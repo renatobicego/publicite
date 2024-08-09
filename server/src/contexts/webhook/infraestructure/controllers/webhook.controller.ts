@@ -1,11 +1,13 @@
 import { Controller, Post, Body, Headers, HttpCode, HttpStatus, Get } from '@nestjs/common';
 import { ClerkWebhookAdapter } from '../adapters/clerk-webhook.adapter';
-import { WebhookService } from '../../application/webhook.service';
+import { ConfigService } from '@nestjs/config'; // Asegúrate de importar ConfigServic
+
 
 @Controller('webhook')
 export class WebhookController {
   constructor(
-    private readonly clerkWebhookAdapter: ClerkWebhookAdapter
+    private readonly clerkWebhookAdapter: ClerkWebhookAdapter,
+    private readonly configService: ConfigService, // Inyecta ConfigService
   ) { }
 
   @Post()
@@ -14,8 +16,9 @@ export class WebhookController {
     @Body() payload: any,
     @Headers() headers: Record<string, string>
   ): Promise<void> {
-    const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET;
-
+    const WEBHOOK_SECRET = this.configService.get<string>('WEBHOOK_SECRET');
+    
+      //ngrok http --domain=regular-loved-hare.ngrok-free.app 3000
     if (!WEBHOOK_SECRET) {
       throw new Error('Please add WEBHOOK_SECRET to your environment variables');
     }
