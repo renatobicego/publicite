@@ -1,13 +1,23 @@
 // user.service.ts
-import { Injectable } from '@nestjs/common';
-import { UserServiceInterface } from '../domain/user-service.interface';
+import { Inject, Injectable } from '@nestjs/common';
+import { UserRepositoryInterface } from '../domain/user-service.interface';
+import { User } from '../domain/entity/user.entity';
+import { CreateUserDto } from './Dtos/create-user.dto';
 
-// MONGO
+
+
+
+
 @Injectable()
-export class UserService implements UserServiceInterface {
-	async createUser(user: any): Promise<void> {
-		console.log("Creating user...", user);
-	}
+export class UserService {
+
+  constructor(
+    @Inject('UserRepositoryInterface') private readonly userRepository: UserRepositoryInterface
+  ) {}
+
+	async createUser(data: CreateUserDto): Promise<User> {
+    return this.userRepository.createUser(data);
+  }
 
 
 }

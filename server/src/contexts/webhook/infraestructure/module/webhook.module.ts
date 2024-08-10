@@ -4,20 +4,14 @@ import { WebhookService } from '../../application/webhook.service';
 import { ClerkWebhookAdapter } from '../adapters/clerk-webhook.adapter';
 import { WebhookController } from '../controllers/webhook.controller';
 import { UserModule } from 'src/contexts/user/infraestructure/module/user.module';
-import { UserService } from 'src/contexts/user/application/user.service';
-
 
 @Module({
   imports: [
-    UserModule,
+    UserModule, // Asegúrate de que UserModule esté importado
     ConfigModule.forRoot(),
   ],
   controllers: [WebhookController],
   providers: [
-    {
-      provide: 'UserServiceInterface',
-      useClass: UserService,
-    },
     WebhookService,
     {
       provide: ClerkWebhookAdapter,
@@ -32,4 +26,4 @@ import { UserService } from 'src/contexts/user/application/user.service';
     },
   ],
 })
-export class WebhookModule { }
+export class WebhookModule {}
