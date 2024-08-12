@@ -1,3 +1,7 @@
+## Documentacion importante para entender la arquitectura
+
+
+
 ## Diferencia entre la Lógica de Aplicación y la Lógica de Negocio en la Arquitectura Hexagonal
 
 En la arquitectura hexagonal, también conocida como arquitectura de puertos y adaptadores, se realiza una separación clara entre la lógica de la aplicación y la lógica del negocio. Aquí te explico las diferencias:

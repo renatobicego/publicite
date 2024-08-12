@@ -4,7 +4,7 @@
         de esta manera recibiremos los datos
 */
 export interface WebhookEventInterface {
-  id: string;
+  object: string;
   type: string;
   data: any;
 }
