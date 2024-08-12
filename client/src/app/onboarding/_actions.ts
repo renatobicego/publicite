@@ -10,11 +10,11 @@ export const completeOnboarding = async (formData: FormData) => {
   }
 
   try {
+    // Hago peticion
+    // Si esa peticion error 
     const res = await clerkClient().users.updateUser(userId, {
       publicMetadata: {
-        onboardingComplete: true,
-        applicationName: formData.get("applicationName"),
-        applicationType: formData.get("applicationType"),
+        onboardingComplete: true
       },
     });
     return { message: res.publicMetadata };

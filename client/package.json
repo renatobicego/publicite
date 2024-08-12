@@ -11,9 +11,12 @@
   "dependencies": {
     "@clerk/localizations": "^2.5.7",
     "@clerk/nextjs": "^5.3.0",
+    "@internationalized/date": "^3.5.5",
     "@mercadopago/sdk-react": "^0.0.19",
     "@nextui-org/react": "^2.4.6",
+    "axios": "^1.7.3",
     "framer-motion": "^11.3.24",
+    "mercadopago": "^2.0.11",
     "next": "14.2.5",
     "react": "^18",
     "react-dom": "^18"
