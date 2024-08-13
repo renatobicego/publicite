@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { WebhookEventInterface } from '../../domain/webhook-event.interface';
+import { WebhookEventInterface } from '../../../domain/clerk/webhook-event.interface';
 import { Webhook } from 'svix';
-import { WebhookServiceInterface } from '../../domain/webhook-service.interface';
+import { WebhookServiceInterface } from '../../../domain/clerk/webhook-service.interface';
 /*
   Esta capa actua como intermediaria de la interacción con la API de Webhook de Clerk.
   La principal responabilidad de esta capa es interceptar los eventos de webhook 
