@@ -10,9 +10,7 @@ export class MpWebhookAdapter {
 	) { }
 
 	async handleRequestValidation(xSignature: any, xRequestId: any): Promise<boolean> {
-
 		const SECRET_KEY_MP_WEBHOOK = this.configService.get<string>('SECRET_KEY_MP_WEBHOOK');
-
 		//Have to extract data.id from url in production
 		const dataID = "123456";
 
@@ -55,6 +53,10 @@ export class MpWebhookAdapter {
 		else {
 			return Promise.resolve(false)
 		}
+	}
+
+	async handleSendValidation(): Promise<void> {
+		
 	}
 
 }

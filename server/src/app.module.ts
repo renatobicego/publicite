@@ -5,7 +5,7 @@ import { ConfigModule } from '@nestjs/config';  // Asegúrate de importar Config
 import { WebhookModule } from './contexts/webhook/infraestructure/module/webhook.module';
 import { UserModule } from './contexts/user/infraestructure/module/user.module';
 import { DatabaseModule } from './contexts/database/infraestructure/database.module';
-// import { DatabaseModule } from './contexts/database/infraestructure/database.module';
+
 
 
 @Module({

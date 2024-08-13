@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Headers, HttpCode, HttpStatus, Get, Res } from '@nestjs/common';
+import { Controller, Post, Body, Headers, HttpCode, HttpStatus, Get, Res, Logger, Req } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config'; // Asegúrate de importar ConfigServic
 import { Response } from 'express';
 
@@ -45,9 +45,36 @@ export class WebhookController {
   async handleWebhookMp(
     @Body() payload: any,
     @Headers() headers: Record<string, string>,
-    @Res() res: Response
+    @Res() res: Response,
+    @Req() req: Request
   ): Promise<Response> {
     try {
+
+      /*
+      Ver este codigo. Deberiamos recibir desde el front el numero de pago y el tipo de evento, con estod eberiamos chequear si el pago esta OK en la api de MP y guardar los datos
+      webhook test no lo puede validar, no se porque ya que creo que brinda el ultimo paso de la validacion
+      */
+      {
+        const request = req.url.split('?')[1];
+        const queryObject = new URLSearchParams(request);
+        const dataId = queryObject.get('data.id');
+        const type = queryObject.get('type');
+        const MP_ACCESS_TOKEN = this.configService.get<string>('MP_ACCESS_TOKEN');
+
+        if (type == 'payment') {
+          console.log("MP-WEBHOOK PAYMENT")
+          const rrr = await fetch(`https://api.mercadopago.com/v1/payments/${dataId}`,
+            {
+              method: 'GET',
+              headers: {
+                'Authorization': `Bearer ${MP_ACCESS_TOKEN}`
+              }
+            }
+          )
+          console.log(rrr)
+        }
+      }
+
       const xSignature = headers['x-signature'];
       const xRequestId = headers['x-request-id'];
       if (!xSignature || !xRequestId) {
@@ -56,7 +83,9 @@ export class WebhookController {
       const authSecretValidation = await this.mpWebhookAdapter.handleRequestValidation(xSignature, xRequestId)
       if (authSecretValidation) {
         console.log("MP-WEBHOOK VALIDATED")
+
         return res.status(HttpStatus.OK).send('Signature verified');
+
       } else {
         console.log("MP-WEBHOOK FAILED")
         return res.status(HttpStatus.UNAUTHORIZED).send('Signature verification failed');
