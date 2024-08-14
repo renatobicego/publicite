@@ -1,8 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
 
 
-import { WebhookEventInterface } from '../domain/webhook-event.interface';
-import { WebhookServiceInterface } from '../domain/webhook-service.interface';
+import { WebhookEventInterface } from '../../domain/clerk/webhook-event.interface';
+import { WebhookServiceInterface } from '../../domain/clerk/webhook-service.interface';
 import { UserRepositoryInterface } from 'src/contexts/user/domain/user-service.interface';
 import { CreateUserDto } from 'src/contexts/user/application/Dtos/create-user.dto';
 /*

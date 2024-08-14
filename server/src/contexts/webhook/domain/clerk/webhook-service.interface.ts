@@ -4,6 +4,8 @@ import { WebhookEventInterface } from "./webhook-event.interface";
   Como es una interfaz solo definimos los metodos que se usaran, no la implementacion.
 */
 
+
+
 export interface WebhookServiceInterface {
   processEvent(event: WebhookEventInterface): Promise<void>;
 }
