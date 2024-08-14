@@ -3,7 +3,7 @@ import { getSubscriptionsPlans } from "./services";
 import { Button, Link } from "@nextui-org/react";
 
 const SubscriptionsPlans = async () => {
-  const { results} = await getSubscriptionsPlans();
+  const { results } = await getSubscriptionsPlans();
   return <div>
     <h1>Subscriptions Plans</h1>
     <ul>

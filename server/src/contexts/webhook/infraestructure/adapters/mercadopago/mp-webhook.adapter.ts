@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from '@nestjs/config'; // Asegúrate de importar ConfigServic
 import * as crypto from 'crypto';
@@ -21,10 +22,10 @@ export class MpWebhookAdapter {
 		private readonly mpWebhookService: mpWebhookServiceInterface
 	) { }
 
-	async handleRequestValidation(xSignature: any, xRequestId: any): Promise<boolean> {
+	async handleRequestValidation(xSignature: any, xRequestId: any, dataID: string): Promise<boolean> {
 		const SECRET_KEY_MP_WEBHOOK = this.configService.get<string>('SECRET_KEY_MP_WEBHOOK');
 		//Have to extract data.id from url in production
-		const dataID = "123456";
+		// const dataID = "123456";
 
 		// Separate x-signature into parts
 		const parts = xSignature.split(',');
