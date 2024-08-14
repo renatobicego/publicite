@@ -8,11 +8,11 @@ import {
   HttpStatus,
   Get,
   Res,
-  // Logger,
   Req,
+  Logger,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config'; // Asegúrate de importar ConfigServic
-import { query, Response } from 'express';
+import { Response } from 'express';
 
 import { ClerkWebhookAdapter } from '../adapters/clerk/clerk-webhook.adapter';
 import { MpWebhookAdapter } from '../adapters/mercadopago/mp-webhook.adapter';
@@ -28,7 +28,8 @@ export class WebhookController {
     private readonly clerkWebhookAdapter: ClerkWebhookAdapter,
     private readonly configService: ConfigService, // Inyecta ConfigService
     private readonly mpWebhookAdapter: MpWebhookAdapter,
-  ) {}
+    private readonly logger = new Logger(WebhookController.name)
+  ) { }
 
   @Post('/clerk')
   @HttpCode(HttpStatus.OK)
@@ -50,78 +51,29 @@ export class WebhookController {
   @Post('/mp')
   @HttpCode(HttpStatus.OK)
   async handleWebhookMp(
-    @Body() payload: any,
     @Headers() headers: Record<string, string>,
     @Res() res: Response,
     @Req() req: Request,
   ): Promise<Response> {
     try {
-      /*
-      Ver este codigo. Deberiamos recibir desde el front el numero de pago y el tipo de evento, con estod eberiamos chequear si el pago esta OK en la api de MP y guardar los datos
-      webhook test no lo puede validar, no se porque ya que creo que brinda el ultimo paso de la validacion
-      */
 
-      const request = req.url.split('?')[1];
-      const queryObject = new URLSearchParams(request);
-      const dataId = queryObject.get('data.id');
-      const preApprovalId = queryObject.get('data.preapproval_id');
-      const type = queryObject.get('type');
-      const MP_ACCESS_TOKEN = this.configService.get<string>('MP_ACCESS_TOKEN');
-      console.log(type)
-      if(type === "subscription_authorized_payment"){
-        console.log('MP-WEBHOOK PAYMENT AUTHORIZED');
-        const rrr = await fetch(
-          `https://api.mercadopago.com/preapproval/${preApprovalId}`,
-          {
-            method: 'GET',
-            headers: {
-              Authorization: `Bearer ${MP_ACCESS_TOKEN}`,
-            },
-          },
-        );
-        // console.log(await rrr.json());
-      }
-      // Update en la subscripción 
-      if (type === 'subscription_preapproval') {
-        console.log('MP-WEBHOOK PAYMENT PREAPPROVAL');
-        const rrr = await fetch(
-          `https://api.mercadopago.com/preapproval/${dataId}`,
-          {
-            method: 'GET',
-            headers: {
-              Authorization: `Bearer ${MP_ACCESS_TOKEN}`,
-            },
-          },
-        );
-        // console.log(await rrr.json());
-      }
-
-      const xSignature = headers['x-signature'];
-      const xRequestId = headers['x-request-id'];
-
-      if (!xSignature || !xRequestId) {
-        return res
-          .status(HttpStatus.BAD_REQUEST)
-          .send('Missing required headers');
-      }
+      //Valido el origen de la petición
       const authSecretValidation =
-        await this.mpWebhookAdapter.handleRequestValidation(
-          xSignature,
-          xRequestId,
-          dataId as string,
-        );
+        await this.mpWebhookAdapter.handleRequestWebHookOriginValidation(
+          headers, req
+        )
       if (authSecretValidation) {
-        console.log('MP-WEBHOOK VALIDATED');
-
+        //En el caso de que validemos el origen y que el pago se complete correctamente, vamos a deolver el estado OK, de lo contrario esta operacion no se hara 
+        this.logger.log('Webhook MP OK - Credentials are valid', 'Class:WebhookController')
         return res.status(HttpStatus.OK).send('Signature verified');
       } else {
-        console.log('MP-WEBHOOK FAILED');
+        this.logger.error('Webhook MP FAIL - Credentials are not valid', 'Class:WebhookController')
         return res
           .status(HttpStatus.UNAUTHORIZED)
           .send('Signature verification failed');
       }
     } catch (error) {
-      console.error(error);
+      this.logger.error(error, 'Class:WebhookController')
       return res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
         .send('Internal Server Error');
@@ -131,6 +83,7 @@ export class WebhookController {
   @Get('health')
   @HttpCode(HttpStatus.OK)
   async healthTest(): Promise<{ status: string }> {
+    this.logger.log('Service ON', 'Class:WebhookController')
     return { status: 'Service ON' };
   }
 }
