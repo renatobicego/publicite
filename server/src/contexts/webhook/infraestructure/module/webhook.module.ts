@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { WebhookService } from '../../application/clerk/webhook.service';
+import { WebhookService } from '../../application/clerk/clerkWebhook.service';
 import { ClerkWebhookAdapter } from '../adapters/clerk/clerk-webhook.adapter';
 import { WebhookController } from '../controllers/webhook.controller';
 import { UserModule } from 'src/contexts/user/infraestructure/module/user.module';

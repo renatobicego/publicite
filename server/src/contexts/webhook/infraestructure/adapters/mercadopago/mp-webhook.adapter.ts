@@ -1,12 +1,24 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from '@nestjs/config'; // Asegúrate de importar ConfigServic
 import * as crypto from 'crypto';
+import { mpWebhookServiceInterface } from "src/contexts/webhook/domain/mercadopago/mpWebhookServiceInterface";
 
+/*
+
+Cuando hago el pago recibo payment y luego recibo otro evento que se creo la subscripcion que se llama
+subcription_preAppproval
+
+cuando vuelve a pagar recibo subvcricpcon:authirizen_payment
+
+
+*/
 @Injectable()
 export class MpWebhookAdapter {
 
 	constructor(
 		private readonly configService: ConfigService,
+		private readonly URL_PAYMENT_CHECK: string = "https://api.mercadopago.com/v1/payments/",
+		private readonly mpWebhookService: mpWebhookServiceInterface
 	) { }
 
 	async handleRequestValidation(xSignature: any, xRequestId: any): Promise<boolean> {
@@ -55,8 +67,31 @@ export class MpWebhookAdapter {
 		}
 	}
 
-	async handleSendValidation(): Promise<void> {
-		
+	async handleSendValidation(type: string, dataId: string): Promise<void> {
+		if (!type || !dataId) throw new Error('Missing required parameters');
+
+		const MP_ACCESS_TOKEN = this.configService.get<string>('MP_ACCESS_TOKEN');
+		switch (type) {
+			case 'payment':
+				const rrr = await fetch(`${this.URL_PAYMENT_CHECK}${dataId}`,
+					{
+						method: 'GET',
+						headers: {
+							'Authorization': `Bearer ${MP_ACCESS_TOKEN}`
+						}
+					}
+				)
+				console.log(rrr)
+				break;
+		}
 	}
+
+
+
+
+
+
+
+
 
 }
