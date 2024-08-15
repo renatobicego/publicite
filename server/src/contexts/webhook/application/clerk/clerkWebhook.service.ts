@@ -1,6 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
 
-
 import { WebhookEventInterface } from '../../domain/clerk/webhook-event.interface';
 import { WebhookServiceInterface } from '../../domain/clerk/webhook-service.interface';
 import { UserRepositoryInterface } from 'src/contexts/user/domain/user-service.interface';
@@ -13,16 +12,14 @@ import { CreateUserDto } from 'src/contexts/user/application/Dtos/create-user.dt
 */
 @Injectable()
 export class WebhookService implements WebhookServiceInterface {
-
   constructor(
-    @Inject('UserRepositoryInterface') private readonly userService: UserRepositoryInterface
-  ) { }
-
+    @Inject('UserRepositoryInterface')
+    private readonly userService: UserRepositoryInterface,
+  ) {}
 
   async processEvent(event: WebhookEventInterface): Promise<void> {
     const { object, type } = event;
     console.log(`Processing webhook Object: ${object} and type: ${type}`);
-
 
     switch (type) {
       case 'user.created':
@@ -30,7 +27,7 @@ export class WebhookService implements WebhookServiceInterface {
         const createUserDto = new CreateUserDto(
           first_name,
           last_name,
-          image_url
+          image_url,
         );
         this.userService.createUser(createUserDto);
         break;
@@ -39,8 +36,4 @@ export class WebhookService implements WebhookServiceInterface {
         break;
     }
   }
-
-
-
-
 }

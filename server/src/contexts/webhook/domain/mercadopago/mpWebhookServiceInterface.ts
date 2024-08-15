@@ -1,4 +1,4 @@
-import { dataType } from "./objects";
+import { dataType } from './objects';
 
 export interface mpWebhookServiceInterface {
   processHeaders(request: any): dataType;

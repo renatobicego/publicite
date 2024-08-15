@@ -6,7 +6,6 @@ import { WebhookController } from '../controllers/webhook.controller';
 import { UserModule } from 'src/contexts/user/infraestructure/module/user.module';
 import { MpWebhookAdapter } from '../adapters/mercadopago/mp-webhook.adapter';
 
-
 @Module({
   imports: [
     UserModule, // Asegúrate de que UserModule esté importado
@@ -17,16 +16,21 @@ import { MpWebhookAdapter } from '../adapters/mercadopago/mp-webhook.adapter';
     WebhookService,
     {
       provide: ClerkWebhookAdapter,
-      useFactory: (webhookService: WebhookService, configService: ConfigService) => {
+      useFactory: (
+        webhookService: WebhookService,
+        configService: ConfigService,
+      ) => {
         const WEBHOOK_SECRET = configService.get<string>('WEBHOOK_SECRET');
         if (!WEBHOOK_SECRET) {
-          throw new Error('Please add WEBHOOK_SECRET to your environment variables');
+          throw new Error(
+            'Please add WEBHOOK_SECRET to your environment variables',
+          );
         }
         return new ClerkWebhookAdapter(webhookService, WEBHOOK_SECRET);
       },
       inject: [WebhookService, ConfigService],
     },
-    MpWebhookAdapter
+    MpWebhookAdapter,
   ],
 })
 export class WebhookModule {}
