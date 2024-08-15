@@ -17,13 +17,14 @@ export class MpWebhookAdapter {
 
 	constructor(
 		private readonly configService: ConfigService,
-		private readonly URL_PAYMENT_CHECK: string = "https://api.mercadopago.com/v1/payments/",
-		private readonly URL_SUBCRIPTION_AUTHORIZED_CHECK: string = "https://api.mercadopago.com/preapproval/",
-		private readonly URL_SUBCRIPTION_PREAPPROVAL_CHECK = "https://api.mercadopago.com/preapproval/",
-		private readonly mpWebhookService: mpWebhookServiceInterface,
-    private readonly logger = new Logger(MpWebhookAdapter.name)
+		// private readonly mpWebhookService: mpWebhookServiceInterface,
 	) { }
 
+	private readonly URL_PAYMENT_CHECK: string = "https://api.mercadopago.com/v1/payments/"
+	private readonly URL_SUBCRIPTION_AUTHORIZED_CHECK: string = "https://api.mercadopago.com/preapproval/"
+	private readonly URL_SUBCRIPTION_PREAPPROVAL_CHECK = "https://api.mercadopago.com/preapproval/"
+
+	private readonly logger = new Logger(MpWebhookAdapter.name)
 	async handleRequestWebHookOriginValidation(header: Record<string, string>, req: Request): Promise<boolean> {
 		const request = req.url.split('?')[1];
 		const queryObject = new URLSearchParams(request);

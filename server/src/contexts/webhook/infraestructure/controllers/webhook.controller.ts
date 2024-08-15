@@ -28,9 +28,9 @@ export class WebhookController {
     private readonly clerkWebhookAdapter: ClerkWebhookAdapter,
     private readonly configService: ConfigService, // Inyecta ConfigService
     private readonly mpWebhookAdapter: MpWebhookAdapter,
-    private readonly logger = new Logger(WebhookController.name)
   ) { }
 
+  private readonly logger = new Logger(WebhookController.name)
   @Post('/clerk')
   @HttpCode(HttpStatus.OK)
   async handleWebhookClerk(
