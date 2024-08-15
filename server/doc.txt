@@ -1,0 +1,165 @@
+
+Validar que el monto sea mayor a mil pesos y que el atributo opartion_type sea "card_validation"
+payment.created payment
+
+verificar que si es un evento que tiene action created: creo nuevo valor, si es update deberia buscarlo y hacer update+
+
+Payment - Case payment.created
+{
+  accounts_info: null,
+  acquirer_reconciliation: [],
+  additional_info: {
+    authentication_code: null,
+    available_balance: null,
+    nsu_processadora: null
+  },
+  authorization_code: '301299',
+  binary_mode: true,
+  brand_id: null,
+  build_version: '3.65.0-rc-8',
+  call_for_authorize_id: null,
+  captured: true,
+  card: {
+    bin: '45099535',
+    cardholder: { identification: [Object], name: 'Test Test' },
+    country: 'ARG',
+    date_created: '2024-08-15T14:44:59.000-04:00',
+    date_last_updated: '2024-08-15T14:44:59.000-04:00',
+    expiration_month: 11,
+    expiration_year: 2025,
+    first_six_digits: '450995',
+    id: null,
+    last_four_digits: '3704',
+    tags: null
+  },
+  charges_details: [],
+  collector_id: 1937254011,
+  corporation_id: null,
+  counter_currency: null,
+  coupon_amount: 0,
+  currency_id: 'ARS',
+  date_approved: '2024-08-15T14:44:59.000-04:00',
+  date_created: '2024-08-15T14:44:59.000-04:00',
+  date_last_updated: '2024-08-15T14:44:59.000-04:00',
+  date_of_expiration: null,
+  deduction_schema: null,
+  description: 'Recurring payment validation',
+  differential_pricing_id: null,
+  external_reference: null,
+  fee_details: [],
+  financing_group: null,
+  id: 85370914822,
+  installments: 1,
+  integrator_id: null,
+  issuer_id: '310',
+  live_mode: true,
+  marketplace_owner: null,
+  merchant_account_id: null,
+  merchant_number: null,
+  metadata: {},
+  money_release_date: null,
+  money_release_schema: null,
+  money_release_status: null,
+  notification_url: null,
+  operation_type: 'card_validation',
+  order: {},
+  payer: {
+    email: 'test_user_1345316664@testuser.com',
+    entity_type: null,
+    first_name: null,
+    id: '1948475212',
+    identification: { number: '1111111', type: 'DNI' },
+    last_name: null,
+    operator_id: null,
+    phone: { number: null, extension: null, area_code: null },
+    type: null
+  },
+  payment_method: { id: 'visa', issuer_id: '310', type: 'credit_card' },
+  payment_method_id: 'visa',
+  payment_type_id: 'credit_card',
+  platform_id: null,
+  point_of_interaction: {
+    business_info: {
+      branch: 'Merchant Services',
+      sub_unit: 'recurring',
+      unit: 'online_payments'
+    },
+    transaction_data: {},
+    type: 'UNSPECIFIED'
+  },
+  pos_id: null,
+  processing_mode: 'aggregator',
+  refunds: [],
+  release_info: null,
+  shipping_amount: 0,
+  sponsor_id: null,
+  statement_descriptor: 'Mercadopago*fake',
+  status: 'approved',
+  status_detail: 'accredited',
+  store_id: null,
+  tags: null,
+  taxes_amount: 0,
+  transaction_amount: 0,
+  transaction_amount_refunded: 0,
+  transaction_details: {
+    acquirer_reference: null,
+    external_resource_url: null,
+    financial_institution: null,
+    installment_amount: 0,
+    net_received_amount: 0,
+    overpaid_amount: 0,
+    payable_deferral_period: null,
+    payment_method_reference_id: null,
+    total_paid_amount: 0
+  }
+}
+
+
+aca ya se valido todo 
+updated subscription_preapproval
+subscription_preapproval - Case updated
+{
+  id: '23119983dfdd439295aa6e6f87e96987',
+  payer_id: 1948475212,
+  payer_email: '',
+  back_url: 'https://www.mercadopago.com.ar/subscriptions',
+  collector_id: 1937254011,
+  application_id: 7687177318754610,
+  status: 'authorized',
+  reason: 'Publicité Premium',
+  date_created: '2024-08-15T14:44:59.883-04:00',
+  last_modified: '2024-08-15T14:45:00.226-04:00',
+  init_point: 'https://www.mercadopago.com.ar/subscriptions/checkout?preapproval_id=23119983dfdd439295aa6e6f87e96987',
+  preapproval_plan_id: '2c9380849146ff3d01914739031d0028',
+  auto_recurring: {
+    frequency: 1,
+    frequency_type: 'months',
+    transaction_amount: 10000,
+    currency_id: 'ARS',
+    start_date: '2024-08-15T14:44:59.884-04:00',
+    end_date: '2024-09-14T23:00:00.000-04:00',
+    billing_day_proportional: false,
+    has_billing_day: false,
+    free_trial: null
+  },
+  summarized: {
+    quotas: 1,
+    charged_quantity: null,
+    pending_charge_quantity: 1,
+    charged_amount: null,
+    pending_charge_amount: 10000,
+    semaphore: null,
+    last_charged_date: null,
+    last_charged_amount: null
+  },
+  next_payment_date: '2024-08-15T14:45:00.000-04:00',
+  payment_method_id: 'visa',
+  card_id: '9472623287',
+  payment_method_id_secondary: null,
+  first_invoice_offset: null,
+  subscription_id: '23119983dfdd439295aa6e6f87e96987'
+}
+
+
+ahora tenemos que esperar el pago y la factura.
+

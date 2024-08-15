@@ -1,8 +1,8 @@
 import {
-  BadRequestException,
-  Injectable,
-  Logger,
-  UnauthorizedException,
+	BadRequestException,
+	Injectable,
+	Logger,
+	UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config'; // Asegúrate de importar ConfigServic
 import * as crypto from 'crypto';
@@ -28,19 +28,21 @@ export class MpWebhookAdapter {
 	private readonly URL_SUBCRIPTION_AUTHORIZED_CHECK: string = "https://api.mercadopago.com/preapproval/"
 	private readonly URL_SUBCRIPTION_PREAPPROVAL_CHECK = "https://api.mercadopago.com/preapproval/"
 	private readonly logger = new Logger(MpWebhookAdapter.name)
+	private readonly MP_ACCESS_TOKEN = this.configService.get<string>('MP_ACCESS_TOKEN');
 
 
 	async handleRequestWebHookOriginValidation(header: Record<string, string>, req: Request): Promise<boolean> {
 		const request = req.url.split('?')[1];
 		const queryObject = new URLSearchParams(request);
+		const { body } = req;
 		const dataId = queryObject.get('data.id');
 
-    const xSignature = header['x-signature'];
-    const xRequestId = header['x-request-id'];
-    if (!xSignature || !xRequestId) {
-      this.logger.error('Invalid webhook headers');
-      throw new UnauthorizedException('Invalid webhook headers');
-    }
+		const xSignature = header['x-signature'];
+		const xRequestId = header['x-request-id'];
+		if (!xSignature || !xRequestId) {
+			this.logger.error('Invalid webhook headers');
+			throw new UnauthorizedException('Invalid webhook headers');
+		}
 
 		const validation = this.checkHashValidation(xSignature, xRequestId, dataId ?? "");
 
@@ -48,10 +50,14 @@ export class MpWebhookAdapter {
 			this.logger.log("Webhook origin is valid, processing webhook data")
 			//Si esto se cumple vamos a procesar el webhook
 			try {
-				const dataMeliResponse = await this.getDataFromMP(queryObject);
-				console.log(dataMeliResponse)
+				const validationGetMp = await this.getDataFromMP(body);
+				if (validationGetMp) {
+					return Promise.resolve(true)
+				} else {
+					return Promise.resolve(false)
+				}
 				//una vez terminado de procesar guardaremos los datos necesarios y enviamos la notif que esta todo ok
-				return Promise.resolve(true)
+
 			} catch (error: any) {
 				throw new Error(error);
 			}
@@ -88,84 +94,110 @@ export class MpWebhookAdapter {
 			return Promise.resolve(false)
 		}
 
-    // Create the manifest string
-    const manifest = `id:${dataId};request-id:${xRequestId};ts:${ts};`;
-    // Generate the HMAC signature
-    const hmac = crypto.createHmac('sha256', secret);
-    hmac.update(manifest);
-    const sha = hmac.digest('hex');
-
+		// Create the manifest string
+		const manifest = `id:${dataId};request-id:${xRequestId};ts:${ts};`;
+		// Generate the HMAC signature
+		const hmac = crypto.createHmac('sha256', secret);
+		hmac.update(manifest);
+		const sha = hmac.digest('hex');
 		if (sha === hash) {
 			return true
 		} else {
 			return false
 		}
-
 	}
 
-  async getDataFromMP(body: any): Promise<void> {
-    const MP_ACCESS_TOKEN = this.configService.get<string>('MP_ACCESS_TOKEN');
-    const dataId = body.data.id;
-    const type = body.type;
+	async getDataFromMP(body: any): Promise<boolean> {
+		this.logger.log("Getting data from MP")
 
-    if (!type || !dataId) {
-      this.logger.error('Missing queryObject', 'Class:MpWebhookAdapter');
-      throw new UnauthorizedException('Invalid webhook headers');
-    }
+		const dataId = body.data.id;
+		const type = body.type;
 
-    /*
+		if (!type || !dataId) {
+			this.logger.error('Missing queryObject', 'Class:MpWebhookAdapter');
+			throw new UnauthorizedException('Invalid webhook headers');
+		}
+
+		/*
 		Si llegamos hasta aca quiere decir que el origen del webhook es correcto.
 		-> Deberiamos chequear el tipo de evento y manejarlo segun corresponda, para la gestion del mismo vamos a llamar a nuestro servicio de webhook para meli
 				Ya que es nuestra capa indicada para el manejo de la logica que corresponde a nuestro negocio y posteriormente comunicaremos con la capa de dominio para almacenar los datos
 		*/
+		const action = body.action;
+		//console.log(action, type);
+
+
+		//Verificamos que el evento sea de tipo card_validation, en ese caso devolvemos la promesa en true ya que no nos interesa.
+		if (action === "payment.created" && body.operation_type === 'card_validation' && body.transaction_amount < 1000) {
+			this.logger.log('MpWebhookAdapter - Case paymenty.created - type card_validation, sending response OK to meli & return');
+			return Promise.resolve(true);
+		}
+
 		switch (type) {
 			case 'payment':
-				const paymentId = queryObject.get('data.id');
-				const payment = await fetch(`${this.URL_PAYMENT_CHECK}${paymentId}`,
-					{
-						method: 'GET',
-						headers: {
-							'Authorization': `Bearer ${MP_ACCESS_TOKEN}`
-						}
-					}
-				)
-				console.log("Payment - Case");
-				console.log(payment);
+				const payment = await fetch(`${this.URL_PAYMENT_CHECK}${dataId}`, {
+					method: 'GET',
+					headers: {
+						Authorization: `Bearer ${this.MP_ACCESS_TOKEN}`,
+					},
+				});
+				console.log('Payment - Case', action);
+				console.log(await payment.json());
 				break;
 			case 'subscription_authorized_payment':
-				const preapproval_id = queryObject.get('data.preapproval_id');
 				const subscription_authorized_payment = await fetch(
-					`${this.URL_SUBCRIPTION_AUTHORIZED_CHECK}${preapproval_id}`,
+					`${this.URL_SUBCRIPTION_AUTHORIZED_CHECK}${dataId}`,
 					{
 						method: 'GET',
 						headers: {
-							Authorization: `Bearer ${MP_ACCESS_TOKEN}`,
+							Authorization: `Bearer ${this.MP_ACCESS_TOKEN}`,
 						},
 					},
 				);
-				console.log("subscription_authorized_payment - Case");
-				console.log(subscription_authorized_payment);
+				console.log('subscription_authorized_payment - Case', action);
+				console.log(await subscription_authorized_payment.json());
 				break;
 			case 'subscription_preapproval':
-				const preapproval_plan_id = queryObject.get('data.preapproval_plan_id');
-				const subscription_preapproval = await fetch(
-					`${this.URL_SUBCRIPTION_PREAPPROVAL_CHECK}${preapproval_plan_id}`,
-					{
-						method: 'GET',
-						headers: {
-							Authorization: `Bearer ${MP_ACCESS_TOKEN}`,
-						},
-					},
-				);
-				console.log("subscription_preapproval - Case");
-				console.log(subscription_preapproval)
+				this.logger.log("processing subscription_preapproval Case - Action: " + action)
+				const response = await this.handleEvent_subscription_preapproval(dataId);
+				if (response) return Promise.resolve(true)
 				break;
 			default:
 				throw new BadRequestException('Invalid webhook headers');
 		}
-
+		return Promise.resolve(true);
 	}
 
+
+	async handleEvent_subscription_preapproval(dataID: string): Promise<boolean> {
+		const subscription_preapproval_response = await fetch(
+			`${this.URL_SUBCRIPTION_PREAPPROVAL_CHECK}${dataID}`,
+			{
+				method: 'GET',
+				headers: {
+					Authorization: `Bearer ${this.MP_ACCESS_TOKEN}`,
+				},
+			},
+		);
+
+		//Si por alguna razon la peticion falla, retornamos false y hacemos que el controller tambien lo haga
+		//De esta manera le decimos a MP que hubo algun problem (entiendo que quizas si no retornamos 200 manda la peticion de nuevo)
+		if (subscription_preapproval_response.status !== 200) {
+			this.logger.error(`Error fetching subscription_preapproval data: ${subscription_preapproval_response.status}`);
+			return Promise.resolve(false)
+		}
+		console.log(await subscription_preapproval_response.json());
+		/*
+		En el caso de que esta peticion se complete de manera correcta 
+		vamos a llamar al servicio para almacenar la informacion en la base de datos 8=D
+		*/
+
+
+
+
+		return Promise.resolve(false)
+		
+	}
 
 
 
