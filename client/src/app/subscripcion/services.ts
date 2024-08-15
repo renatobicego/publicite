@@ -57,7 +57,7 @@ export const getSubscriptionPlanById = async (id: string) => {
 export const getSubscriptionByEmail = async (email: string) => {
   try {
     const { data } = await axios.get(
-      "https://api.mercadopago.com/preapproval/search?payer_email=" + email,
+      "https://api.mercadopago.com/preapproval/search?status=authorized&status=paused&payer_email=" + email,
       {
         headers: {
           Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}`,

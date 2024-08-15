@@ -54,7 +54,6 @@ export class WebhookController {
     @Req() req: Request,
   ): Promise<Response> {
     try {
-
       //Valido el origen de la petición
       const authSecretValidation =
         await this.mpWebhookAdapter.handleRequestWebHookOriginValidation(

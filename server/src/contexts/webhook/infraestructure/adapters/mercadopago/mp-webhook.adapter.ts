@@ -1,8 +1,11 @@
-/* eslint-disable prettier/prettier */
-import { BadRequestException, Injectable, InternalServerErrorException, Logger, UnauthorizedException } from "@nestjs/common";
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config'; // Asegúrate de importar ConfigServic
 import * as crypto from 'crypto';
-import { mpWebhookServiceInterface } from "src/contexts/webhook/domain/mercadopago/mpWebhookServiceInterface";
 
 /*
 
@@ -32,12 +35,12 @@ export class MpWebhookAdapter {
 		const queryObject = new URLSearchParams(request);
 		const dataId = queryObject.get('data.id');
 
-		const xSignature = header['x-signature'];
-		const xRequestId = header['x-request-id'];
-		if (!xSignature || !xRequestId) {
-			this.logger.error("Invalid webhook headers")
-			throw new UnauthorizedException('Invalid webhook headers');
-		}
+    const xSignature = header['x-signature'];
+    const xRequestId = header['x-request-id'];
+    if (!xSignature || !xRequestId) {
+      this.logger.error('Invalid webhook headers');
+      throw new UnauthorizedException('Invalid webhook headers');
+    }
 
 		const validation = this.checkHashValidation(xSignature, xRequestId, dataId ?? "");
 
@@ -85,12 +88,12 @@ export class MpWebhookAdapter {
 			return Promise.resolve(false)
 		}
 
-		// Create the manifest string
-		const manifest = `id:${dataId};request-id:${xRequestId};ts:${ts};`;
-		// Generate the HMAC signature
-		const hmac = crypto.createHmac('sha256', secret);
-		hmac.update(manifest);
-		const sha = hmac.digest('hex');
+    // Create the manifest string
+    const manifest = `id:${dataId};request-id:${xRequestId};ts:${ts};`;
+    // Generate the HMAC signature
+    const hmac = crypto.createHmac('sha256', secret);
+    hmac.update(manifest);
+    const sha = hmac.digest('hex');
 
 		if (sha === hash) {
 			return true
@@ -100,17 +103,17 @@ export class MpWebhookAdapter {
 
 	}
 
-	async getDataFromMP(queryObject: URLSearchParams): Promise<void> {
-		const MP_ACCESS_TOKEN = this.configService.get<string>('MP_ACCESS_TOKEN');
-		const dataId = queryObject.get('data.id');
-		const type = queryObject.get('type');
+  async getDataFromMP(body: any): Promise<void> {
+    const MP_ACCESS_TOKEN = this.configService.get<string>('MP_ACCESS_TOKEN');
+    const dataId = body.data.id;
+    const type = body.type;
 
-		if (!type || !dataId) {
-			this.logger.error('Missing queryObject', 'Class:MpWebhookAdapter');
-			throw new UnauthorizedException('Invalid webhook headers');
-		}
+    if (!type || !dataId) {
+      this.logger.error('Missing queryObject', 'Class:MpWebhookAdapter');
+      throw new UnauthorizedException('Invalid webhook headers');
+    }
 
-		/*
+    /*
 		Si llegamos hasta aca quiere decir que el origen del webhook es correcto.
 		-> Deberiamos chequear el tipo de evento y manejarlo segun corresponda, para la gestion del mismo vamos a llamar a nuestro servicio de webhook para meli
 				Ya que es nuestra capa indicada para el manejo de la logica que corresponde a nuestro negocio y posteriormente comunicaremos con la capa de dominio para almacenar los datos
