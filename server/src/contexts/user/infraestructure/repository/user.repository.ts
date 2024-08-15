@@ -1,8 +1,7 @@
 
 import { Injectable, Logger } from '@nestjs/common';
-import { UserRepositoryInterface } from '../../domain/user-service.interface';
+import { UserRepositoryInterface } from '../../domain/user-repository.interface';
 
-import { CreateUserDto } from '../../application/Dtos/create-user.dto';
 import { User } from '../../domain/entity/user.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -19,19 +18,19 @@ export class UserRepository implements UserRepositoryInterface {
 	) { }
 
 
-	async createUser(createUserDto: CreateUserDto): Promise<User> {
+	async createUser(user: User): Promise<User> {
 		try {
 			
 			this.logger.log("Creating user... in user repository");
 
 			// Crea una instancia del modelo Mongoose
-			const newUser = new this.userModel(createUserDto);
+			const newUser = new this.userModel(user);
 
 			// Guarda el usuario en la base de datos
 			await newUser.save();
 
 			// Retorna el usuario como una promesa
-			return Promise.resolve(createUserDto);
+			return Promise.resolve(user);
 
 		} catch (error: any) {
 			this.logger.error("Error creating user... in user repository");

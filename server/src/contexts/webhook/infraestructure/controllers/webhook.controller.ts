@@ -26,7 +26,7 @@ import { MpWebhookAdapter } from '../adapters/mercadopago/mp-webhook.adapter';
 export class WebhookController {
   constructor(
     private readonly clerkWebhookAdapter: ClerkWebhookAdapter,
-    private readonly configService: ConfigService, // Inyecta ConfigService
+    private readonly configService: ConfigService,
     private readonly mpWebhookAdapter: MpWebhookAdapter,
   ) { }
 
@@ -38,13 +38,11 @@ export class WebhookController {
     @Headers() headers: Record<string, string>,
   ): Promise<void> {
     const WEBHOOK_SECRET = this.configService.get<string>('WEBHOOK_SECRET');
-
     if (!WEBHOOK_SECRET) {
       throw new Error(
         'Please add WEBHOOK_SECRET to your environment variables',
       );
     }
-
     await this.clerkWebhookAdapter.handleRequest(payload, headers);
   }
 

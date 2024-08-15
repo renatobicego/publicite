@@ -17,14 +17,16 @@ export class MpWebhookAdapter {
 
 	constructor(
 		private readonly configService: ConfigService,
-		// private readonly mpWebhookService: mpWebhookServiceInterface,
+		//private readonly mpWebhookService: mpWebhookServiceInterface,
 	) { }
+
 
 	private readonly URL_PAYMENT_CHECK: string = "https://api.mercadopago.com/v1/payments/"
 	private readonly URL_SUBCRIPTION_AUTHORIZED_CHECK: string = "https://api.mercadopago.com/preapproval/"
 	private readonly URL_SUBCRIPTION_PREAPPROVAL_CHECK = "https://api.mercadopago.com/preapproval/"
-
 	private readonly logger = new Logger(MpWebhookAdapter.name)
+
+
 	async handleRequestWebHookOriginValidation(header: Record<string, string>, req: Request): Promise<boolean> {
 		const request = req.url.split('?')[1];
 		const queryObject = new URLSearchParams(request);
@@ -37,6 +39,26 @@ export class MpWebhookAdapter {
 			throw new UnauthorizedException('Invalid webhook headers');
 		}
 
+		const validation = this.checkHashValidation(xSignature, xRequestId, dataId ?? "");
+
+		if (validation) {
+			this.logger.log("Webhook origin is valid, processing webhook data")
+			//Si esto se cumple vamos a procesar el webhook
+			try {
+				const dataMeliResponse = await this.getDataFromMP(queryObject);
+				console.log(dataMeliResponse)
+				//una vez terminado de procesar guardaremos los datos necesarios y enviamos la notif que esta todo ok
+				return Promise.resolve(true)
+			} catch (error: any) {
+				throw new Error(error);
+			}
+		} else {
+			return Promise.resolve(false)
+		}
+	}
+
+
+	checkHashValidation(xSignature: string, xRequestId: string, dataId: string) {
 		// Separate x-signature into parts
 		const parts = xSignature.split(',');
 		let ts: string | undefined;
@@ -56,6 +78,7 @@ export class MpWebhookAdapter {
 				}
 			}
 		});
+
 		const secret = this.configService.get<string>('SECRET_KEY_MP_WEBHOOK');
 		if (!secret) {
 			Logger.error('Please add SECRET_KEY_MP_WEBHOOK to your environment variables');
@@ -70,20 +93,10 @@ export class MpWebhookAdapter {
 		const sha = hmac.digest('hex');
 
 		if (sha === hash) {
-			this.logger.log("Webhook origin is valid, processing webhook data")
-			//Si esto se cumple vamos a procesar el webhook
-			try {
-				const dataMeliResponse = await this.getDataFromMP(queryObject);
-				console.log(dataMeliResponse)
-				//una vez terminado de procesar guardaremos los datos necesarios y enviamos la notif que esta todo ok
-				return Promise.resolve(true)
-			} catch (error: any) {
-				throw new Error(error);
-			}
+			return true
 		} else {
-			return Promise.resolve(false)
+			return false
 		}
-
 
 	}
 
@@ -149,11 +162,6 @@ export class MpWebhookAdapter {
 		}
 
 	}
-
-
-
-
-
 
 
 

@@ -3,8 +3,9 @@ import { Inject, Injectable } from '@nestjs/common';
 
 import { WebhookEventInterface } from '../../domain/clerk/webhook-event.interface';
 import { WebhookServiceInterface } from '../../domain/clerk/webhook-service.interface';
-import { UserRepositoryInterface } from 'src/contexts/user/domain/user-service.interface';
-import { CreateUserDto } from 'src/contexts/user/application/Dtos/create-user.dto';
+
+import { UserRepositoryInterface } from 'src/contexts/user/domain/user-repository.interface';
+import { User } from 'src/contexts/user/domain/entity/user.entity';
 /*
   se utiliza para marcar una clase como un "proveedor" que puede ser 
   inyectado en otras partes de la aplicación mediante el sistema de 
@@ -27,12 +28,12 @@ export class WebhookService implements WebhookServiceInterface {
     switch (type) {
       case 'user.created':
         const { first_name, last_name, image_url } = event.data;
-        const createUserDto = new CreateUserDto(
+        const user = new User(
           first_name,
           last_name,
           image_url
         );
-        this.userService.createUser(createUserDto);
+        this.userService.createUser(user);
         break;
       default:
         console.log('Unknown event type:', type);
