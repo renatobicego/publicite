@@ -1,11 +1,12 @@
 import {
 	BadRequestException,
 	Injectable,
-	Logger,
 	UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config'; // Asegúrate de importar ConfigServic
 import * as crypto from 'crypto';
+import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
+import { MpWebhookServiceInterface } from 'src/contexts/webhook/domain/mercadopago/service/mpWebhookServiceInterface';
 
 /*
 
@@ -20,14 +21,15 @@ export class MpWebhookAdapter {
 
 	constructor(
 		private readonly configService: ConfigService,
-		//private readonly mpWebhookService: mpWebhookServiceInterface,
+		private readonly mpWebhookService: MpWebhookServiceInterface,
+		private readonly logger : MyLoggerService
 	) { }
 
 
 	private readonly URL_PAYMENT_CHECK: string = "https://api.mercadopago.com/v1/payments/"
 	private readonly URL_SUBCRIPTION_AUTHORIZED_CHECK: string = "https://api.mercadopago.com/preapproval/"
 	private readonly URL_SUBCRIPTION_PREAPPROVAL_CHECK = "https://api.mercadopago.com/preapproval/"
-	private readonly logger = new Logger(MpWebhookAdapter.name)
+
 	private readonly MP_ACCESS_TOKEN = this.configService.get<string>('MP_ACCESS_TOKEN');
 
 
@@ -90,7 +92,7 @@ export class MpWebhookAdapter {
 
 		const secret = this.configService.get<string>('SECRET_KEY_MP_WEBHOOK');
 		if (!secret) {
-			Logger.error('Please add SECRET_KEY_MP_WEBHOOK to your environment variables');
+			this.logger.error('Please add SECRET_KEY_MP_WEBHOOK to your environment variables');
 			return Promise.resolve(false)
 		}
 
@@ -170,33 +172,38 @@ export class MpWebhookAdapter {
 
 
 	async handleEvent_subscription_preapproval(dataID: string): Promise<boolean> {
-		const subscription_preapproval_response = await fetch(
-			`${this.URL_SUBCRIPTION_PREAPPROVAL_CHECK}${dataID}`,
-			{
-				method: 'GET',
-				headers: {
-					Authorization: `Bearer ${this.MP_ACCESS_TOKEN}`,
+
+		try {
+			const subscription_preapproval_response = await fetch(
+				`${this.URL_SUBCRIPTION_PREAPPROVAL_CHECK}${dataID}`,
+				{
+					method: 'GET',
+					headers: {
+						Authorization: `Bearer ${this.MP_ACCESS_TOKEN}`,
+					},
 				},
-			},
-		);
+			);
 
-		//Si por alguna razon la peticion falla, retornamos false y hacemos que el controller tambien lo haga
-		//De esta manera le decimos a MP que hubo algun problem (entiendo que quizas si no retornamos 200 manda la peticion de nuevo)
-		if (subscription_preapproval_response.status !== 200) {
-			this.logger.error(`Error fetching subscription_preapproval data: ${subscription_preapproval_response.status}`);
-			return Promise.resolve(false)
+			//Si por alguna razon la peticion falla, retornamos false y hacemos que el controller tambien lo haga
+			//De esta manera le decimos a MP que hubo algun problem (entiendo que quizas si no retornamos 200 manda la peticion de nuevo)
+			if (subscription_preapproval_response.status !== 200) {
+				this.logger.error(`Error fetching subscription_preapproval data: ${subscription_preapproval_response.status}`);
+				return Promise.resolve(false)
+			}
+			console.log(await subscription_preapproval_response.json());
+			/*
+			En el caso de que esta peticion se complete de manera correcta 
+			vamos a llamar al servicio para almacenar la informacion en la base de datos 8=D
+			*/
+			await this.mpWebhookService.createSubscription_preapproval(subscription_preapproval_response);
+
+		}catch(error:any){
+			this.logger.error("An error has ocurred while processing subscription_preapproval event: " + error)
+			throw new Error(error)
 		}
-		console.log(await subscription_preapproval_response.json());
-		/*
-		En el caso de que esta peticion se complete de manera correcta 
-		vamos a llamar al servicio para almacenar la informacion en la base de datos 8=D
-		*/
-
-
-
 
 		return Promise.resolve(false)
-		
+
 	}
 
 

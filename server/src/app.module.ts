@@ -3,7 +3,8 @@ import { ConfigModule } from '@nestjs/config'; // Asegúrate de importar ConfigM
 
 import { WebhookModule } from './contexts/webhook/infraestructure/module/webhook.module';
 import { UserModule } from './contexts/user/infraestructure/module/user.module';
-import { DatabaseModule } from './contexts/database/infraestructure/database.module';
+import { DatabaseModule } from './contexts/shared/database/infraestructure/database.module';
+import { LoggerModule } from './contexts/shared/logger/logger.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { DatabaseModule } from './contexts/database/infraestructure/database.mod
     WebhookModule,
     UserModule,
     DatabaseModule,
+    LoggerModule,
   ],
 })
 export class AppModule {}
