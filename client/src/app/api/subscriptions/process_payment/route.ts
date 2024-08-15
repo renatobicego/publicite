@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
           back_url: "http://localhost:3000/",
           card_token_id: formData.token,
           // payer_email: formData.payer.email,
-          payer_email: "test_user_1835982832@testuser.com",
+          payer_email: "test_user_1345316664@testuser.com",
           preapproval_plan_id: subscriptionPlan.id,
           reason: subscriptionPlan.reason,
         },

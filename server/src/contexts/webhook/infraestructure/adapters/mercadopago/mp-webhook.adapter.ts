@@ -35,6 +35,7 @@ export class MpWebhookAdapter {
     req: Request,
   ): Promise<boolean> {
     const request = req.url.split('?')[1];
+    const { body } = req;
     const queryObject = new URLSearchParams(request);
     const dataId = queryObject.get('data.id');
 
@@ -83,7 +84,7 @@ export class MpWebhookAdapter {
       this.logger.log('Webhook origin is valid, processing webhook data');
       //Si esto se cumple vamos a procesar el webhook
       try {
-        await this.getDataFromMP(queryObject);
+        await this.getDataFromMP(body);
         // console.log(dataMeliResponse);
         //una vez terminado de procesar guardaremos los datos necesarios y enviamos la notif que esta todo ok
         return Promise.resolve(true);
@@ -95,10 +96,10 @@ export class MpWebhookAdapter {
     }
   }
 
-  async getDataFromMP(queryObject: URLSearchParams): Promise<void> {
+  async getDataFromMP(body: any): Promise<void> {
     const MP_ACCESS_TOKEN = this.configService.get<string>('MP_ACCESS_TOKEN');
-    const dataId = queryObject.get('data.id');
-    const type = queryObject.get('type');
+    const dataId = body.data.id;
+    const type = body.type;
 
     if (!type || !dataId) {
       this.logger.error('Missing queryObject', 'Class:MpWebhookAdapter');
@@ -110,23 +111,22 @@ export class MpWebhookAdapter {
 		-> Deberiamos chequear el tipo de evento y manejarlo segun corresponda, para la gestion del mismo vamos a llamar a nuestro servicio de webhook para meli
 				Ya que es nuestra capa indicada para el manejo de la logica que corresponde a nuestro negocio y posteriormente comunicaremos con la capa de dominio para almacenar los datos
 		*/
+    const action = body.action;
+    console.log(action, type);
     switch (type) {
       case 'payment':
-        const paymentId = queryObject.get('data.id');
-        const payment = await fetch(`${this.URL_PAYMENT_CHECK}${paymentId}`, {
+        const payment = await fetch(`${this.URL_PAYMENT_CHECK}${dataId}`, {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${MP_ACCESS_TOKEN}`,
           },
         });
-        console.log('Payment - Case');
+        console.log('Payment - Case', action);
         console.log(await payment.json());
         break;
       case 'subscription_authorized_payment':
-        console.log(queryObject);
-        const preapproval_id = queryObject.get('data.id');
         const subscription_authorized_payment = await fetch(
-          `${this.URL_SUBCRIPTION_AUTHORIZED_CHECK}${preapproval_id}`,
+          `${this.URL_SUBCRIPTION_AUTHORIZED_CHECK}${dataId}`,
           {
             method: 'GET',
             headers: {
@@ -134,13 +134,12 @@ export class MpWebhookAdapter {
             },
           },
         );
-        console.log('subscription_authorized_payment - Case');
+        console.log('subscription_authorized_payment - Case', action);
         console.log(await subscription_authorized_payment.json());
         break;
       case 'subscription_preapproval':
-        const preapproval_plan_id = queryObject.get('data.id');
         const subscription_preapproval = await fetch(
-          `${this.URL_SUBCRIPTION_PREAPPROVAL_CHECK}${preapproval_plan_id}`,
+          `${this.URL_SUBCRIPTION_PREAPPROVAL_CHECK}${dataId}`,
           {
             method: 'GET',
             headers: {
@@ -148,7 +147,7 @@ export class MpWebhookAdapter {
             },
           },
         );
-        console.log('subscription_preapproval - Case');
+        console.log('subscription_preapproval - Case', action);
         console.log(await subscription_preapproval.json());
         break;
       default:
