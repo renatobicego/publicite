@@ -23,8 +23,8 @@ export class MpWebhookAdapter {
 	constructor(
 		private readonly configService: ConfigService,
 		@Inject('MpWebhookServiceInterface') private readonly mpWebhookService: MpWebhookServiceInterface,
-		private readonly logger : MyLoggerService
-	) { } 
+		private readonly logger: MyLoggerService
+	) { }
 
 
 	private readonly URL_PAYMENT_CHECK: string = "https://api.mercadopago.com/v1/payments/"
@@ -129,22 +129,23 @@ export class MpWebhookAdapter {
 		//console.log(action, type);
 
 
-		//Verificamos que el evento sea de tipo card_validation, en ese caso devolvemos la promesa en true ya que no nos interesa.
-		if (action === "payment.created" && body.operation_type === 'card_validation' && body.transaction_amount < 1000) {
-			this.logger.log('MpWebhookAdapter - Case paymenty.created - type card_validation, sending response OK to meli & return');
-			return Promise.resolve(true);
-		}
+
 
 		switch (type) {
 			case 'payment':
-				const payment = await fetch(`${this.URL_PAYMENT_CHECK}${dataId}`, {
+				const paymentResponse: any = await fetch(`${this.URL_PAYMENT_CHECK}${dataId}`, {
 					method: 'GET',
 					headers: {
 						Authorization: `Bearer ${this.MP_ACCESS_TOKEN}`,
 					},
 				});
 				console.log('Payment - Case', action);
-				console.log(await payment.json());
+				const payment = await paymentResponse.json();
+
+				if (action === "payment.created" && payment.operation_type === 'card_validation') {
+					this.logger.log('MpWebhookAdapter - Case paymenty.created - type card_validation, sending response OK to meli & return');
+					return Promise.resolve(true);
+				}
 				break;
 			case 'subscription_authorized_payment':
 				const subscription_authorized_payment = await fetch(
@@ -182,21 +183,21 @@ export class MpWebhookAdapter {
 					},
 				},
 			);
-
+			
 			//Si por alguna razon la peticion falla, retornamos false y hacemos que el controller tambien lo haga
 			//De esta manera le decimos a MP que hubo algun problem (entiendo que quizas si no retornamos 200 manda la peticion de nuevo)
 			if (subscription_preapproval_response.status !== 200) {
 				this.logger.error(`Error fetching subscription_preapproval data: ${subscription_preapproval_response.status}`);
 				return Promise.resolve(false)
 			}
-			console.log(await subscription_preapproval_response.json());
+			const subscription_preapproval = await subscription_preapproval_response.json();
 			/*
 			En el caso de que esta peticion se complete de manera correcta 
 			vamos a llamar al servicio para almacenar la informacion en la base de datos 8=D
 			*/
-			await this.mpWebhookService.createSubscription_preapproval(subscription_preapproval_response);
+			await this.mpWebhookService.createSubscription_preapproval(subscription_preapproval);
 
-		}catch(error:any){
+		} catch (error: any) {
 			this.logger.error("An error has ocurred while processing subscription_preapproval event: " + error)
 			throw new Error(error)
 		}

@@ -1,4 +1,4 @@
 
 export interface MpWebhookServiceInterface {
-  createSubscription_preapproval(data: any): Promise<void>;
+  createSubscription_preapproval(subscription_preapproval: any): Promise<void>;
 }

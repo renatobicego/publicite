@@ -3,6 +3,7 @@ import { MpWebhookServiceInterface } from "../../domain/mercadopago/service/mpWe
 import { MyLoggerService } from "src/contexts/shared/logger/logger.service";
 import Subcription from "../../domain/mercadopago/entity/subcription.entity";
 import SubPreapprovalRepositoryInterface from "../../domain/mercadopago/repository/sub_preapproval.respository.interface";
+import mongoose from "mongoose";
 
 /*
 
@@ -16,16 +17,19 @@ export class MpWebhookService implements MpWebhookServiceInterface {
 		@Inject('SubPreapprovalRepositoryInterface') private readonly subscriptionRepository: SubPreapprovalRepositoryInterface
 
 	) { }
-	async createSubscription_preapproval(data: any): Promise<void> {
+	async createSubscription_preapproval(subscription_preapproval: any): Promise<void> {
 		this.logger.log("createSubscription_preapproval - Class:mpWebhookService")
 		try {
-			const { id, payer_id, status, subscripcion_id } = data
-			const { start_date, end_date } = data.auto_recurring
+			//console.log(subscription_preapproval)
+			const { id, payer_id, status, subscription_id } = subscription_preapproval
+			const { start_date, end_date } = subscription_preapproval.auto_recurring
+
+			// const subscriptionPlanId = new mongoose.Types.ObjectId(subscription_id);
 			const newUserSuscription = new Subcription(
 				id,
 				payer_id,
 				status,
-				subscripcion_id,
+				subscription_id,
 				start_date,
 				end_date
 			)

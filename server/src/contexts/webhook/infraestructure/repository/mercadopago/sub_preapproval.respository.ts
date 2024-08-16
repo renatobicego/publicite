@@ -13,7 +13,7 @@ export default class SubPreapprovalRepository implements SubPreapprovalRepositor
 	) {}
 	
 	async saveSubPreapproval(sub: Subcription): Promise<void> {
-		this.logger.log("saving new subscription in database" + sub.getMpPreapprovalId())
+		this.logger.log("saving new subscription in database SUB_ID: " + sub.getMpPreapprovalId())
 		const newSubscription = new this.subscriptionModel(sub)
 		await newSubscription.save()	
 	}
