@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { MpWebhookServiceInterface } from "../../domain/mercadopago/service/mpWebhookServiceInterface";
 import { MyLoggerService } from "src/contexts/shared/logger/logger.service";
 import Subcription from "../../domain/mercadopago/entity/subcription.entity";
@@ -13,7 +13,8 @@ Esta capa deberia retornar todos los errores.
 export class MpWebhookService implements MpWebhookServiceInterface {
 	constructor(
 		private readonly logger: MyLoggerService,
-		private readonly subscriptionRepository: SubPreapprovalRepositoryInterface
+		@Inject('SubPreapprovalRepositoryInterface') private readonly subscriptionRepository: SubPreapprovalRepositoryInterface
+
 	) { }
 	async createSubscription_preapproval(data: any): Promise<void> {
 		this.logger.log("createSubscription_preapproval - Class:mpWebhookService")

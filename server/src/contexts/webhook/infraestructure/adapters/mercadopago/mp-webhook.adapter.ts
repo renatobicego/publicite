@@ -1,5 +1,6 @@
 import {
 	BadRequestException,
+	Inject,
 	Injectable,
 	UnauthorizedException,
 } from '@nestjs/common';
@@ -21,15 +22,14 @@ export class MpWebhookAdapter {
 
 	constructor(
 		private readonly configService: ConfigService,
-		private readonly mpWebhookService: MpWebhookServiceInterface,
+		@Inject('MpWebhookServiceInterface') private readonly mpWebhookService: MpWebhookServiceInterface,
 		private readonly logger : MyLoggerService
-	) { }
+	) { } 
 
 
 	private readonly URL_PAYMENT_CHECK: string = "https://api.mercadopago.com/v1/payments/"
 	private readonly URL_SUBCRIPTION_AUTHORIZED_CHECK: string = "https://api.mercadopago.com/preapproval/"
 	private readonly URL_SUBCRIPTION_PREAPPROVAL_CHECK = "https://api.mercadopago.com/preapproval/"
-
 	private readonly MP_ACCESS_TOKEN = this.configService.get<string>('MP_ACCESS_TOKEN');
 
 
@@ -172,7 +172,6 @@ export class MpWebhookAdapter {
 
 
 	async handleEvent_subscription_preapproval(dataID: string): Promise<boolean> {
-
 		try {
 			const subscription_preapproval_response = await fetch(
 				`${this.URL_SUBCRIPTION_PREAPPROVAL_CHECK}${dataID}`,
