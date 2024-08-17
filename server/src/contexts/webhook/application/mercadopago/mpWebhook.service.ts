@@ -36,6 +36,12 @@ export class MpWebhookService implements MpWebhookServiceInterface {
 				this.logger.log("Status: " + subscription_authorized_payment.status + " the invoice is not saved yet. Waiting for payment to be approved")
 				return Promise.resolve()
 			}
+			/*
+			PENDIENTE: 
+			si el evento es scheduled creamos el invoice y guardamos en la base de datos, pero lo hacemos con el estado en pending.
+			Cuando llega el otro evento deberiamos buscar el invoice en estado pending y cambiar su estado a approved y adicionalmente updatear el schema con el ID del pago y lo que falte
+			
+			*/
 
 			if (subscription_authorized_payment != null || subscription_authorized_payment != undefined) {
 				this.logger.log("Status: " + subscription_authorized_payment.status + "Generate invoice to save")
