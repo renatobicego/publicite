@@ -7,11 +7,11 @@ import { UserModule } from 'src/contexts/user/infraestructure/module/user.module
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
 import { MpWebhookService } from '../../application/mercadopago/mpWebhook.service';
 import { MpWebhookAdapter } from '../adapters/mercadopago/mp-webhook.adapter';
-import SubPreapprovalRepository from '../repository/mercadopago/sub_preapproval.respository';
 import { SubscriptionSchema } from '../schemas/mercadopago/subscription.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MpHandlerEvents } from '../../application/mercadopago/handler/mpHandlerEvents';
 import { InvoiceSchema } from '../schemas/mercadopago/invoice.schema';
+import MercadoPagoEventsRepository from '../repository/mercadopago/mpEventsRepository.respository';
 
 @Module({
   imports: [
@@ -47,8 +47,8 @@ import { InvoiceSchema } from '../schemas/mercadopago/invoice.schema';
       useClass: MpWebhookService,
     },
     {
-      provide: 'SubPreapprovalRepositoryInterface',
-      useClass: SubPreapprovalRepository,
+      provide: 'MercadoPagoEventsInterface',
+      useClass: MercadoPagoEventsRepository,
     },
     {
       provide: 'MpHandlerEventsInterface',

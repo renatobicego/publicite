@@ -2,9 +2,11 @@ import { BadRequestException, Inject, Injectable } from "@nestjs/common";
 import { MpWebhookServiceInterface } from "../../domain/mercadopago/service/mpWebhookServiceInterface";
 import { MyLoggerService } from "src/contexts/shared/logger/logger.service";
 import Subcription from "../../domain/mercadopago/entity/subcription.entity";
-import SubPreapprovalRepositoryInterface from "../../domain/mercadopago/repository/sub_preapproval.respository.interface";
+
 import { ConfigService } from "@nestjs/config";
 import Invoice from "../../domain/mercadopago/entity/invoice.entity";
+import MercadoPagoEventsInterface from "../../domain/mercadopago/repository/mpEvents.repository.interface";
+
 
 
 /*
@@ -17,7 +19,7 @@ export class MpWebhookService implements MpWebhookServiceInterface {
 	constructor(
 		private readonly logger: MyLoggerService,
 		private readonly configService: ConfigService,
-		@Inject('SubPreapprovalRepositoryInterface') private readonly subscriptionRepository: SubPreapprovalRepositoryInterface
+		@Inject('MercadoPagoEventsInterface') private readonly mercadoPagoEventsRepository: MercadoPagoEventsInterface
 	) { }
 	private readonly MP_ACCESS_TOKEN = this.configService.get<string>('MP_ACCESS_TOKEN');
 
@@ -49,9 +51,9 @@ export class MpWebhookService implements MpWebhookServiceInterface {
 					subscription_authorized_payment.payment.id, //Payment ID 
 					subscription_authorized_payment.preapproval_id, // Subscription ID
 					subscription_authorized_payment.payment.status, //Payment status
-					subscription_authorized_payment.preapproval_id
+					subscription_authorized_payment.preapproval_id // Este campo relacionamos la suscripcion con el preapproval
 				)
-				await this.subscriptionRepository.saveInvoice(newInvoice)
+				await this.mercadoPagoEventsRepository.saveInvoice(newInvoice)
 			}
 			return Promise.resolve()
 		} catch (error: any) {
@@ -62,18 +64,17 @@ export class MpWebhookService implements MpWebhookServiceInterface {
 
 	// Generamos la subscripcion del usuario
 	async createSubscription_preapproval(subscription_preapproval: any): Promise<void> {
-		this.logger.log("---SUBSCRIPTION SERVICE---")
-		this.logger.log("createSubscription_preapproval - Class:mpWebhookService")
-		try {
-			/*
-			Pendiente: Debemos verificar si el usuario que se esta registrando aca ya existe. En el caso de que exista, buscamos el schema por payer_id de ese user y actualizamos su suscripcion
-			de lo contrario deberiamos guardarlo (todo sigue igual)
-			
-			*/
-			const { id, payer_id, status, subscription_id } = subscription_preapproval
-			const { start_date, end_date } = subscription_preapproval.auto_recurring
+		this.logger.log("---SUBSCRIPTION SERVICE---");
+		this.logger.log("createSubscription_preapproval - Class: mpWebhookService");
 
-			// const subscriptionPlanId = new mongoose.Types.ObjectId(subscription_id);
+		try {
+			// Buscar la suscripción existente por payerId
+			const existingSubscription = await this.mercadoPagoEventsRepository.findByPayerId(subscription_preapproval.payer_id);
+
+			// Crear el nuevo objeto de suscripción
+			const { id, payer_id, status, subscription_id } = subscription_preapproval;
+			const { start_date, end_date } = subscription_preapproval.auto_recurring;
+
 			const newUserSuscription = new Subcription(
 				id,
 				payer_id,
@@ -82,12 +83,23 @@ export class MpWebhookService implements MpWebhookServiceInterface {
 				start_date,
 				end_date
 			)
-			await this.subscriptionRepository.saveSubPreapproval(newUserSuscription)
-		} catch (error: any) {
-			this.logger.error("Error createSubscription_preapproval - Class:mpWebhookService", error)
+
+			if (existingSubscription) {
+				// Si existe una suscripción, actualízala
+				this.logger.log("This payer ID already has a subscription, updating the subscription");
+				await this.mercadoPagoEventsRepository.updateUserSubscription(payer_id, newUserSuscription);
+			} else {
+				// Si no existe una suscripción, guárdala
+				this.logger.log("This payer ID does not have a subscription, creating a new subscription");
+				await this.mercadoPagoEventsRepository.saveSubPreapproval(newUserSuscription);
+			}
+
+		} catch (error) {
+			this.logger.error("Error in createSubscription_preapproval - Class: mpWebhookService", error);
 			throw error;
 		}
 	}
+
 
 
 

@@ -2,12 +2,14 @@ import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { MyLoggerService } from "src/contexts/shared/logger/logger.service";
 import Subcription from "src/contexts/webhook/domain/mercadopago/entity/subcription.entity";
-import SubPreapprovalRepositoryInterface from "src/contexts/webhook/domain/mercadopago/repository/sub_preapproval.respository.interface";
 import { SubscriptionDocument } from "../../schemas/mercadopago/subscription.schema";
 import Invoice from "src/contexts/webhook/domain/mercadopago/entity/invoice.entity";
 import { InvoiceDocument } from "../../schemas/mercadopago/invoice.schema";
+import MercadoPagoEventsRepositoryInterface from "src/contexts/webhook/domain/mercadopago/repository/mpEvents.repository.interface";
+import Subscription from "src/contexts/webhook/domain/mercadopago/entity/subcription.entity";
 
-export default class SubPreapprovalRepository implements SubPreapprovalRepositoryInterface {
+
+export default class MercadoPagoEventsRepository implements MercadoPagoEventsRepositoryInterface {
 
 	constructor(
 		private readonly logger: MyLoggerService,
@@ -15,6 +17,14 @@ export default class SubPreapprovalRepository implements SubPreapprovalRepositor
 		@InjectModel('Invoice') private readonly invoiceModel: Model<InvoiceDocument>
 	) { }
 
+	async findByPayerId(payerId: string): Promise<Subscription | null> {
+		this.logger.log("Finding subscription by payerId: " + payerId);
+
+		// Busca la suscripción por payerId
+		const doc = await this.subscriptionModel.findOne({ payerId }).exec();
+
+		return doc as Subscription | null;
+	}
 
 	async saveSubPreapproval(sub: Subcription): Promise<void> {
 		this.logger.log("saving new subscription in database SUB_ID: " + sub.getMpPreapprovalId())
@@ -26,7 +36,23 @@ export default class SubPreapprovalRepository implements SubPreapprovalRepositor
 		this.logger.log("saving new Invoice in database Invoice ID: " + invoice.getPaymentId())
 		const newInvoice = new this.invoiceModel(invoice)
 		await newInvoice.save()
-
 	}
+
+	async updateUserSubscription(payerId: string, sub: Subcription): Promise<void> {
+		this.logger.log("Update subscription of payerID: " + payerId)
+
+
+		// Construye un objeto de actualización excluyendo el campo `_id`
+		const updateFields = { ...sub };
+
+		// Realiza la actualización
+		const result = await this.subscriptionModel.updateOne(
+			{ payerId: payerId },
+			{ $set: updateFields }
+		);
+	}
+
+
+
 
 }
