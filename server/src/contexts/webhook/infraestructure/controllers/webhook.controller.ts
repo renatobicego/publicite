@@ -64,7 +64,7 @@ export class WebhookController {
         )
       if (authSecretValidation) {
         //En el caso de que validemos el origen y que el pago se complete correctamente, vamos a deolver el estado OK, de lo contrario esta operacion no se hara 
-        this.logger.log('Webhook MP OK - Credentials are valid, sending response to Meli - Class:WebhookController')
+        this.logger.log('Webhook MP OK - Credentials are valid - WEBHOOK_PROCESS: COMPLETE ---> sending response to Meli - Class:WebhookController 🚀')
         return res.status(HttpStatus.OK).send('Signature verified');
       } else {
         this.logger.error('Webhook MP FAIL - Credentials are not valid', 'Class:WebhookController')

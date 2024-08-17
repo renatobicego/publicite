@@ -10,12 +10,15 @@ import { MpWebhookAdapter } from '../adapters/mercadopago/mp-webhook.adapter';
 import SubPreapprovalRepository from '../repository/mercadopago/sub_preapproval.respository';
 import { SubscriptionSchema } from '../schemas/mercadopago/subscription.schema';
 import { MongooseModule } from '@nestjs/mongoose';
+import { MpHandlerEvents } from '../../application/mercadopago/handler/mpHandlerEvents';
+import { InvoiceSchema } from '../schemas/mercadopago/invoice.schema';
 
 @Module({
   imports: [
     UserModule, // Importa el UserModule que posiblemente sea necesario en tu WebhookModule
     ConfigModule.forRoot(), // Importa ConfigModule para manejar variables de entorno
     MongooseModule.forFeature([{ name: 'Subscription', schema: SubscriptionSchema }]),
+    MongooseModule.forFeature([{ name: 'Invoice', schema: InvoiceSchema }]),
   ],
   controllers: [WebhookController], // Controlador del módulo
   providers: [
@@ -46,7 +49,10 @@ import { MongooseModule } from '@nestjs/mongoose';
     {
       provide: 'SubPreapprovalRepositoryInterface',
       useClass: SubPreapprovalRepository,
-
+    },
+    {
+      provide: 'MpHandlerEventsInterface',
+      useClass: MpHandlerEvents,
     },
     
 

@@ -1,5 +1,7 @@
 import mongoose, { Schema, Types } from "mongoose";
 
+//subscription_preapproval
+
 
 export const SubscriptionSchema = new Schema({
 	mpPreapprovalId: { type: String, required: true },
