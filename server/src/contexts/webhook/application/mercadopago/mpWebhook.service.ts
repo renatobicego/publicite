@@ -31,9 +31,14 @@ export class MpWebhookService implements MpWebhookServiceInterface {
 	async createSubscription_authorize_payment(subscription_authorized_payment: any): Promise<void> {
 		this.logger.log("createSubscription_authorize_payment - Class:mpWebhookService")
 		try {
-			this.logger.log("Generating invoice ")
-			console.log(subscription_authorized_payment)
+			this.logger.log("---INVOICE SERVICE---")
+			if (subscription_authorized_payment.status === 'scheduled') {
+				this.logger.log("Status: " + subscription_authorized_payment.status + " the invoice is not saved yet. Waiting for payment to be approved")
+				return Promise.resolve()
+			}
+
 			if (subscription_authorized_payment != null || subscription_authorized_payment != undefined) {
+				this.logger.log("Status: " + subscription_authorized_payment.status + "Generate invoice to save")
 				const newInvoice = new Invoice(
 					subscription_authorized_payment.payment.id, //Payment ID 
 					subscription_authorized_payment.preapproval_id, // Subscription ID
@@ -51,6 +56,7 @@ export class MpWebhookService implements MpWebhookServiceInterface {
 
 	// Generamos la subscripcion del usuario
 	async createSubscription_preapproval(subscription_preapproval: any): Promise<void> {
+		this.logger.log("---SUBSCRIPTION SERVICE---")
 		this.logger.log("createSubscription_preapproval - Class:mpWebhookService")
 		try {
 			/*
