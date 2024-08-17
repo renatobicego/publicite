@@ -19,11 +19,8 @@ export default class MercadoPagoEventsRepository implements MercadoPagoEventsRep
 
 	async findByPayerId(payerId: string): Promise<Subscription | null> {
 		this.logger.log("Finding subscription by payerId: " + payerId);
-
-		// Busca la suscripción por payerId
-		const doc = await this.subscriptionModel.findOne({ payerId }).exec();
-
-		return doc as Subscription | null;
+		const userSubscription = await this.subscriptionModel.findOne({ payerId }).exec();
+		return userSubscription as Subscription | null;
 	}
 
 	async saveSubPreapproval(sub: Subcription): Promise<void> {
