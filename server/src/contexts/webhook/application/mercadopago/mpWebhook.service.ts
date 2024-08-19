@@ -6,6 +6,7 @@ import Subcription from "../../domain/mercadopago/entity/subcription.entity";
 import { ConfigService } from "@nestjs/config";
 import Invoice from "../../domain/mercadopago/entity/invoice.entity";
 import MercadoPagoEventsInterface from "../../domain/mercadopago/repository/mpEvents.repository.interface";
+import Payment from "../../domain/mercadopago/entity/payment.entity";
 
 
 
@@ -25,8 +26,32 @@ export class MpWebhookService implements MpWebhookServiceInterface {
 
 
 	async create_payment(payment: any): Promise<void> {
-		console.log(payment)
-		return Promise.resolve();
+		try {
+			this.logger.log("Creating payment for suscription description: " + payment.description)
+			this.logger.log("Creating payment with ID: " + payment.id)
+			if(payment && payment.payer){
+				const newPayment = new Payment(
+					payment.id,
+					payment.payer.id,
+					payment.payer.email,
+					payment.payment_type_id,
+					payment.payment_method_id,
+					payment.transaction_amount,
+					payment.date_approved
+				)
+				await this.mercadoPagoEventsRepository.createPayment(newPayment)
+			}else{
+				this.logger.error("Invalid payment data - Error in payment service")
+				throw new BadRequestException("Invalid payment data")
+			}
+	
+			return Promise.resolve();
+		} catch (error) {
+			this.logger.error("An error has ocurred while creating payment for suscription description: " + payment.description)
+			this.logger.error("An error has ocurred while creating payment ID: " + payment.id)
+			throw error;
+		}
+
 	}
 
 	// Generamos la factura del usuario

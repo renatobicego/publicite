@@ -1,4 +1,4 @@
-export default class Payment{
+export default class Payment {
 	private mpPaymentId: string;
 	private payerId: string;
 	private payerEmail: string;
@@ -16,5 +16,9 @@ export default class Payment{
 		this.paymentMethodId = paymentMethodId;
 		this.transactionAmount = transactionAmount;
 		this.dateApproved = dateApproved;
+	}
+
+	public getMPPaymentId(): string {
+		return this.mpPaymentId;
 	}
 } 

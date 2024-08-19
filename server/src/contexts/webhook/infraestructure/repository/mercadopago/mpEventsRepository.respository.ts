@@ -7,6 +7,8 @@ import Invoice from "src/contexts/webhook/domain/mercadopago/entity/invoice.enti
 import { InvoiceDocument } from "../../schemas/mercadopago/invoice.schema";
 import MercadoPagoEventsRepositoryInterface from "src/contexts/webhook/domain/mercadopago/repository/mpEvents.repository.interface";
 import Subscription from "src/contexts/webhook/domain/mercadopago/entity/subcription.entity";
+import Payment from "src/contexts/webhook/domain/mercadopago/entity/payment.entity";
+import { PaymentDocument } from "../../schemas/mercadopago/payment.schema";
 
 
 export default class MercadoPagoEventsRepository implements MercadoPagoEventsRepositoryInterface {
@@ -14,8 +16,14 @@ export default class MercadoPagoEventsRepository implements MercadoPagoEventsRep
 	constructor(
 		private readonly logger: MyLoggerService,
 		@InjectModel('Subscription') private readonly subscriptionModel: Model<SubscriptionDocument>,
-		@InjectModel('Invoice') private readonly invoiceModel: Model<InvoiceDocument>
+		@InjectModel('Invoice') private readonly invoiceModel: Model<InvoiceDocument>,
+		@InjectModel('Payment') private readonly paymentModel: Model<PaymentDocument>
 	) { }
+	async createPayment(payment: Payment): Promise<void> {
+		this.logger.log("Save payment: " + payment.getMPPaymentId());
+		const newPayment = new this.paymentModel(payment)
+		await newPayment.save()
+	}
 
 	async findByPayerId(payerId: string): Promise<Subscription | null> {
 		this.logger.log("Finding subscription by payerId: " + payerId);
@@ -37,8 +45,6 @@ export default class MercadoPagoEventsRepository implements MercadoPagoEventsRep
 
 	async updateUserSubscription(payerId: string, sub: Subcription): Promise<void> {
 		this.logger.log("Update subscription of payerID: " + payerId)
-
-
 		// Construye un objeto de actualización excluyendo el campo `_id`
 		const updateFields = { ...sub };
 

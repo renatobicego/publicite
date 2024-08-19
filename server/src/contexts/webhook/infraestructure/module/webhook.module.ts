@@ -12,13 +12,17 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { MpHandlerEvents } from '../../application/mercadopago/handler/mpHandlerEvents';
 import { InvoiceSchema } from '../schemas/mercadopago/invoice.schema';
 import MercadoPagoEventsRepository from '../repository/mercadopago/mpEventsRepository.respository';
+import { PaymentSchema } from '../schemas/mercadopago/payment.schema';
 
 @Module({
   imports: [
     UserModule, // Importa el UserModule que posiblemente sea necesario en tu WebhookModule
     ConfigModule.forRoot(), // Importa ConfigModule para manejar variables de entorno
+
+    //Definimos los modelos que utilizara el modulo
     MongooseModule.forFeature([{ name: 'Subscription', schema: SubscriptionSchema }]),
     MongooseModule.forFeature([{ name: 'Invoice', schema: InvoiceSchema }]),
+    MongooseModule.forFeature([{ name: 'Payment', schema: PaymentSchema }]),
   ],
   controllers: [WebhookController], // Controlador del módulo
   providers: [
@@ -54,9 +58,9 @@ import MercadoPagoEventsRepository from '../repository/mercadopago/mpEventsRepos
       provide: 'MpHandlerEventsInterface',
       useClass: MpHandlerEvents,
     },
-    
 
-    
+
+
   ],
 })
-export class WebhookModule {}
+export class WebhookModule { }

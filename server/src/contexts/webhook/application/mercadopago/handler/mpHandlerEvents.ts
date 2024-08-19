@@ -23,7 +23,7 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
 
 
 
-
+	
 	async handleEvent_subscription_preapproval(dataID: string): Promise<boolean> {
 		try {
 
@@ -39,7 +39,7 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
 		}
 
 	}
-
+	
 	async handleEvent_subscription_authorized_payment(dataID: string): Promise<boolean> {
 		try {
 			this.logger.log("The proccess of subscription_authorized_payment are starting - Class:mpHandlerEvents")
@@ -65,6 +65,7 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
 				this.logger.log('MpWebhookAdapter - Case paymenty.created - type card_validation, sending response OK to meli & return');
 				return Promise.resolve(true);
 			}
+			
 			await this.mpWebhookService.create_payment(paymentResponse);
 			return Promise.resolve(true)
 
