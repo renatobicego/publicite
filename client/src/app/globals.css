@@ -16,18 +16,85 @@
   }
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
-}
-
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+.cl-navbar,
+.cl-navbar [class^="cl-internal"] {
+  background: #fffdf7;
+}
+
+.cl-navbarButton[data-active="true"] {
+  font-weight: 600;
+  border-radius: 20px;
+}
+
+.cl-navbarButton:hover{
+  border-radius: 20px;
+}
+.cl-input {
+  border: 0.5px solid #818181;
+}
+.cl-input:focus-within{
+  box-shadow: none !important;
+  border: 0.5px solid #818181;
+}
+
+.cl-formButtonReset,
+.cl-profileSectionPrimaryButton,
+.cl-menuButton,
+.cl-avatarImageActionsUpload,
+.cl-avatarImageActionsRemove,
+.cl-formButtonPrimary, .cl-input {
+  border-radius: 20px;
+  padding: 10px 17px;
+}
+.cl-formButtonPrimary{
+  background-color: #EF2D56;
+  color: white;
+  border: none;
+}
+.cl-formButtonPrimary:disabled{
+  opacity: 0.4;
+  box-shadow: none;
+}
+.cl-profileSectionPrimaryButton,
+.cl-menuButton {
+  color: #8cd867;
+}
+.cl-profileSectionPrimaryButton:hover,
+.cl-menuButton:hover {
+  color: #8cd867;
+}
+.cl-avatarImageActionsUpload {
+  background-color: #8cd867;
+  color: white;
+}
+.cl-avatarImageActionsUpload:hover {
+  background-color: #8cd867;
+  color: white;
+  opacity: 0.9;
+}
+
+.cl-badge {
+  border: #0091ad 1px solid;
+  border-radius: 12px;
+  background: none;
+}
+
+.cl-menuButton[aria-label="Open menu"], .cl-menuButton[aria-label="Close menu"] {
+  border: #8cd867 1.5px solid;
+  border-radius: 100%;
+  padding: 4px;
+}
+
+.cl-profileSectionPrimaryButton__danger, .cl-profileSectionPrimaryButton__danger:hover{
+  color: #EF4444;
+}
+
+.cl-menuList{
+  border-radius: 20px;
 }
