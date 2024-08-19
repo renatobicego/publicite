@@ -66,11 +66,23 @@ describe('MpWebhookService', () => {
 				payer: {
 					id: 'payer123',
 					email: 'payer@example.com',
+					name: 'John Doe', 
+					phone: '+1234567890', 
 				},
 				payment_type_id: 'credit_card',
+				payment_no: 'aasdsad', 
 				payment_method_id: 'visa',
 				transaction_amount: 1000,
 				date_approved: new Date().toString(),
+				currency: 'USD',
+				status: 'completed', 
+				receipt_url: 'http://example.com/receipt', 
+				metadata: {
+					orderId: 'order123',
+					campaignId: 'campaign456',
+				}, 
+				tax_amount: 50, 
+				discount_amount: 10, 
 			};
 
 			await service.create_payment(payment); // Llama al método create_payment del servicio con datos válidos.
@@ -91,5 +103,31 @@ describe('MpWebhookService', () => {
 	});
 
 
+	describe('createSubscription_authorize_payment - Status Scheduled', () => {
+		it('Service should return a promise resolve and log appropriate messages', async () => {
+			const subscription_authorized_payment = {
+				status: 'scheduled',
+				preapproval_id: '12345',
+			};
 	
+			// Mock de los métodos del logger para verificar que se llamen con los mensajes esperados
+			const loggerSpy = jest.spyOn(logger, 'log').mockImplementation();
+	
+			// Llamada al método del servicio con datos válidos
+			await service.createSubscription_authorize_payment(subscription_authorized_payment);
+	
+			// Verifica que el método del logger haya sido llamado con los mensajes esperados
+			expect(loggerSpy).toHaveBeenCalledWith("createSubscription_authorize_payment - Class:mpWebhookService");
+			expect(loggerSpy).toHaveBeenCalledWith("---INVOICE SERVICE---");
+			expect(loggerSpy).toHaveBeenCalledWith("Status: scheduled the invoice is not saved yet. Waiting for payment to be approved");
+	
+			//verificamos que no se llame a este metodo
+			expect(mercadoPagoEventsRepository.createPayment).not.toHaveBeenCalled();
+	
+			// Limpiamos el mock 
+			loggerSpy.mockRestore();
+		});
+	});
+	
+
 });
