@@ -1,4 +1,5 @@
-export default class Subcription {
+//subscription_preapproval
+export default class Subscription {
 	private mpPreapprovalId: string
 	private payerId: string
 	private status: string
@@ -17,6 +18,10 @@ export default class Subcription {
 
 	public getMpPreapprovalId(): string {
 		return this.mpPreapprovalId
+	}
+
+	public getPayerId(): string {
+		return this.payerId
 	}
 
 }

@@ -1,36 +1,31 @@
 import {
 	BadRequestException,
+	Inject,
 	Injectable,
 	UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config'; // Asegúrate de importar ConfigServic
 import * as crypto from 'crypto';
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
-import { MpWebhookServiceInterface } from 'src/contexts/webhook/domain/mercadopago/service/mpWebhookServiceInterface';
+import { MpHandlerEventsInterface } from 'src/contexts/webhook/domain/mercadopago/handler/eventHandler.interface';
 
 /*
+Adapter: responsable de orquestar la logica de procesamiento del webhook, utiliza el handler de eventos de la capa de aplicación.
+Esta capa no deberia tener logica del negocio, sino que deberia orquestarla. 
 
-Cuando hago el pago recibo payment y luego recibo otro evento que se creo la subscripcion que se llama
-subcription_preAppproval
-
-cuando vuelve a pagar recibo subvcricpcon:authirizen_payment
+Pendiente: 
+- Separar logica de validacion del hash
 
 */
+
 @Injectable()
 export class MpWebhookAdapter {
 
 	constructor(
 		private readonly configService: ConfigService,
-		private readonly mpWebhookService: MpWebhookServiceInterface,
-		private readonly logger : MyLoggerService
+		@Inject('MpHandlerEventsInterface') private readonly mpHandlerEvent: MpHandlerEventsInterface,
+		private readonly logger: MyLoggerService
 	) { }
-
-
-	private readonly URL_PAYMENT_CHECK: string = "https://api.mercadopago.com/v1/payments/"
-	private readonly URL_SUBCRIPTION_AUTHORIZED_CHECK: string = "https://api.mercadopago.com/preapproval/"
-	private readonly URL_SUBCRIPTION_PREAPPROVAL_CHECK = "https://api.mercadopago.com/preapproval/"
-
-	private readonly MP_ACCESS_TOKEN = this.configService.get<string>('MP_ACCESS_TOKEN');
 
 
 	async handleRequestWebHookOriginValidation(header: Record<string, string>, req: Request): Promise<boolean> {
@@ -61,7 +56,7 @@ export class MpWebhookAdapter {
 				//una vez terminado de procesar guardaremos los datos necesarios y enviamos la notif que esta todo ok
 
 			} catch (error: any) {
-				throw new Error(error);
+				throw error;
 			}
 		} else {
 			return Promise.resolve(false)
@@ -115,54 +110,28 @@ export class MpWebhookAdapter {
 		const dataId = body.data.id;
 		const type = body.type;
 
+		//Si no existen estos datos el header esta mal y no podremos seguir, arrojamos error
 		if (!type || !dataId) {
 			this.logger.error('Missing queryObject', 'Class:MpWebhookAdapter');
 			throw new UnauthorizedException('Invalid webhook headers');
 		}
 
-		/*
-		Si llegamos hasta aca quiere decir que el origen del webhook es correcto.
-		-> Deberiamos chequear el tipo de evento y manejarlo segun corresponda, para la gestion del mismo vamos a llamar a nuestro servicio de webhook para meli
-				Ya que es nuestra capa indicada para el manejo de la logica que corresponde a nuestro negocio y posteriormente comunicaremos con la capa de dominio para almacenar los datos
-		*/
 		const action = body.action;
-		//console.log(action, type);
-
-
-		//Verificamos que el evento sea de tipo card_validation, en ese caso devolvemos la promesa en true ya que no nos interesa.
-		if (action === "payment.created" && body.operation_type === 'card_validation' && body.transaction_amount < 1000) {
-			this.logger.log('MpWebhookAdapter - Case paymenty.created - type card_validation, sending response OK to meli & return');
-			return Promise.resolve(true);
-		}
-
 		switch (type) {
 			case 'payment':
-				const payment = await fetch(`${this.URL_PAYMENT_CHECK}${dataId}`, {
-					method: 'GET',
-					headers: {
-						Authorization: `Bearer ${this.MP_ACCESS_TOKEN}`,
-					},
-				});
-				console.log('Payment - Case', action);
-				console.log(await payment.json());
+				this.logger.log("processing payment Case - Action: " + action +" Type: " + type)
+				const payment = await this.payment(dataId,action);
+				if (payment) return Promise.resolve(true)
 				break;
 			case 'subscription_authorized_payment':
-				const subscription_authorized_payment = await fetch(
-					`${this.URL_SUBCRIPTION_AUTHORIZED_CHECK}${dataId}`,
-					{
-						method: 'GET',
-						headers: {
-							Authorization: `Bearer ${this.MP_ACCESS_TOKEN}`,
-						},
-					},
-				);
-				console.log('subscription_authorized_payment - Case', action);
-				console.log(await subscription_authorized_payment.json());
+				this.logger.log("subscription_authorized_payment Case - Action: " + action +" Type: " + type)
+				const subscription_authorized_payment_response = await this.subscription_authorized_payment(dataId);
+				if (subscription_authorized_payment_response) return Promise.resolve(true)
 				break;
 			case 'subscription_preapproval':
-				this.logger.log("processing subscription_preapproval Case - Action: " + action)
-				const response = await this.handleEvent_subscription_preapproval(dataId);
-				if (response) return Promise.resolve(true)
+				this.logger.log("processing subscription_preapproval Case - Action: " +" Type: " + type)
+				const subscription_preapproval_response = await this.subscription_preapproval(dataId);
+				if (subscription_preapproval_response) return Promise.resolve(true)
 				break;
 			default:
 				throw new BadRequestException('Invalid webhook headers');
@@ -171,41 +140,34 @@ export class MpWebhookAdapter {
 	}
 
 
-	async handleEvent_subscription_preapproval(dataID: string): Promise<boolean> {
-
-		try {
-			const subscription_preapproval_response = await fetch(
-				`${this.URL_SUBCRIPTION_PREAPPROVAL_CHECK}${dataID}`,
-				{
-					method: 'GET',
-					headers: {
-						Authorization: `Bearer ${this.MP_ACCESS_TOKEN}`,
-					},
-				},
-			);
-
-			//Si por alguna razon la peticion falla, retornamos false y hacemos que el controller tambien lo haga
-			//De esta manera le decimos a MP que hubo algun problem (entiendo que quizas si no retornamos 200 manda la peticion de nuevo)
-			if (subscription_preapproval_response.status !== 200) {
-				this.logger.error(`Error fetching subscription_preapproval data: ${subscription_preapproval_response.status}`);
-				return Promise.resolve(false)
-			}
-			console.log(await subscription_preapproval_response.json());
-			/*
-			En el caso de que esta peticion se complete de manera correcta 
-			vamos a llamar al servicio para almacenar la informacion en la base de datos 8=D
-			*/
-			await this.mpWebhookService.createSubscription_preapproval(subscription_preapproval_response);
-
-		}catch(error:any){
-			this.logger.error("An error has ocurred while processing subscription_preapproval event: " + error)
-			throw new Error(error)
+	async subscription_preapproval(dataID: string): Promise<boolean> {
+		const result = await this.mpHandlerEvent.handleEvent_subscription_preapproval(dataID)
+		if (result) {
+			return Promise.resolve(true)
+		} else {
+			return Promise.resolve(false)
 		}
-
-		return Promise.resolve(false)
-
 	}
 
 
+	async subscription_authorized_payment(dataID: string): Promise<boolean> {
+		const result = await this.mpHandlerEvent.handleEvent_subscription_authorized_payment(dataID)
+		if (result) {
+			return Promise.resolve(true)
+		} else {
+			return Promise.resolve(false)
+		}
+
+
+	}
+	
+	async payment(dataID: string,action: string): Promise<boolean> {
+		const result = await this.mpHandlerEvent.handleEvent_payment(dataID,action)
+		if (result) {
+			return Promise.resolve(true)
+		} else {
+			return Promise.resolve(false)
+		}
+	}
 
 }

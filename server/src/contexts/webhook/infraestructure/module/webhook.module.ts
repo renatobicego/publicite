@@ -7,12 +7,18 @@ import { UserModule } from 'src/contexts/user/infraestructure/module/user.module
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
 import { MpWebhookService } from '../../application/mercadopago/mpWebhook.service';
 import { MpWebhookAdapter } from '../adapters/mercadopago/mp-webhook.adapter';
-import { MpWebhookServiceInterface } from '../../domain/mercadopago/service/mpWebhookServiceInterface';
+import { SubscriptionSchema } from '../schemas/mercadopago/subscription.schema';
+import { MongooseModule } from '@nestjs/mongoose';
+import { MpHandlerEvents } from '../../application/mercadopago/handler/mpHandlerEvents';
+import { InvoiceSchema } from '../schemas/mercadopago/invoice.schema';
+import MercadoPagoEventsRepository from '../repository/mercadopago/mpEventsRepository.respository';
 
 @Module({
   imports: [
     UserModule, // Importa el UserModule que posiblemente sea necesario en tu WebhookModule
     ConfigModule.forRoot(), // Importa ConfigModule para manejar variables de entorno
+    MongooseModule.forFeature([{ name: 'Subscription', schema: SubscriptionSchema }]),
+    MongooseModule.forFeature([{ name: 'Invoice', schema: InvoiceSchema }]),
   ],
   controllers: [WebhookController], // Controlador del módulo
   providers: [
@@ -35,25 +41,22 @@ import { MpWebhookServiceInterface } from '../../domain/mercadopago/service/mpWe
     },
     WebhookService, // Servicio para Webhook de Clerk
     MyLoggerService, // Servicio de logging
+    MpWebhookAdapter,
+    {
+      provide: 'MpWebhookServiceInterface',
+      useClass: MpWebhookService,
+    },
+    {
+      provide: 'MercadoPagoEventsInterface',
+      useClass: MercadoPagoEventsRepository,
+    },
+    {
+      provide: 'MpHandlerEventsInterface',
+      useClass: MpHandlerEvents,
+    },
     
-    // Proveedor para MpWebhookAdapter
-    {
-      provide: MpWebhookAdapter,
-      useFactory: (
-        configService: ConfigService,
-        mpWebhookService: MpWebhookServiceInterface, // Inyecta la interfaz MpWebhookServiceInterface
-        loggerService: MyLoggerService,
-      ) => {
-        return new MpWebhookAdapter(configService, mpWebhookService, loggerService);
-      },
-      inject: [ConfigService, 'MpWebhookServiceInterface', MyLoggerService], // Inyecta dependencias
-    },
 
-    // Registro de la implementación de MpWebhookServiceInterface
-    {
-      provide: 'MpWebhookServiceInterface', // Provee la interfaz como token
-      useClass: MpWebhookService, // Usa la implementación MpWebhookService
-    },
+    
   ],
 })
 export class WebhookModule {}
