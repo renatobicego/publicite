@@ -23,13 +23,14 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
 
 
 
-	
+
 	async handleEvent_subscription_preapproval(dataID: string): Promise<boolean> {
 		try {
-
 			const subscription_preapproval = await this.mpWebhookService.fetchData(
 				`${this.URL_SUBCRIPTION_PREAPPROVAL_CHECK}${dataID}`
 			);
+			console.log("subscription_preapproval RESPONSE:")
+			console.log(subscription_preapproval);
 			// const subscription_preapproval = await subscription_preapproval_response.json();
 			await this.mpWebhookService.createSubscription_preapproval(subscription_preapproval);
 			return Promise.resolve(true)
@@ -39,13 +40,15 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
 		}
 
 	}
-	
+
 	async handleEvent_subscription_authorized_payment(dataID: string): Promise<boolean> {
 		try {
 			this.logger.log("The proccess of subscription_authorized_payment are starting - Class:mpHandlerEvents")
 			const subscription_authorized_payment = await this.mpWebhookService.fetchData(
 				`${this.URL_SUBCRIPTION_AUTHORIZED_CHECK}${dataID}`
 			)
+			console.log("subscription_authorized_payment RESPONSE:")
+			console.log(subscription_authorized_payment);
 			await this.mpWebhookService.createSubscription_authorize_payment(subscription_authorized_payment);
 			return Promise.resolve(true)
 		} catch (error: any) {
@@ -60,12 +63,15 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
 			const paymentResponse: any = await this.mpWebhookService.fetchData(
 				`${this.URL_PAYMENT_CHECK}${dataID}`
 			);
+			console.log("PAYMENT RESPONSE:")
+			console.log(paymentResponse);
+
 
 			if (action === "payment.created" && paymentResponse.operation_type === 'card_validation') {
 				this.logger.log('MpWebhookAdapter - Case paymenty.created - type card_validation, sending response OK to meli & return');
 				return Promise.resolve(true);
 			}
-			
+
 			await this.mpWebhookService.create_payment(paymentResponse);
 			return Promise.resolve(true)
 

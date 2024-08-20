@@ -1,5 +1,5 @@
 import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
+import { Model, ObjectId } from "mongoose";
 import { MyLoggerService } from "src/contexts/shared/logger/logger.service";
 import Subcription from "src/contexts/webhook/domain/mercadopago/entity/subcription.entity";
 import { SubscriptionDocument } from "../../schemas/mercadopago/subscription.schema";
@@ -9,6 +9,8 @@ import MercadoPagoEventsRepositoryInterface from "src/contexts/webhook/domain/me
 import Subscription from "src/contexts/webhook/domain/mercadopago/entity/subcription.entity";
 import Payment from "src/contexts/webhook/domain/mercadopago/entity/payment.entity";
 import { PaymentDocument } from "../../schemas/mercadopago/payment.schema";
+import { SubscriptionPlan } from "src/contexts/webhook/domain/mercadopago/entity/subscriptionPlan.entity";
+
 
 
 export default class MercadoPagoEventsRepository implements MercadoPagoEventsRepositoryInterface {
@@ -17,19 +19,29 @@ export default class MercadoPagoEventsRepository implements MercadoPagoEventsRep
 		private readonly logger: MyLoggerService,
 		@InjectModel('Subscription') private readonly subscriptionModel: Model<SubscriptionDocument>,
 		@InjectModel('Invoice') private readonly invoiceModel: Model<InvoiceDocument>,
-		@InjectModel('Payment') private readonly paymentModel: Model<PaymentDocument>
+		@InjectModel('Payment') private readonly paymentModel: Model<PaymentDocument>,
+		@InjectModel('SubscriptionPlan') private readonly subscriptionPlanModel: Model<SubscriptionDocument>
 	) { }
+
+	async findSubscriptionPlanByMeliID(id: string): Promise<SubscriptionPlan | null> {
+		this.logger.log("Find subscription plan by Meli ID: " + id);
+		const subscriptionPlan = await this.subscriptionPlanModel.findOne({ mpPreapprovalPlanId: id }).exec()
+		return subscriptionPlan as SubscriptionPlan | null;
+	}
+
+
 	async createPayment(payment: Payment): Promise<void> {
 		this.logger.log("Save payment: " + payment.getMPPaymentId());
 		const newPayment = new this.paymentModel(payment)
 		await newPayment.save()
 	}
 
-	async findByPayerId(payerId: string): Promise<Subscription | null> {
-		this.logger.log("Finding subscription by payerId: " + payerId);
-		const userSubscription = await this.subscriptionModel.findOne({ payerId }).exec();
+	async findByPayerIdAndSubscriptionPlanID(payerId: string, subscriptionPlan: ObjectId): Promise<Subscription | null> {
+		this.logger.log(`Finding subscription by payerId: ${payerId} and subscriptionPlanid: ${subscriptionPlan}`);
+		const userSubscription = await this.subscriptionModel.findOne({ payerId, subscriptionPlan: subscriptionPlan }).exec();
 		return userSubscription as Subscription | null;
 	}
+
 
 	async saveSubPreapproval(sub: Subcription): Promise<void> {
 		this.logger.log("saving new subscription in database SUB_ID: " + sub.getMpPreapprovalId())
@@ -49,7 +61,7 @@ export default class MercadoPagoEventsRepository implements MercadoPagoEventsRep
 		const updateFields = { ...sub };
 
 		// Realiza la actualización
-		const result = await this.subscriptionModel.updateOne(
+		await this.subscriptionModel.updateOne(
 			{ payerId: payerId },
 			{ $set: updateFields }
 		);

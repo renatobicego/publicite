@@ -1,4 +1,8 @@
+import { ObjectId } from "mongoose";
+import { SubscriptionPlanDocument } from "src/contexts/webhook/infraestructure/schemas/mercadopago/subscriptionPlan.schema";
+
 export class SubscriptionPlan {
+	private _id: ObjectId;
 	private mpPreapprovalPlanId: string;
 	private isActive: boolean;
 	private reason: string;
@@ -8,7 +12,8 @@ export class SubscriptionPlan {
 	private price: number;
 	private postLimit: number;
 
-	constructor(mpPreapprovalPlanId: string, isActive: boolean, reason: string, description: string, features: string[], intervalTime: number, price: number, postLimit: number) {
+	constructor(mpPreapprovalPlanId: string, isActive: boolean, reason: string, description: string, features: string[], intervalTime: number, price: number, postLimit: number, _id: ObjectId) {
+		this._id = _id;
 		this.mpPreapprovalPlanId = mpPreapprovalPlanId;
 		this.isActive = isActive;
 		this.reason = reason;
@@ -18,4 +23,22 @@ export class SubscriptionPlan {
 		this.price = price;
 		this.postLimit = postLimit;
 	}
+
+	getId(): ObjectId {
+		return this._id;
+	}
+	static fromDocument(doc: SubscriptionPlan): SubscriptionPlan {
+		return new SubscriptionPlan(
+			doc.mpPreapprovalPlanId,
+			doc.isActive,
+			doc.reason,
+			doc.description,
+			doc.features,
+			doc.intervalTime,
+			doc.price,
+			doc.postLimit,
+			doc._id as unknown as ObjectId
+		);
+	}
+
 }

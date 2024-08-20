@@ -1,0 +1,34 @@
+[{
+  "_id": {
+    "$oid": "66c49508e80296e90ec637d8"
+  },
+  "mpPreapprovalPlanId": "2c9380849146ff3d01914739031d0028",
+  "isActive": true,
+  "reason": "Publicité Premium",
+  "description": "Este plan es publicite premium.",
+  "features": [
+    "Beneficio 1",
+    "Beneficio 2",
+    "Beneficio 3"
+  ],
+  "intervalTime": 30,
+  "price": 10000,
+  "postLimit": 50
+},
+{
+  "_id": {
+    "$oid": "66c495f9e80296e90ec637da"
+  },
+  "mpPreapprovalPlanId": "2c938084915406c201916fbcf86b0a8a",
+  "isActive": true,
+  "reason": "test_plan_B",
+  "description": "B plan",
+  "features": [
+    "Beneficio x",
+    "Beneficio y",
+    "Beneficio z"
+  ],
+  "intervalTime": 30,
+  "price": 12000,
+  "postLimit": 10
+}]

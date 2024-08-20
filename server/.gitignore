@@ -3,7 +3,7 @@ credenciales.txt
 /dist
 /node_modules
 /build
-
+credenciales.txt
 # Logs
 logs
 *.log

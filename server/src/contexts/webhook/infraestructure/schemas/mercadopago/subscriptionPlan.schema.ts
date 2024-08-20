@@ -3,9 +3,10 @@
 El tipo de dato de status es ENUM, por ahjora lo dejo como string
 */
 
-import { Schema } from "mongoose";
+import { Schema, Types } from "mongoose";
 
 export const SubscriptionPlanSchema = new Schema({
+	_id: { type: Types.ObjectId, default: Types.ObjectId },
 	mpPreapprovalPlanId: { type: String, required: true },
 	isActive: { type: Boolean, required: true },
 	reason: { type: String, required: true },
@@ -14,10 +15,10 @@ export const SubscriptionPlanSchema = new Schema({
 	intervalTime: { type: Number, required: true },
 	price: { type: Number, required: true },
 	postLimit: { type: Number, required: true },
-
 })
 
 export interface SubscriptionPlanDocument extends Document {
+	_id: Types.ObjectId;
 	mpPreapprovalPlanId: string;
 	isActive: boolean;
 	reason: string;

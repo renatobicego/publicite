@@ -1,13 +1,15 @@
+import { ObjectId } from "mongoose"
+
 //subscription_preapproval
 export default class Subscription {
 	private mpPreapprovalId: string
 	private payerId: string
 	private status: string
-	private subscriptionPlan: string
+	private subscriptionPlan: ObjectId
 	private startDate: string
 	private endDate: string
 
-	constructor(mpPreapprovalId: string, payerId: string, status: string, subscriptionPlan: string, startDate: string, endDate: string) {
+	constructor(mpPreapprovalId: string, payerId: string, status: string, subscriptionPlan: ObjectId, startDate: string, endDate: string) {
 		this.mpPreapprovalId = mpPreapprovalId
 		this.payerId = payerId
 		this.status = status

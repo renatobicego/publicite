@@ -13,6 +13,7 @@ import { MpHandlerEvents } from '../../application/mercadopago/handler/mpHandler
 import { InvoiceSchema } from '../schemas/mercadopago/invoice.schema';
 import MercadoPagoEventsRepository from '../repository/mercadopago/mpEventsRepository.respository';
 import { PaymentSchema } from '../schemas/mercadopago/payment.schema';
+import { SubscriptionPlanSchema } from '../schemas/mercadopago/subscriptionPlan.schema';
 
 @Module({
   imports: [
@@ -23,6 +24,8 @@ import { PaymentSchema } from '../schemas/mercadopago/payment.schema';
     MongooseModule.forFeature([{ name: 'Subscription', schema: SubscriptionSchema }]),
     MongooseModule.forFeature([{ name: 'Invoice', schema: InvoiceSchema }]),
     MongooseModule.forFeature([{ name: 'Payment', schema: PaymentSchema }]),
+    MongooseModule.forFeature([{ name: 'SubscriptionPlan', schema: SubscriptionPlanSchema }]),
+
   ],
   controllers: [WebhookController], // Controlador del módulo
   providers: [
