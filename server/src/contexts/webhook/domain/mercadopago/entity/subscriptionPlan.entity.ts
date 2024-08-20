@@ -1,3 +1,4 @@
+
 import { ObjectId } from "mongoose";
 import { SubscriptionPlanDocument } from "src/contexts/webhook/infraestructure/schemas/mercadopago/subscriptionPlan.schema";
 
@@ -27,7 +28,9 @@ export class SubscriptionPlan {
 	getId(): ObjectId {
 		return this._id;
 	}
-	static fromDocument(doc: SubscriptionPlan): SubscriptionPlan {
+
+
+	static fromDocument(doc: any): SubscriptionPlan {
 		return new SubscriptionPlan(
 			doc.mpPreapprovalPlanId,
 			doc.isActive,
@@ -37,7 +40,7 @@ export class SubscriptionPlan {
 			doc.intervalTime,
 			doc.price,
 			doc.postLimit,
-			doc._id as unknown as ObjectId
+			doc._id
 		);
 	}
 

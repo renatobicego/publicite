@@ -99,16 +99,12 @@ export class MpWebhookService implements MpWebhookServiceInterface {
 			const { id, payer_id, status, preapproval_plan_id } = subscription_preapproval;
 			const { start_date, end_date } = subscription_preapproval.auto_recurring;
 
-			const doc = await this.mercadoPagoEventsRepository.findSubscriptionPlanByMeliID(preapproval_plan_id);
+			const plan = await this.mercadoPagoEventsRepository.findSubscriptionPlanByMeliID(preapproval_plan_id);
 
-			if (!doc) {
+			if (!plan) {
 				this.logger.error("Plan not found - Class: mpWebhookService");
 				throw new BadRequestException("Plan not found, we can't create the subscription");
 			}
-			const plan = SubscriptionPlan.fromDocument(doc);
-			console.log("..........................................................")
-			console.log(plan)
-			// Buscar la suscripción existente por payerId
 
 			const existingSubscription = await this.mercadoPagoEventsRepository.findByPayerIdAndSubscriptionPlanID(payer_id,
 				plan.getId()
@@ -118,7 +114,7 @@ export class MpWebhookService implements MpWebhookServiceInterface {
 				id, // ID de la suscripción
 				payer_id, // id del payer
 				status, // estado de la suscripción
-				plan.getId() as ObjectId, // id del plan en nuestro sistema
+				plan.getId(), // id del plan en nuestro sistema
 				start_date, // fecha de inicio
 				end_date // fecha de fin
 			)

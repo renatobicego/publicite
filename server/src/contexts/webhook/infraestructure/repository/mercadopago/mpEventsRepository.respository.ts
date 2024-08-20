@@ -25,8 +25,8 @@ export default class MercadoPagoEventsRepository implements MercadoPagoEventsRep
 
 	async findSubscriptionPlanByMeliID(id: string): Promise<SubscriptionPlan | null> {
 		this.logger.log("Find subscription plan by Meli ID: " + id);
-		const subscriptionPlan = await this.subscriptionPlanModel.findOne({ mpPreapprovalPlanId: id }).exec()
-		return subscriptionPlan as SubscriptionPlan | null;
+		const subscriptionPlanDocument = await this.subscriptionPlanModel.findOne({ mpPreapprovalPlanId: id }).exec();
+		return subscriptionPlanDocument ? SubscriptionPlan.fromDocument(subscriptionPlanDocument) : null;
 	}
 
 
@@ -39,7 +39,7 @@ export default class MercadoPagoEventsRepository implements MercadoPagoEventsRep
 	async findByPayerIdAndSubscriptionPlanID(payerId: string, subscriptionPlan: ObjectId): Promise<Subscription | null> {
 		this.logger.log(`Finding subscription by payerId: ${payerId} and subscriptionPlanid: ${subscriptionPlan}`);
 		const userSubscription = await this.subscriptionModel.findOne({ payerId, subscriptionPlan: subscriptionPlan }).exec();
-		return userSubscription as Subscription | null;
+		return userSubscription ? Subscription.fromDocument(userSubscription) : null;
 	}
 
 

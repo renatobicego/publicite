@@ -26,4 +26,14 @@ export default class Subscription {
 		return this.payerId
 	}
 
+	static fromDocument(doc: any): Subscription {
+		return new Subscription(
+			doc.mpPreapprovalId,
+			doc.payerId,
+			doc.status,
+			doc.subscriptionPlan,
+			doc.startDate,
+			doc.endDate
+		);
+	}
 }
