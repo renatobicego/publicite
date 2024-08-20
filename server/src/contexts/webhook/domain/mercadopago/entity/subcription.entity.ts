@@ -8,14 +8,16 @@ export default class Subscription {
 	private subscriptionPlan: ObjectId
 	private startDate: string
 	private endDate: string
+	private _id?: ObjectId;
 
-	constructor(mpPreapprovalId: string, payerId: string, status: string, subscriptionPlan: ObjectId, startDate: string, endDate: string) {
+	constructor(mpPreapprovalId: string, payerId: string, status: string, subscriptionPlan: ObjectId, startDate: string, endDate: string, _id?: ObjectId) {
 		this.mpPreapprovalId = mpPreapprovalId
 		this.payerId = payerId
 		this.status = status
 		this.subscriptionPlan = subscriptionPlan
 		this.startDate = startDate
 		this.endDate = endDate
+		this._id = _id;
 	}
 
 	public getMpPreapprovalId(): string {
@@ -26,6 +28,10 @@ export default class Subscription {
 		return this.payerId
 	}
 
+	public getId(): ObjectId | undefined {
+		return this._id || undefined;
+	}
+
 	static fromDocument(doc: any): Subscription {
 		return new Subscription(
 			doc.mpPreapprovalId,
@@ -33,7 +39,8 @@ export default class Subscription {
 			doc.status,
 			doc.subscriptionPlan,
 			doc.startDate,
-			doc.endDate
+			doc.endDate,
+			doc._id
 		);
 	}
 }

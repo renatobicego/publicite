@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable } from "@nestjs/common";
+import { BadRequestException, Inject, Injectable, InternalServerErrorException } from "@nestjs/common";
 import { MpWebhookServiceInterface } from "../../domain/mercadopago/service/mpWebhookServiceInterface";
 import { MyLoggerService } from "src/contexts/shared/logger/logger.service";
 import Subcription from "../../domain/mercadopago/entity/subcription.entity";
@@ -7,8 +7,7 @@ import { ConfigService } from "@nestjs/config";
 import Invoice from "../../domain/mercadopago/entity/invoice.entity";
 import MercadoPagoEventsInterface from "../../domain/mercadopago/repository/mpEvents.repository.interface";
 import Payment from "../../domain/mercadopago/entity/payment.entity";
-import { ObjectId } from "mongoose";
-import { SubscriptionPlan } from "../../domain/mercadopago/entity/subscriptionPlan.entity";
+
 
 
 
@@ -71,21 +70,37 @@ export class MpWebhookService implements MpWebhookServiceInterface {
 			Cuando llega el otro evento deberiamos buscar el invoice en estado pending y cambiar su estado a approved y adicionalmente updatear el schema con el ID del pago y lo que falte
 			
 			*/
+			const subcription = await this.mercadoPagoEventsRepository.findSubscriptionByPreapprovalId(subscription_authorized_payment.preapproval_id)
+			const payment = await this.mercadoPagoEventsRepository.findPaymentByPaymentID(subscription_authorized_payment.payment.id)
+
+			if (!subcription) {
+				this.logger.error("Subscription not found. An error has ocurred with the payment ID: "
+					+ subscription_authorized_payment.id + "- Class:mpWebhookService")
+				throw new BadRequestException()
+			}
+
+			if (!payment) {
+				this.logger.error("Payment not found. An error has ocurred with the payment ID: "
+					+ subscription_authorized_payment.id + "preapproval ID:" + subscription_authorized_payment.preapproval_id + "- Class:mpWebhookService")
+				throw new BadRequestException()
+			}
 
 			if (subscription_authorized_payment != null || subscription_authorized_payment != undefined) {
+
 				this.logger.log("Status: " + subscription_authorized_payment.status + "Generate invoice to save")
+
 				const newInvoice = new Invoice(
-					subscription_authorized_payment.payment.id, //Payment ID 
-					subscription_authorized_payment.preapproval_id, // Subscription ID
+					payment.getId(), //Payment ID de nuestro schema
+					subcription.getId(), // Id de la suscripcion en nuestro schema
 					subscription_authorized_payment.payment.status, //Payment status
-					subscription_authorized_payment.preapproval_id // Este campo relacionamos la suscripcion con el preapproval
+					subscription_authorized_payment.preapproval_id // ID de la suscripcion en MELI
 				)
 				await this.mercadoPagoEventsRepository.saveInvoice(newInvoice)
 			}
 			return Promise.resolve()
 		} catch (error: any) {
 			this.logger.error("Error createSubscription_authorize_payment - Class:mpWebhookService", error)
-			throw error;
+			throw new InternalServerErrorException(error);
 		}
 	}
 

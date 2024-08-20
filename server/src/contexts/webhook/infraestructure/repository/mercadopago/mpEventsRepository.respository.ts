@@ -23,23 +23,34 @@ export default class MercadoPagoEventsRepository implements MercadoPagoEventsRep
 		@InjectModel('SubscriptionPlan') private readonly subscriptionPlanModel: Model<SubscriptionDocument>
 	) { }
 
+	async findPaymentByPaymentID(id: string): Promise<Payment | null> {
+		this.logger.log("Find payment by payment ID: " + id);
+		const payment = this.paymentModel.findOne({ mpPaymentId: id }).exec();
+		return payment ? Payment.fromDocument(payment) : null;
+	}
+
+	async findSubscriptionByPreapprovalId(id: string): Promise<Subcription | null> {
+		this.logger.log("Find subscription by preapproval ID: " + id);
+		const subscription = await this.subscriptionModel.findOne({ mpPreapprovalId: id }).exec(); // mpPreapprovalId es el campo de ID de SUSCRIPCION de MELI
+		return subscription ? Subscription.fromDocument(subscription) : null;
+	}
+
 	async findSubscriptionPlanByMeliID(id: string): Promise<SubscriptionPlan | null> {
 		this.logger.log("Find subscription plan by Meli ID: " + id);
 		const subscriptionPlanDocument = await this.subscriptionPlanModel.findOne({ mpPreapprovalPlanId: id }).exec();
 		return subscriptionPlanDocument ? SubscriptionPlan.fromDocument(subscriptionPlanDocument) : null;
 	}
 
+	async findByPayerIdAndSubscriptionPlanID(payerId: string, subscriptionPlan: ObjectId): Promise<Subscription | null> {
+		this.logger.log(`Finding subscription by payerId: ${payerId} and subscriptionPlanid: ${subscriptionPlan}`);
+		const userSubscription = await this.subscriptionModel.findOne({ payerId, subscriptionPlan: subscriptionPlan }).exec();
+		return userSubscription ? Subscription.fromDocument(userSubscription) : null;
+	}
 
 	async createPayment(payment: Payment): Promise<void> {
 		this.logger.log("Save payment: " + payment.getMPPaymentId());
 		const newPayment = new this.paymentModel(payment)
 		await newPayment.save()
-	}
-
-	async findByPayerIdAndSubscriptionPlanID(payerId: string, subscriptionPlan: ObjectId): Promise<Subscription | null> {
-		this.logger.log(`Finding subscription by payerId: ${payerId} and subscriptionPlanid: ${subscriptionPlan}`);
-		const userSubscription = await this.subscriptionModel.findOne({ payerId, subscriptionPlan: subscriptionPlan }).exec();
-		return userSubscription ? Subscription.fromDocument(userSubscription) : null;
 	}
 
 
@@ -53,6 +64,7 @@ export default class MercadoPagoEventsRepository implements MercadoPagoEventsRep
 		this.logger.log("saving new Invoice in database Invoice ID: " + invoice.getPaymentId())
 		const newInvoice = new this.invoiceModel(invoice)
 		await newInvoice.save()
+		this.logger.log("the invoice payment ID: " + newInvoice.paymentId + " has been related to subscription ID: " + newInvoice.subscriptionId)
 	}
 
 	async updateUserSubscription(payerId: string, sub: Subcription): Promise<void> {

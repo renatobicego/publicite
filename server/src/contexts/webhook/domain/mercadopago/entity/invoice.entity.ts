@@ -1,13 +1,15 @@
+import { ObjectId } from "mongoose";
+
 //subcription_authorized_payment
 export default class Invoice {
 
-	private paymentId: string;
-	private subscriptionId: string;
+	private paymentId: ObjectId | undefined;
+	private subscriptionId: ObjectId | undefined;
 	private status: string;
 	//private mpAuthorizedPaymentId: string;
 	private preapprovalId: string;
 
-	constructor(paymentId: string, subscriptionId: string, status: string, preapprovalId: string) {
+	constructor(paymentId: ObjectId | undefined, subscriptionId: ObjectId | undefined, status: string, preapprovalId: string) {
 		this.paymentId = paymentId;
 		this.subscriptionId = subscriptionId;
 		this.status = status;
@@ -17,7 +19,7 @@ export default class Invoice {
 
 
 
-	getPaymentId(): string {
+	getPaymentId(): ObjectId  | undefined {
 		return this.paymentId
 	}	
 
