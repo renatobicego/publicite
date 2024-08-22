@@ -17,7 +17,7 @@ import { SubscriptionPlanSchema } from '../schemas/mercadopago/subscriptionPlan.
 
 @Module({
   imports: [
-    UserModule, // Importa el UserModule que posiblemente sea necesario en tu WebhookModule
+    //UserModule, // Importa el UserModule que posiblemente sea necesario en tu WebhookModule
     ConfigModule.forRoot(), // Importa ConfigModule para manejar variables de entorno
 
     //Definimos los modelos que utilizara el modulo

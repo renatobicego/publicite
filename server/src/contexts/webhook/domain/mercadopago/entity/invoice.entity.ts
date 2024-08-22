@@ -23,4 +23,14 @@ export default class Invoice {
 		return this.paymentId
 	}	
 
+	getSubscriptionId(): ObjectId | undefined {
+		return this.subscriptionId
+	}	
+
+	getStatus(): string {
+		return this.status
+	}
+	getPreapprovalId(): string {
+		return this.preapprovalId
+	}	
 }

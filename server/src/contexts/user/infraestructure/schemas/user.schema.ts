@@ -8,7 +8,7 @@ export const UserSchema = new Schema({
 
 
 // Define una interfaz que extiende de Document
-export interface UserDocument extends Document {
+export interface UserDocument extends Document { 
   firstName: string;
   lastName: string;
   imageUrl: string;

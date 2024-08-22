@@ -25,10 +25,13 @@ export class SubscriptionPlan {
 		this.postLimit = postLimit;
 	}
 
-	getId(): ObjectId {
+	public getId(): ObjectId {
 		return this._id;
 	}
-
+	public getMpPreapprovalPlanId(): string {
+		return this.mpPreapprovalPlanId;
+	}
+	
 
 	static fromDocument(doc: any): SubscriptionPlan {
 		return new SubscriptionPlan(

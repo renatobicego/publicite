@@ -1,7 +1,8 @@
 import { InjectModel } from "@nestjs/mongoose";
+
+
 import { Model, ObjectId } from "mongoose";
 import { MyLoggerService } from "src/contexts/shared/logger/logger.service";
-import Subcription from "src/contexts/webhook/domain/mercadopago/entity/subcription.entity";
 import { SubscriptionDocument } from "../../schemas/mercadopago/subscription.schema";
 import Invoice from "src/contexts/webhook/domain/mercadopago/entity/invoice.entity";
 import { InvoiceDocument } from "../../schemas/mercadopago/invoice.schema";
@@ -23,16 +24,23 @@ export default class MercadoPagoEventsRepository implements MercadoPagoEventsRep
 		@InjectModel('SubscriptionPlan') private readonly subscriptionPlanModel: Model<SubscriptionDocument>
 	) { }
 
-	async findPaymentByPaymentID(id: string): Promise<Payment | null> {
+	async findPaymentByPaymentID(id: any): Promise<Payment | null> {
 		this.logger.log("Find payment by payment ID: " + id);
-		const payment = this.paymentModel.findOne({ mpPaymentId: id }).exec();
+		const payment = await this.paymentModel.findOne({ mpPaymentId: id }).exec();
 		return payment ? Payment.fromDocument(payment) : null;
 	}
 
-	async findSubscriptionByPreapprovalId(id: string): Promise<Subcription | null> {
+	async findSubscriptionByPreapprovalId(id: string): Promise<Subscription | null> {
 		this.logger.log("Find subscription by preapproval ID: " + id);
-		const subscription = await this.subscriptionModel.findOne({ mpPreapprovalId: id }).exec(); // mpPreapprovalId es el campo de ID de SUSCRIPCION de MELI
+		const subscription = await this.subscriptionModel.findOne({ mpPreapprovalId: id }); // mpPreapprovalId es el campo de ID de SUSCRIPCION de MELI
 		return subscription ? Subscription.fromDocument(subscription) : null;
+	}
+
+	async findAllSubscriptions(): Promise<Subscription[]> {
+		this.logger.log("Find all subscriptions");
+		const subscriptions = await this.subscriptionModel.find().exec(); // Recupera todos los documentos
+		console.log(subscriptions);
+		return subscriptions.map(subscription => Subscription.fromDocument(subscription));
 	}
 
 	async findSubscriptionPlanByMeliID(id: string): Promise<SubscriptionPlan | null> {
@@ -54,7 +62,7 @@ export default class MercadoPagoEventsRepository implements MercadoPagoEventsRep
 	}
 
 
-	async saveSubPreapproval(sub: Subcription): Promise<void> {
+	async saveSubPreapproval(sub: Subscription): Promise<void> {
 		this.logger.log("saving new subscription in database SUB_ID: " + sub.getMpPreapprovalId())
 		const newSubscription = new this.subscriptionModel(sub)
 		await newSubscription.save()
@@ -67,7 +75,7 @@ export default class MercadoPagoEventsRepository implements MercadoPagoEventsRep
 		this.logger.log("the invoice payment ID: " + newInvoice.paymentId + " has been related to subscription ID: " + newInvoice.subscriptionId)
 	}
 
-	async updateUserSubscription(payerId: string, sub: Subcription): Promise<void> {
+	async updateUserSubscription(payerId: string, sub: Subscription): Promise<void> {
 		this.logger.log("Update subscription of payerID: " + payerId)
 		// Construye un objeto de actualización excluyendo el campo `_id`
 		const updateFields = { ...sub };

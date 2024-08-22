@@ -11,7 +11,15 @@ export default class Payment {
 	private _id?: ObjectId;
 
 
-	constructor(mpPaymentId: string, payerId: string, payerEmail: string, paymentTypeId: string, paymentMethodId: string, transactionAmount: number, dateApproved: string, _id?: ObjectId) {
+	constructor(
+		mpPaymentId: string,
+		payerId: string,
+		payerEmail: string,
+		paymentTypeId: string,
+		paymentMethodId: string,
+		transactionAmount: number,
+		dateApproved: string,
+		_id?: ObjectId) {
 		this.mpPaymentId = mpPaymentId;
 		this.payerId = payerId;
 		this.payerEmail = payerEmail;
@@ -27,7 +35,28 @@ export default class Payment {
 	}
 
 	public getId(): ObjectId | undefined {
-		return this._id || undefined;
+		return this._id;
+	}
+
+	public getPayerId(): string {
+		return this.payerId;
+	}
+
+	public getPayerEmail(): string {
+		return this.payerEmail;
+	}
+
+	public getPaymentTypeId(): string {
+		return this.paymentTypeId;
+	}
+	public getPaymentMethodId(): string {
+		return this.paymentMethodId;
+	}
+	public getTransactionAmount(): number {
+		return this.transactionAmount;
+	}
+	public getDateApproved(): string {
+		return this.dateApproved;
 	}
 
 

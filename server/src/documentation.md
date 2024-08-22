@@ -21,3 +21,17 @@ En la arquitectura hexagonal, también conocida como arquitectura de puertos y a
 - **Lógica de Aplicación:** Se encuentra en el lado de los adaptadores, manejando la comunicación entre el núcleo de la aplicación y el exterior. Permite que los casos de uso específicos se ejecuten, y coordina cómo interactúa la lógica de negocio con los componentes externos.
 
 Esta separación asegura que el núcleo de la aplicación pueda evolucionar y adaptarse a cambios sin verse afectado por las variaciones en las interfaces de usuario, las bases de datos, o cualquier otro componente externo.
+
+
+
+1. **Controlador (Controller)**: El controlador se encuentra en la capa de infraestructura y es el punto de entrada para las solicitudes externas, como las peticiones HTTP. Su función principal es recibir las solicitudes, validarlas, y luego delegar la lógica al servicio correspondiente.
+
+2. **Adaptador (Adapter)**: El controlador no interactúa directamente con el servicio de la capa de aplicación. En su lugar, utiliza un adaptador si es necesario. El adaptador es responsable de convertir los datos de entrada (por ejemplo, una petición HTTP) en un formato que el servicio pueda procesar. También puede encargarse de convertir la respuesta del servicio en un formato adecuado para la capa de infraestructura (como una respuesta HTTP).
+
+3. **Servicio (Service)**: El servicio se encuentra en la capa de aplicación y contiene la lógica de negocio o de aplicación que implementa los casos de uso. El adaptador llama al servicio para ejecutar la lógica necesaria. 
+
+En resumen:
+
+- **Controlador** → **Adaptador** → **Servicio (Application Layer)**
+
+Este flujo garantiza que cada capa cumpla con su responsabilidad específica y mantiene el código organizado y desacoplado. Así, la lógica de negocio se mantiene independiente de los detalles de la infraestructura (como las tecnologías de comunicación o las bases de datos), facilitando su testeo y mantenimiento.

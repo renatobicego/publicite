@@ -61,7 +61,7 @@ export class MpWebhookService implements MpWebhookServiceInterface {
 		try {
 			this.logger.log("---INVOICE SERVICE---")
 			if (subscription_authorized_payment.status === 'scheduled') {
-				this.logger.log("Status: " + subscription_authorized_payment.status + " the invoice is not saved yet. Waiting for payment to be approved")
+				this.logger.log("Status: " + subscription_authorized_payment.status + " the invoice for subscription_authorized_payment ID: "+subscription_authorized_payment.id+ " is not saved yet. Waiting for payment to be approved")
 				return Promise.resolve()
 			}
 			/*
@@ -70,28 +70,29 @@ export class MpWebhookService implements MpWebhookServiceInterface {
 			Cuando llega el otro evento deberiamos buscar el invoice en estado pending y cambiar su estado a approved y adicionalmente updatear el schema con el ID del pago y lo que falte
 			
 			*/
-			const subcription = await this.mercadoPagoEventsRepository.findSubscriptionByPreapprovalId(subscription_authorized_payment.preapproval_id)
+			const subscripcion = await this.mercadoPagoEventsRepository.findSubscriptionByPreapprovalId(subscription_authorized_payment.preapproval_id)
 			const payment = await this.mercadoPagoEventsRepository.findPaymentByPaymentID(subscription_authorized_payment.payment.id)
 
-			if (!subcription) {
-				this.logger.error("Subscription not found. An error has ocurred with the payment ID: "
+
+			if (!subscripcion || subscripcion === null) {
+				this.logger.error("Subscription not found. An error has ocurred with subscription_authorized_payment ID: "
 					+ subscription_authorized_payment.id + "- Class:mpWebhookService")
 				throw new BadRequestException()
 			}
 
-			if (!payment) {
+			if (!payment || payment === null) {
 				this.logger.error("Payment not found. An error has ocurred with the payment ID: "
 					+ subscription_authorized_payment.id + "preapproval ID:" + subscription_authorized_payment.preapproval_id + "- Class:mpWebhookService")
 				throw new BadRequestException()
 			}
+	
 
 			if (subscription_authorized_payment != null || subscription_authorized_payment != undefined) {
 
-				this.logger.log("Status: " + subscription_authorized_payment.status + "Generate invoice to save")
-
+				this.logger.log("Status: " + subscription_authorized_payment.status + " Generate invoice to save")
 				const newInvoice = new Invoice(
 					payment.getId(), //Payment ID de nuestro schema
-					subcription.getId(), // Id de la suscripcion en nuestro schema
+					subscripcion.getId(), // Id de la suscripcion en nuestro schema
 					subscription_authorized_payment.payment.status, //Payment status
 					subscription_authorized_payment.preapproval_id // ID de la suscripcion en MELI
 				)

@@ -31,8 +31,21 @@ export default class Subscription {
 	public getId(): ObjectId | undefined {
 		return this._id || undefined;
 	}
+	public getStatus(): string {
+		return this.status
+	}
+	public getSubscriptionPlan(): ObjectId {
+		return this.subscriptionPlan
+	}
+	public getStartDate(): string {
+		return this.startDate
+	}
+	public getEndDate(): string {
+		return this.endDate
+	}
 
 	static fromDocument(doc: any): Subscription {
+		console.log("convirtiendo sub schema a entity")
 		return new Subscription(
 			doc.mpPreapprovalId,
 			doc.payerId,

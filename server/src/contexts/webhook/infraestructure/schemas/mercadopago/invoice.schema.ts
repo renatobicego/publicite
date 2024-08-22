@@ -3,17 +3,22 @@ import mongoose, { Schema, Types } from "mongoose";
 export const InvoiceSchema = new Schema({
 	paymentId: {
 		type: mongoose.Schema.Types.ObjectId,
-		ref: 'payments',
+		ref: 'payment',
 		required: true
 	},
-	subscriptionId: { type: String, required: true },
+	subscriptionId: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: 'subscription',
+		required: true
+	},
+
 	status: { type: String, required: true },
 	preapprovalId: { type: String, required: true },
 })
 
 export interface InvoiceDocument extends Document {
 	paymentId: Types.ObjectId;
-	subscriptionId: string;
+	subscriptionId: Types.ObjectId;
 	status: string;
 	preapprovalId: string
 }
