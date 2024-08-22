@@ -40,6 +40,7 @@ const UserProfilePage = () => (
       }}
     >
       {/* You can pass the content as a component */}
+
       <UserProfile.Page
         label="Custom Page"
         labelIcon={<DotIcon />}

@@ -1,5 +1,5 @@
 "use client";
-import { Button } from "@nextui-org/react";
+import { Button, Link } from "@nextui-org/react";
 import React from "react";
 import { editSubscription } from "../services";
 
@@ -25,6 +25,9 @@ const UserSubscriptionCard = ({ subscription }: { subscription: any }) => {
       </Button>
       <Button onClick={() => handleChangeStatus(subscription.id, "cancelled")}>
         Cancelar
+      </Button>
+      <Button as={Link} href={`/subscripcion/editar/${subscription.id}`}>
+        Editar
       </Button>
     </div>
   );
