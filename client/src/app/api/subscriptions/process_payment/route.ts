@@ -34,3 +34,28 @@ export async function POST(request: NextRequest) {
     return new Response("Error", { status: 500 });
   }
 }
+
+export async function PUT(request: NextRequest) {
+  try {
+    const client = new MercadoPagoConfig({
+      accessToken: process.env.MP_ACCESS_TOKEN as string,
+      options: { timeout: 5000 },
+    });
+
+    const paymentSubscription = new PreApproval(client);
+    const { formData, subscription } = await request.json();
+    paymentSubscription
+      .update({
+        id: subscription.id, 
+        body: {
+          card_token_id: formData.token,
+        },
+      })
+      .then(console.log)
+      .catch(console.log);
+    return new Response("OK", { status: 200 });
+  } catch (error) {
+    return new Response("Error", { status: 500 });
+  }
+}
+
