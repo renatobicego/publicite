@@ -21,11 +21,14 @@ import { SubscriptionPlanSchema } from '../schemas/mercadopago/subscriptionPlan.
     ConfigModule.forRoot(), // Importa ConfigModule para manejar variables de entorno
 
     //Definimos los modelos que utilizara el modulo
-    MongooseModule.forFeature([{ name: 'Subscription', schema: SubscriptionSchema }]),
+    MongooseModule.forFeature([
+      { name: 'Subscription', schema: SubscriptionSchema },
+    ]),
     MongooseModule.forFeature([{ name: 'Invoice', schema: InvoiceSchema }]),
     MongooseModule.forFeature([{ name: 'Payment', schema: PaymentSchema }]),
-    MongooseModule.forFeature([{ name: 'SubscriptionPlan', schema: SubscriptionPlanSchema }]),
-
+    MongooseModule.forFeature([
+      { name: 'SubscriptionPlan', schema: SubscriptionPlanSchema },
+    ]),
   ],
   controllers: [WebhookController], // Controlador del módulo
   providers: [
@@ -61,9 +64,6 @@ import { SubscriptionPlanSchema } from '../schemas/mercadopago/subscriptionPlan.
       provide: 'MpHandlerEventsInterface',
       useClass: MpHandlerEvents,
     },
-
-
-
   ],
 })
-export class WebhookModule { }
+export class WebhookModule {}

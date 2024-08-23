@@ -9,7 +9,6 @@ import {
   Get,
   Res,
   Req,
-  Logger,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config'; // Asegúrate de importar ConfigServic
 import { Response } from 'express';
@@ -92,7 +91,7 @@ export class WebhookController {
       //Valido el origen de la petición
 
       const authSecretValidation =
-        await this.mpWebhookAdapter.subscription_authorized_payment(body.id)
+        await this.mpWebhookAdapter.payment(body.id,"asd")
       if (authSecretValidation) {
         //En el caso de que validemos el origen y que el pago se complete correctamente, vamos a deolver el estado OK, de lo contrario esta operacion no se hara 
         this.logger.log('Webhook MP OK - Credentials are valid - WEBHOOK_PROCESS: COMPLETE ---> sending response to Meli - Class:WebhookController 🚀')
