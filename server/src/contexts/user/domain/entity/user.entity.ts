@@ -17,7 +17,7 @@ export abstract class User {
   private isActive: boolean;
   private contact: ObjectId;
   private createdTime: string;
-  private subscriptions: string;
+  private subscriptions: ObjectId[];
   private accountType: ObjectId;
   private groups: ObjectId[];
   private magazines: ObjectId[];
