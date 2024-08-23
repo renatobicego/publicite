@@ -8,7 +8,7 @@ export const PaymentSchema = new Schema({
 	paymentMethodId: { type: String, required: true },
 	transactionAmount: { type: Number, required: true },
 	dateApproved: { type: String, required: true },
-	_id: { type: Types.ObjectId, default: Types.ObjectId },
+	_id: { type: Types.ObjectId, default: undefined, required: false },
 })
 
 
@@ -20,6 +20,6 @@ export interface PaymentDocument extends Document {
 	paymentMethodId: string;
 	transactionAmount: number;
 	dateApproved: string;
-	_id: ObjectId;
+	_id?: ObjectId; 
 
 }
