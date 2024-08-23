@@ -3,8 +3,8 @@ import { ObjectId } from "mongoose";
 Entidad para el user en general.
 */
 enum UserType {
-  Admin = 'Admin',
-  Regular = 'Regular'
+  Personal = 'Personal',
+  Business = 'Business'
 }
 
 export abstract class User {
@@ -25,8 +25,4 @@ export abstract class User {
   private post: ObjectId[];
   private userRelations: ObjectId[];
   private userType: UserType;
-
-
-
-
 }
