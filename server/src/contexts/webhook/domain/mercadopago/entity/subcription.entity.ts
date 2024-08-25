@@ -8,6 +8,7 @@ export default class Subscription {
   private subscriptionPlan: ObjectId;
   private startDate: string;
   private endDate: string;
+  private external_reference: string;
   private _id?: ObjectId;
 
   constructor(
@@ -17,6 +18,7 @@ export default class Subscription {
     subscriptionPlan: ObjectId,
     startDate: string,
     endDate: string,
+    external_reference: string,
     _id?: ObjectId,
   ) {
     this.mpPreapprovalId = mpPreapprovalId;
@@ -25,6 +27,7 @@ export default class Subscription {
     this.subscriptionPlan = subscriptionPlan;
     this.startDate = startDate;
     this.endDate = endDate;
+    this.external_reference = external_reference;
     this._id = _id;
   }
 
@@ -51,6 +54,7 @@ export default class Subscription {
   public getEndDate(): string {
     return this.endDate;
   }
+  
 
   static fromDocument(doc: any): Subscription {
     console.log('convirtiendo sub schema a entity');
@@ -61,6 +65,7 @@ export default class Subscription {
       doc.subscriptionPlan,
       doc.startDate,
       doc.endDate,
+      doc.external_reference,
       doc._id ? doc._id : ' ',
     );
   }

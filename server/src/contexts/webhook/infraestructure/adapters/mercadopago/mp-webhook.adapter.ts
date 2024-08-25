@@ -15,6 +15,7 @@ Esta capa no deberia tener logica del negocio, sino que deberia orquestarla.
 
 Pendiente: 
 - Separar logica de validacion del hash
+- Aplicar interfaz e injection de dependencias para el adaptador
 
 */
 

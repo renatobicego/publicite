@@ -4,7 +4,7 @@ import {
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { MpWebhookServiceInterface } from '../../domain/mercadopago/service/mpWebhookServiceInterface';
+import { MpWebhookServiceInterface } from '../../domain/mercadopago/service/mpWebhook.service.interface';
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
 import Subcription from '../../domain/mercadopago/entity/subcription.entity';
 
@@ -12,6 +12,7 @@ import { ConfigService } from '@nestjs/config';
 import Invoice from '../../domain/mercadopago/entity/invoice.entity';
 import MercadoPagoEventsInterface from '../../domain/mercadopago/repository/mpEvents.repository.interface';
 import Payment from '../../domain/mercadopago/entity/payment.entity';
+//import { UserRepositoryInterface } from 'src/contexts/user/domain/user-repository.interface';
 
 /*
 Capa de servicio: Debe encargarse de arrojar las exceptions, transforma las request en objetos de dominio (entidades) y las envia al repositorio de persistencia.
@@ -25,9 +26,16 @@ export class MpWebhookService implements MpWebhookServiceInterface {
     private readonly configService: ConfigService,
     @Inject('MercadoPagoEventsInterface')
     private readonly mercadoPagoEventsRepository: MercadoPagoEventsInterface,
+    // @Inject('UserRepositoryInterface')
+    // private readonly userRepository: UserRepositoryInterface,
   ) {}
+
   private readonly MP_ACCESS_TOKEN =
     this.configService.get<string>('MP_ACCESS_TOKEN');
+
+  // async setPayerIDtoUser(payerId: string, payerEmail: string): Promise<void> {
+  //   await this.userRepository.setPayerIDtoUser(payerId, payerEmail);
+  // }
 
   async create_payment(payment: any): Promise<void> {
     try {
@@ -155,19 +163,27 @@ export class MpWebhookService implements MpWebhookServiceInterface {
 
     try {
       // Crear el nuevo objeto de suscripción
-      const { id, payer_id, status, preapproval_plan_id, auto_recurring } =
-        subscription_preapproval;
+      const {
+        id,
+        payer_id,
+        status,
+        preapproval_plan_id,
+        auto_recurring,
+        external_reference,
+      } = subscription_preapproval;
 
       if (
         !auto_recurring ||
         !auto_recurring.start_date ||
-        !auto_recurring.end_date
+        !auto_recurring.end_date ||
+        !external_reference
       ) {
         this.logger.error('Invalid subscription data - missing dates');
         throw new BadRequestException('Invalid subscription data');
       }
       const { start_date, end_date } = auto_recurring;
 
+      //Buscamos el plan al que pertenece la suscripción
       const plan =
         await this.mercadoPagoEventsRepository.findSubscriptionPlanByMeliID(
           preapproval_plan_id,
@@ -181,39 +197,44 @@ export class MpWebhookService implements MpWebhookServiceInterface {
       }
       const planID = plan.getId();
 
-      const existingSubscription =
-        await this.mercadoPagoEventsRepository.findByPayerIdAndSubscriptionPlanID(
-          payer_id,
-          planID,
-        );
-
-      const newUserSuscription = new Subcription(
-        id, // ID de la suscripción
-        payer_id, // id del payer
-        status, // estado de la suscripción
-        planID, // id del plan en nuestro sistema
-        start_date, // fecha de inicio
-        end_date, // fecha de fin
-      );
-
-      if (existingSubscription) {
-        // Si existe una suscripción, actualízala
+      try {
         this.logger.log(
-          'This payer ID already has a subscription with the same plan, updating the subscription',
+          'Creating a new subscription with ID: ' +
+            id +
+            'external reference: ' +
+            external_reference +
+            'for plan ' +
+            plan.getDescription() +
+            ' - Class: mpWebhookService',
         );
-        await this.mercadoPagoEventsRepository.updateUserSubscription(
-          payer_id,
-          newUserSuscription,
-        );
-      } else {
-        // Si no existe una suscripción, guárdala
-        this.logger.log(
-          'This payer ID does not have a subscription, creating a new subscription',
+        const newUserSuscription = new Subcription(
+          id, // ID de la suscripción
+          payer_id, // id del payer
+          status, // estado de la suscripción
+          planID, // id del plan en nuestro sistema
+          start_date, // fecha de inicio
+          end_date, // fecha de fin
+          external_reference, // identificador de usuario
         );
         await this.mercadoPagoEventsRepository.saveSubPreapproval(
           newUserSuscription,
         );
+      } catch (error: any) {
+        throw error;
       }
+      //PENDIENTE: Deberia ver si el estado esta cancelado o no, ver luego como manejar eso.
+
+      // const checkStatus =
+      //   await this.mercadoPagoEventsRepository.findByPayerIdAndSubscriptionPlanID(
+      //     payer_id,
+      //     planID,
+      //     external_reference,
+      //   );
+
+      // await this.mercadoPagoEventsRepository.updateUserSubscription(
+      //   payer_id,
+      //   newUserSuscription,
+      // );
     } catch (error) {
       this.logger.error(
         'Error in createSubscription_preapproval - Class: mpWebhookService',

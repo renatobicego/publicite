@@ -13,6 +13,7 @@ export const SubscriptionSchema = new Schema({
   },
   startDate: { type: String, required: true },
   endDate: { type: String, required: true },
+  external_reference: { type: String, required: true },
 });
 
 export interface SubscriptionDocument extends Document {
@@ -22,4 +23,5 @@ export interface SubscriptionDocument extends Document {
   subscriptionPlan: Types.ObjectId;
   startDate: string;
   endDate: string;
+  external_reference: string;
 }

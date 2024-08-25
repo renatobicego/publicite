@@ -1,5 +1,6 @@
-import {User } from "./entity/user.entity";
+import { User } from './entity/user.entity';
 
 export interface UserRepositoryInterface {
-	createUser(user: User): Promise<User> ;
+  createUser(user: User): Promise<User>;
+  setPayerIDtoUser(payerId: string, payerEmail: string): Promise<void>;
 }

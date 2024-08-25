@@ -63,16 +63,18 @@ export default class MercadoPagoEventsRepository
       : null;
   }
 
-  async findByPayerIdAndSubscriptionPlanID(
+  async findStatusOfUserSubscription(
     payerId: string,
     subscriptionPlan: ObjectId,
+    external_reference: string,
   ): Promise<Subscription | null> {
     this.logger.log(
-      `Finding subscription by payerId: ${payerId} and subscriptionPlanid: ${subscriptionPlan}`,
+      `Finding subscription status of  payerId: ${payerId} and subscriptionPlanid: ${subscriptionPlan} and external_reference: ${external_reference}`,
     );
     const userSubscription = await this.subscriptionModel.findOne({
       payerId,
       subscriptionPlan: subscriptionPlan,
+      external_reference: external_reference,
     });
     return userSubscription
       ? Subscription.fromDocument(userSubscription)
@@ -116,7 +118,7 @@ export default class MercadoPagoEventsRepository
     const updateFields = { ...sub };
 
     // Realiza la actualización
-    await this.subscriptionModel.findOneAndReplace(
+    await this.subscriptionModel.findOneAndUpdate(
       { payerId: payerId },
       { subscriptionPlan: subcriptionPlanId },
       { $set: updateFields },

@@ -3,7 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { WebhookService } from '../../application/clerk/clerkWebhook.service';
 import { ClerkWebhookAdapter } from '../adapters/clerk/clerk-webhook.adapter';
 import { WebhookController } from '../controllers/webhook.controller';
-import { UserModule } from 'src/contexts/user/infraestructure/module/user.module';
+//import { UserModule } from 'src/contexts/user/infraestructure/module/user.module';
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
 import { MpWebhookService } from '../../application/mercadopago/mpWebhook.service';
 import { MpWebhookAdapter } from '../adapters/mercadopago/mp-webhook.adapter';
@@ -11,9 +11,13 @@ import { SubscriptionSchema } from '../schemas/mercadopago/subscription.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MpHandlerEvents } from '../../application/mercadopago/handler/mpHandlerEvents';
 import { InvoiceSchema } from '../schemas/mercadopago/invoice.schema';
-import MercadoPagoEventsRepository from '../repository/mercadopago/mpEventsRepository.respository';
+import MercadoPagoEventsRepository from '../repository/mercadopago/mpEvents.repository';
 import { PaymentSchema } from '../schemas/mercadopago/payment.schema';
 import { SubscriptionPlanSchema } from '../schemas/mercadopago/subscriptionPlan.schema';
+import { SubscriptionController } from '../controllers/subscription.controller';
+import { SubscriptionAdapter } from '../adapters/mercadopago/mp-subscription.adapter';
+import { MpSubscriptionService } from '../../application/mercadopago/mpSubscription.service';
+import { SubscriptionRepository } from '../repository/mercadopago/subscription.repository';
 
 @Module({
   imports: [
@@ -30,7 +34,7 @@ import { SubscriptionPlanSchema } from '../schemas/mercadopago/subscriptionPlan.
       { name: 'SubscriptionPlan', schema: SubscriptionPlanSchema },
     ]),
   ],
-  controllers: [WebhookController], // Controlador del módulo
+  controllers: [WebhookController, SubscriptionController], // Controlador del módulo
   providers: [
     // Proveedor para ClerkWebhookAdapter
     {
@@ -63,6 +67,18 @@ import { SubscriptionPlanSchema } from '../schemas/mercadopago/subscriptionPlan.
     {
       provide: 'MpHandlerEventsInterface',
       useClass: MpHandlerEvents,
+    },
+    {
+      provide: 'SubscriptionAdapterInterface',
+      useClass: SubscriptionAdapter,
+    },
+    {
+      provide: 'SubscriptionRepositoryInterface',
+      useClass: SubscriptionRepository,
+    },
+    {
+      provide: 'SubscriptionServiceInterface',
+      useClass: MpSubscriptionService,
     },
   ],
 })

@@ -1,9 +1,8 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 import { WebhookEventInterface } from '../../domain/clerk/webhook-event.interface';
 import { WebhookServiceInterface } from '../../domain/clerk/webhook-service.interface';
 
-import { UserRepositoryInterface } from 'src/contexts/user/domain/user-repository.interface';
 //import { User } from 'src/contexts/user/domain/entity/user.entity';
 /*
   se utiliza para marcar una clase como un "proveedor" que puede ser 
@@ -13,10 +12,7 @@ import { UserRepositoryInterface } from 'src/contexts/user/domain/user-repositor
 */
 @Injectable()
 export class WebhookService implements WebhookServiceInterface {
-  constructor(
-    // @Inject('UserRepositoryInterface')
-    // private readonly userService: UserRepositoryInterface,
-  ) {}
+  constructor() {} // private readonly userService: UserRepositoryInterface, // @Inject('UserRepositoryInterface')
 
   async processEvent(event: WebhookEventInterface): Promise<void> {
     const { object, type } = event;

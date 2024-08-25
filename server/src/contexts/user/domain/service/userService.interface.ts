@@ -1,3 +1,1 @@
-export interface UserServiceInterface{
-    
-}
+export interface UserServiceInterface {}

@@ -1,6 +1,5 @@
 import { ObjectId } from 'mongoose';
 
-
 export class SubscriptionPlan {
   private _id: ObjectId;
   private mpPreapprovalPlanId: string;
@@ -39,6 +38,9 @@ export class SubscriptionPlan {
   }
   public getMpPreapprovalPlanId(): string {
     return this.mpPreapprovalPlanId;
+  }
+  public getDescription(): string {
+    return this.description;
   }
 
   static fromDocument(doc: any): SubscriptionPlan {

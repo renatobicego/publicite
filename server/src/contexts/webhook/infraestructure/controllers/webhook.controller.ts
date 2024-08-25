@@ -16,6 +16,7 @@ import { Response } from 'express';
 import { ClerkWebhookAdapter } from '../adapters/clerk/clerk-webhook.adapter';
 import { MpWebhookAdapter } from '../adapters/mercadopago/mp-webhook.adapter';
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
+import { ApiExcludeEndpoint } from '@nestjs/swagger';
 
 /* 
   Servidor de prueba, se levanta con: ngrok http --domain=regular-loved-hare.ngrok-free.app 3000 
@@ -33,6 +34,7 @@ export class WebhookController {
 
 
   @Post('/clerk')
+  @ApiExcludeEndpoint()
   @HttpCode(HttpStatus.OK)
   async handleWebhookClerk(
     @Body() payload: any,
@@ -49,6 +51,7 @@ export class WebhookController {
   }
 
   @Post('/mp')
+  @ApiExcludeEndpoint()
   @HttpCode(HttpStatus.OK)
   async handleWebhookMp(
     @Headers() headers: Record<string, string>,
@@ -80,6 +83,7 @@ export class WebhookController {
   }
 
   @Post('/mp-test')
+  @ApiExcludeEndpoint()
   @HttpCode(HttpStatus.OK)
   async handleMpTest(
     @Headers() headers: Record<string, string>,
@@ -110,6 +114,7 @@ export class WebhookController {
     }
   }
   @Get('health')
+  @ApiExcludeEndpoint()
   @HttpCode(HttpStatus.OK)
   async healthTest(): Promise<{ status: string }> {
     this.logger.log('Service ON - Class:WebhookController')
