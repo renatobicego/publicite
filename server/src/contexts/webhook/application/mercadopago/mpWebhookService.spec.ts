@@ -11,10 +11,12 @@ import { MyLoggerService } from '../../../shared/logger/logger.service';
 import Invoice from '../../domain/mercadopago/entity/invoice.entity';
 import { ObjectId } from 'mongoose';
 import Subscription from '../../domain/mercadopago/entity/subcription.entity';
+import { today, getLocalTimeZone } from '@internationalized/date';
 
 describe('MpWebhookService', () => {
   let service: MpWebhookService;
   let logger: MyLoggerService;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let configService: ConfigService;
   let mercadoPagoEventsRepository: MercadoPagoEventsRepositoryInterface;
 
@@ -46,6 +48,7 @@ describe('MpWebhookService', () => {
     }).compile(); // Compila el módulo de prueba.
 
     // Asignamos las instancias del servicio y de los mocks a variables para su uso en las pruebas.
+
     service = module.get<MpWebhookService>(MpWebhookService);
     logger = module.get<MyLoggerService>(MyLoggerService);
     configService = module.get<ConfigService>(ConfigService);
@@ -111,29 +114,6 @@ describe('MpWebhookService', () => {
     });
   });
 
-  // describe('createSubscription_authorize_payment - Status Scheduled', () => {
-  // 	it('Service should return a promise resolve and log appropriate messages', async () => {
-  // 		const subscription_authorized_payment = {
-  // 			status: 'scheduled',
-  // 			preapproval_id: '12345',
-  // 		};
-
-  // 		// Mock de los métodos del logger para verificar que se llamen con los mensajes esperados
-  // 		const loggerSpy = jest.spyOn(logger, 'log').mockImplementation();
-
-  // 		// Llamada al método del servicio con datos válidos
-  // 		await service.createSubscription_authorize_payment(subscription_authorized_payment);
-
-  // 		// Verifica que el método del logger haya sido llamado con los mensajes esperados
-  // 		expect(loggerSpy).toHaveBeenCalledWith("Status: scheduled the invoice is not saved yet. Waiting for payment to be approved");
-
-  // 		//verificamos que no se llame a este metodo
-  // 		expect(mercadoPagoEventsRepository.createPayment).not.toHaveBeenCalled();
-
-  // 		// Limpiamos el mock
-  // 		loggerSpy.mockRestore();
-  // 	});
-  // });
   describe('createSubscription_authorize_payment', () => {
     it('should create an invoice successfully', async () => {
       const subscription_authorized_payment = {
@@ -231,6 +211,44 @@ describe('MpWebhookService', () => {
       expect(
         mercadoPagoEventsRepository.findPaymentByPaymentID,
       ).toHaveBeenCalledWith(subscription_authorized_payment.payment.id);
+    });
+  });
+
+  describe('Use parseTime to check if the time is ok', () => {
+    it('Should return short time if the parseTime  is ok', () => {
+      expect(service.parseTimeX('2024-08-22T12:03:16.000-04:00')).toBe(
+        '2024-08-22',
+      );
+    });
+
+    it('Should return short time if the parseTime is equal', () => {
+      expect(
+        service.parseTimeX('2024-08-22T12:03:16.000-04:00') === '2024-08-22',
+      ).toBe(true);
+    });
+    it('Should return short time if less than one day', () => {
+      expect('2024-08-21' < '2024-08-22').toBe(true);
+    });
+    it('Should return short time if more than one day and its false', () => {
+      expect('2024-08-21' > '2024-08-22').toBe(false);
+    });
+    it('Should return short time if more than one day ', () => {
+      expect('2024-08-25' > '2024-08-22').toBe(true);
+    });
+    it('Should return short time if more than one day (MONTH) ', () => {
+      expect('2024-10-25' > '2024-08-22').toBe(true);
+    });
+    it('Should return short time if more than one day (YEAR) ', () => {
+      expect('2025-08-22' > '2024-08-22').toBe(true);
+    });
+    // TEST USING TODAY
+    it('Should return short time if less than today (YEAR) ', () => {
+      const todayDate = today(getLocalTimeZone()).toString();
+      expect(todayDate > '2023-08-22').toBe(true);
+    });
+    it('Should return short time if less than today (MONTH) ', () => {
+      const todayDate = today(getLocalTimeZone()).toString();
+      expect(todayDate > '2024-07-22').toBe(true);
     });
   });
 });

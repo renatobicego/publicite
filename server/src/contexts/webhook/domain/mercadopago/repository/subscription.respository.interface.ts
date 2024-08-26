@@ -5,4 +5,7 @@ export interface SubscriptionRepositoryInterface {
     subID: string,
     email: string,
   ): Promise<SubscriptionResponse[]>;
+  getActiveSubscriptionByEmail(
+    email: string,
+  ): Promise<SubscriptionResponse | null>;
 }

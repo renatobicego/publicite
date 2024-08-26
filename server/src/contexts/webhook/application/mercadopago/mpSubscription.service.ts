@@ -8,7 +8,19 @@ export class MpSubscriptionService implements SubscriptionServiceInterface {
     @Inject('SubscriptionRepositoryInterface')
     private readonly subscriptionRepository: SubscriptionRepositoryInterface,
   ) {}
-  getSubscriptionByEmail(
+  async getActiveSubscriptionByEmail(
+    email: string,
+  ): Promise<SubscriptionResponse | null> {
+    try {
+      const subscription =
+        this.subscriptionRepository.getActiveSubscriptionByEmail(email);
+
+      return subscription || null;
+    } catch (error: any) {
+      throw new InternalServerErrorException(error);
+    }
+  }
+  getSubscriptionsByEmail(
     subID: string,
     email: string,
   ): Promise<SubscriptionResponse[]> {

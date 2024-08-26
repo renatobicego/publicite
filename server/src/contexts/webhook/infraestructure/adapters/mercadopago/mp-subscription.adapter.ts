@@ -10,14 +10,22 @@ export class SubscriptionAdapter implements SubscriptionAdapterInterface {
     @Inject('SubscriptionServiceInterface')
     private readonly subscriptionService: SubscriptionServiceInterface,
   ) {}
-  async getSubscriptionByEmail(
+  async getSubscriptionsByEmail(
     subID: string,
     email: string,
   ): Promise<SubscriptionResponse[]> {
-    const subscription = await this.subscriptionService.getSubscriptionByEmail(
+    const subscription = await this.subscriptionService.getSubscriptionsByEmail(
       subID,
       email,
     );
+    return Promise.resolve(subscription);
+  }
+
+  async getActiveSubscriptionByEmail(
+    email: string,
+  ): Promise<SubscriptionResponse | null> {
+    const subscription =
+      await this.subscriptionService.getActiveSubscriptionByEmail(email);
     return Promise.resolve(subscription);
   }
 }

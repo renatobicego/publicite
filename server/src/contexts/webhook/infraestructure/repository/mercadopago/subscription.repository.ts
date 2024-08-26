@@ -4,6 +4,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { SubscriptionDocument } from '../../schemas/mercadopago/subscription.schema';
 import { Model } from 'mongoose';
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
+import { BadRequestException } from '@nestjs/common';
+import { getLocalTimeZone, today } from '@internationalized/date';
 
 export class SubscriptionRepository implements SubscriptionRepositoryInterface {
   constructor(
@@ -11,6 +13,34 @@ export class SubscriptionRepository implements SubscriptionRepositoryInterface {
     @InjectModel('Subscription')
     private readonly subscriptionModel: Model<SubscriptionDocument>,
   ) {}
+  async getActiveSubscriptionByEmail(
+    email: string,
+  ): Promise<SubscriptionResponse | null> {
+    // PENDIENTE: TENEMOS QUE VER QUE DIA ES HOY Y CONSULTAR PARA TRAER LAS SUS QUE TENGAN UN END DATE( DEBERIA SER 1 SOLA) MAYOR QUE HOY
+    const todayDate = today(getLocalTimeZone()).toString();
+    try {
+      const subscription = await this.subscriptionModel.findOne({
+        external_reference: email,
+        endDate: { $gte: todayDate },
+      });
+
+      if (!subscription) return null;
+
+      const subs: SubscriptionResponse = {
+        mpPreapprovalId: subscription.mpPreapprovalId,
+        payerId: subscription.payerId,
+        status: subscription.status,
+        subscriptionPlan: subscription.subscriptionPlan,
+        startDate: subscription.startDate,
+        endDate: subscription.endDate,
+        external_reference: subscription.external_reference,
+      };
+
+      return subs;
+    } catch (error: any) {
+      throw new BadRequestException('Error retrieving active subscription');
+    }
+  }
 
   async getSubscriptionByEmail(
     subID: string,

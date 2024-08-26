@@ -51,7 +51,7 @@ export class SubscriptionController {
   @HttpCode(HttpStatus.OK)
   @ApiParam({ name: 'subscriptionId', description: 'The subscription ID' })
   @ApiParam({ name: 'userId', description: 'The user ID' })
-  async handleWebhookClerk(
+  async getAllSubscriptionsController(
     @Param('subscriptionId') subscriptionId: string,
     @Param('userId') userId: string,
   ): Promise<SubscriptionResponse[]> {
@@ -60,10 +60,36 @@ export class SubscriptionController {
         `Searching subscriptions by subscriptionId: ${subscriptionId}, UserId: ${userId}`,
       );
       const subscription =
-        await this.subscriptionAdapter.getSubscriptionByEmail(
+        await this.subscriptionAdapter.getSubscriptionsByEmail(
           subscriptionId,
           userId,
         );
+      return subscription;
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  @Get(':email')
+  @ApiOperation({ summary: 'Get active subscription by userId' })
+  @ApiResponse({
+    status: 200,
+    description: 'Return active subscription of user.',
+    type: [SubscriptionResponse],
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal server error.',
+  })
+  @HttpCode(HttpStatus.OK)
+  @ApiParam({ name: 'email', description: 'The user email' })
+  async getActiveSubscriptionController(
+    @Param('email') email: string,
+  ): Promise<SubscriptionResponse | null> {
+    try {
+      this.logger.log(`Searching active subscription by UserId: ${email}`);
+      const subscription =
+        await this.subscriptionAdapter.getActiveSubscriptionByEmail(email);
       return subscription;
     } catch (error: any) {
       throw error;

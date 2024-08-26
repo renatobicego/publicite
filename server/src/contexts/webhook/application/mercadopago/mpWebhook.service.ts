@@ -12,6 +12,7 @@ import { ConfigService } from '@nestjs/config';
 import Invoice from '../../domain/mercadopago/entity/invoice.entity';
 import MercadoPagoEventsInterface from '../../domain/mercadopago/repository/mpEvents.repository.interface';
 import Payment from '../../domain/mercadopago/entity/payment.entity';
+
 //import { UserRepositoryInterface } from 'src/contexts/user/domain/user-repository.interface';
 
 /*
@@ -26,16 +27,10 @@ export class MpWebhookService implements MpWebhookServiceInterface {
     private readonly configService: ConfigService,
     @Inject('MercadoPagoEventsInterface')
     private readonly mercadoPagoEventsRepository: MercadoPagoEventsInterface,
-    // @Inject('UserRepositoryInterface')
-    // private readonly userRepository: UserRepositoryInterface,
   ) {}
 
   private readonly MP_ACCESS_TOKEN =
     this.configService.get<string>('MP_ACCESS_TOKEN');
-
-  // async setPayerIDtoUser(payerId: string, payerEmail: string): Promise<void> {
-  //   await this.userRepository.setPayerIDtoUser(payerId, payerEmail);
-  // }
 
   async create_payment(payment: any): Promise<void> {
     try {
@@ -181,7 +176,9 @@ export class MpWebhookService implements MpWebhookServiceInterface {
         this.logger.error('Invalid subscription data - missing dates');
         throw new BadRequestException('Invalid subscription data');
       }
-      const { start_date, end_date } = auto_recurring;
+      let { start_date, end_date } = auto_recurring;
+      start_date = this.parseTimeX(start_date);
+      end_date = this.parseTimeX(end_date);
 
       //Buscamos el plan al que pertenece la suscripción
       const plan =
@@ -259,5 +256,9 @@ export class MpWebhookService implements MpWebhookServiceInterface {
     }
     const response_result = await response.json();
     return response_result;
+  }
+
+  parseTimeX(date: string): string {
+    return date.split('T')[0];
   }
 }
