@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongoose';
 
-enum UserType {
+export enum UserType {
   Personal = 'Personal',
   Business = 'Business',
 }

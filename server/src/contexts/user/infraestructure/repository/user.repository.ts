@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { UserRepositoryInterface } from '../../domain/repository/user-repository.interface';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
@@ -10,9 +10,12 @@ import {
 import { UserPerson } from '../../domain/entity/userPerson.entity';
 import { UserBussiness } from '../../domain/entity/userBussiness.entity';
 import { User } from '../../domain/entity/user.entity';
+import { UserTransformationInterface } from '../../domain/repository/transformations/user-transformation.interface';
 
 @Injectable()
-export class UserRepository implements UserRepositoryInterface {
+export class UserRepository
+  implements UserRepositoryInterface, UserTransformationInterface
+{
   constructor(
     @InjectModel(UserPersonModel.modelName) // Corregido para usar el nombre del modelo
     private readonly userPersonModel: Model<IUserPerson>,
@@ -29,32 +32,9 @@ export class UserRepository implements UserRepositoryInterface {
       switch (type) {
         case 0: // Personal User
           if (reqUser instanceof UserPerson) {
-            createdUser = new this.userPersonModel({
-              clerkId: reqUser.getClerkId(),
-              email: reqUser.getEmail(),
-              username: reqUser.getUsername(),
-              description: reqUser.getDescription(),
-              profilePhotoUrl: reqUser.getProfilePhotoUrl(),
-              countryRegion: reqUser.getCountryRegion(),
-              isActive: reqUser.getIsActive(),
-              contact: reqUser.getContact(),
-              createdTime: reqUser.getCreatedTime(),
-              subscriptions: reqUser.getSubscriptions(),
-              groups: reqUser.getGroups(),
-              magazines: reqUser.getMagazines(),
-              board: reqUser.getBoard(),
-              post: reqUser.getPost(),
-              userRelations: reqUser.getUserRelations(),
-              userType: reqUser.getUserType(),
-              name: reqUser.getName(),
-              lastName: reqUser.getLastName(),
-              gender: reqUser.getGender(),
-              birthDate: reqUser.getBirthDate(),
-            });
+            createdUser = this.formatDocument(reqUser);
             userSaved = await createdUser.save();
-            console.log('devolviendo');
-            const userRsp = UserPerson.formatDocument(userSaved);
-            console.log(userRsp);
+            const userRsp = UserPerson.formatDocument(userSaved as IUserPerson);
             return userRsp;
           }
           throw new Error('Invalid user instance for type 0');
@@ -75,5 +55,50 @@ export class UserRepository implements UserRepositoryInterface {
 
       throw error;
     }
+  }
+
+  formatDocument(reqUser: User): IUserPerson | IUserBusiness {
+    const baseUserData = this.getBaseUserData(reqUser);
+
+    if (reqUser instanceof UserPerson) {
+      return new this.userPersonModel({
+        ...baseUserData,
+        name: reqUser.getName(),
+        lastName: reqUser.getLastName(),
+        gender: reqUser.getGender(),
+        birthDate: reqUser.getBirthDate(),
+      });
+    } else if (reqUser instanceof UserBussiness) {
+      return new this.userBusinessModel({
+        ...baseUserData,
+        name: reqUser.getName(),
+        sector: reqUser.getSector(),
+      });
+    } else {
+      throw new BadRequestException(
+        'Invalid user instance - formatDocument in repository',
+      );
+    }
+  }
+
+  getBaseUserData(reqUser: User) {
+    return {
+      clerkId: reqUser.getClerkId(),
+      email: reqUser.getEmail(),
+      username: reqUser.getUsername(),
+      description: reqUser.getDescription(),
+      profilePhotoUrl: reqUser.getProfilePhotoUrl(),
+      countryRegion: reqUser.getCountryRegion(),
+      isActive: reqUser.getIsActive(),
+      contact: reqUser.getContact(),
+      createdTime: reqUser.getCreatedTime(),
+      subscriptions: reqUser.getSubscriptions(),
+      groups: reqUser.getGroups(),
+      magazines: reqUser.getMagazines(),
+      board: reqUser.getBoard(),
+      post: reqUser.getPost(),
+      userRelations: reqUser.getUserRelations(),
+      userType: reqUser.getUserType(),
+    };
   }
 }

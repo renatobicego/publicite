@@ -29,12 +29,6 @@ export interface UserPersonResponse {
 }
 
 export class UserPersonDto {
-  @ApiPropertyOptional({
-    description: 'ID User Schema',
-    example: '5f9d8f5e9d8f5e9d8f5e9d8f',
-    type: Types.ObjectId,
-  })
-  @IsOptional()
   readonly _id?: ObjectId | string;
 
   @ApiProperty({
@@ -102,7 +96,7 @@ export class UserPersonDto {
 
   @ApiPropertyOptional({
     description: 'Ids of the subscriptions schema',
-    example: '5f9d8f5e9d8f5e9d8f5e9d8f',
+    example: ['5f9d8f5e9d8f5e9d8f5e9d8f'],
     type: [Types.ObjectId],
   })
   @IsOptional()
@@ -110,7 +104,7 @@ export class UserPersonDto {
 
   @ApiPropertyOptional({
     description: 'Ids of the groups schema',
-    example: '5f9d8f5e9d8f5e9d8f5e9d8f',
+    example: ['5f9d8f5e9d8f5e9d8f5e9d8f'],
     type: [Types.ObjectId],
   })
   @IsOptional()
@@ -118,7 +112,7 @@ export class UserPersonDto {
 
   @ApiPropertyOptional({
     description: 'Ids of the magazines schema',
-    example: '5f9d8f5e9d8f5e9d8f5e9d8f',
+    example: ['5f9d8f5e9d8f5e9d8f5e9d8f'],
     type: [Types.ObjectId],
   })
   @IsOptional()
@@ -126,7 +120,7 @@ export class UserPersonDto {
 
   @ApiPropertyOptional({
     description: 'Ids of the board schema',
-    example: '5f9d8f5e9d8f5e9d8f5e9d8f',
+    example: ['5f9d8f5e9d8f5e9d8f5e9d8f'],
     type: [Types.ObjectId],
   })
   @IsOptional()
@@ -134,7 +128,7 @@ export class UserPersonDto {
 
   @ApiPropertyOptional({
     description: 'Ids of the post schema',
-    example: '5f9d8f5e9d8f5e9d8f5e9d8f',
+    example: ['5f9d8f5e9d8f5e9d8f5e9d8f'],
     type: [Types.ObjectId],
   })
   @IsOptional()
@@ -142,7 +136,7 @@ export class UserPersonDto {
 
   @ApiPropertyOptional({
     description: 'Ids of the userRelations schema',
-    example: '5f9d8f5e9d8f5e9d8f5e9d8f',
+    example: ['5f9d8f5e9d8f5e9d8f5e9d8f'],
     type: [Types.ObjectId],
   })
   @IsOptional()
@@ -228,8 +222,6 @@ export class UserPersonDto {
   }
 
   static formatDocument(user: UserPerson): UserPersonResponse {
-    console.log('format document in user.personDto' + user.getId());
-
     return {
       clerkId: user.getClerkId(),
       email: user.getEmail(),

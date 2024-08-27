@@ -62,8 +62,6 @@ export class UserPerson extends User {
   }
 
   static formatDocument(document: IUserPerson): UserPerson {
-    console.log('Format document en userPerson ' + document._id);
-
     return new UserPerson(
       document.clerkId,
       document.email,
