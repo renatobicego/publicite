@@ -22,7 +22,11 @@ const config: Config = {
       colors: {
         fondo: "#FFFDF7",
         pistacho: "#8CD867",
-        'text-color': '#031926'
+        'text-color': '#031926',
+        primary: "#EF2D56"
+      },
+      borderRadius: {
+        "20": "20px"
       }
     },
   },

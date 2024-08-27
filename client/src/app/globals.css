@@ -20,11 +20,27 @@
   .text-balance {
     text-wrap: balance;
   }
+
+  h5 {
+    @apply font-bold text-lg
+  }
+
+  .small-text {
+    @apply text-sm
+  }
+
+  .card {
+    @apply rounded-20 shadow-lg
+  }
 }
 
 .cl-navbar,
 .cl-navbar [class^="cl-internal"] {
   background: #fffdf7;
+}
+
+.cl-footer [class^="cl-internal"] * {
+  background: #F7F7F7;
 }
 
 .cl-navbarButton[data-active="true"] {
@@ -56,6 +72,15 @@
   background-color: #EF2D56;
   color: white;
   border: none;
+  box-shadow: none !important;
+  width: auto;
+}
+.cl-formButtonPrimary:hover{
+  background-color: #031926 !important;
+}
+
+.cl-formFieldLabel{
+  color: #031926
 }
 .cl-formButtonPrimary:disabled{
   opacity: 0.4;
@@ -95,6 +120,7 @@
   color: #EF4444;
 }
 
-.cl-menuList{
+.cl-menuList, .cl-cardBox, .cl-signUp-start{
   border-radius: 20px;
 }
+
