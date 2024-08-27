@@ -1,15 +1,11 @@
 import type { Metadata } from "next";
-import { Inter, Lato } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 import { ClerkProvider } from "@clerk/nextjs";
 import { esES } from "@clerk/localizations";
 
-const lato = Lato({
-  subsets: ["latin"],
-  weight: ["400", "700", "900"],
-  variable: "--font-lato",
-});
+
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -44,7 +40,7 @@ export default function RootLayout({
     <ClerkProvider localization={localization}>
       <html lang="en">
         <body
-          className={`${inter.className} ${lato.className} text-text-color`}
+          className={`${inter.className} text-text-color`}
         >
           <Providers>{children}</Providers>
         </body>

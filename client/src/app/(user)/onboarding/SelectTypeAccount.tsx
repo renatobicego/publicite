@@ -15,9 +15,9 @@ const SelectTypeAccount = () => {
   return (
     <div className="card flex flex-col items-center bg-white px-10 py-8 gap-4">
       <div>
-        <h5>¿Cómo planeas utilizar tu cuenta?</h5>
+        <h5>¿Cómo planea utilizar su cuenta?</h5>
         <p className="small-text">
-          Seleccione el tipo de cuenta que desea crear
+          Seleccione el tipo de cuenta que desea crear.
         </p>
       </div>
       <div className="flex gap-4">

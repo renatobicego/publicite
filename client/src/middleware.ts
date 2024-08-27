@@ -9,6 +9,8 @@ const isPublicRoute = createRouteMatcher([
 ]);
 
 export default clerkMiddleware((auth, req: NextRequest) => {
+  return NextResponse.next();
+
   const { userId, sessionClaims, redirectToSignIn } = auth();
   // return NextResponse.next();
 
