@@ -13,15 +13,6 @@ import { SubscriptionAdapterInterface } from '../../domain/mercadopago/adapter/s
 import { SubscriptionResponse } from './response/subscription.response';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 
-// const subscriptionMock: SubscriptionResponse = {
-//   mpPreapprovalId: 'mpPreapprovalId',
-//   payerId: 'payerId',
-//   status: 'status',
-//   subscriptionPlan: '66c49508e80296e90ec637d8' as unknown as ObjectId,
-//   startDate: 'startDate',
-//   endDate: 'endDate',
-//   external_reference: 'external_reference',
-// };
 @ApiTags('Subscriptions')
 @Controller('mercadopago/subscription')
 export class SubscriptionController {
