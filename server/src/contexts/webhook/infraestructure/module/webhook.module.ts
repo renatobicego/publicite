@@ -27,10 +27,8 @@ import { SubscriptionRepository } from '../repository/mercadopago/subscription.r
     //Definimos los modelos que utilizara el modulo
     MongooseModule.forFeature([
       { name: 'Subscription', schema: SubscriptionSchema },
-    ]),
-    MongooseModule.forFeature([{ name: 'Invoice', schema: InvoiceSchema }]),
-    MongooseModule.forFeature([{ name: 'Payment', schema: PaymentSchema }]),
-    MongooseModule.forFeature([
+      { name: 'Invoice', schema: InvoiceSchema },
+      { name: 'Payment', schema: PaymentSchema },
       { name: 'SubscriptionPlan', schema: SubscriptionPlanSchema },
     ]),
   ],
