@@ -12,12 +12,13 @@ export default function RootLayout({
   // }
 
   return (
-    <main className="w-screen h-screen flex">
-      <div className="flex justify-center items-center bg-fondo flex-1">
+    <main className="w-screen min-h-screen flex bg-fondo">
+      <div className="flex justify-center items-center bg-fondo flex-1 h-screen">
         <Image src="/logo.png" alt="Logo" width={300} height={200} />
       </div>
-
-      {children}
+      <div className="flex justify-center items-center bg-white flex-1 rounded-[40px] shadow-xl py-16">
+        {children}
+      </div>
     </main>
   );
 }

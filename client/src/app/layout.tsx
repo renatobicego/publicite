@@ -40,7 +40,7 @@ export default function RootLayout({
     <ClerkProvider localization={localization}>
       <html lang="en">
         <body
-          className={`${inter.className} text-text-color`}
+          className={`${inter.className} text-text-color overflow-x-hidden`}
         >
           <Providers>{children}</Providers>
         </body>

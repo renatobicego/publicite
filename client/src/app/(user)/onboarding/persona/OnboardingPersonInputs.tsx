@@ -4,12 +4,12 @@ import {
   CustomSelect,
   CustomTextarea,
 } from "@/app/components/inputs/CustomInputs";
+import PlaceAutocomplete from "@/app/components/inputs/PlaceAutocomplete";
 import { UserPersonFormValues } from "@/types/userTypes";
 import { CalendarDate } from "@internationalized/date";
 import { Field, FormikErrors } from "formik";
-import PlaceAutocomplete from "./PlaceAutocomplete";
 
-interface SignUpInputsProps {
+interface OnboardingPersonInputsProps {
   initialValues: UserPersonFormValues;
   errors: FormikErrors<UserPersonFormValues>;
   setFieldValue: (
@@ -19,11 +19,11 @@ interface SignUpInputsProps {
   ) => Promise<void | FormikErrors<UserPersonFormValues>>;
 }
 
-const SignUpInputs = ({
+const OnboardingPersonInputs = ({
   initialValues,
   errors,
   setFieldValue,
-}: SignUpInputsProps) => {
+}: OnboardingPersonInputsProps) => {
   const genderItems = [
     { name: "Masculino", value: "M" },
     { name: "Femenino", value: "F" },
@@ -65,6 +65,16 @@ const SignUpInputs = ({
         }
       />
       <Field
+        as={CustomInput}
+        name="contact.phone"
+        label="Teléfono (opcional)"
+        aria-label="telefono"
+        isInvalid={!!errors.contact?.phone}
+        type="tel"
+        errorMessage={errors.contact?.phone}
+        placeholder="Ingrese su teléfono"
+      />
+      <Field
         as={PlaceAutocomplete}
         isRequired
         name="countryRegion"
@@ -90,7 +100,7 @@ const SignUpInputs = ({
       <Field
         as={CustomTextarea}
         name="description"
-        label="Descripción"
+        label="Descripción (opcional)"
         aria-label="apellido"
         placeholder="Ingrese una descripción para su perfil"
       />
@@ -98,4 +108,4 @@ const SignUpInputs = ({
   );
 };
 
-export default SignUpInputs;
+export default OnboardingPersonInputs;

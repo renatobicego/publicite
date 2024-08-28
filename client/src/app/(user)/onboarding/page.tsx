@@ -1,11 +1,5 @@
-
-import SelectTypeAccount from "./SelectTypeAccount";
+import SelectTypeAccount from "./(typeAccount)/SelectTypeAccount";
 
 export default function OnboardingComponent() {
-
-  return (
-    <div className="flex justify-center items-center bg-white flex-1 rounded-[40px] shadow-xl">
-      <SelectTypeAccount />
-    </div>
-  );
+  return <SelectTypeAccount />;
 }
