@@ -44,12 +44,12 @@ const OnboardingPersonInputs = ({
       />
       <Field
         as={CustomInput}
-        name="lastname"
+        name="lastName"
         label="Apellido"
         aria-label="apellido"
-        isInvalid={!!errors.lastname}
+        isInvalid={!!errors.lastName}
         isRequired
-        errorMessage={errors.lastname}
+        errorMessage={errors.lastName}
         placeholder="Ingrese su apellido"
       />
       <Field
@@ -61,7 +61,7 @@ const OnboardingPersonInputs = ({
         isInvalid={!!errors.birthDate}
         errorMessage={errors.birthDate}
         onChange={(value: CalendarDate) =>
-          setFieldValue("birthDate", value.toString())
+          setFieldValue("birthDate", value ? value.toString() : "")
         }
       />
       <Field

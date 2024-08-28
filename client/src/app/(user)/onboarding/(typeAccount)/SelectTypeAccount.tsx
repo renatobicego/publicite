@@ -1,5 +1,6 @@
 import React from "react";
 import CardTypeAccount from "./CardTypeAccount";
+import { Divider } from "@nextui-org/react";
 
 const SelectTypeAccount = () => {
   const accountTypes: { type: "person" | "company"; label: string }[] = [
@@ -20,6 +21,7 @@ const SelectTypeAccount = () => {
           Seleccione el tipo de cuenta que desea crear.
         </p>
       </div>
+      <Divider />
       <div className="flex gap-4">
         {accountTypes.map((accountType) => (
           <CardTypeAccount

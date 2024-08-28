@@ -14,19 +14,16 @@ const CardTypeAccount = ({
     <Card
       as={Link}
       href={`/onboarding/${type === "person" ? "persona" : "empresa"}`}
-      className="p-4"
-      shadow="none"
-      radius="none"
+      className="p-12 hover:bg-text-color hover:text-white hover:opacity-100"
+      shadow="sm"
     >
-      <CardHeader className="bg-white shadow-md rounded-xl">
+      <CardBody className="flex flex-col gap-2">
         {type === "person" ? (
           <FaUser className="size-16 text-primary mx-auto" />
         ) : (
           <IoBusiness className="size-16 text-primary mx-auto" />
         )}
-      </CardHeader>
-      <CardBody>
-        <h5>{label}</h5>
+        <h4>{label}</h4>
       </CardBody>
     </Card>
   );

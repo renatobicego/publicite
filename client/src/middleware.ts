@@ -9,7 +9,6 @@ const isPublicRoute = createRouteMatcher([
 ]);
 
 export default clerkMiddleware((auth, req: NextRequest) => {
-  return NextResponse.next();
 
   const { userId, sessionClaims, redirectToSignIn } = auth();
   // return NextResponse.next();
@@ -24,7 +23,7 @@ export default clerkMiddleware((auth, req: NextRequest) => {
   if (
     userId &&
     !sessionClaims?.metadata?.onboardingComplete &&
-    req.nextUrl.pathname !== "/onboarding"
+    !req.nextUrl.pathname.includes("/onboarding")
   ) {
     const onboardingUrl = new URL("/onboarding", req.url);
     return NextResponse.redirect(onboardingUrl);

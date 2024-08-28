@@ -21,6 +21,10 @@
     text-wrap: balance;
   }
 
+  h4 {
+    @apply font-bold text-xl
+  }
+
   h5 {
     @apply font-bold text-lg
   }

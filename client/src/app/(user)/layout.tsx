@@ -1,15 +1,16 @@
 import { auth } from "@clerk/nextjs/server";
 import { Image } from "@nextui-org/react";
 import { redirect } from "next/navigation";
-
-export default function RootLayout({
+import { Bounce, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+export default function OnboardingLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // if (auth().sessionClaims?.metadata.onboardingComplete === true) {
-  //   redirect("/perfil");
-  // }
+  if (auth().sessionClaims?.metadata.onboardingComplete === true) {
+    redirect("/perfil");
+  }
 
   return (
     <main className="w-screen min-h-screen flex bg-fondo">
@@ -19,6 +20,7 @@ export default function RootLayout({
       <div className="flex justify-center items-center bg-white flex-1 rounded-[40px] shadow-xl py-16">
         {children}
       </div>
+      <ToastContainer />
     </main>
   );
 }

@@ -20,7 +20,7 @@ export interface User {
 }
 
 export interface UserPerson extends User {
-  lastname: string;
+  lastName: string;
   gender: string;
   birthDate: string;
 }
@@ -52,9 +52,10 @@ export interface UserPersonFormValues
     UserPerson,
     "_id" | "subscriptions" | "post" | "board" | "userRelations" | "contact" | "groups" | "magazines"
   > {
-    contact: {
-      phone: string;
-    }
+    // contact: {
+    //   phone: string;
+    // }
+    contact: string
   }
 
   export interface UserBusinessFormValues
