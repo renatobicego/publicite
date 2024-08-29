@@ -14,15 +14,17 @@ import SecondaryButton from "../buttons/SecondaryButton";
 import { SignOutButton, useUser } from "@clerk/nextjs";
 import { FaChevronDown } from "react-icons/fa6";
 import Notifications from "./Notifications";
+import { IoIosClose, IoIosMenu } from "react-icons/io";
+import MobileMenu from "./MobileMenu";
 
 const UserNavItems = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
   const { isSignedIn, user } = useUser();
   return (
     <>
-      <NavbarItem>
+      <NavbarItem className="max-lg:hidden">
         <Notifications />
       </NavbarItem>
-      <NavbarItem>
+      <NavbarItem className="max-lg:hidden">
         {isSignedIn ? (
           <Avatar
             size="sm"
@@ -37,7 +39,7 @@ const UserNavItems = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
           </SecondaryButton>
         )}
       </NavbarItem>
-      <NavbarItem>
+      <NavbarItem className="max-lg:hidden">
         <Dropdown radius="full">
           <DropdownTrigger>
             <Button radius="full" variant="light" size="sm" isIconOnly>
@@ -55,10 +57,12 @@ const UserNavItems = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
           </DropdownMenu>
         </Dropdown>
       </NavbarItem>
-      <NavbarMenuToggle
+      <NavbarMenuToggle 
+        // icon={isMenuOpen ? <IoIosClose className="size-6"/> : <IoIosMenu className="size-6"/>}
         aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-        className="sm:hidden"
+        className="lg:hidden"
       />
+      <MobileMenu  />
     </>
   );
 };

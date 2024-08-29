@@ -5,7 +5,7 @@ import { Good } from "@/types/postTypes";
 import { FaStar } from "react-icons/fa6";
 import SaveButton from "../buttons/SaveButton";
 import PostCardBody from "./PostCardBody";
-import { POSTS } from "@/types/urls";
+import { POSTS } from "@/app/utils/urls";
 
 const GoodCard = ({
   post,
@@ -16,11 +16,7 @@ const GoodCard = ({
 }) => {
   const { _id, imagesUrls, title, reviews, description, price } = post;
   return (
-    <Card
-      className="w-full ease-in-out hover:shadow-md gap-4 !transition-shadow duration-500 hover:cursor-pointer !opacity-100"
-      shadow="none"
-      
-    >
+    <>
       <PostImage _id={_id} url={imagesUrls[0]} title={title} />
       <PostCardBody
         title={title}
@@ -29,7 +25,7 @@ const GoodCard = ({
         price={price}
         isService={false}
       />
-    </Card>
+    </>
   );
 };
 

@@ -1,11 +1,25 @@
-import { Button, Divider, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Input } from "@nextui-org/react";
-import React from "react";
+import {
+  Button,
+  Divider,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
+  Input,
+} from "@nextui-org/react";
+import React, { Dispatch, SetStateAction } from "react";
 import { FaChevronDown, FaSearch } from "react-icons/fa";
 
-const Search = () => {
+const Search = ({
+  isFocused,
+  setIsFocused,
+}: {
+  isFocused: boolean;
+  setIsFocused: Dispatch<SetStateAction<boolean>>;
+}) => {
   return (
     <Input
-      startContent={<FaSearch className="text-light-text" />}
+      startContent={<FaSearch className="text-light-text min-w-3" />}
       endContent={
         <>
           <Divider className="h-1/2" orientation="vertical" />
@@ -14,8 +28,10 @@ const Search = () => {
               <Button
                 radius="full"
                 variant="light"
-                className="rounded-l-none"
-                endContent={<FaChevronDown />}
+                className="rounded-l-none px-2 md:px-3 lg:px-4 md:max-lg:h-9 min-h-6 max-md:h-7 text-xs md:text-sm text-light-text"
+                endContent={
+                  <FaChevronDown className="min-w-1 text-light-text" />
+                }
               >
                 Solapa
               </Button>
@@ -36,10 +52,16 @@ const Search = () => {
       aria-label="buscar"
       color="secondary"
       variant="bordered"
+      onFocus={() => setIsFocused(true)}
+      onBlur={() => setIsFocused(false)}
+      className={`!transition-all duration-300 ${
+        isFocused ? "!w-full flex-grow" : "w-auto"
+      }`}
       classNames={{
-        inputWrapper: `border-secondary border-[0.5px] bg-[#F1FFFA] transition-all duration-300 pr-0 
-              data-[hover=true]:bg-[#ECFFF8] data-[hover=true]:border-secondary focus-within:border-[0.5px]`,
-        input: "ml-1"
+        inputWrapper: `border-secondary border-[0.5px] bg-[#F1FFFA] !transition-all duration-300 pr-0 
+              data-[hover=true]:bg-[#ECFFF8] data-[hover=true]:border-secondary focus-within:border-[0.5px]
+              md:max-lg:h-9 min-h-6 max-md:h-7`,
+        input: "md:ml-1 text-xs md:text-sm",
       }}
     />
   );

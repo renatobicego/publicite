@@ -1,5 +1,5 @@
 "use client"
-import { CONFIGURATION, GROUPS, MAGAZINES, PROFILE } from "@/types/urls";
+import { CONFIGURATION, GROUPS, MAGAZINES, PROFILE } from "@/app/utils/urls";
 import { useUser } from "@clerk/nextjs";
 import { Link } from "@nextui-org/react";
 import React from "react";

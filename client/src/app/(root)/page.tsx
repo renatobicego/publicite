@@ -1,5 +1,6 @@
-import { mockedPosts } from "@/types/mockedData";
+
 import PostsGrid from "../components/grids/PostGrid";
+import { mockedPosts } from "../utils/mockedData";
 
 export default function Home() {
   return (

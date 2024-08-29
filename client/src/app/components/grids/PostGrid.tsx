@@ -9,7 +9,7 @@ const PostsGrid = ({
   recommendation: boolean;
 }) => {
   return (
-    <section className="grid xl:grid-cols-4 3xl:grid-cols-5 gap-5 w-full">
+    <section className="grid grid-cols-2 gap-3 md:gap-4 md:grid-cols-3 xl:grid-cols-4 3xl:grid-cols-5 lg:gap-5 w-full">
       {posts.map((post) => (
         <PostCard
           key={post._id}
