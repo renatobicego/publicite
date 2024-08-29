@@ -24,9 +24,9 @@ const CustomPage = () => {
 };
 
 const UserProfilePage = () => (
-  <main className="w-screen h-screen flex justify-center items-center">
+  <main className="w-screen flex flex-col items-center main-style">
     <UserProfile
-      path="/perfil"
+      path="/configuracion"
       routing="path"
       
       appearance={{

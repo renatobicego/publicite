@@ -20,7 +20,7 @@ const Header = () => {
     <Navbar
       classNames={{
         wrapper:
-          "max-w-full lg:mx-[80px] xl:mx-[100px] shadow-lg mt-4 rounded-full px-10",
+          "max-w-full layout-spacing shadow-lg mt-4 rounded-full px-10",
       }}
       onMenuOpenChange={setIsMenuOpen}
     >

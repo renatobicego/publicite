@@ -1,3 +1,4 @@
+import Footer from "../components/Footer/Footer";
 import Header from "../components/Header/Header";
 
 export default function NavigationLayout({ children }: { children: React.ReactNode }) {
@@ -5,6 +6,7 @@ export default function NavigationLayout({ children }: { children: React.ReactNo
     <>
       <Header />
       {children}
+      <Footer />
     </>
   );
 }

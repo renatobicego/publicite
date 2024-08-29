@@ -23,12 +23,16 @@ const config: Config = {
         fondo: "#FFFDF7",
         pistacho: "#8CD867",
         'text-color': '#031926',
+        service: "#F0931A",
         primary: "#EF2D56",
         secondary: "#8CD867",
         'light-text': "#818181"
       },
       borderRadius: {
         "20": "20px"
+      },
+      screens: {
+        '3xl': '1720px'
       }
     },
   },

@@ -1,5 +1,5 @@
 export interface User {
-  _id: string;
+  _id: ObjectId;
   clerkId: string;
   email: string;
   username: string;
@@ -30,13 +30,13 @@ export interface UserBusiness extends User {
 }
 
 export interface BusinessSector {
-  _id: string;
+  _id: ObjectId;
   label: string;
   description: string;
 }
 
 export interface Contact {
-    _id: string;
+    _id: ObjectId;
     phone: string;
     instagram?: string;
     facebook?: string;
@@ -70,6 +70,6 @@ export interface UserPersonFormValues
       twitter?: string;
       website?: string;
     };
-    businessSector: string
+    businessSector: ObjectId
   }
 

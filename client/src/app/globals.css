@@ -21,12 +21,20 @@
     text-wrap: balance;
   }
 
+  h3{
+    @apply font-bold text-3xl xl:text-4xl
+  }
+
   h4 {
-    @apply font-bold text-xl
+    @apply font-bold text-lg xl:text-xl
   }
 
   h5 {
     @apply font-bold text-lg
+  }
+
+  h6 {
+    @apply font-semibold
   }
 
   .small-text {
@@ -35,6 +43,14 @@
 
   .card {
     @apply rounded-20 shadow-lg
+  }
+
+  .layout-spacing {
+    @apply lg:mx-[80px] xl:mx-[100px]
+  }
+
+  .main-style {
+    @apply pt-10 pb-36 layout-spacing
   }
 }
 

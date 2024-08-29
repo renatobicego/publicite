@@ -39,6 +39,7 @@ const Search = () => {
       classNames={{
         inputWrapper: `border-secondary border-[0.5px] bg-[#F1FFFA] transition-all duration-300 pr-0 
               data-[hover=true]:bg-[#ECFFF8] data-[hover=true]:border-secondary focus-within:border-[0.5px]`,
+        input: "ml-1"
       }}
     />
   );
