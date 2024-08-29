@@ -3,6 +3,7 @@ import { UserType } from './enums.request';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsOptional } from 'class-validator';
 import { UserBussiness } from 'src/contexts/user/domain/entity/userBussiness.entity';
+import { ContactRequestDto } from 'src/contexts/contact/infraestructure/controller/request/contact.request';
 
 export interface UserBusinessResponse {
   _id: ObjectId | string;
@@ -88,7 +89,7 @@ export class UserBusinessDto {
     example: '5f9d8f5e9d8f5e9d8f5e9d8f',
     type: Types.ObjectId,
   })
-  readonly contact: ObjectId;
+  readonly contact: ContactRequestDto;
 
   @ApiProperty({
     description: 'Created time of the user',

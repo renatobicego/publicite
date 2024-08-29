@@ -1,5 +1,5 @@
 import { Inject } from '@nestjs/common';
-import { UserAdapterInterface } from '../../application/interface/userAdapter.interface';
+import { UserAdapterInterface } from '../../application/adapter/userAdapter.interface';
 
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
 import { UserServiceInterface } from '../../domain/service/user.service.interface';

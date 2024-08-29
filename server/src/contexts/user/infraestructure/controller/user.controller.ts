@@ -6,7 +6,7 @@ import {
   UserPersonResponse,
 } from '../../infraestructure/controller/dto/user.person.DTO';
 import { UserBusinessDto, UserBusinessResponse } from './dto/user.business.DTO';
-import { UserAdapterInterface } from '../../application/interface/userAdapter.interface';
+import { UserAdapterInterface } from '../../application/adapter/userAdapter.interface';
 
 @ApiTags('Accounts')
 @Controller('user')

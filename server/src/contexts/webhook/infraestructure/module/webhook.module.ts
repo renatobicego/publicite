@@ -3,8 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { WebhookService } from '../../application/clerk/clerkWebhook.service';
 import { ClerkWebhookAdapter } from '../adapters/clerk/clerk-webhook.adapter';
 import { WebhookController } from '../controllers/webhook.controller';
-//import { UserModule } from 'src/contexts/user/infraestructure/module/user.module';
-import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
+
 import { MpWebhookService } from '../../application/mercadopago/mpWebhook.service';
 import { MpWebhookAdapter } from '../adapters/mercadopago/mp-webhook.adapter';
 import { SubscriptionSchema } from '../schemas/mercadopago/subscription.schema';
@@ -18,6 +17,7 @@ import { SubscriptionController } from '../controllers/subscription.controller';
 import { SubscriptionAdapter } from '../adapters/mercadopago/mp-subscription.adapter';
 import { MpSubscriptionService } from '../../application/mercadopago/mpSubscription.service';
 import { SubscriptionRepository } from '../repository/mercadopago/subscription.repository';
+import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
 
 @Module({
   imports: [
