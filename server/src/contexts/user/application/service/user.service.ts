@@ -73,6 +73,8 @@ export class UserService implements UserServiceInterface {
       }
     } catch (error) {
       await session.abortTransaction();
+      this.logger.error('Error in service. The user has not been created');
+      this.logger.error(error);
       throw error;
     } finally {
       session.endSession();

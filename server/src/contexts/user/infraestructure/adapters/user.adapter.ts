@@ -13,6 +13,7 @@ import {
 import { UserPerson } from '../../domain/entity/userPerson.entity';
 import { User } from '../../domain/entity/user.entity';
 import { UserBussiness } from '../../domain/entity/userBussiness.entity';
+import { error } from 'console';
 
 export class UserAdapter implements UserAdapterInterface {
   constructor(
@@ -53,12 +54,10 @@ export class UserAdapter implements UserAdapterInterface {
           throw new Error('Returned user is not a UserBusiness');
         }
       } catch (error) {
-        this.logger.error('Error in adapter. The user has not been created');
         throw error;
       }
     } else {
-      this.logger.error('Error in adapter. The user has not been created');
-      throw new Error('Invalid type or request');
+      throw error;
     }
   }
 }

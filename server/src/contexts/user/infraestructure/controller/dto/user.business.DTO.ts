@@ -27,14 +27,6 @@ export interface UserBusinessResponse {
   sector: string;
 }
 export class UserBusinessDto {
-  @ApiPropertyOptional({
-    description: 'ID User Schema',
-    example: '5f9d8f5e9d8f5e9d8f5e9d8f',
-    type: Types.ObjectId,
-  })
-  @IsOptional()
-  readonly _id?: ObjectId;
-
   @ApiProperty({
     description: 'ID of the user in clerk',
     example: '5f9d8f5e9d8f5e9d8f5e9d8f',
