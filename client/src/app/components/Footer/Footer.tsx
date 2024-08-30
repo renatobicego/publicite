@@ -1,4 +1,3 @@
-
 import { Button, Link } from "@nextui-org/react";
 import { FaInstagram, FaXTwitter } from "react-icons/fa6";
 import Navigation from "./Navigation";
@@ -7,8 +6,10 @@ import Support from "./Support";
 
 const Footer = () => {
   return (
-    <footer className="bg-text-color px-[100px] py-10 text-white flex items-start gap-10">
-      <div className="flex flex-col items-start mr-20">
+    <footer
+      className={`bg-text-color layout-padding py-10 text-white flex items-start max-md:flex-col gap-5 md:gap-10 max-lg:flex-wrap`}
+    >
+      <div className="flex flex-col items-start mr-20 max-lg:w-full">
         <h4 className="text-4xl">Publicité</h4>
         <nav>
           <ul className="flex gap-2">
