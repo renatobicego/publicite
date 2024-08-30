@@ -60,9 +60,8 @@ const UserNavItems = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
       <NavbarMenuToggle 
         // icon={isMenuOpen ? <IoIosClose className="size-6"/> : <IoIosMenu className="size-6"/>}
         aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-        className="lg:hidden"
+        className="lg:hidden min-h-12"
       />
-      <MobileMenu  />
     </>
   );
 };

@@ -49,6 +49,10 @@
     @apply mx-4 md:mx-10 lg:mx-[80px] xl:mx-[100px]
   }
 
+  .layout-padding {
+    @apply px-4 md:px-10 lg:px-[80px] xl:px-[100px]
+  }
+
   .main-style {
     @apply pt-7 pb-20 md:pt-10 md:pb-36 layout-spacing
   }

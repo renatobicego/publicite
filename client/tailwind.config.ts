@@ -33,6 +33,10 @@ const config: Config = {
       },
       screens: {
         '3xl': '1720px'
+      },
+      transitionProperty: {
+        'height': 'height',
+        'radius': 'border-radius'
       }
     },
   },

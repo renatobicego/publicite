@@ -11,6 +11,7 @@ import { useState } from "react";
 import Search from "./Search";
 import NavMenuItems from "./NavMenuItems";
 import UserNavItems from "./UserNavItems";
+import MobileMenu from "./MobileMenu";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -18,11 +19,17 @@ const Header = () => {
 
   return (
     <Navbar
+      id="navbar"
+      disableAnimation={false}
       classNames={{
-        wrapper:
-          "max-w-full layout-spacing shadow-lg mt-4 rounded-full px-6 md:px-8 lg:px-10 max-md:h-12",
+        wrapper: `max-w-full layout-spacing shadow-lg mt-4 rounded-full max-md:gap-2 px-6 md:px-8 lg:px-10 max-md:h-12 bg-white
+             duration-300 items-start transition-all
+             ${isMenuOpen ? "rounded-b-none shadow-none" : ""}`,
+        base: "pb-4 bg-transparent",
       }}
+      shouldHideOnScroll
       onMenuOpenChange={setIsMenuOpen}
+      isBlurred={false}
     >
       <NavbarContent
         className={`flex-1 max-md:gap-2 transition-all duration-300 ${
@@ -40,7 +47,11 @@ const Header = () => {
             }`}
           />
         </NavbarBrand>
-        <NavbarItem className={`flex-1 !transition-all duration-300 ${isFocused ? "w-full" : "w-auto"}`}>
+        <NavbarItem
+          className={`flex-1 !transition-all duration-300 ${
+            isFocused ? "w-full" : "w-auto"
+          }`}
+        >
           <Search isFocused={isFocused} setIsFocused={setIsFocused} />
         </NavbarItem>
         <NavbarContent
@@ -53,12 +64,11 @@ const Header = () => {
       </NavbarContent>
       <NavbarContent
         justify="end"
-        className={`max-w-fit gap-2 !transition-all duration-300 ${
-          isFocused ? "!w-0 overflow-hidden" : ""
-        }`}
+        className={`max-w-fit gap-2 !transition-all duration-300`}
       >
         <UserNavItems isMenuOpen={isMenuOpen} />
       </NavbarContent>
+      <MobileMenu />
     </Navbar>
   );
 };
