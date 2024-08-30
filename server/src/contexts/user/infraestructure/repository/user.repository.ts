@@ -17,10 +17,10 @@ export class UserRepository
   implements UserRepositoryInterface, UserTransformationInterface
 {
   constructor(
-    @InjectModel(UserPersonModel.modelName) // Corregido para usar el nombre del modelo
+    @InjectModel(UserPersonModel.modelName)
     private readonly userPersonModel: Model<IUserPerson>,
 
-    @InjectModel(UserBusinessModel.modelName) // Corregido para usar el nombre del modelo
+    @InjectModel(UserBusinessModel.modelName)
     private readonly userBusinessModel: Model<IUserBusiness>,
   ) {}
 

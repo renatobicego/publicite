@@ -8,6 +8,7 @@ import { LoggerModule } from './contexts/shared/logger/logger.module';
 import { UserModule } from './contexts/user/infraestructure/module/user.module';
 import { AllExceptionsFilter } from './contexts/shared/exceptionFilter/infraestructure/exception.filter';
 import { ContactModule } from './contexts/contact/infraestructure/module/contact.module';
+import { SectorModule } from './contexts/businessSector/infraestructure/module/sector.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { ContactModule } from './contexts/contact/infraestructure/module/contact
     DatabaseModule,
     LoggerModule,
     ContactModule,
+    SectorModule,
   ],
   providers: [
     {
