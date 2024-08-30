@@ -26,20 +26,27 @@ export class UserService implements UserServiceInterface {
     @InjectConnection() private readonly connection: Connection,
   ) {}
 
-  async createUser(req: UserPersonDto | UserBusinessDto): Promise<User> {
+  async createUser(
+    req: UserPersonDto | UserBusinessDto,
+    type: number,
+  ): Promise<User> {
     const session = await this.connection.startSession();
     session.startTransaction();
     let user: User;
-
+    this.logger.log(
+      'Creating ACCOUNT -> start process in the service: ' + UserService.name,
+    );
     try {
-      this.logger.log('Creating user with username: ' + req.username);
-
-      // Crear el contacto dentro de la transacción
       const contactId = await this.createContact(req.contact, {
         session,
       });
 
-      if (req instanceof UserPersonDto) {
+      if (req instanceof UserPersonDto && type === 0) {
+        // Crear el contacto dentro de la transacción
+
+        this.logger.log(
+          'Creating PERSONAL ACCOUNT with username: ' + req.username,
+        );
         const userPersonal: UserPerson = UserPerson.formatDtoToEntity(
           req,
           contactId as unknown as ObjectId,
@@ -47,22 +54,23 @@ export class UserService implements UserServiceInterface {
         user = await this.userRepository.save(userPersonal, 0, session);
 
         await session.commitTransaction();
-      } else if (req instanceof UserBusinessDto) {
-        this.logger.log('Creating user with username: ' + req.username);
-        const contactId = await this.createContact(req.contact, {
-          session,
-        });
+        await session.endSession();
+        return user;
+      } else if (req instanceof UserBusinessDto && type === 1) {
+        this.logger.log(
+          'Creating BUSINESS ACCOUNT with username: ' + req.username,
+        );
         const userBusiness: UserBussiness = UserBussiness.formatDtoToEntity(
           req,
           contactId as unknown as ObjectId,
         );
         user = await this.userRepository.save(userBusiness, 1, session);
         await session.commitTransaction();
+        await session.endSession();
+        return user;
       } else {
         throw new BadRequestException('Invalid user type');
       }
-
-      return user;
     } catch (error) {
       await session.abortTransaction();
       throw error;

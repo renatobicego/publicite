@@ -179,50 +179,6 @@ export class UserPersonDto {
   })
   readonly birthDate: string;
 
-  constructor(
-    clerkId: string,
-    email: string,
-    username: string,
-    description: string,
-    profilePhotoUrl: string,
-    countryRegion: string,
-    isActive: boolean,
-    contact: any,
-    createdTime: string,
-    subscriptions: ObjectId[],
-    groups: ObjectId[],
-    magazines: ObjectId[],
-    board: ObjectId[],
-    post: ObjectId[],
-    userRelations: ObjectId[],
-    userType: UserType,
-    name: string,
-    lastName: string,
-    gender: Gender,
-    _id?: ObjectId,
-  ) {
-    this.clerkId = clerkId;
-    this.email = email;
-    this.username = username;
-    this.description = description;
-    this.profilePhotoUrl = profilePhotoUrl;
-    this.countryRegion = countryRegion;
-    this.isActive = isActive;
-    this.contact = contact;
-    this.createdTime = createdTime;
-    this.subscriptions = subscriptions;
-    this.groups = groups;
-    this.magazines = magazines;
-    this.board = board;
-    this.post = post;
-    this.userRelations = userRelations;
-    this.userType = userType;
-    this.name = name;
-    this.lastName = lastName;
-    this.gender = gender;
-    this._id = _id;
-  }
-
   static formatDocument(user: UserPerson): UserPersonResponse {
     return {
       clerkId: user.getClerkId(),

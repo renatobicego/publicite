@@ -5,7 +5,7 @@ import { UserPersonDto } from '../../infraestructure/controller/dto/user.person.
 import { User } from '../entity/user.entity';
 
 export interface UserServiceInterface {
-  createUser(req: UserBusinessDto | UserPersonDto): Promise<User>;
+  createUser(req: UserBusinessDto | UserPersonDto, type: number): Promise<User>;
   createContact(
     contactDto: ContactRequestDto,
     options?: { session?: ClientSession },

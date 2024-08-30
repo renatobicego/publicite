@@ -46,7 +46,7 @@ export class UserRepository
         case 1: // Business User
           if (reqUser instanceof UserBussiness) {
             createdUser = this.formatDocument(reqUser); // Asegúrate de que reqUser sea válido aquí
-            userSaved = await createdUser.save();
+            userSaved = await createdUser.save({ session });
             return UserBussiness.formatDocument(userSaved as IUserBusiness);
           }
           throw new BadRequestException('Invalid user instance for type 1');
