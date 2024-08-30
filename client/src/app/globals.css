@@ -58,6 +58,12 @@
   }
 }
 
+.cl-otpCodeFieldInput {
+  border-radius: 8px !important;
+  padding: 10px 8px !important;
+
+}
+
 .cl-navbar,
 .cl-navbar [class^="cl-internal"] {
   background: #fffdf7;

@@ -11,7 +11,7 @@ import {
 } from "@nextui-org/react";
 import React from "react";
 import SecondaryButton from "../buttons/SecondaryButton";
-import { SignOutButton, useUser } from "@clerk/nextjs";
+import { SignOutButton, UserButton, useUser } from "@clerk/nextjs";
 import { FaChevronDown } from "react-icons/fa6";
 import Notifications from "./Notifications";
 import { IoIosClose, IoIosMenu } from "react-icons/io";
@@ -26,13 +26,19 @@ const UserNavItems = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
       </NavbarItem>
       <NavbarItem className="max-lg:hidden">
         {isSignedIn ? (
-          <Avatar
-            size="sm"
-            isBordered
-            as={Link}
-            href={`/perfil`}
-            src={user.imageUrl}
-          />
+          <UserButton appearance={{
+            elements: {
+              rootBox: "size-8 mt-2",
+              avatarBox: "h-full w-full"
+            }
+          }}/>
+          // <Avatar
+          //   size="sm"
+          //   isBordered
+          //   as={Link}
+          //   href={`/perfil`}
+          //   src={user.imageUrl}
+          // />
         ) : (
           <SecondaryButton as={Link} href="/iniciar-sesion" variant="flat">
             Iniciar Sesión

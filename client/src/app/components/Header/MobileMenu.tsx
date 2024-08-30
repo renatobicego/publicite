@@ -1,5 +1,5 @@
 import { Link, NavbarMenu, NavbarMenuItem } from "@nextui-org/react";
-import { transform } from "next/dist/build/swc";
+import { Variants } from "framer-motion";
 import React from "react";
 
 const MobileMenu = () => {
@@ -21,13 +21,12 @@ const MobileMenu = () => {
       url: "/ayuda",
     },
   ];
-  const variants = {
-    visible: { transform: "translateY(0)", opacity: 1, height: 300 },
-    hidden: { transform: "translateY(-50px)", opacity: 0, height: 0 },
+  const variants: Variants = {
+    visible: { transform: "translateY(0)",  height: "200px", opacity: 1 },
+    hidden: { transform: "translateY(-50px)", height: "0px", opacity: 0 },
   };
   return (
     <NavbarMenu
-      portalContainer={document.querySelector("#navbar") as HTMLElement}
       motionProps={{
         variants,
         initial: "hidden",
@@ -35,7 +34,7 @@ const MobileMenu = () => {
         exit: "hidden",
         transition: { duration: 0.3 },
       }}
-      className="bg-white !h-fit !w-auto mx-4 px-6 pb-6 md:mx-10 md:px-8 rounded-b-xl shadow-xl absolute"
+      className="bg-white h-fit !w-auto mx-4 px-6 pb-6 md:mx-10 md:px-8 rounded-b-xl shadow-xl absolute"
     >
       {menuItems.map((item, index) => (
         <NavbarMenuItem  key={`${item}-${index}`}>

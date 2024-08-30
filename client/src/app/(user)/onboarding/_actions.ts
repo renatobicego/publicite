@@ -12,11 +12,13 @@ export const completeOnboardingPerson = async (formData: UserPersonFormValues) =
   }
 
   try {
+    console.log(formData)
 
     const resApi = await axios.post(`${process.env.API_URL}/user/personal`, formData)
     if(resApi.status !== 200 && resApi.status !== 201){
       return { error: "Error al completar el registro. Por favor intenta de nuevo. Error: " + resApi.data.message }
     }
+    console.log(resApi)
     const res = await clerkClient().users.updateUser(userId, {
       publicMetadata: {
         onboardingComplete: true

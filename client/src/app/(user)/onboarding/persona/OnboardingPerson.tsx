@@ -1,7 +1,6 @@
 "use client";
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 import { Form, Formik, FormikHelpers } from "formik";
 import { UserPersonFormValues } from "@/types/userTypes";
 import PrimaryButton from "@/app/components/buttons/PrimaryButton";
@@ -10,7 +9,7 @@ import { userPersonValidation } from "./userPersonValidation";
 import { Divider } from "@nextui-org/react";
 import OnboardingPersonInputs from "./OnboardingPersonInputs";
 import { completeOnboardingPerson } from "../_actions";
-import { Bounce, toast, ToastContainer } from "react-toastify";
+import { Bounce, toast } from "react-toastify";
 const OnboardingPerson = () => {
   const { user } = useUser();
   const router = useRouter();
@@ -18,7 +17,9 @@ const OnboardingPerson = () => {
 
   const initialValues: UserPersonFormValues = {
     clerkId: user?.id as string,
-    contact: "5f9d8f5e9d8f5e9d8f5e9d8f",
+    contact: {
+      phone: "",
+    },
     countryRegion: "",
     createdTime: user.createdAt
       ? parseDateTime(user.createdAt.toISOString().split(".")[0]).toString()

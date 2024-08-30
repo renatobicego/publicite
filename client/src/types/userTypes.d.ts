@@ -52,10 +52,9 @@ export interface UserPersonFormValues
     UserPerson,
     "_id" | "subscriptions" | "post" | "board" | "userRelations" | "contact" | "groups" | "magazines"
   > {
-    // contact: {
-    //   phone: string;
-    // }
-    contact: string
+    contact: {
+      phone: string;
+    }
   }
 
   export interface UserBusinessFormValues
