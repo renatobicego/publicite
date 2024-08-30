@@ -29,4 +29,20 @@ export class Contact {
       contact.website,
     );
   }
+
+  public getPhone(): string {
+    return this.phone;
+  }
+  public getInstagram(): string {
+    return this.instagram;
+  }
+  public getFacebook(): string {
+    return this.facebook;
+  }
+  public getX(): string {
+    return this.x;
+  }
+  public getWebsite(): string {
+    return this.website;
+  }
 }

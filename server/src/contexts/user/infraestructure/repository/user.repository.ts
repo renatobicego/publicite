@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { UserRepositoryInterface } from '../../domain/repository/user-repository.interface';
-import { Model } from 'mongoose';
+import { ClientSession, Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { IUserPerson, UserPersonModel } from '../schemas/userPerson.schema';
 import {
@@ -24,7 +24,11 @@ export class UserRepository
     private readonly userBusinessModel: Model<IUserBusiness>,
   ) {}
 
-  async save(reqUser: UserPerson | UserBussiness, type: number): Promise<User> {
+  async save(
+    reqUser: UserPerson | UserBussiness,
+    type: number,
+    session?: ClientSession,
+  ): Promise<User> {
     try {
       let createdUser;
       let userSaved;
@@ -33,7 +37,7 @@ export class UserRepository
         case 0: // Personal User
           if (reqUser instanceof UserPerson) {
             createdUser = this.formatDocument(reqUser);
-            userSaved = await createdUser.save();
+            userSaved = await createdUser.save({ session });
             const userRsp = UserPerson.formatDocument(userSaved as IUserPerson);
             return userRsp;
           }

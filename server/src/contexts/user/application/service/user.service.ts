@@ -1,5 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { Inject } from '@nestjs/common';
+import { InjectConnection } from '@nestjs/mongoose';
+import { Connection } from 'mongoose';
 
 import { UserType } from '../../infraestructure/controller/dto/enums.request';
 import { UserBusinessDto } from '../../infraestructure/controller/dto/user.business.DTO';
@@ -20,21 +22,30 @@ export class UserService implements UserServiceInterface {
     private readonly userRepository: UserRepositoryInterface,
     @Inject('ContactServiceInterface')
     private readonly contactService: ContactServiceInterface,
-
     private readonly logger: MyLoggerService,
+    @InjectConnection() private readonly connection: Connection,
   ) {}
 
   async createUser(req: UserPersonDto | UserBusinessDto): Promise<User> {
+    const session = await this.connection.startSession();
+    session.startTransaction();
     try {
       this.logger.log('Creating user with username: ' + req.username);
-      //debemos llamar al servicio
-      const contactId = await this.contactService.createContact(req.contact);
+
+      // Crear el contacto dentro de la transacción
+      const contactId = await this.contactService.createContact(req.contact, {
+        session,
+      });
+
+      let user: User;
       if (req instanceof UserPersonDto) {
         const userPersonal: UserPerson = UserPerson.formatDtoToEntity(
           req,
           contactId as unknown as ObjectId,
         );
-        return await this.userRepository.save(userPersonal, 0);
+        user = await this.userRepository.save(userPersonal, 0, session);
+        // Confirma la transacción
+        await session.commitTransaction();
       } else if (req instanceof UserBusinessDto) {
         this.logger.log('Creating user with username: ' + req.username);
         const userBusiness: UserBussiness = new UserBussiness(
@@ -57,11 +68,19 @@ export class UserService implements UserServiceInterface {
           req.name,
           req.sector,
         );
-        return await this.userRepository.save(userBusiness, 1);
+        user = await this.userRepository.save(userBusiness, 1, session);
+        await session.commitTransaction();
+      } else {
+        throw new BadRequestException('Invalid user type');
       }
-      throw new BadRequestException('Invalid user type');
+
+      return user;
     } catch (error) {
+      // Revertir la transacción en caso de error
+      await session.abortTransaction();
       throw error;
+    } finally {
+      session.endSession();
     }
   }
 }

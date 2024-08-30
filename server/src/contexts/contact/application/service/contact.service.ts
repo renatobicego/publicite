@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { Types } from 'mongoose';
+import { ClientSession, Types } from 'mongoose';
 
 import { ContactServiceInterface } from '../../domain/service/contact.service.interface';
 import { ContactRepositoryInterface } from '../../domain/repository/contact.repository.interface';
@@ -12,10 +12,14 @@ export class ContactService implements ContactServiceInterface {
     @Inject('ContactRepositoryInterface')
     private readonly contactRepository: ContactRepositoryInterface,
   ) {}
-  async createContact(contact: ContactRequestDto): Promise<Types.ObjectId> {
+
+  async createContact(
+    contact: ContactRequestDto,
+    options?: { session?: ClientSession },
+  ): Promise<Types.ObjectId> {
     try {
       const formatContact: Contact = Contact.formatDtoToEntity(contact);
-      return await this.contactRepository.createContact(formatContact);
+      return await this.contactRepository.createContact(formatContact, options);
     } catch (error) {
       throw error;
     }

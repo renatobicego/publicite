@@ -1,24 +1,30 @@
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { Model, ClientSession, Types } from 'mongoose';
+
 import { ContactRepositoryInterface } from '../../domain/repository/contact.repository.interface';
 import { Contact } from '../../domain/entity/contact.entity';
-import { ContactDocument } from '../schema/contact.schema';
-import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
-import { Model, Types } from 'mongoose';
+import { ContactDocument } from '../../infraestructure/schema/contact.schema';
 
+@Injectable()
 export class ContactRepository implements ContactRepositoryInterface {
   constructor(
-    private readonly logger: MyLoggerService,
     @InjectModel('Contact')
     private readonly contactModel: Model<ContactDocument>,
   ) {}
-  async createContact(contact: Contact): Promise<Types.ObjectId> {
-    try {
-      this.logger.log('Creating contact schema');
-      const contactDocument = new this.contactModel(contact);
-      const result = await contactDocument.save();
-      return result._id;
-    } catch (error) {
-      throw error;
-    }
+
+  async createContact(
+    contact: Contact,
+    options?: { session?: ClientSession },
+  ): Promise<Types.ObjectId> {
+    const createdContact = new this.contactModel({
+      phone: contact.getPhone(),
+      instagram: contact.getInstagram(),
+      facebook: contact.getFacebook(),
+      x: contact.getX(),
+      website: contact.getWebsite(),
+    });
+    await createdContact.save({ session: options?.session });
+    return createdContact._id;
   }
 }

@@ -1,6 +1,9 @@
-import { Types } from 'mongoose';
+import { ClientSession, Types } from 'mongoose';
 import { Contact } from '../entity/contact.entity';
 
 export interface ContactRepositoryInterface {
-  createContact(contact: Contact): Promise<Types.ObjectId>;
+  createContact(
+    contact: Contact,
+    options?: { session?: ClientSession },
+  ): Promise<Types.ObjectId>;
 }
