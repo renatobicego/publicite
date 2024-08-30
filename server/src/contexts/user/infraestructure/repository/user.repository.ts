@@ -41,22 +41,20 @@ export class UserRepository
             const userRsp = UserPerson.formatDocument(userSaved as IUserPerson);
             return userRsp;
           }
-          throw new Error('Invalid user instance for type 0');
+          throw new BadRequestException('Invalid user instance for type 0');
 
         case 1: // Business User
           if (reqUser instanceof UserBussiness) {
-            createdUser = new this.userBusinessModel(reqUser); // Asegúrate de que reqUser sea válido aquí
+            createdUser = this.formatDocument(reqUser); // Asegúrate de que reqUser sea válido aquí
             userSaved = await createdUser.save();
-            return UserBussiness.formatDocument(userSaved);
+            return UserBussiness.formatDocument(userSaved as IUserBusiness);
           }
-          throw new Error('Invalid user instance for type 1');
+          throw new BadRequestException('Invalid user instance for type 1');
 
         default:
-          throw new Error('Invalid user type');
+          throw new BadRequestException('Invalid user type');
       }
     } catch (error) {
-      console.log(error.message);
-
       throw error;
     }
   }

@@ -2,7 +2,6 @@ import { ObjectId } from 'mongoose';
 import { User } from './user.entity';
 import { IUserPerson } from '../../infraestructure/schemas/userPerson.schema';
 import { UserPersonDto } from '../../infraestructure/controller/dto/user.person.DTO';
-import { Gender } from '../../infraestructure/controller/dto/enums.request';
 
 enum UserType {
   Personal = 'Personal',
@@ -112,7 +111,7 @@ export class UserPerson extends User {
       UserType.Personal,
       req.name,
       req.lastName,
-      req.gender ? Gender.Hombre : Gender.Hombre,
+      req.gender,
       req.birthDate,
     );
   }

@@ -3,7 +3,8 @@ export enum UserType {
   Business = 'Business',
 }
 export enum Gender {
-  Mujer = 'Mujer',
-  Hombre = 'Hombre',
-  Otro = 'Prefiero no decir',
+  Male = 'M',
+  Female = 'F',
+  Other = 'O',
+  Unknown = 'X',
 }

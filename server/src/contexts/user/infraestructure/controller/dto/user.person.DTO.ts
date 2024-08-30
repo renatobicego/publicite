@@ -1,7 +1,7 @@
 import { ObjectId, Types } from 'mongoose';
-import { UserType } from './enums.request';
+import { Gender, UserType } from './enums.request';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional } from 'class-validator';
+import { IsEnum, IsOptional } from 'class-validator';
 import { UserPerson } from 'src/contexts/user/domain/entity/userPerson.entity';
 import { ContactRequestDto } from 'src/contexts/contact/infraestructure/controller/request/contact.request';
 
@@ -166,10 +166,11 @@ export class UserPersonDto {
 
   @ApiProperty({
     description: 'Gender of the user',
-    example: '1',
+    example: " 'M' | 'F | 'X' | 'O' ",
     type: String,
   })
-  readonly gender: string;
+  @IsEnum(Gender)
+  readonly gender: Gender;
 
   @ApiProperty({
     description: 'Birth date of the user',
@@ -197,7 +198,7 @@ export class UserPersonDto {
     userType: UserType,
     name: string,
     lastName: string,
-    gender: string,
+    gender: Gender,
     _id?: ObjectId,
   ) {
     this.clerkId = clerkId;

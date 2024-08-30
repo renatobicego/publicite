@@ -45,7 +45,7 @@ export class UserAdapter implements UserAdapterInterface {
             req as UserBusinessDto,
           );
           if (userB instanceof UserBussiness) {
-            return UserBusinessDto.formatDocument(userB);
+            return UserBusinessDto.formatDocument(userB as UserBussiness);
           } else {
             throw new Error('Returned user is not a UserBusiness');
           }

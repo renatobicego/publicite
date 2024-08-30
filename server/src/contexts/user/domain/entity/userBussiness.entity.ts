@@ -1,6 +1,7 @@
 import { ObjectId } from 'mongoose';
 import { User } from './user.entity';
 import { IUserBusiness } from '../../infraestructure/schemas/userBussiness.schema';
+import { UserBusinessDto } from '../../infraestructure/controller/dto/user.business.DTO';
 
 /*
 Entidad para la cuenta de empresa
@@ -83,6 +84,28 @@ export class UserBussiness extends User {
     );
   }
 
+  static formatDtoToEntity(dto: UserBusinessDto, contactId: ObjectId) {
+    return new UserBussiness(
+      dto.clerkId,
+      dto.email,
+      dto.username,
+      dto.description,
+      dto.profilePhotoUrl,
+      dto.countryRegion,
+      dto.isActive,
+      contactId,
+      dto.createdTime,
+      dto.subscriptions ?? [],
+      dto.groups ?? [],
+      dto.magazines ?? [],
+      dto.board ?? [],
+      dto.post ?? [],
+      dto.userRelations ?? [],
+      UserType.Business,
+      dto.name,
+      dto.sector,
+    );
+  }
   public getId(): ObjectId {
     return this._id as ObjectId;
   }
