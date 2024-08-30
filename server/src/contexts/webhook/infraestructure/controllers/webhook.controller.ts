@@ -12,11 +12,11 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config'; // Asegúrate de importar ConfigServic
 import { Response } from 'express';
+import { ApiExcludeEndpoint } from '@nestjs/swagger';
 
 import { ClerkWebhookAdapter } from '../adapters/clerk/clerk-webhook.adapter';
 import { MpWebhookAdapter } from '../adapters/mercadopago/mp-webhook.adapter';
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
-import { ApiExcludeEndpoint } from '@nestjs/swagger';
 
 /* 
   Servidor de prueba, se levanta con: ngrok http --domain=regular-loved-hare.ngrok-free.app 3000 

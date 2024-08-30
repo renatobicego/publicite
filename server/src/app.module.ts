@@ -1,11 +1,13 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config'; // Asegúrate de importar ConfigModule
+import { APP_FILTER } from '@nestjs/core';
 
 import { WebhookModule } from './contexts/webhook/infraestructure/module/webhook.module';
-// import { UserModule } from './contexts/user/infraestructure/module/user.module';
 import { DatabaseModule } from './contexts/shared/database/infraestructure/database.module';
 import { LoggerModule } from './contexts/shared/logger/logger.module';
 import { UserModule } from './contexts/user/infraestructure/module/user.module';
+import { AllExceptionsFilter } from './contexts/shared/exceptionFilter/infraestructure/exception.filter';
+import { ContactModule } from './contexts/contact/infraestructure/module/contact.module';
 
 @Module({
   imports: [
@@ -16,6 +18,13 @@ import { UserModule } from './contexts/user/infraestructure/module/user.module';
     UserModule,
     DatabaseModule,
     LoggerModule,
+    ContactModule,
+  ],
+  providers: [
+    {
+      provide: APP_FILTER,
+      useClass: AllExceptionsFilter,
+    },
   ],
 })
 export class AppModule {}

@@ -9,6 +9,7 @@ import { UserRepository } from '../repository/user.repository';
 import { UserPersonModel } from '../schemas/userPerson.schema';
 import { UserBusinessModel } from '../schemas/userBussiness.schema';
 import { UserModel } from '../schemas/user.schema';
+import { ContactModule } from 'src/contexts/contact/infraestructure/module/contact.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { UserModel } from '../schemas/user.schema';
         ],
       },
     ]),
+    ContactModule,
   ],
   controllers: [UserController],
   providers: [

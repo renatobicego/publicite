@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { UserRepositoryInterface } from '../../domain/repository/user-repository.interface';
-import { Model } from 'mongoose';
+import { ClientSession, Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { IUserPerson, UserPersonModel } from '../schemas/userPerson.schema';
 import {
@@ -24,7 +24,11 @@ export class UserRepository
     private readonly userBusinessModel: Model<IUserBusiness>,
   ) {}
 
-  async save(reqUser: UserPerson | UserBussiness, type: number): Promise<User> {
+  async save(
+    reqUser: UserPerson | UserBussiness,
+    type: number,
+    session?: ClientSession,
+  ): Promise<User> {
     try {
       let createdUser;
       let userSaved;
@@ -33,26 +37,24 @@ export class UserRepository
         case 0: // Personal User
           if (reqUser instanceof UserPerson) {
             createdUser = this.formatDocument(reqUser);
-            userSaved = await createdUser.save();
+            userSaved = await createdUser.save({ session });
             const userRsp = UserPerson.formatDocument(userSaved as IUserPerson);
             return userRsp;
           }
-          throw new Error('Invalid user instance for type 0');
+          throw new BadRequestException('Invalid user instance for type 0');
 
         case 1: // Business User
           if (reqUser instanceof UserBussiness) {
-            createdUser = new this.userBusinessModel(reqUser); // Asegúrate de que reqUser sea válido aquí
-            userSaved = await createdUser.save();
-            return UserBussiness.formatDocument(userSaved);
+            createdUser = this.formatDocument(reqUser); // Asegúrate de que reqUser sea válido aquí
+            userSaved = await createdUser.save({ session });
+            return UserBussiness.formatDocument(userSaved as IUserBusiness);
           }
-          throw new Error('Invalid user instance for type 1');
+          throw new BadRequestException('Invalid user instance for type 1');
 
         default:
-          throw new Error('Invalid user type');
+          throw new BadRequestException('Invalid user type');
       }
     } catch (error) {
-      console.log(error.message);
-
       throw error;
     }
   }

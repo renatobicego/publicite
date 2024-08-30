@@ -1,6 +1,7 @@
 import { ObjectId } from 'mongoose';
 import { User } from './user.entity';
 import { IUserPerson } from '../../infraestructure/schemas/userPerson.schema';
+import { UserPersonDto } from '../../infraestructure/controller/dto/user.person.DTO';
 
 enum UserType {
   Personal = 'Personal',
@@ -87,6 +88,33 @@ export class UserPerson extends User {
     );
   }
 
+  static formatDtoToEntity(
+    req: UserPersonDto,
+    contactId: ObjectId,
+  ): UserPerson {
+    return new UserPerson(
+      req.clerkId,
+      req.email,
+      req.username,
+      req.description,
+      req.profilePhotoUrl,
+      req.countryRegion,
+      req.isActive,
+      contactId,
+      req.createdTime,
+      req.subscriptions ? req.subscriptions : [],
+      req.groups ? req.groups : [],
+      req.magazines ? req.magazines : [],
+      req.board ? req.board : [],
+      req.post ? req.post : [],
+      req.userRelations ? req.userRelations : [],
+      UserType.Personal,
+      req.name,
+      req.lastName,
+      req.gender,
+      req.birthDate,
+    );
+  }
   public getLastName(): string {
     return this.lastName;
   }

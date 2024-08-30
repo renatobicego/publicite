@@ -3,9 +3,10 @@ import { UserType } from './enums.request';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsOptional } from 'class-validator';
 import { UserBussiness } from 'src/contexts/user/domain/entity/userBussiness.entity';
+import { ContactRequestDto } from 'src/contexts/contact/infraestructure/controller/request/contact.request';
 
 export interface UserBusinessResponse {
-  _id: ObjectId | string;
+  _id: ObjectId;
   clerkId: string;
   email: string;
   username: string;
@@ -23,17 +24,9 @@ export interface UserBusinessResponse {
   userRelations: ObjectId[];
   userType: UserType;
   name: string;
-  sector: ObjectId;
+  sector: string;
 }
 export class UserBusinessDto {
-  @ApiPropertyOptional({
-    description: 'ID User Schema',
-    example: '5f9d8f5e9d8f5e9d8f5e9d8f',
-    type: Types.ObjectId,
-  })
-  @IsOptional()
-  readonly _id?: ObjectId;
-
   @ApiProperty({
     description: 'ID of the user in clerk',
     example: '5f9d8f5e9d8f5e9d8f5e9d8f',
@@ -88,7 +81,7 @@ export class UserBusinessDto {
     example: '5f9d8f5e9d8f5e9d8f5e9d8f',
     type: Types.ObjectId,
   })
-  readonly contact: ObjectId;
+  readonly contact: ContactRequestDto;
 
   @ApiProperty({
     description: 'Created time of the user',
@@ -155,9 +148,9 @@ export class UserBusinessDto {
   @ApiProperty({
     description: 'Sector ID of the company',
     example: '5f9d8f5e9d8f5e9d8f5e9d8f',
-    type: Types.ObjectId,
+    type: String,
   })
-  readonly sector: ObjectId;
+  readonly sector: string;
 
   @ApiProperty({
     description: 'name of the company',
@@ -168,7 +161,6 @@ export class UserBusinessDto {
 
   static formatDocument(user: UserBussiness): UserBusinessResponse {
     return {
-      _id: user.getId(),
       clerkId: user.getClerkId(),
       email: user.getEmail(),
       username: user.getUsername(),
@@ -187,6 +179,7 @@ export class UserBusinessDto {
       userType: user.getUserType(),
       sector: user.getSector(),
       name: user.getName(),
+      _id: user.getId(),
     };
   }
 }
