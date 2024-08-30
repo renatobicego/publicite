@@ -2,13 +2,11 @@ import { Schema } from 'mongoose';
 import { IUser, UserModel } from './user.schema';
 
 interface IUserBusiness extends IUser {
-  // sector: Schema.Types.ObjectId;
-  sector: string;
+  sector: Schema.Types.ObjectId;
 }
 
 const UserBusinessSchema = new Schema<IUserBusiness>({
-  // sector: { type: Schema.Types.ObjectId, ref: 'Sector', required: true },
-  sector: { type: String, required: true },
+  sector: { type: Schema.Types.ObjectId, ref: 'Sector', required: true },
 });
 
 const UserBusinessModel = UserModel.discriminator<IUserBusiness>(

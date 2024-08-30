@@ -12,7 +12,7 @@ enum UserType {
 }
 
 export class UserBussiness extends User {
-  private sector: string;
+  private sector: ObjectId;
   private _id?: ObjectId;
 
   constructor(
@@ -33,7 +33,7 @@ export class UserBussiness extends User {
     userRelations: any[],
     userType: UserType,
     name: string,
-    sector: string,
+    sector: ObjectId,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _id?: ObjectId,
   ) {
@@ -109,7 +109,7 @@ export class UserBussiness extends User {
   public getId(): ObjectId {
     return this._id as ObjectId;
   }
-  public getSector(): string {
+  public getSector(): ObjectId {
     return this.sector;
   }
 }

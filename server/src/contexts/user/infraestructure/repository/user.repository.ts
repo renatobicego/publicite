@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { UserRepositoryInterface } from '../../domain/repository/user-repository.interface';
 import { ClientSession, Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
@@ -11,6 +11,8 @@ import { UserPerson } from '../../domain/entity/userPerson.entity';
 import { UserBussiness } from '../../domain/entity/userBussiness.entity';
 import { User } from '../../domain/entity/user.entity';
 import { UserTransformationInterface } from '../../domain/repository/transformations/user-transformation.interface';
+import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
+import { SectorRepositoryInterface } from 'src/contexts/businessSector/domain/repository/sector.repository.interface';
 
 @Injectable()
 export class UserRepository
@@ -22,6 +24,11 @@ export class UserRepository
 
     @InjectModel(UserBusinessModel.modelName)
     private readonly userBusinessModel: Model<IUserBusiness>,
+
+    @Inject('SectorRepositoryInterface')
+    private readonly sectorRepository: SectorRepositoryInterface,
+
+    private readonly logger: MyLoggerService,
   ) {}
 
   async save(
@@ -45,7 +52,11 @@ export class UserRepository
 
         case 1: // Business User
           if (reqUser instanceof UserBussiness) {
-            createdUser = this.formatDocument(reqUser); // Asegúrate de que reqUser sea válido aquí
+            this.logger.warn(
+              '--VALIDATING BUSINESS SECTOR ID: ' + reqUser.getSector(),
+            );
+            await this.sectorRepository.validateSector(reqUser.getSector());
+            createdUser = this.formatDocument(reqUser);
             userSaved = await createdUser.save({ session });
             return UserBussiness.formatDocument(userSaved as IUserBusiness);
           }

@@ -24,7 +24,7 @@ export interface UserBusinessResponse {
   userRelations: ObjectId[];
   userType: UserType;
   name: string;
-  sector: string;
+  sector: ObjectId;
 }
 export class UserBusinessDto {
   @ApiProperty({
@@ -150,7 +150,7 @@ export class UserBusinessDto {
     example: '5f9d8f5e9d8f5e9d8f5e9d8f',
     type: String,
   })
-  readonly sector: string;
+  readonly sector: ObjectId;
 
   @ApiProperty({
     description: 'name of the company',

@@ -28,5 +28,12 @@ import { SectorService } from '../../application/service/sector.service';
       useClass: SectorAdapter,
     },
   ],
+  exports: [
+    {
+      provide: 'SectorServiceInterface',
+      useClass: SectorService,
+    },
+    MongooseModule,
+  ],
 })
 export class SectorModule {}

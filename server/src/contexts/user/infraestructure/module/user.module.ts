@@ -10,6 +10,8 @@ import { UserPersonModel } from '../schemas/userPerson.schema';
 import { UserBusinessModel } from '../schemas/userBussiness.schema';
 import { UserModel } from '../schemas/user.schema';
 import { ContactModule } from 'src/contexts/contact/infraestructure/module/contact.module';
+import { SectorRepository } from 'src/contexts/businessSector/infraestructure/repository/sector.repository';
+import { SectorModule } from 'src/contexts/businessSector/infraestructure/module/sector.module';
 
 @Module({
   imports: [
@@ -27,6 +29,7 @@ import { ContactModule } from 'src/contexts/contact/infraestructure/module/conta
       },
     ]),
     ContactModule,
+    SectorModule,
   ],
   controllers: [UserController],
   providers: [
@@ -42,6 +45,10 @@ import { ContactModule } from 'src/contexts/contact/infraestructure/module/conta
     {
       provide: 'UserRepositoryInterface',
       useClass: UserRepository,
+    },
+    {
+      provide: 'SectorRepositoryInterface',
+      useClass: SectorRepository,
     },
   ],
 })
