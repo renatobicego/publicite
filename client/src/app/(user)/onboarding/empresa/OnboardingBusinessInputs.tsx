@@ -1,12 +1,10 @@
 import {
-  CustomDateInput,
   CustomInput,
   CustomSelect,
   CustomTextarea,
 } from "@/app/components/inputs/CustomInputs";
 import PlaceAutocomplete from "@/app/components/inputs/PlaceAutocomplete";
 import { BusinessSector, UserBusinessFormValues } from "@/types/userTypes";
-import { CalendarDate } from "@internationalized/date";
 import { Field, FormikErrors } from "formik";
 import { FaFacebook, FaInstagram, FaLink, FaTwitter } from "react-icons/fa6";
 
@@ -34,11 +32,11 @@ const OnboardingBusinessInputs = ({
       <div className="flex gap-4 w-full max-2xl:flex-col">
         <Field
           as={CustomInput}
-          name="name"
+          name="businessName"
           label="Nombre de la Empresa"
           aria-label="nombre"
-          isInvalid={!!errors.name}
-          errorMessage={errors.name}
+          isInvalid={!!errors.businessName}
+          errorMessage={errors.businessName}
           placeholder="Ingrese nombre de la empresa"
           isRequired
         />

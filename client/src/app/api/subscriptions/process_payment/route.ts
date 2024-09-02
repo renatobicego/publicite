@@ -25,6 +25,7 @@ export async function POST(request: NextRequest) {
           payer_email: "test_user_1345316664@testuser.com",
           preapproval_plan_id: subscriptionPlan.id,
           reason: subscriptionPlan.reason,
+          external_reference: formData.payer.email
         },
       })
       .then(console.log)
