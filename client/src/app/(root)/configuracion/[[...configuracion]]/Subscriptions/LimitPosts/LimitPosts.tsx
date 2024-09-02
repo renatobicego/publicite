@@ -2,6 +2,7 @@ import { useState } from "react";
 import AnimatedBox from "../../AnimatedBox";
 import DataBox, { CardDataItem, DataItem, EditButton } from "../../DataBox";
 import LimitPostForm from "./LimitPostForm";
+import { Button } from "@nextui-org/react";
 
 const LimitPosts = () => {
   const [isFormVisible, setIsFormVisible] = useState(false);
@@ -33,7 +34,14 @@ const LimitPosts = () => {
               boldLabel="Disponible hasta: 17/09"
             />
           </div>
-          <EditButton text="Cambiar" onPress={() => setIsFormVisible(true)} />
+          <Button
+            color="secondary"
+            variant="light"
+            radius="full"
+            className={`font-normal max-md:absolute max-md:right-0 max-md:-top-2.5`}
+          >
+            Aumentar Límite
+          </Button>
         </DataBox>
       )}
     </AnimatedBox>

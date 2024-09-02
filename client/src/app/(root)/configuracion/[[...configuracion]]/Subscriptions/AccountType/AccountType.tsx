@@ -1,4 +1,4 @@
-import { useState } from "react";
+import {  useState } from "react";
 import AccountTypeForm from "./AccountTypeForm";
 import AnimatedBox from "../../AnimatedBox";
 import DataBox, { CardDataItem, EditButton } from "../../DataBox";
@@ -15,6 +15,7 @@ const AccountType = () => {
         />
       ) : (
         <DataBox
+          key={"dataAccountType"}
           className=" max-md:my-2.5 !items-start"
           labelText="Tipo de Cuenta"
           labelClassname="md:w-1/4 md:mt-2.5"
@@ -22,7 +23,7 @@ const AccountType = () => {
           <CardDataItem
             title="Publicité Premium"
             subtitle="Próximo pago: 03/09"
-            boldLabel="$100.00"
+            boldLabel="$100.00 por mes"
           />
           <EditButton
             text={<>Actualizar<span className="hidden min-[900px]:inline"> - Cancelar</span></>}

@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
 const AnimatedBox = ({
@@ -10,27 +9,24 @@ const AnimatedBox = ({
   children: React.ReactNode;
   className?: string;
 }) => {
-
   return (
-    <AnimatePresence mode="wait" initial={false}>
+    <AnimatePresence mode="popLayout" initial={false}>
       {isVisible ? (
         <motion.div
-          key={"form"}
-          initial={{ opacity: 0, scale: 0.97 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.97 }}
-          transition={{ duration: 0.2 }}
+          key={"form" + Math.random()}
+          initial={{ opacity: 0, translateY: "-50%" }}
+          animate={{ opacity: 1, translateY: "0%" }}
+          exit={{ opacity: 0, translateY: "-50%" }}
           className={className}
         >
           {children}
         </motion.div>
       ) : (
         <motion.div
-          key={"data"}
-          initial={{ opacity: 0, scale: 0.97 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.97 }}
-          transition={{ duration: 0.2 }}
+          key={"data" + Math.random()}
+          initial={{ opacity: 0, translateY: "50%" }}
+          animate={{ opacity: 1, translateY: "0%" }}
+          exit={{ opacity: 0, translateY: "50%" }}
           className={className}
         >
           {children}

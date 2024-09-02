@@ -2,10 +2,13 @@
 
 import { UserProfile } from "@clerk/nextjs";
 import { BiSolidUserDetail } from "react-icons/bi";
-import { FaShield } from "react-icons/fa6";
+import { FaBell, FaEyeSlash, FaShield, FaSliders } from "react-icons/fa6";
 import Profile from "./Profile/Profile";
 import Subscriptions from "./Subscriptions/Subscriptions";
 import { MdPayments } from "react-icons/md";
+import Privacy from "./Privacy/Privacy";
+import Notifications from "./Notifications/Notifications";
+import Preferences from "./Preferences/Preferences";
 
 const DotIcon = () => {
   return (
@@ -50,13 +53,26 @@ const UserProfilePage = () => (
         <Subscriptions />
       </UserProfile.Page>
       <UserProfile.Page label="security" />
-
-      {/* You can also pass the content as direct children */}
-      <UserProfile.Page label="Terms" labelIcon={<DotIcon />} url="terms">
-        <div>
-          <h1>Custom Terms Page</h1>
-          <p>This is the custom terms page</p>
-        </div>
+      <UserProfile.Page
+        label="Privacidad"
+        labelIcon={<FaEyeSlash className="size-4"/>}
+        url="privacidad"
+      >
+        <Privacy />
+      </UserProfile.Page>
+      <UserProfile.Page
+        label="Notificaciones"
+        labelIcon={<FaBell className="size-4"/>}
+        url="notificaciones"
+      >
+        <Notifications />
+      </UserProfile.Page>
+      <UserProfile.Page
+        label="Preferencias"
+        labelIcon={<FaSliders className="size-4"/>}
+        url="preferencias"
+      >
+        <Preferences />
       </UserProfile.Page>
     </UserProfile>
   </main>

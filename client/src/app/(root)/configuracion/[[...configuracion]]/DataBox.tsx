@@ -1,3 +1,4 @@
+import SecondaryButton from "@/app/components/buttons/SecondaryButton";
 import { Button, Card, CardBody, CardHeader } from "@nextui-org/react";
 import { HTMLAttributes } from "react";
 
@@ -56,15 +57,13 @@ export const EditButton = ({
   className?: HTMLAttributes<HTMLButtonElement>["className"];
 }) => {
   return (
-    <Button
-      color="secondary"
+    <SecondaryButton
       variant="light"
-      radius="full"
       className={`font-normal max-md:absolute max-md:right-0 max-md:-top-2.5 ${className}`}
       onPress={onPress}
     >
       {text}
-    </Button>
+    </SecondaryButton>
   );
 };
 
