@@ -1,5 +1,5 @@
 import { getEndDateISO } from "@/app/utils/dates";
-import { CalendarDate, getLocalTimeZone, today } from "@internationalized/date";
+
 import MercadoPagoConfig, { PreApproval } from "mercadopago";
 import { NextRequest } from "next/server";
 
