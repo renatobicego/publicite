@@ -17,7 +17,7 @@ export interface User {
   userRelations: UserRelations[];
   userType: "Person" | "Business";
   name: string;
-  lastName: string
+  lastName: string;
 }
 
 export interface UserPerson extends User {
@@ -37,12 +37,12 @@ export interface BusinessSector {
 }
 
 export interface Contact {
-    _id: ObjectId;
-    phone: string;
-    instagram?: string;
-    facebook?: string;
-    twitter?: string;
-    website?: string;
+  _id: ObjectId;
+  phone: string;
+  instagram?: string;
+  facebook?: string;
+  twitter?: string;
+  website?: string;
 }
 
 /**
@@ -51,25 +51,49 @@ export interface Contact {
 export interface UserPersonFormValues
   extends Omit<
     UserPerson,
-    "_id" | "subscriptions" | "post" | "board" | "userRelations" | "contact" | "groups" | "magazines"
+    | "_id"
+    | "subscriptions"
+    | "post"
+    | "board"
+    | "userRelations"
+    | "contact"
+    | "groups"
+    | "magazines"
   > {
-    contact: {
-      phone: string;
-    }
-  }
+  contact: {
+    phone: string;
+  };
+}
 
-  export interface UserBusinessFormValues
+export interface UserBusinessFormValues
   extends Omit<
     UserBusiness,
-    "_id" | "subscriptions" | "post" | "board" | "userRelations" | "contact" | "groups" | "magazines" | "businessSector" | "name" | "lastName"
+    | "_id"
+    | "subscriptions"
+    | "post"
+    | "board"
+    | "userRelations"
+    | "contact"
+    | "groups"
+    | "magazines"
+    | "businessSector"
+    | "name"
+    | "lastName"
   > {
-    contact: {
-      phone?: string;
-      instagram?: string;
-      facebook?: string;
-      twitter?: string;
-      website?: string;
-    };
-    businessSector: ObjectId
-  }
+  contact: {
+    phone?: string;
+    instagram?: string;
+    facebook?: string;
+    twitter?: string;
+    website?: string;
+  };
+  businessSector: ObjectId;
+}
 
+export interface BoardType {
+  _id: ObjectId;
+  annotations: string[];
+  visibility: Visibility;
+  keywords: string[];
+  user: Pick<User, "name"> | Pick<UserBusiness, "businessName">;
+}

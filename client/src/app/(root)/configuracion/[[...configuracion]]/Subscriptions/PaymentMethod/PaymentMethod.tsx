@@ -9,7 +9,7 @@ const PaymentMethod = () => {
   const [isFormVisible, setIsFormVisible] = useState(false);
 
   return (
-    <AnimatedBox isVisible={isFormVisible} className="flex-1">
+    <AnimatedBox isVisible={isFormVisible} className="flex-1" key="payment-method">
       {isFormVisible ? (
         <PaymentMethodForm
           key={"formPaymentMethodForm"}
@@ -17,6 +17,7 @@ const PaymentMethod = () => {
         />
       ) : (
         <DataBox
+          key={"dataPaymentMethod"}
           className=" max-md:my-2.5"
           labelText="Método de Pago"
           labelClassname="md:w-1/4 md:my-2.5"
