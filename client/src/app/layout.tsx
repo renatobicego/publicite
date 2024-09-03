@@ -19,12 +19,13 @@ const localization = {
     navbar: {
       ...esES.userProfile?.navbar,
       title: "Configuración",
+      account: 'Cuenta',
     },
     start: {
       ...esES.userProfile?.start,
       headerTitle__account: "Datos de la Cuenta",
       profileSection: {
-        title: "Foto de Perfil",
+        title: "Cuenta",
         primaryButton: "Editar",
       },
     },

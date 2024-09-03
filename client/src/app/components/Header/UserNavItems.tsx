@@ -26,19 +26,16 @@ const UserNavItems = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
       </NavbarItem>
       <NavbarItem className="max-lg:hidden">
         {isSignedIn ? (
-          <UserButton appearance={{
-            elements: {
-              rootBox: "size-8 mt-2",
-              avatarBox: "h-full w-full"
-            }
-          }}/>
-          // <Avatar
-          //   size="sm"
-          //   isBordered
-          //   as={Link}
-          //   href={`/perfil`}
-          //   src={user.imageUrl}
-          // />
+          <UserButton
+            appearance={{
+              elements: {
+                rootBox: "size-8 mt-2",
+                avatarBox: "h-full w-full",
+              },
+            }}
+            userProfileMode="navigation"
+            userProfileUrl="/configuracion"
+          />
         ) : (
           <SecondaryButton as={Link} href="/iniciar-sesion" variant="flat">
             Iniciar Sesión
@@ -63,7 +60,7 @@ const UserNavItems = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
           </DropdownMenu>
         </Dropdown>
       </NavbarItem>
-      <NavbarMenuToggle 
+      <NavbarMenuToggle
         // icon={isMenuOpen ? <IoIosClose className="size-6"/> : <IoIosMenu className="size-6"/>}
         aria-label={isMenuOpen ? "Close menu" : "Open menu"}
         className="lg:hidden min-h-12"

@@ -22,6 +22,7 @@ export const CustomInput = ({
       className="px-4 py-[10px] border-[0.5px]"
       classNames={{
         inputWrapper: "shadow-none hover:shadow-sm border-[0.5px]",
+        input: "text-[0.8125rem]",
         label: "font-medium text-[0.8125rem]",
       }}
       radius="full"
@@ -43,7 +44,9 @@ export const CustomTextarea = ({
   return (
     <Textarea
       classNames={{
-        inputWrapper: "shadow-none hover:shadow-sm border-[0.5px]",
+        inputWrapper:
+          "shadow-none hover:shadow-sm border-[0.5px] text-[0.8125rem]",
+        input: "text-[0.8125rem]",
         label: "font-medium text-[0.8125rem]",
       }}
       variant="bordered"
@@ -62,6 +65,7 @@ export const CustomDateInput = (props: FieldInputProps<any>) => {
         {...props}
         classNames={{
           inputWrapper: "shadow-none hover:shadow-sm border-[0.5px]",
+          input: "text-[0.8125rem]",
           label: "font-medium text-[0.8125rem]",
         }}
         radius="full"
@@ -100,6 +104,7 @@ export const CustomSelect = <T extends unknown>({
       }}
       classNames={{
         trigger: "shadow-none hover:shadow-sm border-[0.5px]",
+        value: "text-[0.8125rem]",
         label: "font-medium text-[0.8125rem]",
       }}
       radius="full"
@@ -113,6 +118,9 @@ export const CustomSelect = <T extends unknown>({
           key={getItemValue(item)}
           value={getItemValue(item)}
           variant="light"
+          classNames={{
+            title: "text-[0.8125rem]",
+          }}
           aria-label={getItemLabel(item)}
           textValue={getItemTextValue ? getItemTextValue(item) : undefined}
         >

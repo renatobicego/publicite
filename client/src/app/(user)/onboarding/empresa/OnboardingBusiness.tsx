@@ -2,7 +2,6 @@
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { completeOnboarding } from "../_actions";
 import { Form, Formik, FormikHelpers } from "formik";
 import { UserBusinessFormValues } from "@/types/userTypes";
 import PrimaryButton from "@/app/components/buttons/PrimaryButton";
@@ -31,7 +30,7 @@ const OnboardingBusiness = () => {
     description: "",
     email: user?.emailAddresses[0].emailAddress,
     isActive: true,
-    name: user.firstName ?? "",
+    businessName: "",
     profilePhotoUrl: user?.imageUrl,
     userType: "Business",
     username: user.username as string,

@@ -26,7 +26,8 @@ const config: Config = {
         service: "#F0931A",
         primary: "#EF2D56",
         secondary: "#8CD867",
-        'light-text': "#818181"
+        'light-text': "#818181",
+        petition: "#0091AD"
       },
       borderRadius: {
         "20": "20px"

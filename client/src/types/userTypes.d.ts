@@ -16,17 +16,18 @@ export interface User {
   post: Post[];
   userRelations: UserRelations[];
   userType: "Person" | "Business";
-  name: string
+  name: string;
+  lastName: string
 }
 
 export interface UserPerson extends User {
-  lastName: string;
   gender: string;
   birthDate: string;
 }
 
 export interface UserBusiness extends User {
   businessSector: BusinessSector;
+  businessName: string;
 }
 
 export interface BusinessSector {
@@ -60,7 +61,7 @@ export interface UserPersonFormValues
   export interface UserBusinessFormValues
   extends Omit<
     UserBusiness,
-    "_id" | "subscriptions" | "post" | "board" | "userRelations" | "contact" | "groups" | "magazines" | "businessSector"
+    "_id" | "subscriptions" | "post" | "board" | "userRelations" | "contact" | "groups" | "magazines" | "businessSector" | "name" | "lastName"
   > {
     contact: {
       phone?: string;

@@ -14,6 +14,7 @@ export async function PUT(request: Request) {
         id: subscriptionId,
         body: {
           ...formData,
+          external_reference: formData.payer.email
         },
       })
       .then(console.log)

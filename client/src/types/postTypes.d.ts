@@ -19,9 +19,11 @@ export interface Post {
   category: PostCategory;
   comments: PostComment[];
   attachedFiles: PostAttachedFile[];
+  author: Author
 }
 
 interface Reviewer extends Pick<UserPerson, "username" | "profilePhotoUrl" > {}
+interface Author extends Pick<UserPerson, "username" | "profilePhotoUrl" | "contact" | "name" | "lastName"> {}
 
 export interface PostRecommendation {
   _id: ObjectId;

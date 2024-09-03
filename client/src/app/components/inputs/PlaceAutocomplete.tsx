@@ -23,6 +23,7 @@ const PlaceAutocomplete = (props: FieldInputProps<any>) => {
       inputProps={{
         classNames: {
           inputWrapper: "shadow-none hover:shadow-sm border-[0.5px]",
+          input: "text-[0.8125rem]",
           label: "font-medium text-[0.8125rem]",
         },
       }}
@@ -33,6 +34,9 @@ const PlaceAutocomplete = (props: FieldInputProps<any>) => {
     >
       {placePredictions.map((place) => (
         <AutocompleteItem
+          classNames={{
+            title: "text-[0.8125rem]",
+          }}
           startContent={<FaLocationDot />}
           key={place.description}
           value={place.description}
