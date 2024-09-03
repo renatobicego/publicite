@@ -18,6 +18,7 @@ import { SubscriptionAdapter } from '../adapters/mercadopago/mp-subscription.ada
 import { MpSubscriptionService } from '../../application/mercadopago/mpSubscription.service';
 import { SubscriptionRepository } from '../repository/mercadopago/subscription.repository';
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
+import { UserModule } from 'src/contexts/user/infraestructure/module/user.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
       { name: 'Payment', schema: PaymentSchema },
       { name: 'SubscriptionPlan', schema: SubscriptionPlanSchema },
     ]),
+    UserModule,
   ],
   controllers: [WebhookController, SubscriptionController], // Controlador del módulo
   providers: [
@@ -54,6 +56,7 @@ import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
     WebhookService, // Servicio para Webhook de Clerk
     MyLoggerService, // Servicio de logging
     MpWebhookAdapter,
+
     {
       provide: 'MpWebhookServiceInterface',
       useClass: MpWebhookService,

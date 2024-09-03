@@ -1,0 +1,1 @@
+{"version":3,"file":"postLocation.schema.js","sourceRoot":"","sources":["../../../../../src/contexts/post/infraestructure/schemas/postLocation.schema.ts"],"names":[],"mappings":";;;AAAA,uCAAuE;AAE1D,QAAA,YAAY,GAAG,IAAI,iBAAM,CAAC;IACnC,QAAQ,EAAE,EAAE,IAAI,EAAE,MAAM,EAAE,QAAQ,EAAE,IAAI,EAAE;IAC1C,SAAS,EAAE,EAAE,IAAI,EAAE,MAAM,EAAE,QAAQ,EAAE,IAAI,EAAE;CAE9C,CAAC,CAAC"}

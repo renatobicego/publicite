@@ -19,6 +19,7 @@ import { ObjectId } from 'mongoose';
 import { ContactRequestDto } from 'src/contexts/contact/infraestructure/controller/request/contact.request';
 import { UP_publiciteUpdateRequestDto } from '../../infraestructure/controller/dto/update.request-DTO/UP-publicite.update.request';
 import { UB_publiciteUpdateRequestDto } from '../../infraestructure/controller/dto/update.request-DTO/UB-publicite.update.request';
+import { UP_clerkUpdateRequestDto } from 'src/contexts/webhook/application/clerk/dto/UP-clerk.update.request';
 
 @Injectable()
 export class UserService implements UserServiceInterface {
@@ -126,5 +127,19 @@ export class UserService implements UserServiceInterface {
       );
       throw error;
     }
+  }
+
+  async updateUserByClerkId(req: UP_clerkUpdateRequestDto): Promise<any> {
+    const clerkId = req.clerkId;
+    try {
+      await this.userRepository.updateByClerkId(clerkId, req);
+    } catch (error: any) {
+      this.logger.error(
+        'An error has occurred in user service - UpdateUserByClerk: ' +
+          error.message,
+      );
+      throw error;
+    }
+    return Promise.resolve();
   }
 }

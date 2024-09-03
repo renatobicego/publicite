@@ -10,6 +10,7 @@ import Subscription from 'src/contexts/webhook/domain/mercadopago/entity/subcrip
 import Payment from 'src/contexts/webhook/domain/mercadopago/entity/payment.entity';
 import { PaymentDocument } from '../../schemas/mercadopago/payment.schema';
 import { SubscriptionPlan } from 'src/contexts/webhook/domain/mercadopago/entity/subscriptionPlan.entity';
+import { SubscriptionPlanDocument } from '../../schemas/mercadopago/subscriptionPlan.schema';
 
 export default class MercadoPagoEventsRepository
   implements MercadoPagoEventsRepositoryInterface
@@ -23,7 +24,7 @@ export default class MercadoPagoEventsRepository
     @InjectModel('Payment')
     private readonly paymentModel: Model<PaymentDocument>,
     @InjectModel('SubscriptionPlan')
-    private readonly subscriptionPlanModel: Model<SubscriptionDocument>,
+    private readonly subscriptionPlanModel: Model<SubscriptionPlanDocument>,
   ) {}
 
   async findPaymentByPaymentID(id: any): Promise<Payment | null> {

@@ -1,5 +1,9 @@
 {
   "projects": {
-    "default": "publicite-5fd57"
-  }
+    "publicite-test": "publicite-test-44880",
+    "default": "publicite-test-44880"
+  },
+  "targets": {},
+  "etags": {},
+  "dataconnectEmulatorConfig": {}
 }
