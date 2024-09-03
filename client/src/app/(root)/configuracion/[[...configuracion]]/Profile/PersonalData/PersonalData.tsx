@@ -8,7 +8,7 @@ const PersonalData = () => {
   const [isFormVisible, setIsFormVisible] = useState(false);
 
   return (
-    <AnimatedBox isVisible={isFormVisible} className="flex-1">
+    <AnimatedBox isVisible={isFormVisible} className="flex-1" key="personal-data">
       {isFormVisible ? (
         <PersonalDataForm key={"formPersonalData"} setIsFormVisible={setIsFormVisible} />
       ) : (

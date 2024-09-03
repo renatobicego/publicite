@@ -6,13 +6,7 @@ export interface Post {
   title: string;
   postType: "Service" | "Good" | "Petition";
   description?: string;
-  visibility:
-    | "Public"
-    | "Private"
-    | "Registered"
-    | "Contacts"
-    | "Friends"
-    | "TopFriends";
+  visibility: Visibility;
   recommendations: PostRecommendation[];
   price: number;
   location: PostLocation;
@@ -75,11 +69,11 @@ export interface Good extends Post {
 
 export interface Service extends Post {
   imagesUrls: string[];
-  frequencyPrice: "Hourly" | "Weekly" | "Monthly" | "Yearly";
+  frequencyPrice: FrequencyPrice;
   reviews: PostReview[];
 }
 
 export interface Petition extends Post {
-  frequencyPrice?: "Hourly" | "Weekly" | "Monthly" | "Yearly";
+  frequencyPrice?: FrequencyPrice;
   toPrice?: number;
 }

@@ -4,16 +4,18 @@ const AnimatedBox = ({
   isVisible,
   children,
   className,
+  key
 }: {
   isVisible: boolean;
   children: React.ReactNode;
   className?: string;
+  key: string;
 }) => {
   return (
     <AnimatePresence mode="popLayout" initial={false}>
       {isVisible ? (
         <motion.div
-          key={"form" + Math.random()}
+          key={"form" + key}
           initial={{ opacity: 0, translateY: "-50%" }}
           animate={{ opacity: 1, translateY: "0%" }}
           exit={{ opacity: 0, translateY: "-50%" }}
@@ -23,7 +25,7 @@ const AnimatedBox = ({
         </motion.div>
       ) : (
         <motion.div
-          key={"data" + Math.random()}
+          key={"data" + key}
           initial={{ opacity: 0, translateY: "50%" }}
           animate={{ opacity: 1, translateY: "0%" }}
           exit={{ opacity: 0, translateY: "50%" }}

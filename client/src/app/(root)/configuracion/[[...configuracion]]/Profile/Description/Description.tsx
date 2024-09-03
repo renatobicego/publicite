@@ -8,7 +8,7 @@ const Description = () => {
   const [isFormVisible, setIsFormVisible] = useState(false);
 
   return (
-    <AnimatedBox isVisible={isFormVisible} className="flex-1">
+    <AnimatedBox isVisible={isFormVisible} className="flex-1" key="descrip">
       {isFormVisible ? (
         <DescriptionForm key={"formDescription"} setIsFormVisible={setIsFormVisible} />
       ) : (

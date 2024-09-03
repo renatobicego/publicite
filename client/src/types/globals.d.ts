@@ -1,4 +1,4 @@
-export { };
+export {};
 
 declare global {
   interface CustomJwtSessionClaims {
@@ -7,5 +7,14 @@ declare global {
     };
     firstName?: string;
   }
-  type ObjectId = string
+  type ObjectId = string;
+  type Visibility =
+    | "Public"
+    | "Private"
+    | "Registered"
+    | "Contacts"
+    | "Friends"
+    | "TopFriends";
+
+  type FrequencyPrice = "Hourly" | "Weekly" | "Monthly" | "Yearly";
 }
