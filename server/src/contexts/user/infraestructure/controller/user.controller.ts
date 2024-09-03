@@ -5,6 +5,7 @@ import { UserPersonDto, UserPersonResponse } from './dto/user.person.DTO';
 import { UserBusinessDto, UserBusinessResponse } from './dto/user.business.DTO';
 import { UserAdapterInterface } from '../../application/adapter/userAdapter.interface';
 import { UP_publiciteUpdateRequestDto } from './dto/update.request-DTO/UP-publicite.update.request';
+import { UB_publiciteUpdateRequestDto } from './dto/update.request-DTO/UB-publicite.update.request';
 
 @ApiTags('Accounts')
 @Controller('user')
@@ -86,6 +87,32 @@ export class UserController {
         updateRequest,
         0,
       )) as UserPersonResponse;
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  @Put('/business/:username')
+  @ApiOperation({ summary: 'Update a new business account' })
+  @ApiResponse({
+    status: 200,
+    description: 'The account has been successfully Updated.',
+    type: [UB_publiciteUpdateRequestDto],
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal server error.',
+  })
+  async updateBusinessAccount(
+    @Body() updateRequest: UB_publiciteUpdateRequestDto,
+    @Param('username') username: string,
+  ): Promise<UserBusinessResponse> {
+    try {
+      return (await this.userAdapter.updateUser(
+        username,
+        updateRequest,
+        1,
+      )) as UserBusinessResponse;
     } catch (error: any) {
       throw error;
     }

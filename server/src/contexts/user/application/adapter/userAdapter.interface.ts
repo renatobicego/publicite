@@ -1,3 +1,4 @@
+import { UB_publiciteUpdateRequestDto } from '../../infraestructure/controller/dto/update.request-DTO/UB-publicite.update.request';
 import { UP_publiciteUpdateRequestDto } from '../../infraestructure/controller/dto/update.request-DTO/UP-publicite.update.request';
 import {
   UserBusinessDto,
@@ -16,7 +17,7 @@ export interface UserAdapterInterface {
 
   updateUser(
     username: string,
-    req: UP_publiciteUpdateRequestDto,
+    req: UP_publiciteUpdateRequestDto | UB_publiciteUpdateRequestDto,
     type: number,
   ): Promise<any>;
 }

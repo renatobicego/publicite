@@ -8,7 +8,10 @@ import {
   UserBusinessModel,
 } from '../schemas/userBussiness.schema';
 import { UP_update, UserPerson } from '../../domain/entity/userPerson.entity';
-import { UserBussiness } from '../../domain/entity/userBussiness.entity';
+import {
+  UB_update,
+  UserBussiness,
+} from '../../domain/entity/userBussiness.entity';
 import { User } from '../../domain/entity/user.entity';
 import { UserTransformationInterface } from '../../domain/repository/transformations/user-transformation.interface';
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
@@ -77,9 +80,12 @@ export class UserRepository
     type: number,
   ): Promise<User> {
     try {
+      let entityToDocument;
+
       switch (type) {
         case 0: // Personal User
-          const entityToDocument = this.formatUpdateDocument(reqUser);
+          this.logger.log('Search user(Personal) for update');
+          entityToDocument = this.formatUpdateDocument(reqUser);
           const userUpdated = await this.userPersonModel.findOneAndUpdate(
             { username: username }, // Búsqueda por username
             entityToDocument,
@@ -91,8 +97,18 @@ export class UserRepository
           return UserPerson.formatDocument(userUpdated as IUserPerson);
 
         case 1:
-          throw new Error('Business user update not implemented');
+          this.logger.log('Search user(Business) for update');
+          entityToDocument = this.formatUpdateDocumentUB(reqUser);
+          const userUpdatedB = await this.userBusinessModel.findOneAndUpdate(
+            { username: username }, // Búsqueda por username
+            entityToDocument,
+            { new: true },
+          );
 
+          if (!userUpdatedB) {
+            throw new BadRequestException('User not found');
+          }
+          return UserBussiness.formatDocument(userUpdatedB as IUserBusiness);
         default:
           throw new BadRequestException('Invalid user type');
       }
@@ -105,6 +121,7 @@ export class UserRepository
   //---------------------------FORMATS OPERATIONS ------------------
   formatDocument(reqUser: User): IUserPerson | IUserBusiness {
     const baseUserData = this.getBaseUserData(reqUser);
+    this.logger.log('Start process in the repository: formatDocument');
     if (reqUser instanceof UserPerson) {
       return new this.userPersonModel({
         ...baseUserData,
@@ -125,6 +142,7 @@ export class UserRepository
   }
 
   getBaseUserData(reqUser: User) {
+    this.logger.log('Start process in the repository: getBaseUserData');
     return {
       clerkId: reqUser.getClerkId(),
       email: reqUser.getEmail(),
@@ -180,6 +198,28 @@ export class UserRepository
       ),
       countryRegion: mapValue('countryRegion'), // Mapea el campo `countryRegion` usando `mapValue`
       description: mapValue('description'), // Mapea el campo `description` usando `mapValue`
+    };
+  }
+
+  formatUpdateDocumentUB(reqUser: UB_update): Partial<IUserBusiness> {
+    const mapValue = (
+      key: keyof UB_update,
+      transformFn?: (value: any) => any,
+    ) => {
+      const value = reqUser[key];
+
+      return value !== undefined && value !== null
+        ? transformFn
+          ? transformFn(value)
+          : value
+        : undefined;
+    };
+
+    return {
+      businessName: mapValue('businessName'),
+      sector: mapValue('sector'),
+      countryRegion: mapValue('countryRegion'),
+      description: mapValue('description'),
     };
   }
 }

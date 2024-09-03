@@ -2,6 +2,14 @@ import { ObjectId } from 'mongoose';
 import { User, UserType } from './user.entity';
 import { IUserBusiness } from '../../infraestructure/schemas/userBussiness.schema';
 import { UserBusinessDto } from '../../infraestructure/controller/dto/user.business.DTO';
+import { UB_publiciteUpdateRequestDto } from '../../infraestructure/controller/dto/update.request-DTO/UB-publicite.update.request';
+
+export interface UB_update {
+  businessName?: string;
+  sector?: ObjectId;
+  countryRegion?: string;
+  description?: string;
+}
 
 export class UserBussiness extends User {
   private businessName: string;
@@ -105,6 +113,17 @@ export class UserBussiness extends User {
       dto.userRelations ?? [],
       UserType.Business,
     );
+  }
+
+  static formatUpdateDto(req: UB_publiciteUpdateRequestDto): UB_update {
+    const updateObject: Partial<UB_update> = {
+      ...(req.businessName && { businessName: req.businessName }),
+      ...(req.sector && { sector: req.sector }),
+      ...(req.countryRegion && { countryRegion: req.countryRegion }),
+      ...(req.description && { description: req.description }),
+    };
+
+    return updateObject as UB_update;
   }
 
   public getId(): ObjectId {
