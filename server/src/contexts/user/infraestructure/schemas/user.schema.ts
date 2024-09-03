@@ -24,6 +24,7 @@ interface IUser extends Document {
   userRelations: Schema.Types.ObjectId[];
   userType: UserType;
   name: string;
+  lastName: string;
 }
 
 const UserSchema = new Schema<IUser>(
@@ -46,6 +47,7 @@ const UserSchema = new Schema<IUser>(
     userRelations: [{ type: Schema.Types.ObjectId, ref: 'UserRelation' }],
     userType: { type: String, enum: Object.values(UserType), required: true },
     name: { type: String, required: true },
+    lastName: { type: String, required: true },
   },
   { discriminatorKey: 'kind', collection: 'users' },
 );

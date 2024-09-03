@@ -1,17 +1,18 @@
 import { ObjectId } from 'mongoose';
-import { User } from './user.entity';
+import { User, UserType } from './user.entity';
 import { IUserBusiness } from '../../infraestructure/schemas/userBussiness.schema';
 import { UserBusinessDto } from '../../infraestructure/controller/dto/user.business.DTO';
+import { UB_publiciteUpdateRequestDto } from '../../infraestructure/controller/dto/update.request-DTO/UB-publicite.update.request';
 
-/*
-Entidad para la cuenta de empresa
-*/
-enum UserType {
-  Personal = 'Personal',
-  Business = 'Business',
+export interface UB_update {
+  businessName?: string;
+  sector?: ObjectId;
+  countryRegion?: string;
+  description?: string;
 }
 
 export class UserBussiness extends User {
+  private businessName: string;
   private sector: ObjectId;
   private _id?: ObjectId;
 
@@ -23,18 +24,19 @@ export class UserBussiness extends User {
     profilePhotoUrl: string,
     countryRegion: string,
     isActive: boolean,
-    contact: any,
-    createdTime: string,
-    subscriptions: any[],
-    groups: any[],
-    magazines: any[],
-    board: any[],
-    post: any[],
-    userRelations: any[],
-    userType: UserType,
     name: string,
+    lastName: string,
     sector: ObjectId,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    businessName: string,
+    contact?: ObjectId, // Hacer contact opcional
+    createdTime: string = '', // Valor por defecto
+    subscriptions: ObjectId[] = [], // Valor por defecto
+    groups: ObjectId[] = [], // Valor por defecto
+    magazines: ObjectId[] = [], // Valor por defecto
+    board: ObjectId[] = [], // Valor por defecto
+    post: ObjectId[] = [], // Valor por defecto
+    userRelations: ObjectId[] = [], // Valor por defecto
+    userType: UserType = UserType.Business, // Valor por defecto
     _id?: ObjectId,
   ) {
     super(
@@ -45,6 +47,8 @@ export class UserBussiness extends User {
       profilePhotoUrl,
       countryRegion,
       isActive,
+      name,
+      lastName,
       contact,
       createdTime,
       subscriptions,
@@ -53,11 +57,11 @@ export class UserBussiness extends User {
       board,
       post,
       userRelations,
-      UserType.Business,
-      name,
+      userType,
     );
     this.sector = sector;
-    this._id = this._id;
+    this.businessName = businessName;
+    this._id = _id;
   }
 
   static formatDocument(document: IUserBusiness): UserBussiness {
@@ -69,22 +73,24 @@ export class UserBussiness extends User {
       document.profilePhotoUrl,
       document.countryRegion,
       document.isActive,
-      document.contact,
-      document.createdTime,
-      document.subscriptions,
-      document.groups,
-      document.magazines,
-      document.board,
-      document.post,
-      document.userRelations,
-      document.userType,
       document.name,
+      document.lastName,
+      document.contact,
+      document.businessName,
       document.sector,
+      document.createdTime,
+      document.subscriptions ?? [],
+      document.groups ?? [],
+      document.magazines ?? [],
+      document.board ?? [],
+      document.post ?? [],
+      document.userRelations ?? [],
+      document.userType ?? UserType.Business, // Valor por defecto en caso de que falte
       document._id as ObjectId,
     );
   }
 
-  static formatDtoToEntity(dto: UserBusinessDto, contactId: ObjectId) {
+  static formatDtoToEntity(dto: UserBusinessDto, contactId?: ObjectId) {
     return new UserBussiness(
       dto.clerkId,
       dto.email,
@@ -93,6 +99,10 @@ export class UserBussiness extends User {
       dto.profilePhotoUrl,
       dto.countryRegion,
       dto.isActive,
+      dto.name,
+      dto.lastName,
+      dto.sector,
+      dto.businessName,
       contactId,
       dto.createdTime,
       dto.subscriptions ?? [],
@@ -102,14 +112,29 @@ export class UserBussiness extends User {
       dto.post ?? [],
       dto.userRelations ?? [],
       UserType.Business,
-      dto.name,
-      dto.sector,
     );
   }
+
+  static formatUpdateDto(req: UB_publiciteUpdateRequestDto): UB_update {
+    const updateObject: Partial<UB_update> = {
+      ...(req.businessName && { businessName: req.businessName }),
+      ...(req.sector && { sector: req.sector }),
+      ...(req.countryRegion && { countryRegion: req.countryRegion }),
+      ...(req.description && { description: req.description }),
+    };
+
+    return updateObject as UB_update;
+  }
+
   public getId(): ObjectId {
     return this._id as ObjectId;
   }
+
   public getSector(): ObjectId {
     return this.sector;
+  }
+
+  public getBusinessName(): string {
+    return this.businessName;
   }
 }
