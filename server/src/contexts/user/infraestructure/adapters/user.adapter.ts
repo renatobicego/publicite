@@ -14,6 +14,7 @@ import { UserPerson } from '../../domain/entity/userPerson.entity';
 import { User } from '../../domain/entity/user.entity';
 import { UserBussiness } from '../../domain/entity/userBussiness.entity';
 import { error } from 'console';
+import { UP_publiciteUpdateRequestDto } from '../controller/dto/update.request-DTO/UP-publicite.update.request';
 
 export class UserAdapter implements UserAdapterInterface {
   constructor(
@@ -56,6 +57,32 @@ export class UserAdapter implements UserAdapterInterface {
       } catch (error) {
         throw error;
       }
+    } else {
+      throw error;
+    }
+  }
+
+  async updateUser(
+    username: string,
+    req: UP_publiciteUpdateRequestDto,
+    type: number,
+  ): Promise<UserPersonResponse> {
+    this.logger.log('Start process in the adapter: Update');
+    if (type === 0 && req instanceof UP_publiciteUpdateRequestDto) {
+      const userUpdated: User = await this.userService.updateUser(
+        username,
+        req as UP_publiciteUpdateRequestDto,
+        0,
+      );
+      return UserPersonDto.formatDocument(userUpdated as UserPerson);
+    } else if (type === 1 && req instanceof UP_publiciteUpdateRequestDto) {
+      // const userUpdated: User = await this.userService.updateUser(
+      //   req as UserBusinessUpdateDto,
+      //   1,
+      // );
+      //format document -> Business
+      // return UserBusinessUpdateDto.formatDocument(userUpdated as UserBussiness);
+      throw new Error();
     } else {
       throw error;
     }

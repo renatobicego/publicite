@@ -2,14 +2,20 @@ import { ObjectId } from 'mongoose';
 import { User } from './user.entity';
 import { IUserPerson } from '../../infraestructure/schemas/userPerson.schema';
 import { UserPersonDto } from '../../infraestructure/controller/dto/user.person.DTO';
+import { UP_publiciteUpdateRequestDto } from '../../infraestructure/controller/dto/update.request-DTO/UP-publicite.update.request';
 
 enum UserType {
   Personal = 'Personal',
   Business = 'Business',
 }
 
+export interface UP_update {
+  birthDate?: string;
+  gender?: string;
+  countryRegion?: string;
+  description?: string;
+}
 export class UserPerson extends User {
-  private lastName: string;
   private gender: string;
   private birthDate: string;
   private _id?: ObjectId;
@@ -22,19 +28,19 @@ export class UserPerson extends User {
     profilePhotoUrl: string,
     countryRegion: string,
     isActive: boolean,
-    contact: ObjectId,
-    createdTime: string,
-    subscriptions: ObjectId[],
-    groups: ObjectId[],
-    magazines: ObjectId[],
-    board: ObjectId[],
-    post: ObjectId[],
-    userRelations: ObjectId[],
-    userType: UserType.Personal,
     name: string,
     lastName: string,
     gender: string,
     birthDate: string,
+    contact?: ObjectId | null | undefined | any,
+    createdTime?: string,
+    subscriptions?: ObjectId[],
+    groups?: ObjectId[],
+    magazines?: ObjectId[],
+    board?: ObjectId[],
+    post?: ObjectId[],
+    userRelations?: ObjectId[],
+    userType?: UserType,
     _id?: ObjectId,
   ) {
     super(
@@ -45,23 +51,24 @@ export class UserPerson extends User {
       profilePhotoUrl,
       countryRegion,
       isActive,
-      contact,
-      createdTime,
-      (subscriptions = subscriptions ?? []),
-      (groups = groups ?? []),
-      (magazines = magazines ?? []),
-      (board = board ?? []),
-      (post = post ?? []),
-      (userRelations = userRelations ?? []),
-      UserType.Personal,
       name,
+      lastName,
+      contact,
+      createdTime ?? '',
+      subscriptions ?? [],
+      groups ?? [],
+      magazines ?? [],
+      board ?? [],
+      post ?? [],
+      userRelations ?? [],
+      userType ?? UserType.Personal,
     );
-    this.lastName = lastName;
     this.gender = gender;
     this.birthDate = birthDate;
     this._id = _id;
   }
 
+  // Método para crear una entidad UserPerson a partir de un documento de la base de datos
   static formatDocument(document: IUserPerson): UserPerson {
     return new UserPerson(
       document.clerkId,
@@ -71,7 +78,11 @@ export class UserPerson extends User {
       document.profilePhotoUrl,
       document.countryRegion,
       document.isActive,
-      document.contact,
+      document.name,
+      document.lastName,
+      document.gender,
+      document.birthDate,
+      document.contact ?? undefined,
       document.createdTime,
       document.subscriptions,
       document.groups,
@@ -80,17 +91,14 @@ export class UserPerson extends User {
       document.post,
       document.userRelations,
       UserType.Personal,
-      document.name,
-      document.lastName,
-      document.gender,
-      document.birthDate,
       document._id as ObjectId,
     );
   }
 
+  // Método para crear una entidad UserPerson a partir de un DTO para la creación
   static formatDtoToEntity(
     req: UserPersonDto,
-    contactId: ObjectId,
+    contactId?: ObjectId,
   ): UserPerson {
     return new UserPerson(
       req.clerkId,
@@ -100,24 +108,33 @@ export class UserPerson extends User {
       req.profilePhotoUrl,
       req.countryRegion,
       req.isActive,
-      contactId,
-      req.createdTime,
-      req.subscriptions ? req.subscriptions : [],
-      req.groups ? req.groups : [],
-      req.magazines ? req.magazines : [],
-      req.board ? req.board : [],
-      req.post ? req.post : [],
-      req.userRelations ? req.userRelations : [],
-      UserType.Personal,
       req.name,
       req.lastName,
       req.gender,
       req.birthDate,
+      contactId ?? undefined,
+      req.createdTime,
+      req.subscriptions ?? [],
+      req.groups ?? [],
+      req.magazines ?? [],
+      req.board ?? [],
+      req.post ?? [],
+      req.userRelations ?? [],
+      UserType.Personal,
     );
   }
-  public getLastName(): string {
-    return this.lastName;
+
+  static formatUpdateDto(req: UP_publiciteUpdateRequestDto): UP_update {
+    const updateObject: Partial<UP_update> = {
+      ...(req.birthDate && { birthDate: req.birthDate }),
+      ...(req.gender && { gender: req.gender }),
+      ...(req.countryRegion && { countryRegion: req.countryRegion }),
+      ...(req.description && { description: req.description }),
+    };
+
+    return updateObject as UP_update;
   }
+
   public getId(): ObjectId {
     return this._id as ObjectId;
   }

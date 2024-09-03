@@ -24,7 +24,9 @@ export interface UserBusinessResponse {
   userRelations: ObjectId[];
   userType: UserType;
   name: string;
+  lastName: string;
   sector: ObjectId;
+  businessName: string;
 }
 export class UserBusinessDto {
   @ApiProperty({
@@ -153,32 +155,146 @@ export class UserBusinessDto {
   readonly sector: ObjectId;
 
   @ApiProperty({
-    description: 'name of the company',
-    example: 'Dutsiland',
+    description: 'Name',
+    example: 'Maxi',
     type: String,
   })
   readonly name: string;
 
+  @ApiProperty({
+    description: 'Last Name',
+    example: 'Cvetic',
+    type: String,
+  })
+  readonly lastName: string;
+
+  @ApiProperty({
+    description: 'Business Name',
+    example: 'Cvetic',
+    type: String,
+  })
+  readonly businessName: string;
+
   static formatDocument(user: UserBussiness): UserBusinessResponse {
     return {
-      clerkId: user.getClerkId(),
-      email: user.getEmail(),
-      username: user.getUsername(),
-      description: user.getDescription(),
-      profilePhotoUrl: user.getProfilePhotoUrl(),
-      countryRegion: user.getCountryRegion(),
-      isActive: user.getIsActive(),
-      contact: user.getContact(),
+      clerkId: user.getClerkId() as string,
+      email: user.getEmail() as string,
+      username: user.getUsername() as string,
+      description: user.getDescription() as string,
+      profilePhotoUrl: user.getProfilePhotoUrl() as string,
+      countryRegion: user.getCountryRegion() as string,
+      isActive: user.getIsActive() as boolean,
+      contact: user.getContact() as ObjectId,
       createdTime: user.getCreatedTime(),
-      subscriptions: user.getSubscriptions(),
-      groups: user.getGroups(),
-      magazines: user.getMagazines(),
-      board: user.getBoard(),
-      post: user.getPost(),
-      userRelations: user.getUserRelations(),
+      subscriptions: user.getSubscriptions() as ObjectId[],
+      groups: user.getGroups() as ObjectId[],
+      magazines: user.getMagazines() as ObjectId[],
+      board: user.getBoard() as ObjectId[],
+      post: user.getPost() as ObjectId[],
+      userRelations: user.getUserRelations() as ObjectId[],
       userType: user.getUserType(),
       sector: user.getSector(),
-      name: user.getName(),
+      name: user.getName() as string,
+      lastName: user.getLastName() as string,
+      businessName: user.getBusinessName(),
+      _id: user.getId(),
+    };
+  }
+}
+
+export class UserBusinessUpdateDto {
+  @ApiProperty({
+    description: 'ID of the user in Database',
+    example: '5f9d8f5e9d8f5e9d8f5e9d8f',
+    type: String,
+  })
+  readonly _id: ObjectId;
+
+  @ApiProperty({
+    description: 'email of the user',
+    example: 'maxi@dutsiland.com',
+    type: String,
+  })
+  readonly email: string;
+
+  @ApiProperty({
+    description: 'username of the user',
+    example: 'mcvetic97',
+    type: String,
+  })
+  readonly username: string;
+
+  @ApiProperty({
+    description: 'Description of the user',
+    example: 'I like to code',
+    type: String,
+  })
+  readonly description: string;
+
+  @ApiProperty({
+    description: 'Profile photo URL of the user',
+    example: 'https://your-bucket.com/profile.jpg',
+    type: String,
+  })
+  readonly profilePhotoUrl: string;
+
+  @ApiProperty({
+    description: 'Country of the user',
+    example: 'Argentina',
+    type: String,
+  })
+  readonly countryRegion: string;
+
+  @ApiProperty({
+    description: 'Sector ID of the company',
+    example: '5f9d8f5e9d8f5e9d8f5e9d8f',
+    type: String,
+  })
+  readonly sector: ObjectId;
+
+  @ApiProperty({
+    description: 'name',
+    example: 'Maxi',
+    type: String,
+  })
+  readonly name: string;
+
+  @ApiProperty({
+    description: 'Lastname',
+    example: 'Cvetic',
+    type: String,
+  })
+  readonly lastName: string;
+
+  @ApiProperty({
+    description: 'Name of the company',
+    example: 'Dutsiland',
+    type: String,
+  })
+  readonly businessName: string;
+
+  static formatDocument(user: UserBussiness): UserBusinessResponse {
+    return {
+      clerkId: user.getClerkId() as string,
+      email: user.getEmail() as string,
+      username: user.getUsername() as string,
+      description: user.getDescription() as string,
+      profilePhotoUrl: user.getProfilePhotoUrl() as string,
+      countryRegion: user.getCountryRegion() as string,
+      isActive: user.getIsActive() as boolean,
+      contact: user.getContact() as ObjectId,
+      createdTime: user.getCreatedTime(),
+      subscriptions: user.getSubscriptions() as ObjectId[],
+      groups: user.getGroups() as ObjectId[],
+      magazines: user.getMagazines() as ObjectId[],
+      board: user.getBoard() as ObjectId[],
+      post: user.getPost() as ObjectId[],
+      userRelations: user.getUserRelations() as ObjectId[],
+      userType: user.getUserType(),
+      sector: user.getSector(),
+      businessName: user.getBusinessName(),
+      name: user.getName() as string,
+      lastName: user.getLastName() as string,
       _id: user.getId(),
     };
   }

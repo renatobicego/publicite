@@ -7,13 +7,14 @@ import { UserBusinessDto } from '../../infraestructure/controller/dto/user.busin
 import { UserRepositoryInterface } from '../../domain/repository/user-repository.interface';
 import { UserServiceInterface } from '../../domain/service/user.service.interface';
 import { UserPersonDto } from '../../infraestructure/controller/dto/user.person.DTO';
-import { UserPerson } from '../../domain/entity/userPerson.entity';
+import { UP_update, UserPerson } from '../../domain/entity/userPerson.entity';
 import { UserBussiness } from '../../domain/entity/userBussiness.entity';
 import { User } from '../../domain/entity/user.entity';
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
 import { ContactServiceInterface } from 'src/contexts/contact/domain/service/contact.service.interface';
 import { ObjectId } from 'mongoose';
 import { ContactRequestDto } from 'src/contexts/contact/infraestructure/controller/request/contact.request';
+import { UP_publiciteUpdateRequestDto } from '../../infraestructure/controller/dto/update.request-DTO/UP-publicite.update.request';
 
 @Injectable()
 export class UserService implements UserServiceInterface {
@@ -86,5 +87,40 @@ export class UserService implements UserServiceInterface {
     options?: { session?: ClientSession },
   ): Promise<Types.ObjectId> {
     return await this.contactService.createContact(contactDto, options);
+  }
+
+  async updateUser(
+    username: string,
+    req: UP_publiciteUpdateRequestDto,
+    type: number,
+  ): Promise<User> {
+    this.logger.log('Updating user in the service: ' + UserService.name);
+    let user: User;
+    try {
+      if (req instanceof UP_publiciteUpdateRequestDto && type === 0) {
+        this.logger.log('Update PERSONAL ACCOUNT with username: ' + username);
+
+        const userPersonal: UP_update = UserPerson.formatUpdateDto(req);
+
+        user = await this.userRepository.update(username, userPersonal, type);
+        return user;
+        // } else if (req instanceof UserBusinessUpdateDto && type === 1) {
+        //   this.logger.log('Update BUSINESS ACCOUNT with id: ' + req._id);
+        //   const userPersonal: UserPerson =
+        //     UserPerson.formatUpdateDtoToEntity(req);
+        //   user = await this.userRepository.update(userPersonal, type);
+        //   return user;
+      } else {
+        this.logger.error(
+          'User type not valid: Action -> UPDATE. error in service',
+        );
+        throw BadRequestException;
+      }
+    } catch (error: any) {
+      this.logger.error(
+        'User has not been updated. error in service: ' + error.message,
+      );
+      throw error;
+    }
   }
 }
