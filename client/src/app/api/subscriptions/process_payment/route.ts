@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
       accessToken: process.env.MP_ACCESS_TOKEN as string,
       options: { timeout: 5000 },
     });
-
+    const externalID = Math.floor(Math.random() * 9000).toString();
     const paymentSubscription = new PreApproval(client);
     const { formData, subscriptionPlan } = await request.json();
     paymentSubscription
@@ -25,6 +25,7 @@ export async function POST(request: NextRequest) {
           payer_email: "test_user_1345316664@testuser.com",
           preapproval_plan_id: subscriptionPlan.id,
           reason: subscriptionPlan.reason,
+          external_reference: externalID,
         },
       })
       .then(console.log)
