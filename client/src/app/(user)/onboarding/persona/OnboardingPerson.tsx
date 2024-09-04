@@ -10,6 +10,7 @@ import { Divider } from "@nextui-org/react";
 import OnboardingPersonInputs from "./OnboardingPersonInputs";
 import { completeOnboardingPerson } from "../_actions";
 import { Bounce, toast } from "react-toastify";
+import { toastifyError } from "@/app/utils/toastify";
 const OnboardingPerson = () => {
   const { user } = useUser();
   const router = useRouter();
@@ -47,17 +48,7 @@ const OnboardingPerson = () => {
       router.push("/");
     }
     if (res?.error) {
-      toast.error(res.error, {
-        position: "bottom-right",
-        autoClose: false,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-        transition: Bounce,
-      });
+      toastifyError(res.error);
     }
   };
   return (

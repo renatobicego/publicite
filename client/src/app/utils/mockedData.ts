@@ -124,6 +124,7 @@ const mockedPetition: Petition = {
     label: "Teléfonos y Compoutadoras",
   },
   postType: "Petition",
+  petitionType: "Good",
   visibility: "Public",
   recommendations: [],
   attachedFiles: [],
@@ -136,5 +137,40 @@ const mockedPetition: Petition = {
   },
   toPrice: 2000,
 };
+
+const mockedPetition2: Petition = {
+  _id: "14152",
+  title: "Busco alquiler por Godoy Cruz",
+  author: {
+    profilePhotoUrl: "/avatar.png",
+    username: "username",
+    contact: {
+      _id: "121",
+      phone: "phone",
+    },
+    lastName: "lastName",
+    name: "name",
+  },
+  category: {
+    _id: "1",
+    label: "Teléfonos y Compoutadoras",
+  },
+  postType: "Petition",
+  petitionType: "Service",
+  frequencyPrice: "Monthly",
+  visibility: "Public",
+  recommendations: [],
+  attachedFiles: [],
+  comments: [],
+  price: 1000,
+  location: {
+    _id: "1",
+    latitude: 0,
+    longitude: 0,
+  },
+  toPrice: 2000,
+};
+
+export const mockedPetitions = [mockedPetition, mockedPetition2, mockedPetition];
 
 export const mockedPosts = [mockedGood, mockedService];

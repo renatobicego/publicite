@@ -22,8 +22,8 @@ const Header = () => {
       id="navbar"
       disableAnimation={false}
       classNames={{
-        wrapper: `max-w-full layout-spacing shadow-lg mt-4 rounded-full max-md:gap-2 px-6 md:px-8 lg:px-10 max-md:h-12 bg-white
-             duration-300 items-start transition-all
+        wrapper: `max-w-full layout-spacing shadow-lg mt-4 rounded-3xl max-md:gap-2 px-6 md:px-8 lg:px-10 max-md:h-12 bg-white
+             duration-500 items-start transition-all 
              ${isMenuOpen ? "rounded-b-none shadow-none" : ""}`,
         base: "pb-4 bg-transparent",
       }}

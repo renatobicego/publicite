@@ -1,8 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { Image } from "@nextui-org/react";
 import { redirect } from "next/navigation";
-import { Bounce, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+
 export default function OnboardingLayout({
   children,
 }: {
@@ -20,7 +19,7 @@ export default function OnboardingLayout({
       <div className="flex justify-center items-center bg-white flex-1 rounded-[40px] shadow-xl py-16">
         {children}
       </div>
-      <ToastContainer />
+      
     </main>
   );
 }

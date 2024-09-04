@@ -7,7 +7,7 @@ const AccountType = () => {
   const [isFormVisible, setIsFormVisible] = useState(false);
 
   return (
-    <AnimatedBox isVisible={isFormVisible} className="flex-1" key="account-type">
+    <AnimatedBox isVisible={isFormVisible} className="flex-1" keyValue="account-type">
       {isFormVisible ? (
         <AccountTypeForm
           key={"formAccountType"}

@@ -1,11 +1,15 @@
 import React from "react";
 import FormCard from "../../FormCard";
-import { Form, Formik } from "formik";
+import { Form, Formik, FormikHelpers } from "formik";
 import { Button } from "@nextui-org/react";
 import PrimaryButton from "@/app/components/buttons/PrimaryButton";
 import { object, string } from "yup";
 
 import FormInputs from "./FormInputs";
+import { EditPersonProfileProps } from "@/types/userTypes";
+import { editProfile } from "../actions";
+import { useRouter } from "next/navigation";
+import { toastifyError, toastifySuccess } from "@/app/utils/toastify";
 
 const personalDataFormSchema = object({
   birthDate: string()
@@ -19,23 +23,31 @@ const personalDataFormSchema = object({
     .min(3, "La ubicación es requerida"),
 });
 
-export interface PersonalDataValues {
-  birthDate: string;
-  gender: string;
-  countryRegion: string;
-}
-
 const PersonalDataForm = ({
   setIsFormVisible,
 }: {
   setIsFormVisible: (value: boolean) => void;
 }) => {
-  const initialValues = {
+  const initialValues: EditPersonProfileProps = {
     birthDate: "2000-01-01",
     gender: "M",
     countryRegion: "Las Heras, Mendoza, Argentina",
   };
-  const handleSubmit = () => {};
+  const router = useRouter();
+  const handleSubmit = async (
+    values: EditPersonProfileProps,
+    actions: FormikHelpers<EditPersonProfileProps>
+  ) => {
+    const res = await editProfile(values, "Person");
+    if (res?.message) {
+      toastifySuccess(res.message);
+      router.refresh();
+      setIsFormVisible(false);
+    }
+    if (res?.error) toastifyError(res.error);
+    actions.setSubmitting(false);
+
+  };
 
   return (
     <FormCard title="Actualizar Datos" initialHeight={110}>
@@ -44,7 +56,7 @@ const PersonalDataForm = ({
         onSubmit={handleSubmit}
         validationSchema={personalDataFormSchema}
       >
-        {({ errors, setFieldValue, initialValues }) => (
+        {({ errors, setFieldValue, initialValues, isSubmitting }) => (
           <Form className="flex flex-col gap-2">
             <FormInputs
               errors={errors}
@@ -60,7 +72,13 @@ const PersonalDataForm = ({
               >
                 Cancelar
               </Button>
-              <PrimaryButton type="submit">Actualizar</PrimaryButton>
+              <PrimaryButton
+                type="submit"
+                isDisabled={isSubmitting}
+                isLoading={isSubmitting}
+              >
+                Actualizar
+              </PrimaryButton>
             </div>
           </Form>
         )}
