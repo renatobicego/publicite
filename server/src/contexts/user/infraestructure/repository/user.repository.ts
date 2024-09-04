@@ -17,6 +17,7 @@ import { UserTransformationInterface } from '../../domain/repository/transformat
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
 import { SectorRepositoryInterface } from 'src/contexts/businessSector/domain/repository/sector.repository.interface';
 import { Gender } from '../controller/dto/enums.request';
+import { UP_clerkUpdateRequestDto } from 'src/contexts/webhook/application/clerk/dto/UP-clerk.update.request';
 
 @Injectable()
 export class UserRepository
@@ -117,7 +118,38 @@ export class UserRepository
       throw error;
     }
   }
-
+  async updateByClerkId(
+    clerkId: string,
+    reqUser: UP_clerkUpdateRequestDto,
+  ): Promise<void> {
+    try {
+      this.logger.log(
+        'Updating clerk atributes in the repository, for the ID: ' + clerkId,
+      );
+      const personalUser = await this.userPersonModel.findOneAndUpdate(
+        { clerkId: clerkId },
+        reqUser,
+        {
+          new: true,
+        },
+      );
+      if (!personalUser) {
+        const businessUser = await this.userBusinessModel.findOneAndUpdate(
+          { clerkId: clerkId },
+          reqUser,
+          {
+            new: true,
+          },
+        );
+        if (!personalUser && !businessUser) {
+          throw new BadRequestException('User not found');
+        }
+      }
+    } catch (error) {
+      this.logger.error('Error in updateByClerkId method(Repository)', error);
+      throw error;
+    }
+  }
   //---------------------------FORMATS OPERATIONS ------------------
   formatDocument(reqUser: User): IUserPerson | IUserBusiness {
     const baseUserData = this.getBaseUserData(reqUser);

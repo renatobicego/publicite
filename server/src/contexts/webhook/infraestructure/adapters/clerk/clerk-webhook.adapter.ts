@@ -11,7 +11,7 @@ import { WebhookServiceInterface } from '../../../domain/clerk/webhook-service.i
 export class ClerkWebhookAdapter {
   constructor(
     private readonly webhookService: WebhookServiceInterface,
-    private readonly webhookSecret: string
+    private readonly webhookSecret: string,
   ) {}
 
   async handleRequest(payload: any, headers: any): Promise<void> {

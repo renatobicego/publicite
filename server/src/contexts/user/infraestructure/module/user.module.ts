@@ -50,6 +50,8 @@ import { SectorModule } from 'src/contexts/businessSector/infraestructure/module
       provide: 'SectorRepositoryInterface',
       useClass: SectorRepository,
     },
+    UserService,
   ],
+  exports: ['UserServiceInterface'],
 })
 export class UserModule {}
