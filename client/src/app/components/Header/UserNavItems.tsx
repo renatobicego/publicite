@@ -11,36 +11,34 @@ import {
 } from "@nextui-org/react";
 import React from "react";
 import SecondaryButton from "../buttons/SecondaryButton";
-import { SignOutButton, UserButton, useUser } from "@clerk/nextjs";
+import { SignedIn, SignedOut, SignOutButton, UserButton } from "@clerk/nextjs";
 import { FaChevronDown } from "react-icons/fa6";
 import Notifications from "./Notifications";
-import { IoIosClose, IoIosMenu } from "react-icons/io";
-import MobileMenu from "./MobileMenu";
+
+import { CONFIGURATION } from "@/app/utils/urls";
 
 const UserNavItems = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
-  const { isSignedIn, user } = useUser();
   return (
     <>
-      <NavbarItem className="max-lg:hidden">
-        <Notifications />
-      </NavbarItem>
-      <NavbarItem className="max-lg:hidden">
-        {isSignedIn ? (
+      <NavbarItem className="max-lg:hidden flex gap-2 items-center">
+        <SignedIn>
+          <Notifications />
           <UserButton
             appearance={{
               elements: {
-                rootBox: "size-8 mt-2",
-                avatarBox: "h-full w-full",
+                rootBox: "size-8",
+                avatarBox: "h-full w-full border-[0.8px]",
               },
             }}
             userProfileMode="navigation"
-            userProfileUrl="/configuracion"
+            userProfileUrl={CONFIGURATION}
           />
-        ) : (
+        </SignedIn>
+        <SignedOut>
           <SecondaryButton as={Link} href="/iniciar-sesion" variant="flat">
             Iniciar Sesión
           </SecondaryButton>
-        )}
+        </SignedOut>
       </NavbarItem>
       <NavbarItem className="max-lg:hidden">
         <Dropdown radius="full">

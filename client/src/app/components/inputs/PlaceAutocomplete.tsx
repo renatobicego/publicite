@@ -1,5 +1,6 @@
 import { Autocomplete, AutocompleteItem, Input } from "@nextui-org/react";
 import { FieldInputProps } from "formik";
+import { useEffect } from "react";
 import usePlacesService from "react-google-autocomplete/lib/usePlacesAutocompleteService";
 import { FaLocationDot } from "react-icons/fa6";
 
@@ -11,6 +12,12 @@ const PlaceAutocomplete = (props: FieldInputProps<any>) => {
         types: ["geocode"],
       },
     });
+
+  useEffect(() => {
+    if(props.value){
+      getPlacePredictions({ input: props.value })
+    }
+  }, [])
 
   return (
     <Autocomplete
@@ -30,6 +37,7 @@ const PlaceAutocomplete = (props: FieldInputProps<any>) => {
       className="px-4 py-[10px]"
       onValueChange={(value) => getPlacePredictions({ input: value })}
       isLoading={isPlacePredictionsLoading}
+      selectedKey={props.value}
       {...props}
     >
       {placePredictions.map((place) => (

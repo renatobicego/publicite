@@ -13,8 +13,8 @@ const SecondaryButton: React.FC<SecondaryButtonProps> = ({
     <Button
       radius="full"
       color="secondary"
-      className={`px-4 py-[10px] hover:bg-text-color hover:text-white hover:opacity-100 text-sm ${props.className}`}
       {...props}
+      className={`px-4 py-[10px] hover:bg-text-color hover:text-white hover:opacity-100 text-sm ${props.className}`}
     >
       {children}
     </Button>

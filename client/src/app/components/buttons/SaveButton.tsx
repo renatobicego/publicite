@@ -1,5 +1,5 @@
-"use client"
-import { Button, ButtonProps } from "@nextui-org/react";
+"use client";
+import { Button, ButtonProps, Tooltip } from "@nextui-org/react";
 import React from "react";
 import { FaBookmark, FaRegBookmark } from "react-icons/fa6";
 
@@ -13,16 +13,18 @@ const SaveButton: React.FC<SaveButtonProps> = ({ saved, ...props }) => {
   };
 
   return (
-    <Button
-      isIconOnly
-      color="primary"
-      radius="full"
-      {...props}
-      onClick={handleClick}
-      className={`opacity-75 data-[hover=true]:opacity-100 ${props.className}`}
-    >
-      {saved ? <FaBookmark /> : <FaRegBookmark />}
-    </Button>
+    <Tooltip placement="bottom" content={saved ? "Guardado" : "Guardar en Revista"}>
+      <Button
+        isIconOnly
+        color="primary"
+        radius="full"
+        {...props}
+        onClick={handleClick}
+        className={`opacity-75 data-[hover=true]:opacity-100 ${props.className}`}
+      >
+        {saved ? <FaBookmark /> : <FaRegBookmark />}
+      </Button>
+    </Tooltip>
   );
 };
 

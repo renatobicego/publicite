@@ -1,8 +1,9 @@
 "use server";
 
-import { UserBusinessFormValues, UserPersonFormValues } from "@/types/userTypes";
+import { postUserBusiness } from "@/app/services/businessServices";
+import { postUserPerson } from "@/app/services/userServices";
+import {  UserBusinessFormValues, UserPersonFormValues } from "@/types/userTypes";
 import { auth, clerkClient } from "@clerk/nextjs/server";
-import axios, { AxiosResponse } from "axios";
 
 export const completeOnboardingPerson = async (formData: UserPersonFormValues) => {
   const { userId } = auth();
@@ -12,13 +13,10 @@ export const completeOnboardingPerson = async (formData: UserPersonFormValues) =
   }
 
   try {
-    console.log(formData)
-
-    const resApi = await axios.post(`${process.env.API_URL}/user/personal`, formData)
+    const resApi = await postUserPerson(formData)
     if(resApi.status !== 200 && resApi.status !== 201){
       return { error: "Error al completar el registro. Por favor intenta de nuevo. Error: " + resApi.data.message }
     }
-    console.log(resApi)
     const res = await clerkClient().users.updateUser(userId, {
       publicMetadata: {
         onboardingComplete: true
@@ -30,3 +28,26 @@ export const completeOnboardingPerson = async (formData: UserPersonFormValues) =
     return { error: "Error al completar el registro. Por favor intenta de nuevo." };
   }
 };
+
+export const completeOnboardingBusiness = async (formData: UserBusinessFormValues) => {
+  const { userId } = auth();
+  if (!userId) {
+    return { error: "Usuario no autenticado. Por favor inicie sesión." };
+  }
+
+  try {
+    const resApi = await postUserBusiness(formData)
+    if(resApi.status !== 200 && resApi.status !== 201){
+      return { error: "Error al completar el registro. Por favor intenta de nuevo. Error: " + resApi.data.message }
+    }
+    const res = await clerkClient().users.updateUser(userId, {
+      publicMetadata: {
+        onboardingComplete: true
+      },
+    });
+    return { message: res.publicMetadata };
+  } catch (err) {
+    console.log(err)
+    return { error: "Error al completar el registro. Por favor intenta de nuevo." };
+  }
+}

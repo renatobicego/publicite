@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { Providers } from "./providers";
 import { ClerkProvider } from "@clerk/nextjs";
 import { esES } from "@clerk/localizations";
-
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 export const metadata: Metadata = {
@@ -19,7 +20,7 @@ const localization = {
     navbar: {
       ...esES.userProfile?.navbar,
       title: "Configuración",
-      account: 'Cuenta',
+      account: "Cuenta",
     },
     start: {
       ...esES.userProfile?.start,
@@ -43,7 +44,10 @@ export default function RootLayout({
         <body
           className={`${inter.className} text-text-color overflow-x-hidden`}
         >
-          <Providers>{children}</Providers>
+          <Providers>
+            {children}
+            <ToastContainer />
+          </Providers>
         </body>
       </html>
     </ClerkProvider>

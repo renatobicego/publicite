@@ -76,4 +76,5 @@ export interface Service extends Post {
 export interface Petition extends Post {
   frequencyPrice?: FrequencyPrice;
   toPrice?: number;
+  petitionType: "Good" | "Service";
 }

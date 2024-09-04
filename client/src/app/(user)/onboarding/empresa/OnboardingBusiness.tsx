@@ -9,6 +9,9 @@ import { parseDateTime } from "@internationalized/date";
 import OnboardingBusinessInputs from "./OnboardingBusinessInputs";
 import { userBusinessValidation } from "./userBusinessValidation";
 import { Divider } from "@nextui-org/react";
+import { completeOnboardingBusiness } from "../_actions";
+import { Bounce, toast } from "react-toastify";
+import { toastifyError } from "@/app/utils/toastify";
 const OnboardingBusiness = () => {
   const [error, setError] = useState("");
   const { user } = useUser();
@@ -42,16 +45,15 @@ const OnboardingBusiness = () => {
     formData: UserBusinessFormValues,
     actions: FormikHelpers<UserBusinessFormValues>
   ) => {
-    console.log(formData);
-    // const res = await completeOnboarding(formData);
-    // if (res?.message) {
-    //   // Reloads the user's data from Clerk's API
-    //   await user?.reload();
-    //   router.push("/");
-    // }
-    // if (res?.error) {
-    //   setError(res?.error);
-    // }
+    const res = await completeOnboardingBusiness(formData);
+    if (res?.message) {
+      // Reloads the user's data from Clerk's API
+      await user?.reload();
+      router.push("/");
+    }
+    if (res?.error) {
+      toastifyError(res.error);
+    }
   };
   return (
     <Formik

@@ -1,4 +1,3 @@
-import { PersonalDataValues } from "./PersonalDataForm";
 import { Field, FormikErrors } from "formik";
 import {
   CustomDateInput,
@@ -6,14 +5,15 @@ import {
 } from "@/app/components/inputs/CustomInputs";
 import PlaceAutocomplete from "@/app/components/inputs/PlaceAutocomplete";
 import { CalendarDate } from "@internationalized/date";
+import { EditPersonProfileProps } from "@/types/userTypes";
 interface PersonalDataFormInputsProps {
-  initialValues: PersonalDataValues;
-  errors: FormikErrors<PersonalDataValues>;
+  initialValues: EditPersonProfileProps;
+  errors: FormikErrors<EditPersonProfileProps>;
   setFieldValue: (
     field: string,
     value: any,
     shouldValidate?: boolean
-  ) => Promise<void | FormikErrors<PersonalDataValues>>;
+  ) => Promise<void | FormikErrors<EditPersonProfileProps>>;
 }
 const FormInputs = ({
   initialValues,

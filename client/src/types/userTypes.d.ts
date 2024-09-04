@@ -15,10 +15,12 @@ export interface User {
   board: Board;
   post: Post[];
   userRelations: UserRelations[];
-  userType: "Person" | "Business";
+  userType: UserType;
   name: string;
   lastName: string;
 }
+
+export type UserType = "Person" | "Business";
 
 export interface UserPerson extends User {
   gender: string;
@@ -97,3 +99,10 @@ export interface BoardType {
   keywords: string[];
   user: Pick<User, "name"> | Pick<UserBusiness, "businessName">;
 }
+
+
+export type EditPersonProfileProps = Partial<Pick<UserPersonFormValues, "description" | "birthDate" | "gender" | "countryRegion">>
+
+export type EditBusinessProfileProps = Partial<Pick<UserBusinessFormValues, "businessName" | "businessSector" | "countryRegion" | "description">>
+
+export type EditProfileProps = EditBusinessProfileProps | EditPersonProfileProps

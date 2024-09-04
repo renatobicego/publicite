@@ -9,24 +9,13 @@ import { MdPayments } from "react-icons/md";
 import Privacy from "./Privacy/Privacy";
 import Notifications from "./Notifications/Notifications";
 import Preferences from "./Preferences/Preferences";
-
-const DotIcon = () => {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 512 512"
-      fill="currentColor"
-    >
-      <path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512z" />
-    </svg>
-  );
-};
+import { CONFIGURATION } from "@/app/utils/urls";
 
 
 const UserProfilePage = () => (
   <main className="flex flex-col items-center min-h-screen main-style">
     <UserProfile
-      path="/configuracion"
+      path={`${CONFIGURATION}`}
       routing="path"
       appearance={{
         elements: {
