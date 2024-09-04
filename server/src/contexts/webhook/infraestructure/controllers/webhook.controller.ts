@@ -47,7 +47,8 @@ export class WebhookController {
         'Please add WEBHOOK_SECRET to your environment variables',
       );
     }
-    await this.clerkWebhookAdapter.handleRequest(payload, headers);
+    const user = await this.clerkWebhookAdapter.handleRequest(payload, headers);
+    return user;
   }
 
   @Post('/mp')

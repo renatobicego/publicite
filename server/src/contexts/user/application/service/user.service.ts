@@ -132,7 +132,7 @@ export class UserService implements UserServiceInterface {
   async updateUserByClerkId(req: UP_clerkUpdateRequestDto): Promise<any> {
     const clerkId = req.clerkId;
     try {
-      await this.userRepository.updateByClerkId(clerkId, req);
+      return await this.userRepository.updateByClerkId(clerkId, req);
     } catch (error: any) {
       this.logger.error(
         'An error has occurred in user service - UpdateUserByClerk: ' +
@@ -140,6 +140,5 @@ export class UserService implements UserServiceInterface {
       );
       throw error;
     }
-    return Promise.resolve();
   }
 }

@@ -18,6 +18,7 @@ import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
 import { SectorRepositoryInterface } from 'src/contexts/businessSector/domain/repository/sector.repository.interface';
 import { Gender } from '../controller/dto/enums.request';
 import { UP_clerkUpdateRequestDto } from 'src/contexts/webhook/application/clerk/dto/UP-clerk.update.request';
+import { IUser, UserModel } from '../schemas/user.schema';
 
 @Injectable()
 export class UserRepository
@@ -29,6 +30,9 @@ export class UserRepository
 
     @InjectModel(UserBusinessModel.modelName)
     private readonly userBusinessModel: Model<IUserBusiness>,
+
+    @InjectModel(UserModel.modelName)
+    private readonly user: Model<IUser>,
 
     @Inject('SectorRepositoryInterface')
     private readonly sectorRepository: SectorRepositoryInterface,
@@ -121,29 +125,25 @@ export class UserRepository
   async updateByClerkId(
     clerkId: string,
     reqUser: UP_clerkUpdateRequestDto,
-  ): Promise<void> {
+  ): Promise<User> {
     try {
       this.logger.log(
         'Updating clerk atributes in the repository, for the ID: ' + clerkId,
       );
-      const personalUser = await this.userPersonModel.findOneAndUpdate(
+      const userUpdated = await this.user.findOneAndUpdate(
         { clerkId: clerkId },
         reqUser,
         {
           new: true,
         },
       );
-      if (!personalUser) {
-        const businessUser = await this.userBusinessModel.findOneAndUpdate(
-          { clerkId: clerkId },
-          reqUser,
-          {
-            new: true,
-          },
-        );
-        if (!personalUser && !businessUser) {
-          throw new BadRequestException('User not found');
-        }
+      if (!userUpdated) {
+        throw new BadRequestException('User not found');
+      }
+      if (userUpdated.userType === 'Personal') {
+        return UserPerson.formatDocument(userUpdated as IUserPerson);
+      } else {
+        return UserBussiness.formatDocument(userUpdated as IUserBusiness);
       }
     } catch (error) {
       this.logger.error('Error in updateByClerkId method(Repository)', error);
