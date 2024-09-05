@@ -15,5 +15,8 @@ export interface UserRepositoryInterface {
   updateByClerkId(
     clerkId: string,
     reqUser: UP_clerkUpdateRequestDto,
-  ): Promise<void>;
+  ): Promise<User>;
+  getUserPersonalInformationByUsername(
+    username: string,
+  ): Promise<Partial<User>>;
 }

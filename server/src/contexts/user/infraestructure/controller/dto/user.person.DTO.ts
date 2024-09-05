@@ -4,6 +4,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum, IsOptional } from 'class-validator';
 import { UserPerson } from 'src/contexts/user/domain/entity/userPerson.entity';
 import { ContactRequestDto } from 'src/contexts/contact/infraestructure/controller/request/contact.request';
+import { Contact } from 'src/contexts/contact/domain/entity/contact.entity';
 
 export interface UserPersonResponse {
   _id: ObjectId;
@@ -204,4 +205,14 @@ export class UserPersonDto {
       _id: user.getId(),
     };
   }
+}
+
+export interface UserPersonalInformationResponse {
+  birthDate?: string;
+  gender?: string;
+  countryRegion?: string;
+  description?: string;
+  contact?: Contact;
+  sector?: string;
+  businessName?: string;
 }
