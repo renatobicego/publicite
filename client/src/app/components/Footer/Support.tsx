@@ -15,6 +15,11 @@ const Support = () => {
           Contactar Soporte
         </Link>
       </li>
+      <li>
+        <Link size="sm" className="text-white" href={""}>
+          Sobre Nosotros
+        </Link>
+      </li>
     </ul>
   );
 };

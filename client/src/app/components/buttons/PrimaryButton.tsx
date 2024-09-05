@@ -10,7 +10,12 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = ({
   ...props
 }) => {
   return (
-    <Button radius="full" color="primary" className="px-4 py-[10px] hover:bg-text-color hover:opacity-100 text-sm" {...props}>
+    <Button
+      radius="full"
+      color="primary"
+      {...props}
+      className={`px-4 py-[10px] hover:bg-text-color hover:opacity-100 text-sm ${props.className}`}
+    >
       {children}
     </Button>
   );

@@ -1,4 +1,5 @@
 import { Good, Petition, Service } from "@/types/postTypes";
+import { SubscriptionPlan } from "@/types/subscriptions";
 
 const mockedGood: Good = {
   _id: "1",
@@ -170,6 +171,41 @@ const mockedPetition2: Petition = {
   },
   toPrice: 2000,
 };
+
+export const mockedSubscriptionPlans: SubscriptionPlan[] = [
+  {
+    _id: "2c9380849146f28",
+    reason: "Gratuita",
+    price: 6500,
+    description: "Cuenta de uso personal, gratis de por vida.",
+    features: ["Beneficio 1", "Beneficio 2", "Beneficio 3"],
+    freePlan: true,
+    intervalTime: 1,
+    isActive: true,
+    postLimit: 5
+  },
+  {
+    _id: "2c9380849146ff3d01914739031d0028",
+    reason: "Publicité Premium",
+    price: 6500,
+    description: "Publicité Premium",
+    features: ["Beneficio 1", "Beneficio 2", "Beneficio 3"],
+    intervalTime: 1,
+    isActive: true,
+    postLimit: 50,
+  },
+  {
+    _id: "2c9380849146ff3d01914739038",
+    reason: "Publicité Premium Gold",
+    price: 10000,
+    description: "Publicité Premium Gold",
+    features: ["Beneficio 1", "Beneficio 2", "Beneficio 3"],
+    intervalTime: 1,
+    isActive: true,
+    postLimit: 100,
+  },
+];
+
 
 export const mockedPetitions = [mockedPetition, mockedPetition2, mockedPetition];
 

@@ -43,7 +43,7 @@ const SubscriptionCard = ({
     <CustomRadio color="secondary" value={subscriptionPlan._id}>
       <div className="flex flex-col gap-1 items-start w-full">
         <div className="w-full flex justify-between items-center gap-4">
-          <h3 className="text-sm font-semibold">{subscriptionPlan.reason}</h3>
+          <h4 className="text-sm font-semibold">{subscriptionPlan.reason}</h4>
           {freePlan ? (
             <p className="text-sm font-semibold">Gratis</p>
           ) : (

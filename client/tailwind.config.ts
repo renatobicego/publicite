@@ -17,7 +17,7 @@ const config: Config = {
       },
       fontFamily: {
         inter: ["Inter", "sans-serif"],
-        lato: ["Lato", "sans-serif"],
+        noto: ["Noto Sans", "sans-serif"],
       },
       colors: {
         fondo: "#FFFDF7",
