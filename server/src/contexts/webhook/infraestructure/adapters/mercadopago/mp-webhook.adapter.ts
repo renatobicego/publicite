@@ -64,6 +64,7 @@ export class MpWebhookAdapter {
 
     const dataId = body.data.id;
     const type = body.type;
+    const action = body.action;
 
     //Si no existen estos datos el header esta mal y no podremos seguir, arrojamos error
     if (!type || !dataId) {
@@ -71,7 +72,6 @@ export class MpWebhookAdapter {
       throw new UnauthorizedException('Invalid webhook headers');
     }
 
-    const action = body.action;
     switch (type) {
       case 'payment':
         this.logger.log(
@@ -105,7 +105,7 @@ export class MpWebhookAdapter {
       default:
         throw new BadRequestException('Invalid webhook headers');
     }
-    return Promise.resolve(true);
+    return Promise.resolve(false);
   }
 
   async subscription_preapproval(dataID: string): Promise<boolean> {
