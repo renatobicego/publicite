@@ -176,12 +176,7 @@ export class UserRepository
     if (populatedUser?.userType === 'Personal') {
       return UserPerson.formatDocument(populatedUser as IUserPerson);
     } else if (populatedUser?.userType === 'Business') {
-      const userret = UserBussiness.formatDocument(
-        populatedUser as IUserBusiness,
-      );
-      console.log(userret);
-
-      return userret;
+      return UserBussiness.formatDocument(populatedUser as IUserBusiness);
     } else {
       throw new NotFoundException('User not found');
     }
