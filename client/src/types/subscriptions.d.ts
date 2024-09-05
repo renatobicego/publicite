@@ -5,4 +5,7 @@ export interface SubscriptionPlan {
   price: number;
   features: string[];
   freePlan?: boolean;
+  postLimit: number;
+  intervalTime: number;
+  isActive: boolean;
 }

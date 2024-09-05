@@ -1,21 +1,11 @@
-import {
-  Avatar,
-  Button,
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownTrigger,
-  Link,
-  NavbarItem,
-  NavbarMenuToggle,
-} from "@nextui-org/react";
+import { Link, NavbarItem, NavbarMenuToggle } from "@nextui-org/react";
 import React from "react";
 import SecondaryButton from "../buttons/SecondaryButton";
-import { SignedIn, SignedOut, SignOutButton, UserButton } from "@clerk/nextjs";
-import { FaChevronDown } from "react-icons/fa6";
+import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import Notifications from "./Notifications";
 
 import { CONFIGURATION } from "@/app/utils/urls";
+import DropdownItems from "./DropdownItems";
 
 const UserNavItems = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
   return (
@@ -41,22 +31,7 @@ const UserNavItems = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
         </SignedOut>
       </NavbarItem>
       <NavbarItem className="max-lg:hidden">
-        <Dropdown radius="full">
-          <DropdownTrigger>
-            <Button radius="full" variant="light" size="sm" isIconOnly>
-              <FaChevronDown />
-            </Button>
-          </DropdownTrigger>
-          <DropdownMenu aria-label="Más acciones">
-            <DropdownItem
-              className="rounded-full"
-              key="cerrar-sesion"
-              color="danger"
-            >
-              <SignOutButton>Cerrar Sesión</SignOutButton>
-            </DropdownItem>
-          </DropdownMenu>
-        </Dropdown>
+        <DropdownItems />
       </NavbarItem>
       <NavbarMenuToggle
         // icon={isMenuOpen ? <IoIosClose className="size-6"/> : <IoIosMenu className="size-6"/>}

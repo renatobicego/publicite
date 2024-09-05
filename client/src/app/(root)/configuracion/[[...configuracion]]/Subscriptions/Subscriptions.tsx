@@ -40,7 +40,7 @@ const Subscriptions = () => {
           exit={{ opacity: 0, translateX: "-100%" }}
           className="flex flex-col gap-4"
         >
-          <h2 className="profile-title">Datos de Subscripción</h2>
+          <h2 className="profile-title">Datos de Suscripción</h2>
           <Divider />
           <AccountType />
           <Divider />

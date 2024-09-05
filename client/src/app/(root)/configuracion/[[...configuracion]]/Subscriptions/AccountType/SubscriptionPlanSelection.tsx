@@ -13,7 +13,7 @@ const SubscriptionPlanSelection = ({
 }) => {
   return (
     <RadioGroup
-      description="Selecciona el plan de subscripción para tu cuenta"
+      description="Selecciona el plan de suscripción para tu cuenta"
       value={selected}
       onValueChange={onPlanChange}
     >

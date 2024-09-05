@@ -16,5 +16,10 @@ export const putUserProfileData = async (
 };
 
 export const getUserProfileData = async (username: string) => {
-  return await axios.get(`${process.env.API_URL}/user/personal/${username}/personal-data`);
+  try {
+    const res = await fetch(`${process.env.API_URL}/user/personal/${username}/personalData`)
+    return res.json()
+  } catch (error) {
+    throw new Error("Error al traer los datos personales del usuario.")
+  }
 };

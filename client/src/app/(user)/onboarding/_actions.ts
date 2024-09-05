@@ -19,7 +19,8 @@ export const completeOnboardingPerson = async (formData: UserPersonFormValues) =
     }
     const res = await clerkClient().users.updateUser(userId, {
       publicMetadata: {
-        onboardingComplete: true
+        onboardingComplete: true,
+        userType: "Person",
       },
     });
     return { message: res.publicMetadata };
@@ -42,7 +43,8 @@ export const completeOnboardingBusiness = async (formData: UserBusinessFormValue
     }
     const res = await clerkClient().users.updateUser(userId, {
       publicMetadata: {
-        onboardingComplete: true
+        onboardingComplete: true,
+        userType: "Business",
       },
     });
     return { message: res.publicMetadata };
