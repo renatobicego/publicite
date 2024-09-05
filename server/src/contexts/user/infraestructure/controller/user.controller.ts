@@ -128,7 +128,7 @@ export class UserController {
     }
   }
 
-  @Get('/profile/:username')
+  @Get('/personal-data/:username')
   @ApiOperation({ summary: 'Get profile information of particular account' })
   @ApiResponse({
     status: 200,
