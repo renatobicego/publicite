@@ -26,6 +26,7 @@ export class MpWebhookAdapter {
     private readonly mpHandlerEvent: MpHandlerEventsInterface,
     @Inject('MpHandlerValidationsInterface')
     private readonly mpHandlerValidations: MpHandlerValidationsInterface,
+
     private readonly logger: MyLoggerService,
   ) {}
 
@@ -35,7 +36,7 @@ export class MpWebhookAdapter {
   ): Promise<boolean> {
     const { body } = req;
 
-    const validation = this.mpHandlerValidations.checkHashValidation(
+    const validation = await this.mpHandlerValidations.checkHashValidation(
       req,
       header,
     );
@@ -105,7 +106,7 @@ export class MpWebhookAdapter {
       default:
         throw new BadRequestException('Invalid webhook headers');
     }
-    return Promise.resolve(false);
+    return Promise.resolve(true);
   }
 
   async subscription_preapproval(dataID: string): Promise<boolean> {

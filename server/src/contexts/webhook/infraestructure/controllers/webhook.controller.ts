@@ -29,7 +29,8 @@ export class WebhookController {
     private readonly clerkWebhookAdapter: ClerkWebhookAdapter,
     private readonly configService: ConfigService,
     private readonly mpWebhookAdapter: MpWebhookAdapter,
-    private readonly logger: MyLoggerService,
+    private readonly logger: MyLoggerService
+
   ) { }
 
 
@@ -66,7 +67,7 @@ export class WebhookController {
           headers, req
         )
       if (authSecretValidation) {
-        //En el caso de que validemos el origen y que el pago se complete correctamente, vamos a deolver el estado OK, de lo contrario esta operacion no se hara 
+        // En el caso de que validemos el origen y que el pago se complete correctamente, vamos a deolver el estado OK, de lo contrario esta operacion no se hara 
         this.logger.log('Webhook MP OK - Credentials are valid - WEBHOOK_PROCESS: COMPLETE ---> sending response to Meli - Class:WebhookController 🚀')
         return res.status(HttpStatus.OK).send('Signature verified');
       } else {
@@ -76,13 +77,15 @@ export class WebhookController {
           .send('Signature verification failed');
       }
     } catch (error) {
-      this.logger.error(error, 'Class:WebhookController')
+      console.log(error);
+      this.logger.error(error +  'Class:WebhookController')
       return res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .send('Internal Server Error');
+        .send(error);
     }
   }
 
+  
   @Post('/mp-test')
   @ApiExcludeEndpoint()
   @HttpCode(HttpStatus.OK)

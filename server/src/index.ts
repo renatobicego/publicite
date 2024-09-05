@@ -27,6 +27,8 @@ const initializeNestApp = async (): Promise<void> => {
     nestApp.useGlobalPipes(new ValidationPipe({ transform: true }));
     nestApp.enableCors({});
     await nestApp.init();
+
+    console.log(`Server running`);
   }
 };
 

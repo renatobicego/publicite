@@ -193,15 +193,15 @@ export class MpWebhookService implements MpWebhookServiceInterface {
         );
       }
       const planID = plan.getId();
-      if (status === 'cancelled') {
-        this.logger.log(
-          'Subscription cancelled: The subscription ID:' +
-            id +
-            'will be cancelled - Class: mpWebhookService',
-        );
-        await this.mercadoPagoEventsRepository.cancelSubscription(id);
-        return Promise.resolve();
-      }
+      // if (status === 'cancelled') {
+      //   this.logger.log(
+      //     'Subscription cancelled: The subscription ID:' +
+      //       id +
+      //       'will be cancelled - Class: mpWebhookService',
+      //   );
+      //   await this.mercadoPagoEventsRepository.cancelSubscription(id);
+      //   return Promise.resolve();
+      // }
       try {
         this.logger.log(
           'Creating a new subscription with ID: ' +

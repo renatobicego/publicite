@@ -127,23 +127,22 @@ export default class MercadoPagoEventsRepository
   }
 
   async cancelSubscription(id: string): Promise<void> {
-    this.logger.log('Cancel subscription in repository: ' + id);
-    this.logger.log(
-      'If you need more information about this action, please check the ID ' +
-        id,
-    );
-
-    const result = await this.subscriptionModel.findOneAndUpdate(
-      { mpPreapprovalId: id },
-      { status: 'cancelled' },
-      { new: true },
-    );
-
-    if (!result) {
-      this.logger.error(`Subscription with id ${id} not found.`);
-      throw new Error(`Subscription with id ${id} not found.`);
-    }
-
-    this.logger.log(`Subscription with id ${id} successfully cancelled.`);
+    console.log(id);
+    return Promise.resolve();
+    // this.logger.log('Cancel subscription in repository: ' + id);
+    // this.logger.log(
+    //   'If you need more information about this action, please check the ID ' +
+    //     id,
+    // );
+    // const result = await this.subscriptionModel.findOneAndUpdate(
+    //   { mpPreapprovalId: id },
+    //   { status: 'cancelled' },
+    //   { new: true },
+    // );
+    // if (!result) {
+    //   this.logger.error(`Subscription with id ${id} not found.`);
+    //   throw new Error(`Subscription with id ${id} not found.`);
+    // }
+    // this.logger.log(`Subscription with id ${id} successfully cancelled.`);
   }
 }

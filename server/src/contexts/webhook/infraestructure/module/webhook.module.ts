@@ -1,25 +1,24 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-
-import { WebhookService } from '../../application/clerk/clerkWebhook.service';
-import { ClerkWebhookAdapter } from '../adapters/clerk/clerk-webhook.adapter';
-import { WebhookController } from '../controllers/webhook.controller';
-import { MpWebhookAdapter } from '../adapters/mercadopago/mp-webhook.adapter';
-import { SubscriptionSchema } from '../schemas/mercadopago/subscription.schema';
 import { MongooseModule } from '@nestjs/mongoose';
-import { MpHandlerEvents } from '../../application/mercadopago/handler/mpHandlerEvents';
-import { InvoiceSchema } from '../schemas/mercadopago/invoice.schema';
-import MercadoPagoEventsRepository from '../repository/mercadopago/mpEvents.repository';
-import { PaymentSchema } from '../schemas/mercadopago/payment.schema';
-import { SubscriptionPlanSchema } from '../schemas/mercadopago/subscriptionPlan.schema';
-import { SubscriptionController } from '../controllers/subscription.controller';
-import { SubscriptionAdapter } from '../adapters/mercadopago/mp-subscription.adapter';
-import { SubscriptionRepository } from '../repository/mercadopago/subscription.repository';
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
 import { UserModule } from 'src/contexts/user/infraestructure/module/user.module';
+import { WebhookService } from '../../application/clerk/clerkWebhook.service';
 import { MpHandlerValidations } from '../../application/mercadopago/handler/mp.handler.validations';
-import { MpWebhookService } from '../../application/mercadopago/service/mpWebhook.service';
+import { MpHandlerEvents } from '../../application/mercadopago/handler/mpHandlerEvents';
 import { MpSubscriptionService } from '../../application/mercadopago/service/mpSubscription.service';
+import { MpWebhookService } from '../../application/mercadopago/service/mpWebhook.service';
+import { ClerkWebhookAdapter } from '../adapters/clerk/clerk-webhook.adapter';
+import { SubscriptionAdapter } from '../adapters/mercadopago/mp-subscription.adapter';
+import { MpWebhookAdapter } from '../adapters/mercadopago/mp-webhook.adapter';
+import { SubscriptionController } from '../controllers/subscription.controller';
+import { WebhookController } from '../controllers/webhook.controller';
+import MercadoPagoEventsRepository from '../repository/mercadopago/mpEvents.repository';
+import { SubscriptionRepository } from '../repository/mercadopago/subscription.repository';
+import { InvoiceSchema } from '../schemas/mercadopago/invoice.schema';
+import { PaymentSchema } from '../schemas/mercadopago/payment.schema';
+import { SubscriptionSchema } from '../schemas/mercadopago/subscription.schema';
+import { SubscriptionPlanSchema } from '../schemas/mercadopago/subscriptionPlan.schema';
 
 @Module({
   imports: [
@@ -84,7 +83,10 @@ import { MpSubscriptionService } from '../../application/mercadopago/service/mpS
     },
     {
       provide: 'MpHandlerValidationsInterface',
-      useClass: MpHandlerValidations,
+      useFactory: (configService: ConfigService, logger: MyLoggerService) => {
+        return new MpHandlerValidations(configService, logger);
+      },
+      inject: [ConfigService, MyLoggerService], // Inyecta las dependencias
     },
   ],
 })
