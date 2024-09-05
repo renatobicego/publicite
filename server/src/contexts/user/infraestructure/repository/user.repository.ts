@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Inject,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { UserRepositoryInterface } from '../../domain/repository/user-repository.interface';
@@ -24,7 +25,6 @@ import { SectorRepositoryInterface } from 'src/contexts/businessSector/domain/re
 import { Gender } from '../controller/dto/enums.request';
 import { UP_clerkUpdateRequestDto } from 'src/contexts/webhook/application/clerk/dto/UP-clerk.update.request';
 import { IUser, UserModel } from '../schemas/user.schema';
-import { error } from 'console';
 
 @Injectable()
 export class UserRepository
@@ -162,7 +162,7 @@ export class UserRepository
     const user = await this.user.findOne({ username: username });
 
     if (!user) {
-      throw error;
+      throw new NotFoundException('User not found');
     }
     let query = this.user.findOne({ username: username }).populate('contact');
 
@@ -178,7 +178,7 @@ export class UserRepository
     } else if (populatedUser?.userType === 'Business') {
       return UserBussiness.formatDocument(populatedUser as IUserBusiness);
     } else {
-      throw new NotFoundException('User not found');
+      throw new InternalServerErrorException('User type not recognized');
     }
   }
 
