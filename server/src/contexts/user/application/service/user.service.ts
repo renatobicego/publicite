@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Inject } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/mongoose';
 import { ClientSession, Connection, Types } from 'mongoose';
@@ -6,7 +10,10 @@ import { ClientSession, Connection, Types } from 'mongoose';
 import { UserBusinessDto } from '../../infraestructure/controller/dto/user.business.DTO';
 import { UserRepositoryInterface } from '../../domain/repository/user-repository.interface';
 import { UserServiceInterface } from '../../domain/service/user.service.interface';
-import { UserPersonDto } from '../../infraestructure/controller/dto/user.person.DTO';
+import {
+  UserPersonalInformationResponse,
+  UserPersonDto,
+} from '../../infraestructure/controller/dto/user.person.DTO';
 import { UP_update, UserPerson } from '../../domain/entity/userPerson.entity';
 import {
   UB_update,
@@ -93,7 +100,45 @@ export class UserService implements UserServiceInterface {
   ): Promise<Types.ObjectId> {
     return await this.contactService.createContact(contactDto, options);
   }
+  async getUserPersonalInformationByUsername(
+    username: string,
+  ): Promise<UserPersonalInformationResponse> {
+    let userResponse: UserPersonalInformationResponse;
+    try {
+      const user =
+        await this.userRepository.getUserPersonalInformationByUsername(
+          username,
+        );
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
 
+      if (user instanceof UserPerson) {
+        userResponse = {
+          birthDate: user.getBirthDate(),
+          gender: user.getGender(),
+          countryRegion: user.getCountryRegion(),
+          description: user.getDescription(),
+          contact: user.getContact() as any,
+        };
+        return userResponse;
+      } else if (user instanceof UserBussiness) {
+        userResponse = {
+          countryRegion: user.getCountryRegion(),
+          description: user.getDescription(),
+          contact: user.getContact() as any,
+          sector: user.getSector() as any,
+          businessName: user.getBusinessName(),
+        };
+        return userResponse;
+      } else {
+        throw new NotFoundException('User not found');
+      }
+    } catch (error) {
+      this.logger.error(error);
+      throw error;
+    }
+  }
   async updateUser(
     username: string,
     req: UP_publiciteUpdateRequestDto | UB_publiciteUpdateRequestDto,

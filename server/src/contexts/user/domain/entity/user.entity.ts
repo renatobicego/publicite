@@ -1,4 +1,5 @@
 import { ObjectId } from 'mongoose';
+import { Contact } from 'src/contexts/contact/domain/entity/contact.entity';
 
 export enum UserType {
   Personal = 'Personal',

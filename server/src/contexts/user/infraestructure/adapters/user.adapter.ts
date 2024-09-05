@@ -23,6 +23,15 @@ export class UserAdapter implements UserAdapterInterface {
     @Inject('UserServiceInterface')
     private readonly userService: UserServiceInterface,
   ) {}
+  async getUserPersonalInformationByUsername(username: string): Promise<any> {
+    try {
+      return await this.userService.getUserPersonalInformationByUsername(
+        username,
+      );
+    } catch (error: any) {
+      throw error;
+    }
+  }
 
   async createUser(
     req: UserPersonDto | UserBusinessDto,

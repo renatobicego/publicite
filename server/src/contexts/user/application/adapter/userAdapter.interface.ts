@@ -20,4 +20,6 @@ export interface UserAdapterInterface {
     req: UP_publiciteUpdateRequestDto | UB_publiciteUpdateRequestDto,
     type: number,
   ): Promise<any>;
+
+  getUserPersonalInformationByUsername(username: string): Promise<any>;
 }

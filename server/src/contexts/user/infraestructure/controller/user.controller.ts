@@ -1,5 +1,13 @@
-import { Body, Controller, Inject, Param, Post, Put } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { UserPersonDto, UserPersonResponse } from './dto/user.person.DTO';
 import { UserBusinessDto, UserBusinessResponse } from './dto/user.business.DTO';
@@ -27,6 +35,7 @@ export class UserController {
     status: 500,
     description: 'Internal server error.',
   })
+  @ApiBody({ type: UserPersonDto })
   async createPersonalAccount(
     @Body() requesNewtUser: UserPersonDto,
   ): Promise<UserPersonResponse> {
@@ -51,6 +60,7 @@ export class UserController {
     status: 500,
     description: 'Internal server error.',
   })
+  @ApiBody({ type: UserBusinessDto })
   async createBusinessAccount(
     @Body() requestNewUser: UserBusinessDto,
   ): Promise<UserBusinessResponse> {
@@ -71,12 +81,12 @@ export class UserController {
   @ApiResponse({
     status: 200,
     description: 'The account has been successfully Updated.',
-    type: [UP_publiciteUpdateRequestDto],
   })
   @ApiResponse({
     status: 500,
     description: 'Internal server error.',
   })
+  @ApiBody({ type: UP_publiciteUpdateRequestDto })
   async updatePersonalAccount(
     @Body() updateRequest: UP_publiciteUpdateRequestDto,
     @Param('username') username: string,
@@ -97,12 +107,12 @@ export class UserController {
   @ApiResponse({
     status: 200,
     description: 'The account has been successfully Updated.',
-    type: [UB_publiciteUpdateRequestDto],
   })
   @ApiResponse({
     status: 500,
     description: 'Internal server error.',
   })
+  @ApiBody({ type: UB_publiciteUpdateRequestDto })
   async updateBusinessAccount(
     @Body() updateRequest: UB_publiciteUpdateRequestDto,
     @Param('username') username: string,
@@ -113,6 +123,30 @@ export class UserController {
         updateRequest,
         1,
       )) as UserBusinessResponse;
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  @Get('/profile/:username')
+  @ApiOperation({ summary: 'Get profile information of particular account' })
+  @ApiResponse({
+    status: 200,
+    description: "Data it's correct.",
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal server error.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'User not found.',
+  })
+  async getPersonalInformation(
+    @Param('username') username: string,
+  ): Promise<UserBusinessResponse> {
+    try {
+      return this.userAdapter.getUserPersonalInformationByUsername(username);
     } catch (error: any) {
       throw error;
     }
