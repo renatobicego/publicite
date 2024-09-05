@@ -1,10 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+
 import { WebhookService } from '../../application/clerk/clerkWebhook.service';
 import { ClerkWebhookAdapter } from '../adapters/clerk/clerk-webhook.adapter';
 import { WebhookController } from '../controllers/webhook.controller';
-
-import { MpWebhookService } from '../../application/mercadopago/mpWebhook.service';
 import { MpWebhookAdapter } from '../adapters/mercadopago/mp-webhook.adapter';
 import { SubscriptionSchema } from '../schemas/mercadopago/subscription.schema';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -15,10 +14,12 @@ import { PaymentSchema } from '../schemas/mercadopago/payment.schema';
 import { SubscriptionPlanSchema } from '../schemas/mercadopago/subscriptionPlan.schema';
 import { SubscriptionController } from '../controllers/subscription.controller';
 import { SubscriptionAdapter } from '../adapters/mercadopago/mp-subscription.adapter';
-import { MpSubscriptionService } from '../../application/mercadopago/mpSubscription.service';
 import { SubscriptionRepository } from '../repository/mercadopago/subscription.repository';
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
 import { UserModule } from 'src/contexts/user/infraestructure/module/user.module';
+import { MpHandlerValidations } from '../../application/mercadopago/handler/mp.handler.validations';
+import { MpWebhookService } from '../../application/mercadopago/service/mpWebhook.service';
+import { MpSubscriptionService } from '../../application/mercadopago/service/mpSubscription.service';
 
 @Module({
   imports: [
@@ -62,7 +63,7 @@ import { UserModule } from 'src/contexts/user/infraestructure/module/user.module
       useClass: MpWebhookService,
     },
     {
-      provide: 'MercadoPagoEventsInterface',
+      provide: 'MercadoPagoEventsRepositoryInterface',
       useClass: MercadoPagoEventsRepository,
     },
     {
@@ -80,6 +81,10 @@ import { UserModule } from 'src/contexts/user/infraestructure/module/user.module
     {
       provide: 'SubscriptionServiceInterface',
       useClass: MpSubscriptionService,
+    },
+    {
+      provide: 'MpHandlerValidationsInterface',
+      useClass: MpHandlerValidations,
     },
   ],
 })

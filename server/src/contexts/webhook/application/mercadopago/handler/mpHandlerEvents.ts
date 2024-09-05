@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
+
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
-import { MpHandlerEventsInterface } from 'src/contexts/webhook/domain/mercadopago/handler/eventHandler.interface';
+import { MpHandlerEventsInterface } from 'src/contexts/webhook/domain/mercadopago/handler/mp.handler.events.interface';
 import { MpWebhookServiceInterface } from 'src/contexts/webhook/domain/mercadopago/service/mpWebhook.service.interface';
 
 /*
