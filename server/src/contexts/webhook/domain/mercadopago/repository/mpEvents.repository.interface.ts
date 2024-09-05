@@ -6,6 +6,7 @@ import Subscription from '../entity/subcription.entity';
 
 export default interface MercadoPagoEventsRepositoryInterface {
   createPayment(payment: Payment): Promise<void>;
+  cancelSubscription(id: string): Promise<void>;
   findStatusOfUserSubscription(
     payerId: string,
     subscriptionPlanID: ObjectId,

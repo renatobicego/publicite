@@ -193,7 +193,15 @@ export class MpWebhookService implements MpWebhookServiceInterface {
         );
       }
       const planID = plan.getId();
-
+      if (status === 'cancelled') {
+        this.logger.log(
+          'Subscription cancelled: The subscription ID:' +
+            id +
+            'will be cancelled - Class: mpWebhookService',
+        );
+        await this.mercadoPagoEventsRepository.cancelSubscription(id);
+        return Promise.resolve();
+      }
       try {
         this.logger.log(
           'Creating a new subscription with ID: ' +
@@ -211,7 +219,7 @@ export class MpWebhookService implements MpWebhookServiceInterface {
           planID, // id del plan en nuestro sistema
           start_date, // fecha de inicio
           end_date, // fecha de fin
-          external_reference, // identificador de usuario
+          external_reference, // identificador de usuario (Es el ID de clerk)
         );
         await this.mercadoPagoEventsRepository.saveSubPreapproval(
           newUserSuscription,
