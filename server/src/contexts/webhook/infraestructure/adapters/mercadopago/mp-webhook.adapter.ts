@@ -61,12 +61,12 @@ export class MpWebhookAdapter {
   }
 
   async getDataFromMP(body: any): Promise<boolean> {
-    this.logger.log('Getting data from MP');
+    this.logger.log('----------------Getting data from MP--------------------');
 
     const dataId = body.data.id;
     const type = body.type;
     const action = body.action;
-
+    console.log(body);
     //Si no existen estos datos el header esta mal y no podremos seguir, arrojamos error
     if (!type || !dataId) {
       this.logger.error('Missing queryObject', 'Class:MpWebhookAdapter');
@@ -96,9 +96,14 @@ export class MpWebhookAdapter {
       case 'subscription_preapproval':
         this.logger.log(
           'processing subscription_preapproval Case - Action: ' +
+            action +
             ' Type: ' +
             type,
         );
+        if (action === 'updated') {
+          this.logger.log('We recive an subcription - ACTION: UPDATE');
+          await this.subscription_preapproval_updated(dataId);
+        }
         const subscription_preapproval_response =
           await this.subscription_preapproval(dataId);
         if (subscription_preapproval_response) return Promise.resolve(true);
@@ -136,6 +141,18 @@ export class MpWebhookAdapter {
       dataID,
       action,
     );
+    if (result) {
+      return Promise.resolve(true);
+    } else {
+      return Promise.resolve(false);
+    }
+  }
+
+  async subscription_preapproval_updated(dataID: string): Promise<boolean> {
+    const result =
+      await this.mpHandlerEvent.handleEvent_subscription_preapproval_updated(
+        dataID,
+      );
     if (result) {
       return Promise.resolve(true);
     } else {

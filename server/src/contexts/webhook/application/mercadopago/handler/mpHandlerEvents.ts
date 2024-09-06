@@ -46,6 +46,29 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
       throw new Error(error);
     }
   }
+  async handleEvent_subscription_preapproval_updated(
+    dataID: string,
+  ): Promise<boolean> {
+    this.logger.log('handleEvent_subscription_preapproval_updated');
+    try {
+      const subscription_preapproval_update =
+        await this.mpWebhookService.fetchData(
+          `${this.URL_SUBCRIPTION_PREAPPROVAL_CHECK}${dataID}`,
+        );
+      console.log('subscription_preapproval_update RESPONSE:');
+      console.log(subscription_preapproval_update);
+      await this.mpWebhookService.updateSubscription_preapproval(
+        subscription_preapproval_update,
+      );
+      return Promise.resolve(true);
+    } catch (error: any) {
+      this.logger.error(
+        'An error has ocurred while processing subscription_preapproval_updated event: ' +
+          error,
+      );
+      throw new Error(error);
+    }
+  }
 
   async handleEvent_subscription_authorized_payment(
     dataID: string,

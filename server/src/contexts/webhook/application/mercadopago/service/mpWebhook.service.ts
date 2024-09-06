@@ -12,6 +12,7 @@ import Payment from 'src/contexts/webhook/domain/mercadopago/entity/payment.enti
 import MercadoPagoEventsRepositoryInterface from 'src/contexts/webhook/domain/mercadopago/repository/mpEvents.repository.interface';
 import Invoice from 'src/contexts/webhook/domain/mercadopago/entity/invoice.entity';
 import Subscription from 'src/contexts/webhook/domain/mercadopago/entity/subcription.entity';
+import { getLocalTimeZone, today } from '@internationalized/date';
 
 //import { UserRepositoryInterface } from 'src/contexts/user/domain/user-repository.interface';
 
@@ -154,7 +155,9 @@ export class MpWebhookService implements MpWebhookServiceInterface {
     subscription_preapproval: any,
   ): Promise<void> {
     this.logger.log('---SUBSCRIPTION SERVICE---');
-    this.logger.log('createSubscription_preapproval - Class: mpWebhookService');
+    this.logger.log(
+      'Method -> createSubscription_preapproval -> Class: mpWebhookService',
+    );
 
     try {
       // Crear el nuevo objeto de suscripción
@@ -193,15 +196,6 @@ export class MpWebhookService implements MpWebhookServiceInterface {
         );
       }
       const planID = plan.getId();
-      // if (status === 'cancelled') {
-      //   this.logger.log(
-      //     'Subscription cancelled: The subscription ID:' +
-      //       id +
-      //       'will be cancelled - Class: mpWebhookService',
-      //   );
-      //   await this.mercadoPagoEventsRepository.cancelSubscription(id);
-      //   return Promise.resolve();
-      // }
       try {
         this.logger.log(
           'Creating a new subscription with ID: ' +
@@ -227,22 +221,62 @@ export class MpWebhookService implements MpWebhookServiceInterface {
       } catch (error: any) {
         throw error;
       }
-      //PENDIENTE: Deberia ver si el estado esta cancelado o no, ver luego como manejar eso.
-
-      // const checkStatus =
-      //   await this.mercadoPagoEventsRepository.findByPayerIdAndSubscriptionPlanID(
-      //     payer_id,
-      //     planID,
-      //     external_reference,
-      //   );
-
-      // await this.mercadoPagoEventsRepository.updateUserSubscription(
-      //   payer_id,
-      //   newUserSuscription,
-      // );
     } catch (error) {
       this.logger.error(
         'Error in createSubscription_preapproval - Class: mpWebhookService',
+        error,
+      );
+      throw error;
+    }
+  }
+
+  async updateSubscription_preapproval(
+    subscription_preapproval_update: any,
+  ): Promise<void> {
+    try {
+      const {
+        id,
+        // payer_id,
+        status,
+        // preapproval_plan_id,
+        // auto_recurring,
+        external_reference,
+      } = subscription_preapproval_update;
+
+      if (status === 'cancelled') {
+        await this.cancelSubscription_preapproval(id);
+        return Promise.resolve();
+      }
+
+      const updateObject = {
+        status: status,
+        external_reference: external_reference,
+      };
+
+      await this.mercadoPagoEventsRepository.updateSubscription(
+        id,
+        updateObject,
+      );
+
+      return Promise.resolve();
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  async cancelSubscription_preapproval(id: string): Promise<void> {
+    try {
+      this.logger.log(
+        'Subscription cancelled: The subscription ID:' +
+          id +
+          'will be cancelled - Class: mpWebhookService',
+      );
+      const end_date = today(getLocalTimeZone()).toString();
+      await this.mercadoPagoEventsRepository.cancelSubscription(id, end_date);
+      return Promise.resolve();
+    } catch (error: any) {
+      this.logger.error(
+        'Error cancelSubscription_preapproval - Class: mpWebhookService',
         error,
       );
       throw error;

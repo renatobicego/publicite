@@ -26,6 +26,19 @@ export default class MercadoPagoEventsRepository
     @InjectModel('SubscriptionPlan')
     private readonly subscriptionPlanModel: Model<SubscriptionPlanDocument>,
   ) {}
+  async updateSubscription(id: string, updateObject: any): Promise<void> {
+    this.logger.log('Update subscription with ID: ' + id);
+    const result = await this.subscriptionModel.findOneAndUpdate(
+      { mpPreapprovalId: id },
+      updateObject,
+      { new: true },
+    );
+    if (!result) {
+      this.logger.error(`Subscription with id ${id} not found.`);
+      throw new Error(`Subscription with id ${id} not found.`);
+    }
+    this.logger.log(`Subscription with id ${id} successfully updated.`);
+  }
 
   async findPaymentByPaymentID(id: any): Promise<Payment | null> {
     this.logger.log('Find payment by payment ID: ' + id);
@@ -110,39 +123,37 @@ export default class MercadoPagoEventsRepository
     );
   }
 
-  async updateUserSubscription(
-    payerId: string,
-    sub: Subscription,
-  ): Promise<void> {
-    this.logger.log('Update subscription of payerID: ' + payerId);
-    const subcriptionPlanId = sub.getSubscriptionPlan();
-    const updateFields = { ...sub };
+  // async updateUserSubscription(
+  //   payerId: string,
+  //   sub: Subscription,
+  // ): Promise<void> {
+  //   this.logger.log('Update subscription of payerID: ' + payerId);
+  //   const subcriptionPlanId = sub.getSubscriptionPlan();
+  //   const updateFields = { ...sub };
 
-    // Realiza la actualización
-    await this.subscriptionModel.findOneAndUpdate(
-      { payerId: payerId },
-      { subscriptionPlan: subcriptionPlanId },
-      { $set: updateFields },
+  //   // Realiza la actualización
+  //   await this.subscriptionModel.findOneAndUpdate(
+  //     { payerId: payerId },
+  //     { subscriptionPlan: subcriptionPlanId },
+  //     { $set: updateFields },
+  //   );
+  // }
+
+  async cancelSubscription(id: string, end_date: string): Promise<void> {
+    this.logger.log('Cancel subscription in repository: ' + id);
+    this.logger.log(
+      'If you need more information about this action, please check the ID ' +
+        id,
     );
-  }
-
-  async cancelSubscription(id: string): Promise<void> {
-    console.log(id);
-    return Promise.resolve();
-    // this.logger.log('Cancel subscription in repository: ' + id);
-    // this.logger.log(
-    //   'If you need more information about this action, please check the ID ' +
-    //     id,
-    // );
-    // const result = await this.subscriptionModel.findOneAndUpdate(
-    //   { mpPreapprovalId: id },
-    //   { status: 'cancelled' },
-    //   { new: true },
-    // );
-    // if (!result) {
-    //   this.logger.error(`Subscription with id ${id} not found.`);
-    //   throw new Error(`Subscription with id ${id} not found.`);
-    // }
-    // this.logger.log(`Subscription with id ${id} successfully cancelled.`);
+    const result = await this.subscriptionModel.findOneAndUpdate(
+      { mpPreapprovalId: id },
+      { status: 'cancelled', end_date: end_date },
+      { new: true },
+    );
+    if (!result) {
+      this.logger.error(`Subscription with id ${id} not found.`);
+      throw new Error(`Subscription with id ${id} not found.`);
+    }
+    this.logger.log(`Subscription with id ${id} successfully cancelled.`);
   }
 }

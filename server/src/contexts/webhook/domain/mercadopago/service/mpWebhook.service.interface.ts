@@ -5,5 +5,8 @@ export interface MpWebhookServiceInterface {
     subscription_authorized_payment: any,
   ): Promise<void>;
   create_payment(payment: any): Promise<void>;
-  //setPayerIDtoUser(payerId: string, payerEmail: string): Promise<void>;
+  updateSubscription_preapproval(
+    subscription_preapproval_update: any,
+  ): Promise<void>;
+  cancelSubscription_preapproval(id: string): Promise<void>;
 }

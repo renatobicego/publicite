@@ -6,7 +6,7 @@ import Subscription from '../entity/subcription.entity';
 
 export default interface MercadoPagoEventsRepositoryInterface {
   createPayment(payment: Payment): Promise<void>;
-  cancelSubscription(id: string): Promise<void>;
+  cancelSubscription(id: string, end_date: string): Promise<void>;
   findStatusOfUserSubscription(
     payerId: string,
     subscriptionPlanID: ObjectId,
@@ -18,5 +18,6 @@ export default interface MercadoPagoEventsRepositoryInterface {
   findAllSubscriptions(): Promise<Subscription[]>;
   saveSubPreapproval(sub: Subscription): Promise<void>;
   saveInvoice(invoice: Invoice): Promise<void>;
-  updateUserSubscription(payerId: string, sub: Subscription): Promise<void>;
+  updateSubscription(id: string, updateObject: any): Promise<void>;
+  //updateUserSubscription(payerId: string, sub: Subscription): Promise<void>;
 }
