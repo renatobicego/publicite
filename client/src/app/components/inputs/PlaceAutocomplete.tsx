@@ -35,6 +35,7 @@ const PlaceAutocomplete = (props: FieldInputProps<any>) => {
         },
       }}
       className="px-4 py-[10px]"
+      description="Ingrese una ubicación y seleccione de la lista."
       onValueChange={(value) => getPlacePredictions({ input: value })}
       isLoading={isPlacePredictionsLoading}
       selectedKey={props.value}

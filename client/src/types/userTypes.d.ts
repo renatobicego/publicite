@@ -43,7 +43,7 @@ export interface Contact {
   phone: string;
   instagram?: string;
   facebook?: string;
-  twitter?: string;
+  x?: string;
   website?: string;
 }
 
@@ -86,7 +86,7 @@ export interface UserBusinessFormValues
     phone?: string;
     instagram?: string;
     facebook?: string;
-    twitter?: string;
+    x?: string;
     website?: string;
   };
   businessSector: ObjectId;
@@ -101,8 +101,13 @@ export interface BoardType {
 }
 
 
-export type EditPersonProfileProps = Partial<Pick<UserPersonFormValues, "description" | "birthDate" | "gender" | "countryRegion">>
+export interface EditPersonProfileProps extends Partial<Pick<UserPersonFormValues, "description" | "birthDate" | "gender" | "countryRegion">>{
+  contact?: Contact
+}
 
-export type EditBusinessProfileProps = Partial<Pick<UserBusinessFormValues, "businessName" | "businessSector" | "countryRegion" | "description">>
+export interface EditBusinessProfileProps extends Partial<Pick<UserBusinessFormValues, "businessName" | "countryRegion" | "description" | "contact">>{
+  businessSector: BusinessSector | ObjectId
+  contact?: Contact
+}
 
 export type EditProfileProps = EditBusinessProfileProps | EditPersonProfileProps

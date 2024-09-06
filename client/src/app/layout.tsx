@@ -39,7 +39,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider localization={localization}>
+    <ClerkProvider localization={localization} >
       <html lang="en">
         <body
           className={` ${noto.className}  text-text-color overflow-x-hidden`}

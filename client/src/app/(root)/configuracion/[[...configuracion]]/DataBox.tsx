@@ -59,7 +59,7 @@ export const EditButton = ({
   return (
     <SecondaryButton
       variant="light"
-      className={`font-normal max-md:absolute max-md:right-0 max-md:-top-2.5 ${className}`}
+      className={`font-normal max-md:absolute max-md:right-0 max-md:-top-2.5 hover:text-secondary ${className}`}
       onPress={onPress}
     >
       {text}

@@ -21,16 +21,20 @@ const FormInputs = ({ errors }: PersonalDataFormInputsProps) => {
       <div className="flex gap-4 w-full max-2xl:flex-col">
         <Field
           as={CustomInput}
-          name="contact.facebook"
+          name="facebook"
           label="Facebook"
+          isInvalid={!!errors.facebook}
+          errorMessage={errors.facebook}
           startContent={<IoLogoFacebook className="size-5 text-blue-600" />}
           aria-label="facebook"
           placeholder="Link a Facebook"
         />
         <Field
           as={CustomInput}
-          name="contact.instagram"
+          name="instagram"
           label="Instagram"
+          isInvalid={!!errors.instagram}
+          errorMessage={errors.instagram}
           startContent={
             <IoLogoInstagram className="size-5 instagram-gradient text-white rounded-md overflow-hidden" />
           }
@@ -39,25 +43,31 @@ const FormInputs = ({ errors }: PersonalDataFormInputsProps) => {
         />
         <Field
           as={CustomInput}
-          name="contact.twitter"
-          label="Twitter"
+          name="x"
+          isInvalid={!!errors.x}
+          errorMessage={errors.x}
+          label="X/Twitter"
           startContent={<FaXTwitter className="size-4 text-slate-900" />}
           aria-label="twitter"
-          placeholder="Link a Twitter"
+          placeholder="Link a X/Twitter"
         />
       </div>
       <div className="flex gap-4 w-full max-2xl:flex-col">
         <Field
           as={CustomInput}
-          name="contact.phone"
+          name="phone"
           label="whatsapp / Teléfono"
+          isInvalid={!!errors.phone}
+          errorMessage={errors.phone}
           aria-label="contacto"
           placeholder="Ingrese teléfono de contacto"
           startContent={<IoLogoWhatsapp className="size-5 text-green-600" />}
         />
         <Field
           as={CustomInput}
-          name="contact.website"
+          name="website"
+          isInvalid={!!errors.website}
+          errorMessage={errors.website}
           startContent={<FaLink className="size-4 text-text-color" />}
           label="Website"
           aria-label="website"

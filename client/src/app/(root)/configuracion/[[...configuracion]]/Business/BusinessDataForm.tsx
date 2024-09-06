@@ -1,4 +1,4 @@
-import { EditBusinessProfileProps } from "@/types/userTypes";
+import { BusinessSector, EditBusinessProfileProps } from "@/types/userTypes";
 import { Form, Formik, FormikHelpers } from "formik";
 import { useRouter } from "next/navigation";
 import { editProfile } from "../Profile/actions";
@@ -23,13 +23,15 @@ const personalDataFormSchema = object({
 
 const BusinessDataForm = ({
   setIsFormVisible,
+  data
 }: {
   setIsFormVisible: (value: boolean) => void;
+  data?: EditBusinessProfileProps;
 }) => {
   const initialValues: EditBusinessProfileProps = {
-    countryRegion: "Las Heras, Mendoza, Argentina",
-    businessName: "Samsung",
-    businessSector: "",
+    countryRegion: data?.countryRegion || "",
+    businessName: data?.businessName || "",
+    businessSector: (data?.businessSector as BusinessSector)._id || "",
   };
   const router = useRouter();
   const handleSubmit = async (

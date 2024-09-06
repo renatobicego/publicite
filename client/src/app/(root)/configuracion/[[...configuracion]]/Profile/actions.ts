@@ -1,5 +1,8 @@
 "use server";
-import { getUserProfileData, putUserProfileData } from "@/app/services/userServices";
+import {
+  getUserProfileData,
+  putUserProfileData,
+} from "@/app/services/userServices";
 import {
   EditPersonProfileProps,
   EditProfileProps,
@@ -41,13 +44,11 @@ export const editProfile = async (
   }
 };
 
-export const getProfileData = async (userType: UserType) => {
+export const getProfileData = async () => {
   const user = await currentUser();
   if (!user?.username) {
     return { error: "Usuario no autenticado. Por favor inicie sesión." };
   }
 
-  if (userType === "Person") {
-    return await getUserProfileData(user.username);
-  }
+  return await getUserProfileData(user.username);
 };

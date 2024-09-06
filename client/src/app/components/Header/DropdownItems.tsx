@@ -25,6 +25,7 @@ const DropdownItems = () => {
           className="rounded-full text-text-color"
           key="planes"
           color="secondary"
+          textValue="Planes de Subscripción"
         >
           Planes de Subscripción
         </DropdownItem>
@@ -32,6 +33,7 @@ const DropdownItems = () => {
           className="rounded-full"
           key="cerrar-sesion"
           color="danger"
+          textValue="Cerrar Sesión"
         >
           <SignOutButton>Cerrar Sesión</SignOutButton>
         </DropdownItem>
