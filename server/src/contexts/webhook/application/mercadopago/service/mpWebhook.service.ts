@@ -4,14 +4,14 @@ import {
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { MpWebhookServiceInterface } from '../../domain/mercadopago/service/mpWebhook.service.interface';
-import Subcription from '../../domain/mercadopago/entity/subcription.entity';
-
 import { ConfigService } from '@nestjs/config';
-import Invoice from '../../domain/mercadopago/entity/invoice.entity';
-import MercadoPagoEventsInterface from '../../domain/mercadopago/repository/mpEvents.repository.interface';
-import Payment from '../../domain/mercadopago/entity/payment.entity';
+
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
+import { MpWebhookServiceInterface } from 'src/contexts/webhook/domain/mercadopago/service/mpWebhook.service.interface';
+import Payment from 'src/contexts/webhook/domain/mercadopago/entity/payment.entity';
+import MercadoPagoEventsRepositoryInterface from 'src/contexts/webhook/domain/mercadopago/repository/mpEvents.repository.interface';
+import Invoice from 'src/contexts/webhook/domain/mercadopago/entity/invoice.entity';
+import Subscription from 'src/contexts/webhook/domain/mercadopago/entity/subcription.entity';
 
 //import { UserRepositoryInterface } from 'src/contexts/user/domain/user-repository.interface';
 
@@ -25,8 +25,8 @@ export class MpWebhookService implements MpWebhookServiceInterface {
   constructor(
     private readonly logger: MyLoggerService,
     private readonly configService: ConfigService,
-    @Inject('MercadoPagoEventsInterface')
-    private readonly mercadoPagoEventsRepository: MercadoPagoEventsInterface,
+    @Inject('MercadoPagoEventsRepositoryInterface')
+    private readonly mercadoPagoEventsRepository: MercadoPagoEventsRepositoryInterface,
   ) {}
 
   private readonly MP_ACCESS_TOKEN =
@@ -193,7 +193,15 @@ export class MpWebhookService implements MpWebhookServiceInterface {
         );
       }
       const planID = plan.getId();
-
+      // if (status === 'cancelled') {
+      //   this.logger.log(
+      //     'Subscription cancelled: The subscription ID:' +
+      //       id +
+      //       'will be cancelled - Class: mpWebhookService',
+      //   );
+      //   await this.mercadoPagoEventsRepository.cancelSubscription(id);
+      //   return Promise.resolve();
+      // }
       try {
         this.logger.log(
           'Creating a new subscription with ID: ' +
@@ -204,14 +212,14 @@ export class MpWebhookService implements MpWebhookServiceInterface {
             plan.getDescription() +
             ' - Class: mpWebhookService',
         );
-        const newUserSuscription = new Subcription(
+        const newUserSuscription = new Subscription(
           id, // ID de la suscripción
           payer_id, // id del payer
           status, // estado de la suscripción
           planID, // id del plan en nuestro sistema
           start_date, // fecha de inicio
           end_date, // fecha de fin
-          external_reference, // identificador de usuario
+          external_reference, // identificador de usuario (Es el ID de clerk)
         );
         await this.mercadoPagoEventsRepository.saveSubPreapproval(
           newUserSuscription,

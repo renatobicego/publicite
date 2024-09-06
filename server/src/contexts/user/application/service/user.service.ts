@@ -103,42 +103,54 @@ export class UserService implements UserServiceInterface {
   async getUserPersonalInformationByUsername(
     username: string,
   ): Promise<UserPersonalInformationResponse> {
-    let userResponse: UserPersonalInformationResponse;
     try {
       const user =
         await this.userRepository.getUserPersonalInformationByUsername(
           username,
         );
+
       if (!user) {
         throw new NotFoundException('User not found');
       }
+      /*
+      Consideraar modularizar la logica de la respuesta.
+
+      */
+      const countryRegion = user.getCountryRegion
+        ? user.getCountryRegion()
+        : undefined;
+      const description = user.getDescription
+        ? user.getDescription()
+        : undefined;
+      const contact = user.getContact ? (user.getContact() as any) : undefined;
+
+      const userResponse: UserPersonalInformationResponse = {
+        countryRegion,
+        description,
+        contact,
+      };
 
       if (user instanceof UserPerson) {
-        userResponse = {
+        return {
+          ...userResponse,
           birthDate: user.getBirthDate(),
           gender: user.getGender(),
-          countryRegion: user.getCountryRegion(),
-          description: user.getDescription(),
-          contact: user.getContact() as any,
         };
-        return userResponse;
       } else if (user instanceof UserBussiness) {
-        userResponse = {
-          countryRegion: user.getCountryRegion(),
-          description: user.getDescription(),
-          contact: user.getContact() as any,
+        return {
+          ...userResponse,
           sector: user.getSector() as any,
           businessName: user.getBusinessName(),
         };
-        return userResponse;
       } else {
-        throw new NotFoundException('User not found');
+        throw new NotFoundException('User type not recognized');
       }
     } catch (error) {
       this.logger.error(error);
       throw error;
     }
   }
+
   async updateUser(
     username: string,
     req: UP_publiciteUpdateRequestDto | UB_publiciteUpdateRequestDto,

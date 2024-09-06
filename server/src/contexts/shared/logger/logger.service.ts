@@ -1,8 +1,8 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable, Logger, LoggerService } from '@nestjs/common';
 
 @Injectable()
-export class MyLoggerService {
-  private readonly logger = new Logger('GlobalLogger');
+export class MyLoggerService implements LoggerService {
+  private readonly logger = new Logger('Publicite-Log');
 
   log(message: string) {
     this.logger.log(message);

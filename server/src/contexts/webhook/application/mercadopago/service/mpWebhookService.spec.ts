@@ -4,13 +4,13 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 
 // Importamos las dependencias específicas del proyecto.
-import Payment from '../../domain/mercadopago/entity/payment.entity';
-import MercadoPagoEventsRepositoryInterface from '../../domain/mercadopago/repository/mpEvents.repository.interface';
+import Payment from '../../../domain/mercadopago/entity/payment.entity';
+import MercadoPagoEventsRepositoryInterface from '../../../domain/mercadopago/repository/mpEvents.repository.interface';
 import { MpWebhookService } from './mpWebhook.service';
-import { MyLoggerService } from '../../../shared/logger/logger.service';
-import Invoice from '../../domain/mercadopago/entity/invoice.entity';
+import { MyLoggerService } from '../../../../shared/logger/logger.service';
+import Invoice from '../../../domain/mercadopago/entity/invoice.entity';
 import { ObjectId } from 'mongoose';
-import Subscription from '../../domain/mercadopago/entity/subcription.entity';
+import Subscription from '../../../domain/mercadopago/entity/subcription.entity';
 import { today, getLocalTimeZone } from '@internationalized/date';
 
 describe('MpWebhookService', () => {

@@ -4,11 +4,10 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config'; // Asegúrate de importar ConfigServic
-import * as crypto from 'crypto';
-import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
 
-import { MpHandlerEventsInterface } from 'src/contexts/webhook/domain/mercadopago/handler/eventHandler.interface';
+import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
+import { MpHandlerEventsInterface } from 'src/contexts/webhook/domain/mercadopago/handler/mp.handler.events.interface';
+import { MpHandlerValidationsInterface } from 'src/contexts/webhook/domain/mercadopago/handler/mp.handler.validations.interface';
 
 /*
 Adapter: responsable de orquestar la logica de procesamiento del webhook, utiliza el handler de eventos de la capa de aplicación.
@@ -23,9 +22,11 @@ Pendiente:
 @Injectable()
 export class MpWebhookAdapter {
   constructor(
-    private readonly configService: ConfigService,
     @Inject('MpHandlerEventsInterface')
     private readonly mpHandlerEvent: MpHandlerEventsInterface,
+    @Inject('MpHandlerValidationsInterface')
+    private readonly mpHandlerValidations: MpHandlerValidationsInterface,
+
     private readonly logger: MyLoggerService,
   ) {}
 
@@ -33,22 +34,11 @@ export class MpWebhookAdapter {
     header: Record<string, string>,
     req: Request,
   ): Promise<boolean> {
-    const request = req.url.split('?')[1];
-    const queryObject = new URLSearchParams(request);
     const { body } = req;
-    const dataId = queryObject.get('data.id');
 
-    const xSignature = header['x-signature'];
-    const xRequestId = header['x-request-id'];
-    if (!xSignature || !xRequestId) {
-      this.logger.error('Invalid webhook headers');
-      throw new UnauthorizedException('Invalid webhook headers');
-    }
-
-    const validation = this.checkHashValidation(
-      xSignature,
-      xRequestId,
-      dataId ?? '',
+    const validation = await this.mpHandlerValidations.checkHashValidation(
+      req,
+      header,
     );
 
     if (validation) {
@@ -70,53 +60,12 @@ export class MpWebhookAdapter {
     }
   }
 
-  checkHashValidation(xSignature: string, xRequestId: string, dataId: string) {
-    // Separate x-signature into parts
-    const parts = xSignature.split(',');
-    let ts: string | undefined;
-    let hash: string | undefined;
-
-    // Iterate over the values to obtain ts and v1
-    parts.forEach((part) => {
-      // Split each part into key and value
-      const [key, value] = part.split('=');
-      if (key && value) {
-        const trimmedKey = key.trim();
-        const trimmedValue = value.trim();
-        if (trimmedKey === 'ts') {
-          ts = trimmedValue;
-        } else if (trimmedKey === 'v1') {
-          hash = trimmedValue;
-        }
-      }
-    });
-
-    const secret = this.configService.get<string>('SECRET_KEY_MP_WEBHOOK');
-    if (!secret) {
-      this.logger.error(
-        'Please add SECRET_KEY_MP_WEBHOOK to your environment variables',
-      );
-      return Promise.resolve(false);
-    }
-
-    // Create the manifest string
-    const manifest = `id:${dataId};request-id:${xRequestId};ts:${ts};`;
-    // Generate the HMAC signature
-    const hmac = crypto.createHmac('sha256', secret);
-    hmac.update(manifest);
-    const sha = hmac.digest('hex');
-    if (sha === hash) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   async getDataFromMP(body: any): Promise<boolean> {
     this.logger.log('Getting data from MP');
 
     const dataId = body.data.id;
     const type = body.type;
+    const action = body.action;
 
     //Si no existen estos datos el header esta mal y no podremos seguir, arrojamos error
     if (!type || !dataId) {
@@ -124,7 +73,6 @@ export class MpWebhookAdapter {
       throw new UnauthorizedException('Invalid webhook headers');
     }
 
-    const action = body.action;
     switch (type) {
       case 'payment':
         this.logger.log(

@@ -62,7 +62,7 @@ export class SubscriptionController {
   }
 
   @Get(':email')
-  @ApiOperation({ summary: 'Get active subscription by userId' })
+  @ApiOperation({ summary: 'Get active subscription by email' })
   @ApiResponse({
     status: 200,
     description: 'Return active subscription of user.',

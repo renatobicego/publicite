@@ -28,15 +28,15 @@ export class UserBussiness extends User {
     lastName: string,
     sector: ObjectId,
     businessName: string,
-    contact?: ObjectId, // Hacer contact opcional
-    createdTime: string = '', // Valor por defecto
-    subscriptions: ObjectId[] = [], // Valor por defecto
-    groups: ObjectId[] = [], // Valor por defecto
-    magazines: ObjectId[] = [], // Valor por defecto
-    board: ObjectId[] = [], // Valor por defecto
-    post: ObjectId[] = [], // Valor por defecto
-    userRelations: ObjectId[] = [], // Valor por defecto
-    userType: UserType = UserType.Business, // Valor por defecto
+    contact?: ObjectId,
+    createdTime: string = '',
+    subscriptions: ObjectId[] = [],
+    groups: ObjectId[] = [],
+    magazines: ObjectId[] = [],
+    board: ObjectId[] = [],
+    post: ObjectId[] = [],
+    userRelations: ObjectId[] = [],
+    userType: UserType = UserType.Business,
     _id?: ObjectId,
   ) {
     super(
@@ -85,7 +85,7 @@ export class UserBussiness extends User {
       document.board ?? [],
       document.post ?? [],
       document.userRelations ?? [],
-      document.userType ?? UserType.Business, // Valor por defecto en caso de que falte
+      document.userType ?? UserType.Business,
       document._id as ObjectId,
     );
   }

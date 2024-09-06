@@ -54,7 +54,6 @@ export default class Subscription {
   public getEndDate(): string {
     return this.endDate;
   }
-  
 
   static fromDocument(doc: any): Subscription {
     console.log('convirtiendo sub schema a entity');
