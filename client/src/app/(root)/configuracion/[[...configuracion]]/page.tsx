@@ -1,8 +1,8 @@
-"use client";
-
+"use client"
+import { memo, useMemo } from "react";
 import { UserProfile, useUser } from "@clerk/nextjs";
 import { BiSolidUserDetail } from "react-icons/bi";
-import { FaBell, FaEyeSlash, FaShield, FaSliders } from "react-icons/fa6";
+import { FaBell, FaEyeSlash, FaSliders } from "react-icons/fa6";
 import Profile from "./Profile/Profile";
 import Subscriptions from "./Subscriptions/Subscriptions";
 import { MdPayments } from "react-icons/md";
@@ -17,7 +17,7 @@ const UserProfilePage = () => {
   const { user } = useUser();
   const userType = user?.publicMetadata?.userType;
 
-  const pageToReturn = () => {
+  const pageToReturn = useMemo(() => {
     switch (userType) {
       case "Person":
         return (
@@ -25,6 +25,7 @@ const UserProfilePage = () => {
             label="Perfil"
             labelIcon={<BiSolidUserDetail className="size-4" />}
             url="perfil"
+            key="Profile"
           >
             <Profile />
           </UserProfile.Page>
@@ -35,15 +36,16 @@ const UserProfilePage = () => {
             label="Empresa"
             url="empresa"
             labelIcon={<IoBusiness className="size-4" />}
+            key="Business"
           >
             <Business />
           </UserProfile.Page>
         );
-
       default:
         return null;
     }
-  };
+  }, [userType]);
+
   return (
     <main className="flex flex-col items-center min-h-screen main-style">
       <UserProfile
@@ -56,8 +58,9 @@ const UserProfilePage = () => {
             navbar: "bg-fondo max-lg:max-w-48",
           },
         }}
+        
       >
-        {pageToReturn()}
+        {pageToReturn}
         <UserProfile.Page
           label="Suscripción"
           labelIcon={<MdPayments className="size-4" />}
@@ -92,4 +95,4 @@ const UserProfilePage = () => {
   );
 };
 
-export default UserProfilePage;
+export default memo(UserProfilePage);

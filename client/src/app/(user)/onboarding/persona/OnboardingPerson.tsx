@@ -9,7 +9,6 @@ import { userPersonValidation } from "./userPersonValidation";
 import { Divider } from "@nextui-org/react";
 import OnboardingPersonInputs from "./OnboardingPersonInputs";
 import { completeOnboardingPerson } from "../_actions";
-import { Bounce, toast } from "react-toastify";
 import { toastifyError } from "@/app/utils/toastify";
 const OnboardingPerson = () => {
   const { user } = useUser();

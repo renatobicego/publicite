@@ -20,3 +20,11 @@ export const getEndDateISO = (monthsToAdd: number) => {
       .toISOString();
   }
 };
+
+export function formatDate(dateString: DateValue | string) {
+  // Split the date string into an array [YYYY, MM, DD]
+  const dateParts = dateString.toString().split("-");
+
+  // Reverse the array and join with slashes to get DD/MM/YYYY
+  return dateParts.reverse().join("/");
+}

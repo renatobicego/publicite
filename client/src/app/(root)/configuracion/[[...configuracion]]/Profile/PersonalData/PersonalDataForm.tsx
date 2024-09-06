@@ -25,13 +25,15 @@ const personalDataFormSchema = object({
 
 const PersonalDataForm = ({
   setIsFormVisible,
+  data
 }: {
   setIsFormVisible: (value: boolean) => void;
+  data?: EditPersonProfileProps
 }) => {
   const initialValues: EditPersonProfileProps = {
-    birthDate: "2000-01-01",
-    gender: "M",
-    countryRegion: "Las Heras, Mendoza, Argentina",
+    birthDate: data?.birthDate || "",
+    gender: data?.gender || "",
+    countryRegion: data?.countryRegion || "",
   };
   const router = useRouter();
   const handleSubmit = async (

@@ -21,7 +21,7 @@ export const CustomInput = ({
       variant="bordered"
       className="px-4 py-[10px] border-[0.5px]"
       classNames={{
-        inputWrapper: "shadow-none hover:shadow-sm border-[0.5px]",
+        inputWrapper: "shadow-none hover:shadow-sm border-[0.5px] group-data-[focus=true]:border-light-text",
         input: "text-[0.8125rem]",
         label: "font-medium text-[0.8125rem]",
       }}

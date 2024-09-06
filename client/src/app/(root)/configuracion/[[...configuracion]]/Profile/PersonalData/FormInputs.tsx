@@ -6,6 +6,7 @@ import {
 import PlaceAutocomplete from "@/app/components/inputs/PlaceAutocomplete";
 import { CalendarDate } from "@internationalized/date";
 import { EditPersonProfileProps } from "@/types/userTypes";
+import { genderItems } from "@/app/utils/selectData";
 interface PersonalDataFormInputsProps {
   initialValues: EditPersonProfileProps;
   errors: FormikErrors<EditPersonProfileProps>;
@@ -20,12 +21,7 @@ const FormInputs = ({
   errors,
   setFieldValue,
 }: PersonalDataFormInputsProps) => {
-  const genderItems = [
-    { name: "Masculino", value: "M" },
-    { name: "Femenino", value: "F" },
-    { name: "No Binario", value: "X" },
-    { name: "Otro", value: "O" },
-  ];
+
   return (
     <>
       <Field

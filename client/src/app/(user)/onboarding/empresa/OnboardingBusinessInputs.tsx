@@ -6,7 +6,18 @@ import {
 import PlaceAutocomplete from "@/app/components/inputs/PlaceAutocomplete";
 import { BusinessSector, UserBusinessFormValues } from "@/types/userTypes";
 import { Field, FormikErrors } from "formik";
-import { FaFacebook, FaInstagram, FaLink, FaTwitter } from "react-icons/fa6";
+import {
+  FaFacebook,
+  FaInstagram,
+  FaLink,
+  FaTwitter,
+  FaXTwitter,
+} from "react-icons/fa6";
+import {
+  IoLogoFacebook,
+  IoLogoInstagram,
+  IoLogoWhatsapp,
+} from "react-icons/io";
 
 interface OnboardingBusinessInputsProps {
   errors: FormikErrors<UserBusinessFormValues>;
@@ -76,8 +87,11 @@ const OnboardingBusinessInputs = ({
         />
         <Field
           as={CustomInput}
+          startContent={<IoLogoWhatsapp className="text-green-600" />}
           name="contact.phone"
           label="Contacto / Teléfono (opcional)"
+          isInvalid={!!errors.contact?.phone}
+          errorMessage={errors.contact?.phone}
           aria-label="contacto"
           placeholder="Ingrese teléfono de contacto"
         />
@@ -87,34 +101,44 @@ const OnboardingBusinessInputs = ({
           as={CustomInput}
           name="contact.facebook"
           label="Facebook"
-          startContent={<FaFacebook />}
+          startContent={<IoLogoFacebook className=" text-blue-600" />}
           aria-label="facebook"
+          isInvalid={!!errors.contact?.facebook}
+          errorMessage={errors.contact?.facebook}
           placeholder="Link a Facebook"
         />
         <Field
           as={CustomInput}
           name="contact.instagram"
           label="Instagram"
-          startContent={<FaInstagram />}
+          startContent={
+            <IoLogoInstagram className="instagram-gradient text-white rounded-md overflow-hidden" />
+          }
           aria-label="instagram"
+          isInvalid={!!errors.contact?.instagram}
+          errorMessage={errors.contact?.instagram}
           placeholder="Link a Instagram"
         />
       </div>
       <div className="flex gap-4 w-full max-2xl:flex-col">
         <Field
           as={CustomInput}
-          name="contact.twitter"
-          label="Twitter"
-          startContent={<FaTwitter />}
+          name="contact.x"
+          label="X/Twitter"
+          startContent={<FaXTwitter className=" text-slate-900" />}
           aria-label="twitter"
-          placeholder="Link a Twitter"
+          isInvalid={!!errors.contact?.x}
+          errorMessage={errors.contact?.x}
+          placeholder="Link a X/Twitter"
         />
         <Field
           as={CustomInput}
           name="contact.website"
-          startContent={<FaLink />}
+          startContent={<FaLink className=" text-text-color" />}
           label="Website"
           aria-label="website"
+          isInvalid={!!errors.contact?.website}
+          errorMessage={errors.contact?.website}
           placeholder="Link a página web"
         />
       </div>

@@ -1,7 +1,6 @@
 "use client";
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 import { Form, Formik, FormikHelpers } from "formik";
 import { UserBusinessFormValues } from "@/types/userTypes";
 import PrimaryButton from "@/app/components/buttons/PrimaryButton";
@@ -10,10 +9,8 @@ import OnboardingBusinessInputs from "./OnboardingBusinessInputs";
 import { userBusinessValidation } from "./userBusinessValidation";
 import { Divider } from "@nextui-org/react";
 import { completeOnboardingBusiness } from "../_actions";
-import { Bounce, toast } from "react-toastify";
 import { toastifyError } from "@/app/utils/toastify";
 const OnboardingBusiness = () => {
-  const [error, setError] = useState("");
   const { user } = useUser();
   const router = useRouter();
   if (!user) return null;
@@ -23,7 +20,7 @@ const OnboardingBusiness = () => {
       phone: "",
       instagram: "",
       facebook: "",
-      twitter: "",
+      x: "",
       website: "",
     },
     countryRegion: "",

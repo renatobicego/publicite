@@ -7,3 +7,4 @@ Podríamos:
 - Si el usuario borra un mail, nosotros no lo borramos porque puede estar asociado con MP
 
 - Sino, si el usuario cambia el mail, podríamos actualizarlo en mp pero sería medio quilombo
+

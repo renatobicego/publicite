@@ -1,34 +1,43 @@
-import { Divider } from "@nextui-org/react";
+import { Divider, Spinner } from "@nextui-org/react";
 import PersonalData from "./PersonalData/PersonalData";
 import Description from "./Description/Description";
 import SocialMedia from "./SocialMedia/SocialMedia";
-import { useEffect, useState } from "react";
-import { UserPerson } from "@/types/userTypes";
+import { useEffect, useState, memo } from "react";
+import { EditPersonProfileProps } from "@/types/userTypes";
 import { getProfileData } from "./actions";
 
+const MemoizedPersonalData = memo(PersonalData);
+const MemoizedDescription = memo(Description);
+const MemoizedSocialMedia = memo(SocialMedia);
+
 const Profile = () => {
-  const [userData, setUserData] = useState<UserPerson>();
+  const [userData, setUserData] = useState<EditPersonProfileProps>();
+
+  const getUserData = async () => {
+    const data = await getProfileData();
+    setUserData(data);
+  };
 
   useEffect(() => {
-    const getUserData = async () => {
-      console.log(await getProfileData("Person"));
-    };
     if (!userData) {
       getUserData();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  if (!userData) return <Spinner color="warning" />;
   return (
     <section className="flex flex-col gap-4">
       <h2 className="profile-title">Datos de Perfil</h2>
+
       <Divider />
-      <PersonalData />
+      <MemoizedPersonalData data={userData} />
       <Divider />
-      <Description />
+      <MemoizedDescription description={userData.description} />
       <Divider />
-      <SocialMedia />
+      <MemoizedSocialMedia contact={userData.contact} />
     </section>
   );
 };
 
-export default Profile;
+export default memo(Profile);

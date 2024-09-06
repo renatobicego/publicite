@@ -147,6 +147,7 @@
   color: #8cd867;
   background-color: #8cd86730;
 }
+
 .cl-avatarImageActionsUpload {
   background-color: #8cd867;
   color: white;
@@ -173,6 +174,9 @@
 .cl-profileSectionPrimaryButton__danger,
 .cl-profileSectionPrimaryButton__danger:hover {
   color: #ef4444;
+}
+.cl-profileSectionPrimaryButton__danger:hover{
+  background-color: #ef444430;
 }
 
 .cl-menuList,

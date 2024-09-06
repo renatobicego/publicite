@@ -1,8 +1,10 @@
 import { EditPersonProfileProps, UserPersonFormValues } from "@/types/userTypes";
 import axios from "axios";
 
+const baseUrl = `${process.env.API_URL}/user/personal`;
+
 export const postUserPerson = async (formData: UserPersonFormValues) => {
-  return await axios.post(`${process.env.API_URL}/user/personal`, formData);
+  return await axios.post(`${baseUrl}`, formData);
 };
 
 export const putUserProfileData = async (
@@ -10,14 +12,14 @@ export const putUserProfileData = async (
   username: string
 ) => {
   return await axios.put(
-    `${process.env.API_URL}/user/personal/${username}`,
+    `${baseUrl}/${username}`,
     formData
   );
 };
 
 export const getUserProfileData = async (username: string) => {
   try {
-    const res = await fetch(`${process.env.API_URL}/user/personal/${username}/personalData`)
+    const res = await fetch(`${process.env.API_URL}/user/personal-data/${username}`)
     return res.json()
   } catch (error) {
     throw new Error("Error al traer los datos personales del usuario.")
