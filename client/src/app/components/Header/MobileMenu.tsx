@@ -12,6 +12,7 @@ import { Variants } from "framer-motion";
 import React from "react";
 import Notifications from "./Notifications";
 import SecondaryButton from "../buttons/SecondaryButton";
+import DropdownItems from "./DropdownItems";
 
 const MobileMenu = () => {
   const { user, isSignedIn } = useUser();
@@ -59,7 +60,7 @@ const MobileMenu = () => {
         exit: "hidden",
         transition: { duration: 0.3 },
       }}
-      className="bg-white h-fit !w-auto mx-4 px-6 pb-6 md:mx-10 md:px-8 rounded-b-xl shadow-2xl fixed items-end gap-1"
+      className="bg-white h-fit !w-auto header-spacing rounded-b-xl shadow-2xl fixed items-end gap-1 pr-6 md:pr-8"
     >
       {shownItems.map((item, index) => (
         <NavbarMenuItem key={`${item}-${index}`}>
@@ -81,6 +82,7 @@ const MobileMenu = () => {
             userProfileMode="navigation"
             userProfileUrl={CONFIGURATION}
           />
+          <DropdownItems />
         </SignedIn>
         <SignedOut>
           <SecondaryButton as={Link} href="/iniciar-sesion" variant="flat" className="-mr-4 mt-2">

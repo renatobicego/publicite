@@ -1,6 +1,6 @@
 import React from "react";
-import { getSubscriptionsPlans } from "./services";
 import { Button, Link } from "@nextui-org/react";
+import { getSubscriptionsPlans } from "../services/subscriptionServices";
 
 const SubscriptionsPlans = async () => {
   const { results } = await getSubscriptionsPlans();
@@ -12,7 +12,7 @@ const SubscriptionsPlans = async () => {
         <li >
           {plan.reason}
         </li>
-        <Button as={Link} href={`/subscripcion/checkout/${plan.id}`}>
+        <Button as={Link} href={`/suscripcion/checkout/${plan.id}`}>
           Pagar Plan
         </Button>
         </div>

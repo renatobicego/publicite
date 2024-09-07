@@ -23,7 +23,7 @@ const PetitionCard = ({
     ? `por ${frequencyPrice[post.frequencyPrice]}`
     : "";
   return (
-    <CardBody className="flex flex-col gap-2">
+    <CardBody className="flex flex-col gap-2 pb-5 justify-start">
       <h6>{post.title}</h6>
       <div className="flex gap-1">
         <Chip className="border-petition" variant="bordered" size="sm">

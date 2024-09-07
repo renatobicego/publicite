@@ -1,7 +1,7 @@
 "use client";
+import { editSubscription } from "@/app/services/subscriptionServices";
 import { Button, Link } from "@nextui-org/react";
 import React from "react";
-import { editSubscription } from "../services";
 
 const UserSubscriptionCard = ({ subscription }: { subscription: any }) => {
   const handleChangeStatus = async (

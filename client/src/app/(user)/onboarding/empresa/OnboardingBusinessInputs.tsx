@@ -4,13 +4,13 @@ import {
   CustomTextarea,
 } from "@/app/components/inputs/CustomInputs";
 import PlaceAutocomplete from "@/app/components/inputs/PlaceAutocomplete";
+import { getBusinessSector } from "@/app/services/businessServices";
 import { BusinessSector, UserBusinessFormValues } from "@/types/userTypes";
 import { Field, FormikErrors } from "formik";
+import { useEffect, useState } from "react";
 import {
-  FaFacebook,
-  FaInstagram,
+
   FaLink,
-  FaTwitter,
   FaXTwitter,
 } from "react-icons/fa6";
 import {
@@ -32,12 +32,16 @@ const OnboardingBusinessInputs = ({
   errors,
   setFieldValue,
 }: OnboardingBusinessInputsProps) => {
-  const mockedBusinessSectorItems: BusinessSector[] = [
-    { label: "Masculino", _id: "M", description: "Lorem ipsum" },
-    { label: "Femenino", _id: "F", description: "Lorem ipsum" },
-    { label: "No Binario", _id: "X", description: "Lorem ipsum" },
-    { label: "Otro", _id: "O", description: "Lorem ipsum" },
-  ];
+  const [businessSectors, setBusinessSectors] = useState<BusinessSector[]>([]);
+  useEffect(() => {
+    const fetchBusinessSectors = async () => {
+      setBusinessSectors(await getBusinessSector());
+    }
+    if(businessSectors.length === 0){
+      fetchBusinessSectors();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   return (
     <>
       <div className="flex gap-4 w-full max-2xl:flex-col">
@@ -65,14 +69,14 @@ const OnboardingBusinessInputs = ({
       <div className="flex gap-4 w-full max-2xl:flex-col">
         <Field
           as={CustomSelect}
-          name="businessSector"
+          name="sector"
           isRequired
           label="Rubro de la Empresa"
           aria-label="rubro de la empresa"
           placeholder="Seleccione el rubro"
-          items={mockedBusinessSectorItems}
-          isInvalid={!!errors.businessSector}
-          errorMessage={errors.businessSector}
+          items={businessSectors}
+          isInvalid={!!errors.sector}
+          errorMessage={errors.sector}
           renderItem={(item: BusinessSector) => (
             <div className="flex flex-col gap-1">
               <p>{item.label}</p>

@@ -8,4 +8,5 @@ export interface SubscriptionPlan {
   postLimit: number;
   intervalTime: number;
   isActive: boolean;
+  isPostPack?: boolean;
 }

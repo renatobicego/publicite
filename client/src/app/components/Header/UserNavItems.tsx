@@ -23,15 +23,13 @@ const UserNavItems = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
             userProfileMode="navigation"
             userProfileUrl={CONFIGURATION}
           />
+          <DropdownItems />
         </SignedIn>
         <SignedOut>
           <SecondaryButton as={Link} href="/iniciar-sesion" variant="flat">
             Iniciar Sesión
           </SecondaryButton>
         </SignedOut>
-      </NavbarItem>
-      <NavbarItem className="max-lg:hidden">
-        <DropdownItems />
       </NavbarItem>
       <NavbarMenuToggle
         // icon={isMenuOpen ? <IoIosClose className="size-6"/> : <IoIosMenu className="size-6"/>}

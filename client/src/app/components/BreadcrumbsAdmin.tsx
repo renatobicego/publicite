@@ -12,7 +12,11 @@ const BreadcrumbsAdmin = ({
   return (
     <Breadcrumbs>
       {items.map((item) => (
-        <BreadcrumbItem href={item.href} key={item.label}>
+        <BreadcrumbItem
+          href={item.href}
+          key={item.label}
+          classNames={{ item: "max-md:text-xs" }}
+        >
           {item.label}
         </BreadcrumbItem>
       ))}

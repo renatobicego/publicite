@@ -5,6 +5,7 @@ const CONFIGURATION = "/configuracion";
 const POSTS = "/anuncios";
 const TUTORIALS = "/tutoriales";
 const SUBSCRIPTIONS = "/suscripciones";
+const PACKS = "/packs-publicaciones";
 
 export {
   MAGAZINES,
@@ -14,4 +15,5 @@ export {
   POSTS,
   TUTORIALS,
   SUBSCRIPTIONS,
+  PACKS,
 };
