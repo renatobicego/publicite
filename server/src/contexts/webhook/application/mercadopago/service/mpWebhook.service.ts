@@ -12,7 +12,6 @@ import Payment from 'src/contexts/webhook/domain/mercadopago/entity/payment.enti
 import MercadoPagoEventsRepositoryInterface from 'src/contexts/webhook/domain/mercadopago/repository/mpEvents.repository.interface';
 import Invoice from 'src/contexts/webhook/domain/mercadopago/entity/invoice.entity';
 import Subscription from 'src/contexts/webhook/domain/mercadopago/entity/subcription.entity';
-import { getLocalTimeZone, today } from '@internationalized/date';
 
 //import { UserRepositoryInterface } from 'src/contexts/user/domain/user-repository.interface';
 
@@ -271,8 +270,8 @@ export class MpWebhookService implements MpWebhookServiceInterface {
           id +
           'will be cancelled - Class: mpWebhookService',
       );
-      const end_date = today(getLocalTimeZone()).toString();
-      await this.mercadoPagoEventsRepository.cancelSubscription(id, end_date);
+
+      await this.mercadoPagoEventsRepository.cancelSubscription(id);
       return Promise.resolve();
     } catch (error: any) {
       this.logger.error(

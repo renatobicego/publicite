@@ -102,7 +102,10 @@ export class MpWebhookAdapter {
         );
         if (action === 'updated') {
           this.logger.log('We recive an subcription - ACTION: UPDATE');
-          await this.subscription_preapproval_updated(dataId);
+          const subscription_preapproval_response =
+            await this.subscription_preapproval_updated(dataId);
+          if (subscription_preapproval_response) return Promise.resolve(true);
+          break;
         }
         const subscription_preapproval_response =
           await this.subscription_preapproval(dataId);

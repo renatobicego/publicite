@@ -139,7 +139,7 @@ export default class MercadoPagoEventsRepository
   //   );
   // }
 
-  async cancelSubscription(id: string, end_date: string): Promise<void> {
+  async cancelSubscription(id: string): Promise<void> {
     this.logger.log('Cancel subscription in repository: ' + id);
     this.logger.log(
       'If you need more information about this action, please check the ID ' +
@@ -147,7 +147,7 @@ export default class MercadoPagoEventsRepository
     );
     const result = await this.subscriptionModel.findOneAndUpdate(
       { mpPreapprovalId: id },
-      { status: 'cancelled', end_date: end_date },
+      { status: 'cancelled' },
       { new: true },
     );
     if (!result) {
