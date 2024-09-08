@@ -49,6 +49,5 @@ export const getProfileData = async () => {
   if (!user?.username) {
     return { error: "Usuario no autenticado. Por favor inicie sesión." };
   }
-
   return await getUserProfileData(user.username);
 };

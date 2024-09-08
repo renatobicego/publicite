@@ -1,4 +1,7 @@
-import { EditPersonProfileProps, UserPersonFormValues } from "@/types/userTypes";
+import {
+  EditPersonProfileProps,
+  UserPersonFormValues,
+} from "@/types/userTypes";
 import axios from "axios";
 
 const baseUrl = `${process.env.API_URL}/user/personal`;
@@ -11,17 +14,19 @@ export const putUserProfileData = async (
   formData: EditPersonProfileProps,
   username: string
 ) => {
-  return await axios.put(
-    `${baseUrl}/${username}`,
-    formData
-  );
+  return await axios.put(`${baseUrl}/${username}`, formData);
 };
 
 export const getUserProfileData = async (username: string) => {
   try {
-    const res = await fetch(`${process.env.API_URL}/user/personal-data/${username}`)
-    return res.json()
+    const res = await fetch(
+      `${process.env.API_URL}/user/personal-data/${username}`
+    );
+
+    return res.json();
   } catch (error) {
-    throw new Error("Error al traer los datos personales del usuario.")
+    return {
+      error: "Error al traer los datos personales del usuario. Por favor intenta de nuevo.",
+    };
   }
 };

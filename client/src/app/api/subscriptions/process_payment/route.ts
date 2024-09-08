@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
           preapproval_plan_id: subscriptionPlan.id,
           reason: subscriptionPlan.reason,
           //external_reference: formData.payer.email
-          external_reference:"TEST_AMEX"
+          external_reference:"Amex_con_validacion_15"
         },
       })
       .then(console.log)

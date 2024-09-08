@@ -32,7 +32,7 @@
   }
 
   h3 {
-    @apply font-bold text-lg md:text-xl xl:text-2xl;
+    @apply font-bold text-xl xl:text-2xl;
   }
 
   h4 {
@@ -59,12 +59,16 @@
     @apply mx-4 md:mx-10 lg:mx-[80px] xl:mx-[100px];
   }
 
+  .header-spacing {
+    @apply mx-2 md:mx-4 lg:mx-12 xl:mx-16;
+  }
+
   .layout-padding {
     @apply px-4 md:px-10 lg:px-[80px] xl:px-[100px];
   }
 
   .main-style {
-    @apply pt-7 pb-20 md:pt-8 md:pb-32 lg:pt-10 lg:pb-36 layout-spacing;
+    @apply pt-4 pb-20 md:pt-8 md:pb-32 xl:pt-10 xl:pb-36 layout-spacing;
   }
 
   .profile-paragraph, .cl-profileSectionTitleText, .cl-profileSectionItem p, .cl-formButtonReset{

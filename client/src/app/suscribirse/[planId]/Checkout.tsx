@@ -1,27 +1,27 @@
 "use client";
 
+import { processPayment } from "@/app/services/subscriptionServices";
 import { useUser } from "@clerk/nextjs";
 import { CardPayment, initMercadoPago } from "@mercadopago/sdk-react";
 import { ICardPaymentBrickPayer } from "@mercadopago/sdk-react/bricks/cardPayment/type";
-import { editPayment } from "../../services";
 
 initMercadoPago(process.env.NEXT_PUBLIC_MP_PUBLIC_KEY as string);
 
 type CheckoutProps = {
-  subscription: any
+  subscriptionPlan: any
 }
 
-const Checkout = ({subscription} : CheckoutProps) => {
+const Checkout = ({subscriptionPlan} : CheckoutProps) => {
   const { user, isLoaded } = useUser();
   const initialization: { amount: number; payer: ICardPaymentBrickPayer } = {
-    amount: subscription.auto_recurring.transaction_amount,
+    amount: subscriptionPlan.auto_recurring.transaction_amount,
     payer: {
       email: user?.emailAddresses[0].emailAddress,
     },
   };
 
   const onSubmit = async (formData: any) => {
-    await editPayment(formData, subscription);
+    await processPayment(formData, subscriptionPlan);
   };
 
   const onError = async (error: any) => {
@@ -48,11 +48,6 @@ const Checkout = ({subscription} : CheckoutProps) => {
         paymentMethods: {
           maxInstallments: 1,
         },
-        visual: {
-          texts: {
-            formSubmit: "Verificar Método"  
-          }
-        }
       }}
     />
   );

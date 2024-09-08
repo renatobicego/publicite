@@ -177,7 +177,7 @@ export const mockedSubscriptionPlans: SubscriptionPlan[] = [
     _id: "2c9380849146f28",
     reason: "Gratuita",
     price: 6500,
-    description: "Cuenta de uso personal, gratis de por vida.",
+    description: "Cuenta personal gratuita de por vida, con anuncios visibles solo para tus contactos.",
     features: ["Beneficio 1", "Beneficio 2", "Beneficio 3"],
     freePlan: true,
     intervalTime: 1,
@@ -186,7 +186,7 @@ export const mockedSubscriptionPlans: SubscriptionPlan[] = [
   },
   {
     _id: "2c9380849146ff3d01914739031d0028",
-    reason: "Publicité Premium",
+    reason: "Premium",
     price: 6500,
     description: "Publicité Premium",
     features: ["Beneficio 1", "Beneficio 2", "Beneficio 3"],
@@ -196,13 +196,46 @@ export const mockedSubscriptionPlans: SubscriptionPlan[] = [
   },
   {
     _id: "2c9380849146ff3d01914739038",
-    reason: "Publicité Premium Gold",
+    reason: "Premium Gold",
     price: 10000,
     description: "Publicité Premium Gold",
     features: ["Beneficio 1", "Beneficio 2", "Beneficio 3"],
     intervalTime: 1,
     isActive: true,
     postLimit: 100,
+  },
+];
+
+export const mockedPacks: SubscriptionPlan[] = [
+  {
+    _id: "2c9380849146f28",
+    reason: "+ 10 Publicaciones Activas",
+    price: 3500,
+    description: "Las 10 publicaciones activas sumadas tendrán una duración de 1 mes. ",
+    features: [],
+    intervalTime: 1,
+    isActive: true,
+    postLimit: 10
+  },
+  {
+    _id: "2c9380849146ff3d01914739031d0028",
+    reason: "+ 20 Publicaciones Activas",
+    price: 6500,
+    description: "Las 20 publicaciones activas sumadas tendrán una duración de 1 mes. ",
+    features: [],
+    intervalTime: 1,
+    isActive: true,
+    postLimit: 20,
+  },
+  {
+    _id: "2c9380849146ff3d01914739038",
+    reason: "+ 50 Publicaciones Activas",
+    price: 10000,
+    description: "Las 50 publicaciones activas sumadas tendrán una duración de 1 mes. ",
+    features: [],
+    intervalTime: 1,
+    isActive: true,
+    postLimit: 50,
   },
 ];
 

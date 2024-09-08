@@ -1,4 +1,4 @@
-import { SUBSCRIPTIONS } from "@/app/utils/urls";
+import { PACKS, SUBSCRIPTIONS } from "@/app/utils/urls";
 import { SignOutButton } from "@clerk/nextjs";
 import {
   Button,
@@ -28,6 +28,16 @@ const DropdownItems = () => {
           textValue="Planes de Subscripción"
         >
           Planes de Subscripción
+        </DropdownItem>
+        <DropdownItem
+          as={Link}
+          href={PACKS}
+          className="rounded-full text-text-color"
+          key="packs"
+          color="secondary"
+          textValue="Packs de Publicaciones"
+        >
+          Packs de Publicaciones
         </DropdownItem>
         <DropdownItem
           className="rounded-full"

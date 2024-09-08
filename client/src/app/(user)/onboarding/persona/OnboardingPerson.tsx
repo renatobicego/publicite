@@ -59,8 +59,8 @@ const OnboardingPerson = () => {
         validateOnChange={false}
         validateOnBlur={false}
       >
-        {({ errors, setFieldValue }) => (
-          <Form className="card flex flex-col items-center bg-white px-10 py-8 gap-4 lg:w-3/4 max-w-[400px]">
+        {({ errors, setFieldValue, isSubmitting }) => (
+          <Form className="card flex flex-col items-center bg-white px-6 md:px-10 py-8 gap-4 w-5/6 md:w-3/4 max-w-[400px]">
             <div>
               <h5>¡Ya casi terminamos!</h5>
               <p className="small-text">Complete los últimos datos.</p>
@@ -72,7 +72,13 @@ const OnboardingPerson = () => {
               setFieldValue={setFieldValue}
               initialValues={initialValues}
             />
-            <PrimaryButton type="submit">Completar Registro</PrimaryButton>
+            <PrimaryButton
+              type="submit"
+              isDisabled={isSubmitting}
+              isLoading={isSubmitting}
+            >
+              Completar Registro
+            </PrimaryButton>
           </Form>
         )}
       </Formik>

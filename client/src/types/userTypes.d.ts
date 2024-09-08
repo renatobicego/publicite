@@ -28,7 +28,7 @@ export interface UserPerson extends User {
 }
 
 export interface UserBusiness extends User {
-  businessSector: BusinessSector;
+  sector: BusinessSector;
   businessName: string;
 }
 
@@ -78,7 +78,7 @@ export interface UserBusinessFormValues
     | "contact"
     | "groups"
     | "magazines"
-    | "businessSector"
+    | "sector"
     | "name"
     | "lastName"
   > {
@@ -89,7 +89,9 @@ export interface UserBusinessFormValues
     x?: string;
     website?: string;
   };
-  businessSector: ObjectId;
+  sector: ObjectId;
+  name: string;
+  lastName: string;
 }
 
 export interface BoardType {
