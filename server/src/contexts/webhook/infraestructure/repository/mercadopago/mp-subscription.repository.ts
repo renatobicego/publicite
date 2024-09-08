@@ -3,10 +3,10 @@ import { Model } from 'mongoose';
 import { BadRequestException } from '@nestjs/common';
 import { getLocalTimeZone, today } from '@internationalized/date';
 
-import { SubscriptionRepositoryInterface } from 'src/contexts/webhook/domain/mercadopago/repository/subscription.respository.interface';
 import { SubscriptionResponse } from '../../controllers/response/subscription.response';
 import { SubscriptionDocument } from '../../schemas/mercadopago/subscription.schema';
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
+import { SubscriptionRepositoryInterface } from 'src/contexts/webhook/domain/mercadopago/repository/mp-subscription.respository.interface';
 
 export class SubscriptionRepository implements SubscriptionRepositoryInterface {
   constructor(

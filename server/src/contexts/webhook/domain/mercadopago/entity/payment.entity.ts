@@ -8,6 +8,7 @@ export default class Payment {
   private paymentMethodId: string;
   private transactionAmount: number;
   private dateApproved: string;
+  private external_reference: string;
   private _id?: ObjectId;
 
   constructor(
@@ -18,6 +19,7 @@ export default class Payment {
     paymentMethodId: string,
     transactionAmount: number,
     dateApproved: string,
+    external_reference: string,
     _id?: ObjectId,
   ) {
     this.mpPaymentId = mpPaymentId;
@@ -27,6 +29,7 @@ export default class Payment {
     this.paymentMethodId = paymentMethodId;
     this.transactionAmount = transactionAmount;
     this.dateApproved = dateApproved;
+    this.external_reference = external_reference;
     this._id = _id;
   }
 
@@ -59,6 +62,9 @@ export default class Payment {
     return this.dateApproved;
   }
 
+  public getExternalReference(): string {
+    return this.external_reference;
+  }
   static fromDocument(doc: any): Payment {
     return new Payment(
       doc.mpPaymentId,
@@ -68,6 +74,7 @@ export default class Payment {
       doc.paymentMethodId,
       doc.transactionAmount,
       doc.dateApproved,
+      doc.external_reference,
       doc._id ? doc._id : ' ',
     );
   }

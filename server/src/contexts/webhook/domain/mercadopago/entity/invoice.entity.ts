@@ -7,18 +7,20 @@ export default class Invoice {
   private status: string;
   //private mpAuthorizedPaymentId: string;
   private preapprovalId: string;
+  private external_reference: string;
 
   constructor(
     paymentId: ObjectId | undefined,
     subscriptionId: ObjectId | undefined,
     status: string,
     preapprovalId: string,
+    external_reference: string,
   ) {
     this.paymentId = paymentId;
     this.subscriptionId = subscriptionId;
     this.status = status;
     this.preapprovalId = preapprovalId;
-    //this.mpAuthorizedPaymentId = mpAuthorizedPaymentId;
+    this.external_reference = external_reference;
   }
 
   getPaymentId(): ObjectId | undefined {
@@ -34,5 +36,9 @@ export default class Invoice {
   }
   getPreapprovalId(): string {
     return this.preapprovalId;
+  }
+
+  getExternalReference(): string {
+    return this.external_reference;
   }
 }

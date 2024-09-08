@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
 import { MpHandlerEventsInterface } from 'src/contexts/webhook/domain/mercadopago/handler/mp.handler.events.interface';
-import { MpWebhookServiceInterface } from 'src/contexts/webhook/domain/mercadopago/service/mpWebhook.service.interface';
+import { MpWebhookServiceInterface } from 'src/contexts/webhook/domain/mercadopago/service/mp-webhook.service.interface';
 
 /*
 HandlerEvents de mercadopago: 
@@ -111,24 +111,22 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
         action === 'payment.created' &&
         paymentResponse.operation_type === 'card_validation'
       ) {
-        // if (paymentResponse.payer.id && paymentResponse.payer.email) {
-        //   this.logger.log(
-        //     'Setting user payer id: ' +
-        //       paymentResponse.payer.id +
-        //       'to: ' +
-        //       paymentResponse.payer.email,
-        //   );
-        // }
-        // await this.mpWebhookService.setPayerIDtoUser(
-        //   paymentResponse.payer.id,
-        //   paymentResponse.payer.email,
-        // );
-        this.logger.log(
+        this.logger.warn(
           'MpWebhookAdapter - Case paymenty.created - type card_validation, sending response OK to meli & return',
         );
         return Promise.resolve(true);
       }
-
+      if (
+        paymentResponse.transaction_amount < 1000 ||
+        paymentResponse.external_reference
+          .toSlowCase()
+          .includes('payment validation')
+      ) {
+        this.logger.warn(
+          'Payment amount is less than 1000, returning OK to Meli - Payment card validation',
+        );
+        return Promise.resolve(true);
+      }
       await this.mpWebhookService.create_payment(paymentResponse);
       return Promise.resolve(true);
     } catch (error: any) {

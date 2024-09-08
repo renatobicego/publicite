@@ -6,19 +6,22 @@ import { UserModule } from 'src/contexts/user/infraestructure/module/user.module
 import { WebhookService } from '../../application/clerk/clerkWebhook.service';
 import { MpHandlerValidations } from '../../application/mercadopago/handler/mp.handler.validations';
 import { MpHandlerEvents } from '../../application/mercadopago/handler/mpHandlerEvents';
-import { MpSubscriptionService } from '../../application/mercadopago/service/mpSubscription.service';
-import { MpWebhookService } from '../../application/mercadopago/service/mpWebhook.service';
+import { MpSubscriptionService } from '../../application/mercadopago/service/mp-subscription.service';
+import { MpWebhookService } from '../../application/mercadopago/service/mp-webhook.service';
 import { ClerkWebhookAdapter } from '../adapters/clerk/clerk-webhook.adapter';
 import { SubscriptionAdapter } from '../adapters/mercadopago/mp-subscription.adapter';
 import { MpWebhookAdapter } from '../adapters/mercadopago/mp-webhook.adapter';
 import { SubscriptionController } from '../controllers/subscription.controller';
 import { WebhookController } from '../controllers/webhook.controller';
-import MercadoPagoEventsRepository from '../repository/mercadopago/mpEvents.repository';
-import { SubscriptionRepository } from '../repository/mercadopago/subscription.repository';
+import MercadoPagoEventsRepository from '../repository/mercadopago/mp-events.repository';
+import { SubscriptionRepository } from '../repository/mercadopago/mp-subscription.repository';
 import { InvoiceSchema } from '../schemas/mercadopago/invoice.schema';
 import { PaymentSchema } from '../schemas/mercadopago/payment.schema';
 import { SubscriptionSchema } from '../schemas/mercadopago/subscription.schema';
 import { SubscriptionPlanSchema } from '../schemas/mercadopago/subscriptionPlan.schema';
+import { MpInvoiceAdapter } from '../adapters/mercadopago/mp-invoice.adapter';
+import { MpInvoiceService } from '../../application/mercadopago/service/mp-invoice.service';
+import { MpInvoiceRepository } from '../repository/mercadopago/mp-invoice.repository';
 
 @Module({
   imports: [
@@ -56,30 +59,41 @@ import { SubscriptionPlanSchema } from '../schemas/mercadopago/subscriptionPlan.
     WebhookService, // Servicio para Webhook de Clerk
     MyLoggerService, // Servicio de logging
     MpWebhookAdapter,
-
+    {
+      provide: 'MpHandlerEventsInterface',
+      useClass: MpHandlerEvents,
+    },
     {
       provide: 'MpWebhookServiceInterface',
       useClass: MpWebhookService,
+    },
+    {
+      provide: 'MpServiceInvoiceInterface',
+      useClass: MpInvoiceService,
+    },
+    {
+      provide: 'SubscriptionServiceInterface',
+      useClass: MpSubscriptionService,
     },
     {
       provide: 'MercadoPagoEventsRepositoryInterface',
       useClass: MercadoPagoEventsRepository,
     },
     {
-      provide: 'MpHandlerEventsInterface',
-      useClass: MpHandlerEvents,
-    },
-    {
-      provide: 'SubscriptionAdapterInterface',
-      useClass: SubscriptionAdapter,
+      provide: 'MercadoPagoInvoiceRepositoryInterface',
+      useClass: MpInvoiceRepository,
     },
     {
       provide: 'SubscriptionRepositoryInterface',
       useClass: SubscriptionRepository,
     },
     {
-      provide: 'SubscriptionServiceInterface',
-      useClass: MpSubscriptionService,
+      provide: 'SubscriptionAdapterInterface',
+      useClass: SubscriptionAdapter,
+    },
+    {
+      provide: 'InvoiceAdapterInterface',
+      useClass: MpInvoiceAdapter,
     },
     {
       provide: 'MpHandlerValidationsInterface',

@@ -1,6 +1,7 @@
 import { Inject, InternalServerErrorException } from '@nestjs/common';
-import { SubscriptionRepositoryInterface } from 'src/contexts/webhook/domain/mercadopago/repository/subscription.respository.interface';
-import { SubscriptionServiceInterface } from 'src/contexts/webhook/domain/mercadopago/service/subscription.service.interface';
+
+import { SubscriptionRepositoryInterface } from 'src/contexts/webhook/domain/mercadopago/repository/mp-subscription.respository.interface';
+import { SubscriptionServiceInterface } from 'src/contexts/webhook/domain/mercadopago/service/mp-subscription.service.interface';
 import { SubscriptionResponse } from 'src/contexts/webhook/infraestructure/controllers/response/subscription.response';
 
 export class MpSubscriptionService implements SubscriptionServiceInterface {
