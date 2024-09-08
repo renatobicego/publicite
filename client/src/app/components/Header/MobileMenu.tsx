@@ -1,5 +1,6 @@
 import {
   CONFIGURATION,
+  CREATE,
   GROUPS,
   MAGAZINES,
   POSTS,
@@ -26,13 +27,13 @@ const MobileMenu = () => {
       url: POSTS,
     },
     {
-      title: "Mis Grupos",
-      url: `${PROFILE}/${user?.username}/${GROUPS}}`,
+      title: "Publicar",
+      url: `${CREATE}`,
       isPrivate: true,
     },
     {
-      title: "Mis Revistas",
-      url: `${PROFILE}/${user?.username}/${MAGAZINES}}`,
+      title: "Mi Perfil",
+      url: `${PROFILE}/${user?.username}`,
       isPrivate: true,
     },
     {

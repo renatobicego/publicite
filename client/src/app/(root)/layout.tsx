@@ -1,4 +1,5 @@
 
+import HelpButton from "../components/buttons/HelpButton";
 import Footer from "../components/Footer/Footer";
 import Header from "../components/Header/Header";
 import { BackgroundProvider } from "./backgroundProvider";
@@ -15,6 +16,7 @@ export default function NavigationLayout({
       <BackgroundProvider>
         <BackgroundStyle />
         {children}
+        <HelpButton />
       </BackgroundProvider>
       <Footer />
     </>

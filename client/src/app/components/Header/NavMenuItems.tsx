@@ -1,7 +1,7 @@
 import { Link, NavbarItem } from "@nextui-org/react";
 import React from "react";
 import PrimaryButton from "../buttons/PrimaryButton";
-import { POSTS } from "@/app/utils/urls";
+import { CREATE, POSTS } from "@/app/utils/urls";
 
 const NavMenuItems = () => {
   return (
@@ -17,7 +17,7 @@ const NavMenuItems = () => {
         </Link>
       </NavbarItem>
       <NavbarItem>
-        <PrimaryButton>Publicar</PrimaryButton>
+        <PrimaryButton as={Link} href={CREATE}>Publicar</PrimaryButton>
       </NavbarItem>
     </>
   );

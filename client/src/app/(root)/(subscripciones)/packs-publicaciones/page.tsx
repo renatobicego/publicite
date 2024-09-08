@@ -2,7 +2,7 @@ import BreadcrumbsAdmin from "@/app/components/BreadcrumbsAdmin";
 import { PACKS } from "@/app/utils/urls";
 import SubscriptionGrid from "../components/SubscriptionGrid";
 
-export default function Page() {
+export default function PostPacks() {
   const breadcrumbsItems = [
     {
       label: "Inicio",

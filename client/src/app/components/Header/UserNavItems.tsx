@@ -1,13 +1,15 @@
 import { Link, NavbarItem, NavbarMenuToggle } from "@nextui-org/react";
 import React from "react";
 import SecondaryButton from "../buttons/SecondaryButton";
-import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { SignedIn, SignedOut, UserButton, useUser } from "@clerk/nextjs";
 import Notifications from "./Notifications";
 
-import { CONFIGURATION } from "@/app/utils/urls";
+import { CONFIGURATION, PROFILE } from "@/app/utils/urls";
 import DropdownItems from "./DropdownItems";
+import { FaUser } from "react-icons/fa6";
 
 const UserNavItems = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
+  const { user } = useUser();
   return (
     <>
       <NavbarItem className="max-lg:hidden flex gap-2 items-center">
@@ -22,7 +24,16 @@ const UserNavItems = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
             }}
             userProfileMode="navigation"
             userProfileUrl={CONFIGURATION}
-          />
+          >
+            <UserButton.MenuItems>
+              <UserButton.Link
+                label="Mi Perfil"
+                labelIcon={<FaUser />}
+                href={`${PROFILE}/${user?.username}`}
+              />
+              <UserButton.Action label="manageAccount" />
+            </UserButton.MenuItems>
+          </UserButton>
           <DropdownItems />
         </SignedIn>
         <SignedOut>
