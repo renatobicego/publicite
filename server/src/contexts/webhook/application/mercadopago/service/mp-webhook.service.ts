@@ -7,11 +7,13 @@ import {
 import { ConfigService } from '@nestjs/config';
 
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
-import { MpWebhookServiceInterface } from 'src/contexts/webhook/domain/mercadopago/service/mpWebhook.service.interface';
+
 import Payment from 'src/contexts/webhook/domain/mercadopago/entity/payment.entity';
-import MercadoPagoEventsRepositoryInterface from 'src/contexts/webhook/domain/mercadopago/repository/mpEvents.repository.interface';
+
 import Invoice from 'src/contexts/webhook/domain/mercadopago/entity/invoice.entity';
 import Subscription from 'src/contexts/webhook/domain/mercadopago/entity/subcription.entity';
+import MercadoPagoEventsRepositoryInterface from 'src/contexts/webhook/domain/mercadopago/repository/mp-events.repository.interface';
+import { MpWebhookServiceInterface } from 'src/contexts/webhook/domain/mercadopago/service/mp-webhook.service.interface';
 
 //import { UserRepositoryInterface } from 'src/contexts/user/domain/user-repository.interface';
 
@@ -47,6 +49,7 @@ export class MpWebhookService implements MpWebhookServiceInterface {
           payment.payment_method_id,
           payment.transaction_amount,
           payment.date_approved,
+          payment.external_reference,
         );
         console.log(newPayment);
         await this.mercadoPagoEventsRepository.createPayment(newPayment);
@@ -70,6 +73,12 @@ export class MpWebhookService implements MpWebhookServiceInterface {
 
   // Generamos la factura del usuario
   async createSubscription_authorize_payment(
+    /*
+			PENDIENTE: 
+			si el evento es scheduled creamos el invoice y guardamos en la base de datos, pero lo hacemos con el estado en pending.
+			Cuando llega el otro evento deberiamos buscar el invoice en estado pending y cambiar su estado a approved y adicionalmente updatear el schema con el ID del pago y lo que falte
+			
+			*/
     subscription_authorized_payment: any,
   ): Promise<void> {
     this.logger.log(
@@ -87,12 +96,7 @@ export class MpWebhookService implements MpWebhookServiceInterface {
         );
         return Promise.resolve();
       }
-      /*
-			PENDIENTE: 
-			si el evento es scheduled creamos el invoice y guardamos en la base de datos, pero lo hacemos con el estado en pending.
-			Cuando llega el otro evento deberiamos buscar el invoice en estado pending y cambiar su estado a approved y adicionalmente updatear el schema con el ID del pago y lo que falte
-			
-			*/
+
       const subscripcion =
         await this.mercadoPagoEventsRepository.findSubscriptionByPreapprovalId(
           subscription_authorized_payment.preapproval_id,
@@ -136,6 +140,7 @@ export class MpWebhookService implements MpWebhookServiceInterface {
           subscripcion.getId(), // Id de la suscripcion en nuestro schema
           subscription_authorized_payment.payment.status, //Payment status
           subscription_authorized_payment.preapproval_id, // ID de la suscripcion en MELI
+          subscription_authorized_payment.external_reference,
         );
         await this.mercadoPagoEventsRepository.saveInvoice(newInvoice);
       }

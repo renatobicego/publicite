@@ -9,7 +9,7 @@ import {
 
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
 
-import { SubscriptionAdapterInterface } from '../../domain/mercadopago/adapter/subscription.adapter.interface';
+import { SubscriptionAdapterInterface } from '../../application/mercadopago/adapter/mp-subscription.adapter.interface';
 import { SubscriptionResponse } from './response/subscription.response';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 

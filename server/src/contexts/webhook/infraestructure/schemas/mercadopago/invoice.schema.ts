@@ -11,9 +11,9 @@ export const InvoiceSchema = new Schema({
     ref: 'subscription',
     required: true,
   },
-
   status: { type: String, required: true },
   preapprovalId: { type: String, required: true },
+  external_reference: { type: String, required: true },
 });
 
 export interface InvoiceDocument extends Document {
@@ -21,4 +21,5 @@ export interface InvoiceDocument extends Document {
   subscriptionId: Types.ObjectId;
   status: string;
   preapprovalId: string;
+  external_reference: string;
 }
