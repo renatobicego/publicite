@@ -12,7 +12,7 @@ const SubscriptionsPlans = async () => {
         <li >
           {plan.reason}
         </li>
-        <Button as={Link} href={`/suscripcion/checkout/${plan.id}`}>
+        <Button as={Link} href={`/suscribirse/${plan.id}`}>
           Pagar Plan
         </Button>
         </div>
