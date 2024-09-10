@@ -1,4 +1,5 @@
 import { ObjectId } from 'mongoose';
+import { SubscriptionResponse } from 'src/contexts/webhook/application/mercadopago/adapter/HTTP-RESPONSE/subscription.response';
 
 //subscription_preapproval
 export default class Subscription {
@@ -9,7 +10,7 @@ export default class Subscription {
   private startDate: string;
   private endDate: string;
   private external_reference: string;
-  private _id?: ObjectId;
+  private _id?: ObjectId | null;
 
   constructor(
     mpPreapprovalId: string,
@@ -39,8 +40,8 @@ export default class Subscription {
     return this.payerId;
   }
 
-  public getId(): ObjectId | undefined {
-    return this._id || undefined;
+  public getId(): ObjectId | null {
+    return this._id ?? null;
   }
   public getStatus(): string {
     return this.status;
@@ -48,6 +49,10 @@ export default class Subscription {
   public getSubscriptionPlan(): ObjectId {
     return this.subscriptionPlan;
   }
+  public getSubscriptionPlanObject(): any {
+    return this.subscriptionPlan;
+  }
+
   public getStartDate(): string {
     return this.startDate;
   }
@@ -67,5 +72,19 @@ export default class Subscription {
       doc.external_reference,
       doc._id ? doc._id : ' ',
     );
+  }
+  static formatEntityToResponse(
+    subscription: Subscription,
+  ): SubscriptionResponse {
+    return {
+      _id: subscription.getId() ? subscription.getId() : null,
+      mpPreapprovalId: subscription.getMpPreapprovalId(),
+      payerId: subscription.getPayerId(),
+      status: subscription.getStatus(),
+      subscriptionPlan: subscription.getSubscriptionPlanObject(),
+      startDate: subscription.getStartDate(),
+      endDate: subscription.getEndDate(),
+      external_reference: subscription.external_reference,
+    };
   }
 }

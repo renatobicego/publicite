@@ -1,7 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Types } from 'mongoose';
+import { ObjectId, Types } from 'mongoose';
+import { SubscriptionPlan } from 'src/contexts/webhook/domain/mercadopago/entity/subscriptionPlan.entity';
 
 export class SubscriptionResponse {
+  @ApiProperty({
+    description: 'The unique identifier for Subscription in mongo',
+    type: Types.ObjectId,
+  })
+  readonly _id: ObjectId | null;
+
   @ApiProperty({
     description: 'The unique identifier for the preapproval',
     type: String,
@@ -21,10 +28,10 @@ export class SubscriptionResponse {
   readonly status: string;
 
   @ApiProperty({
-    description: 'The ID of the subscription plan',
-    type: String,
+    description: 'Subscription Plan',
+    type: SubscriptionPlan,
   })
-  readonly subscriptionPlan: Types.ObjectId;
+  readonly subscriptionPlan: SubscriptionPlan;
 
   @ApiProperty({
     description: 'The start date of the subscription',
@@ -47,14 +54,16 @@ export class SubscriptionResponse {
   readonly external_reference: string;
 
   constructor(
+    _id: ObjectId | null,
     mpPreapprovalId: string,
     payerId: string,
     status: string,
-    subscriptionPlan: Types.ObjectId,
+    subscriptionPlan: SubscriptionPlan,
     startDate: string,
     endDate: string,
     external_reference: string,
   ) {
+    this._id = _id;
     this.mpPreapprovalId = mpPreapprovalId;
     this.payerId = payerId;
     this.status = status;

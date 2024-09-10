@@ -1,0 +1,28 @@
+import { Inject, InternalServerErrorException } from '@nestjs/common';
+
+import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
+import { SubscriptionPlan } from 'src/contexts/webhook/domain/mercadopago/entity/subscriptionPlan.entity';
+import { MercadoPagoSubscriptionPlanRepositoryInterface } from 'src/contexts/webhook/domain/mercadopago/repository/mp-subscriptionPlan.repository.interface';
+import { MercadoPagoSubscriptionPlanServiceInterface } from 'src/contexts/webhook/domain/mercadopago/service/mp-subscriptionPlan.service.interface';
+
+export class MercadoPagoSubscriptionPlanService
+  implements MercadoPagoSubscriptionPlanServiceInterface
+{
+  constructor(
+    private readonly logger: MyLoggerService,
+    @Inject('MercadoPagoSubscriptionPlanRepositoryInterface')
+    private readonly subscriptionPlanRepository: MercadoPagoSubscriptionPlanRepositoryInterface,
+  ) {}
+  async findAllSubscriptionPlans(): Promise<SubscriptionPlan[]> {
+    try {
+      const subscriptionPlans =
+        await this.subscriptionPlanRepository.findAllSubscriptionPlans();
+      return subscriptionPlans;
+    } catch (error: any) {
+      this.logger.error(
+        'An error has ocurred while fetching subscription plans: ' + error,
+      );
+      throw new InternalServerErrorException(error);
+    }
+  }
+}

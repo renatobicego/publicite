@@ -1,11 +1,7 @@
-import { SubscriptionResponse } from 'src/contexts/webhook/infraestructure/controllers/response/subscription.response';
+import { SubscriptionResponse } from './HTTP-RESPONSE/subscription.response';
 
 export interface SubscriptionAdapterInterface {
-  getSubscriptionsByEmail(
-    subID: string,
-    email: string,
+  getSubscriptionHistory(
+    external_reference: string,
   ): Promise<SubscriptionResponse[]>;
-  getActiveSubscriptionByEmail(
-    email: string,
-  ): Promise<SubscriptionResponse | null>;
 }

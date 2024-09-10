@@ -137,7 +137,7 @@ export class MpWebhookService implements MpWebhookServiceInterface {
         );
         const newInvoice = new Invoice(
           payment.getId(), //Payment ID de nuestro schema
-          subscripcion.getId(), // Id de la suscripcion en nuestro schema
+          subscripcion.getId() ?? undefined, // Id de la suscripcion en nuestro schema
           subscription_authorized_payment.payment.status, //Payment status
           subscription_authorized_payment.preapproval_id, // ID de la suscripcion en MELI
           subscription_authorized_payment.external_reference,
