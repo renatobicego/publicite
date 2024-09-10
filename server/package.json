@@ -16,6 +16,7 @@
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
     "dev": "nodemon --exec ts-node -r tsconfig-paths/register src/index-test.ts",
+    "dep": "set DEBUG=nest:dependencies && npm run start:dev",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
