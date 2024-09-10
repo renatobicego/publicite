@@ -4,7 +4,7 @@ import Users from "./Users";
 
 import SubscriptionGrid from "../components/SubscriptionGrid";
 
-export default function Page() {
+export default function SubscriptionPlans() {
   const breadcrumbsItems = [
     {
       label: "Inicio",

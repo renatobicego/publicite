@@ -68,7 +68,7 @@
   }
 
   .main-style {
-    @apply pt-4 pb-20 md:pt-8 md:pb-32 xl:pt-10 xl:pb-36 layout-spacing;
+    @apply pt-4 pb-20 md:pt-8 md:pb-32 layout-spacing;
   }
 
   .profile-paragraph, .cl-profileSectionTitleText, .cl-profileSectionItem p, .cl-formButtonReset{

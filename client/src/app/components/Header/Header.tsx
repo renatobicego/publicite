@@ -45,7 +45,7 @@ const Header = () => {
             height={40}
             className={`w-10 md:w-12 lg:w-16 max-lg:object-contain !transition-all duration-300 ${
               isFocused ? "!w-0 overflow-hidden" : ""
-            }`}
+            } hover:scale-[1.04]`}
           />
         </NavbarBrand>
         <NavbarItem

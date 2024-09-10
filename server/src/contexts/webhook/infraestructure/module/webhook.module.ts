@@ -11,7 +11,7 @@ import { MpWebhookService } from '../../application/mercadopago/service/mp-webho
 import { ClerkWebhookAdapter } from '../adapters/clerk/clerk-webhook.adapter';
 import { SubscriptionAdapter } from '../adapters/mercadopago/mp-subscription.adapter';
 import { MpWebhookAdapter } from '../adapters/mercadopago/mp-webhook.adapter';
-import { SubscriptionController } from '../controllers/subscription.controller';
+import { SubscriptionController } from '../controllers/mp-subscription.controller';
 import { WebhookController } from '../controllers/webhook.controller';
 import MercadoPagoEventsRepository from '../repository/mercadopago/mp-events.repository';
 import { SubscriptionRepository } from '../repository/mercadopago/mp-subscription.repository';

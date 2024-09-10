@@ -12,17 +12,17 @@ import { FaChevronDown } from "react-icons/fa6";
 
 const DropdownItems = () => {
   return (
-    <Dropdown radius="lg">
+    <Dropdown radius="lg" placement="bottom-end" className="bg-fondo">
       <DropdownTrigger>
         <Button radius="full" variant="light" size="sm" isIconOnly>
           <FaChevronDown />
         </Button>
       </DropdownTrigger>
-      <DropdownMenu aria-label="Más acciones">
+      <DropdownMenu aria-label="Más acciones" className="bg-fondo">
         <DropdownItem
           as={Link}
           href={SUBSCRIPTIONS}
-          className="rounded-full text-text-color"
+          className="rounded-full pl-4 text-text-color"
           key="planes"
           color="secondary"
           textValue="Planes de Subscripción"
@@ -32,20 +32,12 @@ const DropdownItems = () => {
         <DropdownItem
           as={Link}
           href={PACKS}
-          className="rounded-full text-text-color"
+          className="rounded-full pl-4 text-text-color"
           key="packs"
           color="secondary"
           textValue="Packs de Publicaciones"
         >
           Packs de Publicaciones
-        </DropdownItem>
-        <DropdownItem
-          className="rounded-full"
-          key="cerrar-sesion"
-          color="danger"
-          textValue="Cerrar Sesión"
-        >
-          <SignOutButton>Cerrar Sesión</SignOutButton>
         </DropdownItem>
       </DropdownMenu>
     </Dropdown>

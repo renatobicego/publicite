@@ -1,38 +1,23 @@
-import { Inject, InternalServerErrorException } from '@nestjs/common';
+import { Inject } from '@nestjs/common';
 
 import { SubscriptionRepositoryInterface } from 'src/contexts/webhook/domain/mercadopago/repository/mp-subscription.respository.interface';
 import { SubscriptionServiceInterface } from 'src/contexts/webhook/domain/mercadopago/service/mp-subscription.service.interface';
-import { SubscriptionResponse } from '../adapter/HTTP-RESPONSE/subscription.response';
+import Subscription from 'src/contexts/webhook/domain/mercadopago/entity/subcription.entity';
 
 export class MpSubscriptionService implements SubscriptionServiceInterface {
   constructor(
     @Inject('SubscriptionRepositoryInterface')
     private readonly subscriptionRepository: SubscriptionRepositoryInterface,
   ) {}
-  async getActiveSubscriptionByEmail(
-    email: string,
-  ): Promise<SubscriptionResponse | null> {
+  async getSubscriptionHistory(
+    external_reference: string,
+  ): Promise<Subscription[]> {
     try {
-      const subscription =
-        this.subscriptionRepository.getActiveSubscriptionByEmail(email);
-
-      return subscription || null;
-    } catch (error: any) {
-      throw new InternalServerErrorException(error);
-    }
-  }
-  getSubscriptionsByEmail(
-    subID: string,
-    email: string,
-  ): Promise<SubscriptionResponse[]> {
-    try {
-      const subscriptions = this.subscriptionRepository.getSubscriptionByEmail(
-        subID,
-        email,
-      );
+      const subscriptions =
+        this.subscriptionRepository.getSubscriptionHistory(external_reference);
       return subscriptions;
     } catch (error: any) {
-      throw new InternalServerErrorException(error);
+      throw error;
     }
   }
 }
