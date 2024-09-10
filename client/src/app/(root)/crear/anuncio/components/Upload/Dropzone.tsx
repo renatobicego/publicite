@@ -7,6 +7,7 @@ interface DropzoneProps {
   allowVideos: boolean;
   maxTotalFiles: number;
   maxVideoSize: number;
+  isDisabled?: boolean;
 }
 
 const Dropzone = ({
@@ -14,9 +15,11 @@ const Dropzone = ({
   allowVideos,
   maxTotalFiles,
   maxVideoSize,
+  isDisabled,
 }: DropzoneProps) => {
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
+    disabled: isDisabled,
     accept: allowVideos
       ? {
           "image/*": [], // Accept all image types
@@ -46,7 +49,12 @@ const Dropzone = ({
       className="w-full hover:cursor-pointer hover:scale-[1.02] transition-all"
     >
       <input {...getInputProps()} />
-      <div className="flex items-center w-full min-h-96 justify-center border-2 border-gray-300 border-dashed rounded-md flex-col bg-fondo">
+      <div
+        className={`flex items-center w-full xl:min-h-96 3xl:min-h-[450px] justify-center border-2 
+      border-gray-300 border-dashed rounded-md flex-col bg-fondo
+        ${isDisabled ? "opacity-50" : ""}
+        `}
+      >
         <IoCloudUploadSharp className="size-16 text-primary" />
         <p className="text-center text-primary font-semibold text-lg">
           Elegir o arrastra aquí los archivos

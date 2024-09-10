@@ -1,17 +1,23 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useCallback, Dispatch, SetStateAction } from "react";
 import Dropzone from "./Dropzone";
 import FilePreview from "./FilePreview";
 import { toastifyError } from "@/app/utils/toastify";
 
 interface UploadImagesProps {
   allowVideos?: boolean;
+  type?: "good" | "service";
+  files: File[];
+  setFiles: Dispatch<SetStateAction<File[]>>;
 }
 
-const UploadImages = ({ allowVideos = true }: UploadImagesProps) => {
-  const [files, setFiles] = useState<File[]>([]);
-
+const UploadImages = ({
+  allowVideos = true,
+  type,
+  files,
+  setFiles,
+}: UploadImagesProps) => {
   const maxImageSize = 5 * 1024 * 1024; // 5MB for images
   const maxVideoSize = 30 * 1024 * 1024; // 30MB for videos
   const maxTotalFiles = 10;
@@ -79,10 +85,15 @@ const UploadImages = ({ allowVideos = true }: UploadImagesProps) => {
         allowVideos={allowVideos}
         maxTotalFiles={maxTotalFiles}
         maxVideoSize={maxVideoSize}
+        isDisabled={!type}
       />
       <div className="flex gap-4 mt-4 w-full flex-wrap">
-        {files.map((file) => (
-          <FilePreview key={file.name} file={file} removeFile={removeFile} />
+        {files.map((file, index) => (
+          <FilePreview
+            key={file.name + index}
+            file={file}
+            removeFile={removeFile}
+          />
         ))}
       </div>
     </div>

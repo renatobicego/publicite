@@ -91,7 +91,7 @@ const mockedService: Service = {
   postType: "Service",
   visibility: "Public",
   recommendations: [],
-  frequencyPrice: "Hourly",
+  frequencyPrice: "hour",
   reviews: [],
   author: {
     profilePhotoUrl: "/avatar.png",
@@ -158,7 +158,7 @@ const mockedPetition2: Petition = {
   },
   postType: "Petition",
   petitionType: "Service",
-  frequencyPrice: "Monthly",
+  frequencyPrice: "month",
   visibility: "Public",
   recommendations: [],
   attachedFiles: [],

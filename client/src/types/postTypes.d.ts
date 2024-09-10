@@ -1,4 +1,3 @@
-
 import { User, UserPerson } from "./userTypes";
 
 export interface Post {
@@ -13,11 +12,15 @@ export interface Post {
   category: PostCategory;
   comments: PostComment[];
   attachedFiles: PostAttachedFile[];
-  author: Author
+  author: Author;
 }
 
-interface Reviewer extends Pick<UserPerson, "username" | "profilePhotoUrl" > {}
-interface Author extends Pick<UserPerson, "username" | "profilePhotoUrl" | "contact" | "name" | "lastName"> {}
+interface Reviewer extends Pick<UserPerson, "username" | "profilePhotoUrl"> {}
+interface Author
+  extends Pick<
+    UserPerson,
+    "username" | "profilePhotoUrl" | "contact" | "name" | "lastName"
+  > {}
 
 export interface PostRecommendation {
   _id: ObjectId;
@@ -26,9 +29,9 @@ export interface PostRecommendation {
 }
 
 export interface PostLocation {
-  _id: ObjectId;
-  latitude: number;
-  longitude: number;
+  _id?: ObjectId;
+  latitude?: number;
+  longitude?: number;
 }
 
 export interface PostCategory {
@@ -67,12 +70,47 @@ export interface Good extends Post {
   condition: "New" | "Used";
 }
 
+export interface GoodPostValues
+  extends Omit<
+    Good,
+    | "_id"
+    | "category"
+    | "price"
+    | "author"
+    | "comments"
+    | "reviews"
+    | "condition"
+    | "recommendations"
+  > {
+  category: ObjectId;
+  price?: number;
+  author: string;
+  condition?: "New" | "Used";
+}
+
+
 export interface Service extends Post {
   imagesUrls: string[];
   frequencyPrice: FrequencyPrice;
   reviews: PostReview[];
 }
 
+export interface ServicePostValues
+  extends Omit<
+    Service,
+    | "_id"
+    | "category"
+    | "price"
+    | "author"
+    | "comments"
+    | "reviews"
+    | "condition"
+    | "recommendations"
+  > {
+  category: ObjectId;
+  price: number | null;
+  author: string;
+}
 export interface Petition extends Post {
   frequencyPrice?: FrequencyPrice;
   toPrice?: number;

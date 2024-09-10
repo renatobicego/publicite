@@ -1,4 +1,4 @@
-import { Autocomplete, AutocompleteItem, Input } from "@nextui-org/react";
+import { Autocomplete, AutocompleteItem } from "@nextui-org/react";
 import { FieldInputProps } from "formik";
 import { useEffect } from "react";
 import usePlacesService from "react-google-autocomplete/lib/usePlacesAutocompleteService";
@@ -10,6 +10,7 @@ const PlaceAutocomplete = (props: FieldInputProps<any>) => {
       apiKey: process.env.NEXT_PUBLIC_MAPS_API_KEY,
       options: {
         types: ["geocode"],
+        input: props.value,
       },
     });
 
@@ -17,6 +18,7 @@ const PlaceAutocomplete = (props: FieldInputProps<any>) => {
     if(props.value){
       getPlacePredictions({ input: props.value })
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (

@@ -17,5 +17,5 @@ declare global {
     | "Friends"
     | "TopFriends";
 
-  type FrequencyPrice = "Hourly" | "Weekly" | "Monthly" | "Yearly";
+  type FrequencyPrice = "hour" | "day" | "week" | "month" | "year";
 }
