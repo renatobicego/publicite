@@ -1,4 +1,4 @@
-import { SubscriptionResponse } from 'src/contexts/webhook/infraestructure/controllers/response/subscription.response';
+import { SubscriptionResponse } from 'src/contexts/webhook/application/mercadopago/adapter/HTTP-RESPONSE/subscription.response';
 
 export interface SubscriptionRepositoryInterface {
   getSubscriptionByEmail(

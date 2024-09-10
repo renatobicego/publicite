@@ -22,6 +22,11 @@ import { SubscriptionPlanSchema } from '../schemas/mercadopago/subscriptionPlan.
 import { MpInvoiceAdapter } from '../adapters/mercadopago/mp-invoice.adapter';
 import { MpInvoiceService } from '../../application/mercadopago/service/mp-invoice.service';
 import { MpInvoiceRepository } from '../repository/mercadopago/mp-invoice.repository';
+import { MercadopagoSubscriptionPlanController } from '../controllers/mp-subscriptionPlan.controller';
+import { MercadoPagoSubscriptionPlanAdapter } from '../adapters/mercadopago/mp-subscriptionPlan.adapter';
+import { LoggerModule } from 'src/contexts/shared/logger/logger.module';
+import { MercadoPagoSubscriptionPlanService } from '../../application/mercadopago/service/mp-subscriptionPlan.service';
+import { MercadoPagoSubscriptionPlanRepository } from '../repository/mercadopago/mp-subscriptionPlan.repository';
 
 @Module({
   imports: [
@@ -36,8 +41,13 @@ import { MpInvoiceRepository } from '../repository/mercadopago/mp-invoice.reposi
       { name: 'SubscriptionPlan', schema: SubscriptionPlanSchema },
     ]),
     UserModule,
+    LoggerModule,
   ],
-  controllers: [WebhookController, SubscriptionController], // Controlador del módulo
+  controllers: [
+    WebhookController,
+    SubscriptionController,
+    MercadopagoSubscriptionPlanController,
+  ], // Controlador del módulo
   providers: [
     // Proveedor para ClerkWebhookAdapter
     {
@@ -56,8 +66,7 @@ import { MpInvoiceRepository } from '../repository/mercadopago/mp-invoice.reposi
       },
       inject: [WebhookService, ConfigService], // Inyecta dependencias necesarias
     },
-    WebhookService, // Servicio para Webhook de Clerk
-    MyLoggerService, // Servicio de logging
+    WebhookService,
     MpWebhookAdapter,
     {
       provide: 'MpHandlerEventsInterface',
@@ -71,6 +80,11 @@ import { MpInvoiceRepository } from '../repository/mercadopago/mp-invoice.reposi
       provide: 'MpServiceInvoiceInterface',
       useClass: MpInvoiceService,
     },
+    {
+      provide: 'MercadoPagoSubscriptionPlanServiceInterface',
+      useClass: MercadoPagoSubscriptionPlanService,
+    },
+
     {
       provide: 'SubscriptionServiceInterface',
       useClass: MpSubscriptionService,
@@ -88,6 +102,10 @@ import { MpInvoiceRepository } from '../repository/mercadopago/mp-invoice.reposi
       useClass: SubscriptionRepository,
     },
     {
+      provide: 'MercadoPagoSubscriptionPlanRepositoryInterface',
+      useClass: MercadoPagoSubscriptionPlanRepository,
+    },
+    {
       provide: 'SubscriptionAdapterInterface',
       useClass: SubscriptionAdapter,
     },
@@ -96,11 +114,15 @@ import { MpInvoiceRepository } from '../repository/mercadopago/mp-invoice.reposi
       useClass: MpInvoiceAdapter,
     },
     {
+      provide: 'MercadopagoSubscriptionPlanAdapterInterface',
+      useClass: MercadoPagoSubscriptionPlanAdapter,
+    },
+    {
       provide: 'MpHandlerValidationsInterface',
       useFactory: (configService: ConfigService, logger: MyLoggerService) => {
         return new MpHandlerValidations(configService, logger);
       },
-      inject: [ConfigService, MyLoggerService], // Inyecta las dependencias
+      inject: [ConfigService, MyLoggerService],
     },
   ],
 })

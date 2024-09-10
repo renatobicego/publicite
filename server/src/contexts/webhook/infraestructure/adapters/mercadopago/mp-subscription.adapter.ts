@@ -2,7 +2,7 @@ import { Inject } from '@nestjs/common';
 
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
 
-import { SubscriptionResponse } from '../../controllers/response/subscription.response';
+import { SubscriptionResponse } from '../../../application/mercadopago/adapter/HTTP-RESPONSE/subscription.response';
 import { SubscriptionAdapterInterface } from 'src/contexts/webhook/application/mercadopago/adapter/mp-subscription.adapter.interface';
 import { SubscriptionServiceInterface } from 'src/contexts/webhook/domain/mercadopago/service/mp-subscription.service.interface';
 

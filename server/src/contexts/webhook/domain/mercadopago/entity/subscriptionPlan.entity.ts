@@ -1,4 +1,5 @@
 import { ObjectId } from 'mongoose';
+import { SubscriptionPlanResponse } from 'src/contexts/webhook/application/mercadopago/adapter/HTTP-RESPONSE/SubscriptionPlan.response';
 
 export class SubscriptionPlan {
   private _id: ObjectId;
@@ -42,6 +43,24 @@ export class SubscriptionPlan {
   public getDescription(): string {
     return this.description;
   }
+  public getFeatures(): string[] {
+    return this.features;
+  }
+  public getIntervalTime(): number {
+    return this.intervalTime;
+  }
+  public getPrice(): number {
+    return this.price;
+  }
+  public getPostLimit(): number {
+    return this.postLimit;
+  }
+  public getIsActive(): boolean {
+    return this.isActive;
+  }
+  public getReason(): string {
+    return this.reason;
+  }
 
   static fromDocument(doc: any): SubscriptionPlan {
     return new SubscriptionPlan(
@@ -55,5 +74,21 @@ export class SubscriptionPlan {
       doc.postLimit,
       doc._id ? doc._id : '',
     );
+  }
+
+  static formatEntityToResponse(
+    subscriptionPlan: SubscriptionPlan,
+  ): SubscriptionPlanResponse {
+    return {
+      _id: subscriptionPlan.getId(),
+      mpPreapprovalPlanId: subscriptionPlan.getMpPreapprovalPlanId(),
+      isActive: subscriptionPlan.getIsActive(),
+      reason: subscriptionPlan.getReason(),
+      description: subscriptionPlan.getDescription(),
+      features: subscriptionPlan.getFeatures(),
+      intervalTime: subscriptionPlan.getIntervalTime(),
+      price: subscriptionPlan.getPrice(),
+      postLimit: subscriptionPlan.getPostLimit(),
+    };
   }
 }

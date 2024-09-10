@@ -8,9 +8,8 @@ import {
 } from '@nestjs/common';
 
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
-
 import { SubscriptionAdapterInterface } from '../../application/mercadopago/adapter/mp-subscription.adapter.interface';
-import { SubscriptionResponse } from './response/subscription.response';
+import { SubscriptionResponse } from '../../application/mercadopago/adapter/HTTP-RESPONSE/subscription.response';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Subscriptions')
