@@ -4,7 +4,11 @@ enum UserType {
   Personal = 'Personal',
   Business = 'Business',
 }
-
+export interface UserPreferences {
+  searchPreference: Schema.Types.ObjectId[];
+  backgroundColor: string;
+  boardColor: string;
+}
 interface IUser extends Document {
   clerkId: string;
   email: string;
@@ -25,6 +29,7 @@ interface IUser extends Document {
   userType: UserType;
   name: string;
   lastName: string;
+  userPreferences: UserPreferences | null | undefined;
 }
 
 const UserSchema = new Schema<IUser>(
@@ -48,6 +53,11 @@ const UserSchema = new Schema<IUser>(
     userType: { type: String, enum: Object.values(UserType), required: true },
     name: { type: String, required: true },
     lastName: { type: String, required: true },
+    userPreferences: {
+      searchPreference: [{ type: Schema.Types.ObjectId, ref: 'PostCategory' }],
+      backgroundColor: { type: String, default: '' },
+      boardColor: { type: String, default: '' },
+    },
   },
   { discriminatorKey: 'kind', collection: 'users' },
 );

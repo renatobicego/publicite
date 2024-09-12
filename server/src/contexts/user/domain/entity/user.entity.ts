@@ -4,6 +4,11 @@ export enum UserType {
   Personal = 'Personal',
   Business = 'Business',
 }
+export interface UserPreferences {
+  searchPreference: ObjectId[];
+  backgroundColor: string;
+  boardColor: string;
+}
 
 export abstract class User {
   private clerkId?: string;
@@ -24,6 +29,7 @@ export abstract class User {
   private post?: ObjectId[];
   private userRelations?: ObjectId[];
   private userType?: UserType;
+  private userPreferences?: UserPreferences | null;
 
   constructor(
     clerkId?: string,
@@ -44,6 +50,7 @@ export abstract class User {
     post?: ObjectId[],
     userRelations?: ObjectId[],
     userType?: UserType,
+    userPreferences?: UserPreferences,
   ) {
     this.clerkId = clerkId;
     this.email = email;
@@ -63,6 +70,11 @@ export abstract class User {
     this.post = post ?? [];
     this.userRelations = userRelations ?? [];
     this.userType = userType ?? UserType.Personal;
+    this.userPreferences = userPreferences ?? {
+      searchPreference: [],
+      backgroundColor: '',
+      boardColor: '',
+    };
   }
 
   getClerkId(): string | undefined {
@@ -135,5 +147,8 @@ export abstract class User {
 
   getLastName(): string | undefined {
     return this.lastName;
+  }
+  getUserPreferences(): UserPreferences | null | undefined {
+    return this.userPreferences;
   }
 }
