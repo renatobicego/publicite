@@ -129,13 +129,11 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
         return Promise.resolve(true);
       }
       if (
-        paymentResponse.transaction_amount < 1000 ||
-        paymentResponse.external_reference
-          .toSlowCase()
-          .includes('payment validation')
+        paymentResponse.transaction_amount < 50 &&
+        paymentResponse.external_reference.includes('payment validation')
       ) {
         this.logger.warn(
-          'Payment amount is less than 1000, returning OK to Meli - Payment card validation',
+          'Payment amount is less than $50, returning OK to Meli - Payment card validation',
         );
         return Promise.resolve(true);
       }
