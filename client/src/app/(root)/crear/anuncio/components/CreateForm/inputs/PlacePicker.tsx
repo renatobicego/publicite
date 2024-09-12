@@ -1,9 +1,8 @@
-import { useState, useEffect } from 'react';
-import { Picker } from '../../../../../../../../../../../react-gmap-picker/src/index';
-import CustomMap from './CustomMap';
+import { useState, useEffect } from "react";
+import { Picker } from "../../../../../../../../../../../react-gmap-picker/src/index";
+import CustomMap from "./CustomMap";
 // import { Picker } from 'react-gmap-picker';
 const INITIAL_LOCATION = { lat: -34.6115643483578, lng: -58.38901999245833 }; // Fallback location
-
 
 const PlacePicker = () => {
   const [location, setLocation] = useState(INITIAL_LOCATION);
@@ -21,10 +20,8 @@ const PlacePicker = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          const { latitude, longitude } = position.coords;   
-
-          const userLocation = { lat: latitude, lng: longitude   
- };
+          const { latitude, longitude } = position.coords;
+          const userLocation = { lat: latitude, lng: longitude };
 
           setLocation(userLocation);
         },
@@ -40,18 +37,11 @@ const PlacePicker = () => {
   if (!location) return null; // Don't render the Picker if location is not set
 
   return (
-    <div>
-      <button type='button' onClick={handleResetLocation}>Reset Location</button>
-      <label>Latitude:</label>
-      <input type="text" value={location.lat} disabled />
-      <label>Longitude:</label>
-      <input type="text" value={location.lng} disabled />
-
-      <div>
-        <h4>Map 1 (roadmap)</h4>
-        <CustomMap lat={location.lat} lng={location.lng} handleLocationChange={handleChangeLocation}/>
-      </div>
-    </div>
+    <CustomMap
+      lat={location.lat}
+      lng={location.lng}
+      handleLocationChange={handleChangeLocation}
+    />
   );
 };
 

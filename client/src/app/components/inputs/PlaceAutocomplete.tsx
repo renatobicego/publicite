@@ -1,10 +1,17 @@
 import { Autocomplete, AutocompleteItem } from "@nextui-org/react";
 import { FieldInputProps } from "formik";
-import { useEffect } from "react";
-import usePlacesService from "react-google-autocomplete/lib/usePlacesAutocompleteService";
+import { useEffect, useState } from "react";
 import { FaLocationDot } from "react-icons/fa6";
+import { Libraries, useLoadScript } from "@react-google-maps/api";
+import usePlacesService from "react-google-autocomplete/lib/usePlacesAutocompleteService";
 
+const libraries: Libraries = ["places"];
 const PlaceAutocomplete = (props: FieldInputProps<any>) => {
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_MAPS_API_KEY as string,
+    libraries,
+  });
+
   const { placePredictions, getPlacePredictions, isPlacePredictionsLoading } =
     usePlacesService({
       apiKey: process.env.NEXT_PUBLIC_MAPS_API_KEY,
@@ -15,11 +22,13 @@ const PlaceAutocomplete = (props: FieldInputProps<any>) => {
     });
 
   useEffect(() => {
-    if(props.value){
-      getPlacePredictions({ input: props.value })
+    if (props.value && isLoaded) {
+      getPlacePredictions({ input: props.value });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoaded]);
+
+  if (!isLoaded) return <div>Cargando...</div>;
 
   return (
     <Autocomplete
@@ -61,3 +70,4 @@ const PlaceAutocomplete = (props: FieldInputProps<any>) => {
 };
 
 export default PlaceAutocomplete;
+

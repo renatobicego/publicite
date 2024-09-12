@@ -1,6 +1,11 @@
+import LatLngAutocomplete from "@/app/components/inputs/LatLngAutocomplete";
+import { MarkerClusterer } from "@googlemaps/markerclusterer";
+import { useState, useEffect, useRef } from "react";
+import { Libraries } from "@react-google-maps/api"; // Use @react-google-maps/api to load the script
 import { Status, Wrapper } from "@googlemaps/react-wrapper";
-import { useEffect, useRef, useState } from "react";
-const CustomMap = ({
+const libraries: Libraries = ["places"]; // Ensure you load the 'places' library
+
+const CustomMapWrapper = ({
   lat,
   lng,
   handleLocationChange,
@@ -12,26 +17,19 @@ const CustomMap = ({
   const render = (status: Status) => <h1>{status}</h1>;
 
   return (
-    <div className="App">
-      <Wrapper
-        apiKey={process.env.NEXT_PUBLIC_MAPS_API_KEY as string}
-        render={render}
-      >
-        <MapComponent
-          lat={lat}
-          lng={lng}
-          handleLocationChange={handleLocationChange}
-        />
-      </Wrapper>
-    </div>
+    <Wrapper
+      apiKey={process.env.NEXT_PUBLIC_MAPS_API_KEY as string}
+      libraries={libraries}
+      render={render}
+    >
+      <CustomMap lat={lat} lng={lng} handleLocationChange={handleLocationChange} />
+    </Wrapper>
   );
 };
 
-export default CustomMap;
+export default CustomMapWrapper;
 
-import { MarkerClusterer } from "@googlemaps/markerclusterer";
-
-export function MapComponent({
+const CustomMap = ({
   lat,
   lng,
   handleLocationChange,
@@ -39,60 +37,71 @@ export function MapComponent({
   lat: number;
   lng: number;
   handleLocationChange: (lat: number, lng: number) => void;
-}) {
-  const [map, setMap] = useState<google.maps.Map>();
-  const ref = useRef<HTMLDivElement>();
-  // New Code Markers: 1
-  const [markerCluster, setMarkerClusters] = useState<MarkerClusterer>();
-  const [marker, setMarker] = useState<
-    { lat: number; lng: number } | undefined
-  >({
-    lat,
-    lng,
-  });
-  // New Code Markers 1
+}) => {
+  const [map, setMap] = useState<google.maps.Map | null>(null);
+  const [markerCluster, setMarkerCluster] = useState<MarkerClusterer | null>(null);
+  const [marker, setMarker] = useState<{ lat: number; lng: number } | null>({ lat, lng });
+  const ref = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (ref.current && !map) {
-      setMap(
-        new window.google.maps.Map(ref.current, {
-          center: { lat, lng },
-          zoom: 10,
-        })
-      );
+      const initializedMap = new google.maps.Map(ref.current, {
+        center: { lat, lng },
+        zoom: 14,
+        mapTypeControlOptions: {
+          mapTypeIds: ["roadmap"],
+        },
+        streetViewControl: false,
+        draggableCursor: "pointer",
+        mapId: "google-maps-" + Math.random().toString(36).slice(2, 9),
+      });
+      setMap(initializedMap);
     }
-    // New Code markets: 2
+  }, [map, lat, lng]);
+
+  useEffect(() => {
     if (map && !markerCluster) {
+      const cluster = new MarkerClusterer({ map, markers: [] });
+      setMarkerCluster(cluster);
+
       map.addListener("click", (e: google.maps.MapMouseEvent) => {
         if (e.latLng) {
-          const { lat, lng } = e.latLng;
-          setMarker({ lat: lat(), lng: lng() });
-          map.setCenter({ lat: lat(), lng: lng() });
-          handleLocationChange(lat(), lng());
+          const lat = e.latLng.lat();
+          const lng = e.latLng.lng();
+          setMarker({ lat, lng });
+          map.setCenter({ lat, lng });
+          handleLocationChange(lat, lng);
         }
       });
-      setMarkerClusters(new MarkerClusterer({ map, markers: [] }));
     }
-    // New Code markers: 2
-  }, [handleLocationChange, lat, lng, map, markerCluster]);
+  }, [map, markerCluster, handleLocationChange]);
 
-  // New Code markers 3
   useEffect(() => {
-    if (marker && markerCluster) {
-      markerCluster.clearMarkers();
-      markerCluster.addMarker(
-        new window.google.maps.Marker({
+    const createMarker = async () => {
+      if (marker && markerCluster) {
+        markerCluster.clearMarkers();
+        const { AdvancedMarkerElement } = (await google.maps.importLibrary("marker")) as any;
+        const newMarker = new AdvancedMarkerElement({
           position: { lat: marker.lat, lng: marker.lng },
-        })
-      );
-    }
+        });
+        markerCluster.addMarker(newMarker);
+      }
+    };
+    createMarker();
   }, [marker, markerCluster]);
-  // New Code markers 3
+
   return (
     <>
+      <LatLngAutocomplete handleLocationChange={handleLocationChange} map={map} />
       <div
-        ref={ref as any}
-        style={{ height: "100%", width: "100%", minHeight: "300px" }}
-      ></div>
+        ref={ref}
+        style={{
+          height: "100%",
+          width: "100%",
+          minHeight: "300px",
+          borderRadius: "20px",
+        }}
+      />
     </>
   );
-}
+};

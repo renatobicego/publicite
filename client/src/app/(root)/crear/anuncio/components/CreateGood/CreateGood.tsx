@@ -7,6 +7,7 @@ import { Divider } from "@nextui-org/react";
 import Condition from "./Condition";
 import dynamic from "next/dynamic";
 import PlacePicker from "../CreateForm/inputs/PlacePicker";
+import LatLngAutocomplete from "@/app/components/inputs/LatLngAutocomplete";
 
 const CreateGood = ({ files }: { files: File[] }) => {
   const initialValues: GoodPostValues = {
@@ -49,6 +50,7 @@ const CreateGood = ({ files }: { files: File[] }) => {
           <PriceCategory errors={errors} isService={true} />
           <Condition errors={errors} />
           <Divider />
+
           <PlacePicker/>
         </Form>
       )}

@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
     });
     // const externalID = Math.floor(Math.random() * 9000).toString();
     const paymentSubscription = new PreApproval(client);
-    const { formData, subscriptionPlan } = await request.json();
+    const { formData, subscriptionPlan, userId } = await request.json();
     paymentSubscription
       .create({
         body: {
@@ -25,8 +25,7 @@ export async function POST(request: NextRequest) {
           payer_email: "test_user_1345316664@testuser.com",
           preapproval_plan_id: subscriptionPlan.id,
           reason: subscriptionPlan.reason,
-          //external_reference: formData.payer.email
-          external_reference:"TEST_AMEX"
+          external_reference: userId
         },
       })
       .then(console.log)

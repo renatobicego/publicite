@@ -172,7 +172,7 @@ const mockedPetition2: Petition = {
   toPrice: 2000,
 };
 
-export const mockedSubscriptionPlans: SubscriptionPlan[] = [
+export const freeSubscriptionPlans: SubscriptionPlan[] = [
   {
     _id: "2c9380849146f28",
     reason: "Gratuita",
@@ -182,28 +182,10 @@ export const mockedSubscriptionPlans: SubscriptionPlan[] = [
     freePlan: true,
     intervalTime: 1,
     isActive: true,
-    postLimit: 5
-  },
-  {
-    _id: "2c9380849146ff3d01914739031d0028",
-    reason: "Premium",
-    price: 6500,
-    description: "Publicité Premium",
-    features: ["Beneficio 1", "Beneficio 2", "Beneficio 3"],
-    intervalTime: 1,
-    isActive: true,
-    postLimit: 50,
-  },
-  {
-    _id: "2c9380849146ff3d01914739038",
-    reason: "Premium Gold",
-    price: 10000,
-    description: "Publicité Premium Gold",
-    features: ["Beneficio 1", "Beneficio 2", "Beneficio 3"],
-    intervalTime: 1,
-    isActive: true,
-    postLimit: 100,
-  },
+    postLimit: 5,
+    isPostPack: false,
+    mpPreapprovalPlanId: ""
+  }
 ];
 
 export const mockedPacks: SubscriptionPlan[] = [
@@ -215,7 +197,9 @@ export const mockedPacks: SubscriptionPlan[] = [
     features: [],
     intervalTime: 1,
     isActive: true,
-    postLimit: 10
+    postLimit: 10,
+    mpPreapprovalPlanId: "",
+    isPostPack: true
   },
   {
     _id: "2c9380849146ff3d01914739031d0028",
@@ -226,6 +210,8 @@ export const mockedPacks: SubscriptionPlan[] = [
     intervalTime: 1,
     isActive: true,
     postLimit: 20,
+    mpPreapprovalPlanId: "",
+    isPostPack: true
   },
   {
     _id: "2c9380849146ff3d01914739038",
@@ -236,6 +222,8 @@ export const mockedPacks: SubscriptionPlan[] = [
     intervalTime: 1,
     isActive: true,
     postLimit: 50,
+    mpPreapprovalPlanId: "",
+    isPostPack: true
   },
 ];
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { processPayment } from "@/app/services/subscriptionServices";
+import { toastifyError } from "@/app/utils/toastify";
 import { useUser } from "@clerk/nextjs";
 import { CardPayment, initMercadoPago } from "@mercadopago/sdk-react";
 import { ICardPaymentBrickPayer } from "@mercadopago/sdk-react/bricks/cardPayment/type";
@@ -17,31 +18,28 @@ const Checkout = ({subscriptionPlan} : CheckoutProps) => {
     amount: subscriptionPlan.auto_recurring.transaction_amount,
     payer: {
       email: user?.emailAddresses[0].emailAddress,
-    },
+    }
   };
 
-  const onSubmit = async (formData: any) => {
-    await processPayment(formData, subscriptionPlan);
+  const onSubmit = async (formData: any, additionalData: any) => {
+    console.log(formData, additionalData)
+    const res = await processPayment(formData, subscriptionPlan, user?.id as string);
   };
 
   const onError = async (error: any) => {
     // callback llamado para todos los casos de error de Brick
-    console.log(error);
+    toastifyError(error);
   };
 
-  const onReady = async () => {
-    /*
-        Callback llamado cuando Brick está listo.
-        Aquí puedes ocultar cargamentos de su sitio, por ejemplo.
-      */
-  };
+  // const onReady = async () => {
+  // };
   if (!isLoaded) return null;
   return (
     <CardPayment
       initialization={initialization}
       key={"cardPaymentBrick"}
       onSubmit={onSubmit}
-      onReady={onReady}
+      // onReady={onReady}
       onError={onError}
       locale="es-AR"
       customization={{

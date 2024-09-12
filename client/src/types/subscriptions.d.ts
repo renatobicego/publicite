@@ -8,5 +8,17 @@ export interface SubscriptionPlan {
   postLimit: number;
   intervalTime: number;
   isActive: boolean;
+  mpPreapprovalPlanId: string;
   isPostPack?: boolean;
+}
+
+export interface Subscription {
+  _id: ObjectId;
+  payerId: string;
+  status: "active" | "cancelled" | "paused";
+  mpPreapprovalId: string;
+  startDate: string;
+  endDate: string;
+  subscriptionPlan: SubscriptionPlan;
+  external_reference: string;
 }

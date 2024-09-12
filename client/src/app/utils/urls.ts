@@ -5,6 +5,7 @@ const CONFIGURATION = "/configuracion";
 const POSTS = "/anuncios";
 const TUTORIALS = "/tutoriales";
 const SUBSCRIPTIONS = "/suscripciones";
+const SUSCRIBE = "/suscribirse";
 const PACKS = "/packs-publicaciones";
 const CREATE = "/crear";
 const CREATE_POST = "/crear/anuncio";
@@ -26,4 +27,5 @@ export {
   CREATE_PETITION,
   CREATE_MAGAZINE,
   CREATE_GROUP,
+  SUSCRIBE,
 };
