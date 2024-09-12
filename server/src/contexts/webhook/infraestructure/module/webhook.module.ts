@@ -27,6 +27,8 @@ import { MercadoPagoSubscriptionPlanAdapter } from '../adapters/mercadopago/mp-s
 import { LoggerModule } from 'src/contexts/shared/logger/logger.module';
 import { MercadoPagoSubscriptionPlanService } from '../../application/mercadopago/service/mp-subscriptionPlan.service';
 import { MercadoPagoSubscriptionPlanRepository } from '../repository/mercadopago/mp-subscriptionPlan.repository';
+import { MpPaymentService } from '../../application/mercadopago/service/mp-payment.service';
+import { MercadoPagoPaymentsRepository } from '../repository/mercadopago/mp-payments.repository';
 
 @Module({
   imports: [
@@ -81,6 +83,10 @@ import { MercadoPagoSubscriptionPlanRepository } from '../repository/mercadopago
       useClass: MpInvoiceService,
     },
     {
+      provide: 'MpPaymentServiceInterface',
+      useClass: MpPaymentService,
+    },
+    {
       provide: 'MercadoPagoSubscriptionPlanServiceInterface',
       useClass: MercadoPagoSubscriptionPlanService,
     },
@@ -102,6 +108,10 @@ import { MercadoPagoSubscriptionPlanRepository } from '../repository/mercadopago
       useClass: SubscriptionRepository,
     },
     {
+      provide: 'MercadoPagoPaymentsRepositoryInterface',
+      useClass: MercadoPagoPaymentsRepository,
+    },
+    {
       provide: 'MercadoPagoSubscriptionPlanRepositoryInterface',
       useClass: MercadoPagoSubscriptionPlanRepository,
     },
@@ -117,6 +127,7 @@ import { MercadoPagoSubscriptionPlanRepository } from '../repository/mercadopago
       provide: 'MercadopagoSubscriptionPlanAdapterInterface',
       useClass: MercadoPagoSubscriptionPlanAdapter,
     },
+
     {
       provide: 'MpHandlerValidationsInterface',
       useFactory: (configService: ConfigService, logger: MyLoggerService) => {

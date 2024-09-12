@@ -13,6 +13,18 @@ export class MercadoPagoSubscriptionPlanRepository
     @InjectModel('SubscriptionPlan')
     private readonly subscriptionPlanModel: Model<SubscriptionPlanDocument>,
   ) {}
+
+  async findSubscriptionPlanByMeliID(
+    id: string,
+  ): Promise<SubscriptionPlan | null> {
+    this.logger.log('Find subscription plan by Meli ID: ' + id);
+    const subscriptionPlanDocument = await this.subscriptionPlanModel
+      .findOne({ mpPreapprovalPlanId: id })
+      .exec();
+    return subscriptionPlanDocument
+      ? SubscriptionPlan.fromDocument(subscriptionPlanDocument)
+      : null;
+  }
   async findAllSubscriptionPlans(): Promise<SubscriptionPlan[]> {
     try {
       this.logger.log('Find all subscription plans in repository');

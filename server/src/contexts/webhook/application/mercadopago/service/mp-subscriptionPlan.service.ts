@@ -13,6 +13,18 @@ export class MercadoPagoSubscriptionPlanService
     @Inject('MercadoPagoSubscriptionPlanRepositoryInterface')
     private readonly subscriptionPlanRepository: MercadoPagoSubscriptionPlanRepositoryInterface,
   ) {}
+  async findSubscriptionPlanByMeliID(
+    id: string,
+  ): Promise<SubscriptionPlan | null> {
+    try {
+      const subscriptionPlan =
+        this.subscriptionPlanRepository.findSubscriptionPlanByMeliID(id);
+      if (!subscriptionPlan) return Promise.resolve(null);
+      return subscriptionPlan;
+    } catch (error: any) {
+      throw error;
+    }
+  }
   async findAllSubscriptionPlans(): Promise<SubscriptionPlan[]> {
     try {
       const subscriptionPlans =

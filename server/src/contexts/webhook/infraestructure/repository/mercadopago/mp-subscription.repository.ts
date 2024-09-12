@@ -12,6 +12,43 @@ export class SubscriptionRepository implements SubscriptionRepositoryInterface {
     @InjectModel('Subscription')
     private readonly subscriptionModel: Model<SubscriptionDocument>,
   ) {}
+  async updateSubscription(id: string, updateObject: any): Promise<void> {
+    this.logger.log('Update subscription with ID: ' + id);
+    const result = await this.subscriptionModel.findOneAndUpdate(
+      { mpPreapprovalId: id },
+      updateObject,
+      { new: true },
+    );
+    if (!result) {
+      this.logger.error(`Subscription with id ${id} not found.`);
+      throw new Error(`Subscription with id ${id} not found.`);
+    }
+    this.logger.log(`Subscription with id ${id} successfully updated.`);
+  }
+  async cancelSubscription(id: string): Promise<void> {
+    this.logger.log('Cancel subscription in repository: ' + id);
+    this.logger.log(
+      'If you need more information about this action, please check the ID ' +
+        id,
+    );
+    const result = await this.subscriptionModel.findOneAndUpdate(
+      { mpPreapprovalId: id },
+      { status: 'cancelled' },
+      { new: true },
+    );
+    if (!result) {
+      this.logger.error(`Subscription with id ${id} not found.`);
+      throw new Error(`Subscription with id ${id} not found.`);
+    }
+    this.logger.log(`Subscription with id ${id} successfully cancelled.`);
+  }
+  async saveSubPreapproval(sub: Subscription): Promise<void> {
+    this.logger.log(
+      'saving new subscription in database SUB_ID: ' + sub.getMpPreapprovalId(),
+    );
+    const newSubscription = new this.subscriptionModel(sub);
+    await newSubscription.save();
+  }
 
   async getSubscriptionHistory(
     external_reference: string,
@@ -27,5 +64,14 @@ export class SubscriptionRepository implements SubscriptionRepositoryInterface {
     } catch (error: any) {
       throw error;
     }
+  }
+  async findSubscriptionByPreapprovalId(
+    id: string,
+  ): Promise<Subscription | null> {
+    this.logger.log('Find subscription by preapproval ID: ' + id);
+    const subscription = await this.subscriptionModel.findOne({
+      mpPreapprovalId: id,
+    }); // mpPreapprovalId es el campo de ID de SUSCRIPCION de MELI
+    return subscription ? Subscription.fromDocument(subscription) : null;
   }
 }

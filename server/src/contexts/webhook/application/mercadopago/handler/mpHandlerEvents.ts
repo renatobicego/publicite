@@ -106,7 +106,19 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
       );
       console.log('PAYMENT RESPONSE:');
       console.log(paymentResponse);
-
+      if (
+        action === 'payment.created' &&
+        paymentResponse.status === 'rejected' &&
+        paymentResponse.operation_type === 'card_validation'
+      ) {
+        this.logger.warn(
+          'The card is rejected,plase contact with the client -> reason: ' +
+            paymentResponse.status_detail ?? 'unknown',
+        );
+        this.logger.warn(
+          'MpWebhookAdapter - Case paymenty.created - STATUS: rejected, sending response OK to meli & return',
+        );
+      }
       if (
         action === 'payment.created' &&
         paymentResponse.operation_type === 'card_validation'

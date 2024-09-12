@@ -7,19 +7,16 @@ import {
 import { ConfigService } from '@nestjs/config';
 
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
-
-import Payment from 'src/contexts/webhook/domain/mercadopago/entity/payment.entity';
-
-import Invoice from 'src/contexts/webhook/domain/mercadopago/entity/invoice.entity';
-import Subscription from 'src/contexts/webhook/domain/mercadopago/entity/subcription.entity';
 import MercadoPagoEventsRepositoryInterface from 'src/contexts/webhook/domain/mercadopago/repository/mp-events.repository.interface';
 import { MpWebhookServiceInterface } from 'src/contexts/webhook/domain/mercadopago/service/mp-webhook.service.interface';
-
-//import { UserRepositoryInterface } from 'src/contexts/user/domain/user-repository.interface';
+import { MpServiceInvoiceInterface } from 'src/contexts/webhook/domain/mercadopago/service/mp-invoice.service.interface';
+import { MpPaymentServiceInterface } from 'src/contexts/webhook/domain/mercadopago/service/mp-payments.service.interface';
+import { SubscriptionServiceInterface } from 'src/contexts/webhook/domain/mercadopago/service/mp-subscription.service.interface';
 
 /*
-Capa de servicio: Debe encargarse de arrojar las exceptions, transforma las request en objetos de dominio (entidades) y las envia al repositorio de persistencia.
-Esta capa deberia retornar todos los errores.
+Capa de servicio: Capa de servicio de webHook, se encarga de comunicar el webHook con los distintos 
+servicios de nuestra app para manejar las suscripciones (invoice, suscription, payment). Cada servicio posee su propia logica, esta capa actua como guia para cada una
+
 */
 
 @Injectable()
@@ -29,6 +26,12 @@ export class MpWebhookService implements MpWebhookServiceInterface {
     private readonly configService: ConfigService,
     @Inject('MercadoPagoEventsRepositoryInterface')
     private readonly mercadoPagoEventsRepository: MercadoPagoEventsRepositoryInterface,
+    @Inject('MpServiceInvoiceInterface')
+    private readonly MpInvoiceService: MpServiceInvoiceInterface,
+    @Inject('MpPaymentServiceInterface')
+    private readonly mpPaymentService: MpPaymentServiceInterface,
+    @Inject('SubscriptionServiceInterface')
+    private readonly subscriptionService: SubscriptionServiceInterface,
   ) {}
 
   private readonly MP_ACCESS_TOKEN =
@@ -36,28 +39,7 @@ export class MpWebhookService implements MpWebhookServiceInterface {
 
   async create_payment(payment: any): Promise<void> {
     try {
-      this.logger.log(
-        'Creating payment for suscription description: ' + payment.description,
-      );
-      this.logger.log('Creating payment with ID: ' + payment.id);
-      if (payment && payment.payer) {
-        const newPayment = new Payment(
-          payment.id,
-          payment.payer.id,
-          payment.payer.email,
-          payment.payment_type_id,
-          payment.payment_method_id,
-          payment.transaction_amount,
-          payment.date_approved,
-          payment.external_reference,
-        );
-        console.log(newPayment);
-        await this.mercadoPagoEventsRepository.createPayment(newPayment);
-      } else {
-        this.logger.error('Invalid payment data - Error in payment service');
-        throw new BadRequestException('Invalid payment data');
-      }
-
+      await this.mpPaymentService.createPayment(payment);
       return Promise.resolve();
     } catch (error) {
       this.logger.error(
@@ -73,78 +55,13 @@ export class MpWebhookService implements MpWebhookServiceInterface {
 
   // Generamos la factura del usuario
   async createSubscription_authorize_payment(
-    /*
-			PENDIENTE: 
-			si el evento es scheduled creamos el invoice y guardamos en la base de datos, pero lo hacemos con el estado en pending.
-			Cuando llega el otro evento deberiamos buscar el invoice en estado pending y cambiar su estado a approved y adicionalmente updatear el schema con el ID del pago y lo que falte
-			
-			*/
     subscription_authorized_payment: any,
   ): Promise<void> {
     this.logger.log(
       'createSubscription_authorize_payment - Class:mpWebhookService',
     );
     try {
-      this.logger.log('---INVOICE SERVICE---');
-      if (subscription_authorized_payment.status === 'scheduled') {
-        this.logger.log(
-          'Status: ' +
-            subscription_authorized_payment.status +
-            ' the invoice for subscription_authorized_payment ID: ' +
-            subscription_authorized_payment.id +
-            ' is not saved yet. Waiting for payment to be approved',
-        );
-        return Promise.resolve();
-      }
-
-      const subscripcion =
-        await this.mercadoPagoEventsRepository.findSubscriptionByPreapprovalId(
-          subscription_authorized_payment.preapproval_id,
-        );
-      const payment =
-        await this.mercadoPagoEventsRepository.findPaymentByPaymentID(
-          subscription_authorized_payment.payment.id,
-        );
-
-      if (!subscripcion || subscripcion === null) {
-        this.logger.error(
-          'Subscription not found. An error has ocurred with subscription_authorized_payment ID: ' +
-            subscription_authorized_payment.id +
-            '- Class:mpWebhookService',
-        );
-        throw new BadRequestException();
-      }
-
-      if (!payment || payment === null) {
-        this.logger.error(
-          'Payment not found. An error has ocurred with the payment ID: ' +
-            subscription_authorized_payment.id +
-            'preapproval ID:' +
-            subscription_authorized_payment.preapproval_id +
-            '- Class:mpWebhookService',
-        );
-        throw new BadRequestException();
-      }
-
-      if (
-        subscription_authorized_payment != null ||
-        subscription_authorized_payment != undefined
-      ) {
-        this.logger.log(
-          'Status: ' +
-            subscription_authorized_payment.status +
-            ' Generate invoice to save',
-        );
-        const newInvoice = new Invoice(
-          payment.getId(), //Payment ID de nuestro schema
-          subscripcion.getId() ?? undefined, // Id de la suscripcion en nuestro schema
-          subscription_authorized_payment.payment.status, //Payment status
-          subscription_authorized_payment.preapproval_id, // ID de la suscripcion en MELI
-          subscription_authorized_payment.external_reference,
-        );
-        await this.mercadoPagoEventsRepository.saveInvoice(newInvoice);
-      }
-      return Promise.resolve();
+      await this.MpInvoiceService.saveInvoice(subscription_authorized_payment);
     } catch (error: any) {
       this.logger.error(
         'Error createSubscription_authorize_payment - Class:mpWebhookService',
@@ -158,73 +75,13 @@ export class MpWebhookService implements MpWebhookServiceInterface {
   async createSubscription_preapproval(
     subscription_preapproval: any,
   ): Promise<void> {
-    this.logger.log('---SUBSCRIPTION SERVICE---');
     this.logger.log(
       'Method -> createSubscription_preapproval -> Class: mpWebhookService',
     );
-
     try {
-      // Crear el nuevo objeto de suscripción
-      const {
-        id,
-        payer_id,
-        status,
-        preapproval_plan_id,
-        auto_recurring,
-        external_reference,
-      } = subscription_preapproval;
-
-      if (
-        !auto_recurring ||
-        !auto_recurring.start_date ||
-        !auto_recurring.end_date ||
-        !external_reference
-      ) {
-        this.logger.error('Invalid subscription data - missing dates');
-        throw new BadRequestException('Invalid subscription data');
-      }
-      let { start_date, end_date } = auto_recurring;
-      start_date = this.parseTimeX(start_date);
-      end_date = this.parseTimeX(end_date);
-
-      //Buscamos el plan al que pertenece la suscripción
-      const plan =
-        await this.mercadoPagoEventsRepository.findSubscriptionPlanByMeliID(
-          preapproval_plan_id,
-        );
-
-      if (!plan) {
-        this.logger.error('Plan not found - Class: mpWebhookService');
-        throw new BadRequestException(
-          "Plan not found, we can't create the subscription",
-        );
-      }
-      const planID = plan.getId();
-      try {
-        this.logger.log(
-          'Creating a new subscription with ID: ' +
-            id +
-            'external reference: ' +
-            external_reference +
-            'for plan ' +
-            plan.getDescription() +
-            ' - Class: mpWebhookService',
-        );
-        const newUserSuscription = new Subscription(
-          id, // ID de la suscripción
-          payer_id, // id del payer
-          status, // estado de la suscripción
-          planID, // id del plan en nuestro sistema
-          start_date, // fecha de inicio
-          end_date, // fecha de fin
-          external_reference, // identificador de usuario (Es el ID de clerk)
-        );
-        await this.mercadoPagoEventsRepository.saveSubPreapproval(
-          newUserSuscription,
-        );
-      } catch (error: any) {
-        throw error;
-      }
+      await this.subscriptionService.createSubscription_preapproval(
+        subscription_preapproval,
+      );
     } catch (error) {
       this.logger.error(
         'Error in createSubscription_preapproval - Class: mpWebhookService',
@@ -238,31 +95,9 @@ export class MpWebhookService implements MpWebhookServiceInterface {
     subscription_preapproval_update: any,
   ): Promise<void> {
     try {
-      const {
-        id,
-        // payer_id,
-        status,
-        // preapproval_plan_id,
-        // auto_recurring,
-        external_reference,
-      } = subscription_preapproval_update;
-
-      if (status === 'cancelled') {
-        await this.cancelSubscription_preapproval(id);
-        return Promise.resolve();
-      }
-
-      const updateObject = {
-        status: status,
-        external_reference: external_reference,
-      };
-
-      await this.mercadoPagoEventsRepository.updateSubscription(
-        id,
-        updateObject,
+      await this.subscriptionService.updateSubscription_preapproval(
+        subscription_preapproval_update,
       );
-
-      return Promise.resolve();
     } catch (error: any) {
       throw error;
     }
@@ -270,14 +105,7 @@ export class MpWebhookService implements MpWebhookServiceInterface {
 
   async cancelSubscription_preapproval(id: string): Promise<void> {
     try {
-      this.logger.log(
-        'Subscription cancelled: The subscription ID:' +
-          id +
-          'will be cancelled - Class: mpWebhookService',
-      );
-
-      await this.mercadoPagoEventsRepository.cancelSubscription(id);
-      return Promise.resolve();
+      this.subscriptionService.cancelSubscription_preapproval(id);
     } catch (error: any) {
       this.logger.error(
         'Error cancelSubscription_preapproval - Class: mpWebhookService',
@@ -302,9 +130,5 @@ export class MpWebhookService implements MpWebhookServiceInterface {
     }
     const response_result = await response.json();
     return response_result;
-  }
-
-  parseTimeX(date: string): string {
-    return date.split('T')[0];
   }
 }
