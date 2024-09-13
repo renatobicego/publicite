@@ -11,13 +11,13 @@ const CreateForm = () => {
   const [files, setFiles] = useState<File[]>([]);
 
   return (
-    <section className="w-full flex gap-4 items-start">
+    <section className="w-full flex gap-4 items-start max-md:flex-col">
       <UploadImages files={files} setFiles={setFiles} type={type} />
-      <div className="flex flex-col flex-1 gap-4">
+      <div className="flex flex-col flex-1 gap-4 max-md:w-full">
         <SelectType type={type} setType={setType} />
         <Divider />
         {!type && (
-          <p className="text-red-500 text-center">
+          <p className="text-red-500 text-center max-lg:text-sm">
             Por favor, seleccione si es un bien o un servicio.
           </p>
         )}

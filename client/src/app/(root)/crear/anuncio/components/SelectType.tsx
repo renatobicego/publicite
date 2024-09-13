@@ -15,7 +15,7 @@ const SelectType = ({
         hideScrollBar: false,
       }}
       classNames={{
-        trigger: "shadow-none hover:shadow-sm border-[0.5px]",
+        trigger: "shadow-none hover:shadow-sm border-[0.5px] py-1",
         value: "text-[0.8125rem]",
         label: "font-medium text-[0.8125rem]",
         base: "flex-1"
@@ -26,6 +26,7 @@ const SelectType = ({
       onChange={(e) => setType(e.target.value as "good" | "service")}
       radius="full"
       isRequired
+      labelPlacement="outside"
       variant="bordered"
     >
       <SelectItem

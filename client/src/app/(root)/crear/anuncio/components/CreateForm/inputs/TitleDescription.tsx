@@ -14,7 +14,6 @@ const TitleDescription = ({
         name="title"
         label="Título"
         placeholder="Agregue un título"
-        labelPlacement="inside"
         isRequired
         aria-label="título"
         isInvalid={!!errors.title}
@@ -25,7 +24,6 @@ const TitleDescription = ({
         name="description"
         label="Descripción"
         placeholder="Agregue una descripción"
-        labelPlacement="inside"
         isRequired
         aria-label="descripción"
         isInvalid={!!errors.description}

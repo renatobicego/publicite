@@ -1,31 +1,33 @@
 import { Autocomplete, AutocompleteItem } from "@nextui-org/react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Key } from "react";
 import usePlacesService from "react-google-autocomplete/lib/usePlacesAutocompleteService";
 import { FaLocationDot } from "react-icons/fa6";
 
 const LatLngAutocomplete = ({
   handleLocationChange,
   map,
+  createMarker
 }: {
   handleLocationChange: (lat: number, lng: number) => void;
   map: google.maps.Map | null;
+  createMarker: (lat?: number, lng?: number) => Promise<void>
 }) => {
-  const [value, setValue] = useState<string | null>(null);
 
   const { placePredictions, getPlacePredictions, isPlacePredictionsLoading } =
     usePlacesService({
       apiKey: process.env.NEXT_PUBLIC_MAPS_API_KEY,
       options: {
         types: ["geocode"],
-        input: value ?? "",
+        input: "",
       },
     });
 
-
-  const handleSelectPlace = (place: google.maps.places.AutocompletePrediction) => {
-    if (map && place.place_id) {
+  const handleSelectPlace = (
+    placeId: string
+  ) => {
+    if (map && placeId) {
       const service = new google.maps.places.PlacesService(map);
-      service.getDetails({ placeId: place.place_id }, (result, status) => {
+      service.getDetails({ placeId: placeId }, (result, status) => {
         if (status === google.maps.places.PlacesServiceStatus.OK && result) {
           const location = result.geometry?.location;
           if (location) {
@@ -33,6 +35,7 @@ const LatLngAutocomplete = ({
             const lng = location.lng();
             handleLocationChange(lat, lng);
             map.setCenter({ lat, lng });
+            createMarker(lat, lng);
           }
         }
       });
@@ -42,18 +45,34 @@ const LatLngAutocomplete = ({
   return (
     <Autocomplete
       label="Ubicación / Ciudad"
-      placeholder="Ingresa una ubicación"
+      placeholder="Ingresa una ubicación, calle o ciudad"
+      autoComplete="hidden"
+      radius="full"
+      labelPlacement="outside"
+      variant="bordered"
+      inputProps={{
+        classNames: {
+          inputWrapper: "shadow-none hover:shadow-sm border-[0.5px] group-data-[focus=true]:border-light-text",
+          input: "text-[0.8125rem]",
+          label: "font-medium text-[0.8125rem]",
+        },
+      }}
+      description="Ingrese una ubicación y seleccione de la lista."
       onValueChange={(value) => getPlacePredictions({ input: value })}
+      onSelectionChange={(key) => handleSelectPlace(key as string)}
       isLoading={isPlacePredictionsLoading}
     >
       {placePredictions.map((place) => (
         <AutocompleteItem
+          classNames={{
+            title: "text-[0.8125rem]",
+          }}
+          startContent={<FaLocationDot />}
           key={place.place_id}
           value={place.description}
           textValue={place.description}
-          onClick={() => handleSelectPlace(place)}
         >
-          <FaLocationDot /> {place.description}
+          {place.description}
         </AutocompleteItem>
       ))}
     </Autocomplete>

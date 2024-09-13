@@ -1,6 +1,7 @@
 import {
   DateInput,
   Input,
+  InputProps,
   Select,
   SelectItem,
   Textarea,
@@ -21,13 +22,29 @@ export const CustomInput = ({
       variant="bordered"
       className="px-4 py-[10px] border-[0.5px]"
       classNames={{
-        inputWrapper: "shadow-none hover:shadow-sm border-[0.5px] group-data-[focus=true]:border-light-text",
+        inputWrapper: "shadow-none hover:shadow-sm border-[0.5px] group-data-[focus=true]:border-light-text py-1",
         input: "text-[0.8125rem]",
         label: "font-medium text-[0.8125rem]",
       }}
       radius="full"
       labelPlacement="outside"
       {...field}
+      {...props}
+    />
+  );
+};
+
+export const CustomInputWithoutFormik: React.FC<InputProps> = (props) => {
+  return (
+    <Input
+      variant="bordered"
+      classNames={{
+        inputWrapper: "shadow-none hover:shadow-sm border-[0.5px] group-data-[focus=true]:border-light-text py-1",
+        input: "text-[0.8125rem]",
+        label: "font-medium text-[0.8125rem]",
+      }}
+      labelPlacement="outside"
+      radius="full"
       {...props}
     />
   );
@@ -45,7 +62,7 @@ export const CustomTextarea = ({
     <Textarea
       classNames={{
         inputWrapper:
-          "shadow-none hover:shadow-sm border-[0.5px] text-[0.8125rem]",
+          "shadow-none hover:shadow-sm border-[0.5px] text-[0.8125rem] group-data-[focus=true]:border-light-text",
         input: "text-[0.8125rem]",
         label: "font-medium text-[0.8125rem]",
       }}
@@ -64,7 +81,7 @@ export const CustomDateInput = (props: FieldInputProps<any>) => {
       <DateInput
         {...props}
         classNames={{
-          inputWrapper: "shadow-none hover:shadow-sm border-[0.5px]",
+          inputWrapper: "shadow-none hover:shadow-sm border-[0.5px] group-data-[focus=true]:border-light-text",
           input: "text-[0.8125rem]",
           label: "font-medium text-[0.8125rem]",
         }}
@@ -77,9 +94,7 @@ export const CustomDateInput = (props: FieldInputProps<any>) => {
   );
 };
 
-interface CustomSelectProps<T> {
-  field: FieldInputProps<any>;
-  form: FormikProps<any>;
+interface CustomSelectProps<T> extends FieldInputProps<any> {
   items: T[];
   getItemLabel: (item: T) => string;
   getItemValue: (item: T) => string;
@@ -88,8 +103,6 @@ interface CustomSelectProps<T> {
 }
 
 export const CustomSelect = <T extends unknown>({
-  field,
-  form,
   items,
   getItemLabel,
   getItemValue,
@@ -97,20 +110,21 @@ export const CustomSelect = <T extends unknown>({
   renderItem,
   ...props
 }: CustomSelectProps<T>) => {
+  
   return (
     <Select
       scrollShadowProps={{
         hideScrollBar: false,
       }}
       classNames={{
-        trigger: "shadow-none hover:shadow-sm border-[0.5px]",
+        trigger: "shadow-none hover:shadow-sm border-[0.5px] group-data-[focus=true]:border-light-text py-1",
         value: "text-[0.8125rem]",
         label: "font-medium text-[0.8125rem]",
       }}
       radius="full"
       variant="bordered"
       labelPlacement="outside"
-      {...field}
+      selectedKeys={props.value ? [props.value] : []}
       {...props}
     >
       {items.map((item, index) => (

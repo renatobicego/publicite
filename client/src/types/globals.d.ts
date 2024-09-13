@@ -11,7 +11,6 @@ declare global {
   type ObjectId = string;
   type Visibility =
     | "Public"
-    | "Private"
     | "Registered"
     | "Contacts"
     | "Friends"

@@ -11,8 +11,7 @@ export const goodValidation = object({
     .max(
       today(getLocalTimeZone()).year,
       "El año debe ser igual o anterior al actual"
-    )
-    .test("is-empty-or-valid", "El año no es válido", (value) => !value),
+    ),
   model: string()
     .nullable()
     .notRequired()

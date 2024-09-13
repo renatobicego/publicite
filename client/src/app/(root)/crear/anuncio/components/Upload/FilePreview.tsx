@@ -8,7 +8,7 @@ interface FilePreviewProps {
 
 const FilePreview = ({ file, removeFile }: FilePreviewProps) => {
   return (
-    <div key={file.name} className="relative overflow-hidden">
+    <div key={file.name} className="relative overflow-hidden min-w-32">
       {file.type.startsWith("video/") ? (
         <video
           src={URL.createObjectURL(file)}

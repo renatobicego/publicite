@@ -18,8 +18,8 @@ const UploadImages = ({
   files,
   setFiles,
 }: UploadImagesProps) => {
-  const maxImageSize = 5 * 1024 * 1024; // 5MB for images
-  const maxVideoSize = 30 * 1024 * 1024; // 30MB for videos
+  const maxImageSize = 4 * 1024 * 1024; // 4MB for images
+  const maxVideoSize = 32 * 1024 * 1024; // 30MB for videos
   const maxTotalFiles = 10;
   const maxVideoFiles = 1;
 
@@ -79,7 +79,7 @@ const UploadImages = ({
   };
 
   return (
-    <div className="w-1/2">
+    <div className="w-full md:w-1/2">
       <Dropzone
         onDrop={onDrop}
         allowVideos={allowVideos}
@@ -87,7 +87,7 @@ const UploadImages = ({
         maxVideoSize={maxVideoSize}
         isDisabled={!type}
       />
-      <div className="flex gap-4 mt-4 w-full flex-wrap">
+      <div className="flex gap-4 mt-4 w-full flex-wrap max-md:flex-nowrap max-md:overflow-x-scroll">
         {files.map((file, index) => (
           <FilePreview
             key={file.name + index}

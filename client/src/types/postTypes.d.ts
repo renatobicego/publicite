@@ -5,7 +5,10 @@ export interface Post {
   title: string;
   postType: "Service" | "Good" | "Petition";
   description?: string;
-  visibility: Visibility;
+  visibility: {
+    post: Visibility;
+    socialMedia: Visibility;
+  };
   recommendations: PostRecommendation[];
   price: number;
   location: PostLocation;
@@ -30,8 +33,8 @@ export interface PostRecommendation {
 
 export interface PostLocation {
   _id?: ObjectId;
-  latitude?: number;
-  longitude?: number;
+  lat: number;
+  lng: number;
 }
 
 export interface PostCategory {
@@ -88,7 +91,6 @@ export interface GoodPostValues
   condition?: "New" | "Used";
 }
 
-
 export interface Service extends Post {
   imagesUrls: string[];
   frequencyPrice: FrequencyPrice;
@@ -108,11 +110,18 @@ export interface ServicePostValues
     | "recommendations"
   > {
   category: ObjectId;
-  price: number | null;
+  price?: number
   author: string;
+  frequencyPrice?: FrequencyPrice;
 }
 export interface Petition extends Post {
   frequencyPrice?: FrequencyPrice;
   toPrice?: number;
   petitionType: "Good" | "Service";
+}
+
+export interface AttachedFileValues {
+  file: File | null;
+  label: string;
+  _id: string;
 }

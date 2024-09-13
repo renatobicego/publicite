@@ -40,7 +40,7 @@ const PlaceAutocomplete = (props: FieldInputProps<any>) => {
       variant="bordered"
       inputProps={{
         classNames: {
-          inputWrapper: "shadow-none hover:shadow-sm border-[0.5px]",
+          inputWrapper: "shadow-none hover:shadow-sm border-[0.5px] group-data-[focus=true]:border-light-text",
           input: "text-[0.8125rem]",
           label: "font-medium text-[0.8125rem]",
         },

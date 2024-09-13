@@ -1,18 +1,22 @@
 import { useState, useEffect } from "react";
-import { Picker } from "../../../../../../../../../../../react-gmap-picker/src/index";
 import CustomMap from "./CustomMap";
-// import { Picker } from 'react-gmap-picker';
-const INITIAL_LOCATION = { lat: -34.6115643483578, lng: -58.38901999245833 }; // Fallback location
+import { FormikErrors } from "formik";
+import { GoodPostValues, PostLocation, ServicePostValues } from "@/types/postTypes";
 
-const PlacePicker = () => {
-  const [location, setLocation] = useState(INITIAL_LOCATION);
-
+const PlacePicker = ({
+  location,
+  setFieldValue,
+}: {
+  location: PostLocation;
+  setFieldValue: (
+    field: string,
+    value: any,
+    shouldValidate?: boolean
+  ) => Promise<void | FormikErrors<GoodPostValues | ServicePostValues>>;
+}) => {
   // Function to handle location and zoom updates
   const handleChangeLocation = (lat: number, lng: number) => {
-    setLocation({ lat, lng });
-  };
-  const handleResetLocation = () => {
-    setLocation(INITIAL_LOCATION);
+    setFieldValue("location", { lat, lng });
   };
 
   // Use geolocation to set the default location based on the user's device location
@@ -23,7 +27,7 @@ const PlacePicker = () => {
           const { latitude, longitude } = position.coords;
           const userLocation = { lat: latitude, lng: longitude };
 
-          setLocation(userLocation);
+          setFieldValue("location", userLocation);
         },
         (error) => {
           console.error("Error getting location:", error);

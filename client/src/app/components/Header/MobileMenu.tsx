@@ -47,7 +47,7 @@ const MobileMenu = () => {
     },
   ];
   const variants: Variants = {
-    visible: { transform: "translateY(0)", height: isSignedIn ?  "270px" : "180px", opacity: 1 },
+    visible: { transform: "translateY(0)", height: isSignedIn ?  "290px" : "190px", opacity: 1 },
     hidden: { transform: "translateY(-50px)", height: "0px", opacity: 0 },
   };
 
@@ -61,7 +61,7 @@ const MobileMenu = () => {
         exit: "hidden",
         transition: { duration: 0.3 },
       }}
-      className="bg-white h-fit !w-auto header-spacing rounded-b-xl shadow-2xl fixed items-end gap-1 pr-6 md:pr-8"
+      className="bg-white h-fit !w-auto header-spacing rounded-b-xl shadow-2xl fixed items-end gap-2 pr-6 md:pr-8"
     >
       {shownItems.map((item, index) => (
         <NavbarMenuItem key={`${item}-${index}`}>

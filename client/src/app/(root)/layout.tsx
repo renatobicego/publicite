@@ -1,4 +1,4 @@
-import { ourFileRouter } from "../api/uploadThing/core";
+import { ourFileRouter } from "../api/uploadthing/core";
 import HelpButton from "../components/buttons/HelpButton";
 import Footer from "../components/Footer/Footer";
 import Header from "../components/Header/Header";

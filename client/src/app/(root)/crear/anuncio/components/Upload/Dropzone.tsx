@@ -50,19 +50,19 @@ const Dropzone = ({
     >
       <input {...getInputProps()} />
       <div
-        className={`flex items-center w-full xl:min-h-96 3xl:min-h-[450px] justify-center border-2 
+        className={`flex items-center w-full min-h-72 lg:min-h-80 xl:min-h-96 3xl:min-h-[450px] justify-center border-2 
       border-gray-300 border-dashed rounded-md flex-col bg-fondo
         ${isDisabled ? "opacity-50" : ""}
         `}
       >
         <IoCloudUploadSharp className="size-16 text-primary" />
-        <p className="text-center text-primary font-semibold text-lg">
+        <p className="text-center text-primary font-semibold lg:text-lg">
           Elegir o arrastra aquí los archivos
         </p>
-        <p className="text-text-color font-semibold text-sm text-center max-w-[80%]">
+        <p className="text-text-color font-semibold text-xs lg:text-sm text-center max-w-[80%]">
           {allowVideos
-            ? "Tamaño máximo de 5Mb para imágenes y 30Mb para videos. Máximo 10 archivos y únicamente se permite 1 video."
-            : "Tamaño máximo de 5Mb, máximo 10 imágenes"}
+            ? "Tamaño máximo de 5MB para imágenes y 30MB para videos. Máximo 10 archivos y únicamente se permite 1 video."
+            : "Tamaño máximo de 5MB, máximo 10 imágenes"}
         </p>
       </div>
     </div>

@@ -24,7 +24,7 @@ const Search = ({
       endContent={
         <>
           <Divider className="h-1/2" orientation="vertical" />
-          <Dropdown className="ml-2">
+          <Dropdown className="ml-2" placement="bottom-end">
             <DropdownTrigger>
               <Button
                 radius="full"

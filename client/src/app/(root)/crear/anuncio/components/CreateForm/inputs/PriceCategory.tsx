@@ -10,6 +10,7 @@ import {
 } from "@/types/postTypes";
 import { Field, FormikErrors } from "formik";
 import React from "react";
+import { FaDollarSign } from "react-icons/fa6";
 
 const PriceCategory = ({
   errors,
@@ -18,8 +19,6 @@ const PriceCategory = ({
   errors: FormikErrors<GoodPostValues> | FormikErrors<ServicePostValues>;
   isService?: boolean;
 }) => {
-
-
   const categories: PostCategory[] = [
     {
       _id: "112sdq",
@@ -36,13 +35,14 @@ const PriceCategory = ({
   ];
   return (
     <>
-      <div className="flex gap-4">
+      <div className="flex gap-4 max-xl:flex-wrap">
         <Field
           as={CustomInput}
           name="price"
+          type="number"
+          startContent={<FaDollarSign />}
           label="Precio"
           placeholder="Agregue el precio"
-          labelPlacement="inside"
           isRequired
           aria-label="precio"
           isInvalid={!!errors.price}
@@ -58,7 +58,6 @@ const PriceCategory = ({
             name="frequencyPrice"
             label="Frecuencia del Precio"
             placeholder="Seleccione la frecuencia del pago"
-            labelPlacement="inside"
             aria-label="frecuencia de precio"
             isInvalid={
               !!(errors as FormikErrors<ServicePostValues>).frequencyPrice
@@ -78,7 +77,6 @@ const PriceCategory = ({
         name="category"
         label="Categoría"
         placeholder="Seleccione la categoría"
-        labelPlacement="inside"
         aria-label="categoría"
         isRequired
         isInvalid={!!errors.category}

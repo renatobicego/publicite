@@ -7,7 +7,7 @@ const SearchTerms = () => {
   const [isFormVisible, setIsFormVisible] = useState(false);
 
   return (
-    <AnimatedBox isVisible={isFormVisible} className="flex-1 w-full">
+    <AnimatedBox isVisible={isFormVisible} className="flex-1 w-full" keyValue="search-terms-box">
       {isFormVisible ? (
         <SearchTermsForm
           key={"searchTermsForm"}

@@ -14,7 +14,6 @@ const Condition = ({ errors }: { errors: FormikErrors<GoodPostValues> }) => {
       name="condition"
       label="Estado"
       placeholder="Seleccione la condición"
-      labelPlacement="inside"
       aria-label="condición"
       isRequired
       isInvalid={!!errors.condition}
