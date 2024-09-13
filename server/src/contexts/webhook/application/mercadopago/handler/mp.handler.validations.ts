@@ -64,7 +64,7 @@ export class MpHandlerValidations implements MpHandlerValidationsInterface {
       this.logger.error(
         'Check hash validation - VALIDATION: WRONG - Please check your headers',
       );
-      return false;
+      throw new UnauthorizedException('Invalid webhook headers');
     }
   }
 }

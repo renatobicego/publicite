@@ -62,19 +62,11 @@ export class WebhookController {
   ): Promise<Response> {
     try {
       //Valido el origen de la petición
-      const authSecretValidation =
-        await this.mpWebhookAdapter.handleRequestWebHookOriginValidation(
+        this.mpWebhookAdapter.handleRequestWebHookOriginValidation(
           headers, req
         )
-      if (authSecretValidation) {
         this.logger.log('Webhook MP OK - Credentials are valid - WEBHOOK_PROCESS: COMPLETE ---> sending response to Meli - Class:WebhookController 🚀')
-        return res.status(HttpStatus.OK).send('Signature verified');
-      } else {
-        this.logger.error('Webhook MP FAIL - Credentials are not valid', 'Class:WebhookController')
-        return res
-          .status(HttpStatus.UNAUTHORIZED)
-          .send('Signature verification failed');
-      }
+        return res.status(HttpStatus.OK).send();
     } catch (error) {
       console.log(error);
       this.logger.error(error +  'Class:WebhookController')
@@ -84,7 +76,7 @@ export class WebhookController {
     }
   }
 
-  
+
   @Post('/mp-test')
   @ApiExcludeEndpoint()
   @HttpCode(HttpStatus.OK)

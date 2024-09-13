@@ -1,16 +1,11 @@
-import { ObjectId, Schema, Types } from 'mongoose';
+import { ObjectId, Types } from 'mongoose';
 import { Gender, UserType } from './enums.request';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum, IsOptional } from 'class-validator';
 import { UserPerson } from 'src/contexts/user/domain/entity/userPerson.entity';
 import { ContactRequestDto } from 'src/contexts/contact/infraestructure/controller/request/contact.request';
 import { Contact } from 'src/contexts/contact/domain/entity/contact.entity';
-
-export interface UserPreferences {
-  searchPreference: Schema.Types.ObjectId[];
-  backgroundColor: string;
-  boardColor: string;
-}
+import { UserPreferences } from './userPreferenceDTO';
 
 export interface UserPersonResponse {
   _id: ObjectId;

@@ -4,6 +4,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsOptional } from 'class-validator';
 import { UserBussiness } from 'src/contexts/user/domain/entity/userBussiness.entity';
 import { ContactRequestDto } from 'src/contexts/contact/infraestructure/controller/request/contact.request';
+import { UserPreferences } from './userPreferenceDTO';
 
 export interface UserBusinessResponse {
   _id: ObjectId;
@@ -27,6 +28,7 @@ export interface UserBusinessResponse {
   lastName: string;
   sector: ObjectId;
   businessName: string;
+  userPreferences: UserPreferences;
 }
 export class UserBusinessDto {
   @ApiProperty({
@@ -175,6 +177,10 @@ export class UserBusinessDto {
   })
   readonly businessName: string;
 
+  @ApiPropertyOptional({
+    description: 'User preferences object',
+  })
+  readonly userPreferences?: UserPreferences;
   static formatDocument(user: UserBussiness): UserBusinessResponse {
     return {
       clerkId: user.getClerkId() as string,
@@ -198,9 +204,16 @@ export class UserBusinessDto {
       lastName: user.getLastName() as string,
       businessName: user.getBusinessName(),
       _id: user.getId(),
+      userPreferences: user.getUserPreferences() ?? userPreferencesInit,
     };
   }
 }
+
+const userPreferencesInit: UserPreferences = {
+  searchPreference: [],
+  backgroundColor: '',
+  boardColor: '',
+};
 
 export class UserBusinessUpdateDto {
   @ApiProperty({
@@ -272,30 +285,4 @@ export class UserBusinessUpdateDto {
     type: String,
   })
   readonly businessName: string;
-
-  static formatDocument(user: UserBussiness): UserBusinessResponse {
-    return {
-      clerkId: user.getClerkId() as string,
-      email: user.getEmail() as string,
-      username: user.getUsername() as string,
-      description: user.getDescription() as string,
-      profilePhotoUrl: user.getProfilePhotoUrl() as string,
-      countryRegion: user.getCountryRegion() as string,
-      isActive: user.getIsActive() as boolean,
-      contact: user.getContact() as ObjectId,
-      createdTime: user.getCreatedTime(),
-      subscriptions: user.getSubscriptions() as ObjectId[],
-      groups: user.getGroups() as ObjectId[],
-      magazines: user.getMagazines() as ObjectId[],
-      board: user.getBoard() as ObjectId[],
-      post: user.getPost() as ObjectId[],
-      userRelations: user.getUserRelations() as ObjectId[],
-      userType: user.getUserType(),
-      sector: user.getSector(),
-      businessName: user.getBusinessName(),
-      name: user.getName() as string,
-      lastName: user.getLastName() as string,
-      _id: user.getId(),
-    };
-  }
 }
