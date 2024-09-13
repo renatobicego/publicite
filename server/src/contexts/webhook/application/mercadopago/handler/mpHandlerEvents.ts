@@ -129,13 +129,12 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
         return Promise.resolve(true);
       }
       if (
-        paymentResponse.transaction_amount < 1000 ||
-        paymentResponse.external_reference
-          .toSlowCase()
-          .includes('payment validation')
+        paymentResponse.transaction_amount < 50 &&
+        paymentResponse.payer.email == null &&
+        paymentResponse.date_approved == null
       ) {
         this.logger.warn(
-          'Payment amount is less than 1000, returning OK to Meli - Payment card validation',
+          'Payment amount is less than $50, returning OK to Meli - Payment card validation',
         );
         return Promise.resolve(true);
       }
@@ -328,23 +327,25 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
 //PAYMENT SCHEDULED
 /*
 {
-    "preapproval_id": "290d32f932264d41b38074269a136bc9",
-    "id": 7012376527,
+    "preapproval_id": "c6c2978a41e2406ab32b529bc8bf510d",
+    "id": 7012805572,
     "type": "recurring",
-    "status": "processed",
-    "date_created": "2024-08-23T18:01:48.231-04:00",
-    "last_modified": "2024-08-23T19:16:14.531-04:00",
-    "transaction_amount": 60000.00,
+    "status": "scheduled",
+    "date_created": "2024-09-12T09:01:52.993-04:00",
+    "last_modified": "2024-09-12T10:07:20.671-04:00",
+    "transaction_amount": 15.00,
     "currency_id": "ARS",
-    "reason": "tu wacha",
+    "reason": "publicite_Maxi",
+    "external_reference": "TEST_PAGO_SIN_FONDOS_2",
     "payment": {
-        "id": 85755158103,
-        "status": "approved",
-        "status_detail": "accredited"
+        "id": 87681460322,
+        "status": "in_process",
+        "status_detail": "offline_process"
     },
+    "rejection_code": "offline_process",
     "retry_attempt": 1,
-    "next_retry_date": "2024-09-23T17:16:56.000-04:00",
-    "debit_date": "2024-08-23T18:00:15.000-04:00",
+    "next_retry_date": "2024-09-13T08:43:21.000-04:00",
+    "debit_date": "2024-09-12T09:00:11.000-04:00",
     "payment_method_id": "card"
 }
 */

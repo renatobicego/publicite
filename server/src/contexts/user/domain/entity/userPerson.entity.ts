@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongoose';
-import { User } from './user.entity';
+import { User, UserPreferences } from './user.entity';
 import { IUserPerson } from '../../infraestructure/schemas/userPerson.schema';
 import { UserPersonDto } from '../../infraestructure/controller/dto/user.person.DTO';
 import { UP_publiciteUpdateRequestDto } from '../../infraestructure/controller/dto/update.request-DTO/UP-publicite.update.request';
@@ -42,6 +42,7 @@ export class UserPerson extends User {
     userRelations?: ObjectId[],
     userType?: UserType,
     _id?: ObjectId,
+    userPreferences?: UserPreferences | null,
   ) {
     super(
       clerkId,
@@ -62,6 +63,11 @@ export class UserPerson extends User {
       post ?? [],
       userRelations ?? [],
       userType ?? UserType.Personal,
+      userPreferences ?? {
+        searchPreference: [],
+        backgroundColor: '',
+        boardColor: '',
+      },
     );
     this.gender = gender;
     this.birthDate = birthDate;
@@ -92,6 +98,7 @@ export class UserPerson extends User {
       document.userRelations,
       UserType.Personal,
       document._id as ObjectId,
+      document.userPreferences,
     );
   }
 

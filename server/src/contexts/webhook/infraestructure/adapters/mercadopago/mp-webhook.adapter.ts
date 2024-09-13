@@ -36,21 +36,17 @@ export class MpWebhookAdapter {
   ): Promise<boolean> {
     const { body } = req;
 
-    const validation = await this.mpHandlerValidations.checkHashValidation(
+    const validation = this.mpHandlerValidations.checkHashValidation(
       req,
       header,
     );
 
     if (validation) {
-      this.logger.log('Webhook origin is valid, processing webhook data');
-      //Si esto se cumple vamos a procesar el webhook
       try {
-        const validationGetMp = await this.getDataFromMP(body);
-        if (validationGetMp) {
-          return Promise.resolve(true);
-        } else {
-          return Promise.resolve(false);
-        }
+        this.logger.log('Webhook origin is valid, processing webhook data');
+        //Si esto se cumple vamos a procesar el webhook
+        this.getDataFromMP(body);
+        return Promise.resolve(true);
         //una vez terminado de procesar guardaremos los datos necesarios y enviamos la notif que esta todo ok
       } catch (error: any) {
         throw error;
@@ -107,6 +103,7 @@ export class MpWebhookAdapter {
           if (subscription_preapproval_response) return Promise.resolve(true);
           break;
         }
+        // Sacar await de nuestro sistema y repsonder de una a meli
         const subscription_preapproval_response =
           await this.subscription_preapproval(dataId);
         if (subscription_preapproval_response) return Promise.resolve(true);

@@ -1,10 +1,16 @@
-import { ObjectId, Types } from 'mongoose';
+import { ObjectId, Schema, Types } from 'mongoose';
 import { Gender, UserType } from './enums.request';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum, IsOptional } from 'class-validator';
 import { UserPerson } from 'src/contexts/user/domain/entity/userPerson.entity';
 import { ContactRequestDto } from 'src/contexts/contact/infraestructure/controller/request/contact.request';
 import { Contact } from 'src/contexts/contact/domain/entity/contact.entity';
+
+export interface UserPreferences {
+  searchPreference: Schema.Types.ObjectId[];
+  backgroundColor: string;
+  boardColor: string;
+}
 
 export interface UserPersonResponse {
   _id: ObjectId;
@@ -28,6 +34,7 @@ export interface UserPersonResponse {
   lastName: string;
   gender: string;
   birthDate: string;
+  userPreferences: UserPreferences;
 }
 
 export class UserPersonDto {
@@ -180,6 +187,11 @@ export class UserPersonDto {
   })
   readonly birthDate: string;
 
+  @ApiPropertyOptional({
+    description: 'User preferences object',
+  })
+  readonly userPreferences?: UserPreferences;
+
   static formatDocument(user: UserPerson): UserPersonResponse {
     return {
       clerkId: user.getClerkId() as string,
@@ -203,10 +215,16 @@ export class UserPersonDto {
       gender: user.getGender(),
       birthDate: user.getBirthDate(),
       _id: user.getId(),
+      userPreferences: user.getUserPreferences() ?? userPreferencesInit,
     };
   }
 }
 
+const userPreferencesInit: UserPreferences = {
+  searchPreference: [],
+  backgroundColor: '',
+  boardColor: '',
+};
 export interface UserPersonalInformationResponse {
   birthDate?: string;
   gender?: string;
