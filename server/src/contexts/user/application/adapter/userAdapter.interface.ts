@@ -8,6 +8,7 @@ import {
   UserPersonDto,
   UserPersonResponse,
 } from '../../infraestructure/controller/dto/user.person.DTO';
+import { UserPreferenceResponse } from './dto/userPreferences.response';
 
 export interface UserAdapterInterface {
   createUser(
@@ -22,4 +23,8 @@ export interface UserAdapterInterface {
   ): Promise<any>;
 
   getUserPersonalInformationByUsername(username: string): Promise<any>;
+  updateUserPreferencesByUsername(
+    username: string,
+    userPreference: UserPreferenceResponse,
+  ): Promise<UserPreferenceResponse>;
 }

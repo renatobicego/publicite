@@ -16,13 +16,18 @@ import { UserBussiness } from '../../domain/entity/userBussiness.entity';
 import { error } from 'console';
 import { UP_publiciteUpdateRequestDto } from '../controller/dto/update.request-DTO/UP-publicite.update.request';
 import { UB_publiciteUpdateRequestDto } from '../controller/dto/update.request-DTO/UB-publicite.update.request';
+import { UserPreferenceResponse } from '../../application/adapter/dto/userPreferences.response';
+import { UserMapperInterface } from '../../application/adapter/mapper/user.mapper.interface';
 
 export class UserAdapter implements UserAdapterInterface {
   constructor(
     private readonly logger: MyLoggerService,
     @Inject('UserServiceInterface')
     private readonly userService: UserServiceInterface,
+    @Inject('UserMapperInterface')
+    private readonly userMapper: UserMapperInterface,
   ) {}
+
   async getUserPersonalInformationByUsername(username: string): Promise<any> {
     try {
       return await this.userService.getUserPersonalInformationByUsername(
@@ -93,6 +98,25 @@ export class UserAdapter implements UserAdapterInterface {
       );
       return UserBusinessDto.formatDocument(userUpdated as UserBussiness);
     } else {
+      throw error;
+    }
+  }
+
+  async updateUserPreferencesByUsername(
+    username: string,
+    userPreference: UserPreferenceResponse,
+  ): Promise<UserPreferenceResponse> {
+    try {
+      this.logger.log(
+        'Start process in the adapter: Update preferences - Sending request to the service',
+      );
+      const userPreferencesUpdated =
+        await this.userService.updateUserPreferencesByUsername(
+          username,
+          userPreference,
+        );
+      return this.userMapper.formatEntityToResponse(userPreferencesUpdated);
+    } catch (error: any) {
       throw error;
     }
   }

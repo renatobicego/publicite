@@ -1,8 +1,12 @@
 import { IUserPerson } from 'src/contexts/user/infraestructure/schemas/userPerson.schema';
-import { User } from '../../entity/user.entity';
+import { User, UserPreferences } from '../../entity/user.entity';
 import { IUserBusiness } from 'src/contexts/user/infraestructure/schemas/userBussiness.schema';
+import { UB_update } from '../../entity/userBussiness.entity';
+import { UP_update } from '../../entity/userPerson.entity';
 
 export interface UserTransformationInterface {
-  formatDocument(user: User): IUserPerson | IUserBusiness;
   getBaseUserData(user: User): any;
+  formatUpdateDocument(reqUser: UP_update): Partial<IUserPerson>;
+  formatUpdateDocumentUB(reqUser: UB_update): Partial<IUserBusiness>;
+  formatDocToUserPreferences(req: any): UserPreferences | null;
 }

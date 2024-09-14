@@ -15,6 +15,10 @@ import { UserAdapterInterface } from '../../application/adapter/userAdapter.inte
 import { UP_publiciteUpdateRequestDto } from './dto/update.request-DTO/UP-publicite.update.request';
 import { UB_publiciteUpdateRequestDto } from './dto/update.request-DTO/UB-publicite.update.request';
 
+import { UserPreferences } from './dto/userPreferenceDTO';
+import { UserPreferencesDto } from './swagger/userPreferenceDTO.swagger';
+import { UserPreferenceResponse } from '../../application/adapter/dto/userPreferences.response';
+
 @ApiTags('Accounts')
 @Controller('user')
 export class UserController {
@@ -147,6 +151,31 @@ export class UserController {
   ): Promise<UserBusinessResponse> {
     try {
       return this.userAdapter.getUserPersonalInformationByUsername(username);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  @Put('/user-preferences/:username')
+  @ApiOperation({ summary: 'Update a new business account' })
+  @ApiResponse({
+    status: 200,
+    description: 'The account has been successfully Updated.',
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal server error.',
+  })
+  @ApiBody({ type: UserPreferencesDto })
+  async updateUserPreferences(
+    @Body() userPreference: UserPreferences,
+    @Param('username') username: string,
+  ): Promise<UserPreferenceResponse> {
+    try {
+      return await this.userAdapter.updateUserPreferencesByUsername(
+        username,
+        userPreference,
+      );
     } catch (error: any) {
       throw error;
     }

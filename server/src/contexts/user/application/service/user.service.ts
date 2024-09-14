@@ -19,7 +19,7 @@ import {
   UB_update,
   UserBussiness,
 } from '../../domain/entity/userBussiness.entity';
-import { User } from '../../domain/entity/user.entity';
+import { User, UserPreferences } from '../../domain/entity/user.entity';
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
 import { ContactServiceInterface } from 'src/contexts/contact/domain/service/contact.service.interface';
 import { ObjectId } from 'mongoose';
@@ -27,6 +27,7 @@ import { ContactRequestDto } from 'src/contexts/contact/infraestructure/controll
 import { UP_publiciteUpdateRequestDto } from '../../infraestructure/controller/dto/update.request-DTO/UP-publicite.update.request';
 import { UB_publiciteUpdateRequestDto } from '../../infraestructure/controller/dto/update.request-DTO/UB-publicite.update.request';
 import { UP_clerkUpdateRequestDto } from 'src/contexts/webhook/application/clerk/dto/UP-clerk.update.request';
+import { UserPreferenceResponse } from '../adapter/dto/userPreferences.response';
 
 @Injectable()
 export class UserService implements UserServiceInterface {
@@ -38,6 +39,23 @@ export class UserService implements UserServiceInterface {
     private readonly logger: MyLoggerService,
     @InjectConnection() private readonly connection: Connection,
   ) {}
+  async updateUserPreferencesByUsername(
+    username: string,
+    userPreference: UserPreferenceResponse,
+  ): Promise<UserPreferences | null> {
+    try {
+      return await this.userRepository.updateUserPreferencesByUsername(
+        username,
+        userPreference,
+      );
+    } catch (error: any) {
+      this.logger.error(
+        'An error has occurred in user service - updateUserPreferencesByUsername: ' +
+          error,
+      );
+      throw error;
+    }
+  }
 
   async createUser(
     req: UserPersonDto | UserBusinessDto,
