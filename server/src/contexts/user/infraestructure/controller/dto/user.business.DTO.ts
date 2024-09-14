@@ -5,6 +5,7 @@ import { IsOptional } from 'class-validator';
 import { UserBussiness } from 'src/contexts/user/domain/entity/userBussiness.entity';
 import { ContactRequestDto } from 'src/contexts/contact/infraestructure/controller/request/contact.request';
 import { UserPreferences } from './userPreferenceDTO';
+import { Sector } from 'src/contexts/businessSector/domain/entity/sector.entity';
 
 export interface UserBusinessResponse {
   _id: ObjectId;
@@ -206,6 +207,36 @@ export class UserBusinessDto {
       _id: user.getId(),
       userPreferences: user.getUserPreferences() ?? userPreferencesInit,
     };
+  }
+
+  constructor(
+    clerkId: string,
+    email: string,
+    username: string,
+    description: string,
+    profilePhotoUrl: string,
+    countryRegion: string,
+    isActive: boolean,
+    contact: ContactRequestDto,
+    createdTime: string,
+    sector: ObjectId,
+    name: string,
+    lastName: string,
+    businessName: string,
+  ) {
+    this.clerkId = clerkId;
+    this.email = email;
+    this.username = username;
+    this.description = description;
+    this.profilePhotoUrl = profilePhotoUrl;
+    this.countryRegion = countryRegion;
+    this.isActive = isActive;
+    this.contact = contact;
+    this.createdTime = createdTime;
+    this.sector = sector;
+    this.name = name;
+    this.lastName = lastName;
+    this.businessName = businessName;
   }
 }
 

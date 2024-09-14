@@ -213,6 +213,35 @@ export class UserPersonDto {
       userPreferences: user.getUserPreferences() ?? userPreferencesInit,
     };
   }
+  constructor(
+    clerkId: string,
+    email: string,
+    username: string,
+    description: string,
+    profilePhotoUrl: string,
+    countryRegion: string,
+    isActive: boolean,
+    contact: ContactRequestDto,
+    createdTime: string,
+    name: string,
+    lastName: string,
+    gender: Gender,
+    birthDate: string,
+  ) {
+    this.clerkId = clerkId;
+    this.email = email;
+    this.username = username;
+    this.description = description;
+    this.profilePhotoUrl = profilePhotoUrl;
+    this.countryRegion = countryRegion;
+    this.isActive = isActive;
+    this.contact = contact;
+    this.createdTime = createdTime;
+    this.name = name;
+    this.lastName = lastName;
+    this.gender = gender;
+    this.birthDate = birthDate;
+  }
 }
 
 const userPreferencesInit: UserPreferences = {
