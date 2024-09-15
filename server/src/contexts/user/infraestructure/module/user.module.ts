@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
 import { UserController } from '../controller/user.controller';
-import { UserAdapter } from '../adapters/user.adapter';
+
 import { UserService } from '../../application/service/user.service';
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
 import { UserRepository } from '../repository/user.repository';
@@ -14,6 +14,7 @@ import { SectorRepository } from 'src/contexts/businessSector/infraestructure/re
 import { SectorModule } from 'src/contexts/businessSector/infraestructure/module/sector.module';
 import { UserMapper } from '../adapters/mapper-implementations/user.mapper';
 import { UserRepositoryMapper } from '../repository/mappers/user.repository.mapper';
+import { UserAdapter } from '../adapters/user.adapter';
 
 @Module({
   imports: [

@@ -11,7 +11,7 @@ export interface UB_update {
   description?: string;
 }
 
-export class UserBussiness extends User {
+export class UserBusiness extends User {
   private businessName: string;
   private sector: ObjectId;
   private _id?: ObjectId;
@@ -70,8 +70,8 @@ export class UserBussiness extends User {
     this._id = _id;
   }
 
-  static formatDocument(document: IUserBusiness): UserBussiness {
-    return new UserBussiness(
+  static formatDocument(document: IUserBusiness): UserBusiness {
+    return new UserBusiness(
       document.clerkId,
       document.email,
       document.username,
@@ -98,7 +98,7 @@ export class UserBussiness extends User {
   }
 
   static formatDtoToEntity(dto: UserBusinessDto, contactId?: ObjectId) {
-    return new UserBussiness(
+    return new UserBusiness(
       dto.clerkId,
       dto.email,
       dto.username,

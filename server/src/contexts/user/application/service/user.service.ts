@@ -17,8 +17,8 @@ import {
 import { UP_update, UserPerson } from '../../domain/entity/userPerson.entity';
 import {
   UB_update,
-  UserBussiness,
-} from '../../domain/entity/userBussiness.entity';
+  UserBusiness,
+} from '../../domain/entity/userBusiness.entity';
 import { User, UserPreferences } from '../../domain/entity/user.entity';
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
 import { ContactServiceInterface } from 'src/contexts/contact/domain/service/contact.service.interface';
@@ -72,14 +72,14 @@ export class UserService implements UserServiceInterface {
         session,
       });
 
-      if (req instanceof UserPersonDto && type === 0) {
+      if (req instanceof UserPersonDto || type === 0) {
         // Crear el contacto dentro de la transacción
 
         this.logger.log(
           'Creating PERSONAL ACCOUNT with username: ' + req.username,
         );
         const userPersonal: UserPerson = UserPerson.formatDtoToEntity(
-          req,
+          req as UserPersonDto,
           contactId as unknown as ObjectId,
         );
         user = await this.userRepository.save(userPersonal, 0, session);
@@ -87,12 +87,12 @@ export class UserService implements UserServiceInterface {
         await session.commitTransaction();
         await session.endSession();
         return user;
-      } else if (req instanceof UserBusinessDto && type === 1) {
+      } else if (req instanceof UserBusinessDto || type === 1) {
         this.logger.log(
           'Creating BUSINESS ACCOUNT with username: ' + req.username,
         );
-        const userBusiness: UserBussiness = UserBussiness.formatDtoToEntity(
-          req,
+        const userBusiness: UserBusiness = UserBusiness.formatDtoToEntity(
+          req as UserBusinessDto,
           contactId as unknown as ObjectId,
         );
         user = await this.userRepository.save(userBusiness, 1, session);
@@ -154,7 +154,7 @@ export class UserService implements UserServiceInterface {
           birthDate: user.getBirthDate(),
           gender: user.getGender(),
         };
-      } else if (user instanceof UserBussiness) {
+      } else if (user instanceof UserBusiness) {
         return {
           ...userResponse,
           sector: user.getSector() as any,
@@ -187,7 +187,7 @@ export class UserService implements UserServiceInterface {
       } else if (req instanceof UB_publiciteUpdateRequestDto && type === 1) {
         this.logger.log('Update BUSINESS ACCOUNT with username: ' + username);
 
-        const userPersonal: UB_update = UserBussiness.formatUpdateDto(req);
+        const userPersonal: UB_update = UserBusiness.formatUpdateDto(req);
         user = await this.userRepository.update(username, userPersonal, type);
         return user;
       } else {

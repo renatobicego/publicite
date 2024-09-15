@@ -1,13 +1,13 @@
 import { ClientSession } from 'mongoose';
 import { User } from '../entity/user.entity';
-import { UserBussiness } from '../entity/userBussiness.entity';
+import { UserBusiness } from '../entity/userBusiness.entity';
 import { UP_update, UserPerson } from '../entity/userPerson.entity';
 import { UP_clerkUpdateRequestDto } from 'src/contexts/webhook/application/clerk/dto/UP-clerk.update.request';
 import { UserPreferences } from '../../infraestructure/schemas/user.schema';
 
 export interface UserRepositoryInterface {
   save(
-    reqUser: UserPerson | UserBussiness,
+    reqUser: UserPerson | UserBusiness,
     type: number,
     session?: ClientSession,
   ): Promise<User>;

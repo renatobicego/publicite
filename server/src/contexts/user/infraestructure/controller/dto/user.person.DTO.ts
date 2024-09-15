@@ -33,8 +33,6 @@ export interface UserPersonResponse {
 }
 
 export class UserPersonDto {
-  readonly _id?: ObjectId | string;
-
   @ApiProperty({
     description: 'ID of the user in clerk',
     example: '5f9d8f5e9d8f5e9d8f5e9d8f',
@@ -151,7 +149,7 @@ export class UserPersonDto {
     example: '1',
     type: String,
   })
-  readonly userType: UserType;
+  readonly userType?: UserType;
 
   @ApiProperty({
     description: 'Name of the user',

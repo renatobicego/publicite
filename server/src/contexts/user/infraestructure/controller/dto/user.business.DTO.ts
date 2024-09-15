@@ -2,10 +2,9 @@ import { ObjectId, Types } from 'mongoose';
 import { UserType } from './enums.request';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsOptional } from 'class-validator';
-import { UserBussiness } from 'src/contexts/user/domain/entity/userBussiness.entity';
+import { UserBusiness } from 'src/contexts/user/domain/entity/userBusiness.entity';
 import { ContactRequestDto } from 'src/contexts/contact/infraestructure/controller/request/contact.request';
 import { UserPreferences } from './userPreferenceDTO';
-import { Sector } from 'src/contexts/businessSector/domain/entity/sector.entity';
 
 export interface UserBusinessResponse {
   _id: ObjectId;
@@ -182,7 +181,7 @@ export class UserBusinessDto {
     description: 'User preferences object',
   })
   readonly userPreferences?: UserPreferences;
-  static formatDocument(user: UserBussiness): UserBusinessResponse {
+  static formatDocument(user: UserBusiness): UserBusinessResponse {
     return {
       clerkId: user.getClerkId() as string,
       email: user.getEmail() as string,

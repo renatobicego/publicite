@@ -14,7 +14,7 @@ import {
   UserBusinessModel,
 } from '../schemas/userBussiness.schema';
 import { UP_update, UserPerson } from '../../domain/entity/userPerson.entity';
-import { UserBussiness } from '../../domain/entity/userBussiness.entity';
+import { UserBusiness } from '../../domain/entity/userBusiness.entity';
 import { User } from '../../domain/entity/user.entity';
 import { UserTransformationInterface } from '../../domain/repository/transformations/user-transformation.interface';
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
@@ -45,7 +45,7 @@ export class UserRepository implements UserRepositoryInterface {
   ) {}
 
   async save(
-    reqUser: UserPerson | UserBussiness,
+    reqUser: UserPerson | UserBusiness,
     type: number,
     session?: ClientSession,
   ): Promise<User> {
@@ -64,14 +64,14 @@ export class UserRepository implements UserRepositoryInterface {
           throw new BadRequestException('Invalid user instance for type 0');
 
         case 1: // Business User
-          if (reqUser instanceof UserBussiness) {
+          if (reqUser instanceof UserBusiness) {
             this.logger.warn(
               '--VALIDATING BUSINESS SECTOR ID: ' + reqUser.getSector(),
             );
             await this.sectorRepository.validateSector(reqUser.getSector());
             createdUser = this.formatDocument(reqUser);
             userSaved = await createdUser.save({ session });
-            return UserBussiness.formatDocument(userSaved as IUserBusiness);
+            return UserBusiness.formatDocument(userSaved as IUserBusiness);
           }
           throw new BadRequestException('Invalid user instance for type 1');
 
@@ -102,7 +102,7 @@ export class UserRepository implements UserRepositoryInterface {
     if (populatedUser?.userType === 'Personal') {
       return UserPerson.formatDocument(populatedUser as IUserPerson);
     } else if (populatedUser?.userType === 'Business') {
-      return UserBussiness.formatDocument(populatedUser as IUserBusiness);
+      return UserBusiness.formatDocument(populatedUser as IUserBusiness);
     } else {
       throw new InternalServerErrorException('User type not recognized');
     }
@@ -143,7 +143,7 @@ export class UserRepository implements UserRepositoryInterface {
           if (!userUpdatedB) {
             throw new BadRequestException('User not found');
           }
-          return UserBussiness.formatDocument(userUpdatedB as IUserBusiness);
+          return UserBusiness.formatDocument(userUpdatedB as IUserBusiness);
         default:
           throw new BadRequestException('Invalid user type');
       }
@@ -173,7 +173,7 @@ export class UserRepository implements UserRepositoryInterface {
       if (userUpdated.userType === 'Personal') {
         return UserPerson.formatDocument(userUpdated as IUserPerson);
       } else {
-        return UserBussiness.formatDocument(userUpdated as IUserBusiness);
+        return UserBusiness.formatDocument(userUpdated as IUserBusiness);
       }
     } catch (error) {
       this.logger.error('Error in updateByClerkId method(Repository)', error);
@@ -219,7 +219,7 @@ export class UserRepository implements UserRepositoryInterface {
         gender: reqUser.getGender(),
         birthDate: reqUser.getBirthDate(),
       });
-    } else if (reqUser instanceof UserBussiness) {
+    } else if (reqUser instanceof UserBusiness) {
       return new this.userBusinessModel({
         ...baseUserData,
         sector: reqUser.getSector(),

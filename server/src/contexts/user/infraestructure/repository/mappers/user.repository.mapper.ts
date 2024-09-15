@@ -5,13 +5,13 @@ import {
 import { UserTransformationInterface } from 'src/contexts/user/domain/repository/transformations/user-transformation.interface';
 import { IUserBusiness } from '../../schemas/userBussiness.schema';
 import { IUserPerson } from '../../schemas/userPerson.schema';
-import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
+
 import { UP_update } from 'src/contexts/user/domain/entity/userPerson.entity';
 import { Gender } from '../../controller/dto/enums.request';
-import { UB_update } from 'src/contexts/user/domain/entity/userBussiness.entity';
+import { UB_update } from 'src/contexts/user/domain/entity/userBusiness.entity';
 
 export class UserRepositoryMapper implements UserTransformationInterface {
-  constructor(private readonly logger: MyLoggerService) {}
+  constructor() {}
   formatDocToUserPreferences(req: any): UserPreferences | null {
     const obj: UserPreferences = {
       searchPreference: req.searchPreference,
@@ -80,7 +80,6 @@ export class UserRepositoryMapper implements UserTransformationInterface {
   }
 
   getBaseUserData(reqUser: User) {
-    this.logger.log('Start process in the repository: getBaseUserData');
     return {
       clerkId: reqUser.getClerkId(),
       email: reqUser.getEmail(),
