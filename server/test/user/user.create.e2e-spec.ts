@@ -1,25 +1,37 @@
 import { Test } from '@nestjs/testing';
-import { Connection, Types } from 'mongoose';
+import { Connection, ObjectId, Types } from 'mongoose';
 import * as request from 'supertest';
 import { AppModule } from 'src/app.module';
 //import { Logger } from '@nestjs/common';
 import { DatabaseService } from 'src/contexts/shared/database/infraestructure/database.service';
 
 import { UserPersonDto } from 'src/contexts/user/infraestructure/controller/dto/user.person.DTO';
-import { userSub } from '../user.stub';
+import { userSub, userSubBusiness } from '../user.stub';
+import { UserBusinessDto } from 'src/contexts/user/infraestructure/controller/dto/user.business.DTO';
 
 let dbConnection: Connection;
 let httpServer: any;
 let app: any;
-beforeEach(async () => {
-  if (dbConnection) {
-    // Limpiar la base de datos si es necesario
-    await dbConnection.collection('users').deleteMany({});
-  }
-});
+
+/*
+
+Pendiente: Ver como arrojar disintos codigos de error para los casos. 
+-> should throw an error if sector does not exist: Deberia arrojar 400
+-> 
+
+*/
 
 describe('Create a Personal account', () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  beforeEach(async () => {
+    if (dbConnection) {
+      // Limpiar la base de datos si es necesario
+      await dbConnection.collection('users').deleteMany({});
+    }
+  });
+
+  afterAll(async () => {
+    await dbConnection.close();
+  });
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -75,5 +87,122 @@ describe('Create a Personal account', () => {
     });
     expect(response.body).toHaveProperty('_id');
     expect(Types.ObjectId.isValid(response.body.contact)).toBe(true);
+    expect(response.body.subscriptions).toEqual([]);
+    expect(response.body.groups).toEqual([]);
+    expect(response.body.magazines).toEqual([]);
+    expect(response.body.board).toEqual([]);
+    expect(response.body.post).toEqual([]);
+    expect(response.body.userRelations).toEqual([]);
+    expect(response.body.userPreferences).toEqual({
+      searchPreference: [],
+      backgroundColor: '',
+      boardColor: '',
+    });
+  });
+
+  it('should create a business account', async () => {
+    const userBusinessDto: UserBusinessDto = {
+      clerkId: userSubBusiness().clerkId,
+      email: userSubBusiness().email,
+      username: userSubBusiness().username,
+      description: userSubBusiness().description,
+      profilePhotoUrl: userSubBusiness().profilePhotoUrl,
+      countryRegion: userSubBusiness().countryRegion,
+      isActive: userSubBusiness().isActive,
+      contact: userSubBusiness().contact,
+      createdTime: userSubBusiness().createdTime,
+      sector: userSubBusiness().sector,
+      name: userSubBusiness().name,
+      lastName: userSubBusiness().lastName,
+      businessName: userSubBusiness().businessName,
+    };
+
+    const response = await request(httpServer)
+      .post('/user/business')
+      //.set('Authorization', `bearer ${token}`)
+      .send(userBusinessDto as UserBusinessDto);
+
+    expect(response.status).toBe(201);
+    expect(response.body).toMatchObject({
+      clerkId: userBusinessDto.clerkId,
+      email: userBusinessDto.email,
+      username: userBusinessDto.username,
+      description: userBusinessDto.description,
+      profilePhotoUrl: userBusinessDto.profilePhotoUrl,
+      countryRegion: userBusinessDto.countryRegion,
+      isActive: userBusinessDto.isActive,
+      createdTime: userBusinessDto.createdTime,
+      name: userBusinessDto.name,
+      lastName: userBusinessDto.lastName,
+      businessName: userBusinessDto.businessName,
+      sector: userBusinessDto.sector,
+    });
+    expect(response.body).toHaveProperty('_id');
+    expect(Types.ObjectId.isValid(response.body.contact)).toBe(true);
+    expect(response.body.subscriptions).toEqual([]);
+    expect(response.body.groups).toEqual([]);
+    expect(response.body.magazines).toEqual([]);
+    expect(response.body.board).toEqual([]);
+    expect(response.body.post).toEqual([]);
+    expect(response.body.userRelations).toEqual([]);
+    expect(response.body.userPreferences).toEqual({
+      searchPreference: [],
+      backgroundColor: '',
+      boardColor: '',
+    });
+  });
+
+  it('should throw an error if user already exists', async () => {
+    await dbConnection.collection('users').insertOne(userSubBusiness());
+    const userBusinessDto: UserBusinessDto = {
+      clerkId: userSubBusiness().clerkId,
+      email: userSubBusiness().email,
+      username: userSubBusiness().username,
+      description: userSubBusiness().description,
+      profilePhotoUrl: userSubBusiness().profilePhotoUrl,
+      countryRegion: userSubBusiness().countryRegion,
+      isActive: userSubBusiness().isActive,
+      contact: userSubBusiness().contact,
+      createdTime: userSubBusiness().createdTime,
+      sector: userSubBusiness().sector,
+      name: userSubBusiness().name,
+      lastName: userSubBusiness().lastName,
+      businessName: userSubBusiness().businessName,
+    };
+
+    const response = await request(httpServer)
+      .post('/user/business')
+      //.set('Authorization', `bearer ${token}`)
+      .send(userBusinessDto as UserBusinessDto);
+    expect(response.status).toBe(500);
+    expect(response.body.exception.errorResponse.code).toBe(11000);
+    expect(response.body.exception.errorResponse.errmsg).toContain(
+      'E11000 duplicate key error collection',
+    );
+  });
+
+  it('should throw an error if sector does not exist', async () => {
+    await dbConnection.collection('users').insertOne(userSubBusiness());
+    const userBusinessDto: UserBusinessDto = {
+      clerkId: userSubBusiness().clerkId,
+      email: userSubBusiness().email,
+      username: userSubBusiness().username,
+      description: userSubBusiness().description,
+      profilePhotoUrl: userSubBusiness().profilePhotoUrl,
+      countryRegion: userSubBusiness().countryRegion,
+      isActive: userSubBusiness().isActive,
+      contact: userSubBusiness().contact,
+      createdTime: userSubBusiness().createdTime,
+      sector: '66d2177dda11f93d8647cf3d' as unknown as ObjectId,
+      name: userSubBusiness().name,
+      lastName: userSubBusiness().lastName,
+      businessName: userSubBusiness().businessName,
+    };
+
+    const response = await request(httpServer)
+      .post('/user/business')
+      //.set('Authorization', `bearer ${token}`)
+      .send(userBusinessDto as UserBusinessDto);
+    expect(response.status).toBe(500);
   });
 });

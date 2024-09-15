@@ -2,7 +2,7 @@
   "_id": {
     "$oid": "66c49508e80296e90ec637d8"
   },
-  "mpPreapprovalPlanId": "2c9380849146ff3d01914739031d0028",
+  "mpPreapprovalPlanId": "2c9380849174c2ec019176e4107c00fd",
   "isActive": true,
   "reason": "Publicité Premium",
   "description": "Este plan es publicite premium.",
@@ -19,10 +19,10 @@
   "_id": {
     "$oid": "66c495f9e80296e90ec637da"
   },
-  "mpPreapprovalPlanId": "2c938084915406c201916fbcf86b0a8a",
+  "mpPreapprovalPlanId": "2c9380849174c2cf019176e5313500fc",
   "isActive": true,
-  "reason": "test_plan_B",
-  "description": "B plan",
+  "reason": "Publicite Gold",
+  "description": "Publicite gold",
   "features": [
     "Beneficio x",
     "Beneficio y",
@@ -31,4 +31,89 @@
   "intervalTime": 30,
   "price": 12000,
   "postLimit": 10
+},
+{
+  "_id": {
+    "$oid": "66c77f938844e827112c60e0"
+  },
+  "mpPreapprovalPlanId": "2c9380849174c2ec01917b49d5a3023f",
+  "isActive": true,
+  "reason": "Plan 3",
+  "description": "Este plan es publicite 3.",
+  "features": [
+    "Beneficio 1",
+    "Beneficio 2",
+    "Beneficio 3"
+  ],
+  "intervalTime": 30,
+  "price": 20000,
+  "postLimit": 50
+},
+{
+  "_id": {
+    "$oid": "66c7b1a88844e827112c6104"
+  },
+  "mpPreapprovalPlanId": "2c9380849174c2cf01917c0d6f3902bb",
+  "isActive": true,
+  "reason": "Tu wacha",
+  "description": "Este plan es publicite wacha.",
+  "features": [
+    "Beneficio 1",
+    "Beneficio 2",
+    "Beneficio 3"
+  ],
+  "intervalTime": 30,
+  "price": 60000,
+  "postLimit": 50
+},
+{
+  "_id": {
+    "$oid": "66ca8507a2476fb33da8e9bc"
+  },
+  "mpPreapprovalPlanId": "2c9380849178637b0191871712b60442",
+  "isActive": true,
+  "reason": "el dutsiland",
+  "description": "Este plan es dutsiland.",
+  "features": [
+    "Beneficio 1",
+    "Beneficio 2",
+    "Beneficio 3"
+  ],
+  "intervalTime": 30,
+  "price": 10000,
+  "postLimit": 50
+},
+{
+  "_id": {
+    "$oid": "66ca8c1fa2476fb33da8e9c1"
+  },
+  "mpPreapprovalPlanId": "2c9380849174c2ec0191871b7d68057c",
+  "isActive": true,
+  "reason": "COUNTER",
+  "description": "Este plan es con external.",
+  "features": [
+    "Beneficio 1",
+    "Beneficio 2",
+    "Beneficio 3"
+  ],
+  "intervalTime": 30,
+  "price": 20000,
+  "postLimit": 50
+},
+{
+  "_id": {
+    "$oid": "66e2df15720cdd6139248cd3"
+  },
+  "mpPreapprovalPlanId": "2c93808491e0e7410191e6064f0e01f6",
+  "isActive": true,
+  "reason": "publicite_Maxi",
+  "description": "Este plan de produccion.",
+  "features": [
+    "Beneficio 1",
+    "Beneficio 2",
+    "Beneficio 3"
+  ],
+  "intervalTime": 30,
+  "price": 20000,
+  "postLimit": 50
 }]

@@ -3,7 +3,6 @@ import {
   Controller,
   Get,
   Inject,
-  InternalServerErrorException,
   Param,
   Post,
   Put,
@@ -50,10 +49,7 @@ export class UserController {
         0,
       )) as UserPersonResponse;
     } catch (error: any) {
-      console.log('Error in createPersonalAccount:', error);
-      throw new InternalServerErrorException(
-        'Failed to create personal account',
-      );
+      throw error;
     }
   }
 

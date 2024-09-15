@@ -1,0 +1,21 @@
+[{
+  "_id": {
+    "$oid": "66d2177dda11f93d8647cf3a"
+  },
+  "label": "Technology",
+  "description": "Tech sector"
+},
+{
+  "_id": {
+    "$oid": "66d217a6da11f93d8647cf3b"
+  },
+  "label": "Legal",
+  "description": "Legal sector"
+},
+{
+  "_id": {
+    "$oid": "66d217b6da11f93d8647cf3c"
+  },
+  "label": "Culture",
+  "description": "Culture sector"
+}]

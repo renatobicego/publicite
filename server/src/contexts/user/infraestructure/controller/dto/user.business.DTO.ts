@@ -147,7 +147,7 @@ export class UserBusinessDto {
     example: '1',
     type: String,
   })
-  readonly userType: UserType;
+  readonly userType?: UserType;
 
   @ApiProperty({
     description: 'Sector ID of the company',
