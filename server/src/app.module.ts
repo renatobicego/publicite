@@ -9,6 +9,7 @@ import { UserModule } from './contexts/user/infraestructure/module/user.module';
 import { AllExceptionsFilter } from './contexts/shared/exceptionFilter/infraestructure/exception.filter';
 import { ContactModule } from './contexts/contact/infraestructure/module/contact.module';
 import { SectorModule } from './contexts/businessSector/infraestructure/module/sector.module';
+import { DatabaseService } from './contexts/shared/database/infraestructure/database.service';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { SectorModule } from './contexts/businessSector/infraestructure/module/s
       provide: APP_FILTER,
       useClass: AllExceptionsFilter,
     },
+    DatabaseService,
   ],
 })
 export class AppModule {}

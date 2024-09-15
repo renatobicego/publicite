@@ -12,17 +12,22 @@ import {
 } from '../controller/dto/user.person.DTO';
 import { UserPerson } from '../../domain/entity/userPerson.entity';
 import { User } from '../../domain/entity/user.entity';
-import { UserBussiness } from '../../domain/entity/userBussiness.entity';
+import { UserBusiness } from '../../domain/entity/userBusiness.entity';
 import { error } from 'console';
 import { UP_publiciteUpdateRequestDto } from '../controller/dto/update.request-DTO/UP-publicite.update.request';
 import { UB_publiciteUpdateRequestDto } from '../controller/dto/update.request-DTO/UB-publicite.update.request';
+import { UserPreferenceResponse } from '../../application/adapter/dto/userPreferences.response';
+import { UserMapperInterface } from '../../application/adapter/mapper/user.mapper.interface';
 
 export class UserAdapter implements UserAdapterInterface {
   constructor(
     private readonly logger: MyLoggerService,
     @Inject('UserServiceInterface')
     private readonly userService: UserServiceInterface,
+    @Inject('UserMapperInterface')
+    private readonly userMapper: UserMapperInterface,
   ) {}
+
   async getUserPersonalInformationByUsername(username: string): Promise<any> {
     try {
       return await this.userService.getUserPersonalInformationByUsername(
@@ -40,7 +45,7 @@ export class UserAdapter implements UserAdapterInterface {
     this.logger.log('Creating user in the adapter');
 
     // Validar tipo y clase de objeto antes de usar el switch
-    if (type === 0 && req instanceof UserPersonDto) {
+    if (type === 0 || req instanceof UserPersonDto) {
       this.logger.log('Person user received in the adapter');
       try {
         const userP: User = await this.userService.createUser(
@@ -52,15 +57,15 @@ export class UserAdapter implements UserAdapterInterface {
         this.logger.error('Error in adapter. The user has not been created');
         throw error;
       }
-    } else if (type === 1 && req instanceof UserBusinessDto) {
+    } else if (type === 1 || req instanceof UserBusinessDto) {
       this.logger.log('Business user received in the adapter');
       try {
         const userB: User = await this.userService.createUser(
           req as UserBusinessDto,
           1,
         );
-        if (userB instanceof UserBussiness) {
-          return UserBusinessDto.formatDocument(userB as UserBussiness);
+        if (userB instanceof UserBusiness) {
+          return UserBusinessDto.formatDocument(userB as UserBusiness);
         } else {
           throw new Error('Returned user is not a UserBusiness');
         }
@@ -91,8 +96,27 @@ export class UserAdapter implements UserAdapterInterface {
         req as UB_publiciteUpdateRequestDto,
         1,
       );
-      return UserBusinessDto.formatDocument(userUpdated as UserBussiness);
+      return UserBusinessDto.formatDocument(userUpdated as UserBusiness);
     } else {
+      throw error;
+    }
+  }
+
+  async updateUserPreferencesByUsername(
+    username: string,
+    userPreference: UserPreferenceResponse,
+  ): Promise<UserPreferenceResponse> {
+    try {
+      this.logger.log(
+        'Start process in the adapter: Update preferences - Sending request to the service',
+      );
+      const userPreferencesUpdated =
+        await this.userService.updateUserPreferencesByUsername(
+          username,
+          userPreference,
+        );
+      return this.userMapper.formatEntityToResponse(userPreferencesUpdated);
+    } catch (error: any) {
       throw error;
     }
   }

@@ -1,16 +1,11 @@
-import { ObjectId, Schema, Types } from 'mongoose';
+import { ObjectId, Types } from 'mongoose';
 import { Gender, UserType } from './enums.request';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum, IsOptional } from 'class-validator';
 import { UserPerson } from 'src/contexts/user/domain/entity/userPerson.entity';
 import { ContactRequestDto } from 'src/contexts/contact/infraestructure/controller/request/contact.request';
 import { Contact } from 'src/contexts/contact/domain/entity/contact.entity';
-
-export interface UserPreferences {
-  searchPreference: Schema.Types.ObjectId[];
-  backgroundColor: string;
-  boardColor: string;
-}
+import { UserPreferences } from './userPreferenceDTO';
 
 export interface UserPersonResponse {
   _id: ObjectId;
@@ -38,8 +33,6 @@ export interface UserPersonResponse {
 }
 
 export class UserPersonDto {
-  readonly _id?: ObjectId | string;
-
   @ApiProperty({
     description: 'ID of the user in clerk',
     example: '5f9d8f5e9d8f5e9d8f5e9d8f',
@@ -156,7 +149,7 @@ export class UserPersonDto {
     example: '1',
     type: String,
   })
-  readonly userType: UserType;
+  readonly userType?: UserType;
 
   @ApiProperty({
     description: 'Name of the user',
@@ -217,6 +210,35 @@ export class UserPersonDto {
       _id: user.getId(),
       userPreferences: user.getUserPreferences() ?? userPreferencesInit,
     };
+  }
+  constructor(
+    clerkId: string,
+    email: string,
+    username: string,
+    description: string,
+    profilePhotoUrl: string,
+    countryRegion: string,
+    isActive: boolean,
+    contact: ContactRequestDto,
+    createdTime: string,
+    name: string,
+    lastName: string,
+    gender: Gender,
+    birthDate: string,
+  ) {
+    this.clerkId = clerkId;
+    this.email = email;
+    this.username = username;
+    this.description = description;
+    this.profilePhotoUrl = profilePhotoUrl;
+    this.countryRegion = countryRegion;
+    this.isActive = isActive;
+    this.contact = contact;
+    this.createdTime = createdTime;
+    this.name = name;
+    this.lastName = lastName;
+    this.gender = gender;
+    this.birthDate = birthDate;
   }
 }
 

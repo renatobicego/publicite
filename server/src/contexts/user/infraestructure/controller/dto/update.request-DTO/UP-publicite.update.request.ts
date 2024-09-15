@@ -28,4 +28,16 @@ export class UP_publiciteUpdateRequestDto {
     type: String,
   })
   readonly description: string;
+
+  constructor(
+    birthDate: string,
+    gender: string,
+    countryRegion: string,
+    description: string,
+  ) {
+    this.birthDate = birthDate;
+    this.gender = gender;
+    this.countryRegion = countryRegion;
+    this.description = description;
+  }
 }

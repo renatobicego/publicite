@@ -13,10 +13,6 @@ import { MpHandlerValidationsInterface } from 'src/contexts/webhook/domain/merca
 Adapter: responsable de orquestar la logica de procesamiento del webhook, utiliza el handler de eventos de la capa de aplicación.
 Esta capa no deberia tener logica del negocio, sino que deberia orquestarla. 
 
-Pendiente: 
-- Separar logica de validacion del hash
-- Aplicar interfaz e injection de dependencias para el adaptador
-
 */
 
 @Injectable()
@@ -45,7 +41,7 @@ export class MpWebhookAdapter {
       try {
         this.logger.log('Webhook origin is valid, processing webhook data');
         //Si esto se cumple vamos a procesar el webhook
-        this.getDataFromMP(body);
+        await this.getDataFromMP(body);
         return Promise.resolve(true);
         //una vez terminado de procesar guardaremos los datos necesarios y enviamos la notif que esta todo ok
       } catch (error: any) {
@@ -62,7 +58,7 @@ export class MpWebhookAdapter {
     const dataId = body.data.id;
     const type = body.type;
     const action = body.action;
-    console.log(body);
+    this.logger.log('body: ' + body);
     //Si no existen estos datos el header esta mal y no podremos seguir, arrojamos error
     if (!type || !dataId) {
       this.logger.error('Missing queryObject', 'Class:MpWebhookAdapter');

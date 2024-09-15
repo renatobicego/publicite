@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
@@ -14,6 +15,10 @@ import { UserBusinessDto, UserBusinessResponse } from './dto/user.business.DTO';
 import { UserAdapterInterface } from '../../application/adapter/userAdapter.interface';
 import { UP_publiciteUpdateRequestDto } from './dto/update.request-DTO/UP-publicite.update.request';
 import { UB_publiciteUpdateRequestDto } from './dto/update.request-DTO/UB-publicite.update.request';
+import { UserPreferences } from './dto/userPreferenceDTO';
+import { UserPreferencesDto } from './swagger/userPreferenceDTO.swagger';
+import { UserPreferenceResponse } from '../../application/adapter/dto/userPreferences.response';
+import { ClerkAuthGuard } from 'src/contexts/clerk-auth/clerk.auth.guard';
 
 @ApiTags('Accounts')
 @Controller('user')
@@ -150,5 +155,36 @@ export class UserController {
     } catch (error: any) {
       throw error;
     }
+  }
+
+  @Put('/user-preferences/:username')
+  @ApiOperation({ summary: 'Update a new business account' })
+  @ApiResponse({
+    status: 200,
+    description: 'The account has been successfully Updated.',
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal server error.',
+  })
+  @ApiBody({ type: UserPreferencesDto })
+  async updateUserPreferences(
+    @Body() userPreference: UserPreferences,
+    @Param('username') username: string,
+  ): Promise<UserPreferenceResponse> {
+    try {
+      return await this.userAdapter.updateUserPreferencesByUsername(
+        username,
+        userPreference,
+      );
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  @Get('/auth')
+  @UseGuards(ClerkAuthGuard)
+  async test_auth(): Promise<string> {
+    return 'auth ok';
   }
 }

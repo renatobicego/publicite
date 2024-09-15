@@ -14,22 +14,17 @@ import {
   UserBusinessModel,
 } from '../schemas/userBussiness.schema';
 import { UP_update, UserPerson } from '../../domain/entity/userPerson.entity';
-import {
-  UB_update,
-  UserBussiness,
-} from '../../domain/entity/userBussiness.entity';
+import { UserBusiness } from '../../domain/entity/userBusiness.entity';
 import { User } from '../../domain/entity/user.entity';
 import { UserTransformationInterface } from '../../domain/repository/transformations/user-transformation.interface';
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
 import { SectorRepositoryInterface } from 'src/contexts/businessSector/domain/repository/sector.repository.interface';
-import { Gender } from '../controller/dto/enums.request';
+
 import { UP_clerkUpdateRequestDto } from 'src/contexts/webhook/application/clerk/dto/UP-clerk.update.request';
-import { IUser, UserModel } from '../schemas/user.schema';
+import { IUser, UserModel, UserPreferences } from '../schemas/user.schema';
 
 @Injectable()
-export class UserRepository
-  implements UserRepositoryInterface, UserTransformationInterface
-{
+export class UserRepository implements UserRepositoryInterface {
   constructor(
     @InjectModel(UserPersonModel.modelName)
     private readonly userPersonModel: Model<IUserPerson>,
@@ -43,11 +38,14 @@ export class UserRepository
     @Inject('SectorRepositoryInterface')
     private readonly sectorRepository: SectorRepositoryInterface,
 
+    @Inject('UserTransformationInterface')
+    private readonly userRepositoryMapper: UserTransformationInterface,
+
     private readonly logger: MyLoggerService,
   ) {}
 
   async save(
-    reqUser: UserPerson | UserBussiness,
+    reqUser: UserPerson | UserBusiness,
     type: number,
     session?: ClientSession,
   ): Promise<User> {
@@ -66,14 +64,14 @@ export class UserRepository
           throw new BadRequestException('Invalid user instance for type 0');
 
         case 1: // Business User
-          if (reqUser instanceof UserBussiness) {
+          if (reqUser instanceof UserBusiness) {
             this.logger.warn(
               '--VALIDATING BUSINESS SECTOR ID: ' + reqUser.getSector(),
             );
             await this.sectorRepository.validateSector(reqUser.getSector());
             createdUser = this.formatDocument(reqUser);
             userSaved = await createdUser.save({ session });
-            return UserBussiness.formatDocument(userSaved as IUserBusiness);
+            return UserBusiness.formatDocument(userSaved as IUserBusiness);
           }
           throw new BadRequestException('Invalid user instance for type 1');
 
@@ -84,7 +82,31 @@ export class UserRepository
       throw error;
     }
   }
+  async getUserPersonalInformationByUsername(
+    username: string,
+  ): Promise<Partial<User>> {
+    const user = await this.user.findOne({ username: username });
 
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    let query = this.user.findOne({ username: username }).populate('contact');
+
+    // Si el usuario es de tipo Business, añadimos el populate para 'sector'
+    if (user.userType === 'Business') {
+      query = query.populate('sector');
+    }
+
+    const populatedUser = await query.exec();
+
+    if (populatedUser?.userType === 'Personal') {
+      return UserPerson.formatDocument(populatedUser as IUserPerson);
+    } else if (populatedUser?.userType === 'Business') {
+      return UserBusiness.formatDocument(populatedUser as IUserBusiness);
+    } else {
+      throw new InternalServerErrorException('User type not recognized');
+    }
+  }
   async update(
     username: string,
     reqUser: UP_update,
@@ -96,7 +118,8 @@ export class UserRepository
       switch (type) {
         case 0: // Personal User
           this.logger.log('Search user(Personal) for update');
-          entityToDocument = this.formatUpdateDocument(reqUser);
+          entityToDocument =
+            this.userRepositoryMapper.formatUpdateDocument(reqUser);
           const userUpdated = await this.userPersonModel.findOneAndUpdate(
             { username: username }, // Búsqueda por username
             entityToDocument,
@@ -109,7 +132,8 @@ export class UserRepository
 
         case 1:
           this.logger.log('Search user(Business) for update');
-          entityToDocument = this.formatUpdateDocumentUB(reqUser);
+          entityToDocument =
+            this.userRepositoryMapper.formatUpdateDocumentUB(reqUser);
           const userUpdatedB = await this.userBusinessModel.findOneAndUpdate(
             { username: username }, // Búsqueda por username
             entityToDocument,
@@ -119,7 +143,7 @@ export class UserRepository
           if (!userUpdatedB) {
             throw new BadRequestException('User not found');
           }
-          return UserBussiness.formatDocument(userUpdatedB as IUserBusiness);
+          return UserBusiness.formatDocument(userUpdatedB as IUserBusiness);
         default:
           throw new BadRequestException('Invalid user type');
       }
@@ -149,47 +173,45 @@ export class UserRepository
       if (userUpdated.userType === 'Personal') {
         return UserPerson.formatDocument(userUpdated as IUserPerson);
       } else {
-        return UserBussiness.formatDocument(userUpdated as IUserBusiness);
+        return UserBusiness.formatDocument(userUpdated as IUserBusiness);
       }
     } catch (error) {
       this.logger.error('Error in updateByClerkId method(Repository)', error);
       throw error;
     }
   }
-  async getUserPersonalInformationByUsername(
+
+  async updateUserPreferencesByUsername(
     username: string,
-  ): Promise<Partial<User>> {
-    const user = await this.user.findOne({ username: username });
+    userPreference: UserPreferences,
+  ): Promise<UserPreferences | null> {
+    try {
+      this.logger.log(
+        'Start process in the repository: updateUserPreferencesByUsername',
+      );
 
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-    let query = this.user.findOne({ username: username }).populate('contact');
+      const userDoc = await this.user.findOneAndUpdate(
+        { username: username },
+        { userPreferences: userPreference },
+        { new: true },
+      );
 
-    // Si el usuario es de tipo Business, añadimos el populate para 'sector'
-    if (user.userType === 'Business') {
-      query = query.populate('sector');
-    }
+      if (!userDoc) {
+        throw new BadRequestException('User not found');
+      }
 
-    const populatedUser = await query.exec();
+      const userPreferences = userDoc.userPreferences;
 
-    if (populatedUser?.userType === 'Personal') {
-      return UserPerson.formatDocument(populatedUser as IUserPerson);
-    } else if (populatedUser?.userType === 'Business') {
-      return UserBussiness.formatDocument(populatedUser as IUserBusiness);
-    } else {
-      throw new InternalServerErrorException('User type not recognized');
+      return this.userRepositoryMapper.formatDocToUserPreferences(
+        userPreferences,
+      );
+    } catch (error: any) {
+      throw error;
     }
   }
 
-  //---------------------------FORMATS OPERATIONS ------------------
-  /*
-  CONSIDERAR OPTIMIZAR FORMATERS Y VER SI PASAR A LA CAPA DE APP
-  
-  */
-
   formatDocument(reqUser: User): IUserPerson | IUserBusiness {
-    const baseUserData = this.getBaseUserData(reqUser);
+    const baseUserData = this.userRepositoryMapper.getBaseUserData(reqUser);
     this.logger.log('Start process in the repository: formatDocument');
     if (reqUser instanceof UserPerson) {
       return new this.userPersonModel({
@@ -197,7 +219,7 @@ export class UserRepository
         gender: reqUser.getGender(),
         birthDate: reqUser.getBirthDate(),
       });
-    } else if (reqUser instanceof UserBussiness) {
+    } else if (reqUser instanceof UserBusiness) {
       return new this.userBusinessModel({
         ...baseUserData,
         sector: reqUser.getSector(),
@@ -208,87 +230,5 @@ export class UserRepository
         'Invalid user instance - formatDocument in repository',
       );
     }
-  }
-
-  getBaseUserData(reqUser: User) {
-    this.logger.log('Start process in the repository: getBaseUserData');
-    return {
-      clerkId: reqUser.getClerkId(),
-      email: reqUser.getEmail(),
-      username: reqUser.getUsername(),
-      name: reqUser.getName(),
-      lastName: reqUser.getLastName(),
-      description: reqUser.getDescription(),
-      profilePhotoUrl: reqUser.getProfilePhotoUrl(),
-      countryRegion: reqUser.getCountryRegion(),
-      isActive: reqUser.getIsActive(),
-      contact: reqUser.getContact(),
-      createdTime: reqUser.getCreatedTime(),
-      subscriptions: reqUser.getSubscriptions(),
-      groups: reqUser.getGroups(),
-      magazines: reqUser.getMagazines(),
-      board: reqUser.getBoard(),
-      post: reqUser.getPost(),
-      userRelations: reqUser.getUserRelations(),
-      userType: reqUser.getUserType(),
-    };
-  }
-
-  formatUpdateDocument(reqUser: UP_update): Partial<IUserPerson> {
-    // Define una función auxiliar `mapValue` que se utiliza para mapear los valores de `reqUser`
-    const mapValue = (
-      key: keyof UP_update, // La clave del objeto `reqUser` que estamos procesando
-      transformFn?: (value: any) => any, // Una función opcional para transformar el valor
-    ) => {
-      // Obtiene el valor del objeto `reqUser` para la clave dada
-      const value = reqUser[key];
-
-      // Verifica si el valor no es `undefined` ni `null`
-      return value !== undefined && value !== null
-        ? transformFn // Si se proporciona `transformFn`, aplícalo al valor
-          ? transformFn(value)
-          : value // Si no se proporciona `transformFn`, retorna el valor tal como está
-        : undefined; // Si el valor es `undefined` o `null`, retorna `undefined`
-    };
-
-    // Crea un objeto que representa el documento de actualización
-    return {
-      birthDate: mapValue('birthDate'), // Mapea el campo `birthDate` usando `mapValue`
-      gender: mapValue(
-        'gender',
-        (
-          gender, // Mapea el campo `gender` usando `mapValue` con una función de transformación
-        ) =>
-          gender === 'M'
-            ? Gender.Male // Si el valor es 'M', transforma a `Gender.Male`
-            : gender === 'F'
-              ? Gender.Female // Si el valor es 'F', transforma a `Gender.Female`
-              : Gender.Other, // De lo contrario, asigna `Gender.Other`
-      ),
-      countryRegion: mapValue('countryRegion'), // Mapea el campo `countryRegion` usando `mapValue`
-      description: mapValue('description'), // Mapea el campo `description` usando `mapValue`
-    };
-  }
-
-  formatUpdateDocumentUB(reqUser: UB_update): Partial<IUserBusiness> {
-    const mapValue = (
-      key: keyof UB_update,
-      transformFn?: (value: any) => any,
-    ) => {
-      const value = reqUser[key];
-
-      return value !== undefined && value !== null
-        ? transformFn
-          ? transformFn(value)
-          : value
-        : undefined;
-    };
-
-    return {
-      businessName: mapValue('businessName'),
-      sector: mapValue('sector'),
-      countryRegion: mapValue('countryRegion'),
-      description: mapValue('description'),
-    };
   }
 }

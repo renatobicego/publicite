@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongoose';
-import { User, UserType } from './user.entity';
+import { User, UserPreferences, UserType } from './user.entity';
 import { IUserBusiness } from '../../infraestructure/schemas/userBussiness.schema';
 import { UserBusinessDto } from '../../infraestructure/controller/dto/user.business.DTO';
 import { UB_publiciteUpdateRequestDto } from '../../infraestructure/controller/dto/update.request-DTO/UB-publicite.update.request';
@@ -11,7 +11,7 @@ export interface UB_update {
   description?: string;
 }
 
-export class UserBussiness extends User {
+export class UserBusiness extends User {
   private businessName: string;
   private sector: ObjectId;
   private _id?: ObjectId;
@@ -38,6 +38,7 @@ export class UserBussiness extends User {
     userRelations: ObjectId[] = [],
     userType: UserType = UserType.Business,
     _id?: ObjectId,
+    userPreferences?: UserPreferences | null,
   ) {
     super(
       clerkId,
@@ -57,15 +58,20 @@ export class UserBussiness extends User {
       board,
       post,
       userRelations,
-      userType,
+      userType ?? UserType.Business,
+      userPreferences ?? {
+        searchPreference: [],
+        backgroundColor: '',
+        boardColor: '',
+      },
     );
     this.sector = sector;
     this.businessName = businessName;
     this._id = _id;
   }
 
-  static formatDocument(document: IUserBusiness): UserBussiness {
-    return new UserBussiness(
+  static formatDocument(document: IUserBusiness): UserBusiness {
+    return new UserBusiness(
       document.clerkId,
       document.email,
       document.username,
@@ -87,11 +93,12 @@ export class UserBussiness extends User {
       document.userRelations ?? [],
       document.userType ?? UserType.Business,
       document._id as ObjectId,
+      document.userPreferences,
     );
   }
 
   static formatDtoToEntity(dto: UserBusinessDto, contactId?: ObjectId) {
-    return new UserBussiness(
+    return new UserBusiness(
       dto.clerkId,
       dto.email,
       dto.username,
