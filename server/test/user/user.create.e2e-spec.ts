@@ -2,7 +2,6 @@ import { Test } from '@nestjs/testing';
 import { Connection, ObjectId, Types } from 'mongoose';
 import * as request from 'supertest';
 import { AppModule } from 'src/app.module';
-//import { Logger } from '@nestjs/common';
 import { DatabaseService } from 'src/contexts/shared/database/infraestructure/database.service';
 
 import { UserPersonDto } from 'src/contexts/user/infraestructure/controller/dto/user.person.DTO';
@@ -39,7 +38,6 @@ describe('Create a Personal account', () => {
     }).compile();
 
     app = moduleRef.createNestApplication();
-    //app.useLogger(new Logger());
     await app.init();
 
     dbConnection = moduleRef

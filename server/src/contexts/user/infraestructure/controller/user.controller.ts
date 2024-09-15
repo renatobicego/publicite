@@ -185,10 +185,6 @@ export class UserController {
   @Get('/auth')
   @UseGuards(ClerkAuthGuard)
   async test_auth(): Promise<string> {
-    try {
-      return 'auth ok';
-    } catch (error: any) {
-      throw error;
-    }
+    return 'auth ok';
   }
 }
