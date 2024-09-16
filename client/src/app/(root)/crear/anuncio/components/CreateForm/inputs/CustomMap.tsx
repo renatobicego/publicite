@@ -1,58 +1,25 @@
 import LatLngAutocomplete from "@/app/components/inputs/LatLngAutocomplete";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 import { useState, useEffect, useRef } from "react";
-import { Libraries } from "@react-google-maps/api"; // Use @react-google-maps/api to load the script
-import { Status, Wrapper } from "@googlemaps/react-wrapper";
-import { Spinner } from "@nextui-org/react";
-const libraries: Libraries = ["places"]; // Ensure you load the 'places' library
-
-const CustomMapWrapper = ({
-  lat,
-  lng,
-  handleLocationChange,
-}: {
-  lat: number;
-  lng: number;
-  handleLocationChange: (lat: number, lng: number) => void;
-}) => {
-  const render = (status: Status) => <Spinner color="warning" />;
-
-  return (
-    <Wrapper
-      apiKey={process.env.NEXT_PUBLIC_MAPS_API_KEY as string}
-      libraries={libraries}
-      render={render}
-    >
-      <CustomMap
-        lat={lat}
-        lng={lng}
-        handleLocationChange={handleLocationChange}
-      />
-    </Wrapper>
-  );
-};
-
-export default CustomMapWrapper;
 
 const CustomMap = ({
   lat,
   lng,
   handleLocationChange,
+  geocodeLatLng
+
 }: {
   lat: number;
   lng: number;
-  handleLocationChange: (lat: number, lng: number) => void;
+  geocodeLatLng: (lat: number, lng: number, userSetted?: boolean) => void
+  handleLocationChange: (lat: number, lng: number, address?: string, userSetted?: boolean) => void;
 }) => {
   const [map, setMap] = useState<google.maps.Map | null>(null);
-  const [markerCluster, setMarkerCluster] = useState<MarkerClusterer | null>(
-    null
-  );
-  const [marker, setMarker] = useState<{ lat: number; lng: number } | null>({
-    lat,
-    lng,
-  });
+  const [markerCluster, setMarkerCluster] = useState<MarkerClusterer | null>(null);
+  const [marker, setMarker] = useState<{ lat: number; lng: number } | null>({ lat, lng });
   const ref = useRef<HTMLDivElement>(null);
 
+  // Initialize the map
   useEffect(() => {
     if (ref.current && !map) {
       const initializedMap = new google.maps.Map(ref.current, {
@@ -63,12 +30,14 @@ const CustomMap = ({
         },
         streetViewControl: false,
         draggableCursor: "pointer",
+        draggingCursor: "pointer",
         mapId: "google-maps-" + Math.random().toString(36).slice(2, 9),
       });
       setMap(initializedMap);
     }
   }, [map, lat, lng]);
 
+  // Marker cluster setup and map click event
   useEffect(() => {
     if (map && !markerCluster) {
       const cluster = new MarkerClusterer({ map, markers: [] });
@@ -79,11 +48,14 @@ const CustomMap = ({
           const lat = e.latLng.lat();
           const lng = e.latLng.lng();
           setMarker({ lat, lng });
-          handleLocationChange(lat, lng);
+          geocodeLatLng(lat, lng, true); // Get the address based on coordinates
         }
       });
     }
-  }, [map, markerCluster, handleLocationChange]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [map, markerCluster]);
+
+
 
   const createMarker = async (lat?: number, lng?: number) => {
     if (marker && markerCluster) {
@@ -97,9 +69,10 @@ const CustomMap = ({
       markerCluster.addMarker(newMarker);
     }
   };
+
   useEffect(() => {
     createMarker();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [marker, markerCluster]);
 
   return (
@@ -121,3 +94,5 @@ const CustomMap = ({
     </>
   );
 };
+
+export default CustomMap;

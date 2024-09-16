@@ -16,9 +16,31 @@
   }
 }
 
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 20px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
 @layer base {
   body {
-    @apply font-inter
+    @apply font-inter;
   }
 }
 
@@ -28,7 +50,7 @@
   }
 
   h2 {
-    @apply font-bold text-2xl md:text-3xl xl:text-4xl ;
+    @apply font-bold text-2xl md:text-3xl xl:text-4xl;
   }
 
   h3 {
@@ -71,122 +93,16 @@
     @apply pt-4 pb-20 md:pt-8 md:pb-32 layout-spacing;
   }
 
-  .profile-paragraph, .cl-profileSectionTitleText, .cl-profileSectionItem p, .cl-formButtonReset{
+  .profile-paragraph,
+  .cl-profileSectionTitleText,
+  .cl-profileSectionItem p,
+  .cl-formButtonReset {
     @apply !text-sm;
   }
 
   .profile-title {
     @apply text-lg font-bold;
   }
-
-
-}
-
-.cl-otpCodeFieldInput {
-  border-radius: 8px !important;
-  padding: 10px 8px !important;
-}
-
-.cl-navbar,
-.cl-navbar [class^="cl-internal"] {
-  background: #fffdf7;
-}
-
-.cl-footer [class^="cl-internal"] * {
-  background: #f7f7f7;
-}
-
-.cl-navbarButton[data-active="true"] {
-  font-weight: 600;
-  border-radius: 20px;
-}
-
-.cl-navbarButton:hover {
-  border-radius: 20px;
-}
-.cl-input {
-  border: 0.5px solid #818181;
-}
-.cl-input:focus-within {
-  box-shadow: none !important;
-  border: 0.5px solid #818181;
-}
-
-.cl-formButtonReset,
-.cl-profileSectionPrimaryButton,
-.cl-menuButton,
-.cl-avatarImageActionsUpload,
-.cl-avatarImageActionsRemove,
-.cl-formButtonPrimary,
-.cl-input {
-  border-radius: 20px;
-  padding: 10px 17px;
-}
-.cl-formButtonPrimary {
-  background-color: #ef2d56;
-  font-size: 0.875rem;
-  color: white;
-  border: none;
-  box-shadow: none !important;
-  width: auto;
-}
-.cl-formButtonPrimary:hover {
-  background-color: #031926 !important;
-}
-
-.cl-formFieldLabel {
-  color: #031926;
-}
-.cl-formButtonPrimary:disabled {
-  opacity: 0.4;
-  box-shadow: none;
-}
-.cl-profileSectionPrimaryButton,
-.cl-menuButton {
-  color: #8cd867;
-  font-size: 0.875rem;
-}
-.cl-profileSectionPrimaryButton:hover,
-.cl-menuButton:hover {
-  color: #8cd867;
-  background-color: #8cd86730;
-}
-
-.cl-avatarImageActionsUpload {
-  background-color: #8cd867;
-  color: white;
-}
-.cl-avatarImageActionsUpload:hover {
-  background-color: #8cd867;
-  color: white;
-  opacity: 0.9;
-}
-
-.cl-badge {
-  border: #0091ad 1px solid;
-  border-radius: 12px;
-  background: none;
-}
-
-.cl-menuButton[aria-label="Open menu"],
-.cl-menuButton[aria-label="Close menu"] {
-  border: #8cd867 1.5px solid;
-  border-radius: 100%;
-  padding: 4px;
-}
-
-.cl-profileSectionPrimaryButton__danger,
-.cl-profileSectionPrimaryButton__danger:hover {
-  color: #ef4444;
-}
-.cl-profileSectionPrimaryButton__danger:hover{
-  background-color: #ef444430;
-}
-
-.cl-menuList,
-.cl-cardBox,
-.cl-signUp-start {
-  border-radius: 20px;
 }
 
 .instagram-gradient {
@@ -216,13 +132,4 @@
     #bc1888 100%
   );
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f09433', endColorstr='#bc1888',GradientType=1 );
-}
-
-@media screen and (max-width: 1020px) {
-  .cl-userProfile-root, .cl-userProfile-root .cl-cardBox {
-    width: 100%;
-  }
-  .cl-navbar [class^="cl-internal"] h1{
-    font-size: 1.25rem;
-  }
 }

@@ -16,6 +16,7 @@ export interface Post {
   comments: PostComment[];
   attachedFiles: PostAttachedFile[];
   author: Author;
+  createdAt: string;
 }
 
 interface Reviewer extends Pick<UserPerson, "username" | "profilePhotoUrl"> {}
@@ -33,8 +34,10 @@ export interface PostRecommendation {
 
 export interface PostLocation {
   _id?: ObjectId;
-  lat: number;
-  lng: number;
+  lat?: number;
+  lng?: number;
+  description?: string;
+  userSetted?: boolean;
 }
 
 export interface PostCategory {

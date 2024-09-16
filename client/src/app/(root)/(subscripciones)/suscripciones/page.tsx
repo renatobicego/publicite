@@ -8,6 +8,7 @@ import {
   getSubscriptionsPlans,
 } from "@/app/services/subscriptionServices";
 import { auth } from "@clerk/nextjs/server";
+import ErrorCard from "@/app/components/ErrorCard";
 
 export default async function SubscriptionPlans() {
   const breadcrumbsItems = [
@@ -25,6 +26,10 @@ export default async function SubscriptionPlans() {
   const subscriptions = await getSubscriptionsPlans();
   const susbcriptionsOfUser = await getSubscriptionsOfUser(userId as string);
 
+  if(subscriptions.error || susbcriptionsOfUser.error){
+    return <ErrorCard message={subscriptions.error || susbcriptionsOfUser.error}/>
+  }
+
   return (
     <main className="flex min-h-screen flex-col items-start main-style gap-8">
       <BreadcrumbsAdmin items={breadcrumbsItems} />
@@ -41,7 +46,7 @@ export default async function SubscriptionPlans() {
         </div>
         <SubscriptionGrid
           type="suscripciones"
-          subscriptions={subscriptions}
+          subscriptions={subscriptions.slice(0, 2)}
           subscriptionsOfUser={susbcriptionsOfUser}
         />
       </section>

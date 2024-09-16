@@ -3,7 +3,7 @@ import { SubscriptionPlan } from "@/types/subscriptions";
 
 const mockedGood: Good = {
   _id: "1",
-  imagesUrls: ["/moto.png"],
+  imagesUrls: ["/moto.png", "/Rectangle 13.png", "/Rectangle 14.png", "/Rectangle 15.png"],
   year: 2022,
   brand: "brand",
   model: "model",
@@ -33,8 +33,8 @@ const mockedGood: Good = {
   price: 1000,
   location: {
     _id: "1",
-    latitude: 0,
-    longitude: 0,
+    lat: 0,
+    lng: 0,
   },
   category: {
     _id: "1",
@@ -43,7 +43,10 @@ const mockedGood: Good = {
   attachedFiles: [],
   comments: [],
   postType: "Good",
-  visibility: "Public",
+  visibility: {
+    post: "Public",
+    socialMedia: "Public",
+  },
   recommendations: [],
   description: "Entrega un mínimo anticipo y llévate tu 0km! 💥",
   title: "Yamaha YBR-Z",
@@ -57,6 +60,7 @@ const mockedGood: Good = {
     lastName: "lastName",
     name: "name",
   },
+  createdAt: "2024-07-12",
 };
 
 const mockedService: Service = {
@@ -68,8 +72,8 @@ const mockedService: Service = {
   price: 1000,
   location: {
     _id: "1",
-    latitude: 0,
-    longitude: 0,
+    lat: 0,
+    lng: 0,
   },
   category: {
     _id: "2",
@@ -89,7 +93,10 @@ const mockedService: Service = {
     },
   ],
   postType: "Service",
-  visibility: "Public",
+  visibility: {
+    post: "Public",
+    socialMedia: "Public",
+  },
   recommendations: [],
   frequencyPrice: "hour",
   reviews: [],
@@ -103,6 +110,7 @@ const mockedService: Service = {
     lastName: "lastName",
     name: "name",
   },
+  createdAt: "2024-07-12",
 };
 
 const mockedPetition: Petition = {
@@ -126,17 +134,21 @@ const mockedPetition: Petition = {
   },
   postType: "Petition",
   petitionType: "Good",
-  visibility: "Public",
+  visibility: {
+    post: "Public",
+    socialMedia: "Public",
+  },
   recommendations: [],
   attachedFiles: [],
   comments: [],
   price: 1000,
   location: {
     _id: "1",
-    latitude: 0,
-    longitude: 0,
+    lat: 0,
+    lng: 0,
   },
   toPrice: 2000,
+  createdAt: "2024-07-12",
 };
 
 const mockedPetition2: Petition = {
@@ -159,17 +171,21 @@ const mockedPetition2: Petition = {
   postType: "Petition",
   petitionType: "Service",
   frequencyPrice: "month",
-  visibility: "Public",
+  visibility: {
+    post: "Public",
+    socialMedia: "Public",
+  },
   recommendations: [],
   attachedFiles: [],
   comments: [],
   price: 1000,
   location: {
     _id: "1",
-    latitude: 0,
-    longitude: 0,
+    lat: 0,
+    lng: 0,
   },
   toPrice: 2000,
+  createdAt: "2024-07-12",
 };
 
 export const freeSubscriptionPlans: SubscriptionPlan[] = [

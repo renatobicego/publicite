@@ -8,7 +8,7 @@ const LatLngAutocomplete = ({
   map,
   createMarker
 }: {
-  handleLocationChange: (lat: number, lng: number) => void;
+  handleLocationChange: (lat: number, lng: number, description?: string, userSetted?: boolean) => void;
   map: google.maps.Map | null;
   createMarker: (lat?: number, lng?: number) => Promise<void>
 }) => {
@@ -33,7 +33,7 @@ const LatLngAutocomplete = ({
           if (location) {
             const lat = location.lat();
             const lng = location.lng();
-            handleLocationChange(lat, lng);
+            handleLocationChange(lat, lng, result.formatted_address, true);
             map.setCenter({ lat, lng });
             createMarker(lat, lng);
           }

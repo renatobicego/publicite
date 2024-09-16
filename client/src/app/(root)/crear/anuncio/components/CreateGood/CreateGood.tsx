@@ -12,6 +12,7 @@ import PrimaryButton from "@/app/components/buttons/PrimaryButton";
 import { useUser } from "@clerk/nextjs";
 import { useUploadThing } from "@/app/utils/uploadThing";
 import { toastifyError } from "@/app/utils/toastify";
+import { getLocalTimeZone, today } from "@internationalized/date";
 
 const INITIAL_LOCATION = { lat: -34.6115643483578, lng: -58.38901999245833 };
 
@@ -28,8 +29,10 @@ const CreateGood = ({ files }: { files: File[] }) => {
     condition: undefined,
     imagesUrls: [],
     location: {
-      lat: INITIAL_LOCATION.lat,
-      lng: INITIAL_LOCATION.lng,
+      lat: undefined,
+      lng: undefined,
+      description: "",
+      userSetted: false
     },
     postType: "Good",
     visibility: {
@@ -39,6 +42,7 @@ const CreateGood = ({ files }: { files: File[] }) => {
     brand: undefined,
     model: undefined,
     year: undefined,
+    createdAt: today(getLocalTimeZone()).toString(),
   };
 
   const [attachedFiles, setAttachedFiles] = useState<AttachedFileValues[]>([]);
@@ -99,13 +103,14 @@ const CreateGood = ({ files }: { files: File[] }) => {
       validationSchema={goodValidation}
     >
       {({ isSubmitting, errors, setFieldValue, values }) => {
+        console.log(values.location)
         return (
           <Form className="flex flex-col gap-4">
             <TitleDescription errors={errors} />
             <PriceCategory errors={errors} />
             <Condition errors={errors} />
             <Divider />
-            <h6>Busque su ubicación y seleccionela en el mapa</h6>
+            <h6>Seleccione su ubicación</h6>
             <PlacePicker
               location={values.location}
               setFieldValue={setFieldValue}

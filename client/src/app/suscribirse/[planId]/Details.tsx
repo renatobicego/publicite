@@ -5,7 +5,7 @@ const Details = ({ subscriptionPlan }: { subscriptionPlan: any }) => {
   return (
     <div className="flex-1 flex flex-col justify-start items-start gap-4
     max-md:px-8 md:max-lg:px-12 mt-12 lg:ml-[10%] 2xl:ml-[20%] lg:mt-24 2xl:mt-36 ">
-      <BackButton className="-ml-2.5"/>
+      <BackButton/>
       <div className="flex items-center">
         <Image
           src="/logo.png"
