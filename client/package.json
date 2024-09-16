@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@clerk/localizations": "^2.5.7",
-    "@clerk/nextjs": "^5.3.0",
+    "@clerk/nextjs": "^5.5.3",
     "@googlemaps/markerclusterer": "^2.5.3",
     "@googlemaps/react-wrapper": "^1.1.42",
     "@internationalized/date": "^3.5.5",
