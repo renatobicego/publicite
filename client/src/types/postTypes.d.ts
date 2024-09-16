@@ -33,6 +33,14 @@ export interface PostRecommendation {
 }
 
 export interface PostLocation {
+  _id: ObjectId;
+  lat: number;
+  lng: number;
+  description: string;
+  userSetted: boolean;
+}
+
+export interface PostLocationForm {
   _id?: ObjectId;
   lat?: number;
   lng?: number;
@@ -92,6 +100,7 @@ export interface GoodPostValues
   price?: number;
   author: string;
   condition?: "New" | "Used";
+  location: PostLocationForm;
 }
 
 export interface Service extends Post {
@@ -114,6 +123,7 @@ export interface ServicePostValues
   > {
   category: ObjectId;
   price?: number
+  location: PostLocationForm;
   author: string;
   frequencyPrice?: FrequencyPrice;
 }

@@ -20,8 +20,18 @@ const mockedGood: Good = {
     },
     {
       _id: "232",
-      rating: 4,
+      rating: 3,
       review: "review",
+      author: {
+        profilePhotoUrl: "/avatar.png",
+        username: "username",
+      },
+      date: "2024-07-12",
+    },
+    {
+      _id: "23w22",
+      rating: 4,
+      review: "Esta es una review más larga para poder mostrar una caja de review de 200 caracteres más grande",
       author: {
         profilePhotoUrl: "/avatar.png",
         username: "username",
@@ -33,14 +43,22 @@ const mockedGood: Good = {
   price: 1000,
   location: {
     _id: "1",
-    lat: 0,
-    lng: 0,
+    lat: -32.8998,
+    lng: -68.8259,
+    description: "Cacique Guaymallen 1065, Las Heras, Mendoza",
+    userSetted: true,
   },
   category: {
     _id: "1",
     label: "Vehículos",
   },
-  attachedFiles: [],
+  attachedFiles: [
+    {
+      _id: "1ghdsf",
+      url: "url",
+      label: "label",
+    },
+  ],
   comments: [],
   postType: "Good",
   visibility: {
@@ -56,6 +74,10 @@ const mockedGood: Good = {
     contact: {
       _id: "121",
       phone: "phone",
+      instagram: "instagram",
+      facebook: "facebook",
+      x: "x",
+      website: "website",
     },
     lastName: "lastName",
     name: "name",
@@ -72,8 +94,10 @@ const mockedService: Service = {
   price: 1000,
   location: {
     _id: "1",
-    lat: 0,
-    lng: 0,
+    lat: -32.8998,
+    lng: -68.8259,
+    description: "Cacique Guaymallen 1065, Las Heras, Mendoza",
+    userSetted: true,
   },
   category: {
     _id: "2",
@@ -144,8 +168,10 @@ const mockedPetition: Petition = {
   price: 1000,
   location: {
     _id: "1",
-    lat: 0,
-    lng: 0,
+    lat: -32.8998,
+    lng: -68.8259,
+    description: "Cacique Guaymallen 1065, Las Heras, Mendoza",
+    userSetted: true,
   },
   toPrice: 2000,
   createdAt: "2024-07-12",
@@ -181,8 +207,10 @@ const mockedPetition2: Petition = {
   price: 1000,
   location: {
     _id: "1",
-    lat: 0,
-    lng: 0,
+    lat: -32.8998,
+    lng: -68.8259,
+    description: "Cacique Guaymallen 1065, Las Heras, Mendoza",
+    userSetted: true,
   },
   toPrice: 2000,
   createdAt: "2024-07-12",
@@ -190,7 +218,7 @@ const mockedPetition2: Petition = {
 
 export const freeSubscriptionPlans: SubscriptionPlan[] = [
   {
-    _id: "2c9380849146f28",
+    _id: "2c9368849146f28",
     reason: "Gratuita",
     price: 6500,
     description: "Cuenta personal gratuita de por vida, con anuncios visibles solo para tus contactos.",
@@ -206,7 +234,7 @@ export const freeSubscriptionPlans: SubscriptionPlan[] = [
 
 export const mockedPacks: SubscriptionPlan[] = [
   {
-    _id: "2c9380849146f28",
+    _id: "2c9368849146f28",
     reason: "+ 10 Publicaciones Activas",
     price: 3500,
     description: "Las 10 publicaciones activas sumadas tendrán una duración de 1 mes. ",
@@ -218,7 +246,7 @@ export const mockedPacks: SubscriptionPlan[] = [
     isPostPack: true
   },
   {
-    _id: "2c9380849146ff3d01914739031d0028",
+    _id: "2c9368849146ff3d01914739031d0028",
     reason: "+ 20 Publicaciones Activas",
     price: 6500,
     description: "Las 20 publicaciones activas sumadas tendrán una duración de 1 mes. ",
@@ -230,7 +258,7 @@ export const mockedPacks: SubscriptionPlan[] = [
     isPostPack: true
   },
   {
-    _id: "2c9380849146ff3d01914739038",
+    _id: "2c9368849146ff3d01914739038",
     reason: "+ 50 Publicaciones Activas",
     price: 10000,
     description: "Las 50 publicaciones activas sumadas tendrán una duración de 1 mes. ",

@@ -103,7 +103,6 @@ const CreateGood = ({ files }: { files: File[] }) => {
       validationSchema={goodValidation}
     >
       {({ isSubmitting, errors, setFieldValue, values }) => {
-        console.log(values.location)
         return (
           <Form className="flex flex-col gap-4">
             <TitleDescription errors={errors} />

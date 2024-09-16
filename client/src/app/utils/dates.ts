@@ -36,3 +36,9 @@ export const getTimeBetweenToday = (date1: DateValue) => {
   if(diffTime > 1 && diffTime < 31) return `${diffTime} dias`;
   if(diffTime > 30) return `${Math.ceil(diffTime / 30)} meses`;
 }
+
+const shortMonths = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+
+export const showDate = (date: DateValue) => {
+  return `${date.day} ${shortMonths[date.month - 1]}. ${date.year}`
+}
