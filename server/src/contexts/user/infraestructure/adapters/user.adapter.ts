@@ -27,6 +27,16 @@ export class UserAdapter implements UserAdapterInterface {
     @Inject('UserMapperInterface')
     private readonly userMapper: UserMapperInterface,
   ) {}
+  async getUserPreferencesByUsername(username: string): Promise<UserPreferenceResponse | null> {
+    try {
+      return await this.userService.getUserPreferencesByUsername(
+        username,
+      );
+
+    } catch (error: any) {
+      throw error;
+    }
+  }
 
   async getUserPersonalInformationByUsername(username: string): Promise<any> {
     try {

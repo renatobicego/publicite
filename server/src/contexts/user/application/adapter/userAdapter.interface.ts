@@ -23,6 +23,7 @@ export interface UserAdapterInterface {
   ): Promise<any>;
 
   getUserPersonalInformationByUsername(username: string): Promise<any>;
+  getUserPreferencesByUsername(username: string): Promise<UserPreferenceResponse | null>;
   updateUserPreferencesByUsername(
     username: string,
     userPreference: UserPreferenceResponse,

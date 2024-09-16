@@ -21,6 +21,7 @@ export interface UserServiceInterface {
   getUserPersonalInformationByUsername(
     username: string,
   ): Promise<UserPersonalInformationResponse>;
+  getUserPreferencesByUsername(username:string):Promise<UserPreferences | null>
   updateUser(
     username: string,
     req: UP_publiciteUpdateRequestDto | UB_publiciteUpdateRequestDto,

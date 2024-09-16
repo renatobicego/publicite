@@ -14,7 +14,7 @@ export interface UserRepositoryInterface {
   getUserPersonalInformationByUsername(
     username: string,
   ): Promise<Partial<User>>;
-
+  getUserPreferencesByUsername(username:string):Promise<UserPreferences | null>;
   update(username: string, reqUser: UP_update, type: number): Promise<User>;
   updateByClerkId(
     clerkId: string,

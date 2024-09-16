@@ -157,6 +157,32 @@ export class UserController {
     }
   }
 
+
+  @Get('/preferences/:username')
+  @ApiOperation({ summary: 'Get profile preferences of particular account' })
+  @ApiResponse({
+    status: 200,
+    description: "Data it's correct.",
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal server error.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'User not found.',
+  })
+  async getUserPreferences(
+    @Param('username') username: string,
+  ): Promise<UserPreferenceResponse| null > {
+    try {
+      return this.userAdapter.getUserPreferencesByUsername(username);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
   @Put('/user-preferences/:username')
   @ApiOperation({ summary: 'Update a new business account' })
   @ApiResponse({

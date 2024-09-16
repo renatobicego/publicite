@@ -38,7 +38,9 @@ export class UserService implements UserServiceInterface {
     private readonly contactService: ContactServiceInterface,
     private readonly logger: MyLoggerService,
     @InjectConnection() private readonly connection: Connection,
-  ) {}
+  ) { }
+
+
   async updateUserPreferencesByUsername(
     username: string,
     userPreference: UserPreferenceResponse,
@@ -51,7 +53,7 @@ export class UserService implements UserServiceInterface {
     } catch (error: any) {
       this.logger.error(
         'An error has occurred in user service - updateUserPreferencesByUsername: ' +
-          error,
+        error,
       );
       throw error;
     }
@@ -169,6 +171,16 @@ export class UserService implements UserServiceInterface {
     }
   }
 
+  async getUserPreferencesByUsername(username: string): Promise<UserPreferences | null> {
+    try {
+      const userPreferences = await this.userRepository.getUserPreferencesByUsername(username);
+      return userPreferences;
+
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
   async updateUser(
     username: string,
     req: UP_publiciteUpdateRequestDto | UB_publiciteUpdateRequestDto,
@@ -211,7 +223,7 @@ export class UserService implements UserServiceInterface {
     } catch (error: any) {
       this.logger.error(
         'An error has occurred in user service - UpdateUserByClerk: ' +
-          error.message,
+        error.message,
       );
       throw error;
     }
