@@ -78,15 +78,15 @@
   }
 
   .layout-spacing {
-    @apply mx-4 md:mx-10 lg:mx-[80px] xl:mx-[100px];
+    @apply mx-4 md:mx-10 lg:mx-[80px] xl:mx-[100px] 3xl:mx-[8%];
   }
 
   .header-spacing {
-    @apply mx-2 md:mx-4 lg:mx-12 xl:mx-16;
+    @apply mx-2 md:mx-4 lg:mx-12 xl:mx-16 3xl:mx-[6%];
   }
 
   .layout-padding {
-    @apply px-4 md:px-10 lg:px-[80px] xl:px-[100px];
+    @apply px-4 md:px-10 lg:px-[80px] xl:px-[100px] 3xl:px-[8%];
   }
 
   .main-style {

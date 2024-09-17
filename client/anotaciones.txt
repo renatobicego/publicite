@@ -10,5 +10,3 @@ Podríamos:
 
 
 conectar preferences
-
-ver layout de main que sea proporcional en pantallas grandes

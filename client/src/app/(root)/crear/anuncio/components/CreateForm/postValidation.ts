@@ -19,6 +19,7 @@ export const postValidation = object({
   location: object({
     lat: number().required("La ubicación es requerida"),
     lng: number().required("La ubicación es requerida"),
+    description: string().required("La ubicación es requerida").min(1, "La ubicación es requerida"),
   }),
   attachedFiles: array(
     object({

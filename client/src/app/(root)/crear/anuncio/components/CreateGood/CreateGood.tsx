@@ -113,6 +113,7 @@ const CreateGood = ({ files }: { files: File[] }) => {
             <PlacePicker
               location={values.location}
               setFieldValue={setFieldValue}
+              error={errors.location}
             />
             <AccordionInputs
               errors={errors}

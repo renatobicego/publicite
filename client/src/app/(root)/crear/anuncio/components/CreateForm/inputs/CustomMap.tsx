@@ -1,18 +1,21 @@
 import LatLngAutocomplete from "@/app/components/inputs/LatLngAutocomplete";
+import { PostLocationForm } from "@/types/postTypes";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
+import { FormikErrors } from "formik";
 import { useState, useEffect, useRef } from "react";
 
 const CustomMap = ({
   lat,
   lng,
   handleLocationChange,
-  geocodeLatLng
-
+  geocodeLatLng,
+  error
 }: {
   lat: number;
   lng: number;
   geocodeLatLng: (lat: number, lng: number, userSetted?: boolean) => void
   handleLocationChange: (lat: number, lng: number, address?: string, userSetted?: boolean) => void;
+  error: FormikErrors<PostLocationForm> | undefined
 }) => {
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [markerCluster, setMarkerCluster] = useState<MarkerClusterer | null>(null);

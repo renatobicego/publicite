@@ -1,4 +1,4 @@
-import { Good, Petition, Service } from "@/types/postTypes";
+import { Good, Magazine, Petition, Service } from "@/types/postTypes";
 import { SubscriptionPlan } from "@/types/subscriptions";
 
 const mockedGood: Good = {
@@ -321,3 +321,41 @@ export const mockedPetitions = [
 ];
 
 export const mockedPosts = [mockedGood, mockedService];
+
+
+export const magazines: Magazine[] = [
+  {
+    _id: "1",
+    name: "Revista 1",
+    sections: [
+      {
+        _id: "234",
+        title: "Sección 1",
+        isFatherSection: true,
+        posts: ["3121"],
+      },
+    ],
+    collaborators: [],
+    owner: "renatobicego",
+  },
+  {
+    _id: "2",
+    name: "Revista 2",
+    sections: [
+      {
+        _id: "2342",
+        title: "Sección 1",
+        isFatherSection: true,
+        posts: [],
+      },
+      {
+        _id: "2343",
+        title: "Sección 2",
+        isFatherSection: true,
+        posts: [],
+      },
+    ],
+    collaborators: [],
+    owner: "renatobicego",
+  },
+];
