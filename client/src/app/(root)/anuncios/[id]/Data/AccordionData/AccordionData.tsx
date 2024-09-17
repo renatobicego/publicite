@@ -39,6 +39,7 @@ const AccordionData = ({ post }: { post: Good | Service }) => {
         title="Ubicación"
       >
         <LocationMap lat={post.location.lat} lng={post.location.lng} />
+        {post.location.userSetted && (<p className="text-sm">El usuario vendedor ha establecido la ubicación manualmente</p>)}
       </AccordionItem>
       <AccordionItem
         indicator={<FaChevronLeft className="size-3" />}
@@ -46,7 +47,7 @@ const AccordionData = ({ post }: { post: Good | Service }) => {
         aria-label="opiniones"
         title="Opiniones"
       >
-        {post.reviews.length === 0 ? (
+        {post.reviews.length > 0 ? (
           <Reviews reviews={post.reviews} />
         ) : (
           <p className="text-light-text text-sm">

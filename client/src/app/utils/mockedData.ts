@@ -3,7 +3,12 @@ import { SubscriptionPlan } from "@/types/subscriptions";
 
 const mockedGood: Good = {
   _id: "1",
-  imagesUrls: ["/moto.png", "/Rectangle 13.png", "/Rectangle 14.png", "/Rectangle 15.png"],
+  imagesUrls: [
+    "/moto.png",
+    "/Rectangle 13.png",
+    "/Rectangle 14.png",
+    "/Rectangle 15.png",
+  ],
   year: 2022,
   brand: "brand",
   model: "model",
@@ -31,7 +36,8 @@ const mockedGood: Good = {
     {
       _id: "23w22",
       rating: 4,
-      review: "Esta es una review más larga para poder mostrar una caja de review de 200 caracteres más grande",
+      review:
+        "Esta es una review más larga para poder mostrar una caja de review de 200 caracteres más grande",
       author: {
         profilePhotoUrl: "/avatar.png",
         username: "username",
@@ -59,18 +65,51 @@ const mockedGood: Good = {
       label: "label",
     },
   ],
-  comments: [],
+  comments: [
+    {
+      _id: "1232df",
+      author: {
+        profilePhotoUrl: "/avatar.png",
+        username: "username",
+      },
+      comment: "Quería consultar si existe la posibilidad de sacar un plan de pago para pagarla. Soy de Buenos Aires, por lo que también quería consultar sobre envios.",
+      date: "2024-07-12",
+      replies: [],
+    },
+    {
+      _id: "1232df",
+      author: {
+        profilePhotoUrl: "/avatar.png",
+        username: "username",
+      },
+      comment: "Quería consultar si existe la posibilidad de sacar un plan de pago para pagarla. Soy de Buenos Aires, por lo que también quería consultar sobre envios.",
+      date: "2024-09-12",
+      replies: [
+        {
+          _id: "1232df",
+          author: {
+            profilePhotoUrl: "/avatar.png",
+            username: "username",
+          },
+          comment: "Si, te puedo armar un plan de pago. Respecto al envío, podemos manejarlo por la empresa Andreani. Saludos",
+          date: "2024-09-13",
+          replies: [],
+        }
+      ],
+    },
+  ],
   postType: "Good",
   visibility: {
     post: "Public",
     socialMedia: "Public",
   },
   recommendations: [],
-  description: "Entrega un mínimo anticipo y llévate tu 0km! 💥",
+  description:
+    "La Yamaha YBR Z es una motocicleta robusta y confiable diseñada para aquellos que buscan una combinación perfecta entre economía y rendimiento. Con su motor de 124 cc, ofrece una conducción suave y eficiente, ideal para el uso diario en la ciudad. Su diseño ergonómico garantiza comodidad en viajes largos, mientras que su chasis resistente proporciona estabilidad y seguridad en diferentes terrenos. Además, cuenta con un tanque de combustible de gran capacidad, lo que permite recorrer largas distancias sin necesidad de recargar constantemente. La Yamaha YBR Z es la elección perfecta para quienes desean una moto duradera, económica y de fácil manejo.",
   title: "Yamaha YBR-Z",
   author: {
     profilePhotoUrl: "/avatar.png",
-    username: "username",
+    username: "renatobicego",
     contact: {
       _id: "121",
       phone: "phone",
@@ -221,15 +260,16 @@ export const freeSubscriptionPlans: SubscriptionPlan[] = [
     _id: "2c9368849146f28",
     reason: "Gratuita",
     price: 6500,
-    description: "Cuenta personal gratuita de por vida, con anuncios visibles solo para tus contactos.",
+    description:
+      "Cuenta personal gratuita de por vida, con anuncios visibles solo para tus contactos.",
     features: ["Beneficio 1", "Beneficio 2", "Beneficio 3"],
     freePlan: true,
     intervalTime: 1,
     isActive: true,
     postLimit: 5,
     isPostPack: false,
-    mpPreapprovalPlanId: ""
-  }
+    mpPreapprovalPlanId: "",
+  },
 ];
 
 export const mockedPacks: SubscriptionPlan[] = [
@@ -237,41 +277,47 @@ export const mockedPacks: SubscriptionPlan[] = [
     _id: "2c9368849146f28",
     reason: "+ 10 Publicaciones Activas",
     price: 3500,
-    description: "Las 10 publicaciones activas sumadas tendrán una duración de 1 mes. ",
+    description:
+      "Las 10 publicaciones activas sumadas tendrán una duración de 1 mes. ",
     features: [],
     intervalTime: 1,
     isActive: true,
     postLimit: 10,
     mpPreapprovalPlanId: "",
-    isPostPack: true
+    isPostPack: true,
   },
   {
     _id: "2c9368849146ff3d01914739031d0028",
     reason: "+ 20 Publicaciones Activas",
     price: 6500,
-    description: "Las 20 publicaciones activas sumadas tendrán una duración de 1 mes. ",
+    description:
+      "Las 20 publicaciones activas sumadas tendrán una duración de 1 mes. ",
     features: [],
     intervalTime: 1,
     isActive: true,
     postLimit: 20,
     mpPreapprovalPlanId: "",
-    isPostPack: true
+    isPostPack: true,
   },
   {
     _id: "2c9368849146ff3d01914739038",
     reason: "+ 50 Publicaciones Activas",
     price: 10000,
-    description: "Las 50 publicaciones activas sumadas tendrán una duración de 1 mes. ",
+    description:
+      "Las 50 publicaciones activas sumadas tendrán una duración de 1 mes. ",
     features: [],
     intervalTime: 1,
     isActive: true,
     postLimit: 50,
     mpPreapprovalPlanId: "",
-    isPostPack: true
+    isPostPack: true,
   },
 ];
 
-
-export const mockedPetitions = [mockedPetition, mockedPetition2, mockedPetition];
+export const mockedPetitions = [
+  mockedPetition,
+  mockedPetition2,
+  mockedPetition,
+];
 
 export const mockedPosts = [mockedGood, mockedService];

@@ -61,6 +61,12 @@ export interface PostComment {
   replies: PostComment[];
 }
 
+export interface PostCommentForm {
+  author: ObjectId;
+  comment: string;
+  date: string
+}
+
 export interface PostAttachedFile {
   _id: ObjectId;
   url: string;

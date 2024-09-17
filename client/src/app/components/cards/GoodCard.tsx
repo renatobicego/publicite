@@ -1,11 +1,8 @@
-import { Card, CardBody, CardHeader, Link } from "@nextui-org/react";
 import React from "react";
 import PostImage from "./PostImage";
 import { Good } from "@/types/postTypes";
-import { FaStar } from "react-icons/fa6";
-import SaveButton from "../buttons/SaveButton";
+
 import PostCardBody from "./PostCardBody";
-import { POSTS } from "@/app/utils/urls";
 
 const GoodCard = ({
   post,
@@ -14,10 +11,10 @@ const GoodCard = ({
   post: Good;
   recommendation: boolean;
 }) => {
-  const { _id, imagesUrls, title, reviews, description, price } = post;
+  const { title, reviews, description, price } = post;
   return (
     <>
-      <PostImage _id={_id} url={imagesUrls[0]} title={title} />
+      <PostImage post={post} recommendation={recommendation}/>
       <PostCardBody
         title={title}
         reviews={reviews}

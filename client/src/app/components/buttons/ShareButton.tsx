@@ -1,12 +1,20 @@
-import { FaShare } from "react-icons/fa6";
-import SecondaryButton from "./SecondaryButton";
 import { Good, Petition, Service } from "@/types/postTypes";
+import { Button, Tooltip } from "@nextui-org/react";
+import { FaShareAlt } from "react-icons/fa";
 
 const ShareButton = ({ post }: { post: Good | Service | Petition }) => {
   return (
-    <SecondaryButton startContent={<FaShare />} variant="flat">
-      Compartir
-    </SecondaryButton>
+    <Tooltip placement="bottom" content="Compartir">
+      <Button
+        isIconOnly
+        variant="flat"
+        color="secondary"
+        radius="full"
+        className="p-1"
+      >
+        <FaShareAlt />
+      </Button>
+    </Tooltip>
   );
 };
 

@@ -5,7 +5,7 @@ import { useState } from "react";
 const Images = ({ images }: { images: string[] }) => {
   const [activeImage, setActiveImage] = useState(0);
   return (
-    <div className="flex-1 flex flex-col gap-2 max-w-[50%]">
+    <div className="flex-1 flex flex-col gap-2 w-full md:max-w-[50%] md:sticky top-24 left-0 h-full overflow-y-auto">
       <Image
         src={images[activeImage]}
         width="100%"
@@ -25,7 +25,7 @@ const Images = ({ images }: { images: string[] }) => {
               wrapper: `shrink-0 hover:cursor-pointer`,
               img: `${index === activeImage ? "border border-primary border-2 p-0.5" : ""}`,
             }}
-            className="h-32 w-40 object-cover"
+            className="h-20 w-24 md:h-24 md:w-32 xl:h-32 xl:w-40 object-cover"
           />
         ))}
       </div>
