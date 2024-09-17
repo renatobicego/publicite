@@ -1,4 +1,4 @@
-import { ClientSession } from 'mongoose';
+import { ClientSession, ObjectId } from 'mongoose';
 import { User } from '../entity/user.entity';
 import { UserBusiness } from '../entity/userBusiness.entity';
 import { UP_update, UserPerson } from '../entity/userPerson.entity';
@@ -14,7 +14,9 @@ export interface UserRepositoryInterface {
   getUserPersonalInformationByUsername(
     username: string,
   ): Promise<Partial<User>>;
-  getUserPreferencesByUsername(username:string):Promise<UserPreferences | null>;
+  getUserPreferencesByUsername(
+    username: string,
+  ): Promise<UserPreferences | null>;
   update(username: string, reqUser: UP_update, type: number): Promise<User>;
   updateByClerkId(
     clerkId: string,
@@ -25,4 +27,10 @@ export interface UserRepositoryInterface {
     username: string,
     userPreference: UserPreferences,
   ): Promise<UserPreferences | null>;
+
+  saveNewPost(
+    postId: ObjectId,
+    authorId: ObjectId,
+    options?: { session?: ClientSession },
+  ): Promise<any>;
 }

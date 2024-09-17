@@ -1,5 +1,5 @@
 import { ObjectId, Types } from 'mongoose';
-import { Gender, UserType } from './enums.request';
+import { Gender, UserType } from '../../../domain/entity/enum/enums.request';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum, IsOptional } from 'class-validator';
 import { UserPerson } from 'src/contexts/user/domain/entity/userPerson.entity';

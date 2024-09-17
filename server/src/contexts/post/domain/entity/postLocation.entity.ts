@@ -1,9 +1,33 @@
-export class PostLocation{
-    private latitude: string;
-    private longitude: string
+export class PostLocation {
+  private location: {
+    type: 'Point';
+    coordinates: [number, number];
+  };
+  private userSetted: boolean;
+  private description: string;
 
-    constructor(latitude:string,longitude:string){
-        this.latitude = latitude;
-        this.longitude = longitude;
-    }
+  constructor(
+    coordinates: [number, number],
+    userSetted: boolean,
+    description: string,
+  ) {
+    this.location = {
+      type: 'Point',
+      coordinates: coordinates,
+    };
+    this.userSetted = userSetted;
+    this.description = description;
+  }
+
+  getLocation() {
+    return this.location;
+  }
+
+  getUserSetted() {
+    return this.userSetted;
+  }
+
+  getDescription() {
+    return this.description;
+  }
 }

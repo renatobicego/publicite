@@ -1,5 +1,6 @@
 import { ObjectId } from 'mongoose';
-import { Gender } from 'src/contexts/user/infraestructure/controller/dto/enums.request';
+import { Gender } from 'src/contexts/user/domain/entity/enum/enums.request';
+
 import { UserBusinessDto } from 'src/contexts/user/infraestructure/controller/dto/user.business.DTO';
 import { UserPersonDto } from 'src/contexts/user/infraestructure/controller/dto/user.person.DTO';
 

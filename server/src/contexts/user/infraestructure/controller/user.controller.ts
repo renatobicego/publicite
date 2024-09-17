@@ -157,7 +157,6 @@ export class UserController {
     }
   }
 
-
   @Get('/preferences/:username')
   @ApiOperation({ summary: 'Get profile preferences of particular account' })
   @ApiResponse({
@@ -174,14 +173,13 @@ export class UserController {
   })
   async getUserPreferences(
     @Param('username') username: string,
-  ): Promise<UserPreferenceResponse| null > {
+  ): Promise<UserPreferenceResponse | null> {
     try {
       return this.userAdapter.getUserPreferencesByUsername(username);
     } catch (error: any) {
       throw error;
     }
   }
-
 
   @Put('/user-preferences/:username')
   @ApiOperation({ summary: 'Update a new business account' })

@@ -38,26 +38,7 @@ export class UserService implements UserServiceInterface {
     private readonly contactService: ContactServiceInterface,
     private readonly logger: MyLoggerService,
     @InjectConnection() private readonly connection: Connection,
-  ) { }
-
-
-  async updateUserPreferencesByUsername(
-    username: string,
-    userPreference: UserPreferenceResponse,
-  ): Promise<UserPreferences | null> {
-    try {
-      return await this.userRepository.updateUserPreferencesByUsername(
-        username,
-        userPreference,
-      );
-    } catch (error: any) {
-      this.logger.error(
-        'An error has occurred in user service - updateUserPreferencesByUsername: ' +
-        error,
-      );
-      throw error;
-    }
-  }
+  ) {}
 
   async createUser(
     req: UserPersonDto | UserBusinessDto,
@@ -118,8 +99,13 @@ export class UserService implements UserServiceInterface {
     contactDto: ContactRequestDto,
     options?: { session?: ClientSession },
   ): Promise<Types.ObjectId> {
-    return await this.contactService.createContact(contactDto, options);
+    try {
+      return await this.contactService.createContact(contactDto, options);
+    } catch (error: any) {
+      throw error;
+    }
   }
+
   async getUserPersonalInformationByUsername(
     username: string,
   ): Promise<UserPersonalInformationResponse> {
@@ -171,16 +157,35 @@ export class UserService implements UserServiceInterface {
     }
   }
 
-  async getUserPreferencesByUsername(username: string): Promise<UserPreferences | null> {
+  async getUserPreferencesByUsername(
+    username: string,
+  ): Promise<UserPreferences | null> {
     try {
-      const userPreferences = await this.userRepository.getUserPreferencesByUsername(username);
+      const userPreferences =
+        await this.userRepository.getUserPreferencesByUsername(username);
       return userPreferences;
-
     } catch (error: any) {
       throw error;
     }
   }
 
+  async updateUserPreferencesByUsername(
+    username: string,
+    userPreference: UserPreferenceResponse,
+  ): Promise<UserPreferences | null> {
+    try {
+      return await this.userRepository.updateUserPreferencesByUsername(
+        username,
+        userPreference,
+      );
+    } catch (error: any) {
+      this.logger.error(
+        'An error has occurred in user service - updateUserPreferencesByUsername: ' +
+          error,
+      );
+      throw error;
+    }
+  }
   async updateUser(
     username: string,
     req: UP_publiciteUpdateRequestDto | UB_publiciteUpdateRequestDto,
@@ -223,8 +228,21 @@ export class UserService implements UserServiceInterface {
     } catch (error: any) {
       this.logger.error(
         'An error has occurred in user service - UpdateUserByClerk: ' +
-        error.message,
+          error.message,
       );
+      throw error;
+    }
+  }
+
+  async saveNewPost(
+    postId: ObjectId,
+    authorId: ObjectId,
+    options?: { session?: ClientSession },
+  ): Promise<void> {
+    try {
+      this.logger.log('Creating post in the service: ' + UserService.name);
+      return await this.userRepository.saveNewPost(postId, authorId, options);
+    } catch (error: any) {
       throw error;
     }
   }

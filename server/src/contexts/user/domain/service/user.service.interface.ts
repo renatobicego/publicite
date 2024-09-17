@@ -1,4 +1,4 @@
-import { ClientSession, Types } from 'mongoose';
+import { ClientSession, ObjectId, Types } from 'mongoose';
 import { ContactRequestDto } from 'src/contexts/contact/infraestructure/controller/request/contact.request';
 import { UserBusinessDto } from '../../infraestructure/controller/dto/user.business.DTO';
 import {
@@ -21,7 +21,9 @@ export interface UserServiceInterface {
   getUserPersonalInformationByUsername(
     username: string,
   ): Promise<UserPersonalInformationResponse>;
-  getUserPreferencesByUsername(username:string):Promise<UserPreferences | null>
+  getUserPreferencesByUsername(
+    username: string,
+  ): Promise<UserPreferences | null>;
   updateUser(
     username: string,
     req: UP_publiciteUpdateRequestDto | UB_publiciteUpdateRequestDto,
@@ -33,4 +35,10 @@ export interface UserServiceInterface {
     username: string,
     userPreference: UserPreferenceResponse,
   ): Promise<UserPreferences | null>;
+
+  saveNewPost(
+    postId: ObjectId,
+    authorId: ObjectId,
+    options?: { session?: ClientSession },
+  ): Promise<void>;
 }

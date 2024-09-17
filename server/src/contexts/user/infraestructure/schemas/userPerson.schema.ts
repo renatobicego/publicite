@@ -1,6 +1,6 @@
 import { Schema } from 'mongoose';
 import { IUser, UserModel } from './user.schema';
-import { Gender } from '../controller/dto/enums.request';
+import { Gender } from '../../domain/entity/enum/enums.request';
 
 interface IUserPerson extends IUser {
   gender: Gender;

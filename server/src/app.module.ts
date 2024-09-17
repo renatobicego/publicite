@@ -10,6 +10,7 @@ import { AllExceptionsFilter } from './contexts/shared/exceptionFilter/infraestr
 import { ContactModule } from './contexts/contact/infraestructure/module/contact.module';
 import { SectorModule } from './contexts/businessSector/infraestructure/module/sector.module';
 import { DatabaseService } from './contexts/shared/database/infraestructure/database.service';
+import { PostModule } from './contexts/post/infraestructure/module/post.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { DatabaseService } from './contexts/shared/database/infraestructure/data
     LoggerModule,
     ContactModule,
     SectorModule,
+    PostModule,
   ],
   providers: [
     {

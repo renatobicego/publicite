@@ -1,11 +1,26 @@
 import { Schema, Document } from 'mongoose';
 
-export const PostLocation = new Schema({
-  latitude: { type: String, required: true },
-  longitude: { type: String, required: true },
+export const PostLocationSchema = new Schema({
+  location: {
+    type: {
+      type: String,
+      enum: ['Point'],
+      required: true,
+    },
+    coordinates: {
+      type: [Number],
+      required: true,
+    },
+  },
+  userSetted: { type: Boolean, required: true },
+  description: { type: String, required: true },
 });
 
 export interface PostLocationDocument extends Document {
-  latitude: string;
-  longitude: string;
+  location: {
+    type: 'Point';
+    coordinates: [number, number];
+  };
+  userSetted: boolean;
+  description: string;
 }

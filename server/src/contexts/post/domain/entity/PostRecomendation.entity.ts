@@ -1,11 +1,11 @@
-import { ObjectId } from "mongoose";
+import { ObjectId } from 'mongoose';
 
 export class PostRecomendation {
-    private user: ObjectId;
-    private upVote: Boolean;
+  private user: ObjectId;
+  private upVote: boolean;
 
-    constructor(user: ObjectId, upVote: boolean) {
-        this.user = user;
-        this.upVote = upVote;
-    }
+  constructor(user: ObjectId, upVote: boolean) {
+    this.user = user;
+    this.upVote = upVote;
+  }
 }

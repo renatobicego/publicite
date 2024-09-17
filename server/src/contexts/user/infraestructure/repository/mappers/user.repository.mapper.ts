@@ -7,7 +7,7 @@ import { IUserBusiness } from '../../schemas/userBussiness.schema';
 import { IUserPerson } from '../../schemas/userPerson.schema';
 
 import { UP_update } from 'src/contexts/user/domain/entity/userPerson.entity';
-import { Gender } from '../../controller/dto/enums.request';
+import { Gender } from '../../../domain/entity/enum/enums.request';
 import { UB_update } from 'src/contexts/user/domain/entity/userBusiness.entity';
 
 export class UserRepositoryMapper implements UserTransformationInterface {

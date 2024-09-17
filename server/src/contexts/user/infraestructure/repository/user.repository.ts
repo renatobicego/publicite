@@ -6,10 +6,13 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { UserRepositoryInterface } from '../../domain/repository/user-repository.interface';
-import { ClientSession, Model } from 'mongoose';
+import { ClientSession, Model, ObjectId } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { IUserPerson, UserPersonModel } from '../schemas/userPerson.schema';
-import { IUserBusiness, UserBusinessModel } from '../schemas/userBussiness.schema';
+import {
+  IUserBusiness,
+  UserBusinessModel,
+} from '../schemas/userBussiness.schema';
 import { UP_update, UserPerson } from '../../domain/entity/userPerson.entity';
 import { UserBusiness } from '../../domain/entity/userBusiness.entity';
 import { User } from '../../domain/entity/user.entity';
@@ -39,19 +42,28 @@ export class UserRepository implements UserRepositoryInterface {
     private readonly userRepositoryMapper: UserTransformationInterface,
 
     private readonly logger: MyLoggerService,
-  ) { }
+  ) {}
 
-  async getUserPreferencesByUsername(username: string): Promise<UserPreferences | null> {
+  async getUserPreferencesByUsername(
+    username: string,
+  ): Promise<UserPreferences | null> {
     try {
       this.logger.log('Searching user preferences for the user: ' + username);
 
-      const userPreference = await this.user.findOne(
-        { username: username },
-        { 'userPreferences.searchPreference': 1, 'userPreferences.backgroundColor': 1, 'userPreferences.boardColor': 1 }
-      ).lean();
+      const userPreference = await this.user
+        .findOne(
+          { username: username },
+          {
+            'userPreferences.searchPreference': 1,
+            'userPreferences.backgroundColor': 1,
+            'userPreferences.boardColor': 1,
+          },
+        )
+        .lean();
 
-      return userPreference ? userPreference.userPreferences as UserPreferences : null;
-
+      return userPreference
+        ? (userPreference.userPreferences as UserPreferences)
+        : null;
     } catch (error: any) {
       this.logger.error('An error occurred in repository', error);
       throw error;
@@ -79,7 +91,9 @@ export class UserRepository implements UserRepositoryInterface {
 
         case 1: // Business User
           if (reqUser instanceof UserBusiness) {
-            this.logger.warn('--VALIDATING BUSINESS SECTOR ID: ' + reqUser.getSector());
+            this.logger.warn(
+              '--VALIDATING BUSINESS SECTOR ID: ' + reqUser.getSector(),
+            );
             await this.sectorRepository.validateSector(reqUser.getSector());
             createdUser = this.formatDocument(reqUser);
             userSaved = await createdUser.save({ session });
@@ -96,7 +110,9 @@ export class UserRepository implements UserRepositoryInterface {
     }
   }
 
-  async getUserPersonalInformationByUsername(username: string): Promise<Partial<User>> {
+  async getUserPersonalInformationByUsername(
+    username: string,
+  ): Promise<Partial<User>> {
     try {
       const user = await this.user.findOne({ username: username });
 
@@ -120,7 +136,10 @@ export class UserRepository implements UserRepositoryInterface {
         throw new InternalServerErrorException('User type not recognized');
       }
     } catch (error) {
-      this.logger.error('Error in getUserPersonalInformationByUsername method', error);
+      this.logger.error(
+        'Error in getUserPersonalInformationByUsername method',
+        error,
+      );
       throw error;
     }
   }
@@ -136,12 +155,13 @@ export class UserRepository implements UserRepositoryInterface {
       switch (type) {
         case 0: // Personal User
           this.logger.log('Search user(Personal) for update');
-          entityToDocument = this.userRepositoryMapper.formatUpdateDocument(reqUser);
-          const userUpdated = await this.userPersonModel.findOneAndUpdate(
-            { username: username },
-            entityToDocument,
-            { new: true },
-          ).lean(); // Aplicar lean() aquí si no necesitas métodos Mongoose
+          entityToDocument =
+            this.userRepositoryMapper.formatUpdateDocument(reqUser);
+          const userUpdated = await this.userPersonModel
+            .findOneAndUpdate({ username: username }, entityToDocument, {
+              new: true,
+            })
+            .lean(); // Aplicar lean() aquí si no necesitas métodos Mongoose
 
           if (!userUpdated) {
             throw new BadRequestException('User not found');
@@ -150,12 +170,13 @@ export class UserRepository implements UserRepositoryInterface {
 
         case 1: // Business User
           this.logger.log('Search user(Business) for update');
-          entityToDocument = this.userRepositoryMapper.formatUpdateDocumentUB(reqUser);
-          const userUpdatedB = await this.userBusinessModel.findOneAndUpdate(
-            { username: username },
-            entityToDocument,
-            { new: true },
-          ).lean(); // Aplicar lean() aquí si no necesitas métodos Mongoose
+          entityToDocument =
+            this.userRepositoryMapper.formatUpdateDocumentUB(reqUser);
+          const userUpdatedB = await this.userBusinessModel
+            .findOneAndUpdate({ username: username }, entityToDocument, {
+              new: true,
+            })
+            .lean(); // Aplicar lean() aquí si no necesitas métodos Mongoose
 
           if (!userUpdatedB) {
             throw new BadRequestException('User not found');
@@ -176,12 +197,12 @@ export class UserRepository implements UserRepositoryInterface {
     reqUser: UP_clerkUpdateRequestDto,
   ): Promise<User> {
     try {
-      this.logger.log('Updating clerk attributes in the repository, for the ID: ' + clerkId);
-      const userUpdated = await this.user.findOneAndUpdate(
-        { clerkId: clerkId },
-        reqUser,
-        { new: true },
-      ).lean(); // Aplicar lean() aquí si no necesitas métodos Mongoose
+      this.logger.log(
+        'Updating clerk attributes in the repository, for the ID: ' + clerkId,
+      );
+      const userUpdated = await this.user
+        .findOneAndUpdate({ clerkId: clerkId }, reqUser, { new: true })
+        .lean(); // Aplicar lean() aquí si no necesitas métodos Mongoose
 
       if (!userUpdated) {
         throw new BadRequestException('User not found');
@@ -202,13 +223,17 @@ export class UserRepository implements UserRepositoryInterface {
     userPreference: UserPreferences,
   ): Promise<UserPreferences | null> {
     try {
-      this.logger.log('Start process in the repository: updateUserPreferencesByUsername');
+      this.logger.log(
+        'Start process in the repository: updateUserPreferencesByUsername',
+      );
 
-      const userDoc = await this.user.findOneAndUpdate(
-        { username: username },
-        { userPreferences: userPreference },
-        { new: true },
-      ).lean(); // Aplicar lean() aquí si no necesitas métodos Mongoose
+      const userDoc = await this.user
+        .findOneAndUpdate(
+          { username: username },
+          { userPreferences: userPreference },
+          { new: true },
+        )
+        .lean(); // Aplicar lean() aquí si no necesitas métodos Mongoose
 
       if (!userDoc) {
         throw new BadRequestException('User not found');
@@ -216,10 +241,14 @@ export class UserRepository implements UserRepositoryInterface {
 
       const userPreferences = userDoc.userPreferences;
 
-      return this.userRepositoryMapper.formatDocToUserPreferences(userPreferences);
-
+      return this.userRepositoryMapper.formatDocToUserPreferences(
+        userPreferences,
+      );
     } catch (error: any) {
-      this.logger.error('Error in updateUserPreferencesByUsername method', error);
+      this.logger.error(
+        'Error in updateUserPreferencesByUsername method',
+        error,
+      );
       throw error;
     }
   }
@@ -240,7 +269,26 @@ export class UserRepository implements UserRepositoryInterface {
         businessName: reqUser.getBusinessName(),
       });
     } else {
-      throw new BadRequestException('Invalid user instance - formatDocument in repository');
+      throw new BadRequestException(
+        'Invalid user instance - formatDocument in repository',
+      );
+    }
+  }
+
+  saveNewPost(
+    postId: ObjectId,
+    authorId: ObjectId,
+    options?: { session?: ClientSession },
+  ): Promise<any> {
+    try {
+      this.logger.log('Start process in the repository: saveNewPost');
+      return this.user.findOneAndUpdate(
+        { _id: authorId },
+        { $addToSet: { posts: postId } },
+        options,
+      );
+    } catch (error: any) {
+      throw error;
     }
   }
 }
