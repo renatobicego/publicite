@@ -1,3 +1,4 @@
+import UsernameAvatar from "@/app/components/buttons/UsernameAvatar";
 import { PROFILE } from "@/app/utils/urls";
 import { Author } from "@/types/postTypes";
 import { Avatar, Link } from "@nextui-org/react";
@@ -19,20 +20,9 @@ const UserData = ({
   const { phone, facebook, instagram, x, website } = author.contact;
   return (
     <div className="w-full justify-between flex items-center">
-      <Link
-        href={`${PROFILE}/${author.username}`}
-        className="flex gap-2"
-        color="foreground"
-        size="sm"
-      >
-        <Avatar color="primary" src={author.profilePhotoUrl} />
-        <p className="font-medium">
-          {author.name} {author.lastName}
-        </p>
-      </Link>
+      <UsernameAvatar author={author} />
       {showContact && (
         <div className="flex gap-2">
-          Redes:
           {phone && (
             <Link
               href={`https://api.whatsapp.com/send?phone=${phone}`}

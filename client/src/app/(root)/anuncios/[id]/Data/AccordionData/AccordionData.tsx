@@ -1,5 +1,5 @@
 "use client";
-import { Good, Service } from "@/types/postTypes";
+import { Good, Petition, Service } from "@/types/postTypes";
 import { Accordion, AccordionItem } from "@nextui-org/react";
 import { FaChevronLeft } from "react-icons/fa6";
 import AdditionalGoodData from "./AdditionalGoodData";
@@ -8,30 +8,44 @@ import LocationMap from "./LocationMap";
 import Reviews from "./Reviews";
 import AttachedFiles from "./AttachedFiles";
 
-const AccordionData = ({ post }: { post: Good | Service }) => {
-  return (
-    <Accordion
-      itemClasses={{
-        title: "text-text-color font-semibold max-md:text-sm text-base",
-      }}
-    >
+const AccordionData = ({
+  post,
+  isPetition,
+}: {
+  post: Good | Service | Petition;
+  isPetition: boolean;
+}) => {
+  const accordionItems = [];
+
+  // Conditionally add "Datos Adicionales" for Good type posts
+  if (post.postType === "Good") {
+    accordionItems.push(
       <AccordionItem
         indicator={<FaChevronLeft className="size-3" />}
         key="dataAdicional"
-        className={post.postType === "Good" ? "" : "hidden"}
         aria-label="datos adicionales"
         title="Datos Adicionales"
       >
         <AdditionalGoodData post={post as Good} />
       </AccordionItem>
-      <AccordionItem
-        indicator={<FaChevronLeft className="size-3" />}
-        key="userData"
-        aria-label="datos del vendedor"
-        title="Información del Vendedor"
-      >
-        <UserData author={post.author} showContact={true} />
-      </AccordionItem>
+    );
+  }
+
+  // Add "Información del Vendedor" for all post types
+  accordionItems.push(
+    <AccordionItem
+      indicator={<FaChevronLeft className="size-3" />}
+      key="userData"
+      aria-label="datos del vendedor"
+      title="Información del Vendedor"
+    >
+      <UserData author={post.author} showContact={true} />
+    </AccordionItem>
+  );
+
+  // Add "Ubicación" if the post has location data
+  if (post.location) {
+    accordionItems.push(
       <AccordionItem
         indicator={<FaChevronLeft className="size-3" />}
         key="location"
@@ -39,14 +53,25 @@ const AccordionData = ({ post }: { post: Good | Service }) => {
         title="Ubicación"
       >
         <LocationMap lat={post.location.lat} lng={post.location.lng} />
+        {post.location.userSetted && (
+          <p className="text-sm">
+            El usuario vendedor ha establecido la ubicación manualmente
+          </p>
+        )}
       </AccordionItem>
+    );
+  }
+
+  // Conditionally add "Opiniones" for non-petition posts with reviews
+  if (!isPetition) {
+    accordionItems.push(
       <AccordionItem
         indicator={<FaChevronLeft className="size-3" />}
         key="reviews"
         aria-label="opiniones"
         title="Opiniones"
       >
-        {post.reviews.length === 0 ? (
+        {"reviews" in post && post.reviews.length > 0 ? (
           <Reviews reviews={post.reviews} />
         ) : (
           <p className="text-light-text text-sm">
@@ -54,15 +79,30 @@ const AccordionData = ({ post }: { post: Good | Service }) => {
           </p>
         )}
       </AccordionItem>
+    );
+  }
+
+  // Conditionally add "Archivos Adjuntos" if there are attached files
+  if (post.attachedFiles.length > 0) {
+    accordionItems.push(
       <AccordionItem
         indicator={<FaChevronLeft className="size-3" />}
         key="attachedFiles"
-        className={post.attachedFiles.length > 0 ? "" : "hidden"}
         aria-label="archivos adjuntos"
         title="Archivos Adjuntos"
       >
         <AttachedFiles attachedFiles={post.attachedFiles} />
       </AccordionItem>
+    );
+  }
+
+  return (
+    <Accordion
+      itemClasses={{
+        title: "text-text-color font-semibold max-md:text-sm text-base",
+      }}
+    >
+      {accordionItems}
     </Accordion>
   );
 };

@@ -1,10 +1,18 @@
 "use client";
 import {
+  CREATE_GROUP,
+  CREATE_MAGAZINE,
+  CREATE_PETITION,
+  CREATE_POST,
+} from "@/app/utils/urls";
+import {
   Button,
   Dropdown,
   DropdownItem,
   DropdownMenu,
+  DropdownSection,
   DropdownTrigger,
+  Link,
 } from "@nextui-org/react";
 import { FaPlus } from "react-icons/fa6";
 import { IoIosHelp } from "react-icons/io";
@@ -49,13 +57,24 @@ const HelpButton = () => {
           </Button>
         </DropdownTrigger>
 
-        <DropdownMenu aria-label="Static Actions" className="bg-fondo">
-          <DropdownItem key="new">New file</DropdownItem>
-          <DropdownItem key="copy">Copy link</DropdownItem>
-          <DropdownItem key="edit">Edit file</DropdownItem>
-          <DropdownItem key="delete" className="text-danger" color="danger">
-            Delete file
-          </DropdownItem>
+        <DropdownMenu
+          aria-label="opciones de publicaciones"
+          className="bg-fondo"
+        >
+          <DropdownSection title="Crear">
+            <DropdownItem as={Link} href={CREATE_POST} key="post">
+              Anuncio
+            </DropdownItem>
+            <DropdownItem as={Link} href={CREATE_PETITION} key="petition">
+              Necesidad
+            </DropdownItem>
+            <DropdownItem as={Link} href={CREATE_MAGAZINE} key="magazine">
+              Revista
+            </DropdownItem>
+            <DropdownItem as={Link} href={CREATE_GROUP} key="group">
+              Grupo
+            </DropdownItem>
+          </DropdownSection>
         </DropdownMenu>
       </Dropdown>
     </>

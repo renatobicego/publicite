@@ -11,6 +11,7 @@ import { useUser } from "@clerk/nextjs";
 import { useUploadThing } from "@/app/utils/uploadThing";
 import { toastifyError } from "@/app/utils/toastify";
 import { serviceValidation } from "./serviceValidation";
+import { getLocalTimeZone, today } from "@internationalized/date";
 
 const INITIAL_LOCATION = { lat: -34.6115643483578, lng: -58.38901999245833 };
 
@@ -27,14 +28,18 @@ const CreateService = ({ files }: { files: File[] }) => {
     author: user?.username || "",
     imagesUrls: [],
     location: {
-      lat: INITIAL_LOCATION.lat,
-      lng: INITIAL_LOCATION.lng,
+      lat: undefined,
+      lng: undefined,
+      description: "",
+      userSetted: false
     },
     postType: "Service",
     visibility: {
       post: "Public",
       socialMedia: "Public",
     },
+    createdAt: today(getLocalTimeZone()).toString(),
+
   };
 
   const [attachedFiles, setAttachedFiles] = useState<AttachedFileValues[]>([]);
@@ -104,6 +109,7 @@ const CreateService = ({ files }: { files: File[] }) => {
             <PlacePicker
               location={values.location}
               setFieldValue={setFieldValue}
+              error={errors.location}
             />
             <AccordionInputs
               errors={errors}

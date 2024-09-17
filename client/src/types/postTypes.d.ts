@@ -61,6 +61,12 @@ export interface PostComment {
   replies: PostComment[];
 }
 
+export interface PostCommentForm {
+  author: ObjectId;
+  comment: string;
+  date: string
+}
+
 export interface PostAttachedFile {
   _id: ObjectId;
   url: string;
@@ -130,11 +136,45 @@ export interface ServicePostValues
 export interface Petition extends Post {
   frequencyPrice?: FrequencyPrice;
   toPrice?: number;
-  petitionType: "Good" | "Service";
+  petitionType?: "Good" | "Service";
+}
+
+export interface PetitionPostValues
+  extends Omit<
+    Petition,
+    | "_id"
+    | "category"
+    | "price"
+    | "author"
+    | "comments"
+    | "reviews"
+    | "condition"
+    | "recommendations"
+  > {
+  category: ObjectId;
+  price?: number
+  location: PostLocationForm;
+  author: string;
 }
 
 export interface AttachedFileValues {
   file: File | null;
   label: string;
   _id: string;
+}
+
+export interface Magazine {
+  _id: ObjectId;
+  name: string;
+  sections: MagazineSection[];
+  collaborators: ObjectId[] | User[];
+  owner: ObjectId | User;
+  isGroupMagazine?: boolean;
+}
+
+export interface MagazineSection {
+  _id: ObjectId;
+  title: string;
+  isFatherSection: boolean;
+  posts: ObjectId[] | Post[];
 }

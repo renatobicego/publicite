@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import CustomMap from "./CustomMap";
 import { FormikErrors } from "formik";
 import {
   GoodPostValues,
-  PostLocation,
+  PostLocationForm,
   ServicePostValues,
 } from "@/types/postTypes";
 import { toastifyError } from "@/app/utils/toastify";
@@ -11,18 +11,23 @@ import { Libraries } from "@react-google-maps/api";
 import { Status, Wrapper } from "@googlemaps/react-wrapper";
 import { Spinner } from "@nextui-org/react";
 const libraries: Libraries = ["places"];
+const INITIAL_LOCATION = { lat: -34.6115643483578, lng: -58.38901999245833 };
 
-const PlacePickerWrapper = ({
-  location,
-  setFieldValue,
-}: {
-  location: PostLocation;
+interface PlacePickerProps {
+  location: PostLocationForm;
   setFieldValue: (
     field: string,
     value: any,
     shouldValidate?: boolean
   ) => Promise<void | FormikErrors<GoodPostValues | ServicePostValues>>;
-}) => {
+  error: FormikErrors<PostLocationForm> | undefined;
+}
+
+const PlacePickerWrapper = ({
+  location,
+  setFieldValue,
+  error,
+}: PlacePickerProps) => {
   const render = (status: Status) => <Spinner color="warning" />;
 
   return (
@@ -31,26 +36,18 @@ const PlacePickerWrapper = ({
       libraries={libraries}
       render={render}
     >
-      <PlacePicker location={location} setFieldValue={setFieldValue} />
+      <PlacePicker
+        location={location}
+        setFieldValue={setFieldValue}
+        error={error}
+      />
     </Wrapper>
   );
 };
 
 export default PlacePickerWrapper;
 
-const PlacePicker = ({
-  location,
-  setFieldValue,
-}: {
-  location: PostLocation;
-  setFieldValue: (
-    field: string,
-    value: any,
-    shouldValidate?: boolean
-  ) => Promise<void | FormikErrors<GoodPostValues | ServicePostValues>>;
-}) => {
-  const [geolocationAccepted, setGeolocationAccepted] = useState(false);
-
+const PlacePicker = ({ location, setFieldValue, error }: PlacePickerProps) => {
   // Function to handle location and zoom updates
   const handleChangeLocation = (
     lat: number,
@@ -65,7 +62,8 @@ const PlacePicker = ({
         description,
         userSetted: true,
       });
-    else setFieldValue("location", { lat, lng, description, userSetted: false });
+    else
+      setFieldValue("location", { lat, lng, description, userSetted: false });
   };
 
   // Use geolocation to set the default location based on the user's device location
@@ -75,10 +73,10 @@ const PlacePicker = ({
         (position) => {
           const { latitude, longitude } = position.coords;
           geocodeLatLng(latitude, longitude);
-          setGeolocationAccepted(true); // User accepted geolocation
         },
         (error) => {
-          toastifyError("Error al obtener la ubicación: " + error.message);
+          // toastifyError("Error al obtener la ubicación: " + error.message);
+          geocodeLatLng(INITIAL_LOCATION.lat, INITIAL_LOCATION.lng);
         }
       );
     } else {
@@ -101,7 +99,13 @@ const PlacePicker = ({
             description: address,
             userSetted: true,
           });
-        else setFieldValue("location", { lat, lng, description: address, userSetted: false});
+        else
+          setFieldValue("location", {
+            lat,
+            lng,
+            description: address,
+            userSetted: false,
+          });
       } else {
         console.error("Geocode was not successful: " + status);
       }
@@ -113,29 +117,22 @@ const PlacePicker = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (!geolocationAccepted) {
-    return (
-      <div className="text-center">
-        <p>Necesitamos tu ubicación para continuar</p>
-        <button
-          type="button"
-          className="btn btn-primary"
-          onClick={handleActivateGeolocation}
-        >
-          Activar geolocalización
-        </button>
-      </div>
-    );
-  }
-
-  if (!location.lat || !location.lng) return null; // Don't render the map if the location is not set
+  if (!location.lat || !location.lng) return <Spinner color="warning" />;
 
   return (
-    <CustomMap
-      lat={location.lat}
-      lng={location.lng}
-      handleLocationChange={handleChangeLocation}
-      geocodeLatLng={geocodeLatLng}
-    />
+    <>
+      <CustomMap
+        lat={location.lat}
+        lng={location.lng}
+        handleLocationChange={handleChangeLocation}
+        geocodeLatLng={geocodeLatLng}
+        error={error}
+      />
+      {error && (
+        <p className="text-danger text-small">
+          Por favor, busque y/o seleccione una ubicación en el mapa
+        </p>
+      )}
+    </>
   );
 };
