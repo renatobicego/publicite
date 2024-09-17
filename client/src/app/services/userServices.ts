@@ -1,7 +1,10 @@
+"use server";
 import {
   EditPersonProfileProps,
   UserPersonFormValues,
+  UserPreferences,
 } from "@/types/userTypes";
+import { currentUser } from "@clerk/nextjs/server";
 import axios from "axios";
 
 const baseUrl = `${process.env.API_URL}/user/personal`;
@@ -26,7 +29,44 @@ export const getUserProfileData = async (username: string) => {
     return res.json();
   } catch (error) {
     return {
-      error: "Error al traer los datos personales del usuario. Por favor intenta de nuevo.",
+      error:
+        "Error al traer los datos personales del usuario. Por favor intenta de nuevo.",
+    };
+  }
+};
+
+export const changeUserPreferences = async (
+  userPreferences: UserPreferences
+) => {
+  const user = await currentUser();
+  try {
+    const { data, status } = await axios.put(
+      `${process.env.API_URL}/user/user-preferences/${user?.username}`,
+      userPreferences
+    );
+    if (status !== 200 && status !== 201) {
+      return {
+        error: "Error al cambiar las preferencias. Por favor intenta de nuevo.",
+      };
+    }
+    return data;
+  } catch (error) {
+    console.log(error)
+    return {
+      error: "Error al cambiar las preferencias. Por favor intenta de nuevo.",
+    };
+  }
+};
+
+export const getUserPreferences = async (username: string) => {
+  try {
+    const res = await fetch(
+      `${process.env.API_URL}/user/preferences/${username}`
+    );
+    return res.json();
+  } catch (error) {
+    return {
+      error: "Error al traer las preferencias. Por favor intenta de nuevo.",
     };
   }
 };

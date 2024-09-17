@@ -2,9 +2,10 @@ import { useState } from "react";
 import DataBox, { DataItem, EditButton } from "../DataBox";
 import { Slider } from "@nextui-org/react";
 import { useBackground } from "@/app/(root)/backgroundProvider";
+import { UserPreferences } from "@/types/userTypes";
 
-const Background = () => {
-  const { gradientValue, setGradientValue } = useBackground();
+const Background = ({userPreferences} : {userPreferences: UserPreferences}) => {
+  const { gradientValue, setGradientValue, postGradientValue } = useBackground();
   const [isFormVisible, setIsFormVisible] = useState(false);
 
   return (
@@ -22,7 +23,10 @@ const Background = () => {
       />
       <EditButton
         text={isFormVisible ? "Guardar" : "Editar"}
-        onPress={() => setIsFormVisible(!isFormVisible)}
+        onPress={() => {
+          if(isFormVisible) postGradientValue({...userPreferences, backgroundColor: gradientValue as number });
+          setIsFormVisible(!isFormVisible)
+        }}
       />
     </DataBox>
   );

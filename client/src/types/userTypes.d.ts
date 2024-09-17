@@ -18,6 +18,13 @@ export interface User {
   userType: UserType;
   name: string;
   lastName: string;
+  userPreferences: UserPreferences;
+}
+
+export interface UserPreferences {
+  searchPreference: ObjectId[];
+  backgroundColor: number;
+  boardColor: string;
 }
 
 export type UserType = "Person" | "Business";

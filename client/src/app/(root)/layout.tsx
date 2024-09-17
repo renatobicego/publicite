@@ -1,3 +1,4 @@
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { ourFileRouter } from "../api/uploadthing/core";
 import HelpButton from "../components/buttons/HelpButton";
 import Footer from "../components/Footer/Footer";
@@ -6,11 +7,14 @@ import { BackgroundProvider } from "./backgroundProvider";
 import BackgroundStyle from "./BackgroundStyle.";
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { extractRouterConfig } from "uploadthing/server";
-export default function NavigationLayout({
+import { redirect } from "next/navigation";
+export default async function NavigationLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const user = await currentUser();
+  if(!user) return redirect('/iniciar-sesion')
   return (
     <>
       <NextSSRPlugin
@@ -23,7 +27,7 @@ export default function NavigationLayout({
         routerConfig={extractRouterConfig(ourFileRouter)}
       />
       <Header />
-      <BackgroundProvider>
+      <BackgroundProvider username={user.username as string}>
         <BackgroundStyle />
         {children}
         <HelpButton />
