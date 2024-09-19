@@ -26,6 +26,7 @@ export interface PostRequest {
     label: string;
   }>;
   createAt: string;
+  _id?: ObjectId;
 }
 
 export interface PostGoodRequest extends PostRequest {

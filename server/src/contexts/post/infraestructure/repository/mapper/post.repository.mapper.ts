@@ -33,14 +33,12 @@ export class PostRepositoryMapper implements PostRepositoryMapperInterface {
           document.condition,
         );
       case 'service':
-        const asd = new PostService(
+        return new PostService(
           post,
           document.frequencyPrice,
           document.imageUrls,
           document.reviews,
         );
-        console.log(asd);
-        return asd;
       default:
         throw error;
     }

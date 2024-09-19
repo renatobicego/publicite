@@ -3,11 +3,14 @@ import * as request from 'supertest';
 import { Connection, Types } from 'mongoose';
 
 import { AppModule } from 'src/app.module';
-import { PostGoodRequest } from 'src/contexts/post/application/adapter/dto/post.request';
+import {
+  PostGoodRequest,
+  PostServiceRequest,
+} from 'src/contexts/post/application/adapter/dto/post.request';
 import { DatabaseService } from 'src/contexts/shared/database/infraestructure/database.service';
 
 import { Logger } from '@nestjs/common';
-import { postGoodStub } from '../model/post.stub';
+import { postGoodStub, postServiceStub } from '../model/post.stub';
 import { userSub_id } from '../model/user.stub';
 
 let dbConnection: Connection;
@@ -16,18 +19,14 @@ let app: any;
 
 describe('Create post suit test', () => {
   beforeEach(async () => {
-    if (dbConnection) {
-      // Limpiar la base de datos si es necesario
-      await dbConnection.collection('postLocations').deleteMany({});
-      await dbConnection.collection('posts').deleteMany({});
-      await dbConnection.collection('users').insertOne(userSub_id());
-    }
+    await dbConnection.collection('users').insertOne(userSub_id());
   });
-
-  afterAll(async () => {
+  afterEach(async () => {
     await dbConnection.collection('postLocations').deleteMany({});
     await dbConnection.collection('posts').deleteMany({});
     await dbConnection.collection('users').deleteMany({});
+  });
+  afterAll(async () => {
     await dbConnection.close();
   });
 
@@ -46,7 +45,7 @@ describe('Create post suit test', () => {
     httpServer = app.getHttpServer();
   });
 
-  it('should create a new postgood and asociate it with a user', async () => {
+  it('should create a new post good and asociate it with a user', async () => {
     const PostRequest: PostGoodRequest = {
       title: postGoodStub().title,
       author: userSub_id().clerkId,
@@ -91,6 +90,57 @@ describe('Create post suit test', () => {
       modelType: PostRequest.modelType,
       reviews: PostRequest.reviews,
       condition: PostRequest.condition,
+    });
+    expect(response.body).toHaveProperty('_id');
+    expect(Types.ObjectId.isValid(response.body.location)).toBe(true);
+
+    const user = await dbConnection
+      .collection('users')
+      .findOne({ clerkId: userSub_id().clerkId });
+    expect(user).toBeTruthy();
+
+    expect(user?.post.toString()).toContain(response.body._id.toString());
+  });
+
+  it('should create a new post service  and asociate it with a user', async () => {
+    const PostRequest: PostServiceRequest = {
+      title: postServiceStub().title,
+      author: userSub_id().clerkId,
+      postType: 'service',
+      description: postServiceStub().description,
+      visibility: postServiceStub().visibility,
+      recomendations: postServiceStub().recomendations,
+      price: postServiceStub().price,
+      location: postServiceStub().location,
+      category: postServiceStub().category,
+      comments: postServiceStub().comments,
+      attachedFiles: postServiceStub().attachedFiles,
+      createAt: postServiceStub().createAt,
+      frequencyPrice: postServiceStub().frequencyPrice,
+      imageUrls: postServiceStub().imageUrls,
+      reviews: postServiceStub().reviews,
+    };
+
+    const response = await request(httpServer)
+      .post('/post')
+      //.set('Authorization', `bearer ${token}`)
+      .send(PostRequest);
+
+    expect(response.status).toBe(201);
+    expect(response.body).toMatchObject({
+      title: PostRequest.title,
+      postType: 'service',
+      description: PostRequest.description,
+      visibility: PostRequest.visibility,
+      recomendations: PostRequest.recomendations,
+      price: PostRequest.price,
+      category: PostRequest.category,
+      comments: PostRequest.comments,
+      attachedFiles: PostRequest.attachedFiles,
+      createAt: PostRequest.createAt,
+      frequencyPrice: PostRequest.frequencyPrice,
+      imageUrls: PostRequest.imageUrls,
+      reviews: PostRequest.reviews,
     });
     expect(response.body).toHaveProperty('_id');
     expect(Types.ObjectId.isValid(response.body.location)).toBe(true);

@@ -1,5 +1,6 @@
 import { ObjectId } from 'mongoose';
 import { PostRequest } from 'src/contexts/post/application/adapter/dto/post.request';
+import { frequencyPrice } from 'src/contexts/post/domain/entity/enum/post-service-freq-type.enum';
 
 export const postStub = (): PostRequest => {
   return {
@@ -53,5 +54,17 @@ export const postGoodStub = () => {
     modelType: 'My Model',
     reviews: ['5f9d8f5e9d8f5e9d8f5e9d8f' as unknown as ObjectId],
     condition: 'New',
+  };
+};
+
+export const postServiceStub = () => {
+  return {
+    ...postStub(),
+    frequencyPrice: frequencyPrice.Day,
+    reviews: ['5f9d8f5e9d8f5e9d8f5e9d8f' as unknown as ObjectId],
+    imageUrls: [
+      'https://your-bucket.com/image1.jpg',
+      'https://your-bucket.com/image2.jpg',
+    ],
   };
 };
