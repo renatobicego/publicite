@@ -17,4 +17,5 @@ declare global {
     | "TopFriends";
 
   type FrequencyPrice = "hour" | "day" | "week" | "month" | "year";
+  type PostType = "Service" | "Good" | "Petition"
 }

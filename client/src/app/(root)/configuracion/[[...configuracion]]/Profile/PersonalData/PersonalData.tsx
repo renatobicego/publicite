@@ -4,8 +4,8 @@ import AnimatedBox from "../../AnimatedBox";
 import { useState } from "react";
 import PersonalDataForm from "./PersonalDataForm";
 import { EditPersonProfileProps } from "@/types/userTypes";
-import { formatDate } from "@/app/utils/dates";
-import { genderItems } from "@/app/utils/selectData";
+import { formatDate } from "@/app/utils/functions/dates";
+import { genderItems } from "@/app/utils/data/selectData";
 
 const PersonalData = ({ data }: { data?: EditPersonProfileProps }) => {
   const [isFormVisible, setIsFormVisible] = useState(false);

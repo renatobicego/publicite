@@ -1,7 +1,7 @@
 "use client";
 
 import { processPayment } from "@/app/services/subscriptionServices";
-import { toastifyError } from "@/app/utils/toastify";
+import { toastifyError } from "@/app/utils/functions/toastify";
 import { useUser } from "@clerk/nextjs";
 import { CardPayment, initMercadoPago } from "@mercadopago/sdk-react";
 import { ICardPaymentBrickPayer } from "@mercadopago/sdk-react/bricks/cardPayment/type";

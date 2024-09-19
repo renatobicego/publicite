@@ -1,4 +1,4 @@
-import { PACKS, SUBSCRIPTIONS } from "@/app/utils/urls";
+import { PACKS, SUBSCRIPTIONS } from "@/app/utils/data/urls";
 import { SignOutButton } from "@clerk/nextjs";
 import {
   Button,

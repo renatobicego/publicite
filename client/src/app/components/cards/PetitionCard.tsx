@@ -2,8 +2,8 @@ import { Petition } from "@/types/postTypes";
 import { CardBody, Chip, Link } from "@nextui-org/react";
 import React from "react";
 import ServiceChip from "../chips/ServiceChip";
-import { frequencyPriceItems } from "@/app/utils/selectData";
-import { POSTS } from "@/app/utils/urls";
+import { frequencyPriceItems } from "@/app/utils/data/selectData";
+import { POSTS } from "@/app/utils/data/urls";
 
 const PetitionCard = ({
   post,

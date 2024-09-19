@@ -5,7 +5,7 @@ import SocialMedia from "./SocialMedia/SocialMedia";
 import { useEffect, useState, memo } from "react";
 import { EditPersonProfileProps } from "@/types/userTypes";
 import { getProfileData } from "./actions";
-import { toastifyError } from "@/app/utils/toastify";
+import { toastifyError } from "@/app/utils/functions/toastify";
 
 const MemoizedPersonalData = memo(PersonalData);
 const MemoizedDescription = memo(Description);

@@ -1,5 +1,27 @@
-import { Good, Magazine, Petition, Service } from "@/types/postTypes";
+import {
+  Good,
+  Magazine,
+  Petition,
+  PostCategory,
+  Service,
+} from "@/types/postTypes";
 import { SubscriptionPlan } from "@/types/subscriptions";
+
+export const categories: PostCategory[] = [
+  {
+    _id: "112sdq",
+    label: "Casa",
+  },
+  {
+    _id: "112egsdq",
+    label: "Departamento",
+  },
+  {
+    _id: "112qsdqsf",
+    label: "Oficina",
+  },
+];
+
 
 const mockedGood: Good = {
   _id: "1",
@@ -54,10 +76,7 @@ const mockedGood: Good = {
     description: "Cacique Guaymallen 1065, Las Heras, Mendoza",
     userSetted: true,
   },
-  category: {
-    _id: "1",
-    label: "Vehículos",
-  },
+  category: categories[0],
   attachedFiles: [
     {
       _id: "1ghdsf",
@@ -72,7 +91,8 @@ const mockedGood: Good = {
         profilePhotoUrl: "/avatar.png",
         username: "username",
       },
-      comment: "Quería consultar si existe la posibilidad de sacar un plan de pago para pagarla. Soy de Buenos Aires, por lo que también quería consultar sobre envios.",
+      comment:
+        "Quería consultar si existe la posibilidad de sacar un plan de pago para pagarla. Soy de Buenos Aires, por lo que también quería consultar sobre envios.",
       date: "2024-07-12",
       replies: [],
     },
@@ -82,7 +102,8 @@ const mockedGood: Good = {
         profilePhotoUrl: "/avatar.png",
         username: "username",
       },
-      comment: "Quería consultar si existe la posibilidad de sacar un plan de pago para pagarla. Soy de Buenos Aires, por lo que también quería consultar sobre envios.",
+      comment:
+        "Quería consultar si existe la posibilidad de sacar un plan de pago para pagarla. Soy de Buenos Aires, por lo que también quería consultar sobre envios.",
       date: "2024-09-12",
       replies: [
         {
@@ -91,10 +112,11 @@ const mockedGood: Good = {
             profilePhotoUrl: "/avatar.png",
             username: "username",
           },
-          comment: "Si, te puedo armar un plan de pago. Respecto al envío, podemos manejarlo por la empresa Andreani. Saludos",
+          comment:
+            "Si, te puedo armar un plan de pago. Respecto al envío, podemos manejarlo por la empresa Andreani. Saludos",
           date: "2024-09-13",
           replies: [],
-        }
+        },
       ],
     },
   ],
@@ -125,7 +147,7 @@ const mockedGood: Good = {
 };
 
 const mockedService: Service = {
-  _id: "1",
+  _id: "1jgdfas",
   imagesUrls: ["/catering.png"],
   description:
     "Te invitamos a que nos conozcas y puedas disfrutar con tus seres queridos de tu evento tal como lo soñaste. Elaboramos bocadillos totalmente caseros y con material de primera calidad.",
@@ -138,10 +160,7 @@ const mockedService: Service = {
     description: "Cacique Guaymallen 1065, Las Heras, Mendoza",
     userSetted: true,
   },
-  category: {
-    _id: "2",
-    label: "Servicios de cocina",
-  },
+  category: categories[1],
   attachedFiles: [],
   comments: [
     {
@@ -322,7 +341,6 @@ export const mockedPetitions = [
 
 export const mockedPosts = [mockedGood, mockedService];
 
-
 export const magazines: Magazine[] = [
   {
     _id: "1",
@@ -359,3 +377,4 @@ export const magazines: Magazine[] = [
     owner: "renatobicego",
   },
 ];
+

@@ -9,7 +9,7 @@ import { userPersonValidation } from "./userPersonValidation";
 import { Divider } from "@nextui-org/react";
 import OnboardingPersonInputs from "./OnboardingPersonInputs";
 import { completeOnboardingPerson } from "../_actions";
-import { toastifyError } from "@/app/utils/toastify";
+import { toastifyError } from "@/app/utils/functions/toastify";
 const OnboardingPerson = () => {
   const { user } = useUser();
   const router = useRouter();

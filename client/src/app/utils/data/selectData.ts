@@ -48,5 +48,20 @@ export const conditionItems: {
   {
     label: "Usado",
     value: "Used",
-  }
+  },
+];
+
+export const postTypesItems: { label: string; value: PostType }[] = [
+  {
+    label: "Bienes",
+    value: "Good",
+  },
+  {
+    label: "Servicios",
+    value: "Service",
+  },
+  {
+    label: "Necesidades",
+    value: "Petition",
+  },
 ];

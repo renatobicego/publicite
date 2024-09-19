@@ -1,5 +1,5 @@
 import PrimaryButton from "@/app/components/buttons/PrimaryButton";
-import { CREATE } from "@/app/utils/urls";
+import { CREATE } from "@/app/utils/data/urls";
 import { Card, CardBody, CardHeader, Image, Link } from "@nextui-org/react";
 
 export default function CheckoutSuccess() {

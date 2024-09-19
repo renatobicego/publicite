@@ -5,7 +5,7 @@ import {
   CREATE_MAGAZINE,
   CREATE_PETITION,
   CREATE_POST,
-} from "@/app/utils/urls";
+} from "@/app/utils/data/urls";
 import { FaCamera, FaUserGroup } from "react-icons/fa6";
 import { IoBook } from "react-icons/io5";
 import { MdQuestionAnswer } from "react-icons/md";

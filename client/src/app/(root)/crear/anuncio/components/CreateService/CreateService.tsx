@@ -9,7 +9,7 @@ import { useState } from "react";
 import PrimaryButton from "@/app/components/buttons/PrimaryButton";
 import { useUser } from "@clerk/nextjs";
 import { useUploadThing } from "@/app/utils/uploadThing";
-import { toastifyError } from "@/app/utils/toastify";
+import { toastifyError } from "@/app/utils/functions/toastify";
 import { serviceValidation } from "./serviceValidation";
 import { getLocalTimeZone, today } from "@internationalized/date";
 

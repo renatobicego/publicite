@@ -1,5 +1,5 @@
-import { getTimeBetweenToday } from "@/app/utils/dates";
-import { conditionItems } from "@/app/utils/selectData";
+import { getTimeBetweenToday } from "@/app/utils/functions/dates";
+import { conditionItems } from "@/app/utils/data/selectData";
 import { Good, Petition, Service } from "@/types/postTypes";
 import { parseDate } from "@internationalized/date";
 import ReviewsStars from "./ReviewsStars";
@@ -10,7 +10,7 @@ import ShareButton from "@/app/components/buttons/ShareButton";
 import SaveButton from "@/app/components/buttons/SaveButton";
 import AccordionData from "./AccordionData/AccordionData";
 import PrimaryButton from "@/app/components/buttons/PrimaryButton";
-import { CREATE_POST } from "@/app/utils/urls";
+import { CREATE_POST } from "@/app/utils/data/urls";
 import { Link } from "@nextui-org/react";
 import ContactPetitionsList from "@/app/components/modals/ContactPetitionsList";
 import PetitionChip from "@/app/components/chips/PetitionChip";

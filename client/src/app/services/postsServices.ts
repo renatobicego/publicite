@@ -1,4 +1,4 @@
-import { mockedPetitions, mockedPosts } from "../utils/mockedData";
+import { mockedPetitions, mockedPosts } from "../utils/data/mockedData";
 
 export const getPostData = async (id: string) => {
   try {

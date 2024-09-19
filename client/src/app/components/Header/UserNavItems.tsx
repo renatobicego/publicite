@@ -4,7 +4,7 @@ import SecondaryButton from "../buttons/SecondaryButton";
 import { SignedIn, SignedOut, UserButton, useUser } from "@clerk/nextjs";
 import Notifications from "./Notifications";
 
-import { CONFIGURATION, PROFILE } from "@/app/utils/urls";
+import { CONFIGURATION, PROFILE } from "@/app/utils/data/urls";
 import DropdownItems from "./DropdownItems";
 import { FaUser } from "react-icons/fa6";
 

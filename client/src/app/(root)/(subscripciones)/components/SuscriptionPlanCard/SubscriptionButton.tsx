@@ -1,6 +1,6 @@
 import BWButton from "@/app/components/buttons/BWButton";
 import PrimaryButton from "@/app/components/buttons/PrimaryButton";
-import { CREATE, SUSCRIBE } from "@/app/utils/urls";
+import { CREATE, SUSCRIBE } from "@/app/utils/data/urls";
 import { Link } from "@nextui-org/react";
 
 const SubscriptionButton = ({

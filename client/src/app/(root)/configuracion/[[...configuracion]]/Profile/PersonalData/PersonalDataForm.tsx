@@ -9,7 +9,7 @@ import FormInputs from "./FormInputs";
 import { EditPersonProfileProps } from "@/types/userTypes";
 import { editProfile } from "../actions";
 import { useRouter } from "next/navigation";
-import { toastifyError, toastifySuccess } from "@/app/utils/toastify";
+import { toastifyError, toastifySuccess } from "@/app/utils/functions/toastify";
 
 const personalDataFormSchema = object({
   birthDate: string()

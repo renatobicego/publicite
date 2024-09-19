@@ -9,7 +9,7 @@ import OnboardingBusinessInputs from "./OnboardingBusinessInputs";
 import { userBusinessValidation } from "./userBusinessValidation";
 import { Divider } from "@nextui-org/react";
 import { completeOnboardingBusiness } from "../_actions";
-import { toastifyError } from "@/app/utils/toastify";
+import { toastifyError } from "@/app/utils/functions/toastify";
 const OnboardingBusiness = () => {
   const { user } = useUser();
   const router = useRouter();

@@ -3,7 +3,7 @@
 import { useCallback, Dispatch, SetStateAction } from "react";
 import Dropzone from "./Dropzone";
 import FilePreview from "./FilePreview";
-import { toastifyError } from "@/app/utils/toastify";
+import { toastifyError } from "@/app/utils/functions/toastify";
 
 interface UploadImagesProps {
   allowVideos?: boolean;

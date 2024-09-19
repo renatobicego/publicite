@@ -1,5 +1,5 @@
 import BreadcrumbsAdmin from "@/app/components/BreadcrumbsAdmin";
-import { SUBSCRIPTIONS } from "@/app/utils/urls";
+import { SUBSCRIPTIONS } from "@/app/utils/data/urls";
 import Users from "./Users";
 
 import SubscriptionGrid from "../components/SubscriptionGrid";

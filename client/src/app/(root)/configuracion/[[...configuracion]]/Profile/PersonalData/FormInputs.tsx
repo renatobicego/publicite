@@ -6,7 +6,7 @@ import {
 import PlaceAutocomplete from "@/app/components/inputs/PlaceAutocomplete";
 import { CalendarDate } from "@internationalized/date";
 import { EditPersonProfileProps } from "@/types/userTypes";
-import { genderItems } from "@/app/utils/selectData";
+import { genderItems } from "@/app/utils/data/selectData";
 interface PersonalDataFormInputsProps {
   initialValues: EditPersonProfileProps;
   errors: FormikErrors<EditPersonProfileProps>;
