@@ -16,13 +16,8 @@ import { Dispatch, SetStateAction, useState } from "react";
 import { FaFilter } from "react-icons/fa6";
 
 const Filter = ({
-  filter,
   setFilter,
 }: {
-  filter: {
-    category: string[];
-    priceRange: number[];
-  };
   setFilter: Dispatch<
     SetStateAction<{
       category: string[];
@@ -35,10 +30,8 @@ const Filter = ({
   const [priceRange, setPriceRange] = useState([0, 200000000]);
 
   const filterPosts = () => {
-    console.log(Array.from(category));
     setFilter({ category: Array.from(category) as string[], priceRange });
   };
-  console.log(filter);
   return (
     <>
       <Button

@@ -1,16 +1,18 @@
 import PostsGrid from "@/app/components/grids/PostGrid";
 import PostGridList from "@/app/components/grids/PostGridList";
 import Filter from "@/app/components/inputs/Filter";
-import FilterOrder from "@/app/components/inputs/Filter";
 import Order from "@/app/components/inputs/Order";
 import SearchPosts from "@/app/components/inputs/SearchPosts";
 import { mockedPosts } from "@/app/utils/data/mockedData";
 import { useInfiniteFetch } from "@/app/utils/hooks/useInfiniteFetch";
 import { Switch } from "@nextui-org/react";
 import { useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 
 const PostListLogic = () => {
   const [showAsList, setShowAsList] = useState(false);
+  const searchParams = useSearchParams();
+  const busqueda = searchParams.get("busqueda");
   // Function to simulate fetching data
   const fetchMockedData = async () => {
     // Simulate delay
@@ -70,7 +72,7 @@ const PostListLogic = () => {
     <>
       <div className="flex gap-2">
         <SearchPosts searchTerm={searchTerm} setSearchTerm={setSearchTerm}/>
-        <Filter filter={filter} setFilter={setFilter}/>
+        <Filter setFilter={setFilter}/>
         <Order sortDescriptor={sortDescriptor} setSortDescriptor={setSortDescriptor}/>
         <Switch
           color="secondary"

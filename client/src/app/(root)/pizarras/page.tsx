@@ -1,8 +1,10 @@
 import BreadcrumbsAdmin from "@/app/components/BreadcrumbsAdmin";
 import SolapasTabs from "@/app/components/SolapasTabs";
-import { POSTS } from "@/app/utils/data/urls";
+import { BOARDS } from "@/app/utils/data/urls";
 
-export default async function PostsList() {
+
+
+export default async function Boards() {
 
   const breadcrumbsItems = [
     {
@@ -10,8 +12,8 @@ export default async function PostsList() {
       href: "/",
     },
     {
-      label: "Anuncios",
-      href: POSTS,
+      label: "Pizarras",
+      href: BOARDS,
     }
   ];
 

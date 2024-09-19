@@ -87,7 +87,7 @@ export interface Good extends Post {
   brand?: string;
   model?: string;
   reviews: PostReview[];
-  condition: "New" | "Used";
+  condition: "new" | "used";
 }
 
 export interface GoodPostValues
@@ -105,7 +105,7 @@ export interface GoodPostValues
   category: ObjectId;
   price?: number;
   author: string;
-  condition?: "New" | "Used";
+  condition?: "new" | "used";
   location: PostLocationForm;
 }
 
@@ -136,7 +136,7 @@ export interface ServicePostValues
 export interface Petition extends Post {
   frequencyPrice?: FrequencyPrice;
   toPrice?: number;
-  petitionType?: "Good" | "Service";
+  petitionType?: "good" | "service";
 }
 
 export interface PetitionPostValues

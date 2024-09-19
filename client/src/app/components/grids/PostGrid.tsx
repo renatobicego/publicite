@@ -28,6 +28,7 @@ const PostsGrid = ({
           />
         ))}
       </section>
+      {!isLoading && posts.length === 0 && <p className="max-md:text-sm text-light-text">No se encontraron pizarras para mostrar</p>}
       {isLoading && <Spinner color="warning" />}
     </>
   );

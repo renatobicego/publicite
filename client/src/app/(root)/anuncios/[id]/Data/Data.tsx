@@ -29,7 +29,7 @@ const Data = async ({
   const petition = post as Petition;
   const datePublished = getTimeBetweenToday(parseDate(good.createdAt));
   const showCondition =
-    post.postType === "Good"
+    post.postType === "good"
       ? `${
           conditionItems.find((item) => item.value === good.condition)?.label
         } | `
@@ -37,13 +37,13 @@ const Data = async ({
 
   const priceToShow = () => {
     switch (post.postType) {
-      case "Good":
+      case "good":
         return `$${good.price}`;
-      case "Service":
+      case "service":
         return `$${service.price} ${
           service.frequencyPrice ? `por ${service.frequencyPrice}` : ""
         }`;
-      case "Petition":
+      case "petition":
         return `${
           petition.toPrice
             ? `De $${petition.price} a $${petition.toPrice}`
@@ -69,8 +69,8 @@ const Data = async ({
         <h3 className="font-medium">{priceToShow()}</h3>
         <div className="flex gap-2">
           <CategoryChip>{post.category.label}</CategoryChip>
-          {post.postType === "Petition" && <PetitionChip />}
-          {post.postType === "Service" || petition.petitionType === "Service" && <ServiceChip />}
+          {post.postType === "petition" && <PetitionChip />}
+          {post.postType === "service" || petition.petitionType === "service" && <ServiceChip />}
         </div>
         <p className="text-sm xl:text-base">{post.description}</p>
         <div className="flex w-full justify-between max-lg:flex-wrap gap-2">

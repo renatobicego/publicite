@@ -13,18 +13,18 @@ const PostCard = ({
   const { postType } = postData;
   const PostCardToReturn = () => {
     switch (postType) {
-      case "Good":
+      case "good":
         return (
           <GoodCard post={postData as Good} recommendation={recommendation} />
         );
-      case "Service":
+      case "service":
         return (
           <ServiceCard
             post={postData as Service}
             recommendation={recommendation}
           />
         );
-      case "Petition":
+      case "petition":
         return (
           <PetitionCard post={postData as Petition} recommendation={recommendation} />
         )
@@ -37,7 +37,7 @@ const PostCard = ({
     <Card
       className={`w-full ease-in-out hover:shadow md:hover:shadow-md gap-4 
         !transition-shadow duration-500 hover:cursor-pointer !opacity-100
-        ${postType === "Petition" ? "border border-petition" : ""}`}
+        ${postType === "petition" ? "border border-petition" : ""}`}
       shadow="none"
     >
       {PostCardToReturn()}

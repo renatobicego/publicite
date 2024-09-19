@@ -39,29 +39,39 @@ export const frequencyPriceItems: {
 
 export const conditionItems: {
   label: string;
-  value: "New" | "Used";
+  value: "new" | "used";
 }[] = [
   {
     label: "Nuevo",
-    value: "New",
+    value: "new",
   },
   {
     label: "Usado",
-    value: "Used",
+    value: "used",
   },
 ];
 
 export const postTypesItems: { label: string; value: PostType }[] = [
   {
     label: "Bienes",
-    value: "Good",
+    value: "good",
   },
   {
     label: "Servicios",
-    value: "Service",
+    value: "service",
   },
   {
     label: "Necesidades",
-    value: "Petition",
+    value: "petition",
   },
+];
+
+export const boardColors = [
+  "bg-fondo",
+  "bg-white",
+  "bg-[#D8FFC6]",
+  "bg-[#20A4F3]/30",
+  "bg-[#FFF275]/80",
+  "bg-[#FFB238]/80",
+  "bg-[#5A0001]/80",
 ];

@@ -101,15 +101,6 @@ export interface UserBusinessFormValues
   lastName: string;
 }
 
-export interface BoardType {
-  _id: ObjectId;
-  annotations: string[];
-  visibility: Visibility;
-  keywords: string[];
-  user: Pick<User, "name"> | Pick<UserBusiness, "businessName">;
-}
-
-
 export interface EditPersonProfileProps extends Partial<Pick<UserPersonFormValues, "description" | "birthDate" | "gender" | "countryRegion">>{
   contact?: Contact
 }

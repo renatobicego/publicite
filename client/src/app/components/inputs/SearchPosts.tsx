@@ -1,5 +1,5 @@
 import { Input } from "@nextui-org/react";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction } from "react";
 import { FaSearch } from "react-icons/fa";
 
 const SearchPosts = ({
@@ -9,9 +9,10 @@ const SearchPosts = ({
   searchTerm: string;
   setSearchTerm: Dispatch<SetStateAction<string>>;
 }) => {
+
   return (
     <Input
-      aria-label="buscar anuncios"
+      aria-label="buscar"
       variant="bordered"
       radius="full"
       startContent={<FaSearch className="text-light-text min-w-3.5" />}
