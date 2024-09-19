@@ -5,8 +5,9 @@ import { AppModule } from 'src/app.module';
 import { DatabaseService } from 'src/contexts/shared/database/infraestructure/database.service';
 
 import { UserPersonDto } from 'src/contexts/user/infraestructure/controller/dto/user.person.DTO';
-import { userSub, userSubBusiness } from '../model/user.stub';
+
 import { UserBusinessDto } from 'src/contexts/user/infraestructure/controller/dto/user.business.DTO';
+import { userSub, userSubBusiness } from 'test/model/user.stub';
 
 let dbConnection: Connection;
 let httpServer: any;

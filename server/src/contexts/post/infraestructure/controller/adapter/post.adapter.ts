@@ -26,18 +26,18 @@ export class PostAdapter implements PostAdapterInterface {
       let postPosted;
 
       switch (post.postType.toLowerCase()) {
-        case PostType.Good:
+        case PostType.Good.toLocaleLowerCase():
           this.logger.log('We are creating a good post');
           postMapped = this.postMapper.requestToEntity(post as PostGoodRequest);
           postPosted = await this.postService.create(postMapped);
           return this.postMapper.entityToResponse(postPosted);
-        case PostType.Service:
+        case PostType.Service.toLocaleLowerCase():
           this.logger.log('We are creating a service post');
           postMapped = this.postMapper.requestToEntity(post);
           await this.postService.create(postMapped);
           return this.postMapper.entityToResponse(postMapped);
 
-        case PostType.Petition:
+        case PostType.Petition.toLocaleLowerCase():
           this.logger.log('We are creating a petition post');
           postMapped = this.postMapper.requestToEntity(post);
           await this.postService.create(postMapped);

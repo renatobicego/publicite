@@ -11,6 +11,7 @@ import { UserModule } from 'src/contexts/user/infraestructure/module/user.module
 import { PostAdapter } from '../controller/adapter/post.adapter';
 import { PostLocationSchema } from '../schemas/postLocation.schema';
 import { PostGoodModel } from '../schemas/post-types-schemas/post.good.schema';
+
 @Module({
   imports: [
     MongooseModule.forFeature([
@@ -36,6 +37,7 @@ import { PostGoodModel } from '../schemas/post-types-schemas/post.good.schema';
     MyLoggerService,
     PostService,
     PostRepository,
+
     {
       provide: 'PostRepositoryMapperInterface',
       useClass: PostRepositoryMapper,

@@ -286,7 +286,7 @@ export class UserRepository implements UserRepositoryInterface {
         'Start process in the repository: ' + UserRepository.name,
       );
       const obj = await this.user.findOneAndUpdate(
-        { _id: authorId },
+        { clerkId: authorId },
         { $addToSet: { post: postId } },
         options,
       );

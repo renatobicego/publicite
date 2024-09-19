@@ -5,8 +5,9 @@ import { Connection, Types } from 'mongoose';
 import { AppModule } from 'src/app.module';
 import { PostGoodRequest } from 'src/contexts/post/application/adapter/dto/post.request';
 import { DatabaseService } from 'src/contexts/shared/database/infraestructure/database.service';
-import { postGoodStub } from '../model/post.stub';
+
 import { Logger } from '@nestjs/common';
+import { postGoodStub } from '../model/post.stub';
 import { userSub_id } from '../model/user.stub';
 
 let dbConnection: Connection;
@@ -48,7 +49,7 @@ describe('Create post suit test', () => {
   it('should create a new postgood and asociate it with a user', async () => {
     const PostRequest: PostGoodRequest = {
       title: postGoodStub().title,
-      author: userSub_id()._id,
+      author: userSub_id().clerkId,
       postType: postGoodStub().postType,
       description: postGoodStub().description,
       visibility: postGoodStub().visibility,
@@ -96,7 +97,7 @@ describe('Create post suit test', () => {
 
     const user = await dbConnection
       .collection('users')
-      .findOne({ _id: userSub_id()._id });
+      .findOne({ clerkId: userSub_id().clerkId });
     expect(user).toBeTruthy();
 
     expect(user?.post.toString()).toContain(response.body._id.toString());
