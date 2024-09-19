@@ -1,7 +1,7 @@
 import { Link, NavbarItem } from "@nextui-org/react";
 import React from "react";
 import PrimaryButton from "../buttons/PrimaryButton";
-import { CREATE, POSTS } from "@/app/utils/urls";
+import { CREATE, POSTS } from "@/app/utils/data/urls";
 
 const NavMenuItems = () => {
   return (

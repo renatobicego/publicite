@@ -3,7 +3,7 @@ import { User, UserPerson } from "./userTypes";
 export interface Post {
   _id: ObjectId;
   title: string;
-  postType: "Service" | "Good" | "Petition";
+  postType: PostType;
   description?: string;
   visibility: {
     post: Visibility;

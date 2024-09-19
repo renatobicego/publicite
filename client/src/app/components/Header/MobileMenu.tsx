@@ -4,7 +4,7 @@ import {
   POSTS,
   PROFILE,
   TUTORIALS,
-} from "@/app/utils/urls";
+} from "@/app/utils/data/urls";
 import { SignedIn, SignedOut, UserButton, useUser } from "@clerk/nextjs";
 import { Link, NavbarMenu, NavbarMenuItem } from "@nextui-org/react";
 import { Variants } from "framer-motion";

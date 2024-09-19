@@ -1,4 +1,4 @@
-import { PROFILE } from "@/app/utils/urls";
+import { PROFILE } from "@/app/utils/data/urls";
 import { Author, Reviewer } from "@/types/postTypes";
 import { Avatar, Link } from "@nextui-org/react";
 

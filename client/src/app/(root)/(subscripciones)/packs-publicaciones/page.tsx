@@ -1,5 +1,5 @@
 import BreadcrumbsAdmin from "@/app/components/BreadcrumbsAdmin";
-import { PACKS } from "@/app/utils/urls";
+import { PACKS } from "@/app/utils/data/urls";
 import SubscriptionGrid from "../components/SubscriptionGrid";
 
 export default function PostPacks() {

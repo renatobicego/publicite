@@ -1,5 +1,5 @@
 import UsernameAvatar from "@/app/components/buttons/UsernameAvatar";
-import { showDate } from "@/app/utils/dates";
+import { showDate } from "@/app/utils/functions/dates";
 import { PostComment } from "@/types/postTypes";
 import { parseDate } from "@internationalized/date";
 import { Card, CardBody, CardHeader } from "@nextui-org/react";

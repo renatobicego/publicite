@@ -11,7 +11,7 @@ import { useState } from "react";
 import PrimaryButton from "@/app/components/buttons/PrimaryButton";
 import { useUser } from "@clerk/nextjs";
 import { useUploadThing } from "@/app/utils/uploadThing";
-import { toastifyError } from "@/app/utils/toastify";
+import { toastifyError } from "@/app/utils/functions/toastify";
 import { getLocalTimeZone, today } from "@internationalized/date";
 
 const INITIAL_LOCATION = { lat: -34.6115643483578, lng: -58.38901999245833 };

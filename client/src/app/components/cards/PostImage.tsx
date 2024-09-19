@@ -1,7 +1,7 @@
 "use client";
 import { CardHeader, Image, Link } from "@nextui-org/react";
 import SaveButton from "../buttons/SaveButton";
-import { POSTS } from "@/app/utils/urls";
+import { POSTS } from "@/app/utils/data/urls";
 import { Good, Post, Service } from "@/types/postTypes";
 
 const PostImage = ({

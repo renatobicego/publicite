@@ -1,6 +1,6 @@
 import { IoCloudUploadSharp } from "react-icons/io5";
 import { useDropzone } from "react-dropzone";
-import { toastifyError } from "@/app/utils/toastify";
+import { toastifyError } from "@/app/utils/functions/toastify";
 
 interface DropzoneProps {
   onDrop: (acceptedFiles: File[]) => void;

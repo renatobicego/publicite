@@ -1,5 +1,5 @@
 "use client";
-import { magazines } from "@/app/utils/mockedData";
+import { magazines } from "@/app/utils/data/mockedData";
 import { Good, Magazine, Petition, Service } from "@/types/postTypes";
 import {
   Accordion,
@@ -13,7 +13,7 @@ import {
 } from "@nextui-org/react";
 import { FaBookmark, FaChevronLeft, FaRegBookmark } from "react-icons/fa6";
 import PrimaryButton from "./PrimaryButton";
-import { CREATE_MAGAZINE } from "@/app/utils/urls";
+import { CREATE_MAGAZINE } from "@/app/utils/data/urls";
 
 interface SaveButtonProps extends ButtonProps {
   saved: boolean;

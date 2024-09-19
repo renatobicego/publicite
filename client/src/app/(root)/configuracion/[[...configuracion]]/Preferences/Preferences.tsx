@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { UserPreferences } from "@/types/userTypes";
 import { useUser } from "@clerk/nextjs";
 import { getUserPreferences } from "@/app/services/userServices";
-import { toastifyError } from "@/app/utils/toastify";
+import { toastifyError } from "@/app/utils/functions/toastify";
 
 const Preferences = () => {
   const [userPreferences, setUserPreferences] = useState<UserPreferences>();

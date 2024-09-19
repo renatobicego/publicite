@@ -9,7 +9,7 @@ import { MdPayments } from "react-icons/md";
 import Privacy from "./Privacy/Privacy";
 import Notifications from "./Notifications/Notifications";
 import Preferences from "./Preferences/Preferences";
-import { CONFIGURATION } from "@/app/utils/urls";
+import { CONFIGURATION } from "@/app/utils/data/urls";
 import Business from "./Business/Business";
 import { IoBusiness } from "react-icons/io5";
 

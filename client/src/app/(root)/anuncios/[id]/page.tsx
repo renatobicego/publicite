@@ -1,12 +1,12 @@
 import BreadcrumbsAdmin from "@/app/components/BreadcrumbsAdmin";
 import ErrorCard from "@/app/components/ErrorCard";
 import { getPostData } from "@/app/services/postsServices";
-import { POSTS } from "@/app/utils/urls";
+import { POSTS } from "@/app/utils/data/urls";
 import Images from "./Images";
 import Data from "./Data/Data";
 import { Good, Petition, Service } from "@/types/postTypes";
 import Comments from "./Comments/Comments";
-import { mockedPosts } from "@/app/utils/mockedData";
+import { mockedPosts } from "@/app/utils/data/mockedData";
 import RecommendedPosts from "./RecommendedPosts";
 import { currentUser } from "@clerk/nextjs/server";
 

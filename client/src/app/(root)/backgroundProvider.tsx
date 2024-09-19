@@ -2,7 +2,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { changeUserPreferences, getUserPreferences } from "../services/userServices";
 import { UserPreferences } from "@/types/userTypes";
-import { toastifyError, toastifySuccess } from "../utils/toastify";
+import { toastifyError, toastifySuccess } from "../utils/functions/toastify";
 
 interface BackgroundContextType {
   gradientValue: number | number[];

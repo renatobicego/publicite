@@ -6,7 +6,7 @@ import {
   CustomTextarea,
 } from "@/app/components/inputs/CustomInputs";
 import PrimaryButton from "@/app/components/buttons/PrimaryButton";
-import { toastifyError, toastifySuccess } from "@/app/utils/toastify";
+import { toastifyError, toastifySuccess } from "@/app/utils/functions/toastify";
 import { editProfile } from "../actions";
 import { useRouter } from "next/navigation";
 

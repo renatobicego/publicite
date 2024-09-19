@@ -9,7 +9,7 @@ import AnimatedBox from "../../AnimatedBox";
 import { useState } from "react";
 import SocialMediaForm from "./SocialMediaForm";
 import { Contact } from "@/types/userTypes";
-import { extractDomain, formatFacebookUrl, formatInstagamUrl, formatTwitterUrl } from "@/app/utils/formatUrls";
+import { extractDomain, formatFacebookUrl, formatInstagamUrl, formatTwitterUrl } from "@/app/utils/functions/formatUrls";
 
 const SocialMedia = ({ contact }: { contact?: Contact }) => {
   const [isFormVisible, setIsFormVisible] = useState(false);

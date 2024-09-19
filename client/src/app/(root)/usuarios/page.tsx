@@ -1,7 +1,7 @@
 import BreadcrumbsAdmin from "@/app/components/BreadcrumbsAdmin";
 import SolapasTabs from "@/app/components/SolapasTabs";
 
-import { POSTS } from "@/app/utils/urls";
+import { POSTS } from "@/app/utils/data/urls";
 
 
 export default async function UsersList() {

@@ -1,6 +1,6 @@
 import { PostReview } from "@/types/postTypes";
 import ReviewsStars, { renderStars } from "../ReviewsStars";
-import { showDate } from "@/app/utils/dates";
+import { showDate } from "@/app/utils/functions/dates";
 import { parseDate } from "@internationalized/date";
 import { Card, CardBody, CardHeader } from "@nextui-org/react";
 

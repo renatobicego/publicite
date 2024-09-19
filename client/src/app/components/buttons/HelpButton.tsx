@@ -4,7 +4,7 @@ import {
   CREATE_MAGAZINE,
   CREATE_PETITION,
   CREATE_POST,
-} from "@/app/utils/urls";
+} from "@/app/utils/data/urls";
 import {
   Button,
   Dropdown,

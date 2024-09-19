@@ -1,4 +1,4 @@
-import { showDate } from "@/app/utils/dates";
+import { showDate } from "@/app/utils/functions/dates";
 import { PostComment } from "@/types/postTypes";
 import { parseDate } from "@internationalized/date";
 import { Card, CardBody } from "@nextui-org/react";
