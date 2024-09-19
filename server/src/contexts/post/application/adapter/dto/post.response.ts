@@ -1,15 +1,26 @@
+import { ObjectId } from 'mongoose';
+
 export interface PostResponse {
-  _id: string;
   title: string;
   author: string;
   postType: string;
   description: string;
   visibility: string;
-  recomendations: string[];
+  recomendations: any[];
   price: number;
   location: string;
-  category: string[];
-  comments: string[];
-  attachedFiles: string[];
+  category: any[];
+  comments: any[];
+  attachedFiles: { url: string; label: string }[];
   createAt: string;
+  _id: ObjectId;
+}
+
+export interface PostGoodResponse extends PostResponse {
+  imageUrls: string[];
+  year: number;
+  brand: string;
+  modelType: string;
+  reviews: string[];
+  condition: string;
 }

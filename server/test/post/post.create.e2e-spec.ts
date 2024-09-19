@@ -3,9 +3,12 @@ import * as request from 'supertest';
 import { Connection, Types } from 'mongoose';
 
 import { AppModule } from 'src/app.module';
-import { PostRequest } from 'src/contexts/post/application/adapter/dto/post.request';
+import { PostGoodRequest } from 'src/contexts/post/application/adapter/dto/post.request';
 import { DatabaseService } from 'src/contexts/shared/database/infraestructure/database.service';
-import { postStub } from '../model/post.stub';
+
+import { Logger } from '@nestjs/common';
+import { postGoodStub } from '../model/post.stub';
+import { userSub_id } from '../model/user.stub';
 
 let dbConnection: Connection;
 let httpServer: any;
@@ -15,12 +18,16 @@ describe('Create post suit test', () => {
   beforeEach(async () => {
     if (dbConnection) {
       // Limpiar la base de datos si es necesario
-      await dbConnection.collection('PostLocations').deleteMany({});
-      await dbConnection.collection('Posts').deleteMany({});
+      await dbConnection.collection('postLocations').deleteMany({});
+      await dbConnection.collection('posts').deleteMany({});
+      await dbConnection.collection('users').insertOne(userSub_id());
     }
   });
 
   afterAll(async () => {
+    await dbConnection.collection('postLocations').deleteMany({});
+    await dbConnection.collection('posts').deleteMany({});
+    await dbConnection.collection('users').deleteMany({});
     await dbConnection.close();
   });
 
@@ -30,6 +37,7 @@ describe('Create post suit test', () => {
     }).compile();
 
     app = moduleRef.createNestApplication();
+    app.useLogger(new Logger());
     await app.init();
 
     dbConnection = moduleRef
@@ -38,20 +46,26 @@ describe('Create post suit test', () => {
     httpServer = app.getHttpServer();
   });
 
-  it('should create a new post and asociate it with a user', async () => {
-    const PostRequest: PostRequest = {
-      title: postStub().title,
-      author: postStub().author,
-      postType: postStub().postType,
-      description: postStub().description,
-      visibility: postStub().visibility,
-      recomendations: postStub().recomendations,
-      price: postStub().price,
-      location: postStub().location,
-      category: postStub().category,
-      comments: postStub().comments,
-      attachedFiles: postStub().attachedFiles,
-      createAt: postStub().createAt,
+  it('should create a new postgood and asociate it with a user', async () => {
+    const PostRequest: PostGoodRequest = {
+      title: postGoodStub().title,
+      author: userSub_id().clerkId,
+      postType: postGoodStub().postType,
+      description: postGoodStub().description,
+      visibility: postGoodStub().visibility,
+      recomendations: postGoodStub().recomendations,
+      price: postGoodStub().price,
+      location: postGoodStub().location,
+      category: postGoodStub().category,
+      comments: postGoodStub().comments,
+      attachedFiles: postGoodStub().attachedFiles,
+      createAt: postGoodStub().createAt,
+      imageUrls: postGoodStub().imageUrls,
+      year: postGoodStub().year,
+      brand: postGoodStub().brand,
+      modelType: postGoodStub().modelType,
+      reviews: postGoodStub().reviews,
+      condition: postGoodStub().condition,
     };
 
     const response = await request(httpServer)
@@ -60,11 +74,9 @@ describe('Create post suit test', () => {
       .send(PostRequest);
 
     expect(response.status).toBe(201);
-    console.log(response.body);
     expect(response.body).toMatchObject({
       title: PostRequest.title,
-      author: PostRequest.author,
-      postType: PostRequest.postType,
+      postType: PostRequest.postType.toString().toLowerCase(),
       description: PostRequest.description,
       visibility: PostRequest.visibility,
       recomendations: PostRequest.recomendations,
@@ -73,8 +85,21 @@ describe('Create post suit test', () => {
       comments: PostRequest.comments,
       attachedFiles: PostRequest.attachedFiles,
       createAt: PostRequest.createAt,
+      imageUrls: PostRequest.imageUrls,
+      year: PostRequest.year,
+      brand: PostRequest.brand,
+      modelType: PostRequest.modelType,
+      reviews: PostRequest.reviews,
+      condition: PostRequest.condition,
     });
     expect(response.body).toHaveProperty('_id');
     expect(Types.ObjectId.isValid(response.body.location)).toBe(true);
+
+    const user = await dbConnection
+      .collection('users')
+      .findOne({ clerkId: userSub_id().clerkId });
+    expect(user).toBeTruthy();
+
+    expect(user?.post.toString()).toContain(response.body._id.toString());
   });
 });

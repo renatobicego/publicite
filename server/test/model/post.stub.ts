@@ -5,9 +5,12 @@ export const postStub = (): PostRequest => {
   return {
     title: 'My title',
     author: '5f9d8f5e9d8f5e9d8f5e9d8f' as unknown as ObjectId,
-    postType: 'public',
+    postType: 'Good',
     description: 'My description',
-    visibility: 'public',
+    visibility: {
+      post: 'public',
+      socialMedia: 'public',
+    },
     recomendations: [],
     price: 0,
     location: {
@@ -35,5 +38,20 @@ export const postStub = (): PostRequest => {
       },
     ],
     createAt: '2024-10-10T00:00:00Z',
+  };
+};
+
+export const postGoodStub = () => {
+  return {
+    ...postStub(),
+    imageUrls: [
+      'https://your-bucket.com/image1.jpg',
+      'https://your-bucket.com/image2.jpg',
+    ],
+    year: 2024,
+    brand: 'My Brand',
+    modelType: 'My Model',
+    reviews: ['5f9d8f5e9d8f5e9d8f5e9d8f' as unknown as ObjectId],
+    condition: 'New',
   };
 };

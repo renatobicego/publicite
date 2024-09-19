@@ -27,3 +27,12 @@ export interface PostRequest {
   }>;
   createAt: string;
 }
+
+export interface PostGoodRequest extends PostRequest {
+  imageUrls: string[];
+  year: number;
+  brand: string;
+  modelType: string;
+  reviews: ObjectId[];
+  condition: string;
+}

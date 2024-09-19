@@ -1,4 +1,4 @@
-import { ObjectId } from 'mongoose';
+import { ObjectId, Types } from 'mongoose';
 import { Gender } from 'src/contexts/user/domain/entity/enum/enums.request';
 
 import { UserBusinessDto } from 'src/contexts/user/infraestructure/controller/dto/user.business.DTO';
@@ -49,5 +49,38 @@ export const userSubBusiness = (): UserBusinessDto => {
     name: 'Maxi',
     lastName: 'Cvetic',
     businessName: 'Dutsiland',
+  };
+};
+
+export const userSub_id = (): any => {
+  return {
+    _id: new Types.ObjectId('66e608531f76fc4dda965554'),
+    clerkId: '5f9d8f5e9d8f5e9d8f5e9d8f',
+    email: '222222@gmail.com',
+    username: 'maxi22222',
+    description: 'I like to code',
+    profilePhotoUrl: 'https://your-bucket.com/profile.jpg',
+    countryRegion: 'Argentina',
+    isActive: true,
+    contact: '66e608531f76fc4dda965551',
+    createdTime: '2024-10-10T00:00:00Z',
+    subscriptions: [],
+    groups: [],
+    magazines: [],
+    board: [],
+    post: [],
+    userRelations: [],
+    userType: 'Personal',
+    name: 'Renato',
+    lastName: 'Bicego',
+    userPreferences: {
+      searchPreference: [],
+      backgroundColor: '',
+      boardColor: '',
+      kind: 'UserPerson',
+      gender: 'M',
+      birthDate: '2024-10-10',
+    },
+    __v: 0,
   };
 };
