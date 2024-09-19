@@ -5,7 +5,7 @@ const AdditionalGoodData = ({post} : {post: Good}) => {
     <ul className="flex flex-col gap-1 list-disc list-inside ml-2 text-sm xl:text-base">
       {post.year && <li>Año: {post.year}</li>}
       {post.brand && <li>Marca: {post.brand}</li>}
-      {post.model && <li>Modelo: {post.model}</li>}
+      {post.modelType && <li>Modelo: {post.modelType}</li>}
     </ul>
   )
 }

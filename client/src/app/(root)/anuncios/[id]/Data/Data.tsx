@@ -27,7 +27,7 @@ const Data = async ({
   const good = post as Good;
   const service = post as Service;
   const petition = post as Petition;
-  const datePublished = getTimeBetweenToday(parseDate(good.createdAt));
+  const datePublished = getTimeBetweenToday(parseDate(good.createAt));
   const showCondition =
     post.postType === "good"
       ? `${

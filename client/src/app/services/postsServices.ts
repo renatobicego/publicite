@@ -1,4 +1,6 @@
+import { GoodPostValues, PetitionPostValues, ServicePostValues } from "@/types/postTypes";
 import { mockedPetitions, mockedPosts } from "../utils/data/mockedData";
+import axios from "axios";
 
 export const getPostData = async (id: string) => {
   try {
@@ -20,7 +22,7 @@ export const getCategories = async () => {
   try {
     return [
       {
-        _id: "112sdq",
+        _id: "66e660c0670176213da68f22",
         label: "Casa",
       },
       {
@@ -38,3 +40,12 @@ export const getCategories = async () => {
     };
   }
 };
+
+export const postPost = async (values: GoodPostValues | PetitionPostValues | ServicePostValues) => {
+  try {
+    const res = await axios.post(`${process.env.API_URL}/post`, values);
+    return res
+  } catch (error) {
+    return error
+  }
+}

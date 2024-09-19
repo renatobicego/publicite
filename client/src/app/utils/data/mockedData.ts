@@ -11,7 +11,7 @@ import { boardColors } from "./selectData";
 
 export const categories: PostCategory[] = [
   {
-    _id: "112sdq",
+    _id: "66e660c0670176213da68f22",
     label: "Casa",
   },
   {
@@ -34,7 +34,7 @@ const mockedGood: Good = {
   ],
   year: 2022,
   brand: "brand",
-  model: "model",
+  modelType: "modelType",
   reviews: [
     {
       _id: "231",
@@ -144,7 +144,7 @@ const mockedGood: Good = {
     lastName: "lastName",
     name: "name",
   },
-  createdAt: "2024-07-12",
+  createAt: "2024-07-12",
 };
 
 const mockedService: Service = {
@@ -193,7 +193,7 @@ const mockedService: Service = {
     lastName: "lastName",
     name: "name",
   },
-  createdAt: "2024-07-12",
+  createAt: "2024-07-12",
 };
 
 const mockedPetition: Petition = {
@@ -233,7 +233,7 @@ const mockedPetition: Petition = {
     userSetted: true,
   },
   toPrice: 2000,
-  createdAt: "2024-07-12",
+  createAt: "2024-07-12",
 };
 
 const mockedPetition2: Petition = {
@@ -272,7 +272,7 @@ const mockedPetition2: Petition = {
     userSetted: true,
   },
   toPrice: 2000,
-  createdAt: "2024-07-12",
+  createAt: "2024-07-12",
 };
 
 export const freeSubscriptionPlans: SubscriptionPlan[] = [

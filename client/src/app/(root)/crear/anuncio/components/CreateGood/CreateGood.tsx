@@ -11,28 +11,30 @@ import { useState } from "react";
 import PrimaryButton from "@/app/components/buttons/PrimaryButton";
 import { useUser } from "@clerk/nextjs";
 import { useUploadThing } from "@/app/utils/uploadThing";
-import { toastifyError } from "@/app/utils/functions/toastify";
+import { toastifyError, toastifySuccess } from "@/app/utils/functions/toastify";
 import { getLocalTimeZone, today } from "@internationalized/date";
-
-const INITIAL_LOCATION = { lat: -34.6115643483578, lng: -58.38901999245833 };
+import { createPost } from "../../actions";
+import { useRouter } from "next/navigation";
+import { POSTS } from "@/app/utils/data/urls";
+import useUploadFiles from "@/app/utils/hooks/useUploadFiles";
 
 const CreateGood = ({ files }: { files: File[] }) => {
   const { user } = useUser();
-  const [progress, setProgress] = useState(0);
+  console.log(user?.publicMetadata)
   const initialValues: GoodPostValues = {
     attachedFiles: [],
     description: "",
     title: "",
     price: undefined,
     category: "",
-    author: user?.username || "",
+    author: (user?.publicMetadata.mongoId as string) || "",
     condition: undefined,
     imagesUrls: [],
     location: {
       lat: undefined,
       lng: undefined,
       description: "",
-      userSetted: false
+      userSetted: false,
     },
     postType: "good",
     visibility: {
@@ -40,59 +42,49 @@ const CreateGood = ({ files }: { files: File[] }) => {
       socialMedia: "public",
     },
     brand: undefined,
-    model: undefined,
+    modelType: undefined,
     year: undefined,
-    createdAt: today(getLocalTimeZone()).toString(),
+    createAt: today(getLocalTimeZone()).toString(),
   };
-
+  const router = useRouter();
   const [attachedFiles, setAttachedFiles] = useState<AttachedFileValues[]>([]);
-  const { startUpload } = useUploadThing("fileUploader", {
-    onUploadError: (e) => {
-      toastifyError(`Error al subir el archivo/imagen: ${e.name}`);
-    },
-    onClientUploadComplete: () => {
-      setProgress(0);
-    },
-
-    onUploadProgress: (value) => {
-      setProgress(value);
-    },
-  });
+  const { progress, submitFiles } = useUploadFiles(files, attachedFiles);
 
   const handleSubmit = async (
     values: GoodPostValues,
     actions: FormikHelpers<GoodPostValues>
   ) => {
-    if (!files.length) {
-      actions.setFieldError(
-        "imagesUrls",
-        "Por favor agregue al menos una imagen"
-      );
-      return;
-    }
-    // Combine both files and attachedFiles into a single array for upload
-    const combinedFiles = [...files, ...attachedFiles.map((file) => file.file)];
+    const newValuesWithUrlFiles = await submitFiles(values, actions);
+    if (!newValuesWithUrlFiles) return;
+    values = newValuesWithUrlFiles;
 
-    const res = await startUpload(combinedFiles as File[]);
-    if (!res || !res.length) {
-      return;
-    }
+    const dbLocation = {
+      location: {
+        type: "Point",
+        coordinates: [values.location.lat, values.location.lng],
+      },
+      description: values.location.description,
+      userSetted: values.location.userSetted,
+    };
 
-    // Separate URLs based on the origin of files
-    const uploadedFileUrls = res
-      .slice(0, files.length)
-      .map((upload) => upload.url);
-    const uploadedAttachedFileUrls = res.slice(files.length).map((upload, index) => ({
-      url: upload.url,
-      label: attachedFiles[index].label,
-      _id: "",
+    const attachedFiles = values.attachedFiles.map((file) => ({
+      url: file.url,
+      label: file.label,
     }));
 
-    // Assign URLs to their respective fields in the form values
-    values.imagesUrls = uploadedFileUrls;
-    values.attachedFiles = uploadedAttachedFileUrls;
+    const resApi = await createPost({
+      ...values,
+      location: dbLocation,
+      attachedFiles,
+      category: [values.category],
+    });
+    if (resApi.error) {
+      toastifyError(resApi.error);
+      return;
+    }
 
-    console.log(values);
+    toastifySuccess("Anuncio creado exitosamente");
+    router.push(`${POSTS}/${resApi.id}`);
   };
   return (
     <Formik
