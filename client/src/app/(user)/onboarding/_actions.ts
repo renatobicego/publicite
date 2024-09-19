@@ -21,11 +21,11 @@ export const completeOnboardingPerson = async (formData: UserPersonFormValues) =
       publicMetadata: {
         onboardingComplete: true,
         userType: "Person",
+        mongoId: resApi.data._id
       },
     });
     return { message: res.publicMetadata };
   } catch (err) {
-    console.log(err)
     return { error: "Error al completar el registro. Por favor intenta de nuevo." };
   }
 };
@@ -45,11 +45,11 @@ export const completeOnboardingBusiness = async (formData: UserBusinessFormValue
       publicMetadata: {
         onboardingComplete: true,
         userType: "Business",
+        mongoId: resApi.data._id
       },
     });
     return { message: res.publicMetadata };
   } catch (err) {
-    console.log(err)
     return { error: "Error al completar el registro. Por favor intenta de nuevo." };
   }
 }

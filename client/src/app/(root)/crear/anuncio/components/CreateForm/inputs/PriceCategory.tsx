@@ -2,6 +2,7 @@ import {
   CustomInput,
   CustomSelect,
 } from "@/app/components/inputs/CustomInputs";
+import { categories } from "@/app/utils/data/mockedData";
 import { frequencyPriceItems } from "@/app/utils/data/selectData";
 import {
   GoodPostValues,
@@ -19,20 +20,6 @@ const PriceCategory = ({
   errors: FormikErrors<GoodPostValues> | FormikErrors<ServicePostValues>;
   isService?: boolean;
 }) => {
-  const categories: PostCategory[] = [
-    {
-      _id: "112sdq",
-      label: "Casa",
-    },
-    {
-      _id: "112egsdq",
-      label: "Departamento",
-    },
-    {
-      _id: "112qsdqsf",
-      label: "Oficina",
-    },
-  ];
   return (
     <>
       <div className="flex gap-4 max-xl:flex-wrap">

@@ -31,7 +31,7 @@ const CreatePetition = () => {
       post: "public",
       socialMedia: "public",
     },
-    createdAt: today(getLocalTimeZone()).toString(),
+    createAt: today(getLocalTimeZone()).toString(),
     petitionType: undefined,
     frequencyPrice: undefined,
     toPrice: undefined,

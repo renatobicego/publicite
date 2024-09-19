@@ -34,12 +34,12 @@ const AdditionalGoodData = ({
       />
        <Field
         as={CustomInput}
-        name="model"
+        name="modelType"
         label="Modelo"
         placeholder="Agregue el modelo"
         aria-label="modelo"
-        isInvalid={!!errors.model}
-        errorMessage={errors.model}
+        isInvalid={!!errors.modelType}
+        errorMessage={errors.modelType}
       />
     </div>
   );

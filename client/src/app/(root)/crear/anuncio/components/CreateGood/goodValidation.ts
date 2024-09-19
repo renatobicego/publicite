@@ -12,7 +12,7 @@ export const goodValidation = object({
       today(getLocalTimeZone()).year,
       "El año debe ser igual o anterior al actual"
     ),
-  model: string()
+  modelType: string()
     .nullable()
     .notRequired()
     .max(80, "El modelo no puede ser mayor a 80 caracteres")

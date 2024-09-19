@@ -51,13 +51,13 @@ const AccordionInputs = ({
         title="Datos Adicionales"
         indicator={<FaChevronLeft className="size-3" />}
         subtitle={
-          goodErrors.year || goodErrors.brand || goodErrors.model
+          goodErrors.year || goodErrors.brand || goodErrors.modelType
             ? "Corrija los errores"
             : ""
         }
         className={isService ? "hidden" : ""}
         classNames={generateClassname(
-          goodErrors.year || goodErrors.brand || goodErrors.model
+          goodErrors.year || goodErrors.brand || goodErrors.modelType
         )}
       >
         <AdditionalGoodData errors={errors} />

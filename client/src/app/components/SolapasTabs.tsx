@@ -18,7 +18,7 @@ const SolapasTabs = () => {
   const pathname = usePathname();
 
   return (
-    <Tabs aria-label="Options" variant="underlined" selectedKey={pathname}>
+    <Tabs classNames={{panel: "p-0"}} aria-label="Options" variant="underlined" selectedKey={pathname}>
       <Tab className="w-full" key={POSTS} title="Recomendados" href={POSTS}>
         <PostsList />
       </Tab>

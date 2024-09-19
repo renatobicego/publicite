@@ -38,7 +38,7 @@ const CreateService = ({ files }: { files: File[] }) => {
       post: "public",
       socialMedia: "public",
     },
-    createdAt: today(getLocalTimeZone()).toString(),
+    createAt: today(getLocalTimeZone()).toString(),
 
   };
 
