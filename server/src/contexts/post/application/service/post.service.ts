@@ -77,7 +77,6 @@ export class PostService implements PostServiceInterface {
       //Todo ok
       await session.commitTransaction();
       await session.endSession();
-
       return newPost;
     } catch (error: any) {
       await session.abortTransaction();

@@ -2,18 +2,23 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Post } from '../../domain/entity/post.entity';
 import { PostRepositoryInterface } from '../../domain/repository/post.repository.interface';
 import { ClientSession, Model, ObjectId } from 'mongoose';
-import { PostDocument } from '../schemas/post.schema';
+
 import { Inject } from '@nestjs/common';
 import { PostRepositoryMapperInterface } from '../../domain/repository/mapper/post.repository.mapper.interface';
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
 
 import { PostLocation } from '../../domain/entity/postLocation.entity';
 import { PostLocationDocument } from '../schemas/postLocation.schema';
+import { PostGood } from '../../domain/entity/post-types/post.good.entity';
+import {
+  IPostGood,
+  PostGoodModel,
+} from '../schemas/post-types-schemas/post.good.schema';
 
 export class PostRepository implements PostRepositoryInterface {
   constructor(
-    @InjectModel('Post')
-    private readonly postDocument: Model<PostDocument>,
+    @InjectModel(PostGoodModel.modelName)
+    private readonly postGoodDocument: Model<IPostGood>,
     @InjectModel('PostLocation')
     private readonly locationDocument: Model<PostLocationDocument>,
     @Inject('PostRepositoryMapperInterface')
@@ -56,11 +61,48 @@ export class PostRepository implements PostRepositoryInterface {
         attachedFiles: post.getAttachedFiles,
         createAt: post.getCreateAt,
       };
-      const postPostedDocument = new this.postDocument(documentToSave);
-      const documetnSaved = await postPostedDocument.save(options);
-      return this.postMapper.documentToEntityMapped(documetnSaved);
+      switch (post.getPostType) {
+        case 'good':
+          return this.saveGoodPost(documentToSave, post as PostGood, options);
+        case 'service':
+          throw Error;
+
+        case 'petition':
+          throw Error;
+
+        default:
+          this.logger.error('Invalid post type: ' + post.getPostType);
+          throw Error;
+      }
     } catch (error: any) {
       this.logger.error('Error creating post REPOSITORY: ' + error);
+      throw error;
+    }
+  }
+
+  async saveGoodPost(
+    baseObj: any,
+    post: PostGood,
+    options?: { session?: ClientSession },
+  ): Promise<Post> {
+    try {
+      const newPost = {
+        ...baseObj,
+        imageUrls: post.getImageUrls,
+        year: post.getYear,
+        brand: post.getBrand,
+        modelType: post.getModel,
+        reviews: post.getReviews,
+        condition: post.getCondition,
+      };
+      const postPostedDocument = new this.postGoodDocument(newPost);
+      const documentSaved = await postPostedDocument.save(options);
+
+      const ret = this.postMapper.documentToEntityMapped(documentSaved);
+      this.logger.log('Post good created successfully: ' + ret.getId);
+      return ret;
+    } catch (error: any) {
+      this.logger.error('Error creating PostGood REPOSITORY: ' + error);
       throw error;
     }
   }

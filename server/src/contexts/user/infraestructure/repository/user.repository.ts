@@ -22,6 +22,7 @@ import { SectorRepositoryInterface } from 'src/contexts/businessSector/domain/re
 
 import { UP_clerkUpdateRequestDto } from 'src/contexts/webhook/application/clerk/dto/UP-clerk.update.request';
 import { IUser, UserModel, UserPreferences } from '../schemas/user.schema';
+import { error } from 'console';
 
 @Injectable()
 export class UserRepository implements UserRepositoryInterface {
@@ -275,19 +276,32 @@ export class UserRepository implements UserRepositoryInterface {
     }
   }
 
-  saveNewPost(
+  async saveNewPost(
     postId: ObjectId,
     authorId: ObjectId,
     options?: { session?: ClientSession },
   ): Promise<any> {
     try {
-      this.logger.log('Start process in the repository: saveNewPost');
-      return this.user.findOneAndUpdate(
+      this.logger.log(
+        'Start process in the repository: ' + UserRepository.name,
+      );
+      const obj = await this.user.findOneAndUpdate(
         { _id: authorId },
-        { $addToSet: { posts: postId } },
+        { $addToSet: { post: postId } },
         options,
       );
+      if (!obj) {
+        this.logger.error(
+          'An error was occurred trying to save a new post in user array',
+        );
+        throw error;
+      }
+      return obj;
     } catch (error: any) {
+      this.logger.error(
+        'An error was occurred trying to save a new post in user array(catch)',
+        error,
+      );
       throw error;
     }
   }

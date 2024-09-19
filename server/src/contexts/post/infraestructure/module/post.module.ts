@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { PostSchema } from '../schemas/post.schema';
+import PostModel from '../schemas/post.schema';
 import { PostController } from '../controller/post.controller';
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
 import { PostService } from '../../application/service/post.service';
@@ -10,9 +10,22 @@ import { PostAdapterMapper } from '../controller/adapter/mapper/post.adapter.map
 import { UserModule } from 'src/contexts/user/infraestructure/module/user.module';
 import { PostAdapter } from '../controller/adapter/post.adapter';
 import { PostLocationSchema } from '../schemas/postLocation.schema';
+import { PostGoodModel } from '../schemas/post-types-schemas/post.good.schema';
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: 'Post', schema: PostSchema }]),
+    MongooseModule.forFeature([
+      {
+        name: PostModel.modelName,
+        schema: PostModel.schema,
+        discriminators: [
+          { name: PostGoodModel.modelName, schema: PostGoodModel.schema },
+          // {
+          //   name: UserBusinessModel.modelName,
+          //   schema: UserBusinessModel.schema,
+          // },
+        ],
+      },
+    ]),
     MongooseModule.forFeature([
       { name: 'PostLocation', schema: PostLocationSchema },
     ]),
