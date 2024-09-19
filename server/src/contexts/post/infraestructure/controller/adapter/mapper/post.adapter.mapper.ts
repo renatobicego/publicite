@@ -52,6 +52,7 @@ export class PostAdapterMapper implements PostMapperAdapterInterface {
           imageUrls: postService.getImageUrls ?? ([] as any),
           reviews: (postService.getReviews as any) ?? ([] as any),
         };
+
         return postServiceResponse;
 
       case 'petition':

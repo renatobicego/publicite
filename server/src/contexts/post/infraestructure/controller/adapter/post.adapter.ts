@@ -38,8 +38,8 @@ export class PostAdapter implements PostAdapterInterface {
           postMapped = this.postMapper.requestToEntity(
             post as PostServiceRequest,
           );
-          await this.postService.create(postMapped);
-          return this.postMapper.entityToResponse(postMapped);
+          postPosted = await this.postService.create(postMapped);
+          return this.postMapper.entityToResponse(postPosted);
 
         case PostType.Petition.toLocaleLowerCase():
           this.logger.log('We are creating a petition post');
