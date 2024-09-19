@@ -24,3 +24,8 @@ export interface PostGoodResponse extends PostResponse {
   reviews: string[];
   condition: string;
 }
+export interface PostServiceResponse extends PostResponse {
+  frequencyPrice: string;
+  imageUrls: string[];
+  reviews: string[];
+}

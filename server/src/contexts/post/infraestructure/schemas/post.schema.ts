@@ -10,7 +10,7 @@ export interface attachedFiles {
 
 export interface PostDocument extends Document {
   title: string;
-  author: Schema.Types.ObjectId;
+  author: string;
   postType: string;
   description: string;
   visibility: {
@@ -30,7 +30,7 @@ export const PostSchema = new Schema<PostDocument>(
   {
     title: { type: String, required: true },
     author: {
-      type: Schema.Types.ObjectId,
+      type: String,
       ref: 'User',
       required: true,
     },

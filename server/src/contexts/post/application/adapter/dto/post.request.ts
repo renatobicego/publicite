@@ -2,7 +2,7 @@ import { ObjectId } from 'mongoose';
 
 export interface PostRequest {
   title: string;
-  author: ObjectId;
+  author: string;
   postType: string;
   description: string;
   visibility: {
@@ -35,4 +35,10 @@ export interface PostGoodRequest extends PostRequest {
   modelType: string;
   reviews: ObjectId[];
   condition: string;
+}
+
+export interface PostServiceRequest extends PostRequest {
+  frequencyPrice: string;
+  imageUrls: string[];
+  reviews: ObjectId[];
 }

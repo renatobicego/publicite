@@ -20,13 +20,6 @@ export class PostService implements PostServiceInterface {
 
   async create(post: Post): Promise<Post> {
     let locationID: ObjectId;
-    /*
-      1- recibo post
-      2- busco user
-      3- push post en el array de post del user
-      4- guardo user
-      5- devuelvo post 
-      */
 
     const session = await this.connection.startSession();
     session.startTransaction();
@@ -58,7 +51,7 @@ export class PostService implements PostServiceInterface {
       try {
         await this.userService.saveNewPost(
           newPost.getId as unknown as ObjectId,
-          newPost.getAuthor as unknown as ObjectId,
+          newPost.getAuthor,
           {
             session,
           },

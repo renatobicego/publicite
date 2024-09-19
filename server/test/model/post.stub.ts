@@ -4,7 +4,7 @@ import { PostRequest } from 'src/contexts/post/application/adapter/dto/post.requ
 export const postStub = (): PostRequest => {
   return {
     title: 'My title',
-    author: '5f9d8f5e9d8f5e9d8f5e9d8f' as unknown as ObjectId,
+    author: '5f9d8f5e9d8f5e9d8f5e9d8f',
     postType: 'Good',
     description: 'My description',
     visibility: {

@@ -4,9 +4,11 @@ import { BadRequestException } from '@nestjs/common';
 import {
   PostGoodResponse,
   PostResponse,
+  PostServiceResponse,
 } from 'src/contexts/post/application/adapter/dto/post.response';
 import { PostMapperAdapterInterface } from 'src/contexts/post/application/adapter/mapper/post.adapter.mapper.interface';
 import { PostGood } from 'src/contexts/post/domain/entity/post-types/post.good.entity';
+import { PostService } from 'src/contexts/post/domain/entity/post-types/post.service.entity';
 import { Post } from 'src/contexts/post/domain/entity/post.entity';
 
 export class PostAdapterMapper implements PostMapperAdapterInterface {
@@ -43,11 +45,16 @@ export class PostAdapterMapper implements PostMapperAdapterInterface {
 
         return postGoodResponse;
       case 'service':
-        // Implementación para PostService si tienes una subclase PostServiceResponse
-        throw new BadRequestException('PostService mapping not implemented');
+        const postService = entity as PostService;
+        const postServiceResponse: PostServiceResponse = {
+          ...baseResponse,
+          frequencyPrice: postService.getfrequencyPrice ?? '',
+          imageUrls: postService.getImageUrls ?? ([] as any),
+          reviews: (postService.getReviews as any) ?? ([] as any),
+        };
+        return postServiceResponse;
 
       case 'petition':
-        // Implementación para PostPetition si tienes una subclase PostPetitionResponse
         throw new BadRequestException('PostPetition mapping not implemented');
 
       default:
@@ -63,9 +70,24 @@ export class PostAdapterMapper implements PostMapperAdapterInterface {
       socialMedia: request.visibility.socialMedia.toLowerCase(),
     };
 
+    const postBase = new Post(
+      request.title,
+      request.author,
+      postTypetNormalized,
+      request.description,
+      visibilityNormalizated,
+      request.recomendation ?? [],
+      request.price,
+      request.location,
+      request.category ?? [],
+      request.comments ?? [],
+      request.attachedFiles ?? [],
+      request.createAt,
+    );
+
     switch (postTypetNormalized) {
       case 'good':
-        const postt = new PostGood(
+        return new PostGood(
           request.title,
           request.author,
           postTypetNormalized,
@@ -86,9 +108,13 @@ export class PostAdapterMapper implements PostMapperAdapterInterface {
           request.condition ?? null,
         );
 
-        return postt;
       case 'service':
-        throw BadRequestException;
+        return new PostService(
+          postBase,
+          request.frequencyPrice ?? null,
+          request.imageUrls ?? [],
+          request.reviews ?? [],
+        );
       case 'petition':
         throw BadRequestException;
 

@@ -14,11 +14,18 @@ import {
   IPostGood,
   PostGoodModel,
 } from '../schemas/post-types-schemas/post.good.schema';
+import {
+  IPostService,
+  PostServiceModel,
+} from '../schemas/post-types-schemas/post.service.schema';
+import { PostService } from '../../domain/entity/post-types/post.service.entity';
 
 export class PostRepository implements PostRepositoryInterface {
   constructor(
     @InjectModel(PostGoodModel.modelName)
     private readonly postGoodDocument: Model<IPostGood>,
+    @InjectModel(PostServiceModel.modelName)
+    private readonly postServiceDocument: Model<IPostService>,
     @InjectModel('PostLocation')
     private readonly locationDocument: Model<PostLocationDocument>,
     @Inject('PostRepositoryMapperInterface')
@@ -61,11 +68,15 @@ export class PostRepository implements PostRepositoryInterface {
         attachedFiles: post.getAttachedFiles,
         createAt: post.getCreateAt,
       };
-      switch (post.getPostType) {
+      switch (post.getPostType.toLowerCase()) {
         case 'good':
           return this.saveGoodPost(documentToSave, post as PostGood, options);
         case 'service':
-          throw Error;
+          return this.saveServicePost(
+            documentToSave,
+            post as PostService,
+            options,
+          );
 
         case 'petition':
           throw Error;
@@ -103,6 +114,29 @@ export class PostRepository implements PostRepositoryInterface {
       return ret;
     } catch (error: any) {
       this.logger.error('Error creating PostGood REPOSITORY: ' + error);
+      throw error;
+    }
+  }
+  async saveServicePost(
+    baseObj: any,
+    post: PostService,
+    options?: { session?: ClientSession },
+  ): Promise<any> {
+    try {
+      const newPost = {
+        ...baseObj,
+        frequencyPrice: post.getfrequencyPrice,
+        imageUrls: post.getImageUrls,
+        reviews: post.getReviews,
+      };
+      const postPostedDocument = new this.postServiceDocument(newPost);
+      const documentSaved = await postPostedDocument.save(options);
+
+      const ret = this.postMapper.documentToEntityMapped(documentSaved);
+      this.logger.log('Post service created successfully: ' + ret.getId);
+      return ret;
+    } catch (error: any) {
+      this.logger.error('Error creating PostService REPOSITORY: ' + error);
       throw error;
     }
   }

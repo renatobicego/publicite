@@ -38,7 +38,7 @@ export interface UserServiceInterface {
 
   saveNewPost(
     postId: ObjectId,
-    authorId: ObjectId,
+    authorId: string,
     options?: { session?: ClientSession },
   ): Promise<void>;
 }

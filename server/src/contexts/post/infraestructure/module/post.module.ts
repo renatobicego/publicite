@@ -11,6 +11,7 @@ import { UserModule } from 'src/contexts/user/infraestructure/module/user.module
 import { PostAdapter } from '../controller/adapter/post.adapter';
 import { PostLocationSchema } from '../schemas/postLocation.schema';
 import { PostGoodModel } from '../schemas/post-types-schemas/post.good.schema';
+import { PostServiceModel } from '../schemas/post-types-schemas/post.service.schema';
 
 @Module({
   imports: [
@@ -20,10 +21,7 @@ import { PostGoodModel } from '../schemas/post-types-schemas/post.good.schema';
         schema: PostModel.schema,
         discriminators: [
           { name: PostGoodModel.modelName, schema: PostGoodModel.schema },
-          // {
-          //   name: UserBusinessModel.modelName,
-          //   schema: UserBusinessModel.schema,
-          // },
+          { name: PostServiceModel.modelName, schema: PostServiceModel.schema },
         ],
       },
     ]),

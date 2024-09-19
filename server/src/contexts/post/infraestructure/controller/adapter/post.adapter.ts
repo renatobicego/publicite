@@ -3,6 +3,7 @@ import { error } from 'console';
 import {
   PostGoodRequest,
   PostRequest,
+  PostServiceRequest,
 } from 'src/contexts/post/application/adapter/dto/post.request';
 import { PostResponse } from 'src/contexts/post/application/adapter/dto/post.response';
 import { PostMapperAdapterInterface } from 'src/contexts/post/application/adapter/mapper/post.adapter.mapper.interface';
@@ -31,9 +32,12 @@ export class PostAdapter implements PostAdapterInterface {
           postMapped = this.postMapper.requestToEntity(post as PostGoodRequest);
           postPosted = await this.postService.create(postMapped);
           return this.postMapper.entityToResponse(postPosted);
+
         case PostType.Service.toLocaleLowerCase():
           this.logger.log('We are creating a service post');
-          postMapped = this.postMapper.requestToEntity(post);
+          postMapped = this.postMapper.requestToEntity(
+            post as PostServiceRequest,
+          );
           await this.postService.create(postMapped);
           return this.postMapper.entityToResponse(postMapped);
 

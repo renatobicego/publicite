@@ -12,7 +12,7 @@ export class PostGood extends Post {
   private condition: string;
   constructor(
     title: string,
-    author: ObjectId,
+    author: string,
     postType: string,
     description: string,
     visibility: Visibility,
