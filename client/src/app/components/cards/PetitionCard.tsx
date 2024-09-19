@@ -32,7 +32,7 @@ const PetitionCard = ({
         <Chip className="border-petition" variant="bordered" size="sm">
           Necesidad
         </Chip>
-        {post.petitionType === "Service" && <ServiceChip />}
+        {post.petitionType === "service" && <ServiceChip />}
       </div>
       {post.description && (
         <div className="text-light-text line-clamp-2 max-md:text-xs">

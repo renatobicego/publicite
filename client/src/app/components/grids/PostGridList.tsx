@@ -122,6 +122,7 @@ const PostGridList = ({
       shadow="none"
       aria-label="Example table with infinite pagination"
       className="w-full"
+      
       bottomContent={isLoading ? <Spinner color="warning" /> : null}
       classNames={{
         base: "w-full !overflow-x-auto",
@@ -142,7 +143,7 @@ const PostGridList = ({
       </TableHeader>
       <TableBody
         isLoading={isLoading}
-        loadingContent={<Spinner color="white" />}
+        emptyContent="No se encontraron resultados"
       >
         {items.map((item, index) => (
           <TableRow key={index}>

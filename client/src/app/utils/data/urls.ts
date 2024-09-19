@@ -1,6 +1,6 @@
 const MAGAZINES = "/revistas";
 const GROUPS = "/grupos";
-const PROFILE = "/perfil";
+const PROFILE = "/perfiles";
 const CONFIGURATION = "/configuracion";
 const POSTS = "/anuncios";
 const TUTORIALS = "/tutoriales";
@@ -12,6 +12,10 @@ const CREATE_POST = "/crear/anuncio";
 const CREATE_PETITION = "/crear/necesidad";
 const CREATE_MAGAZINE = "/crear/revista";
 const CREATE_GROUP = "/crear/grupo";
+const POST_RECENTS = `${POSTS}/recientes`
+const POST_BEST=`${POSTS}/mejor-puntuados`
+const POST_NEXT_TO_EXPIRE=`${POSTS}/proximos-a-vencer`
+const BOARDS = "/pizarras";
 
 export {
   MAGAZINES,
@@ -28,4 +32,8 @@ export {
   CREATE_MAGAZINE,
   CREATE_GROUP,
   SUSCRIBE,
+  POST_RECENTS,
+  POST_BEST,
+  POST_NEXT_TO_EXPIRE,
+  BOARDS
 };

@@ -33,10 +33,10 @@ const CreateService = ({ files }: { files: File[] }) => {
       description: "",
       userSetted: false
     },
-    postType: "Service",
+    postType: "service",
     visibility: {
-      post: "Public",
-      socialMedia: "Public",
+      post: "public",
+      socialMedia: "public",
     },
     createdAt: today(getLocalTimeZone()).toString(),
 

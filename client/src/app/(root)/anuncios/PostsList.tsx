@@ -8,7 +8,7 @@ import { useState } from "react";
 import PostListLogic from "./PostListLogic";
 
 const PostsList = () => {
-  const [postType, setPostType] = useState<Selection>(new Set(["Good"]));
+  const [postType, setPostType] = useState<Selection>(new Set(["good"]));
 
   const pathname = usePathname();
   const titleToShow = () => {

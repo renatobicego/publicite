@@ -18,7 +18,7 @@ const AccordionData = ({
   const accordionItems = [];
 
   // Conditionally add "Datos Adicionales" for Good type posts
-  if (post.postType === "Good") {
+  if (post.postType === "good") {
     accordionItems.push(
       <AccordionItem
         indicator={<FaChevronLeft className="size-3" />}

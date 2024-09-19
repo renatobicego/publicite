@@ -1,3 +1,4 @@
+import { Board } from "@/types/board";
 import {
   Good,
   Magazine,
@@ -6,6 +7,7 @@ import {
   Service,
 } from "@/types/postTypes";
 import { SubscriptionPlan } from "@/types/subscriptions";
+import { boardColors } from "./selectData";
 
 export const categories: PostCategory[] = [
   {
@@ -21,7 +23,6 @@ export const categories: PostCategory[] = [
     label: "Oficina",
   },
 ];
-
 
 const mockedGood: Good = {
   _id: "1",
@@ -67,7 +68,7 @@ const mockedGood: Good = {
       date: "2024-07-12",
     },
   ],
-  condition: "New",
+  condition: "new",
   price: 1000,
   location: {
     _id: "1",
@@ -120,10 +121,10 @@ const mockedGood: Good = {
       ],
     },
   ],
-  postType: "Good",
+  postType: "good",
   visibility: {
-    post: "Public",
-    socialMedia: "Public",
+    post: "public",
+    socialMedia: "public",
   },
   recommendations: [],
   description:
@@ -174,10 +175,10 @@ const mockedService: Service = {
       replies: [],
     },
   ],
-  postType: "Service",
+  postType: "service",
   visibility: {
-    post: "Public",
-    socialMedia: "Public",
+    post: "public",
+    socialMedia: "public",
   },
   recommendations: [],
   frequencyPrice: "hour",
@@ -214,11 +215,11 @@ const mockedPetition: Petition = {
     _id: "1",
     label: "Teléfonos y Compoutadoras",
   },
-  postType: "Petition",
-  petitionType: "Good",
+  postType: "petition",
+  petitionType: "good",
   visibility: {
-    post: "Public",
-    socialMedia: "Public",
+    post: "public",
+    socialMedia: "public",
   },
   recommendations: [],
   attachedFiles: [],
@@ -252,12 +253,12 @@ const mockedPetition2: Petition = {
     _id: "1",
     label: "Teléfonos y Compoutadoras",
   },
-  postType: "Petition",
-  petitionType: "Service",
+  postType: "petition",
+  petitionType: "service",
   frequencyPrice: "month",
   visibility: {
-    post: "Public",
-    socialMedia: "Public",
+    post: "public",
+    socialMedia: "public",
   },
   recommendations: [],
   attachedFiles: [],
@@ -378,3 +379,65 @@ export const magazines: Magazine[] = [
   },
 ];
 
+export const mockedBoards: Board[] = [
+  {
+    _id: "1",
+    annotations: ["Anotacion 1", "Anotacion 2"],
+    keywords: ["Keyword 1", "Keyword 2"],
+    user: {
+      username: "renatobicego",
+      profilePhotoUrl: "/avatar.png",
+      name: "Renato",
+    },
+    visibility: "public",
+  },
+  {
+    _id: "2",
+    annotations: [
+      "Anotacion 1",
+      "Anotacion 2",
+      "Anotacion 3",
+      "Anotacion 4",
+      "Anotacion 5",
+    ],
+    keywords: ["Keyword 1", "Keyword 2"],
+    user: {
+      username: "pedrobicego",
+      profilePhotoUrl: "/avatar.png",
+      name: "Renato",
+    },
+    visibility: "public",
+    color: boardColors[3],
+  },
+  {
+    _id: "3",
+    annotations: ["Anotacion 1", "Anotacion 2"],
+    keywords: ["Keyword 1", "Keyword 2"],
+    user: {
+      username: "miguelabentin",
+      profilePhotoUrl: "/avatar.png",
+      name: "Renato",
+    },
+    visibility: "public",
+    color: boardColors[1],
+  },
+  {
+    _id: "4",
+    annotations: [
+      "Anotacion 1",
+      "Anotacion 2",
+      "Anotacion 3",
+      "Anotacion 4",
+      "Anotacion 5",
+      "Anotacion 6",
+    ],
+    keywords: ["Keyword 1", "Keyword 2"],
+    user: {
+      username: "maxicvetic",
+      profilePhotoUrl: "/avatar.png",
+      name: "Renato",
+    },
+    visibility: "public",
+    color: boardColors[6],
+  },
+];

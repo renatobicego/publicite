@@ -34,10 +34,10 @@ const CreateGood = ({ files }: { files: File[] }) => {
       description: "",
       userSetted: false
     },
-    postType: "Good",
+    postType: "good",
     visibility: {
-      post: "Public",
-      socialMedia: "Public",
+      post: "public",
+      socialMedia: "public",
     },
     brand: undefined,
     model: undefined,

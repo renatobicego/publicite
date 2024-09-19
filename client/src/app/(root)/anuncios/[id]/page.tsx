@@ -36,7 +36,7 @@ export default async function PostPage({ params }: { params: { id: string } }) {
 
   const user = await currentUser();
   const isAuthor = postData.author.username === user?.username;
-  const isPetition = postData.postType === "Petition";
+  const isPetition = postData.postType === "petition";
 
   return (
     <main className="flex min-h-screen flex-col items-start main-style gap-6 md:gap-8">

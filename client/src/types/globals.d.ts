@@ -10,12 +10,12 @@ declare global {
   }
   type ObjectId = string;
   type Visibility =
-    | "Public"
-    | "Registered"
-    | "Contacts"
-    | "Friends"
-    | "TopFriends";
+    | "public"
+    | "registered"
+    | "contacts"
+    | "friends"
+    | "topfriends";
 
   type FrequencyPrice = "hour" | "day" | "week" | "month" | "year";
-  type PostType = "Service" | "Good" | "Petition"
+  type PostType = "service" | "good" | "petition"
 }

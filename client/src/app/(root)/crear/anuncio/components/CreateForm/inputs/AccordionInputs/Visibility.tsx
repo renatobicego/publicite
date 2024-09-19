@@ -10,11 +10,11 @@ const Visibility = ({
 }) => {
   const visibilityItems: { value: Visibility; label: string }[] = [
     {
-      value: "Public",
+      value: "public",
       label: "Público",
     },
     {
-      value: "Registered",
+      value: "registered",
       label: "Usuarios Registrados",
     },
     {

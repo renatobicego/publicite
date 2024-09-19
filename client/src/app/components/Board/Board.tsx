@@ -1,4 +1,5 @@
-import { BoardType, User } from "@/types/userTypes";
+import { Board } from "@/types/board";
+import { User } from "@/types/userTypes";
 import {
   Button,
   Card,
@@ -9,15 +10,18 @@ import {
 } from "@nextui-org/react";
 import React from "react";
 import { FaPencil } from "react-icons/fa6";
+import UsernameAvatar from "../buttons/UsernameAvatar";
 
-const Board = ({
+const BoardCard = ({
   isMyBoard,
   board,
   bg,
+  isProfile = false,
 }: {
   isMyBoard: boolean;
-  board: BoardType;
+  board: Board;
   bg: string;
+  isProfile?: boolean;
 }) => {
   const darkColors = ["bg-[#5A0001]/80"];
   const darkColorsBorder = [
@@ -30,7 +34,11 @@ const Board = ({
   return (
     <Card className={`p-4 flex flex-col gap-2 ${bg} ${textColor}`}>
       <CardHeader className="p-0">
-        <h6>Pizarra de {(board.user as User).name}</h6>
+        {isProfile ? (
+          <h6>Pizarra de {(board.user as User).name}</h6>
+        ) : (
+          <UsernameAvatar author={board.user as User} showAvatar textColor={textColor}/>
+        )}
       </CardHeader>
       <CardBody className="p-0">
         <ul className="list-inside list-disc text-sm">
@@ -53,12 +61,14 @@ const Board = ({
             </Chip>
           ))}
         </div>
-        <Button isIconOnly variant="flat" color="primary" radius="full">
-          <FaPencil className="size-4" />
-        </Button>
+        {isMyBoard && (
+          <Button isIconOnly variant="flat" color="primary" radius="full">
+            <FaPencil className="size-4" />
+          </Button>
+        )}
       </CardFooter>
     </Card>
   );
 };
 
-export default Board;
+export default BoardCard;

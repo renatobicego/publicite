@@ -26,10 +26,10 @@ const CreatePetition = () => {
       description: "",
       userSetted: false,
     },
-    postType: "Good",
+    postType: "good",
     visibility: {
-      post: "Public",
-      socialMedia: "Public",
+      post: "public",
+      socialMedia: "public",
     },
     createdAt: today(getLocalTimeZone()).toString(),
     petitionType: undefined,
