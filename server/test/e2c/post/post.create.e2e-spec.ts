@@ -17,13 +17,16 @@ describe('Create post suit test', () => {
   beforeEach(async () => {
     if (dbConnection) {
       // Limpiar la base de datos si es necesario
-      await dbConnection.collection('PostLocations').deleteMany({});
-      await dbConnection.collection('Posts').deleteMany({});
+      await dbConnection.collection('postLocations').deleteMany({});
+      await dbConnection.collection('posts').deleteMany({});
       await dbConnection.collection('users').insertOne(userSub_id());
     }
   });
 
   afterAll(async () => {
+    await dbConnection.collection('postLocations').deleteMany({});
+    await dbConnection.collection('posts').deleteMany({});
+    await dbConnection.collection('users').deleteMany({});
     await dbConnection.close();
   });
 
@@ -90,13 +93,12 @@ describe('Create post suit test', () => {
     });
     expect(response.body).toHaveProperty('_id');
     expect(Types.ObjectId.isValid(response.body.location)).toBe(true);
+
     const user = await dbConnection
-      .collection('Users')
-      .findOne({ _id: response.body.author });
-    expect(
-      user?.post.find(
-        (post: any) => post._id.toString() === response.body._id.toString(),
-      ),
-    );
+      .collection('users')
+      .findOne({ _id: userSub_id()._id });
+    expect(user).toBeTruthy();
+
+    expect(user?.post.toString()).toContain(response.body._id.toString());
   });
 });
