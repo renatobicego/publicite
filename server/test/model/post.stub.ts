@@ -1,5 +1,6 @@
 import { ObjectId } from 'mongoose';
 import { PostRequest } from 'src/contexts/post/application/adapter/dto/post.request';
+import { petitionType } from 'src/contexts/post/domain/entity/enum/post-petition-type.enum';
 import { frequencyPrice } from 'src/contexts/post/domain/entity/enum/post-service-freq-type.enum';
 
 export const postStub = (): PostRequest => {
@@ -66,5 +67,14 @@ export const postServiceStub = () => {
       'https://your-bucket.com/image1.jpg',
       'https://your-bucket.com/image2.jpg',
     ],
+  };
+};
+
+export const postPetitionStub = () => {
+  return {
+    ...postStub(),
+    toPrice: '1000',
+    frequencyPrice: frequencyPrice.Day,
+    petitionType: petitionType.Good,
   };
 };

@@ -5,12 +5,17 @@ import { Connection, Types } from 'mongoose';
 import { AppModule } from 'src/app.module';
 import {
   PostGoodRequest,
+  PostPetitionRequest,
   PostServiceRequest,
 } from 'src/contexts/post/application/adapter/dto/post.request';
 import { DatabaseService } from 'src/contexts/shared/database/infraestructure/database.service';
 
 import { Logger } from '@nestjs/common';
-import { postGoodStub, postServiceStub } from '../model/post.stub';
+import {
+  postGoodStub,
+  postPetitionStub,
+  postServiceStub,
+} from '../model/post.stub';
 import { userSub_id } from '../model/user.stub';
 
 let dbConnection: Connection;
@@ -48,7 +53,7 @@ describe('Create post suit test', () => {
   it('should create a new post good and asociate it with a user', async () => {
     const PostRequest: PostGoodRequest = {
       title: postGoodStub().title,
-      author: userSub_id().clerkId,
+      author: userSub_id()._id,
       postType: postGoodStub().postType,
       description: postGoodStub().description,
       visibility: postGoodStub().visibility,
@@ -105,7 +110,7 @@ describe('Create post suit test', () => {
   it('should create a new post service  and asociate it with a user', async () => {
     const PostRequest: PostServiceRequest = {
       title: postServiceStub().title,
-      author: userSub_id().clerkId,
+      author: userSub_id()._id,
       postType: 'service',
       description: postServiceStub().description,
       visibility: postServiceStub().visibility,
@@ -141,6 +146,57 @@ describe('Create post suit test', () => {
       frequencyPrice: PostRequest.frequencyPrice,
       imageUrls: PostRequest.imageUrls,
       reviews: PostRequest.reviews,
+    });
+    expect(response.body).toHaveProperty('_id');
+    expect(Types.ObjectId.isValid(response.body.location)).toBe(true);
+
+    const user = await dbConnection
+      .collection('users')
+      .findOne({ _id: userSub_id()._id });
+    expect(user).toBeTruthy();
+
+    expect(user?.post.toString()).toContain(response.body._id.toString());
+  });
+
+  it('should create a new post petition  and asociate it with a user', async () => {
+    const PostRequest: PostPetitionRequest = {
+      title: postPetitionStub().title,
+      author: userSub_id()._id,
+      postType: 'petition',
+      description: postPetitionStub().description,
+      visibility: postPetitionStub().visibility,
+      recomendations: postPetitionStub().recomendations,
+      price: postPetitionStub().price,
+      location: postPetitionStub().location,
+      category: postPetitionStub().category,
+      comments: postPetitionStub().comments,
+      attachedFiles: postPetitionStub().attachedFiles,
+      createAt: postPetitionStub().createAt,
+      toPrice: postPetitionStub().toPrice,
+      frequencyPrice: postPetitionStub().frequencyPrice,
+      petitionType: postPetitionStub().petitionType,
+    };
+
+    const response = await request(httpServer)
+      .post('/post')
+      //.set('Authorization', `bearer ${token}`)
+      .send(PostRequest);
+
+    expect(response.status).toBe(201);
+    expect(response.body).toMatchObject({
+      title: PostRequest.title,
+      postType: 'petition',
+      description: PostRequest.description,
+      visibility: PostRequest.visibility,
+      recomendations: PostRequest.recomendations,
+      price: PostRequest.price,
+      category: PostRequest.category,
+      comments: PostRequest.comments,
+      attachedFiles: PostRequest.attachedFiles,
+      createAt: PostRequest.createAt,
+      toPrice: PostRequest.toPrice,
+      frequencyPrice: PostRequest.frequencyPrice,
+      petitionType: PostRequest.petitionType,
     });
     expect(response.body).toHaveProperty('_id');
     expect(Types.ObjectId.isValid(response.body.location)).toBe(true);
