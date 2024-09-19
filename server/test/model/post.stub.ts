@@ -5,7 +5,7 @@ import { frequencyPrice } from 'src/contexts/post/domain/entity/enum/post-servic
 export const postStub = (): PostRequest => {
   return {
     title: 'My title',
-    author: '5f9d8f5e9d8f5e9d8f5e9d8f',
+    author: '5f9d8f5e9d8f5e9d8f5e9d8f' as unknown as ObjectId,
     postType: 'Good',
     description: 'My description',
     visibility: {

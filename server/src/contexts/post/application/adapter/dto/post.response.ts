@@ -2,7 +2,7 @@ import { ObjectId } from 'mongoose';
 
 export interface PostResponse {
   title: string;
-  author: string;
+  author: ObjectId;
   postType: string;
   description: string;
   visibility: string;

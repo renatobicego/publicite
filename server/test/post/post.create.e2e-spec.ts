@@ -96,7 +96,7 @@ describe('Create post suit test', () => {
 
     const user = await dbConnection
       .collection('users')
-      .findOne({ clerkId: userSub_id().clerkId });
+      .findOne({ _id: userSub_id()._id });
     expect(user).toBeTruthy();
 
     expect(user?.post.toString()).toContain(response.body._id.toString());
@@ -147,7 +147,7 @@ describe('Create post suit test', () => {
 
     const user = await dbConnection
       .collection('users')
-      .findOne({ clerkId: userSub_id().clerkId });
+      .findOne({ _id: userSub_id()._id });
     expect(user).toBeTruthy();
 
     expect(user?.post.toString()).toContain(response.body._id.toString());

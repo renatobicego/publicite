@@ -9,7 +9,7 @@ export interface Visibility {
 
 export class Post {
   private title: string;
-  private author: string;
+  private author: ObjectId;
   private postType: string;
   private description: string;
   private visibility: Visibility;
@@ -24,7 +24,7 @@ export class Post {
 
   constructor(
     title: string,
-    author: string,
+    author: ObjectId,
     postType: string,
     description: string,
     visibility: Visibility,

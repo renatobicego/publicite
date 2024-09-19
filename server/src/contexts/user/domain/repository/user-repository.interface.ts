@@ -30,7 +30,7 @@ export interface UserRepositoryInterface {
 
   saveNewPost(
     postId: ObjectId,
-    authorId: string,
+    authorId: ObjectId,
     options?: { session?: ClientSession },
   ): Promise<any>;
 }

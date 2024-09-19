@@ -236,7 +236,7 @@ export class UserService implements UserServiceInterface {
 
   async saveNewPost(
     postId: ObjectId,
-    authorId: string,
+    authorId: ObjectId,
     options?: { session?: ClientSession },
   ): Promise<void> {
     try {

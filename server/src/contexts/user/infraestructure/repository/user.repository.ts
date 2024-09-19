@@ -278,7 +278,7 @@ export class UserRepository implements UserRepositoryInterface {
 
   async saveNewPost(
     postId: ObjectId,
-    authorId: string,
+    authorId: ObjectId,
     options?: { session?: ClientSession },
   ): Promise<any> {
     try {
