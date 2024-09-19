@@ -88,18 +88,7 @@ export class PostAdapterMapper implements PostMapperAdapterInterface {
     switch (postTypetNormalized) {
       case 'good':
         return new PostGood(
-          request.title,
-          request.author,
-          postTypetNormalized,
-          request.description,
-          visibilityNormalizated,
-          request.recomendation ?? [],
-          request.price,
-          request.location,
-          request.category ?? [],
-          request.comments ?? [],
-          request.attachedFiles ?? [],
-          request.createAt,
+          postBase,
           request.imageUrls,
           request.year ?? null,
           request.brand ?? null,

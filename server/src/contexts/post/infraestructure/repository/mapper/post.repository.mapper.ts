@@ -19,37 +19,28 @@ export class PostRepositoryMapper implements PostRepositoryMapperInterface {
       document.comments,
       document.attachedFiles,
       document.createAt,
+      document._id,
     );
     switch (document.postType.toLowerCase()) {
       case 'good':
         return new PostGood(
-          document.title,
-          document.author,
-          document.postType,
-          document.description,
-          document.visibility,
-          document.recomendations,
-          document.price,
-          document.location,
-          document.category,
-          document.comments,
-          document.attachedFiles,
-          document.createAt,
+          post,
           document.imageUrls,
           document.year,
           document.brand,
           document.modelType,
           document.reviews,
           document.condition,
-          document._id,
         );
       case 'service':
-        return new PostService(
+        const asd = new PostService(
           post,
           document.frequencyPrice,
           document.imageUrls,
           document.reviews,
         );
+        console.log(asd);
+        return asd;
       default:
         throw error;
     }

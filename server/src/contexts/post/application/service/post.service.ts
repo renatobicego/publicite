@@ -24,6 +24,7 @@ export class PostService implements PostServiceInterface {
     const session = await this.connection.startSession();
     session.startTransaction();
     try {
+      //Location to save
       try {
         locationID = await this.postRepository.saveLocation(post.getLocation, {
           session,
@@ -37,6 +38,7 @@ export class PostService implements PostServiceInterface {
         throw error;
       }
 
+      //Post to save
       const newPost: Post = await this.postRepository.create(post, locationID, {
         session,
       });
@@ -49,6 +51,7 @@ export class PostService implements PostServiceInterface {
         throw error;
       }
       try {
+        //Post to save in user
         await this.userService.saveNewPost(
           newPost.getId as unknown as ObjectId,
           newPost.getAuthor,

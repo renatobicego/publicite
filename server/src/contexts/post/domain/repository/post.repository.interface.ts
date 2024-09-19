@@ -10,7 +10,6 @@ export interface PostRepositoryInterface {
   ): Promise<Post>;
   saveLocation(
     location: PostLocation,
-
     options?: { session?: ClientSession },
   ): Promise<ObjectId>;
 }

@@ -129,6 +129,7 @@ export class PostRepository implements PostRepositoryInterface {
         imageUrls: post.getImageUrls,
         reviews: post.getReviews,
       };
+
       const postPostedDocument = new this.postServiceDocument(newPost);
       const documentSaved = await postPostedDocument.save(options);
 

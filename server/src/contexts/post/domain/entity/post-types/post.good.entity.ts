@@ -1,7 +1,5 @@
 import { ObjectId } from 'mongoose';
-import { Post, Visibility } from '../post.entity';
-import { PostLocation } from '../postLocation.entity';
-import { PostRecomendation } from '../postRecomendation.entity';
+import { Post } from '../post.entity';
 
 export class PostGood extends Post {
   private imageUrls: string[];
@@ -11,18 +9,7 @@ export class PostGood extends Post {
   private reviews?: ObjectId[];
   private condition: string;
   constructor(
-    title: string,
-    author: string,
-    postType: string,
-    description: string,
-    visibility: Visibility,
-    recomendations: PostRecomendation[],
-    price: number,
-    location: PostLocation,
-    category: ObjectId[],
-    comments: ObjectId[],
-    attachedFiles: { url: string; label: string }[],
-    createAt: string,
+    post: Post,
     //Good atributes
     imageUrls?: string[],
     year?: number,
@@ -30,22 +17,21 @@ export class PostGood extends Post {
     modelType?: string,
     reviews?: ObjectId[],
     condition?: string,
-    _id?: ObjectId,
   ) {
     super(
-      title,
-      author,
-      postType,
-      description,
-      visibility,
-      recomendations,
-      price,
-      location,
-      category,
-      comments,
-      attachedFiles as [],
-      createAt,
-      _id,
+      post.getTitle,
+      post.getAuthor,
+      post.getPostType,
+      post.getDescription,
+      post.getVisibility,
+      post.getRecomendations,
+      post.getPrice,
+      post.getLocation,
+      post.getCategory,
+      post.getComments,
+      post.getAttachedFiles as any,
+      post.getCreateAt,
+      post.getId,
     );
 
     this.imageUrls = imageUrls || [];

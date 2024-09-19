@@ -296,6 +296,10 @@ export class UserRepository implements UserRepositoryInterface {
         );
         throw error;
       }
+      this.logger.log(
+        'The post was successfully saved in the user profile: ' +
+          UserRepository.name,
+      );
       return obj;
     } catch (error: any) {
       this.logger.error(
