@@ -29,3 +29,9 @@ export interface PostServiceResponse extends PostResponse {
   imageUrls: string[];
   reviews: string[];
 }
+
+export interface PostPetitionResponse extends PostResponse {
+  toPrice: string;
+  frequencyPrice: string;
+  petitionType: string;
+}

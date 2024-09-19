@@ -1,5 +1,6 @@
 import { error } from 'console';
 import { PostGood } from 'src/contexts/post/domain/entity/post-types/post.good.entity';
+import { PostPetition } from 'src/contexts/post/domain/entity/post-types/post.petition.entity';
 import { PostService } from 'src/contexts/post/domain/entity/post-types/post.service.entity';
 import { Post } from 'src/contexts/post/domain/entity/post.entity';
 import { PostRepositoryMapperInterface } from 'src/contexts/post/domain/repository/mapper/post.repository.mapper.interface';
@@ -38,6 +39,13 @@ export class PostRepositoryMapper implements PostRepositoryMapperInterface {
           document.frequencyPrice,
           document.imageUrls,
           document.reviews,
+        );
+      case 'petition':
+        return new PostPetition(
+          post,
+          document.toPrice,
+          document.frequencyPrice,
+          document.petitionType,
         );
       default:
         throw error;

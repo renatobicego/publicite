@@ -12,6 +12,7 @@ import { PostAdapter } from '../controller/adapter/post.adapter';
 import { PostLocationSchema } from '../schemas/postLocation.schema';
 import { PostGoodModel } from '../schemas/post-types-schemas/post.good.schema';
 import { PostServiceModel } from '../schemas/post-types-schemas/post.service.schema';
+import { PostPetitionModel } from '../schemas/post-types-schemas/post.petition.schema';
 
 @Module({
   imports: [
@@ -22,6 +23,10 @@ import { PostServiceModel } from '../schemas/post-types-schemas/post.service.sch
         discriminators: [
           { name: PostGoodModel.modelName, schema: PostGoodModel.schema },
           { name: PostServiceModel.modelName, schema: PostServiceModel.schema },
+          {
+            name: PostPetitionModel.modelName,
+            schema: PostPetitionModel.schema,
+          },
         ],
       },
     ]),

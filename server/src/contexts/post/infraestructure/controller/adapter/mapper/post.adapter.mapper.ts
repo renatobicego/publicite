@@ -3,11 +3,13 @@
 import { BadRequestException } from '@nestjs/common';
 import {
   PostGoodResponse,
+  PostPetitionResponse,
   PostResponse,
   PostServiceResponse,
 } from 'src/contexts/post/application/adapter/dto/post.response';
 import { PostMapperAdapterInterface } from 'src/contexts/post/application/adapter/mapper/post.adapter.mapper.interface';
 import { PostGood } from 'src/contexts/post/domain/entity/post-types/post.good.entity';
+import { PostPetition } from 'src/contexts/post/domain/entity/post-types/post.petition.entity';
 import { PostService } from 'src/contexts/post/domain/entity/post-types/post.service.entity';
 import { Post } from 'src/contexts/post/domain/entity/post.entity';
 
@@ -56,8 +58,14 @@ export class PostAdapterMapper implements PostMapperAdapterInterface {
         return postServiceResponse;
 
       case 'petition':
-        throw new BadRequestException('PostPetition mapping not implemented');
-
+        const postPetition = entity as PostPetition;
+        const postPetitionResponse: PostPetitionResponse = {
+          ...baseResponse,
+          toPrice: postPetition.getToPrice,
+          frequencyPrice: postPetition.getFrequencyPrice,
+          petitionType: postPetition.getPetitionType,
+        };
+        return postPetitionResponse;
       default:
         throw new BadRequestException(
           `Invalid post type: ${entity.getPostType}`,
@@ -106,10 +114,15 @@ export class PostAdapterMapper implements PostMapperAdapterInterface {
           request.reviews ?? [],
         );
       case 'petition':
-        throw BadRequestException;
+        return new PostPetition(
+          postBase,
+          request.toPrice,
+          request.frequencyPrice,
+          request.petitionType,
+        );
 
       default:
-        throw BadRequestException;
+        throw Error('Invalid post type: ' + postTypetNormalized);
     }
   }
 }

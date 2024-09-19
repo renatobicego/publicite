@@ -2,6 +2,7 @@ import { Inject } from '@nestjs/common';
 import { error } from 'console';
 import {
   PostGoodRequest,
+  PostPetitionRequest,
   PostRequest,
   PostServiceRequest,
 } from 'src/contexts/post/application/adapter/dto/post.request';
@@ -42,10 +43,12 @@ export class PostAdapter implements PostAdapterInterface {
           return this.postMapper.entityToResponse(postPosted);
 
         case PostType.Petition.toLocaleLowerCase():
-          this.logger.log('We are creating a petition post');
-          postMapped = this.postMapper.requestToEntity(post);
-          await this.postService.create(postMapped);
-          return this.postMapper.entityToResponse(postMapped);
+          this.logger.log('We are creating a service post');
+          postMapped = this.postMapper.requestToEntity(
+            post as PostPetitionRequest,
+          );
+          postPosted = await this.postService.create(postMapped);
+          return this.postMapper.entityToResponse(postPosted);
 
         default:
           this.logger.error('Error in adapter');

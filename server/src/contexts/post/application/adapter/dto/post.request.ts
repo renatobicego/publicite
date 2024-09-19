@@ -43,3 +43,9 @@ export interface PostServiceRequest extends PostRequest {
   imageUrls: string[];
   reviews: ObjectId[];
 }
+
+export interface PostPetitionRequest extends PostRequest {
+  toPrice: string;
+  frequencyPrice: string;
+  petitionType: string;
+}

@@ -19,13 +19,23 @@ import {
   PostServiceModel,
 } from '../schemas/post-types-schemas/post.service.schema';
 import { PostService } from '../../domain/entity/post-types/post.service.entity';
+import { PostPetition } from '../../domain/entity/post-types/post.petition.entity';
+import {
+  IPostPetition,
+  PostPetitionModel,
+} from '../schemas/post-types-schemas/post.petition.schema';
 
 export class PostRepository implements PostRepositoryInterface {
   constructor(
     @InjectModel(PostGoodModel.modelName)
     private readonly postGoodDocument: Model<IPostGood>,
+
     @InjectModel(PostServiceModel.modelName)
     private readonly postServiceDocument: Model<IPostService>,
+
+    @InjectModel(PostPetitionModel.modelName)
+    private readonly postPetitionDocument: Model<IPostPetition>,
+
     @InjectModel('PostLocation')
     private readonly locationDocument: Model<PostLocationDocument>,
     @Inject('PostRepositoryMapperInterface')
@@ -71,6 +81,7 @@ export class PostRepository implements PostRepositoryInterface {
       switch (post.getPostType.toLowerCase()) {
         case 'good':
           return this.saveGoodPost(documentToSave, post as PostGood, options);
+
         case 'service':
           return this.saveServicePost(
             documentToSave,
@@ -79,7 +90,11 @@ export class PostRepository implements PostRepositoryInterface {
           );
 
         case 'petition':
-          throw Error;
+          return this.savePetitionPost(
+            documentToSave,
+            post as PostPetition,
+            options,
+          );
 
         default:
           this.logger.error('Invalid post type: ' + post.getPostType);
@@ -131,6 +146,31 @@ export class PostRepository implements PostRepositoryInterface {
       };
 
       const postPostedDocument = new this.postServiceDocument(newPost);
+      const documentSaved = await postPostedDocument.save(options);
+
+      const ret = this.postMapper.documentToEntityMapped(documentSaved);
+      this.logger.log('Post service created successfully: ' + ret.getId);
+      return ret;
+    } catch (error: any) {
+      this.logger.error('Error creating PostService REPOSITORY: ' + error);
+      throw error;
+    }
+  }
+
+  async savePetitionPost(
+    baseObj: any,
+    post: PostPetition,
+    options?: { session?: ClientSession },
+  ): Promise<any> {
+    try {
+      const newPost = {
+        ...baseObj,
+        toPrice: post.getToPrice,
+        frequencyPrice: post.getFrequencyPrice,
+        petitionType: post.getPetitionType,
+      };
+
+      const postPostedDocument = new this.postPetitionDocument(newPost);
       const documentSaved = await postPostedDocument.save(options);
 
       const ret = this.postMapper.documentToEntityMapped(documentSaved);
