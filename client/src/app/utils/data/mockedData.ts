@@ -72,8 +72,10 @@ const mockedGood: Good = {
   price: 1000,
   location: {
     _id: "1",
-    lat: -32.8998,
-    lng: -68.8259,
+    location: {
+      type: "Point",
+      coordinates: [-32.8998, -68.8259],
+    },
     description: "Cacique Guaymallen 1065, Las Heras, Mendoza",
     userSetted: true,
   },
@@ -156,8 +158,10 @@ const mockedService: Service = {
   price: 1000,
   location: {
     _id: "1",
-    lat: -32.8998,
-    lng: -68.8259,
+    location: {
+      type: "Point",
+      coordinates: [-32.8998, -68.8259],
+    },
     description: "Cacique Guaymallen 1065, Las Heras, Mendoza",
     userSetted: true,
   },
@@ -227,8 +231,10 @@ const mockedPetition: Petition = {
   price: 1000,
   location: {
     _id: "1",
-    lat: -32.8998,
-    lng: -68.8259,
+    location: {
+      type: "Point",
+      coordinates: [-32.8998, -68.8259],
+    },
     description: "Cacique Guaymallen 1065, Las Heras, Mendoza",
     userSetted: true,
   },
@@ -266,8 +272,10 @@ const mockedPetition2: Petition = {
   price: 1000,
   location: {
     _id: "1",
-    lat: -32.8998,
-    lng: -68.8259,
+    location: {
+      type: "Point",
+      coordinates: [-32.8998, -68.8259],
+    },
     description: "Cacique Guaymallen 1065, Las Heras, Mendoza",
     userSetted: true,
   },
@@ -441,3 +449,63 @@ export const mockedBoards: Board[] = [
     color: boardColors[6],
   },
 ];
+
+
+export const mockedUsers = [
+  {
+    _id: "1k2",
+    profilePhotoUrl: "/avatar.png",
+    username: "username",
+    contact: {
+      _id: "12qdas1",
+      phone: "phone",
+    },
+    lastName: "lastName",
+    name: "name",
+    countryRegion: "Córdoba, Argentina",
+    userType: "Business",
+    businessName: "Nombre de Empresa",
+  },
+  {
+    _id: "2k3",
+    profilePhotoUrl: "/avatar.png",
+    username: "username",
+    contact: {
+      _id: "12daf1",
+      phone: "phone",
+      instagram: "instagram",
+      facebook: "facebook",
+    },
+    lastName: "Bicego",
+    name: "Renato",
+    countryRegion: "Mendoza, Argentina",
+    userType: "Person"
+  },
+  {
+    _id: "3k4",
+    profilePhotoUrl: "/avatar.png",
+    username: "username",
+    contact: {
+      _id: "12211",
+      phone: "phone",
+      x: "x",
+    },
+    lastName: "Perez",
+    name: "Pedro",
+    countryRegion: "Bariloche, Río Negro, Argentina",
+    userType: "Person"
+  },
+  {
+    _id: "4k5",
+    profilePhotoUrl: "/avatar.png",
+    username: "username",
+    contact: {
+      _id: "12as211",
+      website: "website",
+    },
+    lastName: "Lopez",
+    name: "Miguel",
+    countryRegion: "Córdoba, Argentina",
+    userType: "Person"
+  }
+]

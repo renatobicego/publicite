@@ -21,7 +21,8 @@ export const getEndDateISO = (monthsToAdd: number) => {
   }
 };
 
-export function formatDate(dateString: DateValue | string) {
+export function formatDate(dateString?: DateValue | string) {
+  if(!dateString) return "Sin fecha";
   // Split the date string into an array [YYYY, MM, DD]
   const dateParts = dateString.toString().split("-");
 

@@ -1,13 +1,13 @@
 import PostsGrid from "@/app/components/grids/PostGrid";
 import PostGridList from "@/app/components/grids/PostGridList";
-import Filter from "@/app/components/inputs/Filter";
-import Order from "@/app/components/inputs/Order";
+import Order, { SortOption } from "@/app/components/inputs/Order";
 import SearchPosts from "@/app/components/inputs/SearchPosts";
 import { mockedPosts } from "@/app/utils/data/mockedData";
 import { useInfiniteFetch } from "@/app/utils/hooks/useInfiniteFetch";
 import { Switch } from "@nextui-org/react";
 import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import FilterPosts from "./FilterPosts";
 
 const PostListLogic = () => {
   const [showAsList, setShowAsList] = useState(false);
@@ -29,27 +29,29 @@ const PostListLogic = () => {
   const hasSearchFilter = Boolean(searchTerm);
   const [filter, setFilter] = useState({
     category: [] as string[],
-    priceRange: [0, 2000000000]
-  })
+    priceRange: [0, 2000000000],
+  });
 
   const filteredItems = useMemo(() => {
     let filteredPosts = [...items];
 
     if (hasSearchFilter) {
       filteredPosts = filteredPosts.filter((post) =>
-        post.title.toLowerCase().includes(searchTerm.toLowerCase()),
+        post.title.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
     if (filter.category.length > 0) {
       filteredPosts = filteredPosts.filter((post) =>
-        filter.category.includes(post.category._id),
+        filter.category.includes(post.category._id)
       );
     }
 
     if (filter.priceRange[0] !== 0 || filter.priceRange[1] !== 2000000000) {
-      filteredPosts = filteredPosts.filter((post) =>
-        post.price >= filter.priceRange[0] && post.price <= filter.priceRange[1]
+      filteredPosts = filteredPosts.filter(
+        (post) =>
+          post.price >= filter.priceRange[0] &&
+          post.price <= filter.priceRange[1]
       );
     }
     return filteredPosts;
@@ -68,12 +70,32 @@ const PostListLogic = () => {
     });
   }, [sortDescriptor, items, filteredItems]);
 
+  // Sorting options for the Order component
+  const sortOptions: SortOption[] = [
+    { label: "A-Z", key: "nameAsc", direction: "ascending" },
+    { label: "Z-A", key: "nameDesc", direction: "descending" },
+    {
+      label: "Precio de mayor a menor",
+      key: "priceDesc",
+      direction: "descending",
+    },
+    {
+      label: "Precio de menor a mayor",
+      key: "priceAsc",
+      direction: "ascending",
+    },
+  ];
+
   return (
     <>
       <div className="flex gap-2">
-        <SearchPosts searchTerm={searchTerm} setSearchTerm={setSearchTerm}/>
-        <Filter setFilter={setFilter}/>
-        <Order sortDescriptor={sortDescriptor} setSortDescriptor={setSortDescriptor}/>
+        <SearchPosts searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+        <FilterPosts setFilter={setFilter} />
+        <Order
+          sortDescriptor={sortDescriptor}
+          setSortDescriptor={setSortDescriptor}
+          sortOptions={sortOptions}
+        />
         <Switch
           color="secondary"
           isSelected={showAsList}

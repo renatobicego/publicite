@@ -7,10 +7,12 @@ import {
   CardFooter,
   CardHeader,
   Chip,
+  Link,
 } from "@nextui-org/react";
 import React from "react";
 import { FaPencil } from "react-icons/fa6";
 import UsernameAvatar from "../buttons/UsernameAvatar";
+import { PROFILE } from "@/app/utils/data/urls";
 
 const BoardCard = ({
   isMyBoard,
@@ -32,12 +34,20 @@ const BoardCard = ({
   const textColor = darkColors.includes(bg) ? "text-white" : "text-text-color";
   const borderColor = darkColorsBorder.includes(bg) ? "border-white" : "";
   return (
-    <Card className={`p-4 flex flex-col gap-2 ${bg} ${textColor}`}>
+    <Card
+      as={Link}
+      href={`${PROFILE}/${board.user.username}`}
+      className={`p-4 flex flex-col gap-2 ${bg} ${textColor}`}
+    >
       <CardHeader className="p-0">
         {isProfile ? (
           <h6>Pizarra de {(board.user as User).name}</h6>
         ) : (
-          <UsernameAvatar author={board.user as User} showAvatar textColor={textColor}/>
+          <UsernameAvatar
+            author={board.user as User}
+            showAvatar
+            textColor={textColor}
+          />
         )}
       </CardHeader>
       <CardBody className="p-0">

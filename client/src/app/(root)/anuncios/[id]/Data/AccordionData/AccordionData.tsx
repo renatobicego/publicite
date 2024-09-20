@@ -52,7 +52,7 @@ const AccordionData = ({
         aria-label="ubicación"
         title="Ubicación"
       >
-        <LocationMap lat={post.location.lat} lng={post.location.lng} />
+        <LocationMap lat={post.location.location.coordinates[0]} lng={post.location.location.coordinates[1]} />
         {post.location.userSetted && (
           <p className="text-sm">
             El usuario vendedor ha establecido la ubicación manualmente

@@ -15,7 +15,7 @@ import {
 import { Dispatch, SetStateAction, useState } from "react";
 import { FaFilter } from "react-icons/fa6";
 
-const Filter = ({
+const FilterPosts = ({
   setFilter,
 }: {
   setFilter: Dispatch<
@@ -79,7 +79,7 @@ const Filter = ({
   );
 };
 
-export default Filter;
+export default FilterPosts;
 
 const SelectCategory = ({
   category,
