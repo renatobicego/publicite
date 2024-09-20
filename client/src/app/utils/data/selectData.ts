@@ -66,6 +66,17 @@ export const postTypesItems: { label: string; value: PostType }[] = [
   },
 ];
 
+export const petitionTypesItems: { label: string; value: PostType }[] = [
+  {
+    label: "Bienes",
+    value: "good",
+  },
+  {
+    label: "Servicios",
+    value: "service",
+  }
+];
+
 export const boardColors = [
   "bg-fondo",
   "bg-white",

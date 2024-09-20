@@ -1,7 +1,7 @@
 import { CustomSelect } from "@/app/components/inputs/CustomInputs";
 import { GoodPostValues, ServicePostValues } from "@/types/postTypes";
 import { Field, FormikErrors } from "formik";
-import React from "react";
+import React, { memo } from "react";
 
 const Visibility = ({
   errors,
@@ -18,15 +18,15 @@ const Visibility = ({
       label: "Usuarios Registrados",
     },
     {
-      value: "Contacts",
+      value: "contacts",
       label: "Contactos",
     },
     {
-      value: "Friends",
+      value: "friends",
       label: "Amigos",
     },
     {
-      value: "TopFriends",
+      value: "topfriends",
       label: "Top Amigos",
     },
   ];
@@ -64,4 +64,4 @@ const Visibility = ({
   );
 };
 
-export default Visibility;
+export default memo(Visibility);

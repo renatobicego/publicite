@@ -1,5 +1,6 @@
 "use client";
 
+import { postTypesItems } from "@/app/utils/data/selectData";
 import { Select, SelectItem } from "@nextui-org/react";
 
 const SelectType = ({
