@@ -69,7 +69,7 @@ const mockedGood: Good = {
     },
   ],
   condition: "new",
-  price: 1000,
+  price: 10000,
   location: {
     _id: "1",
     location: {

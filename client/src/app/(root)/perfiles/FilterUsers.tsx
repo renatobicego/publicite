@@ -7,14 +7,10 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-  Select,
-  Selection,
-  SelectItem,
-  Slider,
   useDisclosure,
 } from "@nextui-org/react";
 import { Dispatch, SetStateAction, useState } from "react";
-import { FaFilter } from "react-icons/fa6";
+import { FaFilter, FaX } from "react-icons/fa6";
 
 const FilterUsers = ({
   setFilter,
@@ -42,12 +38,28 @@ const FilterUsers = ({
       >
         <FaFilter />
       </Button>
+      {location && (
+        <Button
+          size="sm"
+          color="secondary"
+          variant="ghost"
+          className="min-w-fit"
+          radius="full"
+          onPress={() => {
+            setLocation("");
+            setFilter({ location: "" });
+          }}
+          startContent={<FaX className="text-secondary min-w-3" />}
+        >
+          Borrar Filtros
+        </Button>
+      )}
       <Modal placement="center" isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
           {(onClose) => (
             <>
               <ModalHeader className="flex flex-col gap-1">
-                Filtrar Anuncios
+                Filtrar Usuarios
               </ModalHeader>
               <ModalBody>
                 <PlaceAutocomplete
@@ -61,8 +73,15 @@ const FilterUsers = ({
                 />
               </ModalBody>
               <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  Cerrar
+                <Button
+                  color="danger"
+                  variant="light"
+                  onPress={() => {
+                    onClose();
+                    setLocation("");
+                  }}
+                >
+                  Cancelar
                 </Button>
                 <Button
                   color="primary"

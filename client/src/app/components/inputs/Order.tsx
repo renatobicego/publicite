@@ -12,6 +12,7 @@ export type SortOption = {
   label: string;
   key: string;
   direction: "ascending" | "descending";
+  column: string;
 };
 
 const Order = ({
@@ -29,9 +30,9 @@ const Order = ({
       direction: string;
     }>
   >;
-  sortOptions: SortOption[]; // Array of sorting options
+  sortOptions: SortOption[]; 
 }) => {
-  // Function to change or reset the sorting order
+  // change or reset the sorting order
   const changeOrder = (key: any) => {
     const selectedOption = sortOptions.find((option) => option.key === key);
 
@@ -41,18 +42,18 @@ const Order = ({
       const { column, direction } = prevValue;
 
       // Reset if the same sort key and direction are selected
-      if (column === selectedOption.key && direction === selectedOption.direction) {
+      if (column === selectedOption.column && direction === selectedOption.direction) {
         return { column: "", direction: "" };
       }
 
-      return { column: selectedOption.key, direction: selectedOption.direction };
+      return { column: selectedOption.column, direction: selectedOption.direction };
     });
   };
 
   // Determine the selected key based on sortDescriptor
   const selectedKey = () => {
     const currentOption = sortOptions.find(
-      (option) => option.key === sortDescriptor.column && option.direction === sortDescriptor.direction
+      (option) => option.column === sortDescriptor.column && option.direction === sortDescriptor.direction
     );
     return currentOption ? [currentOption.key] : [];
   };

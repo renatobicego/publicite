@@ -10,7 +10,6 @@ import {
   Spinner,
   Image,
   Divider,
-  SortDescriptor,
 } from "@nextui-org/react";
 import { useCallback } from "react";
 import { FaStar } from "react-icons/fa6";
@@ -107,8 +106,8 @@ const PostGridList = ({
         default:
           return (
             <div className="flex gap-1 items-center">
-              <ShareButton post={data as Post} />
-              <SaveButton post={data as Post} saved={false} />
+              <ShareButton post={data} />
+              <SaveButton post={data} saved={false} />
             </div>
           );
       }
@@ -120,9 +119,8 @@ const PostGridList = ({
     <Table
       isHeaderSticky
       shadow="none"
-      aria-label="Example table with infinite pagination"
+      aria-label="lista comparativa de anuncios"
       className="w-full"
-      
       bottomContent={isLoading ? <Spinner color="warning" /> : null}
       classNames={{
         base: "w-full !overflow-x-auto",

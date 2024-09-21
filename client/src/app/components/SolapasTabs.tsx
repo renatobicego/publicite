@@ -2,7 +2,6 @@
 
 import { Tab, Tabs } from "@nextui-org/react";
 import { usePathname } from "next/navigation";
-import PostsList from "../(root)/anuncios/PostsList";
 import {
   BOARDS,
   POST_BEST,
@@ -14,6 +13,7 @@ import {
 import BoardsLogic from "../(root)/pizarras/BoardsLogic";
 import UsersLogic from "../(root)/perfiles/UsersLogic";
 import { useEffect, useRef } from "react";
+import PostsList from "../(root)/anuncios/components/PostsList";
 
 const SolapasTabs = () => {
   const pathname = usePathname();

@@ -73,7 +73,6 @@ const CreatePetition = () => {
       label: file.label,
     }));
 
-    console.log(values);
     const resApi = await createPost({
       ...values,
       location: dbLocation,
@@ -90,14 +89,13 @@ const CreatePetition = () => {
   };
   return (
     <Formik
-      // validateOnBlur={false}
-      // validateOnChange={false}
+      validateOnBlur={false}
+      validateOnChange={false}
       initialValues={initialValues}
       onSubmit={handleSubmit}
       validationSchema={petitionValidation}
     >
       {({ isSubmitting, errors, setFieldValue, values }) => {
-        console.log(values.price)
 
         return (
           <Form className="flex flex-col gap-4 w-full">

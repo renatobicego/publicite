@@ -25,7 +25,7 @@ const TitleDescription = ({
         name="description"
         label="Descripción"
         placeholder="Agregue una descripción"
-        isRequired
+        description="Máximo 2000 caracteres"
         aria-label="descripción"
         isInvalid={!!errors.description}
         errorMessage={errors.description}

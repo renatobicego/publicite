@@ -26,7 +26,7 @@ const CreateService = ({ files }: { files: File[] }) => {
     price: undefined,
     frequencyPrice: undefined,
     category: "",
-    author: user?.username || "",
+    author: (user?.publicMetadata.mongoId as string) || "",
     imagesUrls: [],
     location: {
       lat: undefined,

@@ -7,6 +7,7 @@ import { useMemo, useState } from "react";
 import { Board } from "@/types/board";
 const BoardsLogic = () => {
   const { items, isLoading } = useInfiniteFetch(getBoards, true);
+  console.log(items)
   const [searchTerm, setSearchTerm] = useState("");
   const hasSearchFilter = Boolean(searchTerm);
   const filteredItems = useMemo(() => {
