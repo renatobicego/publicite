@@ -40,7 +40,7 @@ const SolapasTabs = () => {
     <Tabs
       classNames={{
         panel: "p-0",
-        tabList: "max-md:gap-0",
+        tabList: "max-md:gap-0 p-0",
         tab: "max-md:text-xs",
         tabContent: "max-md:text-xs",
         base: "max-w-full overflow-x-auto", // Horizontal scroll enabled

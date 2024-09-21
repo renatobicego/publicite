@@ -30,7 +30,7 @@ const Order = ({
       direction: string;
     }>
   >;
-  sortOptions: SortOption[]; 
+  sortOptions: SortOption[];
 }) => {
   // change or reset the sorting order
   const changeOrder = (key: any) => {
@@ -42,18 +42,26 @@ const Order = ({
       const { column, direction } = prevValue;
 
       // Reset if the same sort key and direction are selected
-      if (column === selectedOption.column && direction === selectedOption.direction) {
+      if (
+        column === selectedOption.column &&
+        direction === selectedOption.direction
+      ) {
         return { column: "", direction: "" };
       }
 
-      return { column: selectedOption.column, direction: selectedOption.direction };
+      return {
+        column: selectedOption.column,
+        direction: selectedOption.direction,
+      };
     });
   };
 
   // Determine the selected key based on sortDescriptor
   const selectedKey = () => {
     const currentOption = sortOptions.find(
-      (option) => option.column === sortDescriptor.column && option.direction === sortDescriptor.direction
+      (option) =>
+        option.column === sortDescriptor.column &&
+        option.direction === sortDescriptor.direction
     );
     return currentOption ? [currentOption.key] : [];
   };
@@ -61,7 +69,13 @@ const Order = ({
   return (
     <Dropdown placement="bottom-end">
       <DropdownTrigger>
-        <Button isIconOnly color="secondary" variant="bordered" radius="full">
+        <Button
+          isIconOnly
+          color="secondary"
+          className="max-md:size-8 max-md:min-w-8"
+          variant="bordered"
+          radius="full"
+        >
           <FaSort />
         </Button>
       </DropdownTrigger>

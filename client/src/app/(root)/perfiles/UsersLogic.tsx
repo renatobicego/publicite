@@ -11,13 +11,7 @@ const UsersLogic = () => {
   const searchParams = useSearchParams();
   const busqueda = searchParams.get("busqueda");
 
-  // Fetch mocked users data
-  const fetchMockedData = async () => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    return [...mockedUsers];
-  };
-
-  const { items, isLoading } = useInfiniteFetch(fetchMockedData, true);
+  const { items, isLoading } = useInfiniteFetch("users", true);
 
   // Use custom hook for filtering and sorting logic
   const {
@@ -38,7 +32,7 @@ const UsersLogic = () => {
     <section className="w-full flex-col flex gap-4">
       <h2>Perfiles</h2>
       <div className="flex gap-2 items-center">
-        <SearchPosts searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+        <SearchPosts searchTerms={searchTerm} setSearchTerms={setSearchTerm} />
         <FilterUsers setFilter={setFilter} />
         <Order
           sortDescriptor={sortDescriptor}

@@ -5,8 +5,8 @@ import FilterPosts from "./FilterPosts";
 import { Dispatch, SetStateAction } from "react";
 
 interface PostListHeaderProps {
-  searchTerm: string;
-  setSearchTerm: Dispatch<SetStateAction<string>>;
+  searchTerms: (string | undefined)[];
+  setSearchTerms: Dispatch<SetStateAction<(string | undefined)[]>>;
   filter: { category: string[]; priceRange: (number | undefined)[] };
   setFilter: (filter: any) => void;
   sortDescriptor: { column: string; direction: string };
@@ -16,8 +16,8 @@ interface PostListHeaderProps {
 }
 
 const PostListHeader = ({
-  searchTerm,
-  setSearchTerm,
+  searchTerms,
+  setSearchTerms,
   filter,
   setFilter,
   sortDescriptor,
@@ -25,7 +25,7 @@ const PostListHeader = ({
   showAsList,
   setShowAsList,
 }: PostListHeaderProps) => {
-      // Sorting options for the Order component
+  // Sorting options for the Order component
   const sortOptions: SortOption[] = [
     { label: "A-Z", key: "nameAsc", direction: "ascending", column: "title" },
     { label: "Z-A", key: "nameDesc", direction: "descending", column: "title" },
@@ -43,8 +43,8 @@ const PostListHeader = ({
     },
   ];
   return (
-    <div className="flex gap-2 items-center">
-      <SearchPosts searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+    <div className="flex gap-2 items-center max-md:flex-wrap">
+      <SearchPosts searchTerms={searchTerms} setSearchTerms={setSearchTerms} isMultiSearch/>
       <FilterPosts filter={filter} setFilter={setFilter} />
       <Order
         sortDescriptor={sortDescriptor}
@@ -56,6 +56,9 @@ const PostListHeader = ({
         isSelected={showAsList}
         onValueChange={setShowAsList}
         className="min-w-fit"
+        classNames={{
+          label: "text-xs md:text-sm",
+        }}
       >
         Mostrar en Lista
       </Switch>

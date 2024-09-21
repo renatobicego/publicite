@@ -1,12 +1,14 @@
 import { useMemo, useState } from "react";
 
 export const useFilteredAndSortedPosts = (items: any[]) => {
-  const [searchTerm, setSearchTerm] = useState("");
+  // Modify searchTerm to hold two terms
+  const [searchTerms, setSearchTerms] = useState<(string | undefined)[]>([]);
   const [sortDescriptor, setSortDescriptor] = useState({
     column: "",
     direction: "",
   });
-  const hasSearchFilter = Boolean(searchTerm);
+
+  const hasSearchFilter = Boolean(searchTerms[0] || searchTerms[1]);
 
   const [filter, setFilter] = useState<{
     category: string[];
@@ -19,10 +21,20 @@ export const useFilteredAndSortedPosts = (items: any[]) => {
   const filteredItems = useMemo(() => {
     let filteredPosts = [...items];
 
+    // Check if either search term is provided and filter based on that
     if (hasSearchFilter) {
-      filteredPosts = filteredPosts.filter((post) =>
-        post.title.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+      filteredPosts = filteredPosts.filter((post) => {
+        const titleLowerCase = post.title.toLowerCase();
+        const matchesFirstTerm = searchTerms[0]
+          ? titleLowerCase.includes(searchTerms[0].toLowerCase())
+          : true;
+        const matchesSecondTerm = searchTerms[1]
+          ? titleLowerCase.includes(searchTerms[1].toLowerCase())
+          : true;
+
+        // Post should match either of the search terms
+        return matchesFirstTerm && matchesSecondTerm;
+      });
     }
 
     if (filter.category.length > 0) {
@@ -44,7 +56,7 @@ export const useFilteredAndSortedPosts = (items: any[]) => {
     }
 
     return filteredPosts;
-  }, [hasSearchFilter, items, searchTerm, filter]);
+  }, [hasSearchFilter, items, searchTerms, filter]);
 
   const sortedItems = useMemo(() => {
     if (!sortDescriptor.column) {
@@ -61,8 +73,8 @@ export const useFilteredAndSortedPosts = (items: any[]) => {
   }, [sortDescriptor, filteredItems]);
 
   return {
-    searchTerm,
-    setSearchTerm,
+    searchTerms,
+    setSearchTerms,
     sortDescriptor,
     setSortDescriptor,
     filter,

@@ -6,6 +6,7 @@ import {
 } from "@/types/userTypes";
 import { currentUser } from "@clerk/nextjs/server";
 import axios from "axios";
+import { mockedUsers } from "../utils/data/mockedData";
 
 const baseUrl = `${process.env.API_URL}/user/personal`;
 
@@ -64,6 +65,19 @@ export const getUserPreferences = async (username: string) => {
       `${process.env.API_URL}/user/preferences/${username}`
     );
     return res.json();
+  } catch (error) {
+    return {
+      error: "Error al traer las preferencias. Por favor intenta de nuevo.",
+    };
+  }
+};
+
+
+
+export const getUsers = async (searchTerm: string | null) => {
+  try {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    return mockedUsers
   } catch (error) {
     return {
       error: "Error al traer las preferencias. Por favor intenta de nuevo.",

@@ -9,8 +9,8 @@ const PostListLogic = ({postType} : {postType: "good" | "service" | "petition"})
   const [showAsList, setShowAsList] = useState(false);
   const { items, isLoading } = useInfiniteFetch(postType, true);
   const {
-    searchTerm,
-    setSearchTerm,
+    searchTerms,
+    setSearchTerms,
     sortDescriptor,
     setSortDescriptor,
     filter,
@@ -20,8 +20,8 @@ const PostListLogic = ({postType} : {postType: "good" | "service" | "petition"})
   return (
     <>
       <PostListHeader
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
+        searchTerms={searchTerms}
+        setSearchTerms={setSearchTerms}
         filter={filter}
         setFilter={setFilter}
         sortDescriptor={sortDescriptor}

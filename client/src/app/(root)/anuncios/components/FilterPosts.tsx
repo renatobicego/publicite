@@ -50,6 +50,7 @@ const FilterPosts = ({
         color="secondary"
         variant="bordered"
         radius="full"
+        className="max-md:size-8 max-md:min-w-8"
       >
         <FaFilter />
       </Button>
