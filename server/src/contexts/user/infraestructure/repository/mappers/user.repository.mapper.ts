@@ -14,9 +14,19 @@ import { UserRepositoryMapperInterface } from 'src/contexts/user/domain/reposito
 import { UserPersonalUpdateDto } from 'src/contexts/user/domain/entity/dto/user.personal.update.dto';
 import { UserBusinessUpdateDto } from 'src/contexts/user/domain/entity/dto/user.business.update.dto';
 import { UserPreferencesEntityDto } from 'src/contexts/user/domain/entity/dto/user.preferences.update.dto';
+import { UserClerkUpdateDto } from 'src/contexts/user/domain/entity/dto/user.clerk.update.dto';
 
 export class UserRepositoryMapper implements UserRepositoryMapperInterface {
   constructor() {}
+  documentToEntityMapped_clerkUpdate(document: any): UserClerkUpdateDto {
+    return new UserClerkUpdateDto({
+      name: document.name,
+      lastName: document.lastName,
+      username: document.username,
+      profilePhotoUrl: document.profilePhotoUrl,
+      email: document.email,
+    });
+  }
   documentToEntityMapped(document: any): User {
     const post: User = new User(
       document.clerkId,

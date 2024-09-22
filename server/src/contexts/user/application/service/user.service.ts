@@ -13,6 +13,7 @@ import { ContactRequest } from '../adapter/dto/HTTP-REQUEST/user.request.CREATE'
 import { UserPersonalUpdateDto } from '../../domain/entity/dto/user.personal.update.dto';
 import { UserBusinessUpdateDto } from '../../domain/entity/dto/user.business.update.dto';
 import { UserPreferencesEntityDto } from '../../domain/entity/dto/user.preferences.update.dto';
+import { UP_clerkUpdateRequestDto } from 'src/contexts/webhook/application/clerk/dto/UP-clerk.update.request';
 
 @Injectable()
 export class UserService implements UserServiceInterface {
@@ -145,18 +146,18 @@ export class UserService implements UserServiceInterface {
     }
   }
 
-  // async updateUserByClerkId(req: UP_clerkUpdateRequestDto): Promise<any> {
-  //   const clerkId = req.clerkId;
-  //   try {
-  //     return await this.userRepository.updateByClerkId(clerkId, req);
-  //   } catch (error: any) {
-  //     this.logger.error(
-  //       'An error has occurred in user service - UpdateUserByClerk: ' +
-  //         error.message,
-  //     );
-  //     throw error;
-  //   }
-  // }
+  async updateUserByClerkId(req: UP_clerkUpdateRequestDto): Promise<any> {
+    const clerkId = req.clerkId;
+    try {
+      return await this.userRepository.updateByClerkId(clerkId, req);
+    } catch (error: any) {
+      this.logger.error(
+        'An error has occurred in user service - UpdateUserByClerk: ' +
+          error.message,
+      );
+      throw error;
+    }
+  }
 
   async saveNewPost(
     postId: ObjectId,

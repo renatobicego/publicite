@@ -19,6 +19,8 @@ import { error } from 'console';
 import { UserBusinessUpdateDto } from '../../domain/entity/dto/user.business.update.dto';
 import { UserPersonalUpdateDto } from '../../domain/entity/dto/user.personal.update.dto';
 import { UserPreferencesEntityDto } from '../../domain/entity/dto/user.preferences.update.dto';
+import { UP_clerkUpdateRequestDto } from 'src/contexts/webhook/application/clerk/dto/UP-clerk.update.request';
+import { UserClerkUpdateDto } from '../../domain/entity/dto/user.clerk.update.dto';
 
 @Injectable()
 export class UserRepository implements UserRepositoryInterface {
@@ -91,7 +93,7 @@ export class UserRepository implements UserRepositoryInterface {
         userPreferences: reqUser.getUserPreferences,
       };
       console.log(documentToSave);
-      switch (reqUser.getUserType?.toLocaleLowerCase()) {
+      switch (reqUser.getUserType?.toLowerCase()) {
         case 'personal':
           return await this.savePersonalAccount(
             documentToSave,
@@ -254,32 +256,28 @@ export class UserRepository implements UserRepositoryInterface {
     }
   }
 
-  // async updateByClerkId(
-  //   clerkId: string,
-  //   reqUser: UP_clerkUpdateRequestDto,
-  // ): Promise<User> {
-  //   throw new Error('Method not implemented.');
-  //   // try {
-  //   //   this.logger.log(
-  //   //     'Updating clerk attributes in the repository, for the ID: ' + clerkId,
-  //   //   );
-  //   //   const userUpdated = await this.user
-  //   //     .findOneAndUpdate({ clerkId: clerkId }, reqUser, { new: true })
-  //   //     .lean(); // Aplicar lean() aquí si no necesitas métodos Mongoose
-
-  //   //   if (!userUpdated) {
-  //   //     throw new BadRequestException('User not found');
-  //   //   }
-  //   //   if (userUpdated.userType === 'Personal') {
-  //   //     return UserPerson.formatDocument(userUpdated as IUserPerson);
-  //   //   } else {
-  //   //     return UserBusiness.formatDocument(userUpdated as IUserBusiness);
-  //   //   }
-  //   // } catch (error) {
-  //   //   this.logger.error('Error in updateByClerkId method(Repository)', error);
-  //   //   throw error;
-  //   // }
-  // }
+  async updateByClerkId(
+    clerkId: string,
+    reqUser: UP_clerkUpdateRequestDto,
+  ): Promise<UserClerkUpdateDto> {
+    try {
+      this.logger.log(
+        'Updating clerk attributes in the repository, for the ID: ' + clerkId,
+      );
+      const userUpdated = await this.user
+        .findOneAndUpdate({ clerkId: clerkId }, reqUser, { new: true })
+        .lean(); // Aplicar lean() aquí si no necesitas métodos Mongoose
+      if (!userUpdated) {
+        throw new BadRequestException('User not found');
+      }
+      return this.userRepositoryMapper.documentToEntityMapped_clerkUpdate(
+        userUpdated,
+      );
+    } catch (error) {
+      this.logger.error('Error in updateByClerkId method(Repository)', error);
+      throw error;
+    }
+  }
 
   async updateUserPreferencesByUsername(
     username: string,

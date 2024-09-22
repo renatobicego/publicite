@@ -7,6 +7,8 @@ import { UserBusiness } from '../entity/userBusiness.entity';
 import { UserBusinessUpdateDto } from '../entity/dto/user.business.update.dto';
 import { UserPersonalUpdateDto } from '../entity/dto/user.personal.update.dto';
 import { UserPreferencesEntityDto } from '../entity/dto/user.preferences.update.dto';
+import { UP_clerkUpdateRequestDto } from 'src/contexts/webhook/application/clerk/dto/UP-clerk.update.request';
+import { UserClerkUpdateDto } from '../entity/dto/user.clerk.update.dto';
 
 export interface UserRepositoryInterface {
   save(reqUser: User, session?: ClientSession): Promise<User>;
@@ -32,10 +34,10 @@ export interface UserRepositoryInterface {
     reqUser: UserPersonalUpdateDto | UserBusinessUpdateDto,
     type: number,
   ): Promise<UserPersonalUpdateDto | UserBusinessUpdateDto>;
-  // updateByClerkId(
-  //   clerkId: string,
-  //   reqUser: UP_clerkUpdateRequestDto,
-  // ): Promise<User>;
+  updateByClerkId(
+    clerkId: string,
+    reqUser: UP_clerkUpdateRequestDto,
+  ): Promise<UserClerkUpdateDto>;
 
   updateUserPreferencesByUsername(
     username: string,
