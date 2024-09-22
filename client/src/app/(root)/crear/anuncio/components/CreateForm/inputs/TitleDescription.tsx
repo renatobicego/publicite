@@ -1,6 +1,7 @@
 import { CustomInput, CustomTextarea } from "@/app/components/inputs/CustomInputs";
 import { GoodPostValues, ServicePostValues } from "@/types/postTypes";
 import { Field, FormikErrors } from "formik";
+import { memo } from "react";
 
 const TitleDescription = ({
   errors,
@@ -24,7 +25,7 @@ const TitleDescription = ({
         name="description"
         label="Descripción"
         placeholder="Agregue una descripción"
-        isRequired
+        description="Máximo 2000 caracteres"
         aria-label="descripción"
         isInvalid={!!errors.description}
         errorMessage={errors.description}
@@ -33,4 +34,4 @@ const TitleDescription = ({
   );
 };
 
-export default TitleDescription;
+export default memo(TitleDescription);

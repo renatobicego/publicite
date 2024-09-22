@@ -1,6 +1,6 @@
 import SecondaryButton from "@/app/components/buttons/SecondaryButton";
 import { AttachedFileValues, PostAttachedFile } from "@/types/postTypes";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, memo, SetStateAction, useState } from "react";
 import { FaPlus } from "react-icons/fa6";
 import FileCard from "./FileCard";
 import { FormikErrors } from "formik";
@@ -11,22 +11,26 @@ const AttachedFiles = ({
   attachedFiles,
   setAttachedFiles,
   errors,
+  maxFiles = 3,
 }: {
   attachedFiles: AttachedFileValues[];
   setAttachedFiles: Dispatch<SetStateAction<AttachedFileValues[]>>;
   errors: string | string[] | FormikErrors<PostAttachedFile>[] | undefined;
+  maxFiles?: number;
 }) => {
   const [error, setError] = useState<string | null>(null);
 
   const addFile = () => {
-    setAttachedFiles((prev) => [
-      ...prev,
-      {
-        file: null,
-        label: "",
-        _id: Math.random().toString(),
-      },
-    ]);
+    if (attachedFiles.length < maxFiles) {
+      setAttachedFiles((prev) => [
+        ...prev,
+        {
+          file: null,
+          label: "",
+          _id: Math.random().toString(),
+        },
+      ]);
+    }
   };
 
   const handleFileChange = (file: File | null, _id: string) => {
@@ -65,14 +69,14 @@ const AttachedFiles = ({
     <div className="flex flex-col gap-4">
       <div className="flex gap-2 w-full justify-between flex-col items-end">
         <p className="text-text-color w-full text-xs md:text-sm">
-          Agregue archivos .pdf adjuntos con una etiqueta. Tamaño máximo de
-          10MB y 3 archivos.
+          Agregue archivos .pdf adjuntos con una etiqueta. Tamaño máximo de 10MB
+          y {maxFiles} archivo/s.
         </p>
         <SecondaryButton
           startContent={<FaPlus className="max-size-8" />}
           size="sm"
           className="text-xs min-w-fit [&>svg]:min-w-3"
-          isDisabled={attachedFiles.length >= 3}
+          isDisabled={attachedFiles.length >= maxFiles}
           onPress={addFile}
         >
           Agregar Archivo
@@ -88,7 +92,9 @@ const AttachedFiles = ({
           onLabelChange={handleLabelChange}
           onRemove={removeFile}
           error={
-            typeof errors === "object" && errors[index] && typeof errors[index] !== "string"
+            typeof errors === "object" &&
+            errors[index] &&
+            typeof errors[index] !== "string"
               ? errors[index] // Pass specific file errors for this file
               : null
           }
@@ -104,4 +110,4 @@ const AttachedFiles = ({
   );
 };
 
-export default AttachedFiles;
+export default memo(AttachedFiles);

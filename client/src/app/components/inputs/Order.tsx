@@ -8,9 +8,17 @@ import {
 import { Dispatch, SetStateAction } from "react";
 import { FaSort } from "react-icons/fa6";
 
+export type SortOption = {
+  label: string;
+  key: string;
+  direction: "ascending" | "descending";
+  column: string;
+};
+
 const Order = ({
   sortDescriptor,
   setSortDescriptor,
+  sortOptions,
 }: {
   sortDescriptor: {
     column: string;
@@ -22,60 +30,52 @@ const Order = ({
       direction: string;
     }>
   >;
+  sortOptions: SortOption[];
 }) => {
-  // Function to change or reset the sorting order
+  // change or reset the sorting order
   const changeOrder = (key: any) => {
+    const selectedOption = sortOptions.find((option) => option.key === key);
+
+    if (!selectedOption) return;
+
     setSortDescriptor((prevValue) => {
       const { column, direction } = prevValue;
 
-      // Check if the same sort key was selected again and reset it
-      switch (key) {
-        case "aZ":
-          if (column === "title" && direction === "ascending") {
-            return { column: "", direction: "" };
-          }
-          return { column: "title", direction: "ascending" };
-
-        case "zA":
-          if (column === "title" && direction === "descending") {
-            return { column: "", direction: "" };
-          }
-          return { column: "title", direction: "descending" };
-
-        case "priceDesc":
-          if (column === "price" && direction === "descending") {
-            return { column: "", direction: "" };
-          }
-          return { column: "price", direction: "descending" };
-
-        case "priceAsc":
-          if (column === "price" && direction === "ascending") {
-            return { column: "", direction: "" };
-          }
-          return { column: "price", direction: "ascending" };
-
-        default:
-          return prevValue;
+      // Reset if the same sort key and direction are selected
+      if (
+        column === selectedOption.column &&
+        direction === selectedOption.direction
+      ) {
+        return { column: "", direction: "" };
       }
+
+      return {
+        column: selectedOption.column,
+        direction: selectedOption.direction,
+      };
     });
   };
 
   // Determine the selected key based on sortDescriptor
   const selectedKey = () => {
-    if (sortDescriptor.column === "title") {
-      return sortDescriptor.direction === "ascending" ? ["aZ"] : ["zA"];
-    } else if (sortDescriptor.column === "price") {
-      return sortDescriptor.direction === "ascending"
-        ? ["priceAsc"]
-        : ["priceDesc"];
-    }
-    return []; // Default if no valid sortDescriptor is set
+    const currentOption = sortOptions.find(
+      (option) =>
+        option.column === sortDescriptor.column &&
+        option.direction === sortDescriptor.direction
+    );
+    return currentOption ? [currentOption.key] : [];
   };
 
   return (
     <Dropdown placement="bottom-end">
       <DropdownTrigger>
-        <Button isIconOnly color="secondary" variant="bordered" radius="full">
+        <Button
+          isIconOnly
+          color="secondary"
+          className="max-md:size-8 max-md:min-w-8"
+          variant="bordered"
+          radius="full"
+        >
           <FaSort />
         </Button>
       </DropdownTrigger>
@@ -86,10 +86,9 @@ const Order = ({
         selectionMode="single"
         selectedKeys={selectedKey()}
       >
-        <DropdownItem key="aZ">A-Z</DropdownItem>
-        <DropdownItem key="zA">Z-A</DropdownItem>
-        <DropdownItem key="priceDesc">Precio de mayor a menor</DropdownItem>
-        <DropdownItem key="priceAsc">Precio de menor a mayor</DropdownItem>
+        {sortOptions.map((option) => (
+          <DropdownItem key={option.key}>{option.label}</DropdownItem>
+        ))}
       </DropdownMenu>
     </Dropdown>
   );

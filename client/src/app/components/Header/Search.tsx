@@ -135,7 +135,8 @@ const DropdownSolapas = ({
           <Button
             radius="full"
             variant="light"
-            className="rounded-l-none max-md:min-w-10 px-0 md:px-3 lg:px-4 md:max-lg:h-9 min-h-6 max-md:h-7 text-sm text-light-text"
+            className="rounded-l-none min-w-10 md:min-w-fit px-0 md:px-3 lg:px-4 
+            md:max-lg:h-9 min-h-6 max-md:h-7 text-sm text-light-text"
             endContent={
               <FaChevronDown className="min-w-1 md:min-w-2 mt-0.5 text-light-text max-md:hidden" />
             }

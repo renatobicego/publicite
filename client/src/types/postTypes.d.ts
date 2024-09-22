@@ -138,7 +138,7 @@ export interface ServicePostValues
 export interface Petition extends Post {
   frequencyPrice?: FrequencyPrice;
   toPrice?: number;
-  petitionType?: "good" | "service";
+  petitionType: "good" | "service";
 }
 
 export interface PetitionPostValues
@@ -157,6 +157,8 @@ export interface PetitionPostValues
   price?: number
   location: PostLocationForm;
   author: string;
+  petitionType?: "good" | "service";
+
 }
 
 export interface AttachedFileValues {

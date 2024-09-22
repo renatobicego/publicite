@@ -5,9 +5,8 @@ export const postValidation = object({
     .required("El título es requerido")
     .min(3, "El título debe tener al menos 3 caracteres"),
   description: string()
-    .required("La descripción es requerida")
-    .min(3, "La descripción debe tener al menos 3 caracteres")
-    .max(1000, "La descripción debe tener menos de 2000 caracteres"),
+    .optional()
+    .max(2000, "La descripción debe tener menos de 2000 caracteres"),
   category: string()
     .required("La categoria es requerida")
     .min(3, "La categoria es requerida"),
@@ -15,7 +14,6 @@ export const postValidation = object({
     .required("El precio es requerido")
     .min(1, "El precio debe ser mayor a 1")
     .max(200000000, "El precio debe ser menor a 200.000.000"),
-  condition: string().required("La condición es requerida"),
   location: object({
     lat: number().required("La ubicación es requerida"),
     lng: number().required("La ubicación es requerida"),

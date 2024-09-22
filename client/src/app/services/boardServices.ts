@@ -1,6 +1,6 @@
 import { mockedBoards } from "../utils/data/mockedData";
 
-export const getBoards = async () => {
+export const getBoards = async (searchTerm: string | null) => {
   await new Promise((resolve) => setTimeout(resolve, 1000));
   return [
     ...mockedBoards,

@@ -1,46 +1,68 @@
 "use client";
 import SearchPosts from "@/app/components/inputs/SearchPosts";
 import BoardGrid from "./BoardGrid";
-import { getBoards } from "@/app/services/boardServices";
 import { useInfiniteFetch } from "@/app/utils/hooks/useInfiniteFetch";
 import { useMemo, useState } from "react";
 import { Board } from "@/types/board";
+
 const BoardsLogic = () => {
-  const { items, isLoading } = useInfiniteFetch(getBoards, true);
-  const [searchTerm, setSearchTerm] = useState("");
-  const hasSearchFilter = Boolean(searchTerm);
+  const { items, isLoading } = useInfiniteFetch("boards", true);
+  const [searchTerms, setSearchTerms] = useState<(string | undefined)[]>([]);
+
+  // Ensure searchTerms are non-empty strings
+  const hasSearchFilter = Boolean(
+    (searchTerms[0] && searchTerms[0].trim() !== "") ||
+    (searchTerms[1] && searchTerms[1].trim() !== "")
+  );
+
   const filteredItems = useMemo(() => {
     let filteredBoards = [...items];
   
     if (hasSearchFilter) {
       filteredBoards = filteredBoards.filter((board: Board) => {
-        // Convert search term to lowercase
-        const lowerCaseSearchTerm = searchTerm.toLowerCase();
+        const firstSearchTerm = searchTerms[0]?.toLowerCase().trim();
+        const secondSearchTerm = searchTerms[1]?.toLowerCase().trim();
   
-        // Check if any annotations match
-        const annotationMatch = board.annotations.some((annotation: string) =>
-          annotation.toLowerCase().includes(lowerCaseSearchTerm),
-        );
+        // Check if any annotations or keywords match the first term
+        const firstTermMatch =
+          !firstSearchTerm ||
+          board.annotations.some((annotation: string) =>
+            annotation.toLowerCase().includes(firstSearchTerm)
+          ) ||
+          board.keywords.some((keyword: string) =>
+            keyword.toLowerCase().includes(firstSearchTerm)
+          );
   
-        // Check if any keywords match
-        const keywordMatch = board.keywords.some((keyword: string) =>
-          keyword.toLowerCase().includes(lowerCaseSearchTerm),
-        );
+        // Check if any annotations or keywords match the second term (only if defined)
+        const secondTermMatch =
+          !secondSearchTerm || // If second search term is not defined, we allow the match
+          board.annotations.some((annotation: string) =>
+            annotation.toLowerCase().includes(secondSearchTerm)
+          ) ||
+          board.keywords.some((keyword: string) =>
+            keyword.toLowerCase().includes(secondSearchTerm)
+          );
   
-        // Return true if either annotations or keywords match
-        return annotationMatch || keywordMatch;
+        // Return true if firstTerm matches and secondTerm matches (if defined)
+        return firstTermMatch && secondTermMatch;
       });
     }
   
     return filteredBoards;
-  }, [hasSearchFilter, items, searchTerm]);
+  }, [hasSearchFilter, items, searchTerms]);
+  
+
   return (
     <section className="w-full flex-col flex gap-4">
       <h2>Pizarras</h2>
       <div className="flex gap-2">
-        <SearchPosts searchTerm={searchTerm} setSearchTerm={setSearchTerm}/>
+        <SearchPosts
+          searchTerms={searchTerms}
+          setSearchTerms={setSearchTerms}
+          isMultiSearch
+        />
       </div>
-      <BoardGrid items={filteredItems} isLoading={isLoading}/>
+      <BoardGrid items={filteredItems} isLoading={isLoading} />
     </section>
   );
 };

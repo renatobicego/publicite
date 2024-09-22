@@ -70,6 +70,7 @@ const FileCard = ({
                   color="secondary"
                   variant="flat"
                   startContent={<FaFile />}
+                  classNames={{content: "whitespace-normal", base: "min-h-7 h-auto"}}
                 >
                   {attachedFile.file.name}
                 </Chip>

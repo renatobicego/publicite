@@ -1,18 +1,21 @@
 import { postTypesItems } from "@/app/utils/data/selectData";
 import { Select, Selection, SelectItem } from "@nextui-org/react";
-import { Dispatch, SetStateAction } from "react";
+import { ChangeEvent, Dispatch, SetStateAction } from "react";
 
 const SelectPostType = ({
   postType,
   setPostType,
 }: {
-  postType: Selection;
-  setPostType: Dispatch<SetStateAction<Selection>>;
+  postType: string;
+  setPostType: Dispatch<SetStateAction<"good" | "service" | "petition">>;
 }) => {
+  const handleSelectionChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    setPostType(e.target.value as any);
+  };
   return (
     <Select
-      selectedKeys={postType}
-      onSelectionChange={setPostType}
+      selectedKeys={[postType]}
+      onChange={handleSelectionChange}
       items={postTypesItems}
       label="Bienes, servicios o necesidades"
       placeholder="Seleccione el tipo de anuncio"

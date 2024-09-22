@@ -2,33 +2,22 @@ import {
   CustomInput,
   CustomSelect,
 } from "@/app/components/inputs/CustomInputs";
+import { categories } from "@/app/utils/data/mockedData";
 import { frequencyPriceItems } from "@/app/utils/data/selectData";
 import { PetitionPostValues, PostCategory } from "@/types/postTypes";
 import { Checkbox } from "@nextui-org/react";
 import { Field, FormikErrors } from "formik";
-import { useState } from "react";
+import { memo, useState } from "react";
 import { FaDollarSign } from "react-icons/fa6";
 
 const PriceRangeCategory = ({
   errors,
+  setFieldValue
 }: {
   errors: FormikErrors<PetitionPostValues>;
+  setFieldValue: (field: string, value: any, shouldValidate?: boolean) => Promise<void | FormikErrors<PetitionPostValues>>
 }) => {
   const [isChecked, setIsChecked] = useState(false);
-  const categories: PostCategory[] = [
-    {
-      _id: "112sdq",
-      label: "Casa",
-    },
-    {
-      _id: "112egsdq",
-      label: "Departamento",
-    },
-    {
-      _id: "112qsdqsf",
-      label: "Oficina",
-    },
-  ];
   return (
     <div className="flex flex-col gap-4">
       <div className="flex gap-4">
@@ -62,7 +51,12 @@ const PriceRangeCategory = ({
       <Checkbox
         size="sm"
         checked={isChecked}
-        onChange={() => setIsChecked(!isChecked)}
+        onChange={() => {
+          setIsChecked(!isChecked)
+          if(isChecked){
+            setFieldValue("toPrice", undefined)
+          }
+        }}
       >
         Agregar rango de precios
       </Checkbox>
@@ -97,4 +91,4 @@ const PriceRangeCategory = ({
   );
 };
 
-export default PriceRangeCategory;
+export default memo(PriceRangeCategory);

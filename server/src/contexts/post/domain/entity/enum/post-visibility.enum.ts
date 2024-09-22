@@ -1,6 +1,6 @@
 export enum Visibility {
   Public = 'public',
-  Registgered = 'registgered',
+  Registgered = 'registered',
   Contacts = 'contacts',
   Friends = 'friends',
   TopFriends = 'topfriends',

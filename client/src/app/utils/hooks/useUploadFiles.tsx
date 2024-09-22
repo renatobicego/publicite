@@ -4,13 +4,15 @@ import { toastifyError } from "../functions/toastify";
 import {
   AttachedFileValues,
   GoodPostValues,
+  PetitionPostValues,
   ServicePostValues,
 } from "@/types/postTypes";
 import { FormikHelpers } from "formik";
 
 const useUploadFiles = (
   files: File[],
-  attachedFiles: AttachedFileValues[]
+  attachedFiles: AttachedFileValues[],
+  isPetition?: boolean
 ) => {
   const [progress, setProgress] = useState(0);
   const { startUpload } = useUploadThing("fileUploader", {
@@ -26,8 +28,14 @@ const useUploadFiles = (
     },
   });
 
-  const submitFiles = async (values: GoodPostValues | ServicePostValues, actions: FormikHelpers<GoodPostValues>) => {
-    if (!files.length) {
+  const submitFiles = async (
+    values: any,
+    actions: FormikHelpers<any>
+  ) => {
+    if(isPetition && !attachedFiles.length) {
+      return values
+    }
+    if (!files.length && !isPetition) {
       actions.setFieldError(
         "imagesUrls",
         "Por favor agregue al menos una imagen"

@@ -2,19 +2,21 @@
 import SelectPostType from "@/app/components/inputs/SelectPostType";
 import { postTypesItems } from "@/app/utils/data/selectData";
 import { POSTS } from "@/app/utils/data/urls";
-import { Selection } from "@nextui-org/react";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import PostListLogic from "./PostListLogic";
+import { fetchDataByType } from "@/app/utils/data/fetchDataByType";
 
 const PostsList = () => {
-  const [postType, setPostType] = useState<Selection>(new Set(["good"]));
-
+  const [postType, setPostType] = useState<"good" | "service" | "petition">("good");
   const pathname = usePathname();
+  
+  // Function to determine the title based on path and post type
   const titleToShow = () => {
     const typeSelected = postTypesItems.find(
-      (pType) => pType.value === Array.from(postType)[0]
+      (pType) => pType.value === postType
     )?.label;
+    
     switch (pathname) {
       case POSTS:
         return "Recomendados - " + typeSelected;
@@ -32,7 +34,7 @@ const PostsList = () => {
     <section className="w-full flex-col flex gap-4">
       <SelectPostType postType={postType} setPostType={setPostType} />
       <h2>{titleToShow()}</h2>
-      <PostListLogic />
+      <PostListLogic postType={postType} />
     </section>
   );
 };

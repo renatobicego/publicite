@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { memo, useEffect } from "react";
 import CustomMap from "./CustomMap";
 import { FormikErrors } from "formik";
 import {
@@ -45,7 +45,7 @@ const PlacePickerWrapper = ({
   );
 };
 
-export default PlacePickerWrapper;
+export default memo(PlacePickerWrapper);
 
 const PlacePicker = ({ location, setFieldValue, error }: PlacePickerProps) => {
   // Function to handle location and zoom updates
