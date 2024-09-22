@@ -1,10 +1,4 @@
-import {
-  BadRequestException,
-  Inject,
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { UserRepositoryInterface } from '../../domain/repository/user-repository.interface';
 import { ClientSession, Model, ObjectId } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
@@ -13,16 +7,18 @@ import {
   IUserBusiness,
   UserBusinessModel,
 } from '../schemas/userBussiness.schema';
-import { UP_update, UserPerson } from '../../domain/entity/userPerson.entity';
+import { UserPerson } from '../../domain/entity/userPerson.entity';
 import { UserBusiness } from '../../domain/entity/userBusiness.entity';
-import { User } from '../../domain/entity/user.entity';
-import { UserTransformationInterface } from '../../domain/repository/transformations/user-transformation.interface';
+import { User, UserPreferences } from '../../domain/entity/user.entity';
+import { UserRepositoryMapperInterface } from '../../domain/repository/mapper/user.repository.mapper.interface';
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
 import { SectorRepositoryInterface } from 'src/contexts/businessSector/domain/repository/sector.repository.interface';
 
-import { UP_clerkUpdateRequestDto } from 'src/contexts/webhook/application/clerk/dto/UP-clerk.update.request';
-import { IUser, UserModel, UserPreferences } from '../schemas/user.schema';
+import { IUser, UserModel } from '../schemas/user.schema';
 import { error } from 'console';
+import { UserBusinessUpdateDto } from '../../domain/entity/dto/user.business.update.dto';
+import { UserPersonalUpdateDto } from '../../domain/entity/dto/user.personal.update.dto';
+import { UserPreferencesEntityDto } from '../../domain/entity/dto/user.preferences.update.dto';
 
 @Injectable()
 export class UserRepository implements UserRepositoryInterface {
@@ -39,8 +35,8 @@ export class UserRepository implements UserRepositoryInterface {
     @Inject('SectorRepositoryInterface')
     private readonly sectorRepository: SectorRepositoryInterface,
 
-    @Inject('UserTransformationInterface')
-    private readonly userRepositoryMapper: UserTransformationInterface,
+    @Inject('UserRepositoryMapperInterface')
+    private readonly userRepositoryMapper: UserRepositoryMapperInterface,
 
     private readonly logger: MyLoggerService,
   ) {}
@@ -57,7 +53,6 @@ export class UserRepository implements UserRepositoryInterface {
           {
             'userPreferences.searchPreference': 1,
             'userPreferences.backgroundColor': 1,
-            'userPreferences.boardColor': 1,
           },
         )
         .lean();
@@ -71,37 +66,53 @@ export class UserRepository implements UserRepositoryInterface {
     }
   }
 
-  async save(
-    reqUser: UserPerson | UserBusiness,
-    type: number,
-    session?: ClientSession,
-  ): Promise<User> {
+  async save(reqUser: User, session?: ClientSession): Promise<User> {
     try {
-      let createdUser;
-      let userSaved;
-
-      switch (type) {
-        case 0: // Personal User
-          if (reqUser instanceof UserPerson) {
-            createdUser = this.formatDocument(reqUser);
-            userSaved = await createdUser.save({ session });
-            const userRsp = UserPerson.formatDocument(userSaved as IUserPerson);
-            return userRsp;
-          }
-          throw new BadRequestException('Invalid user instance for type 0');
-
-        case 1: // Business User
-          if (reqUser instanceof UserBusiness) {
-            this.logger.warn(
-              '--VALIDATING BUSINESS SECTOR ID: ' + reqUser.getSector(),
-            );
-            await this.sectorRepository.validateSector(reqUser.getSector());
-            createdUser = this.formatDocument(reqUser);
-            userSaved = await createdUser.save({ session });
-            return UserBusiness.formatDocument(userSaved as IUserBusiness);
-          }
-          throw new BadRequestException('Invalid user instance for type 1');
-
+      this.logger.log('Saving User in repository');
+      const documentToSave = {
+        clerkId: reqUser.getClerkId,
+        email: reqUser.getEmail,
+        username: reqUser.getUsername,
+        description: reqUser.getDescription,
+        profilePhotoUrl: reqUser.getProfilePhotoUrl,
+        countryRegion: reqUser.getCountryRegion,
+        name: reqUser.getName,
+        lastName: reqUser.getLastName,
+        isActive: reqUser.getIsActive,
+        contact: reqUser.getContact,
+        createdTime: reqUser.getCreatedTime,
+        subscriptions: reqUser.getSubscriptions,
+        groups: reqUser.getGroups,
+        magazines: reqUser.getMagazines,
+        board: reqUser.getBoard,
+        post: reqUser.getPost,
+        userRelations: reqUser.getUserRelations,
+        userType: reqUser.getUserType,
+        userPreferences: reqUser.getUserPreferences,
+      };
+      console.log(documentToSave);
+      switch (reqUser.getUserType?.toLocaleLowerCase()) {
+        case 'personal':
+          return await this.savePersonalAccount(
+            documentToSave,
+            reqUser as UserPerson,
+            {
+              session: session,
+            },
+          );
+        case 'business':
+          const cast = reqUser as UserBusiness;
+          this.logger.warn(
+            '--VALIDATING BUSINESS SECTOR ID: ' + cast.getSector,
+          );
+          await this.sectorRepository.validateSector(cast.getSector);
+          return await this.saveBusinessAccount(
+            documentToSave,
+            reqUser as UserBusiness,
+            {
+              session: session,
+            },
+          );
         default:
           throw new BadRequestException('Invalid user type');
       }
@@ -111,31 +122,66 @@ export class UserRepository implements UserRepositoryInterface {
     }
   }
 
+  async savePersonalAccount(
+    baseObj: any,
+    user: UserPerson,
+    options?: { session?: ClientSession },
+  ): Promise<User> {
+    const newUser = {
+      ...baseObj,
+      gender: user.getGender,
+      birthDate: user.getBirthDate,
+    };
+    const userDocument = new this.userPersonModel(newUser);
+    const documentSaved = await userDocument.save(options);
+
+    const ret = this.userRepositoryMapper.documentToEntityMapped(documentSaved);
+    this.logger.log('Personal account created successfully: ' + ret.getId);
+    return ret;
+  }
+
+  async saveBusinessAccount(
+    baseObj: any,
+    user: UserBusiness,
+    options?: { session?: ClientSession },
+  ): Promise<User> {
+    const newUser = {
+      ...baseObj,
+      sector: user.getSector,
+      businessName: user.getBusinessName,
+    };
+    const userDocument = new this.userBusinessModel(newUser);
+    const documentSaved = await userDocument.save(options);
+
+    const ret = this.userRepositoryMapper.documentToEntityMapped(documentSaved);
+    this.logger.log('Business account created successfully: ' + ret.getId);
+    return ret;
+  }
+
   async getUserPersonalInformationByUsername(
     username: string,
-  ): Promise<Partial<User>> {
+  ): Promise<Partial<User> | null> {
     try {
-      const user = await this.user.findOne({ username: username });
+      const user = await this.user.findOne({ username }).lean().exec();
 
       if (!user) {
-        throw new NotFoundException('User not found');
+        return null; // Devuelve undefined en lugar de lanzar un error
       }
 
-      let query = this.user.findOne({ username: username }).populate('contact');
+      const projection =
+        user.userType.toLowerCase() === 'business'
+          ? 'countryRegion description contact sector businessName'
+          : 'birthDate gender countryRegion description contact';
 
-      if (user.userType === 'Business') {
-        query = query.populate('sector');
-      }
+      const populatedUser = await this.user
+        .findOne({ username })
+        .populate('contact')
+        .populate(user.userType.toLowerCase() === 'business' ? 'sector' : '')
+        .select(projection)
+        .lean()
+        .exec();
 
-      const populatedUser = await query.lean().exec();
-
-      if (populatedUser?.userType === 'Personal') {
-        return UserPerson.formatDocument(populatedUser as IUserPerson);
-      } else if (populatedUser?.userType === 'Business') {
-        return UserBusiness.formatDocument(populatedUser as IUserBusiness);
-      } else {
-        throw new InternalServerErrorException('User type not recognized');
-      }
+      return populatedUser as Partial<User>;
     } catch (error) {
       this.logger.error(
         'Error in getUserPersonalInformationByUsername method',
@@ -147,9 +193,9 @@ export class UserRepository implements UserRepositoryInterface {
 
   async update(
     username: string,
-    reqUser: UP_update,
+    reqUser: UserPersonalUpdateDto | UserBusinessUpdateDto,
     type: number,
-  ): Promise<User> {
+  ): Promise<UserPersonalUpdateDto | UserBusinessUpdateDto> {
     try {
       let entityToDocument;
 
@@ -167,10 +213,22 @@ export class UserRepository implements UserRepositoryInterface {
           if (!userUpdated) {
             throw new BadRequestException('User not found');
           }
-          return UserPerson.formatDocument(userUpdated as IUserPerson);
+          return this.userRepositoryMapper.documentToEntityMapped_update(
+            userUpdated,
+            0,
+          );
 
         case 1: // Business User
+          const cast = reqUser as UserBusinessUpdateDto;
+          if (cast.getSector) {
+            this.logger.log(
+              'Validate sector for business user ID: ' + cast.getSector,
+            );
+            await this.sectorRepository.validateSector(cast.getSector);
+          }
+
           this.logger.log('Search user(Business) for update');
+
           entityToDocument =
             this.userRepositoryMapper.formatUpdateDocumentUB(reqUser);
           const userUpdatedB = await this.userBusinessModel
@@ -182,7 +240,10 @@ export class UserRepository implements UserRepositoryInterface {
           if (!userUpdatedB) {
             throw new BadRequestException('User not found');
           }
-          return UserBusiness.formatDocument(userUpdatedB as IUserBusiness);
+          return this.userRepositoryMapper.documentToEntityMapped_update(
+            userUpdatedB,
+            1,
+          );
 
         default:
           throw new BadRequestException('Invalid user type');
@@ -193,41 +254,41 @@ export class UserRepository implements UserRepositoryInterface {
     }
   }
 
-  async updateByClerkId(
-    clerkId: string,
-    reqUser: UP_clerkUpdateRequestDto,
-  ): Promise<User> {
-    try {
-      this.logger.log(
-        'Updating clerk attributes in the repository, for the ID: ' + clerkId,
-      );
-      const userUpdated = await this.user
-        .findOneAndUpdate({ clerkId: clerkId }, reqUser, { new: true })
-        .lean(); // Aplicar lean() aquí si no necesitas métodos Mongoose
+  // async updateByClerkId(
+  //   clerkId: string,
+  //   reqUser: UP_clerkUpdateRequestDto,
+  // ): Promise<User> {
+  //   throw new Error('Method not implemented.');
+  //   // try {
+  //   //   this.logger.log(
+  //   //     'Updating clerk attributes in the repository, for the ID: ' + clerkId,
+  //   //   );
+  //   //   const userUpdated = await this.user
+  //   //     .findOneAndUpdate({ clerkId: clerkId }, reqUser, { new: true })
+  //   //     .lean(); // Aplicar lean() aquí si no necesitas métodos Mongoose
 
-      if (!userUpdated) {
-        throw new BadRequestException('User not found');
-      }
-      if (userUpdated.userType === 'Personal') {
-        return UserPerson.formatDocument(userUpdated as IUserPerson);
-      } else {
-        return UserBusiness.formatDocument(userUpdated as IUserBusiness);
-      }
-    } catch (error) {
-      this.logger.error('Error in updateByClerkId method(Repository)', error);
-      throw error;
-    }
-  }
+  //   //   if (!userUpdated) {
+  //   //     throw new BadRequestException('User not found');
+  //   //   }
+  //   //   if (userUpdated.userType === 'Personal') {
+  //   //     return UserPerson.formatDocument(userUpdated as IUserPerson);
+  //   //   } else {
+  //   //     return UserBusiness.formatDocument(userUpdated as IUserBusiness);
+  //   //   }
+  //   // } catch (error) {
+  //   //   this.logger.error('Error in updateByClerkId method(Repository)', error);
+  //   //   throw error;
+  //   // }
+  // }
 
   async updateUserPreferencesByUsername(
     username: string,
-    userPreference: UserPreferences,
-  ): Promise<UserPreferences | null> {
+    userPreference: UserPreferencesEntityDto,
+  ): Promise<UserPreferencesEntityDto | null> {
     try {
       this.logger.log(
         'Start process in the repository: updateUserPreferencesByUsername',
       );
-
       const userDoc = await this.user
         .findOneAndUpdate(
           { username: username },
@@ -235,14 +296,11 @@ export class UserRepository implements UserRepositoryInterface {
           { new: true },
         )
         .lean(); // Aplicar lean() aquí si no necesitas métodos Mongoose
-
       if (!userDoc) {
         throw new BadRequestException('User not found');
       }
-
       const userPreferences = userDoc.userPreferences;
-
-      return this.userRepositoryMapper.formatDocToUserPreferences(
+      return this.userRepositoryMapper.documentToEntityMapped_preferences(
         userPreferences,
       );
     } catch (error: any) {
@@ -251,28 +309,6 @@ export class UserRepository implements UserRepositoryInterface {
         error,
       );
       throw error;
-    }
-  }
-
-  formatDocument(reqUser: User): IUserPerson | IUserBusiness {
-    const baseUserData = this.userRepositoryMapper.getBaseUserData(reqUser);
-    this.logger.log('Start process in the repository: formatDocument');
-    if (reqUser instanceof UserPerson) {
-      return new this.userPersonModel({
-        ...baseUserData,
-        gender: reqUser.getGender(),
-        birthDate: reqUser.getBirthDate(),
-      });
-    } else if (reqUser instanceof UserBusiness) {
-      return new this.userBusinessModel({
-        ...baseUserData,
-        sector: reqUser.getSector(),
-        businessName: reqUser.getBusinessName(),
-      });
-    } else {
-      throw new BadRequestException(
-        'Invalid user instance - formatDocument in repository',
-      );
     }
   }
 

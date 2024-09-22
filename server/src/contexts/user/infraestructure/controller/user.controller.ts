@@ -10,15 +10,34 @@ import {
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
-import { UserPersonDto, UserPersonResponse } from './dto/user.person.DTO';
-import { UserBusinessDto, UserBusinessResponse } from './dto/user.business.DTO';
 import { UserAdapterInterface } from '../../application/adapter/userAdapter.interface';
-import { UP_publiciteUpdateRequestDto } from './dto/update.request-DTO/UP-publicite.update.request';
-import { UB_publiciteUpdateRequestDto } from './dto/update.request-DTO/UB-publicite.update.request';
-import { UserPreferences } from './dto/userPreferenceDTO';
-import { UserPreferencesDto } from './swagger/userPreferenceDTO.swagger';
-import { UserPreferenceResponse } from '../../application/adapter/dto/userPreferences.response';
+
 import { ClerkAuthGuard } from 'src/contexts/clerk-auth/clerk.auth.guard';
+import {
+  UserPersonRequestDto_SWAGGER,
+  UserPersonResponseDto_SWAGGER,
+} from './swagger/user.person.dto.swagger';
+
+import {
+  UserBusinessRequestDto_SWAGGER,
+  UserBusinessResponseDto_SWAGGER,
+} from './swagger/user.business.dto.swagger';
+import {
+  UserBusinessResponse,
+  UserPersonResponse,
+  UserResponse,
+} from '../../application/adapter/dto/HTTP-RESPONSE/user.response.dto';
+import { PersonalUpdateRequest_SWAGGER } from './swagger/update/UP-publicite.update.request';
+import { personalAccountUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/user.personal.request.UPDATE';
+import { BusinessUpdateRequest_SWAGGER } from './swagger/update/UB-publicite.update.request';
+import {
+  UserPersonRequest,
+  UserBusinessRequest,
+  UserPreferencesRequest,
+} from '../../application/adapter/dto/HTTP-REQUEST/user.request.CREATE';
+import { businessAccountUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/user.business.request.UPDATE';
+import { UserPreferenceResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.preferences.response';
+import { UserPreferencesDto_SWAGGER } from './swagger/user.preferences.dto.swagger';
 
 @ApiTags('Accounts')
 @Controller('user')
@@ -34,21 +53,18 @@ export class UserController {
   @ApiResponse({
     status: 201,
     description: 'The account has been successfully created.',
-    type: [UserPersonDto],
+    type: [UserPersonResponseDto_SWAGGER],
   })
   @ApiResponse({
     status: 500,
     description: 'Internal server error.',
   })
-  @ApiBody({ type: UserPersonDto })
+  @ApiBody({ type: UserPersonRequestDto_SWAGGER })
   async createPersonalAccount(
-    @Body() requesNewtUser: UserPersonDto,
-  ): Promise<UserPersonResponse> {
+    @Body() requesNewtUser: UserPersonRequest,
+  ): Promise<UserResponse> {
     try {
-      return (await this.userAdapter.createUser(
-        requesNewtUser,
-        0,
-      )) as UserPersonResponse;
+      return await this.userAdapter.createUser(requesNewtUser);
     } catch (error: any) {
       throw error;
     }
@@ -59,21 +75,20 @@ export class UserController {
   @ApiResponse({
     status: 201,
     description: 'The account has been successfully created.',
-    type: [UserBusinessDto],
+    type: [UserBusinessResponseDto_SWAGGER],
   })
   @ApiResponse({
     status: 500,
     description: 'Internal server error.',
   })
-  @ApiBody({ type: UserBusinessDto })
+  @ApiBody({ type: UserBusinessRequestDto_SWAGGER })
   async createBusinessAccount(
-    @Body() requestNewUser: UserBusinessDto,
-  ): Promise<UserBusinessResponse> {
+    @Body() requestNewUser: UserBusinessRequest,
+  ): Promise<UserResponse> {
     try {
       return (await this.userAdapter.createUser(
         requestNewUser,
-        1,
-      )) as UserBusinessResponse;
+      )) as unknown as UserBusinessResponse;
     } catch (error: any) {
       throw error;
     }
@@ -86,14 +101,15 @@ export class UserController {
   @ApiResponse({
     status: 200,
     description: 'The account has been successfully Updated.',
+    //type: [UserPersonResponseDto_SWAGGER],
   })
   @ApiResponse({
     status: 500,
     description: 'Internal server error.',
   })
-  @ApiBody({ type: UP_publiciteUpdateRequestDto })
+  @ApiBody({ type: PersonalUpdateRequest_SWAGGER })
   async updatePersonalAccount(
-    @Body() updateRequest: UP_publiciteUpdateRequestDto,
+    @Body() updateRequest: personalAccountUpdateRequest,
     @Param('username') username: string,
   ): Promise<UserPersonResponse> {
     try {
@@ -117,9 +133,9 @@ export class UserController {
     status: 500,
     description: 'Internal server error.',
   })
-  @ApiBody({ type: UB_publiciteUpdateRequestDto })
+  @ApiBody({ type: BusinessUpdateRequest_SWAGGER })
   async updateBusinessAccount(
-    @Body() updateRequest: UB_publiciteUpdateRequestDto,
+    @Body() updateRequest: businessAccountUpdateRequest,
     @Param('username') username: string,
   ): Promise<UserBusinessResponse> {
     try {
@@ -132,6 +148,8 @@ export class UserController {
       throw error;
     }
   }
+
+  ///------------CONTROLLERS GET  ACCOUNT-------------------
 
   @Get('/personal-data/:username')
   @ApiOperation({ summary: 'Get profile information of particular account' })
@@ -149,7 +167,7 @@ export class UserController {
   })
   async getPersonalInformation(
     @Param('username') username: string,
-  ): Promise<UserBusinessResponse> {
+  ): Promise<any> {
     try {
       return this.userAdapter.getUserPersonalInformationByUsername(username);
     } catch (error: any) {
@@ -186,16 +204,17 @@ export class UserController {
   @ApiResponse({
     status: 200,
     description: 'The account has been successfully Updated.',
+    type: [UserPreferencesDto_SWAGGER],
   })
   @ApiResponse({
     status: 500,
     description: 'Internal server error.',
   })
-  @ApiBody({ type: UserPreferencesDto })
+  @ApiBody({ type: UserPreferencesDto_SWAGGER })
   async updateUserPreferences(
-    @Body() userPreference: UserPreferences,
+    @Body() userPreference: UserPreferencesRequest,
     @Param('username') username: string,
-  ): Promise<UserPreferenceResponse> {
+  ): Promise<UserPreferenceResponse | null> {
     try {
       return await this.userAdapter.updateUserPreferencesByUsername(
         username,

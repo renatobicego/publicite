@@ -1,28 +1,97 @@
-import {
-  User,
-  UserPreferences,
-} from 'src/contexts/user/domain/entity/user.entity';
-import { UserTransformationInterface } from 'src/contexts/user/domain/repository/transformations/user-transformation.interface';
+import { User } from 'src/contexts/user/domain/entity/user.entity';
 import { IUserBusiness } from '../../schemas/userBussiness.schema';
 import { IUserPerson } from '../../schemas/userPerson.schema';
+import {
+  UP_update,
+  UserPerson,
+} from 'src/contexts/user/domain/entity/userPerson.entity';
+import { Gender } from '../../../domain/entity/enum/user.enums';
+import {
+  UB_update,
+  UserBusiness,
+} from 'src/contexts/user/domain/entity/userBusiness.entity';
+import { UserRepositoryMapperInterface } from 'src/contexts/user/domain/repository/mapper/user.repository.mapper.interface';
+import { UserPersonalUpdateDto } from 'src/contexts/user/domain/entity/dto/user.personal.update.dto';
+import { UserBusinessUpdateDto } from 'src/contexts/user/domain/entity/dto/user.business.update.dto';
+import { UserPreferencesEntityDto } from 'src/contexts/user/domain/entity/dto/user.preferences.update.dto';
 
-import { UP_update } from 'src/contexts/user/domain/entity/userPerson.entity';
-import { Gender } from '../../../domain/entity/enum/enums.request';
-import { UB_update } from 'src/contexts/user/domain/entity/userBusiness.entity';
-
-export class UserRepositoryMapper implements UserTransformationInterface {
+export class UserRepositoryMapper implements UserRepositoryMapperInterface {
   constructor() {}
-  formatDocToUserPreferences(req: any): UserPreferences | null {
-    const obj: UserPreferences = {
-      searchPreference: req.searchPreference,
-      backgroundColor: req.backgroundColor,
-      boardColor: req.boardColor,
-    };
+  documentToEntityMapped(document: any): User {
+    const post: User = new User(
+      document.clerkId,
+      document.email,
+      document.username,
+      document.description,
+      document.profilePhotoUrl,
+      document.countryRegion,
+      document.isActive,
+      document.name,
+      document.lastName,
+      document.contact,
+      document.createdTime,
+      document.subscriptions,
+      document.groups,
+      document.magazines,
+      document.board,
+      document.post,
+      document.userRelations,
+      document.userType,
+      document.userPreferences,
+      document._id,
+    );
+    switch (document.userType.toLowerCase()) {
+      case 'personal':
+        return new UserPerson(post, document.gender, document.birthDate);
+      case 'business':
+        return new UserBusiness(post, document.sector, document.businessName);
+      default:
+        throw new Error('User type not recognized in repository mapper');
+    }
+  }
+  documentToEntityMapped_update(
+    document: any,
+    type: number,
+  ): UserPersonalUpdateDto | UserBusinessUpdateDto {
+    if (!document) {
+      throw new Error('Document is undefined or null');
+    }
 
-    return obj;
+    if (type === 1) {
+      return new UserBusinessUpdateDto({
+        businessName: document.businessName,
+        sector: document.sector,
+        countryRegion: document.countryRegion,
+        description: document.description,
+      });
+    } else if (type === 0) {
+      return new UserPersonalUpdateDto({
+        birthDate: document.birthDate,
+        gender: document.gender,
+        countryRegion: document.countryRegion,
+        description: document.description,
+      });
+    } else {
+      throw new Error('Invalid user type in respository mapper');
+    }
   }
 
-  formatUpdateDocumentUB(reqUser: UB_update): Partial<IUserBusiness> {
+  documentToEntityMapped_preferences(
+    document: any,
+  ): UserPreferencesEntityDto | null {
+    const { searchPreference, backgroundColor } = document;
+
+    const userPreferenceUpdated = new UserPreferencesEntityDto(
+      searchPreference,
+      backgroundColor,
+    );
+
+    return userPreferenceUpdated;
+  }
+
+  formatUpdateDocumentUB(
+    reqUser: UserBusinessUpdateDto,
+  ): Partial<IUserBusiness> {
     const mapValue = (
       key: keyof UB_update,
       transformFn?: (value: any) => any,
@@ -43,7 +112,7 @@ export class UserRepositoryMapper implements UserTransformationInterface {
       description: mapValue('description'),
     };
   }
-  formatUpdateDocument(reqUser: UP_update): Partial<IUserPerson> {
+  formatUpdateDocument(reqUser: UserPersonalUpdateDto): Partial<IUserPerson> {
     // Define una función auxiliar `mapValue` que se utiliza para mapear los valores de `reqUser`
     const mapValue = (
       key: keyof UP_update, // La clave del objeto `reqUser` que estamos procesando
@@ -79,26 +148,26 @@ export class UserRepositoryMapper implements UserTransformationInterface {
     };
   }
 
-  getBaseUserData(reqUser: User) {
-    return {
-      clerkId: reqUser.getClerkId(),
-      email: reqUser.getEmail(),
-      username: reqUser.getUsername(),
-      name: reqUser.getName(),
-      lastName: reqUser.getLastName(),
-      description: reqUser.getDescription(),
-      profilePhotoUrl: reqUser.getProfilePhotoUrl(),
-      countryRegion: reqUser.getCountryRegion(),
-      isActive: reqUser.getIsActive(),
-      contact: reqUser.getContact(),
-      createdTime: reqUser.getCreatedTime(),
-      subscriptions: reqUser.getSubscriptions(),
-      groups: reqUser.getGroups(),
-      magazines: reqUser.getMagazines(),
-      board: reqUser.getBoard(),
-      post: reqUser.getPost(),
-      userRelations: reqUser.getUserRelations(),
-      userType: reqUser.getUserType(),
-    };
-  }
+  // getBaseUserData(reqUser: User) {
+  //   return {
+  //     clerkId: reqUser.getClerkId(),
+  //     email: reqUser.getEmail(),
+  //     username: reqUser.getUsername(),
+  //     name: reqUser.getName(),
+  //     lastName: reqUser.getLastName(),
+  //     description: reqUser.getDescription(),
+  //     profilePhotoUrl: reqUser.getProfilePhotoUrl(),
+  //     countryRegion: reqUser.getCountryRegion(),
+  //     isActive: reqUser.getIsActive(),
+  //     contact: reqUser.getContact(),
+  //     createdTime: reqUser.getCreatedTime(),
+  //     subscriptions: reqUser.getSubscriptions(),
+  //     groups: reqUser.getGroups(),
+  //     magazines: reqUser.getMagazines(),
+  //     board: reqUser.getBoard(),
+  //     post: reqUser.getPost(),
+  //     userRelations: reqUser.getUserRelations(),
+  //     userType: reqUser.getUserType(),
+  //   };
+  // }
 }

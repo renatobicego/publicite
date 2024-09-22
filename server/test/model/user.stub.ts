@@ -1,9 +1,6 @@
 import { ObjectId, Types } from 'mongoose';
 import { Gender } from 'src/contexts/user/domain/entity/enum/enums.request';
 
-import { UserBusinessDto } from 'src/contexts/user/infraestructure/controller/dto/user.business.DTO';
-import { UserPersonDto } from 'src/contexts/user/infraestructure/controller/dto/user.person.DTO';
-
 export const userSub = (): UserPersonDto => {
   return {
     clerkId: '5f9d8f5e9d8f5e9d8f5e9d8f',
@@ -76,11 +73,10 @@ export const userSub_id = (): any => {
     userPreferences: {
       searchPreference: [],
       backgroundColor: '',
-      boardColor: '',
-      kind: 'UserPerson',
-      gender: 'M',
-      birthDate: '2024-10-10',
     },
+    kind: 'UserPerson',
+    gender: 'M',
+    birthDate: '2024-10-10',
     __v: 0,
   };
 };

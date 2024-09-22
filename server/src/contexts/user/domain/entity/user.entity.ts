@@ -1,26 +1,23 @@
 import { ObjectId } from 'mongoose';
+import { UserType } from './enum/user.enums';
 
-export enum UserType {
-  Personal = 'Personal',
-  Business = 'Business',
-}
 export interface UserPreferences {
-  searchPreference: ObjectId[];
-  backgroundColor: string;
-  boardColor: string;
+  searchPreference: ObjectId[] | [];
+  backgroundColor: number | undefined;
 }
 
-export abstract class User {
-  private clerkId?: string;
-  private email?: string;
-  private username?: string;
-  private description?: string;
-  private profilePhotoUrl?: string;
-  private countryRegion?: string;
-  private name?: string;
-  private lastName?: string;
-  private isActive?: boolean;
-  private contact?: ObjectId;
+export class User {
+  private _id?: ObjectId;
+  private clerkId: string;
+  private email: string;
+  private username: string;
+  private description: string;
+  private profilePhotoUrl: string;
+  private countryRegion: string;
+  private name: string;
+  private lastName: string;
+  private isActive: boolean;
+  private contact?: ObjectId | undefined;
   private createdTime?: string;
   private subscriptions?: ObjectId[];
   private groups?: ObjectId[];
@@ -29,18 +26,18 @@ export abstract class User {
   private post?: ObjectId[];
   private userRelations?: ObjectId[];
   private userType?: UserType;
-  private userPreferences?: UserPreferences | null;
+  private userPreferences?: UserPreferences;
 
   constructor(
-    clerkId?: string,
-    email?: string,
-    username?: string,
-    description?: string,
-    profilePhotoUrl?: string,
-    countryRegion?: string,
-    isActive?: boolean,
-    name?: string,
-    lastName?: string,
+    clerkId: string,
+    email: string,
+    username: string,
+    description: string,
+    profilePhotoUrl: string,
+    countryRegion: string,
+    isActive: boolean,
+    name: string,
+    lastName: string,
     contact?: ObjectId,
     createdTime?: string,
     subscriptions?: ObjectId[],
@@ -51,6 +48,7 @@ export abstract class User {
     userRelations?: ObjectId[],
     userType?: UserType,
     userPreferences?: UserPreferences,
+    _id?: ObjectId,
   ) {
     this.clerkId = clerkId;
     this.email = email;
@@ -72,83 +70,90 @@ export abstract class User {
     this.userType = userType ?? UserType.Personal;
     this.userPreferences = userPreferences ?? {
       searchPreference: [],
-      backgroundColor: '',
-      boardColor: '',
+      backgroundColor: undefined,
     };
+    this._id = _id;
   }
 
-  getClerkId(): string | undefined {
+  setContact(contact: ObjectId) {
+    this.contact = contact;
+  }
+
+  get getId() {
+    return this._id;
+  }
+  get getClerkId() {
     return this.clerkId;
   }
 
-  getEmail(): string | undefined {
+  get getEmail() {
     return this.email;
   }
 
-  getUsername(): string | undefined {
+  get getUsername() {
     return this.username;
   }
 
-  getDescription(): string | undefined {
+  get getDescription() {
     return this.description;
   }
 
-  getProfilePhotoUrl(): string | undefined {
+  get getProfilePhotoUrl() {
     return this.profilePhotoUrl;
   }
 
-  getCountryRegion(): string | undefined {
+  get getCountryRegion() {
     return this.countryRegion;
   }
 
-  getIsActive(): boolean | undefined {
+  get getIsActive() {
     return this.isActive;
   }
 
-  getContact(): ObjectId | undefined {
+  get getContact() {
     return this.contact;
   }
 
-  getCreatedTime(): string {
-    return this.createdTime ?? '';
+  get getCreatedTime() {
+    return this.createdTime;
   }
 
-  getSubscriptions(): ObjectId[] | undefined {
+  get getSubscriptions() {
     return this.subscriptions;
   }
 
-  getGroups(): ObjectId[] | undefined {
+  get getGroups() {
     return this.groups;
   }
 
-  getMagazines(): ObjectId[] | undefined {
+  get getMagazines() {
     return this.magazines;
   }
 
-  getBoard(): ObjectId[] | undefined {
+  get getBoard() {
     return this.board;
   }
 
-  getPost(): ObjectId[] | undefined {
+  get getPost() {
     return this.post;
   }
 
-  getUserRelations(): ObjectId[] | undefined {
+  get getUserRelations() {
     return this.userRelations;
   }
 
-  getUserType(): UserType {
-    return this.userType ?? UserType.Personal;
+  get getUserType() {
+    return this.userType;
   }
 
-  getName(): string | undefined {
+  get getName() {
     return this.name;
   }
 
-  getLastName(): string | undefined {
+  get getLastName() {
     return this.lastName;
   }
-  getUserPreferences(): UserPreferences | null | undefined {
+  get getUserPreferences() {
     return this.userPreferences;
   }
 }

@@ -1,9 +1,9 @@
 import { ClientSession, Types } from 'mongoose';
-import { ContactRequestDto } from '../../infraestructure/controller/request/contact.request';
+import { ContactRequest } from 'src/contexts/user/application/adapter/dto/HTTP-REQUEST/user.request.CREATE';
 
 export interface ContactServiceInterface {
   createContact(
-    contact: ContactRequestDto,
+    contact: ContactRequest,
     options?: { session?: ClientSession },
   ): Promise<Types.ObjectId>;
 }

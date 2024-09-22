@@ -1,23 +1,21 @@
 import { Inject } from '@nestjs/common';
+
 import { UserAdapterInterface } from '../../application/adapter/userAdapter.interface';
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
 import { UserServiceInterface } from '../../domain/service/user.service.interface';
-import {
-  UserBusinessDto,
-  UserBusinessResponse,
-} from '../controller/dto/user.business.DTO';
-import {
-  UserPersonDto,
-  UserPersonResponse,
-} from '../controller/dto/user.person.DTO';
-import { UserPerson } from '../../domain/entity/userPerson.entity';
-import { User } from '../../domain/entity/user.entity';
-import { UserBusiness } from '../../domain/entity/userBusiness.entity';
-import { error } from 'console';
-import { UP_publiciteUpdateRequestDto } from '../controller/dto/update.request-DTO/UP-publicite.update.request';
-import { UB_publiciteUpdateRequestDto } from '../controller/dto/update.request-DTO/UB-publicite.update.request';
-import { UserPreferenceResponse } from '../../application/adapter/dto/userPreferences.response';
+
 import { UserMapperInterface } from '../../application/adapter/mapper/user.mapper.interface';
+import { UserResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.response.dto';
+import {
+  UserPreferencesRequest,
+  UserRequest,
+} from '../../application/adapter/dto/HTTP-REQUEST/user.request.CREATE';
+import { businessAccountUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/user.business.request.UPDATE';
+import { personalAccountUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/user.personal.request.UPDATE';
+import { UserPersonalUpdateResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.personal.response.UPDATE';
+import { UserBusinessUpdateResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.business.response.UPDATE';
+import { UserPersonalInformationResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.information.response';
+import { UserPreferenceResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.preferences.response';
 
 export class UserAdapter implements UserAdapterInterface {
   constructor(
@@ -27,18 +25,65 @@ export class UserAdapter implements UserAdapterInterface {
     @Inject('UserMapperInterface')
     private readonly userMapper: UserMapperInterface,
   ) {}
-  async getUserPreferencesByUsername(username: string): Promise<UserPreferenceResponse | null> {
-    try {
-      return await this.userService.getUserPreferencesByUsername(
-        username,
-      );
 
+  async createUser(req: UserRequest): Promise<UserResponse> {
+    let userMapped;
+    let userCreated;
+
+    if (!req.userType) {
+      throw new Error('Invalid user type');
+    }
+
+    try {
+      switch (req.userType.toLocaleLowerCase()) {
+        case 'personal': {
+          this.logger.log('We are creating a persona account');
+          userMapped = this.userMapper.requestToEntity(req);
+          userCreated = await this.userService.createUser(
+            userMapped,
+            req?.contact,
+          );
+          return this.userMapper.entityToResponse(userCreated);
+        }
+        case 'business': {
+          this.logger.log('We are creating a persona account');
+          userMapped = this.userMapper.requestToEntity(req);
+          userCreated = await this.userService.createUser(
+            userMapped,
+            req?.contact,
+          );
+          return this.userMapper.entityToResponse(userCreated);
+        }
+        default: {
+          throw new Error('Invalid user type');
+        }
+      }
+    } catch (error: any) {
+      console.log(error);
+      throw error;
+    }
+  }
+
+  async getUserPreferencesByUsername(
+    username: string,
+  ): Promise<UserPreferenceResponse | null> {
+    try {
+      const userPreference =
+        await this.userService.getUserPreferencesByUsername(username);
+      if (!userPreference) return null;
+      const userPreferenceResponse: UserPreferenceResponse = {
+        searchPreference: userPreference?.searchPreference ?? [],
+        backgroundColor: userPreference?.backgroundColor ?? undefined,
+      };
+      return userPreferenceResponse;
     } catch (error: any) {
       throw error;
     }
   }
 
-  async getUserPersonalInformationByUsername(username: string): Promise<any> {
+  async getUserPersonalInformationByUsername(
+    username: string,
+  ): Promise<UserPersonalInformationResponse> {
     try {
       return await this.userService.getUserPersonalInformationByUsername(
         username,
@@ -48,84 +93,55 @@ export class UserAdapter implements UserAdapterInterface {
     }
   }
 
-  async createUser(
-    req: UserPersonDto | UserBusinessDto,
-    type: number,
-  ): Promise<UserPersonResponse | UserBusinessResponse> {
-    this.logger.log('Creating user in the adapter');
-
-    // Validar tipo y clase de objeto antes de usar el switch
-    if (type === 0 || req instanceof UserPersonDto) {
-      this.logger.log('Person user received in the adapter');
-      try {
-        const userP: User = await this.userService.createUser(
-          req as UserPersonDto,
-          0,
-        );
-        return UserPersonDto.formatDocument(userP as UserPerson);
-      } catch (error) {
-        this.logger.error('Error in adapter. The user has not been created');
-        throw error;
-      }
-    } else if (type === 1 || req instanceof UserBusinessDto) {
-      this.logger.log('Business user received in the adapter');
-      try {
-        const userB: User = await this.userService.createUser(
-          req as UserBusinessDto,
-          1,
-        );
-        if (userB instanceof UserBusiness) {
-          return UserBusinessDto.formatDocument(userB as UserBusiness);
-        } else {
-          throw new Error('Returned user is not a UserBusiness');
-        }
-      } catch (error) {
-        throw error;
-      }
-    } else {
-      throw error;
-    }
-  }
-
   async updateUser(
     username: string,
-    req: UP_publiciteUpdateRequestDto | UB_publiciteUpdateRequestDto,
+    req: businessAccountUpdateRequest | personalAccountUpdateRequest,
     type: number,
-  ): Promise<UserPersonResponse | UserBusinessResponse> {
-    this.logger.log('Start process in the adapter: Update');
-    if (type === 0 && req instanceof UP_publiciteUpdateRequestDto) {
-      const userUpdated: User = await this.userService.updateUser(
+  ): Promise<UserPersonalUpdateResponse | UserBusinessUpdateResponse> {
+    this.logger.log('Start udpate process in the adapter: Update');
+    let userMapped;
+    let userUpdated;
+    // 0 -> Personal Account | 1 -> Business Account
+    if (type === 0) {
+      userMapped = this.userMapper.requestToEntity_update(req, 0);
+      userUpdated = await this.userService.updateUser(
         username,
-        req as UP_publiciteUpdateRequestDto,
-        0,
+        userMapped,
+        type,
       );
-      return UserPersonDto.formatDocument(userUpdated as UserPerson);
-    } else if (type === 1 && req instanceof UB_publiciteUpdateRequestDto) {
-      const userUpdated: User = await this.userService.updateUser(
+      return this.userMapper.entityToResponse_update(userUpdated, 0);
+    } else if (type === 1) {
+      userMapped = this.userMapper.requestToEntity_update(req, 1);
+      userUpdated = await this.userService.updateUser(
         username,
-        req as UB_publiciteUpdateRequestDto,
-        1,
+        userMapped,
+        type,
       );
-      return UserBusinessDto.formatDocument(userUpdated as UserBusiness);
+      return this.userMapper.entityToResponse_update(userUpdated, 1);
     } else {
-      throw error;
+      throw new Error('Invalid user type');
     }
   }
 
   async updateUserPreferencesByUsername(
     username: string,
-    userPreference: UserPreferenceResponse,
-  ): Promise<UserPreferenceResponse> {
+    userPreference: UserPreferencesRequest,
+  ): Promise<UserPreferenceResponse | null> {
     try {
       this.logger.log(
         'Start process in the adapter: Update preferences - Sending request to the service',
       );
+      const userPreferencesMapped =
+        this.userMapper.requestToEntity_userPreferences(userPreference);
       const userPreferencesUpdated =
         await this.userService.updateUserPreferencesByUsername(
           username,
-          userPreference,
+          userPreferencesMapped,
         );
-      return this.userMapper.formatEntityToResponse(userPreferencesUpdated);
+      if (!userPreferencesUpdated) return null;
+      return this.userMapper.entityToResponse_userPreferences(
+        userPreferencesUpdated,
+      );
     } catch (error: any) {
       throw error;
     }

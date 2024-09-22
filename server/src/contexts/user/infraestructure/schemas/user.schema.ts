@@ -1,13 +1,9 @@
 import { Schema, model, Document } from 'mongoose';
+import { UserType } from '../../domain/entity/enum/user.enums';
 
-enum UserType {
-  Personal = 'Personal',
-  Business = 'Business',
-}
 export interface UserPreferences {
   searchPreference: Schema.Types.ObjectId[];
-  backgroundColor: string;
-  boardColor: string;
+  backgroundColor: number | undefined;
 }
 interface IUser extends Document {
   clerkId: string;
@@ -55,8 +51,7 @@ const UserSchema = new Schema<IUser>(
     lastName: { type: String, required: true },
     userPreferences: {
       searchPreference: [{ type: Schema.Types.ObjectId, ref: 'PostCategory' }],
-      backgroundColor: { type: String, default: '' },
-      boardColor: { type: String, default: '' },
+      backgroundColor: { type: Number, default: undefined },
     },
   },
   { discriminatorKey: 'kind', collection: 'users' },
