@@ -5,7 +5,7 @@ import { useState } from "react";
 import PackCard from "./PackCard";
 import { Subscription, SubscriptionPlan } from "@/types/subscriptions";
 import FrequencyButtons from "./FrequencyButtons";
-import { checkIfUserIsSubscribed } from "@/app/utils/utils";
+import { checkIfUserIsSubscribed } from "@/utils/functions/utils";
 
 const SubscriptionGrid = ({
   type,

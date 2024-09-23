@@ -124,6 +124,7 @@ const DropdownSolapas = ({
       Array.from(selectedKeys)
         .map((key) => keyToLabel[key as string])
         .join(", "),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [selectedKeys]
   );
 

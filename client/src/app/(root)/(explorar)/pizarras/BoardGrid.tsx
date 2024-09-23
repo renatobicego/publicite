@@ -4,6 +4,7 @@ import { Board } from "@/types/board";
 import { useUser } from "@clerk/nextjs";
 import { Spinner } from "@nextui-org/react";
 import { useState, useEffect } from "react";
+import { User } from "@/types/userTypes";
 
 const BoardGrid = ({ items, isLoading }: { items: Board[]; isLoading: boolean }) => {
   const {columns} = useMasonryGrid(items);
@@ -16,7 +17,7 @@ const BoardGrid = ({ items, isLoading }: { items: Board[]; isLoading: boolean })
             {column.map((board: Board, index) => (
               <BoardCard
                 bg={board.color || "bg-fondo"}
-                isMyBoard={user?.username === board.user.username}
+                isMyBoard={user?.username === (board.user as User).username}
                 board={board}
                 key={board._id + index}
               />

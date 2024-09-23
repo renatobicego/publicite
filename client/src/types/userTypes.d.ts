@@ -74,6 +74,7 @@ export interface UserPersonFormValues
     | "contact"
     | "groups"
     | "magazines"
+    | "userPreferences"
   > {
   contact: {
     phone: string;

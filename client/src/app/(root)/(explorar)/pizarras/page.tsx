@@ -1,8 +1,6 @@
 import BreadcrumbsAdmin from "@/components/BreadcrumbsAdmin";
-import SolapasTabs from "@/app/components/SolapasTabs";
+import SolapasTabs from "@/components/solapas/SolapasTabs";
 import { BOARDS } from "@/utils/data/urls";
-
-
 
 export default async function Boards() {
 

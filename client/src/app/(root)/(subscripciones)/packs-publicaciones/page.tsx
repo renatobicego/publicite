@@ -31,7 +31,7 @@ export default function PostPacks() {
             Estás utilizando 40 de tus 50 publicaciones activas disponibles.
           </p>
         </div>
-        <SubscriptionGrid type="packs"/>
+        <SubscriptionGrid type="packs" subscriptions={[]} subscriptionsOfUser={[]}/>
       </section>
     </main>
   );
