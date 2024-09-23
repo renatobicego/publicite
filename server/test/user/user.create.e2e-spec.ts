@@ -4,10 +4,11 @@ import * as request from 'supertest';
 import { AppModule } from 'src/app.module';
 import { DatabaseService } from 'src/contexts/shared/database/infraestructure/database.service';
 
-import { UserPersonDto } from 'src/contexts/user/infraestructure/controller/dto/user.person.DTO';
-
-import { UserBusinessDto } from 'src/contexts/user/infraestructure/controller/dto/user.business.DTO';
-import { userSub, userSubBusiness } from 'test/model/user.stub';
+import { userSub, userSubBusiness } from '../../test/model/user.stub';
+import {
+  UserBusinessRequest,
+  UserPersonRequest,
+} from 'src/contexts/user/application/adapter/dto/HTTP-REQUEST/user.request.CREATE';
 
 let dbConnection: Connection;
 let httpServer: any;
@@ -48,26 +49,28 @@ describe('Create a Personal account', () => {
   });
 
   it('should create a personal account', async () => {
-    const userPersonDto: UserPersonDto = {
+    const userPersonDto: UserPersonRequest = {
       clerkId: userSub().clerkId,
       email: userSub().email,
       username: userSub().username,
       description: userSub().description,
       profilePhotoUrl: userSub().profilePhotoUrl,
       countryRegion: userSub().countryRegion,
+      name: userSub().name,
+      lastName: userSub().lastName,
       isActive: userSub().isActive,
       contact: userSub().contact,
       createdTime: userSub().createdTime,
-      name: userSub().name,
-      lastName: userSub().lastName,
+      userType: userSub().userType,
       gender: userSub().gender,
       birthDate: userSub().birthDate,
+      userPreferences: userSub().userPreferences,
     };
 
     const response = await request(httpServer)
       .post('/user/personal')
       //.set('Authorization', `bearer ${token}`)
-      .send(userPersonDto as UserPersonDto);
+      .send(userPersonDto as UserPersonRequest);
 
     expect(response.status).toBe(201);
     expect(response.body).toMatchObject({
@@ -77,30 +80,28 @@ describe('Create a Personal account', () => {
       description: userPersonDto.description,
       profilePhotoUrl: userPersonDto.profilePhotoUrl,
       countryRegion: userPersonDto.countryRegion,
-      isActive: userPersonDto.isActive,
-      createdTime: userPersonDto.createdTime,
       name: userPersonDto.name,
       lastName: userPersonDto.lastName,
+      isActive: userPersonDto.isActive,
+      createdTime: userPersonDto.createdTime,
+      userType: userPersonDto.userType,
+      userPreferences: userPersonDto.userPreferences,
       gender: userPersonDto.gender,
       birthDate: userPersonDto.birthDate,
     });
     expect(response.body).toHaveProperty('_id');
-    expect(Types.ObjectId.isValid(response.body.contact)).toBe(true);
+    //expect(Types.ObjectId.isValid(response.body.contact)).toBe(true);
     expect(response.body.subscriptions).toEqual([]);
     expect(response.body.groups).toEqual([]);
     expect(response.body.magazines).toEqual([]);
     expect(response.body.board).toEqual([]);
     expect(response.body.post).toEqual([]);
     expect(response.body.userRelations).toEqual([]);
-    expect(response.body.userPreferences).toEqual({
-      searchPreference: [],
-      backgroundColor: '',
-      boardColor: '',
-    });
+    expect(Types.ObjectId.isValid(response.body.contact)).toBe(true);
   });
 
   it('should create a business account', async () => {
-    const userBusinessDto: UserBusinessDto = {
+    const userBusinessDto: UserBusinessRequest = {
       clerkId: userSubBusiness().clerkId,
       email: userSubBusiness().email,
       username: userSubBusiness().username,
@@ -114,12 +115,14 @@ describe('Create a Personal account', () => {
       name: userSubBusiness().name,
       lastName: userSubBusiness().lastName,
       businessName: userSubBusiness().businessName,
+      userType: userSubBusiness().userType,
+      userPreferences: userSubBusiness().userPreferences,
     };
 
     const response = await request(httpServer)
       .post('/user/business')
       //.set('Authorization', `bearer ${token}`)
-      .send(userBusinessDto as UserBusinessDto);
+      .send(userBusinessDto as UserBusinessRequest);
 
     expect(response.status).toBe(201);
     expect(response.body).toMatchObject({
@@ -146,14 +149,13 @@ describe('Create a Personal account', () => {
     expect(response.body.userRelations).toEqual([]);
     expect(response.body.userPreferences).toEqual({
       searchPreference: [],
-      backgroundColor: '',
-      boardColor: '',
+      backgroundColor: 12,
     });
   });
 
   it('should throw an error if user already exists', async () => {
     await dbConnection.collection('users').insertOne(userSubBusiness());
-    const userBusinessDto: UserBusinessDto = {
+    const userBusinessDto: UserBusinessRequest = {
       clerkId: userSubBusiness().clerkId,
       email: userSubBusiness().email,
       username: userSubBusiness().username,
@@ -167,12 +169,14 @@ describe('Create a Personal account', () => {
       name: userSubBusiness().name,
       lastName: userSubBusiness().lastName,
       businessName: userSubBusiness().businessName,
+      userType: userSubBusiness().userType,
+      userPreferences: userSubBusiness().userPreferences,
     };
 
     const response = await request(httpServer)
       .post('/user/business')
       //.set('Authorization', `bearer ${token}`)
-      .send(userBusinessDto as UserBusinessDto);
+      .send(userBusinessDto as UserBusinessRequest);
     expect(response.status).toBe(500);
     expect(response.body.exception.errorResponse.code).toBe(11000);
     expect(response.body.exception.errorResponse.errmsg).toContain(
@@ -182,7 +186,7 @@ describe('Create a Personal account', () => {
 
   it('should throw an error if sector does not exist', async () => {
     await dbConnection.collection('users').insertOne(userSubBusiness());
-    const userBusinessDto: UserBusinessDto = {
+    const userBusinessDto: UserBusinessRequest = {
       clerkId: userSubBusiness().clerkId,
       email: userSubBusiness().email,
       username: userSubBusiness().username,
@@ -196,12 +200,14 @@ describe('Create a Personal account', () => {
       name: userSubBusiness().name,
       lastName: userSubBusiness().lastName,
       businessName: userSubBusiness().businessName,
+      userType: userSubBusiness().userType,
+      userPreferences: userSubBusiness().userPreferences,
     };
 
     const response = await request(httpServer)
       .post('/user/business')
       //.set('Authorization', `bearer ${token}`)
-      .send(userBusinessDto as UserBusinessDto);
+      .send(userBusinessDto as UserBusinessRequest);
     expect(response.status).toBe(500);
   });
 });

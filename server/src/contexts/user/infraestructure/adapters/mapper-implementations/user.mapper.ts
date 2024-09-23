@@ -102,8 +102,6 @@ export class UserMapper implements UserMapperInterface {
           ...userBase,
           gender: caster.getGender,
           birthDate: caster.getBirthDate,
-          name: '',
-          lastName: '',
         };
         return userPersonResponnse;
       }
