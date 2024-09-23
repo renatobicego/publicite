@@ -1,5 +1,5 @@
 import { Tooltip } from "@nextui-org/react";
-import SecondaryButton from "@/app/components/buttons/SecondaryButton";
+import SecondaryButton from "@/components/buttons/SecondaryButton";
 import { FiUpload } from "react-icons/fi";
 import { useRef } from "react";
 

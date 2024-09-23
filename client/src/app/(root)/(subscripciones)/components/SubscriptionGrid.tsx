@@ -1,11 +1,11 @@
 "use client";
-import { freeSubscriptionPlans, mockedPacks } from "@/app/utils/data/mockedData";
+import { freeSubscriptionPlans, mockedPacks } from "@/utils/data/mockedData";
 import SubscriptionPlanCard from "./SuscriptionPlanCard/SubscriptionPlanCard";
 import { useState } from "react";
 import PackCard from "./PackCard";
 import { Subscription, SubscriptionPlan } from "@/types/subscriptions";
 import FrequencyButtons from "./FrequencyButtons";
-import { checkIfUserIsSubscribed } from "@/app/utils/utils";
+import { checkIfUserIsSubscribed } from "@/utils/functions/utils";
 
 const SubscriptionGrid = ({
   type,

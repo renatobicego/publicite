@@ -1,9 +1,11 @@
 "use server";
+import { putBusinessProfileData } from "@/services/businessServices";
 import {
   getUserProfileData,
   putUserProfileData,
-} from "@/app/services/userServices";
+} from "@/services/userServices";
 import {
+  EditBusinessProfileProps,
   EditPersonProfileProps,
   EditProfileProps,
   UserType,
@@ -35,6 +37,17 @@ export const editProfile = async (
       }
       return { message: "Usuario editado exitosamente" };
     } else if (userType === "Business") {
+      const resApi = await putBusinessProfileData(
+        formData as EditBusinessProfileProps,
+        user.username
+      )
+      if (resApi.status !== 200 && resApi.status !== 201) {
+        return {
+          error:
+            "Error al completar el registro. Por favor intenta de nuevo. Error: " +
+            resApi.data.message,
+        };
+      }
       return { message: "Usuario editado exitosamente" };
     }
   } catch (err) {

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import FormCard from "../FormCard";
 import { Button, Select, Selection, SelectItem } from "@nextui-org/react";
-import PrimaryButton from "@/app/components/buttons/PrimaryButton";
+import PrimaryButton from "@/components/buttons/PrimaryButton";
 
 const SearchTermsForm = ({
   setIsFormVisible,

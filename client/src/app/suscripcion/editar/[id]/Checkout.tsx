@@ -1,6 +1,6 @@
 "use client";
 
-import { editPayment } from "@/app/services/subscriptionServices";
+import { editPayment } from "@/services/subscriptionServices";
 import { useUser } from "@clerk/nextjs";
 import { CardPayment, initMercadoPago } from "@mercadopago/sdk-react";
 import { ICardPaymentBrickPayer } from "@mercadopago/sdk-react/bricks/cardPayment/type";

@@ -1,5 +1,5 @@
-import { CustomSelect } from "@/app/components/inputs/CustomInputs";
-import { petitionTypesItems } from "@/app/utils/data/selectData";
+import { CustomSelect } from "@/components/inputs/CustomInputs";
+import { petitionTypesItems } from "@/utils/data/selectData";
 import { Field } from "formik";
 import { memo } from "react";
 

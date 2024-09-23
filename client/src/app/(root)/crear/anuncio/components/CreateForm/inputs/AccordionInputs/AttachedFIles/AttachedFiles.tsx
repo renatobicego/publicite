@@ -1,4 +1,4 @@
-import SecondaryButton from "@/app/components/buttons/SecondaryButton";
+import SecondaryButton from "@/components/buttons/SecondaryButton";
 import { AttachedFileValues, PostAttachedFile } from "@/types/postTypes";
 import { Dispatch, memo, SetStateAction, useState } from "react";
 import { FaPlus } from "react-icons/fa6";

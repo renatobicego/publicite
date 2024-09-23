@@ -5,6 +5,6 @@ export interface Board {
     annotations: string[];
     visibility: Visibility;
     keywords: string[];
-    user: Pick<User, "username" | "profilePhotoUrl" | "name">;
+    user: Pick<User, "username" | "profilePhotoUrl" | "name"> | ObjectId;
     color?: string;
 }

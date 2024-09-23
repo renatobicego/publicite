@@ -12,7 +12,7 @@ import PlanDetails from "./PlanDetails";
 import PopularChip from "./PopularChip";
 import SubscribedFooter from "./SubscribedFooter";
 import SubscriptionButton from "./SubscriptionButton";
-import { CREATE } from "@/app/utils/data/urls";
+import { CREATE } from "@/utils/data/urls";
 
 const SubscriptionPlanCard = ({
   subscriptionPlan,

@@ -3,11 +3,10 @@ import Details from "./Details";
 import {
   getSubscriptionPlanById,
   getSubscriptionsOfUser,
-} from "@/app/services/subscriptionServices";
+} from "@/services/subscriptionServices";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
-import { Subscription } from "@/types/subscriptions";
-import { checkIfUserIsSubscribed } from "@/app/utils/utils";
+import { checkIfUserIsSubscribed } from "@/utils/functions/utils";
 
 const Checkout = dynamic(() => import("./Checkout"), {
   ssr: false,

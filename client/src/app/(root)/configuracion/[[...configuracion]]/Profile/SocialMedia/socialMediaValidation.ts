@@ -1,6 +1,6 @@
 import { object, string } from "yup";
 
-const phoneRegex = /^(\+\d{1,3}[- ]?)?\d{10}$/;
+const phoneRegex = /^(0|\+\d{1,3}[- ]?)?\d{10}$/;
 const instagramUrlRegex =
   /(?:https?:\/\/)?(?:www\.)?instagram\.com\/([A-Za-z0-9_.]+)/;
 const twitterUrlRegex =

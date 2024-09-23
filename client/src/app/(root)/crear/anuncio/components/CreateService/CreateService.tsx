@@ -6,14 +6,14 @@ import { Divider } from "@nextui-org/react";
 import PlacePicker from "../CreateForm/inputs/PlacePicker";
 import AccordionInputs from "../CreateForm/inputs/AccordionInputs/AccordionInputs";
 import { useState } from "react";
-import PrimaryButton from "@/app/components/buttons/PrimaryButton";
+import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { useUser } from "@clerk/nextjs";
-import { toastifyError, toastifySuccess } from "@/app/utils/functions/toastify";
+import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { serviceValidation } from "./serviceValidation";
 import { getLocalTimeZone, today } from "@internationalized/date";
-import useUploadFiles from "@/app/utils/hooks/useUploadFiles";
+import useUploadFiles from "@/utils/hooks/useUploadFiles";
 import { createPost } from "../../actions";
-import { POSTS } from "@/app/utils/data/urls";
+import { POSTS } from "@/utils/data/urls";
 import { useRouter } from "next/navigation";
 
 

@@ -1,4 +1,4 @@
-import { CustomInput } from "@/app/components/inputs/CustomInputs";
+import { CustomInput } from "@/components/inputs/CustomInputs";
 import { Contact } from "@/types/userTypes";
 import { Field, FormikErrors } from "formik";
 import { FaXTwitter, FaLink } from "react-icons/fa6";

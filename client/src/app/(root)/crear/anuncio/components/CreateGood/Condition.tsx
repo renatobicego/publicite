@@ -1,5 +1,5 @@
-import { CustomSelect } from "@/app/components/inputs/CustomInputs";
-import { conditionItems } from "@/app/utils/data/selectData";
+import { CustomSelect } from "@/components/inputs/CustomInputs";
+import { conditionItems } from "@/utils/data/selectData";
 import { GoodPostValues } from "@/types/postTypes";
 import { Field, FormikErrors } from "formik";
 

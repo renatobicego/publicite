@@ -1,11 +1,11 @@
-import BreadcrumbsAdmin from "@/app/components/BreadcrumbsAdmin";
+import BreadcrumbsAdmin from "@/components/BreadcrumbsAdmin";
 import {
   CREATE,
   CREATE_GROUP,
   CREATE_MAGAZINE,
   CREATE_PETITION,
   CREATE_POST,
-} from "@/app/utils/data/urls";
+} from "@/utils/data/urls";
 import { FaCamera, FaUserGroup } from "react-icons/fa6";
 import { IoBook } from "react-icons/io5";
 import { MdQuestionAnswer } from "react-icons/md";

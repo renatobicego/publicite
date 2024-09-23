@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import FormCard from "../../FormCard";
 import SubscriptionPlanSelection from "./SubscriptionPlanSelection";
 import ActionButtons from "./ActionButtons";
-import { getSubscriptionsPlans } from "@/app/services/subscriptionServices";
+import { getSubscriptionsPlans } from "@/services/subscriptionServices";
 
 const AccountTypeForm = ({
   setIsFormVisible,

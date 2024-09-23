@@ -1,5 +1,5 @@
 "use server"
-import { postPost } from "@/app/services/postsServices";
+import { postPost } from "@/services/postsServices";
 import { GoodPostValues, PetitionPostValues, ServicePostValues } from "@/types/postTypes";
 import { currentUser } from "@clerk/nextjs/server";
 

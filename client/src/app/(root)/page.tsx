@@ -1,6 +1,6 @@
-import SecondaryButton from "../components/buttons/SecondaryButton";
-import PostsGrid from "../components/grids/PostGrid";
-import { mockedPetitions, mockedPosts } from "../utils/data/mockedData";
+import SecondaryButton from "../../components/buttons/SecondaryButton";
+import PostsGrid from "../../components/grids/PostGrid";
+import { mockedPetitions, mockedPosts } from "../../utils/data/mockedData";
 
 export default function Home() {
   return (

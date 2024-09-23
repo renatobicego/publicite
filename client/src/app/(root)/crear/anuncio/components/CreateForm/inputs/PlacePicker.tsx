@@ -6,7 +6,7 @@ import {
   PostLocationForm,
   ServicePostValues,
 } from "@/types/postTypes";
-import { toastifyError } from "@/app/utils/functions/toastify";
+import { toastifyError } from "@/utils/functions/toastify";
 import { Libraries } from "@react-google-maps/api";
 import { Status, Wrapper } from "@googlemaps/react-wrapper";
 import { Spinner } from "@nextui-org/react";

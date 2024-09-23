@@ -1,5 +1,5 @@
 "use client";
-import { editSubscription } from "@/app/services/subscriptionServices";
+import { editSubscription } from "@/services/subscriptionServices";
 import { Button, Link } from "@nextui-org/react";
 import React from "react";
 

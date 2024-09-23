@@ -2,8 +2,8 @@ import { Button } from "@nextui-org/react";
 import DataBox from "../DataBox";
 import { FaColonSign } from "react-icons/fa6";
 import { useState } from "react";
-import Board from "@/app/components/Board/Board";
-import { boardColors } from "@/app/utils/data/selectData";
+import Board from "@/components/Board/Board";
+import { boardColors } from "@/utils/data/selectData";
 
 const BoardPersonalization = () => {
   const [colorSelected, setColorSelected] = useState("bg-fondo");

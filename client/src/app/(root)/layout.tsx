@@ -1,8 +1,8 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { ourFileRouter } from "../api/uploadthing/core";
-import HelpButton from "../components/buttons/HelpButton";
-import Footer from "../components/Footer/Footer";
-import Header from "../components/Header/Header";
+import HelpButton from "../../components/buttons/HelpButton";
+import Footer from "../../components/Footer/Footer";
+import Header from "../../components/Header/Header";
 import { BackgroundProvider } from "./backgroundProvider";
 import BackgroundStyle from "./BackgroundStyle.";
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";

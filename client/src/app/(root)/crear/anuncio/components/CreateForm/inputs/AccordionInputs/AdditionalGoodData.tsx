@@ -1,4 +1,4 @@
-import { CustomInput } from "@/app/components/inputs/CustomInputs";
+import { CustomInput } from "@/components/inputs/CustomInputs";
 import { GoodPostValues, ServicePostValues } from "@/types/postTypes";
 import { Field, FormikErrors } from "formik";
 import React from "react";

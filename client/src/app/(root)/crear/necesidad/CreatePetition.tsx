@@ -1,7 +1,7 @@
 "use client";
 import { AttachedFileValues, PetitionPostValues } from "@/types/postTypes";
 import { Form, Formik, FormikHelpers } from "formik";
-import PrimaryButton from "@/app/components/buttons/PrimaryButton";
+import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { useUser } from "@clerk/nextjs";
 import { getLocalTimeZone, today } from "@internationalized/date";
 import { petitionValidation } from "./petititonValidation";
@@ -11,11 +11,11 @@ import PlacePicker from "../anuncio/components/CreateForm/inputs/PlacePicker";
 import PriceRangeCategory from "./PriceRangeCategory";
 import Visibility from "../anuncio/components/CreateForm/inputs/AccordionInputs/Visibility";
 import { createPost } from "../anuncio/actions";
-import { toastifyError, toastifySuccess } from "@/app/utils/functions/toastify";
+import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { useRouter } from "next/navigation";
-import { POSTS } from "@/app/utils/data/urls";
+import { POSTS } from "@/utils/data/urls";
 import { useState } from "react";
-import useUploadFiles from "@/app/utils/hooks/useUploadFiles";
+import useUploadFiles from "@/utils/hooks/useUploadFiles";
 import AttachedFiles from "../anuncio/components/CreateForm/inputs/AccordionInputs/AttachedFIles/AttachedFiles";
 import PetitionType from "./PetitionType";
 

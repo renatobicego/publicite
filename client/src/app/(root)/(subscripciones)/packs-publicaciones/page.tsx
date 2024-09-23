@@ -1,5 +1,5 @@
-import BreadcrumbsAdmin from "@/app/components/BreadcrumbsAdmin";
-import { PACKS } from "@/app/utils/data/urls";
+import BreadcrumbsAdmin from "@/components/BreadcrumbsAdmin";
+import { PACKS } from "@/utils/data/urls";
 import SubscriptionGrid from "../components/SubscriptionGrid";
 
 export default function PostPacks() {
@@ -31,7 +31,7 @@ export default function PostPacks() {
             Estás utilizando 40 de tus 50 publicaciones activas disponibles.
           </p>
         </div>
-        <SubscriptionGrid type="packs"/>
+        <SubscriptionGrid type="packs" subscriptions={[]} subscriptionsOfUser={[]}/>
       </section>
     </main>
   );

@@ -1,4 +1,4 @@
-import BackButton from "@/app/components/buttons/BackButton";
+import BackButton from "@/components/buttons/BackButton";
 import { Button, Divider, Image, Link } from "@nextui-org/react";
 
 const Details = ({ subscriptionPlan }: { subscriptionPlan: any }) => {

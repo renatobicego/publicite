@@ -1,4 +1,4 @@
-import { getSubscriptionById } from "@/app/services/subscriptionServices";
+import { getSubscriptionById } from "@/services/subscriptionServices";
 import dynamic from "next/dynamic";
 
 const Checkout = dynamic(() => import("./Checkout"), {

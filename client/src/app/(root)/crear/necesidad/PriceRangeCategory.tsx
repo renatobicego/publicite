@@ -1,9 +1,9 @@
 import {
   CustomInput,
   CustomSelect,
-} from "@/app/components/inputs/CustomInputs";
-import { categories } from "@/app/utils/data/mockedData";
-import { frequencyPriceItems } from "@/app/utils/data/selectData";
+} from "@/components/inputs/CustomInputs";
+import { categories } from "@/utils/data/mockedData";
+import { frequencyPriceItems } from "@/utils/data/selectData";
 import { PetitionPostValues, PostCategory } from "@/types/postTypes";
 import { Checkbox } from "@nextui-org/react";
 import { Field, FormikErrors } from "formik";
