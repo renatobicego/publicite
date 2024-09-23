@@ -27,7 +27,7 @@ const BusinessData = ({data} : {data?: EditBusinessProfileProps}) => {
             <EditButton text="Editar" onPress={() => setIsFormVisible(true)} />
           </DataBox>
           <DataBox labelText="Rubro" className="-mt-2.5">
-            <DataItem>{(data?.businessSector as BusinessSector).label}</DataItem>
+            <DataItem>{(data?.sector as BusinessSector).label}</DataItem>
           </DataBox>
           <DataBox labelText="Ubicación">
             <DataItem Icon={<TbWorldPin className="size-5" />}>

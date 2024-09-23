@@ -6,7 +6,7 @@ import LimitPosts from "./LimitPosts/LimitPosts";
 import { AnimatePresence, motion } from "framer-motion";
 import PaymentsTable from "./Payments/PaymentsTable";
 import { FaChevronLeft } from "react-icons/fa6";
-import SecondaryButton from "@/app/components/buttons/SecondaryButton";
+import SecondaryButton from "@/components/buttons/SecondaryButton";
 
 const Subscriptions = () => {
   const [arePaymentsShown, setArePaymentsShown] = useState(false);

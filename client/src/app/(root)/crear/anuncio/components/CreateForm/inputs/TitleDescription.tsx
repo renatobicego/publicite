@@ -1,4 +1,4 @@
-import { CustomInput, CustomTextarea } from "@/app/components/inputs/CustomInputs";
+import { CustomInput, CustomTextarea } from "@/components/inputs/CustomInputs";
 import { GoodPostValues, ServicePostValues } from "@/types/postTypes";
 import { Field, FormikErrors } from "formik";
 import { memo } from "react";

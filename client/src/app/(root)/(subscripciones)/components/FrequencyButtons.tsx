@@ -1,4 +1,4 @@
-import BWButton from "@/app/components/buttons/BWButton";
+import BWButton from "@/components/buttons/BWButton";
 import { Dispatch, SetStateAction } from "react";
 
 const FrequencyButtons = ({

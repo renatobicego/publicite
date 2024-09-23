@@ -2,11 +2,11 @@ import { Field, FormikErrors } from "formik";
 import {
   CustomDateInput,
   CustomSelect,
-} from "@/app/components/inputs/CustomInputs";
-import PlaceAutocomplete from "@/app/components/inputs/PlaceAutocomplete";
+} from "@/components/inputs/CustomInputs";
+import PlaceAutocomplete from "@/components/inputs/PlaceAutocomplete";
 import { CalendarDate } from "@internationalized/date";
 import { EditPersonProfileProps } from "@/types/userTypes";
-import { genderItems } from "@/app/utils/data/selectData";
+import { genderItems } from "@/utils/data/selectData";
 interface PersonalDataFormInputsProps {
   initialValues: EditPersonProfileProps;
   errors: FormikErrors<EditPersonProfileProps>;

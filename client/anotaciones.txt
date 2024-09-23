@@ -9,4 +9,4 @@ Podríamos:
 - Sino, si el usuario cambia el mail, podríamos actualizarlo en mp pero sería medio quilombo
 
 
-conectar preferences
+preferences actualizar, faltaria get de categories

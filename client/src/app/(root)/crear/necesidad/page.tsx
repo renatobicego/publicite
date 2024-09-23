@@ -1,5 +1,5 @@
-import BreadcrumbsAdmin from "@/app/components/BreadcrumbsAdmin";
-import { CREATE, CREATE_PETITION, CREATE_POST } from "@/app/utils/data/urls";
+import BreadcrumbsAdmin from "@/components/BreadcrumbsAdmin";
+import { CREATE, CREATE_PETITION, CREATE_POST } from "@/utils/data/urls";
 import CreatePetition from "./CreatePetition";
 
 export default function CreatePost() {

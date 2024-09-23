@@ -1,3 +1,6 @@
+import { Board } from "./board";
+import { PostCategory } from "./postTypes";
+
 export interface User {
   _id: ObjectId;
   clerkId: string;
@@ -13,7 +16,7 @@ export interface User {
   groups: Group[];
   magazines: Magazine[];
   board: Board;
-  post: Post[];
+  posts: Post[];
   userRelations: UserRelations[];
   userType: UserType;
   name: string;
@@ -21,10 +24,13 @@ export interface User {
   userPreferences: UserPreferences;
 }
 
+export interface GetUser extends Omit<User, "userPreferences" | "clerkId" | "userRelations"> {
+  userRelations: User[]
+}
+
 export interface UserPreferences {
-  searchPreference: ObjectId[];
+  searchPreference: ObjectId[] | PostCategory[];
   backgroundColor: number;
-  boardColor: string;
 }
 
 export type UserType = "Person" | "Business";
@@ -62,7 +68,7 @@ export interface UserPersonFormValues
     UserPerson,
     | "_id"
     | "subscriptions"
-    | "post"
+    | "posts"
     | "board"
     | "userRelations"
     | "contact"
@@ -79,7 +85,7 @@ export interface UserBusinessFormValues
     UserBusiness,
     | "_id"
     | "subscriptions"
-    | "post"
+    | "posts"
     | "board"
     | "userRelations"
     | "contact"
@@ -88,6 +94,7 @@ export interface UserBusinessFormValues
     | "sector"
     | "name"
     | "lastName"
+    | "userPreferences"
   > {
   contact: {
     phone?: string;
@@ -101,13 +108,38 @@ export interface UserBusinessFormValues
   lastName: string;
 }
 
-export interface EditPersonProfileProps extends Partial<Pick<UserPersonFormValues, "description" | "birthDate" | "gender" | "countryRegion">>{
-  contact?: Contact
+export interface EditPersonProfileProps
+  extends Partial<
+    Pick<
+      UserPersonFormValues,
+      "description" | "birthDate" | "gender" | "countryRegion"
+    >
+  > {
+  contact?: Contact;
 }
 
-export interface EditBusinessProfileProps extends Partial<Pick<UserBusinessFormValues, "businessName" | "countryRegion" | "description" | "contact">>{
-  businessSector: BusinessSector | ObjectId
-  contact?: Contact
+export interface EditBusinessProfileProps
+  extends Partial<
+    Pick<
+      UserBusinessFormValues,
+      "businessName" | "countryRegion" | "description" | "contact"
+    >
+  > {
+  sector: BusinessSector | ObjectId;
+  contact?: Contact;
 }
 
-export type EditProfileProps = EditBusinessProfileProps | EditPersonProfileProps
+export type EditProfileProps =
+  | EditBusinessProfileProps
+  | EditPersonProfileProps;
+
+export interface Group {
+  _id: ObjectId;
+  members: ObjectId[] | User[];
+  admins: ObjectId[] | User[];
+  name: string;
+  details: string;
+  rules: string;
+  magazines: ObjectId[] | Magazine[];
+  profilePhotoUrl: string;
+}

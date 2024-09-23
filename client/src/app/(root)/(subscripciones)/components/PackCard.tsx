@@ -1,5 +1,5 @@
-import BWButton from "@/app/components/buttons/BWButton";
-import SecondaryButton from "@/app/components/buttons/SecondaryButton";
+import BWButton from "@/components/buttons/BWButton";
+import SecondaryButton from "@/components/buttons/SecondaryButton";
 import { SubscriptionPlan } from "@/types/subscriptions";
 import { Button, Card, CardBody, Chip } from "@nextui-org/react";
 

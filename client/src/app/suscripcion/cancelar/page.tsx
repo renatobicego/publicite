@@ -1,5 +1,5 @@
 import UserSubscriptionCard from "./UserSubscriptionCard";
-import { getSubscriptionByEmail } from "@/app/services/subscriptionServices";
+import { getSubscriptionByEmail } from "@/services/subscriptionServices";
 
 export default async function Page() {
   const subscriptions = await getSubscriptionByEmail(

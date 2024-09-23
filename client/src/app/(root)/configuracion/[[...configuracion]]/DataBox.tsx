@@ -1,4 +1,4 @@
-import SecondaryButton from "@/app/components/buttons/SecondaryButton";
+import SecondaryButton from "@/components/buttons/SecondaryButton";
 import { Button, Card, CardBody, CardHeader } from "@nextui-org/react";
 import { HTMLAttributes } from "react";
 

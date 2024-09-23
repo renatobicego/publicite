@@ -5,8 +5,8 @@ import BoardPersonalization from "./BoardPersonalization";
 import { useEffect, useState } from "react";
 import { UserPreferences } from "@/types/userTypes";
 import { useUser } from "@clerk/nextjs";
-import { getUserPreferences } from "@/app/services/userServices";
-import { toastifyError } from "@/app/utils/functions/toastify";
+import { getUserPreferences } from "@/services/userServices";
+import { toastifyError } from "@/utils/functions/toastify";
 
 const Preferences = () => {
   const [userPreferences, setUserPreferences] = useState<UserPreferences>();
@@ -27,7 +27,7 @@ const Preferences = () => {
     <section className="flex flex-col gap-4 items-start w-full">
       <h2 className="profile-title">Preferencias y Personalización</h2>
       <Divider />
-      <SearchTerms />
+      <SearchTerms userPreferences={userPreferences}/>
       <Divider />
       <Background userPreferences={userPreferences}/>
       <Divider />

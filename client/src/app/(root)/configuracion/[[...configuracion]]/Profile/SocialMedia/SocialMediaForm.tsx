@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import FormCard from "../../FormCard";
 import { Form, Formik } from "formik";
 import { Button } from "@nextui-org/react";
-import PrimaryButton from "@/app/components/buttons/PrimaryButton";
+import PrimaryButton from "@/components/buttons/PrimaryButton";
 import FormInputs from "./FormInputs";
 import { Contact } from "@/types/userTypes";
 import { contactSchema } from "./socialMediaValidation";

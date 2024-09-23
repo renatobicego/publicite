@@ -2,9 +2,11 @@ import { Field, FormikErrors } from "formik";
 import {
   CustomInput,
   CustomSelect,
-} from "@/app/components/inputs/CustomInputs";
-import PlaceAutocomplete from "@/app/components/inputs/PlaceAutocomplete";
-import { EditBusinessProfileProps } from "@/types/userTypes";
+} from "@/components/inputs/CustomInputs";
+import PlaceAutocomplete from "@/components/inputs/PlaceAutocomplete";
+import { BusinessSector, EditBusinessProfileProps } from "@/types/userTypes";
+import { useEffect, useState } from "react";
+import { getBusinessSector } from "@/services/businessServices";
 interface PersonalDataFormInputsProps {
   initialValues: EditBusinessProfileProps;
   errors: FormikErrors<EditBusinessProfileProps>;
@@ -19,12 +21,16 @@ const FormInputs = ({
   errors,
   setFieldValue,
 }: PersonalDataFormInputsProps) => {
-  const businessSectorItems = [
-    { name: "Masculino", value: "M" },
-    { name: "Femenino", value: "F" },
-    { name: "No Binario", value: "X" },
-    { name: "Otro", value: "O" },
-  ];
+  const [businessSectorItems, setBusinessSectorItems] = useState([])
+
+  useEffect(() => {
+    const getItems = async() => {
+      const res = await getBusinessSector()
+      setBusinessSectorItems(res)
+    }
+    if(!businessSectorItems.length) getItems()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   return (
     <>
       <Field
@@ -38,18 +44,18 @@ const FormInputs = ({
       />
       <Field
         as={CustomSelect}
-        name="businessSector"
+        name="sector"
         isRequired
-        label="Género"
-        aria-label="genero"
-        placeholder="Seleccione su género"
+        label="Rubro de la Empresa - Negocio"
+        aria-label="rubro de la empresa"
+        placeholder="Seleccione el rubro"
         items={businessSectorItems}
-        defaultSelectedKeys={[initialValues.businessSector]}
-        isInvalid={!!errors.businessSector}
-        errorMessage={errors.businessSector}
-        getItemLabel={(item: { name: string; value: string }) => item.name}
-        getItemTextValue={(item: { name: string; value: string }) => item.name}
-        getItemValue={(item: { name: string; value: string }) => item.value}
+        defaultSelectedKeys={[initialValues.sector]}
+        isInvalid={!!errors.sector}
+        errorMessage={errors.sector}
+        getItemLabel={(item: BusinessSector) => item.label}
+        getItemTextValue={(item: BusinessSector) => item.label}
+        getItemValue={(item: BusinessSector) => item._id}
       />
       <Field
         as={PlaceAutocomplete}

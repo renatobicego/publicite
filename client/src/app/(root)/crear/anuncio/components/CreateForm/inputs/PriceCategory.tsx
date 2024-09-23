@@ -1,9 +1,9 @@
 import {
   CustomInput,
   CustomSelect,
-} from "@/app/components/inputs/CustomInputs";
-import { categories } from "@/app/utils/data/mockedData";
-import { frequencyPriceItems } from "@/app/utils/data/selectData";
+} from "@/components/inputs/CustomInputs";
+import { categories } from "@/utils/data/mockedData";
+import { frequencyPriceItems } from "@/utils/data/selectData";
 import {
   GoodPostValues,
   PostCategory,

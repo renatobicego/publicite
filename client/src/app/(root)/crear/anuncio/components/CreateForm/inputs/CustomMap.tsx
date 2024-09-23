@@ -1,4 +1,4 @@
-import LatLngAutocomplete from "@/app/components/inputs/LatLngAutocomplete";
+import LatLngAutocomplete from "@/components/inputs/LatLngAutocomplete";
 import { PostLocationForm } from "@/types/postTypes";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 import { FormikErrors } from "formik";

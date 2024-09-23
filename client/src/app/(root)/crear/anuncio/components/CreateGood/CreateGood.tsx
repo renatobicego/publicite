@@ -8,15 +8,15 @@ import Condition from "./Condition";
 import PlacePicker from "../CreateForm/inputs/PlacePicker";
 import AccordionInputs from "../CreateForm/inputs/AccordionInputs/AccordionInputs";
 import { useState } from "react";
-import PrimaryButton from "@/app/components/buttons/PrimaryButton";
+import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { useUser } from "@clerk/nextjs";
-import { useUploadThing } from "@/app/utils/uploadThing";
-import { toastifyError, toastifySuccess } from "@/app/utils/functions/toastify";
+import { useUploadThing } from "@/utils/uploadThing";
+import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { getLocalTimeZone, today } from "@internationalized/date";
 import { createPost } from "../../actions";
 import { useRouter } from "next/navigation";
-import { POSTS } from "@/app/utils/data/urls";
-import useUploadFiles from "@/app/utils/hooks/useUploadFiles";
+import { POSTS } from "@/utils/data/urls";
+import useUploadFiles from "@/utils/hooks/useUploadFiles";
 
 const CreateGood = ({ files }: { files: File[] }) => {
   const { user } = useUser();

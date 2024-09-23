@@ -2,7 +2,7 @@ import { AttachedFileValues, PostAttachedFile } from "@/types/postTypes";
 import { Button, Card, CardBody, Chip, Tooltip } from "@nextui-org/react";
 import { FaFile, FaX } from "react-icons/fa6";
 import FileUploadButton from "./FileUploadButton";
-import { CustomInputWithoutFormik } from "@/app/components/inputs/CustomInputs";
+import { CustomInputWithoutFormik } from "@/components/inputs/CustomInputs";
 import { FormikErrors } from "formik";
 
 const FileCard = ({

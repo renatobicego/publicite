@@ -1,4 +1,4 @@
-import { getEndDateISO } from "@/app/utils/functions/dates";
+import { getEndDateISO } from "@/utils/functions/dates";
 
 import MercadoPagoConfig, { PreApproval } from "mercadopago";
 import { NextRequest } from "next/server";

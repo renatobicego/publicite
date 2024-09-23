@@ -2,14 +2,14 @@ import React from "react";
 import FormCard from "../../FormCard";
 import { Form, Formik, FormikHelpers } from "formik";
 import { Button } from "@nextui-org/react";
-import PrimaryButton from "@/app/components/buttons/PrimaryButton";
+import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { object, string } from "yup";
 
 import FormInputs from "./FormInputs";
 import { EditPersonProfileProps } from "@/types/userTypes";
 import { editProfile } from "../actions";
 import { useRouter } from "next/navigation";
-import { toastifyError, toastifySuccess } from "@/app/utils/functions/toastify";
+import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 
 const personalDataFormSchema = object({
   birthDate: string()

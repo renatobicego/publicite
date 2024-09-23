@@ -1,4 +1,4 @@
-import SecondaryButton from "@/app/components/buttons/SecondaryButton";
+import SecondaryButton from "@/components/buttons/SecondaryButton";
 import { SubscriptionPlan } from "@/types/subscriptions";
 import { Button } from "@nextui-org/react";
 

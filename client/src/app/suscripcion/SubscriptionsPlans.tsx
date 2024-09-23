@@ -1,6 +1,6 @@
 import React from "react";
 import { Button, Link } from "@nextui-org/react";
-import { getSubscriptionsPlans } from "../services/subscriptionServices";
+import { getSubscriptionsPlans } from "../../services/subscriptionServices";
 
 const SubscriptionsPlans = async () => {
   const { results } = await getSubscriptionsPlans();

@@ -2,7 +2,7 @@ import { Button } from "@nextui-org/react";
 import FormCard from "../../FormCard";
 import { DataItem } from "../../DataBox";
 import { FaCcVisa } from "react-icons/fa6";
-import SecondaryButton from "@/app/components/buttons/SecondaryButton";
+import SecondaryButton from "@/components/buttons/SecondaryButton";
 
 const PaymentMethodForm = ({
   setIsFormVisible,

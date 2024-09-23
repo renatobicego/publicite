@@ -4,18 +4,20 @@ import { Field, Form, Formik, FormikHelpers } from "formik";
 import {
   CustomInput,
   CustomTextarea,
-} from "@/app/components/inputs/CustomInputs";
-import PrimaryButton from "@/app/components/buttons/PrimaryButton";
-import { toastifyError, toastifySuccess } from "@/app/utils/functions/toastify";
+} from "@/components/inputs/CustomInputs";
+import PrimaryButton from "@/components/buttons/PrimaryButton";
+import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { editProfile } from "../actions";
 import { useRouter } from "next/navigation";
 
 const DescriptionForm = ({
   setIsFormVisible,
   description,
+  isBusiness = false,
 }: {
   setIsFormVisible: (value: boolean) => void;
   description?: string;
+  isBusiness?: boolean;
 }) => {
   const router = useRouter();
   const initialValues = {
@@ -25,7 +27,7 @@ const DescriptionForm = ({
     values: { description: string },
     actions: FormikHelpers<{ description: string }>
   ) => {
-    const res = await editProfile(values, "Person");
+    const res = await editProfile(values, isBusiness ? "Business" : "Person");
     if (res?.message) {
       toastifySuccess(res.message);
       router.refresh();
@@ -37,12 +39,15 @@ const DescriptionForm = ({
   return (
     <FormCard title="Actualizar Descripción">
       <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-        {({ isSubmitting }) => (
+        {({ isSubmitting, errors }) => (
           <Form className="flex flex-col gap-2">
             <Field
               as={CustomTextarea}
               name="description"
               label="Descripción"
+              aria-label="descripción"
+              isInvalid={!!errors.description}
+              errorMessage={errors.description}
               placeholder="Agregar descripción"
             />
             <div className="flex gap-2">

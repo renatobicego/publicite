@@ -1,14 +1,14 @@
-import BreadcrumbsAdmin from "@/app/components/BreadcrumbsAdmin";
-import { SUBSCRIPTIONS } from "@/app/utils/data/urls";
+import BreadcrumbsAdmin from "@/components/BreadcrumbsAdmin";
+import { SUBSCRIPTIONS } from "@/utils/data/urls";
 import Users from "./Users";
 
 import SubscriptionGrid from "../components/SubscriptionGrid";
 import {
   getSubscriptionsOfUser,
   getSubscriptionsPlans,
-} from "@/app/services/subscriptionServices";
+} from "@/services/subscriptionServices";
 import { auth } from "@clerk/nextjs/server";
-import ErrorCard from "@/app/components/ErrorCard";
+import ErrorCard from "@/components/ErrorCard";
 
 export default async function SubscriptionPlans() {
   const breadcrumbsItems = [

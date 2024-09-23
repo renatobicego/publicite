@@ -2,18 +2,18 @@ import { BusinessSector, EditBusinessProfileProps } from "@/types/userTypes";
 import { Form, Formik, FormikHelpers } from "formik";
 import { useRouter } from "next/navigation";
 import { editProfile } from "../Profile/actions";
-import { toastifyError, toastifySuccess } from "@/app/utils/functions/toastify";
+import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import FormCard from "../FormCard";
 import { object, string } from "yup";
 import { Button } from "@nextui-org/react";
-import PrimaryButton from "@/app/components/buttons/PrimaryButton";
+import PrimaryButton from "@/components/buttons/PrimaryButton";
 import FormInputs from "./FormInputs";
 
 const personalDataFormSchema = object({
   businessName: string()
     .required("El nombre de la empresa es requerido")
     .min(1, "El nombre de la empresa es requerido"),
-  businessSector: string()
+  sector: string()
     .required("El rubro es requerido")
     .min(10, "El rubro es requerido"),
   countryRegion: string()
@@ -31,7 +31,7 @@ const BusinessDataForm = ({
   const initialValues: EditBusinessProfileProps = {
     countryRegion: data?.countryRegion || "",
     businessName: data?.businessName || "",
-    businessSector: (data?.businessSector as BusinessSector)._id || "",
+    sector: (data?.sector as BusinessSector)._id || "",
   };
   const router = useRouter();
   const handleSubmit = async (
