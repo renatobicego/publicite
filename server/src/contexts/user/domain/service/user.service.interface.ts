@@ -1,40 +1,34 @@
 import { ClientSession, ObjectId, Types } from 'mongoose';
-import { ContactRequestDto } from 'src/contexts/contact/infraestructure/controller/request/contact.request';
-import { UserBusinessDto } from '../../infraestructure/controller/dto/user.business.DTO';
-import {
-  UserPersonalInformationResponse,
-  UserPersonDto,
-} from '../../infraestructure/controller/dto/user.person.DTO';
+
 import { User, UserPreferences } from '../entity/user.entity';
-import { UP_publiciteUpdateRequestDto } from '../../infraestructure/controller/dto/update.request-DTO/UP-publicite.update.request';
-import { UB_publiciteUpdateRequestDto } from '../../infraestructure/controller/dto/update.request-DTO/UB-publicite.update.request';
+import { ContactRequest } from '../../application/adapter/dto/HTTP-REQUEST/user.request.CREATE';
+import { UserPersonalUpdateDto } from '../entity/dto/user.personal.update.dto';
+import { UserBusinessUpdateDto } from '../entity/dto/user.business.update.dto';
+import { UserPreferencesEntityDto } from '../entity/dto/user.preferences.update.dto';
 import { UP_clerkUpdateRequestDto } from 'src/contexts/webhook/application/clerk/dto/UP-clerk.update.request';
-import { UserPreferenceResponse } from '../../application/adapter/dto/userPreferences.response';
 
 export interface UserServiceInterface {
-  createUser(req: UserBusinessDto | UserPersonDto, type: number): Promise<User>;
+  createUser(req: User, contactDto: ContactRequest): Promise<User>;
   createContact(
-    contactDto: ContactRequestDto,
+    contactDto: ContactRequest,
     options?: { session?: ClientSession },
   ): Promise<Types.ObjectId>;
 
-  getUserPersonalInformationByUsername(
-    username: string,
-  ): Promise<UserPersonalInformationResponse>;
+  getUserPersonalInformationByUsername(username: string): Promise<any>;
   getUserPreferencesByUsername(
     username: string,
   ): Promise<UserPreferences | null>;
   updateUser(
     username: string,
-    req: UP_publiciteUpdateRequestDto | UB_publiciteUpdateRequestDto,
+    req: UserPersonalUpdateDto | UserBusinessUpdateDto,
     type: number,
-  ): Promise<any>;
+  ): Promise<UserPersonalUpdateDto | UserBusinessUpdateDto>;
 
   updateUserByClerkId(req: UP_clerkUpdateRequestDto): Promise<any>;
   updateUserPreferencesByUsername(
     username: string,
-    userPreference: UserPreferenceResponse,
-  ): Promise<UserPreferences | null>;
+    userPreference: UserPreferencesEntityDto,
+  ): Promise<UserPreferencesEntityDto | null>;
 
   saveNewPost(
     postId: ObjectId,

@@ -3,9 +3,9 @@ import { ClientSession, Types } from 'mongoose';
 
 import { ContactServiceInterface } from '../../domain/service/contact.service.interface';
 import { ContactRepositoryInterface } from '../../domain/repository/contact.repository.interface';
-import { ContactRequestDto } from '../../infraestructure/controller/request/contact.request';
 import { Contact } from '../../domain/entity/contact.entity';
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
+import { ContactRequest } from 'src/contexts/user/application/adapter/dto/HTTP-REQUEST/user.request.CREATE';
 
 @Injectable()
 export class ContactService implements ContactServiceInterface {
@@ -16,13 +16,19 @@ export class ContactService implements ContactServiceInterface {
   ) {}
 
   async createContact(
-    contact: ContactRequestDto,
+    contact: ContactRequest,
     options?: { session?: ClientSession },
   ): Promise<Types.ObjectId> {
     try {
       this.logger.log('Creating contact in service: ' + ContactService.name);
-      const formatContact: Contact = Contact.formatDtoToEntity(contact);
-      return await this.contactRepository.createContact(formatContact, options);
+      const contactMapped = new Contact(
+        contact.phone ?? '',
+        contact.instagram ?? '',
+        contact.facebook ?? '',
+        contact.x ?? '',
+        contact.website ?? '',
+      );
+      return await this.contactRepository.createContact(contactMapped, options);
     } catch (error) {
       throw error;
     }

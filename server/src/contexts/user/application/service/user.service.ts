@@ -1,33 +1,19 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { Inject } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/mongoose';
-import { ClientSession, Connection, Types } from 'mongoose';
+import { ClientSession, Connection, Types, ObjectId } from 'mongoose';
 
-import { UserBusinessDto } from '../../infraestructure/controller/dto/user.business.DTO';
 import { UserRepositoryInterface } from '../../domain/repository/user-repository.interface';
 import { UserServiceInterface } from '../../domain/service/user.service.interface';
-import {
-  UserPersonalInformationResponse,
-  UserPersonDto,
-} from '../../infraestructure/controller/dto/user.person.DTO';
-import { UP_update, UserPerson } from '../../domain/entity/userPerson.entity';
-import {
-  UB_update,
-  UserBusiness,
-} from '../../domain/entity/userBusiness.entity';
+
 import { User, UserPreferences } from '../../domain/entity/user.entity';
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
 import { ContactServiceInterface } from 'src/contexts/contact/domain/service/contact.service.interface';
-import { ObjectId } from 'mongoose';
-import { ContactRequestDto } from 'src/contexts/contact/infraestructure/controller/request/contact.request';
-import { UP_publiciteUpdateRequestDto } from '../../infraestructure/controller/dto/update.request-DTO/UP-publicite.update.request';
-import { UB_publiciteUpdateRequestDto } from '../../infraestructure/controller/dto/update.request-DTO/UB-publicite.update.request';
+import { ContactRequest } from '../adapter/dto/HTTP-REQUEST/user.request.CREATE';
+import { UserPersonalUpdateDto } from '../../domain/entity/dto/user.personal.update.dto';
+import { UserBusinessUpdateDto } from '../../domain/entity/dto/user.business.update.dto';
+import { UserPreferencesEntityDto } from '../../domain/entity/dto/user.preferences.update.dto';
 import { UP_clerkUpdateRequestDto } from 'src/contexts/webhook/application/clerk/dto/UP-clerk.update.request';
-import { UserPreferenceResponse } from '../adapter/dto/userPreferences.response';
 
 @Injectable()
 export class UserService implements UserServiceInterface {
@@ -39,11 +25,25 @@ export class UserService implements UserServiceInterface {
     private readonly logger: MyLoggerService,
     @InjectConnection() private readonly connection: Connection,
   ) {}
+  async updateUserPreferencesByUsername(
+    username: string,
+    userPreference: UserPreferencesEntityDto,
+  ): Promise<UserPreferencesEntityDto | null> {
+    try {
+      return await this.userRepository.updateUserPreferencesByUsername(
+        username,
+        userPreference,
+      );
+    } catch (error: any) {
+      this.logger.error(
+        'An error has occurred in user service - updateUserPreferencesByUsername: ' +
+          error,
+      );
+      throw error;
+    }
+  }
 
-  async createUser(
-    req: UserPersonDto | UserBusinessDto,
-    type: number,
-  ): Promise<User> {
+  async createUser(req: User, contactDto: any): Promise<User> {
     const session = await this.connection.startSession();
     session.startTransaction();
     let user: User;
@@ -51,39 +51,31 @@ export class UserService implements UserServiceInterface {
       'Creating ACCOUNT -> start process in the service: ' + UserService.name,
     );
     try {
-      const contactId = await this.createContact(req.contact, {
+      const contactId = await this.createContact(contactDto, {
         session,
       });
+      req.setContact(contactId as unknown as ObjectId);
+      switch (req.getUserType?.toLocaleLowerCase()) {
+        case 'personal':
+          this.logger.log('We are creating a persona account');
+          this.logger.log(
+            'Creating PERSONAL ACCOUNT with username: ' + req.getUsername,
+          );
 
-      if (req instanceof UserPersonDto || type === 0) {
-        // Crear el contacto dentro de la transacción
-
-        this.logger.log(
-          'Creating PERSONAL ACCOUNT with username: ' + req.username,
-        );
-        const userPersonal: UserPerson = UserPerson.formatDtoToEntity(
-          req as UserPersonDto,
-          contactId as unknown as ObjectId,
-        );
-        user = await this.userRepository.save(userPersonal, 0, session);
-
-        await session.commitTransaction();
-        await session.endSession();
-        return user;
-      } else if (req instanceof UserBusinessDto || type === 1) {
-        this.logger.log(
-          'Creating BUSINESS ACCOUNT with username: ' + req.username,
-        );
-        const userBusiness: UserBusiness = UserBusiness.formatDtoToEntity(
-          req as UserBusinessDto,
-          contactId as unknown as ObjectId,
-        );
-        user = await this.userRepository.save(userBusiness, 1, session);
-        await session.commitTransaction();
-        await session.endSession();
-        return user;
-      } else {
-        throw new BadRequestException('Invalid user type');
+          user = await this.userRepository.save(req, session);
+          await session.commitTransaction();
+          await session.endSession();
+          return user;
+        case 'business':
+          this.logger.log(
+            'Creating BUSINESS ACCOUNT with username: ' + req.getUsername,
+          );
+          user = await this.userRepository.save(req, session);
+          await session.commitTransaction();
+          await session.endSession();
+          return user;
+        default:
+          throw new BadRequestException('Invalid user type');
       }
     } catch (error) {
       await session.abortTransaction();
@@ -96,7 +88,7 @@ export class UserService implements UserServiceInterface {
   }
 
   async createContact(
-    contactDto: ContactRequestDto,
+    contactDto: ContactRequest,
     options?: { session?: ClientSession },
   ): Promise<Types.ObjectId> {
     try {
@@ -106,53 +98,15 @@ export class UserService implements UserServiceInterface {
     }
   }
 
-  async getUserPersonalInformationByUsername(
-    username: string,
-  ): Promise<UserPersonalInformationResponse> {
+  async getUserPersonalInformationByUsername(username: string): Promise<any> {
     try {
       const user =
         await this.userRepository.getUserPersonalInformationByUsername(
           username,
         );
-
-      if (!user) {
-        throw new NotFoundException('User not found');
-      }
-      /*
-      Consideraar modularizar la logica de la respuesta.
-
-      */
-      const countryRegion = user.getCountryRegion
-        ? user.getCountryRegion()
-        : undefined;
-      const description = user.getDescription
-        ? user.getDescription()
-        : undefined;
-      const contact = user.getContact ? (user.getContact() as any) : undefined;
-
-      const userResponse: UserPersonalInformationResponse = {
-        countryRegion,
-        description,
-        contact,
-      };
-
-      if (user instanceof UserPerson) {
-        return {
-          ...userResponse,
-          birthDate: user.getBirthDate(),
-          gender: user.getGender(),
-        };
-      } else if (user instanceof UserBusiness) {
-        return {
-          ...userResponse,
-          sector: user.getSector() as any,
-          businessName: user.getBusinessName(),
-        };
-      } else {
-        throw new NotFoundException('User type not recognized');
-      }
-    } catch (error) {
-      this.logger.error(error);
+      return user;
+    } catch (error: any) {
+      this.logger.error('An error has occurred in user service: ' + error);
       throw error;
     }
   }
@@ -169,49 +123,20 @@ export class UserService implements UserServiceInterface {
     }
   }
 
-  async updateUserPreferencesByUsername(
-    username: string,
-    userPreference: UserPreferenceResponse,
-  ): Promise<UserPreferences | null> {
-    try {
-      return await this.userRepository.updateUserPreferencesByUsername(
-        username,
-        userPreference,
-      );
-    } catch (error: any) {
-      this.logger.error(
-        'An error has occurred in user service - updateUserPreferencesByUsername: ' +
-          error,
-      );
-      throw error;
-    }
-  }
   async updateUser(
     username: string,
-    req: UP_publiciteUpdateRequestDto | UB_publiciteUpdateRequestDto,
+    req: UserPersonalUpdateDto | UserBusinessUpdateDto,
     type: number,
-  ): Promise<User> {
+  ): Promise<UserPersonalUpdateDto | UserBusinessUpdateDto> {
+    // 0 -> Personal Account | 1 -> Business Account
     this.logger.log('Updating user in the service: ' + UserService.name);
-    let user: User;
     try {
-      if (req instanceof UP_publiciteUpdateRequestDto && type === 0) {
-        this.logger.log('Update PERSONAL ACCOUNT with username: ' + username);
-
-        const userPersonal: UP_update = UserPerson.formatUpdateDto(req);
-        user = await this.userRepository.update(username, userPersonal, type);
-
-        return user;
-      } else if (req instanceof UB_publiciteUpdateRequestDto && type === 1) {
-        this.logger.log('Update BUSINESS ACCOUNT with username: ' + username);
-
-        const userPersonal: UB_update = UserBusiness.formatUpdateDto(req);
-        user = await this.userRepository.update(username, userPersonal, type);
-        return user;
+      if (type === 0) {
+        return await this.userRepository.update(username, req, type);
+      } else if (type === 1) {
+        return await this.userRepository.update(username, req, type);
       } else {
-        this.logger.error(
-          'User type not valid: Action -> UPDATE. error in service',
-        );
-        throw BadRequestException;
+        throw new Error('Invalid user type');
       }
     } catch (error: any) {
       this.logger.error(

@@ -1,5 +1,3 @@
-import { ContactRequestDto } from '../../infraestructure/controller/request/contact.request';
-
 export class Contact {
   private phone: string;
   private instagram: string;
@@ -20,29 +18,20 @@ export class Contact {
     this.x = x;
     this.website = website;
   }
-  static formatDtoToEntity(contact: ContactRequestDto): Contact {
-    return new Contact(
-      contact.phone,
-      contact.instagram,
-      contact.facebook,
-      contact.x,
-      contact.website,
-    );
-  }
 
-  public getPhone(): string {
+  public getPhone() {
     return this.phone;
   }
-  public getInstagram(): string {
+  public getInstagram() {
     return this.instagram;
   }
-  public getFacebook(): string {
+  public getFacebook() {
     return this.facebook;
   }
-  public getX(): string {
+  public getX() {
     return this.x;
   }
-  public getWebsite(): string {
+  public getWebsite() {
     return this.website;
   }
 }

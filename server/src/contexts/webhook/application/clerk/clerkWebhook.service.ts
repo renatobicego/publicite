@@ -29,9 +29,10 @@ export class WebhookService implements WebhookServiceInterface {
       case 'user.updated':
         const UP_clerkRequestUpdate: UP_clerkUpdateRequestDto =
           this.processData(data);
-        return await this.userService.updateUserByClerkId(
-          UP_clerkRequestUpdate,
-        );
+        // return await this.userService.updateUserByClerkId(
+        //   UP_clerkRequestUpdate,
+        // );
+        return Promise.resolve();
       default:
         console.log('Unknown event type:', type);
         break;

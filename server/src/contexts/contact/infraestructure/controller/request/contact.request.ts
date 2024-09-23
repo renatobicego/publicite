@@ -1,7 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsOptional } from 'class-validator';
 
-export class ContactRequestDto {
+export class ContactRequestDto_SWAGGER {
   @ApiPropertyOptional({
     description: 'Contact phone',
     example: '+54 9 11 1111 1111',

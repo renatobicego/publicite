@@ -1,6 +1,6 @@
 export enum UserType {
-  Personal = 'Personal',
-  Business = 'Business',
+  Personal = 'personal',
+  Business = 'business',
 }
 export enum Gender {
   Male = 'M',

@@ -1,31 +1,29 @@
-import { UB_publiciteUpdateRequestDto } from '../../infraestructure/controller/dto/update.request-DTO/UB-publicite.update.request';
-import { UP_publiciteUpdateRequestDto } from '../../infraestructure/controller/dto/update.request-DTO/UP-publicite.update.request';
-import {
-  UserBusinessDto,
-  UserBusinessResponse,
-} from '../../infraestructure/controller/dto/user.business.DTO';
-import {
-  UserPersonDto,
-  UserPersonResponse,
-} from '../../infraestructure/controller/dto/user.person.DTO';
-import { UserPreferenceResponse } from './dto/userPreferences.response';
+import { businessAccountUpdateRequest } from './dto/HTTP-REQUEST/user.business.request.UPDATE';
+import { personalAccountUpdateRequest } from './dto/HTTP-REQUEST/user.personal.request.UPDATE';
+import { UserPreferenceResponse } from './dto/HTTP-RESPONSE/user.preferences.response';
+import { UserRequest } from './dto/HTTP-REQUEST/user.request.CREATE';
+import { UserBusinessUpdateResponse } from './dto/HTTP-RESPONSE/user.business.response.UPDATE';
+import { UserPersonalInformationResponse } from './dto/HTTP-RESPONSE/user.information.response';
+import { UserPersonalUpdateResponse } from './dto/HTTP-RESPONSE/user.personal.response.UPDATE';
+import { UserResponse } from './dto/HTTP-RESPONSE/user.response.dto';
 
 export interface UserAdapterInterface {
-  createUser(
-    req: UserPersonDto | UserBusinessDto,
-    type: number,
-  ): Promise<UserPersonResponse | UserBusinessResponse>;
+  createUser(req: UserRequest): Promise<UserResponse>;
 
   updateUser(
     username: string,
-    req: UP_publiciteUpdateRequestDto | UB_publiciteUpdateRequestDto,
+    req: businessAccountUpdateRequest | personalAccountUpdateRequest,
     type: number,
-  ): Promise<any>;
+  ): Promise<UserPersonalUpdateResponse | UserBusinessUpdateResponse>;
 
-  getUserPersonalInformationByUsername(username: string): Promise<any>;
-  getUserPreferencesByUsername(username: string): Promise<UserPreferenceResponse | null>;
+  getUserPersonalInformationByUsername(
+    username: string,
+  ): Promise<UserPersonalInformationResponse>;
+  getUserPreferencesByUsername(
+    username: string,
+  ): Promise<UserPreferenceResponse | null>;
   updateUserPreferencesByUsername(
     username: string,
     userPreference: UserPreferenceResponse,
-  ): Promise<UserPreferenceResponse>;
+  ): Promise<UserPreferenceResponse | null>;
 }

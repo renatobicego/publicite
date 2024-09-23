@@ -58,7 +58,7 @@ import { UserAdapter } from '../adapters/user.adapter';
       useClass: UserMapper,
     },
     {
-      provide: 'UserTransformationInterface',
+      provide: 'UserRepositoryMapperInterface',
       useClass: UserRepositoryMapper,
     },
     UserService,
