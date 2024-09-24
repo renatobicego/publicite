@@ -58,7 +58,8 @@ export class MpWebhookAdapter {
     const dataId = body.data.id;
     const type = body.type;
     const action = body.action;
-    this.logger.log('body: ' + body);
+    this.logger.log(body);
+
     //Si no existen estos datos el header esta mal y no podremos seguir, arrojamos error
     if (!type || !dataId) {
       this.logger.error('Missing queryObject', 'Class:MpWebhookAdapter');

@@ -52,6 +52,11 @@ export class SubscriptionResponse {
     type: String,
   })
   readonly external_reference: string;
+  @ApiProperty({
+    description: 'The day of the update',
+    type: String,
+  })
+  readonly dayOfUpdate: string;
 
   constructor(
     _id: ObjectId | null,
@@ -62,6 +67,7 @@ export class SubscriptionResponse {
     startDate: string,
     endDate: string,
     external_reference: string,
+    dayOfUpdate: string,
   ) {
     this._id = _id;
     this.mpPreapprovalId = mpPreapprovalId;
@@ -71,5 +77,6 @@ export class SubscriptionResponse {
     this.startDate = startDate;
     this.endDate = endDate;
     this.external_reference = external_reference;
+    this.dayOfUpdate = dayOfUpdate;
   }
 }

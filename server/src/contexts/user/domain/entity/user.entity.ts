@@ -67,7 +67,7 @@ export class User {
     this.board = board ?? [];
     this.post = post ?? [];
     this.userRelations = userRelations ?? [];
-    this.userType = userType ?? UserType.Personal;
+    this.userType = userType ?? UserType.Person;
     this.userPreferences = userPreferences ?? {
       searchPreference: [],
       backgroundColor: undefined,

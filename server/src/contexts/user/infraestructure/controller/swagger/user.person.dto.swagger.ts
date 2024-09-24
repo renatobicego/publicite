@@ -69,7 +69,7 @@ export class UserPersonRequestDto_SWAGGER {
 
   @ApiProperty({
     description: 'Type of the user',
-    example: 'Personal',
+    example: 'Person',
     type: String,
   })
   readonly userType?: any;
@@ -223,7 +223,7 @@ export class UserPersonResponseDto_SWAGGER {
 
   @ApiProperty({
     description: 'userType of the user',
-    example: 'Personal',
+    example: 'Person',
     type: String,
   })
   userType: any;

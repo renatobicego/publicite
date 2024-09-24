@@ -59,11 +59,7 @@ export class MpPaymentService implements MpPaymentServiceInterface {
     this.logger.log('Find payment by payment ID: ' + id);
     try {
       const payment = await this.mpPaymentRepository.findPaymentByPaymentID(id);
-      if (!payment) {
-        this.logger.error(`Payment with id ${id} not found.`);
-        throw new Error(`Payment with id ${id} not found.`);
-      }
-      this.logger.log(`Payment with id ${id} successfully found.`);
+      if (payment) this.logger.log(`Payment with id ${id} successfully found.`);
       return payment;
     } catch (error: any) {
       throw error;

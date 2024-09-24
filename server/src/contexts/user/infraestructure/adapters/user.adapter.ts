@@ -36,7 +36,7 @@ export class UserAdapter implements UserAdapterInterface {
 
     try {
       switch (req.userType.toLocaleLowerCase()) {
-        case 'personal': {
+        case 'person': {
           this.logger.log('We are creating a persona account');
           userMapped = this.userMapper.requestToEntity(req);
           userCreated = await this.userService.createUser(

@@ -59,7 +59,7 @@ export class UserMapper implements UserMapperInterface {
       request.userPreferences,
     );
     switch (request.userType.toLocaleLowerCase()) {
-      case 'personal': {
+      case 'person': {
         return new UserPerson(userBase, request.gender, request.birthDate);
       }
       case 'business': {
@@ -96,7 +96,7 @@ export class UserMapper implements UserMapperInterface {
     };
 
     switch (entity.getUserType?.toLocaleLowerCase()) {
-      case 'personal': {
+      case 'person': {
         caster = entity as UserPerson;
         const userPersonResponnse: UserPersonResponse = {
           ...userBase,

@@ -31,6 +31,7 @@ export default class Subscription {
     this.startDate = startDate;
     this.endDate = endDate;
     this.external_reference = external_reference;
+    this.dayOfUpdate = dayOfUpdate;
     this._id = _id;
   }
 
@@ -76,6 +77,7 @@ export default class Subscription {
       doc.startDate,
       doc.endDate,
       doc.external_reference,
+      doc.dayOfUpdate,
       doc._id ? doc._id : ' ',
     );
   }
@@ -91,6 +93,7 @@ export default class Subscription {
       startDate: subscription.getStartDate(),
       endDate: subscription.getEndDate(),
       external_reference: subscription.external_reference,
+      dayOfUpdate: subscription.getDayOfUpdate(),
     };
   }
 }

@@ -2,7 +2,7 @@ import { ObjectId } from 'mongoose';
 
 //subcription_authorized_payment
 export default class Invoice {
-  private paymentId: ObjectId | undefined;
+  private paymentId: ObjectId | string;
   private subscriptionId: ObjectId | undefined;
   private status: string;
   //private mpAuthorizedPaymentId: string;
@@ -11,7 +11,7 @@ export default class Invoice {
   private dayOfUpdate: string;
 
   constructor(
-    paymentId: ObjectId | undefined,
+    paymentId: ObjectId | string,
     subscriptionId: ObjectId | undefined,
     status: string,
     preapprovalId: string,
@@ -26,7 +26,7 @@ export default class Invoice {
     this.dayOfUpdate = dayOfUpdate;
   }
 
-  getPaymentId(): ObjectId | undefined {
+  getPaymentId() {
     return this.paymentId;
   }
 

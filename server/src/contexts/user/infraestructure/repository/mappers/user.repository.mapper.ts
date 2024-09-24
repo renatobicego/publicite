@@ -51,7 +51,7 @@ export class UserRepositoryMapper implements UserRepositoryMapperInterface {
       document._id,
     );
     switch (document.userType.toLowerCase()) {
-      case 'personal':
+      case 'person':
         return new UserPerson(post, document.gender, document.birthDate);
       case 'business':
         return new UserBusiness(post, document.sector, document.businessName);

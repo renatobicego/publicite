@@ -27,7 +27,7 @@ export const userSub = (): UserPersonRequest => {
       website: '',
     },
     createdTime: '2024-10-10T00:00:00Z',
-    userType: UserType.Personal,
+    userType: UserType.Person,
     userPreferences: {
       searchPreference: ['66e608531f76fc4dda965554' as unknown as ObjectId],
       backgroundColor: 12,
@@ -84,7 +84,7 @@ export const userSub_id = (): any => {
     board: [],
     post: [],
     userRelations: [],
-    userType: 'Personal',
+    userType: 'Person',
     name: 'Renato',
     lastName: 'Bicego',
     userPreferences: {

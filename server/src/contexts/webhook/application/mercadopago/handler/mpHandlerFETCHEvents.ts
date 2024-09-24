@@ -60,12 +60,13 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
       return Promise.resolve(true);
     }
 
-    if (paymentResponse.transaction_amount < 50) {
+    if (paymentResponse.transaction_amount < 30) {
       this.logger.warn('Payment amount is less than $50, returning OK to Meli');
       return Promise.resolve(true);
     }
-    switch (paymentResponse.status) {
-      case 'approved' || 'pending' || 'in_process':
+
+    switch (paymentResponse.status.toString().toLowerCase()) {
+      case 'approved':
         this.logger.warn(
           'MpWebhookAdapter - Case paymenty.created - STATUS: ' +
             paymentResponse.status,
@@ -75,15 +76,31 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
       case 'rejected':
         // VER SI HACEMOS ALGO CON EL STATUS REJECTED CUANDO LLEGA UN PAGO
         this.logger.warn(
-          'MpWebhookAdapter - Case paymenty.created - STATUS: REJECTED',
+          'MpWebhookAdapter - Case paymenty.created - STATUS: ' +
+            paymentResponse.status,
         );
         await this.mpWebhookService.create_payment(paymentResponse);
         return Promise.resolve(true);
+      case 'pending':
+        this.logger.warn(
+          'MpWebhookAdapter - Case paymenty.created - STATUS: ' +
+            paymentResponse.status,
+        );
+        await this.mpWebhookService.create_payment(paymentResponse);
+        return Promise.resolve(true);
+      case 'in_process':
+        this.logger.warn(
+          'MpWebhookAdapter - Case paymenty.created - STATUS: ' +
+            paymentResponse.status,
+        );
+        await this.mpWebhookService.create_payment(paymentResponse);
+        return Promise.resolve(true);
+
       default:
         this.logger.warn(
           'MpWebhookAdapter - Case paymenty.created - STATUS: default, sending response OK to meli & return',
         );
-        throw new Error('Unknown payment status' + paymentResponse.status);
+        throw new Error('Unknown payment status: ' + paymentResponse.status);
     }
   }
   async handleEvent_payment_update(dataID: string): Promise<boolean> {
@@ -107,8 +124,22 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
       this.logger.warn('Payment amount is less than $50, returning OK to Meli');
       return Promise.resolve(true);
     }
-    switch (paymentResponse.status) {
-      case 'approved' || 'pending' || 'in_process':
+    switch (paymentResponse.status.toString().toLowerCase()) {
+      case 'approved':
+        this.logger.warn(
+          'MpWebhookAdapter - Case payment.UPDATE - STATUS: ' +
+            paymentResponse.status,
+        );
+        await this.mpWebhookService.updatePayment(paymentResponse);
+        return Promise.resolve(true);
+      case 'pending':
+        this.logger.warn(
+          'MpWebhookAdapter - Case payment.UPDATE - STATUS: ' +
+            paymentResponse.status,
+        );
+        await this.mpWebhookService.updatePayment(paymentResponse);
+        return Promise.resolve(true);
+      case 'in_process':
         this.logger.warn(
           'MpWebhookAdapter - Case payment.UPDATE - STATUS: ' +
             paymentResponse.status,
@@ -191,9 +222,9 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
         );
       console.log('subscription_authorized_payment CREATE RESPONSE:');
       console.log(subscription_authorized_payment);
-      if (subscription_authorized_payment.transaction_amount < 50) {
+      if (subscription_authorized_payment.transaction_amount < 30) {
         this.logger.warn(
-          'Payment amount is less than $50, returning OK to Meli',
+          'Payment amount is less than $30, returning OK to Meli',
         );
         return Promise.resolve(true);
       }
@@ -230,7 +261,7 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
         return Promise.resolve(true);
       }
 
-      if (subscription_authorized_payment.retry_attempt >= 1) {
+      if (subscription_authorized_payment.retry_attempt == 1) {
         this.logger.warn(
           'Retry attempt is greater than 1, returning OK to Meli and pausing the suscription. Preapproval_id: ' +
             subscription_authorized_payment.preapproval_id,

@@ -1,5 +1,7 @@
 import { today, getLocalTimeZone } from '@internationalized/date';
 import { BadRequestException, Inject } from '@nestjs/common';
+import mongoose from 'mongoose';
+
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
 import Invoice from 'src/contexts/webhook/domain/mercadopago/entity/invoice.entity';
 import { MercadoPagoInvoiceRepositoryInterface } from 'src/contexts/webhook/domain/mercadopago/repository/mp-invoice.respository.interface';
@@ -22,44 +24,54 @@ export class MpInvoiceService implements MpServiceInvoiceInterface {
     id: string,
   ): Promise<void> {
     this.logger.log('---INVOICE SERVICE UPDATE ---');
+
     const dayOfUpdate = today(getLocalTimeZone()).toString();
+
     try {
-      const subsToUpdate = {
+      // Crear el objeto subsToUpdate sin incluir paymentId inicialmente
+      const subsToUpdate: any = {
         status: subscription_authorized_payment_to_update.status,
         dayOfUpdate: dayOfUpdate,
       };
-      this.logger.log('Updating invoice with status:' + subsToUpdate.status);
+
+      // Solo agregar paymentId si existe en el objeto
+      if (subscription_authorized_payment_to_update?.payment?.id) {
+        const payment = await this.paymentService.findPaymentByPaymentID(
+          subscription_authorized_payment_to_update?.payment?.id,
+        );
+        subsToUpdate.paymentId = payment?.getId();
+      }
+
+      // Log para verificar el estado y otros datos antes de la actualización
+      this.logger.log('Updating invoice with status: ' + subsToUpdate.status);
+
+      // Llamada al repositorio para actualizar la factura
       return await this.mpInvoiceRepository.updateInvoice(subsToUpdate, id);
     } catch (error: any) {
+      this.logger.error('Error updating invoice:', error);
       throw error;
     }
   }
+
   async saveInvoice(subscription_authorized_payment: any): Promise<void> {
     this.logger.log('---INVOICE SERVICE CREATE ---');
+    let paymetnId;
 
     const subscripcion =
       await this.subscriptionService.findSubscriptionByPreapprovalId(
         subscription_authorized_payment.preapproval_id,
       );
-    const payment = await this.paymentService.findPaymentByPaymentID(
-      subscription_authorized_payment.payment.id,
-    );
+    const payment = await this.paymentService.findPaymentByPaymentID('12312');
+    if (!payment) {
+      paymetnId = this.generateCustomObjectId('0001abcd');
+    } else {
+      paymetnId = payment.getId();
+    }
 
     if (!subscripcion || subscripcion === null) {
       this.logger.error(
         'Subscription not found. An error has ocurred with subscription_authorized_payment ID: ' +
           subscription_authorized_payment.id +
-          '- Class:mpWebhookService',
-      );
-      throw new BadRequestException();
-    }
-
-    if (!payment || payment === null) {
-      this.logger.error(
-        'Payment not found. An error has ocurred with the payment ID: ' +
-          subscription_authorized_payment.id +
-          'preapproval ID:' +
-          subscription_authorized_payment.preapproval_id +
           '- Class:mpWebhookService',
       );
       throw new BadRequestException();
@@ -76,7 +88,7 @@ export class MpInvoiceService implements MpServiceInvoiceInterface {
       );
       const dayOfUpdate = today(getLocalTimeZone()).toString();
       const newInvoice = new Invoice(
-        payment.getId(), //Payment ID de nuestro schema
+        paymetnId as any,
         subscripcion.getId() ?? undefined, // Id de la suscripcion en nuestro schema
         subscription_authorized_payment.payment.status, //Payment status
         subscription_authorized_payment.preapproval_id, // ID de la suscripcion en MELI
@@ -87,6 +99,25 @@ export class MpInvoiceService implements MpServiceInvoiceInterface {
     }
     return Promise.resolve();
   }
+
+  generateCustomObjectId(customValue: string): mongoose.Types.ObjectId {
+    // Asegúrate de que el customValue tenga solo caracteres hexadecimales y longitud de 8
+    const hexCustomValue = customValue
+      .replace(/[^a-fA-F0-9]/g, '')
+      .padStart(8, '0')
+      .slice(0, 8);
+
+    // Crear un ObjectId válido
+    const objectId = new mongoose.Types.ObjectId();
+    const restOfObjectId = objectId.toHexString().slice(8, 24);
+
+    // Concatenar la parte personalizada con el resto del ObjectId
+    const customObjectIdHex = hexCustomValue + restOfObjectId;
+
+    // Convertir el valor concatenado en un ObjectId válido
+    return new mongoose.Types.ObjectId(customObjectIdHex);
+  }
+
   async getInvoicesByExternalReference(
     external_reference: string,
   ): Promise<any[]> {

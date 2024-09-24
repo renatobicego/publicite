@@ -106,14 +106,8 @@ export class MpSubscriptionService implements SubscriptionServiceInterface {
   async updateSubscription_preapproval(
     subscription_preapproval_update: any,
   ): Promise<void> {
-    const {
-      id,
-      payer_id,
-      status,
-      preapproval_plan_id,
-      auto_recurring,
-      external_reference,
-    } = subscription_preapproval_update;
+    const { id, payer_id, status, auto_recurring, external_reference } =
+      subscription_preapproval_update;
     let { start_date, end_date } = auto_recurring;
     start_date = this.parseTimeX(start_date);
     end_date = this.parseTimeX(end_date);
@@ -122,7 +116,6 @@ export class MpSubscriptionService implements SubscriptionServiceInterface {
       payerId: payer_id ?? '',
       status: status,
       external_reference: external_reference,
-      subscriptionPlan: preapproval_plan_id,
       startDate: start_date,
       endDate: end_date,
       dayOfUpdate: today(getLocalTimeZone()).toString(),

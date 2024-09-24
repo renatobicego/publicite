@@ -56,7 +56,7 @@ export class UserService implements UserServiceInterface {
       });
       req.setContact(contactId as unknown as ObjectId);
       switch (req.getUserType?.toLocaleLowerCase()) {
-        case 'personal':
+        case 'person':
           this.logger.log('We are creating a persona account');
           this.logger.log(
             'Creating PERSONAL ACCOUNT with username: ' + req.getUsername,
