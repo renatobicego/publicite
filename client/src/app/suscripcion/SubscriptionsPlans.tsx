@@ -1,9 +1,10 @@
 import React from "react";
 import { Button, Link } from "@nextui-org/react";
-import { getSubscriptionsPlans } from "../../services/subscriptionServices";
+import { getSubscriptionsPlans, getSubscriptionsPlansMP } from "../../services/subscriptionServices";
 
 const SubscriptionsPlans = async () => {
-  const { results } = await getSubscriptionsPlans();
+  // const results = await getSubscriptionsPlans();
+  const {results} = await getSubscriptionsPlansMP()
   return <div>
     <h1>Subscriptions Plans</h1>
     <ul>

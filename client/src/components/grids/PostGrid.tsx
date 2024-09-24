@@ -1,5 +1,5 @@
 import { Post } from "@/types/postTypes";
-import PostCard from "../cards/PostCard";
+import PostCard from "../cards/PostCard/PostCard";
 import { Spinner } from "@nextui-org/react";
 
 const PostsGrid = ({

@@ -4,8 +4,12 @@ import ErrorCard from "@/components/ErrorCard";
 import PostsGrid from "@/components/grids/PostGrid";
 import { getMagazineById } from "@/services/magazineService";
 import { MAGAZINES, PROFILE } from "@/utils/data/urls";
-import { Avatar, Link } from "@nextui-org/react";
+import { Avatar, Button, Link } from "@nextui-org/react";
 import AccordionSections from "./AccordionSections";
+import { currentUser } from "@clerk/nextjs/server";
+import { Magazine } from "@/types/postTypes";
+import SecondaryButton from "@/components/buttons/SecondaryButton";
+import InviteCollabMagazine from "@/components/modals/InviteCollabMagazine";
 
 export default async function MagazinePage({
   params,
@@ -13,6 +17,8 @@ export default async function MagazinePage({
   params: { id: string };
 }) {
   const magazine = await getMagazineById(params.id);
+  const user = await currentUser();
+  const isOwner = (magazine as any).owner.username === user?.username;
   if ("error" in magazine) {
     return <ErrorCard message={magazine.error} />;
   }
@@ -40,7 +46,9 @@ export default async function MagazinePage({
       <BreadcrumbsAdmin items={breadcrumbsItems} />
       <section className="w-full flex-col gap-4 flex items-center justify-center">
         <h2>{magazine.name}</h2>
-        <p className="md:max-w-[75%] xl:max-w-[50%] text-center">{magazine.description}</p>
+        <p className="md:max-w-[75%] xl:max-w-[50%] text-center text-sm lg:text-base">
+          {magazine.description}
+        </p>
         <Link
           color="foreground"
           href={`${PROFILE}/${magazine.owner.username}`}
@@ -49,7 +57,20 @@ export default async function MagazinePage({
           <Avatar src={magazine.owner.profilePhotoUrl} size="lg" />
           <p className="font-semibold">@{magazine.owner.username}</p>
         </Link>
-        <ShareButton post={magazine} />
+        <div className="flex gap-2 items-center max-md:flex-wrap justify-center">
+          {!isOwner && (
+            <>
+              <SecondaryButton
+                as={Link}
+                href={`${MAGAZINES}/${magazine._id}/editar`}
+              >
+                Editar
+              </SecondaryButton>
+              <InviteCollabMagazine />
+            </>
+          )}
+          <ShareButton post={magazine} />
+        </div>
       </section>
       <PostsGrid
         posts={

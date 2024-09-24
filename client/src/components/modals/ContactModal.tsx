@@ -46,10 +46,15 @@ const ContactModal = ({ post }: { post: Good | Service | Petition }) => {
                 </p>
               </ModalBody>
               <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
+                <Button
+                  color="danger"
+                  variant="light"
+                  radius="full"
+                  onPress={onClose}
+                >
                   Close
                 </Button>
-                <Button color="primary" onPress={onClose}>
+                <Button color="primary" radius="full" onPress={onClose}>
                   Action
                 </Button>
               </ModalFooter>

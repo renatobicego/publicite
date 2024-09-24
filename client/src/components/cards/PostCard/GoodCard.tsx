@@ -1,8 +1,8 @@
 import React from "react";
-import PostImage from "./PostImage";
 import { Good } from "@/types/postTypes";
-
 import PostCardBody from "./PostCardBody";
+import PostImage from "./PostImage";
+
 
 const GoodCard = ({
   post,

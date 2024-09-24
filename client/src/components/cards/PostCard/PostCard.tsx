@@ -2,7 +2,7 @@ import { Good, Petition, Post, Service } from "@/types/postTypes";
 import GoodCard from "./GoodCard";
 import ServiceCard from "./ServiceCard";
 import { Card } from "@nextui-org/react";
-import PetitionCard from "./PetitionCard";
+import PetitionCard from "../PetitionCard";
 const PostCard = ({
   postData,
   recommendation,

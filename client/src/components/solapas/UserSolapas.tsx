@@ -5,7 +5,7 @@ import {
   MAGAZINES,
   GROUPS,
 } from "@/utils/data/urls";
-import { GetUser, User } from "@/types/userTypes";
+import { GetUser } from "@/types/userTypes";
 import { Tab, Tabs } from "@nextui-org/react";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";

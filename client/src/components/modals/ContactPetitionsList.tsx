@@ -32,7 +32,7 @@ const ContactPetitionsList = ({
           radius="full"
           className="p-1"
         >
-          <MdContacts className="size-5"/>
+          <MdContacts className="size-5" />
         </Button>
       </Tooltip>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
@@ -63,10 +63,15 @@ const ContactPetitionsList = ({
                 </p>
               </ModalBody>
               <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
+                <Button
+                  color="danger"
+                  variant="light"
+                  radius="full"
+                  onPress={onClose}
+                >
                   Close
                 </Button>
-                <Button color="primary" onPress={onClose}>
+                <Button color="primary" radius="full" onPress={onClose}>
                   Action
                 </Button>
               </ModalFooter>

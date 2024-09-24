@@ -2,7 +2,7 @@ import { PostReview } from "@/types/postTypes";
 import { CardBody } from "@nextui-org/react";
 import React from "react";
 import { FaStar } from "react-icons/fa6";
-import ServiceChip from "../chips/ServiceChip";
+import ServiceChip from "../../chips/ServiceChip";
 
 interface PostCardBodyProps {
   title: string;
