@@ -9,6 +9,9 @@ export const PaymentSchema = new Schema({
   transactionAmount: { type: Number, required: true },
   dateApproved: { type: String, required: true },
   external_reference: { type: String, required: true },
+  status_detail: { type: String, required: true },
+  dayOfUpdate: { type: String },
+  status: { type: String },
 });
 
 export interface PaymentDocument extends Document {
@@ -20,4 +23,7 @@ export interface PaymentDocument extends Document {
   transactionAmount: number;
   dateApproved: string;
   external_reference: string;
+  status_detail: string;
+  dayOfUpdate: string;
+  status: string;
 }

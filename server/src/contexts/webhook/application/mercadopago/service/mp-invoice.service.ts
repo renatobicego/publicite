@@ -1,3 +1,4 @@
+import { today, getLocalTimeZone } from '@internationalized/date';
 import { BadRequestException, Inject } from '@nestjs/common';
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
 import Invoice from 'src/contexts/webhook/domain/mercadopago/entity/invoice.entity';
@@ -16,18 +17,25 @@ export class MpInvoiceService implements MpServiceInvoiceInterface {
     @Inject('MpPaymentServiceInterface')
     private readonly paymentService: MpPaymentServiceInterface,
   ) {}
-  async saveInvoice(subscription_authorized_payment: any): Promise<void> {
-    this.logger.log('---INVOICE SERVICE---');
-    if (subscription_authorized_payment.status === 'scheduled') {
-      this.logger.log(
-        'Status: ' +
-          subscription_authorized_payment.status +
-          ' the invoice for subscription_authorized_payment ID: ' +
-          subscription_authorized_payment.id +
-          ' is not saved yet. Waiting for payment to be approved',
-      );
-      return Promise.resolve();
+  async updateInvoice(
+    subscription_authorized_payment_to_update: any,
+    id: string,
+  ): Promise<void> {
+    this.logger.log('---INVOICE SERVICE UPDATE ---');
+    const dayOfUpdate = today(getLocalTimeZone()).toString();
+    try {
+      const subsToUpdate = {
+        status: subscription_authorized_payment_to_update.status,
+        dayOfUpdate: dayOfUpdate,
+      };
+      this.logger.log('Updating invoice with status:' + subsToUpdate.status);
+      return await this.mpInvoiceRepository.updateInvoice(subsToUpdate, id);
+    } catch (error: any) {
+      throw error;
     }
+  }
+  async saveInvoice(subscription_authorized_payment: any): Promise<void> {
+    this.logger.log('---INVOICE SERVICE CREATE ---');
 
     const subscripcion =
       await this.subscriptionService.findSubscriptionByPreapprovalId(
@@ -66,12 +74,14 @@ export class MpInvoiceService implements MpServiceInvoiceInterface {
           subscription_authorized_payment.status +
           ' Generate invoice to save',
       );
+      const dayOfUpdate = today(getLocalTimeZone()).toString();
       const newInvoice = new Invoice(
         payment.getId(), //Payment ID de nuestro schema
         subscripcion.getId() ?? undefined, // Id de la suscripcion en nuestro schema
         subscription_authorized_payment.payment.status, //Payment status
         subscription_authorized_payment.preapproval_id, // ID de la suscripcion en MELI
         subscription_authorized_payment.external_reference,
+        dayOfUpdate,
       );
       await this.mpInvoiceRepository.saveInvoice(newInvoice);
     }

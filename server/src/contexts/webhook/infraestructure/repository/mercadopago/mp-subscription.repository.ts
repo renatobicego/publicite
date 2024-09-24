@@ -5,6 +5,7 @@ import { SubscriptionDocument } from '../../schemas/mercadopago/subscription.sch
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
 import { SubscriptionRepositoryInterface } from 'src/contexts/webhook/domain/mercadopago/repository/mp-subscription.respository.interface';
 import Subscription from 'src/contexts/webhook/domain/mercadopago/entity/subcription.entity';
+import { getLocalTimeZone, today } from '@internationalized/date';
 
 export class SubscriptionRepository implements SubscriptionRepositoryInterface {
   constructor(
@@ -12,6 +13,20 @@ export class SubscriptionRepository implements SubscriptionRepositoryInterface {
     @InjectModel('Subscription')
     private readonly subscriptionModel: Model<SubscriptionDocument>,
   ) {}
+  async pauseSubscription(id: string, updateObject: any): Promise<void> {
+    this.logger.log('Update subscription with ID: ' + id + 'STATUS: PAUSED');
+    const result = await this.subscriptionModel.findOneAndUpdate(
+      { mpPreapprovalId: id },
+      updateObject,
+      { new: true },
+    );
+    console.log('subscription paused: ' + result);
+    if (!result) {
+      this.logger.error(`Subscription with id ${id} not found.`);
+      throw new Error(`Subscription with id ${id} not found.`);
+    }
+    this.logger.log(`Subscription with id ${id} successfully updated.`);
+  }
   async updateSubscription(id: string, updateObject: any): Promise<void> {
     this.logger.log('Update subscription with ID: ' + id);
     const result = await this.subscriptionModel.findOneAndUpdate(
@@ -31,9 +46,13 @@ export class SubscriptionRepository implements SubscriptionRepositoryInterface {
       'If you need more information about this action, please check the ID ' +
         id,
     );
+    const dayOfUpdate = today(getLocalTimeZone()).toString();
     const result = await this.subscriptionModel.findOneAndUpdate(
       { mpPreapprovalId: id },
-      { status: 'cancelled' },
+      {
+        status: 'cancelled',
+        dayOfUpdate: dayOfUpdate,
+      },
       { new: true },
     );
     if (!result) {

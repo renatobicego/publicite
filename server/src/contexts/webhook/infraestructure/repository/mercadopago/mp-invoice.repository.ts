@@ -13,6 +13,27 @@ export class MpInvoiceRepository
     private readonly invoiceModel: Model<InvoiceDocument>,
     private readonly logger: MyLoggerService,
   ) {}
+  async updateInvoice(
+    subscription_authorized_payment_to_update: any,
+    id: string,
+  ): Promise<void> {
+    try {
+      const invoiceUpdated = await this.invoiceModel.findOneAndUpdate(
+        { preapprovalId: id },
+        subscription_authorized_payment_to_update,
+        { new: true },
+      );
+
+      if (!invoiceUpdated) {
+        throw new Error(`No invoice found with preapprovalId: ${id}`);
+      }
+    } catch (error: any) {
+      throw new Error(
+        `Error updating invoice with preapprovalId: ${id}: ${error.message}`,
+      );
+    }
+  }
+
   async saveInvoice(invoice: Invoice): Promise<void> {
     this.logger.log(
       'saving new Invoice in database Invoice ID: ' + invoice.getPaymentId(),

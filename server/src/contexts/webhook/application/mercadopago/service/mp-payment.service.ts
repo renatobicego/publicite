@@ -1,3 +1,4 @@
+import { today, getLocalTimeZone } from '@internationalized/date';
 import { BadRequestException, Inject } from '@nestjs/common';
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
 import Payment from 'src/contexts/webhook/domain/mercadopago/entity/payment.entity';
@@ -10,11 +11,29 @@ export class MpPaymentService implements MpPaymentServiceInterface {
     @Inject('MercadoPagoPaymentsRepositoryInterface')
     private readonly mpPaymentRepository: MercadoPagoPaymentsRepositoryInterface,
   ) {}
+  async updatePayment(payment: any): Promise<void> {
+    const dayOfUpdate = today(getLocalTimeZone()).toString();
+    const mpPaymentId = payment.id;
+    const paymentUpdated = {
+      payerId: payment.payer.id,
+      payerEmail: payment.payer.email,
+      paymentTypeId: payment.payment_type_id,
+      paymentMethodId: payment.payment_method_id,
+      transactionAmount: payment.transaction_amount,
+      dateApproved: payment.date_approved,
+      external_reference: payment.external_reference,
+      status_detail: payment.status_detail,
+      dayOfUpdate: dayOfUpdate,
+      status: payment.status,
+    };
+    await this.mpPaymentRepository.updatePayment(paymentUpdated, mpPaymentId);
+  }
   async createPayment(payment: any): Promise<void> {
     this.logger.log(
       'Creating payment for suscription description: ' + payment.description,
     );
     this.logger.log('Creating payment with ID: ' + payment.id);
+    const dayOfUpdate = today(getLocalTimeZone()).toString();
     if (payment && payment.payer) {
       const newPayment = new Payment(
         payment.id,
@@ -25,6 +44,9 @@ export class MpPaymentService implements MpPaymentServiceInterface {
         payment.transaction_amount,
         payment.date_approved,
         payment.external_reference,
+        payment.status_detail,
+        dayOfUpdate,
+        payment.status,
       );
       console.log(newPayment);
       await this.mpPaymentRepository.createPayment(newPayment);
