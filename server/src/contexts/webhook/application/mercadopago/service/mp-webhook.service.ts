@@ -7,7 +7,6 @@ import {
 import { ConfigService } from '@nestjs/config';
 
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
-import MercadoPagoEventsRepositoryInterface from 'src/contexts/webhook/domain/mercadopago/repository/mp-events.repository.interface';
 import { MpWebhookServiceInterface } from 'src/contexts/webhook/domain/mercadopago/service/mp-webhook.service.interface';
 import { MpServiceInvoiceInterface } from 'src/contexts/webhook/domain/mercadopago/service/mp-invoice.service.interface';
 import { MpPaymentServiceInterface } from 'src/contexts/webhook/domain/mercadopago/service/mp-payments.service.interface';
@@ -24,8 +23,7 @@ export class MpWebhookService implements MpWebhookServiceInterface {
   constructor(
     private readonly logger: MyLoggerService,
     private readonly configService: ConfigService,
-    @Inject('MercadoPagoEventsRepositoryInterface')
-    private readonly mercadoPagoEventsRepository: MercadoPagoEventsRepositoryInterface,
+
     @Inject('MpServiceInvoiceInterface')
     private readonly MpInvoiceService: MpServiceInvoiceInterface,
     @Inject('MpPaymentServiceInterface')
@@ -52,32 +50,25 @@ export class MpWebhookService implements MpWebhookServiceInterface {
       throw error;
     }
   }
-
-  // Generamos la factura del usuario
-  async createSubscription_authorize_payment(
-    subscription_authorized_payment: any,
-  ): Promise<void> {
-    this.logger.log(
-      'createSubscription_authorize_payment - Class:mpWebhookService',
-    );
+  async updatePayment(payment: any): Promise<void> {
     try {
-      await this.MpInvoiceService.saveInvoice(subscription_authorized_payment);
-    } catch (error: any) {
+      await this.mpPaymentService.updatePayment(payment);
+      return Promise.resolve();
+    } catch (error) {
       this.logger.error(
-        'Error createSubscription_authorize_payment - Class:mpWebhookService',
-        error,
+        'An error has ocurred while updating payment for suscription description: ' +
+          payment.description,
       );
-      throw new InternalServerErrorException(error);
+      this.logger.error(
+        'An error has ocurred while updating payment ID: ' + payment.id,
+      );
+      throw error;
     }
   }
-
-  // Generamos la subscripcion del usuario
-  async createSubscription_preapproval(
+  // CREAMOS la subscripcion del usuario
+  async subscription_preapproval_create(
     subscription_preapproval: any,
   ): Promise<void> {
-    this.logger.log(
-      'Method -> createSubscription_preapproval -> Class: mpWebhookService',
-    );
     try {
       await this.subscriptionService.createSubscription_preapproval(
         subscription_preapproval,
@@ -91,7 +82,8 @@ export class MpWebhookService implements MpWebhookServiceInterface {
     }
   }
 
-  async updateSubscription_preapproval(
+  // ACTUALIZAMOS la subscripcion del usuario
+  async subscription_preapproval_update(
     subscription_preapproval_update: any,
   ): Promise<void> {
     try {
@@ -103,15 +95,43 @@ export class MpWebhookService implements MpWebhookServiceInterface {
     }
   }
 
-  async cancelSubscription_preapproval(id: string): Promise<void> {
+  // Generamos la factura del usuario
+  async subscription_authorize_payment_create(
+    subscription_authorized_payment: any,
+  ): Promise<void> {
+    this.logger.log(
+      'createSubscription_authorize_payment - Class:mpWebhookService',
+    );
+
     try {
-      this.subscriptionService.cancelSubscription_preapproval(id);
+      await this.MpInvoiceService.saveInvoice(subscription_authorized_payment);
     } catch (error: any) {
       this.logger.error(
-        'Error cancelSubscription_preapproval - Class: mpWebhookService',
+        'Error createSubscription_authorize_payment - Class:mpWebhookService',
         error,
       );
-      throw error;
+      throw new InternalServerErrorException(error);
+    }
+  }
+
+  async subscription_authorize_payment_update(
+    subscription_authorized_payment: any,
+  ): Promise<void> {
+    this.logger.log(
+      'createSubscription_authorize_payment - Class:mpWebhookService',
+    );
+    try {
+      const id = subscription_authorized_payment.preapproval_id;
+      await this.MpInvoiceService.updateInvoice(
+        subscription_authorized_payment,
+        id,
+      );
+    } catch (error: any) {
+      this.logger.error(
+        'Error createSubscription_authorize_payment - Class:mpWebhookService',
+        error,
+      );
+      throw new InternalServerErrorException(error);
     }
   }
 
@@ -130,5 +150,32 @@ export class MpWebhookService implements MpWebhookServiceInterface {
     }
     const response_result = await response.json();
     return response_result;
+  }
+
+  async fetchPauseSuscription(
+    url: string,
+    preapproval_id: string,
+  ): Promise<any> {
+    try {
+      const response = await fetch(url + '/' + preapproval_id, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${this.MP_ACCESS_TOKEN}`,
+        },
+        body: JSON.stringify({
+          status: 'paused',
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error en la solicitud: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      await this.subscription_preapproval_update(data);
+    } catch (error) {
+      console.error('Error al actualizar la suscripción:', error);
+      throw error;
+    }
   }
 }

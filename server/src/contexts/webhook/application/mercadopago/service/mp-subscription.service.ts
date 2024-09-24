@@ -5,6 +5,7 @@ import { SubscriptionServiceInterface } from 'src/contexts/webhook/domain/mercad
 import Subscription from 'src/contexts/webhook/domain/mercadopago/entity/subcription.entity';
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
 import { MercadoPagoSubscriptionPlanServiceInterface } from 'src/contexts/webhook/domain/mercadopago/service/mp-subscriptionPlan.service.interface';
+import { getLocalTimeZone, today } from '@internationalized/date';
 
 export class MpSubscriptionService implements SubscriptionServiceInterface {
   constructor(
@@ -15,24 +16,10 @@ export class MpSubscriptionService implements SubscriptionServiceInterface {
     private readonly mpSubscriptionPlanService: MercadoPagoSubscriptionPlanServiceInterface,
   ) {}
 
-  async cancelSubscription_preapproval(id: string): Promise<void> {
-    try {
-      this.logger.log(
-        'Subscription cancelled: The subscription ID:' +
-          id +
-          'will be cancelled - Class: mpWebhookService',
-      );
-
-      await this.subscriptionRepository.cancelSubscription(id);
-      return Promise.resolve();
-    } catch (error: any) {
-      throw error;
-    }
-  }
   async createSubscription_preapproval(
     subscription_preapproval: any,
   ): Promise<void> {
-    this.logger.log('---SUBSCRIPTION SERVICE---');
+    this.logger.log('---------------SUBSCRIPTION SERVICE------------------');
     // Crear el nuevo objeto de suscripción
     const {
       id,
@@ -79,6 +66,7 @@ export class MpSubscriptionService implements SubscriptionServiceInterface {
           plan.getDescription() +
           ' - Class: mpWebhookService',
       );
+      const dayOfUpdate = today(getLocalTimeZone()).toString();
       const newUserSuscription = new Subscription(
         id, // ID de la suscripción
         payer_id, // id del payer
@@ -87,6 +75,7 @@ export class MpSubscriptionService implements SubscriptionServiceInterface {
         start_date, // fecha de inicio
         end_date, // fecha de fin
         external_reference, // identificador de usuario (Es el ID de clerk)
+        dayOfUpdate, // dia de actualización
       );
       await this.subscriptionRepository.saveSubPreapproval(newUserSuscription);
     } catch (error: any) {
@@ -113,31 +102,45 @@ export class MpSubscriptionService implements SubscriptionServiceInterface {
       throw error;
     }
   }
+
   async updateSubscription_preapproval(
     subscription_preapproval_update: any,
   ): Promise<void> {
     const {
       id,
-      // payer_id,
+      payer_id,
       status,
-      // preapproval_plan_id,
-      // auto_recurring,
+      preapproval_plan_id,
+      auto_recurring,
       external_reference,
     } = subscription_preapproval_update;
-
-    if (status === 'cancelled') {
-      await this.cancelSubscription_preapproval(id);
-      return Promise.resolve();
-    }
-
+    let { start_date, end_date } = auto_recurring;
+    start_date = this.parseTimeX(start_date);
+    end_date = this.parseTimeX(end_date);
     const updateObject = {
+      mpPreapprovalId: id,
+      payerId: payer_id ?? '',
       status: status,
       external_reference: external_reference,
+      subscriptionPlan: preapproval_plan_id,
+      startDate: start_date,
+      endDate: end_date,
+      dayOfUpdate: today(getLocalTimeZone()).toString(),
     };
 
-    await this.subscriptionRepository.updateSubscription(id, updateObject);
-
-    return Promise.resolve();
+    switch (status) {
+      case 'cancelled':
+        await this.subscriptionRepository.cancelSubscription(id);
+        return Promise.resolve();
+      case 'paused':
+        await this.subscriptionRepository.pauseSubscription(id, updateObject);
+        return Promise.resolve();
+      case 'authorized':
+        await this.subscriptionRepository.updateSubscription(id, updateObject);
+        return Promise.resolve();
+      default:
+        break;
+    }
   }
 
   parseTimeX(date: string): string {

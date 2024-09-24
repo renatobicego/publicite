@@ -6,4 +6,5 @@ export interface SubscriptionRepositoryInterface {
   saveSubPreapproval(sub: Subscription): Promise<void>;
   updateSubscription(id: string, updateObject: any): Promise<void>;
   cancelSubscription(id: string): Promise<void>;
+  pauseSubscription(id: string, updateObject: any): Promise<void>;
 }

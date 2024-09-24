@@ -7,5 +7,4 @@ export interface SubscriptionServiceInterface {
   updateSubscription_preapproval(
     subscription_preapproval_update: any,
   ): Promise<void>;
-  cancelSubscription_preapproval(id: string): Promise<void>;
 }

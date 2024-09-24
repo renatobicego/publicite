@@ -13,6 +13,22 @@ export class MercadoPagoPaymentsRepository
     @InjectModel('Payment')
     private readonly paymentModel: Model<PaymentDocument>,
   ) {}
+  async updatePayment(paymentToUpdate: any, id: any): Promise<void> {
+    try {
+      this.logger.log('Update payment: ' + id);
+
+      await this.paymentModel.findOneAndUpdate(
+        { mpPaymentId: id },
+        paymentToUpdate,
+      );
+
+      this.logger.log('Payment updated with status: ' + paymentToUpdate.status);
+    } catch (error) {
+      this.logger.error(
+        'An error has ocurred while updating mpPaymentId : ' + id,
+      );
+    }
+  }
   async findPaymentByPaymentID(id: any): Promise<Payment | null> {
     this.logger.log('Find payment by payment ID: ' + id);
     const payment = await this.paymentModel.findOne({ mpPaymentId: id }).exec();

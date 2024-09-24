@@ -10,6 +10,7 @@ export default class Subscription {
   private startDate: string;
   private endDate: string;
   private external_reference: string;
+  private dayOfUpdate: string;
   private _id?: ObjectId | null;
 
   constructor(
@@ -20,6 +21,7 @@ export default class Subscription {
     startDate: string,
     endDate: string,
     external_reference: string,
+    dayOfUpdate: string,
     _id?: ObjectId,
   ) {
     this.mpPreapprovalId = mpPreapprovalId;
@@ -58,6 +60,10 @@ export default class Subscription {
   }
   public getEndDate(): string {
     return this.endDate;
+  }
+
+  public getDayOfUpdate() {
+    return this.dayOfUpdate;
   }
 
   static fromDocument(doc: any): Subscription {
