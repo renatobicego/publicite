@@ -2,11 +2,10 @@ import { Good, Magazine, Post } from "@/types/postTypes";
 import { MAGAZINES, PROFILE } from "@/utils/data/urls";
 import { Card, CardBody, CardFooter, Image, Link } from "@nextui-org/react";
 
-const MagazineCard = ({ magazineData, username }: { magazineData: Magazine; username: string }) => {
+const MagazineCard = ({ magazineData}: { magazineData: Magazine; }) => {
   const posts = magazineData.sections[0].posts as Post[];
-  const PROFILE_USERNAME = `${PROFILE}/${username}`;
   return (
-    <Card as={Link} href={`${PROFILE_USERNAME}${MAGAZINES}/${magazineData._id}`} className="w-full">
+    <Card as={Link} href={`${MAGAZINES}/${magazineData._id}`} className="w-full">
       <CardBody className="flex gap-1 flex-row w-full p-1">
         {posts[0] ? (
           <Image
@@ -33,7 +32,7 @@ const MagazineCard = ({ magazineData, username }: { magazineData: Magazine; user
           ) : (
             <div className="bg-gray-200 w-full h-[4.4rem] lg:h-[6.4rem] rounded-md"></div>
           )}
-          {posts[1] ? (
+          {posts[2] ? (
             <Image
               alt="magazine image"
               radius="sm"
@@ -41,14 +40,14 @@ const MagazineCard = ({ magazineData, username }: { magazineData: Magazine; user
               classNames={{
                 wrapper: "!max-w-full max-h-[50%]",
               }}
-              src={(posts[1] as Good).imagesUrls[0]}
+              src={(posts[2] as Good).imagesUrls[0]}
             />
           ) : (
             <div className="bg-gray-200 w-full h-[4.4rem] lg:h-[6.4rem] rounded-md"></div>
           )}
         </div>
       </CardBody>
-      <CardFooter className="px-4">
+      <CardFooter className="px-4 pb-4">
         <h6>{magazineData.name}</h6>
       </CardFooter>
     </Card>

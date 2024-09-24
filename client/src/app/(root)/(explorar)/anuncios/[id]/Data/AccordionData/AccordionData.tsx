@@ -20,7 +20,7 @@ const AccordionData = ({
   // Conditionally add "Datos Adicionales" for Good type posts
   if (post.postType === "good") {
     accordionItems.push(
-      <AccordionItem
+      <AccordionItem HeadingComponent={"h6"}
         indicator={<FaChevronLeft className="size-3" />}
         key="dataAdicional"
         aria-label="datos adicionales"
@@ -33,7 +33,7 @@ const AccordionData = ({
 
   // Add "Información del Vendedor" for all post types
   accordionItems.push(
-    <AccordionItem
+    <AccordionItem HeadingComponent={"h6"}
       indicator={<FaChevronLeft className="size-3" />}
       key="userData"
       aria-label="datos del vendedor"
@@ -46,7 +46,7 @@ const AccordionData = ({
   // Add "Ubicación" if the post has location data
   if (post.location) {
     accordionItems.push(
-      <AccordionItem
+      <AccordionItem HeadingComponent={"h6"}
         indicator={<FaChevronLeft className="size-3" />}
         key="location"
         aria-label="ubicación"
@@ -65,7 +65,7 @@ const AccordionData = ({
   // Conditionally add "Opiniones" for non-petition posts with reviews
   if (!isPetition) {
     accordionItems.push(
-      <AccordionItem
+      <AccordionItem HeadingComponent={"h6"}
         indicator={<FaChevronLeft className="size-3" />}
         key="reviews"
         aria-label="opiniones"
@@ -85,7 +85,7 @@ const AccordionData = ({
   // Conditionally add "Archivos Adjuntos" if there are attached files
   if (post.attachedFiles.length > 0) {
     accordionItems.push(
-      <AccordionItem
+      <AccordionItem HeadingComponent={"h6"}
         indicator={<FaChevronLeft className="size-3" />}
         key="attachedFiles"
         aria-label="archivos adjuntos"
