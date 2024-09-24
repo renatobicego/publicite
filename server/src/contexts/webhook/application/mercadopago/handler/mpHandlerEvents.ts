@@ -230,7 +230,7 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
         return Promise.resolve(true);
       }
 
-      if (subscription_authorized_payment.retry_attempt > 1) {
+      if (subscription_authorized_payment.retry_attempt >= 1) {
         this.logger.warn(
           'Retry attempt is greater than 1, returning OK to Meli and pausing the suscription. Preapproval_id: ' +
             subscription_authorized_payment.preapproval_id,
