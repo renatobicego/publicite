@@ -1,8 +1,8 @@
-import { Good, Petition, Service } from "@/types/postTypes";
+import { Good, Magazine, Petition, Service } from "@/types/postTypes";
 import { Button, Tooltip } from "@nextui-org/react";
 import { FaShareAlt } from "react-icons/fa";
 
-const ShareButton = ({ post }: { post: Good | Service | Petition }) => {
+const ShareButton = ({ post }: { post: Good | Service | Petition | Magazine }) => {
   return (
     <Tooltip placement="bottom" content="Compartir">
       <Button

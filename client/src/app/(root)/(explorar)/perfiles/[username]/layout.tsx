@@ -38,7 +38,7 @@ export default async function ProfileLayout({
   return (
     <main className="flex min-h-screen flex-col items-start main-style gap-4 md:gap-6 xl:gap-8">
       <BreadcrumbsAdmin items={breadcrumbsItems} />
-      <div className="items-start flex gap-4 justify-between w-full">
+      <div className="items-start flex gap-4 justify-between w-full max-md:flex-wrap">
         <UserInfo user={user} />
         <BoardCard
           bg={user.board.color || "bg-fondo"}
@@ -48,7 +48,7 @@ export default async function ProfileLayout({
           name={user.name}
         />
       </div>
-      <UserSolapas user={user} />
+      <UserSolapas user={{...user, username: params.username}} />
       {children}
     </main>
   );

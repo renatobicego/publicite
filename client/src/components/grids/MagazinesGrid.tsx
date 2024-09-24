@@ -5,11 +5,9 @@ import MagazineCard from "../cards/MagazineCard";
 const MagazinesGrid = ({
   magazines,
   isLoading = false,
-  username,
 }: {
   magazines: Magazine[];
   isLoading?: boolean;
-  username: string;
 }) => {
   return (
     <>
@@ -20,7 +18,6 @@ const MagazinesGrid = ({
           <MagazineCard
             key={magazine._id + index}
             magazineData={magazine}
-            username={username}
           />
         ))}
       </section>

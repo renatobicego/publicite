@@ -67,7 +67,7 @@ const UserSolapas = ({user} : {user: GetUser}) => {
         href={`${PROFILE_USERNAME}${MAGAZINES}`}
         data-key={`${PROFILE_USERNAME}${MAGAZINES}`}
       >
-        <MagazinesGrid magazines={user.magazines} username={user.username}/>
+        <MagazinesGrid magazines={user.magazines}/>
       </Tab>
       <Tab
         className="w-full"

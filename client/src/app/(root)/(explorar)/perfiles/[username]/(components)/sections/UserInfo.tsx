@@ -29,18 +29,18 @@ const UserInfo = ({ user }: { user: GetUser }) => {
         alt={`foto de perfil de ${user.username}`}
         className="rounded-full "
         classNames={{
-          img: "object-cover w-full  md:!h-32 xl:!h-52",
-          wrapper: "md:!min-w-32 md:!w-32 xl:!w-52 xl:!min-w-52"
+          img: "object-cover w-full !h-24 md:!h-32 xl:!h-52",
+          wrapper: "!min-w-24 w-24 md:!min-w-32 md:!w-32 xl:!w-52 xl:!min-w-52"
         }}
       />
-      <div className="flex gap-4 items-start flex-col">
+      <div className="flex gap-2 md:gap-4 items-start flex-col">
         <h2>
           {userType === "Business"
             ? business.businessName
             : `${user.name} ${user.lastName}`}
         </h2>
         <h6>@{user.username}</h6>
-        <p>{user.description}</p>
+        <p className="text-sm lg:text-base">{user.description}</p>
         <div className="flex items-center gap-1">
           <TbWorldPin className="size-4 min-w-4" />
           <p className="text-xs md:text-sm">{user.countryRegion}</p>

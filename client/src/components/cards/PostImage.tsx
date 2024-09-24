@@ -2,7 +2,7 @@
 import { CardHeader, Image, Link } from "@nextui-org/react";
 import SaveButton from "../buttons/SaveButton";
 import { POSTS } from "@/utils/data/urls";
-import { Good, Post, Service } from "@/types/postTypes";
+import { Good, Service } from "@/types/postTypes";
 
 const PostImage = ({
   post,

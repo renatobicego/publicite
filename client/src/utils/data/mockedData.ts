@@ -351,43 +351,6 @@ export const mockedPetitions = [
 
 export const mockedPosts = [mockedGood, mockedService];
 
-export const magazines: Magazine[] = [
-  {
-    _id: "1",
-    name: "Revista 1",
-    sections: [
-      {
-        _id: "234",
-        title: "Sección 1",
-        isFatherSection: true,
-        posts: ["3121"],
-      },
-    ],
-    collaborators: [],
-    owner: "renatobicego",
-  },
-  {
-    _id: "2",
-    name: "Revista 2",
-    sections: [
-      {
-        _id: "2342",
-        title: "Sección 1",
-        isFatherSection: true,
-        posts: [],
-      },
-      {
-        _id: "2343",
-        title: "Sección 2",
-        isFatherSection: true,
-        posts: [],
-      },
-    ],
-    collaborators: [],
-    owner: "renatobicego",
-  },
-];
-
 export const mockedBoards: Board[] = [
   {
     _id: "1",
@@ -451,7 +414,6 @@ export const mockedBoards: Board[] = [
   },
 ];
 
-
 export const mockedUsers = [
   {
     _id: "1k2",
@@ -480,7 +442,7 @@ export const mockedUsers = [
     lastName: "Bicego",
     name: "Renato",
     countryRegion: "Mendoza, Argentina",
-    userType: "Person"
+    userType: "Person",
   },
   {
     _id: "3k4",
@@ -494,7 +456,7 @@ export const mockedUsers = [
     lastName: "Perez",
     name: "Pedro",
     countryRegion: "Bariloche, Río Negro, Argentina",
-    userType: "Person"
+    userType: "Person",
   },
   {
     _id: "4k5",
@@ -507,10 +469,9 @@ export const mockedUsers = [
     lastName: "Lopez",
     name: "Miguel",
     countryRegion: "Córdoba, Argentina",
-    userType: "Person"
-  }
-]
-
+    userType: "Person",
+  },
+];
 
 export const mockedGroups: Group[] = [
   {
@@ -542,8 +503,8 @@ export const mockedGroups: Group[] = [
     magazines: [],
     rules: "rules",
     profilePhotoUrl: "/group3.png",
-  }
-]
+  },
+];
 
 export const mockedMagazines: Magazine[] = [
   {
@@ -557,8 +518,9 @@ export const mockedMagazines: Magazine[] = [
         isFatherSection: true,
         posts: mockedPosts,
         title: "Sección 1",
-      }
-    ]
+      },
+    ],
+    description: ""
   },
   {
     _id: "2magaz",
@@ -571,12 +533,13 @@ export const mockedMagazines: Magazine[] = [
         isFatherSection: true,
         posts: mockedPosts,
         title: "Sección 1",
-      }
-    ]
-  }
-]
+      },
+    ],
+    description: ""
+  },
+];
 
-export const mockedCompleteUser : GetUser = {
+export const mockedCompleteUser: GetUser = {
   _id: "2k3",
   profilePhotoUrl: "/avatar.png",
   username: "username",
@@ -614,4 +577,33 @@ export const mockedCompleteUser : GetUser = {
   magazines: mockedMagazines,
   posts: mockedPosts,
   userRelations: [],
-}
+};
+
+export const mockedCompleteMagazine = {
+  _id: "1magaz",
+  collaborators: [],
+  name: "Magazine 1",
+  owner: mockedCompleteUser,
+  description:
+    "Esta sería la descripción de la revista guitarras de Miguel abentin.",
+  sections: [
+    {
+      _id: "234sec",
+      isFatherSection: true,
+      posts: mockedPosts,
+      title: "Sección 1",
+    },
+    {
+      _id: "345sec",
+      isFatherSection: false,
+      posts: mockedPosts,
+      title: "Sección 2",
+    },
+    {
+      _id: "3415sec",
+      isFatherSection: false,
+      posts: mockedPosts,
+      title: "Sección 3",
+    },
+  ],
+};

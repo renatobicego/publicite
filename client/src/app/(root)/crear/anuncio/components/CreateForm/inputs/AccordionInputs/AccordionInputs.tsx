@@ -35,7 +35,7 @@ const AccordionInputs = ({
   };
   return (
     <Accordion>
-      <AccordionItem
+      <AccordionItem HeadingComponent={"h6"}
         key="visibilidad"
         aria-label="Configuración de Visibilidad"
         indicator={<FaChevronLeft className="size-3" />}
@@ -45,7 +45,7 @@ const AccordionInputs = ({
       >
         <Visibility errors={errors} />
       </AccordionItem>
-      <AccordionItem
+      <AccordionItem HeadingComponent={"h6"}
         key="dataAdicional"
         aria-label="Datos Adicionales"
         title="Datos Adicionales"
@@ -62,7 +62,7 @@ const AccordionInputs = ({
       >
         <AdditionalGoodData errors={errors} />
       </AccordionItem>
-      <AccordionItem
+      <AccordionItem HeadingComponent={"h6"}
         key="attachedFiles"
         aria-label="Archivos Adjuntos"
         indicator={<FaChevronLeft className="size-3" />}

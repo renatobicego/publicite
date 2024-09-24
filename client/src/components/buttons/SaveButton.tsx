@@ -1,5 +1,4 @@
 "use client";
-import { magazines } from "@/utils/data/mockedData";
 import { Good, Magazine, Petition, Service } from "@/types/postTypes";
 import {
   Accordion,
@@ -14,6 +13,7 @@ import {
 import { FaBookmark, FaChevronLeft, FaRegBookmark } from "react-icons/fa6";
 import PrimaryButton from "./PrimaryButton";
 import { CREATE_MAGAZINE } from "@/utils/data/urls";
+import { mockedMagazines } from "@/utils/data/mockedData";
 
 interface SaveButtonProps extends ButtonProps {
   saved: boolean;
@@ -45,7 +45,7 @@ const SaveButton: React.FC<SaveButtonProps> = ({ saved, post, ...props }) => {
             </p>
             <div className="mt-2 flex flex-col gap-2 w-full">
               <p className="text-xs">Tus revistas</p>
-              {magazines.map((magazine) => (
+              {mockedMagazines.map((magazine) => (
                 <MagazineCard key={magazine._id} magazine={magazine} />
               ))}
               <PrimaryButton as={Link} href={`${CREATE_MAGAZINE}/${post._id}`}>
@@ -65,7 +65,7 @@ const MagazineCard = ({ magazine }: { magazine: Magazine }) => {
   if (magazine.sections.length > 1) {
     return (
       <Accordion variant="bordered" isCompact>
-        <AccordionItem
+        <AccordionItem HeadingComponent={"h6"}
           indicator={<FaChevronLeft className="size-3" />}
           title={magazine.name}
           classNames={{
