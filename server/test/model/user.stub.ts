@@ -1,15 +1,24 @@
 import { ObjectId, Types } from 'mongoose';
-import { Gender } from 'src/contexts/user/domain/entity/enum/enums.request';
+import {
+  UserPersonRequest,
+  UserBusinessRequest,
+} from 'src/contexts/user/application/adapter/dto/HTTP-REQUEST/user.request.CREATE';
+import {
+  Gender,
+  UserType,
+} from 'src/contexts/user/domain/entity/enum/user.enums';
 
-export const userSub = (): UserPersonDto => {
+export const userSub = (): UserPersonRequest => {
   return {
     clerkId: '5f9d8f5e9d8f5e9d8f5e9d8f',
-    email: '222222@gmail.com',
-    username: 'maxi22222',
+    email: 'asdasdaaaaaaasd@gmail.com',
+    username: 'aaaaa',
     description: 'I like to code',
     profilePhotoUrl: 'https://your-bucket.com/profile.jpg',
     countryRegion: 'Argentina',
     isActive: true,
+    name: 'Renato',
+    lastName: 'Bicego',
     contact: {
       phone: '2151651',
       instagram: '@asd',
@@ -18,14 +27,17 @@ export const userSub = (): UserPersonDto => {
       website: '',
     },
     createdTime: '2024-10-10T00:00:00Z',
-    name: 'Renato',
-    lastName: 'Bicego',
+    userType: UserType.Personal,
+    userPreferences: {
+      searchPreference: ['66e608531f76fc4dda965554' as unknown as ObjectId],
+      backgroundColor: 12,
+    },
     gender: Gender.Male,
     birthDate: '2024-10-10',
   };
 };
 
-export const userSubBusiness = (): UserBusinessDto => {
+export const userSubBusiness = (): UserBusinessRequest => {
   return {
     clerkId: '5f9d8f5e9d8f5e9d8f5e9d8f',
     email: 'juan@gmail.com',
@@ -42,9 +54,14 @@ export const userSubBusiness = (): UserBusinessDto => {
       website: '',
     },
     createdTime: '2024-10-10T00:00:00Z',
-    sector: '66d2177dda11f93d8647cf3a' as unknown as ObjectId,
     name: 'Maxi',
     lastName: 'Cvetic',
+    userType: UserType.Business,
+    userPreferences: {
+      searchPreference: [],
+      backgroundColor: 12,
+    },
+    sector: '66d2177dda11f93d8647cf3a' as unknown as ObjectId,
     businessName: 'Dutsiland',
   };
 };
