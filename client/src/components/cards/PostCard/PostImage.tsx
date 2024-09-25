@@ -7,13 +7,15 @@ import { Good, Service } from "@/types/postTypes";
 const PostImage = ({
   post,
   recommendation,
+  savePostMagazine,
 }: {
   post: Good | Service;
   recommendation: boolean;
+  savePostMagazine: boolean;
 }) => {
   return (
     <CardHeader className="w-full pb-0 max-md:px-1 md:px-2 lg:px-3">
-      <Link href={`${POSTS}/${post._id}`} className="w-full">
+      <Link href={`${POSTS}/${post._id}`} className="w-full" isDisabled={savePostMagazine}>
         <Image
           src={post.imagesUrls[0]}
           classNames={{
@@ -27,11 +29,13 @@ const PostImage = ({
           height={290}
         />
       </Link>
-      <SaveButton
-        post={post}
-        saved={false}
-        className="absolute top-4 right-2 md:right-4 z-10 max-md:min-w-8 max-md:size-8"
-      />
+      {!savePostMagazine && (
+        <SaveButton
+          post={post}
+          saved={false}
+          className="absolute top-4 right-2 md:right-4 z-10 max-md:min-w-8 max-md:size-8"
+        />
+      )}
     </CardHeader>
   );
 };

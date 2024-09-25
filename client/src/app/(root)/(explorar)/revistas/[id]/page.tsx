@@ -81,7 +81,7 @@ export default async function MagazinePage({
             <>
               <SecondaryButton
                 as={Link}
-                href={`${MAGAZINES}/${magazine._id}/editar`}
+                href={`/editar${MAGAZINES}/${magazine._id}`}
               >
                 Editar
               </SecondaryButton>

@@ -37,7 +37,9 @@ const HandleGroupMember = ({
           </Button>
         </DropdownTrigger>
         <DropdownMenu aria-label="Static Actions">
-          <DropdownItem key="new">Asignar como administrador</DropdownItem>
+          <DropdownItem className="rounded-full" key="new" color="secondary">
+            Asignar como administrador
+          </DropdownItem>
         </DropdownMenu>
       </Dropdown>
       <ConfirmModal

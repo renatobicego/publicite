@@ -74,7 +74,7 @@ export const petitionTypesItems: { label: string; value: PostType }[] = [
   {
     label: "Servicios",
     value: "service",
-  }
+  },
 ];
 
 export const boardColors = [
@@ -85,4 +85,27 @@ export const boardColors = [
   "bg-[#FFF275]/80",
   "bg-[#FFB238]/80",
   "bg-[#5A0001]/80",
+];
+
+export const visibilityItems: { value: Visibility; label: string }[] = [
+  {
+    value: "public",
+    label: "Público",
+  },
+  {
+    value: "registered",
+    label: "Usuarios Registrados",
+  },
+  {
+    value: "contacts",
+    label: "Contactos",
+  },
+  {
+    value: "friends",
+    label: "Amigos",
+  },
+  {
+    value: "topfriends",
+    label: "Top Amigos",
+  },
 ];

@@ -1,17 +1,28 @@
 // app/providers.tsx
-'use client'
+"use client";
 
-import {NextUIProvider} from '@nextui-org/react'
-import { useEffect, useState } from 'react';
-
+import { NextUIProvider } from "@nextui-org/react";
+import { useRouter } from "next/navigation";
+import { AppProgressBar as ProgressBar } from "next-nprogress-bar";
+import { useEffect, useState } from "react";
 export function Providers({ children }: { children: React.ReactNode }) {
-  const [isMounted, setIsMounted] = useState(false);
+  const router = useRouter();
+  const [isClient, setIsClient] = useState(false);
   useEffect(() => {
-    setIsMounted(true);
+    setIsClient(true);
   }, []);
-  if (isMounted) {
-    return <NextUIProvider>{children}</NextUIProvider>;
-  }else {
-    return <>{children}</> 
-  }
+
+  return isClient ? (
+    <NextUIProvider navigate={router.push}>
+      {children}
+      <ProgressBar
+        height="4px"
+        color="#F0931A"
+        options={{ showSpinner: true }}
+        shallowRouting
+      />
+    </NextUIProvider>
+  ) : (
+    <></>
+  );
 }

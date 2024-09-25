@@ -9,9 +9,12 @@ import {
 } from "@nextui-org/react";
 import { useState } from "react";
 import Search from "./Search";
-import NavMenuItems from "./NavMenuItems";
-import UserNavItems from "./UserNavItems";
 import MobileMenu from "./MobileMenu";
+import dynamic from "next/dynamic";
+import NavMenuItems from "./NavMenuItems";
+const UserNavItems = dynamic(() => import("./UserNavItems"), {
+  ssr: false,
+})
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

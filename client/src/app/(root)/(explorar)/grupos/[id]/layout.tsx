@@ -8,6 +8,7 @@ import UserSolapas from "@/components/solapas/UserSolapas";
 import GroupInfo from "./(components)/GroupInfo";
 import { getGroupById } from "@/services/groupsService";
 import GroupSolapas from "@/components/solapas/GroupSolapas";
+import { Group } from "@/types/userTypes";
 
 export default async function GroupLayout({
   children,
@@ -39,9 +40,9 @@ export default async function GroupLayout({
     <main className="flex min-h-screen flex-col items-start main-style gap-4 md:gap-6 xl:gap-8">
       <BreadcrumbsAdmin items={breadcrumbsItems} />
       <div className="items-start flex gap-4 justify-between w-full max-md:flex-wrap">
-        <GroupInfo group={group} />
+        <GroupInfo group={group as Group} />
       </div>
-      <GroupSolapas group={group} />
+      <GroupSolapas group={group as Group} />
       {children}
     </main>
   );

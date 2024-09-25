@@ -14,7 +14,7 @@ import PrimaryButton from "./buttons/PrimaryButton";
 const ErrorCard = ({ message }: { message?: string }) => {
   const router = useRouter();
   return (
-    <main className="flex min-h-[80vh] flex-col items-center justify-center main-style gap-4 md:gap-6 lg:gap-8">
+    <main className="flex min-h-[80vh] flex-col items-center justify-center main-style gap-4 md:gap-6 lg:gap-8 self-center">
       <Card className="p-4 max-w-full">
         <CardHeader>
           <BackButton />

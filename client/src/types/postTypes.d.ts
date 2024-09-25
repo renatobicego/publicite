@@ -178,6 +178,7 @@ export interface Magazine {
 export interface UserMagazine extends Magazine{
   collaborators: ObjectId[] | GetUser[];
   user: ObjectId | GetUser;
+  visibility: Visibility;
 }
 
 export interface GroupMagazine extends Magazine{

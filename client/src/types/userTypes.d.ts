@@ -143,4 +143,5 @@ export interface Group {
   rules: string;
   magazines: ObjectId[] | Magazine[];
   profilePhotoUrl: string;
+  visibility: "private" | "public";
 }

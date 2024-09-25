@@ -7,14 +7,16 @@ import PostImage from "./PostImage";
 const GoodCard = ({
   post,
   recommendation,
+  savePostMagazine
 }: {
   post: Good;
   recommendation: boolean;
+  savePostMagazine: boolean;
 }) => {
   const { title, reviews, description, price } = post;
   return (
     <>
-      <PostImage post={post} recommendation={recommendation}/>
+      <PostImage post={post} recommendation={recommendation} savePostMagazine={savePostMagazine}/>
       <PostCardBody
         title={title}
         reviews={reviews}

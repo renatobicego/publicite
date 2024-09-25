@@ -8,8 +8,8 @@ export const getPostData = async (id: string) => {
 
     // return await res.json();
 
-    return mockedPetitions[0];
-    // return mockedPosts[0];
+    // return mockedPetitions[0];
+    return mockedPosts[0];
   } catch (error) {
     return {
       error:

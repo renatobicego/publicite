@@ -1,6 +1,6 @@
 "use client";
 
-import PostsList from "@/app/(root)/(explorar)/anuncios/page";
+import PostsList from "@/app/(root)/(explorar)/anuncios/components/PostsList";
 import GroupsLogic from "@/app/(root)/(explorar)/grupos/GroupsLogic";
 import UsersLogic from "@/app/(root)/(explorar)/perfiles/UsersLogic";
 import BoardsLogic from "@/app/(root)/(explorar)/pizarras/BoardsLogic";
@@ -45,9 +45,9 @@ const SolapasTabs = () => {
         tabList: "max-md:gap-0 p-0",
         tab: "max-md:text-xs",
         tabContent: "max-md:text-xs",
-        base: "max-w-full overflow-x-auto", // Horizontal scroll enabled
+        base: "max-w-full overflow-x-auto", 
       }}
-      ref={tabsRef} // Ref for the entire tabs container
+      ref={tabsRef} 
       aria-label="Options"
       variant="underlined"
       selectedKey={pathname}
@@ -57,7 +57,7 @@ const SolapasTabs = () => {
         key={POSTS}
         title="Recomendados"
         href={POSTS}
-        data-key={POSTS} // Use a data attribute to identify the tab
+        data-key={POSTS}
       >
         <PostsList />
       </Tab>
