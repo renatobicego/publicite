@@ -1,7 +1,8 @@
 import { Group, User, UserBusiness } from "@/types/userTypes";
-import { Avatar, Card, CardBody } from "@nextui-org/react";
+import { Avatar, Card, CardBody, Link } from "@nextui-org/react";
 import { TbWorldPin } from "react-icons/tb";
 import SendRequest from "../buttons/SendRequest";
+import { GROUPS } from "@/utils/data/urls";
 
 const GroupCard = ({ group }: { group: Group }) => {
   return (
@@ -15,7 +16,9 @@ const GroupCard = ({ group }: { group: Group }) => {
           }}
         />
         <div className="flex flex-col gap-2 md:gap-1 items-start flex-1">
-          <h6>{group.name}</h6>
+          <Link color="foreground" href={`${GROUPS}/${group._id}`}>
+            <h6>{group.name}</h6>
+          </Link>
           <p className="text-xs md:text-sm">{group.members.length} miembros</p>
           <SendRequest isGroup />
         </div>

@@ -5,6 +5,7 @@ import {
   Petition,
   PostCategory,
   Service,
+  UserMagazine,
 } from "@/types/postTypes";
 import { SubscriptionPlan } from "@/types/subscriptions";
 import { boardColors } from "./selectData";
@@ -423,8 +424,6 @@ export const mockedUsers = [
       _id: "12qdas1",
       phone: "phone",
     },
-    lastName: "lastName",
-    name: "name",
     countryRegion: "Córdoba, Argentina",
     userType: "Business",
     businessName: "Nombre de Empresa",
@@ -473,11 +472,11 @@ export const mockedUsers = [
   },
 ];
 
-export const mockedGroups: Group[] = [
+export const mockedGroups = [
   {
     _id: "9ievfm",
-    members: ["1k2", "2k3"],
-    admins: ["1k2"],
+    members: [...mockedUsers],
+    admins: ["1k2", "66f1500c439dc5335877271d"],
     details: "details",
     name: "Computadoras",
     magazines: [],
@@ -486,7 +485,7 @@ export const mockedGroups: Group[] = [
   },
   {
     _id: "9ievfmas",
-    members: ["1k2", "2k3", "3k4", "4k5", "5k6"],
+    members: [...mockedUsers, ...mockedUsers],
     admins: ["1k2"],
     details: "details",
     name: "Instrumentos Musicales",
@@ -506,12 +505,13 @@ export const mockedGroups: Group[] = [
   },
 ];
 
-export const mockedMagazines: Magazine[] = [
+export const mockedMagazines: UserMagazine[] = [
   {
     _id: "1magaz",
     collaborators: [],
     name: "Magazine 1",
-    owner: "1k2",
+    user: "1k2",
+    ownerType: "user",
     sections: [
       {
         _id: "234sec",
@@ -526,7 +526,8 @@ export const mockedMagazines: Magazine[] = [
     _id: "2magaz",
     collaborators: [],
     name: "Magazine 2",
-    owner: "1k2",
+    user: "1k2",
+    ownerType: "user",
     sections: [
       {
         _id: "234sec",
@@ -568,10 +569,8 @@ export const mockedCompleteUser: GetUser = {
     color: boardColors[0],
     visibility: "public",
   },
-  createdTime: "2020-12-01T00:00:00.000Z",
   description: "Esta es la descripción del usuario para mostrar en su perfil",
   email: "email",
-  isActive: true,
   subscriptions: [],
   groups: [],
   magazines: mockedMagazines,
@@ -579,11 +578,11 @@ export const mockedCompleteUser: GetUser = {
   userRelations: [],
 };
 
-export const mockedCompleteMagazine = {
+export const mockedCompleteMagazine: UserMagazine = {
   _id: "1magaz",
   collaborators: [],
   name: "Magazine 1",
-  owner: mockedCompleteUser,
+  user: mockedCompleteUser,
   description:
     "Esta sería la descripción de la revista guitarras de Miguel abentin.",
   sections: [
@@ -606,4 +605,5 @@ export const mockedCompleteMagazine = {
       title: "Sección 3",
     },
   ],
+  ownerType: "user",
 };

@@ -5,9 +5,15 @@ import { useState } from "react";
 import PostListHeader from "./PostListHeader";
 import { useFilteredAndSortedPosts } from "@/utils/hooks/useFilteredOrderedPosts";
 
-const PostListLogic = ({postType} : {postType: "good" | "service" | "petition"}) => {
+const PostListLogic = ({
+  postType,
+  groupId
+}: {
+  postType: "good" | "service" | "petition" | "groupPosts";
+  groupId?: ObjectId
+}) => {
   const [showAsList, setShowAsList] = useState(false);
-  const { items, isLoading } = useInfiniteFetch(postType, true);
+  const { items, isLoading } = useInfiniteFetch(postType, true, groupId);
   const {
     searchTerms,
     setSearchTerms,

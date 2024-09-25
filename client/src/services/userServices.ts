@@ -27,7 +27,7 @@ export const getUserProfileData = async (username: string) => {
       `${process.env.API_URL}/user/personal-data/${username}`
     );
 
-    return res.json();
+    return await res.json();
   } catch (error) {
     return {
       error:
@@ -64,7 +64,7 @@ export const getUserPreferences = async (username: string) => {
     const res = await fetch(
       `${process.env.API_URL}/user/preferences/${username}`
     );
-    return res.json();
+    return await res.json();
   } catch (error) {
     return {
       error: "Error al traer las preferencias. Por favor intenta de nuevo.",
@@ -88,7 +88,7 @@ export const getUserByUsername = async (username: string) => {
     // const res = await fetch(
     //   `${process.env.API_URL}/user/personal-data/${username}`
     // );
-    // return res.json();
+    // return await res.json();
     return mockedCompleteUser
   } catch (error) {
     return {

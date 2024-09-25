@@ -13,10 +13,7 @@ const ServiceCard = ({
   const { title, reviews, description, price } = post;
 
   return (
-    <Card
-      className="w-full ease-in-out hover:shadow-md gap-4 !transition-shadow duration-500 hover:cursor-pointer"
-      shadow="none"
-    >
+    <>
       <PostImage post={post} recommendation={recommendation} />
       <PostCardBody
         title={title}
@@ -25,7 +22,7 @@ const ServiceCard = ({
         price={price}
         isService={true}
       />
-    </Card>
+    </>
   );
 };
 

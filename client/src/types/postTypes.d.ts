@@ -1,4 +1,4 @@
-import { GetUser, User, UserPerson } from "./userTypes";
+import { GetUser, Group, User, UserPerson } from "./userTypes";
 
 export interface Post {
   _id: ObjectId;
@@ -171,10 +171,18 @@ export interface Magazine {
   _id: ObjectId;
   name: string;
   sections: MagazineSection[];
-  collaborators: ObjectId[] | GetUser[];
-  owner: ObjectId | GetUser;
-  isGroupMagazine?: boolean;
+  ownerType: "user" | "group";
   description: string;
+}
+
+export interface UserMagazine extends Magazine{
+  collaborators: ObjectId[] | GetUser[];
+  user: ObjectId | GetUser;
+}
+
+export interface GroupMagazine extends Magazine{
+  allowedCollaborators: ObjectId[] | GetUser[];
+  group: ObjectId | Group;
 }
 
 export interface MagazineSection {
