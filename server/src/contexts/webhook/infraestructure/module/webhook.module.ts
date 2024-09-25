@@ -5,7 +5,7 @@ import { MyLoggerService } from '../../../shared/logger/logger.service';
 import { UserModule } from 'src/contexts/user/infraestructure/module/user.module';
 import { WebhookService } from '../../application/clerk/clerkWebhook.service';
 import { MpHandlerValidations } from '../../application/mercadopago/handler/mp.handler.validations';
-import { MpHandlerEvents } from '../../application/mercadopago/handler/mpHandlerEvents';
+import { MpHandlerEvents } from '../../application/mercadopago/handler/mpHandlerFETCHEvents';
 import { MpSubscriptionService } from '../../application/mercadopago/service/mp-subscription.service';
 import { MpWebhookService } from '../../application/mercadopago/service/mp-webhook.service';
 import { ClerkWebhookAdapter } from '../adapters/clerk/clerk-webhook.adapter';

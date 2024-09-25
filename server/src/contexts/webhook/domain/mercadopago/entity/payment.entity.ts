@@ -28,17 +28,17 @@ export default class Payment {
     status: string,
     _id?: ObjectId,
   ) {
-    this.mpPaymentId = mpPaymentId;
-    this.payerId = payerId;
-    this.payerEmail = payerEmail;
-    this.paymentTypeId = paymentTypeId;
-    this.paymentMethodId = paymentMethodId;
-    this.transactionAmount = transactionAmount;
-    this.dateApproved = dateApproved;
-    this.external_reference = external_reference;
-    this.status_detail = status_detail;
-    this.dayOfUpdate = dayOfUpdate;
-    this.status = status;
+    this.mpPaymentId = mpPaymentId ?? ' ';
+    this.payerId = payerId ?? ' ';
+    this.payerEmail = payerEmail ?? ' ';
+    this.paymentTypeId = paymentTypeId ?? ' ';
+    this.paymentMethodId = paymentMethodId ?? ' ';
+    this.transactionAmount = transactionAmount ?? ' ';
+    this.dateApproved = dateApproved ?? ' ';
+    this.external_reference = external_reference ?? ' ';
+    this.status_detail = status_detail ?? ' ';
+    this.dayOfUpdate = dayOfUpdate ?? ' ';
+    this.status = status ?? ' ';
     this._id = _id;
   }
 

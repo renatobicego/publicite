@@ -94,7 +94,7 @@ export class UserRepository implements UserRepositoryInterface {
       };
       console.log(documentToSave);
       switch (reqUser.getUserType?.toLowerCase()) {
-        case 'personal':
+        case 'person':
           return await this.savePersonalAccount(
             documentToSave,
             reqUser as UserPerson,

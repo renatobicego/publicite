@@ -30,7 +30,7 @@ export class UserPerson extends User {
       user.getBoard ?? [],
       user.getPost ?? [],
       user.getUserRelations ?? [],
-      user.getUserType ?? UserType.Personal,
+      user.getUserType ?? UserType.Person,
       user.getUserPreferences ?? {
         searchPreference: [],
         backgroundColor: undefined,

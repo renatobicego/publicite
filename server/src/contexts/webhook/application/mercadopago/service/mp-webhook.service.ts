@@ -157,10 +157,14 @@ export class MpWebhookService implements MpWebhookServiceInterface {
     preapproval_id: string,
   ): Promise<any> {
     try {
-      const response = await fetch(url + '/' + preapproval_id, {
+      const rute = `${url}${preapproval_id}`;
+      this.logger.warn('fetching to mp url: ' + rute);
+
+      const response = await fetch(rute, {
         method: 'PUT',
         headers: {
           Authorization: `Bearer ${this.MP_ACCESS_TOKEN}`,
+          'Content-Type': 'application/json', // Asegúrate de incluir Content-Type
         },
         body: JSON.stringify({
           status: 'paused',
