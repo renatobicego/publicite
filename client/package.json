@@ -27,6 +27,7 @@
     "framer-motion": "^11.3.24",
     "mercadopago": "^2.0.11",
     "next": "14.2.5",
+    "next-nprogress-bar": "^2.3.13",
     "react": "^18",
     "react-dom": "^18",
     "react-dropzone": "^14.2.3",

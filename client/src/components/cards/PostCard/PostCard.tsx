@@ -6,28 +6,40 @@ import PetitionCard from "../PetitionCard";
 const PostCard = ({
   postData,
   recommendation,
+  className,
+  savePostMagazine = false,
 }: {
   postData: Post;
   recommendation: boolean;
+  className?: string;
+  savePostMagazine?: boolean;
 }) => {
   const { postType } = postData;
   const PostCardToReturn = () => {
     switch (postType) {
       case "good":
         return (
-          <GoodCard post={postData as Good} recommendation={recommendation} />
+          <GoodCard
+            post={postData as Good}
+            recommendation={recommendation}
+            savePostMagazine={savePostMagazine}
+          />
         );
       case "service":
         return (
           <ServiceCard
             post={postData as Service}
             recommendation={recommendation}
+            savePostMagazine={savePostMagazine}
           />
         );
       case "petition":
         return (
-          <PetitionCard post={postData as Petition} recommendation={recommendation} />
-        )
+          <PetitionCard
+            post={postData as Petition}
+            recommendation={recommendation}
+          />
+        );
       default:
         break;
     }
@@ -36,8 +48,10 @@ const PostCard = ({
   return (
     <Card
       className={`w-full ease-in-out hover:shadow md:hover:shadow-md gap-4 
-        !transition-shadow duration-500 hover:cursor-pointer !opacity-100
-        ${postType === "petition" ? "border border-petition" : ""}`}
+        !transition-shadow duration-500 !opacity-100
+        ${
+          postType === "petition" ? "border border-petition" : ""
+        } ${className}`}
       shadow="none"
     >
       {PostCardToReturn()}

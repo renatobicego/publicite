@@ -6,10 +6,10 @@ export const getPostData = async (id: string) => {
   try {
     // const res = await fetch(`${process.env.API_URL}/businessSector`);
 
-    // return res.json();
+    // return await res.json();
 
-    return mockedPetitions[0];
-    // return mockedPosts[0];
+    // return mockedPetitions[0];
+    return mockedPosts[0];
   } catch (error) {
     return {
       error:

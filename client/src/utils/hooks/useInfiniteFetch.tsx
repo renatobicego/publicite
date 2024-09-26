@@ -5,8 +5,9 @@ import { toastifyError } from "../functions/toastify";
 
 // Custom hook for infinite scroll and data fetching
 export const useInfiniteFetch = (
-  postType: "good" | "service" | "petition" | "groups" | "users" | "boards",
-  hasMoreData: boolean
+  postType: "good" | "service" | "petition" | "groups" | "users" | "boards" | "groupPosts",
+  hasMoreData: boolean,
+  groupId?: string
 ) => {
   const [isLoading, setIsLoading] = useState(false);
   const [items, setItems] = useState<any[]>([]);
@@ -14,8 +15,8 @@ export const useInfiniteFetch = (
   const busqueda = searchParams.get("busqueda");
   // Create fetchData function based on postType and searchTerm
   const fetchData = useMemo(() => {
-    return fetchDataByType(postType, busqueda);
-  }, [postType, busqueda]);
+    return fetchDataByType(postType, busqueda, groupId);
+  }, [postType, busqueda, groupId]);
 
   // Function to handle initial fetch and scroll-based fetch
   const loadMore = useCallback(async () => {

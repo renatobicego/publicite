@@ -4,7 +4,7 @@ export const getMagazineById = async (id: string) => {
     try {
       // const res = await fetch(`${process.env.API_URL}/businessSector`);
   
-      // return res.json();
+      // return await res.json();
   
       return mockedCompleteMagazine;
       // return mockedPosts[0];

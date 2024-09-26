@@ -8,8 +8,9 @@ import {
 } from "@nextui-org/react";
 import { FaShareAlt } from "react-icons/fa";
 import { FaChevronDown } from "react-icons/fa6";
+import { IoIosExit } from "react-icons/io";
 
-const OptionsDropdown = ({ username }: { username: string }) => {
+const OptionsDropdown = ({ groupId }: { groupId: string }) => {
   return (
     <Dropdown placement="bottom-end">
       <DropdownTrigger>
@@ -25,6 +26,14 @@ const OptionsDropdown = ({ username }: { username: string }) => {
           className="rounded-full px-4"
         >
           Compartir
+        </DropdownItem>
+        <DropdownItem
+          startContent={<IoIosExit />}
+          color="danger"
+          key="new"
+          className="rounded-full px-4"
+        >
+          Salir del Grupo
         </DropdownItem>
       </DropdownMenu>
     </Dropdown>

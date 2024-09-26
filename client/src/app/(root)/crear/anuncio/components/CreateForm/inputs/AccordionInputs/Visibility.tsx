@@ -1,5 +1,6 @@
 import { CustomSelect } from "@/components/inputs/CustomInputs";
 import { GoodPostValues, ServicePostValues } from "@/types/postTypes";
+import { visibilityItems } from "@/utils/data/selectData";
 import { Field, FormikErrors } from "formik";
 import React, { memo } from "react";
 
@@ -8,28 +9,7 @@ const Visibility = ({
 }: {
   errors: FormikErrors<GoodPostValues> | FormikErrors<ServicePostValues>;
 }) => {
-  const visibilityItems: { value: Visibility; label: string }[] = [
-    {
-      value: "public",
-      label: "Público",
-    },
-    {
-      value: "registered",
-      label: "Usuarios Registrados",
-    },
-    {
-      value: "contacts",
-      label: "Contactos",
-    },
-    {
-      value: "friends",
-      label: "Amigos",
-    },
-    {
-      value: "topfriends",
-      label: "Top Amigos",
-    },
-  ];
+
   return (
     <div className="flex gap-2 max-xl:flex-wrap">
       <Field

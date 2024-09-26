@@ -1,5 +1,5 @@
 import { Board } from "./board";
-import { PostCategory } from "./postTypes";
+import { Magazine, PostCategory } from "./postTypes";
 
 export interface User {
   _id: ObjectId;
@@ -24,7 +24,7 @@ export interface User {
   userPreferences: UserPreferences;
 }
 
-export interface GetUser extends Omit<User, "userPreferences" | "clerkId" | "userRelations"> {
+export interface GetUser extends Omit<User, "userPreferences" | "clerkId" | "userRelations" | "createdTime" | "isActive"> {
   userRelations: User[]
 }
 
@@ -143,4 +143,5 @@ export interface Group {
   rules: string;
   magazines: ObjectId[] | Magazine[];
   profilePhotoUrl: string;
+  visibility: "private" | "public";
 }

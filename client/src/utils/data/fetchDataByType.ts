@@ -1,5 +1,5 @@
 import { getBoards } from "@/services/boardServices";
-import { getGroups } from "@/services/groupsService";
+import { getGroupPosts, getGroups } from "@/services/groupsService";
 import {
   getGoods,
   getPetitions,
@@ -8,8 +8,9 @@ import {
 import { getUsers } from "@/services/userServices";
 
 export const fetchDataByType = (
-  postType: "good" | "service" | "petition" | "boards" | "users" | "groups",
-  searchTerm: string | null
+  postType: "good" | "service" | "petition" | "boards" | "users" | "groups" | "groupPosts",
+  searchTerm: string | null,
+  groupId?: string
 ) => {
   switch (postType) {
     case "good":
@@ -24,5 +25,7 @@ export const fetchDataByType = (
       return async () => await getGroups(searchTerm);
     case "users":
       return async () => await getUsers(searchTerm);
+    case "groupPosts":
+      return async () => await getGroupPosts(searchTerm, groupId);
   }
 };

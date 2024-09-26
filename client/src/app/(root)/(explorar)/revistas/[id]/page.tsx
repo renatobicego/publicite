@@ -7,22 +7,38 @@ import { MAGAZINES, PROFILE } from "@/utils/data/urls";
 import { Avatar, Button, Link } from "@nextui-org/react";
 import AccordionSections from "./AccordionSections";
 import { currentUser } from "@clerk/nextjs/server";
-import { Magazine } from "@/types/postTypes";
+import { GroupMagazine, Magazine, Post, UserMagazine } from "@/types/postTypes";
 import SecondaryButton from "@/components/buttons/SecondaryButton";
 import InviteCollabMagazine from "@/components/modals/InviteCollabMagazine";
+import { Group, User } from "@/types/userTypes";
 
 export default async function MagazinePage({
   params,
 }: {
   params: { id: string };
 }) {
-  const magazine = await getMagazineById(params.id);
-  const user = await currentUser();
-  const isOwner = (magazine as any).owner.username === user?.username;
+  const magazine: Magazine | { error: string } = await getMagazineById(
+    params.id
+  );
   if ("error" in magazine) {
     return <ErrorCard message={magazine.error} />;
   }
+  const user = await currentUser();
+  const isOwnerTypeUser = magazine.ownerType === "user";
+  const owner = isOwnerTypeUser
+    ? (magazine as UserMagazine).user
+    : (magazine as GroupMagazine).group;
+  const ownerAsUser = owner as User;
+  const ownerAsGroup = owner as Group;
+  const isOwner = isOwnerTypeUser
+    ? ownerAsUser.username === user?.username
+    : ((magazine as GroupMagazine).allowedCollaborators as string[]).includes(
+        user?.publicMetadata.mongoId as string
+      );
 
+  const urlProfile = isOwnerTypeUser
+    ? `${PROFILE}/${ownerAsUser.username}`
+    : `${PROFILE}/${ownerAsGroup._id}`;
   const breadcrumbsItems = [
     {
       label: "Inicio",
@@ -33,14 +49,15 @@ export default async function MagazinePage({
       href: PROFILE,
     },
     {
-      label: magazine.owner.username,
-      href: `${PROFILE}/${magazine.owner.username}`,
+      label: isOwnerTypeUser ? ownerAsUser.username : ownerAsGroup.name,
+      href: urlProfile,
     },
     {
       label: magazine.name,
       href: `${MAGAZINES}/${magazine._id}`,
     },
   ];
+
   return (
     <main className="flex min-h-screen flex-col items-start main-style gap-4 md:gap-6 xl:gap-8">
       <BreadcrumbsAdmin items={breadcrumbsItems} />
@@ -51,18 +68,20 @@ export default async function MagazinePage({
         </p>
         <Link
           color="foreground"
-          href={`${PROFILE}/${magazine.owner.username}`}
+          href={urlProfile}
           className="flex gap-2 items-center flex-col"
         >
-          <Avatar src={magazine.owner.profilePhotoUrl} size="lg" />
-          <p className="font-semibold">@{magazine.owner.username}</p>
+          <Avatar src={ownerAsUser.profilePhotoUrl} size="lg" />
+          <p className="font-semibold">
+            {isOwnerTypeUser ? `@${ownerAsUser.username}` : ownerAsGroup.name}{" "}
+          </p>
         </Link>
         <div className="flex gap-2 items-center max-md:flex-wrap justify-center">
           {!isOwner && (
             <>
               <SecondaryButton
                 as={Link}
-                href={`${MAGAZINES}/${magazine._id}/editar`}
+                href={`/editar${MAGAZINES}/${magazine._id}`}
               >
                 Editar
               </SecondaryButton>
@@ -74,8 +93,8 @@ export default async function MagazinePage({
       </section>
       <PostsGrid
         posts={
-          magazine.sections.find((section) => section.isFatherSection)?.posts ||
-          []
+          (magazine.sections.find((section) => section.isFatherSection)
+            ?.posts as Post[]) || []
         }
       />
       {magazine.sections.length > 1 && (

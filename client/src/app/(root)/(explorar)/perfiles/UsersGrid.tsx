@@ -5,15 +5,17 @@ import { Spinner } from "@nextui-org/react";
 const UsersGrid = ({
   items,
   isLoading = false,
+  groupGrid = false,
 }: {
   items: User[];
   isLoading?: boolean;
+  groupGrid?: boolean;
 }) => {
   return (
     <>
       <div className="grid grid-cols-2 lg:grid-cols-3 3xl:grid-cols-4 gap-4">
         {items.map((user: User, index) => (
-          <ProfileCard user={user} key={user._id + index} />
+          <ProfileCard user={user} key={user._id + index} groupGrid={groupGrid} />
         ))}
       </div>
       {!isLoading && items.length === 0 && (

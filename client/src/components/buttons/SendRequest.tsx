@@ -24,7 +24,7 @@ const SendRequest = ({
         <>
           <SecondaryButton
             variant={variant}
-            className={`max-md:hidden mt-auto ${removeMargin && "-ml-4"} hover:text-secondary`}
+            className={`max-md:hidden mt-auto ${removeMargin && "-ml-4"}`}
           >
             Enviar solicitud
           </SecondaryButton>
