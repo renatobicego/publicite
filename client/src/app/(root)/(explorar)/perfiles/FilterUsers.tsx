@@ -55,7 +55,7 @@ const FilterUsers = ({
           Borrar Filtros
         </Button>
       )}
-      <Modal placement="center" isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal radius="lg" className="p-2"  placement="center" isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
           {(onClose) => (
             <>

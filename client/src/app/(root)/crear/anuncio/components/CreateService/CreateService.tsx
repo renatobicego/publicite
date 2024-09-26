@@ -12,9 +12,10 @@ import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { serviceValidation } from "./serviceValidation";
 import { getLocalTimeZone, today } from "@internationalized/date";
 import useUploadFiles from "@/utils/hooks/useUploadFiles";
-import { createPost } from "../../actions";
+import { createPost } from "../../../../../server/postActions";
 import { POSTS } from "@/utils/data/urls";
 import { useRouter } from "next/navigation";
+import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
 
 
 const CreateService = ({ files }: { files: File[] }) => {
@@ -108,6 +109,7 @@ const CreateService = ({ files }: { files: File[] }) => {
               isService={true}
               setAttachedFiles={setAttachedFiles}
             />
+            <RequiredFieldsMsg />
             <PrimaryButton
               isDisabled={isSubmitting}
               isLoading={isSubmitting}

@@ -192,3 +192,19 @@ export interface MagazineSection {
   isFatherSection: boolean;
   posts: ObjectId[] | Post[];
 }
+
+export interface PetitionContact {
+  userContacting?: ObjectId;
+  post: ObjectId;
+  fullName?: string; // for users not registered
+  email: string;
+  phone?: string; // for users not registered
+  message: string;
+}
+
+export interface PostNotification {
+  _id: ObjectId;
+  message: string;
+  post: Post;
+  date: string;
+}

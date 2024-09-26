@@ -10,17 +10,16 @@ import AccordionInputs from "../CreateForm/inputs/AccordionInputs/AccordionInput
 import { useState } from "react";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { useUser } from "@clerk/nextjs";
-import { useUploadThing } from "@/utils/uploadThing";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { getLocalTimeZone, today } from "@internationalized/date";
-import { createPost } from "../../actions";
+import { createPost } from "../../../../../server/postActions";
 import { useRouter } from "next/navigation";
 import { POSTS } from "@/utils/data/urls";
 import useUploadFiles from "@/utils/hooks/useUploadFiles";
+import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
 
 const CreateGood = ({ files }: { files: File[] }) => {
   const { user } = useUser();
-  console.log(user?.publicMetadata)
   const initialValues: GoodPostValues = {
     attachedFiles: [],
     description: "",
@@ -112,6 +111,7 @@ const CreateGood = ({ files }: { files: File[] }) => {
               attachedFiles={attachedFiles}
               setAttachedFiles={setAttachedFiles}
             />
+            <RequiredFieldsMsg />
             <PrimaryButton
               isDisabled={isSubmitting}
               isLoading={isSubmitting}

@@ -5,7 +5,7 @@ declare global {
     metadata: {
       onboardingComplete?: boolean;
       userType: "Person" | "Business";
-      mongoId: string
+      mongoId: ObjectId
     };
     firstName?: string;
   }

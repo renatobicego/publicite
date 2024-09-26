@@ -17,7 +17,7 @@ const InviteCollabMagazine = () => {
       <SecondaryButton onPress={onOpen} variant="flat" className="order-last">
         Invitar Colaboradores
       </SecondaryButton>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal radius="lg" className="p-2"  isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
           {(onClose) => (
             <>

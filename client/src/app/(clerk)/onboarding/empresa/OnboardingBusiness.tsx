@@ -10,6 +10,7 @@ import { userBusinessValidation } from "./userBusinessValidation";
 import { Divider } from "@nextui-org/react";
 import { completeOnboardingBusiness } from "../_actions";
 import { toastifyError } from "@/utils/functions/toastify";
+import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
 const OnboardingBusiness = () => {
   const { user } = useUser();
   const router = useRouter();
@@ -47,7 +48,7 @@ const OnboardingBusiness = () => {
     if (res?.message) {
       // Reloads the user's data from Clerk's API
       await user?.reload();
-      router.push("/");
+      router.replace("/");
     }
     if (res?.error) {
       toastifyError(res.error);
@@ -72,6 +73,7 @@ const OnboardingBusiness = () => {
             errors={errors}
             setFieldValue={setFieldValue}
           />
+          <RequiredFieldsMsg />
           <PrimaryButton
             type="submit"
             isDisabled={isSubmitting}

@@ -14,7 +14,6 @@ export default async function NavigationLayout({
   children: React.ReactNode;
 }) {
   const user = await currentUser();
-  if(!user) return redirect('/iniciar-sesion')
   return (
     <>
       <NextSSRPlugin
@@ -27,7 +26,7 @@ export default async function NavigationLayout({
         routerConfig={extractRouterConfig(ourFileRouter)}
       />
       <Header />
-      <BackgroundProvider username={user.username as string}>
+      <BackgroundProvider username={user?.username}>
         <BackgroundStyle />
         {children}
         <HelpButton />

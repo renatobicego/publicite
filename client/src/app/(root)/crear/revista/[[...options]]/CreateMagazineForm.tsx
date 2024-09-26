@@ -13,9 +13,10 @@ import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { magazineValidation } from "./validation";
 import Inputs from "./Inputs";
 import { useUser } from "@clerk/nextjs";
-import { createMagazine } from "./actions";
+import { createMagazine } from "../../../../server/magazineActions";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { MAGAZINES } from "@/utils/data/urls";
+import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
 
 const CreateMagazineForm = ({
   isGroupMagazine,
@@ -59,9 +60,10 @@ const CreateMagazineForm = ({
     const resApi = await createMagazine(values);
     if (resApi.error) {
       toastifyError(resApi.error);
+      actions.setSubmitting(false);
       return;
     }
-    toastifySuccess("Revista creada exitosamente");
+    toastifySuccess(resApi.message as string);
     router.push(`${MAGAZINES}/${resApi.id}`);
   };
   return (
@@ -81,6 +83,7 @@ const CreateMagazineForm = ({
               errors={errors}
               setFieldValue={setFieldValue}
             />
+            <RequiredFieldsMsg />
             <PrimaryButton
               isDisabled={isSubmitting}
               isLoading={isSubmitting}

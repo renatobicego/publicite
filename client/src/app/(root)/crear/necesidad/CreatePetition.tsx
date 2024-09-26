@@ -10,7 +10,7 @@ import { Divider } from "@nextui-org/react";
 import PlacePicker from "../anuncio/components/CreateForm/inputs/PlacePicker";
 import PriceRangeCategory from "./PriceRangeCategory";
 import Visibility from "../anuncio/components/CreateForm/inputs/AccordionInputs/Visibility";
-import { createPost } from "../anuncio/actions";
+import { createPost } from "../../../server/postActions";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { useRouter } from "next/navigation";
 import { POSTS } from "@/utils/data/urls";
@@ -18,6 +18,7 @@ import { useState } from "react";
 import useUploadFiles from "@/utils/hooks/useUploadFiles";
 import AttachedFiles from "../anuncio/components/CreateForm/inputs/AccordionInputs/AttachedFIles/AttachedFiles";
 import PetitionType from "./PetitionType";
+import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
 
 const CreatePetition = () => {
   const { user } = useUser();
@@ -81,10 +82,11 @@ const CreatePetition = () => {
     });
     if (resApi.error) {
       toastifyError(resApi.error);
+      actions.setSubmitting(false);
       return;
     }
 
-    toastifySuccess("Anuncio creado exitosamente");
+    toastifySuccess(resApi.message as string);
     router.push(`${POSTS}/${resApi.id}`);
   };
   return (
@@ -125,11 +127,12 @@ const CreatePetition = () => {
                 </div>
               </div>
             </div>
+            <RequiredFieldsMsg />
             <PrimaryButton
               isDisabled={isSubmitting}
               isLoading={isSubmitting}
               type="submit"
-              className="mt-4 self-start"
+              className="self-start"
             >
               {isSubmitting
                 ? attachedFiles.length > 0

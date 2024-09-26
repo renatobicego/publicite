@@ -73,7 +73,7 @@ const FilterPosts = ({
             Borrar Filtros
           </Button>
         )}
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal radius="lg" className="p-2"  isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
           {(onClose) => (
             <>
