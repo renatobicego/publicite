@@ -2,6 +2,7 @@ import { ObjectId } from 'mongoose';
 import { PostRequest } from 'src/contexts/post/application/adapter/dto/post.request';
 import { petitionType } from 'src/contexts/post/domain/entity/enum/post-petition-type.enum';
 import { frequencyPrice } from 'src/contexts/post/domain/entity/enum/post-service-freq-type.enum';
+//npm run test:e2e -- --runInBand
 
 export const postStub = (): PostRequest => {
   return {

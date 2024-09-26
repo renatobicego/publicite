@@ -1,4 +1,4 @@
-import { today, getLocalTimeZone } from '@internationalized/date';
+import { getLocalTimeZone, now } from '@internationalized/date';
 import { BadRequestException, Inject } from '@nestjs/common';
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
 import Payment from 'src/contexts/webhook/domain/mercadopago/entity/payment.entity';
@@ -12,7 +12,7 @@ export class MpPaymentService implements MpPaymentServiceInterface {
     private readonly mpPaymentRepository: MercadoPagoPaymentsRepositoryInterface,
   ) {}
   async updatePayment(payment: any): Promise<void> {
-    const dayOfUpdate = today(getLocalTimeZone()).toString();
+    const timeOfUpdate = now(getLocalTimeZone()).toString();
     const mpPaymentId = payment.id;
     const paymentUpdated = {
       payerId: payment.payer.id,
@@ -23,7 +23,7 @@ export class MpPaymentService implements MpPaymentServiceInterface {
       dateApproved: payment.date_approved,
       external_reference: payment.external_reference,
       status_detail: payment.status_detail,
-      dayOfUpdate: dayOfUpdate,
+      timeOfUpdate: timeOfUpdate,
       status: payment.status,
     };
     await this.mpPaymentRepository.updatePayment(paymentUpdated, mpPaymentId);
@@ -33,7 +33,7 @@ export class MpPaymentService implements MpPaymentServiceInterface {
       'Creating payment for suscription description: ' + payment.description,
     );
     this.logger.log('Creating payment with ID: ' + payment.id);
-    const dayOfUpdate = today(getLocalTimeZone()).toString();
+    const timeOfUpdate = now(getLocalTimeZone()).toString();
     if (payment && payment.payer) {
       const newPayment = new Payment(
         payment.id,
@@ -45,7 +45,7 @@ export class MpPaymentService implements MpPaymentServiceInterface {
         payment.date_approved,
         payment.external_reference,
         payment.status_detail,
-        dayOfUpdate,
+        timeOfUpdate,
         payment.status,
       );
       console.log(newPayment);
@@ -56,7 +56,6 @@ export class MpPaymentService implements MpPaymentServiceInterface {
     }
   }
   async findPaymentByPaymentID(id: string): Promise<Payment | null> {
-    this.logger.log('Find payment by payment ID: ' + id);
     try {
       const payment = await this.mpPaymentRepository.findPaymentByPaymentID(id);
       if (payment) this.logger.log(`Payment with id ${id} successfully found.`);

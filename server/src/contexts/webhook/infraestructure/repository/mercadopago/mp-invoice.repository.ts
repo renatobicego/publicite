@@ -39,6 +39,8 @@ export class MpInvoiceRepository
       'saving new Invoice in database Invoice ID: ' + invoice.getPaymentId(),
     );
     const newInvoice = new this.invoiceModel(invoice);
+    console.log(newInvoice);
+
     await newInvoice.save();
     this.logger.log(
       'the invoice payment ID: ' +

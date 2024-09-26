@@ -10,7 +10,7 @@ export const PaymentSchema = new Schema({
   dateApproved: { type: String, required: true },
   external_reference: { type: String, required: true },
   status_detail: { type: String, required: true },
-  dayOfUpdate: { type: String },
+  timeOfUpdate: { type: String },
   status: { type: String },
 });
 
@@ -24,6 +24,6 @@ export interface PaymentDocument extends Document {
   dateApproved: string;
   external_reference: string;
   status_detail: string;
-  dayOfUpdate: string;
+  timeOfUpdate: string;
   status: string;
 }

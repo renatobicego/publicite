@@ -5,7 +5,10 @@ import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
 import { UserServiceInterface } from '../../domain/service/user.service.interface';
 
 import { UserMapperInterface } from '../../application/adapter/mapper/user.mapper.interface';
-import { UserResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.response.dto';
+import {
+  UserFindAllResponse,
+  UserResponse,
+} from '../../application/adapter/dto/HTTP-RESPONSE/user.response.dto';
 import {
   UserPreferencesRequest,
   UserRequest,
@@ -25,6 +28,14 @@ export class UserAdapter implements UserAdapterInterface {
     @Inject('UserMapperInterface')
     private readonly userMapper: UserMapperInterface,
   ) {}
+  async findAllUsers(user: string): Promise<UserFindAllResponse[]> {
+    try {
+      const users: UserFindAllResponse[] = [];
+      return users;
+    } catch (error: any) {
+      throw error;
+    }
+  }
 
   async createUser(req: UserRequest): Promise<UserResponse> {
     let userMapped;
@@ -59,7 +70,6 @@ export class UserAdapter implements UserAdapterInterface {
         }
       }
     } catch (error: any) {
-      console.log(error);
       throw error;
     }
   }

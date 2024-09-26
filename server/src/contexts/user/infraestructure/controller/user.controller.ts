@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -229,5 +230,24 @@ export class UserController {
   @UseGuards(ClerkAuthGuard)
   async test_auth(): Promise<string> {
     return 'auth ok';
+  }
+
+  @Get()
+  @ApiOperation({ summary: 'Get all users of particular query' })
+  @ApiResponse({
+    status: 200,
+    description: "Data it's correct.",
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal server error.',
+  })
+  async getAllUsers(@Query('user') user: string): Promise<any> {
+    try {
+      const users = await this.userAdapter.findAllUsers(user);
+      return users;
+    } catch (error: any) {
+      throw error;
+    }
   }
 }

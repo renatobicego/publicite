@@ -1,4 +1,4 @@
-import { Contact } from 'src/contexts/contact/domain/entity/contact.entity';
+import { Contact } from './user.contact.response';
 
 export interface UserPersonalInformationResponse {
   birthDate?: string;

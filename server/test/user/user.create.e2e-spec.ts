@@ -24,14 +24,13 @@ Pendiente: Ver como arrojar disintos codigos de error para los casos.
 
 describe('Create a Personal account', () => {
   beforeEach(async () => {
-    if (dbConnection) {
-      // Limpiar la base de datos si es necesario
-      await dbConnection.collection('users').deleteMany({});
-    }
+    // Limpiar la base de datos si es necesario
+    await dbConnection.collection('users').deleteMany({});
   });
 
   afterAll(async () => {
     await dbConnection.close();
+    await app.close();
   });
 
   beforeAll(async () => {
@@ -185,7 +184,6 @@ describe('Create a Personal account', () => {
   });
 
   it('should throw an error if sector does not exist', async () => {
-    await dbConnection.collection('users').insertOne(userSubBusiness());
     const userBusinessDto: UserBusinessRequest = {
       clerkId: userSubBusiness().clerkId,
       email: userSubBusiness().email,

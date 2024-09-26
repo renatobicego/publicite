@@ -10,7 +10,7 @@ export default class Payment {
   private dateApproved: string;
   private external_reference: string;
   private status_detail: string;
-  private dayOfUpdate: string;
+  private timeOfUpdate: string;
   private status: string;
   private _id?: ObjectId;
 
@@ -24,7 +24,7 @@ export default class Payment {
     dateApproved: string,
     external_reference: string,
     status_detail: string,
-    dayOfUpdate: string,
+    timeOfUpdate: string,
     status: string,
     _id?: ObjectId,
   ) {
@@ -37,7 +37,7 @@ export default class Payment {
     this.dateApproved = dateApproved ?? ' ';
     this.external_reference = external_reference ?? ' ';
     this.status_detail = status_detail ?? ' ';
-    this.dayOfUpdate = dayOfUpdate ?? ' ';
+    this.timeOfUpdate = timeOfUpdate ?? ' ';
     this.status = status ?? ' ';
     this._id = _id;
   }
@@ -78,7 +78,7 @@ export default class Payment {
     return this.external_reference;
   }
   public getDayOfUpdate() {
-    return this.dayOfUpdate;
+    return this.timeOfUpdate;
   }
 
   public getStatusDetail(): string {
@@ -95,7 +95,7 @@ export default class Payment {
       doc.dateApproved,
       doc.external_reference,
       doc.status_detail,
-      doc.dayOfUpdate,
+      doc.timeOfUpdate,
       doc.status,
       doc._id ? doc._id : ' ',
     );

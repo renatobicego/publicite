@@ -18,9 +18,13 @@ describe('Create a Personal account', () => {
     httpServer = app.getHttpServer();
   });
 
+  afterAll(async () => {
+    await app.close();
+  });
+
   it('should error if user are not authorized', async () => {
     const response = await request(httpServer).get('/user/auth');
-    console.log(response.body);
+
     expect(response.status).toBe(403);
   });
 });
