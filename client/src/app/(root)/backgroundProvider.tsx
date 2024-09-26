@@ -20,11 +20,12 @@ export const useBackground = () => {
   return context;
 };
 
-export const BackgroundProvider = ({ children, username }: { children: ReactNode; username: string }) => {
+export const BackgroundProvider = ({ children, username }: { children: ReactNode; username?: string | null }) => {
   const [gradientValue, setGradientValue] = useState<number | number[]>(0);
 
   // Load background color from localStorage for the current user
   useEffect(() => {
+    if(!username) return
     const storedGradientValue = localStorage.getItem(`backgroundColor_${username}`);
     if (storedGradientValue) {
       setGradientValue(JSON.parse(storedGradientValue));

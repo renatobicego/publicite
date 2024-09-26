@@ -1,19 +1,18 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
-const isOnboardingRoute = createRouteMatcher(["/onboarding"]);
 const isPublicRoute = createRouteMatcher([
   "/iniciar-sesion(.*)",
   "/registrarse(.*)",
   "/",
   "/api/clerkWebhook",
   "/api/uploadThing",
+  "/anuncios(.*)",
+  "/favicon.ico",
 ]);
 
 export default clerkMiddleware((auth, req: NextRequest) => {
-
   const { userId, sessionClaims, redirectToSignIn } = auth();
-  // return NextResponse.next();
 
   // If the user isn't signed in and the route is private, redirect to sign-in
   if (!userId && !isPublicRoute(req)) {
@@ -35,6 +34,7 @@ export default clerkMiddleware((auth, req: NextRequest) => {
   if (userId && !isPublicRoute(req)) {
     return NextResponse.next();
   }
+  return NextResponse.next();
 });
 
 export const config = {

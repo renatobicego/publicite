@@ -5,7 +5,6 @@ import { parseDate } from "@internationalized/date";
 import ReviewsStars from "./ReviewsStars";
 import CategoryChip from "@/components/chips/CategoryChip";
 import ServiceChip from "@/components/chips/ServiceChip";
-import ContactModal from "@/components/modals/ContactModal";
 import ShareButton from "@/components/buttons/ShareButton";
 import SaveButton from "@/components/buttons/SaveButton";
 import AccordionData from "./AccordionData/AccordionData";
@@ -14,6 +13,8 @@ import { CREATE_POST } from "@/utils/data/urls";
 import { Link } from "@nextui-org/react";
 import ContactPetitionsList from "@/components/modals/ContactPetitionsList";
 import PetitionChip from "@/components/chips/PetitionChip";
+import ContactModal from "@/components/modals/ContactModal/ContactModal";
+import { SignedIn } from "@clerk/nextjs";
 
 const Data = async ({
   post,
@@ -70,7 +71,8 @@ const Data = async ({
         <div className="flex gap-2">
           <CategoryChip>{post.category.label}</CategoryChip>
           {post.postType === "petition" && <PetitionChip />}
-          {post.postType === "service" || petition.petitionType === "service" && <ServiceChip />}
+          {post.postType === "service" ||
+            (petition.petitionType === "service" && <ServiceChip />)}
         </div>
         <p className="text-sm xl:text-base">{post.description}</p>
         <div className="flex w-full justify-between max-lg:flex-wrap gap-2">
@@ -79,12 +81,14 @@ const Data = async ({
               Editar Anuncio
             </PrimaryButton>
           ) : (
-            <ContactModal post={post} />
+            <ContactModal postId={post._id} />
           )}
           <div className="flex gap-2">
             {isAuthor && <ContactPetitionsList post={post} />}
             <ShareButton post={post} />
-            <SaveButton saved={false} post={post} />
+            <SignedIn>
+              <SaveButton saved={false} post={post} />
+            </SignedIn>
           </div>
         </div>
       </div>

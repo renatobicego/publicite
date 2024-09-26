@@ -3,6 +3,7 @@ import { CardHeader, Image, Link } from "@nextui-org/react";
 import SaveButton from "../../buttons/SaveButton";
 import { POSTS } from "@/utils/data/urls";
 import { Good, Service } from "@/types/postTypes";
+import { SignedIn } from "@clerk/nextjs";
 
 const PostImage = ({
   post,
@@ -15,7 +16,11 @@ const PostImage = ({
 }) => {
   return (
     <CardHeader className="w-full pb-0 max-md:px-1 md:px-2 lg:px-3">
-      <Link href={`${POSTS}/${post._id}`} className="w-full" isDisabled={savePostMagazine}>
+      <Link
+        href={`${POSTS}/${post._id}`}
+        className="w-full"
+        isDisabled={savePostMagazine}
+      >
         <Image
           src={post.imagesUrls[0]}
           classNames={{
@@ -29,13 +34,15 @@ const PostImage = ({
           height={290}
         />
       </Link>
-      {!savePostMagazine && (
-        <SaveButton
-          post={post}
-          saved={false}
-          className="absolute top-4 right-2 md:right-4 z-10 max-md:min-w-8 max-md:size-8"
-        />
-      )}
+      <SignedIn>
+        {!savePostMagazine && (
+          <SaveButton
+            post={post}
+            saved={false}
+            className="absolute top-4 right-2 md:right-4 z-10 max-md:min-w-8 max-md:size-8"
+          />
+        )}
+      </SignedIn>
     </CardHeader>
   );
 };

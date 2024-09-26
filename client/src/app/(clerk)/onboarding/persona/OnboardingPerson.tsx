@@ -10,6 +10,7 @@ import { Divider } from "@nextui-org/react";
 import OnboardingPersonInputs from "./OnboardingPersonInputs";
 import { completeOnboardingPerson } from "../_actions";
 import { toastifyError } from "@/utils/functions/toastify";
+import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
 const OnboardingPerson = () => {
   const { user } = useUser();
   const router = useRouter();
@@ -44,7 +45,7 @@ const OnboardingPerson = () => {
     if (res?.message) {
       // Reloads the user's data from Clerk's API
       await user?.reload();
-      router.push("/");
+      router.replace("/");
     }
     if (res?.error) {
       toastifyError(res.error);
@@ -72,6 +73,7 @@ const OnboardingPerson = () => {
               setFieldValue={setFieldValue}
               initialValues={initialValues}
             />
+            <RequiredFieldsMsg />
             <PrimaryButton
               type="submit"
               isDisabled={isSubmitting}

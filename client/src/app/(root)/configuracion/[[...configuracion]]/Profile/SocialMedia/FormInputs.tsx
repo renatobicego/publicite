@@ -56,7 +56,7 @@ const FormInputs = ({ errors }: PersonalDataFormInputsProps) => {
         <Field
           as={CustomInput}
           name="phone"
-          label="whatsapp / Teléfono"
+          label="Whatsapp / Teléfono"
           isInvalid={!!errors.phone}
           errorMessage={errors.phone}
           aria-label="contacto"

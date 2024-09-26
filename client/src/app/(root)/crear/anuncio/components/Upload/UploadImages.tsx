@@ -19,7 +19,7 @@ const UploadImages = ({
   setFiles,
 }: UploadImagesProps) => {
   const maxImageSize = 4 * 1024 * 1024; // 4MB for images
-  const maxVideoSize = 32 * 1024 * 1024; // 30MB for videos
+  const maxVideoSize = 32 * 1024 * 1024; // 32MB for videos
   const maxTotalFiles = 10;
   const maxVideoFiles = 1;
 
@@ -52,14 +52,14 @@ const UploadImages = ({
 
         if (isImage && file.size > maxImageSize) {
           toastifyError(
-            `El archivo ${file.name} es demasiado grande. Las imágenes deben ser menores a 5MB.`
+            `El archivo ${file.name} es demasiado grande. Las imágenes deben ser menores a 4MB.`
           );
           return false;
         }
 
         if (allowVideos && isVideo && file.size > maxVideoSize) {
           toastifyError(
-            `El archivo ${file.name} es demasiado grande. Los videos deben ser menores a 25MB.`
+            `El archivo ${file.name} es demasiado grande. Los videos deben ser menores a 32MB.`
           );
           return false;
         }

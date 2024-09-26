@@ -27,7 +27,7 @@ const Inputs = ({
     <>
       <Field
         as={CustomInput}
-        name="nombre"
+        name="name"
         label="Nombre del grupo"
         placeholder="Agregue un nombre"
         isRequired
@@ -64,12 +64,14 @@ const Inputs = ({
           setFieldValue("members", e.target.value.split(","))
         }
         name={"members"}
+        label="Invitar Miembros"
         aria-label="invitar miembros"
         items={mockedUsers}
         isInvalid={!!errors.members}
         errorMessage={errors.members}
       />
       <Divider />
+      <h6>Visibilidad del Grupo</h6>
       <Field
         as={CustomSelect}
         items={visibilityItems}
@@ -78,8 +80,8 @@ const Inputs = ({
         getItemTextValue={(item: any) => item.label}
         getItemLabel={(item: any) => item.label}
         name="visibility"
-        label="Visibilidad del Grupo"
-        placeholder="¿Quién puede enviar la solicitud para unirse?"
+        label="¿Quién puede enviar la solicitud para unirse?"
+        placeholder="Seleccionar la visibilidad"
         aria-label="visibilidad del grupo"
         isInvalid={!!errors.visibility}
         errorMessage={errors.visibility}

@@ -17,7 +17,7 @@ const InviteUsersGroup = () => {
       <PrimaryButton onPress={onOpen} startContent={<FaPlus />}>
         Invitar Miembros
       </PrimaryButton>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal radius="lg" className="p-2"  isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
           {(onClose) => (
             <>
