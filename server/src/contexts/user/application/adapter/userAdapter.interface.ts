@@ -5,7 +5,10 @@ import { UserRequest } from './dto/HTTP-REQUEST/user.request.CREATE';
 import { UserBusinessUpdateResponse } from './dto/HTTP-RESPONSE/user.business.response.UPDATE';
 import { UserPersonalInformationResponse } from './dto/HTTP-RESPONSE/user.information.response';
 import { UserPersonalUpdateResponse } from './dto/HTTP-RESPONSE/user.personal.response.UPDATE';
-import { UserResponse } from './dto/HTTP-RESPONSE/user.response.dto';
+import {
+  UserFindAllResponse,
+  UserResponse,
+} from './dto/HTTP-RESPONSE/user.response.dto';
 
 export interface UserAdapterInterface {
   createUser(req: UserRequest): Promise<UserResponse>;
@@ -26,4 +29,6 @@ export interface UserAdapterInterface {
     username: string,
     userPreference: UserPreferenceResponse,
   ): Promise<UserPreferenceResponse | null>;
+
+  findAllUsers(user: string): Promise<UserFindAllResponse[]>;
 }

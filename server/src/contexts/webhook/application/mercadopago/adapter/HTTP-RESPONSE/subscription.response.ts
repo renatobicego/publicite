@@ -56,7 +56,7 @@ export class SubscriptionResponse {
     description: 'The day of the update',
     type: String,
   })
-  readonly dayOfUpdate: string;
+  readonly timeOfUpdate: string;
 
   constructor(
     _id: ObjectId | null,
@@ -67,7 +67,7 @@ export class SubscriptionResponse {
     startDate: string,
     endDate: string,
     external_reference: string,
-    dayOfUpdate: string,
+    timeOfUpdate: string,
   ) {
     this._id = _id;
     this.mpPreapprovalId = mpPreapprovalId;
@@ -77,6 +77,6 @@ export class SubscriptionResponse {
     this.startDate = startDate;
     this.endDate = endDate;
     this.external_reference = external_reference;
-    this.dayOfUpdate = dayOfUpdate;
+    this.timeOfUpdate = timeOfUpdate;
   }
 }

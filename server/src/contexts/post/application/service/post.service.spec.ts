@@ -121,8 +121,6 @@ describe('PostService', () => {
       expect(session.commitTransaction).toHaveBeenCalled();
       expect(session.endSession).toHaveBeenCalled();
     } catch (error) {
-      console.log('Error lanzado:', error);
-      console.log(error); // Para capturar y ver el error
       throw error; // Volver a lanzar el error para que Jest lo registre
     }
   });

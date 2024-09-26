@@ -5,7 +5,7 @@ import { SubscriptionServiceInterface } from 'src/contexts/webhook/domain/mercad
 import Subscription from 'src/contexts/webhook/domain/mercadopago/entity/subcription.entity';
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
 import { MercadoPagoSubscriptionPlanServiceInterface } from 'src/contexts/webhook/domain/mercadopago/service/mp-subscriptionPlan.service.interface';
-import { getLocalTimeZone, today } from '@internationalized/date';
+import { getLocalTimeZone, now } from '@internationalized/date';
 
 export class MpSubscriptionService implements SubscriptionServiceInterface {
   constructor(
@@ -66,7 +66,7 @@ export class MpSubscriptionService implements SubscriptionServiceInterface {
           plan.getDescription() +
           ' - Class: mpWebhookService',
       );
-      const dayOfUpdate = today(getLocalTimeZone()).toString();
+      const timeOfUpdate = now(getLocalTimeZone()).toString();
       const newUserSuscription = new Subscription(
         id, // ID de la suscripción
         payer_id, // id del payer
@@ -75,7 +75,7 @@ export class MpSubscriptionService implements SubscriptionServiceInterface {
         start_date, // fecha de inicio
         end_date, // fecha de fin
         external_reference, // identificador de usuario (Es el ID de clerk)
-        dayOfUpdate, // dia de actualización
+        timeOfUpdate, // dia de actualización
       );
       await this.subscriptionRepository.saveSubPreapproval(newUserSuscription);
     } catch (error: any) {
@@ -111,6 +111,7 @@ export class MpSubscriptionService implements SubscriptionServiceInterface {
     let { start_date, end_date } = auto_recurring;
     start_date = this.parseTimeX(start_date);
     end_date = this.parseTimeX(end_date);
+    const timeOfUpdate = now(getLocalTimeZone()).toString();
     const updateObject = {
       mpPreapprovalId: id,
       payerId: payer_id ?? '',
@@ -118,7 +119,7 @@ export class MpSubscriptionService implements SubscriptionServiceInterface {
       external_reference: external_reference,
       startDate: start_date,
       endDate: end_date,
-      dayOfUpdate: today(getLocalTimeZone()).toString(),
+      timeOfUpdate: timeOfUpdate,
     };
 
     switch (status) {

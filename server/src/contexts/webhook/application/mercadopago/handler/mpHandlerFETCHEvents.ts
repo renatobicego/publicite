@@ -261,9 +261,14 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
         return Promise.resolve(true);
       }
 
-      if (subscription_authorized_payment.retry_attempt == 1) {
+      if (
+        subscription_authorized_payment.status.toLowerCase() === 'rejected' ||
+        subscription_authorized_payment.status.toLowerCase() === 'cancelled' ||
+        subscription_authorized_payment.payment?.status.toLowerCase() ===
+          'rejected'
+      ) {
         this.logger.warn(
-          'Retry attempt is greater than 1, returning OK to Meli and pausing the suscription. Preapproval_id: ' +
+          'Status is rejected, returning OK to Meli and pausing the suscription. Preapproval_id: ' +
             subscription_authorized_payment.preapproval_id,
         );
         await this.mpWebhookService.fetchPauseSuscription(

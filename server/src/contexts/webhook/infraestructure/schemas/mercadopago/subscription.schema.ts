@@ -14,7 +14,7 @@ export const SubscriptionSchema = new Schema({
   startDate: { type: String, required: true },
   endDate: { type: String, required: true },
   external_reference: { type: String, required: true },
-  dayOfUpdate: { type: String },
+  timeOfUpdate: { type: String },
 });
 
 export interface SubscriptionDocument extends Document {
@@ -25,5 +25,5 @@ export interface SubscriptionDocument extends Document {
   startDate: string;
   endDate: string;
   external_reference: string;
-  dayOfUpdate: string;
+  timeOfUpdate: string;
 }

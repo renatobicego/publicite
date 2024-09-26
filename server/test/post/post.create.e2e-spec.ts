@@ -23,16 +23,14 @@ let httpServer: any;
 let app: any;
 
 describe('Create post suit test', () => {
-  beforeEach(async () => {
-    await dbConnection.collection('users').insertOne(userSub_id());
-  });
+  beforeEach(async () => {});
   afterEach(async () => {
     await dbConnection.collection('postLocations').deleteMany({});
     await dbConnection.collection('posts').deleteMany({});
-    await dbConnection.collection('users').deleteMany({});
   });
   afterAll(async () => {
     await dbConnection.close();
+    await app.close();
   });
 
   beforeAll(async () => {
@@ -48,6 +46,8 @@ describe('Create post suit test', () => {
       .get<DatabaseService>(DatabaseService)
       .getDBHandle();
     httpServer = app.getHttpServer();
+    await dbConnection.collection('users').deleteMany({});
+    await dbConnection.collection('users').insertOne(userSub_id());
   });
 
   it('should create a new post good and asociate it with a user', async () => {

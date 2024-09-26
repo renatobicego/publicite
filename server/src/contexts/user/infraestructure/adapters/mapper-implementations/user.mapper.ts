@@ -145,7 +145,6 @@ export class UserMapper implements UserMapperInterface {
         throw new Error('Invalid user type');
       }
     } catch (error: any) {
-      console.log(error);
       throw error;
     }
   }

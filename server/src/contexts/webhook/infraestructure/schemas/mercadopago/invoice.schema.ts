@@ -12,16 +12,18 @@ export const InvoiceSchema = new Schema({
     required: true,
   },
   status: { type: String, required: true },
+  paymentStatus: { type: String, required: true },
   preapprovalId: { type: String, required: true },
   external_reference: { type: String, required: true },
-  dateOfUpdate: { type: String },
+  timeOfUpdate: { type: String },
 });
 
 export interface InvoiceDocument extends Document {
   paymentId: Types.ObjectId;
   subscriptionId: Types.ObjectId;
   status: string;
+  paymentStatus: string;
   preapprovalId: string;
   external_reference: string;
-  dateOfUpdate: string;
+  timeOfUpdate: string;
 }

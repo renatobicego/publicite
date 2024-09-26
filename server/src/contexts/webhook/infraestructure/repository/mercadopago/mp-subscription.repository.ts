@@ -46,12 +46,12 @@ export class SubscriptionRepository implements SubscriptionRepositoryInterface {
       'If you need more information about this action, please check the ID ' +
         id,
     );
-    const dayOfUpdate = today(getLocalTimeZone()).toString();
+    const timeOfUpdate = today(getLocalTimeZone()).toString();
     const result = await this.subscriptionModel.findOneAndUpdate(
       { mpPreapprovalId: id },
       {
         status: 'cancelled',
-        dayOfUpdate: dayOfUpdate,
+        timeOfUpdate: timeOfUpdate,
       },
       { new: true },
     );
