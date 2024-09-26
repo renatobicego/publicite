@@ -14,6 +14,7 @@ import { UserPersonalUpdateDto } from '../../domain/entity/dto/user.personal.upd
 import { UserBusinessUpdateDto } from '../../domain/entity/dto/user.business.update.dto';
 import { UserPreferencesEntityDto } from '../../domain/entity/dto/user.preferences.update.dto';
 import { UP_clerkUpdateRequestDto } from 'src/contexts/webhook/application/clerk/dto/UP-clerk.update.request';
+import { UserFindAllResponse } from '../adapter/dto/HTTP-RESPONSE/user.response.dto';
 
 @Injectable()
 export class UserService implements UserServiceInterface {
@@ -25,23 +26,6 @@ export class UserService implements UserServiceInterface {
     private readonly logger: MyLoggerService,
     @InjectConnection() private readonly connection: Connection,
   ) {}
-  async updateUserPreferencesByUsername(
-    username: string,
-    userPreference: UserPreferencesEntityDto,
-  ): Promise<UserPreferencesEntityDto | null> {
-    try {
-      return await this.userRepository.updateUserPreferencesByUsername(
-        username,
-        userPreference,
-      );
-    } catch (error: any) {
-      this.logger.error(
-        'An error has occurred in user service - updateUserPreferencesByUsername: ' +
-          error,
-      );
-      throw error;
-    }
-  }
 
   async createUser(req: User, contactDto: any): Promise<User> {
     const session = await this.connection.startSession();
@@ -55,7 +39,7 @@ export class UserService implements UserServiceInterface {
         session,
       });
       req.setContact(contactId as unknown as ObjectId);
-      switch (req.getUserType?.toLocaleLowerCase()) {
+      switch (req.getUserType?.toLowerCase()) {
         case 'person':
           this.logger.log('We are creating a persona account');
           this.logger.log(
@@ -98,6 +82,17 @@ export class UserService implements UserServiceInterface {
     }
   }
 
+  async findAllUsers(
+    user: string,
+    limit: number,
+  ): Promise<UserFindAllResponse> {
+    try {
+      return await this.userRepository.findAllUsers(user, limit);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
   async getUserPersonalInformationByUsername(username: string): Promise<any> {
     try {
       const user =
@@ -119,6 +114,37 @@ export class UserService implements UserServiceInterface {
         await this.userRepository.getUserPreferencesByUsername(username);
       return userPreferences;
     } catch (error: any) {
+      throw error;
+    }
+  }
+
+  async saveNewPost(
+    postId: ObjectId,
+    authorId: ObjectId,
+    options?: { session?: ClientSession },
+  ): Promise<void> {
+    try {
+      this.logger.log('Creating post in the service: ' + UserService.name);
+      return await this.userRepository.saveNewPost(postId, authorId, options);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  async updateUserPreferencesByUsername(
+    username: string,
+    userPreference: UserPreferencesEntityDto,
+  ): Promise<UserPreferencesEntityDto | null> {
+    try {
+      return await this.userRepository.updateUserPreferencesByUsername(
+        username,
+        userPreference,
+      );
+    } catch (error: any) {
+      this.logger.error(
+        'An error has occurred in user service - updateUserPreferencesByUsername: ' +
+          error,
+      );
       throw error;
     }
   }
@@ -155,19 +181,6 @@ export class UserService implements UserServiceInterface {
         'An error has occurred in user service - UpdateUserByClerk: ' +
           error.message,
       );
-      throw error;
-    }
-  }
-
-  async saveNewPost(
-    postId: ObjectId,
-    authorId: ObjectId,
-    options?: { session?: ClientSession },
-  ): Promise<void> {
-    try {
-      this.logger.log('Creating post in the service: ' + UserService.name);
-      return await this.userRepository.saveNewPost(postId, authorId, options);
-    } catch (error: any) {
       throw error;
     }
   }

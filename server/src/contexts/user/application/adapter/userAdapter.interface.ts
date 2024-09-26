@@ -30,5 +30,5 @@ export interface UserAdapterInterface {
     userPreference: UserPreferenceResponse,
   ): Promise<UserPreferenceResponse | null>;
 
-  findAllUsers(user: string): Promise<UserFindAllResponse[]>;
+  findAllUsers(user: string, limit: number): Promise<UserFindAllResponse>;
 }

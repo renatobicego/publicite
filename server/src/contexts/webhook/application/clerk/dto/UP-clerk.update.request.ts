@@ -5,4 +5,5 @@ export interface UP_clerkUpdateRequestDto {
   username: string;
   profilePhotoUrl: string;
   email: string;
+  finder: string;
 }

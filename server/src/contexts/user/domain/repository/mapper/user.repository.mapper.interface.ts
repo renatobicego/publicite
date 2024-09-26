@@ -7,6 +7,7 @@ import { UserBusinessUpdateDto } from '../../entity/dto/user.business.update.dto
 import { UserPersonalUpdateDto } from '../../entity/dto/user.personal.update.dto';
 import { UserPreferencesEntityDto } from '../../entity/dto/user.preferences.update.dto';
 import { UserClerkUpdateDto } from '../../entity/dto/user.clerk.update.dto';
+import { UserFindAllResponse } from 'src/contexts/user/application/adapter/dto/HTTP-RESPONSE/user.response.dto';
 
 export interface UserRepositoryMapperInterface {
   //getBaseUserData(user: User): any;
@@ -22,4 +23,5 @@ export interface UserRepositoryMapperInterface {
     document: any,
     type: number,
   ): UserPersonalUpdateDto | UserBusinessUpdateDto;
+  documentToResponseAllUsers(document: any): UserFindAllResponse['user'][0];
 }

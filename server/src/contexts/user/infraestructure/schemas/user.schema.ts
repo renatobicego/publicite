@@ -25,6 +25,7 @@ interface IUser extends Document {
   userType: UserType;
   name: string;
   lastName: string;
+  finder: string;
   userPreferences: UserPreferences | null | undefined;
 }
 
@@ -49,6 +50,7 @@ const UserSchema = new Schema<IUser>(
     userType: { type: String, enum: Object.values(UserType), required: true },
     name: { type: String, required: true },
     lastName: { type: String, required: true },
+    finder: { type: String, required: true },
     userPreferences: {
       searchPreference: [{ type: Schema.Types.ObjectId, ref: 'PostCategory' }],
       backgroundColor: { type: Number, default: undefined },
@@ -56,6 +58,10 @@ const UserSchema = new Schema<IUser>(
   },
   { discriminatorKey: 'kind', collection: 'users' },
 );
+
+//Indices
+UserSchema.index({ name: 1 });
+UserSchema.index({ finder: 1 });
 
 const UserModel = model<IUser>('User', UserSchema);
 

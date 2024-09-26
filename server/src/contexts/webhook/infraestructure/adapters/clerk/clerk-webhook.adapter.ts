@@ -39,8 +39,7 @@ export class ClerkWebhookAdapter {
       throw new UnauthorizedException('Invalid webhook signature');
     }
 
-    return Promise.resolve();
-    //const userUpdated = await this.webhookService.processEvent(evt);
-    //return userUpdated;
+    const userUpdated = await this.webhookService.processEvent(evt);
+    return userUpdated;
   }
 }

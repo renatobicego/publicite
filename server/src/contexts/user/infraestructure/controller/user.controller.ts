@@ -9,7 +9,13 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
 import { UserAdapterInterface } from '../../application/adapter/userAdapter.interface';
 
@@ -39,6 +45,7 @@ import {
 import { businessAccountUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/user.business.request.UPDATE';
 import { UserPreferenceResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.preferences.response';
 import { UserPreferencesDto_SWAGGER } from './swagger/user.preferences.dto.swagger';
+import { UserFindAllResponseDto_SWAGGER } from './swagger/user.findAll.response.swagger';
 
 @ApiTags('Accounts')
 @Controller('user')
@@ -233,18 +240,34 @@ export class UserController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all users of particular query' })
+  @ApiOperation({ summary: 'Get all users by username, lastName or Name' })
   @ApiResponse({
     status: 200,
     description: "Data it's correct.",
+    type: [UserFindAllResponseDto_SWAGGER],
   })
   @ApiResponse({
     status: 500,
     description: 'Internal server error.',
   })
-  async getAllUsers(@Query('user') user: string): Promise<any> {
+  @ApiQuery({
+    name: 'user',
+    required: true,
+    type: String,
+    description: 'Name, lastName or username of the user',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: true,
+    type: Number,
+    description: 'Number of users to return',
+  })
+  async getAllUsers(
+    @Query('user') user: string,
+    @Query('limit') limit: number,
+  ): Promise<any> {
     try {
-      const users = await this.userAdapter.findAllUsers(user);
+      const users = await this.userAdapter.findAllUsers(user, limit);
       return users;
     } catch (error: any) {
       throw error;

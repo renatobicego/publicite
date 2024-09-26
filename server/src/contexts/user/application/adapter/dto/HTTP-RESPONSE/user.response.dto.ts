@@ -38,14 +38,17 @@ export interface UserBusinessResponse extends UserResponse {
 }
 
 export interface UserFindAllResponse {
-  _id: ObjectId;
-  clerkId: string;
-  profilePhotoUrl: string;
-  username: string;
-  contact: ContactRespose;
-  countryRegion: string;
-  userType: string;
-  businessName?: string;
-  lastName: string;
-  name: string;
+  user: {
+    // Cambié aquí a un arreglo
+    _id: ObjectId;
+    profilePhotoUrl: string;
+    username: string;
+    contact: ContactRespose; // Asegúrate de que la interfaz ContactResponse esté definida
+    countryRegion: string;
+    userType: string;
+    businessName?: string;
+    lastName: string;
+    name: string;
+  }[]; // Ahora es un arreglo de usuarios
+  hasMore?: boolean; // Indica si hay más usuarios
 }

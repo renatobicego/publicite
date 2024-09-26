@@ -21,6 +21,8 @@ import { UserPersonalUpdateDto } from '../../domain/entity/dto/user.personal.upd
 import { UserPreferencesEntityDto } from '../../domain/entity/dto/user.preferences.update.dto';
 import { UP_clerkUpdateRequestDto } from 'src/contexts/webhook/application/clerk/dto/UP-clerk.update.request';
 import { UserClerkUpdateDto } from '../../domain/entity/dto/user.clerk.update.dto';
+import { UserFindAllResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.response.dto';
+import { fullNameNormalization } from '../../application/functions/utils';
 
 @Injectable()
 export class UserRepository implements UserRepositoryInterface {
@@ -42,6 +44,43 @@ export class UserRepository implements UserRepositoryInterface {
 
     private readonly logger: MyLoggerService,
   ) {}
+
+  async findAllUsers(
+    user: string,
+    limit: number,
+  ): Promise<UserFindAllResponse> {
+    try {
+      const users = await this.user
+        .find({
+          $or: [
+            { finder: { $regex: user, $options: 'i' } },
+            { name: { $regex: user, $options: 'i' } },
+          ],
+        })
+        .limit(limit + 1)
+        .select(
+          'profilePhotoUrl username contact countryRegion userType businessName lastName name',
+        )
+        .populate('contact')
+        .lean();
+      console.log(users);
+
+      const hasMore = users.length > limit;
+
+      const userResponse = users
+        .slice(0, limit)
+        .map((user) =>
+          this.userRepositoryMapper.documentToResponseAllUsers(user),
+        );
+
+      return {
+        user: userResponse,
+        hasMore: hasMore,
+      };
+    } catch (error: any) {
+      throw error;
+    }
+  }
 
   async getUserPreferencesByUsername(
     username: string,
@@ -66,98 +105,6 @@ export class UserRepository implements UserRepositoryInterface {
       this.logger.error('An error occurred in repository', error);
       throw error;
     }
-  }
-
-  async save(reqUser: User, session?: ClientSession): Promise<User> {
-    try {
-      this.logger.log('Saving User in repository');
-      const documentToSave = {
-        clerkId: reqUser.getClerkId,
-        email: reqUser.getEmail,
-        username: reqUser.getUsername,
-        description: reqUser.getDescription,
-        profilePhotoUrl: reqUser.getProfilePhotoUrl,
-        countryRegion: reqUser.getCountryRegion,
-        name: reqUser.getName,
-        lastName: reqUser.getLastName,
-        isActive: reqUser.getIsActive,
-        contact: reqUser.getContact,
-        createdTime: reqUser.getCreatedTime,
-        subscriptions: reqUser.getSubscriptions,
-        groups: reqUser.getGroups,
-        magazines: reqUser.getMagazines,
-        board: reqUser.getBoard,
-        post: reqUser.getPost,
-        userRelations: reqUser.getUserRelations,
-        userType: reqUser.getUserType,
-        userPreferences: reqUser.getUserPreferences,
-      };
-
-      switch (reqUser.getUserType?.toLowerCase()) {
-        case 'person':
-          return await this.savePersonalAccount(
-            documentToSave,
-            reqUser as UserPerson,
-            {
-              session: session,
-            },
-          );
-        case 'business':
-          const cast = reqUser as UserBusiness;
-          this.logger.warn(
-            '--VALIDATING BUSINESS SECTOR ID: ' + cast.getSector,
-          );
-          await this.sectorRepository.validateSector(cast.getSector);
-          return await this.saveBusinessAccount(
-            documentToSave,
-            reqUser as UserBusiness,
-            {
-              session: session,
-            },
-          );
-        default:
-          throw new BadRequestException('Invalid user type');
-      }
-    } catch (error) {
-      this.logger.error('Error in save method', error);
-      throw error;
-    }
-  }
-
-  async savePersonalAccount(
-    baseObj: any,
-    user: UserPerson,
-    options?: { session?: ClientSession },
-  ): Promise<User> {
-    const newUser = {
-      ...baseObj,
-      gender: user.getGender,
-      birthDate: user.getBirthDate,
-    };
-    const userDocument = new this.userPersonModel(newUser);
-    const documentSaved = await userDocument.save(options);
-
-    const ret = this.userRepositoryMapper.documentToEntityMapped(documentSaved);
-    this.logger.log('Personal account created successfully: ' + ret.getId);
-    return ret;
-  }
-
-  async saveBusinessAccount(
-    baseObj: any,
-    user: UserBusiness,
-    options?: { session?: ClientSession },
-  ): Promise<User> {
-    const newUser = {
-      ...baseObj,
-      sector: user.getSector,
-      businessName: user.getBusinessName,
-    };
-    const userDocument = new this.userBusinessModel(newUser);
-    const documentSaved = await userDocument.save(options);
-
-    const ret = this.userRepositoryMapper.documentToEntityMapped(documentSaved);
-    this.logger.log('Business account created successfully: ' + ret.getId);
-    return ret;
   }
 
   async getUserPersonalInformationByUsername(
@@ -308,6 +255,108 @@ export class UserRepository implements UserRepositoryInterface {
       );
       throw error;
     }
+  }
+
+  async save(reqUser: User, session?: ClientSession): Promise<User> {
+    try {
+      this.logger.log('Saving User in repository');
+      let finder = '';
+      const documentToSave = {
+        clerkId: reqUser.getClerkId,
+        email: reqUser.getEmail,
+        username: reqUser.getUsername,
+        description: reqUser.getDescription,
+        profilePhotoUrl: reqUser.getProfilePhotoUrl,
+        countryRegion: reqUser.getCountryRegion,
+        name: reqUser.getName,
+        lastName: reqUser.getLastName,
+        finder: '',
+        isActive: reqUser.getIsActive,
+        contact: reqUser.getContact,
+        createdTime: reqUser.getCreatedTime,
+        subscriptions: reqUser.getSubscriptions,
+        groups: reqUser.getGroups,
+        magazines: reqUser.getMagazines,
+        board: reqUser.getBoard,
+        post: reqUser.getPost,
+        userRelations: reqUser.getUserRelations,
+        userType: reqUser.getUserType,
+        userPreferences: reqUser.getUserPreferences,
+      };
+
+      switch (reqUser.getUserType?.toLowerCase()) {
+        case 'person':
+          finder = fullNameNormalization(reqUser.getName, reqUser.getLastName);
+          documentToSave.finder = finder;
+          return await this.savePersonalAccount(
+            documentToSave,
+            reqUser as UserPerson,
+            {
+              session: session,
+            },
+          );
+        case 'business':
+          const cast = reqUser as UserBusiness;
+          this.logger.warn(
+            '--VALIDATING BUSINESS SECTOR ID: ' + cast.getSector,
+          );
+          await this.sectorRepository.validateSector(cast.getSector);
+          finder = fullNameNormalization(
+            cast.getName,
+            cast.getLastName,
+            cast.getBusinessName,
+          );
+          documentToSave.finder = finder;
+          return await this.saveBusinessAccount(
+            documentToSave,
+            reqUser as UserBusiness,
+            {
+              session: session,
+            },
+          );
+        default:
+          throw new BadRequestException('Invalid user type');
+      }
+    } catch (error) {
+      this.logger.error('Error in save method', error);
+      throw error;
+    }
+  }
+
+  async savePersonalAccount(
+    baseObj: any,
+    user: UserPerson,
+    options?: { session?: ClientSession },
+  ): Promise<User> {
+    const newUser = {
+      ...baseObj,
+      gender: user.getGender,
+      birthDate: user.getBirthDate,
+    };
+    const userDocument = new this.userPersonModel(newUser);
+    const documentSaved = await userDocument.save(options);
+
+    const ret = this.userRepositoryMapper.documentToEntityMapped(documentSaved);
+    this.logger.log('Personal account created successfully: ' + ret.getId);
+    return ret;
+  }
+
+  async saveBusinessAccount(
+    baseObj: any,
+    user: UserBusiness,
+    options?: { session?: ClientSession },
+  ): Promise<User> {
+    const newUser = {
+      ...baseObj,
+      sector: user.getSector,
+      businessName: user.getBusinessName,
+    };
+    const userDocument = new this.userBusinessModel(newUser);
+    const documentSaved = await userDocument.save(options);
+
+    const ret = this.userRepositoryMapper.documentToEntityMapped(documentSaved);
+    this.logger.log('Business account created successfully: ' + ret.getId);
+    return ret;
   }
 
   async saveNewPost(

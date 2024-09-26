@@ -28,14 +28,6 @@ export class UserAdapter implements UserAdapterInterface {
     @Inject('UserMapperInterface')
     private readonly userMapper: UserMapperInterface,
   ) {}
-  async findAllUsers(user: string): Promise<UserFindAllResponse[]> {
-    try {
-      const users: UserFindAllResponse[] = [];
-      return users;
-    } catch (error: any) {
-      throw error;
-    }
-  }
 
   async createUser(req: UserRequest): Promise<UserResponse> {
     let userMapped;
@@ -46,7 +38,7 @@ export class UserAdapter implements UserAdapterInterface {
     }
 
     try {
-      switch (req.userType.toLocaleLowerCase()) {
+      switch (req.userType.toLowerCase()) {
         case 'person': {
           this.logger.log('We are creating a persona account');
           userMapped = this.userMapper.requestToEntity(req);
@@ -69,6 +61,16 @@ export class UserAdapter implements UserAdapterInterface {
           throw new Error('Invalid user type');
         }
       }
+    } catch (error: any) {
+      throw error;
+    }
+  }
+  async findAllUsers(
+    user: string,
+    limit: number,
+  ): Promise<UserFindAllResponse> {
+    try {
+      return await this.userService.findAllUsers(user, limit);
     } catch (error: any) {
       throw error;
     }

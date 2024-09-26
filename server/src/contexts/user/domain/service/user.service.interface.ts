@@ -6,6 +6,7 @@ import { UserPersonalUpdateDto } from '../entity/dto/user.personal.update.dto';
 import { UserBusinessUpdateDto } from '../entity/dto/user.business.update.dto';
 import { UserPreferencesEntityDto } from '../entity/dto/user.preferences.update.dto';
 import { UP_clerkUpdateRequestDto } from 'src/contexts/webhook/application/clerk/dto/UP-clerk.update.request';
+import { UserFindAllResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.response.dto';
 
 export interface UserServiceInterface {
   createUser(req: User, contactDto: ContactRequest): Promise<User>;
@@ -14,6 +15,7 @@ export interface UserServiceInterface {
     options?: { session?: ClientSession },
   ): Promise<Types.ObjectId>;
 
+  findAllUsers(user: string, limit: number): Promise<UserFindAllResponse>;
   getUserPersonalInformationByUsername(username: string): Promise<any>;
   getUserPreferencesByUsername(
     username: string,

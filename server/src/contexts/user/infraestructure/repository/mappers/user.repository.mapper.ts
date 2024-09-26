@@ -15,9 +15,23 @@ import { UserPersonalUpdateDto } from 'src/contexts/user/domain/entity/dto/user.
 import { UserBusinessUpdateDto } from 'src/contexts/user/domain/entity/dto/user.business.update.dto';
 import { UserPreferencesEntityDto } from 'src/contexts/user/domain/entity/dto/user.preferences.update.dto';
 import { UserClerkUpdateDto } from 'src/contexts/user/domain/entity/dto/user.clerk.update.dto';
+import { UserFindAllResponse } from 'src/contexts/user/application/adapter/dto/HTTP-RESPONSE/user.response.dto';
 
 export class UserRepositoryMapper implements UserRepositoryMapperInterface {
   constructor() {}
+  documentToResponseAllUsers(document: any): UserFindAllResponse['user'][0] {
+    return {
+      _id: document._id,
+      profilePhotoUrl: document.profilePhotoUrl,
+      username: document.username,
+      contact: document.contact,
+      countryRegion: document.countryRegion,
+      userType: document.userType,
+      businessName: document.businessName,
+      lastName: document.lastName,
+      name: document.name,
+    };
+  }
   documentToEntityMapped_clerkUpdate(document: any): UserClerkUpdateDto {
     return new UserClerkUpdateDto({
       name: document.name,

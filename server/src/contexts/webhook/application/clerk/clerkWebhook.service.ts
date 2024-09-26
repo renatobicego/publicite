@@ -5,6 +5,7 @@ import { WebhookServiceInterface } from '../../domain/clerk/webhook-service.inte
 import { UP_clerkUpdateRequestDto } from './dto/UP-clerk.update.request';
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
 import { UserServiceInterface } from 'src/contexts/user/domain/service/user.service.interface';
+import { fullNameNormalization } from 'src/contexts/user/application/functions/utils';
 
 //import { User } from 'src/contexts/user/domain/entity/user.entity';
 /*
@@ -29,10 +30,10 @@ export class WebhookService implements WebhookServiceInterface {
       case 'user.updated':
         const UP_clerkRequestUpdate: UP_clerkUpdateRequestDto =
           this.processData(data);
-        // return await this.userService.updateUserByClerkId(
-        //   UP_clerkRequestUpdate,
-        // );
-        return Promise.resolve();
+        return await this.userService.updateUserByClerkId(
+          UP_clerkRequestUpdate,
+        );
+
       default:
         console.log('Unknown event type:', type);
         break;
@@ -43,6 +44,7 @@ export class WebhookService implements WebhookServiceInterface {
     const { first_name, last_name, username, image_url, email_addresses, id } =
       data;
     const email = email_addresses[0].email_address;
+    const finder = fullNameNormalization(first_name, last_name);
     const UP_clerkRequestUpdate: UP_clerkUpdateRequestDto = {
       clerkId: id,
       name: first_name,
@@ -50,6 +52,7 @@ export class WebhookService implements WebhookServiceInterface {
       username: username,
       profilePhotoUrl: image_url,
       email: email,
+      finder: finder,
     };
     return UP_clerkRequestUpdate;
   }
