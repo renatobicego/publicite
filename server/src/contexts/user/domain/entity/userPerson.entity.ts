@@ -27,7 +27,7 @@ export class UserPerson extends User {
       user.getSubscriptions ?? [],
       user.getGroups ?? [],
       user.getMagazines ?? [],
-      user.getBoard ?? [],
+      user.getBoard ?? undefined,
       user.getPost ?? [],
       user.getUserRelations ?? [],
       user.getUserType ?? UserType.Person,

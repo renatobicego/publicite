@@ -31,7 +31,7 @@ export interface PostServiceResponse extends PostResponse {
 }
 
 export interface PostPetitionResponse extends PostResponse {
-  toPrice: string;
+  toPrice: number;
   frequencyPrice: string;
   petitionType: string;
 }

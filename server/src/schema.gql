@@ -1,0 +1,77 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Contact {
+  _id: ID
+  phone: String
+  instagram: String
+  facebook: String
+  x: String
+  website: String
+}
+
+type PostLocation_Grapql_Model {
+  type: String!
+  coordinates: [Float!]!
+  userSetted: Boolean!
+  description: String!
+}
+
+type Visibility {
+  post: String
+  socialMedia: String
+}
+
+type AttachedFile {
+  url: String!
+  label: String!
+}
+
+type Post_Full_Graphql_Model {
+  _id: ID
+  title: String
+  postType: String
+  description: String
+  visibility: Visibility
+  price: Float
+  location: PostLocation_Grapql_Model
+  category: [String!]
+  comments: [String!]
+  attachedFiles: [AttachedFile!]
+  createAt: String
+  toPrice: Float
+  frequencyPrice: String
+  petitionType: String
+}
+
+type UserPreferences_Grapql_Model {
+  searchPreference: [ID!]
+  backgroundColor: Float
+}
+
+type User_Full_Grapql_Model {
+  _id: ID
+  clerkId: String
+  email: String
+  username: String
+  description: String
+  profilePhotoUrl: String
+  countryRegion: String
+  name: String
+  lastName: String
+  isActive: String
+  businessName: String
+  contact: Contact
+  createdTime: String
+  post: [Post_Full_Graphql_Model]
+  userType: String
+  userPreferences: UserPreferences_Grapql_Model
+}
+
+type Query {
+  hello: String!
+
+  """Obtiene un usuario por su nombre de usuario"""
+  findOneByUsername(username: String!): User_Full_Grapql_Model
+}

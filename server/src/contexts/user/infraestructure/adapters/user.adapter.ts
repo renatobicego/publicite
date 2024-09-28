@@ -42,6 +42,7 @@ export class UserAdapter implements UserAdapterInterface {
         case 'person': {
           this.logger.log('We are creating a persona account');
           userMapped = this.userMapper.requestToEntity(req);
+
           userCreated = await this.userService.createUser(
             userMapped,
             req?.contact,
@@ -71,6 +72,13 @@ export class UserAdapter implements UserAdapterInterface {
   ): Promise<UserFindAllResponse> {
     try {
       return await this.userService.findAllUsers(user, limit);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+  async findUserByUsername(username: string, keys: string[]): Promise<any> {
+    try {
+      return await this.userService.findUserByUsername(username, keys);
     } catch (error: any) {
       throw error;
     }

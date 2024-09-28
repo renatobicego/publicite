@@ -81,7 +81,7 @@ export const userSub_id = (): any => {
     subscriptions: [],
     groups: [],
     magazines: [],
-    board: [],
+    board: undefined,
     post: [],
     userRelations: [],
     userType: 'Person',

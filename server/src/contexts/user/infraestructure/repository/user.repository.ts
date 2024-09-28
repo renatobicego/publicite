@@ -45,6 +45,19 @@ export class UserRepository implements UserRepositoryInterface {
     private readonly logger: MyLoggerService,
   ) {}
 
+  async findUserByUsername(username: string, keys: string[]): Promise<any> {
+    try {
+      const keysString = keys.join(' ');
+      return await this.user
+        .findOne({ username })
+        .select(keysString)
+        .populate(keysString);
+    } catch (error: any) {
+      console.log(error);
+      throw error;
+    }
+  }
+
   async findAllUsers(
     user: string,
     limit: number,
@@ -334,6 +347,7 @@ export class UserRepository implements UserRepositoryInterface {
       birthDate: user.getBirthDate,
     };
     const userDocument = new this.userPersonModel(newUser);
+
     const documentSaved = await userDocument.save(options);
 
     const ret = this.userRepositoryMapper.documentToEntityMapped(documentSaved);
@@ -390,6 +404,23 @@ export class UserRepository implements UserRepositoryInterface {
         error,
       );
       throw error;
+    }
+  }
+
+  async saveBoard(
+    boardId: ObjectId,
+    userId: ObjectId,
+    options?: { session?: ClientSession },
+  ): Promise<void> {
+    this.logger.log(`Asignando el board al usuario: ${userId}`);
+    try {
+      await this.user.findOneAndUpdate(
+        { _id: userId },
+        { board: boardId },
+        options,
+      );
+    } catch (error) {
+      throw new Error(`Error al actualizar el usuario: ${error.message}`);
     }
   }
 }

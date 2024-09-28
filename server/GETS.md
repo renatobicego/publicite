@@ -1,42 +1,5 @@
 ﻿# Rutas GET
 
-### Usuario
-- `getUserProfileData`: Ruta que devuelva los datos personales del usuario **LISTA**
-- `getBusinessSector`: traer rubros de empresas **LISTA**
-- `getUserPreferences`: Devolver las userPreferences del usuario **LISTA**
-- `getUsers`: Debe devolver 50 usuarios aleatorios o los que coincidan con la búsqueda (en caso de que se haga una búsqueda). La búsqueda va a existir si envio una searchQuery, o sea voy a enviar una query param opcional que va a ser el nombre, apellido o usuario y se debería devolver usuarios que cumplan con la query (por ejemplo la ruta sería `users?search=acá%20la%20busqueda`). La respuesta debe ser una array con los siguientes datos (doy como ejemplo si es Business o si es Person: 
-```json
-[
-	{
-		_id:  "1k2",
-		profilePhotoUrl:  "/avatar.png",
-		username:  "username",
-		contact: {
-			_id:  "12qdas1",
-			phone:  "phone",
-			...todasLasRedesSocialesQueTenga
-		},
-		countryRegion:  "Córdoba, Argentina",
-		userType:  "Business",
-		businessName:  "Nombre de Empresa",
-	},
-	{
-		_id:  "2k3",
-		profilePhotoUrl:  "/avatar.png",
-		username:  "username",
-		contact: {
-		_id:  "12daf1",
-		phone:  "phone",
-		instagram:  "instagram",
-		facebook:  "facebook",
-		},
-		lastName:  "Bicego",
-		name:  "Renato",
-		countryRegion:  "Mendoza, Argentina",
-		userType:  "Person",
-	}
-]
-```
 - `getUserByUsername`: Devolver datos del usuario por su username. Los datos a devolver son:
 ```json
 export  const  mockedCompleteUser:  GetUser  = {

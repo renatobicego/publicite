@@ -19,7 +19,7 @@ interface IUser extends Document {
   accountType: Schema.Types.ObjectId;
   groups: Schema.Types.ObjectId[];
   magazines: Schema.Types.ObjectId[];
-  board: Schema.Types.ObjectId[];
+  board: Schema.Types.ObjectId | undefined;
   post: Schema.Types.ObjectId[];
   userRelations: Schema.Types.ObjectId[];
   userType: UserType;
@@ -44,7 +44,7 @@ const UserSchema = new Schema<IUser>(
     accountType: { type: Schema.Types.ObjectId, ref: 'AccountType' },
     groups: [{ type: Schema.Types.ObjectId, ref: 'Group' }],
     magazines: [{ type: Schema.Types.ObjectId, ref: 'Magazine' }],
-    board: [{ type: Schema.Types.ObjectId, ref: 'Board' }],
+    board: { type: Schema.Types.ObjectId, ref: 'Board', default: undefined },
     post: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
     userRelations: [{ type: Schema.Types.ObjectId, ref: 'UserRelation' }],
     userType: { type: String, enum: Object.values(UserType), required: true },
@@ -56,7 +56,7 @@ const UserSchema = new Schema<IUser>(
       backgroundColor: { type: Number, default: undefined },
     },
   },
-  { discriminatorKey: 'kind', collection: 'users' },
+  { discriminatorKey: 'userType', collection: 'users' },
 );
 
 //Indices

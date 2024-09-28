@@ -15,6 +15,7 @@ import { UserBusinessUpdateDto } from '../../domain/entity/dto/user.business.upd
 import { UserPreferencesEntityDto } from '../../domain/entity/dto/user.preferences.update.dto';
 import { UP_clerkUpdateRequestDto } from 'src/contexts/webhook/application/clerk/dto/UP-clerk.update.request';
 import { UserFindAllResponse } from '../adapter/dto/HTTP-RESPONSE/user.response.dto';
+import { error } from 'console';
 
 @Injectable()
 export class UserService implements UserServiceInterface {
@@ -93,6 +94,14 @@ export class UserService implements UserServiceInterface {
     }
   }
 
+  async findUserByUsername(username: string, keys: string[]): Promise<any> {
+    try {
+      return await this.userRepository.findUserByUsername(username, keys);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
   async getUserPersonalInformationByUsername(username: string): Promise<any> {
     try {
       const user =
@@ -126,6 +135,19 @@ export class UserService implements UserServiceInterface {
     try {
       this.logger.log('Creating post in the service: ' + UserService.name);
       return await this.userRepository.saveNewPost(postId, authorId, options);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  async saveBoard(
+    boardId: ObjectId,
+    authorId: ObjectId,
+    options?: { session?: ClientSession },
+  ): Promise<void> {
+    this.logger.log('Creating board in the user: ' + UserService.name);
+    try {
+      return await this.userRepository.saveBoard(boardId, authorId, options);
     } catch (error: any) {
       throw error;
     }

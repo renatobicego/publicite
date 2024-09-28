@@ -12,7 +12,7 @@ const UserBusinessSchema = new Schema<IUserBusiness>({
 });
 
 const UserBusinessModel = UserModel.discriminator<IUserBusiness>(
-  'UserBusiness',
+  'Business',
   UserBusinessSchema,
 );
 

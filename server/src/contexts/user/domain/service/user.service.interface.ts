@@ -16,6 +16,7 @@ export interface UserServiceInterface {
   ): Promise<Types.ObjectId>;
 
   findAllUsers(user: string, limit: number): Promise<UserFindAllResponse>;
+  findUserByUsername(username: string, keys: string[]): Promise<any>;
   getUserPersonalInformationByUsername(username: string): Promise<any>;
   getUserPreferencesByUsername(
     username: string,
@@ -34,6 +35,12 @@ export interface UserServiceInterface {
 
   saveNewPost(
     postId: ObjectId,
+    authorId: ObjectId,
+    options?: { session?: ClientSession },
+  ): Promise<void>;
+
+  saveBoard(
+    boardId: ObjectId,
     authorId: ObjectId,
     options?: { session?: ClientSession },
   ): Promise<void>;

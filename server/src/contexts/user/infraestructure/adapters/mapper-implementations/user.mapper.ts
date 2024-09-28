@@ -58,6 +58,7 @@ export class UserMapper implements UserMapperInterface {
       request.userType,
       request.userPreferences,
     );
+
     switch (request.userType.toLocaleLowerCase()) {
       case 'person': {
         return new UserPerson(userBase, request.gender, request.birthDate);
@@ -86,7 +87,7 @@ export class UserMapper implements UserMapperInterface {
       subscriptions: entity.getSubscriptions as [],
       groups: entity.getGroups as [],
       magazines: entity.getMagazines as [],
-      board: entity.getBoard as [],
+      board: entity.getBoard as any,
       post: entity.getPost as [],
       userRelations: entity.getUserRelations as [],
       userType: entity.getUserType as any,

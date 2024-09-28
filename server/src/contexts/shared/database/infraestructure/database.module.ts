@@ -6,7 +6,7 @@ import { DatabaseService } from './database.service';
 @Global()
 @Module({
   imports: [
-    ConfigModule.forRoot(), //Cargamos las variables de entorno
+    //ConfigModule.forRoot(), //Cargamos las variables de entorno
 
     //Iniciamos la config de la BD
     MongooseModule.forRootAsync({

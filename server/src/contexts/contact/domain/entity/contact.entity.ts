@@ -1,8 +1,19 @@
+import { ObjectId } from 'mongoose';
+import { Field, ObjectType, ID } from '@nestjs/graphql';
+
+@ObjectType()
 export class Contact {
+  @Field(() => ID, { nullable: true })
+  private _id?: ObjectId;
+  @Field(() => String, { nullable: true })
   private phone: string;
+  @Field(() => String, { nullable: true })
   private instagram: string;
+  @Field(() => String, { nullable: true })
   private facebook: string;
+  @Field(() => String, { nullable: true })
   private x: string;
+  @Field(() => String, { nullable: true })
   private website: string;
 
   constructor(

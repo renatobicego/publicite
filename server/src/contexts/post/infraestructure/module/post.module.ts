@@ -38,9 +38,6 @@ import { PostPetitionModel } from '../schemas/post-types-schemas/post.petition.s
   controllers: [PostController],
   providers: [
     MyLoggerService,
-    PostService,
-    PostRepository,
-
     {
       provide: 'PostRepositoryMapperInterface',
       useClass: PostRepositoryMapper,

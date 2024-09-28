@@ -13,7 +13,7 @@ const UserPersonSchema = new Schema<IUserPerson>({
 });
 
 const UserPersonModel = UserModel.discriminator<IUserPerson>(
-  'UserPerson',
+  'Person',
   UserPersonSchema,
 );
 

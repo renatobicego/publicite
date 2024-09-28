@@ -22,7 +22,7 @@ export class User {
   private subscriptions?: ObjectId[];
   private groups?: ObjectId[];
   private magazines?: ObjectId[];
-  private board?: ObjectId[];
+  private board?: ObjectId | undefined;
   private post?: ObjectId[];
   private userRelations?: ObjectId[];
   private userType?: UserType;
@@ -43,7 +43,7 @@ export class User {
     subscriptions?: ObjectId[],
     groups?: ObjectId[],
     magazines?: ObjectId[],
-    board?: ObjectId[],
+    board?: ObjectId | undefined,
     post?: ObjectId[],
     userRelations?: ObjectId[],
     userType?: UserType,
@@ -64,7 +64,7 @@ export class User {
     this.subscriptions = subscriptions ?? [];
     this.groups = groups ?? [];
     this.magazines = magazines ?? [];
-    this.board = board ?? [];
+    this.board = board ?? undefined;
     this.post = post ?? [];
     this.userRelations = userRelations ?? [];
     this.userType = userType ?? UserType.Person;

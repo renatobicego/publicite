@@ -4,13 +4,13 @@ import { frequencyPrice } from 'src/contexts/post/domain/entity/enum/post-servic
 import { petitionType } from 'src/contexts/post/domain/entity/enum/post-petition-type.enum';
 
 interface IPostPetition extends PostDocument {
-  toPrice: string;
+  toPrice: number;
   frequencyPrice: string;
   petitionType: string;
 }
 // El esquema del discriminador para PostGood
 const PostPetitionSchema = new Schema<IPostPetition>({
-  toPrice: { type: String, required: true },
+  toPrice: { type: Number, required: true },
   frequencyPrice: {
     type: String,
     enum: Object.values(frequencyPrice),

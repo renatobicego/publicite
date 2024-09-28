@@ -15,6 +15,7 @@ import { SectorModule } from 'src/contexts/businessSector/infraestructure/module
 import { UserMapper } from '../adapters/mapper-implementations/user.mapper';
 import { UserRepositoryMapper } from '../repository/mappers/user.repository.mapper';
 import { UserAdapter } from '../adapters/user.adapter';
+import { UserResolver } from '../graphql/resolver/user.resolver';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { UserAdapter } from '../adapters/user.adapter';
   controllers: [UserController],
   providers: [
     MyLoggerService,
+    UserResolver,
     {
       provide: 'UserAdapterInterface',
       useClass: UserAdapter,
@@ -63,6 +65,6 @@ import { UserAdapter } from '../adapters/user.adapter';
     },
     UserService,
   ],
-  exports: ['UserServiceInterface'],
+  exports: ['UserServiceInterface', 'UserRepositoryInterface'],
 })
 export class UserModule {}

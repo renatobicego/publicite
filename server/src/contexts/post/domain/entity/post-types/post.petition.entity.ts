@@ -1,14 +1,14 @@
 import { Post } from '../post.entity';
 
 export class PostPetition extends Post {
-  private toPrice: string;
+  private toPrice: number;
   private frequencyPrice: string;
   private petitionType: string;
 
   constructor(
     post: Post,
     //Good atributes
-    toPrice: string,
+    toPrice: number,
     frequencyPrice: string,
     petitionType: string,
   ) {
