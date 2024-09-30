@@ -1,5 +1,6 @@
 import { Field, ObjectType, ID, Float } from '@nestjs/graphql';
 import { ObjectId } from 'mongoose';
+import { Board } from 'src/contexts/board/domain/entity/board.entity';
 import { Contact } from 'src/contexts/contact/domain/entity/contact.entity';
 import { Post_Full_Graphql_Model } from 'src/contexts/post/domain/entity/models_graphql/post.full.grapql.model';
 
@@ -61,8 +62,8 @@ export class User_Full_Grapql_Model {
   // @Field(() => [ID], { nullable: 'itemsAndList' })
   // magazines?: ObjectId[];
 
-  // @Field(() => [ID], { nullable: 'itemsAndList' })
-  // board?: ObjectId[];
+  @Field(() => Board, { nullable: true })
+  board?: Board;
 
   @Field(() => [Post_Full_Graphql_Model], { nullable: 'itemsAndList' })
   post?: Post_Full_Graphql_Model;

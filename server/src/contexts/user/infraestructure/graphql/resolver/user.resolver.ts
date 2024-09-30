@@ -21,12 +21,6 @@ export class UserResolver {
     private readonly userAdapter: UserAdapterInterface,
   ) {}
 
-  @Query(() => String)
-  hello() {
-    console.log('hello');
-    return 'hello';
-  }
-
   @Query(() => User_Full_Grapql_Model, {
     nullable: true,
     description: 'Obtiene un usuario por su nombre de usuario',

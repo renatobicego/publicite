@@ -11,6 +11,15 @@ type Contact {
   website: String
 }
 
+type Board {
+  _id: ID
+  annotations: [String!]
+  visibility: String
+  user: String
+  color: String
+  keywords: [String!]
+}
+
 type PostLocation_Grapql_Model {
   type: String!
   coordinates: [Float!]!
@@ -64,14 +73,13 @@ type User_Full_Grapql_Model {
   businessName: String
   contact: Contact
   createdTime: String
+  board: Board
   post: [Post_Full_Graphql_Model]
   userType: String
   userPreferences: UserPreferences_Grapql_Model
 }
 
 type Query {
-  hello: String!
-
   """Obtiene un usuario por su nombre de usuario"""
   findOneByUsername(username: String!): User_Full_Grapql_Model
 }
