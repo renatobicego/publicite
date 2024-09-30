@@ -9,6 +9,14 @@ const config: Config = withUt({
     "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}"
 
   ],
+  safelist: [
+    '!text-white',
+    'bg-[#D8FFC6]', 
+    'bg-[#20A4F3]/30', 
+    'bg-[#FFF275]/80', 
+    'bg-[#FFB238]/80', 
+    'bg-[#5A0001]/80',
+  ],
   theme: {
     extend: {
       backgroundImage: {

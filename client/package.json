@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@apollo/client": "^3.11.0-rc.2",
+    "@apollo/experimental-nextjs-app-support": "^0.11.3",
     "@clerk/localizations": "^2.5.7",
     "@clerk/nextjs": "^5.5.3",
     "@googlemaps/markerclusterer": "^2.5.3",
@@ -25,6 +27,7 @@
     "axios": "^1.7.4",
     "formik": "^2.4.6",
     "framer-motion": "^11.3.24",
+    "graphql-tag": "^2.12.6",
     "mercadopago": "^2.0.11",
     "next": "14.2.5",
     "next-nprogress-bar": "^2.3.13",

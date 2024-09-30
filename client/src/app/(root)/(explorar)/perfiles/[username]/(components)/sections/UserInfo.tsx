@@ -19,7 +19,7 @@ import {
 import { TbWorldPin } from "react-icons/tb";
 import OptionsDropdown from "../OptionsDropdown";
 
-const UserInfo = ({ user }: { user: GetUser }) => {
+const UserInfo = ({ user, isMyProfile }: { user: GetUser; isMyProfile: boolean }) => {
   const { userType } = user;
   const business = user as UserBusiness;
   return (
@@ -29,7 +29,7 @@ const UserInfo = ({ user }: { user: GetUser }) => {
         alt={`foto de perfil de ${user.username}`}
         className="rounded-full "
         classNames={{
-          img: "object-cover w-full !h-24 md:!h-32 xl:!h-52",
+          img: "object-cover w-full !h-24 md:!h-32 xl:!h-52 border",
           wrapper: "!min-w-24 w-24 md:!min-w-32 md:!w-32 xl:!w-52 xl:!min-w-52"
         }}
       />
@@ -40,12 +40,12 @@ const UserInfo = ({ user }: { user: GetUser }) => {
             : `${user.name} ${user.lastName}`}
         </h2>
         <h6>@{user.username}</h6>
-        <p className="text-sm lg:text-base">{user.description}</p>
+        {user.description && <p className="text-sm lg:text-base">{user.description}</p>}
         <div className="flex items-center gap-1">
           <TbWorldPin className="size-4 min-w-4" />
           <p className="text-xs md:text-sm">{user.countryRegion}</p>
         </div>
-        <SocialMedia contact={user.contact} />
+        {user.contact && <SocialMedia contact={user.contact} />}
         <div className="flex gap-2 items-center">
           <SendRequest variant="solid" removeMargin={false} />
           <OptionsDropdown username={user.username} />

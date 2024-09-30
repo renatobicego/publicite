@@ -47,7 +47,7 @@ const OnboardingPersonInputs = ({
       <Field
         as={CustomInput}
         name="contact.phone"
-        label="Teléfono (opcional)"
+        label="Teléfono"
         aria-label="telefono"
         isInvalid={!!errors.contact?.phone}
         type="tel"

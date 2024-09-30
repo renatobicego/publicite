@@ -1,9 +1,7 @@
-import { Button } from "@nextui-org/react";
 import DataBox from "../DataBox";
-import { FaColonSign } from "react-icons/fa6";
 import { useState } from "react";
 import Board from "@/components/Board/Board";
-import { boardColors } from "@/utils/data/selectData";
+import BoardColor from "@/components/Board/inputs/BoardColor";
 
 const BoardPersonalization = () => {
   const [colorSelected, setColorSelected] = useState("bg-fondo");
@@ -11,22 +9,7 @@ const BoardPersonalization = () => {
   return (
     <DataBox labelText="Personalizar Pizarra" className="!items-start mt-2.5" labelClassname="mt-1">
       <div className="flex-1 flex flex-col gap-4">
-        <div className="flex gap-1">
-          {boardColors.map((color: string) => (
-            <Button
-              key={color}
-              variant="bordered"
-              isIconOnly
-              size="sm"
-              onPress={() => setColorSelected(color)}
-              className={`${color} ${
-                colorSelected === color ? "border-secondary" : ""
-              }`}
-            >
-              <FaColonSign className="size-[0.01px]" />
-            </Button>
-          ))}
-        </div>
+        <BoardColor colorSelected={colorSelected} setColorSelected={setColorSelected} />
         <Board
           bg={colorSelected}
           isMyBoard

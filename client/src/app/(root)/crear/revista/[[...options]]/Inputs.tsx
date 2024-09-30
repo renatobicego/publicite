@@ -53,7 +53,7 @@ const Inputs = ({
           <Field
             as={CustomSelect}
             items={visibilityItems}
-            allowEmptySelection={false}
+            disallowEmptySelection
             getItemValue={(item: any) => item.value}
             getItemTextValue={(item: any) => item.label}
             getItemLabel={(item: any) => item.label}

@@ -38,14 +38,14 @@ export const CustomInputWithoutFormik: React.FC<InputProps> = (props) => {
   return (
     <Input
       variant="bordered"
-      classNames={{
-        inputWrapper: "shadow-none hover:shadow-sm border-[0.5px] group-data-[focus=true]:border-light-text py-1",
-        input: "text-[0.8125rem]",
-        label: "font-medium text-[0.8125rem]",
-      }}
       labelPlacement="outside"
       radius="full"
       {...props}
+      classNames={{
+        inputWrapper: "shadow-none hover:shadow-sm border-[0.5px] group-data-[focus=true]:border-light-text py-1",
+        input: "text-[0.8125rem]",
+        label: `font-medium text-[0.8125rem] ${props.classNames?.label}`,
+      }}
     />
   );
 };
@@ -100,6 +100,7 @@ interface CustomSelectProps<T> extends FieldInputProps<any> {
   getItemValue: (item: T) => string;
   getItemTextValue?: (item: T) => string;
   renderItem?: (item: T) => React.ReactNode; // New prop for custom rendering
+  textColor?: string
 }
 
 export const CustomSelect = <T extends unknown>({
@@ -118,8 +119,8 @@ export const CustomSelect = <T extends unknown>({
       }}
       classNames={{
         trigger: "shadow-none hover:shadow-sm border-[0.5px] group-data-[focus=true]:border-light-text py-1",
-        value: "text-[0.8125rem]",
-        label: "font-medium text-[0.8125rem]",
+        value: `text-[0.8125rem] ${props.textColor}`,
+        label: `font-medium text-[0.8125rem] ${props.textColor}`,
       }}
       radius="full"
       variant="bordered"

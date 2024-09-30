@@ -7,6 +7,8 @@ import {
 import { currentUser } from "@clerk/nextjs/server";
 import axios from "axios";
 import { mockedCompleteUser, mockedUsers } from "../utils/data/mockedData";
+import { getClient } from "@/lib/client";
+import getUserByUsernameQuery from "@/graphql/userQueries";
 
 const baseUrl = `${process.env.API_URL}/user/personal`;
 
@@ -52,7 +54,7 @@ export const changeUserPreferences = async (
     }
     return data;
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return {
       error: "Error al cambiar las preferencias. Por favor intenta de nuevo.",
     };
@@ -75,7 +77,7 @@ export const getUserPreferences = async (username: string) => {
 export const getUsers = async (searchTerm: string | null) => {
   try {
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    return mockedUsers
+    return mockedUsers;
   } catch (error) {
     return {
       error: "Error al traer las preferencias. Por favor intenta de nuevo.",
@@ -85,14 +87,17 @@ export const getUsers = async (searchTerm: string | null) => {
 
 export const getUserByUsername = async (username: string) => {
   try {
-    // const res = await fetch(
-    //   `${process.env.API_URL}/user/personal-data/${username}`
-    // );
-    // return await res.json();
-    return mockedCompleteUser
+    const { data } = await getClient().query({
+      query: getUserByUsernameQuery,
+      variables: { username },
+    });
+    // console.log(data)
+
+    return {...data.findOneByUsername, posts: data.findOneByUsername.post};
   } catch (error) {
     return {
-      error: "Error al traer los datos del usuario. Por favor intenta de nuevo.",
+      error:
+        "Error al traer los datos del usuario. Por favor intenta de nuevo.",
     };
   }
 };
