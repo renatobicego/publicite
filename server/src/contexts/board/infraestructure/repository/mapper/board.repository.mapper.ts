@@ -8,6 +8,7 @@ export class BoardRepositoryMapper implements BoardRepositoryMapperInterface {
       document.visibility,
       document.user,
       document.color,
+      document.keywords,
       document._id,
     );
   }

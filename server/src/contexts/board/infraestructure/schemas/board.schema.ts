@@ -5,6 +5,7 @@ export const BoardSchema = new Schema({
   visibility: { type: String },
   user: { type: Schema.Types.ObjectId, ref: 'User' },
   color: { type: String },
+  keywords: [{ type: String }],
 });
 
 export interface BoardDocument extends Document {
@@ -12,4 +13,5 @@ export interface BoardDocument extends Document {
   visibility: string;
   user: Schema.Types.ObjectId;
   color: string;
+  keywords: string[];
 }

@@ -22,37 +22,29 @@ export class BoardService implements BoardServiceInterface {
     const session: ClientSession = await this.connection.startSession();
 
     try {
-      // Iniciar la transacción
       session.startTransaction();
 
-      // 1. Convertir el request en la entidad board
       const boardMapper = this.boardMapper.requestToEntitiy(boardRequest);
 
-      // 2. Guardar el board en la base de datos dentro de la transacción
       const boardSaved = await this.boardRepository.save(boardMapper, {
         session,
       });
 
-      // 3. Actualizar el user con el nuevo board dentro de la transacción
       await this.userService.saveBoard(
         boardSaved.getId as ObjectId,
         boardSaved.getUser as ObjectId,
         { session },
       );
 
-      // 4. Confirmar la transacción si ambas operaciones tuvieron éxito
       await session.commitTransaction();
 
-      // 5. Devolver la respuesta mapeada
       return this.boardMapper.entityToResponse(boardSaved);
     } catch (error) {
-      // Si ocurre un error, revertir los cambios
       await session.abortTransaction();
       throw new Error(
         `Error al guardar el board y actualizar el user: ${error.message}`,
       );
     } finally {
-      // Asegurarse de que la sesión siempre se cierre
       await session.endSession();
     }
   }

@@ -6,4 +6,5 @@ export interface BoardResponse {
   visibility: string;
   user: ObjectId;
   color: string;
+  keywords: string[];
 }

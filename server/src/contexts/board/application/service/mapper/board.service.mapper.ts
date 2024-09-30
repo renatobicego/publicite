@@ -5,11 +5,15 @@ import { BoardResponse } from '../../dto/HTTP-RESPONSE/board.response';
 
 export class BoardServiceMapper implements BoardMapperServiceInterface {
   requestToEntitiy(boardRequest: BoardRequest): Board {
+    if (!boardRequest.user) {
+      throw new Error('user is required');
+    }
     return new Board(
       boardRequest.annotations,
       boardRequest.visibility,
       boardRequest.user,
       boardRequest.color,
+      boardRequest.keywords,
     );
   }
   entityToResponse(board: Board): BoardResponse {
@@ -19,6 +23,7 @@ export class BoardServiceMapper implements BoardMapperServiceInterface {
       visibility: board.getVisibility,
       user: board.getUser,
       color: board.getColor,
+      keywords: board.getkeywords,
     };
     return boardresponse;
   }

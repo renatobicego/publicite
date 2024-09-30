@@ -5,4 +5,5 @@ export interface BoardRequest {
   visibility: string;
   user: ObjectId;
   color: string;
+  keywords: string[];
 }

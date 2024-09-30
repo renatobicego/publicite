@@ -18,22 +18,31 @@ export class Board {
   @Field(() => String, { nullable: true })
   private color: string;
 
+  @Field(() => [String], { nullable: true })
+  private keywords: string[];
+
   constructor(
     annotations: string[],
     visibility: string,
     user: ObjectId,
     color: string,
+    keywords: string[],
     id?: ObjectId,
   ) {
     this.annotations = annotations;
     this.visibility = visibility;
     this.user = user;
-    this.color = color;
+    this.color = color ?? '';
+    this.keywords = keywords;
     this._id = id;
   }
 
   get getId() {
     return this._id;
+  }
+
+  get getkeywords() {
+    return this.keywords;
   }
 
   get getAnnotations() {

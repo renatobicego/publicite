@@ -5,7 +5,6 @@ import { ClientSession, Connection, Types, ObjectId } from 'mongoose';
 
 import { UserRepositoryInterface } from '../../domain/repository/user-repository.interface';
 import { UserServiceInterface } from '../../domain/service/user.service.interface';
-
 import { User, UserPreferences } from '../../domain/entity/user.entity';
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
 import { ContactServiceInterface } from 'src/contexts/contact/domain/service/contact.service.interface';
@@ -15,7 +14,6 @@ import { UserBusinessUpdateDto } from '../../domain/entity/dto/user.business.upd
 import { UserPreferencesEntityDto } from '../../domain/entity/dto/user.preferences.update.dto';
 import { UP_clerkUpdateRequestDto } from 'src/contexts/webhook/application/clerk/dto/UP-clerk.update.request';
 import { UserFindAllResponse } from '../adapter/dto/HTTP-RESPONSE/user.response.dto';
-import { error } from 'console';
 
 @Injectable()
 export class UserService implements UserServiceInterface {
