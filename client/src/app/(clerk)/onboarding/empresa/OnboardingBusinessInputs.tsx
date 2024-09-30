@@ -93,7 +93,7 @@ const OnboardingBusinessInputs = ({
           as={CustomInput}
           startContent={<IoLogoWhatsapp className="text-green-600" />}
           name="contact.phone"
-          label="Contacto / Teléfono (opcional)"
+          label="Contacto / Teléfono"
           isInvalid={!!errors.contact?.phone}
           errorMessage={errors.contact?.phone}
           aria-label="contacto"

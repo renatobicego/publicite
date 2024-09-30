@@ -1,3 +1,4 @@
+import axios from "axios";
 import { mockedBoards } from "../utils/data/mockedData";
 
 export const getBoards = async (searchTerm: string | null) => {
@@ -13,3 +14,7 @@ export const getBoards = async (searchTerm: string | null) => {
     ...mockedBoards.reverse(),
   ]; // Return the same mocked data
 };
+
+export const postBoard = async(values: any) => {
+  return await axios.post(`${process.env.API_URL}/board`, values)
+}
