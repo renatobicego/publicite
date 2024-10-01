@@ -66,7 +66,7 @@ export class User_Full_Grapql_Model {
   board?: Board;
 
   @Field(() => [Post_Full_Graphql_Model], { nullable: 'itemsAndList' })
-  post?: Post_Full_Graphql_Model;
+  posts?: Post_Full_Graphql_Model;
 
   // @Field(() => [ID], { nullable: 'itemsAndList' })
   // userRelations?: ObjectId[];

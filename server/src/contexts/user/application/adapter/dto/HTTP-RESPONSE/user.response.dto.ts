@@ -16,7 +16,7 @@ export interface UserResponse {
   groups: ObjectId[];
   magazines: ObjectId[];
   board: ObjectId | undefined;
-  post: ObjectId[];
+  posts: ObjectId[];
   userRelations: ObjectId[];
   userType: string;
   name: string;
