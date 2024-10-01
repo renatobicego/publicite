@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongoose';
 
 export interface BoardResponse {
-  _id: ObjectId | string;
+  _id: ObjectId | undefined;
   annotations: string[];
   visibility: string;
   user: ObjectId;

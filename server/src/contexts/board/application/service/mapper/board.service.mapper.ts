@@ -18,7 +18,7 @@ export class BoardServiceMapper implements BoardMapperServiceInterface {
   }
   entityToResponse(board: Board): BoardResponse {
     const boardresponse: BoardResponse = {
-      _id: board.getId ?? '',
+      _id: board.getId ?? undefined,
       annotations: board.getAnnotations,
       visibility: board.getVisibility,
       user: board.getUser,

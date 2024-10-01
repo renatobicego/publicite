@@ -149,13 +149,13 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
       case 'rejected':
         // VER SI HACEMOS ALGO CON EL STATUS REJECTED CUANDO LLEGA UN PAGO
         this.logger.warn(
-          'MpWebhookAdapter - Case paymenty.created - STATUS: REJECTED',
+          'MpWebhookAdapter - Case paymenty.UPDATE - STATUS: REJECTED',
         );
         await this.mpWebhookService.updatePayment(paymentResponse);
         return Promise.resolve(true);
       default:
         this.logger.warn(
-          'MpWebhookAdapter - Case paymenty.created - STATUS: default, sending response OK to meli & return',
+          'MpWebhookAdapter - Case paymenty.UPDATE - STATUS: Unknown payment status, sending response OK to meli & return',
         );
         throw new Error('Unknown payment status' + paymentResponse.status);
     }
@@ -254,34 +254,42 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
         );
       console.log('subscription_authorized_payment UPDATE RESPONSE:');
       console.log(subscription_authorized_payment);
-      if (subscription_authorized_payment.transaction_amount < 50) {
+
+      if (subscription_authorized_payment.transaction_amount < 30) {
         this.logger.warn(
-          'Payment amount is less than $50, returning OK to Meli',
+          'Payment amount is less than $30, returning OK to Meli',
         );
-        return Promise.resolve(true);
+        return true;
       }
 
+      const rejectedStatuses = new Set(['rejected', 'cancelled']);
+      const paymentStatus =
+        subscription_authorized_payment.payment?.status.toLowerCase();
+      const subscriptionStatus =
+        subscription_authorized_payment.status.toLowerCase();
+
       if (
-        subscription_authorized_payment.status.toLowerCase() === 'rejected' ||
-        subscription_authorized_payment.status.toLowerCase() === 'cancelled' ||
-        subscription_authorized_payment.payment?.status.toLowerCase() ===
-          'rejected'
+        rejectedStatuses.has(subscriptionStatus) ||
+        paymentStatus === 'rejected'
       ) {
         this.logger.warn(
-          'Status is rejected, returning OK to Meli and pausing the suscription. Preapproval_id: ' +
-            subscription_authorized_payment.preapproval_id,
+          `Status is rejected, returning OK to Meli and pausing the subscription. Preapproval_id: ${subscription_authorized_payment.preapproval_id}`,
+        );
+
+        await this.mpWebhookService.subscription_authorize_payment_update(
+          subscription_authorized_payment,
         );
         await this.mpWebhookService.fetchPauseSuscription(
           this.URL_SUBCRIPTION_PREAPPROVAL_CHECK,
           subscription_authorized_payment.preapproval_id,
         );
-        return Promise.resolve(true);
+        return true;
       }
 
       await this.mpWebhookService.subscription_authorize_payment_update(
         subscription_authorized_payment,
       );
-      return Promise.resolve(true);
+      return true;
     } catch (error: any) {
       this.logger.error(
         'An error has ocurred while processing subscription_authorized_payment event: ' +

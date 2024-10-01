@@ -1,6 +1,12 @@
+import { registerEnumType } from '@nestjs/graphql';
+
 export enum Visibility {
-  EVERYONE = 'everyone',
-  CONTACTS = 'contacts',
-  FRIENDS = 'friends',
-  TOP_FRIENDS = 'topfriends',
+  everyone = 'everyone',
+  contacts = 'contacts',
+  friends = 'friends',
+  topfriends = 'topfriends',
 }
+
+registerEnumType(Visibility, {
+  name: 'Visibility_Enum_board',
+});

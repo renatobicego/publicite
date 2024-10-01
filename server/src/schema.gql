@@ -83,3 +83,23 @@ type Query {
   """Obtiene un usuario por su nombre de usuario"""
   findOneByUsername(username: String!): User_Full_Grapql_Model
 }
+
+type Mutation {
+  """Actualiza el board del usuario"""
+  updateBoardByUsername(id: String!, boardData: UpdateBoardDto!): Board
+}
+
+input UpdateBoardDto {
+  annotations: [String!]
+  visibility: Visibility_Enum_board
+  user: String
+  color: String
+  keywords: [String!]
+}
+
+enum Visibility_Enum_board {
+  everyone
+  contacts
+  friends
+  topfriends
+}

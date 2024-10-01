@@ -10,6 +10,7 @@ import { BoardServiceMapper } from '../../application/service/mapper/board.servi
 import { BoardRepositoryMapper } from '../repository/mapper/board.repository.mapper';
 import { BoardAdapter } from '../controller/adapter/board.adapter';
 import { UserModule } from 'src/contexts/user/infraestructure/module/user.module';
+import { BoardResolver } from '../graphql/resolver/board.resolver';
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: 'Board', schema: BoardSchema }]),
@@ -20,6 +21,7 @@ import { UserModule } from 'src/contexts/user/infraestructure/module/user.module
   controllers: [BoardController],
   providers: [
     MyLoggerService,
+    BoardResolver,
     {
       provide: 'BoardServiceInterface',
       useClass: BoardService,
