@@ -54,7 +54,7 @@ const CreateBoard = ({ user }: { user: GetUser }) => {
   };
   return (
     <Card
-      className={`p-4 flex flex-col gap-2 bg-fondo min-w-[30%] lg:p-6 md:max-w-[34%] xl:max-w-[50%]
+      className={`p-4 flex flex-col gap-2 bg-fondo min-w-full md:min-w-[30%] lg:p-6 md:max-w-[34%] xl:max-w-[50%]
         ${bgColor} ${borderColor} ${textColor} `}
     >
       <CardHeader className="p-0">

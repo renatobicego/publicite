@@ -58,7 +58,7 @@ const BoardCard = ({
           !isProfile ? `${PROFILE}/${(board.user as User).username}` : undefined
         }
         className={`p-4 flex flex-col gap-2 ${bg} ${textColor} ${
-          isProfile && "min-w-[30%] lg:p-6 md:max-w-[34%] xl:max-w-[50%]"
+          isProfile && "min-w-full md:min-w-[30%] lg:p-6 md:max-w-[34%] xl:max-w-[50%]"
         }`}
       >
         <CardHeader className="p-0">

@@ -30,7 +30,13 @@ const getUserByUsernameQuery = gql`
       profilePhotoUrl
       userType
       username
-      
+      board {
+        _id
+        annotations
+        color
+        keywords
+        user
+      }
     }
   }
 `;

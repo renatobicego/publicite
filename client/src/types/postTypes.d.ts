@@ -202,9 +202,16 @@ export interface PetitionContact {
   message: string;
 }
 
-export interface PostNotification {
+export interface PostContactNotification {
   _id: ObjectId;
   message: string;
   post: Post;
   date: string;
+}
+
+export interface PostSharedNotification {
+  _id: ObjectId;
+  post: Post;
+  date: string;
+  userSharing: Pick<User, "_id" | "username">;
 }

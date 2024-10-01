@@ -6,10 +6,10 @@ import { toastifyError } from "../functions/toastify";
 // Custom hook for infinite scroll and data fetching
 export const useInfiniteFetch = (
   postType: "good" | "service" | "petition" | "groups" | "users" | "boards" | "groupPosts",
-  hasMoreData: boolean,
   groupId?: string
 ) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [hasMoreData, setHasMoreData] = useState(true);
   const [items, setItems] = useState<any[]>([]);
   const searchParams = useSearchParams();
   const busqueda = searchParams.get("busqueda");
@@ -28,7 +28,9 @@ export const useInfiniteFetch = (
       if (data.error) {
         toastifyError((data as any).error);
       } else {
-        setItems((prevItems) => [...prevItems, ...data]);
+        console.log(data)
+        setHasMoreData(data.hasMore)
+        setItems((prevItems) => [...prevItems, ...data.items]);
       }
     } catch (error: any) {
       // Handle error here if needed

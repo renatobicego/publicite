@@ -24,8 +24,12 @@ export interface User {
   userPreferences: UserPreferences;
 }
 
-export interface GetUser extends Omit<User, "userPreferences" | "clerkId" | "userRelations" | "createdTime" | "isActive"> {
-  userRelations: User[]
+export interface GetUser
+  extends Omit<
+    User,
+    "userPreferences" | "clerkId" | "userRelations" | "createdTime" | "isActive"
+  > {
+  userRelations: User[];
 }
 
 export interface UserPreferences {
@@ -144,4 +148,26 @@ export interface Group {
   magazines: ObjectId[] | Magazine[];
   profilePhotoUrl: string;
   visibility: "private" | "public";
+}
+
+export interface UserRelations {
+  _id: ObjectId;
+  userA: User;
+  userB: User;
+  typeRelationA: UserRelation;
+  typeRelationB: UserRelation;
+}
+
+export interface NewContactRelationNotification {
+  _id: ObjectId;
+  user: Pick<User, "_id" | "username" | "profilePhotoUrl">;
+  typeRelation: UserRelation;
+  date: string;
+}
+
+export interface GroupInvitationNotification {
+  _id: ObjectId;
+  group: Pick<Group, "_id" | "name" | "profilePhotoUrl">;
+  userInviting: Pick<User, "username">;
+  date: string;
 }
