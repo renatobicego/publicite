@@ -127,7 +127,6 @@ import { MercadoPagoPaymentsRepository } from '../repository/mercadopago/mp-paym
       provide: 'MercadopagoSubscriptionPlanAdapterInterface',
       useClass: MercadoPagoSubscriptionPlanAdapter,
     },
-
     {
       provide: 'MpHandlerValidationsInterface',
       useFactory: (configService: ConfigService, logger: MyLoggerService) => {

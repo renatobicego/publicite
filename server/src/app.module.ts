@@ -28,6 +28,7 @@ import { BoardModule } from './contexts/board/infraestructure/module/user.module
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       playground: false,
+      introspection: true,
       plugins: [ApolloServerPluginLandingPageLocalDefault()],
     }),
     WebhookModule,

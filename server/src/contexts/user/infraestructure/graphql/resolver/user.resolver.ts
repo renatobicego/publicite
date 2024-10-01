@@ -1,9 +1,6 @@
-import { InjectModel } from '@nestjs/mongoose';
 import { Inject } from '@nestjs/common';
 import { Args, Info, Query, Resolver } from '@nestjs/graphql';
-import { Model } from 'mongoose';
 
-import { IUser, UserModel } from '../../schemas/user.schema';
 import { User_Full_Grapql_Model } from 'src/contexts/user/domain/entity/models_graphql/user.full.grapql.model';
 import { UserAdapterInterface } from 'src/contexts/user/application/adapter/userAdapter.interface';
 
@@ -14,9 +11,6 @@ import { UserAdapterInterface } from 'src/contexts/user/application/adapter/user
 export class UserResolver {
   //Definimos las query
   constructor(
-    @InjectModel(UserModel.modelName)
-    private readonly user: Model<IUser>,
-
     @Inject('UserAdapterInterface')
     private readonly userAdapter: UserAdapterInterface,
   ) {}

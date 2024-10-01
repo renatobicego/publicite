@@ -1,4 +1,4 @@
-import { Inject } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 
 import { UserAdapterInterface } from '../../application/adapter/userAdapter.interface';
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
@@ -20,6 +20,7 @@ import { UserBusinessUpdateResponse } from '../../application/adapter/dto/HTTP-R
 import { UserPersonalInformationResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.information.response';
 import { UserPreferenceResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.preferences.response';
 
+@Injectable()
 export class UserAdapter implements UserAdapterInterface {
   constructor(
     private readonly logger: MyLoggerService,
