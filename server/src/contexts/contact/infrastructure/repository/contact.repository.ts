@@ -4,7 +4,7 @@ import { Model, ClientSession, Types } from 'mongoose';
 
 import { ContactRepositoryInterface } from '../../domain/repository/contact.repository.interface';
 import { Contact } from '../../domain/entity/contact.entity';
-import { ContactDocument } from '../../infraestructure/schema/contact.schema';
+import { ContactDocument } from '../../infrastructure/schema/contact.schema';
 
 @Injectable()
 export class ContactRepository implements ContactRepositoryInterface {

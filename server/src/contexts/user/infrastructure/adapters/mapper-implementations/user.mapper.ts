@@ -88,7 +88,7 @@ export class UserMapper implements UserMapperInterface {
       groups: entity.getGroups as [],
       magazines: entity.getMagazines as [],
       board: entity.getBoard as any,
-      post: entity.getPost as [],
+      posts: entity.getPost as [],
       userRelations: entity.getUserRelations as [],
       userType: entity.getUserType as any,
       name: entity.getName,

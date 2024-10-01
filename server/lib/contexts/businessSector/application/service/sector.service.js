@@ -11,7 +11,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SectorService = void 0;
 const common_1 = require("@nestjs/common");
-const sector_dto_1 = require("../../infraestructure/controller/request/sector.dto");
+const sector_dto_1 = require("../../infrastructure/controller/request/sector.dto");
 let SectorService = class SectorService {
     constructor(logger, sectorRepository) {
         this.logger = logger;

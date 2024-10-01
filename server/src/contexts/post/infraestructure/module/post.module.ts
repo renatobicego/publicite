@@ -7,7 +7,7 @@ import { PostService } from '../../application/service/post.service';
 import { PostRepository } from '../repository/post.repository';
 import { PostRepositoryMapper } from '../repository/mapper/post.repository.mapper';
 import { PostAdapterMapper } from '../controller/adapter/mapper/post.adapter.mapper';
-import { UserModule } from 'src/contexts/user/infraestructure/module/user.module';
+import { UserModule } from 'src/contexts/user/infrastructure/module/user.module';
 import { PostAdapter } from '../controller/adapter/post.adapter';
 import { PostLocationSchema } from '../schemas/postLocation.schema';
 import { PostGoodModel } from '../schemas/post-types-schemas/post.good.schema';

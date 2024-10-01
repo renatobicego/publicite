@@ -1,6 +1,6 @@
-import { IUserPerson } from 'src/contexts/user/infraestructure/schemas/userPerson.schema';
+import { IUserPerson } from 'src/contexts/user/infrastructure/schemas/userPerson.schema';
 import { User } from '../../entity/user.entity';
-import { IUserBusiness } from 'src/contexts/user/infraestructure/schemas/userBussiness.schema';
+import { IUserBusiness } from 'src/contexts/user/infrastructure/schemas/userBussiness.schema';
 import { UB_update } from '../../entity/userBusiness.entity';
 import { UP_update } from '../../entity/userPerson.entity';
 import { UserBusinessUpdateDto } from '../../entity/dto/user.business.update.dto';

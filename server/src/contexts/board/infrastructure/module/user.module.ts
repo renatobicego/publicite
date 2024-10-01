@@ -9,7 +9,7 @@ import { BoardRepository } from '../repository/board.repository';
 import { BoardServiceMapper } from '../../application/service/mapper/board.service.mapper';
 import { BoardRepositoryMapper } from '../repository/mapper/board.repository.mapper';
 import { BoardAdapter } from '../controller/adapter/board.adapter';
-import { UserModule } from 'src/contexts/user/infraestructure/module/user.module';
+import { UserModule } from 'src/contexts/user/infrastructure/module/user.module';
 import { BoardResolver } from '../graphql/resolver/board.resolver';
 @Module({
   imports: [

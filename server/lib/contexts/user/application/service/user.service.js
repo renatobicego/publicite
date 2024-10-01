@@ -14,12 +14,12 @@ exports.UserService = void 0;
 const common_1 = require("@nestjs/common");
 const common_2 = require("@nestjs/common");
 const mongoose_1 = require("@nestjs/mongoose");
-const user_business_DTO_1 = require("../../infraestructure/controller/dto/user.business.DTO");
-const user_person_DTO_1 = require("../../infraestructure/controller/dto/user.person.DTO");
+const user_business_DTO_1 = require("../../infrastructure/controller/dto/user.business.DTO");
+const user_person_DTO_1 = require("../../infrastructure/controller/dto/user.person.DTO");
 const userPerson_entity_1 = require("../../domain/entity/userPerson.entity");
 const userBussiness_entity_1 = require("../../domain/entity/userBussiness.entity");
-const UP_publicite_update_request_1 = require("../../infraestructure/controller/dto/update.request-DTO/UP-publicite.update.request");
-const UB_publicite_update_request_1 = require("../../infraestructure/controller/dto/update.request-DTO/UB-publicite.update.request");
+const UP_publicite_update_request_1 = require("../../infrastructure/controller/dto/update.request-DTO/UP-publicite.update.request");
+const UB_publicite_update_request_1 = require("../../infrastructure/controller/dto/update.request-DTO/UB-publicite.update.request");
 let UserService = UserService_1 = class UserService {
     constructor(userRepository, contactService, logger, connection) {
         this.userRepository = userRepository;

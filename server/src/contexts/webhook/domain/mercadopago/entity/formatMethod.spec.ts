@@ -1,6 +1,6 @@
 import { Types } from 'mongoose';
-import { PaymentDocument } from '../../../infraestructure/schemas/mercadopago/payment.schema';
-import { SubscriptionDocument } from '../../../infraestructure/schemas/mercadopago/subscription.schema';
+import { PaymentDocument } from '../../../infrastructure/schemas/mercadopago/payment.schema';
+import { SubscriptionDocument } from '../../../infrastructure/schemas/mercadopago/subscription.schema';
 import Payment from 'src/contexts/webhook/domain/mercadopago/entity/payment.entity';
 import Subscription from 'src/contexts/webhook/domain/mercadopago/entity/subcription.entity';
 

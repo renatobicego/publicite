@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongoose';
-import { SectorDocument } from '../../infraestructure/schema/sector.schema';
+import { SectorDocument } from '../../infrastructure/schema/sector.schema';
 
 export class Sector {
   private _id?: ObjectId;

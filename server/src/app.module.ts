@@ -1,21 +1,22 @@
 import { join } from 'path';
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config'; // Asegúrate de importar ConfigModule
+import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 
-import { WebhookModule } from './contexts/webhook/infraestructure/module/webhook.module';
-import { DatabaseModule } from './contexts/shared/database/infraestructure/database.module';
+import { WebhookModule } from './contexts/webhook/infrastructure/module/webhook.module';
 import { LoggerModule } from './contexts/shared/logger/logger.module';
-import { UserModule } from './contexts/user/infraestructure/module/user.module';
-import { AllExceptionsFilter } from './contexts/shared/exceptionFilter/infraestructure/exception.filter';
-import { ContactModule } from './contexts/contact/infraestructure/module/contact.module';
-import { SectorModule } from './contexts/businessSector/infraestructure/module/sector.module';
-import { DatabaseService } from './contexts/shared/database/infraestructure/database.service';
+import { UserModule } from './contexts/user/infrastructure/module/user.module';
+import { ContactModule } from './contexts/contact/infrastructure/module/contact.module';
+import { SectorModule } from './contexts/businessSector/infrastructure/module/sector.module';
+import { BoardModule } from './contexts/board/infrastructure/module/user.module';
 import { PostModule } from './contexts/post/infraestructure/module/post.module';
-import { BoardModule } from './contexts/board/infraestructure/module/user.module';
+import { AllExceptionsFilter } from './contexts/shared/exceptionFilter/infrastructure/exception.filter';
+import { DatabaseModule } from './contexts/shared/database/infrastructure/database.module';
+import { DatabaseService } from './contexts/shared/database/infrastructure/database.service';
+import { GroupModule } from './contexts/group/infrastructure/module/group.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { BoardModule } from './contexts/board/infraestructure/module/user.module
     SectorModule,
     PostModule,
     BoardModule,
+    GroupModule,
   ],
   providers: [
     {
