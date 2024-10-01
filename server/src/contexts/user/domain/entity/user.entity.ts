@@ -23,7 +23,7 @@ export class User {
   private groups?: ObjectId[];
   private magazines?: ObjectId[];
   private board?: ObjectId | undefined;
-  private post?: ObjectId[];
+  private posts?: ObjectId[];
   private userRelations?: ObjectId[];
   private userType?: UserType;
   private userPreferences?: UserPreferences;
@@ -44,7 +44,7 @@ export class User {
     groups?: ObjectId[],
     magazines?: ObjectId[],
     board?: ObjectId | undefined,
-    post?: ObjectId[],
+    posts?: ObjectId[],
     userRelations?: ObjectId[],
     userType?: UserType,
     userPreferences?: UserPreferences,
@@ -65,7 +65,7 @@ export class User {
     this.groups = groups ?? [];
     this.magazines = magazines ?? [];
     this.board = board ?? undefined;
-    this.post = post ?? [];
+    this.posts = posts ?? [];
     this.userRelations = userRelations ?? [];
     this.userType = userType ?? UserType.Person;
     this.userPreferences = userPreferences ?? {
@@ -135,7 +135,7 @@ export class User {
   }
 
   get getPost() {
-    return this.post;
+    return this.posts;
   }
 
   get getUserRelations() {

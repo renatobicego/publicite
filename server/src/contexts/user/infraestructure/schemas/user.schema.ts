@@ -20,7 +20,7 @@ interface IUser extends Document {
   groups: Schema.Types.ObjectId[];
   magazines: Schema.Types.ObjectId[];
   board: Schema.Types.ObjectId | undefined;
-  post: Schema.Types.ObjectId[];
+  posts: Schema.Types.ObjectId[];
   userRelations: Schema.Types.ObjectId[];
   userType: UserType;
   name: string;
@@ -45,7 +45,7 @@ const UserSchema = new Schema<IUser>(
     groups: [{ type: Schema.Types.ObjectId, ref: 'Group' }],
     magazines: [{ type: Schema.Types.ObjectId, ref: 'Magazine' }],
     board: { type: Schema.Types.ObjectId, ref: 'Board', default: undefined },
-    post: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
+    posts: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
     userRelations: [{ type: Schema.Types.ObjectId, ref: 'UserRelation' }],
     userType: { type: String, enum: Object.values(UserType), required: true },
     name: { type: String, required: true },
