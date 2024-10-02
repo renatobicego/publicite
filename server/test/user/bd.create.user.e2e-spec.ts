@@ -2,7 +2,7 @@ import { Test } from '@nestjs/testing';
 import { Connection, ObjectId } from 'mongoose';
 
 import { AppModule } from 'src/app.module';
-import { DatabaseService } from 'src/contexts/shared/database/infraestructure/database.service';
+import { DatabaseService } from 'src/contexts/shared/database/infrastructure/database.service';
 import { fullNameNormalization } from 'src/contexts/user/application/functions/utils';
 import {
   UserType,

@@ -79,6 +79,18 @@ type User_Full_Grapql_Model {
   userPreferences: UserPreferences_Grapql_Model
 }
 
+type GroupResponse {
+  _id: String!
+  members: [String!]!
+  admins: [String!]!
+  name: String!
+  rules: String!
+  magazines: [String!]!
+  details: String!
+  profilePhotoUrl: String!
+  visibility: String!
+}
+
 type Query {
   """Obtiene un usuario por su nombre de usuario"""
   findOneByUsername(username: String!): User_Full_Grapql_Model
@@ -87,6 +99,9 @@ type Query {
 type Mutation {
   """Actualiza el board del usuario"""
   updateBoardByUsername(id: String!, boardData: UpdateBoardDto!): Board
+
+  """Crear un grupo"""
+  createNewGroup(groupDto: GroupRequest!): GroupResponse
 }
 
 input UpdateBoardDto {
@@ -98,8 +113,20 @@ input UpdateBoardDto {
 }
 
 enum Visibility_Enum_board {
-  everyone
+  public
+  registered
   contacts
   friends
   topfriends
+}
+
+input GroupRequest {
+  members: [String!]!
+  admins: [String!]!
+  name: String!
+  rules: String!
+  magazines: [String!]!
+  details: String!
+  profilePhotoUrl: String!
+  visibility: String!
 }

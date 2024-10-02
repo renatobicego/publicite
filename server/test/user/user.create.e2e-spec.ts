@@ -2,7 +2,7 @@ import { Test } from '@nestjs/testing';
 import { Connection, ObjectId, Types } from 'mongoose';
 import * as request from 'supertest';
 import { AppModule } from 'src/app.module';
-import { DatabaseService } from 'src/contexts/shared/database/infraestructure/database.service';
+import { DatabaseService } from 'src/contexts/shared/database/infrastructure/database.service';
 
 import { userSub, userSubBusiness } from '../../test/model/user.stub';
 import {

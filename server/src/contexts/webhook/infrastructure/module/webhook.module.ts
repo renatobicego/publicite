@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MyLoggerService } from '../../../shared/logger/logger.service';
-import { UserModule } from 'src/contexts/user/infraestructure/module/user.module';
+import { UserModule } from 'src/contexts/user/infrastructure/module/user.module';
 import { WebhookService } from '../../application/clerk/clerkWebhook.service';
 import { MpHandlerValidations } from '../../application/mercadopago/handler/mp.handler.validations';
 import { MpHandlerEvents } from '../../application/mercadopago/handler/mpHandlerFETCHEvents';

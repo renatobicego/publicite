@@ -17,9 +17,9 @@ const user_repository_1 = require("../repository/user.repository");
 const userPerson_schema_1 = require("../schemas/userPerson.schema");
 const userBussiness_schema_1 = require("../schemas/userBussiness.schema");
 const user_schema_1 = require("../schemas/user.schema");
-const contact_module_1 = require("src/contexts/contact/infraestructure/module/contact.module");
-const sector_repository_1 = require("src/contexts/businessSector/infraestructure/repository/sector.repository");
-const sector_module_1 = require("src/contexts/businessSector/infraestructure/module/sector.module");
+const contact_module_1 = require("src/contexts/contact/infrastructure/module/contact.module");
+const sector_repository_1 = require("src/contexts/businessSector/infrastructure/repository/sector.repository");
+const sector_module_1 = require("src/contexts/businessSector/infrastructure/module/sector.module");
 let UserModule = class UserModule {
 };
 UserModule = __decorate([

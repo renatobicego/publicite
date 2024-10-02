@@ -5,7 +5,7 @@ import { SectorServiceInterface } from '../../domain/service/sector.service.inte
 import {
   SectorResponse,
   SectorResponseDto,
-} from '../../infraestructure/controller/request/sector.dto';
+} from '../../infrastructure/controller/request/sector.dto';
 
 export class SectorService implements SectorServiceInterface {
   constructor(
