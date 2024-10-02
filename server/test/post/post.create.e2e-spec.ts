@@ -7,7 +7,7 @@ import {
   PostGoodRequest,
   PostPetitionRequest,
   PostServiceRequest,
-} from 'src/contexts/post/application/adapter/dto/post.request';
+} from 'src/contexts/post/application/adapter/dto/HTTP-REQUEST/post.request';
 import { DatabaseService } from 'src/contexts/shared/database/infrastructure/database.service';
 
 import { Logger } from '@nestjs/common';

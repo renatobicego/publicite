@@ -1,6 +1,6 @@
 import { ObjectId, Schema } from 'mongoose';
 import PostModel, { PostDocument } from '../post.schema';
-import { frequencyPrice } from 'src/contexts/post/domain/entity/enum/post-service-freq-type.enum';
+import { FrequencyPrice } from 'src/contexts/post/domain/entity/enum/post-service-freq-type.enum';
 
 interface IPostService extends PostDocument {
   frequencyPrice: string;
@@ -11,7 +11,7 @@ interface IPostService extends PostDocument {
 const PostServiceSchema = new Schema<IPostService>({
   frequencyPrice: {
     type: String,
-    enum: Object.values(frequencyPrice),
+    enum: Object.values(FrequencyPrice),
     required: true,
   },
   reviews: [{ type: Schema.Types.ObjectId, ref: 'Review' }],

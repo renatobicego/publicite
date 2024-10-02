@@ -13,6 +13,7 @@ import { PostLocationSchema } from '../schemas/postLocation.schema';
 import { PostGoodModel } from '../schemas/post-types-schemas/post.good.schema';
 import { PostServiceModel } from '../schemas/post-types-schemas/post.service.schema';
 import { PostPetitionModel } from '../schemas/post-types-schemas/post.petition.schema';
+import { PostResolver } from '../graphql/resolver/post.resolver';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { PostPetitionModel } from '../schemas/post-types-schemas/post.petition.s
   controllers: [PostController],
   providers: [
     MyLoggerService,
+    PostResolver,
     {
       provide: 'PostRepositoryMapperInterface',
       useClass: PostRepositoryMapper,

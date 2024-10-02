@@ -384,7 +384,7 @@ export class UserRepository implements UserRepositoryInterface {
       );
       const obj = await this.user.findOneAndUpdate(
         { _id: authorId },
-        { $addToSet: { post: postId } },
+        { $addToSet: { posts: postId } },
         options,
       );
       if (!obj) {
@@ -397,6 +397,7 @@ export class UserRepository implements UserRepositoryInterface {
         'The post was successfully saved in the user profile: ' +
           UserRepository.name,
       );
+      console.log(obj);
       return obj;
     } catch (error: any) {
       this.logger.error(

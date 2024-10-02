@@ -1,13 +1,15 @@
 // Transforma las solicitudes del exterior (controllers) a objetos de dominio (entities)
-
+import { omitBy, isNil } from 'lodash';
 import { BadRequestException } from '@nestjs/common';
+import { PostUpdateRequest } from 'src/contexts/post/application/adapter/dto/HTTP-REQUEST/post.update.request';
 import {
   PostGoodResponse,
   PostPetitionResponse,
   PostResponse,
   PostServiceResponse,
-} from 'src/contexts/post/application/adapter/dto/post.response';
+} from 'src/contexts/post/application/adapter/dto/HTTP-RESPONSE/post.response';
 import { PostMapperAdapterInterface } from 'src/contexts/post/application/adapter/mapper/post.adapter.mapper.interface';
+import { PostUpdateDto } from 'src/contexts/post/domain/entity/dto/post.update.dto';
 import { PostGood } from 'src/contexts/post/domain/entity/post-types/post.good.entity';
 import { PostPetition } from 'src/contexts/post/domain/entity/post-types/post.petition.entity';
 import { PostService } from 'src/contexts/post/domain/entity/post-types/post.service.entity';
@@ -124,5 +126,26 @@ export class PostAdapterMapper implements PostMapperAdapterInterface {
       default:
         throw Error('Invalid post type: ' + postTypetNormalized);
     }
+  }
+  requestUpdateToEntity(postUpdateRequest: PostUpdateRequest): PostUpdateDto {
+    const postUpdateDto: PostUpdateDto = {
+      title: postUpdateRequest.title,
+      description: postUpdateRequest.description,
+      visibility: postUpdateRequest.visibility,
+      price: postUpdateRequest.price,
+      //location: postUpdateRequest.location,
+      category: postUpdateRequest.category,
+      attachedFiles: postUpdateRequest.attachedFiles,
+      imageUrls: postUpdateRequest.imageUrls,
+      year: postUpdateRequest.year,
+      brand: postUpdateRequest.brand,
+      modelType: postUpdateRequest.modelType,
+      condition: postUpdateRequest.condition,
+      frequencyPrice: postUpdateRequest.frequencyPrice,
+      toPrice: postUpdateRequest.toPrice,
+      petitionType: postUpdateRequest.petitionType,
+    };
+
+    return omitBy(postUpdateDto, isNil);
   }
 }

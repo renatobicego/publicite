@@ -97,11 +97,67 @@ type Query {
 }
 
 type Mutation {
+  """Actualizar un post"""
+  updatePostById(postUpdate: PostUpdateRequest!, id: String!): String
+
   """Actualiza el board del usuario"""
   updateBoardByUsername(id: String!, boardData: UpdateBoardDto!): Board
 
   """Crear un grupo"""
   createNewGroup(groupDto: GroupRequest!): GroupResponse
+}
+
+input PostUpdateRequest {
+  title: String
+  description: String
+  visibility: VisibilityEnum
+  price: Float
+  postType: PostType!
+  category: [String!]
+  attachedFiles: [AttachedFiles!]
+  imageUrls: [String!]
+  year: Int
+  brand: String
+  modelType: String
+  condition: String
+  toPrice: String
+  frequencyPrice: FrequencyPrice
+  petitionType: String
+}
+
+input VisibilityEnum {
+  post: Visibility_of_the_post!
+  socialMedia: Visibility_of_the_post!
+}
+
+"""Visibility of the post """
+enum Visibility_of_the_post {
+  Public
+  Registgered
+  Contacts
+  Friends
+  TopFriends
+}
+
+"""Type of the post """
+enum PostType {
+  Good
+  Service
+  Petition
+}
+
+input AttachedFiles {
+  url: String!
+  label: String!
+}
+
+"""Frecuencia """
+enum FrequencyPrice {
+  Hour
+  Day
+  Week
+  Month
+  Year
 }
 
 input UpdateBoardDto {
