@@ -7,48 +7,53 @@ import {
   CardFooter,
   CardHeader,
 } from "@nextui-org/react";
-import PrimaryButton from "../buttons/PrimaryButton";
+import PrimaryButton from "../../buttons/PrimaryButton";
 import { Form, Formik, FormikHelpers } from "formik";
-import { PostBoard } from "@/types/board";
-import { useState } from "react";
+import { Board, PostBoard } from "@/types/board";
+import { Dispatch, SetStateAction, useState } from "react";
 import CreateBoardInputs from "./CreateBoardInputs";
-import BoardColor from "./inputs/BoardColor";
+import BoardColor from "../inputs/BoardColor";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { useRouter } from "next-nprogress-bar";
-import { createBoard } from "@/app/server/boardActions";
+import { createBoard, editBoard } from "@/app/server/boardActions";
+import { handleBoardColor } from "@/utils/functions/utils";
 
-const CreateBoard = ({ user }: { user: GetUser }) => {
-  const [showForm, setShowForm] = useState(false);
-  const [bgColor, setBgColor] = useState("bg-fondo");
-  const router = useRouter()
+const CreateBoard = ({
+  user,
+  prevBoard,
+  setShowEditBoard,
+}: {
+  user: GetUser;
+  prevBoard?: Board;
+  setShowEditBoard?: Dispatch<SetStateAction<boolean>>;
+}) => {
+  const [showForm, setShowForm] = useState(prevBoard ? true : false);
+  const [bgColor, setBgColor] = useState(prevBoard?.color || "bg-fondo");
+  const router = useRouter();
   const initialValues: PostBoard = {
-    annotations: [],
-    keywords: [],
+    annotations: prevBoard ? prevBoard.annotations : [],
+    keywords: prevBoard ? prevBoard.keywords : [],
     user: user._id,
-    visibility: "public",
+    visibility: prevBoard ? prevBoard.visibility : "public",
     color: bgColor,
   };
-  const darkColors = ["bg-[#5A0001]/80"];
-  const darkColorsBorder = [
-    "bg-[#5A0001]/80",
-    "bg-[#20A4F3]/30",
-    "bg-[#FFB238]/80",
-  ];
-  const textColor = darkColors.includes(bgColor)
-    ? "text-white"
-    : "text-text-color";
-  const borderColor = darkColorsBorder.includes(bgColor) ? "border-white" : "";
+  const { borderColor, textColor } = handleBoardColor(bgColor);
   const handleSubmit = async (
     values: PostBoard,
     actions: FormikHelpers<PostBoard>
   ) => {
-    const resApi = await createBoard(values);
+    let resApi;
+    if (prevBoard) {
+      resApi = await editBoard(prevBoard._id, values);
+    } else {
+      resApi = await createBoard({ ...values, color: bgColor });
+    }
     if (resApi.error) {
       toastifyError(resApi.error);
       actions.setSubmitting(false);
       return;
     }
-    setShowForm(false)
+    setShowForm(false);
     toastifySuccess(resApi.message as string);
     router.refresh();
   };
@@ -68,7 +73,7 @@ const CreateBoard = ({ user }: { user: GetUser }) => {
             validateOnBlur={false}
             validateOnChange={false}
           >
-            {({ errors, isSubmitting, setValues, values }) => {
+            {({ isSubmitting, setValues, values }) => {
               return (
                 <Form className="flex flex-col gap-4">
                   <CreateBoardInputs
@@ -89,7 +94,13 @@ const CreateBoard = ({ user }: { user: GetUser }) => {
                       color="danger"
                       variant="light"
                       radius="full"
-                      onPress={() => setShowForm(false)}
+                      onPress={() => {
+                        setBgColor(prevBoard?.color || "bg-fondo");
+                        setShowForm(false);
+                        if (setShowEditBoard) {
+                          setShowEditBoard(false);
+                        }
+                      }}
                     >
                       Cancelar
                     </Button>
@@ -99,7 +110,13 @@ const CreateBoard = ({ user }: { user: GetUser }) => {
                       type="submit"
                       className="self-start"
                     >
-                      {isSubmitting ? "Creando" : "Crear"}
+                      {isSubmitting
+                        ? prevBoard
+                          ? "Editando"
+                          : "Creando"
+                        : prevBoard
+                        ? "Editar"
+                        : "Crear"}
                     </PrimaryButton>
                   </div>
                 </Form>
@@ -110,13 +127,15 @@ const CreateBoard = ({ user }: { user: GetUser }) => {
           <></>
         )}
       </CardBody>
-      <CardFooter className="flex w-full items-center justify-between p-0 pt-2">
-        {!showForm && (
-          <PrimaryButton onPress={() => setShowForm(true)}>
-            Crear Pizarra
-          </PrimaryButton>
-        )}
-      </CardFooter>
+      {!prevBoard && (
+        <CardFooter className="flex w-full items-center justify-between p-0 pt-2">
+          {!showForm && (
+            <PrimaryButton onPress={() => setShowForm(true)}>
+              Crear Pizarra
+            </PrimaryButton>
+          )}
+        </CardFooter>
+      )}
     </Card>
   );
 };

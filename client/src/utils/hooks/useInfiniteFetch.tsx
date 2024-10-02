@@ -28,7 +28,6 @@ export const useInfiniteFetch = (
       if (data.error) {
         toastifyError((data as any).error);
       } else {
-        console.log(data)
         setHasMoreData(data.hasMore)
         setItems((prevItems) => [...prevItems, ...data.items]);
       }

@@ -45,3 +45,15 @@ export const getSharedMagazineIds = (
 ) => {
   return isSharedMagazine ? { user: options[1], post: options[2] } : null;
 };
+
+export const handleBoardColor = (bg: string) => {
+  const darkColors = ["bg-[#5A0001]/80"];
+  const darkColorsBorder = [
+    "bg-[#5A0001]/80",
+    "bg-[#20A4F3]/30",
+    "bg-[#FFB238]/80",
+  ];
+  const textColor = darkColors.includes(bg) ? "text-white" : "text-text-color";
+  const borderColor = darkColorsBorder.includes(bg) ? "border-white" : "";
+  return { textColor, borderColor };
+};

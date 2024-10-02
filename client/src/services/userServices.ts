@@ -92,9 +92,8 @@ export const getUserByUsername = async (username: string) => {
       query: getUserByUsernameQuery,
       variables: { username },
     });
-    // console.log(data)
 
-    return {...data.findOneByUsername, posts: data.findOneByUsername.post};
+    return data.findOneByUsername
   } catch (error) {
     return {
       error:

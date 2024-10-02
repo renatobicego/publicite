@@ -2,10 +2,10 @@ import { Chip } from "@nextui-org/react";
 import { Field, FormikErrors } from "formik";
 import { PostBoard } from "@/types/board";
 import { memo, SetStateAction } from "react";
-import AnnotationsInputs from "./inputs/AnnotationsInputs";
-import KeywordsInput from "./inputs/KeywordsInput";
+import AnnotationsInputs from "../inputs/AnnotationsInputs";
+import KeywordsInput from "../inputs/KeywordsInput";
 import { visibilityItems } from "@/utils/data/selectData";
-import { CustomSelect } from "../inputs/CustomInputs";
+import { CustomSelect } from "../../inputs/CustomInputs";
 
 const CreateBoardInputs = ({
   setValues,

@@ -17,7 +17,7 @@ const getUserByUsernameQuery = gql`
       description
       lastName
       name
-      post {
+      posts {
         _id
         description
         frequencyPrice
@@ -36,6 +36,7 @@ const getUserByUsernameQuery = gql`
         color
         keywords
         user
+        visibility
       }
     }
   }

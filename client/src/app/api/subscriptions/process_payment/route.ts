@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
         body: {
           auto_recurring: {
             ...subscriptionPlan.auto_recurring,
-            end_date: getEndDateISO(subscriptionPlan.auto_recurring.frequency),
+            end_date: getEndDateISO(subscriptionPlan.auto_recurring.frequency, "days"),
           },
           back_url: "http://localhost:3000/",
           card_token_id: formData.token,

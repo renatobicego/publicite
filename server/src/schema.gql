@@ -74,7 +74,7 @@ type User_Full_Grapql_Model {
   contact: Contact
   createdTime: String
   board: Board
-  post: [Post_Full_Graphql_Model]
+  posts: [Post_Full_Graphql_Model]
   userType: String
   userPreferences: UserPreferences_Grapql_Model
 }
