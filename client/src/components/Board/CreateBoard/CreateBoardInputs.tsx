@@ -1,4 +1,4 @@
-import { Chip } from "@nextui-org/react";
+import { Button, Chip } from "@nextui-org/react";
 import { Field, FormikErrors } from "formik";
 import { PostBoard } from "@/types/board";
 import { memo, SetStateAction } from "react";
@@ -6,6 +6,9 @@ import AnnotationsInputs from "../inputs/AnnotationsInputs";
 import KeywordsInput from "../inputs/KeywordsInput";
 import { visibilityItems } from "@/utils/data/selectData";
 import { CustomSelect } from "../../inputs/CustomInputs";
+import { FaX } from "react-icons/fa6";
+import KeywordAdded from "../inputs/KeywordAdded";
+import AnnotationAdded from "../inputs/AnnotationAdded";
 
 const CreateBoardInputs = ({
   setValues,
@@ -21,34 +24,48 @@ const CreateBoardInputs = ({
   textColor: string;
   borderColor: string;
 }) => {
+  const deleteKeyword = (keyword: string) => {
+    setValues((prev) => ({
+      ...prev,
+      keywords: prev.keywords.filter((k) => k !== keyword),
+    }));
+  };
+  const deleteAnnotation = (annotation: string) => {
+    setValues((prev) => ({
+      ...prev,
+      annotations: prev.annotations.filter((a) => a !== annotation),
+    }));
+  };
   return (
     <>
       {values.annotations.length > 0 && (
         <ul className="flex flex-col gap-2 list-inside list-disc">
           {values.annotations.map((annotation, index) => (
-            <li className="text-sm" key={index}>
-              {annotation}
-            </li>
+            <AnnotationAdded
+              key={index}
+              annotation={annotation}
+              deleteAnnotation={deleteAnnotation}
+            />
           ))}
         </ul>
       )}
       <AnnotationsInputs setValues={setValues} textColor={textColor} />
-      <KeywordsInput setValues={setValues} textColor={textColor} />
-      {values.keywords.length > 0 && (
-        <div className="flex gap-1 items-center">
-          {values.keywords.map((keyword, index) => (
-            <Chip
-              size="sm"
-              key={index}
-              color="default"
-              variant="bordered"
-              className={`${textColor} ${borderColor}`}
-            >
-              {keyword}
-            </Chip>
-          ))}
-        </div>
-      )}
+      <div>
+        <KeywordsInput setValues={setValues} textColor={textColor} />
+        {values.keywords.length > 0 && (
+          <div className="flex gap-1 items-center">
+            {values.keywords.map((keyword, index) => (
+              <KeywordAdded
+                key={index}
+                keyword={keyword}
+                deleteKeyword={deleteKeyword}
+                borderColor={borderColor}
+                textColor={textColor}
+              />
+            ))}
+          </div>
+        )}
+      </div>
       <Field
         as={CustomSelect}
         items={visibilityItems}

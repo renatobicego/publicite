@@ -1,16 +1,15 @@
 import { Field, FormikErrors } from "formik";
-import { ChangeEvent, memo } from "react";
+import { ChangeEvent, memo, useEffect, useState } from "react";
 import {
   CustomInput,
   CustomSelect,
   CustomTextarea,
 } from "@/components/inputs/CustomInputs";
-import { visibilityItems } from "@/utils/data/selectData";
+import { groupVisibilityItems } from "@/utils/data/selectData";
 import SelectUsers from "@/components/inputs/SelectUsers";
-import { mockedUsers } from "@/utils/data/mockedData";
 import { Divider } from "@nextui-org/react";
-import SecondaryButton from "@/components/buttons/SecondaryButton";
 import { PostGroup } from "./CreateGroupForm";
+import { fetchDataByType } from "@/utils/data/fetchDataByType";
 
 const Inputs = ({
   errors,
@@ -23,6 +22,13 @@ const Inputs = ({
     shouldValidate?: boolean
   ) => Promise<void | FormikErrors<PostGroup>>;
 }) => {
+  const [listUsers, setListUsers] = useState([]);
+  useEffect(() => {
+    //debería traer contactos del admin
+    fetchDataByType("users", null)().then((data: any) => {
+      setListUsers(data.items);
+    })
+  }, [])
   return (
     <>
       <Field
@@ -50,7 +56,7 @@ const Inputs = ({
         name="rules"
         label="Reglas"
         placeholder="Agregue las reglas del grupo"
-        description="Máximo 200 caracteres"
+        description="Máximo 300 caracteres"
         aria-label="reglas"
         isInvalid={!!errors.rules}
         errorMessage={errors.rules}
@@ -66,7 +72,7 @@ const Inputs = ({
         name={"members"}
         label="Invitar Miembros"
         aria-label="invitar miembros"
-        items={mockedUsers}
+        items={listUsers}
         isInvalid={!!errors.members}
         errorMessage={errors.members}
       />
@@ -74,13 +80,13 @@ const Inputs = ({
       <h6>Visibilidad del Grupo</h6>
       <Field
         as={CustomSelect}
-        items={visibilityItems}
+        items={groupVisibilityItems}
         disallowEmptySelection
         getItemValue={(item: any) => item.value}
         getItemTextValue={(item: any) => item.label}
         getItemLabel={(item: any) => item.label}
         name="visibility"
-        label="¿Quién puede enviar la solicitud para unirse?"
+        label="Visibilidad del Grupo"
         placeholder="Seleccionar la visibilidad"
         aria-label="visibilidad del grupo"
         isInvalid={!!errors.visibility}

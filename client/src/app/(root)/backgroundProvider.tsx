@@ -52,11 +52,15 @@ export const BackgroundProvider = ({
       // Fetch user preferences from the server if not found in localStorage
       const fetchPreferences = async () => {
         const preferences = await getUserPreferences(username);
-        if (preferences && preferences.backgroundColor) {
-          setGradientValue(preferences.backgroundColor);
+        if (preferences) {
+          setGradientValue(
+            preferences.backgroundColor ? preferences.backgroundColor : 0
+          );
           localStorage.setItem(
             `backgroundColor_${username}`,
-            JSON.stringify(preferences.backgroundColor)
+            JSON.stringify(
+              preferences.backgroundColor ? preferences.backgroundColor : 0
+            )
           );
         }
       };

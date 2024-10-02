@@ -44,7 +44,7 @@ const CreateBoard = ({
   ) => {
     let resApi;
     if (prevBoard) {
-      resApi = await editBoard(prevBoard._id, values);
+      resApi = await editBoard(prevBoard._id, { ...values, color: bgColor });
     } else {
       resApi = await createBoard({ ...values, color: bgColor });
     }
@@ -54,6 +54,9 @@ const CreateBoard = ({
       return;
     }
     setShowForm(false);
+    if (setShowEditBoard) {
+      setShowEditBoard(false);
+    }
     toastifySuccess(resApi.message as string);
     router.refresh();
   };

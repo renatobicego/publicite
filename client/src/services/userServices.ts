@@ -6,7 +6,6 @@ import {
 } from "@/types/userTypes";
 import { currentUser } from "@clerk/nextjs/server";
 import axios from "axios";
-import { mockedUsers } from "../utils/data/mockedData";
 import { query } from "@/lib/client";
 import getUserByUsernameQuery from "@/graphql/userQueries";
 

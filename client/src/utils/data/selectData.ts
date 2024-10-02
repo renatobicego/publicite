@@ -124,3 +124,14 @@ export const relationTypes: {value: UserRelation; label: string}[] = [
     value: "topfriend",
   }
 ]
+
+export const groupVisibilityItems: { value: "public" | "private"; label: string }[] = [
+  {
+    value: "public",
+    label: "Público",
+  },
+  {
+    value: "private",
+    label: "Privado",
+  }
+];
