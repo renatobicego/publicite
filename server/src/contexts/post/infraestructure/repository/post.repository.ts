@@ -2,11 +2,10 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Post } from '../../domain/entity/post.entity';
 import { PostRepositoryInterface } from '../../domain/repository/post.repository.interface';
 import { ClientSession, Model, ObjectId } from 'mongoose';
-
 import { Inject } from '@nestjs/common';
+
 import { PostRepositoryMapperInterface } from '../../domain/repository/mapper/post.repository.mapper.interface';
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
-
 import { PostLocation } from '../../domain/entity/postLocation.entity';
 import { PostLocationDocument } from '../schemas/postLocation.schema';
 import { PostGood } from '../../domain/entity/post-types/post.good.entity';
@@ -24,6 +23,8 @@ import {
   IPostPetition,
   PostPetitionModel,
 } from '../schemas/post-types-schemas/post.petition.schema';
+import { PostUpdateDto } from '../../domain/entity/dto/post.update.dto';
+import { PostType } from '../../domain/entity/enum/post-type.enum';
 
 export class PostRepository implements PostRepositoryInterface {
   constructor(
@@ -42,6 +43,7 @@ export class PostRepository implements PostRepositoryInterface {
     private readonly postMapper: PostRepositoryMapperInterface,
     private readonly logger: MyLoggerService,
   ) {}
+
   async saveLocation(
     location: PostLocation,
     options?: { session?: ClientSession },
@@ -178,6 +180,46 @@ export class PostRepository implements PostRepositoryInterface {
       return ret;
     } catch (error: any) {
       this.logger.error('Error creating PostService REPOSITORY: ' + error);
+      throw error;
+    }
+  }
+
+  async updatePostById(
+    postUpdate: PostUpdateDto,
+    id: string,
+    postType: string,
+  ): Promise<any> {
+    try {
+      let postId;
+      switch (postType) {
+        case PostType.Good:
+          this.logger.warn('Updating POST TYPE: ' + postType);
+          postId = await this.postGoodDocument.findByIdAndUpdate(
+            id,
+            postUpdate,
+          );
+          return postId?._id;
+        case PostType.Service:
+          this.logger.warn('Updating POST TYPE: ' + postType);
+          postId = await this.postServiceDocument.findByIdAndUpdate(
+            id,
+            postUpdate,
+          );
+          return postId?._id;
+        case PostType.Petition:
+          this.logger.warn('Updating POST TYPE: ' + postType);
+          postId = await this.postPetitionDocument.findByIdAndUpdate(
+            id,
+            postUpdate,
+          );
+          return postId?._id;
+        default:
+          this.logger.error(
+            'Invalid post type we could not update: ' + postType,
+          );
+          throw Error;
+      }
+    } catch (error: any) {
       throw error;
     }
   }

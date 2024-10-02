@@ -2,8 +2,8 @@ import { Body, Controller, Inject, Post } from '@nestjs/common';
 import { PostAdapterInterface } from '../../application/adapter/post.adapter.interface';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
-import { PostRequest } from '../../application/adapter/dto/post.request';
-import { PostResponse } from '../../application/adapter/dto/post.response';
+import { PostRequest } from '../../application/adapter/dto/HTTP-REQUEST/post.request';
+import { PostResponse } from '../../application/adapter/dto/HTTP-RESPONSE/post.response';
 import { PostRequestDto } from './swagger/post.request.swagger';
 import { PostResponseDto } from './swagger/post.response.swagger';
 

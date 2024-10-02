@@ -7,6 +7,7 @@ import { Connection, ObjectId } from 'mongoose';
 import { error } from 'console';
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
 import { UserServiceInterface } from 'src/contexts/user/domain/service/user.service.interface';
+import { PostUpdateDto } from '../../domain/entity/dto/post.update.dto';
 
 export class PostService implements PostServiceInterface {
   constructor(
@@ -80,6 +81,19 @@ export class PostService implements PostServiceInterface {
       throw error;
     } finally {
       session.endSession();
+    }
+  }
+
+  async updatePostById(
+    postUpdate: PostUpdateDto,
+    id: string,
+    postType: string,
+    cookie?: any,
+  ): Promise<any> {
+    try {
+      return await this.postRepository.updatePostById(postUpdate, id, postType);
+    } catch (error: any) {
+      throw error;
     }
   }
 }
