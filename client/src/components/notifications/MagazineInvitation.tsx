@@ -1,52 +1,41 @@
-import { GROUPS } from "@/utils/data/urls";
+import { MAGAZINES } from "@/utils/data/urls";
 import { showDate } from "@/utils/functions/dates";
 import { parseDate } from "@internationalized/date";
-import { Image } from "@nextui-org/react";
 import Link from "next/link";
-import {
-  NotificationCard,
-  NotificationImage,
-  NotificationBody,
-  NotificationOptions,
-} from "./NotificationCard";
-import { GroupInvitationNotification } from "@/types/userTypes";
+import { NotificationCard, NotificationImage, NotificationBody, NotificationOptions } from "./NotificationCard";
+import { MagazineInvitationNotification } from "@/types/postTypes";
+import { IoBook } from "react-icons/io5";
 
-const GroupInvitation = ({
+const MagazineInvitation = ({
   notification,
 }: {
-  notification: GroupInvitationNotification;
+  notification: MagazineInvitationNotification;
 }) => {
-  const { group } = notification;
   return (
     <NotificationCard>
       <NotificationImage>
-        <Image
-          radius="full"
-          src={group.profilePhotoUrl || "/groupLogo.png"}
-          alt="foto"
-          className="object-cover w-16 h-16"
-        />
+        <IoBook className="text-secondary size-14" />
       </NotificationImage>
       <NotificationBody>
         <p className="text-sm">
           <span className="font-semibold">
             {notification.userInviting.username}
           </span>{" "}
-          te ha enviado una invitación al grupo
-          <span className="font-semibold"> {group.name}</span>
+          te ha invitado a colaborar en la revista 
+          <span className="font-semibold"> {notification.magazine.name}</span>
         </p>
       </NotificationBody>
       <NotificationOptions
         date={showDate(parseDate(notification.date))}
         items={[
           {
-            label: "Aceptar Solicitud",
+            label: "Aceptar Invitación",
           },
           {
-            label: "Ver Grupo",
+            label: "Ver Revista",
             as: Link,
             className: "text-text-color",
-            href: `${GROUPS}/${group._id}`,
+            href: `${MAGAZINES}/${notification.magazine._id}`,
           },
           {
             label: "Rechazar Solicitud",
@@ -58,4 +47,4 @@ const GroupInvitation = ({
   );
 };
 
-export default GroupInvitation;
+export default MagazineInvitation;

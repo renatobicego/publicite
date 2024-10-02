@@ -4,7 +4,7 @@ import {
   NotificationCard,
   NotificationImage,
   NotificationOptions,
-} from "./NotificationCard";
+} from "../NotificationCard";
 import { Good, PostContactNotification } from "@/types/postTypes";
 import { POSTS } from "@/utils/data/urls";
 import { showDate } from "@/utils/functions/dates";

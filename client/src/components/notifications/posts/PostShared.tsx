@@ -1,14 +1,13 @@
 import { CREATE_MAGAZINE, POSTS } from "@/utils/data/urls";
 import { showDate } from "@/utils/functions/dates";
 import { parseDate } from "@internationalized/date";
-import { Image } from "@nextui-org/react";
-import Link from "next/link";
+import { Image, Link } from "@nextui-org/react";
 import {
   NotificationCard,
   NotificationImage,
   NotificationBody,
   NotificationOptions,
-} from "./NotificationCard";
+} from "../NotificationCard";
 import { Good, PostSharedNotification } from "@/types/postTypes";
 import { MdQuestionAnswer } from "react-icons/md";
 
@@ -22,7 +21,7 @@ const PostShared = ({
     <NotificationCard>
       <NotificationImage>
         {post.postType === "petition" ? (
-          <MdQuestionAnswer className="text-petition size-20" />
+          <MdQuestionAnswer className="text-petition size-14" />
         ) : (
           <Image
             radius="sm"
@@ -35,8 +34,8 @@ const PostShared = ({
           />
         )}
       </NotificationImage>
-      <NotificationBody>
-        <p className="text-sm">
+      <NotificationBody as={Link} href={`${POSTS}/${post._id}`}>
+        <p className="text-sm text-text-color">
           <span className="font-semibold">
             {notification.userSharing.username}
           </span>{" "}

@@ -170,4 +170,13 @@ export interface GroupInvitationNotification {
   group: Pick<Group, "_id" | "name" | "profilePhotoUrl">;
   userInviting: Pick<User, "username">;
   date: string;
+  type: GroupNotificationType;
 }
+
+export type GroupNotificationType =
+  | "groupInvitation"
+  | "admin"
+  | "memberDeleted"
+  | "newMemberRequest"
+  | "groupAccepted"
+  | "groupDeclined";

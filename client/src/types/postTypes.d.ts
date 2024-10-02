@@ -215,3 +215,10 @@ export interface PostSharedNotification {
   date: string;
   userSharing: Pick<User, "_id" | "username">;
 }
+
+export interface MagazineInvitationNotification {
+  _id: ObjectId;
+  magazine: Pick<Magazine, "_id" | "name">;
+  userInviting: Pick<User, "username">;
+  date: string;
+}

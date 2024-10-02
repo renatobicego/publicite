@@ -6,15 +6,21 @@ import {
   PopoverContent,
 } from "@nextui-org/react";
 import { FaBell } from "react-icons/fa6";
-import NewContactPost from "../notifications/NewContactPost";
+import NewContactPost from "../notifications/posts/NewContactPost";
 import { mockedPosts, mockedUsers } from "@/utils/data/mockedData";
 import NewContactRequest from "../notifications/NewContactRequest";
-import GroupInvitation from "../notifications/GroupInvitation";
-import PostShared from "../notifications/PostShared";
+import GroupInvitation from "../notifications/groups/GroupInvitation";
+import PostShared from "../notifications/posts/PostShared";
+import MagazineInvitation from "../notifications/MagazineInvitation";
+import PaymentSuccess from "../notifications/suscriptions/PaymentSuccess";
 
 const Notifications = () => {
   return (
-    <Popover placement="bottom-end">
+    <Popover
+      className="max-h-[80vh] overflow-y-auto"
+      shouldBlockScroll
+      placement="bottom-end"
+    >
       <PopoverTrigger>
         <Button radius="full" variant="light" isIconOnly>
           <Badge content="" size="sm" color="primary">
@@ -59,6 +65,23 @@ const Notifications = () => {
               date: "2022-01-01",
               post: mockedPosts[0],
               userSharing: mockedUsers[0],
+            }}
+          />
+          <MagazineInvitation
+            notification={{
+              _id: "5",
+              date: "2024-01-01",
+              magazine: { _id: "1", name: "Computadoras" },
+              userInviting: { username: "username" },
+            }}
+          />
+          <PaymentSuccess
+            notification={{
+              _id: "6",
+              date: "2024-01-01",
+              subscriptionPlan: {
+                reason: "Suscripción mensual",
+              },
             }}
           />
         </div>
