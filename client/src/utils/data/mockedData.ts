@@ -136,7 +136,7 @@ const mockedGood: Good = {
   title: "Yamaha YBR-Z",
   author: {
     profilePhotoUrl: "/avatar.png",
-    username: "renatobicego",
+    username: "uncuyoatletismo",
     contact: {
       _id: "121",
       phone: "phone",
@@ -147,6 +147,7 @@ const mockedGood: Good = {
     },
     lastName: "lastName",
     name: "name",
+    _id: "66fb19fd316723a55b9d0ccb"
   },
   createAt: "2024-07-12",
 };
@@ -197,6 +198,7 @@ const mockedService: Service = {
       phone: "phone",
     },
     lastName: "lastName",
+    _id: "66fb19fd316723a55b9d0ccb",
     name: "name",
   },
   createAt: "2024-07-12",
@@ -216,6 +218,7 @@ const mockedPetition: Petition = {
     },
     lastName: "lastName",
     name: "name",
+    _id: "66fb19fd316723a55b9d0ccb"
   },
   category: {
     _id: "1",
@@ -256,6 +259,7 @@ const mockedPetition2: Petition = {
     },
     lastName: "lastName",
     name: "name",
+    _id: "66fb19fd316723a55b9d0ccb"
   },
   category: {
     _id: "1",
@@ -520,7 +524,8 @@ export const mockedMagazines: UserMagazine[] = [
         title: "Sección 1",
       },
     ],
-    description: ""
+    description: "",
+    visibility: "public",
   },
   {
     _id: "2magaz",
@@ -536,7 +541,8 @@ export const mockedMagazines: UserMagazine[] = [
         title: "Sección 1",
       },
     ],
-    description: ""
+    description: "",
+    visibility: "public",
   },
 ];
 
@@ -565,7 +571,11 @@ export const mockedCompleteUser: GetUser = {
       "Anotacion 6",
     ],
     keywords: ["Keyword 1", "Keyword 2"],
-    user: "2k3",
+    user: {
+      name: "Renato",
+      username: "renatobicego",
+      profilePhotoUrl: "/avatar.png",
+    },
     color: boardColors[0],
     visibility: "public",
   },
@@ -606,4 +616,5 @@ export const mockedCompleteMagazine: UserMagazine = {
     },
   ],
   ownerType: "user",
+  visibility: "public",
 };

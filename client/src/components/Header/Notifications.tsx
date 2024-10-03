@@ -9,7 +9,7 @@ import { FaBell } from "react-icons/fa6";
 import NewContactPost from "../notifications/posts/NewContactPost";
 import { mockedPosts, mockedUsers } from "@/utils/data/mockedData";
 import NewContactRequest from "../notifications/NewContactRequest";
-import GroupInvitation from "../notifications/groups/GroupInvitation";
+import GroupInvitation from "../notifications/groups/GroupNotification";
 import PostShared from "../notifications/posts/PostShared";
 import MagazineInvitation from "../notifications/MagazineInvitation";
 import PaymentSuccess from "../notifications/suscriptions/PaymentSuccess";
@@ -57,6 +57,7 @@ const Notifications = () => {
               date: "2022-01-01",
               group: { _id: "1", name: "Computadoras", profilePhotoUrl: "" },
               userInviting: { username: "username" },
+              type: "groupInvitation",
             }}
           />
           <PostShared

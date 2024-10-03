@@ -1,70 +1,43 @@
 import SecondaryButton from "@/components/buttons/SecondaryButton";
-import { AttachedFileValues, PostAttachedFile } from "@/types/postTypes";
+import {
+  AttachedFileValues,
+  GoodPostValues,
+  PostAttachedFile,
+  ServicePostValues,
+} from "@/types/postTypes";
 import { Dispatch, memo, SetStateAction, useState } from "react";
 import { FaPlus } from "react-icons/fa6";
 import FileCard from "./FileCard";
 import { FormikErrors } from "formik";
-
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB in bytes
+import PrevAttachedFile from "./PrevAttachedFile";
+import DeletedAttachedFile from "./DeletedAttachedFIle";
+import { useAttachedFiles } from "./AttachedFilesContext";
 
 const AttachedFiles = ({
-  attachedFiles,
-  setAttachedFiles,
   errors,
   maxFiles = 3,
+  setValues,
+  isEditing
 }: {
-  attachedFiles: AttachedFileValues[];
-  setAttachedFiles: Dispatch<SetStateAction<AttachedFileValues[]>>;
   errors: string | string[] | FormikErrors<PostAttachedFile>[] | undefined;
   maxFiles?: number;
+  setValues?: (
+    values: SetStateAction<any>,
+    shouldValidate?: boolean
+  ) => Promise<any>;
+  isEditing: boolean;
 }) => {
-  const [error, setError] = useState<string | null>(null);
-
-  const addFile = () => {
-    if (attachedFiles.length < maxFiles) {
-      setAttachedFiles((prev) => [
-        ...prev,
-        {
-          file: null,
-          label: "",
-          _id: Math.random().toString(),
-        },
-      ]);
-    }
-  };
-
-  const handleFileChange = (file: File | null, _id: string) => {
-    if (file) {
-      // Validation: Check if the file is a PDF and its size is below 10MB
-      if (file.type !== "application/pdf") {
-        setError("Solo se permiten archivos PDF.");
-        return;
-      }
-      if (file.size > MAX_FILE_SIZE) {
-        setError("El archivo no debe exceder los 10MB.");
-        return;
-      }
-
-      // Clear the error if valid
-      setError(null);
-
-      // Update the attached file
-      setAttachedFiles((prev) =>
-        prev.map((f) => (f._id === _id ? { ...f, file } : f))
-      );
-    }
-  };
-
-  const handleLabelChange = (label: string, _id: string) => {
-    setAttachedFiles((prev) =>
-      prev.map((f) => (f._id === _id ? { ...f, label } : f))
-    );
-  };
-
-  const removeFile = (_id: string) => {
-    setAttachedFiles((prev) => prev.filter((file) => file._id !== _id));
-  };
-
+  const {
+    attachedFiles,
+    prevAttachedFiles,
+    prevAttachedFilesDeleted,
+    addFile,
+    removeFile,
+    handleFileChange,
+    handleLabelChange,
+    error,
+    addBackDeletedAttachedFile
+  } = useAttachedFiles();
   return (
     <div className="flex flex-col gap-4">
       <div className="flex gap-2 w-full justify-between flex-col items-end">
@@ -77,7 +50,7 @@ const AttachedFiles = ({
           size="sm"
           className="text-xs min-w-fit [&>svg]:min-w-3"
           isDisabled={attachedFiles.length >= maxFiles}
-          onPress={addFile}
+          onPress={() => addFile(maxFiles, isEditing)}
         >
           Agregar Archivo
         </SecondaryButton>
@@ -98,6 +71,28 @@ const AttachedFiles = ({
               ? errors[index] // Pass specific file errors for this file
               : null
           }
+        />
+      ))}
+      {prevAttachedFiles?.map((attachedFile, index) => (
+        <PrevAttachedFile
+          key={attachedFile._id + "prev"}
+          attachedFile={attachedFile}
+          onLabelChange={handleLabelChange}
+          onRemove={removeFile}
+          error={
+            typeof errors === "object" &&
+            errors[index] &&
+            typeof errors[index] !== "string"
+              ? errors[index] // Pass specific file errors for this file
+              : null
+          }
+        />
+      ))}
+      {prevAttachedFilesDeleted?.map((attachedFile) => (
+        <DeletedAttachedFile
+          key={attachedFile._id + "deleted"}
+          attachedFile={attachedFile}
+          addBackDeletedAttachedFile={addBackDeletedAttachedFile}
         />
       ))}
 

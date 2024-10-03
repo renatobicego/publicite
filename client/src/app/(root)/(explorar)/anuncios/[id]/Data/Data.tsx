@@ -9,7 +9,7 @@ import ShareButton from "@/components/buttons/ShareButton";
 import SaveButton from "@/components/buttons/SaveButton";
 import AccordionData from "./AccordionData/AccordionData";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
-import { CREATE_POST } from "@/utils/data/urls";
+import { CREATE_POST, EDIT_POST } from "@/utils/data/urls";
 import { Link } from "@nextui-org/react";
 import ContactPetitionsList from "@/components/modals/ContactPetitionsList";
 import PetitionChip from "@/components/chips/PetitionChip";
@@ -77,7 +77,7 @@ const Data = async ({
         <p className="text-sm xl:text-base">{post.description}</p>
         <div className="flex w-full justify-between max-lg:flex-wrap gap-2">
           {isAuthor ? (
-            <PrimaryButton as={Link} href={`${CREATE_POST}/${post._id}`}>
+            <PrimaryButton as={Link} href={`${EDIT_POST}/${post._id}`}>
               Editar Anuncio
             </PrimaryButton>
           ) : (

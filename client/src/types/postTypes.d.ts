@@ -23,7 +23,7 @@ interface Reviewer extends Pick<UserPerson, "username" | "profilePhotoUrl"> {}
 interface Author
   extends Pick<
     UserPerson,
-    "username" | "profilePhotoUrl" | "contact" | "name" | "lastName"
+    "username" | "profilePhotoUrl" | "contact" | "name" | "lastName" | "_id"
   > {}
 
 export interface PostRecommendation {
@@ -37,7 +37,7 @@ export interface PostLocation {
   location: {
     type: "Point";
     coordinates: [number, number];
-  }
+  };
   description: string;
   userSetted: boolean;
 }
@@ -66,7 +66,7 @@ export interface PostComment {
 export interface PostCommentForm {
   author: ObjectId;
   comment: string;
-  date: string
+  date: string;
 }
 
 export interface PostAttachedFile {
@@ -92,23 +92,27 @@ export interface Good extends Post {
   condition: "new" | "used";
 }
 
-export interface GoodPostValues
+export interface CreatePostValues
   extends Omit<
-    Good,
+    Post,
     | "_id"
-    | "category"
-    | "price"
     | "author"
     | "comments"
-    | "reviews"
-    | "condition"
+    | "price"
+    | "category"
     | "recommendations"
+    | "location"
   > {
   category: ObjectId;
   price?: number;
   author: string;
-  condition?: "new" | "used";
   location: PostLocationForm;
+}
+
+export interface GoodPostValues
+  extends CreatePostValues,
+    Omit<Good, "_id" | "reviews" | "comments" | "recommendations"> {
+  condition?: "new" | "used";
 }
 
 export interface Service extends Post {
@@ -118,21 +122,11 @@ export interface Service extends Post {
 }
 
 export interface ServicePostValues
-  extends Omit<
-    Service,
-    | "_id"
-    | "category"
-    | "price"
-    | "author"
-    | "comments"
-    | "reviews"
-    | "condition"
-    | "recommendations"
-  > {
-  category: ObjectId;
-  price?: number
-  location: PostLocationForm;
-  author: string;
+  extends CreatePostValues,
+    Omit<
+      Service,
+      "frequencyPrice" | "reviews" | "comments" | "recommendations"
+    > {
   frequencyPrice?: FrequencyPrice;
 }
 export interface Petition extends Post {
@@ -142,23 +136,9 @@ export interface Petition extends Post {
 }
 
 export interface PetitionPostValues
-  extends Omit<
-    Petition,
-    | "_id"
-    | "category"
-    | "price"
-    | "author"
-    | "comments"
-    | "reviews"
-    | "condition"
-    | "recommendations"
-  > {
-  category: ObjectId;
-  price?: number
-  location: PostLocationForm;
-  author: string;
+  extends CreatePostValues,
+    Omit<Petition, "petitionType"> {
   petitionType?: "good" | "service";
-
 }
 
 export interface AttachedFileValues {
@@ -175,13 +155,13 @@ export interface Magazine {
   description: string;
 }
 
-export interface UserMagazine extends Magazine{
+export interface UserMagazine extends Magazine {
   collaborators: ObjectId[] | GetUser[];
   user: ObjectId | GetUser;
   visibility: Visibility;
 }
 
-export interface GroupMagazine extends Magazine{
+export interface GroupMagazine extends Magazine {
   allowedCollaborators: ObjectId[] | GetUser[];
   group: ObjectId | Group;
 }
