@@ -397,7 +397,7 @@ export class UserRepository implements UserRepositoryInterface {
         'The post was successfully saved in the user profile: ' +
           UserRepository.name,
       );
-      console.log(obj);
+
       return obj;
     } catch (error: any) {
       this.logger.error(

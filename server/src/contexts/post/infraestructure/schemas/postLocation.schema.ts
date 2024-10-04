@@ -1,4 +1,4 @@
-import { Schema, Document } from 'mongoose';
+import { Schema, Document, model } from 'mongoose';
 
 export const PostLocationSchema = new Schema({
   location: {
@@ -24,3 +24,10 @@ export interface PostLocationDocument extends Document {
   userSetted: boolean;
   description: string;
 }
+
+const PostLocationModel = model<PostLocationDocument>(
+  'PostLocation',
+  PostLocationSchema,
+);
+
+export default PostLocationModel;

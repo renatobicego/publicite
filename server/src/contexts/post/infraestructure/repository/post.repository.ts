@@ -1,7 +1,7 @@
-import { InjectModel } from '@nestjs/mongoose';
+import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Post } from '../../domain/entity/post.entity';
 import { PostRepositoryInterface } from '../../domain/repository/post.repository.interface';
-import { ClientSession, Model, ObjectId } from 'mongoose';
+import { ClientSession, Connection, Model, ObjectId } from 'mongoose';
 import { Inject } from '@nestjs/common';
 
 import { PostRepositoryMapperInterface } from '../../domain/repository/mapper/post.repository.mapper.interface';
@@ -25,6 +25,11 @@ import {
 } from '../schemas/post-types-schemas/post.petition.schema';
 import { PostUpdateDto } from '../../domain/entity/dto/post.update.dto';
 import { PostType } from '../../domain/entity/enum/post-type.enum';
+import { PostDocument } from '../schemas/post.schema';
+import {
+  IUser,
+  UserModel,
+} from 'src/contexts/user/infrastructure/schemas/user.schema';
 
 export class PostRepository implements PostRepositoryInterface {
   constructor(
@@ -37,27 +42,20 @@ export class PostRepository implements PostRepositoryInterface {
     @InjectModel(PostPetitionModel.modelName)
     private readonly postPetitionDocument: Model<IPostPetition>,
 
+    @InjectModel(UserModel.modelName)
+    private readonly userDocument: Model<IUser>,
+
     @InjectModel('PostLocation')
     private readonly locationDocument: Model<PostLocationDocument>,
     @Inject('PostRepositoryMapperInterface')
     private readonly postMapper: PostRepositoryMapperInterface,
-    private readonly logger: MyLoggerService,
-  ) {}
 
-  async saveLocation(
-    location: PostLocation,
-    options?: { session?: ClientSession },
-  ): Promise<ObjectId> {
-    try {
-      this.logger.log('Saving location in repository');
-      const postPostedDocument = new this.locationDocument(location);
-      const documentSaved = await postPostedDocument.save(options);
-      return documentSaved._id as unknown as ObjectId;
-    } catch (error: any) {
-      this.logger.error('Error creating location REPOSITORY: ' + error);
-      throw error;
-    }
-  }
+    @InjectModel('Post')
+    private readonly postDocument: Model<PostDocument>,
+
+    private readonly logger: MyLoggerService,
+    @InjectConnection() private readonly connection: Connection,
+  ) {}
 
   async create(
     post: Post,
@@ -104,6 +102,63 @@ export class PostRepository implements PostRepositoryInterface {
       }
     } catch (error: any) {
       this.logger.error('Error creating post REPOSITORY: ' + error);
+      throw error;
+    }
+  }
+
+  async deletePostById(id: string): Promise<void> {
+    const session = await this.connection.startSession();
+    try {
+      await session.withTransaction(async () => {
+        const postDeleted = await this.postDocument.findByIdAndDelete(id, {
+          session,
+        });
+        if (!postDeleted) throw new Error('Post not found');
+
+        const deletePromises = [
+          /*
+          - Falta reviews 
+          - Falta comments
+          */
+          this.locationDocument.deleteOne(
+            { _id: postDeleted.location },
+            { session },
+          ),
+          this.userDocument.findOneAndUpdate(
+            {
+              _id: postDeleted.author,
+            },
+            {
+              $pull: { posts: postDeleted._id },
+            },
+            { session },
+          ),
+        ];
+
+        await Promise.all(deletePromises);
+      });
+      await session.commitTransaction();
+    } catch (error) {
+      this.logger.error('Error deleting post REPOSITORY: ' + error);
+      await session.abortTransaction();
+      this.logger.error('Session aborted');
+      throw error;
+    } finally {
+      session.endSession();
+    }
+  }
+
+  async saveLocation(
+    location: PostLocation,
+    options?: { session?: ClientSession },
+  ): Promise<ObjectId> {
+    try {
+      this.logger.log('Saving location in repository');
+      const postPostedDocument = new this.locationDocument(location);
+      const documentSaved = await postPostedDocument.save(options);
+      return documentSaved._id as unknown as ObjectId;
+    } catch (error: any) {
+      this.logger.error('Error creating location REPOSITORY: ' + error);
       throw error;
     }
   }

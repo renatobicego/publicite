@@ -98,6 +98,9 @@ type Query {
 
 type Mutation {
   """Actualizar un post"""
+  deletePostById(id: String!): String
+
+  """Actualizar un post"""
   updatePostById(postUpdate: PostUpdateRequest!, id: String!): String
 
   """Actualiza el board del usuario"""

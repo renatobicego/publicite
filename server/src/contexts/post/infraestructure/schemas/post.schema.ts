@@ -2,6 +2,7 @@ import { Schema, model, Document } from 'mongoose';
 import { PostType } from '../../domain/entity/enum/post-type.enum';
 import { PostLocation } from '../../domain/entity/postLocation.entity';
 import { Visibility } from '../../domain/entity/enum/post-visibility.enum';
+import PostLocationModel, { PostLocationSchema } from './postLocation.schema';
 
 export interface attachedFiles {
   url: string;

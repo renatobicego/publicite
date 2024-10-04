@@ -1,10 +1,10 @@
 import { Inject } from '@nestjs/common';
+import { Connection, ObjectId } from 'mongoose';
+import { InjectConnection } from '@nestjs/mongoose';
+
 import { PostRepositoryInterface } from '../../domain/repository/post.repository.interface';
 import { PostServiceInterface } from '../../domain/service/post.service.interface';
 import { Post } from '../../domain/entity/post.entity';
-import { InjectConnection } from '@nestjs/mongoose';
-import { Connection, ObjectId } from 'mongoose';
-import { error } from 'console';
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
 import { UserServiceInterface } from 'src/contexts/user/domain/service/user.service.interface';
 import { PostUpdateDto } from '../../domain/entity/dto/post.update.dto';
@@ -20,67 +20,54 @@ export class PostService implements PostServiceInterface {
   ) {}
 
   async create(post: Post): Promise<Post> {
-    let locationID: ObjectId;
-
     const session = await this.connection.startSession();
-    session.startTransaction();
+    let locationID: ObjectId;
+    let newPost: Post;
     try {
-      //Location to save
-      try {
+      await session.withTransaction(async () => {
+        //Location to save
         locationID = await this.postRepository.saveLocation(post.getLocation, {
           session,
         });
-      } catch (error: any) {
-        this.logger.error(
-          'An error was ocurring while saving the location in post',
-        );
-        await session.abortTransaction();
-        session.endSession();
-        throw error;
-      }
+        if (!locationID) {
+          throw new Error('Error al guardar la ubicación');
+        }
 
-      //Post to save
-      const newPost: Post = await this.postRepository.create(post, locationID, {
-        session,
-      });
-      if (!newPost.getId) {
-        this.logger.error(
-          "An error was ocurred. We couldn't get the id of the post. The post was not created",
-        );
-        await session.abortTransaction();
-        session.endSession();
-        throw error;
-      }
-      try {
+        //Post to save
+        newPost = await this.postRepository.create(post, locationID, {
+          session,
+        });
+
+        if (!newPost || !newPost.getId) {
+          throw new Error('Error al crear el post');
+        }
+
         //Post to save in user
-        await this.userService.saveNewPost(
-          newPost.getId as unknown as ObjectId,
-          newPost.getAuthor,
-          {
-            session,
-          },
-        );
-      } catch (error: any) {
-        //Falla el servicio del user
-        this.logger.error(
-          'An error was ocurring while saving the post in user',
-          error,
-        );
-        await session.abortTransaction();
-        session.endSession();
-        throw error;
-      }
+        await this.userService.saveNewPost(newPost.getId, newPost.getAuthor, {
+          session,
+        });
+        return newPost;
+      });
 
       //Todo ok
       await session.commitTransaction();
-      await session.endSession();
-      return newPost;
+      return newPost!; // Si marco como ! aseguro que no sera null ya que si llega a este retorno quiere decir que la transaccion se completo
     } catch (error: any) {
       await session.abortTransaction();
       session.endSession();
       throw error;
     } finally {
       session.endSession();
+    }
+  }
+
+  async deletePostById(id: string): Promise<void> {
+    try {
+      this.logger.log('Deleting post with id: ' + id);
+      await this.postRepository.deletePostById(id);
+    } catch (error: any) {
+      this.logger.log('An error was ocurred deleting a post with id: ' + id);
+      throw error;
     }
   }
 

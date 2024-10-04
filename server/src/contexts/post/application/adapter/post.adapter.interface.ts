@@ -10,4 +10,6 @@ export interface PostAdapterInterface {
     id: string,
     cookie?: any,
   ): Promise<PostUpdateDto>;
+
+  deletePostById(id: string): Promise<void>;
 }

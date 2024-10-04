@@ -14,6 +14,7 @@ import { PostGoodModel } from '../schemas/post-types-schemas/post.good.schema';
 import { PostServiceModel } from '../schemas/post-types-schemas/post.service.schema';
 import { PostPetitionModel } from '../schemas/post-types-schemas/post.petition.schema';
 import { PostResolver } from '../graphql/resolver/post.resolver';
+import { UserSchema } from 'src/contexts/user/infrastructure/schemas/user.schema';
 
 @Module({
   imports: [
@@ -30,10 +31,10 @@ import { PostResolver } from '../graphql/resolver/post.resolver';
           },
         ],
       },
-    ]),
-    MongooseModule.forFeature([
       { name: 'PostLocation', schema: PostLocationSchema },
+      { name: 'User', schema: UserSchema },
     ]),
+
     UserModule,
   ],
   controllers: [PostController],

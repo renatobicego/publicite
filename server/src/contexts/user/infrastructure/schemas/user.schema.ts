@@ -65,4 +65,4 @@ UserSchema.index({ finder: 1 });
 
 const UserModel = model<IUser>('User', UserSchema);
 
-export { UserModel, IUser };
+export { UserModel, IUser, UserSchema };

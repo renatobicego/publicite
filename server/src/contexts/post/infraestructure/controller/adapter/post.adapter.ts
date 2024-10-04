@@ -64,6 +64,14 @@ export class PostAdapter implements PostAdapterInterface {
     }
   }
 
+  async deletePostById(id: string): Promise<void> {
+    try {
+      await this.postService.deletePostById(id);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
   async updatePostById(
     postUpdate: PostUpdateRequest,
     id: string,
