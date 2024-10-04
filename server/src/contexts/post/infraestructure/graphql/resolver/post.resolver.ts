@@ -4,7 +4,6 @@ import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
 import { PostUpdateRequest } from 'src/contexts/post/application/adapter/dto/HTTP-REQUEST/post.update.request';
 import { PostAdapterInterface } from 'src/contexts/post/application/adapter/post.adapter.interface';
 import { Post_Full_Graphql_Model } from 'src/contexts/post/domain/entity/models_graphql/post.full.grapql.model';
-import { Post } from 'src/contexts/post/domain/entity/post.entity';
 
 @Resolver('Post')
 export class PostResolver {

@@ -1,16 +1,17 @@
 import { Schema, model, Document } from 'mongoose';
+import { OwnerType } from '../../domain/entity/enum/magazine.ownerType.enum';
 
 interface MagazineDocument extends Document {
   name: string;
   sections: Schema.Types.ObjectId[];
-  ownerType: string;
+  ownerType: OwnerType;
   description?: string;
 }
 
 const MagazineSchema = new Schema<MagazineDocument>({
   name: { type: String, required: true },
   sections: [{ type: Schema.Types.ObjectId, ref: 'MagazineSection' }],
-  ownerType: { type: String, required: true },
+  ownerType: { type: String, enum: Object.values(OwnerType), required: true },
   description: {
     type: String,
     default: 'Esta revista no posee una descripción de todavía',
@@ -22,4 +23,3 @@ const MagazineSchema = new Schema<MagazineDocument>({
 const MagazineModel = model<MagazineDocument>('Magazine', MagazineSchema);
 
 export { MagazineModel, MagazineDocument };
-
