@@ -8,7 +8,6 @@ import {
   Input,
   Selection,
 } from "@nextui-org/react";
-import { useRouter } from "next/navigation";
 import React, { Dispatch, SetStateAction, useMemo, useState } from "react";
 import { FaChevronDown, FaSearch } from "react-icons/fa";
 import SecondaryButton from "../buttons/SecondaryButton";
@@ -22,6 +21,7 @@ import {
   POSTS,
   PROFILE,
 } from "@/utils/data/urls";
+import { useRouter } from "next-nprogress-bar";
 
 const Search = ({
   isFocused,

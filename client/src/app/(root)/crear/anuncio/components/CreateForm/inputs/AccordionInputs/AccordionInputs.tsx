@@ -2,25 +2,22 @@ import { Accordion, AccordionItem } from "@nextui-org/react";
 import Visibility from "./Visibility";
 import { FormikErrors } from "formik";
 import {
-  AttachedFileValues,
   GoodPostValues,
   ServicePostValues,
 } from "@/types/postTypes";
 import AdditionalGoodData from "./AdditionalGoodData";
 import AttachedFiles from "./AttachedFIles/AttachedFiles";
-import { Dispatch, SetStateAction } from "react";
+import { memo, SetStateAction } from "react";
 import { FaChevronLeft } from "react-icons/fa6";
 
 const AccordionInputs = ({
   errors,
   isService = false,
-  attachedFiles,
-  setAttachedFiles,
+  isEditing = false
 }: {
   errors: FormikErrors<GoodPostValues> | FormikErrors<ServicePostValues>;
   isService?: boolean;
-  attachedFiles: AttachedFileValues[];
-  setAttachedFiles: Dispatch<SetStateAction<AttachedFileValues[]>>;
+  isEditing?: boolean
 }) => {
   const goodErrors = errors as FormikErrors<GoodPostValues>;
 
@@ -35,7 +32,8 @@ const AccordionInputs = ({
   };
   return (
     <Accordion>
-      <AccordionItem HeadingComponent={"h6"}
+      <AccordionItem
+        HeadingComponent={"h6"}
         key="visibilidad"
         aria-label="Configuración de Visibilidad"
         indicator={<FaChevronLeft className="size-3" />}
@@ -45,7 +43,8 @@ const AccordionInputs = ({
       >
         <Visibility errors={errors} />
       </AccordionItem>
-      <AccordionItem HeadingComponent={"h6"}
+      <AccordionItem
+        HeadingComponent={"h6"}
         key="dataAdicional"
         aria-label="Datos Adicionales"
         title="Datos Adicionales"
@@ -62,7 +61,8 @@ const AccordionInputs = ({
       >
         <AdditionalGoodData errors={errors} />
       </AccordionItem>
-      <AccordionItem HeadingComponent={"h6"}
+      <AccordionItem
+        HeadingComponent={"h6"}
         key="attachedFiles"
         aria-label="Archivos Adjuntos"
         indicator={<FaChevronLeft className="size-3" />}
@@ -72,12 +72,11 @@ const AccordionInputs = ({
       >
         <AttachedFiles
           errors={errors.attachedFiles}
-          attachedFiles={attachedFiles}
-          setAttachedFiles={setAttachedFiles}
+          isEditing={isEditing}
         />
       </AccordionItem>
     </Accordion>
   );
 };
 
-export default AccordionInputs;
+export default memo(AccordionInputs);

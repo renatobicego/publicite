@@ -6,7 +6,7 @@ import ErrorCard from "@/components/ErrorCard";
 import BoardCard from "@/components/Board/Board";
 import { currentUser } from "@clerk/nextjs/server";
 import UserSolapas from "@/components/solapas/UserSolapas";
-import CreateBoard from "@/components/Board/CreateBoard";
+import CreateBoard from "@/components/Board/CreateBoard/CreateBoard";
 
 export default async function ProfileLayout({
   children,
@@ -43,7 +43,6 @@ export default async function ProfileLayout({
         <UserInfo user={user} isMyProfile={isMyProfile} />
         {(user.board || !isMyProfile) ? (
           <BoardCard
-            bg={user.board?.color || "bg-fondo"}
             board={user.board}
             isMyBoard={isMyProfile}
             isProfile

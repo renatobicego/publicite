@@ -1,6 +1,15 @@
 "use client";
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { changeUserPreferences, getUserPreferences } from "../../services/userServices";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
+import {
+  changeUserPreferences,
+  getUserPreferences,
+} from "../../services/userServices";
 import { UserPreferences } from "@/types/userTypes";
 import { toastifyError, toastifySuccess } from "../../utils/functions/toastify";
 
@@ -10,7 +19,9 @@ interface BackgroundContextType {
   postGradientValue: (userPreferences: UserPreferences) => Promise<void>;
 }
 
-const BackgroundContext = createContext<BackgroundContextType | undefined>(undefined);
+const BackgroundContext = createContext<BackgroundContextType | undefined>(
+  undefined
+);
 
 export const useBackground = () => {
   const context = useContext(BackgroundContext);
@@ -20,22 +31,37 @@ export const useBackground = () => {
   return context;
 };
 
-export const BackgroundProvider = ({ children, username }: { children: ReactNode; username?: string | null }) => {
+export const BackgroundProvider = ({
+  children,
+  username,
+}: {
+  children: ReactNode;
+  username?: string | null;
+}) => {
   const [gradientValue, setGradientValue] = useState<number | number[]>(0);
 
   // Load background color from localStorage for the current user
   useEffect(() => {
-    if(!username) return
-    const storedGradientValue = localStorage.getItem(`backgroundColor_${username}`);
+    if (!username) return;
+    const storedGradientValue = localStorage.getItem(
+      `backgroundColor_${username}`
+    );
     if (storedGradientValue) {
       setGradientValue(JSON.parse(storedGradientValue));
     } else {
       // Fetch user preferences from the server if not found in localStorage
       const fetchPreferences = async () => {
         const preferences = await getUserPreferences(username);
-        if (preferences && preferences.backgroundColor) {
-          setGradientValue(preferences.backgroundColor);
-          localStorage.setItem(`backgroundColor_${username}`, JSON.stringify(preferences.backgroundColor));
+        if (preferences) {
+          setGradientValue(
+            preferences.backgroundColor ? preferences.backgroundColor : 0
+          );
+          localStorage.setItem(
+            `backgroundColor_${username}`,
+            JSON.stringify(
+              preferences.backgroundColor ? preferences.backgroundColor : 0
+            )
+          );
         }
       };
       fetchPreferences();
@@ -54,7 +80,10 @@ export const BackgroundProvider = ({ children, username }: { children: ReactNode
     } else {
       toastifySuccess("Preferencias guardadas");
       // Save to localStorage under the specific username
-      localStorage.setItem(`backgroundColor_${username}`, JSON.stringify(gradientValue));
+      localStorage.setItem(
+        `backgroundColor_${username}`,
+        JSON.stringify(gradientValue)
+      );
     }
   };
 

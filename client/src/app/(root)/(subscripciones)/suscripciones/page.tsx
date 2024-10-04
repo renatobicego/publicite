@@ -46,7 +46,7 @@ export default async function SubscriptionPlans() {
         </div>
         <SubscriptionGrid
           type="suscripciones"
-          subscriptions={subscriptions.slice(0, 2)}
+          subscriptions={subscriptions}
           subscriptionsOfUser={susbcriptionsOfUser}
         />
       </section>

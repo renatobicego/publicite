@@ -1,5 +1,5 @@
 "use server";
-import { postBoard } from "@/services/boardServices";
+import { postBoard, putBoard } from "@/services/boardServices";
 import { currentUser } from "@clerk/nextjs/server";
 
 export const createBoard = async (formData: any) => {
@@ -11,7 +11,6 @@ export const createBoard = async (formData: any) => {
 
   try {
     const resApi: any = await postBoard(formData);
-    console.log(resApi);
     if (resApi.status !== 200 && resApi.status !== 201) {
       return {
         error:
@@ -26,3 +25,18 @@ export const createBoard = async (formData: any) => {
     };
   }
 };
+
+export const editBoard = async(id: string, formData: any) => {
+
+  try {
+    const res = await putBoard(id, formData);
+    if(res.error){
+      return { error: res.error }
+    }
+    return { message: "Pizarra editada exitosamente", id: "1" };
+  } catch (err) {
+    return {
+      error: "Error al editar la pizarra. Por favor intenta de nuevo.",
+    };
+  }
+}

@@ -17,7 +17,7 @@ const getUserByUsernameQuery = gql`
       description
       lastName
       name
-      post {
+      posts {
         _id
         description
         frequencyPrice
@@ -30,7 +30,14 @@ const getUserByUsernameQuery = gql`
       profilePhotoUrl
       userType
       username
-      
+      board {
+        _id
+        annotations
+        color
+        keywords
+        user
+        visibility
+      }
     }
   }
 `;

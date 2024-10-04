@@ -54,7 +54,7 @@ const FileCard = ({
               </div>
             </div>
             {!attachedFile.label && (
-              <p className="text-danger max-md:text-xs md:text-sm xl:hidden">
+              <p className="text-danger text-xs lg:text-sm xl:hidden">
                 Agregar primero una etiqueta para subir archivo
               </p>
             )}
@@ -68,9 +68,13 @@ const FileCard = ({
                 </span>
                 <Chip
                   color="secondary"
+                  className="px-2"
                   variant="flat"
                   startContent={<FaFile />}
-                  classNames={{content: "whitespace-normal", base: "min-h-7 h-auto"}}
+                  classNames={{
+                    content: "whitespace-normal",
+                    base: "min-h-7 h-auto",
+                  }}
                 >
                   {attachedFile.file.name}
                 </Chip>

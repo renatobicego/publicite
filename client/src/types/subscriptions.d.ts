@@ -22,3 +22,9 @@ export interface Subscription {
   subscriptionPlan: SubscriptionPlan;
   external_reference: string;
 }
+
+export interface PaymentSuccesNotification {
+  _id: ObjectId;
+  date: string;
+  subscriptionPlan: Pick<SubscriptionPlan, "reason">;
+}

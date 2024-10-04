@@ -6,7 +6,7 @@ import FilterUsers from "./FilterUsers";
 import { useFilteredAndSortedUsers } from "@/utils/hooks/useFilteredOrderedUsers";
 
 const UsersLogic = () => {
-  const { items, isLoading } = useInfiniteFetch("users", true);
+  const { items, isLoading } = useInfiniteFetch("users");
 
   // Use custom hook for filtering and sorting logic
   const {

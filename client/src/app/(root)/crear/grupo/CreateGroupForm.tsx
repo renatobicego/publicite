@@ -3,7 +3,6 @@ import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { Group } from "@/types/userTypes";
 import { useUser } from "@clerk/nextjs";
 import { Form, Formik, FormikHelpers } from "formik";
-import { useRouter } from "next/navigation";
 import Inputs from "./Inputs";
 import UploadProfileImage from "./UploadProfileImage";
 import { useState } from "react";
@@ -12,6 +11,8 @@ import { createGroup } from "@/app/server/groupActions";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { GROUPS } from "@/utils/data/urls";
 import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
+import { useRouter } from "next-nprogress-bar";
+import { groupValidation } from "./validation";
 
 export type PostGroup = Omit<Group, "_id">;
 const CreateGroupForm = () => {
@@ -57,6 +58,7 @@ const CreateGroupForm = () => {
       validateOnChange={false}
       initialValues={initialValues}
       onSubmit={handleSubmit}
+      validationSchema={groupValidation}
     >
       {({ isSubmitting, errors, setFieldValue }) => {
         return (

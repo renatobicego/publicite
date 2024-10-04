@@ -19,6 +19,7 @@ import useUploadFiles from "@/utils/hooks/useUploadFiles";
 import AttachedFiles from "../anuncio/components/CreateForm/inputs/AccordionInputs/AttachedFIles/AttachedFiles";
 import PetitionType from "./PetitionType";
 import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
+import { useAttachedFiles } from "../anuncio/components/CreateForm/inputs/AccordionInputs/AttachedFIles/AttachedFilesContext";
 
 const CreatePetition = () => {
   const { user } = useUser();
@@ -47,7 +48,7 @@ const CreatePetition = () => {
   };
 
   const router = useRouter();
-  const [attachedFiles, setAttachedFiles] = useState<AttachedFileValues[]>([]);
+  const {attachedFiles} = useAttachedFiles();
   const { progress, submitFiles } = useUploadFiles([], attachedFiles, true);
 
   const handleSubmit = async (
@@ -119,10 +120,9 @@ const CreatePetition = () => {
                 <div className="flex lg:px-4 flex-col gap-4">
                   <h6>Archivos Adjuntos (opcional)</h6>
                   <AttachedFiles
-                    attachedFiles={attachedFiles}
-                    setAttachedFiles={setAttachedFiles}
                     errors={errors.attachedFiles}
                     maxFiles={1}
+                    isEditing={false}
                   />
                 </div>
               </div>

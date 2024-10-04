@@ -28,3 +28,40 @@ export const checkIfUserIsSubscribed = (
     return false;
   });
 };
+
+export const getMagazineType = (options: string[]) => {
+  const isGroupMagazine = options.includes("grupos");
+  const isSharedMagazine = options.includes("compartida");
+  return { isGroupMagazine, isSharedMagazine };
+};
+
+export const getId = (options: string[], isGroupMagazine: boolean) => {
+  return isGroupMagazine ? options[1] : options[0] || null;
+};
+
+export const getSharedMagazineIds = (
+  options: string[],
+  isSharedMagazine: boolean
+) => {
+  return isSharedMagazine ? { user: options[1], post: options[2] } : null;
+};
+
+export const handleBoardColor = (bg: string) => {
+  const darkColors = ["bg-[#5A0001]/80"];
+  const darkColorsBorder = [
+    "bg-[#5A0001]/80",
+    "bg-[#20A4F3]/30",
+    "bg-[#FFB238]/80",
+  ];
+  const textColor = darkColors.includes(bg) ? "text-white" : "text-text-color";
+  const borderColor = darkColorsBorder.includes(bg) ? "border-white" : "";
+  return { textColor, borderColor };
+};
+
+const videoExtensions = ["mp4", "mov", "avi", "mkv", "webm"]; // Add more as needed
+
+// Helper function to check if the URL is a video based on file extension
+export const isVideo = (url: string) => {
+  const extension = url.split(".").pop()?.toLowerCase();
+  return extension ? videoExtensions.includes(extension) : false;
+};

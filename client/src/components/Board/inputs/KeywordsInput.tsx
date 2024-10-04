@@ -21,9 +21,10 @@ const KeywordsInput = ({
       key={"keywords"}
       label="Palabras Clave (opcional)"
       aria-label="palabras clave"
+      description="Precione el botón + para agregar la palabra clave"
       placeholder="Agregue una palabra"
       value={currentKeyword}
-      classNames={{label: `!${textColor}`}}
+      classNames={{ label: `!${textColor}` }}
       onValueChange={setCurrentKeyword}
       endContent={
         <Button
@@ -35,6 +36,7 @@ const KeywordsInput = ({
             }));
           }}
           size="sm"
+          isDisabled={currentKeyword.trim() === ""}
           radius="full"
           isIconOnly
           variant="light"

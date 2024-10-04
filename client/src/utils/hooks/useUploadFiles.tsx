@@ -1,18 +1,15 @@
 import { useState } from "react";
 import { useUploadThing } from "../uploadThing";
 import { toastifyError } from "../functions/toastify";
-import {
-  AttachedFileValues,
-  GoodPostValues,
-  PetitionPostValues,
-  ServicePostValues,
-} from "@/types/postTypes";
+import { AttachedFileValues } from "@/types/postTypes";
 import { FormikHelpers } from "formik";
+import { image } from "@nextui-org/react";
 
 const useUploadFiles = (
   files: File[],
   attachedFiles: AttachedFileValues[],
-  isPetition?: boolean
+  isPetition?: boolean,
+  isEditing?: boolean
 ) => {
   const [progress, setProgress] = useState(0);
   const { startUpload } = useUploadThing("fileUploader", {
@@ -28,14 +25,11 @@ const useUploadFiles = (
     },
   });
 
-  const submitFiles = async (
-    values: any,
-    actions: FormikHelpers<any>
-  ) => {
-    if(isPetition && !attachedFiles.length) {
-      return values
+  const submitFiles = async (values: any, actions: FormikHelpers<any>) => {
+    if (isPetition && !attachedFiles.length) {
+      return values;
     }
-    if (!files.length && !isPetition) {
+    if (!files.length && !isPetition && !isEditing) {
       actions.setFieldError(
         "imagesUrls",
         "Por favor agregue al menos una imagen"
@@ -59,12 +53,19 @@ const useUploadFiles = (
       .map((upload, index) => ({
         url: upload.url,
         label: attachedFiles[index].label,
-        _id: "",
       }));
 
     // Assign URLs to their respective fields in the form values
-    values.imagesUrls = uploadedFileUrls;
-    values.attachedFiles = uploadedAttachedFileUrls;
+    if (isEditing) {
+      values.imagesUrls = [...values.imagesUrls, ...uploadedFileUrls];
+      values.attachedFiles = [
+        ...values.attachedFiles,
+        ...uploadedAttachedFileUrls,
+      ];
+    } else {
+      values.imagesUrls = uploadedFileUrls;
+      values.attachedFiles = uploadedAttachedFileUrls;
+    }
     return values;
   };
   return {

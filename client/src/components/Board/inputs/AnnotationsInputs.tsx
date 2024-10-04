@@ -22,6 +22,7 @@ const AnnotationsInputs = ({
       label="Anotaciones (opcional)"
       aria-label="anotaciones"
       placeholder="Agregue una anotación"
+      description="Precione el botón + para agregar la anotación"
       classNames={{label: `!${textColor}`}}
       value={currentAnnotation}
       onValueChange={setCurrentAnnotation}
@@ -34,6 +35,7 @@ const AnnotationsInputs = ({
               annotations: [...prev.annotations, currentAnnotation],
             }));
           }}
+          isDisabled={currentAnnotation.trim() === ""}
           size="sm"
           radius="full"
           variant="light"

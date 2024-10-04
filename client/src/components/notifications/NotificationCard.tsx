@@ -9,6 +9,9 @@ import {
   DropdownItemProps,
   DropdownMenu,
   DropdownTrigger,
+  HTMLNextUIProps,
+  Link,
+  LinkProps,
 } from "@nextui-org/react";
 import { FaEllipsis } from "react-icons/fa6";
 
@@ -25,11 +28,19 @@ const NotificationCard = ({ children }: { children: React.ReactNode }) => {
 };
 
 const NotificationImage = ({ children }: { children: React.ReactNode }) => {
-  return <CardHeader className="max-w-28 max-h-28 p-2">{children}</CardHeader>;
+  return (
+    <CardHeader className="max-w-28 max-h-28 p-2 justify-center">
+      {children}
+    </CardHeader>
+  );
 };
 
-const NotificationBody = ({ children }: { children: React.ReactNode }) => {
-  return <CardBody className="flex-1 text-sm px-1">{children}</CardBody>;
+const NotificationBody = (props: HTMLNextUIProps<"div", never> & LinkProps) => {
+  return (
+    <CardBody {...props} className={`flex-1 text-sm px-1 ${props.className}`}>
+      {props.children}
+    </CardBody>
+  );
 };
 
 export interface NotificationOptionProps extends DropdownItemProps {

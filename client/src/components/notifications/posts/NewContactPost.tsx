@@ -4,8 +4,8 @@ import {
   NotificationCard,
   NotificationImage,
   NotificationOptions,
-} from "./NotificationCard";
-import { Good, PostNotification } from "@/types/postTypes";
+} from "../NotificationCard";
+import { Good, PostContactNotification } from "@/types/postTypes";
 import { POSTS } from "@/utils/data/urls";
 import { showDate } from "@/utils/functions/dates";
 import { parseDate } from "@internationalized/date";
@@ -13,7 +13,7 @@ import { parseDate } from "@internationalized/date";
 const NewContactPost = ({
   notification,
 }: {
-  notification: PostNotification;
+  notification: PostContactNotification;
 }) => {
   const { post } = notification;
   const { imagesUrls } = post as Good;
@@ -41,6 +41,7 @@ const NewContactPost = ({
             label: "Ver Post",
             as: Link,
             href: `${POSTS}/${post._id}`,
+            className: "text-text-color",
           },
           {
             label: "Rechazar Solicitud",

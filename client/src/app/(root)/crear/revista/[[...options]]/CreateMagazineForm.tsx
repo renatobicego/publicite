@@ -2,6 +2,7 @@
 
 import ErrorCard from "@/components/ErrorCard";
 import {
+  createMagazineValues,
   groupMagazine,
   PostGroupMagazine,
   PostUserMagazine,
@@ -21,11 +22,21 @@ import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
 const CreateMagazineForm = ({
   isGroupMagazine,
   id,
+  shareMagazineIds,
 }: {
   isGroupMagazine: boolean;
   id: string | null;
+  shareMagazineIds: {
+    user: string;
+    post: string;
+  } | null;
 }) => {
-  const initialValues = isGroupMagazine ? groupMagazine : userMagazine;
+  const initialValues = isGroupMagazine
+    ? groupMagazine
+    : ({
+        ...userMagazine,
+        collaborators: shareMagazineIds ? [shareMagazineIds.user] : [],
+      } as PostUserMagazine);
   const router = useRouter();
   const { user } = useUser();
 
@@ -39,30 +50,21 @@ const CreateMagazineForm = ({
     values: PostUserMagazine | PostGroupMagazine,
     actions: FormikHelpers<PostUserMagazine | PostGroupMagazine>
   ) => {
-    if (isGroupMagazine) {
-      values = {
-        ...values,
-        group: id,
-      } as PostGroupMagazine;
-    } else {
-      values = {
-        ...values,
-        user: user?.publicMetadata.mongoId,
-      } as PostUserMagazine;
-    }
-    if (id && !isGroupMagazine) {
-      values = {
-        ...values,
-        addedPost: id,
-      } as any;
-    }
+    const finalValues = createMagazineValues(
+      values,
+      isGroupMagazine,
+      id,
+      shareMagazineIds,
+      user
+    );
 
-    const resApi = await createMagazine(values);
+    const resApi = await createMagazine(finalValues);
     if (resApi.error) {
       toastifyError(resApi.error);
       actions.setSubmitting(false);
       return;
     }
+
     toastifySuccess(resApi.message as string);
     router.push(`${MAGAZINES}/${resApi.id}`);
   };

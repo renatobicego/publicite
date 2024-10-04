@@ -10,3 +10,7 @@ Podríamos:
 
 
 preferences actualizar, faltaria get de categories
+
+
+boton pete de compartir app
+editar pizarra logica

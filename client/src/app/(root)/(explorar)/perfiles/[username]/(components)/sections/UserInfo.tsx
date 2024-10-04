@@ -18,10 +18,17 @@ import {
 } from "react-icons/fa6";
 import { TbWorldPin } from "react-icons/tb";
 import OptionsDropdown from "../OptionsDropdown";
+import PrimaryButton from "@/components/buttons/PrimaryButton";
 
-const UserInfo = ({ user, isMyProfile }: { user: GetUser; isMyProfile: boolean }) => {
+const UserInfo = ({
+  user,
+  isMyProfile,
+}: {
+  user: GetUser;
+  isMyProfile: boolean;
+}) => {
   const { userType } = user;
-  const business = user as UserBusiness;
+  const business = user as unknown as UserBusiness;
   return (
     <section className="flex gap-4 md:gap-6 xl:gap-8 md:max-w-[65%] xl:max-w-[50%]">
       <Image
@@ -30,7 +37,7 @@ const UserInfo = ({ user, isMyProfile }: { user: GetUser; isMyProfile: boolean }
         className="rounded-full "
         classNames={{
           img: "object-cover w-full !h-24 md:!h-32 xl:!h-52 border",
-          wrapper: "!min-w-24 w-24 md:!min-w-32 md:!w-32 xl:!w-52 xl:!min-w-52"
+          wrapper: "!min-w-24 w-24 md:!min-w-32 md:!w-32 xl:!w-52 xl:!min-w-52",
         }}
       />
       <div className="flex gap-2 md:gap-4 items-start flex-col">
@@ -40,14 +47,22 @@ const UserInfo = ({ user, isMyProfile }: { user: GetUser; isMyProfile: boolean }
             : `${user.name} ${user.lastName}`}
         </h2>
         <h6>@{user.username}</h6>
-        {user.description && <p className="text-sm lg:text-base">{user.description}</p>}
+        {user.description && (
+          <p className="text-sm lg:text-base">{user.description}</p>
+        )}
         <div className="flex items-center gap-1">
           <TbWorldPin className="size-4 min-w-4" />
           <p className="text-xs md:text-sm">{user.countryRegion}</p>
         </div>
         {user.contact && <SocialMedia contact={user.contact} />}
         <div className="flex gap-2 items-center">
-          <SendRequest variant="solid" removeMargin={false} />
+          {isMyProfile ? (
+            <PrimaryButton as={Link} href="/configuracion">
+              Editar Perfil
+            </PrimaryButton>
+          ) : (
+            <SendRequest variant="solid" removeMargin={false} />
+          )}
           <OptionsDropdown username={user.username} />
         </div>
       </div>

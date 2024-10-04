@@ -5,7 +5,7 @@ declare global {
     metadata: {
       onboardingComplete?: boolean;
       userType: "Person" | "Business";
-      mongoId: ObjectId
+      mongoId: ObjectId;
     };
     firstName?: string;
   }
@@ -16,7 +16,8 @@ declare global {
     | "contacts"
     | "friends"
     | "topfriends";
+  type UserRelation = "contact" | "friend" | "topfriend";
 
   type FrequencyPrice = "hour" | "day" | "week" | "month" | "year";
-  type PostType = "service" | "good" | "petition"
+  type PostType = "service" | "good" | "petition";
 }
