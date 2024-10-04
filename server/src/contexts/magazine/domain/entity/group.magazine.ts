@@ -1,17 +1,14 @@
 import { ObjectId } from 'mongoose';
-
 import { Magazine } from './magazine.entity';
 
-export class UserMagazine extends Magazine {
-  private colaborators: ObjectId[];
-  private user: ObjectId;
-  private visibility: string;
+export class GroupMagazine extends Magazine {
+  private allowedColaborators: ObjectId[];
+  private group: ObjectId[];
 
   constructor(
     magazine: Magazine,
-    colaborators: ObjectId[],
-    user: ObjectId,
-    visibility: string,
+    allowedColaborators: ObjectId[],
+    group: ObjectId[],
   ) {
     super(
       magazine.getName,
@@ -21,9 +18,8 @@ export class UserMagazine extends Magazine {
         'Esta revista no posee una descripción de todavía',
       magazine.getId,
     );
-    this.colaborators = colaborators;
-    this.user = user;
-    this.visibility = visibility;
+    this.allowedColaborators = allowedColaborators;
+    this.group = group;
   }
 }
 
