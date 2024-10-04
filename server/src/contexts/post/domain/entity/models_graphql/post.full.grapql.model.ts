@@ -1,5 +1,6 @@
 import { ObjectId } from 'mongoose';
-import { Field, ObjectType, ID, Float } from '@nestjs/graphql';
+import { Field, ObjectType, ID, Float, Int } from '@nestjs/graphql';
+import { GoodCondition } from '../enum/post-good-condition.enum';
 
 @ObjectType()
 export class PostLocation_Grapql_Model {
@@ -69,11 +70,33 @@ export class Post_Full_Graphql_Model {
   @Field(() => String, { nullable: true })
   createAt: string;
 
-  @Field(() => Float, { nullable: true })
-  toPrice: number;
+  //Fields post GOOD
+  @Field(() => [String], { nullable: true })
+  imageUrls: string[];
+
+  @Field(() => Int, { nullable: true })
+  year: number;
 
   @Field(() => String, { nullable: true })
+  brand: string;
+
+  @Field(() => String, { nullable: true })
+  modelType: string;
+
+  @Field(() => [String], { nullable: true })
+  reviews: ObjectId[];
+
+  @Field(() => GoodCondition, { nullable: true })
+  condition: GoodCondition;
+
+  //Fields post Service
+  //-> comparte imageUrls & reviews de post good & frequencyPrice de post petition
+  @Field(() => String, { nullable: true })
   frequencyPrice: string;
+
+  //Fields post Petition
+  @Field(() => Float, { nullable: true })
+  toPrice: number;
 
   @Field(() => String, { nullable: true })
   petitionType: string;

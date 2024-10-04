@@ -148,6 +148,19 @@ export class PostRepository implements PostRepositoryInterface {
     }
   }
 
+  async findPostsByAuthorId(id: string): Promise<any> {
+    try {
+      this.logger.log('Finding posts by author id in repository');
+      const posts = await this.postDocument.find({ author: id }).lean();
+      return posts;
+    } catch (error: any) {
+      this.logger.error(
+        'An error was ocurred finding posts by author id: ' + id,
+      );
+      throw error;
+    }
+  }
+
   async saveLocation(
     location: PostLocation,
     options?: { session?: ClientSession },

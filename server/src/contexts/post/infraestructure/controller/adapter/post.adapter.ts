@@ -64,6 +64,13 @@ export class PostAdapter implements PostAdapterInterface {
     }
   }
 
+  async findPostsByAuthorId(id: string): Promise<void> {
+    try {
+      return await this.postService.findPostsByAuthorId(id);
+    } catch (error: any) {
+      throw error;
+    }
+  }
   async deletePostById(id: string): Promise<void> {
     try {
       await this.postService.deletePostById(id);

@@ -3,7 +3,7 @@ import { Post } from '../entity/post.entity';
 
 export interface PostServiceInterface {
   create(post: Post): Promise<Post>;
-
+  findPostsByAuthorId(id: string): Promise<void>;
   deletePostById(id: string): Promise<void>;
   updatePostById(
     postUpdate: PostUpdateDto,

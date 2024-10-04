@@ -5,11 +5,11 @@ import { PostResponse } from './dto/HTTP-RESPONSE/post.response';
 
 export interface PostAdapterInterface {
   create(post: PostRequest): Promise<PostResponse>;
+  deletePostById(id: string): Promise<void>;
+  findPostsByAuthorId(id: string): Promise<void>;
   updatePostById(
     postUpdate: PostUpdateRequest,
     id: string,
     cookie?: any,
   ): Promise<PostUpdateDto>;
-
-  deletePostById(id: string): Promise<void>;
 }
