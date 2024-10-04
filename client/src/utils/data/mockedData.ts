@@ -486,6 +486,7 @@ export const mockedGroups = [
     magazines: [],
     rules: "rules",
     profilePhotoUrl: "/group1.png",
+    visibility: "public",
   },
   {
     _id: "9ievfmas",
@@ -495,6 +496,7 @@ export const mockedGroups = [
     name: "Instrumentos Musicales",
     magazines: [],
     rules: "rules",
+    visibility: "public",
     profilePhotoUrl: "/group2.png",
   },
   {
@@ -502,6 +504,7 @@ export const mockedGroups = [
     members: ["1k2", "2k3", "3k4", "4k5", "5k6"],
     admins: ["1k2"],
     details: "details",
+    visibility: "public",
     name: "Desarrolladores",
     magazines: [],
     rules: "rules",

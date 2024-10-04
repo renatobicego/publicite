@@ -2,28 +2,21 @@ import { Accordion, AccordionItem } from "@nextui-org/react";
 import Visibility from "./Visibility";
 import { FormikErrors } from "formik";
 import {
-  AttachedFileValues,
   GoodPostValues,
-  PostAttachedFile,
   ServicePostValues,
 } from "@/types/postTypes";
 import AdditionalGoodData from "./AdditionalGoodData";
 import AttachedFiles from "./AttachedFIles/AttachedFiles";
-import { Dispatch, memo, SetStateAction } from "react";
+import { memo, SetStateAction } from "react";
 import { FaChevronLeft } from "react-icons/fa6";
 
 const AccordionInputs = ({
   errors,
   isService = false,
-  setValues,
   isEditing = false
 }: {
   errors: FormikErrors<GoodPostValues> | FormikErrors<ServicePostValues>;
   isService?: boolean;
-  setValues?: (
-    values: SetStateAction<any>,
-    shouldValidate?: boolean
-  ) => Promise<any>;
   isEditing?: boolean
 }) => {
   const goodErrors = errors as FormikErrors<GoodPostValues>;
@@ -79,7 +72,6 @@ const AccordionInputs = ({
       >
         <AttachedFiles
           errors={errors.attachedFiles}
-          setValues={setValues}
           isEditing={isEditing}
         />
       </AccordionItem>

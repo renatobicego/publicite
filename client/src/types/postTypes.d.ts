@@ -125,7 +125,7 @@ export interface ServicePostValues
   extends CreatePostValues,
     Omit<
       Service,
-      "frequencyPrice" | "reviews" | "comments" | "recommendations"
+      "frequencyPrice" | "reviews" | "comments" | "recommendations" | "_id"
     > {
   frequencyPrice?: FrequencyPrice;
 }
@@ -137,7 +137,7 @@ export interface Petition extends Post {
 
 export interface PetitionPostValues
   extends CreatePostValues,
-    Omit<Petition, "petitionType"> {
+    Omit<Petition, "petitionType" | "_id" | "recommendations" | "comments"> {
   petitionType?: "good" | "service";
 }
 

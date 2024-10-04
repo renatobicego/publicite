@@ -1,4 +1,8 @@
-import { AttachedFileValues, GoodPostValues, ServicePostValues } from "@/types/postTypes";
+import {
+  AttachedFileValues,
+  GoodPostValues,
+  ServicePostValues,
+} from "@/types/postTypes";
 import { Form, Formik, FormikHelpers } from "formik";
 import TitleDescription from "../CreateForm/inputs/TitleDescription";
 import PriceCategory from "../CreateForm/inputs/PriceCategory";
@@ -16,7 +20,7 @@ import { createPost } from "../../../../../server/postActions";
 import { POSTS } from "@/utils/data/urls";
 import { useRouter } from "next/navigation";
 import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
-
+import { useAttachedFiles } from "../CreateForm/inputs/AccordionInputs/AttachedFIles/AttachedFilesContext";
 
 const CreateService = ({ files }: { files: File[] }) => {
   const { user } = useUser();
@@ -33,7 +37,7 @@ const CreateService = ({ files }: { files: File[] }) => {
       lat: undefined,
       lng: undefined,
       description: "",
-      userSetted: false
+      userSetted: false,
     },
     postType: "service",
     visibility: {
@@ -43,7 +47,8 @@ const CreateService = ({ files }: { files: File[] }) => {
     createAt: today(getLocalTimeZone()).toString(),
   };
 
-  const [attachedFiles, setAttachedFiles] = useState<AttachedFileValues[]>([]);
+  const { attachedFiles } = useAttachedFiles();
+
   const { progress, submitFiles } = useUploadFiles(files, attachedFiles);
   const router = useRouter();
 
@@ -103,12 +108,7 @@ const CreateService = ({ files }: { files: File[] }) => {
               setFieldValue={setFieldValue}
               error={errors.location}
             />
-            <AccordionInputs
-              errors={errors}
-              attachedFiles={attachedFiles}
-              isService={true}
-              setAttachedFiles={setAttachedFiles}
-            />
+            <AccordionInputs errors={errors} isService={true} />
             <RequiredFieldsMsg />
             <PrimaryButton
               isDisabled={isSubmitting}

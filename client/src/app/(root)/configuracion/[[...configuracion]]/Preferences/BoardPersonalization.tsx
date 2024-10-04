@@ -31,7 +31,6 @@ const BoardPersonalization = ({ board }: { board: Board }) => {
           setColorSelected={setColorSelected}
         />
         <BoardCard
-          bg={board.color || "bg-fondo"}
           isMyBoard
           isProfile
           widthFull

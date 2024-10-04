@@ -53,7 +53,6 @@ const EditPostForm = ({ postData }: { postData: Good | Service }) => {
             <Divider />
             <AccordionInputs
               errors={errors}
-              setValues={setValues}
               isEditing
               isService={postType === "service"}
             />

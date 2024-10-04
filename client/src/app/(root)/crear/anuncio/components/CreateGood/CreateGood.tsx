@@ -17,6 +17,7 @@ import { useRouter } from "next/navigation";
 import { POSTS } from "@/utils/data/urls";
 import useUploadFiles from "@/utils/hooks/useUploadFiles";
 import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
+import { useAttachedFiles } from "../CreateForm/inputs/AccordionInputs/AttachedFIles/AttachedFilesContext";
 
 const CreateGood = ({ files }: { files: File[] }) => {
   const { user } = useUser();
@@ -46,7 +47,8 @@ const CreateGood = ({ files }: { files: File[] }) => {
     createAt: today(getLocalTimeZone()).toString(),
   };
   const router = useRouter();
-  const [attachedFiles, setAttachedFiles] = useState<AttachedFileValues[]>([]);
+  const { attachedFiles } = useAttachedFiles();
+
   const { progress, submitFiles } = useUploadFiles(files, attachedFiles);
 
   const handleSubmit = async (
@@ -108,8 +110,6 @@ const CreateGood = ({ files }: { files: File[] }) => {
             />
             <AccordionInputs
               errors={errors}
-              attachedFiles={attachedFiles}
-              setAttachedFiles={setAttachedFiles}
             />
             <RequiredFieldsMsg />
             <PrimaryButton

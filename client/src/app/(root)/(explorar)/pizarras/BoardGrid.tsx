@@ -16,7 +16,6 @@ const BoardGrid = ({ items, isLoading }: { items: Board[]; isLoading: boolean })
           <div key={colIndex} className="grid gap-4">
             {column.map((board: Board, index) => (
               <BoardCard
-                bg={board.color || "bg-fondo"}
                 isMyBoard={user?.username === (board.user as User).username}
                 board={board}
                 key={board._id + index}

@@ -13,7 +13,7 @@ const PostListLogic = ({
   groupId?: ObjectId
 }) => {
   const [showAsList, setShowAsList] = useState(false);
-  const { items, isLoading } = useInfiniteFetch(postType, true, groupId);
+  const { items, isLoading } = useInfiniteFetch(postType, groupId);
   const {
     searchTerms,
     setSearchTerms,

@@ -10,21 +10,16 @@ import { FaPlus } from "react-icons/fa6";
 import FileCard from "./FileCard";
 import { FormikErrors } from "formik";
 import PrevAttachedFile from "./PrevAttachedFile";
-import DeletedAttachedFile from "./DeletedAttachedFIle";
 import { useAttachedFiles } from "./AttachedFilesContext";
+import DeletedAttachedFile from "./DeletedAttachedFile";
 
 const AttachedFiles = ({
   errors,
   maxFiles = 3,
-  setValues,
   isEditing
 }: {
   errors: string | string[] | FormikErrors<PostAttachedFile>[] | undefined;
   maxFiles?: number;
-  setValues?: (
-    values: SetStateAction<any>,
-    shouldValidate?: boolean
-  ) => Promise<any>;
   isEditing: boolean;
 }) => {
   const {

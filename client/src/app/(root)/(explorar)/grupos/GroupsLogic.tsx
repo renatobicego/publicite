@@ -5,7 +5,7 @@ import { useFilteredAndSortedGroups } from "@/utils/hooks/useFIlteredOrderedGrou
 import GroupsGrid from "./GroupsGrid";
 
 const GroupsLogic = () => {
-  const { items, isLoading } = useInfiniteFetch("groups", true);
+  const { items, isLoading } = useInfiniteFetch("groups");
 
   // Use custom hook for filtering and sorting logic
   const {

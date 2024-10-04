@@ -10,7 +10,7 @@ import { currentUser } from "@clerk/nextjs/server";
 import { GroupMagazine, Magazine, Post, UserMagazine } from "@/types/postTypes";
 import SecondaryButton from "@/components/buttons/SecondaryButton";
 import InviteCollabMagazine from "@/components/modals/InviteCollabMagazine";
-import { Group, User } from "@/types/userTypes";
+import { GetUser, Group, User } from "@/types/userTypes";
 
 export default async function MagazinePage({
   params,
@@ -28,7 +28,7 @@ export default async function MagazinePage({
   const owner = isOwnerTypeUser
     ? (magazine as UserMagazine).user
     : (magazine as GroupMagazine).group;
-  const ownerAsUser = owner as User;
+  const ownerAsUser = owner as GetUser;
   const ownerAsGroup = owner as Group;
   const isOwner = isOwnerTypeUser
     ? ownerAsUser.username === user?.username
