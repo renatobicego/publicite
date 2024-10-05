@@ -124,6 +124,9 @@ type Mutation {
 
   """Crear un grupo"""
   createNewGroup(groupDto: GroupRequest!): GroupResponse
+
+  """Crear una revista"""
+  createPersonalMagazine(magazineCreateRequest: MagazineCreateRequest!): String
 }
 
 input PostUpdateRequest {
@@ -204,4 +207,23 @@ input GroupRequest {
   details: String!
   profilePhotoUrl: String!
   visibility: String!
+}
+
+input MagazineCreateRequest {
+  name: String!
+  sections: [String!]!
+  ownerType: OwnerType!
+  description: String
+  addedPost: String
+  colaborators: [String!]
+  user: String!
+  visibility: String!
+  allowedColaborators: [String!]
+  group: [String!]
+}
+
+"""Owner type of the magazine"""
+enum OwnerType {
+  user
+  group
 }

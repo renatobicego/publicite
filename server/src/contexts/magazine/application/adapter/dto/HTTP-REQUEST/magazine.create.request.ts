@@ -1,8 +1,8 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, InputType, ObjectType } from '@nestjs/graphql';
 import { ObjectId } from 'mongoose';
 import { OwnerType } from 'src/contexts/magazine/domain/entity/enum/magazine.ownerType.enum';
 
-@ObjectType()
+@InputType()
 export class MagazineCreateRequest {
   @Field(() => String)
   name: string;
@@ -20,20 +20,20 @@ export class MagazineCreateRequest {
   addedPost?: ObjectId;
 
   // User Magazines Atributes
-  @Field(() => [String])
+  @Field(() => [String], { nullable: true })
   colaborators: ObjectId[];
 
   @Field(() => String)
   user: ObjectId;
 
   @Field(() => String)
-  visibility: ObjectId;
+  visibility: string;
 
   // Group Magazines Atributes
 
-  @Field(() => [String])
+  @Field(() => [String], { nullable: true })
   allowedColaborators: ObjectId[];
 
-  @Field(() => [String])
+  @Field(() => [String], { nullable: true })
   group: ObjectId[];
 }

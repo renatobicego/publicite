@@ -1,6 +1,6 @@
-import { Schema, model, Document } from 'mongoose';
+import { Schema, model } from 'mongoose';
 
-import { MagazineDocument } from './magazine.schema';
+import { MagazineDocument, MagazineModel } from './magazine.schema';
 interface UserMagazineDocument extends MagazineDocument {
   colaborators: Schema.Types.ObjectId[];
   user: Schema.Types.ObjectId;
@@ -13,10 +13,9 @@ const UserMagazineSchema = new Schema<UserMagazineDocument>({
   visibility: { type: String, required: true },
 });
 
-const UserMagazineModel = model<UserMagazineDocument>(
+const UserMagazineModel = MagazineModel.discriminator(
   'UserMagazine',
   UserMagazineSchema,
 );
 
 export { UserMagazineModel, UserMagazineDocument };
-

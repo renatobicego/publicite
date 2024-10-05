@@ -6,6 +6,9 @@ import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
 import { MagazineSection } from '../../domain/entity/section/magazine.section.entity';
 import { OwnerType } from '../../domain/entity/enum/magazine.ownerType.enum';
 import { Magazine } from '../../domain/entity/magazine.entity';
+import { ObjectId } from 'mongoose';
+import { UserMagazine } from '../../domain/entity/user.magazine';
+import { GroupMagazine } from '../../domain/entity/group.magazine';
 
 export class MagazineService implements MagazineServiceInterface {
   constructor(
@@ -17,25 +20,43 @@ export class MagazineService implements MagazineServiceInterface {
     try {
       this.logger.log('Creating new Magazine in service..');
       const { addedPost } = magazineRequest;
-      let newFatherSection = undefined;
-      //Aca tenemos dos caminos
-      //1. Corroborar si viene una revista con un addedPost, si viene un addedPost creamos una seccion
+      let section: any = [];
+      const magazineBase = new Magazine(
+        magazineRequest.name,
+        section,
+        magazineRequest.ownerType,
+        magazineRequest.description ?? null,
+        undefined,
+      );
 
       if (addedPost) {
         //La revista tiene un post, tenemos que proceder a crear la Magazine Section
-        newFatherSection = new MagazineSection('', [addedPost], true);
+        const newFatherSection = new MagazineSection('', [addedPost], true);
+        section.push(newFatherSection);
+        magazineBase.setSections = section;
       }
-      //   const magazineBase = new Magazine(
-      //     magazineRequest.name,
-      //   [newFatherSection] ?? [],
-      //     magazineRequest.ownerType,
-      //     magazineRequest.description,
-      //     null,
-      //   );
+
       switch (magazineRequest.ownerType) {
         case OwnerType.user: {
+          this.logger.log('Creating new UserMagazine in service..');
+          const userMagazine = new UserMagazine(
+            magazineBase,
+            magazineRequest.colaborators,
+            magazineRequest.user,
+            magazineRequest.visibility,
+          );
+          await this.magazineRepository.save(userMagazine);
+          break;
         }
         case OwnerType.group: {
+          this.logger.log('Creating new GroupMagazine in service..');
+          const groupMagazine = new GroupMagazine(
+            magazineBase,
+            magazineRequest.allowedColaborators ?? [],
+            magazineRequest.group,
+          );
+          await this.magazineRepository.save(groupMagazine);
+          break;
         }
       }
     } catch (error: any) {

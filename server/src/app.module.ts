@@ -17,11 +17,10 @@ import { AllExceptionsFilter } from './contexts/shared/exceptionFilter/infrastru
 import { DatabaseModule } from './contexts/shared/database/infrastructure/database.module';
 import { DatabaseService } from './contexts/shared/database/infrastructure/database.service';
 import { GroupModule } from './contexts/group/infrastructure/module/group.module';
+import { MagazineModule } from './contexts/magazine/infrastructure/module/magazine.module';
 
 @Module({
   imports: [
-    DatabaseModule,
-    LoggerModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
@@ -32,6 +31,8 @@ import { GroupModule } from './contexts/group/infrastructure/module/group.module
       introspection: true,
       plugins: [ApolloServerPluginLandingPageLocalDefault()],
     }),
+    DatabaseModule,
+    LoggerModule,
     WebhookModule,
     UserModule,
     ContactModule,
@@ -39,6 +40,7 @@ import { GroupModule } from './contexts/group/infrastructure/module/group.module
     PostModule,
     BoardModule,
     GroupModule,
+    MagazineModule,
   ],
   providers: [
     {

@@ -1,5 +1,5 @@
 import { Schema } from 'mongoose';
-import { MagazineDocument } from './magazine.schema';
+import { MagazineDocument, MagazineModel } from './magazine.schema';
 
 interface GroupMagazineDocument extends MagazineDocument {
   allowedColaborators: Schema.Types.ObjectId[];
@@ -21,3 +21,9 @@ export const GroupMagazineSchema = new Schema<GroupMagazineDocument>({
   ],
 });
 
+const GroupMagazineModel = MagazineModel.discriminator(
+  'GroupMagazine',
+  GroupMagazineSchema,
+);
+
+export { GroupMagazineModel, GroupMagazineDocument };
