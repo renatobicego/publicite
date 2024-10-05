@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose';
+import { Schema } from 'mongoose';
 
 import { MagazineDocument, MagazineModel } from './magazine.schema';
 interface UserMagazineDocument extends MagazineDocument {

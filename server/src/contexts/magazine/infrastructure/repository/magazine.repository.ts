@@ -1,6 +1,6 @@
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Magazine } from '../../domain/entity/magazine.entity';
-import { Connection, Model } from 'mongoose';
+import { Connection, Model, ObjectId } from 'mongoose';
 
 import { MagazineRepositoryInterface } from '../../domain/repository/magazine.repository.interface';
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
@@ -17,14 +17,22 @@ import {
   GroupMagazineDocument,
   GroupMagazineModel,
 } from '../schemas/magazine.group.schema';
+import { MagazineResponse } from '../../application/adapter/dto/HTTP-RESPONSE/magazine.reponse';
+import { MagazineDocument, MagazineModel } from '../schemas/magazine.schema';
+import { Inject } from '@nestjs/common';
+import { MagazineRepositoryMapper } from './mapper/magazine.repository.mapper';
+import { MagazineRepositoryMapperInterface } from '../../domain/repository/mapper/magazine.respository.mapper.interface';
 
 export class MagazineRepository implements MagazineRepositoryInterface {
   constructor(
     @InjectConnection() private readonly connection: Connection,
     private readonly logger: MyLoggerService,
 
-    // @InjectModel(MagazineModel.modelName)
-    // private readonly magazineModel: Model<MagazineDocument>,
+    @Inject('MagazineRepositoryMapperInterface')
+    private readonly magazineRepositoryMapper: MagazineRepositoryMapperInterface,
+
+    @InjectModel(MagazineModel.modelName)
+    private readonly magazineModel: Model<MagazineDocument>,
     @InjectModel(MagazineSectionModel.modelName)
     private readonly magazineSection: Model<MagazineSectionDocument>,
     @InjectModel(UserMagazineModel.modelName)
@@ -32,6 +40,24 @@ export class MagazineRepository implements MagazineRepositoryInterface {
     @InjectModel(GroupMagazineModel.modelName)
     private readonly groupMagazine: Model<GroupMagazineDocument>,
   ) {}
+  async findMagazineByMagazineId(
+    id: ObjectId,
+  ): Promise<Partial<MagazineResponse>[] | []> {
+    try {
+      let magazines = [];
+      magazines = await this.magazineModel.find({ _id: id });
+      if (magazines.length > 0) {
+        const magz = magazines.map((magazine) => {
+          return this.magazineRepositoryMapper.toReponse(magazine);
+        });
+        return magz;
+      }
+
+      return magazines as any;
+    } catch (error: any) {
+      throw error;
+    }
+  }
   async save(magazine: Magazine): Promise<any> {
     if (magazine.getSections.length <= 0) {
       try {

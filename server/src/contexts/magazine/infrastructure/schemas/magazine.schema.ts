@@ -3,6 +3,7 @@ import { OwnerType } from '../../domain/entity/enum/magazine.ownerType.enum';
 
 interface MagazineDocument extends Document {
   name: string;
+
   sections: Schema.Types.ObjectId[];
   ownerType: OwnerType;
   description?: string;
@@ -28,4 +29,4 @@ const MagazineSchema = new Schema<MagazineDocument>(
 // y esta tipado como magazineDocument
 const MagazineModel = model<MagazineDocument>('Magazine', MagazineSchema);
 
-export { MagazineModel, MagazineDocument };
+export { MagazineModel, MagazineDocument, MagazineSchema };

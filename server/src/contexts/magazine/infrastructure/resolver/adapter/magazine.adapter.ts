@@ -1,5 +1,8 @@
 import { Inject } from '@nestjs/common';
+import { ObjectId } from 'mongoose';
+
 import { MagazineCreateRequest } from 'src/contexts/magazine/application/adapter/dto/HTTP-REQUEST/magazine.create.request';
+import { MagazineResponse } from 'src/contexts/magazine/application/adapter/dto/HTTP-RESPONSE/magazine.reponse';
 import { MagazineAdapterInterface } from 'src/contexts/magazine/application/adapter/magazine.adapter.interface';
 import { MagazineServiceInterface } from 'src/contexts/magazine/domain/service/magazine.service.interface';
 
@@ -12,6 +15,16 @@ export class MagazineAdapter implements MagazineAdapterInterface {
   async createMagazine(magazineRequest: MagazineCreateRequest): Promise<any> {
     try {
       return await this.magazineService.createMagazine(magazineRequest);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  async findMagazineByMagazineId(
+    id: ObjectId,
+  ): Promise<Partial<MagazineResponse>[] | []> {
+    try {
+      return await this.magazineService.findMagazineByMagazineId(id);
     } catch (error: any) {
       throw error;
     }

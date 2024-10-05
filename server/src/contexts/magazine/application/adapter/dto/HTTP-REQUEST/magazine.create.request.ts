@@ -23,7 +23,7 @@ export class MagazineCreateRequest {
   @Field(() => [String], { nullable: true })
   colaborators: ObjectId[];
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   user: ObjectId;
 
   @Field(() => String)

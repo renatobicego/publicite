@@ -25,6 +25,7 @@ export class Magazine {
     return this.name;
   }
 
+
   get getSections() {
     return this.sections;
   }

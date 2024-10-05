@@ -9,6 +9,7 @@ import { Magazine } from '../../domain/entity/magazine.entity';
 import { ObjectId } from 'mongoose';
 import { UserMagazine } from '../../domain/entity/user.magazine';
 import { GroupMagazine } from '../../domain/entity/group.magazine';
+import { MagazineResponse } from '../adapter/dto/HTTP-RESPONSE/magazine.reponse';
 
 export class MagazineService implements MagazineServiceInterface {
   constructor(
@@ -16,6 +17,7 @@ export class MagazineService implements MagazineServiceInterface {
     private readonly magazineRepository: MagazineRepositoryInterface,
     private readonly logger: MyLoggerService,
   ) {}
+
   async createMagazine(magazineRequest: MagazineCreateRequest): Promise<void> {
     try {
       this.logger.log('Creating new Magazine in service..');
@@ -42,7 +44,6 @@ export class MagazineService implements MagazineServiceInterface {
           const userMagazine = new UserMagazine(
             magazineBase,
             magazineRequest.colaborators,
-            magazineRequest.user,
             magazineRequest.visibility,
           );
           await this.magazineRepository.save(userMagazine);
@@ -61,6 +62,19 @@ export class MagazineService implements MagazineServiceInterface {
       }
     } catch (error: any) {
       this.logger.error('Error creating new Magazine in service', error);
+      throw error;
+    }
+  }
+
+  async findMagazineByMagazineId(
+    id: ObjectId,
+  ): Promise<Partial<MagazineResponse>[] | []> {
+    this.logger.log('Finding user Magazines, user ID: ' + id);
+    try {
+      return await this.magazineRepository.findMagazineByMagazineId(id);
+    } catch (error: any) {
+      this.logger.error('Error finding new Magazine in service', error);
+
       throw error;
     }
   }
