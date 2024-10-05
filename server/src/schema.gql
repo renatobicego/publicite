@@ -124,6 +124,12 @@ type Query {
   """Obtener Post por autor"""
   findPostsByAuthorId(authorId: String!): [Post_Full_Graphql_Model!]
 
+  """Busca un grupo por su id"""
+  getGroupById(id: String!): GroupResponse
+
+  """Busca un grupo por su nombre"""
+  getGroupByName(name: String!, limit: Float, page: Float): [GroupResponse!]
+
   """Crear una revista"""
   getMagazineByMagazineId(id: String!): [MagazineResponse!]
 }

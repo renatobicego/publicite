@@ -9,6 +9,31 @@ export class GroupAdapter implements GroupAdapterInterface {
     @Inject('GroupServiceInterface')
     private readonly groupService: GroupServiceInterface,
   ) {}
+
+  async findGroupById(id: string): Promise<GroupResponse> {
+    try {
+      const response = await this.groupService.findGroupById(id);
+      return response;
+    } catch (error: any) {
+      throw error;
+    }
+  }
+  async findGroupByName(
+    name: string,
+    limit: number,
+    page: number,
+  ): Promise<GroupResponse[]> {
+    try {
+      const response = await this.groupService.findGroupByName(
+        name,
+        limit,
+        page,
+      );
+      return response;
+    } catch (error: any) {
+      throw error;
+    }
+  }
   async saveGroup(group: GroupRequest): Promise<GroupResponse> {
     try {
       return await this.groupService.saveGroup(group);

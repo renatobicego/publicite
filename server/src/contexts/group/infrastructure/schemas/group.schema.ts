@@ -26,3 +26,5 @@ export interface GroupDocument extends Document {
   profilePhotoUrl: string;
   visibility: Visibility;
 }
+
+GroupSchema.index({ name: 1 });

@@ -1,5 +1,5 @@
 import { Inject } from '@nestjs/common';
-import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
 
 import { GroupRequest } from 'src/contexts/group/application/adapter/dto/HTTP-REQUEST/group.request';
 import { GroupResponse } from 'src/contexts/group/application/adapter/dto/HTTP-RESPONSE/group.response';
@@ -21,6 +21,38 @@ export class GroupResolver {
   ): Promise<GroupResponse> {
     try {
       return await this.groupAdapter.saveGroup(groupDto);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  @Query(() => GroupResponse, {
+    nullable: true,
+    description: 'Busca un grupo por su id',
+  })
+  async getGroupById(
+    @Args('id', { type: () => String })
+    id: string,
+  ): Promise<GroupResponse> {
+    try {
+      return await this.groupAdapter.findGroupById(id);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  @Query(() => [GroupResponse], {
+    nullable: true,
+    description: 'Busca un grupo por su nombre',
+  })
+  async getGroupByName(
+    @Args('name', { type: () => String })
+    name: string,
+    @Args('limit', { type: () => Number, nullable: true }) limit: number,
+    @Args('page', { type: () => Number, nullable: true }) page: number,
+  ): Promise<GroupResponse[]> {
+    try {
+      return await this.groupAdapter.findGroupByName(name, limit, page);
     } catch (error: any) {
       throw error;
     }

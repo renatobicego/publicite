@@ -3,4 +3,10 @@ import { GroupResponse } from '../../application/adapter/dto/HTTP-RESPONSE/group
 
 export interface GroupServiceInterface {
   saveGroup(group: GroupRequest): Promise<GroupResponse>;
+  findGroupById(id: string): Promise<GroupResponse>;
+  findGroupByName(
+    name: string,
+    limit: number,
+    page: number,
+  ): Promise<GroupResponse[]>;
 }
