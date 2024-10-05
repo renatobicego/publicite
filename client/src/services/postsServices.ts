@@ -53,7 +53,7 @@ export const postPost = async (values: GoodPostValues | PetitionPostValues | Ser
 export const getGoods = async (searchTerm: string | null) => {
   try {
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    return [mockedPosts[0], mockedPosts[0], mockedPosts[0], mockedPosts[0]]; // Return the same mocked data
+    return {items: [mockedPosts[0], mockedPosts[0], mockedPosts[0], mockedPosts[0]]}; // Return the same mocked data
   } catch (error) {
     return {
       error: "Error al traer los anuncios. Por favor intenta de nuevo.",

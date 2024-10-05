@@ -6,7 +6,7 @@ import { createNewGroupMutation } from "@/graphql/groupQueries";
 export const getGroups = async (searchTerm: string | null) => {
   try {
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    return mockedGroups;
+    return {items: mockedGroups};
   } catch (error) {
     return {
       error: "Error al traer grupos. Por favor intenta de nuevo.",

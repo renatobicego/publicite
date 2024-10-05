@@ -10,10 +10,9 @@ export default async function EditPost({ params }: { params: { id: string } }) {
   const postData: Good | Service | { error: string } = await getPostData(
     params.id
   );
-  const currentUser = auth();
   if (
     !("error" in postData) &&
-    currentUser.sessionClaims?.metadata.mongoId !== postData.author._id
+    auth().sessionClaims?.metadata.mongoId !== postData.author._id
   ) {
     redirect(`${POSTS}/${params.id}`);
   }
