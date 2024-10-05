@@ -32,7 +32,6 @@ export class GroupRepository implements GroupRepositoryInterface {
 
       // const regex = new RegExp(`^${name}`, 'i'); // de esta forma buscamos el nombre SOLO COMO EMPIEZA, SI EL NAME QUE BUSCA ESTA EN EL MEDIO NO APARECE
 
-      // Calcula los valores de paginación
       const skip = (page - 1) * limit;
 
       // Realiza la búsqueda con paginación
@@ -40,8 +39,8 @@ export class GroupRepository implements GroupRepositoryInterface {
         .find({ name: { $regex: regex } })
         .limit(limit)
         .skip(skip)
-        .sort({ name: 1 }); //  Ordena los resultados por nombre
-
+        .sort({ name: 1 }) //  Ordena los resultados por nombre
+        .lean();
       return groups.map((group) => this.groupMapper.toGroupResponse(group));
     } catch (error: any) {
       throw error;
