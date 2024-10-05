@@ -11,20 +11,18 @@ const MagazinesGrid = ({
 }) => {
   return (
     <>
-      <section
-        className={`grid grid-cols-2 gap-3 md:gap-4 md:grid-cols-3 xl:grid-cols-4 3xl:grid-cols-5 lg:gap-5 w-full`}
-      >
-        {magazines.map((magazine, index) => (
-          <MagazineCard
-            key={magazine._id + index}
-            magazineData={magazine}
-          />
-        ))}
-      </section>
-      {!isLoading && magazines.length === 0 && (
+      {!isLoading && (magazines.length === 0 || !magazines) ? (
         <p className="max-md:text-sm text-light-text">
           No se encontraron anuncios para mostrar
         </p>
+      ) : (
+        <section
+          className={`grid grid-cols-2 gap-3 md:gap-4 md:grid-cols-3 xl:grid-cols-4 3xl:grid-cols-5 lg:gap-5 w-full`}
+        >
+          {magazines.map((magazine, index) => (
+            <MagazineCard key={magazine._id + index} magazineData={magazine} />
+          ))}
+        </section>
       )}
       {isLoading && <Spinner color="warning" />}
     </>

@@ -9,7 +9,7 @@ import { getId, getMagazineType, getSharedMagazineIds } from "@/utils/functions/
 export default async function CreateMagazine({
   params,
 }: {
-  params: { options: string[] };
+  params: { options: string[] | undefined };
 }) {
   const breadcrumbsItems = [
     {

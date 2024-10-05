@@ -110,7 +110,7 @@ type MagazineResponse {
   sections: [String!]!
   ownerType: String!
   description: String
-  colaborators: [String!]
+  collaborators: [String!]
   user: String
   visibility: String
   allowedColaborators: [String!]
@@ -237,7 +237,7 @@ input MagazineCreateRequest {
   ownerType: OwnerType!
   description: String
   addedPost: String
-  colaborators: [String!]
+  collaborators: [String!]
   user: String
   visibility: String!
   allowedColaborators: [String!]

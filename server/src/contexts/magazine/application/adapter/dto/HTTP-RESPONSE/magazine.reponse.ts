@@ -23,7 +23,7 @@ export class MagazineResponse {
 
   //User Magazine
   @Field(() => [String], { nullable: true })
-  colaborators?: any[];
+  collaborators?: any[];
 
   @Field(() => String, { nullable: true })
   user?: any;
@@ -43,7 +43,7 @@ export class MagazineResponse {
     this.sections = magazine.sections;
     this.ownerType = magazine.ownerType;
     this.description = magazine.description;
-    this.colaborators = magazine.colaborators;
+    this.collaborators = magazine.collaborators;
     this.user = magazine.user;
     this.visibility = magazine.visibility;
     this.allowedColaborators = magazine.allowedColaborators;

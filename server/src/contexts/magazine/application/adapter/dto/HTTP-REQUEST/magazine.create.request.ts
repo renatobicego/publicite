@@ -21,7 +21,7 @@ export class MagazineCreateRequest {
 
   // User Magazines Atributes
   @Field(() => [String], { nullable: true })
-  colaborators: ObjectId[];
+  collaborators: ObjectId[];
 
   @Field(() => String, { nullable: true })
   user: ObjectId;

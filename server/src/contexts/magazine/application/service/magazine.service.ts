@@ -43,7 +43,7 @@ export class MagazineService implements MagazineServiceInterface {
           this.logger.log('Creating new UserMagazine in service..');
           const userMagazine = new UserMagazine(
             magazineBase,
-            magazineRequest.colaborators,
+            magazineRequest.collaborators,
             magazineRequest.visibility,
           );
           await this.magazineRepository.save(userMagazine);

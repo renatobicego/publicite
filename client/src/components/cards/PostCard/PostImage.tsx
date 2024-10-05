@@ -27,7 +27,7 @@ const PostImage = ({
             wrapper: `!max-w-full w-full max-md:max-h-[45vw] md:max-lg:max-h-[25vw] `,
             img: `!max-w-full w-full object-cover max-md:max-h-[45vw] md:max-h-[25vw] ${
               recommendation && "lg:max-2xl:max-h-[18vw]"
-            } lg:max-h-[17vw] 3xl:max-h-[14vw]`,
+            } lg:max-h-[22vw] xl:max-h-[17vw] 3xl:max-h-[14vw]`,
           }}
           alt={`Imagen de portada de ${post.title}`}
           width={287}

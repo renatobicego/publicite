@@ -1,21 +1,21 @@
 import { postTypesItems } from "@/utils/data/selectData";
-import { Select, Selection, SelectItem } from "@nextui-org/react";
-import { ChangeEvent, Dispatch, SetStateAction } from "react";
+import { POSTS } from "@/utils/data/urls";
+import { Link, Select, SelectItem } from "@nextui-org/react";
 
-const SelectPostType = ({
-  postType,
-  setPostType,
-}: {
-  postType: string;
-  setPostType: Dispatch<SetStateAction<"good" | "service" | "petition">>;
-}) => {
-  const handleSelectionChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    setPostType(e.target.value as any);
+const SelectPostType = ({ postType }: { postType: string }) => {
+  const getUrlPostType = (postType: string) => {
+    switch (postType) {
+      case "good":
+        return `${POSTS}`;
+      case "service":
+        return `${POSTS}/servicios`;
+      case "petition":
+        return `${POSTS}/necesidades`;
+    }
   };
   return (
     <Select
       selectedKeys={[postType]}
-      onChange={handleSelectionChange}
       items={postTypesItems}
       label="Bienes, servicios o necesidades"
       placeholder="Seleccione el tipo de anuncio"
@@ -35,7 +35,14 @@ const SelectPostType = ({
       variant="bordered"
     >
       {(postType) => (
-        <SelectItem variant="light" key={postType.value} value={postType.value}>
+        <SelectItem
+          variant="light"
+          className="text-text-color"
+          key={postType.value}
+          value={postType.value}
+          as={Link}
+          href={getUrlPostType(postType.value)}
+        >
           {postType.label}
         </SelectItem>
       )}

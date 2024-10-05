@@ -29,20 +29,23 @@ export const checkIfUserIsSubscribed = (
   });
 };
 
-export const getMagazineType = (options: string[]) => {
+export const getMagazineType = (options?: string[]) => {
+  if(!options) return { isGroupMagazine: false, isSharedMagazine: false };
   const isGroupMagazine = options.includes("grupos");
   const isSharedMagazine = options.includes("compartida");
   return { isGroupMagazine, isSharedMagazine };
 };
 
-export const getId = (options: string[], isGroupMagazine: boolean) => {
+export const getId = (options: string[] | undefined, isGroupMagazine: boolean) => {
+  if(!options) return null;
   return isGroupMagazine ? options[1] : options[0] || null;
 };
 
 export const getSharedMagazineIds = (
-  options: string[],
+  options: string[] | undefined,
   isSharedMagazine: boolean
 ) => {
+  if(!options) return null;
   return isSharedMagazine ? { user: options[1], post: options[2] } : null;
 };
 

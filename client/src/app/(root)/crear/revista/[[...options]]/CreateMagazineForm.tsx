@@ -57,6 +57,7 @@ const CreateMagazineForm = ({
       shareMagazineIds,
       user
     );
+    console.log(finalValues)
 
     const resApi = await createMagazine(finalValues);
     if (resApi.error) {

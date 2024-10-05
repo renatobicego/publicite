@@ -3,12 +3,12 @@ import { ObjectId } from 'mongoose';
 import { Magazine } from './magazine.entity';
 
 export class UserMagazine extends Magazine {
-  private colaborators: ObjectId[];
+  private collaborators: ObjectId[];
   private visibility: string;
 
   constructor(
     magazine: Magazine,
-    colaborators: ObjectId[],
+    collaborators: ObjectId[],
     visibility: string,
   ) {
     super(
@@ -19,7 +19,7 @@ export class UserMagazine extends Magazine {
         'Esta revista no posee una descripción de todavía',
       magazine.getId,
     );
-    this.colaborators = colaborators;
+    this.collaborators = collaborators;
     this.visibility = visibility;
   }
 }

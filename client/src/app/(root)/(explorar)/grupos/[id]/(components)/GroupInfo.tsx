@@ -6,7 +6,7 @@ import OptionsDropdown from "./OptionsDropdown";
 import { currentUser } from "@clerk/nextjs/server";
 import RulesPopover from "./RulesPopover";
 import SecondaryButton from "@/components/buttons/SecondaryButton";
-import { GROUPS } from "@/utils/data/urls";
+import { EDIT_GROUP } from "@/utils/data/urls";
 
 const GroupInfo = async ({ group }: { group: Group }) => {
   const loggedUser = await currentUser();
@@ -33,7 +33,7 @@ const GroupInfo = async ({ group }: { group: Group }) => {
           {group.admins.some(
             (admin) => admin === (loggedUser?.publicMetadata.mongoId as string)
           ) ? (
-            <SecondaryButton as={Link} href={`/editar${GROUPS}/${group._id}`}>
+            <SecondaryButton as={Link} href={`${EDIT_GROUP}/${group._id}`}>
               {" "}
               Editar Grupo{" "}
             </SecondaryButton>

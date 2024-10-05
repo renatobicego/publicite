@@ -7,3 +7,19 @@ export const createNewGroupMutation = gql`
     }
   }
 `;
+
+export const getGroupByIdQuery = gql`
+  query GetGroupById($getGroupByIdId: String!) {
+    getGroupById(id: $getGroupByIdId) {
+      _id
+      admins
+      details
+      magazines
+      members
+      name
+      profilePhotoUrl
+      rules
+      visibility
+    }
+  }
+`;

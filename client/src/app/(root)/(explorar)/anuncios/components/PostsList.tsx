@@ -2,19 +2,17 @@
 import SelectPostType from "@/components/inputs/SelectPostType";
 import { postTypesItems } from "@/utils/data/selectData";
 import { POSTS } from "@/utils/data/urls";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 import PostListLogic from "./PostListLogic";
-import { fetchDataByType } from "@/utils/data/fetchDataByType";
 
-const PostsList = () => {
-  const [postType, setPostType] = useState<"good" | "service" | "petition">("good");
+const PostsList = ({postTypeVisited} : {postTypeVisited: "good" | "service" | "petition"}) => {
   const pathname = usePathname();
   
   // Function to determine the title based on path and post type
   const titleToShow = () => {
     const typeSelected = postTypesItems.find(
-      (pType) => pType.value === postType
+      (pType) => pType.value === postTypeVisited
     )?.label;
     
     switch (pathname) {
@@ -27,14 +25,14 @@ const PostsList = () => {
       case `${POSTS}/proximos-a-vencer`:
         return "Próximos a Vencer - " + typeSelected;
       default:
-        return "Anuncios";
+        return "Anuncios - " + typeSelected;
     }
   };
   return (
     <section className="w-full flex-col flex gap-4">
-      <SelectPostType postType={postType} setPostType={setPostType} />
+      <SelectPostType postType={postTypeVisited} />
       <h2>{titleToShow()}</h2>
-      <PostListLogic postType={postType} />
+      <PostListLogic postType={postTypeVisited} />
     </section>
   );
 };

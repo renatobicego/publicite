@@ -64,7 +64,7 @@ export const getGoods = async (searchTerm: string | null) => {
 export const getServices = async (searchTerm: string | null) => {
   try {
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    return [mockedPosts[1], mockedPosts[1], mockedPosts[1], mockedPosts[1]]; // Return the same mocked data
+    return { items: [mockedPosts[1], mockedPosts[1], mockedPosts[1], mockedPosts[1]] }; // Return the same mocked data
   } catch (error) {
     return {
       error: "Error al traer los anuncios. Por favor intenta de nuevo.",
@@ -75,7 +75,7 @@ export const getServices = async (searchTerm: string | null) => {
 export const getPetitions = async (searchTerm: string | null) => {
   try {
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    return mockedPetitions // Return the same mocked data
+    return { items: mockedPetitions } // Return the same mocked data
   } catch (error) {
     return {
       error: "Error al traer los anuncios. Por favor intenta de nuevo.",

@@ -38,6 +38,24 @@ const SolapasTabs = () => {
     }
   }, [pathname]);
 
+  const getPostType = () => {
+    switch (true) {
+      case pathname.includes("servicios"):
+        return "service";
+      case pathname.includes("necesidades"):
+        return "petition";
+      default:
+        return "good";
+    }
+  };
+  const postTypeVisited = getPostType();
+
+  const postTypeUrlVisited =
+    postTypeVisited === "petition"
+      ? "/necesidades"
+      : postTypeVisited === "service"
+      ? "/servicios"
+      : "";
   return (
     <Tabs
       classNames={{
@@ -45,48 +63,48 @@ const SolapasTabs = () => {
         tabList: "max-md:gap-0 p-0",
         tab: "max-md:text-xs",
         tabContent: "max-md:text-xs",
-        base: "max-w-full overflow-x-auto", 
+        base: "max-w-full overflow-x-auto",
       }}
-      ref={tabsRef} 
+      ref={tabsRef}
       aria-label="Options"
       variant="underlined"
       selectedKey={pathname}
     >
       <Tab
         className="w-full"
-        key={POSTS}
+        key={`${POSTS}${postTypeUrlVisited}`}
         title="Recomendados"
-        href={POSTS}
-        data-key={POSTS}
+        href={`${POSTS}${postTypeUrlVisited}`}
+        data-key={`${POSTS}${postTypeUrlVisited}`}
       >
-        <PostsList />
+        <PostsList postTypeVisited={postTypeVisited} />
       </Tab>
       <Tab
         className="w-full"
-        key={POST_RECENTS}
+        key={`${POST_RECENTS}${postTypeUrlVisited}`}
         title="Anuncios de Hoy"
-        href={POST_RECENTS}
-        data-key={POST_RECENTS}
+        href={`${POST_RECENTS}${postTypeUrlVisited}`}
+        data-key={`${POST_RECENTS}${postTypeUrlVisited}`}
       >
-        <PostsList />
+        <PostsList postTypeVisited={postTypeVisited} />
       </Tab>
       <Tab
         className="w-full"
-        key={POST_BEST}
+        key={`${POST_BEST}${postTypeUrlVisited}`}
         title="Mejor Puntuados"
-        href={POST_BEST}
-        data-key={POST_BEST}
+        href={`${POST_BEST}${postTypeUrlVisited}`}
+        data-key={`${POST_BEST}${postTypeUrlVisited}`}
       >
-        <PostsList />
+        <PostsList postTypeVisited={postTypeVisited} />
       </Tab>
       <Tab
         className="w-full"
-        key={POST_NEXT_TO_EXPIRE}
+        key={`${POST_NEXT_TO_EXPIRE}${postTypeUrlVisited}`}
         title="Próximos a Vencer"
-        href={POST_NEXT_TO_EXPIRE}
-        data-key={POST_NEXT_TO_EXPIRE}
+        href={`${POST_NEXT_TO_EXPIRE}${postTypeUrlVisited}`}
+        data-key={`${POST_NEXT_TO_EXPIRE}${postTypeUrlVisited}`}
       >
-        <PostsList />
+        <PostsList postTypeVisited={postTypeVisited} />
       </Tab>
       <Tab
         className="w-full"

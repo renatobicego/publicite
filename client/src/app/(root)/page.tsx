@@ -1,6 +1,8 @@
+import { POSTS } from "@/utils/data/urls";
 import SecondaryButton from "../../components/buttons/SecondaryButton";
 import PostsGrid from "../../components/grids/PostGrid";
 import { mockedPetitions, mockedPosts } from "../../utils/data/mockedData";
+import { Link } from "@nextui-org/react";
 
 export default function Home() {
   return (
@@ -10,7 +12,7 @@ export default function Home() {
         posts={[...mockedPosts, ...mockedPosts, ...mockedPosts]}
         recommendation={false}
       />
-      <SecondaryButton className="self-center">
+      <SecondaryButton as={Link} href={POSTS} className="self-center">
         Ver Más Anuncios
       </SecondaryButton>
       <h2 className="mt-4">¿Qué están buscando los usuarios?</h2>
@@ -18,7 +20,7 @@ export default function Home() {
         posts={[...mockedPetitions, ...mockedPetitions, ...mockedPetitions]}
         recommendation={false}
       />
-      <SecondaryButton className="self-center">
+      <SecondaryButton as={Link} href={`${POSTS}/necesidades`} className="self-center">
         Ver Más Necesidades
       </SecondaryButton>
     </main>

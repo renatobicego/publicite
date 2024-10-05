@@ -29,7 +29,7 @@ const Inputs = ({
     <>
       <Field
         as={CustomInput}
-        name="title"
+        name="name"
         label="Título"
         placeholder="Agregue un título"
         isRequired

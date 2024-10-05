@@ -4,7 +4,7 @@ import ErrorCard from "@/components/ErrorCard";
 import PostsGrid from "@/components/grids/PostGrid";
 import { getMagazineById } from "@/services/magazineService";
 import { MAGAZINES, PROFILE } from "@/utils/data/urls";
-import { Avatar, Button, Link } from "@nextui-org/react";
+import { Avatar, Link } from "@nextui-org/react";
 import AccordionSections from "./AccordionSections";
 import { currentUser } from "@clerk/nextjs/server";
 import { GroupMagazine, Magazine, Post, UserMagazine } from "@/types/postTypes";
@@ -20,16 +20,20 @@ export default async function MagazinePage({
   const magazine: Magazine | { error: string } = await getMagazineById(
     params.id
   );
+  console.log(magazine)
   if ("error" in magazine) {
     return <ErrorCard message={magazine.error} />;
   }
   const user = await currentUser();
   const isOwnerTypeUser = magazine.ownerType === "user";
+
   const owner = isOwnerTypeUser
     ? (magazine as UserMagazine).user
     : (magazine as GroupMagazine).group;
+  
   const ownerAsUser = owner as GetUser;
   const ownerAsGroup = owner as Group;
+  
   const isOwner = isOwnerTypeUser
     ? ownerAsUser.username === user?.username
     : ((magazine as GroupMagazine).allowedCollaborators as string[]).includes(

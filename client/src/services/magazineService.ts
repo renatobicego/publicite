@@ -1,17 +1,25 @@
-import { mockedCompleteMagazine } from "@/utils/data/mockedData";
+import { createMagazineMutation, getMagazineByIdQuery } from "@/graphql/magazineQueries";
+import { getClient, query } from "@/lib/client";
 
 export const getMagazineById = async (id: string) => {
     try {
-      // const res = await fetch(`${process.env.API_URL}/businessSector`);
-  
-      // return await res.json();
-  
-      return mockedCompleteMagazine;
-      // return mockedPosts[0];
+      const { data } = await query({
+        query: getMagazineByIdQuery,
+        variables: { getMagazineByMagazineIdId: id },
+      });
+      return data;
     } catch (error) {
       return {
         error:
           "Error al traer los datos de la revista. Por favor intenta de nuevo.",
       };
     }
-  };
+};
+  
+export const postMagazine = async (formData: any) => { 
+  const { data } =  await getClient().mutate({
+    mutation: createMagazineMutation,
+    variables: { magazineCreateRequest: formData },
+  })
+  return data
+}
