@@ -20,7 +20,7 @@ const EDIT_POST = "/editar/anuncio";
 const EDIT_PETITION = "/editar/necesidad";
 const EDIT_MAGAZINE = "/editar/revista";
 const EDIT_GROUP = "/editar/grupo";
-
+const FILE_URL = process.env.NEXT_PUBLIC_UPLOADTHING_URL
 export {
   MAGAZINES,
   GROUPS,
@@ -44,4 +44,5 @@ export {
   EDIT_PETITION,
   EDIT_MAGAZINE,
   EDIT_GROUP,
+  FILE_URL
 };

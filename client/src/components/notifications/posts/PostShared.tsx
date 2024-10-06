@@ -1,4 +1,4 @@
-import { CREATE_MAGAZINE, POSTS } from "@/utils/data/urls";
+import { CREATE_MAGAZINE, FILE_URL, POSTS } from "@/utils/data/urls";
 import { showDate } from "@/utils/functions/dates";
 import { parseDate } from "@internationalized/date";
 import { Image, Link } from "@nextui-org/react";
@@ -25,7 +25,7 @@ const PostShared = ({
         ) : (
           <Image
             radius="sm"
-            src={(post as Good).imagesUrls[0]}
+            src={FILE_URL + (post as Good).imagesUrls[0]}
             alt="foto"
             className="object-cover"
             classNames={{

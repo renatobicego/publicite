@@ -1,14 +1,13 @@
 import {
   CreatePostValues,
   Good,
-  GoodPostValues,
   Petition,
   Service,
 } from "@/types/postTypes";
 
 export const getPostInitialValues = (
-  postData: Good | Service | Petition,
-  postType: "good" | "service" | "petition"
+  postData: Good | Service,
+  postType: "good" | "service"
 ) => {
   const postValues: Omit<CreatePostValues, "createAt" | "location"> = {
     attachedFiles: postData.attachedFiles,
@@ -41,13 +40,5 @@ export const getPostInitialValues = (
         frequencyPrice: serviceData.frequencyPrice,
       };
       return serviceValues;
-    case "petition":
-      const petitionData = postData as Petition;
-      const petitionValues = {
-        ...postValues,
-        toPrice: petitionData.toPrice,
-        frequencyPrice: petitionData.frequencyPrice,
-      };
-      return petitionValues;
   }
 };

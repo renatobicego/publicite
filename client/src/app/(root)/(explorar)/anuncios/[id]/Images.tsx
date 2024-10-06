@@ -1,5 +1,6 @@
 "use client";
-import { Button, Image } from "@nextui-org/react";
+import { FILE_URL } from "@/utils/data/urls";
+import { Image } from "@nextui-org/react";
 import { useState } from "react";
 
 const Images = ({ images }: { images: string[] }) => {
@@ -7,7 +8,7 @@ const Images = ({ images }: { images: string[] }) => {
   return (
     <div className="flex-1 flex flex-col gap-2 w-full md:max-w-[50%] md:sticky top-24 left-0 h-full overflow-y-auto">
       <Image
-        src={images[activeImage]}
+        src={FILE_URL + images[activeImage]}
         width="100%"
         height="100%"
         alt="Anuncio"
@@ -17,7 +18,7 @@ const Images = ({ images }: { images: string[] }) => {
         {[...images, ...images].map((image, index) => (
           <Image
             key={index}
-            src={image}
+            src={FILE_URL + image}
             onClick={() => setActiveImage(index)}
             alt="Anuncio"
             isZoomed

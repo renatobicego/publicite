@@ -1,7 +1,6 @@
 import { Board } from "@/types/board";
 import {
   Good,
-  Magazine,
   Petition,
   PostCategory,
   Service,
@@ -9,7 +8,7 @@ import {
 } from "@/types/postTypes";
 import { SubscriptionPlan } from "@/types/subscriptions";
 import { boardColors } from "./selectData";
-import { GetUser, Group, User } from "@/types/userTypes";
+import { GetUser } from "@/types/userTypes";
 
 export const categories: PostCategory[] = [
   {
@@ -29,10 +28,10 @@ export const categories: PostCategory[] = [
 const mockedGood: Good = {
   _id: "1",
   imagesUrls: [
-    "/moto.png",
-    "/Rectangle 13.png",
-    "/Rectangle 14.png",
-    "/Rectangle 15.png",
+    "cc3ab11f-7abf-453d-95f1-5b85465f22a2-aybrx2.jpg",
+    "21283bb3-8d33-4800-b109-969d15076745-hs36nz.jpg",
+    "21283bb3-8d33-4800-b109-969d15076745-hs36nz.jpg",
+    "21283bb3-8d33-4800-b109-969d15076745-hs36nz.jpg",
   ],
   year: 2022,
   brand: "brand",
@@ -154,7 +153,7 @@ const mockedGood: Good = {
 
 const mockedService: Service = {
   _id: "1jgdfas",
-  imagesUrls: ["/catering.png"],
+  imagesUrls: ["9c5124a7-ed98-4fd0-a5a2-0854d620e564-hs36nz.jpg"],
   description:
     "Te invitamos a que nos conozcas y puedas disfrutar con tus seres queridos de tu evento tal como lo soñaste. Elaboramos bocadillos totalmente caseros y con material de primera calidad.",
   title: "Lunch para eventos social y corporativos",

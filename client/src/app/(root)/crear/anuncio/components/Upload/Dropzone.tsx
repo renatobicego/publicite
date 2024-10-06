@@ -61,8 +61,8 @@ const Dropzone = ({
         </p>
         <p className="text-text-color font-semibold text-xs lg:text-sm text-center max-w-[80%]">
           {allowVideos
-            ? "Tamaño máximo de 4MB para imágenes y 32MB para videos. Máximo 10 archivos y únicamente se permite 1 video."
-            : "Tamaño máximo de 4MB, máximo 10 imágenes"}
+            ? `Tamaño máximo de 4MB para imágenes y 32MB para videos. Máximo ${maxTotalFiles} archivos y únicamente se permite 1 video.`
+            : `Tamaño máximo de 4MB, máximo ${maxTotalFiles} imágenes`}
         </p>
       </div>
     </div>

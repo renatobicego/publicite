@@ -1,6 +1,12 @@
 "use client";
 
-import { useCallback, Dispatch, SetStateAction } from "react";
+import {
+  useCallback,
+  Dispatch,
+  SetStateAction,
+  HTMLAttributes,
+  memo,
+} from "react";
 import Dropzone from "./Dropzone";
 import FilePreview from "./FilePreview";
 import { toastifyError } from "@/utils/functions/toastify";
@@ -10,6 +16,9 @@ interface UploadImagesProps {
   type?: "good" | "service";
   files: File[];
   setFiles: Dispatch<SetStateAction<File[]>>;
+  customClassname?: HTMLAttributes<HTMLDivElement>["className"];
+  prevFilesCount?: number;
+  isVideoUploaded?: boolean;
 }
 
 const UploadImages = ({
@@ -17,11 +26,14 @@ const UploadImages = ({
   type,
   files,
   setFiles,
+  customClassname,
+  prevFilesCount = 0,
+  isVideoUploaded = false,
 }: UploadImagesProps) => {
   const maxImageSize = 4 * 1024 * 1024; // 4MB for images
   const maxVideoSize = 32 * 1024 * 1024; // 32MB for videos
-  const maxTotalFiles = 10;
-  const maxVideoFiles = 1;
+  const maxTotalFiles = 10 - prevFilesCount;
+  const maxVideoFiles = allowVideos ? (isVideoUploaded ? 1 : 0) : 0;
 
   // Handle file drop
   const onDrop = useCallback(
@@ -46,7 +58,10 @@ const UploadImages = ({
         }
 
         if (currentFileCount + acceptedFiles.length > maxTotalFiles) {
-          toastifyError("Solo puedes subir un máximo de 10 archivos.");
+          console.log(currentFileCount, acceptedFiles.length, maxTotalFiles);
+          toastifyError(
+            `Solo puedes subir un máximo de ${maxTotalFiles} archivos.`
+          );
           return false;
         }
 
@@ -70,7 +85,7 @@ const UploadImages = ({
       setFiles((prevFiles) => [...prevFiles, ...validFiles]);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [allowVideos, files]
+    [allowVideos, files, maxTotalFiles, maxVideoFiles]
   );
 
   // Remove a specific file
@@ -79,7 +94,7 @@ const UploadImages = ({
   };
 
   return (
-    <div className="w-full md:w-1/2">
+    <div className={`w-full md:w-1/2 ${customClassname}`}>
       <Dropzone
         onDrop={onDrop}
         allowVideos={allowVideos}
@@ -100,4 +115,4 @@ const UploadImages = ({
   );
 };
 
-export default UploadImages;
+export default memo(UploadImages);

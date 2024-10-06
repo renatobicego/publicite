@@ -1,5 +1,5 @@
 import { Good, Magazine, Post } from "@/types/postTypes";
-import { MAGAZINES, PROFILE } from "@/utils/data/urls";
+import { FILE_URL, MAGAZINES, PROFILE } from "@/utils/data/urls";
 import { Card, CardBody, CardFooter, Image, Link } from "@nextui-org/react";
 
 const MagazineCard = ({ magazineData}: { magazineData: Magazine; }) => {
@@ -15,7 +15,7 @@ const MagazineCard = ({ magazineData}: { magazineData: Magazine; }) => {
               img: "w-full object-cover h-36 lg:h-52",
               wrapper: "w-2/3",
             }}
-            src={(posts[0] as Good).imagesUrls[0]}
+            src={FILE_URL + (posts[0] as Good).imagesUrls[0]}
           />
         ) : null}
         <div className="flex gap-1 flex-1 flex-col h-full">
@@ -27,7 +27,7 @@ const MagazineCard = ({ magazineData}: { magazineData: Magazine; }) => {
               classNames={{
                 wrapper: "!max-w-full max-h-[50%]",
               }}
-              src={(posts[1] as Good).imagesUrls[0]}
+              src={FILE_URL + (posts[1] as Good).imagesUrls[0]}
             />
           ) : (
             <div className="bg-gray-200 w-full h-[4.4rem] lg:h-[6.4rem] rounded-md"></div>
@@ -40,7 +40,7 @@ const MagazineCard = ({ magazineData}: { magazineData: Magazine; }) => {
               classNames={{
                 wrapper: "!max-w-full max-h-[50%]",
               }}
-              src={(posts[2] as Good).imagesUrls[0]}
+              src={FILE_URL + (posts[2] as Good).imagesUrls[0]}
             />
           ) : (
             <div className="bg-gray-200 w-full h-[4.4rem] lg:h-[6.4rem] rounded-md"></div>

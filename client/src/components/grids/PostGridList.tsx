@@ -15,6 +15,7 @@ import { useCallback } from "react";
 import { FaStar } from "react-icons/fa6";
 import SaveButton from "../buttons/SaveButton";
 import ShareButton from "../buttons/ShareButton";
+import { FILE_URL } from "@/utils/data/urls";
 
 const PostGridList = ({
   items,
@@ -30,7 +31,7 @@ const PostGridList = ({
           return (
             <div className="flex gap-2 2xl:gap-4 items-center justify-between">
               <Image
-                src={data.imagesUrls[0]}
+                src={FILE_URL + data.imagesUrls[0]}
                 alt={data.title}
                 classNames={{
                   wrapper:

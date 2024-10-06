@@ -1,7 +1,7 @@
 "use client";
 import { CardHeader, Image, Link } from "@nextui-org/react";
 import SaveButton from "../../buttons/SaveButton";
-import { POSTS } from "@/utils/data/urls";
+import { FILE_URL, POSTS } from "@/utils/data/urls";
 import { Good, Service } from "@/types/postTypes";
 import { SignedIn } from "@clerk/nextjs";
 
@@ -22,7 +22,7 @@ const PostImage = ({
         isDisabled={savePostMagazine}
       >
         <Image
-          src={post.imagesUrls[0]}
+          src={FILE_URL + post.imagesUrls[0]}
           classNames={{
             wrapper: `!max-w-full w-full max-md:max-h-[45vw] md:max-lg:max-h-[25vw] `,
             img: `!max-w-full w-full object-cover max-md:max-h-[45vw] md:max-h-[25vw] ${

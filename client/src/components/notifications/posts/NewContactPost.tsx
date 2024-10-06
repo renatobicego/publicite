@@ -6,7 +6,7 @@ import {
   NotificationOptions,
 } from "../NotificationCard";
 import { Good, PostContactNotification } from "@/types/postTypes";
-import { POSTS } from "@/utils/data/urls";
+import { FILE_URL, POSTS } from "@/utils/data/urls";
 import { showDate } from "@/utils/functions/dates";
 import { parseDate } from "@internationalized/date";
 
@@ -22,7 +22,7 @@ const NewContactPost = ({
       <NotificationImage>
         <Image
           radius="sm"
-          src={post.postType === "petition" ? "/logo.png" : imagesUrls[0]}
+          src={post.postType === "petition" ? "/logo.png" : FILE_URL + imagesUrls[0]}
           alt="foto"
           className="object-cover"
           classNames={{

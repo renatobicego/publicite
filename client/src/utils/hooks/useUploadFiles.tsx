@@ -4,6 +4,7 @@ import { toastifyError } from "../functions/toastify";
 import { AttachedFileValues } from "@/types/postTypes";
 import { FormikHelpers } from "formik";
 import { image } from "@nextui-org/react";
+import { deleteFilesService } from "@/app/server/uploadThing";
 
 const useUploadFiles = (
   files: File[],
@@ -47,11 +48,11 @@ const useUploadFiles = (
     // Separate URLs based on the origin of files
     const uploadedFileUrls = res
       .slice(0, files.length)
-      .map((upload) => upload.url);
+      .map((upload) => upload.key);
     const uploadedAttachedFileUrls = res
       .slice(files.length)
       .map((upload, index) => ({
-        url: upload.url,
+        url: upload.key,
         label: attachedFiles[index].label,
       }));
 
@@ -68,9 +69,21 @@ const useUploadFiles = (
     }
     return values;
   };
+
+  const deleteFiles = async (urls: string[]) => {
+    try {
+      await deleteFilesService(urls);
+    } catch (error) {
+      console.log(error);
+      toastifyError(
+        "Error al eliminar los archivos anteriores. Por favor intenta de nuevo."
+      );
+    }
+  };
   return {
     submitFiles,
     progress,
+    deleteFiles,
   };
 };
 

@@ -2,7 +2,7 @@ import BreadcrumbsAdmin from "@/components/BreadcrumbsAdmin";
 import ErrorCard from "@/components/ErrorCard";
 import { getPostData } from "@/services/postsServices";
 import { Good, Service } from "@/types/postTypes";
-import { EDIT_POST, POSTS } from "@/utils/data/urls";
+import { EDIT_PETITION, EDIT_POST, POSTS } from "@/utils/data/urls";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import EditPostClient from "./EditPost";
@@ -18,6 +18,10 @@ export default async function EditPost({ params }: { params: { id: string } }) {
   }
   if ("error" in postData) {
     return <ErrorCard message={postData.error} />;
+  }
+
+  if(postData.postType === "petition"){
+    redirect(`${EDIT_PETITION}/${params.id}`);
   }
   const breadcrumbsItems = [
     {

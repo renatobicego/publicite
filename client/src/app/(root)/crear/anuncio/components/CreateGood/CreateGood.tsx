@@ -56,7 +56,10 @@ const CreateGood = ({ files }: { files: File[] }) => {
     actions: FormikHelpers<GoodPostValues>
   ) => {
     const newValuesWithUrlFiles = await submitFiles(values, actions);
-    if (!newValuesWithUrlFiles) return;
+    if (!newValuesWithUrlFiles) {
+      actions.setSubmitting(false);
+      return
+    };
     values = newValuesWithUrlFiles;
 
     const dbLocation = {
