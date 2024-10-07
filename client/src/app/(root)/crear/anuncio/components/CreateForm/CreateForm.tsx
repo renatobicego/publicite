@@ -12,7 +12,12 @@ const CreateForm = () => {
 
   return (
     <section className="w-full flex gap-4 items-start max-md:flex-col">
-      <UploadImages files={files} setFiles={setFiles} type={type} />
+      <UploadImages
+        files={files}
+        setFiles={setFiles}
+        type={type}
+        customClassname="max-md:mb-4"
+      />
       <div className="flex flex-col flex-1 gap-4 max-md:w-full">
         <SelectType type={type} setType={setType} />
         <Divider />

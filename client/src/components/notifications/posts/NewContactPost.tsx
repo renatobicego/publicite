@@ -26,7 +26,7 @@ const NewContactPost = ({
           alt="foto"
           className="object-cover"
           classNames={{
-            wrapper: "w-full !max-w-full",
+            wrapper: "w-full !max-w-full object-cover",
           }}
         />
       </NotificationImage>

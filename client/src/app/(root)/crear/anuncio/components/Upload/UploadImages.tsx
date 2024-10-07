@@ -102,7 +102,7 @@ const UploadImages = ({
         maxVideoSize={maxVideoSize}
         isDisabled={!type}
       />
-      <div className="flex gap-4 mt-4 w-full flex-wrap max-md:flex-nowrap max-md:overflow-x-scroll">
+      <div className="flex gap-4 mt-4 w-full flex-wrap max-md:flex-nowrap max-md:overflow-x-auto">
         {files.map((file, index) => (
           <FilePreview
             key={file.name + index}

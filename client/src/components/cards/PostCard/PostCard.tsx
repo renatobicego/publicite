@@ -1,18 +1,21 @@
 import { Good, Petition, Post, Service } from "@/types/postTypes";
 import GoodCard from "./GoodCard";
 import ServiceCard from "./ServiceCard";
-import { Card } from "@nextui-org/react";
+import { Card, CardFooter } from "@nextui-org/react";
 import PetitionCard from "../PetitionCard";
+import UsernameAvatar from "@/components/buttons/UsernameAvatar";
 const PostCard = ({
   postData,
   recommendation,
   className,
   savePostMagazine = false,
+  isGroupPost = false,
 }: {
   postData: Post;
   recommendation: boolean;
   className?: string;
   savePostMagazine?: boolean;
+  isGroupPost?: boolean;
 }) => {
   const { postType } = postData;
   const PostCardToReturn = () => {
@@ -48,13 +51,18 @@ const PostCard = ({
   return (
     <Card
       className={`w-full ease-in-out hover:shadow md:hover:shadow-md gap-4 
-        !transition-shadow duration-500 !opacity-100
+        !transition-shadow duration-500 !opacity-100 self-start
         ${
           postType === "petition" ? "border border-petition" : ""
         } ${className}`}
       shadow="none"
     >
       {PostCardToReturn()}
+      {isGroupPost && (
+        <CardFooter>
+          <UsernameAvatar author={postData.author} showAvatar />
+        </CardFooter>
+      )}
     </Card>
   );
 };

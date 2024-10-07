@@ -32,7 +32,7 @@ const ImagePreview = ({
   const isBeingDeleted = deletedImages.includes(image);
   return (
     <div
-      className={`relative overflow-hidden min-w-32 ${
+      className={`relative overflow-hidden min-w-20 md:min-w-24 lg:min-w-28 xl:min-w-32 ${
         isBeingDeleted ? "border border-danger rounded-2xl" : ""
       }`}
     >
@@ -40,7 +40,7 @@ const ImagePreview = ({
         <video
           src={FILE_URL + image}
           controls
-          className={`object-cover size-32 ${
+          className={`object-cover size-20 md:size-24 lg:size-28 xl:size-32 rounded-lg md:rounded-xl xl:rounded-2xl ${
             isBeingDeleted ? "opacity-50" : ""
           }`}
         />
@@ -48,7 +48,7 @@ const ImagePreview = ({
         <Image
           src={FILE_URL + image}
           alt={"imagen anterior"}
-          className={`object-cover size-32`}
+          className={`object-cover size-20 md:size-24 lg:size-28 xl:size-32 max-md:rounded-lg`}
           classNames={{
             wrapper: ` ${isBeingDeleted ? "opacity-50" : ""}`,
           }}
@@ -63,7 +63,7 @@ const ImagePreview = ({
             radius="full"
             color="secondary"
             onPress={() => addBackImage(image)}
-            className="absolute top-1 right-1 z-10"
+            className="absolute top-1 right-1 z-10 max-md:size-6 max-md:min-w-6 "
           >
             <FaPlus className="size-4" />
           </Button>
@@ -76,7 +76,7 @@ const ImagePreview = ({
             radius="full"
             color="danger"
             onPress={() => removeImage(image)}
-            className="absolute top-1 right-1 z-10"
+            className="absolute top-1 right-1 z-10 max-md:size-6 max-md:min-w-6"
           >
             <IoClose className="size-4" />
           </Button>

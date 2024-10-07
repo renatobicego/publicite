@@ -29,7 +29,7 @@ const NotificationCard = ({ children }: { children: React.ReactNode }) => {
 
 const NotificationImage = ({ children }: { children: React.ReactNode }) => {
   return (
-    <CardHeader className="max-w-28 max-h-28 p-2 justify-center">
+    <CardHeader className="max-w-20 max-h-20 lg:max-w-24 2xl:max-w-28 lg:max-h-24 2xl:max-h-28 p-2 justify-center">
       {children}
     </CardHeader>
   );

@@ -8,18 +8,18 @@ interface FilePreviewProps {
 
 const FilePreview = ({ file, removeFile }: FilePreviewProps) => {
   return (
-    <div className="relative overflow-hidden min-w-32">
+    <div className="relative overflow-hidden min-w-20 md:min-w-24 lg:min-w-28 xl:min-w-32">
       {file.type.startsWith("video/") ? (
         <video
           src={URL.createObjectURL(file)}
           controls
-          className="size-32 object-cover"
+          className="size-20 md:size-24 lg:size-28 xl:size-32 object-cover rounded-lg md:rounded-xl xl:rounded-2xl"
         />
       ) : (
         <Image
           src={URL.createObjectURL(file)}
           alt={file.name}
-          className="object-cover size-32"
+          className="object-cover size-20 md:size-24 lg:size-28 xl:size-32  max-md:rounded-lg"
         />
       )}
       <Button
@@ -28,7 +28,7 @@ const FilePreview = ({ file, removeFile }: FilePreviewProps) => {
         radius="full"
         color="danger"
         onClick={() => removeFile(file.name)}
-        className="absolute top-1 right-1 z-10"
+        className="absolute top-1 right-1 z-10 max-md:size-6 max-md:min-w-6"
       >
         <IoClose className="size-4" />
       </Button>

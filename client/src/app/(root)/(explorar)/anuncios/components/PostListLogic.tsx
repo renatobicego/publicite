@@ -38,7 +38,7 @@ const PostListLogic = ({
       {showAsList ? (
         <PostGridList items={sortedItems} isLoading={isLoading} />
       ) : (
-        <PostsGrid posts={sortedItems} isLoading={isLoading} />
+        <PostsGrid posts={sortedItems} isLoading={isLoading} isGroupPosts={postType === "groupPosts"} />
       )}
     </>
   );

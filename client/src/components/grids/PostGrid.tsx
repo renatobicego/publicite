@@ -6,10 +6,12 @@ const PostsGrid = ({
   posts,
   recommendation = false,
   isLoading = false,
+  isGroupPosts = false,
 }: {
   posts: Post[];
   recommendation?: boolean;
   isLoading?: boolean;
+  isGroupPosts?: boolean;
 }) => {
   return (
     <>
@@ -25,6 +27,7 @@ const PostsGrid = ({
             key={post._id + index}
             postData={post}
             recommendation={recommendation}
+            isGroupPost={isGroupPosts}
           />
         ))}
       </section>

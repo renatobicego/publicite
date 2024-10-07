@@ -59,7 +59,7 @@ const GroupNotification = ({
             <span className="font-semibold">
               {notification.userInviting.username}
             </span>
-          )}
+          )} {" "}
           {noticationMessages[type].message}
           <span className="font-semibold"> {group.name}</span>
         </p>

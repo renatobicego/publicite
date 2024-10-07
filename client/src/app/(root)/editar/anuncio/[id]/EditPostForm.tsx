@@ -52,13 +52,13 @@ const EditPostForm = ({ postData }: { postData: Good | Service }) => {
       onSubmit={handleSubmit}
       validateOnBlur={false}
       validateOnChange={false}
-      // validationSchema={
-      //   postType === "good" ? goodValidation : serviceValidation
-      // }
+      validationSchema={
+        postType === "good" ? goodValidation : serviceValidation
+      }
     >
       {({ isSubmitting, errors, values }) => {
         return (
-          <Form className="w-full flex gap-4 items-start">
+          <Form className="w-full max-md:flex-col flex gap-4 items-start">
             <div className="flex flex-col gap-4 flex-1 max-md:w-full">
               <UploadImages
                 files={newImages}
@@ -69,13 +69,16 @@ const EditPostForm = ({ postData }: { postData: Good | Service }) => {
                 customClassname="md:w-full"
               />
               <h6>Imagenes Subidas Anteriormente</h6>
-              <div className="flex gap-4 w-full flex-wrap max-md:flex-nowrap max-md:overflow-x-scroll">
+              <div className="flex gap-2 lg:gap-4 w-full flex-wrap max-md:flex-nowrap 
+              max-md:overflow-x-auto max-md:mb-4 pb-1">
                 {values.imagesUrls &&
                   values.imagesUrls.map((url, index) => (
                     <ImagePreview
                       image={url}
                       key={index}
-                      isMaxFileCountExceeded={values.imagesUrls.length + newImages.length > 10}
+                      isMaxFileCountExceeded={
+                        values.imagesUrls.length + newImages.length > 10
+                      }
                       deletedImages={deletedImages}
                       setDeletedImages={setDeletedImages}
                     />
@@ -106,7 +109,6 @@ const EditPostForm = ({ postData }: { postData: Good | Service }) => {
                   isDisabled={isSubmitting}
                   isLoading={isSubmitting}
                   type="submit"
-                  className="mt-4"
                 >
                   {isSubmitting ? `Editando ${progress}%` : "Editar Anuncio"}
                 </PrimaryButton>

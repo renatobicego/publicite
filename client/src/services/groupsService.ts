@@ -1,6 +1,6 @@
 "use server"
 import { getClient, query } from "@/lib/client";
-import { mockedGroups, mockedPosts } from "../utils/data/mockedData";
+import { mockedGroups, mockedPetitions, mockedPosts } from "../utils/data/mockedData";
 import { createNewGroupMutation, getGroupByIdQuery } from "@/graphql/groupQueries";
 
 export const getGroups = async (searchTerm: string | null) => {
@@ -33,7 +33,7 @@ export const getGroupPosts = async (searchTerm: string | null, groupId?: string)
   if(!groupId) return {error: "Error al traer anuncios del grupo. Por favor intenta de nuevo."}
   try {
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    return {items: mockedPosts};
+    return {items: [...mockedPosts, ...mockedPetitions]};
   } catch (error) {
     return {
       error: "Error al traer anuncios del grupo. Por favor intenta de nuevo.",
