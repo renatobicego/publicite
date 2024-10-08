@@ -70,13 +70,12 @@ export class MagazineService implements MagazineServiceInterface {
 
   async findMagazineByMagazineId(
     id: ObjectId,
-  ): Promise<Partial<MagazineResponse>[] | []> {
+  ): Promise<Partial<MagazineResponse> | null> {
     this.logger.log('Finding user Magazines, user ID: ' + id);
     try {
       return await this.magazineRepository.findMagazineByMagazineId(id);
     } catch (error: any) {
       this.logger.error('Error finding new Magazine in service', error);
-
       throw error;
     }
   }

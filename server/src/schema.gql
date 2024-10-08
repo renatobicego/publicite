@@ -204,17 +204,47 @@ type GroupListResponse {
   hasMore: Boolean!
 }
 
+type collaborators_graphql {
+  _id: String
+  username: String
+  profilePhotoUrl: String
+}
+
+type sections_graphql {
+  _id: String
+  isFatherSection: Boolean
+  title: String
+}
+
+type group_graphql {
+  _id: String
+  name: String
+  profilePhotoUrl: String
+}
+
+type allowedColaborators_graphql {
+  _id: String
+  username: String
+  profilePhotoUrl: String
+}
+
+type user_graphql {
+  _id: String
+  username: String
+  profilePhotoUrl: String
+}
+
 type MagazineResponse {
   _id: String!
   name: String!
-  sections: [String!]!
+  sections: [sections_graphql!]!
   ownerType: String!
   description: String
-  collaborators: [String!]
-  user: String
+  collaborators: [collaborators_graphql!]
+  user: user_graphql
   visibility: String
-  allowedColaborators: [String!]
-  group: [String!]
+  allowedColaborators: [allowedColaborators_graphql!]
+  group: group_graphql
 }
 
 type PostCategoryResponse {
@@ -239,7 +269,7 @@ type Query {
   getGroupByName(name: String!, limit: Float): GroupListResponse
 
   """Crear una revista"""
-  getMagazineByMagazineId(id: String!): [MagazineResponse!]
+  getMagazineByMagazineId(id: String!): MagazineResponse
 
   """Devuelve todas las categorias creadas"""
   getAllCategoryPost: [PostCategoryResponse!]

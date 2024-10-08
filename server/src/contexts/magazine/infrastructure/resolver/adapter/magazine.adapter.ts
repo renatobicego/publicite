@@ -22,7 +22,7 @@ export class MagazineAdapter implements MagazineAdapterInterface {
 
   async findMagazineByMagazineId(
     id: ObjectId,
-  ): Promise<Partial<MagazineResponse>[] | []> {
+  ): Promise<Partial<MagazineResponse> | null> {
     try {
       return await this.magazineService.findMagazineByMagazineId(id);
     } catch (error: any) {

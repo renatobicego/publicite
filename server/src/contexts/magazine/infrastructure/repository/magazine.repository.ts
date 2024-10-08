@@ -1,6 +1,7 @@
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Magazine } from '../../domain/entity/magazine.entity';
 import { Connection, Model, ObjectId } from 'mongoose';
+import { Inject } from '@nestjs/common';
 
 import { MagazineRepositoryInterface } from '../../domain/repository/magazine.repository.interface';
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
@@ -19,11 +20,8 @@ import {
 } from '../schemas/magazine.group.schema';
 import { MagazineResponse } from '../../application/adapter/dto/HTTP-RESPONSE/magazine.reponse';
 import { MagazineDocument, MagazineModel } from '../schemas/magazine.schema';
-import { Inject } from '@nestjs/common';
-import { MagazineRepositoryMapper } from './mapper/magazine.repository.mapper';
 import { MagazineRepositoryMapperInterface } from '../../domain/repository/mapper/magazine.respository.mapper.interface';
 import { IUser } from 'src/contexts/user/infrastructure/schemas/user.schema';
-import { UserMagazine } from '../../domain/entity/user.magazine';
 import { GroupDocument } from 'src/contexts/group/infrastructure/schemas/group.schema';
 
 export class MagazineRepository implements MagazineRepositoryInterface {
@@ -47,18 +45,38 @@ export class MagazineRepository implements MagazineRepositoryInterface {
   ) {}
   async findMagazineByMagazineId(
     id: ObjectId,
-  ): Promise<Partial<MagazineResponse>[] | []> {
+  ): Promise<Partial<MagazineResponse> | null> {
     try {
-      let magazines = [];
-      magazines = await this.magazineModel.find({ _id: id });
-      if (magazines.length > 0) {
-        const magz = magazines.map((magazine) => {
-          return this.magazineRepositoryMapper.toReponse(magazine);
+      const magazine = await this.magazineModel
+        .findById({ _id: id })
+        .select(
+          '_id collaborators name user description sections ownerType allowedColaborators group',
+        )
+        .populate({
+          path: 'collaborators',
+          select: '_id username profilePhotoUrl',
+        })
+        .populate({
+          path: 'user',
+          select: '_id username profilePhotoUrl',
+        })
+        .populate({
+          path: 'group',
+          select: '_id name profilePhotoUrl',
+        })
+        .populate({
+          path: 'sections',
+          select: '_id isFatherSection posts title',
+        })
+        .populate({
+          path: 'allowedColaborators',
+          select: '_id username profilePhotoUrl',
         });
-        return magz;
+      console.log(magazine);
+      if (!magazine) {
+        return null;
       }
-
-      return magazines as any;
+      return this.magazineRepositoryMapper.toReponse(magazine);
     } catch (error: any) {
       throw error;
     }
