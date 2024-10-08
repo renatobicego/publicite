@@ -29,10 +29,11 @@ export class GroupService implements GroupServiceInterface {
   async findGroupByName(
     name: string,
     limit: number,
+    keys?: string[],
   ): Promise<GroupListResponse> {
     try {
       this.logger.log('Finding group by name: ' + name);
-      return await this.groupRepository.findGroupByName(name, limit);
+      return await this.groupRepository.findGroupByName(name, limit, keys);
     } catch (error: any) {
       throw error;
     }

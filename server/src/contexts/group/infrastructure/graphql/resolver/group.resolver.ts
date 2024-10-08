@@ -55,7 +55,11 @@ export class GroupResolver {
     @Info() info: any,
   ): Promise<GroupListResponse> {
     try {
-      return await this.groupAdapter.findGroupByName(name, limit);
+      const keys = info.fieldNodes[0].selectionSet.selections
+        .find((selection: any) => selection.name.value === 'groups')
+        .selectionSet.selections.map((item: any) => item.name.value);
+        
+      return await this.groupAdapter.findGroupByName(name, limit, keys);
     } catch (error: any) {
       throw error;
     }

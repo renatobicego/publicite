@@ -7,5 +7,9 @@ import {
 export interface GroupAdapterInterface {
   saveGroup(group: GroupRequest): Promise<GroupResponse>;
   findGroupById(id: string): Promise<GroupResponse>;
-  findGroupByName(name: string, limit: number): Promise<GroupListResponse>;
+  findGroupByName(
+    name: string,
+    limit: number,
+    keys?: string[],
+  ): Promise<GroupListResponse>;
 }
