@@ -161,22 +161,43 @@ export class PostRepository implements PostRepositoryInterface {
       throw error;
     }
   }
-
   async findPostById(id: string): Promise<any> {
+    const session = await this.connection.startSession();
+    session.startTransaction();
+
     try {
       this.logger.log('Finding post by id in repository');
 
       const post = await this.postDocument
         .findById(id)
+        .session(session)
         .populate({
           path: 'location',
           model: 'PostLocation',
           select: 'location description userSetted coordinates',
         })
+        .populate({
+          path: 'category',
+          model: 'PostCategory',
+        })
+        .populate({
+          path: 'author',
+          model: 'User',
+          select: '_id profilePhotoUrl username lastName name contact',
+          populate: {
+            path: 'contact',
+            model: 'Contact',
+          },
+        })
         .lean();
+
+      await session.commitTransaction();
+      session.endSession();
 
       return post;
     } catch (error: any) {
+      await session.abortTransaction();
+      session.endSession();
       this.logger.error('An error occurred finding post by id: ' + id);
       throw error;
     }

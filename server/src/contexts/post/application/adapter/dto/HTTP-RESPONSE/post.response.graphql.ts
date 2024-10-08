@@ -10,6 +10,39 @@ export class location {
 }
 
 @ObjectType()
+export class Contact_graph {
+  @Field(() => ID, { nullable: true })
+  _id?: ObjectId;
+  @Field(() => String, { nullable: true })
+  phone: string;
+  @Field(() => String, { nullable: true })
+  instagram: string;
+  @Field(() => String, { nullable: true })
+  facebook: string;
+  @Field(() => String, { nullable: true })
+  x: string;
+  @Field(() => String, { nullable: true })
+  website: string;
+}
+@ObjectType()
+export class author {
+  @Field(() => String)
+  profilePhotoUrl: string;
+
+  @Field(() => String)
+  username: string;
+
+  @Field(() => Contact_graph)
+  contact: Contact_graph;
+
+  @Field(() => String)
+  lastName: string;
+
+  @Field(() => String)
+  name: string;
+}
+
+@ObjectType()
 export class PostLocation_Grapql {
   @Field(() => String, { nullable: true })
   _id: ObjectId;
@@ -40,6 +73,15 @@ export class AttachedFile_post {
 }
 
 @ObjectType()
+export class Post_Category {
+  @Field(() => String, { nullable: true })
+  _id: string;
+
+  @Field(() => String, { nullable: true })
+  label: string;
+}
+
+@ObjectType()
 export class Post_response_graphql_model {
   @Field(() => ID, { nullable: true }) // _id puede ser nulo
   _id?: ObjectId;
@@ -56,6 +98,9 @@ export class Post_response_graphql_model {
   @Field(() => Visibility_post, { nullable: true })
   visibility: Visibility_post;
 
+  @Field(() => author, { nullable: true })
+  author: author;
+
   //ver que necesitamos de esto
   //recomendations: PostRecomendation[];
 
@@ -65,8 +110,8 @@ export class Post_response_graphql_model {
   @Field(() => PostLocation_Grapql, { nullable: true })
   location: PostLocation_Grapql;
 
-  @Field(() => [String], { nullable: true })
-  category: ObjectId[];
+  @Field(() => [Post_Category], { nullable: true })
+  category: Post_Category[];
 
   @Field(() => [String], { nullable: true })
   comments: ObjectId[];
