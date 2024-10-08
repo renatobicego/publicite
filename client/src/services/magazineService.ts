@@ -7,7 +7,7 @@ export const getMagazineById = async (id: string) => {
         query: getMagazineByIdQuery,
         variables: { getMagazineByMagazineIdId: id },
       });
-      return data.getMagazineByMagazineId[0];
+      return data.getMagazineByMagazineId;
     } catch (error) {
       return {
         error:

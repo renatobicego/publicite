@@ -15,7 +15,11 @@ export const getGroupByIdQuery = gql`
       admins
       details
       magazines
-      members
+      members {
+        _id
+        profilePhotoUrl
+        username
+      }
       name
       profilePhotoUrl
       rules

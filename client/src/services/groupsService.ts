@@ -23,6 +23,7 @@ export const getGroupById = async (id: string) => {
 
     return data.getGroupById;
   } catch (error) {
+    console.log(error)
     return {
       error: "Error al traer información del grupo. Por favor intenta de nuevo.",
     };

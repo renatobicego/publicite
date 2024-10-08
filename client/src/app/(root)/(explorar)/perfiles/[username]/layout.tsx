@@ -31,6 +31,7 @@ export default async function ProfileLayout({
   ];
 
   const user = await getUserByUsername(params.username);
+  console.log(user.magazines[1].sections)
   const loggedUser = await currentUser();
   if ("error" in user) {
     return <ErrorCard message={user.error} />;
@@ -52,7 +53,7 @@ export default async function ProfileLayout({
           <CreateBoard user={user} />
         )}
       </div>
-      <UserSolapas user={{ ...user, username: params.username }} />
+      <UserSolapas user={user} />
       {children}
     </main>
   );

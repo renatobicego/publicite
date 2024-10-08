@@ -9,7 +9,24 @@ export const getPostByIdQuery = gql`
         url
       }
       brand
-      category
+      category {
+        _id
+        label
+      }
+      author {
+        contact {
+          _id
+          facebook
+          instagram
+          phone
+          website
+          x
+        }
+        lastName
+        name
+        profilePhotoUrl
+        username
+      }
       comments
       condition
       createAt

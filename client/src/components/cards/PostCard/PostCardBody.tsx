@@ -19,16 +19,16 @@ const PostCardBody = ({
   price,
   isService,
 }: PostCardBodyProps) => {
-  const averageRating =
+  const averageRating = reviews &&
     reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length;
   return (
     <CardBody className="pt-0 flex flex-col gap-1 max-md:px-1 md:px-2 lg:px-3">
       <div className="flex gap-1 w-full justify-between items-start">
         <h6>{title}</h6>
-        {reviews.length > 0 && (
+        {reviews && reviews.length > 0 && (
           <div className="flex gap-1 items-center text-light-text text-sm">
             <FaStar className="size-3 md:size-4"/>
-            <span>{averageRating.toFixed(1)}</span>
+            {averageRating && <span>{averageRating.toFixed(1)}</span>}
           </div>
         )}
       </div>

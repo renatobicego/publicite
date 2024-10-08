@@ -34,7 +34,7 @@ export default async function PostPage({ params }: { params: { id: string } }) {
   ];
 
   const user = await currentUser();
-  // const isAuthor = postData.author.username === user?.username;
+  const isAuthor = postData.author.username === user?.username;
   const isPetition = postData.postType === "petition";
 
   return (
@@ -42,14 +42,14 @@ export default async function PostPage({ params }: { params: { id: string } }) {
       <BreadcrumbsAdmin items={breadcrumbsItems} />
       <section className="w-full flex max-md:flex-col gap-4 lg:gap-6 3xl:gap-8 relative">
         {!isPetition && <Images images={(postData as any).imagesUrls} />}
-        <Data post={postData} isAuthor={false} isPetition={isPetition} />
+        <Data post={postData} isAuthor={isAuthor} isPetition={isPetition} />
       </section>
       <section className="w-full flex max-lg:flex-col gap-4 lg:gap-6 3xl:gap-8 md:mt-6 xl:mt-8">
         <Comments
           // comments={postData.comments}
           comments={[]}
           postId={postData._id}
-          isAuthor={false}
+          isAuthor={isAuthor}
         />
         <RecommendedPosts recommendedPosts={mockedPosts} />
       </section>
