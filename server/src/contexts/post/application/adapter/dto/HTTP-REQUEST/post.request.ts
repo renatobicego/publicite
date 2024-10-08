@@ -30,7 +30,7 @@ export interface PostRequest {
 }
 
 export interface PostGoodRequest extends PostRequest {
-  imageUrls: string[];
+  imagesUrls: string[];
   year: number;
   brand: string;
   modelType: string;
@@ -40,7 +40,7 @@ export interface PostGoodRequest extends PostRequest {
 
 export interface PostServiceRequest extends PostRequest {
   frequencyPrice: string;
-  imageUrls: string[];
+  imagesUrls: string[];
   reviews: ObjectId[];
 }
 

@@ -12,7 +12,7 @@ export class PostUpdateDto {
     url: string;
     label: string;
   }>;
-  imageUrls?: string[];
+  imagesUrls?: string[];
   year?: number;
   brand?: string;
   modelType?: string;

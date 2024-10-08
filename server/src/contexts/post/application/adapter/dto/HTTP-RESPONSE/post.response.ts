@@ -17,7 +17,7 @@ export interface PostResponse {
 }
 
 export interface PostGoodResponse extends PostResponse {
-  imageUrls: string[];
+  imagesUrls: string[];
   year: number;
   brand: string;
   modelType: string;
@@ -26,7 +26,7 @@ export interface PostGoodResponse extends PostResponse {
 }
 export interface PostServiceResponse extends PostResponse {
   frequencyPrice: string;
-  imageUrls: string[];
+  imagesUrls: string[];
   reviews: string[];
 }
 

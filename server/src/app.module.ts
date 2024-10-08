@@ -18,6 +18,7 @@ import { DatabaseModule } from './contexts/shared/database/infrastructure/databa
 import { DatabaseService } from './contexts/shared/database/infrastructure/database.service';
 import { GroupModule } from './contexts/group/infrastructure/module/group.module';
 import { MagazineModule } from './contexts/magazine/infrastructure/module/magazine.module';
+import { PostCategoryModule } from './contexts/postCategory/infrastructure/module/post.category.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { MagazineModule } from './contexts/magazine/infrastructure/module/magazi
     BoardModule,
     GroupModule,
     MagazineModule,
+    PostCategoryModule,
   ],
   providers: [
     {

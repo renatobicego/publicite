@@ -7,6 +7,7 @@ export interface PostAdapterInterface {
   create(post: PostRequest): Promise<PostResponse>;
   deletePostById(id: string): Promise<void>;
   findPostsByAuthorId(id: string): Promise<void>;
+  findPostById(id: string): Promise<void>;
   updatePostById(
     postUpdate: PostUpdateRequest,
     id: string,

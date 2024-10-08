@@ -1,0 +1,719 @@
+﻿<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Welcome file</title>
+    <link rel="stylesheet" href="https://stackedit.io/style.css" />
+  </head>
+
+  <body class="stackedit">
+    <div class="stackedit__html">
+      <h1 id="rutas-get">Rutas GET</h1>
+      <h3 id="usuario">Usuario</h3>
+      <ul>
+        <!-- <li>
+          <code>getUserProfileData</code>: Ruta que devuelva los datos
+          personales del usuario <strong>LISTA</strong>
+        </li> -->
+        <!-- <li>
+          <code>getBusinessSector</code>: traer rubros de empresas
+          <strong>LISTA</strong>
+        </li> -->
+        <!-- <li>
+          <code>getUserPreferences</code>: Devolver las userPreferences del
+          usuario
+          <strong>LISTA</strong>
+        </li> -->
+        <li>
+          <code>getContactOfUser</code>: Devolver los contactos del usuario que
+          envio por id o username (como quieras). Solo necesito el id, el name
+          lastname o businessName si es empresa, username y profilePhotoUrl.
+        </li>
+        <li>
+          <code>getUserActivePostNumber</code>: Traer el número de posts activos
+          del usuario (por id). Unicamente el número, debería chequearlo por
+          endDate.
+        </li>
+        <!-- <li>
+          <code>getUsers</code>: Debe devolver 50 usuarios aleatorios o los que
+          coincidan con la búsqueda (en caso de que se haga una búsqueda). La
+          búsqueda va a existir si envio una searchQuery, o sea voy a enviar una
+          query param opcional que va a ser el nombre, apellido o usuario y se
+          debería devolver usuarios que cumplan con la query (por ejemplo la
+          ruta sería <code>users?search=acá%20la%20busqueda</code>). La
+          respuesta debe ser una array con los siguientes datos (doy como
+          ejemplo si es Business o si es Person:
+        </li> -->
+      </ul>
+      <!-- <pre
+        class="language-json"
+      ><code class="prism  language-json"><span class="token punctuation">[</span>
+	<span class="token punctuation">{</span>
+		_id<span class="token punctuation">:</span>  <span class="token string">"1k2"</span><span class="token punctuation">,</span>
+		profilePhotoUrl<span class="token punctuation">:</span>  <span class="token string">"/avatar.png"</span><span class="token punctuation">,</span>
+		username<span class="token punctuation">:</span>  <span class="token string">"username"</span><span class="token punctuation">,</span>
+		contact<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+			_id<span class="token punctuation">:</span>  <span class="token string">"12qdas1"</span><span class="token punctuation">,</span>
+			phone<span class="token punctuation">:</span>  <span class="token string">"phone"</span><span class="token punctuation">,</span>
+			<span class="token operator">...</span>todasLasRedesSocialesQueTenga
+		<span class="token punctuation">}</span><span class="token punctuation">,</span>
+		countryRegion<span class="token punctuation">:</span>  <span class="token string">"Córdoba, Argentina"</span><span class="token punctuation">,</span>
+		userType<span class="token punctuation">:</span>  <span class="token string">"Business"</span><span class="token punctuation">,</span>
+		businessName<span class="token punctuation">:</span>  <span class="token string">"Nombre de Empresa"</span><span class="token punctuation">,</span>
+	<span class="token punctuation">}</span><span class="token punctuation">,</span>
+	<span class="token punctuation">{</span>
+		_id<span class="token punctuation">:</span>  <span class="token string">"2k3"</span><span class="token punctuation">,</span>
+		profilePhotoUrl<span class="token punctuation">:</span>  <span class="token string">"/avatar.png"</span><span class="token punctuation">,</span>
+		username<span class="token punctuation">:</span>  <span class="token string">"username"</span><span class="token punctuation">,</span>
+		contact<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+		_id<span class="token punctuation">:</span>  <span class="token string">"12daf1"</span><span class="token punctuation">,</span>
+		phone<span class="token punctuation">:</span>  <span class="token string">"phone"</span><span class="token punctuation">,</span>
+		instagram<span class="token punctuation">:</span>  <span class="token string">"instagram"</span><span class="token punctuation">,</span>
+		facebook<span class="token punctuation">:</span>  <span class="token string">"facebook"</span><span class="token punctuation">,</span>
+		<span class="token punctuation">}</span><span class="token punctuation">,</span>
+		lastName<span class="token punctuation">:</span>  <span class="token string">"Bicego"</span><span class="token punctuation">,</span>
+		name<span class="token punctuation">:</span>  <span class="token string">"Renato"</span><span class="token punctuation">,</span>
+		countryRegion<span class="token punctuation">:</span>  <span class="token string">"Mendoza, Argentina"</span><span class="token punctuation">,</span>
+		userType<span class="token punctuation">:</span>  <span class="token string">"Person"</span><span class="token punctuation">,</span>
+	<span class="token punctuation">}</span>
+<span class="token punctuation">]</span>
+</code></pre> -->
+      <ul>
+        <li>
+          <code>getUserByUsername</code>: Devolver datos del usuario por su
+          username. Los datos a devolver son:
+        </li>
+      </ul>
+      <pre
+        class="language-json"
+      ><code class="prism  language-json"><span class="token keyword">export</span>  <span class="token keyword">const</span>  mockedCompleteUser<span class="token punctuation">:</span>  GetUser  <span class="token operator">=</span> <span class="token punctuation">{</span>
+	_id<span class="token punctuation">:</span>  <span class="token string">"2k3"</span><span class="token punctuation">,</span>
+	profilePhotoUrl<span class="token punctuation">:</span>  <span class="token string">"/avatar.png"</span><span class="token punctuation">,</span>
+	username<span class="token punctuation">:</span>  <span class="token string">"username"</span><span class="token punctuation">,</span>
+	contact<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+		_id<span class="token punctuation">:</span>  <span class="token string">"12daf1"</span><span class="token punctuation">,</span>
+		phone<span class="token punctuation">:</span>  <span class="token string">"phone"</span><span class="token punctuation">,</span>
+		instagram<span class="token punctuation">:</span>  <span class="token string">"instagram"</span><span class="token punctuation">,</span>
+		facebook<span class="token punctuation">:</span>  <span class="token string">"facebook"</span><span class="token punctuation">,</span>
+	<span class="token punctuation">}</span><span class="token punctuation">,</span>
+	lastName<span class="token punctuation">:</span>  <span class="token string">"Bicego"</span><span class="token punctuation">,</span>
+	name<span class="token punctuation">:</span>  <span class="token string">"Renato"</span><span class="token punctuation">,</span>
+	countryRegion<span class="token punctuation">:</span>  <span class="token string">"Mendoza, Argentina"</span><span class="token punctuation">,</span>
+	userType<span class="token punctuation">:</span>  <span class="token string">"Person"</span><span class="token punctuation">,</span>
+	board<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+		_id<span class="token punctuation">:</span>  <span class="token string">"4"</span><span class="token punctuation">,</span>
+		annotations<span class="token punctuation">:</span>  <span class="token punctuation">[</span>
+		<span class="token string">"Anotacion 1 pruebo agregar más texto en la anotación para ver el diseño"</span><span class="token punctuation">,</span>
+		<span class="token string">"Anotacion 2"</span><span class="token punctuation">,</span>
+		<span class="token string">"Anotacion 3"</span><span class="token punctuation">,</span>
+		<span class="token string">"Anotacion 4"</span><span class="token punctuation">,</span>
+		<span class="token string">"Anotacion 5"</span><span class="token punctuation">,</span>
+		<span class="token string">"Anotacion 6"</span><span class="token punctuation">,</span>
+		<span class="token punctuation">]</span><span class="token punctuation">,</span>
+		keywords<span class="token punctuation">:</span>  <span class="token punctuation">[</span><span class="token string">"Keyword 1"</span><span class="token punctuation">,</span>  <span class="token string">"Keyword 2"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+		user<span class="token punctuation">:</span>  <span class="token string">"2k3"</span><span class="token punctuation">,</span>
+		color<span class="token punctuation">:</span>  <span class="token string">"color"</span><span class="token punctuation">,</span>
+		visibility<span class="token punctuation">:</span>  <span class="token string">"public"</span><span class="token punctuation">,</span>
+	<span class="token punctuation">}</span><span class="token punctuation">,</span>
+	description<span class="token punctuation">:</span>  <span class="token string">"Esta es la descripción del usuario para mostrar en su perfil"</span><span class="token punctuation">,</span>
+	email<span class="token punctuation">:</span>  <span class="token string">"email"</span><span class="token punctuation">,</span>
+	subscriptions<span class="token punctuation">:</span>  <span class="token punctuation">[</span>después vemos qué datos<span class="token punctuation">]</span><span class="token punctuation">,</span>
+	groups<span class="token punctuation">:</span>  <span class="token punctuation">[</span>
+		<span class="token punctuation">{</span>
+			_id<span class="token punctuation">:</span> <span class="token string">"id"</span><span class="token punctuation">,</span>
+			name<span class="token punctuation">:</span> <span class="token string">"nombre del grupo"</span><span class="token punctuation">,</span>
+			profilePhotoUrl<span class="token punctuation">:</span> <span class="token string">"url"</span><span class="token punctuation">,</span>
+			members<span class="token punctuation">:</span> <span class="token punctuation">[</span>solo los ids<span class="token punctuation">]</span>
+		<span class="token punctuation">}</span>
+	<span class="token punctuation">]</span><span class="token punctuation">,</span>
+	magazines<span class="token punctuation">:</span>  <span class="token punctuation">[</span>
+		<span class="token punctuation">{</span>
+			_id<span class="token punctuation">:</span>  <span class="token string">"1magaz"</span><span class="token punctuation">,</span>
+			name<span class="token punctuation">:</span>  <span class="token string">"Magazine 1"</span><span class="token punctuation">,</span>
+			sections<span class="token punctuation">:</span>  <span class="token punctuation">[</span>
+				<span class="token punctuation">{</span>
+					posts<span class="token punctuation">:</span> <span class="token punctuation">[</span>
+						<span class="token punctuation">{</span>
+							imagesUrls<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">"url"</span><span class="token punctuation">]</span>
+						<span class="token punctuation">}</span>
+					<span class="token punctuation">]</span>
+				<span class="token punctuation">}</span>
+			<span class="token punctuation">]</span> <span class="token operator">**</span><span class="token operator">*</span>aclaración abajo 
+			description<span class="token punctuation">:</span>  <span class="token string">""</span>
+		<span class="token punctuation">}</span>
+	<span class="token punctuation">]</span><span class="token punctuation">,</span>
+	posts<span class="token punctuation">:</span>  <span class="token function">mockedPosts</span> <span class="token punctuation">(</span>abajo esta cómo<span class="token punctuation">)</span><span class="token punctuation">,</span>
+	userRelations<span class="token punctuation">:</span>  <span class="token punctuation">[</span>después vemos qué datos<span class="token punctuation">]</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token operator">**</span><span class="token operator">*</span><span class="token punctuation">(</span>necesito unicamente <span class="token number">3</span> fotos de <span class="token number">3</span> posts distintos<span class="token punctuation">,</span> es para mostrar de portada <span class="token number">3</span> imagenes
+en la card de revista<span class="token punctuation">.</span> Voy a poner una foto de cómo se vería después de esto<span class="token punctuation">.</span> hay que tener 
+en cuenta que los posts pueden estar en distintas secciones<span class="token punctuation">,</span> pero simplemente quiero <span class="token number">3</span> fotos
+ de cualquier posts que se encuentre en las secciones<span class="token punctuation">.</span> Si hay <span class="token number">1</span> post que me devuelva 
+ solo <span class="token number">1</span> foto<span class="token punctuation">.</span> si no hay ningún post que no me devuelva nada<span class="token punctuation">)</span>
+
+<span class="token keyword">const</span> mockedPosts <span class="token operator">=</span> <span class="token punctuation">[</span>
+	<span class="token punctuation">(</span>good<span class="token punctuation">)</span><span class="token punctuation">{</span>
+		_id<span class="token punctuation">:</span> <span class="token string">"id"</span><span class="token punctuation">,</span>
+		imagesUrls<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">"urls"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+		title<span class="token punctuation">:</span> <span class="token string">"titulo"</span><span class="token punctuation">,</span>
+		description<span class="token punctuation">:</span> <span class="token string">"descripcion"</span><span class="token punctuation">,</span>
+		price<span class="token punctuation">:</span> <span class="token number">2000</span><span class="token punctuation">,</span>
+		reviews<span class="token punctuation">:</span> <span class="token punctuation">[</span>
+			<span class="token punctuation">{</span>
+				rating<span class="token punctuation">:</span> <span class="token number">4.5</span>
+			<span class="token punctuation">}</span>
+		<span class="token punctuation">]</span>
+	<span class="token punctuation">}</span><span class="token punctuation">,</span>
+	<span class="token punctuation">(</span>service<span class="token punctuation">)</span><span class="token punctuation">{</span>
+		_id<span class="token punctuation">:</span> <span class="token string">"id"</span><span class="token punctuation">,</span>
+		imagesUrls<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">"urls"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+		title<span class="token punctuation">:</span> <span class="token string">"titulo"</span><span class="token punctuation">,</span>
+		description<span class="token punctuation">:</span> <span class="token string">"descripcion"</span><span class="token punctuation">,</span>
+		price<span class="token punctuation">:</span> <span class="token number">2000</span><span class="token punctuation">,</span>
+		frequencyPrice<span class="token punctuation">:</span> <span class="token string">"hour"</span><span class="token punctuation">,</span>
+		reviews<span class="token punctuation">:</span> <span class="token punctuation">[</span>
+			<span class="token punctuation">{</span>
+				rating<span class="token punctuation">:</span> <span class="token number">4.5</span>
+			<span class="token punctuation">}</span>
+		<span class="token punctuation">]</span>
+	<span class="token punctuation">}</span><span class="token punctuation">,</span>
+	<span class="token punctuation">(</span>petition<span class="token punctuation">)</span><span class="token punctuation">{</span>
+		_id<span class="token punctuation">:</span> <span class="token string">"id"</span><span class="token punctuation">,</span>
+		title<span class="token punctuation">:</span> <span class="token string">"titulo"</span><span class="token punctuation">,</span>
+		description<span class="token punctuation">:</span> <span class="token string">"descripcion"</span><span class="token punctuation">,</span>
+		price<span class="token punctuation">:</span> <span class="token number">2000</span><span class="token punctuation">,</span>
+		toPrice<span class="token punctuation">:</span> <span class="token number">4000</span><span class="token punctuation">,</span>
+		frequencyPrice<span class="token punctuation">:</span> <span class="token string">"hour"</span><span class="token punctuation">,</span>
+		petitionType<span class="token punctuation">:</span> <span class="token string">"good"</span>
+	<span class="token punctuation">}</span>
+<span class="token punctuation">]</span>
+</code></pre>
+      <h3 id="posts">Posts</h3>
+      <ul>
+        <li>
+          <code>getPostData</code>: Devolver los datos completos del post por el
+          id enviado. los objetos serían sería:
+        </li>
+      </ul>
+      <pre
+        class="language-js"
+      ><code class="prism  language-js"><span class="token keyword">const</span> mockedGood<span class="token punctuation">:</span>  Good  <span class="token operator">=</span> <span class="token punctuation">{</span>
+	_id<span class="token punctuation">:</span>  <span class="token string">"1"</span><span class="token punctuation">,</span>
+	imagesUrls<span class="token punctuation">:</span>  <span class="token punctuation">[</span>
+		<span class="token string">"/moto.png"</span><span class="token punctuation">,</span>
+		<span class="token string">"/Rectangle 13.png"</span><span class="token punctuation">,</span>
+		<span class="token string">"/Rectangle 14.png"</span><span class="token punctuation">,</span>
+		<span class="token string">"/Rectangle 15.png"</span><span class="token punctuation">,</span>
+	<span class="token punctuation">]</span><span class="token punctuation">,</span>
+	year<span class="token punctuation">:</span>  <span class="token number">2022</span><span class="token punctuation">,</span>
+	brand<span class="token punctuation">:</span>  <span class="token string">"brand"</span><span class="token punctuation">,</span>
+	modelType<span class="token punctuation">:</span>  <span class="token string">"modelType"</span><span class="token punctuation">,</span>
+	reviews<span class="token punctuation">:</span>  <span class="token punctuation">[</span>
+		<span class="token punctuation">{</span>
+			_id<span class="token punctuation">:</span>  <span class="token string">"231"</span><span class="token punctuation">,</span>
+			rating<span class="token punctuation">:</span>  <span class="token number">5</span><span class="token punctuation">,</span>
+			review<span class="token punctuation">:</span>  <span class="token string">"review"</span><span class="token punctuation">,</span>
+			author<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+				profilePhotoUrl<span class="token punctuation">:</span>  <span class="token string">"/avatar.png"</span><span class="token punctuation">,</span>
+				username<span class="token punctuation">:</span>  <span class="token string">"username"</span><span class="token punctuation">,</span>
+			<span class="token punctuation">}</span><span class="token punctuation">,</span>
+			date<span class="token punctuation">:</span>  <span class="token string">"2024-07-12"</span><span class="token punctuation">,</span>
+		<span class="token punctuation">}</span><span class="token punctuation">,</span>
+		<span class="token punctuation">{</span>
+			_id<span class="token punctuation">:</span>  <span class="token string">"232"</span><span class="token punctuation">,</span>
+			rating<span class="token punctuation">:</span>  <span class="token number">3</span><span class="token punctuation">,</span>
+			review<span class="token punctuation">:</span>  <span class="token string">"review"</span><span class="token punctuation">,</span>
+			author<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+				profilePhotoUrl<span class="token punctuation">:</span>  <span class="token string">"/avatar.png"</span><span class="token punctuation">,</span>
+				username<span class="token punctuation">:</span>  <span class="token string">"username"</span><span class="token punctuation">,</span>
+			<span class="token punctuation">}</span><span class="token punctuation">,</span>
+			date<span class="token punctuation">:</span>  <span class="token string">"2024-07-12"</span><span class="token punctuation">,</span>
+		<span class="token punctuation">}</span><span class="token punctuation">,</span>
+		<span class="token punctuation">{</span>
+			_id<span class="token punctuation">:</span>  <span class="token string">"23w22"</span><span class="token punctuation">,</span>
+			rating<span class="token punctuation">:</span>  <span class="token number">4</span><span class="token punctuation">,</span>
+			review<span class="token punctuation">:</span>
+			<span class="token string">"Esta es una review más larga para poder mostrar una caja de review de 200 caracteres más grande"</span><span class="token punctuation">,</span>
+			author<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+				profilePhotoUrl<span class="token punctuation">:</span>  <span class="token string">"/avatar.png"</span><span class="token punctuation">,</span>
+				username<span class="token punctuation">:</span>  <span class="token string">"username"</span><span class="token punctuation">,</span>
+			<span class="token punctuation">}</span><span class="token punctuation">,</span>
+			date<span class="token punctuation">:</span>  <span class="token string">"2024-07-12"</span><span class="token punctuation">,</span>
+		<span class="token punctuation">}</span><span class="token punctuation">,</span>
+	<span class="token punctuation">]</span><span class="token punctuation">,</span>
+	condition<span class="token punctuation">:</span>  <span class="token string">"new"</span><span class="token punctuation">,</span>
+	price<span class="token punctuation">:</span>  <span class="token number">10000</span><span class="token punctuation">,</span>
+	location<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+		_id<span class="token punctuation">:</span>  <span class="token string">"1"</span><span class="token punctuation">,</span>
+		location<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+			type<span class="token punctuation">:</span>  <span class="token string">"Point"</span><span class="token punctuation">,</span>
+			coordinates<span class="token punctuation">:</span>  <span class="token punctuation">[</span><span class="token operator">-</span><span class="token number">32.8998</span><span class="token punctuation">,</span>  <span class="token operator">-</span><span class="token number">68.8259</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+		<span class="token punctuation">}</span><span class="token punctuation">,</span>
+		description<span class="token punctuation">:</span>  <span class="token string">"Cacique Guaymallen 1065, Las Heras, Mendoza"</span><span class="token punctuation">,</span>
+		userSetted<span class="token punctuation">:</span>  <span class="token boolean">true</span><span class="token punctuation">,</span>
+	<span class="token punctuation">}</span><span class="token punctuation">,</span>
+	category<span class="token punctuation">:</span>  categories<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token punctuation">(</span>devolver todas las props con el populate<span class="token punctuation">)</span><span class="token punctuation">,</span>
+	attachedFiles<span class="token punctuation">:</span>  <span class="token punctuation">[</span>
+		<span class="token punctuation">{</span>
+			_id<span class="token punctuation">:</span>  <span class="token string">"1ghdsf"</span><span class="token punctuation">,</span>
+			url<span class="token punctuation">:</span>  <span class="token string">"url"</span><span class="token punctuation">,</span>
+			label<span class="token punctuation">:</span>  <span class="token string">"label"</span><span class="token punctuation">,</span>
+		<span class="token punctuation">}</span><span class="token punctuation">,</span>
+	<span class="token punctuation">]</span><span class="token punctuation">,</span>
+	comments<span class="token punctuation">:</span>  <span class="token punctuation">[</span>
+		<span class="token punctuation">{</span>
+			_id<span class="token punctuation">:</span>  <span class="token string">"1232df"</span><span class="token punctuation">,</span>
+			author<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+				profilePhotoUrl<span class="token punctuation">:</span>  <span class="token string">"/avatar.png"</span><span class="token punctuation">,</span>
+				username<span class="token punctuation">:</span>  <span class="token string">"username"</span><span class="token punctuation">,</span>
+			<span class="token punctuation">}</span><span class="token punctuation">,</span>
+			comment<span class="token punctuation">:</span> <span class="token string">"Quería consultar si existe la posibilidad de sacar un plan de pago para pagarla. Soy de Buenos Aires, por lo que también quería consultar sobre envios."</span><span class="token punctuation">,</span>
+			date<span class="token punctuation">:</span>  <span class="token string">"2024-07-12"</span><span class="token punctuation">,</span>
+			replies<span class="token punctuation">:</span>  <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+		<span class="token punctuation">}</span><span class="token punctuation">,</span>
+		<span class="token punctuation">{</span>
+			_id<span class="token punctuation">:</span>  <span class="token string">"1232df"</span><span class="token punctuation">,</span>
+			author<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+				profilePhotoUrl<span class="token punctuation">:</span>  <span class="token string">"/avatar.png"</span><span class="token punctuation">,</span>
+				username<span class="token punctuation">:</span>  <span class="token string">"username"</span><span class="token punctuation">,</span>
+			<span class="token punctuation">}</span><span class="token punctuation">,</span>
+			comment<span class="token punctuation">:</span> <span class="token string">"Quería consultar si existe la posibilidad de sacar un plan de pago para pagarla. Soy de Buenos Aires, por lo que también quería consultar sobre envios."</span><span class="token punctuation">,</span>
+			date<span class="token punctuation">:</span>  <span class="token string">"2024-09-12"</span><span class="token punctuation">,</span>
+			replies<span class="token punctuation">:</span>  <span class="token punctuation">[</span>
+				<span class="token punctuation">{</span>
+					_id<span class="token punctuation">:</span>  <span class="token string">"1232df"</span><span class="token punctuation">,</span>
+					author<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+						profilePhotoUrl<span class="token punctuation">:</span>  <span class="token string">"/avatar.png"</span><span class="token punctuation">,</span>
+						username<span class="token punctuation">:</span>  <span class="token string">"username"</span><span class="token punctuation">,</span>
+					<span class="token punctuation">}</span><span class="token punctuation">,</span>
+					comment<span class="token punctuation">:</span> <span class="token string">"Si, te puedo armar un plan de pago. Respecto al envío, podemos manejarlo por la empresa Andreani. Saludos"</span><span class="token punctuation">,</span>
+					date<span class="token punctuation">:</span>  <span class="token string">"2024-09-13"</span><span class="token punctuation">,</span>
+					replies<span class="token punctuation">:</span>  <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+				<span class="token punctuation">}</span><span class="token punctuation">,</span>
+			<span class="token punctuation">]</span><span class="token punctuation">,</span>
+		<span class="token punctuation">}</span><span class="token punctuation">,</span>
+	<span class="token punctuation">]</span><span class="token punctuation">,</span>
+	postType<span class="token punctuation">:</span>  <span class="token string">"good"</span><span class="token punctuation">,</span>
+	visibility<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+		post<span class="token punctuation">:</span>  <span class="token string">"public"</span><span class="token punctuation">,</span>
+		socialMedia<span class="token punctuation">:</span>  <span class="token string">"public"</span><span class="token punctuation">,</span>
+	<span class="token punctuation">}</span><span class="token punctuation">,</span>
+	recommendations<span class="token punctuation">:</span>  <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+	description<span class="token punctuation">:</span> <span class="token string">"La Yamaha YBR Z es una motocicleta robusta y confiable diseñada para aquellos que buscan una combinación perfecta entre economía y rendimiento. Con su motor de 124 cc, ofrece una conducción suave y eficiente, ideal para el uso diario en la ciudad. Su diseño ergonómico garantiza comodidad en viajes largos, mientras que su chasis resistente proporciona estabilidad y seguridad en diferentes terrenos. Además, cuenta con un tanque de combustible de gran capacidad, lo que permite recorrer largas distancias sin necesidad de recargar constantemente. La Yamaha YBR Z es la elección perfecta para quienes desean una moto duradera, económica y de fácil manejo."</span><span class="token punctuation">,</span>
+	title<span class="token punctuation">:</span>  <span class="token string">"Yamaha YBR-Z"</span><span class="token punctuation">,</span>
+	author<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+		profilePhotoUrl<span class="token punctuation">:</span>  <span class="token string">"/avatar.png"</span><span class="token punctuation">,</span>
+		username<span class="token punctuation">:</span>  <span class="token string">"renatobicego"</span><span class="token punctuation">,</span>
+		contact<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+			_id<span class="token punctuation">:</span>  <span class="token string">"121"</span><span class="token punctuation">,</span>
+			phone<span class="token punctuation">:</span>  <span class="token string">"phone"</span><span class="token punctuation">,</span>
+			instagram<span class="token punctuation">:</span>  <span class="token string">"instagram"</span><span class="token punctuation">,</span>
+			facebook<span class="token punctuation">:</span>  <span class="token string">"facebook"</span><span class="token punctuation">,</span>
+			x<span class="token punctuation">:</span>  <span class="token string">"x"</span><span class="token punctuation">,</span>
+			website<span class="token punctuation">:</span>  <span class="token string">"website"</span><span class="token punctuation">,</span>
+		<span class="token punctuation">}</span><span class="token punctuation">,</span>
+		lastName<span class="token punctuation">:</span>  <span class="token string">"lastName"</span><span class="token punctuation">,</span>
+		name<span class="token punctuation">:</span>  <span class="token string">"name"</span><span class="token punctuation">,</span>
+	<span class="token punctuation">}</span><span class="token punctuation">,</span>
+	createAt<span class="token punctuation">:</span>  <span class="token string">"2024-07-12"</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+<span class="token keyword">const</span>  mockedService<span class="token punctuation">:</span>  Service  <span class="token operator">=</span> <span class="token punctuation">{</span>
+	_id<span class="token punctuation">:</span>  <span class="token string">"1jgdfas"</span><span class="token punctuation">,</span>
+	imagesUrls<span class="token punctuation">:</span>  <span class="token punctuation">[</span><span class="token string">"/catering.png"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+	description<span class="token punctuation">:</span><span class="token string">"Te invitamos a que nos conozcas y puedas disfrutar con tus seres queridos de tu evento tal como lo soñaste. Elaboramos bocadillos totalmente caseros y con material de primera calidad."</span><span class="token punctuation">,</span>
+	title<span class="token punctuation">:</span>  <span class="token string">"Lunch para eventos social y corporativos"</span><span class="token punctuation">,</span>
+	price<span class="token punctuation">:</span>  <span class="token number">1000</span><span class="token punctuation">,</span>
+	location<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+		_id<span class="token punctuation">:</span>  <span class="token string">"1"</span><span class="token punctuation">,</span>
+		location<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+			type<span class="token punctuation">:</span>  <span class="token string">"Point"</span><span class="token punctuation">,</span>
+			coordinates<span class="token punctuation">:</span>  <span class="token punctuation">[</span><span class="token operator">-</span><span class="token number">32.8998</span><span class="token punctuation">,</span>  <span class="token operator">-</span><span class="token number">68.8259</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+		<span class="token punctuation">}</span><span class="token punctuation">,</span>
+		description<span class="token punctuation">:</span>  <span class="token string">"Cacique Guaymallen 1065, Las Heras, Mendoza"</span><span class="token punctuation">,</span>
+		userSetted<span class="token punctuation">:</span>  <span class="token boolean">true</span><span class="token punctuation">,</span>
+	<span class="token punctuation">}</span><span class="token punctuation">,</span>
+	category<span class="token punctuation">:</span>  categories<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token punctuation">(</span>todas las props con el populate<span class="token punctuation">)</span><span class="token punctuation">,</span>
+	attachedFiles<span class="token punctuation">:</span>  <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+	comments<span class="token punctuation">:</span>  <span class="token punctuation">[</span>
+		<span class="token punctuation">{</span>
+			_id<span class="token punctuation">:</span>  <span class="token string">"2312"</span><span class="token punctuation">,</span>
+			author<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+				profilePhotoUrl<span class="token punctuation">:</span>  <span class="token string">"/avatar.png"</span><span class="token punctuation">,</span>
+				username<span class="token punctuation">:</span>  <span class="token string">"username"</span><span class="token punctuation">,</span>
+			<span class="token punctuation">}</span><span class="token punctuation">,</span>
+			comment<span class="token punctuation">:</span>  <span class="token string">"comment"</span><span class="token punctuation">,</span>
+			date<span class="token punctuation">:</span>  <span class="token string">"2024-07-12"</span><span class="token punctuation">,</span>
+			replies<span class="token punctuation">:</span>  <span class="token punctuation">[</span><span class="token punctuation">(</span>igual que good<span class="token punctuation">,</span> las mismas props<span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+		<span class="token punctuation">}</span><span class="token punctuation">,</span>
+	<span class="token punctuation">]</span><span class="token punctuation">,</span>
+	postType<span class="token punctuation">:</span>  <span class="token string">"service"</span><span class="token punctuation">,</span>
+	visibility<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+		post<span class="token punctuation">:</span>  <span class="token string">"public"</span><span class="token punctuation">,</span>
+		socialMedia<span class="token punctuation">:</span>  <span class="token string">"public"</span><span class="token punctuation">,</span>
+	<span class="token punctuation">}</span><span class="token punctuation">,</span>
+	recommendations<span class="token punctuation">:</span>  <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+	frequencyPrice<span class="token punctuation">:</span>  <span class="token string">"hour"</span><span class="token punctuation">,</span>
+	reviews<span class="token punctuation">:</span>  <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+	author<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+		profilePhotoUrl<span class="token punctuation">:</span>  <span class="token string">"/avatar.png"</span><span class="token punctuation">,</span>
+		username<span class="token punctuation">:</span>  <span class="token string">"username"</span><span class="token punctuation">,</span>
+		contact<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+			_id<span class="token punctuation">:</span>  <span class="token string">"121"</span><span class="token punctuation">,</span>
+			phone<span class="token punctuation">:</span>  <span class="token string">"phone"</span><span class="token punctuation">,</span>
+		<span class="token punctuation">}</span><span class="token punctuation">,</span>
+		lastName<span class="token punctuation">:</span>  <span class="token string">"lastName"</span><span class="token punctuation">,</span>
+		name<span class="token punctuation">:</span>  <span class="token string">"name"</span><span class="token punctuation">,</span>
+	<span class="token punctuation">}</span><span class="token punctuation">,</span>
+	createAt<span class="token punctuation">:</span>  <span class="token string">"2024-07-12"</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span>  mockedPetition<span class="token punctuation">:</span>  Petition  <span class="token operator">=</span> <span class="token punctuation">{</span>
+	_id<span class="token punctuation">:</span>  <span class="token string">"1452"</span><span class="token punctuation">,</span>
+	title<span class="token punctuation">:</span>  <span class="token string">"Busco iPhone 14 Pro Max"</span><span class="token punctuation">,</span>
+	description<span class="token punctuation">:</span> <span class="token string">"Esto en búsqueda de un iPhone 14 pro max nuevo en caja, de 128gb. Cualquier duda o consulta puede contactarme por este medio. Gracias"</span><span class="token punctuation">,</span>
+	author<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+		profilePhotoUrl<span class="token punctuation">:</span>  <span class="token string">"/avatar.png"</span><span class="token punctuation">,</span>
+		username<span class="token punctuation">:</span>  <span class="token string">"username"</span><span class="token punctuation">,</span>
+		contact<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+			_id<span class="token punctuation">:</span>  <span class="token string">"121"</span><span class="token punctuation">,</span>
+			phone<span class="token punctuation">:</span>  <span class="token string">"phone"</span><span class="token punctuation">,</span>
+		<span class="token punctuation">}</span><span class="token punctuation">,</span>
+		lastName<span class="token punctuation">:</span>  <span class="token string">"lastName"</span><span class="token punctuation">,</span>
+		name<span class="token punctuation">:</span>  <span class="token string">"name"</span><span class="token punctuation">,</span>
+	<span class="token punctuation">}</span><span class="token punctuation">,</span>
+	category<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+		_id<span class="token punctuation">:</span>  <span class="token string">"1"</span><span class="token punctuation">,</span>
+		label<span class="token punctuation">:</span>  <span class="token string">"Teléfonos y Compoutadoras"</span><span class="token punctuation">,</span>
+	<span class="token punctuation">}</span><span class="token punctuation">,</span>
+	postType<span class="token punctuation">:</span>  <span class="token string">"petition"</span><span class="token punctuation">,</span>
+	petitionType<span class="token punctuation">:</span>  <span class="token string">"good"</span><span class="token punctuation">,</span>
+	visibility<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+		post<span class="token punctuation">:</span>  <span class="token string">"public"</span><span class="token punctuation">,</span>
+		socialMedia<span class="token punctuation">:</span>  <span class="token string">"public"</span><span class="token punctuation">,</span>
+	<span class="token punctuation">}</span><span class="token punctuation">,</span>
+	recommendations<span class="token punctuation">:</span>  <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+	attachedFiles<span class="token punctuation">:</span>  <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+	comments<span class="token punctuation">:</span>  <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+	price<span class="token punctuation">:</span>  <span class="token number">1000</span><span class="token punctuation">,</span>
+	location<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+		_id<span class="token punctuation">:</span>  <span class="token string">"1"</span><span class="token punctuation">,</span>
+		location<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+			type<span class="token punctuation">:</span>  <span class="token string">"Point"</span><span class="token punctuation">,</span>
+			coordinates<span class="token punctuation">:</span>  <span class="token punctuation">[</span><span class="token operator">-</span><span class="token number">32.8998</span><span class="token punctuation">,</span>  <span class="token operator">-</span><span class="token number">68.8259</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+		<span class="token punctuation">}</span><span class="token punctuation">,</span>
+		description<span class="token punctuation">:</span>  <span class="token string">"Cacique Guaymallen 1065, Las Heras, Mendoza"</span><span class="token punctuation">,</span>
+		userSetted<span class="token punctuation">:</span>  <span class="token boolean">true</span><span class="token punctuation">,</span>
+	<span class="token punctuation">}</span><span class="token punctuation">,</span>
+	toPrice<span class="token punctuation">:</span>  <span class="token number">2000</span><span class="token punctuation">,</span>
+	createAt<span class="token punctuation">:</span>  <span class="token string">"2024-07-12"</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+ 
+</code></pre>
+      <ul>
+        <li><code>getCategories</code>: devolver categorias de anuncios</li>
+      </ul>
+      <p>
+        <strong
+          >Los siguientes gets hay que implementar un sistema de
+          infiniteFetchScroll, o sea el usuario al llegar al final de la página
+          va a hacer un fetch más trayendo 50 posts más. Cuando se hace el
+          fetch, el back devuelve una prop de tipo boolean que dice si hay más
+          valores para traer o ya no hay más. Hay que buscar alguna guía que
+          explique cómo hacer esto. También hay que filtrarlos por la
+          visibility</strong
+        >
+      </p>
+      <ul>
+        <li>
+          <code>getGoods</code>: devolver posts de tipos bienes. Hay que tener
+          en cuenta que pueden haber queries opcionales y algunas obligatorias:
+          searchTerm (búsqueda opcional), location (obligatoria, sería latitud y
+          longitud y habría que filtrar con una proximidad (radius), esa
+          proximidad va a estar disponivle solo para usuarios premium). Sería
+          algo como
+          <code
+            >GET
+            /posts/goods?search=autos&amp;lat=20.30&amp;lng=-23.23&amp;radius=20</code
+          >. El objeto que debería devolver sería:
+        </li>
+      </ul>
+      <pre
+        class="language-js"
+      ><code class="prism  language-js"><span class="token keyword">export</span>  <span class="token keyword">const</span>  mockedGoods <span class="token operator">=</span> <span class="token punctuation">[</span>
+	<span class="token punctuation">{</span>
+		_id<span class="token punctuation">:</span> <span class="token string">"id"</span><span class="token punctuation">,</span>
+		imagesUrls<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">"urls"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+		title<span class="token punctuation">:</span> <span class="token string">"titulo"</span><span class="token punctuation">,</span>
+		description<span class="token punctuation">:</span> <span class="token string">"descripcion"</span><span class="token punctuation">,</span>
+		price<span class="token punctuation">:</span> <span class="token number">2000</span><span class="token punctuation">,</span>
+		reviews<span class="token punctuation">:</span> <span class="token punctuation">[</span>
+			<span class="token punctuation">{</span>
+				rating<span class="token punctuation">:</span> <span class="token number">4.5</span>
+			<span class="token punctuation">}</span>
+		<span class="token punctuation">]</span>
+	<span class="token punctuation">}</span><span class="token punctuation">,</span>
+	<span class="token punctuation">{</span>
+		_id<span class="token punctuation">:</span> <span class="token string">"id1"</span><span class="token punctuation">,</span>
+		imagesUrls<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">"urls2"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+		title<span class="token punctuation">:</span> <span class="token string">"titulo2"</span><span class="token punctuation">,</span>
+		description<span class="token punctuation">:</span> <span class="token string">"descripcion"</span><span class="token punctuation">,</span>
+		price<span class="token punctuation">:</span> <span class="token number">20002</span><span class="token punctuation">,</span>
+		reviews<span class="token punctuation">:</span> <span class="token punctuation">[</span>
+			<span class="token punctuation">{</span>
+				rating<span class="token punctuation">:</span> <span class="token number">4.5</span>
+			<span class="token punctuation">}</span>
+		<span class="token punctuation">]</span>
+	<span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">]</span>
+</code></pre>
+      <ul>
+        <li>
+          <code>getServices</code>: idem a getGoods pero debería devolver
+          servicios:
+        </li>
+      </ul>
+      <pre
+        class="language-js"
+      ><code class="prism  language-js"><span class="token punctuation">[</span>
+	<span class="token punctuation">{</span>
+		_id<span class="token punctuation">:</span> <span class="token string">"id"</span><span class="token punctuation">,</span>
+		imagesUrls<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">"urls"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+		title<span class="token punctuation">:</span> <span class="token string">"titulo"</span><span class="token punctuation">,</span>
+		description<span class="token punctuation">:</span> <span class="token string">"descripcion"</span><span class="token punctuation">,</span>
+		price<span class="token punctuation">:</span> <span class="token number">2000</span><span class="token punctuation">,</span>
+		frequencyPrice<span class="token punctuation">:</span> <span class="token string">"hour"</span><span class="token punctuation">,</span>
+		reviews<span class="token punctuation">:</span> <span class="token punctuation">[</span>
+			<span class="token punctuation">{</span>
+				rating<span class="token punctuation">:</span> <span class="token number">4.5</span>
+			<span class="token punctuation">}</span>
+		<span class="token punctuation">]</span>
+	<span class="token punctuation">}</span>
+<span class="token punctuation">]</span>
+</code></pre>
+      <ul>
+        <li>
+          <code>getPetitions</code>: idem pero debería devolver necesidades
+        </li>
+      </ul>
+      <pre
+        class="language-js"
+      ><code class="prism  language-js"><span class="token punctuation">[</span>
+	<span class="token punctuation">{</span>
+		_id<span class="token punctuation">:</span> <span class="token string">"id"</span><span class="token punctuation">,</span>
+		title<span class="token punctuation">:</span> <span class="token string">"titulo"</span><span class="token punctuation">,</span>
+		description<span class="token punctuation">:</span> <span class="token string">"descripcion"</span><span class="token punctuation">,</span>
+		price<span class="token punctuation">:</span> <span class="token number">2000</span><span class="token punctuation">,</span>
+		toPrice<span class="token punctuation">:</span> <span class="token number">4000</span><span class="token punctuation">,</span>
+		frequencyPrice<span class="token punctuation">:</span> <span class="token string">"hour"</span><span class="token punctuation">,</span>
+		petitionType<span class="token punctuation">:</span> <span class="token string">"good"</span>
+	<span class="token punctuation">}</span>
+<span class="token punctuation">]</span>
+</code></pre>
+      <h3 id="revistas">Revistas</h3>
+      <ul>
+        <li>
+          <code>getMagazineById</code>: traer revista con sus datos por id,
+          donde los posts debería devolverlos con las mismas props que el
+          <code>getPosts</code>:
+        </li>
+      </ul>
+      <pre
+        class="language-js"
+      ><code class="prism  language-js"><span class="token keyword">export</span>  <span class="token keyword">const</span>  mockedCompleteMagazine<span class="token punctuation">:</span>  UserMagazine  <span class="token operator">=</span> <span class="token punctuation">{</span>
+	_id<span class="token punctuation">:</span>  <span class="token string">"1magaz"</span><span class="token punctuation">,</span>
+	collaborators<span class="token punctuation">:</span>  <span class="token punctuation">[</span>
+		<span class="token punctuation">{</span>
+			_id<span class="token punctuation">:</span> <span class="token string">"id"</span>
+			username<span class="token punctuation">:</span> <span class="token string">"username"</span><span class="token punctuation">,</span>
+			profilePhotoUrl<span class="token punctuation">:</span> <span class="token string">"foto"</span>
+		<span class="token punctuation">}</span>
+	<span class="token punctuation">]</span><span class="token punctuation">,</span>
+	name<span class="token punctuation">:</span>  <span class="token string">"Magazine 1"</span><span class="token punctuation">,</span>
+	user<span class="token punctuation">:</span>  <span class="token punctuation">{</span>
+		_id<span class="token punctuation">:</span> <span class="token string">"id"</span>
+		username<span class="token punctuation">:</span> <span class="token string">"username"</span><span class="token punctuation">,</span>
+		profilePhotoUrl<span class="token punctuation">:</span> <span class="token string">"foto"</span>
+	<span class="token punctuation">}</span><span class="token punctuation">,</span>
+	description<span class="token punctuation">:</span> <span class="token string">"Esta sería la descripción de la revista guitarras de Miguel abentin."</span><span class="token punctuation">,</span>
+	sections<span class="token punctuation">:</span>  <span class="token punctuation">[</span>
+		<span class="token punctuation">{</span>
+			_id<span class="token punctuation">:</span>  <span class="token string">"234sec"</span><span class="token punctuation">,</span>
+			isFatherSection<span class="token punctuation">:</span>  <span class="token boolean">true</span><span class="token punctuation">,</span>
+			posts<span class="token punctuation">:</span>  mockedPosts<span class="token punctuation">,</span>
+			title<span class="token punctuation">:</span>  <span class="token string">"Sección 1"</span><span class="token punctuation">,</span>
+		<span class="token punctuation">}</span><span class="token punctuation">,</span>
+		<span class="token punctuation">{</span>
+			_id<span class="token punctuation">:</span>  <span class="token string">"345sec"</span><span class="token punctuation">,</span>
+			isFatherSection<span class="token punctuation">:</span>  <span class="token boolean">false</span><span class="token punctuation">,</span>
+			posts<span class="token punctuation">:</span>  mockedPosts<span class="token punctuation">,</span>
+			title<span class="token punctuation">:</span>  <span class="token string">"Sección 2"</span><span class="token punctuation">,</span>
+		<span class="token punctuation">}</span><span class="token punctuation">,</span>
+		<span class="token punctuation">{</span>
+			_id<span class="token punctuation">:</span>  <span class="token string">"3415sec"</span><span class="token punctuation">,</span>
+			isFatherSection<span class="token punctuation">:</span>  <span class="token boolean">false</span><span class="token punctuation">,</span>
+			posts<span class="token punctuation">:</span>  mockedPosts<span class="token punctuation">,</span>
+			title<span class="token punctuation">:</span>  <span class="token string">"Sección 3"</span><span class="token punctuation">,</span>
+		<span class="token punctuation">}</span><span class="token punctuation">,</span>
+	<span class="token punctuation">]</span><span class="token punctuation">,</span>
+	ownerType<span class="token punctuation">:</span>  <span class="token string">"user"</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token keyword">export</span>  <span class="token keyword">const</span>  mockedCompleteMagazineGroup<span class="token punctuation">:</span>  GroupMagazine  <span class="token operator">=</span> <span class="token punctuation">{</span>
+	_id<span class="token punctuation">:</span>  <span class="token string">"1magaz"</span><span class="token punctuation">,</span>
+	allowedCollaborators<span class="token punctuation">:</span>  <span class="token punctuation">[</span>
+		<span class="token punctuation">{</span>
+			_id<span class="token punctuation">:</span> <span class="token string">"id"</span>
+			username<span class="token punctuation">:</span> <span class="token string">"username"</span><span class="token punctuation">,</span>
+			profilePhotoUrl<span class="token punctuation">:</span> <span class="token string">"foto"</span>
+		<span class="token punctuation">}</span>
+	<span class="token punctuation">]</span><span class="token punctuation">,</span>
+	name<span class="token punctuation">:</span>  <span class="token string">"Magazine 1"</span><span class="token punctuation">,</span>
+	group<span class="token punctuation">:</span>  <span class="token punctuation">{</span>
+		_id<span class="token punctuation">:</span> <span class="token string">"id"</span>
+		name<span class="token punctuation">:</span> <span class="token string">"name"</span><span class="token punctuation">,</span>
+		profilePhotoUrl<span class="token punctuation">:</span> <span class="token string">"foto"</span>
+	<span class="token punctuation">}</span><span class="token punctuation">,</span>
+	description<span class="token punctuation">:</span> <span class="token string">"Esta sería la descripción de la revista guitarras de Miguel abentin."</span><span class="token punctuation">,</span>
+	sections<span class="token punctuation">:</span>  <span class="token punctuation">[</span>
+		<span class="token punctuation">{</span>
+			_id<span class="token punctuation">:</span>  <span class="token string">"234sec"</span><span class="token punctuation">,</span>
+			isFatherSection<span class="token punctuation">:</span>  <span class="token boolean">true</span><span class="token punctuation">,</span>
+			posts<span class="token punctuation">:</span>  mockedPosts<span class="token punctuation">,</span>
+			title<span class="token punctuation">:</span>  <span class="token string">"Sección 1"</span><span class="token punctuation">,</span>
+		<span class="token punctuation">}</span><span class="token punctuation">,</span>
+		<span class="token punctuation">{</span>
+			_id<span class="token punctuation">:</span>  <span class="token string">"345sec"</span><span class="token punctuation">,</span>
+			isFatherSection<span class="token punctuation">:</span>  <span class="token boolean">false</span><span class="token punctuation">,</span>
+			posts<span class="token punctuation">:</span>  mockedPosts<span class="token punctuation">,</span>
+			title<span class="token punctuation">:</span>  <span class="token string">"Sección 2"</span><span class="token punctuation">,</span>
+		<span class="token punctuation">}</span><span class="token punctuation">,</span>
+		<span class="token punctuation">{</span>
+			_id<span class="token punctuation">:</span>  <span class="token string">"3415sec"</span><span class="token punctuation">,</span>
+			isFatherSection<span class="token punctuation">:</span>  <span class="token boolean">false</span><span class="token punctuation">,</span>
+			posts<span class="token punctuation">:</span>  mockedPosts<span class="token punctuation">,</span>
+			title<span class="token punctuation">:</span>  <span class="token string">"Sección 3"</span><span class="token punctuation">,</span>
+		<span class="token punctuation">}</span><span class="token punctuation">,</span>
+	<span class="token punctuation">]</span><span class="token punctuation">,</span>
+	ownerType<span class="token punctuation">:</span>  <span class="token string">"group"</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre>
+      <h3 id="grupos">Grupos</h3>
+      <ul>
+        <li>
+          <code>getGroups</code>: idem a getPosts solo que tiene que traer
+          grupos y únicamente se va a enviar un searchTerm nada más que va a ser
+          opcional. Tiene que devolver:
+        </li>
+      </ul>
+      <pre
+        class="language-js"
+      ><code class="prism  language-js"><span class="token punctuation">[</span>
+	<span class="token punctuation">{</span>
+		_id<span class="token punctuation">:</span> <span class="token string">"id"</span><span class="token punctuation">,</span>
+		name<span class="token punctuation">:</span> <span class="token string">"nombre del grupo"</span><span class="token punctuation">,</span>
+		profilePhotoUrl<span class="token punctuation">:</span> <span class="token string">"url"</span><span class="token punctuation">,</span>
+		members<span class="token punctuation">:</span> <span class="token punctuation">[</span>solo los ids<span class="token punctuation">]</span>
+	<span class="token punctuation">}</span>
+<span class="token punctuation">]</span><span class="token punctuation">,</span>
+</code></pre>
+      <ul>
+        <li>
+          <code>getGroupById</code>: traer todos los datos de grupo. Tiene que
+          devolver:
+        </li>
+      </ul>
+      <pre
+        class="language-js"
+      ><code class="prism  language-js"><span class="token punctuation">{</span>
+	_id<span class="token punctuation">:</span>  <span class="token string">"9ievfm"</span><span class="token punctuation">,</span>
+	members<span class="token punctuation">:</span>  <span class="token punctuation">[</span>
+		<span class="token punctuation">{</span>
+			_id<span class="token punctuation">:</span> <span class="token string">"id"</span>
+			username<span class="token punctuation">:</span> <span class="token string">"username"</span><span class="token punctuation">,</span>
+			profilePhotoUrl<span class="token punctuation">:</span> <span class="token string">"foto"</span>
+		<span class="token punctuation">}</span>
+	<span class="token punctuation">]</span><span class="token punctuation">,</span>
+	admins<span class="token punctuation">:</span>  <span class="token punctuation">[</span>solo los ids<span class="token punctuation">]</span><span class="token punctuation">,</span>
+	details<span class="token punctuation">:</span>  <span class="token string">"details"</span><span class="token punctuation">,</span>
+	name<span class="token punctuation">:</span>  <span class="token string">"Computadoras"</span><span class="token punctuation">,</span>
+	magazines<span class="token punctuation">:</span>  <span class="token punctuation">[</span>
+		<span class="token punctuation">{</span>
+			_id<span class="token punctuation">:</span>  <span class="token string">"1magaz"</span><span class="token punctuation">,</span>
+			name<span class="token punctuation">:</span>  <span class="token string">"Magazine 1"</span><span class="token punctuation">,</span>
+			sections<span class="token punctuation">:</span>  <span class="token punctuation">[</span>
+				<span class="token punctuation">{</span>
+					posts<span class="token punctuation">:</span> <span class="token punctuation">[</span>
+						<span class="token punctuation">{</span>
+							imagesUrls<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">"url"</span><span class="token punctuation">]</span>
+						<span class="token punctuation">}</span>
+					<span class="token punctuation">]</span>
+				<span class="token punctuation">}</span>
+			<span class="token punctuation">]</span> <span class="token operator">**</span><span class="token operator">*</span>lo mismo que con getUserByUsername
+			description<span class="token punctuation">:</span>  <span class="token string">""</span>
+		<span class="token punctuation">}</span>
+	<span class="token punctuation">]</span><span class="token punctuation">,</span>
+	rules<span class="token punctuation">:</span>  <span class="token string">"rules"</span><span class="token punctuation">,</span>
+	profilePhotoUrl<span class="token punctuation">:</span>  <span class="token string">"/group1.png"</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">,</span>
+</code></pre>
+      <ul>
+        <li>
+          <code>getGroupPosts</code>: debería devolver cualquier tipo de post
+          (good, service o petition) de los miembros de un grupo por el id del
+          mismo. También deberíamos impementar el infiniteFetchScroll pero
+          unicamente que acá no van a haber searchQueries. Debería devolver una
+          array con la misma estructura que los
+          <code>getGoods, getPetitions o getServices</code>, o sea las mismas
+          props dependiendo del tipo, pero <strong>AGREGANDO LA PROP</strong>
+          <code>author</code> con su <code>profilePhotoUrl</code> y su
+          <code>username</code>.
+        </li>
+      </ul>
+      <h3 id="pizarras">Pizarras</h3>
+      <ul>
+        <li>
+          <code>getBoards</code>: idem a <code>getGroups</code>, solo que el
+          searchTerm que se envía debería filtrar pizarras por las annotations y
+          las keywords. Tener en cuenta que como
+          <code>getGoods, getServices y getPetitions</code>, hay que filtrar por
+          la visibility Debería devolver:
+        </li>
+      </ul>
+      <pre
+        class="language-js"
+      ><code class="prism  language-js"><span class="token keyword">const</span> boards <span class="token operator">=</span> <span class="token punctuation">[</span>
+	<span class="token punctuation">{</span>
+		_id<span class="token punctuation">:</span>  <span class="token string">"1"</span><span class="token punctuation">,</span>
+		annotations<span class="token punctuation">:</span>  <span class="token punctuation">[</span><span class="token string">"Anotacion 1"</span><span class="token punctuation">,</span>  <span class="token string">"Anotacion 2"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+		keywords<span class="token punctuation">:</span>  <span class="token punctuation">[</span><span class="token string">"Keyword 1"</span><span class="token punctuation">,</span>  <span class="token string">"Keyword 2"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+		user<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+			username<span class="token punctuation">:</span>  <span class="token string">"renatobicego"</span><span class="token punctuation">,</span>
+			profilePhotoUrl<span class="token punctuation">:</span>  <span class="token string">"/avatar.png"</span><span class="token punctuation">,</span>
+			name<span class="token punctuation">:</span>  <span class="token string">"Renato"</span><span class="token punctuation">,</span>
+		<span class="token punctuation">}</span><span class="token punctuation">,</span>
+		visibility<span class="token punctuation">:</span>  <span class="token string">"public"</span><span class="token punctuation">,</span>
+		color<span class="token punctuation">:</span> <span class="token string">"color"</span>
+	<span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">]</span>
+</code></pre>
+      <h3 id="suscripciones">Suscripciones</h3>
+      <ul>
+        <li>
+          <code>getActiveSubscriptionsOfUser</code> : devolver las suscripciones
+          activas del usuario que envio por id o username, con populate del
+          subscription plan.
+        </li>
+        <li>
+          <code>getSubscriptionsPlans</code>: devolver planes de suscripción
+          <strong>LISTA</strong>
+        </li>
+        <li><code>getPostsPacks</code>: devolver packs de publicaciones</li>
+        <li>
+          <code>getUserInvoices</code>: devolver facturas con populate de pago y
+          populate de suscription plan.
+        </li>
+      </ul>
+    </div>
+  </body>
+</html>
+

@@ -1,7 +1,11 @@
 import { Inject } from '@nestjs/common';
 import { GroupServiceInterface } from '../../domain/service/group.service.interface';
 import { GroupRepositoryInterface } from '../../domain/repository/group.repository.interface';
-import { GroupResponse } from '../adapter/dto/HTTP-RESPONSE/group.response';
+
+import {
+  GroupListResponse,
+  GroupResponse,
+} from '../adapter/dto/HTTP-RESPONSE/group.response';
 import { GroupRequest } from '../adapter/dto/HTTP-REQUEST/group.request';
 import { GroupServiceMapperInterface } from '../../domain/service/mapper/group.service.mapper.interface';
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
@@ -25,11 +29,10 @@ export class GroupService implements GroupServiceInterface {
   async findGroupByName(
     name: string,
     limit: number,
-    page: number,
-  ): Promise<GroupResponse[]> {
+  ): Promise<GroupListResponse> {
     try {
       this.logger.log('Finding group by name: ' + name);
-      return await this.groupRepository.findGroupByName(name, limit, page);
+      return await this.groupRepository.findGroupByName(name, limit);
     } catch (error: any) {
       throw error;
     }

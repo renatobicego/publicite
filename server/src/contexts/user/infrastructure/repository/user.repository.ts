@@ -48,6 +48,7 @@ export class UserRepository implements UserRepositoryInterface {
   async findUserByUsername(username: string, keys: string[]): Promise<any> {
     try {
       const keysString = keys.join(' ');
+
       return await this.user
         .findOne({ username })
         .select(keysString)
@@ -68,6 +69,7 @@ export class UserRepository implements UserRepositoryInterface {
           $or: [
             { finder: { $regex: user, $options: 'i' } },
             { name: { $regex: user, $options: 'i' } },
+            { username: { $regex: user, $options: 'i' } },
           ],
         })
         .limit(limit + 1)
@@ -76,7 +78,6 @@ export class UserRepository implements UserRepositoryInterface {
         )
         .populate('contact')
         .lean();
-      console.log(users);
 
       const hasMore = users.length > limit;
 
@@ -109,6 +110,7 @@ export class UserRepository implements UserRepositoryInterface {
             'userPreferences.backgroundColor': 1,
           },
         )
+        .populate('userPreferences.searchPreference')
         .lean();
 
       return userPreference

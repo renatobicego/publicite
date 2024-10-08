@@ -1,7 +1,8 @@
 import { Inject } from '@nestjs/common';
-import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
+import { Args, Mutation, Resolver, Query, Info } from '@nestjs/graphql';
 
 import { PostUpdateRequest } from 'src/contexts/post/application/adapter/dto/HTTP-REQUEST/post.update.request';
+import { Post_response_graphql_model } from 'src/contexts/post/application/adapter/dto/HTTP-RESPONSE/post.response.graphql';
 import { PostAdapterInterface } from 'src/contexts/post/application/adapter/post.adapter.interface';
 import { Post_Full_Graphql_Model } from 'src/contexts/post/domain/entity/models_graphql/post.full.grapql.model';
 
@@ -14,7 +15,7 @@ export class PostResolver {
 
   @Mutation(() => String, {
     nullable: true,
-    description: 'Actualizar un post',
+    description: 'eliminar un post por id',
   })
   async deletePostById(
     @Args('id', { type: () => String })
@@ -56,6 +57,21 @@ export class PostResolver {
   ): Promise<any> {
     try {
       return await this.postAdapter.findPostsByAuthorId(authorId);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  @Query(() => Post_response_graphql_model, {
+    nullable: true,
+    description: 'Obtener Post por su Id',
+  })
+  async findPostById(
+    @Args('id', { type: () => String }) id: string,
+  ): Promise<any> {
+    try {
+      let post = await this.postAdapter.findPostById(id);
+      return post;
     } catch (error: any) {
       throw error;
     }

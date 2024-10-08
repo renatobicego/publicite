@@ -5,6 +5,7 @@ export interface UserPreferences {
   searchPreference: Schema.Types.ObjectId[];
   backgroundColor: number | undefined;
 }
+
 interface IUser extends Document {
   clerkId: string;
   email: string;

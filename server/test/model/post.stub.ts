@@ -47,7 +47,7 @@ export const postStub = (): PostRequest => {
 export const postGoodStub = () => {
   return {
     ...postStub(),
-    imageUrls: [
+    imagesUrls: [
       'https://your-bucket.com/image1.jpg',
       'https://your-bucket.com/image2.jpg',
     ],
@@ -64,7 +64,7 @@ export const postServiceStub = () => {
     ...postStub(),
     frequencyPrice: frequencyPrice.Day,
     reviews: ['5f9d8f5e9d8f5e9d8f5e9d8f' as unknown as ObjectId],
-    imageUrls: [
+    imagesUrls: [
       'https://your-bucket.com/image1.jpg',
       'https://your-bucket.com/image2.jpg',
     ],

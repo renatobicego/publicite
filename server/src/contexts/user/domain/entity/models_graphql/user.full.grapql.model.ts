@@ -5,17 +5,83 @@ import { Contact } from 'src/contexts/contact/domain/entity/contact.entity';
 import { Post_Full_Graphql_Model } from 'src/contexts/post/domain/entity/models_graphql/post.full.grapql.model';
 
 @ObjectType()
-export class UserPreferences_Grapql_Model {
-  @Field(() => [ID], { nullable: true })
-  searchPreference: ObjectId[] | [];
+export class Subscriptions_Full_Graphql_Model {
+  @Field(() => ID)
+  _id: string;
 
-  @Field(() => Float, { nullable: true })
-  backgroundColor: number | undefined;
+  @Field(() => String, { nullable: true })
+  mpPreapprovalId: string;
+
+  @Field(() => String, { nullable: true })
+  payerId: string;
+
+  @Field(() => String, { nullable: true })
+  status: string;
+
+  @Field(() => String, { nullable: true })
+  subscriptionPlan: string;
+
+  @Field(() => String, { nullable: true })
+  startDate: string;
+
+  @Field(() => String, { nullable: true })
+  endDate: string;
+
+  @Field(() => String, { nullable: true })
+  external_reference: string;
+
+  @Field(() => String, { nullable: true })
+  timeOfUpdate?: string;
+}
+
+@ObjectType()
+export class Groups_Full_Graphql_Model {
+  @Field(() => ID, { nullable: true })
+  _id?: ObjectId;
+
+  @Field(() => String, { nullable: true })
+  name: string;
+
+  @Field(() => [String], { nullable: true })
+  members: ObjectId[];
+
+  @Field(() => String, { nullable: true })
+  profilePhotoUrl: string;
+}
+
+@ObjectType()
+export class Magazines_Full_Graphql_Model {
+  @Field(() => ID, { nullable: true })
+  _id?: ObjectId;
+
+  @Field(() => String, { nullable: true })
+  name: string;
+
+  @Field(() => Sections_Full_Graphql_Model, { nullable: true })
+  sections: Sections_Full_Graphql_Model[];
+}
+
+@ObjectType()
+export class Post_full_Graph {
+  @Field(() => ID, { nullable: true })
+  _id?: ObjectId;
+
+  @Field(() => [String], { nullable: true })
+  imagesUrls: string[];
+}
+
+@ObjectType()
+export class Sections_Full_Graphql_Model {
+  @Field(() => ID, { nullable: true })
+  _id?: ObjectId;
+
+  @Field(() => Post_full_Graph, { nullable: true })
+  posts: Post_full_Graph[];
 }
 
 @ObjectType()
 export class User_Full_Grapql_Model {
-  @Field(() => ID, { nullable: true }) // _id puede ser nulo
+  @Field(() => ID, { nullable: true })
   _id?: ObjectId;
 
   @Field(() => String, { nullable: true })
@@ -53,14 +119,8 @@ export class User_Full_Grapql_Model {
   @Field(() => String, { nullable: true })
   createdTime?: string;
 
-  // @Field(() => [ID], { nullable: 'itemsAndList' })
-  // subscriptions?: ObjectId[];
-
-  // @Field(() => [ID], { nullable: 'itemsAndList' })
-  // groups?: ObjectId[];
-
-  // @Field(() => [ID], { nullable: 'itemsAndList' })
-  // magazines?: ObjectId[];
+  @Field(() => [Magazines_Full_Graphql_Model], { nullable: 'itemsAndList' })
+  magazines?: Magazines_Full_Graphql_Model[];
 
   @Field(() => Board, { nullable: true })
   board?: Board;
@@ -68,12 +128,15 @@ export class User_Full_Grapql_Model {
   @Field(() => [Post_Full_Graphql_Model], { nullable: 'itemsAndList' })
   posts?: Post_Full_Graphql_Model;
 
+  @Field(() => [Subscriptions_Full_Graphql_Model], { nullable: 'itemsAndList' })
+  subscriptions?: Subscriptions_Full_Graphql_Model[];
+
   // @Field(() => [ID], { nullable: 'itemsAndList' })
   // userRelations?: ObjectId[];
 
   @Field(() => String, { nullable: true })
   userType?: string;
 
-  @Field(() => UserPreferences_Grapql_Model, { nullable: true })
-  userPreferences?: UserPreferences_Grapql_Model;
+  @Field(() => [Groups_Full_Graphql_Model], { nullable: 'itemsAndList' })
+  groups?: Groups_Full_Graphql_Model[];
 }

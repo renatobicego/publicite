@@ -10,8 +10,9 @@ export interface PostRepositoryInterface {
     options?: { session?: ClientSession },
   ): Promise<Post>;
 
-  deletePostById(id: string): Promise<void>;
+  deletePostById(id: string): Promise<any>;
   findPostsByAuthorId(id: string): Promise<void>;
+  findPostById(id: string): Promise<void>;
   saveLocation(
     location: PostLocation,
     options?: { session?: ClientSession },

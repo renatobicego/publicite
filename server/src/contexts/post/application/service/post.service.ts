@@ -71,10 +71,21 @@ export class PostService implements PostServiceInterface {
     }
   }
 
-  async findPostsByAuthorId(id: string): Promise<void> {
+  async findPostsByAuthorId(id: string): Promise<any> {
     try {
       this.logger.log('Finding posts by author id: ' + id);
       return await this.postRepository.findPostsByAuthorId(id);
+    } catch (error: any) {
+      this.logger.error(
+        'An error was ocurred finding posts by author id: ' + id,
+      );
+      throw error;
+    }
+  }
+  async findPostById(id: string): Promise<void> {
+    try {
+      this.logger.log('Finding posts by  id: ' + id);
+      return await this.postRepository.findPostById(id);
     } catch (error: any) {
       this.logger.error(
         'An error was ocurred finding posts by author id: ' + id,
