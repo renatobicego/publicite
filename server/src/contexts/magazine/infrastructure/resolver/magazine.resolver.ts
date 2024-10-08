@@ -22,8 +22,7 @@ export class MagazineResolver {
     magazineRequest: MagazineCreateRequest,
   ): Promise<any> {
     try {
-      await this.magazineAdapter.createMagazine(magazineRequest);
-      return 'creado';
+      return await this.magazineAdapter.createMagazine(magazineRequest);
     } catch (error: any) {
       throw error;
     }

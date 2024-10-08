@@ -30,10 +30,13 @@ export class MagazineService implements MagazineServiceInterface {
         magazineRequest.description ?? null,
         undefined,
       );
-
-      if (addedPost) {
+      if (addedPost != undefined || addedPost != null) {
         //La revista tiene un post, tenemos que proceder a crear la Magazine Section
-        const newFatherSection = new MagazineSection('', [addedPost], true);
+        const newFatherSection = new MagazineSection(
+          '',
+          [addedPost as ObjectId],
+          true,
+        );
         section.push(newFatherSection);
         magazineBase.setSections = section;
       }
@@ -47,8 +50,7 @@ export class MagazineService implements MagazineServiceInterface {
             magazineRequest.user,
             magazineRequest.visibility,
           );
-          await this.magazineRepository.save(userMagazine);
-          break;
+          return await this.magazineRepository.save(userMagazine);
         }
         case OwnerType.group: {
           this.logger.log('Creating new GroupMagazine in service..');
@@ -57,8 +59,7 @@ export class MagazineService implements MagazineServiceInterface {
             magazineRequest.allowedColaborators ?? [],
             magazineRequest.group,
           );
-          await this.magazineRepository.save(groupMagazine);
-          break;
+          return await this.magazineRepository.save(groupMagazine);
         }
       }
     } catch (error: any) {
