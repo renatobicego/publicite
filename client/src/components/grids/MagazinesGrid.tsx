@@ -13,7 +13,7 @@ const MagazinesGrid = ({
     <>
       {!isLoading && (magazines.length === 0 || !magazines) ? (
         <p className="max-md:text-sm text-light-text">
-          No se encontraron anuncios para mostrar
+          No se encontraron revistas para mostrar
         </p>
       ) : (
         <section

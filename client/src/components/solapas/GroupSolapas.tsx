@@ -1,8 +1,8 @@
 "use client";
 
-import { MAGAZINES, GROUPS } from "@/utils/data/urls";
+import { MAGAZINES, GROUPS, CREATE_MAGAZINE } from "@/utils/data/urls";
 import { Group, User } from "@/types/userTypes";
-import { Tab, Tabs } from "@nextui-org/react";
+import { Link, Tab, Tabs } from "@nextui-org/react";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 import MagazinesGrid from "../grids/MagazinesGrid";
@@ -11,6 +11,8 @@ import { Magazine } from "@/types/postTypes";
 import { useUser } from "@clerk/nextjs";
 import UsersGrid from "@/app/(root)/(explorar)/perfiles/UsersGrid";
 import InviteUsersGroup from "../modals/InviteUsersGroup";
+import PrimaryButton from "../buttons/PrimaryButton";
+import { FaPlus } from "react-icons/fa6";
 const GroupSolapas = ({ group }: { group: Group }) => {
   const pathname = usePathname();
   const tabsRef = useRef<HTMLDivElement | null>(null);
@@ -34,6 +36,9 @@ const GroupSolapas = ({ group }: { group: Group }) => {
   }, [pathname]);
 
   const GROUP_URL = `${GROUPS}/${group._id}`;
+  const isAdmin = group.admins.some(
+    (admin) => admin === user?.publicMetadata.mongoId
+  );
 
   return (
     <Tabs
@@ -66,14 +71,22 @@ const GroupSolapas = ({ group }: { group: Group }) => {
         href={`${GROUP_URL}${MAGAZINES}`}
         data-key={`${GROUP_URL}${MAGAZINES}`}
       >
+        <div className="w-full flex justify-between items-center">
+          <h3>Revistas del Grupo</h3>
+          {isAdmin && (
+            <PrimaryButton
+              as={Link}
+              startContent={<FaPlus />}
+              href={`${CREATE_MAGAZINE}/grupos/${group._id}`}
+            >
+              Crear Revista
+            </PrimaryButton>
+          )}
+        </div>
         <MagazinesGrid magazines={group.magazines as Magazine[]} />
       </Tab>
       <Tab
-        className={`w-full flex gap-4 flex-col ${
-          group.admins.some((admin) => admin === user?.publicMetadata.mongoId)
-            ? ""
-            : "hidden"
-        }`}
+        className={`w-full flex gap-4 flex-col ${isAdmin ? "" : "hidden"}`}
         key={`${GROUP_URL}/miembros`}
         title="Administrar Miembros"
         href={`${GROUP_URL}/miembros`}
@@ -83,7 +96,7 @@ const GroupSolapas = ({ group }: { group: Group }) => {
           <h3>Miembros del Grupo</h3>
           <InviteUsersGroup />
         </div>
-        <UsersGrid items={group.members as User[]} groupGrid/>
+        <UsersGrid items={group.members as User[]} groupGrid />
       </Tab>
     </Tabs>
   );

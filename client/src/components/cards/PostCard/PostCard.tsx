@@ -6,13 +6,13 @@ import PetitionCard from "../PetitionCard";
 import UsernameAvatar from "@/components/buttons/UsernameAvatar";
 const PostCard = ({
   postData,
-  recommendation,
+  recommendation = false,
   className,
   savePostMagazine = false,
   isGroupPost = false,
 }: {
   postData: Post;
-  recommendation: boolean;
+  recommendation?: boolean;
   className?: string;
   savePostMagazine?: boolean;
   isGroupPost?: boolean;
@@ -51,7 +51,7 @@ const PostCard = ({
   return (
     <Card
       className={`w-full ease-in-out hover:shadow md:hover:shadow-md gap-4 
-        !transition-shadow duration-500 !opacity-100 self-start
+        !transition-shadow duration-500 !opacity-100 ${isGroupPost ? "self-start" : ""}
         ${
           postType === "petition" ? "border border-petition" : ""
         } ${className}`}

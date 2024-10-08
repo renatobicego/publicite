@@ -7,7 +7,8 @@ import Support from "./Support";
 const Footer = () => {
   return (
     <footer
-      className={`bg-text-color layout-padding py-10 text-white flex items-start max-md:flex-col gap-5 md:gap-10 max-lg:flex-wrap`}
+      className={`bg-text-color layout-padding py-10 text-white flex items-start 
+        max-md:flex-col gap-5 md:gap-10 max-lg:flex-wrap rounded-20 lg:rounded-3xl`}
     >
       <div className="flex flex-col items-start mr-20 max-lg:w-full">
         <h4 className="text-4xl">Publicité</h4>

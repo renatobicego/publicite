@@ -18,7 +18,7 @@ const PetitionCard = ({
   const frequencyShown = post.frequencyPrice
     ? `por ${
         frequencyPriceItems.find((item) => item.value === post.frequencyPrice)
-          ?.label
+          ?.text
       }`
     : "";
   return (

@@ -8,9 +8,10 @@ Podríamos:
 
 - Sino, si el usuario cambia el mail, podríamos actualizarlo en mp pero sería medio quilombo
 
-
-preferences actualizar, faltaria get de categories
-
-
-boton pete de compartir app
+boton de compartir app
 editar pizarra logica
+agregar endate a post
+
+solo administradores pueden crear revista?
+miembors de grupo pueden ver anuncios d eotro aunque esten como solo para amigos?
+las publciaciones de necesidad se suman al limite?

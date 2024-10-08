@@ -57,9 +57,11 @@ const CreateMagazineForm = ({
       shareMagazineIds,
       user
     );
-    console.log(finalValues)
 
-    const resApi = await createMagazine(finalValues);
+    const resApi = await createMagazine({
+      ...finalValues,
+      addedPost: "6700845734e0ffb19c9913c1",
+    });
     if (resApi.error) {
       toastifyError(resApi.error);
       actions.setSubmitting(false);
@@ -80,7 +82,12 @@ const CreateMagazineForm = ({
       {({ isSubmitting, errors, setFieldValue }) => {
         return (
           <Form className="flex flex-col gap-4 max-md:w-full md:max-xl:flex-1 xl:w-1/2 self-center">
-            <h2>Crear Revista</h2>
+            <h2>
+              Crear Revista{" "}
+              <span className={`${!isGroupMagazine && "hidden"}`}>
+                de Grupo
+              </span>
+            </h2>
             <Inputs
               isUserMagazine={!isGroupMagazine}
               errors={errors}

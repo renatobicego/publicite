@@ -3,7 +3,10 @@ import { postPost } from "@/services/postsServices";
 import { PetitionContact } from "@/types/postTypes";
 import { currentUser } from "@clerk/nextjs/server";
 
-export const createPost = async (formData: any) => {
+export const createPost = async (formData: any, userCanPublishPost: boolean) => {
+  if (!userCanPublishPost) {
+    return { error: "Límite de anuncios activos alcanzado" };
+  }
   const user = await currentUser();
 
   if (!user?.username) {

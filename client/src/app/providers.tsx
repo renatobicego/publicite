@@ -2,8 +2,7 @@
 "use client";
 
 import { NextUIProvider } from "@nextui-org/react";
-import { useRouter } from "next/navigation";
-import { AppProgressBar as ProgressBar } from "next-nprogress-bar";
+import { AppProgressBar as ProgressBar, useRouter } from "next-nprogress-bar";
 import { useEffect, useState } from "react";
 export function Providers({ children }: { children: React.ReactNode }) {
   const router = useRouter();

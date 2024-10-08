@@ -8,9 +8,13 @@ export const useInfiniteFetch = (
   postType: "good" | "service" | "petition" | "groups" | "users" | "boards" | "groupPosts",
   groupId?: string
 ) => {
+  // is loading
   const [isLoading, setIsLoading] = useState(false);
+  // has more data to fetch (used for infinite scroll)
   const [hasMoreData, setHasMoreData] = useState(true);
   const [items, setItems] = useState<any[]>([]);
+
+  // Get search params in url
   const searchParams = useSearchParams();
   const busqueda = searchParams.get("busqueda");
   // Create fetchData function based on postType and searchTerm
@@ -20,6 +24,7 @@ export const useInfiniteFetch = (
 
   // Function to handle initial fetch and scroll-based fetch
   const loadMore = useCallback(async () => {
+    // Check if data is still loading or there are no more items
     if (isLoading || !hasMoreData) return;
 
     setIsLoading(true);

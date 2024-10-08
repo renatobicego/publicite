@@ -6,7 +6,7 @@ import { editBoardByUsernameMutation, getBoardByUsernameQuery } from "@/graphql/
 
 export const getBoards = async (searchTerm: string | null) => {
   await new Promise((resolve) => setTimeout(resolve, 1000));
-  return [
+  return {items: [
     ...mockedBoards,
     ...mockedBoards.reverse(),
     mockedBoards[3],
@@ -15,7 +15,7 @@ export const getBoards = async (searchTerm: string | null) => {
     mockedBoards[1],
     ...mockedBoards,
     ...mockedBoards.reverse(),
-  ]; // Return the same mocked data
+  ]}; // Return the same mocked data
 };
 
 export const postBoard = async(values: any) => {

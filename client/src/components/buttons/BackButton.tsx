@@ -8,7 +8,7 @@ const BackButton: React.FC<ButtonProps> = ({ className }: ButtonProps) => {
   return (
     <Button
       radius="full"
-      className={`-ml-2.5 ${className} `}
+      className={`-ml-2.5 ${className} max-md:text-xs`}
       size="sm"
       variant="light"
       onPress={() => router.back()}

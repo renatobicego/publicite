@@ -1,15 +1,10 @@
-import {
-  AttachedFileValues,
-  GoodPostValues,
-  ServicePostValues,
-} from "@/types/postTypes";
+import { GoodPostValues, ServicePostValues } from "@/types/postTypes";
 import { Form, Formik, FormikHelpers } from "formik";
 import TitleDescription from "../CreateForm/inputs/TitleDescription";
 import PriceCategory from "../CreateForm/inputs/PriceCategory";
 import { Divider } from "@nextui-org/react";
 import PlacePicker from "../CreateForm/inputs/PlacePicker";
 import AccordionInputs from "../CreateForm/inputs/AccordionInputs/AccordionInputs";
-import { useState } from "react";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { useUser } from "@clerk/nextjs";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
@@ -22,7 +17,13 @@ import { useRouter } from "next/navigation";
 import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
 import { useAttachedFiles } from "../CreateForm/inputs/AccordionInputs/AttachedFIles/AttachedFilesContext";
 
-const CreateService = ({ files }: { files: File[] }) => {
+const CreateService = ({
+  files,
+  userCanPublishPost,
+}: {
+  files: File[];
+  userCanPublishPost: boolean;
+}) => {
   const { user } = useUser();
   const initialValues: ServicePostValues = {
     attachedFiles: [],
@@ -56,8 +57,15 @@ const CreateService = ({ files }: { files: File[] }) => {
     values: GoodPostValues,
     actions: FormikHelpers<GoodPostValues>
   ) => {
+    if(!userCanPublishPost) {
+      actions.setSubmitting(false);
+      return
+    };
     const newValuesWithUrlFiles = await submitFiles(values, actions);
-    if (!newValuesWithUrlFiles) return;
+    if (!newValuesWithUrlFiles) {
+      actions.setSubmitting(false);
+      return
+    };
     values = newValuesWithUrlFiles;
 
     const dbLocation = {
@@ -79,7 +87,7 @@ const CreateService = ({ files }: { files: File[] }) => {
       location: dbLocation,
       attachedFiles,
       category: [values.category],
-    });
+    }, userCanPublishPost);
     if (resApi.error) {
       toastifyError(resApi.error);
       return;
@@ -111,7 +119,7 @@ const CreateService = ({ files }: { files: File[] }) => {
             <AccordionInputs errors={errors} isService={true} />
             <RequiredFieldsMsg />
             <PrimaryButton
-              isDisabled={isSubmitting}
+              isDisabled={isSubmitting || !userCanPublishPost}
               isLoading={isSubmitting}
               type="submit"
               className="mt-4"

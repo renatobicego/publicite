@@ -7,13 +7,16 @@ import {
 } from "@/components/inputs/CustomInputs";
 import { groupVisibilityItems } from "@/utils/data/selectData";
 import SelectUsers from "@/components/inputs/SelectUsers";
-import { Divider } from "@nextui-org/react";
+import { Divider, Link } from "@nextui-org/react";
 import { PostGroup } from "./CreateGroupForm";
 import { fetchDataByType } from "@/utils/data/fetchDataByType";
+import { GROUPS } from "@/utils/data/urls";
 
 const Inputs = ({
   errors,
   setFieldValue,
+  showMembers = true,
+  id,
 }: {
   errors: FormikErrors<PostGroup>;
   setFieldValue: (
@@ -21,14 +24,16 @@ const Inputs = ({
     value: any,
     shouldValidate?: boolean
   ) => Promise<void | FormikErrors<PostGroup>>;
+  showMembers?: boolean;
+  id?: string;
 }) => {
   const [listUsers, setListUsers] = useState([]);
   useEffect(() => {
     //debería traer contactos del admin
     fetchDataByType("users", null)().then((data: any) => {
       setListUsers(data.items);
-    })
-  }, [])
+    });
+  }, []);
   return (
     <>
       <Field
@@ -62,21 +67,32 @@ const Inputs = ({
         errorMessage={errors.rules}
       />
       <Divider />
-      <h6>Invitar Miembros *</h6>
-      <Field
-        as={SelectUsers}
-        isRequired
-        onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-          setFieldValue("members", e.target.value.split(","))
-        }
-        name={"members"}
-        label="Invitar Miembros"
-        aria-label="invitar miembros"
-        items={listUsers}
-        isInvalid={!!errors.members}
-        errorMessage={errors.members}
-      />
-      <Divider />
+      {showMembers ? (
+        <>
+          <h6>Invitar Miembros *</h6>
+          <Field
+            as={SelectUsers}
+            isRequired
+            onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+              setFieldValue("members", e.target.value.split(","))
+            }
+            name={"members"}
+            label="Invitar Miembros"
+            aria-label="invitar miembros"
+            items={listUsers}
+            isInvalid={!!errors.members}
+            errorMessage={errors.members}
+          />
+          <Divider />
+        </>
+      ) : (
+        <p className="text-xs md:text-sm">
+          Para gestionar los miembros del grupo, debe hacerlo desde la pestaña de {" "}
+          <Link size="sm" href={`${GROUPS}/${id}/miembros`}>
+            Administrar Miembros
+          </Link>
+        </p>
+      )}
       <h6>Visibilidad del Grupo</h6>
       <Field
         as={CustomSelect}

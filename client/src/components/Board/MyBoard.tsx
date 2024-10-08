@@ -23,6 +23,7 @@ const MyBoard = ({
 }) => {
   const [showEditBoard, setShowEditBoard] = useState(false);
   const { user } = useUser();
+  // if the board is being edited, return the create board component
   if (showEditBoard) {
     return (
       <CreateBoard
@@ -37,6 +38,7 @@ const MyBoard = ({
       />
     );
   }
+  // if the board is not being edited, return the board component
   return (
     <Card
       className={`p-4 flex flex-col gap-2 ${board.color} ${textColor} ${

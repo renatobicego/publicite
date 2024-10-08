@@ -1,3 +1,4 @@
+"use server";
 import axios from "axios";
 
 export const processPayment = async (
@@ -5,11 +6,14 @@ export const processPayment = async (
   subscriptionPlan: any,
   userId: string
 ) => {
-  const { data, status } = await axios.post("/api/subscriptions/process_payment", {
-    formData,
-    subscriptionPlan,
-    userId,
-  });
+  const { data, status } = await axios.post(
+    "/api/subscriptions/process_payment",
+    {
+      formData,
+      subscriptionPlan,
+      userId,
+    }
+  );
 
   // if(status !== 200 && status !== 201){
   //   console.log(data);
@@ -60,7 +64,9 @@ export const getSubscriptionsPlansMP = async () => {
 };
 
 export const getSubscriptionsPlans = async () => {
-  const res = await fetch(process.env.API_URL + "/subscriptionplans", { next: { revalidate: 180 } });
+  const res = await fetch(process.env.API_URL + "/subscriptionplans", {
+    next: { revalidate: 180 },
+  });
   if (!res.ok) {
     return {
       error:
@@ -72,15 +78,33 @@ export const getSubscriptionsPlans = async () => {
 };
 
 export const getSubscriptionsOfUser = async (userId: string) => {
-  const res = await fetch(process.env.API_URL + "/subscription/" + userId);
-  if (!res.ok) {
-    return {
-      error:
-        "Error al traer los datos de suscripciones. Por favor intenta de nuevo.",
-    };
+  try {
+    const res = await fetch(process.env.API_URL + "/subscription/" + userId);
+    if (!res.ok) {
+      return {
+        error:
+          "Error al traer los datos de suscripciones. Por favor intenta de nuevo.",
+      };
+    }
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.log(error);
   }
-  const data = await res.json();
-  return data;
+};
+
+export const getUserActivePostNumber = async (userId: string) => {
+  // const res = await fetch(process.env.API_URL + "/subscription/" + userId);
+  // if (!res.ok) {
+  //   return {
+  //     error:
+  //       "Error al traer los datos de suscripciones. Por favor intenta de nuevo.",
+  //   };
+  // }
+  // const data = await res.json();
+  // return data;
+
+  return 3;
 };
 
 export const getSubscriptionPlanById = async (id: string) => {

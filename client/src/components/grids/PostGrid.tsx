@@ -1,6 +1,7 @@
 import { Post } from "@/types/postTypes";
 import PostCard from "../cards/PostCard/PostCard";
 import { Spinner } from "@nextui-org/react";
+import GroupPostGrid from "./GroupPostGrid";
 
 const PostsGrid = ({
   posts,
@@ -15,22 +16,25 @@ const PostsGrid = ({
 }) => {
   return (
     <>
-      <section
-        className={`grid grid-cols-2 gap-3 md:gap-4  ${
-          !recommendation
-            ? "md:grid-cols-3 xl:grid-cols-4 3xl:grid-cols-5"
-            : "md:max-lg:grid-cols-3"
-        }  lg:gap-5 w-full`}
-      >
-        {posts.map((post, index) => (
-          <PostCard
-            key={post._id + index}
-            postData={post}
-            recommendation={recommendation}
-            isGroupPost={isGroupPosts}
-          />
-        ))}
-      </section>
+      {isGroupPosts ? (
+        <GroupPostGrid posts={posts}/>
+      ) : (
+        <section
+          className={`grid grid-cols-2 gap-3 md:gap-4  ${
+            !recommendation
+              ? "md:grid-cols-3 xl:grid-cols-4 3xl:grid-cols-5"
+              : "md:max-lg:grid-cols-3"
+          }  lg:gap-5 w-full`}
+        >
+          {posts.map((post, index) => (
+            <PostCard
+              key={post._id + index}
+              postData={post}
+              recommendation={recommendation}
+            />
+          ))}
+        </section>
+      )}
       {!isLoading && posts.length === 0 && (
         <p className="max-md:text-sm text-light-text">
           No se encontraron anuncios para mostrar

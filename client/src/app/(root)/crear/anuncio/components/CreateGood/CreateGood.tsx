@@ -19,7 +19,13 @@ import useUploadFiles from "@/utils/hooks/useUploadFiles";
 import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
 import { useAttachedFiles } from "../CreateForm/inputs/AccordionInputs/AttachedFIles/AttachedFilesContext";
 
-const CreateGood = ({ files }: { files: File[] }) => {
+const CreateGood = ({
+  files,
+  userCanPublishPost,
+}: {
+  files: File[];
+  userCanPublishPost: boolean;
+}) => {
   const { user } = useUser();
   const initialValues: GoodPostValues = {
     attachedFiles: [],
@@ -55,11 +61,15 @@ const CreateGood = ({ files }: { files: File[] }) => {
     values: GoodPostValues,
     actions: FormikHelpers<GoodPostValues>
   ) => {
-    const newValuesWithUrlFiles = await submitFiles(values, actions);
-    if (!newValuesWithUrlFiles) {
+    if(!userCanPublishPost) {
       actions.setSubmitting(false);
       return
     };
+    const newValuesWithUrlFiles = await submitFiles(values, actions);
+    if (!newValuesWithUrlFiles) {
+      actions.setSubmitting(false);
+      return;
+    }
     values = newValuesWithUrlFiles;
 
     const dbLocation = {
@@ -81,7 +91,7 @@ const CreateGood = ({ files }: { files: File[] }) => {
       location: dbLocation,
       attachedFiles,
       category: [values.category],
-    });
+    }, userCanPublishPost);
     if (resApi.error) {
       toastifyError(resApi.error);
       return;
@@ -111,12 +121,10 @@ const CreateGood = ({ files }: { files: File[] }) => {
               setFieldValue={setFieldValue}
               error={errors.location}
             />
-            <AccordionInputs
-              errors={errors}
-            />
+            <AccordionInputs errors={errors} />
             <RequiredFieldsMsg />
             <PrimaryButton
-              isDisabled={isSubmitting}
+              isDisabled={isSubmitting || !userCanPublishPost}
               isLoading={isSubmitting}
               type="submit"
               className="mt-4"

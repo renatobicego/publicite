@@ -7,10 +7,10 @@ import { useFilteredAndSortedPosts } from "@/utils/hooks/useFilteredOrderedPosts
 
 const PostListLogic = ({
   postType,
-  groupId
+  groupId,
 }: {
   postType: "good" | "service" | "petition" | "groupPosts";
-  groupId?: ObjectId
+  groupId?: ObjectId;
 }) => {
   const [showAsList, setShowAsList] = useState(false);
   const { items, isLoading } = useInfiniteFetch(postType, groupId);
@@ -38,7 +38,11 @@ const PostListLogic = ({
       {showAsList ? (
         <PostGridList items={sortedItems} isLoading={isLoading} />
       ) : (
-        <PostsGrid posts={sortedItems} isLoading={isLoading} isGroupPosts={postType === "groupPosts"} />
+        <PostsGrid
+          posts={sortedItems}
+          isLoading={isLoading}
+          isGroupPosts={postType === "groupPosts"}
+        />
       )}
     </>
   );

@@ -1,15 +1,26 @@
 import { toastifyError } from "@/utils/functions/toastify";
-import { Dispatch, SetStateAction, useCallback } from "react";
+import { Dispatch, memo, SetStateAction, useCallback } from "react";
 import Dropzone from "./Dropzone";
 import { Button, Image } from "@nextui-org/react";
 import { IoClose } from "react-icons/io5";
+import { Group } from "@/types/userTypes";
+import { FormikErrors } from "formik";
+import { FILE_URL } from "@/utils/data/urls";
 
 const UploadProfileImage = ({
   setPhotoFile,
   photoFile,
+  prevImage,
+  setFieldValue,
 }: {
   setPhotoFile: Dispatch<SetStateAction<File | undefined>>;
   photoFile?: File;
+  prevImage?: string;
+  setFieldValue?: (
+    field: string,
+    value: any,
+    shouldValidate?: boolean
+  ) => Promise<void | FormikErrors<Group>>;
 }) => {
   const maxImageSize = 4 * 1024 * 1024; // 4MB for images
   const maxTotalFiles = 1;
@@ -35,15 +46,16 @@ const UploadProfileImage = ({
   // Remove a specific file
   const removeFile = () => {
     setPhotoFile(undefined);
+    setFieldValue?.("profilePhotoUrl", undefined);
   };
 
   return (
     <div className="w-auto md:w-1/2 mx-auto">
-      {photoFile ? (
+      {photoFile || prevImage ? (
         <div className="relative ">
           <Image
-            src={URL.createObjectURL(photoFile)}
-            alt={photoFile.name}
+            src={prevImage ? FILE_URL + prevImage : photoFile && URL.createObjectURL(photoFile)}
+            alt={photoFile?.name || "Imagen de perfil"}
             className="object-cover size-64 md:size-72 lg:size-96 rounded-full"
           />
           <Button
@@ -64,4 +76,4 @@ const UploadProfileImage = ({
   );
 };
 
-export default UploadProfileImage;
+export default memo(UploadProfileImage);

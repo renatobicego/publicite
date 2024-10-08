@@ -3,7 +3,6 @@ import { useUploadThing } from "../uploadThing";
 import { toastifyError } from "../functions/toastify";
 import { AttachedFileValues } from "@/types/postTypes";
 import { FormikHelpers } from "formik";
-import { image } from "@nextui-org/react";
 import { deleteFilesService } from "@/app/server/uploadThing";
 
 const useUploadFiles = (

@@ -1,15 +1,17 @@
 import { useMemo, useState } from "react";
 
 export const useFilteredAndSortedPosts = (items: any[]) => {
-  // Modify searchTerm to hold two terms
+  // Modify searchTerm to hold two terms for a search
+  // search phases
   const [searchTerms, setSearchTerms] = useState<(string | undefined)[]>([]);
+  // Sorting key and direction
   const [sortDescriptor, setSortDescriptor] = useState({
     column: "",
     direction: "",
   });
 
   const hasSearchFilter = Boolean(searchTerms[0] || searchTerms[1]);
-
+  // filter options
   const [filter, setFilter] = useState<{
     category: string[];
     priceRange: (number | undefined)[];
@@ -18,6 +20,7 @@ export const useFilteredAndSortedPosts = (items: any[]) => {
     priceRange: [undefined, undefined],
   });
 
+  // Filtered items
   const filteredItems = useMemo(() => {
     let filteredPosts = [...items];
 
@@ -25,6 +28,7 @@ export const useFilteredAndSortedPosts = (items: any[]) => {
     if (hasSearchFilter) {
       filteredPosts = filteredPosts.filter((post) => {
         const titleLowerCase = post.title.toLowerCase();
+        // Check if title matches either of the search terms
         const matchesFirstTerm = searchTerms[0]
           ? titleLowerCase.includes(searchTerms[0].toLowerCase())
           : true;
@@ -32,17 +36,20 @@ export const useFilteredAndSortedPosts = (items: any[]) => {
           ? titleLowerCase.includes(searchTerms[1].toLowerCase())
           : true;
 
-        // Post should match either of the search terms
+        // Post should match both of the search terms or just the first one 
+        // in case second term is not defined
         return matchesFirstTerm && matchesSecondTerm;
       });
     }
 
+    // Filter by category
     if (filter.category.length > 0) {
       filteredPosts = filteredPosts.filter((post) =>
         filter.category.includes(post.category._id)
       );
     }
 
+    // Filter by price
     if (filter.priceRange[0] || filter.priceRange[1]) {
       filteredPosts = filteredPosts.filter((post) => {
         const minPrice = filter.priceRange[0]
@@ -58,6 +65,7 @@ export const useFilteredAndSortedPosts = (items: any[]) => {
     return filteredPosts;
   }, [hasSearchFilter, items, searchTerms, filter]);
 
+  // Sorting logic
   const sortedItems = useMemo(() => {
     if (!sortDescriptor.column) {
       return filteredItems;

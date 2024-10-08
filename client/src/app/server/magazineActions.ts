@@ -11,6 +11,7 @@ export const createMagazine = async (formData: any) => {
 
   try {
     const resApi: any = await postMagazine(formData);
+    console.log(resApi)
     return { message: "Revista creada exitosamente", id: resApi._id };
   } catch (err) {
     console.log(err)

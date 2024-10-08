@@ -5,26 +5,29 @@ import { handleBoardColor } from "@/utils/functions/utils";
 import MyBoard from "./MyBoard";
 
 interface BoardProps {
-  isMyBoard: boolean;
+  isMyBoard: boolean; // if true, the card will be a my board
   board?: Board;
-  isProfile?: boolean;
+  isProfile?: boolean; // if true, the card will be a profile card
   name?: string;
-  widthFull?: boolean;
+  widthFull?: boolean; // if true, the card will take 100% of the parent width
 }
 const BoardCard = ({
   isMyBoard,
   board,
   isProfile = false,
   name,
-  widthFull = false,
+  widthFull = false, 
 }: BoardProps) => {
   const bg = board?.color || "bg-fondo";
+  // Change style of board based in color of the board
   const { textColor, borderColor } = handleBoardColor(bg);
+  // if the board doesn't exist, return an empty board
   if (!board) {
     return (
       <EmptyBoard isProfile={isProfile} name={name} widthFull={widthFull} />
     );
   }
+  // if is my profile and is my board, return my board
   if (isProfile && isMyBoard) {
     return (
       <MyBoard
@@ -36,6 +39,7 @@ const BoardCard = ({
       />
     );
   } else {
+    // return normal board
     return (
       <BoardContent
         isProfile={isProfile}

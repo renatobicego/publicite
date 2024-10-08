@@ -11,10 +11,13 @@ import UsersGrid from "@/app/(root)/(explorar)/perfiles/UsersGrid";
 import GroupsGrid from "@/app/(root)/(explorar)/grupos/GroupsGrid";
 import PrimaryButton from "../buttons/PrimaryButton";
 import { FaPlus } from "react-icons/fa6";
+import { useUser } from "@clerk/nextjs";
 
 const UserSolapas = ({ user }: { user: GetUser }) => {
   const pathname = usePathname();
   const tabsRef = useRef<HTMLDivElement | null>(null);
+  const { user: loggedUser } = useUser();
+  const isMyProfike = loggedUser && user.username === loggedUser.username;
 
   useEffect(() => {
     if (tabsRef.current) {
@@ -56,14 +59,16 @@ const UserSolapas = ({ user }: { user: GetUser }) => {
         href={PROFILE_USERNAME}
         data-key={PROFILE_USERNAME} // Use a data attribute to identify the tab
       >
-        <PrimaryButton
-          className="float-right"
-          startContent={<FaPlus />}
-          as={Link}
-          href={CREATE}
-        >
-          Crear
-        </PrimaryButton>
+        {isMyProfike && (
+          <PrimaryButton
+            className="float-right"
+            startContent={<FaPlus />}
+            as={Link}
+            href={CREATE}
+          >
+            Crear
+          </PrimaryButton>
+        )}
         <PostsGrid posts={user.posts} />
       </Tab>
       <Tab
@@ -90,14 +95,16 @@ const UserSolapas = ({ user }: { user: GetUser }) => {
         href={`${PROFILE_USERNAME}/contactos`}
         data-key={`${PROFILE_USERNAME}/contactos`}
       >
-        <PrimaryButton
-          className="float-right"
-          startContent={<FaPlus />}
-          as={Link}
-          href={CREATE}
-        >
-          Crear
-        </PrimaryButton>
+        {isMyProfike && (
+          <PrimaryButton
+            className="float-right"
+            startContent={<FaPlus />}
+            as={Link}
+            href={PROFILE}
+          >
+            Agregar Contactos
+          </PrimaryButton>
+        )}
         <UsersGrid items={user.userRelations} />
       </Tab>
       <Tab
@@ -107,14 +114,16 @@ const UserSolapas = ({ user }: { user: GetUser }) => {
         href={`${PROFILE_USERNAME}${GROUPS}`}
         data-key={`${PROFILE_USERNAME}${GROUPS}`}
       >
-        <PrimaryButton
-          className="float-right"
-          startContent={<FaPlus />}
-          as={Link}
-          href={CREATE}
-        >
-          Crear
-        </PrimaryButton>
+        {isMyProfike && (
+          <PrimaryButton
+            className="float-right"
+            startContent={<FaPlus />}
+            as={Link}
+            href={CREATE}
+          >
+            Crear
+          </PrimaryButton>
+        )}
         <GroupsGrid items={user.groups} />
       </Tab>
     </Tabs>

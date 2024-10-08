@@ -21,9 +21,11 @@ const BoardContent = ({
   name?: string;
   isProfile: boolean;
   widthFull?: boolean;
-}) => {
+  }) => {
+  
   return (
     <Card
+      // if is a board shown in baord grid (explorar), it should be a link
       as={!isProfile ? Link : undefined}
       href={
         !isProfile ? `${PROFILE}/${(board.user as User).username}` : undefined

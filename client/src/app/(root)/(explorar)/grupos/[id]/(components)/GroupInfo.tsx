@@ -6,15 +6,15 @@ import OptionsDropdown from "./OptionsDropdown";
 import { currentUser } from "@clerk/nextjs/server";
 import RulesPopover from "./RulesPopover";
 import SecondaryButton from "@/components/buttons/SecondaryButton";
-import { EDIT_GROUP } from "@/utils/data/urls";
+import { EDIT_GROUP, FILE_URL } from "@/utils/data/urls";
 
 const GroupInfo = async ({ group }: { group: Group }) => {
   const loggedUser = await currentUser();
 
   return (
-    <section className="flex gap-4 md:gap-6 xl:gap-8 md:max-w-[65%] xl:max-w-[50%]">
+    <section className="flex gap-4 md:gap-6 xl:gap-8 md:max-w-[65%] xl:max-w-[50%] max-md:flex-col">
       <Image
-        src={group.profilePhotoUrl}
+        src={FILE_URL + group.profilePhotoUrl}
         alt={`foto de perfil de ${group.name}`}
         className="rounded-full "
         classNames={{
@@ -29,7 +29,7 @@ const GroupInfo = async ({ group }: { group: Group }) => {
           <FaUser className="size-4 min-w-4" />
           <p className="text-xs md:text-sm">{group.members.length} miembro/s</p>
         </div>
-        <div className="flex gap-2 items-center">
+        <div className="flex gap-2 items-center max-md:flex-wrap">
           {group.admins.some(
             (admin) => admin === (loggedUser?.publicMetadata.mongoId as string)
           ) ? (

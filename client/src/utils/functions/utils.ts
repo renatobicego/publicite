@@ -6,11 +6,14 @@ export const checkIfUserIsSubscribed = (
   subscriptionPlan: SubscriptionPlan | string,
   byMpId?: boolean
 ) => {
+  // Check if user is subscribed
   return subscriptionsOfUser.some((subscription) => {
     const isSameId = byMpId
       ? subscription.subscriptionPlan.mpPreapprovalPlanId == subscriptionPlan
       : subscription.subscriptionPlan._id ==
-        (subscriptionPlan as SubscriptionPlan)._id;
+      (subscriptionPlan as SubscriptionPlan)._id;
+
+    // Check if subscription is active
     if (isSameId) {
       const todayDate = today(getLocalTimeZone());
       switch (true) {
@@ -36,10 +39,17 @@ export const getMagazineType = (options?: string[]) => {
   return { isGroupMagazine, isSharedMagazine };
 };
 
+/**
+ * 
+ * The following functions are used to get id from options
+ * and check magazine owner and magazine type (used in magazine page)
+ */
+// Get id from options (used in magazine page)
 export const getId = (options: string[] | undefined, isGroupMagazine: boolean) => {
   if(!options) return null;
   return isGroupMagazine ? options[1] : options[0] || null;
 };
+
 
 export const getSharedMagazineIds = (
   options: string[] | undefined,
@@ -49,6 +59,7 @@ export const getSharedMagazineIds = (
   return isSharedMagazine ? { user: options[1], post: options[2] } : null;
 };
 
+// Change style of board based in color of the board
 export const handleBoardColor = (bg: string) => {
   const darkColors = ["bg-[#5A0001]/80"];
   const darkColorsBorder = [

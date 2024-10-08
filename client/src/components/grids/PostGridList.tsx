@@ -1,5 +1,5 @@
 import { frequencyPriceItems } from "@/utils/data/selectData";
-import { Good, Post, Service } from "@/types/postTypes";
+import { Good, Petition, Post, Service } from "@/types/postTypes";
 import {
   Table,
   TableHeader,
@@ -10,12 +10,14 @@ import {
   Spinner,
   Image,
   Divider,
+  Link,
 } from "@nextui-org/react";
 import { useCallback } from "react";
 import { FaStar } from "react-icons/fa6";
 import SaveButton from "../buttons/SaveButton";
 import ShareButton from "../buttons/ShareButton";
-import { FILE_URL } from "@/utils/data/urls";
+import { FILE_URL, POSTS } from "@/utils/data/urls";
+import { MdQuestionAnswer } from "react-icons/md";
 
 const PostGridList = ({
   items,
@@ -25,30 +27,56 @@ const PostGridList = ({
   isLoading: boolean;
 }) => {
   const renderCell = useCallback(
-    (data: Good | Service, columnKey: keyof Good | keyof Service) => {
+    (
+      data: Good | Service | Petition,
+      columnKey: keyof Good | keyof Service | keyof Petition
+    ) => {
       switch (columnKey) {
         case "imagesUrls":
+          if (!("imagesUrls" in data)) {
+            return (
+              <div className="flex gap-2 2xl:gap-4 items-center justify-between">
+                <Link href={`${POSTS}/${data._id}`}>
+                  <MdQuestionAnswer className="text-petition size-14 ml-4" />
+                </Link>
+                <Divider
+                  orientation="vertical"
+                  className="h-24 md:h-28 lg:h-32"
+                />
+              </div>
+            );
+          }
           return (
             <div className="flex gap-2 2xl:gap-4 items-center justify-between">
-              <Image
-                src={FILE_URL + data.imagesUrls[0]}
-                alt={data.title}
-                classNames={{
-                  wrapper:
-                    "w-28 h-24 md:w-32 lg:w-36 md:h-28 lg:h-32 xl:w-40 object-cover xl:h-36 !max-w-40",
-                  img: "w-full h-full max-h-40 object-cover",
-                }}
+              <Link href={`${POSTS}/${data._id}`}>
+                <Image
+                  src={FILE_URL + data.imagesUrls[0]}
+                  alt={data.title}
+                  classNames={{
+                    wrapper:
+                      "w-28 h-24 md:w-32 lg:w-36 md:h-28 lg:h-32 xl:w-40 object-cover xl:h-36 !max-w-40",
+                    img: "w-full h-full max-h-40 object-cover",
+                  }}
+                />
+              </Link>
+              <Divider
+                orientation="vertical"
+                className="h-24 md:h-28 lg:h-32"
               />
-              <Divider orientation="vertical" className="h-32" />
             </div>
           );
         case "title":
           return (
             <div className="flex gap-2 2xl:gap-4 items-center justify-between">
-              <h6 className="max-w-60 max-lg:min-w-28 2xl:text-base">
-                {data.title}
-              </h6>
-              <Divider orientation="vertical" className="h-32" />
+              <Link className="text-text-color" href={`${POSTS}/${data._id}`}>
+                <h6 className="max-w-60 max-lg:min-w-28 max-md:text-xs 2xl:text-base">
+                  {data.title}
+                </h6>
+              </Link>
+              <Divider
+                orientation="vertical"
+                className="h-24 md:h-28 lg:h-32"
+              />
             </div>
           );
         case "description":
@@ -57,13 +85,16 @@ const PostGridList = ({
               <p className="max-xl:text-xs 2xl:text-sm line-clamp-3 min-w-56 max-w-72">
                 {data.description}
               </p>
-              <Divider orientation="vertical" className="h-32" />
+              <Divider
+                orientation="vertical"
+                className="h-24 md:h-28 lg:h-32"
+              />
             </div>
           );
         case "price":
           return (
             <div className="flex gap-2 2xl:gap-4 items-center justify-between ">
-              <p className="max-md:text-sm font-semibold min-w-16">
+              <p className="max-md:text-xs font-semibold min-w-16">
                 {"frequencyPrice" in data
                   ? `$${data.price} por ${
                       frequencyPriceItems.find(
@@ -72,35 +103,54 @@ const PostGridList = ({
                     }`
                   : `$${data.price}`}
               </p>
-              <Divider orientation="vertical" className="h-32" />
+              <Divider
+                orientation="vertical"
+                className="h-24 md:h-28 lg:h-32"
+              />
             </div>
           );
         case "reviews":
+          if (!("reviews" in data)) {
+            return (
+              <div className={`flex gap-2 2xl:gap-4 items-center justify-end`}>
+                <Divider
+                  orientation="vertical"
+                  className="h-24 md:h-28 lg:h-32"
+                />
+              </div>
+            );
+          }
           const averageRating =
             data.reviews.reduce((acc, review) => acc + review.rating, 0) /
             data.reviews.length;
           return (
             <div
-              className={`flex gap-2 2xl:gap-4 items-center ${
+              className={`flex max-md:gap-8 gap-2 2xl:gap-4 items-center ${
                 data.reviews.length > 0 ? "justify-between" : "justify-end"
               }`}
             >
               {data.reviews.length > 0 && (
-                <div className="flex gap-1 items-center text-light-text text-sm">
+                <div className="flex gap-1 items-center text-light-text max-md:text-xs ml-4 md:ml-2 text-sm">
                   <FaStar className="size-3 md:size-4" />
                   <span>{averageRating.toFixed(1)}</span>
                 </div>
               )}
-              <Divider orientation="vertical" className="h-32" />
+              <Divider
+                orientation="vertical"
+                className="h-24 md:h-28 lg:h-32"
+              />
             </div>
           );
         case "location":
           return (
             <div className="flex gap-2 2xl:gap-4 items-center justify-between text-light-text">
-              <p className="max-xl:text-xs 2xl:text-sm min-w-28 max-w-52">
+              <p className="max-xl:text-xs 2xl:text-sm min-w-36 max-w-52">
                 {data.location.description}
               </p>
-              <Divider orientation="vertical" className="h-32" />
+              <Divider
+                orientation="vertical"
+                className="h-24 md:h-28 lg:h-32"
+              />
             </div>
           );
 
@@ -125,10 +175,10 @@ const PostGridList = ({
       bottomContent={isLoading ? <Spinner color="warning" /> : null}
       classNames={{
         base: "w-full !overflow-x-auto",
-        th: "bg-white",
+        th: "bg-white max-md:pl-1",
         thead: "[&>tr]:!shadow-none",
         wrapper: "overflow-y-hidden p-0",
-        td: "max-h-fit",
+        td: "max-h-fit max-md:p-1",
       }}
     >
       <TableHeader className="!shadow-none">

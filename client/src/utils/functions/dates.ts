@@ -5,6 +5,7 @@ import {
   today,
 } from "@internationalized/date";
 
+// function used in subscription creation for the end date
 export const getEndDateISO = (
   timeToAdd: number,
   frequency: "days" | "months" | undefined = "months"
@@ -20,6 +21,7 @@ export const getEndDateISO = (
         .toDate(getLocalTimeZone())
         .toISOString();
     case "months":
+      // if the end date is next year
       if (timeToAdd + currentDate.month > 12) {
         return new CalendarDate(
           currentDate.year + 1,

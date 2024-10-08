@@ -1,47 +1,51 @@
-"use client"
+"use client";
 
 import { useEffect, useState } from "react";
 
-const useMasonryGrid = (items: any[], columnCounts: number[] = [1, 2, 3, 4]) => {
-  // Create state to hold the columns
-  const [columns, setColumns] = useState<any[][]>([[], [], [], []]);
+const useMasonryGrid = (
+  items: any[],
+  columnCounts: number[] = [1, 2, 3, 4], // Default column counts
+  screenSizes: number[] = [640, 1024, 1536] // Default breakpoints
+) => {
+  const [columns, setColumns] = useState<any[][]>([]);
 
-  // Handle window resizing to dynamically update the columns
   useEffect(() => {
     const handleResize = () => {
       const screenWidth = window.innerWidth;
-      let columnCount = columnCounts[0];
 
-      if (screenWidth >= 640 && screenWidth < 1024) {
-        columnCount = columnCounts[1];
-      } else if (screenWidth >= 1024 && screenWidth < 1536) {
-        columnCount = columnCounts[2];
-      } else if (screenWidth >= 1536) {
-        columnCount = columnCounts[3];
+      // Dynamically determine the number of columns based on screen width
+      let columnCount = columnCounts[0]; // Default to the first column count
+
+      for (let i = 0; i < screenSizes.length; i++) {
+        if (screenWidth >= screenSizes[i]) {
+          columnCount =
+            columnCounts[i + 1] || columnCounts[columnCounts.length - 1];
+        }
       }
 
       // Distribute items into columns
       const newColumns: any[][] = Array(columnCount)
         .fill(null)
         .map(() => []);
-      items.forEach((item: any, index) => {
+
+      items.forEach((item, index) => {
         newColumns[index % columnCount].push(item);
       });
 
       setColumns(newColumns);
     };
 
-    // Initialize the columns on mount
+    // Initialize the grid on component mount
     handleResize();
 
-    // Add event listener for window resizing
+    // Listen to window resize events
     window.addEventListener("resize", handleResize);
 
-    // Cleanup event listener on unmount
+    // Clean up the event listener on unmount
     return () => window.removeEventListener("resize", handleResize);
-  }, [columnCounts, items]);
+  }, [columnCounts, items, screenSizes]);
 
-  return {columns}
-}
+  return { columns };
+};
 
-export default useMasonryGrid
+export default useMasonryGrid;

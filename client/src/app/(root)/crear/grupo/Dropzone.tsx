@@ -11,7 +11,8 @@ const Dropzone = ({ onDrop, maxTotalFiles }: DropzoneProps) => {
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     accept: {
-      "image/*": [], // Only accept image types
+      "image/png": [],
+      "image/jpeg": [], // Accepts both jpg and jpeg
     },
     maxSize: 4 * 1024 * 1024, // Use video max size if videos are allowed
     maxFiles: maxTotalFiles,

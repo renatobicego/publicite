@@ -22,11 +22,16 @@ const Dropzone = ({
     disabled: isDisabled,
     accept: allowVideos
       ? {
-          "image/*": [], // Accept all image types
-          "video/*": [], // Accept all video types
+          "image/png": [],
+          "image/jpeg": [], // Accepts both jpg and jpeg
+
+          "video/mp4": [],
+          "video/quicktime": [], // "mov" format
+          "video/webm": [],
         }
       : {
-          "image/*": [], // Only accept image types
+          "image/png": [],
+          "image/jpeg": [], // Accepts both jpg and jpeg
         },
     maxSize: allowVideos ? maxVideoSize : 4 * 1024 * 1024, // Use video max size if videos are allowed
     maxFiles: maxTotalFiles,

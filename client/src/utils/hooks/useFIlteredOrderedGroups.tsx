@@ -2,13 +2,17 @@ import { Group } from "@/types/userTypes";
 import { useState, useMemo } from "react";
 
 export const useFilteredAndSortedGroups = (items: any[]) => {
+  // Search term used in post grid
   const [searchTerm, setSearchTerm] = useState("");
+
+  // Sorting key and direction
   const [sortDescriptor, setSortDescriptor] = useState({
     column: "",
     direction: "",
   });
   const hasSearchFilter = Boolean(searchTerm);
 
+  // Filtered items
   const filteredItems = useMemo(() => {
     let filteredGroups = [...items];
 
