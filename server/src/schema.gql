@@ -133,6 +133,23 @@ type location {
   coordinates: [Float!]!
 }
 
+type Contact_graph {
+  _id: ID
+  phone: String
+  instagram: String
+  facebook: String
+  x: String
+  website: String
+}
+
+type author {
+  profilePhotoUrl: String!
+  username: String!
+  contact: Contact_graph!
+  lastName: String!
+  name: String!
+}
+
 type PostLocation_Grapql {
   _id: String
   location: location
@@ -150,15 +167,21 @@ type AttachedFile_post {
   label: String!
 }
 
+type Post_Category {
+  _id: String
+  label: String
+}
+
 type Post_response_graphql_model {
   _id: ID
   title: String
   postType: String
   description: String
   visibility: Visibility_post
+  author: author
   price: Float
   location: PostLocation_Grapql
-  category: [String!]
+  category: [Post_Category!]
   comments: [String!]
   attachedFiles: [AttachedFile_post!]
   createAt: String
@@ -204,17 +227,47 @@ type GroupListResponse {
   hasMore: Boolean!
 }
 
+type collaborators_graphql {
+  _id: String
+  username: String
+  profilePhotoUrl: String
+}
+
+type sections_graphql {
+  _id: String
+  isFatherSection: Boolean
+  title: String
+}
+
+type group_graphql {
+  _id: String
+  name: String
+  profilePhotoUrl: String
+}
+
+type allowedColaborators_graphql {
+  _id: String
+  username: String
+  profilePhotoUrl: String
+}
+
+type user_graphql {
+  _id: String
+  username: String
+  profilePhotoUrl: String
+}
+
 type MagazineResponse {
   _id: String!
   name: String!
-  sections: [String!]!
+  sections: [sections_graphql!]!
   ownerType: String!
   description: String
-  collaborators: [String!]
-  user: String
+  collaborators: [collaborators_graphql!]
+  user: user_graphql
   visibility: String
-  allowedColaborators: [String!]
-  group: [String!]
+  allowedColaborators: [allowedColaborators_graphql!]
+  group: group_graphql
 }
 
 type PostCategoryResponse {
@@ -239,7 +292,7 @@ type Query {
   getGroupByName(name: String!, limit: Float): GroupListResponse
 
   """Crear una revista"""
-  getMagazineByMagazineId(id: String!): [MagazineResponse!]
+  getMagazineByMagazineId(id: String!): MagazineResponse
 
   """Devuelve todas las categorias creadas"""
   getAllCategoryPost: [PostCategoryResponse!]

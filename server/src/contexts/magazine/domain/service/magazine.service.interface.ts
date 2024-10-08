@@ -5,5 +5,7 @@ import { MagazineResponse } from '../../application/adapter/dto/HTTP-RESPONSE/ma
 
 export interface MagazineServiceInterface {
   createMagazine(magazineRequest: MagazineCreateRequest): Promise<void>;
-  findMagazineByMagazineId(userId: ObjectId): Promise<Partial<MagazineResponse>[] | []>;
+  findMagazineByMagazineId(
+    userId: ObjectId,
+  ): Promise<Partial<MagazineResponse> | null>;
 }

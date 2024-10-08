@@ -3,7 +3,6 @@ import { OwnerType } from '../../domain/entity/enum/magazine.ownerType.enum';
 
 interface MagazineDocument extends Document {
   name: string;
-
   sections: Schema.Types.ObjectId[];
   ownerType: OwnerType;
   description?: string;

@@ -8,12 +8,10 @@ import { MagazineModel, MagazineSchema } from '../schemas/magazine.schema';
 import { MagazineSectionModel } from '../schemas/section/magazine.section.schema';
 import { MagazineResolver } from '../resolver/magazine.resolver';
 import { UserMagazineModel } from '../schemas/magazine.user.schema';
-import {
-  GroupMagazineModel,
-  GroupMagazineSchema,
-} from '../schemas/magazine.group.schema';
+import { GroupMagazineModel } from '../schemas/magazine.group.schema';
 import { MagazineRepositoryMapper } from '../repository/mapper/magazine.repository.mapper';
 import { UserSchema } from 'src/contexts/user/infrastructure/schemas/user.schema';
+import { GroupSchema } from 'src/contexts/group/infrastructure/schemas/group.schema';
 
 @Module({
   imports: [
@@ -35,6 +33,7 @@ import { UserSchema } from 'src/contexts/user/infrastructure/schemas/user.schema
       { name: 'MagazineSection', schema: MagazineSectionModel.schema },
       { name: 'Magazine', schema: MagazineSchema },
       { name: 'User', schema: UserSchema },
+      { name: 'Group', schema: GroupSchema },
     ]),
   ],
   providers: [

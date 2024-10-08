@@ -22,21 +22,20 @@ export class MagazineResolver {
     magazineRequest: MagazineCreateRequest,
   ): Promise<any> {
     try {
-      await this.magazineAdapter.createMagazine(magazineRequest);
-      return 'creado';
+      return await this.magazineAdapter.createMagazine(magazineRequest);
     } catch (error: any) {
       throw error;
     }
   }
 
-  @Query(() => [MagazineResponse], {
+  @Query(() => MagazineResponse, {
     nullable: true,
     description: 'Crear una revista',
   })
   async getMagazineByMagazineId(
     @Args('id', { type: () => String })
     id: ObjectId,
-  ): Promise<Partial<MagazineResponse>[] | []> {
+  ): Promise<Partial<MagazineResponse> | null> {
     try {
       return await this.magazineAdapter.findMagazineByMagazineId(id);
     } catch (error: any) {

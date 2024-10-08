@@ -40,9 +40,9 @@ export class PostAdapterMapper implements PostMapperAdapterInterface {
         const postGoodResponse: PostGoodResponse = {
           ...baseResponse,
           imagesUrls: postGood.getImageUrls,
-          year: postGood.getYear ?? 0,
-          brand: postGood.getBrand ?? '',
-          modelType: postGood.getModel ?? '',
+          year: postGood.getYear ?? undefined,
+          brand: postGood.getBrand ?? undefined,
+          modelType: postGood.getModel ?? undefined,
           reviews: postGood.getReviews ?? ([] as any),
           condition: postGood.getCondition,
         };

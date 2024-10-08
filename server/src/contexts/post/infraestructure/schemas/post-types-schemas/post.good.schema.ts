@@ -12,9 +12,9 @@ interface IPostGood extends PostDocument {
 // El esquema del discriminador para PostGood
 const PostGoodSchema = new Schema<IPostGood>({
   imagesUrls: [{ type: String, required: true }],
-  year: { type: Number, required: true },
-  brand: { type: String, required: true },
-  modelType: { type: String, required: true },
+  year: { type: Number },
+  brand: { type: String },
+  modelType: { type: String },
   reviews: [{ type: Schema.Types.ObjectId, ref: 'Review' }],
   condition: { type: String, default: 'new' },
 });

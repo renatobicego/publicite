@@ -6,5 +6,5 @@ export interface MagazineAdapterInterface {
   createMagazine(magazineRequest: MagazineCreateRequest): Promise<any>;
   findMagazineByMagazineId(
     userId: ObjectId,
-  ): Promise<Partial<MagazineResponse>[] | []>;
+  ): Promise<Partial<MagazineResponse> | null>;
 }

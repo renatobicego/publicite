@@ -5,6 +5,8 @@ import { MagazineResponse } from '../../application/adapter/dto/HTTP-RESPONSE/ma
 
 export interface MagazineRepositoryInterface {
   save(magazine: Magazine): Promise<any>;
-  saveMagazineWithSection(magazine: Magazine): Promise<any>
-  findMagazineByMagazineId(userId: ObjectId): Promise<Partial<MagazineResponse>[] | []>;
+  saveMagazineWithSection(magazine: Magazine): Promise<any>;
+  findMagazineByMagazineId(
+    userId: ObjectId,
+  ): Promise<Partial<MagazineResponse> | null>;
 }
