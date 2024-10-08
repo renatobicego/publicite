@@ -39,7 +39,7 @@ export class PostAdapterMapper implements PostMapperAdapterInterface {
         const postGood = entity as PostGood;
         const postGoodResponse: PostGoodResponse = {
           ...baseResponse,
-          imageUrls: postGood.getImageUrls,
+          imagesUrls: postGood.getImageUrls,
           year: postGood.getYear ?? 0,
           brand: postGood.getBrand ?? '',
           modelType: postGood.getModel ?? '',
@@ -53,7 +53,7 @@ export class PostAdapterMapper implements PostMapperAdapterInterface {
         const postServiceResponse: PostServiceResponse = {
           ...baseResponse,
           frequencyPrice: postService.getfrequencyPrice ?? '',
-          imageUrls: postService.getImageUrls ?? ([] as any),
+          imagesUrls: postService.getImageUrls ?? ([] as any),
           reviews: (postService.getReviews as any) ?? ([] as any),
         };
 
@@ -100,7 +100,7 @@ export class PostAdapterMapper implements PostMapperAdapterInterface {
       case 'good':
         return new PostGood(
           postBase,
-          request.imageUrls,
+          request.imagesUrls,
           request.year ?? null,
           request.brand ?? null,
           request.modelType ?? null,
@@ -112,7 +112,7 @@ export class PostAdapterMapper implements PostMapperAdapterInterface {
         return new PostService(
           postBase,
           request.frequencyPrice ?? null,
-          request.imageUrls ?? [],
+          request.imagesUrls ?? [],
           request.reviews ?? [],
         );
       case 'petition':
@@ -136,7 +136,7 @@ export class PostAdapterMapper implements PostMapperAdapterInterface {
       //location: postUpdateRequest.location,
       category: postUpdateRequest.category,
       attachedFiles: postUpdateRequest.attachedFiles,
-      imageUrls: postUpdateRequest.imageUrls,
+      imagesUrls: postUpdateRequest.imagesUrls,
       year: postUpdateRequest.year,
       brand: postUpdateRequest.brand,
       modelType: postUpdateRequest.modelType,

@@ -1,6 +1,6 @@
 import { Schema, model, Document } from 'mongoose';
 import { PostType } from '../../domain/entity/enum/post-type.enum';
-import { PostLocation } from '../../domain/entity/postLocation.entity';
+
 import { Visibility } from '../../domain/entity/enum/post-visibility.enum';
 
 export interface attachedFiles {
@@ -19,7 +19,7 @@ export interface PostDocument extends Document {
   };
   recomendations: Schema.Types.ObjectId[];
   price: number;
-  location: PostLocation;
+  location: Schema.Types.ObjectId;
   category: Schema.Types.ObjectId[];
   comments: Schema.Types.ObjectId[];
   attachedFiles: attachedFiles[];

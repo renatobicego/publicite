@@ -81,7 +81,7 @@ describe('PostService', () => {
       postGoodStub().comments ?? [],
       postGoodStub().attachedFiles ?? [],
       postGoodStub().createAt,
-      postGoodStub().imageUrls,
+      postGoodStub().imagesUrls,
       postGoodStub().year ?? null,
       postGoodStub().brand ?? null,
       postGoodStub().modelType ?? null,

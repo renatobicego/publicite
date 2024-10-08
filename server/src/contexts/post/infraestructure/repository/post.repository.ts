@@ -30,6 +30,7 @@ import {
   IUser,
   UserModel,
 } from 'src/contexts/user/infrastructure/schemas/user.schema';
+import { Post_response_graphql_model } from '../../application/adapter/dto/HTTP-RESPONSE/post.response.graphql';
 
 export class PostRepository implements PostRepositoryInterface {
   constructor(
@@ -161,6 +162,26 @@ export class PostRepository implements PostRepositoryInterface {
     }
   }
 
+  async findPostById(id: string): Promise<any> {
+    try {
+      this.logger.log('Finding post by id in repository');
+
+      const post = await this.postDocument
+        .findById(id)
+        .populate({
+          path: 'location',
+          model: 'PostLocation',
+          select: 'location description userSetted coordinates',
+        })
+        .lean();
+
+      return post;
+    } catch (error: any) {
+      this.logger.error('An error occurred finding post by id: ' + id);
+      throw error;
+    }
+  }
+
   async saveLocation(
     location: PostLocation,
     options?: { session?: ClientSession },
@@ -184,7 +205,7 @@ export class PostRepository implements PostRepositoryInterface {
     try {
       const newPost = {
         ...baseObj,
-        imageUrls: post.getImageUrls,
+        imagesUrls: post.getImageUrls,
         year: post.getYear,
         brand: post.getBrand,
         modelType: post.getModel,
@@ -211,7 +232,7 @@ export class PostRepository implements PostRepositoryInterface {
       const newPost = {
         ...baseObj,
         frequencyPrice: post.getfrequencyPrice,
-        imageUrls: post.getImageUrls,
+        imagesUrls: post.getImageUrls,
         reviews: post.getReviews,
       };
 

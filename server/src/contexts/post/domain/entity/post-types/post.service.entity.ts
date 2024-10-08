@@ -3,14 +3,14 @@ import { Post } from '../post.entity';
 
 export class PostService extends Post {
   private frequencyPrice: string;
-  private imageUrls: string[];
+  private imagesUrls: string[];
   private reviews: ObjectId[];
 
   constructor(
     post: Post,
     //Service atributes
     frequencyPrice?: string,
-    imageUrls?: string[],
+    imagesUrls?: string[],
     reviews?: ObjectId[],
   ) {
     super(
@@ -29,7 +29,7 @@ export class PostService extends Post {
       post.getId,
     );
     this.frequencyPrice = frequencyPrice ?? '';
-    this.imageUrls = imageUrls || [];
+    this.imagesUrls = imagesUrls || [];
     this.reviews = reviews ?? [];
   }
 
@@ -38,7 +38,7 @@ export class PostService extends Post {
   }
 
   get getImageUrls() {
-    return this.imageUrls;
+    return this.imagesUrls;
   }
 
   get getReviews() {

@@ -42,3 +42,12 @@ export class GroupResponse {
     this.visibility = group.visibility;
   }
 }
+
+@ObjectType()
+export class GroupListResponse {
+  @Field(() => [GroupResponse])
+  groups: GroupResponse[];
+
+  @Field(() => Boolean)
+  hasMore: boolean;
+}

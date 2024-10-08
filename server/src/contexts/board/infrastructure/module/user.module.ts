@@ -14,7 +14,6 @@ import { BoardResolver } from '../graphql/resolver/board.resolver';
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: 'Board', schema: BoardSchema }]),
-
     UserModule,
   ],
 

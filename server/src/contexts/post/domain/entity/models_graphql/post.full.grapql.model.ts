@@ -1,19 +1,24 @@
 import { ObjectId } from 'mongoose';
 import { Field, ObjectType, ID, Float, Int } from '@nestjs/graphql';
 import { GoodCondition } from '../enum/post-good-condition.enum';
-
 @ObjectType()
-export class PostLocation_Grapql_Model {
+export class Location_graphQl {
   @Field(() => String)
   type: 'Point'; // Este valor está fijo en 'Point'
 
-  @Field(() => [Number])
+  @Field(() => [Float])
   coordinates: [number, number]; // Arreglo de coordenadas
+}
 
-  @Field()
+@ObjectType()
+export class PostLocation_Grapql_Model {
+  @Field(() => Location_graphQl)
+  location: Location_graphQl; // Este valor está fijo en 'Point'
+
+  @Field(() => Boolean)
   userSetted: boolean; // Campo booleano
 
-  @Field()
+  @Field(() => String)
   description: string; // Campo de descripción
 }
 
@@ -72,7 +77,7 @@ export class Post_Full_Graphql_Model {
 
   //Fields post GOOD
   @Field(() => [String], { nullable: true })
-  imageUrls: string[];
+  imagesUrls: string[];
 
   @Field(() => Int, { nullable: true })
   year: number;
@@ -90,7 +95,7 @@ export class Post_Full_Graphql_Model {
   condition: GoodCondition;
 
   //Fields post Service
-  //-> comparte imageUrls & reviews de post good & frequencyPrice de post petition
+  //-> comparte imagesUrls & reviews de post good & frequencyPrice de post petition
   @Field(() => String, { nullable: true })
   frequencyPrice: string;
 

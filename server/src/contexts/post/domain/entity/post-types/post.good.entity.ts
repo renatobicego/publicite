@@ -2,7 +2,7 @@ import { ObjectId } from 'mongoose';
 import { Post } from '../post.entity';
 
 export class PostGood extends Post {
-  private imageUrls: string[];
+  private imagesUrls: string[];
   private year?: number;
   private brand?: string;
   private modelType?: string;
@@ -11,7 +11,7 @@ export class PostGood extends Post {
   constructor(
     post: Post,
     //Good atributes
-    imageUrls?: string[],
+    imagesUrls?: string[],
     year?: number,
     brand?: string,
     modelType?: string,
@@ -34,7 +34,7 @@ export class PostGood extends Post {
       post.getId,
     );
 
-    this.imageUrls = imageUrls || [];
+    this.imagesUrls = imagesUrls || [];
     this.year = year;
     this.brand = brand;
     this.modelType = modelType;
@@ -43,7 +43,7 @@ export class PostGood extends Post {
   }
 
   get getImageUrls() {
-    return this.imageUrls;
+    return this.imagesUrls;
   }
 
   get getYear() {

@@ -6,7 +6,10 @@ import { GroupRepositoryInterface } from '../../domain/repository/group.reposito
 import { GroupDocument } from '../schemas/group.schema';
 import { Inject } from '@nestjs/common';
 import { GroupRepositoryMapperInterface } from '../../domain/repository/mapper/group.repository.mapper.interface';
-import { GroupResponse } from '../../application/adapter/dto/HTTP-RESPONSE/group.response';
+import {
+  GroupListResponse,
+  GroupResponse,
+} from '../../application/adapter/dto/HTTP-RESPONSE/group.response';
 
 export class GroupRepository implements GroupRepositoryInterface {
   constructor(
@@ -25,23 +28,27 @@ export class GroupRepository implements GroupRepositoryInterface {
   async findGroupByName(
     name: string,
     limit: number,
-    page: number,
-  ): Promise<GroupResponse[]> {
+  ): Promise<GroupListResponse> {
     try {
       const regex = new RegExp(`${name}`, 'i'); // de esta forma buscamos el nombre en TODO EL STRING DE NAME
 
       // const regex = new RegExp(`^${name}`, 'i'); // de esta forma buscamos el nombre SOLO COMO EMPIEZA, SI EL NAME QUE BUSCA ESTA EN EL MEDIO NO APARECE
 
-      const skip = (page - 1) * limit;
-
       // Realiza la búsqueda con paginación
       const groups = await this.groupModel
         .find({ name: { $regex: regex } })
-        .limit(limit)
-        .skip(skip)
+        .limit(limit + 1)
         .sort({ name: 1 }) //  Ordena los resultados por nombre
         .lean();
-      return groups.map((group) => this.groupMapper.toGroupResponse(group));
+
+      const hasMore = groups.length > limit;
+      const groupResponse = groups
+        .slice(0, limit)
+        .map((group) => this.groupMapper.toGroupResponse(group));
+      return {
+        groups: groupResponse,
+        hasMore: hasMore,
+      };
     } catch (error: any) {
       throw error;
     }

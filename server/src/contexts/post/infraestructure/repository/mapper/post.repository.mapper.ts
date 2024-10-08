@@ -26,7 +26,7 @@ export class PostRepositoryMapper implements PostRepositoryMapperInterface {
       case 'good':
         return new PostGood(
           post,
-          document.imageUrls,
+          document.imagesUrls,
           document.year,
           document.brand,
           document.modelType,
@@ -37,7 +37,7 @@ export class PostRepositoryMapper implements PostRepositoryMapperInterface {
         return new PostService(
           post,
           document.frequencyPrice,
-          document.imageUrls,
+          document.imagesUrls,
           document.reviews,
         );
       case 'petition':

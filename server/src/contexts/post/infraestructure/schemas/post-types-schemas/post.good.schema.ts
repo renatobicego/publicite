@@ -2,7 +2,7 @@ import { ObjectId, Schema } from 'mongoose';
 import PostModel, { PostDocument } from '../post.schema';
 
 interface IPostGood extends PostDocument {
-  imageUrls: string[];
+  imagesUrls: string[];
   year: number;
   brand: string;
   modelType: string;
@@ -11,7 +11,7 @@ interface IPostGood extends PostDocument {
 }
 // El esquema del discriminador para PostGood
 const PostGoodSchema = new Schema<IPostGood>({
-  imageUrls: [{ type: String, required: true }],
+  imagesUrls: [{ type: String, required: true }],
   year: { type: Number, required: true },
   brand: { type: String, required: true },
   modelType: { type: String, required: true },

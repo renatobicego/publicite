@@ -85,9 +85,7 @@ export class UserAdapter implements UserAdapterInterface {
     }
   }
 
-  async getUserPreferencesByUsername(
-    username: string,
-  ): Promise<UserPreferenceResponse | null> {
+  async getUserPreferencesByUsername(username: string): Promise<any> {
     try {
       const userPreference =
         await this.userService.getUserPreferencesByUsername(username);

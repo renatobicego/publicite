@@ -64,7 +64,7 @@ describe('Create post suit test', () => {
       comments: postGoodStub().comments,
       attachedFiles: postGoodStub().attachedFiles,
       createAt: postGoodStub().createAt,
-      imageUrls: postGoodStub().imageUrls,
+      imagesUrls: postGoodStub().imagesUrls,
       year: postGoodStub().year,
       brand: postGoodStub().brand,
       modelType: postGoodStub().modelType,
@@ -89,7 +89,7 @@ describe('Create post suit test', () => {
       comments: PostRequest.comments,
       attachedFiles: PostRequest.attachedFiles,
       createAt: PostRequest.createAt,
-      imageUrls: PostRequest.imageUrls,
+      imagesUrls: PostRequest.imagesUrls,
       year: PostRequest.year,
       brand: PostRequest.brand,
       modelType: PostRequest.modelType,
@@ -122,7 +122,7 @@ describe('Create post suit test', () => {
       attachedFiles: postServiceStub().attachedFiles,
       createAt: postServiceStub().createAt,
       frequencyPrice: postServiceStub().frequencyPrice,
-      imageUrls: postServiceStub().imageUrls,
+      imagesUrls: postServiceStub().imagesUrls,
       reviews: postServiceStub().reviews,
     };
 
@@ -144,7 +144,7 @@ describe('Create post suit test', () => {
       attachedFiles: PostRequest.attachedFiles,
       createAt: PostRequest.createAt,
       frequencyPrice: PostRequest.frequencyPrice,
-      imageUrls: PostRequest.imageUrls,
+      imagesUrls: PostRequest.imagesUrls,
       reviews: PostRequest.reviews,
     });
     expect(response.body).toHaveProperty('_id');

@@ -17,6 +17,7 @@ export interface UserServiceInterface {
 
   findAllUsers(user: string, limit: number): Promise<UserFindAllResponse>;
   findUserByUsername(username: string, keys: string[]): Promise<any>;
+
   getUserPersonalInformationByUsername(username: string): Promise<any>;
   getUserPreferencesByUsername(
     username: string,

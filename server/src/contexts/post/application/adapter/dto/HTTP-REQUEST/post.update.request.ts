@@ -47,7 +47,7 @@ export class PostUpdateRequest {
 
   //POST GOOD Y SERVICE
   @Field(() => [String], { nullable: true })
-  imageUrls?: string[];
+  imagesUrls?: string[];
 
   //POST GOOD
   @Field(() => Int, { nullable: true })
