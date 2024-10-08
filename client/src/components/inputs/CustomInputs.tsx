@@ -5,6 +5,7 @@ import {
   Select,
   SelectItem,
   Textarea,
+  TextAreaProps,
 } from "@nextui-org/react";
 import { FieldInputProps, FormikProps } from "formik";
 import { I18nProvider } from "@react-aria/i18n";
@@ -70,6 +71,23 @@ export const CustomTextarea = ({
       radius="full"
       labelPlacement="outside"
       {...field}
+      {...props}
+    />
+  );
+};
+
+export const CustomTextareaWithoutFormik: React.FC<TextAreaProps> = (props) => {
+  return (
+    <Textarea
+      classNames={{
+        inputWrapper:
+          "shadow-none hover:shadow-sm border-[0.5px] text-[0.8125rem] group-data-[focus=true]:border-light-text",
+        input: "text-[0.8125rem]",
+        label: "font-medium text-[0.8125rem]",
+      }}
+      variant="bordered"
+      radius="full"
+      labelPlacement="outside"
       {...props}
     />
   );

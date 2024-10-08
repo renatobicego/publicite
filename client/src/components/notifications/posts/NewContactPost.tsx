@@ -1,4 +1,4 @@
-import { DropdownItem, Image, Link } from "@nextui-org/react";
+import { DropdownItem, Image, Link, useDisclosure } from "@nextui-org/react";
 import {
   NotificationBody,
   NotificationCard,
@@ -9,6 +9,7 @@ import { Good, PostContactNotification } from "@/types/postTypes";
 import { FILE_URL, POSTS } from "@/utils/data/urls";
 import { showDate } from "@/utils/functions/dates";
 import { parseDate } from "@internationalized/date";
+import ContactPetition from "@/components/modals/ContactPetition/ContactPetition";
 
 const NewContactPost = ({
   notification,
@@ -17,12 +18,17 @@ const NewContactPost = ({
 }) => {
   const { post } = notification;
   const { imagesUrls } = post as Good;
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
   return (
     <NotificationCard>
       <NotificationImage>
         <Image
           radius="sm"
-          src={post.postType === "petition" ? "/logo.png" : FILE_URL + imagesUrls[0]}
+          src={
+            post.postType === "petition"
+              ? "/logo.png"
+              : FILE_URL + imagesUrls[0]
+          }
           alt="foto"
           className="object-cover"
           classNames={{
@@ -36,6 +42,7 @@ const NewContactPost = ({
         items={[
           {
             label: "Ver Solicitud",
+            onPress: onOpen,
           },
           {
             label: "Ver Post",
@@ -49,6 +56,14 @@ const NewContactPost = ({
           },
         ]}
       />
+      {isOpen && (
+        <ContactPetition
+          post={post}
+          isOpen={true}
+          onOpenChange={onOpenChange}
+          notification={notification}
+        />
+      )}
     </NotificationCard>
   );
 };

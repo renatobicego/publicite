@@ -4,6 +4,7 @@ import { toastifyError } from "../functions/toastify";
 import { AttachedFileValues } from "@/types/postTypes";
 import { FormikHelpers } from "formik";
 import { deleteFilesService } from "@/app/server/uploadThing";
+import imageCompression from "browser-image-compression";
 
 const useUploadFiles = (
   files: File[],
@@ -37,7 +38,16 @@ const useUploadFiles = (
       return;
     }
     // Combine both files and attachedFiles into a single array for upload
-    const combinedFiles = [...files, ...attachedFiles.map((file) => file.file)];
+    const compressedFiles = await Promise.all(files.map(async (file) => {
+      if(file.type.startsWith("video/")) return file;
+      const options = {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 600,
+        useWebWorker: true,
+      };
+      return await imageCompression(file, options);
+    }));
+    const combinedFiles = [...compressedFiles, ...attachedFiles.map((file) => file.file)];
 
     const res = await startUpload(combinedFiles as File[]);
     if (!res || !res.length) {

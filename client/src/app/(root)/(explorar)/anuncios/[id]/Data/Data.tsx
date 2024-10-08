@@ -11,7 +11,7 @@ import AccordionData from "./AccordionData/AccordionData";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { CREATE_POST, EDIT_POST } from "@/utils/data/urls";
 import { Link } from "@nextui-org/react";
-import ContactPetitionsList from "@/components/modals/ContactPetitionsList";
+import ContactPetitionsList from "@/components/modals/ContactPetition/ContactPetitionsList";
 import PetitionChip from "@/components/chips/PetitionChip";
 import ContactModal from "@/components/modals/ContactModal/ContactModal";
 import { SignedIn } from "@clerk/nextjs";

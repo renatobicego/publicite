@@ -1,4 +1,4 @@
-import { AttachedFileValues, GoodPostValues } from "@/types/postTypes";
+import { GoodPostValues } from "@/types/postTypes";
 import { Form, Formik, FormikHelpers } from "formik";
 import { goodValidation } from "./goodValidation";
 import TitleDescription from "../CreateForm/inputs/TitleDescription";
@@ -7,7 +7,6 @@ import { Divider } from "@nextui-org/react";
 import Condition from "./Condition";
 import PlacePicker from "../CreateForm/inputs/PlacePicker";
 import AccordionInputs from "../CreateForm/inputs/AccordionInputs/AccordionInputs";
-import { useState } from "react";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { useUser } from "@clerk/nextjs";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
@@ -146,3 +145,5 @@ const CreateGood = ({
 };
 
 export default CreateGood;
+
+

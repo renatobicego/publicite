@@ -19,6 +19,7 @@ import {
 import { TbWorldPin } from "react-icons/tb";
 import OptionsDropdown from "../OptionsDropdown";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
+import ContactPetitionsList from "@/components/modals/ContactPetition/ContactPetitionsList";
 
 const UserInfo = ({
   user,
@@ -57,9 +58,12 @@ const UserInfo = ({
         {user.contact && <SocialMedia contact={user.contact} />}
         <div className="flex gap-2 items-center">
           {isMyProfile ? (
-            <PrimaryButton as={Link} href="/configuracion">
-              Editar Perfil
-            </PrimaryButton>
+            <>
+              <PrimaryButton as={Link} href="/configuracion">
+                Editar Perfil
+              </PrimaryButton>
+              <ContactPetitionsList userId={user._id} />
+            </>
           ) : (
             <SendRequest variant="solid" removeMargin={false} />
           )}

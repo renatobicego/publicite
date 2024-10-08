@@ -176,7 +176,7 @@ export interface MagazineSection {
 export interface PetitionContact {
   userContacting?: ObjectId;
   post: ObjectId;
-  fullName?: string; // for users not registered
+  fullName: string; // for users not registered
   email: string;
   phone?: string; // for users not registered
   message: string;
@@ -187,6 +187,7 @@ export interface PostContactNotification {
   message: string;
   post: Post;
   date: string;
+  contactPetition: PetitionContact;
 }
 
 export interface PostSharedNotification {

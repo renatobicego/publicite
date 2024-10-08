@@ -9,6 +9,11 @@ declare global {
     };
     firstName?: string;
   }
+  interface UserPublicMetadata {
+    onboardingComplete?: boolean;
+    userType: "Person" | "Business";
+    mongoId: ObjectId;
+  }
   type ObjectId = string;
   type Visibility =
     | "public"
