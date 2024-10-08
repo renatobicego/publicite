@@ -46,6 +46,8 @@ export class MagazineRepository implements MagazineRepositoryInterface {
   async findMagazineByMagazineId(
     id: ObjectId,
   ): Promise<Partial<MagazineResponse> | null> {
+    const session = await this.connection.startSession();
+    session.startTransaction();
     try {
       const magazine = await this.magazineModel
         .findById({ _id: id })
@@ -71,16 +73,25 @@ export class MagazineRepository implements MagazineRepositoryInterface {
         .populate({
           path: 'allowedColaborators',
           select: '_id username profilePhotoUrl',
-        });
-      console.log(magazine);
+        })
+        .session(session);
+
       if (!magazine) {
+        await session.abortTransaction();
+        session.endSession();
         return null;
       }
+
+      await session.commitTransaction();
+      session.endSession();
       return this.magazineRepositoryMapper.toReponse(magazine);
     } catch (error: any) {
+      await session.abortTransaction();
+      session.endSession();
       throw error;
     }
   }
+
   async save(magazine: Magazine): Promise<any> {
     let magazineSaved;
     if (magazine.getSections.length <= 0) {
