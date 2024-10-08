@@ -4,11 +4,13 @@ import { Magazine } from './magazine.entity';
 
 export class UserMagazine extends Magazine {
   private collaborators: ObjectId[];
+  private user: ObjectId;
   private visibility: string;
 
   constructor(
     magazine: Magazine,
     collaborators: ObjectId[],
+    user: ObjectId,
     visibility: string,
   ) {
     super(
@@ -20,6 +22,11 @@ export class UserMagazine extends Magazine {
       magazine.getId,
     );
     this.collaborators = collaborators;
+    this.user = user;
     this.visibility = visibility;
+  }
+
+  get getUser() {
+    return this.user;
   }
 }

@@ -173,9 +173,23 @@ type Post_response_graphql_model {
   petitionType: String
 }
 
+type members_graphQl {
+  _id: String
+  username: String
+  profilePhotoUrl: String
+}
+
+type post_magazines_section {
+  imagesUrls: String
+}
+
+type magazines_section {
+  posts: post_magazines_section
+}
+
 type GroupResponse {
   _id: String!
-  members: [String!]!
+  members: [members_graphQl!]!
   admins: [String!]!
   name: String!
   rules: String!

@@ -2,12 +2,50 @@ import { Field, ObjectType } from '@nestjs/graphql';
 import { ObjectId } from 'mongoose';
 
 @ObjectType()
+export class members_graphQl {
+  @Field(() => String, { nullable: true })
+  _id: string;
+
+  @Field(() => String, { nullable: true })
+  username: string;
+
+  @Field(() => String, { nullable: true })
+  profilePhotoUrl: string;
+}
+@ObjectType()
+export class post_magazines_section {
+  @Field(() => String, { nullable: true })
+  imagesUrls: string;
+}
+
+@ObjectType()
+export class magazines_section {
+  @Field(() => post_magazines_section, { nullable: true })
+  posts: post_magazines_section;
+}
+
+@ObjectType()
+export class magazines_graphQl {
+  @Field(() => String, { nullable: true })
+  _id: string;
+
+  @Field(() => String, { nullable: true })
+  name: string;
+
+  @Field(() => magazines_section, { nullable: true })
+  sections: magazines_section;
+
+  @Field(() => String, { nullable: true })
+  description: string;
+}
+
+@ObjectType()
 export class GroupResponse {
   @Field(() => String)
   _id: string;
 
-  @Field(() => [String])
-  members: ObjectId[];
+  @Field(() => [members_graphQl])
+  members: members_graphQl[];
 
   @Field(() => [String])
   admins: ObjectId[];

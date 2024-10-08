@@ -13,6 +13,7 @@ import {
   GroupMagazineSchema,
 } from '../schemas/magazine.group.schema';
 import { MagazineRepositoryMapper } from '../repository/mapper/magazine.repository.mapper';
+import { UserSchema } from 'src/contexts/user/infrastructure/schemas/user.schema';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { MagazineRepositoryMapper } from '../repository/mapper/magazine.reposito
       },
       { name: 'MagazineSection', schema: MagazineSectionModel.schema },
       { name: 'Magazine', schema: MagazineSchema },
+      { name: 'User', schema: UserSchema },
     ]),
   ],
   providers: [

@@ -10,6 +10,7 @@ import {
   GroupListResponse,
   GroupResponse,
 } from '../../application/adapter/dto/HTTP-RESPONSE/group.response';
+import { select } from 'firebase-functions/params';
 
 export class GroupRepository implements GroupRepositoryInterface {
   constructor(
@@ -28,23 +29,25 @@ export class GroupRepository implements GroupRepositoryInterface {
   async findGroupByName(
     name: string,
     limit: number,
+    keys: string[],
   ): Promise<GroupListResponse> {
     try {
       const regex = new RegExp(`${name}`, 'i'); // de esta forma buscamos el nombre en TODO EL STRING DE NAME
-
       // const regex = new RegExp(`^${name}`, 'i'); // de esta forma buscamos el nombre SOLO COMO EMPIEZA, SI EL NAME QUE BUSCA ESTA EN EL MEDIO NO APARECE
 
-      // Realiza la búsqueda con paginación
+      const keysString = keys.join(' ');
       const groups = await this.groupModel
         .find({ name: { $regex: regex } })
         .limit(limit + 1)
-        .sort({ name: 1 }) //  Ordena los resultados por nombre
+        .select(keysString)
+        .populate(keysString)
+        .sort({ name: 1 })
         .lean();
-
       const hasMore = groups.length > limit;
       const groupResponse = groups
         .slice(0, limit)
         .map((group) => this.groupMapper.toGroupResponse(group));
+
       return {
         groups: groupResponse,
         hasMore: hasMore,

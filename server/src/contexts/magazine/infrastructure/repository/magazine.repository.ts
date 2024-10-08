@@ -22,6 +22,8 @@ import { MagazineDocument, MagazineModel } from '../schemas/magazine.schema';
 import { Inject } from '@nestjs/common';
 import { MagazineRepositoryMapper } from './mapper/magazine.repository.mapper';
 import { MagazineRepositoryMapperInterface } from '../../domain/repository/mapper/magazine.respository.mapper.interface';
+import { IUser } from 'src/contexts/user/infrastructure/schemas/user.schema';
+import { UserMagazine } from '../../domain/entity/user.magazine';
 
 export class MagazineRepository implements MagazineRepositoryInterface {
   constructor(
@@ -39,6 +41,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
     private readonly userMagazine: Model<UserMagazineDocument>,
     @InjectModel(GroupMagazineModel.modelName)
     private readonly groupMagazine: Model<GroupMagazineDocument>,
+    @InjectModel('User') private readonly userModel: Model<IUser>,
   ) {}
   async findMagazineByMagazineId(
     id: ObjectId,
@@ -64,7 +67,6 @@ export class MagazineRepository implements MagazineRepositoryInterface {
         switch (magazine.getOwnerType) {
           case OwnerType.user: {
             const userMagazine = new this.userMagazine(magazine);
-            console.log(userMagazine);
             return await userMagazine.save();
           }
           case OwnerType.group: {
@@ -87,6 +89,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
     try {
       await session.withTransaction(async () => {
         const section = magazine.getSections.pop();
+        let magazineSaved;
 
         const newMagazineSection = new this.magazineSection(section);
         const sectionSave = await newMagazineSection.save({ session });
@@ -98,12 +101,18 @@ export class MagazineRepository implements MagazineRepositoryInterface {
         switch (magazine.getOwnerType) {
           case OwnerType.user: {
             const userMagazine = new this.userMagazine(magazineToSave);
-            await userMagazine.save({ session });
+            magazineSaved = await userMagazine.save({ session });
+            await this.userModel.findByIdAndUpdate(
+              userMagazine.user,
+              { $push: { magazines: magazineSaved._id } },
+              { session },
+            );
+
             break;
           }
           case OwnerType.group: {
             const groupMagazine = new this.groupMagazine(magazineToSave);
-            await groupMagazine.save({ session });
+            magazineSaved = await groupMagazine.save({ session });
             break;
           }
           default: {

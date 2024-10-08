@@ -44,6 +44,7 @@ export class MagazineService implements MagazineServiceInterface {
           const userMagazine = new UserMagazine(
             magazineBase,
             magazineRequest.collaborators,
+            magazineRequest.user,
             magazineRequest.visibility,
           );
           await this.magazineRepository.save(userMagazine);
