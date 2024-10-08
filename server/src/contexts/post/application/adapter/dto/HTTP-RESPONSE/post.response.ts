@@ -18,9 +18,9 @@ export interface PostResponse {
 
 export interface PostGoodResponse extends PostResponse {
   imagesUrls: string[];
-  year: number;
-  brand: string;
-  modelType: string;
+  year?: number | undefined;
+  brand?: string;
+  modelType?: string;
   reviews: string[];
   condition: string;
 }
