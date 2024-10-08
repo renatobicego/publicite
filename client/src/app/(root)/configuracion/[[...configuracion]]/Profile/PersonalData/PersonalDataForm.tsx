@@ -8,7 +8,7 @@ import { object, string } from "yup";
 import FormInputs from "./FormInputs";
 import { EditPersonProfileProps } from "@/types/userTypes";
 import { editProfile } from "../actions";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next-nprogress-bar";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 
 const personalDataFormSchema = object({

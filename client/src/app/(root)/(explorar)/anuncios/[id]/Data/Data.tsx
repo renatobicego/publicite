@@ -1,7 +1,7 @@
 import { getTimeBetweenToday } from "@/utils/functions/dates";
 import { conditionItems } from "@/utils/data/selectData";
 import { Good, Petition, Service } from "@/types/postTypes";
-import { parseDate } from "@internationalized/date";
+import { parseDate, parseDateTime } from "@internationalized/date";
 import ReviewsStars from "./ReviewsStars";
 import CategoryChip from "@/components/chips/CategoryChip";
 import ServiceChip from "@/components/chips/ServiceChip";
@@ -28,7 +28,7 @@ const Data = async ({
   const good = post as Good;
   const service = post as Service;
   const petition = post as Petition;
-  const datePublished = getTimeBetweenToday(parseDate(good.createAt));
+  const datePublished = getTimeBetweenToday(parseDateTime(post.createAt.replace("Z", "")));
   const showCondition =
     post.postType === "good"
       ? `${

@@ -19,7 +19,6 @@ export default async function MagazinePage({
   const magazine: Magazine | { error: string } = await getMagazineById(
     params.id
   );
-  console.log(magazine);
   if ("error" in magazine) {
     return <ErrorCard message={magazine.error} />;
   }

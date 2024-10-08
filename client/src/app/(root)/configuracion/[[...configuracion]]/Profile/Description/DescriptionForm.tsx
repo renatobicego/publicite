@@ -8,7 +8,7 @@ import {
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { editProfile } from "../actions";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next-nprogress-bar";
 
 const DescriptionForm = ({
   setIsFormVisible,

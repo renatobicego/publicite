@@ -15,7 +15,7 @@ const MagazineActions = ({
 }) => {
   return (
     <div className="flex gap-2 items-center max-md:flex-wrap justify-center">
-      {!isOwner && (
+      {isOwner && (
         <>
           <SecondaryButton as={Link} href={`${EDIT_MAGAZINE}/${magazine._id}`}>
             Editar

@@ -11,9 +11,8 @@ import RecommendedPosts from "./RecommendedPosts";
 import { currentUser } from "@clerk/nextjs/server";
 
 export default async function PostPage({ params }: { params: { id: string } }) {
-  const postData: Good | Service | Petition | { error: string } = await getPostData(
-    params.id
-  );
+  const postData: Good | Service | Petition | { error: string } =
+    await getPostData(params.id);
 
   if ("error" in postData) {
     return <ErrorCard message={postData.error} />;
@@ -35,23 +34,22 @@ export default async function PostPage({ params }: { params: { id: string } }) {
   ];
 
   const user = await currentUser();
-  const isAuthor = postData.author.username === user?.username;
+  // const isAuthor = postData.author.username === user?.username;
   const isPetition = postData.postType === "petition";
 
   return (
     <main className="flex min-h-screen flex-col items-start main-style gap-6 md:gap-8">
       <BreadcrumbsAdmin items={breadcrumbsItems} />
       <section className="w-full flex max-md:flex-col gap-4 lg:gap-6 3xl:gap-8 relative">
-        {!isPetition && (
-          <Images images={(postData as any).imagesUrls} />
-        )}
-        <Data post={postData} isAuthor={isAuthor} isPetition={isPetition} />
+        {!isPetition && <Images images={(postData as any).imagesUrls} />}
+        <Data post={postData} isAuthor={false} isPetition={isPetition} />
       </section>
       <section className="w-full flex max-lg:flex-col gap-4 lg:gap-6 3xl:gap-8 md:mt-6 xl:mt-8">
         <Comments
-          comments={postData.comments}
+          // comments={postData.comments}
+          comments={[]}
           postId={postData._id}
-          isAuthor={isAuthor}
+          isAuthor={false}
         />
         <RecommendedPosts recommendedPosts={mockedPosts} />
       </section>

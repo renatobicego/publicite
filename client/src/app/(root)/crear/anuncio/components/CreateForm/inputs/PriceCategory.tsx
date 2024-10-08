@@ -2,7 +2,6 @@ import {
   CustomInput,
   CustomSelect,
 } from "@/components/inputs/CustomInputs";
-import { categories } from "@/utils/data/mockedData";
 import { frequencyPriceItems } from "@/utils/data/selectData";
 import {
   GoodPostValues,
@@ -10,8 +9,10 @@ import {
   ServicePostValues,
 } from "@/types/postTypes";
 import { Field, FormikErrors } from "formik";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FaDollarSign } from "react-icons/fa6";
+import { getCategories } from "@/services/postsServices";
+import { toastifyError } from "@/utils/functions/toastify";
 
 const PriceCategory = ({
   errors,
@@ -19,7 +20,17 @@ const PriceCategory = ({
 }: {
   errors: FormikErrors<GoodPostValues> | FormikErrors<ServicePostValues>;
   isService?: boolean;
-}) => {
+  }) => {
+  const [categories, setCategories] = useState<PostCategory[]>([])
+  useEffect(() => {
+    getCategories().then((data) => {
+      if (data.error) {
+        toastifyError(data.error)
+        return
+      }
+      setCategories(data)
+    })
+  }, [])
   return (
     <>
       <div className="flex gap-4 max-xl:flex-wrap">

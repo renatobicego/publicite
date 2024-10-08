@@ -13,7 +13,7 @@ import { getLocalTimeZone, today } from "@internationalized/date";
 import useUploadFiles from "@/utils/hooks/useUploadFiles";
 import { createPost } from "../../../../../server/postActions";
 import { POSTS } from "@/utils/data/urls";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next-nprogress-bar";
 import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
 import { useAttachedFiles } from "../CreateForm/inputs/AccordionInputs/AttachedFIles/AttachedFilesContext";
 

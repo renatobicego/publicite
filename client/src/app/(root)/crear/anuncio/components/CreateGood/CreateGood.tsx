@@ -12,11 +12,11 @@ import { useUser } from "@clerk/nextjs";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { getLocalTimeZone, today } from "@internationalized/date";
 import { createPost } from "../../../../../server/postActions";
-import { useRouter } from "next/navigation";
 import { POSTS } from "@/utils/data/urls";
 import useUploadFiles from "@/utils/hooks/useUploadFiles";
 import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
 import { useAttachedFiles } from "../CreateForm/inputs/AccordionInputs/AttachedFIles/AttachedFilesContext";
+import { useRouter } from "next-nprogress-bar";
 
 const CreateGood = ({
   files,

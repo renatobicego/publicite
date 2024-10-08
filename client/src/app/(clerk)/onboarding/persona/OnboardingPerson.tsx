@@ -1,6 +1,6 @@
 "use client";
 import { useUser } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next-nprogress-bar";
 import { Form, Formik, FormikHelpers } from "formik";
 import { UserPersonFormValues } from "@/types/userTypes";
 import PrimaryButton from "@/components/buttons/PrimaryButton";

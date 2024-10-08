@@ -8,7 +8,7 @@ import {
   PostUserMagazine,
   userMagazine,
 } from "./initialValues";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next-nprogress-bar";
 import { Form, Formik, FormikHelpers } from "formik";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { magazineValidation } from "./validation";

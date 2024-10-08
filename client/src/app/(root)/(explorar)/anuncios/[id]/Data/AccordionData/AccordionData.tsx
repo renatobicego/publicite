@@ -72,7 +72,10 @@ const AccordionData = ({
         title="Opiniones"
       >
         {"reviews" in post && post.reviews.length > 0 ? (
-          <Reviews reviews={post.reviews} />
+          <Reviews
+            // reviews={post.reviews}
+            reviews={[]}
+          />
         ) : (
           <p className="text-light-text text-sm">
             Nadie ha calificado este anuncio ¡Sé el primero!
