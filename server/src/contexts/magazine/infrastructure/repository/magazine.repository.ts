@@ -69,6 +69,11 @@ export class MagazineRepository implements MagazineRepositoryInterface {
         .populate({
           path: 'sections',
           select: '_id isFatherSection posts title',
+          populate: {
+            path: 'posts',
+            select:
+              '_id imagesUrls title description price frequencyPrice petitionType',
+          },
         })
         .populate({
           path: 'allowedColaborators',
@@ -81,7 +86,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
         session.endSession();
         return null;
       }
-
+      console.log(magazine);
       await session.commitTransaction();
       session.endSession();
       return this.magazineRepositoryMapper.toReponse(magazine);
