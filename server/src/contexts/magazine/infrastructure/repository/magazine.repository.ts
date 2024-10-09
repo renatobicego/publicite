@@ -72,7 +72,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
           populate: {
             path: 'posts',
             select:
-              '_id imagesUrls title description price frequencyPrice petitionType',
+              '_id imagesUrls title description price frequencyPrice petitionType postType',
           },
         })
         .populate({

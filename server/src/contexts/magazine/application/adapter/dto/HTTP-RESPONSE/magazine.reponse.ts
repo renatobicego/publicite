@@ -1,9 +1,6 @@
 import { Field, Float, ObjectType } from '@nestjs/graphql';
 import { ObjectId } from 'mongoose';
 
-// CONSULTAR SI QUIERE EL POPULATE EN EL FRONT O NO
-// En el caso de que si hay que armar un objeto en users para poder devolverlo
-
 @ObjectType()
 export class posts_graphql_magazine {
   @Field(() => String, { nullable: true })
@@ -29,6 +26,9 @@ export class posts_graphql_magazine {
 
   @Field(() => String, { nullable: true })
   petitionType: string;
+
+  @Field(() => String, { nullable: true })
+  postType: string;
 }
 
 @ObjectType()
