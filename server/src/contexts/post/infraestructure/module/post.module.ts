@@ -1,20 +1,21 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import PostModel from '../schemas/post.schema';
-import { PostController } from '../controller/post.controller';
+import PostModel from '../post/schemas/post.schema';
+
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
-import { PostService } from '../../application/service/post.service';
-import { PostRepository } from '../repository/post.repository';
-import { PostRepositoryMapper } from '../repository/mapper/post.repository.mapper';
-import { PostAdapterMapper } from '../controller/adapter/mapper/post.adapter.mapper';
+import { PostService } from '../../application/post/service/post.service';
+import { PostRepository } from '../post/repository/post.repository';
+import { PostRepositoryMapper } from '../post/repository/mapper/post.repository.mapper';
 import { UserModule } from 'src/contexts/user/infrastructure/module/user.module';
-import { PostAdapter } from '../controller/adapter/post.adapter';
-import { PostLocationSchema } from '../schemas/postLocation.schema';
-import { PostGoodModel } from '../schemas/post-types-schemas/post.good.schema';
-import { PostServiceModel } from '../schemas/post-types-schemas/post.service.schema';
-import { PostPetitionModel } from '../schemas/post-types-schemas/post.petition.schema';
-import { PostResolver } from '../graphql/resolver/post.resolver';
+import { PostLocationSchema } from '../post/schemas/postLocation.schema';
+import { PostGoodModel } from '../post/schemas/post-types-schemas/post.good.schema';
+import { PostServiceModel } from '../post/schemas/post-types-schemas/post.service.schema';
+import { PostPetitionModel } from '../post/schemas/post-types-schemas/post.petition.schema';
 import { UserSchema } from 'src/contexts/user/infrastructure/schemas/user.schema';
+import { PostController } from '../post/controller/post.controller';
+import { PostAdapterMapper } from '../post/controller/adapter/mapper/post.adapter.mapper';
+import { PostAdapter } from '../post/controller/adapter/post.adapter';
+import { PostResolver } from '../post/graphql/resolver/post.resolver';
 
 @Module({
   imports: [
