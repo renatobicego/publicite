@@ -12,7 +12,7 @@ boton de compartir app
 agregar endate a post
 carpeta posts
 
-solo administradores pueden crear revista?
+solo administradores de grupo pueden crear revista?
 miembors de grupo pueden ver anuncios d eotro aunque esten como solo para amigos?
 las publciaciones de necesidad se suman al limite?
 colaboradores de revista y miembros es por invitación o se lo agrega directamente

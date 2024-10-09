@@ -80,7 +80,7 @@ const CreatePetition = () => {
       location: dbLocation,
       attachedFiles,
       category: [values.category],
-    });
+    }, true);
     if (resApi.error) {
       toastifyError(resApi.error);
       actions.setSubmitting(false);
