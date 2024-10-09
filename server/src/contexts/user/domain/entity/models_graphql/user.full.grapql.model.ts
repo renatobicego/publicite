@@ -35,6 +35,14 @@ export class Subscriptions_Full_Graphql_Model {
 }
 
 @ObjectType()
+export class Post_full_Graph {
+  @Field(() => ID, { nullable: true })
+  _id?: ObjectId;
+
+  @Field(() => [String], { nullable: true })
+  imagesUrls: string[];
+}
+@ObjectType()
 export class Groups_Full_Graphql_Model {
   @Field(() => ID, { nullable: true })
   _id?: ObjectId;
@@ -50,6 +58,15 @@ export class Groups_Full_Graphql_Model {
 }
 
 @ObjectType()
+export class Sections_Full_Graphql_Model {
+  @Field(() => ID, { nullable: true })
+  _id?: ObjectId;
+
+  @Field(() => [Post_full_Graph], { nullable: true })
+  posts: Post_full_Graph[];
+}
+
+@ObjectType()
 export class Magazines_Full_Graphql_Model {
   @Field(() => ID, { nullable: true })
   _id?: ObjectId;
@@ -57,26 +74,8 @@ export class Magazines_Full_Graphql_Model {
   @Field(() => String, { nullable: true })
   name: string;
 
-  @Field(() => Sections_Full_Graphql_Model, { nullable: true })
+  @Field(() => [Sections_Full_Graphql_Model], { nullable: true })
   sections: Sections_Full_Graphql_Model[];
-}
-
-@ObjectType()
-export class Post_full_Graph {
-  @Field(() => ID, { nullable: true })
-  _id?: ObjectId;
-
-  @Field(() => [String], { nullable: true })
-  imagesUrls: string[];
-}
-
-@ObjectType()
-export class Sections_Full_Graphql_Model {
-  @Field(() => ID, { nullable: true })
-  _id?: ObjectId;
-
-  @Field(() => Post_full_Graph, { nullable: true })
-  posts: Post_full_Graph[];
 }
 
 @ObjectType()

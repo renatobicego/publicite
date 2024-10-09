@@ -83,6 +83,11 @@ type Subscriptions_Full_Graphql_Model {
   timeOfUpdate: String
 }
 
+type Post_full_Graph {
+  _id: ID
+  imagesUrls: [String!]
+}
+
 type Groups_Full_Graphql_Model {
   _id: ID
   name: String
@@ -90,20 +95,15 @@ type Groups_Full_Graphql_Model {
   profilePhotoUrl: String
 }
 
+type Sections_Full_Graphql_Model {
+  _id: ID
+  posts: [Post_full_Graph!]
+}
+
 type Magazines_Full_Graphql_Model {
   _id: ID
   name: String
-  sections: Sections_Full_Graphql_Model
-}
-
-type Post_full_Graph {
-  _id: ID
-  imagesUrls: [String!]
-}
-
-type Sections_Full_Graphql_Model {
-  _id: ID
-  posts: Post_full_Graph
+  sections: [Sections_Full_Graphql_Model!]
 }
 
 type User_Full_Grapql_Model {
@@ -235,6 +235,7 @@ type posts_graphql_magazine {
   price: Float
   frequencyPrice: String
   petitionType: String
+  postType: String
 }
 
 type collaborators_graphql {
