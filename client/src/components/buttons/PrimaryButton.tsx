@@ -15,7 +15,7 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = ({
       color="primary"
       {...props}
       className={`px-4 py-[10px] hover:bg-text-color/75 hover:!opacity-100
-         max-md:text-xs text-sm font-medium ${props.className}`}
+         max-md:text-small text-sm font-medium ${props.className}`}
     >
       {children}
     </Button>

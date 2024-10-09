@@ -27,7 +27,9 @@ import {
   mockedNewContactRelation,
   mockedPaymentSuccess,
   mockedPostShared,
+  mockedReviewPost,
 } from "@/utils/data/mockedNotifications";
+import ReviewRequest from "../notifications/posts/ReviewRequest";
 
 const Notifications = () => {
   const [screenSize, setScreenSize] = useState(0);
@@ -102,11 +104,18 @@ const MobileNotifications = () => {
           <FaBell className="size-6" />
         </Badge>
       </Button>
-      <Modal placement="center" isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal
+        classNames={{ body: "max-h-[80vh] overflow-y-auto px-0", header: "px-0" }}
+        placement="center"
+        className="max-md:px-4"
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+      >
         <ModalContent>
-          <ModalBody>
-            {isOpen && <NotificationsContent />}
-          </ModalBody>
+          <ModalHeader>
+            <h5>Notificaciones</h5>
+          </ModalHeader>
+          <ModalBody>{isOpen && <NotificationsContent />}</ModalBody>
         </ModalContent>
       </Modal>
     </>
@@ -115,14 +124,14 @@ const MobileNotifications = () => {
 
 const NotificationsContent = () => {
   return (
-    <div className="p-2 flex flex-col gap-2">
-      <div className="font-bold">Notificaciones</div>
+    <div className="max-md:mb-4 md:p-2 flex flex-col gap-2">
       <NewContactPost notification={mockedNewContactPost} />
       <NewContactRequest notification={mockedNewContactRelation} />
       <GroupInvitation notification={mockedGroupInvitation} />
       <PostShared notification={mockedPostShared} />
       <MagazineInvitation notification={mockedMagazineInvitation} />
       <PaymentSuccess notification={mockedPaymentSuccess} />
+      <ReviewRequest notification={mockedReviewPost} />
     </div>
   );
 };

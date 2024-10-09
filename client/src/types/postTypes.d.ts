@@ -203,3 +203,10 @@ export interface MagazineInvitationNotification {
   userInviting: Pick<User, "username">;
   date: string;
 }
+
+export interface ReviewPostNotification {
+  _id: ObjectId;
+  post: Post;
+  date: string;
+  userAsking: Pick<User, "_id" | "username">;
+}

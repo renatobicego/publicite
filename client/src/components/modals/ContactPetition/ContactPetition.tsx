@@ -1,16 +1,13 @@
 import PostCard from "@/components/cards/PostCard/PostCard";
 import {
   CustomInputWithoutFormik,
-  CustomTextarea,
   CustomTextareaWithoutFormik,
 } from "@/components/inputs/CustomInputs";
 import { Post, PostContactNotification } from "@/types/postTypes";
 import {
-  Button,
   Modal,
   ModalBody,
   ModalContent,
-  ModalFooter,
   ModalHeader,
 } from "@nextui-org/react";
 

@@ -1,5 +1,5 @@
 import { Field, FormikErrors } from "formik";
-import { ChangeEvent, memo } from "react";
+import { ChangeEvent, memo, useEffect, useState } from "react";
 import {
   CustomInput,
   CustomSelect,
@@ -11,6 +11,9 @@ import { mockedUsers } from "@/utils/data/mockedData";
 import { Divider } from "@nextui-org/react";
 import SecondaryButton from "@/components/buttons/SecondaryButton";
 import { PostGroupMagazine, PostUserMagazine } from "./initialValues";
+import { useUser } from "@clerk/nextjs";
+import { getUsers } from "@/services/userServices";
+import { toastifyError } from "@/utils/functions/toastify";
 
 const Inputs = ({
   errors,
@@ -25,6 +28,12 @@ const Inputs = ({
     shouldValidate?: boolean
   ) => Promise<void | FormikErrors<PostUserMagazine | PostGroupMagazine>>;
 }) => {
+  const [userContacts, setUserContacts] = useState([]);
+  const { user } = useUser();
+
+  useEffect(() => {
+    getUsers(null).then((users) => setUserContacts(users.items));
+  }, []);
   return (
     <>
       <Field
@@ -82,7 +91,7 @@ const Inputs = ({
         }
         name={isUserMagazine ? "collaborators" : "allowedCollaborators"}
         aria-label="invitar colaboradores"
-        items={mockedUsers}
+        items={userContacts}
       />
       {!isUserMagazine && (
         <SecondaryButton

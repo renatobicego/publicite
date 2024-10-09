@@ -2,6 +2,7 @@ import {
   MagazineInvitationNotification,
   PostContactNotification,
   PostSharedNotification,
+  ReviewPostNotification,
 } from "@/types/postTypes";
 import { mockedPosts, mockedUsers } from "./mockedData";
 import {
@@ -90,4 +91,11 @@ export const mockedPaymentSuccess: PaymentSuccesNotification = {
   subscriptionPlan: {
     reason: "Suscripción mensual",
   },
+};
+
+export const mockedReviewPost: ReviewPostNotification = {
+  _id: "7",
+  date: "2024-01-01",
+  post: mockedPosts[0],
+  userAsking: mockedUsers[0],
 };
