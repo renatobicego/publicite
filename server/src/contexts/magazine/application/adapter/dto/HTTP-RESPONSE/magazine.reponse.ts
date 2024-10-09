@@ -1,8 +1,35 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, Float, ObjectType } from '@nestjs/graphql';
 import { ObjectId } from 'mongoose';
 
 // CONSULTAR SI QUIERE EL POPULATE EN EL FRONT O NO
 // En el caso de que si hay que armar un objeto en users para poder devolverlo
+
+@ObjectType()
+export class posts_graphql_magazine {
+  @Field(() => String, { nullable: true })
+  _id: ObjectId;
+
+  @Field(() => [String], { nullable: true })
+  imagesUrls: string[];
+
+  @Field(() => String, { nullable: true })
+  title: string;
+
+  @Field(() => String, { nullable: true })
+  description: string;
+
+  @Field(() => Float, { nullable: true })
+  price: number;
+
+  // @Field(() => String, { nullable: true })
+  // reviews: string;
+
+  @Field(() => String, { nullable: true })
+  frequencyPrice: string;
+
+  @Field(() => String, { nullable: true })
+  petitionType: string;
+}
 
 @ObjectType()
 export class collaborators_graphql {
@@ -17,22 +44,22 @@ export class collaborators_graphql {
 }
 
 @ObjectType()
-export class sections_graphql {
+export class sections_graphql_magazine {
   @Field(() => String, { nullable: true })
   _id: ObjectId;
 
   @Field(() => Boolean, { nullable: true })
   isFatherSection: boolean;
 
-  // @Field(() => String, { nullable: true })
-  // posts: string;
+  @Field(() => [posts_graphql_magazine], { nullable: true })
+  posts: posts_graphql_magazine[];
 
   @Field(() => String, { nullable: true })
   title: string;
 }
 
 @ObjectType()
-export class group_graphql {
+export class group_graphql_magazine {
   @Field(() => String, { nullable: true })
   _id: ObjectId;
 
@@ -44,7 +71,7 @@ export class group_graphql {
 }
 
 @ObjectType()
-export class allowedColaborators_graphql {
+export class allowedColaborators_graphql_magazine {
   @Field(() => String, { nullable: true })
   _id: ObjectId;
 
@@ -56,7 +83,7 @@ export class allowedColaborators_graphql {
 }
 
 @ObjectType()
-export class user_graphql {
+export class user_graphql_magazine {
   @Field(() => String, { nullable: true })
   _id: ObjectId;
 
@@ -75,8 +102,8 @@ export class MagazineResponse {
   @Field(() => String)
   name: string;
 
-  @Field(() => [sections_graphql])
-  sections: sections_graphql[];
+  @Field(() => [sections_graphql_magazine])
+  sections: sections_graphql_magazine[];
 
   @Field(() => String)
   ownerType: string;
@@ -88,17 +115,17 @@ export class MagazineResponse {
   @Field(() => [collaborators_graphql], { nullable: true })
   collaborators?: collaborators_graphql[];
 
-  @Field(() => user_graphql, { nullable: true })
-  user?: user_graphql;
+  @Field(() => user_graphql_magazine, { nullable: true })
+  user?: user_graphql_magazine;
 
   @Field(() => String, { nullable: true })
   visibility?: string;
 
-  @Field(() => [allowedColaborators_graphql], { nullable: true })
-  allowedColaborators?: allowedColaborators_graphql;
+  @Field(() => [allowedColaborators_graphql_magazine], { nullable: true })
+  allowedColaborators?: allowedColaborators_graphql_magazine;
 
-  @Field(() => group_graphql, { nullable: true })
-  group?: group_graphql;
+  @Field(() => group_graphql_magazine, { nullable: true })
+  group?: group_graphql_magazine;
 
   constructor(magazine: any) {
     this._id = magazine._id;

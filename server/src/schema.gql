@@ -227,31 +227,42 @@ type GroupListResponse {
   hasMore: Boolean!
 }
 
+type posts_graphql_magazine {
+  _id: String
+  imagesUrls: [String!]
+  title: String
+  description: String
+  price: Float
+  frequencyPrice: String
+  petitionType: String
+}
+
 type collaborators_graphql {
   _id: String
   username: String
   profilePhotoUrl: String
 }
 
-type sections_graphql {
+type sections_graphql_magazine {
   _id: String
   isFatherSection: Boolean
+  posts: [posts_graphql_magazine!]
   title: String
 }
 
-type group_graphql {
+type group_graphql_magazine {
   _id: String
   name: String
   profilePhotoUrl: String
 }
 
-type allowedColaborators_graphql {
+type allowedColaborators_graphql_magazine {
   _id: String
   username: String
   profilePhotoUrl: String
 }
 
-type user_graphql {
+type user_graphql_magazine {
   _id: String
   username: String
   profilePhotoUrl: String
@@ -260,14 +271,14 @@ type user_graphql {
 type MagazineResponse {
   _id: String!
   name: String!
-  sections: [sections_graphql!]!
+  sections: [sections_graphql_magazine!]!
   ownerType: String!
   description: String
   collaborators: [collaborators_graphql!]
-  user: user_graphql
+  user: user_graphql_magazine
   visibility: String
-  allowedColaborators: [allowedColaborators_graphql!]
-  group: group_graphql
+  allowedColaborators: [allowedColaborators_graphql_magazine!]
+  group: group_graphql_magazine
 }
 
 type PostCategoryResponse {
