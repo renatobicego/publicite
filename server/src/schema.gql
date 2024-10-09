@@ -235,6 +235,7 @@ type posts_graphql_magazine {
   price: Float
   frequencyPrice: String
   petitionType: String
+  postType: String
 }
 
 type collaborators_graphql {

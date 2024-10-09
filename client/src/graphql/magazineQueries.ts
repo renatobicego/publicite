@@ -29,9 +29,19 @@ export const getMagazineByIdQuery = gql`
       name
       ownerType
       sections {
-        title
-        isFatherSection
         _id
+        isFatherSection
+        posts {
+          _id
+          description
+          frequencyPrice
+          imagesUrls
+          petitionType
+          postType
+          price
+          title
+        }
+        title
       }
       user {
         username

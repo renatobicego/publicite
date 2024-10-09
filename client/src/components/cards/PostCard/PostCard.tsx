@@ -16,7 +16,8 @@ const PostCard = ({
   className?: string;
   savePostMagazine?: boolean;
   isGroupPost?: boolean;
-}) => {
+  }) => {
+  console.log(postData)
   const { postType } = postData;
   const PostCardToReturn = () => {
     switch (postType) {
@@ -44,7 +45,7 @@ const PostCard = ({
           />
         );
       default:
-        break;
+        throw new Error("Invalid post type");
     }
   };
 

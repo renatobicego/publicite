@@ -58,10 +58,7 @@ const CreateMagazineForm = ({
       user
     );
 
-    const resApi = await createMagazine({
-      ...finalValues,
-      addedPost: "6700845734e0ffb19c9913c1",
-    });
+    const resApi = await createMagazine(finalValues);
     if (resApi.error) {
       toastifyError(resApi.error);
       actions.setSubmitting(false);

@@ -8,7 +8,8 @@ const MagazinesGrid = ({
 }: {
   magazines: Magazine[];
   isLoading?: boolean;
-}) => {
+  }) => {
+  console.log(magazines[0].sections)
   return (
     <>
       {!isLoading && ( !magazines || magazines.length === 0) ? (

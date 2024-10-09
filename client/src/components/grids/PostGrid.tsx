@@ -13,7 +13,7 @@ const PostsGrid = ({
   recommendation?: boolean;
   isLoading?: boolean;
   isGroupPosts?: boolean;
-}) => {
+  }) => {
   return (
     <>
       {isGroupPosts ? (
