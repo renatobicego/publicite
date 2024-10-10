@@ -51,7 +51,7 @@ export const getGroupPosts = async (
     };
   try {
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    return { items: [...mockedPosts, ...mockedPetitions] };
+    return { items: [...mockedPosts, ...mockedPetitions], hasMore: false };
   } catch (error) {
     return {
       error: "Error al traer anuncios del grupo. Por favor intenta de nuevo.",
