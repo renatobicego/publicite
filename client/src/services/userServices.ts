@@ -76,6 +76,7 @@ export const getUserPreferences = async (username: string) => {
 
 export const getUsers = async (searchTerm: string | null) => {
   try {
+    console.log(searchTerm)
     const res = await fetch(`${process.env.API_URL}/user?user=${searchTerm ? searchTerm : ''}&limit=20`, {
       headers: {
         Cookie: cookies().toString(),
