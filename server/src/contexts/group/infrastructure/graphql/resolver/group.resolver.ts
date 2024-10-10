@@ -53,14 +53,9 @@ export class GroupResolver {
     @Args('name', { type: () => String })
     name: string,
     @Args('limit', { type: () => Number, nullable: true }) limit: number,
-    @Info() info: any,
   ): Promise<GroupListResponse> {
     try {
-      const keys = info.fieldNodes[0].selectionSet.selections
-        .find((selection: any) => selection.name.value === 'groups')
-        .selectionSet.selections.map((item: any) => item.name.value);
-
-      return await this.groupAdapter.findGroupByName(name, limit, keys);
+      return await this.groupAdapter.findGroupByName(name, limit);
     } catch (error: any) {
       throw error;
     }

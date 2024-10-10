@@ -95,7 +95,6 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
         );
         await this.mpWebhookService.create_payment(paymentResponse);
         return Promise.resolve(true);
-
       default:
         this.logger.warn(
           'MpWebhookAdapter - Case paymenty.created - STATUS: default, sending response OK to meli & return',
@@ -147,9 +146,16 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
         await this.mpWebhookService.updatePayment(paymentResponse);
         return Promise.resolve(true);
       case 'rejected':
-        // VER SI HACEMOS ALGO CON EL STATUS REJECTED CUANDO LLEGA UN PAGO
         this.logger.warn(
-          'MpWebhookAdapter - Case paymenty.UPDATE - STATUS: REJECTED',
+          'MpWebhookAdapter - Case payment.UPDATE - STATUS: ' +
+            paymentResponse.status,
+        );
+        await this.mpWebhookService.updatePayment(paymentResponse);
+        return Promise.resolve(true);
+      case 'cancelled':
+        this.logger.warn(
+          'MpWebhookAdapter - Case payment.UPDATE - STATUS: ' +
+            paymentResponse.status,
         );
         await this.mpWebhookService.updatePayment(paymentResponse);
         return Promise.resolve(true);
@@ -157,7 +163,7 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
         this.logger.warn(
           'MpWebhookAdapter - Case paymenty.UPDATE - STATUS: Unknown payment status, sending response OK to meli & return',
         );
-        throw new Error('Unknown payment status' + paymentResponse.status);
+        throw new Error('Unknown payment status: ' + paymentResponse.status);
     }
   }
   async handleEvent_subscription_preapproval_create(
@@ -270,7 +276,8 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
 
       if (
         rejectedStatuses.has(subscriptionStatus) ||
-        paymentStatus === 'rejected'
+        paymentStatus === 'rejected' ||
+        paymentStatus === 'cancelled'
       ) {
         this.logger.warn(
           `Status is rejected, returning OK to Meli and pausing the subscription. Preapproval_id: ${subscription_authorized_payment.preapproval_id}`,

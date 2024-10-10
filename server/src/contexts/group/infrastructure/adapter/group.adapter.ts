@@ -24,10 +24,9 @@ export class GroupAdapter implements GroupAdapterInterface {
   async findGroupByName(
     name: string,
     limit: number,
-    keys?: string[],
   ): Promise<GroupListResponse> {
     try {
-      const response = await this.groupService.findGroupByName(name, limit, keys);
+      const response = await this.groupService.findGroupByName(name, limit);
       return response;
     } catch (error: any) {
       throw error;

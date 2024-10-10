@@ -90,7 +90,7 @@ export class WebhookController {
       //Valido el origen de la petición
 
       const authSecretValidation =
-        await this.mpWebhookAdapter.subscription_authorized_payment("7013028266","created");
+        await this.mpWebhookAdapter.subscription_authorized_payment("7013371913","created");
       if (authSecretValidation) {
         //En el caso de que validemos el origen y que el pago se complete correctamente, vamos a deolver el estado OK, de lo contrario esta operacion no se hara 
         this.logger.log('Webhook MP OK - Credentials are valid - WEBHOOK_PROCESS: COMPLETE ---> sending response to Meli - Class:WebhookController 🚀')

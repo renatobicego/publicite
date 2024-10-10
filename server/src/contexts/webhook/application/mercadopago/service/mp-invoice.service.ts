@@ -98,6 +98,7 @@ export class MpInvoiceService implements MpServiceInvoiceInterface {
         subscription_authorized_payment.preapproval_id, // ID de la suscripcion en MELI
         subscription_authorized_payment.external_reference,
         timeOfUpdate,
+        subscription_authorized_payment.id, // ID de la factura en meli
       );
       await this.mpInvoiceRepository.saveInvoice(newInvoice);
     }

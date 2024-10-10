@@ -29,7 +29,6 @@ export class GroupRepository implements GroupRepositoryInterface {
   async findGroupByName(
     name: string,
     limit: number,
-    keys: string[],
   ): Promise<GroupListResponse> {
     try {
       const regex = new RegExp(`${name}`, 'i'); // de esta forma buscamos el nombre en TODO EL STRING DE NAME

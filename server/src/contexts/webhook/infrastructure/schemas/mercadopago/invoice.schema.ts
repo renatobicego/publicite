@@ -16,6 +16,7 @@ export const InvoiceSchema = new Schema({
   preapprovalId: { type: String, required: true },
   external_reference: { type: String, required: true },
   timeOfUpdate: { type: String },
+  invoice_id: { type: String, required: true },
 });
 
 export interface InvoiceDocument extends Document {
@@ -26,4 +27,5 @@ export interface InvoiceDocument extends Document {
   preapprovalId: string;
   external_reference: string;
   timeOfUpdate: string;
+  invoice_id: string;
 }
