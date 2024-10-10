@@ -17,7 +17,6 @@ const PostCard = ({
   savePostMagazine?: boolean;
   isGroupPost?: boolean;
   }) => {
-  console.log(postData)
   const { postType } = postData;
   const PostCardToReturn = () => {
     switch (postType) {

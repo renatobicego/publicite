@@ -6,7 +6,7 @@ import { BackgroundProvider } from "./backgroundProvider";
 import BackgroundStyle from "./BackgroundStyle.";
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { extractRouterConfig } from "uploadthing/server";
-import { ourFileRouter } from "@/app/api/uploadthing/core"
+// import { ourFileRouter } from "@/app/api/uploadthing/core"
 export default async function NavigationLayout({
   children,
 }: {
@@ -15,9 +15,9 @@ export default async function NavigationLayout({
   const user = await currentUser();
   return (
     <>
-      <NextSSRPlugin
+      {/* <NextSSRPlugin
         routerConfig={extractRouterConfig(ourFileRouter)}
-      />
+      /> */}
       <Header />
       <BackgroundProvider username={user?.username}>
         <BackgroundStyle />

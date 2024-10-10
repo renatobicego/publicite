@@ -27,3 +27,20 @@ export const getGroupByIdQuery = gql`
     }
   }
 `;
+
+export const getGroupsQuery = gql`
+  query GetGroupByName($name: String!, $limit: Float) {
+    getGroupByName(name: $name, limit: $limit) {
+      groups {
+        _id
+        name
+        members {
+          _id
+        }
+        profilePhotoUrl
+        visibility
+      }
+      hasMore
+    }
+  }
+`;
