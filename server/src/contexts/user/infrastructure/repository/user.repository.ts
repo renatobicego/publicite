@@ -1,7 +1,7 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { UserRepositoryInterface } from '../../domain/repository/user-repository.interface';
-import { ClientSession, Model, ObjectId } from 'mongoose';
-import { InjectModel } from '@nestjs/mongoose';
+import { ClientSession, Connection, Model, ObjectId } from 'mongoose';
+import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { IUserPerson, UserPersonModel } from '../schemas/userPerson.schema';
 import {
   IUserBusiness,
@@ -43,16 +43,46 @@ export class UserRepository implements UserRepositoryInterface {
     private readonly userRepositoryMapper: UserRepositoryMapperInterface,
 
     private readonly logger: MyLoggerService,
+    @InjectConnection() private readonly connection: Connection,
   ) {}
 
   async findUserByUsername(username: string, keys: string[]): Promise<any> {
     try {
-      const keysString = keys.join(' ');
-
-      return await this.user
+      const session = await this.connection.startSession();
+      session.startTransaction();
+      const user = await this.user
         .findOne({ username })
-        .select(keysString)
-        .populate(keysString);
+        .select(
+          '_id profilePhotoUrl username contact lastName name countryRegion userType board description email suscriptions groups magazines userRelations posts',
+        )
+        .populate('contact board groups')
+        .populate({
+          path: 'magazines',
+          select: '_id name sections',
+          populate: {
+            path: 'sections',
+            select: 'posts',
+            populate: {
+              path: 'posts',
+              select: 'imagesUrls',
+            },
+          },
+        })
+        .populate({
+          path: 'posts',
+          select:
+            '_id imagesUrls title description price frequencyPrice petitionType postType toPrice',
+        })
+        .session(session);
+
+      if (!user) {
+        await session.abortTransaction();
+        session.endSession();
+        return null;
+      }
+      await session.commitTransaction();
+      session.endSession();
+      return user;
     } catch (error: any) {
       console.log(error);
       throw error;
