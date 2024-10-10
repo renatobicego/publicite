@@ -17,10 +17,8 @@ export const getGroups = async (searchTerm: string | null) => {
       query: getGroupsQuery,
       variables: { name: searchTerm ? searchTerm : "", limit: 20.0 },
     });
-    console.log(data);
-    return { items: mockedGroups };
+    return { items: data.getGroupByName.groups, hasMore: data.getGroupByName.hasMore };
   } catch (error) {
-    console.log(error);
     return {
       error: "Error al traer grupos. Por favor intenta de nuevo.",
     };
@@ -36,7 +34,6 @@ export const getGroupById = async (id: string) => {
 
     return data.getGroupById;
   } catch (error) {
-    console.log(error);
     return {
       error:
         "Error al traer información del grupo. Por favor intenta de nuevo.",

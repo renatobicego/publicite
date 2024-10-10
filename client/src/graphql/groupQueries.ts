@@ -12,13 +12,16 @@ export const getGroupByIdQuery = gql`
   query GetGroupById($getGroupByIdId: String!) {
     getGroupById(id: $getGroupByIdId) {
       _id
-      admins
+      admins {
+        username
+        _id
+      }
       details
       magazines
       members {
-        _id
-        profilePhotoUrl
         username
+        profilePhotoUrl
+        _id
       }
       name
       profilePhotoUrl

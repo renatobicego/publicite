@@ -1,5 +1,5 @@
 import { createRouteHandler } from "uploadthing/next";
-import { ourFileRouter } from "./core";
+import { ourFileRouter } from "../../server/core";
  
  
 // Export routes for Next App Router
