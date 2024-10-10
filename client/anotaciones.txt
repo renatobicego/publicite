@@ -11,6 +11,8 @@ Podríamos:
 boton de compartir app
 agregar endate a post
 carpeta posts
+paginacion
+buscador pete
 
 solo administradores de grupo pueden crear revista?
 miembors de grupo pueden ver anuncios d eotro aunque esten como solo para amigos?
