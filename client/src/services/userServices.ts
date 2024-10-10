@@ -76,7 +76,6 @@ export const getUserPreferences = async (username: string) => {
 
 export const getUsers = async (searchTerm: string | null) => {
   try {
-    console.log(searchTerm)
     const res = await fetch(`${process.env.API_URL}/user?user=${searchTerm ? searchTerm : ''}&limit=20`, {
       headers: {
         Cookie: cookies().toString(),
@@ -86,7 +85,7 @@ export const getUsers = async (searchTerm: string | null) => {
     return {items: data.user, hasMore: data.hasMore};
   } catch (error) {
     return {
-      error: "Error al traer las preferencias. Por favor intenta de nuevo.",
+      error: "Error al traer los usuarios. Por favor intenta de nuevo.",
     };
   }
 };

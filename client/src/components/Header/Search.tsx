@@ -35,6 +35,7 @@ const Search = ({
     new Set(["recomendados"])
   );
   const router = useRouter(); // Next.js router for redirection
+  
 
   // Dynamically set the URL based on the selected search category
   const getSearchURL = () => {
@@ -115,7 +116,7 @@ const DropdownSolapas = ({
     puntuados: "Mejor Puntuados",
     vencer: "Próximos a Vencer",
     pizarras: "Pizarras",
-    contactos: "Contactos",
+    contactos: "Perfiles",
     grupos: "Grupos",
   };
 
