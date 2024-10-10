@@ -210,10 +210,15 @@ type magazines_section {
   posts: post_magazines_section
 }
 
+type GroupResponse_admins {
+  _id: String
+  username: String
+}
+
 type GroupResponse {
   _id: String!
   members: [members_graphQl!]!
-  admins: [String!]!
+  admins: [GroupResponse_admins!]!
   name: String!
   rules: String!
   magazines: [String!]!
