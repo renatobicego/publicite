@@ -6,6 +6,7 @@ import {
   GroupListResponse,
   GroupResponse,
 } from 'src/contexts/group/application/adapter/dto/HTTP-RESPONSE/group.response';
+
 import { GroupAdapterInterface } from 'src/contexts/group/application/adapter/group.adapter.interface';
 
 @Resolver('Group')
@@ -58,7 +59,7 @@ export class GroupResolver {
       const keys = info.fieldNodes[0].selectionSet.selections
         .find((selection: any) => selection.name.value === 'groups')
         .selectionSet.selections.map((item: any) => item.name.value);
-        
+
       return await this.groupAdapter.findGroupByName(name, limit, keys);
     } catch (error: any) {
       throw error;

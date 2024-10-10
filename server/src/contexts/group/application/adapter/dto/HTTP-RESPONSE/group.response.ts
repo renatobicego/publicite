@@ -40,15 +40,24 @@ export class magazines_graphQl {
 }
 
 @ObjectType()
+export class GroupResponse_admins {
+  @Field(() => String, { nullable: true })
+  _id: string;
+
+  @Field(() => String, { nullable: true })
+  username: string;
+}
+
+@ObjectType()
 export class GroupResponse {
   @Field(() => String)
-  _id: string;
+  _id: ObjectId;
 
   @Field(() => [members_graphQl])
   members: members_graphQl[];
 
-  @Field(() => [String])
-  admins: ObjectId[];
+  @Field(() => [GroupResponse_admins])
+  admins: GroupResponse_admins[];
 
   @Field(() => String)
   name: string;
@@ -71,10 +80,10 @@ export class GroupResponse {
   constructor(group: any) {
     this._id = group._id;
     this.members = group.members;
-    this.admins = group.admins;
+    this.admins = group.admins ?? [];
     this.name = group.name;
     this.rules = group.rules;
-    this.magazines = group.magazines;
+    this.magazines = group.magazines ?? [];
     this.details = group.details;
     this.profilePhotoUrl = group.profilePhotoUrl;
     this.visibility = group.visibility;
