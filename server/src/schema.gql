@@ -352,6 +352,9 @@ type Mutation {
   """Crear una revista"""
   createMagazine(magazineCreateRequest: MagazineCreateRequest!): String
 
+  """Actualizar una revista"""
+  updateMagazineById(magazineUpdateRequest: MagazineUpdateRequest!): String
+
   """Crear una categoria de un post"""
   createNewCategoryPost(category: PostCategoryRequest!): PostCategoryResponse
 }
@@ -466,6 +469,19 @@ input MagazineCreateRequest {
 enum OwnerType {
   user
   group
+}
+
+input MagazineUpdateRequest {
+  _id: String!
+  name: String
+  sections: [String!]
+  ownerType: OwnerType!
+  description: String
+  collaborators: [String!]
+  user: String
+  visibility: String
+  allowedColaborators: [String!]
+  group: [String!]
 }
 
 input PostCategoryRequest {

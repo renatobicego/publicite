@@ -10,6 +10,7 @@ import { ObjectId } from 'mongoose';
 import { UserMagazine } from '../../domain/entity/user.magazine';
 import { GroupMagazine } from '../../domain/entity/group.magazine';
 import { MagazineResponse } from '../adapter/dto/HTTP-RESPONSE/magazine.reponse';
+import { MagazineUpdateRequest } from '../adapter/dto/HTTP-REQUEST/magazine.update.request';
 
 export class MagazineService implements MagazineServiceInterface {
   constructor(
@@ -76,6 +77,16 @@ export class MagazineService implements MagazineServiceInterface {
       return await this.magazineRepository.findMagazineByMagazineId(id);
     } catch (error: any) {
       this.logger.error('Error finding new Magazine in service', error);
+      throw error;
+    }
+  }
+
+  async updateMagazineById(
+    magazineRequest: MagazineUpdateRequest,
+  ): Promise<any> {
+    try {
+      return await this.magazineRepository.updateMagazineById(magazineRequest);
+    } catch (error: any) {
       throw error;
     }
   }

@@ -23,6 +23,7 @@ import { MagazineDocument, MagazineModel } from '../schemas/magazine.schema';
 import { MagazineRepositoryMapperInterface } from '../../domain/repository/mapper/magazine.respository.mapper.interface';
 import { IUser } from 'src/contexts/user/infrastructure/schemas/user.schema';
 import { GroupDocument } from 'src/contexts/group/infrastructure/schemas/group.schema';
+import { MagazineUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/magazine.update.request';
 
 export class MagazineRepository implements MagazineRepositoryInterface {
   constructor(
@@ -43,6 +44,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
     @InjectModel('User') private readonly userModel: Model<IUser>,
     @InjectModel('Group') private readonly groupModel: Model<GroupDocument>,
   ) {}
+
   async findMagazineByMagazineId(
     id: ObjectId,
   ): Promise<Partial<MagazineResponse> | null> {
@@ -206,6 +208,30 @@ export class MagazineRepository implements MagazineRepositoryInterface {
       this.logger.error('Session aborted');
     } finally {
       session.endSession();
+    }
+  }
+
+  async updateMagazineById(magazine: MagazineUpdateRequest): Promise<any> {
+    try {
+      switch (magazine.ownerType) {
+        case OwnerType.user: {
+          const response = await this.userMagazine
+            .findByIdAndUpdate(magazine._id, magazine)
+            .lean();
+          return response?._id;
+        }
+        case OwnerType.group: {
+          const response = await this.groupMagazine
+            .findByIdAndUpdate(magazine._id, magazine)
+            .lean();
+          return response?._id;
+        }
+        default: {
+          throw new Error('Invalid owner type');
+        }
+      }
+    } catch (error: any) {
+      throw error;
     }
   }
 }
