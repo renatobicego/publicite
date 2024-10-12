@@ -9,6 +9,7 @@ import {
 import { GroupRequest } from '../adapter/dto/HTTP-REQUEST/group.request';
 import { GroupServiceMapperInterface } from '../../domain/service/mapper/group.service.mapper.interface';
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
+import { GroupUpdateRequest } from '../adapter/dto/HTTP-REQUEST/group.update.request';
 
 export class GroupService implements GroupServiceInterface {
   constructor(
@@ -18,6 +19,7 @@ export class GroupService implements GroupServiceInterface {
     @Inject('GroupServiceMapperInterface')
     private readonly groupMapper: GroupServiceMapperInterface,
   ) {}
+
   async findGroupById(id: string): Promise<GroupResponse> {
     try {
       this.logger.log('Finding group by id: ' + id);
@@ -43,6 +45,16 @@ export class GroupService implements GroupServiceInterface {
       return await this.groupRepository.save(groupMapped);
     } catch (err) {
       throw err;
+    }
+  }
+
+  async updateGroupById(group: GroupUpdateRequest): Promise<any> {
+    try {
+      this.logger.log('Updating group by id: ' + group._id);
+      return await this.groupRepository.updateGroupById(group);
+    } catch (error: any) {
+      this.logger.error('An error was ocurred when updating group: ');
+      throw error;
     }
   }
 }

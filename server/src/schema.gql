@@ -346,6 +346,9 @@ type Mutation {
   """Crear un grupo"""
   createNewGroup(groupDto: GroupRequest!): GroupResponse
 
+  """Actualizar un grupo"""
+  updateGroupById(groupToUpdate: GroupUpdateRequest!): String
+
   """Crear una revista"""
   createMagazine(magazineCreateRequest: MagazineCreateRequest!): String
 
@@ -431,6 +434,19 @@ input GroupRequest {
   details: String!
   profilePhotoUrl: String!
   visibility: String!
+}
+
+input GroupUpdateRequest {
+  _id: String!
+  admin: String!
+  members: [String!]
+  admins: [String!]
+  name: String
+  rules: String
+  magazines: [String!]
+  details: String
+  profilePhotoUrl: String
+  visibility: String
 }
 
 input MagazineCreateRequest {

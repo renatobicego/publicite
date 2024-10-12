@@ -6,6 +6,7 @@ import {
   GroupResponse,
 } from '../../application/adapter/dto/HTTP-RESPONSE/group.response';
 import { GroupRequest } from '../../application/adapter/dto/HTTP-REQUEST/group.request';
+import { GroupUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/group.update.request';
 
 export class GroupAdapter implements GroupAdapterInterface {
   constructor(
@@ -35,6 +36,14 @@ export class GroupAdapter implements GroupAdapterInterface {
   async saveGroup(group: GroupRequest): Promise<GroupResponse> {
     try {
       return await this.groupService.saveGroup(group);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  async updateGroupById(group: GroupUpdateRequest): Promise<any> {
+    try {
+      return await this.groupService.updateGroupById(group);
     } catch (error: any) {
       throw error;
     }

@@ -3,6 +3,7 @@ import { Args, Mutation, Resolver, Query, Context } from '@nestjs/graphql';
 import { ClerkAuthGuard } from 'src/contexts/clerk-auth/clerk.auth.guard';
 
 import { GroupRequest } from 'src/contexts/group/application/adapter/dto/HTTP-REQUEST/group.request';
+import { GroupUpdateRequest } from 'src/contexts/group/application/adapter/dto/HTTP-REQUEST/group.update.request';
 import {
   GroupListResponse,
   GroupResponse,
@@ -43,7 +44,7 @@ export class GroupResolver {
     @Context() context: any,
   ): Promise<GroupResponse> {
     try {
-      PubliciteAuth.authorize(context);
+      PubliciteAuth.authorize(context, "not admin");
       return await this.groupAdapter.findGroupById(id);
     } catch (error: any) {
       throw error;
@@ -61,6 +62,23 @@ export class GroupResolver {
   ): Promise<GroupListResponse> {
     try {
       return await this.groupAdapter.findGroupByName(name, limit);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  @Mutation(() => String, {
+    nullable: true,
+    description: 'Actualizar un grupo',
+  })
+  async updateGroupById(
+    @Args('groupToUpdate', { type: () => GroupUpdateRequest })
+    groupToUpdate: GroupUpdateRequest,
+    @Context() context: any,
+  ): Promise<any> {
+    try {
+      PubliciteAuth.authorize(context, groupToUpdate.admin);
+      return await this.groupAdapter.updateGroupById(groupToUpdate);
     } catch (error: any) {
       throw error;
     }

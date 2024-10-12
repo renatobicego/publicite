@@ -10,6 +10,7 @@ import {
   GroupListResponse,
   GroupResponse,
 } from '../../application/adapter/dto/HTTP-RESPONSE/group.response';
+import { GroupUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/group.update.request';
 
 export class GroupRepository implements GroupRepositoryInterface {
   constructor(
@@ -18,6 +19,7 @@ export class GroupRepository implements GroupRepositoryInterface {
     private readonly groupMapper: GroupRepositoryMapperInterface,
     @InjectConnection() private readonly connection: Connection,
   ) {}
+
   async findGroupById(id: string): Promise<GroupResponse> {
     try {
       const group = await this.groupModel.findById(id).lean();
@@ -86,6 +88,17 @@ export class GroupRepository implements GroupRepositoryInterface {
       const groupSaved = await newGroup.save();
       return this.groupMapper.toGroupResponse(groupSaved);
     } catch (error: any) {
+      throw error;
+    }
+  }
+
+  async updateGroupById(group: GroupUpdateRequest): Promise<any> {
+    try {
+      const response = await this.groupModel
+        .findByIdAndUpdate(group._id, group)
+        .lean();
+      return response?._id;
+    } catch (error) {
       throw error;
     }
   }
