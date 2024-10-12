@@ -128,6 +128,21 @@ type User_Full_Grapql_Model {
   groups: [Groups_Full_Graphql_Model]
 }
 
+type PaymentResponse {
+  _id: String!
+  mpPaymentId: String!
+  payerId: String!
+  payerEmail: String
+  paymentTypeId: String!
+  paymentMethodId: String!
+  transactionAmount: String!
+  dateApproved: String
+  external_reference: String!
+  status_detail: String!
+  timeOfUpdate: String!
+  status: String!
+}
+
 type location {
   type: String!
   coordinates: [Float!]!
@@ -293,6 +308,9 @@ type PostCategoryResponse {
 }
 
 type Query {
+  """Buscar los pagos por id de clerk"""
+  findPaymentByClerkId(id: String!): [PaymentResponse!]
+
   """Obtiene un usuario por su nombre de usuario"""
   findOneByUsername(username: String!): User_Full_Grapql_Model
 

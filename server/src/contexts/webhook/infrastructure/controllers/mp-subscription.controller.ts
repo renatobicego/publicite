@@ -22,7 +22,7 @@ export class SubscriptionController {
   ) {}
 
   @Get(':clerkId')
-  @ApiOperation({ summary: 'Get subscriptions by active' })
+  @ApiOperation({ summary: 'Get subscriptions by clerId' })
   @ApiResponse({
     status: 200,
     description: 'Return subscriptions of user.',

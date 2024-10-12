@@ -29,6 +29,8 @@ import { MercadoPagoSubscriptionPlanService } from '../../application/mercadopag
 import { MercadoPagoSubscriptionPlanRepository } from '../repository/mercadopago/mp-subscriptionPlan.repository';
 import { MpPaymentService } from '../../application/mercadopago/service/mp-payment.service';
 import { MercadoPagoPaymentsRepository } from '../repository/mercadopago/mp-payments.repository';
+import { MpPaymentAdapter } from '../adapters/mercadopago/mp-payment.adapter';
+import { MpPaymentResolver } from '../controllers/resolver/mp-payment.resolver';
 
 @Module({
   imports: [
@@ -70,6 +72,7 @@ import { MercadoPagoPaymentsRepository } from '../repository/mercadopago/mp-paym
     },
     WebhookService,
     MpWebhookAdapter,
+    MpPaymentResolver,
     {
       provide: 'MpHandlerEventsInterface',
       useClass: MpHandlerEvents,
@@ -122,6 +125,10 @@ import { MercadoPagoPaymentsRepository } from '../repository/mercadopago/mp-paym
     {
       provide: 'InvoiceAdapterInterface',
       useClass: MpInvoiceAdapter,
+    },
+    {
+      provide: 'MpPaymentAdapterInterface',
+      useClass: MpPaymentAdapter,
     },
     {
       provide: 'MercadopagoSubscriptionPlanAdapterInterface',

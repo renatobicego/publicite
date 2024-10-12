@@ -11,23 +11,7 @@ export class MpPaymentService implements MpPaymentServiceInterface {
     @Inject('MercadoPagoPaymentsRepositoryInterface')
     private readonly mpPaymentRepository: MercadoPagoPaymentsRepositoryInterface,
   ) {}
-  async updatePayment(payment: any): Promise<void> {
-    const timeOfUpdate = now(getLocalTimeZone()).toString();
-    const mpPaymentId = payment.id;
-    const paymentUpdated = {
-      payerId: payment.payer.id,
-      payerEmail: payment.payer.email,
-      paymentTypeId: payment.payment_type_id,
-      paymentMethodId: payment.payment_method_id,
-      transactionAmount: payment.transaction_amount,
-      dateApproved: payment.date_approved,
-      external_reference: payment.external_reference,
-      status_detail: payment.status_detail,
-      timeOfUpdate: timeOfUpdate,
-      status: payment.status,
-    };
-    await this.mpPaymentRepository.updatePayment(paymentUpdated, mpPaymentId);
-  }
+
   async createPayment(payment: any): Promise<void> {
     this.logger.log(
       'Creating payment for suscription description: ' + payment.description,
@@ -55,6 +39,7 @@ export class MpPaymentService implements MpPaymentServiceInterface {
       throw new BadRequestException('Invalid payment data');
     }
   }
+
   async findPaymentByPaymentID(id: string): Promise<Payment | null> {
     try {
       const payment = await this.mpPaymentRepository.findPaymentByPaymentID(id);
@@ -63,5 +48,31 @@ export class MpPaymentService implements MpPaymentServiceInterface {
     } catch (error: any) {
       throw error;
     }
+  }
+
+  async findPaymentByClerkId(id: string): Promise<any> {
+    try {
+      return await this.mpPaymentRepository.findPaymentByClerkId(id);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  async updatePayment(payment: any): Promise<void> {
+    const timeOfUpdate = now(getLocalTimeZone()).toString();
+    const mpPaymentId = payment.id;
+    const paymentUpdated = {
+      payerId: payment.payer.id,
+      payerEmail: payment.payer.email,
+      paymentTypeId: payment.payment_type_id,
+      paymentMethodId: payment.payment_method_id,
+      transactionAmount: payment.transaction_amount,
+      dateApproved: payment.date_approved,
+      external_reference: payment.external_reference,
+      status_detail: payment.status_detail,
+      timeOfUpdate: timeOfUpdate,
+      status: payment.status,
+    };
+    await this.mpPaymentRepository.updatePayment(paymentUpdated, mpPaymentId);
   }
 }
