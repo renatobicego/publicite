@@ -5,11 +5,11 @@ import { MagazineResponse } from '../../application/adapter/dto/HTTP-RESPONSE/ma
 import { MagazineUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/magazine.update.request';
 
 export interface MagazineRepositoryInterface {
-  addColaboratorsToMagazine(
+  addCollaboratorsToMagazine(
     newColaborators: string[],
     magazineId: string,
   ): Promise<void>;
-  deleteColaboratorsFromMagazine(
+  deleteCollaboratorsFromMagazine(
     colaboratorsToDelete: string[],
     magazineId: string,
   ): Promise<void>;

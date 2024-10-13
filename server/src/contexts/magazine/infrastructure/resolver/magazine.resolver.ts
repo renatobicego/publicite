@@ -31,7 +31,7 @@ export class MagazineResolver {
   ): Promise<any> {
     try {
       PubliciteAuth.authorize(context, magazineAdmin);
-      await this.magazineAdapter.addColaboratorsToMagazine(
+      await this.magazineAdapter.addCollaboratorsToMagazine(
         newColaborators,
         magazineId,
       );
@@ -57,7 +57,7 @@ export class MagazineResolver {
   ): Promise<any> {
     try {
       PubliciteAuth.authorize(context, magazineAdmin);
-      await this.magazineAdapter.deleteColaboratorsFromMagazine(
+      await this.magazineAdapter.deleteCollaboratorsFromMagazine(
         colaboratorsToDelete,
         magazineId,
       );

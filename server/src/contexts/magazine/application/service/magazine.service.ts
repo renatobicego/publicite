@@ -18,13 +18,13 @@ export class MagazineService implements MagazineServiceInterface {
     private readonly magazineRepository: MagazineRepositoryInterface,
     private readonly logger: MyLoggerService,
   ) {}
-  async addColaboratorsToMagazine(
+  async addCollaboratorsToMagazine(
     newColaborators: string[],
     magazineId: string,
   ): Promise<void> {
     try {
       this.logger.log('Adding Colaborators to Magazine in service..');
-      await this.magazineRepository.addColaboratorsToMagazine(
+      await this.magazineRepository.addCollaboratorsToMagazine(
         newColaborators,
         magazineId,
       );
@@ -87,13 +87,13 @@ export class MagazineService implements MagazineServiceInterface {
     }
   }
 
-  async deleteColaboratorsFromMagazine(
+  async deleteCollaboratorsFromMagazine(
     colaboratorsToDelete: string[],
     magazineId: string,
   ): Promise<void> {
     try {
       this.logger.log('Deleting Colaborators from Magazine in service..');
-      await this.magazineRepository.deleteColaboratorsFromMagazine(
+      await this.magazineRepository.deleteCollaboratorsFromMagazine(
         colaboratorsToDelete,
         magazineId,
       );

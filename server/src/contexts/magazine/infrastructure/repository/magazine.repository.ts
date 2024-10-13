@@ -44,7 +44,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
     @InjectModel('User') private readonly userModel: Model<IUser>,
     @InjectModel('Group') private readonly groupModel: Model<GroupDocument>,
   ) {}
-  async addColaboratorsToMagazine(
+  async addCollaboratorsToMagazine(
     newColaborators: string[],
     magazineId: string,
   ): Promise<void> {
@@ -74,7 +74,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
     }
   }
 
-  async deleteColaboratorsFromMagazine(
+  async deleteCollaboratorsFromMagazine(
     colaboratorsToDelete: string[],
     magazineId: string,
   ): Promise<void> {

@@ -12,12 +12,12 @@ export class MagazineAdapter implements MagazineAdapterInterface {
     @Inject('MagazineServiceInterface')
     private readonly magazineService: MagazineServiceInterface,
   ) {}
-  async addColaboratorsToMagazine(
+  async addCollaboratorsToMagazine(
     newColaborators: string[],
     magazineId: string,
   ): Promise<any> {
     try {
-      await this.magazineService.addColaboratorsToMagazine(
+      await this.magazineService.addCollaboratorsToMagazine(
         newColaborators,
         magazineId,
       );
@@ -34,12 +34,12 @@ export class MagazineAdapter implements MagazineAdapterInterface {
     }
   }
 
-  async deleteColaboratorsFromMagazine(
+  async deleteCollaboratorsFromMagazine(
     colaboratorsToDelete: string[],
     magazineId: string,
   ): Promise<any> {
     try {
-      await this.magazineService.deleteColaboratorsFromMagazine(
+      await this.magazineService.deleteCollaboratorsFromMagazine(
         colaboratorsToDelete,
         magazineId,
       );

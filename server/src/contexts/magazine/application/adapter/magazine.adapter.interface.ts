@@ -4,11 +4,11 @@ import { MagazineResponse } from './dto/HTTP-RESPONSE/magazine.reponse';
 import { MagazineUpdateRequest } from './dto/HTTP-REQUEST/magazine.update.request';
 
 export interface MagazineAdapterInterface {
-  addColaboratorsToMagazine(
+  addCollaboratorsToMagazine(
     newColaborators: string[],
     magazineId: string,
   ): Promise<any>;
-  deleteColaboratorsFromMagazine(
+  deleteCollaboratorsFromMagazine(
     colaboratorsToDelete: string[],
     magazineId: string,
   ): Promise<any>;
