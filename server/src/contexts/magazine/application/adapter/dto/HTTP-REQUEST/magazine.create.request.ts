@@ -34,6 +34,6 @@ export class MagazineCreateRequest {
   @Field(() => [String], { nullable: true })
   allowedColaborators: ObjectId[];
 
-  @Field(() => [String], { nullable: true })
-  group: ObjectId[];
+  @Field(() => String, { nullable: true })
+  group: ObjectId;
 }

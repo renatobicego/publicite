@@ -18,6 +18,24 @@ export class MagazineService implements MagazineServiceInterface {
     private readonly magazineRepository: MagazineRepositoryInterface,
     private readonly logger: MyLoggerService,
   ) {}
+  async addColaboratorsToMagazine(
+    newColaborators: string[],
+    magazineId: string,
+  ): Promise<void> {
+    try {
+      this.logger.log('Adding Colaborators to Magazine in service..');
+      await this.magazineRepository.addColaboratorsToMagazine(
+        newColaborators,
+        magazineId,
+      );
+    } catch (error: any) {
+      this.logger.error(
+        'Error adding Colaborators to Magazine in service',
+        error,
+      );
+      throw error;
+    }
+  }
 
   async createMagazine(magazineRequest: MagazineCreateRequest): Promise<void> {
     try {
@@ -65,6 +83,22 @@ export class MagazineService implements MagazineServiceInterface {
       }
     } catch (error: any) {
       this.logger.error('Error creating new Magazine in service', error);
+      throw error;
+    }
+  }
+
+  async deleteColaboratorsFromMagazine(
+    colaboratorsToDelete: string[],
+    magazineId: string,
+  ): Promise<void> {
+    try {
+      this.logger.log('Deleting Colaborators from Magazine in service..');
+      await this.magazineRepository.deleteColaboratorsFromMagazine(
+        colaboratorsToDelete,
+        magazineId,
+      );
+    } catch (error: any) {
+      this.logger.error('Error deleting Colaborators from Magazine in service');
       throw error;
     }
   }

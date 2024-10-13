@@ -3,12 +3,12 @@ import { Magazine } from './magazine.entity';
 
 export class GroupMagazine extends Magazine {
   private allowedColaborators: ObjectId[];
-  private group: ObjectId[];
+  private group: ObjectId;
 
   constructor(
     magazine: Magazine,
     allowedColaborators: ObjectId[],
-    group: ObjectId[],
+    group: ObjectId,
   ) {
     super(
       magazine.getName,

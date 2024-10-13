@@ -5,6 +5,14 @@ import { MagazineResponse } from '../../application/adapter/dto/HTTP-RESPONSE/ma
 import { MagazineUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/magazine.update.request';
 
 export interface MagazineRepositoryInterface {
+  addColaboratorsToMagazine(
+    newColaborators: string[],
+    magazineId: string,
+  ): Promise<void>;
+  deleteColaboratorsFromMagazine(
+    colaboratorsToDelete: string[],
+    magazineId: string,
+  ): Promise<void>;
   save(magazine: Magazine): Promise<any>;
   saveMagazineWithSection(magazine: Magazine): Promise<any>;
   findMagazineByMagazineId(

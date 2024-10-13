@@ -17,6 +17,58 @@ export class MagazineResolver {
 
   @Mutation(() => String, {
     nullable: true,
+    description: 'Agregar colaboradores a la revista',
+  })
+  async addColaboratorsToMagazine(
+    @Args('newColaborators', { type: () => [String] })
+    newColaborators: string[],
+    @Args('magazineAdmin', { type: () => String })
+    magazineAdmin: string,
+    @Args('magazineId', { type: () => String })
+    magazineId: string,
+    @Context()
+    context: any,
+  ): Promise<any> {
+    try {
+      PubliciteAuth.authorize(context, magazineAdmin);
+      await this.magazineAdapter.addColaboratorsToMagazine(
+        newColaborators,
+        magazineId,
+      );
+      return 'Colaborators added';
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  @Mutation(() => String, {
+    nullable: true,
+    description: 'Eliminar colaboradores de la revista',
+  })
+  async deleteColaboratorsFromMagazine(
+    @Args('colaboratorsToDelete', { type: () => [String] })
+    colaboratorsToDelete: string[],
+    @Args('magazineAdmin', { type: () => String })
+    magazineAdmin: string,
+    @Args('magazineId', { type: () => String })
+    magazineId: string,
+    @Context()
+    context: any,
+  ): Promise<any> {
+    try {
+      PubliciteAuth.authorize(context, magazineAdmin);
+      await this.magazineAdapter.deleteColaboratorsFromMagazine(
+        colaboratorsToDelete,
+        magazineId,
+      );
+      return 'Colaborators deleted';
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  @Mutation(() => String, {
+    nullable: true,
     description: 'Crear una revista',
   })
   async createMagazine(
@@ -32,7 +84,7 @@ export class MagazineResolver {
 
   @Query(() => MagazineResponse, {
     nullable: true,
-    description: 'Crear una revista',
+    description: 'Obtener una revista',
   })
   async getMagazineByMagazineId(
     @Args('id', { type: () => String })

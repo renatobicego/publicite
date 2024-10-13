@@ -44,6 +44,69 @@ export class MagazineRepository implements MagazineRepositoryInterface {
     @InjectModel('User') private readonly userModel: Model<IUser>,
     @InjectModel('Group') private readonly groupModel: Model<GroupDocument>,
   ) {}
+  async addColaboratorsToMagazine(
+    newColaborators: string[],
+    magazineId: string,
+  ): Promise<void> {
+    const session = await this.connection.startSession();
+    try {
+      await session.withTransaction(async () => {
+        await this.userModel.updateMany(
+          { _id: { $in: newColaborators } },
+          { $addToSet: { magazines: magazineId } },
+          { session },
+        );
+        await this.userMagazine.findByIdAndUpdate(
+          magazineId,
+          { $addToSet: { collaborators: { $each: newColaborators } } },
+          { session },
+        );
+      });
+      await session.commitTransaction();
+      this.logger.log('Colaborators added to Magazine successfully');
+      return;
+    } catch (error: any) {
+      this.logger.error('Error adding Colaborators to Magazine', error);
+      await session.abortTransaction();
+      throw error;
+    } finally {
+      session.endSession();
+    }
+  }
+
+  async deleteColaboratorsFromMagazine(
+    colaboratorsToDelete: string[],
+    magazineId: string,
+  ): Promise<void> {
+    const session = await this.connection.startSession();
+    try {
+      await session.withTransaction(async () => {
+        await this.userModel
+          .updateMany(
+            { _id: { $in: colaboratorsToDelete } },
+            { $pull: { magazines: magazineId } },
+            { session },
+          )
+          .lean();
+        await this.userMagazine
+          .findByIdAndUpdate(
+            magazineId,
+            { $pullAll: { collaborators: colaboratorsToDelete } },
+            { session },
+          )
+          .lean();
+      });
+      await session.commitTransaction();
+      this.logger.log('Colaborators deleted from Magazine successfully');
+      return;
+    } catch (error: any) {
+      await session.abortTransaction();
+      this.logger.error('Error deleting Colaborators from Magazine', error);
+      throw error;
+    } finally {
+      session.endSession();
+    }
+  }
 
   async findMagazineByMagazineId(
     id: ObjectId,
@@ -119,7 +182,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
                 await this.userModel.updateMany(
                   //Updateo los colaboradores
                   { _id: { $in: userMagazine.collaborators } },
-                  { $push: { magazines: magazineSaved._id } },
+                  { $addToSet: { magazines: magazineSaved._id } },
                   { session },
                 );
               }
@@ -131,7 +194,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
               await this.groupModel.findByIdAndUpdate(
                 //Updateo la revista en el grupo
                 groupMagazine.group,
-                { $push: { magazines: magazineSaved._id } },
+                { $addToSet: { magazines: magazineSaved._id } },
                 { session },
               );
               return magazineSaved._id;

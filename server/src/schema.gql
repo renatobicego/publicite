@@ -326,7 +326,7 @@ type Query {
   """Busca un grupo por su nombre"""
   getGroupByName(name: String!, limit: Float): GroupListResponse
 
-  """Crear una revista"""
+  """Obtener una revista"""
   getMagazineByMagazineId(id: String!): MagazineResponse
 
   """Devuelve todas las categorias creadas"""
@@ -366,6 +366,12 @@ type Mutation {
 
   """Actualizar un grupo"""
   updateGroupById(groupToUpdate: GroupUpdateRequest!): String
+
+  """Agregar colaboradores a la revista"""
+  addColaboratorsToMagazine(newColaborators: [String!]!, magazineAdmin: String!, magazineId: String!): String
+
+  """Eliminar colaboradores de la revista"""
+  deleteColaboratorsFromMagazine(colaboratorsToDelete: [String!]!, magazineAdmin: String!, magazineId: String!): String
 
   """Crear una revista"""
   createMagazine(magazineCreateRequest: MagazineCreateRequest!): String
@@ -478,7 +484,7 @@ input MagazineCreateRequest {
   user: String
   visibility: String!
   allowedColaborators: [String!]
-  group: [String!]
+  group: String
 }
 
 """Owner type of the magazine"""
@@ -495,7 +501,6 @@ input MagazineUpdateRequest {
   description: String
   user: String
   visibility: String
-  group: [String!]
 }
 
 input PostCategoryRequest {

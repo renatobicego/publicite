@@ -19,13 +19,9 @@ export class MagazineUpdateRequest {
   @Field(() => String, { nullable: true })
   description?: string;
 
-
   @Field(() => String, { nullable: true })
   user: string;
 
   @Field(() => String, { nullable: true })
   visibility: string;
-
-  @Field(() => [String], { nullable: true })
-  group: ObjectId[];
 }
