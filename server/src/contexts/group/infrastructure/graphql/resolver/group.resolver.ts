@@ -21,7 +21,7 @@ export class GroupResolver {
 
   @Mutation(() => String, {
     nullable: true,
-    description: 'Actualizar un grupo',
+    description: 'Agregar admins un grupo',
   })
   async addAdminsToGroupByGroupId(
     @Args('newAdmins', { type: () => [String] })
@@ -42,6 +42,29 @@ export class GroupResolver {
     }
   }
 
+  @Mutation(() => String, {
+    nullable: true,
+    description: 'Agregar miembros a  un grupo',
+  })
+  async addMembersToGroupByGroupId(
+    @Args('newMembers', { type: () => [String] })
+    newMembers: string[],
+    @Args('groupAdmin', { type: () => String })
+    groupAdmin: string,
+    @Args('groupId', { type: () => String })
+    groupId: string,
+    @Context()
+    context: any,
+  ): Promise<any> {
+    try {
+      PubliciteAuth.authorize(context, groupAdmin);
+      await this.groupAdapter.addMembersToGroup(newMembers, groupId);
+      return 'Admins added';
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
   @Mutation(() => GroupResponse, {
     nullable: true,
     description: 'Crear un grupo',
@@ -56,11 +79,57 @@ export class GroupResolver {
     }
   }
 
+  @Mutation(() => String, {
+    nullable: true,
+    description: 'Eliminar admins un grupo',
+  })
+  async deleteAdminsToGroupByGroupId(
+    @Args('adminsToDelete', { type: () => [String] })
+    adminsToDelete: string[],
+    @Args('groupAdmin', { type: () => String })
+    groupAdmin: string,
+    @Args('groupId', { type: () => String })
+    groupId: string,
+    @Context()
+    context: any,
+  ): Promise<any> {
+    try {
+      PubliciteAuth.authorize(context, groupAdmin);
+      await this.groupAdapter.deleteAdminsToGroup(adminsToDelete, groupId);
+      return 'Users deleted';
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  @Mutation(() => String, {
+    nullable: true,
+    description: 'Eliminar miembros un grupo',
+  })
+  async deleteMembersToGroupByGroupId(
+    @Args('membersToDelete', { type: () => [String] })
+    membersToDelete: string[],
+    @Args('groupAdmin', { type: () => String })
+    groupAdmin: string,
+    @Args('groupId', { type: () => String })
+    groupId: string,
+    @Context()
+    context: any,
+  ): Promise<any> {
+    try {
+      PubliciteAuth.authorize(context, groupAdmin);
+      await this.groupAdapter.deleteMembersToGroup(membersToDelete, groupId);
+      return 'Users deleted';
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
   @Query(() => GroupResponse, {
     nullable: true,
     description: 'Busca un grupo por su id',
   })
-  @UseGuards(ClerkAuthGuard) // Aquí aplicas el guard
+  @UseGuards(ClerkAuthGuard)
   async getGroupById(
     @Args('id', { type: () => String })
     id: string,

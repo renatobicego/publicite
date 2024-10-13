@@ -13,6 +13,14 @@ export class GroupAdapter implements GroupAdapterInterface {
     @Inject('GroupServiceInterface')
     private readonly groupService: GroupServiceInterface,
   ) {}
+  async addMembersToGroup(newMembers: string[], groupId: string): Promise<any> {
+    try {
+      await this.groupService.addMembersToGroup(newMembers, groupId);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
   async addAdminsToGroup(admins: string[], groupId: string): Promise<any> {
     try {
       await this.groupService.addAdminsToGroup(admins, groupId);
@@ -21,6 +29,21 @@ export class GroupAdapter implements GroupAdapterInterface {
     }
   }
 
+  async deleteAdminsToGroup(admins: string[], groupId: string): Promise<any> {
+    try {
+      await this.groupService.deleteAdminsToGroup(admins, groupId);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  async deleteMembersToGroup(membersToDelete: string[], groupId: string): Promise<any> {
+    try {
+      await this.groupService.deleteMembersToGroup(membersToDelete, groupId);
+    } catch (error: any) {
+      throw error;
+    }
+  }
   async findGroupById(id: string): Promise<GroupResponse> {
     try {
       const response = await this.groupService.findGroupById(id);

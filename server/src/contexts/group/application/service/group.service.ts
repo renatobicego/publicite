@@ -19,16 +19,42 @@ export class GroupService implements GroupServiceInterface {
     @Inject('GroupServiceMapperInterface')
     private readonly groupMapper: GroupServiceMapperInterface,
   ) {}
-  async addAdminsToGroup(admins: string[],groupId: string): Promise<any> {
+  async addMembersToGroup(newMembers: string[], groupId: string): Promise<any> {
     try {
-      this.logger.log('Adding admins to group: ' + admins);
-      return await this.groupRepository.addAdminsToGroup(admins,groupId);
+      this.logger.log('Adding users to group: ' + groupId);
+      return await this.groupRepository.addMembersToGroup(newMembers, groupId);
     } catch (error: any) {
       this.logger.error('An error was ocurred when adding admins to group: ');
       throw error;
     }
   }
 
+  async addAdminsToGroup(admins: string[], groupId: string): Promise<any> {
+    try {
+      this.logger.log('Adding admins to group: ' + admins);
+      return await this.groupRepository.addAdminsToGroup(admins, groupId);
+    } catch (error: any) {
+      this.logger.error('An error was ocurred when adding admins to group: ');
+      throw error;
+    }
+  }
+  async deleteAdminsToGroup(admins: string[], groupId: string): Promise<any> {
+    try {
+      this.logger.log('Deleting admins to group: ' + admins);
+      return await this.groupRepository.deleteAdminsToGroup(admins, groupId);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  async deleteMembersToGroup(membersToDelete: string[], groupId: string): Promise<any> {
+    try {
+      this.logger.log('Deleting users to group: ' + groupId);
+      return await this.groupRepository.deleteMembersToGroup(membersToDelete, groupId);
+    } catch (error: any) {
+      throw error;
+    }
+  }
   async findGroupById(id: string): Promise<GroupResponse> {
     try {
       this.logger.log('Finding group by id: ' + id);

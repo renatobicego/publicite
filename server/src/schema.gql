@@ -343,11 +343,20 @@ type Mutation {
   """Actualiza el board del usuario"""
   updateBoardByUsername(id: String!, boardData: UpdateBoardDto!): Board
 
-  """Actualizar un grupo"""
+  """Agregar admins un grupo"""
   addAdminsToGroupByGroupId(newAdmins: [String!]!, groupAdmin: String!, groupId: String!): String
+
+  """Agregar miembros a  un grupo"""
+  addMembersToGroupByGroupId(newMembers: [String!]!, groupAdmin: String!, groupId: String!): String
 
   """Crear un grupo"""
   createNewGroup(groupDto: GroupRequest!): GroupResponse
+
+  """Eliminar admins un grupo"""
+  deleteAdminsToGroupByGroupId(adminsToDelete: [String!]!, groupAdmin: String!, groupId: String!): String
+
+  """Eliminar miembros un grupo"""
+  deleteMembersToGroupByGroupId(membersToDelete: [String!]!, groupAdmin: String!, groupId: String!): String
 
   """Actualizar un grupo"""
   updateGroupById(groupToUpdate: GroupUpdateRequest!): String

@@ -6,7 +6,10 @@ import {
 } from '../../application/adapter/dto/HTTP-RESPONSE/group.response';
 
 export interface GroupServiceInterface {
-  addAdminsToGroup(admins: string[],groupId: string): Promise<any>;
+  addAdminsToGroup(admins: string[], groupId: string): Promise<any>;
+  addMembersToGroup(newMembers: string[], groupId: string): Promise<any>;
+  deleteAdminsToGroup(admins: string[], groupId: string): Promise<any>;
+  deleteMembersToGroup(membersToDelete: string[], groupId: string): Promise<any>;
   findGroupById(id: string): Promise<GroupResponse>;
   findGroupByName(
     name: string,
