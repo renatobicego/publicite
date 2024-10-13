@@ -8,8 +8,16 @@ import { Group } from '../entity/group.entity';
 export interface GroupRepositoryInterface {
   addAdminsToGroup(admins: string[], groupId: string): Promise<any>;
   addMembersToGroup(newMembers: string[], groupId: string): Promise<any>;
+  addMagazinesToGroup(magazineIds: string[], groupId: string): Promise<any>;
   deleteAdminsToGroup(admins: string[], groupId: string): Promise<any>;
-  deleteMembersToGroup(membersToDelete: string[], groupId: string): Promise<any>;
+  deleteMembersToGroup(
+    membersToDelete: string[],
+    groupId: string,
+  ): Promise<any>;
+  deleteMagazinesFromGroup(
+    magazinesToDelete: string[],
+    groupId: string,
+  ): Promise<any>;
   findGroupById(id: string): Promise<GroupResponse>;
   findGroupByName(
     name: string,

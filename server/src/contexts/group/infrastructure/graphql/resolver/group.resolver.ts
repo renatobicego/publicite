@@ -65,6 +65,29 @@ export class GroupResolver {
     }
   }
 
+  @Mutation(() => String, {
+    nullable: true,
+    description: 'Agregar revistas a un grupo',
+  })
+  async addMagazinezToGroupByGroupId(
+    @Args('newMagazines', { type: () => [String] })
+    newMagazines: string[],
+    @Args('groupAdmin', { type: () => String })
+    groupAdmin: string,
+    @Args('groupId', { type: () => String })
+    groupId: string,
+    @Context()
+    context: any,
+  ): Promise<any> {
+    try {
+      PubliciteAuth.authorize(context, groupAdmin);
+      await this.groupAdapter.addMagazinesToGroup(newMagazines, groupId);
+      return 'Magazines added';
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
   @Mutation(() => GroupResponse, {
     nullable: true,
     description: 'Crear un grupo',
@@ -83,7 +106,7 @@ export class GroupResolver {
     nullable: true,
     description: 'Eliminar admins un grupo',
   })
-  async deleteAdminsToGroupByGroupId(
+  async deleteAdminsFromGroupByGroupId(
     @Args('adminsToDelete', { type: () => [String] })
     adminsToDelete: string[],
     @Args('groupAdmin', { type: () => String })
@@ -106,7 +129,7 @@ export class GroupResolver {
     nullable: true,
     description: 'Eliminar miembros un grupo',
   })
-  async deleteMembersToGroupByGroupId(
+  async deleteMembersFromGroupByGroupId(
     @Args('membersToDelete', { type: () => [String] })
     membersToDelete: string[],
     @Args('groupAdmin', { type: () => String })
@@ -120,6 +143,32 @@ export class GroupResolver {
       PubliciteAuth.authorize(context, groupAdmin);
       await this.groupAdapter.deleteMembersToGroup(membersToDelete, groupId);
       return 'Users deleted';
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  @Mutation(() => String, {
+    nullable: true,
+    description: 'Eliminar revistas de un grupo',
+  })
+  async deleteMagazinesFromGroupByGroupId(
+    @Args('magazinesToDelete', { type: () => [String] })
+    magazinesToDelete: string[],
+    @Args('groupAdmin', { type: () => String })
+    groupAdmin: string,
+    @Args('groupId', { type: () => String })
+    groupId: string,
+    @Context()
+    context: any,
+  ): Promise<any> {
+    try {
+      PubliciteAuth.authorize(context, groupAdmin);
+      await this.groupAdapter.deleteMagazinesFromGroup(
+        magazinesToDelete,
+        groupId,
+      );
+      return 'Magazines deleted';
     } catch (error: any) {
       throw error;
     }

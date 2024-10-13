@@ -1,4 +1,5 @@
 import { Inject } from '@nestjs/common';
+
 import { GroupAdapterInterface } from '../../application/adapter/group.adapter.interface';
 import { GroupServiceInterface } from '../../domain/service/group.service.interface';
 import {
@@ -13,6 +14,17 @@ export class GroupAdapter implements GroupAdapterInterface {
     @Inject('GroupServiceInterface')
     private readonly groupService: GroupServiceInterface,
   ) {}
+  async addMagazinesToGroup(
+    magazineIds: string[],
+    groupId: string,
+  ): Promise<any> {
+    try {
+      await this.groupService.addMagazinesToGroup(magazineIds, groupId);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
   async addMembersToGroup(newMembers: string[], groupId: string): Promise<any> {
     try {
       await this.groupService.addMembersToGroup(newMembers, groupId);
@@ -37,13 +49,28 @@ export class GroupAdapter implements GroupAdapterInterface {
     }
   }
 
-  async deleteMembersToGroup(membersToDelete: string[], groupId: string): Promise<any> {
+  async deleteMembersToGroup(
+    membersToDelete: string[],
+    groupId: string,
+  ): Promise<any> {
     try {
       await this.groupService.deleteMembersToGroup(membersToDelete, groupId);
     } catch (error: any) {
       throw error;
     }
   }
+
+  async deleteMagazinesFromGroup(
+    magazinesToDelete: string[],
+    groupId: string,
+  ): Promise<any> {
+    try {
+      await this.groupService.deleteMagazinesFromGroup(magazinesToDelete, groupId);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
   async findGroupById(id: string): Promise<GroupResponse> {
     try {
       const response = await this.groupService.findGroupById(id);

@@ -19,6 +19,21 @@ export class GroupService implements GroupServiceInterface {
     @Inject('GroupServiceMapperInterface')
     private readonly groupMapper: GroupServiceMapperInterface,
   ) {}
+  async addMagazinesToGroup(
+    magazineIds: string[],
+    groupId: string,
+  ): Promise<any> {
+    try {
+      this.logger.log('Adding Magazines to group: ' + groupId);
+      return await this.groupRepository.addMagazinesToGroup(magazineIds, groupId);
+    } catch (error: any) {
+      this.logger.error(
+        'An error was ocurred when adding magazines to group: ',
+      );
+      throw error;
+    }
+  }
+
   async addMembersToGroup(newMembers: string[], groupId: string): Promise<any> {
     try {
       this.logger.log('Adding users to group: ' + groupId);
@@ -47,14 +62,42 @@ export class GroupService implements GroupServiceInterface {
     }
   }
 
-  async deleteMembersToGroup(membersToDelete: string[], groupId: string): Promise<any> {
+  async deleteMembersToGroup(
+    membersToDelete: string[],
+    groupId: string,
+  ): Promise<any> {
     try {
       this.logger.log('Deleting users to group: ' + groupId);
-      return await this.groupRepository.deleteMembersToGroup(membersToDelete, groupId);
+      return await this.groupRepository.deleteMembersToGroup(
+        membersToDelete,
+        groupId,
+      );
     } catch (error: any) {
+      this.logger.error(
+        'An error was ocurred when deleting admins to group: ' + groupId,
+      );
       throw error;
     }
   }
+
+  async deleteMagazinesFromGroup(
+    magazineIds: string[],
+    groupId: string,
+  ): Promise<any> {
+    try {
+      this.logger.log('Deleting magazines to group: ' + groupId);
+      return await this.groupRepository.deleteMagazinesFromGroup(
+        magazineIds,
+        groupId,
+      );
+    } catch (error: any) {
+      this.logger.error(
+        'An error was ocurred when deleting magazines to group: ' + groupId,
+      );
+      throw error;
+    }
+  }
+
   async findGroupById(id: string): Promise<GroupResponse> {
     try {
       this.logger.log('Finding group by id: ' + id);

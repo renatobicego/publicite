@@ -349,14 +349,20 @@ type Mutation {
   """Agregar miembros a  un grupo"""
   addMembersToGroupByGroupId(newMembers: [String!]!, groupAdmin: String!, groupId: String!): String
 
+  """Agregar revistas a un grupo"""
+  addMagazinezToGroupByGroupId(newMagazines: [String!]!, groupAdmin: String!, groupId: String!): String
+
   """Crear un grupo"""
   createNewGroup(groupDto: GroupRequest!): GroupResponse
 
   """Eliminar admins un grupo"""
-  deleteAdminsToGroupByGroupId(adminsToDelete: [String!]!, groupAdmin: String!, groupId: String!): String
+  deleteAdminsFromGroupByGroupId(adminsToDelete: [String!]!, groupAdmin: String!, groupId: String!): String
 
   """Eliminar miembros un grupo"""
-  deleteMembersToGroupByGroupId(membersToDelete: [String!]!, groupAdmin: String!, groupId: String!): String
+  deleteMembersFromGroupByGroupId(membersToDelete: [String!]!, groupAdmin: String!, groupId: String!): String
+
+  """Eliminar revistas de un grupo"""
+  deleteMagazinesFromGroupByGroupId(magazinesToDelete: [String!]!, groupAdmin: String!, groupId: String!): String
 
   """Actualizar un grupo"""
   updateGroupById(groupToUpdate: GroupUpdateRequest!): String

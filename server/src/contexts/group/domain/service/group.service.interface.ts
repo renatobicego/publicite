@@ -8,8 +8,16 @@ import {
 export interface GroupServiceInterface {
   addAdminsToGroup(admins: string[], groupId: string): Promise<any>;
   addMembersToGroup(newMembers: string[], groupId: string): Promise<any>;
+  addMagazinesToGroup(magazineIds: string[], groupId: string): Promise<any>;
+  deleteMembersToGroup(
+    membersToDelete: string[],
+    groupId: string,
+  ): Promise<any>;
   deleteAdminsToGroup(admins: string[], groupId: string): Promise<any>;
-  deleteMembersToGroup(membersToDelete: string[], groupId: string): Promise<any>;
+  deleteMagazinesFromGroup(
+    magazineIds: string[],
+    groupId: string,
+  ): Promise<any>;
   findGroupById(id: string): Promise<GroupResponse>;
   findGroupByName(
     name: string,
