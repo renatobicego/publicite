@@ -43,6 +43,32 @@ export class MagazineResolver {
 
   @Mutation(() => String, {
     nullable: true,
+    description: 'Agregar AllowedColaborators a la revista',
+  })
+  async addAllowedCollaboratorsToMagazine(
+    @Args('newAllowedColaborators', { type: () => [String] })
+    newAllowedColaborators: string[],
+    @Args('magazineAdmin', { type: () => String })
+    magazineAdmin: string,
+    @Args('magazineId', { type: () => String })
+    magazineId: string,
+    @Context()
+    context: any,
+  ): Promise<any> {
+    try {
+      PubliciteAuth.authorize(context, magazineAdmin);
+      await this.magazineAdapter.addAllowedCollaboratorsToMagazine(
+        newAllowedColaborators,
+        magazineId,
+      );
+      return 'Colaborators added';
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  @Mutation(() => String, {
+    nullable: true,
     description: 'Eliminar colaboradores de la revista',
   })
   async deleteColaboratorsFromMagazine(
@@ -59,6 +85,32 @@ export class MagazineResolver {
       PubliciteAuth.authorize(context, magazineAdmin);
       await this.magazineAdapter.deleteCollaboratorsFromMagazine(
         colaboratorsToDelete,
+        magazineId,
+      );
+      return 'Colaborators deleted';
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  @Mutation(() => String, {
+    nullable: true,
+    description: 'Eliminar allowed colaboradores de la revista',
+  })
+  async deleteAllowedCollaboratorsFromMagazine(
+    @Args('allowedCollaboratorsToDelete', { type: () => [String] })
+    allowedCollaboratorsToDelete: string[],
+    @Args('magazineAdmin', { type: () => String })
+    magazineAdmin: string,
+    @Args('magazineId', { type: () => String })
+    magazineId: string,
+    @Context()
+    context: any,
+  ): Promise<any> {
+    try {
+      PubliciteAuth.authorize(context, magazineAdmin);
+      await this.magazineAdapter.deleteAllowedCollaboratorsFromMagazine(
+        allowedCollaboratorsToDelete,
         magazineId,
       );
       return 'Colaborators deleted';

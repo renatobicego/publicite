@@ -12,6 +12,20 @@ export class MagazineAdapter implements MagazineAdapterInterface {
     @Inject('MagazineServiceInterface')
     private readonly magazineService: MagazineServiceInterface,
   ) {}
+  async addAllowedCollaboratorsToMagazine(
+    newAllowedCollaborators: string[],
+    magazineId: string,
+  ): Promise<any> {
+    try {
+      await this.magazineService.addAllowedCollaboratorsToMagazine(
+        newAllowedCollaborators,
+        magazineId,
+      );
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
   async addCollaboratorsToMagazine(
     newColaborators: string[],
     magazineId: string,
@@ -41,6 +55,20 @@ export class MagazineAdapter implements MagazineAdapterInterface {
     try {
       await this.magazineService.deleteCollaboratorsFromMagazine(
         colaboratorsToDelete,
+        magazineId,
+      );
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  async deleteAllowedCollaboratorsFromMagazine(
+    allowedCollaboratorsToDelete: string[],
+    magazineId: string,
+  ): Promise<any> {
+    try {
+      await this.magazineService.deleteAllowedCollaboratorsFromMagazine(
+        allowedCollaboratorsToDelete,
         magazineId,
       );
     } catch (error: any) {

@@ -9,11 +9,21 @@ export interface MagazineServiceInterface {
     newColaborators: string[],
     magazineId: string,
   ): Promise<void>;
+  addAllowedCollaboratorsToMagazine(
+    newAllowedCollaborators: string[],
+    magazineId: string,
+  ): Promise<any>;
   createMagazine(magazineRequest: MagazineCreateRequest): Promise<void>;
   deleteCollaboratorsFromMagazine(
     colaboratorsToDelete: string[],
     magazineId: string,
   ): Promise<void>;
+
+  deleteAllowedCollaboratorsFromMagazine(
+    allowedCollaboratorsToDelete: string[],
+    magazineId: string,
+  ): Promise<any>;
+
   findMagazineByMagazineId(
     userId: ObjectId,
   ): Promise<Partial<MagazineResponse> | null>;

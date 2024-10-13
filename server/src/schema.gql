@@ -370,8 +370,14 @@ type Mutation {
   """Agregar colaboradores a la revista"""
   addColaboratorsToMagazine(newColaborators: [String!]!, magazineAdmin: String!, magazineId: String!): String
 
+  """Agregar AllowedColaborators a la revista"""
+  addAllowedCollaboratorsToMagazine(newAllowedColaborators: [String!]!, magazineAdmin: String!, magazineId: String!): String
+
   """Eliminar colaboradores de la revista"""
   deleteColaboratorsFromMagazine(colaboratorsToDelete: [String!]!, magazineAdmin: String!, magazineId: String!): String
+
+  """Eliminar allowed colaboradores de la revista"""
+  deleteAllowedCollaboratorsFromMagazine(allowedCollaboratorsToDelete: [String!]!, magazineAdmin: String!, magazineId: String!): String
 
   """Crear una revista"""
   createMagazine(magazineCreateRequest: MagazineCreateRequest!): String
