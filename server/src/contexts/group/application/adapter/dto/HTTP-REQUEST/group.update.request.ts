@@ -9,12 +9,6 @@ export class GroupUpdateRequest {
   @Field(() => String)
   admin: string;
 
-  @Field(() => [String], { nullable: true })
-  members: ObjectId[];
-
-  @Field(() => [String], { nullable: true })
-  admins: ObjectId[];
-
   @Field(() => String, { nullable: true })
   name: string;
 

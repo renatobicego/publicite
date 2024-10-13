@@ -19,20 +19,12 @@ export class MagazineUpdateRequest {
   @Field(() => String, { nullable: true })
   description?: string;
 
-  // User Magazines Atributes
-  @Field(() => [String], { nullable: true })
-  collaborators: ObjectId[];
 
   @Field(() => String, { nullable: true })
   user: string;
 
   @Field(() => String, { nullable: true })
   visibility: string;
-
-  // Group Magazines Atributes
-
-  @Field(() => [String], { nullable: true })
-  allowedColaborators: ObjectId[];
 
   @Field(() => [String], { nullable: true })
   group: ObjectId[];

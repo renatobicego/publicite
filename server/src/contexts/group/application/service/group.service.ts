@@ -19,6 +19,15 @@ export class GroupService implements GroupServiceInterface {
     @Inject('GroupServiceMapperInterface')
     private readonly groupMapper: GroupServiceMapperInterface,
   ) {}
+  async addAdminsToGroup(admins: string[],groupId: string): Promise<any> {
+    try {
+      this.logger.log('Adding admins to group: ' + admins);
+      return await this.groupRepository.addAdminsToGroup(admins,groupId);
+    } catch (error: any) {
+      this.logger.error('An error was ocurred when adding admins to group: ');
+      throw error;
+    }
+  }
 
   async findGroupById(id: string): Promise<GroupResponse> {
     try {

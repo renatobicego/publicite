@@ -11,14 +11,79 @@ import {
   GroupResponse,
 } from '../../application/adapter/dto/HTTP-RESPONSE/group.response';
 import { GroupUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/group.update.request';
+import { IUser } from 'src/contexts/user/infrastructure/schemas/user.schema';
+import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
+import { error } from 'console';
 
 export class GroupRepository implements GroupRepositoryInterface {
   constructor(
     @InjectModel('Group') private readonly groupModel: Model<GroupDocument>,
+    @InjectModel('User') private readonly userModel: Model<IUser>,
     @Inject('GroupRepositoryMapperInterface')
     private readonly groupMapper: GroupRepositoryMapperInterface,
     @InjectConnection() private readonly connection: Connection,
+    private readonly logger: MyLoggerService,
   ) {}
+  async addAdminsToGroup(admins: string[], groupId: string): Promise<any> {
+    const session = await this.connection.startSession();
+    try {
+      await session.withTransaction(async () => {
+        //Enfoque FOR
+        for (const admin of admins) {
+          await this.groupModel.findByIdAndUpdate(
+            groupId,
+            { $push: { admins: admin } },
+            { session },
+          );
+          await this.userModel.findByIdAndUpdate(
+            admin,
+            { $push: { groups: groupId } },
+            { session },
+          );
+        }
+        //ENFOQUE MAP
+        // await session.withTransaction(async () => {
+        //   const promises = admins.map(async (admin) => {
+        //     const groupPromise = this.groupModel.findByIdAndUpdate(
+        //       groupId,
+        //       {
+        //         $push: {
+        //           admins: admin,
+        //         },
+        //       },
+        //       { session },
+        //     );
+        //     const adminPromise = this.userModel.findByIdAndUpdate(
+        //       admin,
+        //       {
+        //         $push: {
+        //           groups: groupId,
+        //         },
+        //       },
+        //       { session },
+        //     );
+        //     // Asegúrate de retornar las promesas aquí
+        //     return Promise.all([groupPromise, adminPromise]);
+        //   });
+        //
+        //   await Promise.all(promises);
+        // });
+      });
+      await session.commitTransaction();
+      this.logger.log(
+        'Admins added to group successfully Group ID: ' + groupId,
+      );
+      return;
+    } catch (error: any) {
+      await session.abortTransaction();
+      this.logger.error(
+        'An error was ocurred when adding admins to group: ' + error,
+      );
+      throw error;
+    } finally {
+      session.endSession();
+    }
+  }
 
   async findGroupById(id: string): Promise<GroupResponse> {
     try {

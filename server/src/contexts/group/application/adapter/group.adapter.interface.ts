@@ -6,6 +6,7 @@ import {
 } from './dto/HTTP-RESPONSE/group.response';
 
 export interface GroupAdapterInterface {
+  addAdminsToGroup(admins: string[], groupId: string): Promise<any>;
   findGroupById(id: string): Promise<GroupResponse>;
   findGroupByName(
     name: string,

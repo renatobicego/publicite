@@ -6,6 +6,7 @@ import {
 import { Group } from '../entity/group.entity';
 
 export interface GroupRepositoryInterface {
+  addAdminsToGroup(admins: string[],groupId: string): Promise<any>;
   findGroupById(id: string): Promise<GroupResponse>;
   findGroupByName(
     name: string,

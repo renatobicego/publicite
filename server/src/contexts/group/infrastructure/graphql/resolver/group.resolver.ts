@@ -19,6 +19,29 @@ export class GroupResolver {
     private readonly groupAdapter: GroupAdapterInterface,
   ) {}
 
+  @Mutation(() => String, {
+    nullable: true,
+    description: 'Actualizar un grupo',
+  })
+  async addAdminsToGroupByGroupId(
+    @Args('newAdmins', { type: () => [String] })
+    newAdmins: string[],
+    @Args('groupAdmin', { type: () => String })
+    groupAdmin: string,
+    @Args('groupId', { type: () => String })
+    groupId: string,
+    @Context()
+    context: any,
+  ): Promise<any> {
+    try {
+      PubliciteAuth.authorize(context, groupAdmin);
+      await this.groupAdapter.addAdminsToGroup(newAdmins, groupId);
+      return 'Admins added';
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
   @Mutation(() => GroupResponse, {
     nullable: true,
     description: 'Crear un grupo',
@@ -44,7 +67,7 @@ export class GroupResolver {
     @Context() context: any,
   ): Promise<GroupResponse> {
     try {
-      PubliciteAuth.authorize(context, "not admin");
+      PubliciteAuth.authorize(context, 'not admin');
       return await this.groupAdapter.findGroupById(id);
     } catch (error: any) {
       throw error;

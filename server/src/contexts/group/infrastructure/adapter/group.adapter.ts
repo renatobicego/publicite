@@ -13,6 +13,13 @@ export class GroupAdapter implements GroupAdapterInterface {
     @Inject('GroupServiceInterface')
     private readonly groupService: GroupServiceInterface,
   ) {}
+  async addAdminsToGroup(admins: string[], groupId: string): Promise<any> {
+    try {
+      await this.groupService.addAdminsToGroup(admins, groupId);
+    } catch (error: any) {
+      throw error;
+    }
+  }
 
   async findGroupById(id: string): Promise<GroupResponse> {
     try {
