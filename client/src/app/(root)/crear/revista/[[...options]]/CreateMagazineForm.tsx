@@ -76,7 +76,7 @@ const CreateMagazineForm = ({
       onSubmit={handleSubmit}
       validationSchema={magazineValidation}
     >
-      {({ isSubmitting, errors, setFieldValue }) => {
+      {({ isSubmitting, errors, setValues }) => {
         return (
           <Form className="flex flex-col gap-4 max-md:w-full md:max-xl:flex-1 xl:w-1/2 self-center">
             <h2>
@@ -88,7 +88,7 @@ const CreateMagazineForm = ({
             <Inputs
               isUserMagazine={!isGroupMagazine}
               errors={errors}
-              setFieldValue={setFieldValue}
+              setValues={setValues}
             />
             <RequiredFieldsMsg />
             <PrimaryButton

@@ -5,13 +5,13 @@ import { GetUser } from "@/types/userTypes";
 import { Link, Tab, Tabs } from "@nextui-org/react";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
-import PostsGrid from "../grids/PostGrid";
 import MagazinesGrid from "../grids/MagazinesGrid";
 import UsersGrid from "@/app/(root)/(explorar)/perfiles/UsersGrid";
 import GroupsGrid from "@/app/(root)/(explorar)/grupos/GroupsGrid";
 import PrimaryButton from "../buttons/PrimaryButton";
 import { FaPlus } from "react-icons/fa6";
 import { useUser } from "@clerk/nextjs";
+import UserPosts from "@/app/(root)/(explorar)/perfiles/[username]/(components)/UserPosts/UserPosts";
 
 const UserSolapas = ({ user }: { user: GetUser }) => {
   const pathname = usePathname();
@@ -69,7 +69,7 @@ const UserSolapas = ({ user }: { user: GetUser }) => {
             Crear
           </PrimaryButton>
         )}
-        <PostsGrid posts={user.posts} />
+        <UserPosts posts={user.posts} />
       </Tab>
       <Tab
         className="w-full"

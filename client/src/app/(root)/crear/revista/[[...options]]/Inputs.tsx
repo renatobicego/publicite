@@ -1,39 +1,67 @@
 import { Field, FormikErrors } from "formik";
-import { ChangeEvent, memo, useEffect, useState } from "react";
+import { ChangeEvent, memo, SetStateAction, useEffect, useState } from "react";
 import {
   CustomInput,
   CustomSelect,
   CustomTextarea,
 } from "@/components/inputs/CustomInputs";
 import { visibilityItems } from "@/utils/data/selectData";
-import SelectUsers from "@/components/inputs/SelectUsers";
 import { mockedUsers } from "@/utils/data/mockedData";
 import { Divider } from "@nextui-org/react";
 import SecondaryButton from "@/components/buttons/SecondaryButton";
 import { PostGroupMagazine, PostUserMagazine } from "./initialValues";
 import { useUser } from "@clerk/nextjs";
 import { getUsers } from "@/services/userServices";
-import { toastifyError } from "@/utils/functions/toastify";
+import { SearchUsers } from "@/components/inputs/SelectUsers";
 
 const Inputs = ({
   errors,
   isUserMagazine,
-  setFieldValue,
+  setValues,
 }: {
   errors: FormikErrors<PostUserMagazine | PostGroupMagazine>;
   isUserMagazine: boolean;
-  setFieldValue: (
-    field: string,
-    value: any,
+  setValues: (
+    values: (
+      prevValues: PostUserMagazine | PostGroupMagazine
+    ) => PostUserMagazine | PostGroupMagazine,
     shouldValidate?: boolean
   ) => Promise<void | FormikErrors<PostUserMagazine | PostGroupMagazine>>;
 }) => {
   const [userContacts, setUserContacts] = useState([]);
   const { user } = useUser();
 
+  const getUsersByQuery = (query: string | null) => {
+    getUsers(query).then((users) => setUserContacts(users.items));
+  };
+
   useEffect(() => {
-    getUsers(null).then((users) => setUserContacts(users.items));
+    getUsersByQuery("");
   }, []);
+
+  const handleSelectionChange = (key: any) => {
+    setValues((prevValues: any) => {
+      const currentArray =
+        prevValues[isUserMagazine ? "collaborators" : "allowedCollaborators"];
+      const updatedArray = currentArray.includes(key)
+        ? currentArray.filter((item: any) => item !== key) // Remove if exists
+        : [...currentArray, key]; // Add if not exists
+
+      return {
+        ...prevValues,
+        [isUserMagazine ? "collaborators" : "allowedCollaborators"]:
+          updatedArray,
+      };
+    });
+  };
+
+  const allowAllCollaborators = () => {
+    setValues((prevValues) => ({
+      ...prevValues,
+      allowedCollaborators: mockedUsers.map((user) => user._id),
+    }));
+  };
+
   return (
     <>
       <Field
@@ -82,31 +110,23 @@ const Inputs = ({
           : "¿Quién puede colaborar en la revista?"}
       </h6>
       <Field
-        as={SelectUsers}
-        onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-          setFieldValue(
-            isUserMagazine ? "collaborators" : "allowedCollaborators",
-            e.target.value.split(",")
-          )
-        }
+        as={SearchUsers}
+        onSelectionChange={handleSelectionChange}
         name={isUserMagazine ? "collaborators" : "allowedCollaborators"}
         aria-label="invitar colaboradores"
+        onValueChange={(value: string | null) => getUsersByQuery(value)}
         items={userContacts}
       />
       {!isUserMagazine && (
         <SecondaryButton
           size="sm"
           className="self-end"
-          onPress={() =>
-            setFieldValue(
-              "allowedCollaborators",
-              mockedUsers.map((user) => user._id)
-            )
-          }
+          onPress={allowAllCollaborators}
         >
           Permitir a todos
         </SecondaryButton>
       )}
+      
     </>
   );
 };

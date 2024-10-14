@@ -13,6 +13,7 @@ agregar endate a post
 carpeta posts
 paginacion
 buscador pete
+marcar como visto peticion de contaacto
 
 solo administradores de grupo pueden crear revista?
 miembors de grupo pueden ver anuncios d eotro aunque esten como solo para amigos?
