@@ -121,7 +121,7 @@ export class MpWebhookService implements MpWebhookServiceInterface {
       'createSubscription_authorize_payment - Class:mpWebhookService',
     );
     try {
-      const id = subscription_authorized_payment.preapproval_id;
+      const id = subscription_authorized_payment.id;
       await this.MpInvoiceService.updateInvoice(
         subscription_authorized_payment,
         id,

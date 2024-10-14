@@ -73,9 +73,11 @@ export class SubscriptionRepository implements SubscriptionRepositoryInterface {
     external_reference: string,
   ): Promise<Subscription[]> {
     try {
-      const subscriptions = await this.subscriptionModel.find({
-        external_reference: external_reference,
-      });
+      const subscriptions = await this.subscriptionModel
+        .find({
+          external_reference: external_reference,
+        })
+        .populate('subscriptionPlan');
       if (!subscriptions) return [];
       return subscriptions.map((subscription) => {
         return Subscription.fromDocument(subscription);

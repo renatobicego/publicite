@@ -3,11 +3,14 @@ import { ObjectId } from 'mongoose';
 import { OwnerType } from 'src/contexts/magazine/domain/entity/enum/magazine.ownerType.enum';
 
 @InputType()
-export class MagazineCreateRequest {
+export class MagazineUpdateRequest {
   @Field(() => String)
+  _id: string;
+
+  @Field(() => String, { nullable: true })
   name: string;
 
-  @Field(() => [String])
+  @Field(() => [String], { nullable: true })
   sections: ObjectId[];
 
   @Field(() => OwnerType)
@@ -17,23 +20,8 @@ export class MagazineCreateRequest {
   description?: string;
 
   @Field(() => String, { nullable: true })
-  addedPost?: ObjectId;
-
-  // User Magazines Atributes
-  @Field(() => [String], { nullable: true })
-  collaborators: ObjectId[];
+  user: string;
 
   @Field(() => String, { nullable: true })
-  user: ObjectId;
-
-  @Field(() => String)
   visibility: string;
-
-  // Group Magazines Atributes
-
-  @Field(() => [String], { nullable: true })
-  allowedColaborators: ObjectId[];
-
-  @Field(() => String, { nullable: true })
-  group: ObjectId;
 }

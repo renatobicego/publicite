@@ -128,6 +128,21 @@ type User_Full_Grapql_Model {
   groups: [Groups_Full_Graphql_Model]
 }
 
+type PaymentResponse {
+  _id: String!
+  mpPaymentId: String!
+  payerId: String!
+  payerEmail: String
+  paymentTypeId: String!
+  paymentMethodId: String!
+  transactionAmount: String!
+  dateApproved: String
+  external_reference: String!
+  status_detail: String!
+  timeOfUpdate: String!
+  status: String!
+}
+
 type location {
   type: String!
   coordinates: [Float!]!
@@ -293,6 +308,9 @@ type PostCategoryResponse {
 }
 
 type Query {
+  """Buscar los pagos por id de clerk"""
+  findPaymentByClerkId(id: String!): [PaymentResponse!]
+
   """Obtiene un usuario por su nombre de usuario"""
   findOneByUsername(username: String!): User_Full_Grapql_Model
 
@@ -308,7 +326,7 @@ type Query {
   """Busca un grupo por su nombre"""
   getGroupByName(name: String!, limit: Float): GroupListResponse
 
-  """Crear una revista"""
+  """Obtener una revista"""
   getMagazineByMagazineId(id: String!): MagazineResponse
 
   """Devuelve todas las categorias creadas"""
@@ -325,11 +343,47 @@ type Mutation {
   """Actualiza el board del usuario"""
   updateBoardByUsername(id: String!, boardData: UpdateBoardDto!): Board
 
+  """Agregar admins un grupo"""
+  addAdminsToGroupByGroupId(newAdmins: [String!]!, groupAdmin: String!, groupId: String!): String
+
+  """Agregar miembros a  un grupo"""
+  addMembersToGroupByGroupId(newMembers: [String!]!, groupAdmin: String!, groupId: String!): String
+
+  """Agregar revistas a un grupo"""
+  addMagazinezToGroupByGroupId(newMagazines: [String!]!, groupAdmin: String!, groupId: String!): String
+
   """Crear un grupo"""
   createNewGroup(groupDto: GroupRequest!): GroupResponse
 
+  """Eliminar admins un grupo"""
+  deleteAdminsFromGroupByGroupId(adminsToDelete: [String!]!, groupAdmin: String!, groupId: String!): String
+
+  """Eliminar miembros un grupo"""
+  deleteMembersFromGroupByGroupId(membersToDelete: [String!]!, groupAdmin: String!, groupId: String!): String
+
+  """Eliminar revistas de un grupo"""
+  deleteMagazinesFromGroupByGroupId(magazinesToDelete: [String!]!, groupAdmin: String!, groupId: String!): String
+
+  """Actualizar un grupo"""
+  updateGroupById(groupToUpdate: GroupUpdateRequest!): String
+
+  """Agregar colaboradores a la revista"""
+  addColaboratorsToMagazine(newColaborators: [String!]!, magazineAdmin: String!, magazineId: String!): String
+
+  """Agregar AllowedColaborators a la revista"""
+  addAllowedCollaboratorsToMagazine(newAllowedColaborators: [String!]!, magazineAdmin: String!, magazineId: String!): String
+
+  """Eliminar colaboradores de la revista"""
+  deleteColaboratorsFromMagazine(colaboratorsToDelete: [String!]!, magazineAdmin: String!, magazineId: String!): String
+
+  """Eliminar allowed colaboradores de la revista"""
+  deleteAllowedCollaboratorsFromMagazine(allowedCollaboratorsToDelete: [String!]!, magazineAdmin: String!, magazineId: String!): String
+
   """Crear una revista"""
   createMagazine(magazineCreateRequest: MagazineCreateRequest!): String
+
+  """Actualizar una revista"""
+  updateMagazineById(magazineUpdateRequest: MagazineUpdateRequest!): String
 
   """Crear una categoria de un post"""
   createNewCategoryPost(category: PostCategoryRequest!): PostCategoryResponse
@@ -415,6 +469,17 @@ input GroupRequest {
   visibility: String!
 }
 
+input GroupUpdateRequest {
+  _id: String!
+  admin: String!
+  name: String
+  rules: String
+  magazines: [String!]
+  details: String
+  profilePhotoUrl: String
+  visibility: String
+}
+
 input MagazineCreateRequest {
   name: String!
   sections: [String!]!
@@ -425,13 +490,23 @@ input MagazineCreateRequest {
   user: String
   visibility: String!
   allowedColaborators: [String!]
-  group: [String!]
+  group: String
 }
 
 """Owner type of the magazine"""
 enum OwnerType {
   user
   group
+}
+
+input MagazineUpdateRequest {
+  _id: String!
+  name: String
+  sections: [String!]
+  ownerType: OwnerType!
+  description: String
+  user: String
+  visibility: String
 }
 
 input PostCategoryRequest {

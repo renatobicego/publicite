@@ -7,10 +7,14 @@ import { GroupAdapter } from '../adapter/group.adapter';
 import { GroupSchema } from '../schemas/group.schema';
 import { GroupRepositoryMapper } from '../repository/mapper/group.repository.mapper';
 import { GroupServiceMapper } from '../../application/service/mapper/group.service.mapper';
+import { UserSchema } from 'src/contexts/user/infrastructure/schemas/user.schema';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: 'Group', schema: GroupSchema }]),
+    MongooseModule.forFeature([
+      { name: 'Group', schema: GroupSchema },
+      { name: 'User', schema: UserSchema },
+    ]),
   ],
   controllers: [],
   providers: [

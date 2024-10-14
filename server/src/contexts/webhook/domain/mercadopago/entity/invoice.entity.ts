@@ -9,6 +9,7 @@ export default class Invoice {
   private preapprovalId: string;
   private external_reference: string;
   private timeOfUpdate: string;
+  private invoice_id: string;
 
   constructor(
     paymentId: ObjectId | string,
@@ -18,6 +19,7 @@ export default class Invoice {
     preapprovalId: string,
     external_reference: string,
     timeOfUpdate: string,
+    invoice_id: string,
   ) {
     this.paymentId = paymentId;
     this.subscriptionId = subscriptionId;
@@ -26,10 +28,15 @@ export default class Invoice {
     this.preapprovalId = preapprovalId;
     this.external_reference = external_reference;
     this.timeOfUpdate = timeOfUpdate;
+    this.invoice_id = invoice_id;
   }
 
   getPaymentId() {
     return this.paymentId;
+  }
+
+  getInvoiceId() {
+    return this.invoice_id;
   }
 
   getPaymentStatus(): string {

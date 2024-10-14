@@ -6,29 +6,40 @@ import {
   Injectable,
   Logger,
 } from '@nestjs/common';
-import { error } from 'console';
+import { GqlExecutionContext } from '@nestjs/graphql';
 
 @Injectable()
 export class ClerkAuthGuard implements CanActivate {
   private readonly logger = new Logger(ClerkAuthGuard.name);
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const { req } = context.switchToHttp().getRequest();
+    const httpContext = context.switchToHttp();
+    let request = httpContext.getRequest();
+
+    // const authToken = request.headers.authorization;
+    // console.log(authToken.substring(7).trim());
+
     try {
-      if (!req || !req.cookies) {
-        this.logger.error('Cookies or request not found');
-        throw error;
+      if (context.getType() === 'http') {
+        request = context.switchToHttp().getRequest();
+      } else {
+        const gqlContext = GqlExecutionContext.create(context);
+        request = gqlContext.getContext().req;
       }
 
-      const token = req.cookies?.__session;
+      if (!request || !request.cookies) {
+        this.logger.error('Cookies or request not found');
+        throw new ForbiddenException('Unauthorized');
+      }
+
+      const token = request.cookies.__session;
       if (!token) {
         this.logger.error('Token not found');
-        throw error;
+        throw new ForbiddenException('Unauthorized');
       }
 
-      // Verificar el token usando Clerk
+      request.token = token;
       await clerkClient.verifyToken(token);
-
       return true;
     } catch (error) {
       this.logger.error(`Error in ClerkAuthGuard: ${error.message}`);

@@ -1,13 +1,16 @@
-import { Inject } from '@nestjs/common';
-import { Args, Mutation, Resolver, Query, Info } from '@nestjs/graphql';
+import { Inject, UseGuards } from '@nestjs/common';
+import { Args, Mutation, Resolver, Query, Context } from '@nestjs/graphql';
+import { ClerkAuthGuard } from 'src/contexts/clerk-auth/clerk.auth.guard';
 
 import { GroupRequest } from 'src/contexts/group/application/adapter/dto/HTTP-REQUEST/group.request';
+import { GroupUpdateRequest } from 'src/contexts/group/application/adapter/dto/HTTP-REQUEST/group.update.request';
 import {
   GroupListResponse,
   GroupResponse,
 } from 'src/contexts/group/application/adapter/dto/HTTP-RESPONSE/group.response';
 
 import { GroupAdapterInterface } from 'src/contexts/group/application/adapter/group.adapter.interface';
+import { PubliciteAuth } from 'src/contexts/shared/publicite_auth/publicite_auth';
 
 @Resolver('Group')
 export class GroupResolver {
@@ -15,6 +18,75 @@ export class GroupResolver {
     @Inject('GroupAdapterInterface')
     private readonly groupAdapter: GroupAdapterInterface,
   ) {}
+
+  @Mutation(() => String, {
+    nullable: true,
+    description: 'Agregar admins un grupo',
+  })
+  async addAdminsToGroupByGroupId(
+    @Args('newAdmins', { type: () => [String] })
+    newAdmins: string[],
+    @Args('groupAdmin', { type: () => String })
+    groupAdmin: string,
+    @Args('groupId', { type: () => String })
+    groupId: string,
+    @Context()
+    context: any,
+  ): Promise<any> {
+    try {
+      PubliciteAuth.authorize(context, groupAdmin);
+      await this.groupAdapter.addAdminsToGroup(newAdmins, groupId);
+      return 'Admins added';
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  @Mutation(() => String, {
+    nullable: true,
+    description: 'Agregar miembros a  un grupo',
+  })
+  async addMembersToGroupByGroupId(
+    @Args('newMembers', { type: () => [String] })
+    newMembers: string[],
+    @Args('groupAdmin', { type: () => String })
+    groupAdmin: string,
+    @Args('groupId', { type: () => String })
+    groupId: string,
+    @Context()
+    context: any,
+  ): Promise<any> {
+    try {
+      PubliciteAuth.authorize(context, groupAdmin);
+      await this.groupAdapter.addMembersToGroup(newMembers, groupId);
+      return 'Admins added';
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  @Mutation(() => String, {
+    nullable: true,
+    description: 'Agregar revistas a un grupo',
+  })
+  async addMagazinezToGroupByGroupId(
+    @Args('newMagazines', { type: () => [String] })
+    newMagazines: string[],
+    @Args('groupAdmin', { type: () => String })
+    groupAdmin: string,
+    @Args('groupId', { type: () => String })
+    groupId: string,
+    @Context()
+    context: any,
+  ): Promise<any> {
+    try {
+      PubliciteAuth.authorize(context, groupAdmin);
+      await this.groupAdapter.addMagazinesToGroup(newMagazines, groupId);
+      return 'Magazines added';
+    } catch (error: any) {
+      throw error;
+    }
+  }
 
   @Mutation(() => GroupResponse, {
     nullable: true,
@@ -30,15 +102,90 @@ export class GroupResolver {
     }
   }
 
+  @Mutation(() => String, {
+    nullable: true,
+    description: 'Eliminar admins un grupo',
+  })
+  async deleteAdminsFromGroupByGroupId(
+    @Args('adminsToDelete', { type: () => [String] })
+    adminsToDelete: string[],
+    @Args('groupAdmin', { type: () => String })
+    groupAdmin: string,
+    @Args('groupId', { type: () => String })
+    groupId: string,
+    @Context()
+    context: any,
+  ): Promise<any> {
+    try {
+      PubliciteAuth.authorize(context, groupAdmin);
+      await this.groupAdapter.deleteAdminsToGroup(adminsToDelete, groupId);
+      return 'Users deleted';
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  @Mutation(() => String, {
+    nullable: true,
+    description: 'Eliminar miembros un grupo',
+  })
+  async deleteMembersFromGroupByGroupId(
+    @Args('membersToDelete', { type: () => [String] })
+    membersToDelete: string[],
+    @Args('groupAdmin', { type: () => String })
+    groupAdmin: string,
+    @Args('groupId', { type: () => String })
+    groupId: string,
+    @Context()
+    context: any,
+  ): Promise<any> {
+    try {
+      PubliciteAuth.authorize(context, groupAdmin);
+      await this.groupAdapter.deleteMembersToGroup(membersToDelete, groupId);
+      return 'Users deleted';
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  @Mutation(() => String, {
+    nullable: true,
+    description: 'Eliminar revistas de un grupo',
+  })
+  async deleteMagazinesFromGroupByGroupId(
+    @Args('magazinesToDelete', { type: () => [String] })
+    magazinesToDelete: string[],
+    @Args('groupAdmin', { type: () => String })
+    groupAdmin: string,
+    @Args('groupId', { type: () => String })
+    groupId: string,
+    @Context()
+    context: any,
+  ): Promise<any> {
+    try {
+      PubliciteAuth.authorize(context, groupAdmin);
+      await this.groupAdapter.deleteMagazinesFromGroup(
+        magazinesToDelete,
+        groupId,
+      );
+      return 'Magazines deleted';
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
   @Query(() => GroupResponse, {
     nullable: true,
     description: 'Busca un grupo por su id',
   })
+  @UseGuards(ClerkAuthGuard)
   async getGroupById(
     @Args('id', { type: () => String })
     id: string,
+    @Context() context: any,
   ): Promise<GroupResponse> {
     try {
+      PubliciteAuth.authorize(context, 'not admin');
       return await this.groupAdapter.findGroupById(id);
     } catch (error: any) {
       throw error;
@@ -53,14 +200,26 @@ export class GroupResolver {
     @Args('name', { type: () => String })
     name: string,
     @Args('limit', { type: () => Number, nullable: true }) limit: number,
-    @Info() info: any,
   ): Promise<GroupListResponse> {
     try {
-      const keys = info.fieldNodes[0].selectionSet.selections
-        .find((selection: any) => selection.name.value === 'groups')
-        .selectionSet.selections.map((item: any) => item.name.value);
+      return await this.groupAdapter.findGroupByName(name, limit);
+    } catch (error: any) {
+      throw error;
+    }
+  }
 
-      return await this.groupAdapter.findGroupByName(name, limit, keys);
+  @Mutation(() => String, {
+    nullable: true,
+    description: 'Actualizar un grupo',
+  })
+  async updateGroupById(
+    @Args('groupToUpdate', { type: () => GroupUpdateRequest })
+    groupToUpdate: GroupUpdateRequest,
+    @Context() context: any,
+  ): Promise<any> {
+    try {
+      PubliciteAuth.authorize(context, groupToUpdate.admin);
+      return await this.groupAdapter.updateGroupById(groupToUpdate);
     } catch (error: any) {
       throw error;
     }

@@ -19,7 +19,7 @@ export class MpInvoiceRepository
   ): Promise<void> {
     try {
       const invoiceUpdated = await this.invoiceModel.findOneAndUpdate(
-        { preapprovalId: id },
+        { invoice_id: id },
         subscription_authorized_payment_to_update,
         { new: true },
       );
