@@ -19,7 +19,6 @@ const UserNavItems = dynamic(() => import("./UserNavItems"), {
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
-
   return (
     <Navbar
       id="navbar"
@@ -72,7 +71,7 @@ const Header = () => {
       >
         <UserNavItems isMenuOpen={isMenuOpen} />
       </NavbarContent>
-      <MobileMenu />
+      <MobileMenu setIsMenuOpen={setIsMenuOpen} />
     </Navbar>
   );
 };

@@ -38,32 +38,42 @@ const useUploadFiles = (
       return;
     }
     // Combine both files and attachedFiles into a single array for upload
-    const compressedFiles = await Promise.all(files.map(async (file) => {
-      if(file.type.startsWith("video/")) return file;
-      const options = {
-        maxSizeMB: 1,
-        maxWidthOrHeight: 600,
-        useWebWorker: true,
-      };
-      return await imageCompression(file, options);
-    }));
-    const combinedFiles = [...compressedFiles, ...attachedFiles.map((file) => file.file)];
+    const compressedFiles = await Promise.all(
+      files.map(async (file) => {
+        if (file.type.startsWith("video/")) return file;
+        const options = {
+          maxSizeMB: 1,
+          maxWidthOrHeight: 600,
+          useWebWorker: true,
+        };
+        return await imageCompression(file, options);
+      })
+    );
+    const combinedFiles = [
+      ...compressedFiles,
+      ...attachedFiles.map((file) => file.file),
+    ];
 
-    const res = await startUpload(combinedFiles as File[]);
-    if (!res || !res.length) {
+    // Start the upload
+    let res;
+    if (combinedFiles.length > 1) {
+      res = await startUpload(combinedFiles as File[]);
+    }
+    console.log(res);
+    if ((!res ||!res.length) && !isEditing) {
       return;
     }
 
     // Separate URLs based on the origin of files
-    const uploadedFileUrls = res
+    const uploadedFileUrls = res ? res
       .slice(0, files.length)
-      .map((upload) => upload.key);
-    const uploadedAttachedFileUrls = res
+      .map((upload) => upload.key) : [];
+    const uploadedAttachedFileUrls = res ? res
       .slice(files.length)
       .map((upload, index) => ({
         url: upload.key,
         label: attachedFiles[index].label,
-      }));
+      })) : [];
 
     // Assign URLs to their respective fields in the form values
     if (isEditing) {

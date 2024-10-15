@@ -66,3 +66,12 @@ export const getPostCategories = gql`
     }
   }
 `;
+
+export const editPostMutation = gql`
+  mutation UpdatePostById(
+    $postUpdate: PostUpdateRequest!
+    $updatePostByIdId: String!
+  ) {
+    updatePostById(postUpdate: $postUpdate, id: $updatePostByIdId)
+  }
+`;

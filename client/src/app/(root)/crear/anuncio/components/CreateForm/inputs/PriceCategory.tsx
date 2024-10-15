@@ -69,6 +69,7 @@ const PriceCategory = ({
       <Field
         as={CustomSelect}
         items={categories}
+        isLoading={categories.length === 0}
         getItemValue={(item: any) => item._id}
         getItemTextValue={(item: any) => item.label}
         getItemLabel={(item: any) => item.label}

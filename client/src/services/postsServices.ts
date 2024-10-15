@@ -2,8 +2,8 @@
 import { GoodPostValues, PetitionPostValues, ServicePostValues } from "@/types/postTypes";
 import { mockedPetitions, mockedPosts } from "../utils/data/mockedData";
 import axios from "axios";
-import { query } from "@/lib/client";
-import { getPostByIdQuery, getPostCategories } from "@/graphql/postQueries";
+import { getClient, query } from "@/lib/client";
+import { editPostMutation, getPostByIdQuery, getPostCategories } from "@/graphql/postQueries";
 
 export const getPostData = async (id: string) => {
   try {
@@ -40,6 +40,21 @@ export const postPost = async (values: GoodPostValues | PetitionPostValues | Ser
     return res
   } catch (error) {
     return error
+  }
+}
+
+
+export const putPost = async (values: GoodPostValues | PetitionPostValues | ServicePostValues, id: string) => {
+  try {
+    const {data} = await getClient().mutate({
+      mutation: editPostMutation,
+      variables: {updatePostByIdId: id, postUpdate: values}
+    })
+    return data.updatePostById;
+  } catch (error) {
+    return {
+      error: "Error al editar el anuncios. Por favor intenta de nuevo.",
+    };
   }
 }
 

@@ -12,7 +12,7 @@ export interface Post {
   recommendations: PostRecommendation[];
   price: number;
   location: PostLocation;
-  category: PostCategory;
+  category: PostCategory[];
   comments: PostComment[];
   attachedFiles: PostAttachedFile[];
   author: Author;

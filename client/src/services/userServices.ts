@@ -8,7 +8,7 @@ import { currentUser } from "@clerk/nextjs/server";
 import axios from "axios";
 import { query } from "@/lib/client";
 import getUserByUsernameQuery from "@/graphql/userQueries";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 
 const baseUrl = `${process.env.API_URL}/user/personal`;
 
@@ -76,13 +76,18 @@ export const getUserPreferences = async (username: string) => {
 
 export const getUsers = async (searchTerm: string | null) => {
   try {
-    const res = await fetch(`${process.env.API_URL}/user?user=${searchTerm ? searchTerm : ''}&limit=20`, {
-      headers: {
-        Cookie: cookies().toString(),
+    const res = await fetch(
+      `${process.env.API_URL}/user?user=${
+        searchTerm ? searchTerm : ""
+      }&limit=20`,
+      {
+        headers: {
+          Cookie: cookies().toString(),
+        },
       }
-    });
+    );
     const data = await res.json();
-    return {items: data.user, hasMore: data.hasMore};
+    return { items: data.user, hasMore: data.hasMore };
   } catch (error) {
     return {
       error: "Error al traer los usuarios. Por favor intenta de nuevo.",
@@ -95,9 +100,17 @@ export const getUserByUsername = async (username: string) => {
     const { data } = await query({
       query: getUserByUsernameQuery,
       variables: { username },
+      context: {
+        headers: {
+          Cookie: cookies().toString(),
+        },
+        fetchOptions: {
+          next: { revalidate: 60 },
+        },
+      },
     });
 
-    return data.findOneByUsername
+    return data.findOneByUsername;
   } catch (error) {
     return {
       error:
