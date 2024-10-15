@@ -71,7 +71,12 @@ export const editPostMutation = gql`
   mutation UpdatePostById(
     $postUpdate: PostUpdateRequest!
     $updatePostByIdId: String!
+    $authorId: String!
   ) {
-    updatePostById(postUpdate: $postUpdate, id: $updatePostByIdId)
+    updatePostById(
+      postUpdate: $postUpdate
+      id: $updatePostByIdId
+      author_id: $authorId
+    )
   }
 `;

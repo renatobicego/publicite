@@ -40,7 +40,7 @@ export default async function PostPage({ params }: { params: { id: string } }) {
   return (
     <main className="flex min-h-screen flex-col items-start main-style gap-6 md:gap-8">
       <BreadcrumbsAdmin items={breadcrumbsItems} />
-      <section className="w-full flex max-md:flex-col gap-4 lg:gap-6 3xl:gap-8 relative">
+      <section className="w-full flex max-lg:flex-col gap-4 lg:gap-6 3xl:gap-8 relative">
         {!isPetition && <Images images={(postData as any).imagesUrls} />}
         <Data post={postData} isAuthor={isAuthor} isPetition={isPetition} />
       </section>

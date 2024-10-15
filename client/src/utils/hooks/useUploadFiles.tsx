@@ -56,14 +56,12 @@ const useUploadFiles = (
 
     // Start the upload
     let res;
-    if (combinedFiles.length > 1) {
+    if (combinedFiles.length > 0) {
       res = await startUpload(combinedFiles as File[]);
     }
-    console.log(res);
     if ((!res ||!res.length) && !isEditing) {
       return;
     }
-
     // Separate URLs based on the origin of files
     const uploadedFileUrls = res ? res
       .slice(0, files.length)

@@ -1,6 +1,6 @@
 import BreadcrumbsAdmin from "@/components/BreadcrumbsAdmin";
-import { CREATE, CREATE_PETITION, CREATE_POST } from "@/utils/data/urls";
-import CreatePetition from "./CreatePetition";
+import { CREATE, CREATE_PETITION } from "@/utils/data/urls";
+import CreatePetitionClient from "./CreatePetitionClient";
 
 export default function CreatePost() {
   const breadcrumbsItems = [
@@ -21,7 +21,7 @@ export default function CreatePost() {
     <main className="flex min-h-screen flex-col items-start main-style gap-4 md:gap-6 lg:gap-8">
       <BreadcrumbsAdmin items={breadcrumbsItems} />
       <h2>Crear Necesidad</h2>
-      <CreatePetition />
+      <CreatePetitionClient />
     </main>
   );
 }

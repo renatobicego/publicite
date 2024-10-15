@@ -1,25 +1,48 @@
-import { Button, Modal, ModalContent, ModalFooter, ModalHeader, Tooltip, useDisclosure } from "@nextui-org/react";
-import React from "react";
+import {
+  Button,
+  Modal,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  Tooltip,
+  useDisclosure,
+} from "@nextui-org/react";
+import React, { useEffect } from "react";
 
 const ConfirmModal = ({
   ButtonAction,
   message,
   tooltipMessage,
   confirmText,
+  onConfirm,
+  customOpen,
 }: {
   ButtonAction: JSX.Element;
   message: string;
   tooltipMessage: string;
   confirmText: string;
+  onConfirm: () => void;
+  customOpen?: (openModal: () => void) => void; // Custom open function
 }) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
+  useEffect(() => {
+    // If customOpen is passed, set the openModal function to it
+    if (customOpen) {
+      customOpen(onOpen);
+    }
+  }, [customOpen, onOpen]);
   return (
     <>
       <Tooltip placement="bottom" content={tooltipMessage}>
         {React.cloneElement(ButtonAction, { onPress: onOpen })}
       </Tooltip>
-      <Modal radius="lg" className="p-2"  isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal
+        radius="lg"
+        className="p-2"
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+      >
         <ModalContent>
           {(onClose) => (
             <>
@@ -28,14 +51,21 @@ const ConfirmModal = ({
               </ModalHeader>
               <ModalFooter>
                 <Button
-                  color="secondary"
+                  color="danger"
                   variant="light"
                   radius="full"
                   onPress={onClose}
                 >
                   Cancelar
                 </Button>
-                <Button color="danger" radius="full" onPress={onClose}>
+                <Button
+                  color="danger"
+                  radius="full"
+                  onPress={() => {
+                    onClose();
+                    onConfirm();
+                  }}
+                >
                   {confirmText}
                 </Button>
               </ModalFooter>

@@ -47,3 +47,17 @@ export const getGroupsQuery = gql`
     }
   }
 `;
+
+export const makeAdminMutation = gql`
+  mutation AddAdminsToGroupByGroupId(
+    $newAdmins: [String!]!
+    $groupAdmin: String!
+    $groupId: String!
+  ) {
+    addAdminsToGroupByGroupId(
+      newAdmins: $newAdmins
+      groupAdmin: $groupAdmin
+      groupId: $groupId
+    )
+  }
+`;

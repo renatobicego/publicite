@@ -1,5 +1,5 @@
 import SendRequest from "@/components/buttons/SendRequest";
-import { Group } from "@/types/userTypes";
+import { Group, User } from "@/types/userTypes";
 import { Image, Link } from "@nextui-org/react";
 import { FaUser } from "react-icons/fa6";
 import OptionsDropdown from "./OptionsDropdown";
@@ -8,9 +8,7 @@ import RulesPopover from "./RulesPopover";
 import SecondaryButton from "@/components/buttons/SecondaryButton";
 import { EDIT_GROUP, FILE_URL } from "@/utils/data/urls";
 
-const GroupInfo = async ({ group }: { group: Group }) => {
-  const loggedUser = await currentUser();
-
+const GroupInfo = async ({ group, isAdmin }: { group: Group; isAdmin: boolean }) => {
   return (
     <section className="flex gap-4 md:gap-6 xl:gap-8 md:max-w-[65%] xl:max-w-[50%] max-md:flex-col">
       <Image
@@ -30,9 +28,7 @@ const GroupInfo = async ({ group }: { group: Group }) => {
           <p className="text-xs md:text-sm">{group.members.length} miembro/s</p>
         </div>
         <div className="flex gap-2 items-center max-md:flex-wrap">
-          {group.admins.some(
-            (admin) => admin === (loggedUser?.publicMetadata.mongoId as string)
-          ) ? (
+          {isAdmin ? (
             <SecondaryButton as={Link} href={`${EDIT_GROUP}/${group._id}`}>
               {" "}
               Editar Grupo{" "}

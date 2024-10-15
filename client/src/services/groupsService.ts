@@ -1,7 +1,6 @@
 "use server";
 import { getClient, query } from "@/lib/client";
 import {
-  mockedGroups,
   mockedPetitions,
   mockedPosts,
 } from "../utils/data/mockedData";
@@ -9,7 +8,10 @@ import {
   createNewGroupMutation,
   getGroupByIdQuery,
   getGroupsQuery,
+  makeAdminMutation,
 } from "@/graphql/groupQueries";
+import { cookies } from "next/headers";
+import { auth } from "@clerk/nextjs/server";
 
 export const getGroups = async (searchTerm: string | null) => {
   try {
@@ -30,6 +32,11 @@ export const getGroupById = async (id: string) => {
     const { data } = await query({
       query: getGroupByIdQuery,
       variables: { getGroupByIdId: id },
+      context: {
+        headers: {
+          Cookie: cookies().toString(),
+        },
+      }
     });
 
     return data.getGroupById;
@@ -67,3 +74,20 @@ export const postGroup = async (formData: any) => {
     })
     .then((res) => res.data.createNewGroup);
 };
+
+export const putAdminGroup = async (groupId: string, userIds: string[]) => {
+  const groupAdmin = auth().sessionClaims?.metadata.mongoId;
+  try {
+  return await getClient()
+    .mutate({
+      mutation: makeAdminMutation,
+      variables: { groupId, newAdmins: userIds, groupAdmin },
+    })
+    .then((res) => res);
+    
+  } catch (error) {
+    return {
+      error: "Error al agregar administrador al grupo. Por favor intenta de nuevo.",
+    }
+  }
+}

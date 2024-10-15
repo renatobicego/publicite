@@ -1,5 +1,5 @@
 "use server";
-import { postGroup } from "@/services/groupsService";
+import { postGroup, putAdminGroup } from "@/services/groupsService";
 import { currentUser } from "@clerk/nextjs/server";
 
 export const createGroup = async (formData: any) => {
@@ -18,6 +18,20 @@ export const createGroup = async (formData: any) => {
   } catch (err) {
     return {
       error: "Error al crear el grupo. Por favor intenta de nuevo.",
+    };
+  }
+};
+
+export const addAdmin = async (groupId: string, userIds: string[]) => {
+  try {
+    const res = await putAdminGroup(groupId, userIds);
+    if("error" in res){
+      return { error: res.error }
+    }
+    return { message: "Administrador agregado" };
+  } catch (err) {
+    return {
+      error: "Error al agregar administrador al grupo. Por favor intenta de nuevo.",
     };
   }
 };

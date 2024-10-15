@@ -423,9 +423,9 @@ enum Visibility_of_the_post {
 
 """Type of the post """
 enum PostType {
-  Good
-  Service
-  Petition
+  good
+  service
+  petition
 }
 
 input AttachedFiles {

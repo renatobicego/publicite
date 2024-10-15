@@ -8,9 +8,13 @@ import HandleGroupMember from "../buttons/HandleGroupMember";
 const ProfileCard = ({
   user,
   groupGrid,
+  groupId,
+  isAdmin,
 }: {
   user: User;
   groupGrid?: boolean;
+  groupId?: string;
+  isAdmin?: boolean;
 }) => {
   const { userType } = user;
   const nameToShow =
@@ -32,7 +36,7 @@ const ProfileCard = ({
             className="text-text-color hover:text-primary"
             href={`${PROFILE}/${user.username}`}
           >
-            <h6>{nameToShow}</h6>
+            <h6>{groupGrid ? user.username : nameToShow}</h6>
           </Link>
           {!groupGrid ? (
             <>
@@ -43,7 +47,15 @@ const ProfileCard = ({
               <SendRequest />
             </>
           ) : (
-            <HandleGroupMember user={user} nameToShow={nameToShow} />
+            <>
+              {isAdmin && <p className="text-xs font-normal italic">Administrador</p>}
+              <HandleGroupMember
+                user={user}
+                nameToShow={nameToShow}
+                groupId={groupId}
+                isAdmin={isAdmin}
+              />
+            </>
           )}
         </div>
       </CardBody>
