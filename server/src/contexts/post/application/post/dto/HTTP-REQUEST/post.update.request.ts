@@ -63,8 +63,8 @@ export class PostUpdateRequest {
   condition?: string;
 
   //POST Petition
-  @Field(() => String, { nullable: true })
-  toPrice?: string;
+  @Field(() => Float, { nullable: true })
+  toPrice?: number;
 
   @Field(() => FrequencyPrice, { nullable: true })
   frequencyPrice?: FrequencyPrice;
