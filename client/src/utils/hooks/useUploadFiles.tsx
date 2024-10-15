@@ -59,29 +59,35 @@ const useUploadFiles = (
     if (combinedFiles.length > 0) {
       res = await startUpload(combinedFiles as File[]);
     }
-    if ((!res ||!res.length) && !isEditing) {
+    if ((!res || !res.length) && !isEditing) {
       return;
     }
     // Separate URLs based on the origin of files
-    const uploadedFileUrls = res ? res
-      .slice(0, files.length)
-      .map((upload) => upload.key) : [];
-    const uploadedAttachedFileUrls = res ? res
-      .slice(files.length)
-      .map((upload, index) => ({
-        url: upload.key,
-        label: attachedFiles[index].label,
-      })) : [];
+    const uploadedFileUrls = res
+      ? res.slice(0, files.length).map((upload) => upload.key)
+      : [];
+    const uploadedAttachedFileUrls = res
+      ? res.slice(files.length).map((upload, index) => ({
+          url: upload.key,
+          label: attachedFiles[index].label,
+        }))
+      : [];
 
     // Assign URLs to their respective fields in the form values
     if (isEditing) {
-      values.imagesUrls = [...values.imagesUrls, ...uploadedFileUrls];
-      values.attachedFiles = [
-        ...values.attachedFiles,
-        ...uploadedAttachedFileUrls,
-      ];
+      if (!isPetition) {
+        values.imagesUrls = [...values.imagesUrls, ...uploadedFileUrls];
+        values.attachedFiles = [
+          ...values.attachedFiles,
+          ...uploadedAttachedFileUrls,
+        ];
+      } else {
+        values.attachedFiles = uploadedAttachedFileUrls
+      }
     } else {
-      values.imagesUrls = uploadedFileUrls;
+      if (!isPetition) {
+        values.imagesUrls = uploadedFileUrls;
+      }
       values.attachedFiles = uploadedAttachedFileUrls;
     }
     return values;

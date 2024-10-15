@@ -20,7 +20,7 @@ const MagazineActions = ({
           <SecondaryButton as={Link} href={`${EDIT_MAGAZINE}/${magazine._id}`}>
             Editar
           </SecondaryButton>
-          <InviteCollabMagazine />
+          <InviteCollabMagazine magazine={magazine}/>
         </>
       )}
       <ShareButton post={magazine} />

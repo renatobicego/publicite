@@ -22,8 +22,12 @@ import { useEffect } from "react";
 
 const EditPetitionForm = ({ postData }: { postData: Petition }) => {
   const router = useRouter();
-  const { attachedFiles, setPrevAttachedFiles, prevAttachedFilesDeleted } =
-    useAttachedFiles();
+  const {
+    attachedFiles,
+    setPrevAttachedFiles,
+    prevAttachedFiles,
+    prevAttachedFilesDeleted,
+  } = useAttachedFiles();
   useEffect(() => {
     setPrevAttachedFiles(postData.attachedFiles);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -55,11 +59,19 @@ const EditPetitionForm = ({ postData }: { postData: Petition }) => {
   ) => {
     // delete prev files deleted
     await deleteFiles(prevAttachedFilesDeleted.map((file) => file.url));
-
+    // upload new files if any
+    if (attachedFiles.length) {
+      values = await submitFiles(values, actions);
+    } else {
+      // update prevAttachedFiles with new values
+      values.attachedFiles = prevAttachedFiles;
+    }
+    
     // edit post
     const resApi = await editPost(
       {
         ...values,
+        frequencyPrice: values.frequencyPrice ? values.frequencyPrice : undefined,
         category: [values.category],
       },
       postData._id,
