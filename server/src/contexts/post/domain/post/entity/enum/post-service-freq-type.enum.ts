@@ -1,11 +1,11 @@
 import { registerEnumType } from '@nestjs/graphql';
 
 export enum FrequencyPrice {
-  Hour = 'hour',
-  Day = 'day',
-  Week = 'week',
-  Month = 'month',
-  Year = 'year',
+  hour = 'hour',
+  day = 'day',
+  week = 'week',
+  month = 'month',
+  year = 'year',
 }
 
 registerEnumType(FrequencyPrice, {
