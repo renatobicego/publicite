@@ -31,13 +31,13 @@ export class PostAdapter implements PostAdapterInterface {
       let postPosted;
 
       switch (post.postType.toLowerCase()) {
-        case PostType.Good.toLocaleLowerCase():
+        case PostType.good.toLocaleLowerCase():
           this.logger.log('We are creating a good post');
           postMapped = this.postMapper.requestToEntity(post as PostGoodRequest);
           postPosted = await this.postService.create(postMapped);
           return this.postMapper.entityToResponse(postPosted);
 
-        case PostType.Service.toLocaleLowerCase():
+        case PostType.service.toLocaleLowerCase():
           this.logger.log('We are creating a service post');
           postMapped = this.postMapper.requestToEntity(
             post as PostServiceRequest,
@@ -45,7 +45,7 @@ export class PostAdapter implements PostAdapterInterface {
           postPosted = await this.postService.create(postMapped);
           return this.postMapper.entityToResponse(postPosted);
 
-        case PostType.Petition.toLocaleLowerCase():
+        case PostType.petition.toLocaleLowerCase():
           this.logger.log('We are creating a service post');
           postMapped = this.postMapper.requestToEntity(
             post as PostPetitionRequest,

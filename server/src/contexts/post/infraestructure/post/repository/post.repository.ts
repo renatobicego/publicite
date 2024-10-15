@@ -301,21 +301,21 @@ export class PostRepository implements PostRepositoryInterface {
     try {
       let postId;
       switch (postType) {
-        case PostType.Good:
+        case PostType.good:
           this.logger.warn('Updating POST TYPE: ' + postType);
           postId = await this.postGoodDocument.findByIdAndUpdate(
             id,
             postUpdate,
           );
           return postId?._id;
-        case PostType.Service:
+        case PostType.service:
           this.logger.warn('Updating POST TYPE: ' + postType);
           postId = await this.postServiceDocument.findByIdAndUpdate(
             id,
             postUpdate,
           );
           return postId?._id;
-        case PostType.Petition:
+        case PostType.petition:
           this.logger.warn('Updating POST TYPE: ' + postType);
           postId = await this.postPetitionDocument.findByIdAndUpdate(
             id,

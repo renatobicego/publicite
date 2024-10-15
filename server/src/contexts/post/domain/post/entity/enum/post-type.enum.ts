@@ -1,9 +1,9 @@
 import { registerEnumType } from '@nestjs/graphql';
 
 export enum PostType {
-  Good = 'good',
-  Service = 'service',
-  Petition = 'petition',
+  good = 'good',
+  service = 'service',
+  petition = 'petition',
 }
 
 registerEnumType(PostType, {
