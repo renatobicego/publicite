@@ -223,7 +223,17 @@ export class GroupRepository implements GroupRepositoryInterface {
 
   async findGroupById(id: string): Promise<GroupResponse> {
     try {
-      const group = await this.groupModel.findById(id).lean();
+      const group = await this.groupModel
+        .findById(id)
+        .populate({
+          path: 'members',
+          select: '_id username profilePhotoUrl',
+        })
+        .populate({
+          path: 'admins',
+          select: '_id username',
+        })
+        .lean();
       return this.groupMapper.toGroupResponse(group);
     } catch (error: any) {
       throw error;
