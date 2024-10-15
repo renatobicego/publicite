@@ -2,7 +2,6 @@ import { Inject } from '@nestjs/common';
 import { Connection, ObjectId } from 'mongoose';
 import { InjectConnection } from '@nestjs/mongoose';
 
-
 import { Post } from '../../../domain/post/entity/post.entity';
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
 import { UserServiceInterface } from 'src/contexts/user/domain/service/user.service.interface';
@@ -99,7 +98,6 @@ export class PostService implements PostServiceInterface {
     postUpdate: PostUpdateDto,
     id: string,
     postType: string,
-    cookie?: any,
   ): Promise<any> {
     try {
       return await this.postRepository.updatePostById(postUpdate, id, postType);

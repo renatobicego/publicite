@@ -338,7 +338,7 @@ type Mutation {
   deletePostById(id: String!): String
 
   """Actualizar un post"""
-  updatePostById(postUpdate: PostUpdateRequest!, id: String!): String
+  updatePostById(postUpdate: PostUpdateRequest!, id: String!, author_id: String!): String
 
   """Actualiza el board del usuario"""
   updateBoardByUsername(id: String!, boardData: UpdateBoardDto!): Board
@@ -414,11 +414,11 @@ input VisibilityEnum {
 
 """Visibility of the post """
 enum Visibility_of_the_post {
-  Public
-  Registgered
-  Contacts
-  Friends
-  TopFriends
+  public
+  registered
+  contacts
+  friends
+  topfriends
 }
 
 """Type of the post """

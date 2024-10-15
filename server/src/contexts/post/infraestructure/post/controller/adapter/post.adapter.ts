@@ -91,19 +91,13 @@ export class PostAdapter implements PostAdapterInterface {
   async updatePostById(
     postUpdate: PostUpdateRequest,
     id: string,
-    cookie?: any,
   ): Promise<any> {
     try {
       this.logger.log('We are updating a post with id: ' + id);
       const { postType } = postUpdate;
       const postMapped = this.postMapper.requestUpdateToEntity(postUpdate);
       this.logger.log('Post mapped succesfully');
-      return await this.postService.updatePostById(
-        postMapped,
-        id,
-        postType,
-        cookie,
-      );
+      return await this.postService.updatePostById(postMapped, id, postType);
     } catch (error: any) {
       this.logger.log('An error was ocurred updating a post with id: ' + id);
       throw error;

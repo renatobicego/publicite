@@ -1,10 +1,12 @@
-import { Inject } from '@nestjs/common';
-import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
+import { Inject, UseGuards } from '@nestjs/common';
+import { Args, Mutation, Resolver, Query, Context } from '@nestjs/graphql';
+import { ClerkAuthGuard } from 'src/contexts/clerk-auth/clerk.auth.guard';
 
 import { PostAdapterInterface } from 'src/contexts/post/application/post/adapter/post.adapter.interface';
 import { PostUpdateRequest } from 'src/contexts/post/application/post/dto/HTTP-REQUEST/post.update.request';
 import { Post_response_graphql_model } from 'src/contexts/post/application/post/dto/HTTP-RESPONSE/post.response.graphql';
 import { Post_Full_Graphql_Model } from 'src/contexts/post/domain/post/entity/models_graphql/post.full.grapql.model';
+import { PubliciteAuth } from 'src/contexts/shared/publicite_auth/publicite_auth';
 
 @Resolver('Post')
 export class PostResolver {
@@ -34,15 +36,19 @@ export class PostResolver {
     nullable: true,
     description: 'Actualizar un post',
   })
+  @UseGuards(ClerkAuthGuard)
   async updatePostById(
     @Args('postUpdate', { type: () => PostUpdateRequest })
     postUpdate: PostUpdateRequest,
     @Args('id', { type: () => String })
     id: string,
-    cookie?: any,
+    @Args('author_id', { type: () => String })
+    admin_id: string,
+    @Context() context: any,
   ): Promise<any> {
     try {
-      return await this.postAdapter.updatePostById(postUpdate, id, cookie);
+      PubliciteAuth.authorize(context, admin_id);
+      return await this.postAdapter.updatePostById(postUpdate, id);
     } catch (error: any) {
       throw error;
     }
