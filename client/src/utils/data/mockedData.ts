@@ -80,7 +80,7 @@ const mockedGood: Good = {
     description: "Cacique Guaymallen 1065, Las Heras, Mendoza",
     userSetted: true,
   },
-  category: categories[0],
+  category: [categories[0]],
   attachedFiles: [
     {
       _id: "1ghdsf",
@@ -146,7 +146,7 @@ const mockedGood: Good = {
     },
     lastName: "lastName",
     name: "name",
-    _id: "66fb19fd316723a55b9d0ccb"
+    _id: "66fb19fd316723a55b9d0ccb",
   },
   createAt: "2024-07-12",
 };
@@ -167,7 +167,7 @@ const mockedService: Service = {
     description: "Cacique Guaymallen 1065, Las Heras, Mendoza",
     userSetted: true,
   },
-  category: categories[1],
+  category: [categories[1]],
   attachedFiles: [],
   comments: [
     {
@@ -217,12 +217,14 @@ const mockedPetition: Petition = {
     },
     lastName: "lastName",
     name: "name",
-    _id: "66fb19fd316723a55b9d0ccb"
+    _id: "66fb19fd316723a55b9d0ccb",
   },
-  category: {
-    _id: "1",
-    label: "Teléfonos y Compoutadoras",
-  },
+  category: [
+    {
+      _id: "1",
+      label: "Teléfonos y Compoutadoras",
+    },
+  ],
   postType: "petition",
   petitionType: "good",
   visibility: {
@@ -258,12 +260,14 @@ const mockedPetition2: Petition = {
     },
     lastName: "lastName",
     name: "name",
-    _id: "66fb19fd316723a55b9d0ccb"
+    _id: "66fb19fd316723a55b9d0ccb",
   },
-  category: {
-    _id: "1",
-    label: "Teléfonos y Compoutadoras",
-  },
+  category: [
+    {
+      _id: "1",
+      label: "Teléfonos y Compoutadoras",
+    },
+  ],
   postType: "petition",
   petitionType: "service",
   frequencyPrice: "month",

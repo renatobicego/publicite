@@ -1,15 +1,17 @@
 import BreadcrumbsAdmin from "@/components/BreadcrumbsAdmin";
 import ErrorCard from "@/components/ErrorCard";
 import { getPostData } from "@/services/postsServices";
-import { Good, Service } from "@/types/postTypes";
+import { Good, Petition, Service } from "@/types/postTypes";
 import { EDIT_PETITION, EDIT_POST, POSTS } from "@/utils/data/urls";
 import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
-import EditPostClient from "./EditPost";
-export default async function EditPost({ params }: { params: { id: string } }) {
-  const postData: Good | Service | { error: string } = await getPostData(
-    params.id
-  );
+import EditPetitionClient from "./EditPetitionClient";
+export default async function EditPetitionPage({
+  params,
+}: {
+  params: { id: string };
+}) {
+  const postData: Petition | { error: string } = await getPostData(params.id);
   const userLogged = await currentUser();
   if (
     !("error" in postData) &&
@@ -20,18 +22,14 @@ export default async function EditPost({ params }: { params: { id: string } }) {
   if ("error" in postData) {
     return <ErrorCard message={postData.error} />;
   }
-
-  if (postData.postType === "petition") {
-    redirect(`${EDIT_PETITION}/${params.id}`);
-  }
   const breadcrumbsItems = [
     {
       label: "Inicio",
       href: "/",
     },
     {
-      label: "Anuncios",
-      href: POSTS,
+      label: "Necesidades",
+      href: `${POSTS}/necesidades`,
     },
     {
       label: postData.title,
@@ -39,14 +37,14 @@ export default async function EditPost({ params }: { params: { id: string } }) {
     },
     {
       label: "Editar",
-      href: `${EDIT_POST}/${params.id}`,
+      href: `${EDIT_PETITION}/${params.id}`,
     },
   ];
   return (
     <main className="flex min-h-screen flex-col items-start main-style gap-4 md:gap-6 lg:gap-8">
       <BreadcrumbsAdmin items={breadcrumbsItems} />
-      <h2>Editar Anuncio</h2>
-      <EditPostClient postData={postData} />
+      <h2>Editar Necesidad</h2>
+      <EditPetitionClient postData={postData} />
     </main>
   );
 }

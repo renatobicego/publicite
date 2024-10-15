@@ -9,8 +9,9 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import SecondaryButton from "../buttons/SecondaryButton";
+import { Magazine } from "@/types/postTypes";
 
-const InviteCollabMagazine = () => {
+const InviteCollabMagazine = ({magazine} : {magazine: Magazine}) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   return (
     <>
@@ -22,7 +23,7 @@ const InviteCollabMagazine = () => {
           {(onClose) => (
             <>
               <ModalHeader className="flex flex-col gap-1">
-                Modal Title
+                Invitar Colaboradores a {magazine.name}
               </ModalHeader>
               <ModalBody>
                 <p>
@@ -33,10 +34,10 @@ const InviteCollabMagazine = () => {
               </ModalBody>
               <ModalFooter>
                 <Button color="danger" variant="light" onPress={onClose}>
-                  Close
+                  Cerrar
                 </Button>
                 <Button color="primary" onPress={onClose}>
-                  Action
+                  Invitar
                 </Button>
               </ModalFooter>
             </>

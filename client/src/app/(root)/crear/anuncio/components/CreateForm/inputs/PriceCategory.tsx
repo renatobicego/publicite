@@ -1,7 +1,4 @@
-import {
-  CustomInput,
-  CustomSelect,
-} from "@/components/inputs/CustomInputs";
+import { CustomInput, CustomSelect } from "@/components/inputs/CustomInputs";
 import { frequencyPriceItems } from "@/utils/data/selectData";
 import {
   GoodPostValues,
@@ -20,17 +17,17 @@ const PriceCategory = ({
 }: {
   errors: FormikErrors<GoodPostValues> | FormikErrors<ServicePostValues>;
   isService?: boolean;
-  }) => {
-  const [categories, setCategories] = useState<PostCategory[]>([])
+}) => {
+  const [categories, setCategories] = useState<PostCategory[]>([]);
   useEffect(() => {
     getCategories().then((data) => {
       if (data.error) {
-        toastifyError(data.error)
-        return
+        toastifyError(data.error);
+        return;
       }
-      setCategories(data)
-    })
-  }, [])
+      setCategories(data);
+    });
+  }, []);
   return (
     <>
       <div className="flex gap-4 max-xl:flex-wrap">

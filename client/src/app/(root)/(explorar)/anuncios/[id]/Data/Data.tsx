@@ -1,5 +1,5 @@
 import { getTimeBetweenToday } from "@/utils/functions/dates";
-import { conditionItems } from "@/utils/data/selectData";
+import { conditionItems, frequencyPriceItems } from "@/utils/data/selectData";
 import { Good, Petition, Service } from "@/types/postTypes";
 import { parseDate, parseDateTime } from "@internationalized/date";
 import ReviewsStars from "./ReviewsStars";
@@ -28,7 +28,9 @@ const Data = async ({
   const good = post as Good;
   const service = post as Service;
   const petition = post as Petition;
-  const datePublished = getTimeBetweenToday(parseDateTime(post.createAt.replace("Z", "")));
+  const datePublished = getTimeBetweenToday(
+    parseDateTime(post.createAt.replace("Z", ""))
+  );
   const showCondition =
     post.postType === "good"
       ? `${
@@ -49,13 +51,23 @@ const Data = async ({
           petition.toPrice
             ? `De $${petition.price} a $${petition.toPrice}`
             : `$${petition.price}`
-        } ${petition.frequencyPrice ? `por ${petition.frequencyPrice}` : ""}`;
+        } ${
+          petition.frequencyPrice
+            ? `por ${
+                (
+                  frequencyPriceItems.find(
+                    (item) => item.value === petition.frequencyPrice
+                  ) ?? {}
+                ).text as string
+              }`
+            : ""
+        }`;
     }
   };
   return (
     <div
       className={`flex-1 flex gap-4 items-start w-full ${
-        isPetition ? "max-md:flex-col" : "md:w-1/2 flex-col"
+        isPetition ? "max-lg:flex-col" : "lg:w-1/2 flex-col"
       }`}
     >
       <div className="flex flex-col gap-4 w-full">
@@ -64,7 +76,7 @@ const Data = async ({
           Publicado {datePublished} en {post.location.description}
         </p>
         <h2>{post.title}</h2>
-        {"reviews" in post && post.reviews.length > 0 && (
+        {"reviews" in post && post.reviews && post.reviews.length > 0 && (
           <ReviewsStars reviews={post.reviews} />
         )}
         <h3 className="font-medium">{priceToShow()}</h3>

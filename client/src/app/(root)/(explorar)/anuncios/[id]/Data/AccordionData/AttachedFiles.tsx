@@ -1,4 +1,5 @@
 import { PostAttachedFile } from "@/types/postTypes";
+import { FILE_URL } from "@/utils/data/urls";
 import { Chip, Link } from "@nextui-org/react";
 import { FaFile } from "react-icons/fa6";
 
@@ -18,7 +19,7 @@ const AttachedFiles = ({
           as={Link}
           target={"_blank"}
           startContent={<FaFile />}
-          href={file.url}
+          href={FILE_URL + file.url}
         >
           {file.label}
         </Chip>

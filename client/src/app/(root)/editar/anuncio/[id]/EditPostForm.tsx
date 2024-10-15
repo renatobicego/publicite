@@ -6,7 +6,7 @@ import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { useEffect, useState } from "react";
 import useUploadFiles from "@/utils/hooks/useUploadFiles";
-import { Button, Divider, image } from "@nextui-org/react";
+import { Button, Divider } from "@nextui-org/react";
 import { useRouter } from "next-nprogress-bar";
 import TitleDescription from "@/app/(root)/crear/anuncio/components/CreateForm/inputs/TitleDescription";
 import PriceCategory from "@/app/(root)/crear/anuncio/components/CreateForm/inputs/PriceCategory";
@@ -21,6 +21,7 @@ import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { POSTS } from "@/utils/data/urls";
 import { goodEditValidation } from "@/app/(root)/crear/anuncio/components/CreateGood/goodValidation";
 import { serviceEditValidation } from "@/app/(root)/crear/anuncio/components/CreateService/serviceValidation";
+import { handleFileSubmission } from "./handleFileSubmission";
 
 const EditPostForm = ({ postData }: { postData: Good | Service }) => {
   const { postType } = postData;
@@ -42,31 +43,42 @@ const EditPostForm = ({ postData }: { postData: Good | Service }) => {
   const initialValues = getPostInitialValues(postData, postType as any);
 
   const handleSubmit = async (values: any, actions: FormikHelpers<any>) => {
-    await deleteFiles([
-      ...deletedImages,
-      ...prevAttachedFilesDeleted.map((file) => file.url),
-    ]);
-    const newValuesWithUrlFiles = await submitFiles(values, actions);
+    // check if all images were deleted and no new images were added
+    if (
+      newImages.length === 0 &&
+      deletedImages.length === values.imagesUrls.length
+    ) {
+      actions.setFieldError(
+        "imagesUrls",
+        "Por favor agrega al menos una imagen"
+      );
+      actions.setSubmitting(false);
+      return false;
+    }
+
+    // hanlde file submission
+    const newValuesWithUrlFiles = await handleFileSubmission(
+      deletedImages,
+      values,
+      actions,
+      deleteFiles,
+      prevAttachedFilesDeleted,
+      submitFiles
+    );
+    // check if there was an error
     if (!newValuesWithUrlFiles) {
+      actions.setFieldError(
+        "imagesUrls",
+        "Error al subir las imágenes. Por favor intenta de nuevo."
+      );
       actions.setSubmitting(false);
       return;
     }
-    values = {
-      ...newValuesWithUrlFiles,
-      imagesUrls: newValuesWithUrlFiles.imagesUrls.filter(
-        (url: string) => !deletedImages.includes(url)
-      ),
-      attachedFiles: newValuesWithUrlFiles.attachedFiles.filter(
-        (file: PostAttachedFile) =>
-          !prevAttachedFilesDeleted.some(
-            (deletedFile) => deletedFile.url === file.url
-          )
-      ),
-    };
 
+    // edit post
     const resApi = await editPost(
       {
-        ...values,
+        ...newValuesWithUrlFiles,
         category: [values.category],
       },
       postData._id,
@@ -78,6 +90,7 @@ const EditPostForm = ({ postData }: { postData: Good | Service }) => {
     }
 
     toastifySuccess("Anuncio editado exitosamente");
+    router.refresh();
     router.push(`${POSTS}/${resApi.id}`);
   };
   return (

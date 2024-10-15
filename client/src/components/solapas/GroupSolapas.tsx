@@ -8,15 +8,19 @@ import { useEffect, useRef } from "react";
 import MagazinesGrid from "../grids/MagazinesGrid";
 import PostListLogic from "@/app/(root)/(explorar)/anuncios/components/PostListLogic";
 import { Magazine } from "@/types/postTypes";
-import { useUser } from "@clerk/nextjs";
 import UsersGrid from "@/app/(root)/(explorar)/perfiles/UsersGrid";
 import InviteUsersGroup from "../modals/InviteUsersGroup";
 import PrimaryButton from "../buttons/PrimaryButton";
 import { FaPlus } from "react-icons/fa6";
-const GroupSolapas = ({ group }: { group: Group }) => {
+const GroupSolapas = ({
+  group,
+  isAdmin,
+}: {
+  group: Group;
+  isAdmin: boolean;
+}) => {
   const pathname = usePathname();
   const tabsRef = useRef<HTMLDivElement | null>(null);
-  const { user } = useUser();
 
   useEffect(() => {
     if (tabsRef.current) {
@@ -36,9 +40,6 @@ const GroupSolapas = ({ group }: { group: Group }) => {
   }, [pathname]);
 
   const GROUP_URL = `${GROUPS}/${group._id}`;
-  const isAdmin = group.admins.some(
-    (admin) => admin === user?.publicMetadata.mongoId
-  );
 
   return (
     <Tabs
@@ -96,7 +97,11 @@ const GroupSolapas = ({ group }: { group: Group }) => {
           <h3>Miembros del Grupo</h3>
           <InviteUsersGroup />
         </div>
-        <UsersGrid items={group.members as User[]} groupGrid />
+        <UsersGrid
+          items={group.members as User[]}
+          groupGrid
+          group={group}
+        />
       </Tab>
     </Tabs>
   );

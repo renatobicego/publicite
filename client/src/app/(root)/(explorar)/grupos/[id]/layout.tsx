@@ -8,7 +8,7 @@ import UserSolapas from "@/components/solapas/UserSolapas";
 import GroupInfo from "./(components)/GroupInfo";
 import { getGroupById } from "@/services/groupsService";
 import GroupSolapas from "@/components/solapas/GroupSolapas";
-import { Group } from "@/types/userTypes";
+import { Group, User } from "@/types/userTypes";
 
 export default async function GroupLayout({
   children,
@@ -17,7 +17,7 @@ export default async function GroupLayout({
   params: { id: string };
   children: React.ReactNode;
 }) {
-  const group = await getGroupById(params.id);
+  const group: Group | { error: string } = await getGroupById(params.id);
   if ("error" in group) {
     return <ErrorCard message={group.error} />;
   }
@@ -35,14 +35,19 @@ export default async function GroupLayout({
       href: `${GROUPS}/${params.id}`,
     },
   ];
+  const loggedUser = await currentUser();
+  const isAdmin = group.admins.some(
+    (admin) =>
+      (admin as User)._id === (loggedUser?.publicMetadata.mongoId as string)
+  );
 
   return (
     <main className="flex min-h-screen flex-col items-start main-style gap-4 md:gap-6 xl:gap-8">
       <BreadcrumbsAdmin items={breadcrumbsItems} />
       <div className="items-start flex gap-4 justify-between w-full max-md:flex-wrap">
-        <GroupInfo group={group as Group} />
+        <GroupInfo group={group as Group} isAdmin={isAdmin} />
       </div>
-      <GroupSolapas group={group as Group} />
+      <GroupSolapas group={group as Group} isAdmin={isAdmin}/>
       {children}
     </main>
   );

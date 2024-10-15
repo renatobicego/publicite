@@ -1,23 +1,37 @@
-import {
-  CustomInput,
-  CustomSelect,
-} from "@/components/inputs/CustomInputs";
-import { categories } from "@/utils/data/mockedData";
+import { CustomInput, CustomSelect } from "@/components/inputs/CustomInputs";
 import { frequencyPriceItems } from "@/utils/data/selectData";
 import { PetitionPostValues, PostCategory } from "@/types/postTypes";
 import { Checkbox } from "@nextui-org/react";
 import { Field, FormikErrors } from "formik";
-import { memo, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { FaDollarSign } from "react-icons/fa6";
+import { getCategories } from "@/services/postsServices";
+import { toastifyError } from "@/utils/functions/toastify";
 
 const PriceRangeCategory = ({
   errors,
-  setFieldValue
+  setFieldValue,
+  defaultChecked = false,
 }: {
   errors: FormikErrors<PetitionPostValues>;
-  setFieldValue: (field: string, value: any, shouldValidate?: boolean) => Promise<void | FormikErrors<PetitionPostValues>>
+  setFieldValue: (
+    field: string,
+    value: any,
+    shouldValidate?: boolean
+  ) => Promise<void | FormikErrors<PetitionPostValues>>;
+  defaultChecked?: boolean;
 }) => {
-  const [isChecked, setIsChecked] = useState(false);
+  const [isChecked, setIsChecked] = useState(defaultChecked ? true : false);
+  const [categories, setCategories] = useState<PostCategory[]>([]);
+  useEffect(() => {
+    getCategories().then((data) => {
+      if (data.error) {
+        toastifyError(data.error);
+        return;
+      }
+      setCategories(data);
+    });
+  }, []);
   return (
     <div className="flex flex-col gap-4">
       <div className="flex gap-4">
@@ -51,10 +65,11 @@ const PriceRangeCategory = ({
       <Checkbox
         size="sm"
         checked={isChecked}
+        isSelected={isChecked}
         onChange={() => {
-          setIsChecked(!isChecked)
-          if(isChecked){
-            setFieldValue("toPrice", undefined)
+          setIsChecked(!isChecked);
+          if (isChecked) {
+            setFieldValue("toPrice", undefined);
           }
         }}
       >
@@ -73,7 +88,7 @@ const PriceRangeCategory = ({
         isInvalid={!!errors.frequencyPrice}
         errorMessage={errors.frequencyPrice}
       />
-       <Field
+      <Field
         as={CustomSelect}
         items={categories}
         getItemValue={(item: any) => item._id}
@@ -81,6 +96,7 @@ const PriceRangeCategory = ({
         getItemLabel={(item: any) => item.label}
         name="category"
         label="Categoría"
+        isLoading={categories.length === 0}
         placeholder="Seleccione la categoría"
         aria-label="categoría"
         isRequired
