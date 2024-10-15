@@ -7,6 +7,7 @@ import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { SignedOut, useUser } from "@clerk/nextjs";
 import { Button } from "@nextui-org/react";
 import { Field, Form, Formik, FormikHelpers } from "formik";
+import { contactFormValidation } from "./validation";
 
 const ContactForm = ({
   postId,
@@ -17,10 +18,10 @@ const ContactForm = ({
 }) => {
   const { user } = useUser();
   const initialValues: PetitionContact = {
-    userContacting: user?.publicMetadata?.mongoId as string,
+    userContacting: user?.publicMetadata?.mongoId,
     email: user?.emailAddresses[0].emailAddress || "",
     post: postId,
-    fullName: undefined,
+    fullName: user?.fullName || "",
     phone: undefined,
     message: "",
   };
@@ -28,7 +29,6 @@ const ContactForm = ({
     values: PetitionContact,
     actions: FormikHelpers<PetitionContact>
   ) => {
-    console.log(values);
     const resApi = await createContactPetition(values);
     if (resApi.error) {
       toastifyError(resApi.error);
@@ -43,6 +43,7 @@ const ContactForm = ({
       validateOnChange={false}
       initialValues={initialValues}
       onSubmit={handleSubmit}
+      validationSchema={contactFormValidation}
     >
       {({ isSubmitting, errors }) => {
         return (
@@ -84,6 +85,7 @@ const ContactForm = ({
               name="message"
               label="Mensaje"
               placeholder="Agregue su mensaje"
+              description="Máximo 300 caracteres"
               isRequired
               aria-label="mensaje"
               isInvalid={!!errors.message}

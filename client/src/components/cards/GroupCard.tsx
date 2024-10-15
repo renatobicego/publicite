@@ -1,6 +1,5 @@
-import { Group, User, UserBusiness } from "@/types/userTypes";
+import { Group } from "@/types/userTypes";
 import { Avatar, Card, CardBody, Link } from "@nextui-org/react";
-import { TbWorldPin } from "react-icons/tb";
 import SendRequest from "../buttons/SendRequest";
 import { GROUPS } from "@/utils/data/urls";
 

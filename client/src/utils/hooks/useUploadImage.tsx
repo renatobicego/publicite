@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { useUploadThing } from "../uploadThing";
 import { toastifyError } from "../functions/toastify";
-import { FormikHelpers } from "formik";
 import { deleteFilesService } from "@/app/server/uploadThing";
-
+import imageCompression from "browser-image-compression";
 const useUploadImage = () => {
   const [progress, setProgress] = useState(0);
   const { startUpload } = useUploadThing("fileUploader", {
@@ -20,7 +19,13 @@ const useUploadImage = () => {
   });
 
   const submitFiles = async (file: File) => {
-    const res = await startUpload([file]);
+    const options = {
+      maxSizeMB: 1,
+      maxWidthOrHeight: 600,
+      useWebWorker: true,
+    };
+    const compressedFile = await imageCompression(file, options);
+    const res = await startUpload([compressedFile]);
     if (!res || !res.length) {
       return;
     }
@@ -43,7 +48,7 @@ const useUploadImage = () => {
   return {
     submitFiles,
     progress,
-    deleteFile
+    deleteFile,
   };
 };
 

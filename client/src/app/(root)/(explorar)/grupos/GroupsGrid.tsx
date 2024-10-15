@@ -13,7 +13,7 @@ const GroupsGrid = ({
   return (
     <>
       <div className="grid grid-cols-2 lg:grid-cols-3 3xl:grid-cols-4 gap-4">
-        {items.map((group: Group, index) => (
+        {items && items.map((group: Group, index) => (
           <GroupCard group={group} key={group._id + index} />
         ))}
       </div>

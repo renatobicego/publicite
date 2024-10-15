@@ -1,7 +1,7 @@
 import { getTimeBetweenToday } from "@/utils/functions/dates";
 import { conditionItems } from "@/utils/data/selectData";
 import { Good, Petition, Service } from "@/types/postTypes";
-import { parseDate } from "@internationalized/date";
+import { parseDate, parseDateTime } from "@internationalized/date";
 import ReviewsStars from "./ReviewsStars";
 import CategoryChip from "@/components/chips/CategoryChip";
 import ServiceChip from "@/components/chips/ServiceChip";
@@ -11,7 +11,7 @@ import AccordionData from "./AccordionData/AccordionData";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { CREATE_POST, EDIT_POST } from "@/utils/data/urls";
 import { Link } from "@nextui-org/react";
-import ContactPetitionsList from "@/components/modals/ContactPetitionsList";
+import ContactPetitionsList from "@/components/modals/ContactPetition/ContactPetitionsList";
 import PetitionChip from "@/components/chips/PetitionChip";
 import ContactModal from "@/components/modals/ContactModal/ContactModal";
 import { SignedIn } from "@clerk/nextjs";
@@ -28,7 +28,7 @@ const Data = async ({
   const good = post as Good;
   const service = post as Service;
   const petition = post as Petition;
-  const datePublished = getTimeBetweenToday(parseDate(good.createAt));
+  const datePublished = getTimeBetweenToday(parseDateTime(post.createAt.replace("Z", "")));
   const showCondition =
     post.postType === "good"
       ? `${
@@ -69,7 +69,7 @@ const Data = async ({
         )}
         <h3 className="font-medium">{priceToShow()}</h3>
         <div className="flex gap-2">
-          <CategoryChip>{post.category.label}</CategoryChip>
+          <CategoryChip>{(post.category as any)[0].label}</CategoryChip>
           {post.postType === "petition" && <PetitionChip />}
           {post.postType === "service" ||
             (petition.petitionType === "service" && <ServiceChip />)}

@@ -26,6 +26,7 @@ const getUserByUsernameQuery = gql`
         price
         title
         toPrice
+        imagesUrls
       }
       profilePhotoUrl
       userType
@@ -37,6 +38,22 @@ const getUserByUsernameQuery = gql`
         keywords
         user
         visibility
+      }
+      groups {
+        _id
+        members
+        name
+        profilePhotoUrl
+      }
+      magazines {
+        _id
+        name
+        sections {
+          posts {
+            _id
+            imagesUrls
+          }
+        }
       }
     }
   }

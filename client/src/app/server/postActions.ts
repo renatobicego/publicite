@@ -1,5 +1,5 @@
 "use server";
-import { postPost } from "@/services/postsServices";
+import { postPost, putPost } from "@/services/postsServices";
 import { PetitionContact } from "@/types/postTypes";
 import { currentUser } from "@clerk/nextjs/server";
 
@@ -44,6 +44,28 @@ export const createContactPetition = async (formData: PetitionContact) => {
   } catch (err) {
     return {
       error: "Error al crear el anuncio. Por favor intenta de nuevo.",
+    };
+  }
+};
+
+
+export const editPost = async (formData: any, id: string, authorUsername: string) => {
+  const user = await currentUser();
+
+  if (!user?.username) {
+    return { error: "Usuario no autenticado. Por favor inicie sesión." };
+  }
+  
+  if (user.username !== authorUsername) {
+    return { error: "No puedes editar este anuncio" };
+  }
+
+  try {
+    const resApi: any = await putPost(formData, id);
+    return { message: "Anuncio editado exitosamente", id: resApi };
+  } catch (err) {
+    return {
+      error: "Error al editar el anuncio. Por favor intenta de nuevo.",
     };
   }
 };

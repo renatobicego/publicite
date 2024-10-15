@@ -1,12 +1,23 @@
-"use server"
+"use server";
 import { getClient, query } from "@/lib/client";
-import { mockedGroups, mockedPetitions, mockedPosts } from "../utils/data/mockedData";
-import { createNewGroupMutation, getGroupByIdQuery } from "@/graphql/groupQueries";
+import {
+  mockedGroups,
+  mockedPetitions,
+  mockedPosts,
+} from "../utils/data/mockedData";
+import {
+  createNewGroupMutation,
+  getGroupByIdQuery,
+  getGroupsQuery,
+} from "@/graphql/groupQueries";
 
 export const getGroups = async (searchTerm: string | null) => {
   try {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    return {items: mockedGroups};
+    const { data } = await query({
+      query: getGroupsQuery,
+      variables: { name: searchTerm ? searchTerm : "", limit: 20.0 },
+    });
+    return { items: data.getGroupByName.groups, hasMore: data.getGroupByName.hasMore };
   } catch (error) {
     return {
       error: "Error al traer grupos. Por favor intenta de nuevo.",
@@ -24,16 +35,23 @@ export const getGroupById = async (id: string) => {
     return data.getGroupById;
   } catch (error) {
     return {
-      error: "Error al traer información del grupo. Por favor intenta de nuevo.",
+      error:
+        "Error al traer información del grupo. Por favor intenta de nuevo.",
     };
   }
 };
 
-export const getGroupPosts = async (searchTerm: string | null, groupId?: string) => {
-  if(!groupId) return {error: "Error al traer anuncios del grupo. Por favor intenta de nuevo."}
+export const getGroupPosts = async (
+  searchTerm: string | null,
+  groupId?: string
+) => {
+  if (!groupId)
+    return {
+      error: "Error al traer anuncios del grupo. Por favor intenta de nuevo.",
+    };
   try {
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    return {items: [...mockedPosts, ...mockedPetitions]};
+    return { items: [...mockedPosts, ...mockedPetitions], hasMore: false };
   } catch (error) {
     return {
       error: "Error al traer anuncios del grupo. Por favor intenta de nuevo.",
@@ -42,8 +60,10 @@ export const getGroupPosts = async (searchTerm: string | null, groupId?: string)
 };
 
 export const postGroup = async (formData: any) => {
-  return await getClient().mutate({
-    mutation: createNewGroupMutation,
-    variables: { groupDto: formData },
-  }).then((res) => res.data.createNewGroup);
+  return await getClient()
+    .mutate({
+      mutation: createNewGroupMutation,
+      variables: { groupDto: formData },
+    })
+    .then((res) => res.data.createNewGroup);
 };

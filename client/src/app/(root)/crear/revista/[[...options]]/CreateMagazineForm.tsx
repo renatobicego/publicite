@@ -8,7 +8,7 @@ import {
   PostUserMagazine,
   userMagazine,
 } from "./initialValues";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next-nprogress-bar";
 import { Form, Formik, FormikHelpers } from "formik";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { magazineValidation } from "./validation";
@@ -58,10 +58,7 @@ const CreateMagazineForm = ({
       user
     );
 
-    const resApi = await createMagazine({
-      ...finalValues,
-      addedPost: "6700845734e0ffb19c9913c1",
-    });
+    const resApi = await createMagazine(finalValues);
     if (resApi.error) {
       toastifyError(resApi.error);
       actions.setSubmitting(false);
@@ -79,7 +76,7 @@ const CreateMagazineForm = ({
       onSubmit={handleSubmit}
       validationSchema={magazineValidation}
     >
-      {({ isSubmitting, errors, setFieldValue }) => {
+      {({ isSubmitting, errors, setValues }) => {
         return (
           <Form className="flex flex-col gap-4 max-md:w-full md:max-xl:flex-1 xl:w-1/2 self-center">
             <h2>
@@ -91,7 +88,7 @@ const CreateMagazineForm = ({
             <Inputs
               isUserMagazine={!isGroupMagazine}
               errors={errors}
-              setFieldValue={setFieldValue}
+              setValues={setValues}
             />
             <RequiredFieldsMsg />
             <PrimaryButton

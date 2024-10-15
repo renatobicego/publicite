@@ -7,7 +7,7 @@ import {
   CardFooter,
   CardHeader,
 } from "@nextui-org/react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next-nprogress-bar";
 import BackButton from "./buttons/BackButton";
 import PrimaryButton from "./buttons/PrimaryButton";
 

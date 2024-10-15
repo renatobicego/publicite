@@ -8,12 +8,17 @@ import {
 import { SignedIn, SignedOut, UserButton, useUser } from "@clerk/nextjs";
 import { Link, NavbarMenu, NavbarMenuItem } from "@nextui-org/react";
 import { Variants } from "framer-motion";
-import React from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import Notifications from "./Notifications";
 import SecondaryButton from "../buttons/SecondaryButton";
 import DropdownItems from "./DropdownItems";
+import NextLink from "next/link"; 
 
-const MobileMenu = () => {
+const MobileMenu = ({
+  setIsMenuOpen,
+}: {
+  setIsMenuOpen: Dispatch<SetStateAction<boolean>>;
+}) => {
   const { user, isSignedIn } = useUser();
   const menuItems = [
     {
@@ -45,11 +50,17 @@ const MobileMenu = () => {
     },
   ];
   const variants: Variants = {
-    visible: { transform: "translateY(0)", height: isSignedIn ?  "290px" : "190px", opacity: 1 },
+    visible: {
+      transform: "translateY(0)",
+      height: isSignedIn ? "290px" : "190px",
+      opacity: 1,
+    },
     hidden: { transform: "translateY(-50px)", height: "0px", opacity: 0 },
   };
 
-  const shownItems = isSignedIn ? menuItems : menuItems.filter((item) => !item.isPrivate);
+  const shownItems = isSignedIn
+    ? menuItems
+    : menuItems.filter((item) => !item.isPrivate);
   return (
     <NavbarMenu
       motionProps={{
@@ -59,13 +70,19 @@ const MobileMenu = () => {
         exit: "hidden",
         transition: { duration: 0.3 },
       }}
-      className="bg-white h-fit !w-auto header-spacing rounded-b-xl shadow-2xl fixed items-end gap-2 pr-6 md:pr-8"
+      className="bg-white h-fit !w-auto header-spacing rounded-b-xl shadow-2xl fixed items-end gap-2 pr-6 md:pr-8 overflow-y-hidden"
     >
       {shownItems.map((item, index) => (
         <NavbarMenuItem key={`${item}-${index}`}>
-          <Link  className={`w-full text-text-color`} href={item.url} size="sm">
-            {item.title}
-          </Link>
+          <NextLink href={item.url} passHref>
+            <Link
+              onClick={() => setIsMenuOpen(false)}
+              className={`w-full text-text-color`}
+              size="sm"
+            >
+              {item.title}
+            </Link>
+          </NextLink>
         </NavbarMenuItem>
       ))}
       <div className="flex gap-2 items-center">
@@ -84,7 +101,12 @@ const MobileMenu = () => {
           <DropdownItems />
         </SignedIn>
         <SignedOut>
-          <SecondaryButton as={Link} href="/iniciar-sesion" variant="flat" className="-mr-4 mt-2">
+          <SecondaryButton
+            as={Link}
+            href="/iniciar-sesion"
+            variant="flat"
+            className="-mr-4 mt-2"
+          >
             Iniciar Sesión
           </SecondaryButton>
         </SignedOut>

@@ -12,7 +12,7 @@ export const getPostInitialValues = (
   const postValues: Omit<CreatePostValues, "createAt" | "location"> = {
     attachedFiles: postData.attachedFiles,
     author: postData.author._id,
-    category: postData.category._id,
+    category: postData.category[0]._id,
     description: postData.description,
     price: postData.price,
     postType: postData.postType,

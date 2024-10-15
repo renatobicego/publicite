@@ -10,14 +10,44 @@ export const getMagazineByIdQuery = gql`
   query GetMagazineByMagazineId($getMagazineByMagazineIdId: String!) {
     getMagazineByMagazineId(id: $getMagazineByMagazineIdId) {
       _id
-      allowedColaborators
-      collaborators
+      allowedColaborators {
+        _id
+        profilePhotoUrl
+        username
+      }
+      collaborators {
+        username
+        profilePhotoUrl
+        _id
+      }
       description
-      group
+      group {
+        profilePhotoUrl
+        name
+        _id
+      }
       name
       ownerType
-      sections
-      user
+      sections {
+        _id
+        isFatherSection
+        posts {
+          _id
+          description
+          frequencyPrice
+          imagesUrls
+          petitionType
+          postType
+          price
+          title
+        }
+        title
+      }
+      user {
+        username
+        profilePhotoUrl
+        _id
+      }
       visibility
     }
   }

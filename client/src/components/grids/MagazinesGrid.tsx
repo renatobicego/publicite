@@ -8,10 +8,11 @@ const MagazinesGrid = ({
 }: {
   magazines: Magazine[];
   isLoading?: boolean;
-}) => {
+  }) => {
+  console.log(magazines[0].sections)
   return (
     <>
-      {!isLoading && (magazines.length === 0 || !magazines) ? (
+      {!isLoading && ( !magazines || magazines.length === 0) ? (
         <p className="max-md:text-sm text-light-text">
           No se encontraron revistas para mostrar
         </p>

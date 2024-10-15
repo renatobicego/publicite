@@ -12,7 +12,7 @@ export interface Post {
   recommendations: PostRecommendation[];
   price: number;
   location: PostLocation;
-  category: PostCategory;
+  category: PostCategory[];
   comments: PostComment[];
   attachedFiles: PostAttachedFile[];
   author: Author;
@@ -176,7 +176,7 @@ export interface MagazineSection {
 export interface PetitionContact {
   userContacting?: ObjectId;
   post: ObjectId;
-  fullName?: string; // for users not registered
+  fullName: string; // for users not registered
   email: string;
   phone?: string; // for users not registered
   message: string;
@@ -187,6 +187,7 @@ export interface PostContactNotification {
   message: string;
   post: Post;
   date: string;
+  contactPetition: PetitionContact;
 }
 
 export interface PostSharedNotification {
@@ -201,4 +202,11 @@ export interface MagazineInvitationNotification {
   magazine: Pick<Magazine, "_id" | "name">;
   userInviting: Pick<User, "username">;
   date: string;
+}
+
+export interface ReviewPostNotification {
+  _id: ObjectId;
+  post: Post;
+  date: string;
+  userAsking: Pick<User, "_id" | "username">;
 }

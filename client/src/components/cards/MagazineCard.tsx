@@ -2,7 +2,8 @@ import { Good, Magazine, Post } from "@/types/postTypes";
 import { FILE_URL, MAGAZINES, PROFILE } from "@/utils/data/urls";
 import { Card, CardBody, CardFooter, Image, Link } from "@nextui-org/react";
 
-const MagazineCard = ({ magazineData}: { magazineData: Magazine; }) => {
+const MagazineCard = ({ magazineData }: { magazineData: Magazine; }) => {
+  console.log(magazineData)
   const posts = magazineData.sections[0].posts as Post[];
   return (
     <Card as={Link} href={`${MAGAZINES}/${magazineData._id}`} className="w-full">

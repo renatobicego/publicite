@@ -49,7 +49,7 @@ const CreateForm = () => {
             "
         >
           <h5 className="mt-28">
-            ¡Ups! Has alcanzado el límite de publicacciones activas.
+            ¡Ups! Has alcanzado el límite de publicaciones activas.
           </h5>
           <h6>
             {numberOfPosts} / {limit} publicaciones activas

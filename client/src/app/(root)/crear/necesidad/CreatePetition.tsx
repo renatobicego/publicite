@@ -12,7 +12,7 @@ import PriceRangeCategory from "./PriceRangeCategory";
 import Visibility from "../anuncio/components/CreateForm/inputs/AccordionInputs/Visibility";
 import { createPost } from "../../../server/postActions";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next-nprogress-bar";
 import { POSTS } from "@/utils/data/urls";
 import { useState } from "react";
 import useUploadFiles from "@/utils/hooks/useUploadFiles";
@@ -80,7 +80,7 @@ const CreatePetition = () => {
       location: dbLocation,
       attachedFiles,
       category: [values.category],
-    });
+    }, true);
     if (resApi.error) {
       toastifyError(resApi.error);
       actions.setSubmitting(false);

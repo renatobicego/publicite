@@ -1,15 +1,18 @@
+"use server"
 import { GoodPostValues, PetitionPostValues, ServicePostValues } from "@/types/postTypes";
 import { mockedPetitions, mockedPosts } from "../utils/data/mockedData";
 import axios from "axios";
+import { getClient, query } from "@/lib/client";
+import { editPostMutation, getPostByIdQuery, getPostCategories } from "@/graphql/postQueries";
 
 export const getPostData = async (id: string) => {
   try {
-    // const res = await fetch(`${process.env.API_URL}/businessSector`);
+    const {data} = await query({
+      query: getPostByIdQuery,
+      variables: {findPostByIdId: id},
+    });
 
-    // return await res.json();
-
-    // return mockedPetitions[0];
-    return mockedPosts[0];
+    return data.findPostById;
   } catch (error) {
     return {
       error:
@@ -20,23 +23,13 @@ export const getPostData = async (id: string) => {
 
 export const getCategories = async () => {
   try {
-    return [
-      {
-        _id: "66e660c0670176213da68f22",
-        label: "Casa",
-      },
-      {
-        _id: "112egsdq",
-        label: "Departamento",
-      },
-      {
-        _id: "112qsdqsf",
-        label: "Oficina",
-      },
-    ];
+    const {data} = await query({
+      query: getPostCategories
+    })
+    return data.getAllCategoryPost;
   } catch (error) {
     return {
-      error: "Error al traer las categorías. Por favor intenta de nuevo.",
+      error: "Error al traer las categorías de anuncios. Por favor intenta de nuevo.",
     };
   }
 };
@@ -47,6 +40,21 @@ export const postPost = async (values: GoodPostValues | PetitionPostValues | Ser
     return res
   } catch (error) {
     return error
+  }
+}
+
+
+export const putPost = async (values: GoodPostValues | PetitionPostValues | ServicePostValues, id: string) => {
+  try {
+    const {data} = await getClient().mutate({
+      mutation: editPostMutation,
+      variables: {updatePostByIdId: id, postUpdate: values}
+    })
+    return data.updatePostById;
+  } catch (error) {
+    return {
+      error: "Error al editar el anuncios. Por favor intenta de nuevo.",
+    };
   }
 }
 

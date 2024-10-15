@@ -5,19 +5,19 @@ import { GetUser } from "@/types/userTypes";
 import { Link, Tab, Tabs } from "@nextui-org/react";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
-import PostsGrid from "../grids/PostGrid";
 import MagazinesGrid from "../grids/MagazinesGrid";
 import UsersGrid from "@/app/(root)/(explorar)/perfiles/UsersGrid";
 import GroupsGrid from "@/app/(root)/(explorar)/grupos/GroupsGrid";
 import PrimaryButton from "../buttons/PrimaryButton";
 import { FaPlus } from "react-icons/fa6";
 import { useUser } from "@clerk/nextjs";
+import UserPosts from "@/app/(root)/(explorar)/perfiles/[username]/(components)/UserPosts/UserPosts";
 
 const UserSolapas = ({ user }: { user: GetUser }) => {
   const pathname = usePathname();
   const tabsRef = useRef<HTMLDivElement | null>(null);
   const { user: loggedUser } = useUser();
-  const isMyProfike = loggedUser && user.username === loggedUser.username;
+  const isMyProfile = loggedUser && user.username === loggedUser.username;
 
   useEffect(() => {
     if (tabsRef.current) {
@@ -59,9 +59,9 @@ const UserSolapas = ({ user }: { user: GetUser }) => {
         href={PROFILE_USERNAME}
         data-key={PROFILE_USERNAME} // Use a data attribute to identify the tab
       >
-        {isMyProfike && (
+        {isMyProfile && (
           <PrimaryButton
-            className="float-right"
+            className="mb-2 ml-2 md:float-right"
             startContent={<FaPlus />}
             as={Link}
             href={CREATE}
@@ -69,7 +69,7 @@ const UserSolapas = ({ user }: { user: GetUser }) => {
             Crear
           </PrimaryButton>
         )}
-        <PostsGrid posts={user.posts} />
+        <UserPosts posts={user.posts} />
       </Tab>
       <Tab
         className="w-full"
@@ -79,7 +79,7 @@ const UserSolapas = ({ user }: { user: GetUser }) => {
         data-key={`${PROFILE_USERNAME}${MAGAZINES}`}
       >
         <PrimaryButton
-          className="float-right"
+          className="mb-2 md:float-right"
           startContent={<FaPlus />}
           as={Link}
           href={CREATE}
@@ -95,9 +95,9 @@ const UserSolapas = ({ user }: { user: GetUser }) => {
         href={`${PROFILE_USERNAME}/contactos`}
         data-key={`${PROFILE_USERNAME}/contactos`}
       >
-        {isMyProfike && (
+        {isMyProfile && (
           <PrimaryButton
-            className="float-right"
+            className="mb-2 md:float-right"
             startContent={<FaPlus />}
             as={Link}
             href={PROFILE}
@@ -114,9 +114,9 @@ const UserSolapas = ({ user }: { user: GetUser }) => {
         href={`${PROFILE_USERNAME}${GROUPS}`}
         data-key={`${PROFILE_USERNAME}${GROUPS}`}
       >
-        {isMyProfike && (
+        {isMyProfile && (
           <PrimaryButton
-            className="float-right"
+            className="mb-2 md:float-right"
             startContent={<FaPlus />}
             as={Link}
             href={CREATE}

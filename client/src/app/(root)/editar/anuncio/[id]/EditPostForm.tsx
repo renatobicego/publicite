@@ -1,14 +1,12 @@
 "use client";
-import { Good, Service } from "@/types/postTypes";
+import { Good, PostAttachedFile, Service } from "@/types/postTypes";
 import { getPostInitialValues } from "./initialValues";
 import { Form, Formik, FormikErrors, FormikHelpers } from "formik";
-import { goodValidation } from "@/app/(root)/crear/anuncio/components/CreateGood/goodValidation";
-import { serviceValidation } from "@/app/(root)/crear/anuncio/components/CreateService/serviceValidation";
 import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { useEffect, useState } from "react";
 import useUploadFiles from "@/utils/hooks/useUploadFiles";
-import { Button, Divider } from "@nextui-org/react";
+import { Button, Divider, image } from "@nextui-org/react";
 import { useRouter } from "next-nprogress-bar";
 import TitleDescription from "@/app/(root)/crear/anuncio/components/CreateForm/inputs/TitleDescription";
 import PriceCategory from "@/app/(root)/crear/anuncio/components/CreateForm/inputs/PriceCategory";
@@ -18,12 +16,18 @@ import UploadImages from "@/app/(root)/crear/anuncio/components/Upload/UploadIma
 import { useAttachedFiles } from "@/app/(root)/crear/anuncio/components/CreateForm/inputs/AccordionInputs/AttachedFIles/AttachedFilesContext";
 import ImagePreview from "./ImagePreview";
 import { isVideo } from "@/utils/functions/utils";
+import { editPost } from "@/app/server/postActions";
+import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
+import { POSTS } from "@/utils/data/urls";
+import { goodEditValidation } from "@/app/(root)/crear/anuncio/components/CreateGood/goodValidation";
+import { serviceEditValidation } from "@/app/(root)/crear/anuncio/components/CreateService/serviceValidation";
 
 const EditPostForm = ({ postData }: { postData: Good | Service }) => {
   const { postType } = postData;
   const router = useRouter();
   const [newImages, setNewImages] = useState<File[]>([]);
-  const { attachedFiles, setPrevAttachedFiles } = useAttachedFiles();
+  const { attachedFiles, setPrevAttachedFiles, prevAttachedFilesDeleted } =
+    useAttachedFiles();
   const [deletedImages, setDeletedImages] = useState<string[]>([]);
   useEffect(() => {
     setPrevAttachedFiles(postData.attachedFiles);
@@ -38,13 +42,43 @@ const EditPostForm = ({ postData }: { postData: Good | Service }) => {
   const initialValues = getPostInitialValues(postData, postType as any);
 
   const handleSubmit = async (values: any, actions: FormikHelpers<any>) => {
-    await deleteFiles(["8ddfe6f2-cd14-465e-a1f6-cc49ad3feef7-jy5xxa.pdf"]);
-    // const newValuesWithUrlFiles = await submitFiles(values, actions);
-    // if (!newValuesWithUrlFiles) {
-    //   actions.setSubmitting(false);
-    //   return;
-    // }
-    // values = newValuesWithUrlFiles;
+    await deleteFiles([
+      ...deletedImages,
+      ...prevAttachedFilesDeleted.map((file) => file.url),
+    ]);
+    const newValuesWithUrlFiles = await submitFiles(values, actions);
+    if (!newValuesWithUrlFiles) {
+      actions.setSubmitting(false);
+      return;
+    }
+    values = {
+      ...newValuesWithUrlFiles,
+      imagesUrls: newValuesWithUrlFiles.imagesUrls.filter(
+        (url: string) => !deletedImages.includes(url)
+      ),
+      attachedFiles: newValuesWithUrlFiles.attachedFiles.filter(
+        (file: PostAttachedFile) =>
+          !prevAttachedFilesDeleted.some(
+            (deletedFile) => deletedFile.url === file.url
+          )
+      ),
+    };
+
+    const resApi = await editPost(
+      {
+        ...values,
+        category: [values.category],
+      },
+      postData._id,
+      postData.author.username
+    );
+    if (resApi.error) {
+      toastifyError(resApi.error);
+      return;
+    }
+
+    toastifySuccess("Anuncio editado exitosamente");
+    router.push(`${POSTS}/${resApi.id}`);
   };
   return (
     <Formik
@@ -53,7 +87,7 @@ const EditPostForm = ({ postData }: { postData: Good | Service }) => {
       validateOnBlur={false}
       validateOnChange={false}
       validationSchema={
-        postType === "good" ? goodValidation : serviceValidation
+        postType === "good" ? goodEditValidation : serviceEditValidation
       }
     >
       {({ isSubmitting, errors, values }) => {
@@ -69,8 +103,10 @@ const EditPostForm = ({ postData }: { postData: Good | Service }) => {
                 customClassname="md:w-full"
               />
               <h6>Imagenes Subidas Anteriormente</h6>
-              <div className="flex gap-2 lg:gap-4 w-full flex-wrap max-md:flex-nowrap 
-              max-md:overflow-x-auto max-md:mb-4 pb-1">
+              <div
+                className="flex gap-2 lg:gap-4 w-full flex-wrap max-md:flex-nowrap 
+              max-md:overflow-x-auto max-md:mb-4 pb-1"
+              >
                 {values.imagesUrls &&
                   values.imagesUrls.map((url, index) => (
                     <ImagePreview

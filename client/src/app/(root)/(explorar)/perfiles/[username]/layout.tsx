@@ -36,7 +36,6 @@ export default async function ProfileLayout({
     return <ErrorCard message={user.error} />;
   }
   const isMyProfile = user.username === loggedUser?.username;
-  console.log(user.board)
   return (
     <main className="flex min-h-screen flex-col items-start main-style gap-4 md:gap-6 xl:gap-8">
       <BreadcrumbsAdmin items={breadcrumbsItems} />
@@ -53,7 +52,7 @@ export default async function ProfileLayout({
           <CreateBoard user={user} />
         )}
       </div>
-      <UserSolapas user={{ ...user, username: params.username }} />
+      <UserSolapas user={user} />
       {children}
     </main>
   );

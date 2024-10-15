@@ -43,7 +43,8 @@ const useMasonryGrid = (
 
     // Clean up the event listener on unmount
     return () => window.removeEventListener("resize", handleResize);
-  }, [columnCounts, items, screenSizes]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [items]);
 
   return { columns };
 };

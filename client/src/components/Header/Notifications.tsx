@@ -20,6 +20,16 @@ import PostShared from "../notifications/posts/PostShared";
 import MagazineInvitation from "../notifications/MagazineInvitation";
 import PaymentSuccess from "../notifications/suscriptions/PaymentSuccess";
 import { useEffect, useState } from "react";
+import {
+  mockedGroupInvitation,
+  mockedMagazineInvitation,
+  mockedNewContactPost,
+  mockedNewContactRelation,
+  mockedPaymentSuccess,
+  mockedPostShared,
+  mockedReviewPost,
+} from "@/utils/data/mockedNotifications";
+import ReviewRequest from "../notifications/posts/ReviewRequest";
 
 const Notifications = () => {
   const [screenSize, setScreenSize] = useState(0);
@@ -48,11 +58,21 @@ const Notifications = () => {
 export default Notifications;
 
 const DesktopNotifications = () => {
+  const [isOpen, setIsOpen] = useState(false);
   return (
     <Popover
-      className="max-h-[80vh] overflow-y-auto max-lg:hidden"
+      className=" max-lg:hidden"
       shouldBlockScroll
       placement="bottom-end"
+      triggerType="menu"
+      containerPadding={10}
+      backdrop="transparent"
+      classNames={{
+        base: "max-h-[60vh] overflow-y-auto shadow-lg rounded-xl",
+        content: "mt-2",
+      }}
+      isOpen={isOpen}
+      onOpenChange={(open) => setIsOpen(open)}
     >
       <PopoverTrigger>
         <Button radius="full" variant="light" isIconOnly>
@@ -62,7 +82,7 @@ const DesktopNotifications = () => {
         </Button>
       </PopoverTrigger>
       <PopoverContent>
-        <NotificationsContent />
+        {isOpen ? <NotificationsContent /> : <></>}
       </PopoverContent>
     </Popover>
   );
@@ -84,11 +104,18 @@ const MobileNotifications = () => {
           <FaBell className="size-6" />
         </Badge>
       </Button>
-      <Modal placement="center" isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal
+        classNames={{ body: "max-h-[80vh] overflow-y-auto px-0", header: "px-0" }}
+        placement="center"
+        className="max-md:px-4"
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+      >
         <ModalContent>
-          <ModalBody>
-            <NotificationsContent />
-          </ModalBody>
+          <ModalHeader>
+            <h5>Notificaciones</h5>
+          </ModalHeader>
+          <ModalBody>{isOpen && <NotificationsContent />}</ModalBody>
         </ModalContent>
       </Modal>
     </>
@@ -97,62 +124,14 @@ const MobileNotifications = () => {
 
 const NotificationsContent = () => {
   return (
-    <div className="p-2 flex flex-col gap-2">
-      <div className="font-bold">Notificaciones</div>
-      <NewContactPost
-        notification={{
-          _id: "1",
-          date: "2022-01-01",
-          message: "¡Has recibido una petición de contacto!",
-          post: mockedPosts[0],
-        }}
-      />
-      <NewContactRequest
-        notification={{
-          _id: "2",
-          date: "2022-01-01",
-          typeRelation: "contact",
-          user: {
-            _id: "qeq",
-            profilePhotoUrl: "avatar.png",
-            username: "username",
-          },
-        }}
-      />
-      <GroupInvitation
-        notification={{
-          _id: "3",
-          date: "2022-01-01",
-          group: { _id: "1", name: "Computadoras", profilePhotoUrl: "" },
-          userInviting: { username: "username" },
-          type: "groupInvitation",
-        }}
-      />
-      <PostShared
-        notification={{
-          _id: "4",
-          date: "2022-01-01",
-          post: mockedPosts[0],
-          userSharing: mockedUsers[0],
-        }}
-      />
-      <MagazineInvitation
-        notification={{
-          _id: "5",
-          date: "2024-01-01",
-          magazine: { _id: "1", name: "Computadoras" },
-          userInviting: { username: "username" },
-        }}
-      />
-      <PaymentSuccess
-        notification={{
-          _id: "6",
-          date: "2024-01-01",
-          subscriptionPlan: {
-            reason: "Suscripción mensual",
-          },
-        }}
-      />
+    <div className="max-md:mb-4 md:p-2 flex flex-col gap-2">
+      <NewContactPost notification={mockedNewContactPost} />
+      <NewContactRequest notification={mockedNewContactRelation} />
+      <GroupInvitation notification={mockedGroupInvitation} />
+      <PostShared notification={mockedPostShared} />
+      <MagazineInvitation notification={mockedMagazineInvitation} />
+      <PaymentSuccess notification={mockedPaymentSuccess} />
+      <ReviewRequest notification={mockedReviewPost} />
     </div>
   );
 };

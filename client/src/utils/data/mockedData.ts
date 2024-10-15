@@ -26,7 +26,7 @@ export const categories: PostCategory[] = [
 ];
 
 const mockedGood: Good = {
-  _id: "1",
+  _id: "670580694c81639f199a5387",
   imagesUrls: [
     "cc3ab11f-7abf-453d-95f1-5b85465f22a2-aybrx2.jpg",
     "21283bb3-8d33-4800-b109-969d15076745-hs36nz.jpg",
@@ -420,9 +420,9 @@ export const mockedBoards: Board[] = [
 
 export const mockedUsers = [
   {
-    _id: "1k2",
+    _id: "66fac933316723a55b9d0c90",
     profilePhotoUrl: "/avatar.png",
-    username: "username",
+    username: "renatobicego",
     contact: {
       _id: "12qdas1",
       phone: "phone",
@@ -432,7 +432,7 @@ export const mockedUsers = [
     businessName: "Nombre de Empresa",
   },
   {
-    _id: "2k3",
+    _id: "66fac933316723a55b9d0c91",
     profilePhotoUrl: "/avatar.png",
     username: "username",
     contact: {

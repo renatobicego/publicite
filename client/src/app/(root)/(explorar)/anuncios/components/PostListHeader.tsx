@@ -11,8 +11,9 @@ interface PostListHeaderProps {
   setFilter: (filter: any) => void;
   sortDescriptor: { column: string; direction: string };
   setSortDescriptor: (sort: any) => void;
-  showAsList: boolean;
-  setShowAsList: (value: boolean) => void;
+  showAsList?: boolean;
+  setShowAsList?: (value: boolean) => void;
+  showToggleList?: boolean;
 }
 
 const PostListHeader = ({
@@ -24,6 +25,7 @@ const PostListHeader = ({
   setSortDescriptor,
   showAsList,
   setShowAsList,
+  showToggleList = true,
 }: PostListHeaderProps) => {
   // Sorting options for the Order component
   const sortOptions: SortOption[] = [
@@ -44,24 +46,30 @@ const PostListHeader = ({
   ];
   return (
     <div className="flex gap-2 items-center max-md:flex-wrap justify-end">
-      <SearchPosts searchTerms={searchTerms} setSearchTerms={setSearchTerms} isMultiSearch/>
+      <SearchPosts
+        searchTerms={searchTerms}
+        setSearchTerms={setSearchTerms}
+        isMultiSearch
+      />
       <FilterPosts filter={filter} setFilter={setFilter} />
       <Order
         sortDescriptor={sortDescriptor}
         setSortDescriptor={setSortDescriptor}
         sortOptions={sortOptions}
       />
-      <Switch
-        color="secondary"
-        isSelected={showAsList}
-        onValueChange={setShowAsList}
-        className="min-w-fit"
-        classNames={{
-          label: "text-xs md:text-sm",
-        }}
-      >
-        Mostrar en Lista
-      </Switch>
+      {showToggleList && (
+        <Switch
+          color="secondary"
+          isSelected={showAsList}
+          onValueChange={setShowAsList}
+          className="min-w-fit"
+          classNames={{
+            label: "text-xs md:text-sm",
+          }}
+        >
+          Mostrar en Lista
+        </Switch>
+      )}
     </div>
   );
 };

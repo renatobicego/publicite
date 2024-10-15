@@ -15,7 +15,7 @@ const Images = ({ images }: { images: string[] }) => {
         className="w-full h-full max-h-[60vh] object-cover"
       />
       <div className="w-full overflow-x-auto flex gap-1 p-1">
-        {[...images, ...images].map((image, index) => (
+        {images.map((image, index) => (
           <Image
             key={index}
             src={FILE_URL + image}
