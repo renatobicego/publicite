@@ -402,7 +402,7 @@ input PostUpdateRequest {
   brand: String
   modelType: String
   condition: String
-  toPrice: String
+  toPrice: Float
   frequencyPrice: FrequencyPrice
   petitionType: String
 }
@@ -423,9 +423,9 @@ enum Visibility_of_the_post {
 
 """Type of the post """
 enum PostType {
-  Good
-  Service
-  Petition
+  good
+  service
+  petition
 }
 
 input AttachedFiles {
@@ -435,11 +435,11 @@ input AttachedFiles {
 
 """Frecuencia """
 enum FrequencyPrice {
-  Hour
-  Day
-  Week
-  Month
-  Year
+  hour
+  day
+  week
+  month
+  year
 }
 
 input UpdateBoardDto {

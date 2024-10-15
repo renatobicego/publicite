@@ -18,6 +18,6 @@ export class PostUpdateDto {
   modelType?: string;
   condition?: string;
   frequencyPrice?: string;
-  toPrice?: string;
+  toPrice?: number;
   petitionType?: string;
 }
