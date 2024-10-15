@@ -22,6 +22,7 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
+
   SwaggerModule.setup('api', app, document); // La documentación estará disponible en /api
   //Racibe las cookies y las hace un populate
   app.use(cookieParser());

@@ -146,7 +146,10 @@ export class PostAdapterMapper implements PostMapperAdapterInterface {
       toPrice: postUpdateRequest.toPrice,
       petitionType: postUpdateRequest.petitionType,
     };
-
-    return omitBy(postUpdateDto, isNil);
+    const postMapped = omitBy(postUpdateDto, isNil);
+    if ('toPrice' in postUpdateRequest) {
+      postMapped.toPrice = postUpdateRequest.toPrice;
+    }
+    return postMapped;
   }
 }

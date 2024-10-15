@@ -19,12 +19,16 @@ export class PostResolver {
     nullable: true,
     description: 'eliminar un post por id',
   })
+  @UseGuards(ClerkAuthGuard)
   async deletePostById(
     @Args('id', { type: () => String })
     id: string,
-    cookie?: any,
+    @Args('id', { type: () => String })
+    author_id: string,
+    @Context() context: any,
   ): Promise<any> {
     try {
+      PubliciteAuth.authorize(context, author_id);
       await this.postAdapter.deletePostById(id);
       return 'Eliminado con exito';
     } catch (error: any) {
@@ -36,7 +40,7 @@ export class PostResolver {
     nullable: true,
     description: 'Actualizar un post',
   })
-  @UseGuards(ClerkAuthGuard)
+  //@UseGuards(ClerkAuthGuard)
   async updatePostById(
     @Args('postUpdate', { type: () => PostUpdateRequest })
     postUpdate: PostUpdateRequest,
