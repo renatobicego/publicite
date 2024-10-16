@@ -13,6 +13,10 @@ import { currentUser } from "@clerk/nextjs/server";
 export default async function PostPage({ params }: { params: { id: string } }) {
   const postData: Good | Service | Petition | { error: string } =
     await getPostData(params.id);
+  
+  if(!postData) {
+    return <ErrorCard message="Error al traer los datos. El anuncio no existe."/>
+  }
 
   if ("error" in postData) {
     return <ErrorCard message={postData.error} />;

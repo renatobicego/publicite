@@ -10,15 +10,39 @@ import {
 } from "@nextui-org/react";
 import SecondaryButton from "../buttons/SecondaryButton";
 import { Magazine } from "@/types/postTypes";
+import { SearchUsers } from "../inputs/SelectUsers";
+import useSearchUsers from "@/utils/hooks/useSearchUsers";
+import { useEffect, useState } from "react";
 
-const InviteCollabMagazine = ({magazine} : {magazine: Magazine}) => {
+const InviteCollabMagazine = ({ magazine }: { magazine: Magazine }) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const { users, getUsersByQuery } = useSearchUsers();
+  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+  const handleSelectionChange = (key: any) => {
+    if (selectedUsers.includes(key)) {
+      setSelectedUsers(selectedUsers.filter((item: any) => item !== key));
+    } else {
+      setSelectedUsers([...selectedUsers, key]);
+    }
+  };
+  
+  useEffect(() => {
+    if (isOpen) {
+      setSelectedUsers([]);
+    }
+  }, [isOpen])
+  console.log(selectedUsers)
   return (
     <>
       <SecondaryButton onPress={onOpen} variant="flat" className="order-last">
         Invitar Colaboradores
       </SecondaryButton>
-      <Modal radius="lg" className="p-2"  isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal
+        radius="lg"
+        className="p-2"
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+      >
         <ModalContent>
           {(onClose) => (
             <>
@@ -26,11 +50,13 @@ const InviteCollabMagazine = ({magazine} : {magazine: Magazine}) => {
                 Invitar Colaboradores a {magazine.name}
               </ModalHeader>
               <ModalBody>
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Nullam pulvinar risus non risus hendrerit venenatis.
-                  Pellentesque sit amet hendrerit risus, sed porttitor quam.
-                </p>
+                <SearchUsers
+                  items={users}
+                  onValueChange={(value: string | null) =>
+                    getUsersByQuery(value)
+                  }
+                  onSelectionChange={handleSelectionChange}
+                />
               </ModalBody>
               <ModalFooter>
                 <Button color="danger" variant="light" onPress={onClose}>

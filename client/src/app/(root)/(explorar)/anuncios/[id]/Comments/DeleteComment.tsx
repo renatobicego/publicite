@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@nextui-org/react";
-import { FaTrash } from "react-icons/fa6";
+import { IoTrashOutline } from "react-icons/io5";
 
 const DeleteComment = ({
   commentId,
@@ -18,7 +18,7 @@ const DeleteComment = ({
       color="danger"
       onPress={() => console.log(commentId)}
     >
-      <FaTrash className="size-4" />
+      <IoTrashOutline className="size-4" />
     </Button>
   );
 };

@@ -13,6 +13,7 @@ import { PostGroupMagazine, PostUserMagazine } from "./initialValues";
 import { useUser } from "@clerk/nextjs";
 import { getUsers } from "@/services/userServices";
 import { SearchUsers } from "@/components/inputs/SelectUsers";
+import useSearchUsers from "@/utils/hooks/useSearchUsers";
 
 const Inputs = ({
   errors,
@@ -28,16 +29,7 @@ const Inputs = ({
     shouldValidate?: boolean
   ) => Promise<void | FormikErrors<PostUserMagazine | PostGroupMagazine>>;
 }) => {
-  const [userContacts, setUserContacts] = useState([]);
-  const { user } = useUser();
-
-  const getUsersByQuery = (query: string | null) => {
-    getUsers(query).then((users) => setUserContacts(users.items));
-  };
-
-  useEffect(() => {
-    getUsersByQuery("");
-  }, []);
+  const { users: userContacts, getUsersByQuery } = useSearchUsers();
 
   const handleSelectionChange = (key: any) => {
     setValues((prevValues: any) => {
@@ -126,7 +118,6 @@ const Inputs = ({
           Permitir a todos
         </SecondaryButton>
       )}
-      
     </>
   );
 };

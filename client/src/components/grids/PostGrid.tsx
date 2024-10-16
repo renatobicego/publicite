@@ -1,7 +1,7 @@
 import { Post } from "@/types/postTypes";
 import PostCard from "../cards/PostCard/PostCard";
 import { Spinner } from "@nextui-org/react";
-import GroupPostGrid from "./GroupPostGrid";
+import MasonryPostGrid from "./MasonryPostGrid";
 
 const PostsGrid = ({
   posts,
@@ -17,7 +17,7 @@ const PostsGrid = ({
   return (
     <>
       {isGroupPosts ? (
-        <GroupPostGrid posts={posts}/>
+        <MasonryPostGrid posts={posts} isGroupPost={isGroupPosts}/>
       ) : (
         <section
           className={`grid grid-cols-2 gap-3 md:gap-4  ${

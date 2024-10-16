@@ -1,6 +1,6 @@
 "use server";
-import { postPost, putPost } from "@/services/postsServices";
-import { PetitionContact } from "@/types/postTypes";
+import { deletePostService, postPost, putPost } from "@/services/postsServices";
+import { PetitionContact, Post } from "@/types/postTypes";
 import { currentUser } from "@clerk/nextjs/server";
 
 export const createPost = async (
@@ -69,14 +69,35 @@ export const editPost = async (
   try {
     const resApi: any = await putPost(formData, id);
     if (resApi.error) {
-      return {
-        error: "Error al editar el anuncio. Por favor intenta de nuevo.",
-      };
+      return resApi
     }
     return { message: "Anuncio editado exitosamente", id: resApi };
   } catch (err) {
     return {
       error: "Error al editar el anuncio. Por favor intenta de nuevo.",
+    };
+  }
+};
+
+export const deletePost = async (
+  post: Post,
+) => {
+  const user = await currentUser();
+
+  if (!user?.username) {
+    return { error: "Usuario no autenticado. Por favor inicie sesión." };
+  }
+
+  if (user.username !== post.author.username) {
+    return { error: "No puedes borrar este anuncio" };
+  }
+
+  try {
+    const resApi: any = await deletePostService(post);
+    return resApi
+  } catch (err) {
+    return {
+      error: "Error al eliminar el anuncio. Por favor intenta de nuevo.",
     };
   }
 };

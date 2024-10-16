@@ -1,11 +1,9 @@
 "use server";
 import { getClient, query } from "@/lib/client";
-import {
-  mockedPetitions,
-  mockedPosts,
-} from "../utils/data/mockedData";
+import { mockedPetitions, mockedPosts } from "../utils/data/mockedData";
 import {
   createNewGroupMutation,
+  deleteMemberMutation,
   getGroupByIdQuery,
   getGroupsQuery,
   makeAdminMutation,
@@ -19,7 +17,10 @@ export const getGroups = async (searchTerm: string | null) => {
       query: getGroupsQuery,
       variables: { name: searchTerm ? searchTerm : "", limit: 20.0 },
     });
-    return { items: data.getGroupByName.groups, hasMore: data.getGroupByName.hasMore };
+    return {
+      items: data.getGroupByName.groups,
+      hasMore: data.getGroupByName.hasMore,
+    };
   } catch (error) {
     return {
       error: "Error al traer grupos. Por favor intenta de nuevo.",
@@ -36,7 +37,7 @@ export const getGroupById = async (id: string) => {
         headers: {
           Cookie: cookies().toString(),
         },
-      }
+      },
     });
 
     return data.getGroupById;
@@ -78,16 +79,34 @@ export const postGroup = async (formData: any) => {
 export const putAdminGroup = async (groupId: string, userIds: string[]) => {
   const groupAdmin = auth().sessionClaims?.metadata.mongoId;
   try {
-  return await getClient()
-    .mutate({
-      mutation: makeAdminMutation,
-      variables: { groupId, newAdmins: userIds, groupAdmin },
-    })
-    .then((res) => res);
-    
+    return await getClient()
+      .mutate({
+        mutation: makeAdminMutation,
+        variables: { groupId, newAdmins: userIds, groupAdmin },
+      })
+      .then((res) => res);
   } catch (error) {
     return {
-      error: "Error al agregar administrador al grupo. Por favor intenta de nuevo.",
-    }
+      error:
+        "Error al agregar administrador al grupo. Por favor intenta de nuevo.",
+    };
   }
-}
+};
+
+export const deleteMember = async (groupId: string, userIds: string[]) => {
+  const groupAdmin = auth().sessionClaims?.metadata.mongoId;
+  try {
+    await getClient()
+      .mutate({
+        mutation: deleteMemberMutation,
+        variables: { groupId, membersToDelete: userIds, groupAdmin },
+      })
+      .then((res) => res);
+
+    return { message: "Miembro eliminado" };
+  } catch (error) {
+    return {
+      error: "Error al quitar mimebro del grupo. Por favor intenta de nuevo.",
+    };
+  }
+};

@@ -85,7 +85,7 @@ const SelectUsers = (props: SelectUserProps) => {
 
 export { SelectUsers };
 
-interface SearchUsersProps extends AutocompleteProps<User> {
+interface SearchUsersProps extends Omit<AutocompleteProps<User>, "children"> {
   items: User[];
   onValueChange: (value: string) => void;
   onSelectionChange: (key: Key | null) => void;
@@ -117,6 +117,7 @@ const SearchUsers = (props: SearchUsersProps) => {
         radius="full"
         labelPlacement="outside"
         isLoading={isLoading}
+        selectedKey={null}
         startContent={<FaSearch className="text-light-text" />}
         scrollShadowProps={{
           hideScrollBar: false,
