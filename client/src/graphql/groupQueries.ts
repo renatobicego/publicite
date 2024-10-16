@@ -61,3 +61,17 @@ export const makeAdminMutation = gql`
     )
   }
 `;
+
+export const deleteMemberMutation = gql`
+  mutation DeleteMembersFromGroupByGroupId(
+    $membersToDelete: [String!]!
+    $groupAdmin: String!
+    $groupId: String!
+  ) {
+    deleteMembersFromGroupByGroupId(
+      membersToDelete: $membersToDelete
+      groupAdmin: $groupAdmin
+      groupId: $groupId
+    )
+  }
+`;

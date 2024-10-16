@@ -51,7 +51,7 @@ const ProfileCard = ({
               {isAdmin && <p className="text-xs font-normal italic">Administrador</p>}
               <HandleGroupMember
                 user={user}
-                nameToShow={nameToShow}
+                nameToShow={user.username}
                 groupId={groupId}
                 isAdmin={isAdmin}
               />

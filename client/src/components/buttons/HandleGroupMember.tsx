@@ -7,11 +7,12 @@ import {
   DropdownMenu,
   DropdownTrigger,
 } from "@nextui-org/react";
-import { FaPencil, FaTrash } from "react-icons/fa6";
+import { FaPencil } from "react-icons/fa6";
 import ConfirmModal from "../modals/ConfirmModal";
-import { addAdmin } from "@/app/server/groupActions";
+import { addAdmin, removeMember } from "@/app/server/groupActions";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { useRouter } from "next-nprogress-bar";
+import { IoTrashOutline } from "react-icons/io5";
 
 const HandleGroupMember = ({
   user,
@@ -35,6 +36,16 @@ const HandleGroupMember = ({
       toastifySuccess(res.message);
       router.refresh();
     }
+  };
+
+  const deleteMember = async () => {
+    const res = await removeMember(groupId as string, [user._id]);
+    if ("error" in res) {
+      toastifyError(res.error as string);
+      return;
+    }
+    toastifySuccess(res.message);
+    router.refresh();
   };
 
   const assignAdminRef = useRef<() => void>(() => {});
@@ -89,13 +100,13 @@ const HandleGroupMember = ({
                 variant="flat"
                 radius="full"
               >
-                <FaTrash />
+                <IoTrashOutline />
               </Button>
             }
             message={`¿Desea eliminar a ${nameToShow} del grupo?`}
             tooltipMessage="Eliminar"
             confirmText="Eliminar"
-            onConfirm={() => {}}
+            onConfirm={deleteMember}
           />
         </>
       )}

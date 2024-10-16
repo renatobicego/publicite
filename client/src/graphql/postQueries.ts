@@ -80,3 +80,9 @@ export const editPostMutation = gql`
     )
   }
 `;
+
+export const deletePostMutation = gql`
+  mutation DeletePostById($deletePostByIdId: String!) {
+    deletePostById(id: $deletePostByIdId)
+  }
+`;

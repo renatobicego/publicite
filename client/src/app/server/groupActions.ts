@@ -1,5 +1,5 @@
 "use server";
-import { postGroup, putAdminGroup } from "@/services/groupsService";
+import { deleteMember, postGroup, putAdminGroup } from "@/services/groupsService";
 import { currentUser } from "@clerk/nextjs/server";
 
 export const createGroup = async (formData: any) => {
@@ -35,3 +35,14 @@ export const addAdmin = async (groupId: string, userIds: string[]) => {
     };
   }
 };
+
+export const removeMember = async (groupId: string, membersToDelete: string[]) => {
+try {
+    const res = await deleteMember(groupId, membersToDelete);
+    return res
+  } catch (err) {
+    return {
+      error: "Error al agregar administrador al grupo. Por favor intenta de nuevo.",
+    };
+  }
+}

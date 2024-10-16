@@ -9,12 +9,14 @@ import ShareButton from "@/components/buttons/ShareButton";
 import SaveButton from "@/components/buttons/SaveButton";
 import AccordionData from "./AccordionData/AccordionData";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
-import { CREATE_POST, EDIT_POST } from "@/utils/data/urls";
-import { Link } from "@nextui-org/react";
+import { EDIT_POST } from "@/utils/data/urls";
+import { Button, Link } from "@nextui-org/react";
 import ContactPetitionsList from "@/components/modals/ContactPetition/ContactPetitionsList";
 import PetitionChip from "@/components/chips/PetitionChip";
 import ContactModal from "@/components/modals/ContactModal/ContactModal";
 import { SignedIn } from "@clerk/nextjs";
+import { FaChevronDown } from "react-icons/fa6";
+import OptionsDropdown from "./OptionsDropdown";
 
 const Data = async ({
   post,
@@ -71,10 +73,13 @@ const Data = async ({
       }`}
     >
       <div className="flex flex-col gap-4 w-full">
-        <p className="text-sm text-light-text">
-          {showCondition}
-          Publicado {datePublished} en {post.location.description}
-        </p>
+        <div className="flex justify-between gap-2 md:gap-4">
+          <p className="text-sm text-light-text">
+            {showCondition}
+            Publicado {datePublished} en {post.location.description}
+          </p>
+          <OptionsDropdown post={post} />
+        </div>
         <h2>{post.title}</h2>
         {"reviews" in post && post.reviews && post.reviews.length > 0 && (
           <ReviewsStars reviews={post.reviews} />
