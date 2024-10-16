@@ -19,8 +19,7 @@ import { DatabaseService } from './contexts/shared/database/infrastructure/datab
 import { GroupModule } from './contexts/group/infrastructure/module/group.module';
 import { MagazineModule } from './contexts/magazine/infrastructure/module/magazine.module';
 import { PostCategoryModule } from './contexts/postCategory/infrastructure/module/post.category.module';
-import { NotificationGatewaySocket } from './contexts/shared/notifications/infrastructure/gatewaySocket/gateway.socket';
-import { NotificationSocketModule } from './contexts/shared/notifications/infrastructure/module/notification.socket.module';
+import { NotificationSocketModule } from './contexts/shared/socket/infrastructure/module/notification.socket.module';
 
 @Module({
   imports: [

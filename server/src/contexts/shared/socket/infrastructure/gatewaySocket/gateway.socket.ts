@@ -1,5 +1,4 @@
 import {
-  ConnectedSocket,
   MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -8,6 +7,9 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+
+import { SocketNotificationServiceInterface } from '../../domain/service/socket.notification.service.interface';
+import { Inject } from '@nestjs/common';
 
 @WebSocketGateway({
   cors: {
@@ -20,6 +22,9 @@ export class NotificationGatewaySocket
   @WebSocketServer()
   server: Server;
   private clients: Record<string, { socket: Socket; userId: string }> = {};
+
+  @Inject('SocketNotificationServiceInterface')
+  private readonly notificatorService: SocketNotificationServiceInterface;
 
   handleConnection(client: Socket) {
     const userId = client.handshake.query.userId as string;
@@ -39,24 +44,25 @@ export class NotificationGatewaySocket
     console.log('Client disconnected', client.id);
   }
 
-  @SubscribeMessage('mensaje')
-  handleMessage(@ConnectedSocket() client: Socket, @MessageBody() data: any) {
-    console.log(data);
-    this.server.emit('mensaje', data);
-    // console.log(client.id);
-    // client.broadcast.emit('mensaje', data);
-  }
-
+  //Enviar solicitud de grupo a un usuario especifico
   @SubscribeMessage('member_group_request')
   notification_member_group_request(
-    @MessageBody() data: { userId: string; event: string; message: any },
+    @MessageBody()
+    data: {
+      toId: string;
+      message: any;
+      ids: Map<string, string>;
+    },
   ) {
     const toJsonData = JSON.parse(data as any);
-    console.log(toJsonData.data.userId);
-    const client = this.clients[toJsonData.data.userId]?.socket;
+    const client = this.clients[toJsonData.data.toId]?.socket;
 
     if (client) {
-      client.emit(toJsonData.event, toJsonData.data.message);
+      const messageHtml = `Nueva notif`;
+      client.emit('member_group_request', messageHtml);
+      this.notificatorService.sendNotificationToUser(toJsonData);
+    } else {
+      this.notificatorService.sendNotificationToUser(toJsonData);
     }
   }
 }
