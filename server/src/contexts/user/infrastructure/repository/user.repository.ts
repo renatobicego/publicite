@@ -62,7 +62,7 @@ export class UserRepository implements UserRepositoryInterface {
           {
             path: 'posts',
             select:
-              '_id imagesUrls title description price reviews frequencyPrice toPrice petitionType',
+              '_id imagesUrls title description price reviews frequencyPrice toPrice petitionType postType',
           },
           {
             path: 'magazines',
