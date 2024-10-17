@@ -4,6 +4,7 @@ import { mockedPetitions, mockedPosts } from "../utils/data/mockedData";
 import {
   createNewGroupMutation,
   deleteMemberMutation,
+  editGroupMutation,
   getGroupByIdQuery,
   getGroupsQuery,
   makeAdminMutation,
@@ -42,6 +43,7 @@ export const getGroupById = async (id: string) => {
 
     return data.getGroupById;
   } catch (error) {
+    console.log(error)
     return {
       error:
         "Error al traer información del grupo. Por favor intenta de nuevo.",
@@ -76,15 +78,35 @@ export const postGroup = async (formData: any) => {
     .then((res) => res.data.createNewGroup);
 };
 
+export const putGroup = async (groupToUpdate: any) => {
+  try {
+    const { data } = await getClient()
+      .mutate({
+        mutation: editGroupMutation,
+        variables: { groupToUpdate },
+      })
+      .then((res) => res);
+    console.log(data);
+    return {
+      message: "Grupo editado exitosamente",
+      id: data.updateGroupById,
+    };
+  } catch (error) {
+    console.log(error)
+    return {
+      error: "Error al editar el grupo. Por favor intenta de nuevo.",
+    };
+  }
+};
+
 export const putAdminGroup = async (groupId: string, userIds: string[]) => {
   const groupAdmin = auth().sessionClaims?.metadata.mongoId;
   try {
-    return await getClient()
-      .mutate({
-        mutation: makeAdminMutation,
-        variables: { groupId, newAdmins: userIds, groupAdmin },
-      })
-      .then((res) => res);
+    await getClient().mutate({
+      mutation: makeAdminMutation,
+      variables: { groupId, newAdmins: userIds, groupAdmin },
+    });
+    return { message: "Administrador agregado" };
   } catch (error) {
     return {
       error:

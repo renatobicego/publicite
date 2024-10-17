@@ -1,9 +1,9 @@
 import BreadcrumbsAdmin from "@/components/BreadcrumbsAdmin";
 import ErrorCard from "@/components/ErrorCard";
 import { getGroupById } from "@/services/groupsService";
-import { Group } from "@/types/userTypes";
+import { Group, User } from "@/types/userTypes";
 import { EDIT_GROUP, EDIT_POST, GROUPS, POSTS } from "@/utils/data/urls";
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import EditGroup from "./EditGroup";
 export default async function EditGroupPage({
@@ -12,10 +12,13 @@ export default async function EditGroupPage({
   params: { id: string };
 }) {
   const groupData: Group | { error: string } = await getGroupById(params.id);
+  const loggedUser = await currentUser();
+
   if (
     !("error" in groupData) &&
-    !(groupData.admins as string[]).includes(
-      auth().sessionClaims?.metadata.mongoId as string
+    !groupData.admins.some(
+      (admin) =>
+        (admin as User)._id === (loggedUser?.publicMetadata.mongoId as string)
     )
   ) {
     redirect(`${GROUPS}/${params.id}`);

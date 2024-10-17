@@ -46,7 +46,7 @@ const UploadProfileImage = ({
   // Remove a specific file
   const removeFile = () => {
     setPhotoFile(undefined);
-    setFieldValue?.("profilePhotoUrl", undefined);
+    setFieldValue?.("profilePhotoUrl", null);
   };
 
   return (

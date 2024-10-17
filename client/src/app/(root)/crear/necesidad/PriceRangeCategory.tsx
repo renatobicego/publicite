@@ -69,7 +69,7 @@ const PriceRangeCategory = ({
         onChange={() => {
           setIsChecked(!isChecked);
           if (isChecked) {
-            setFieldValue("toPrice", undefined);
+            setFieldValue("toPrice", null);
           }
         }}
       >

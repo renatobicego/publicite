@@ -26,7 +26,7 @@ export const getPostData = async (id: string) => {
       variables: { findPostByIdId: id },
       context: {
         fetchOptions: {
-          next: { revalidate: 30 },
+          cache: 'no-store' 
         },
       },
     });

@@ -85,9 +85,9 @@ export interface PostReview {
 
 export interface Good extends Post {
   imagesUrls: string[];
-  year?: number;
-  brand?: string;
-  modelType?: string;
+  year?: number | null;
+  brand?: string | null;
+  modelType?: string | null;
   reviews: PostReview[];
   condition: "new" | "used";
 }
@@ -131,7 +131,7 @@ export interface ServicePostValues
 }
 export interface Petition extends Post {
   frequencyPrice?: FrequencyPrice;
-  toPrice?: number;
+  toPrice?: number | null;
   petitionType: "good" | "service";
 }
 

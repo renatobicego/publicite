@@ -71,7 +71,7 @@ const EditPetitionForm = ({ postData }: { postData: Petition }) => {
     const resApi = await editPost(
       {
         ...values,
-        frequencyPrice: values.frequencyPrice ? values.frequencyPrice : undefined,
+        frequencyPrice: values.frequencyPrice ? values.frequencyPrice : null,
         category: [values.category],
       },
       postData._id,
@@ -95,6 +95,7 @@ const EditPetitionForm = ({ postData }: { postData: Petition }) => {
       validationSchema={petitionEditValidation}
     >
       {({ isSubmitting, errors, setFieldValue, values }) => {
+        console.log(values)
         return (
           <Form className="flex flex-col gap-4 w-full">
             <div className="flex gap-8 md:gap-4 w-full max-md:flex-col">
@@ -106,7 +107,7 @@ const EditPetitionForm = ({ postData }: { postData: Petition }) => {
                 <PriceRangeCategory
                   setFieldValue={setFieldValue}
                   errors={errors}
-                  defaultChecked={values.toPrice !== undefined}
+                  defaultChecked={values.toPrice ? true : false}
                 />
                 <Visibility errors={errors} />
                 <div className="flex lg:px-4 flex-col gap-4">

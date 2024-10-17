@@ -14,3 +14,15 @@ export const groupValidation = object({
     .optional()
     .max(300, "Las reglas del grupo deben tener menos de 300 caracteres"),
 });
+
+export const groupEditValidation = object({
+  name: string()
+    .required("El nombre del grupo es requerido")
+    .min(2, "El nombre del grupo debe tener al menos 2 caracteres"),
+  details: string()
+    .optional()
+    .max(200, "La descripción debe tener menos de 200 caracteres"),
+  rules: string()
+    .optional()
+    .max(300, "Las reglas del grupo deben tener menos de 300 caracteres"),
+});
