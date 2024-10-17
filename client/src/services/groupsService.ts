@@ -17,12 +17,18 @@ export const getGroups = async (searchTerm: string | null) => {
     const { data } = await query({
       query: getGroupsQuery,
       variables: { name: searchTerm ? searchTerm : "", limit: 20.0 },
+      context: {
+        headers: {
+          Cookie: cookies().toString(),
+        },
+      },
     });
     return {
       items: data.getGroupByName.groups,
       hasMore: data.getGroupByName.hasMore,
     };
   } catch (error) {
+    console.log(error)
     return {
       error: "Error al traer grupos. Por favor intenta de nuevo.",
     };

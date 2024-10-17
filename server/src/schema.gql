@@ -329,7 +329,7 @@ type Query {
   findPostById(id: String!): Post_response_graphql_model
 
   """Busca un grupo por su id"""
-  getGroupById(id: String!): GroupResponse
+  getGroupById(id: String!, adminId: String!): GroupResponse
 
   """Busca un grupo por su nombre"""
   getGroupByName(name: String!, limit: Float): GroupListResponse

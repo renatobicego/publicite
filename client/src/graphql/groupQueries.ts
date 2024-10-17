@@ -17,7 +17,17 @@ export const getGroupByIdQuery = gql`
         _id
       }
       details
-      magazines
+      magazines {
+        sections {
+          posts {
+            _id
+            imagesUrls
+          }
+          _id
+        }
+        name
+        _id
+      }
       members {
         username
         profilePhotoUrl
