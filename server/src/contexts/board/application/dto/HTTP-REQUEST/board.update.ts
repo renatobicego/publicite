@@ -11,9 +11,6 @@ export class UpdateBoardDto {
   visibility: Visibility;
 
   @Field(() => String, { nullable: true })
-  user: ObjectId;
-
-  @Field(() => String, { nullable: true })
   color: string;
 
   @Field(() => [String], { nullable: true })

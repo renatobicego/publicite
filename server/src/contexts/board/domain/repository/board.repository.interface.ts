@@ -1,8 +1,10 @@
 import { ClientSession } from 'mongoose';
 import { Board } from '../entity/board.entity';
 import { UpdateBoardDto } from '../../application/dto/HTTP-REQUEST/board.update';
-import { BoardResponse } from '../../application/dto/HTTP-RESPONSE/board.response';
-import { BoardGetAllResponse } from '../../application/dto/HTTP-RESPONSE/board.getAll.response';
+import {
+  BoardGetAllResponse,
+  BoardResponse,
+} from '../../application/dto/HTTP-RESPONSE/board.response';
 
 export interface BoardRespositoryInterface {
   getBoardByAnnotationOrKeyword(
