@@ -32,6 +32,7 @@ export class BoardRepository implements BoardRespositoryInterface {
             { annotations: { $regex: regex } },
             { keywords: { $regex: regex } },
           ],
+          $and: [{ visibility: 'public' }],
         })
         .limit(limit + 1)
         .skip((page - 1) * limit)
