@@ -2,7 +2,7 @@ import BreadcrumbsAdmin from "@/components/BreadcrumbsAdmin";
 import ErrorCard from "@/components/ErrorCard";
 import PostsGrid from "@/components/grids/PostGrid";
 import { getMagazineById } from "@/services/magazineService";
-import { MAGAZINES, PROFILE } from "@/utils/data/urls";
+import { GROUPS, MAGAZINES, PROFILE } from "@/utils/data/urls";
 import AccordionSections from "./AccordionSections";
 import { currentUser } from "@clerk/nextjs/server";
 import { Magazine, Post } from "@/types/postTypes";
@@ -36,8 +36,8 @@ export default async function MagazinePage({
       href: "/",
     },
     {
-      label: "Perfiles",
-      href: PROFILE,
+      label: isOwnerTypeUser ?  "Perfiles" : "Grupos",
+      href: isOwnerTypeUser ? PROFILE : GROUPS,
     },
     {
       label: isOwnerTypeUser ? ownerAsUser.username : ownerAsGroup.name,

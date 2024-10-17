@@ -32,7 +32,7 @@ export class MagazineCreateRequest {
   // Group Magazines Atributes
 
   @Field(() => [String], { nullable: true })
-  allowedColaborators: ObjectId[];
+  allowedCollaborators: ObjectId[];
 
   @Field(() => String, { nullable: true })
   group: ObjectId;

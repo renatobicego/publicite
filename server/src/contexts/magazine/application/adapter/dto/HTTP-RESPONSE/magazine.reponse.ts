@@ -122,7 +122,7 @@ export class MagazineResponse {
   visibility?: string;
 
   @Field(() => [allowedColaborators_graphql_magazine], { nullable: true })
-  allowedColaborators?: allowedColaborators_graphql_magazine;
+  allowedCollaborators?: allowedColaborators_graphql_magazine;
 
   @Field(() => group_graphql_magazine, { nullable: true })
   group?: group_graphql_magazine;
@@ -136,7 +136,7 @@ export class MagazineResponse {
     this.collaborators = magazine.collaborators;
     this.user = magazine.user;
     this.visibility = magazine.visibility;
-    this.allowedColaborators = magazine.allowedColaborators;
+    this.allowedCollaborators = magazine.allowedCollaborators;
     this.group = magazine.group;
   }
 }

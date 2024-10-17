@@ -163,6 +163,7 @@ export interface UserMagazine extends Magazine {
 
 export interface GroupMagazine extends Magazine {
   allowedCollaborators: ObjectId[] | GetUser[];
+  visibility: Visibility;
   group: ObjectId | Group;
 }
 

@@ -60,7 +60,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
           magazineId,
           {
             $addToSet: {
-              allowedColaborators: { $each: newAllowedCollaborators },
+              allowedCollaborators: { $each: newAllowedCollaborators },
             },
           },
           { session },
@@ -159,7 +159,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
         await this.groupMagazine
           .findByIdAndUpdate(
             magazineId,
-            { $pullAll: { allowedColaborators: allowedCollaboratorsToDelete } },
+            { $pullAll: { allowedCollaborators: allowedCollaboratorsToDelete } },
             { session },
           )
           .lean();
@@ -190,7 +190,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
       const magazine = await this.magazineModel
         .findById(id)
         .select(
-          '_id collaborators name user description sections ownerType allowedColaborators group visibility',
+          '_id collaborators name user description sections ownerType allowedCollaborators group visibility',
         )
         .populate([
           { path: 'collaborators', select: '_id username profilePhotoUrl' },
@@ -212,7 +212,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
             },
           },
           {
-            path: 'allowedColaborators',
+            path: 'allowedCollaborators',
             select: '_id username profilePhotoUrl',
           },
         ])

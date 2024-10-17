@@ -94,7 +94,7 @@ export class MagazineService implements MagazineServiceInterface {
           this.logger.log('Creating new GroupMagazine in service..');
           const groupMagazine = new GroupMagazine(
             magazineBase,
-            magazineRequest.allowedColaborators ?? [],
+            magazineRequest.allowedCollaborators ?? [],
             magazineRequest.group,
           );
           return await this.magazineRepository.save(groupMagazine);
@@ -128,7 +128,7 @@ export class MagazineService implements MagazineServiceInterface {
   ): Promise<any> {
     try {
       this.logger.log(
-        'Deleting AllowedColaborators from Magazine in service..',
+        'Deleting allowedCollaborators from Magazine in service..',
       );
       await this.magazineRepository.deleteAllowedCollaboratorsFromMagazine(
         allowedCollaboratorsToDelete,

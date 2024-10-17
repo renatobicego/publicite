@@ -12,7 +12,7 @@ import { useRouter } from "next-nprogress-bar";
 import { Form, Formik, FormikHelpers } from "formik";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { magazineValidation } from "./validation";
-import Inputs from "./Inputs";
+import Inputs from "./inputs/Inputs";
 import { useUser } from "@clerk/nextjs";
 import { createMagazine } from "../../../../server/magazineActions";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
@@ -76,7 +76,7 @@ const CreateMagazineForm = ({
       onSubmit={handleSubmit}
       validationSchema={magazineValidation}
     >
-      {({ isSubmitting, errors, setValues }) => {
+      {({ isSubmitting, errors, setValues, values }) => {
         return (
           <Form className="flex flex-col gap-4 max-md:w-full md:max-xl:flex-1 xl:w-1/2 self-center">
             <h2>
@@ -88,6 +88,7 @@ const CreateMagazineForm = ({
             <Inputs
               isUserMagazine={!isGroupMagazine}
               errors={errors}
+              id={id}
               setValues={setValues}
             />
             <RequiredFieldsMsg />

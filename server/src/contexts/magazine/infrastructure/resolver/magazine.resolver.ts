@@ -43,7 +43,7 @@ export class MagazineResolver {
 
   @Mutation(() => String, {
     nullable: true,
-    description: 'Agregar AllowedColaborators a la revista',
+    description: 'Agregar allowedCollaborators a la revista',
   })
   async addAllowedCollaboratorsToMagazine(
     @Args('newAllowedColaborators', { type: () => [String] })

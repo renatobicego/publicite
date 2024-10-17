@@ -2,12 +2,12 @@ import { Schema } from 'mongoose';
 import { MagazineDocument, MagazineModel } from './magazine.schema';
 
 interface GroupMagazineDocument extends MagazineDocument {
-  allowedColaborators: Schema.Types.ObjectId[];
+  allowedCollaborators: Schema.Types.ObjectId[];
   group: Schema.Types.ObjectId;
 }
 
 export const GroupMagazineSchema = new Schema<GroupMagazineDocument>({
-  allowedColaborators: [
+  allowedCollaborators: [
     {
       type: Schema.Types.ObjectId,
       ref: 'User',
