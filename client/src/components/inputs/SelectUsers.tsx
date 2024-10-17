@@ -55,7 +55,7 @@ const SelectUsers = (props: SelectUserProps) => {
         );
       }}
       {...props}
-      selectedKeys={props.value ? props.value : []}
+      // selectedKeys={props.value ? props.value : []}
     >
       {(user) => (
         <SelectItem

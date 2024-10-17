@@ -17,7 +17,17 @@ export const getGroupByIdQuery = gql`
         _id
       }
       details
-      magazines
+      magazines {
+        sections {
+          posts {
+            _id
+            imagesUrls
+          }
+          _id
+        }
+        name
+        _id
+      }
       members {
         username
         profilePhotoUrl
@@ -27,6 +37,23 @@ export const getGroupByIdQuery = gql`
       profilePhotoUrl
       rules
       visibility
+    }
+  }
+`;
+
+export const getGroupMembersByIdQuery = gql`
+  query GetGroupById($getGroupByIdId: String!) {
+    getGroupById(id: $getGroupByIdId) {
+      _id
+      admins {
+        username
+        _id
+      }
+      members {
+        username
+        profilePhotoUrl
+        _id
+      }
     }
   }
 `;

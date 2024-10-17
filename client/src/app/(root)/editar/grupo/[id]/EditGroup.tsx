@@ -3,7 +3,6 @@ import Inputs from "@/app/(root)/crear/grupo/Inputs";
 import UploadProfileImage from "@/app/(root)/crear/grupo/UploadProfileImage";
 import {
   groupEditValidation,
-  groupValidation,
 } from "@/app/(root)/crear/grupo/validation";
 import { editGroup } from "@/app/server/groupActions";
 import PrimaryButton from "@/components/buttons/PrimaryButton";

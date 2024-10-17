@@ -6,6 +6,7 @@ import {
   deleteMemberMutation,
   editGroupMutation,
   getGroupByIdQuery,
+  getGroupMembersByIdQuery,
   getGroupsQuery,
   makeAdminMutation,
 } from "@/graphql/groupQueries";
@@ -17,12 +18,18 @@ export const getGroups = async (searchTerm: string | null) => {
     const { data } = await query({
       query: getGroupsQuery,
       variables: { name: searchTerm ? searchTerm : "", limit: 20.0 },
+      context: {
+        headers: {
+          Cookie: cookies().toString(),
+        },
+      },
     });
     return {
       items: data.getGroupByName.groups,
       hasMore: data.getGroupByName.hasMore,
     };
   } catch (error) {
+    console.log(error)
     return {
       error: "Error al traer grupos. Por favor intenta de nuevo.",
     };
@@ -47,6 +54,28 @@ export const getGroupById = async (id: string) => {
     return {
       error:
         "Error al traer información del grupo. Por favor intenta de nuevo.",
+    };
+  }
+};
+
+export const getGroupMembersById = async (id: string) => {
+  try {
+    const { data } = await query({
+      query: getGroupMembersByIdQuery,
+      variables: { getGroupByIdId: id },
+      context: {
+        headers: {
+          Cookie: cookies().toString(),
+        },
+      },
+    });
+
+    return data.getGroupById;
+  } catch (error) {
+    console.log(error)
+    return {
+      error:
+        "Error al traer los miembros del grupo. Por favor intenta de nuevo.",
     };
   }
 };

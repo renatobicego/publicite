@@ -307,7 +307,7 @@ type MagazineResponse {
   collaborators: [collaborators_graphql!]
   user: user_graphql_magazine
   visibility: String
-  allowedColaborators: [allowedColaborators_graphql_magazine!]
+  allowedCollaborators: [allowedColaborators_graphql_magazine!]
   group: group_graphql_magazine
 }
 
@@ -330,7 +330,7 @@ type Query {
   findPostById(id: String!): Post_response_graphql_model
 
   """Busca un grupo por su id"""
-  getGroupById(id: String!, adminId: String!): GroupResponse
+  getGroupById(id: String!): GroupResponse
 
   """Busca un grupo por su nombre"""
   getGroupByName(name: String!, limit: Float): GroupListResponse
@@ -379,7 +379,7 @@ type Mutation {
   """Agregar colaboradores a la revista"""
   addColaboratorsToMagazine(newColaborators: [String!]!, magazineAdmin: String!, magazineId: String!): String
 
-  """Agregar AllowedColaborators a la revista"""
+  """Agregar allowedCollaborators a la revista"""
   addAllowedCollaboratorsToMagazine(newAllowedColaborators: [String!]!, magazineAdmin: String!, magazineId: String!): String
 
   """Eliminar colaboradores de la revista"""
@@ -498,7 +498,7 @@ input MagazineCreateRequest {
   collaborators: [String!]
   user: String
   visibility: String!
-  allowedColaborators: [String!]
+  allowedCollaborators: [String!]
   group: String
 }
 

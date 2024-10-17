@@ -31,10 +31,10 @@ export default async function ProfileLayout({
   ];
 
   const user = await getUserByUsername(params.username);
-  const loggedUser = await currentUser();
-  if ("error" in user) {
+  if (!user || "error" in user) {
     return <ErrorCard message={user.error} />;
   }
+  const loggedUser = await currentUser();
   const isMyProfile = user.username === loggedUser?.username;
   return (
     <main className="flex min-h-screen flex-col items-start main-style gap-4 md:gap-6 xl:gap-8">

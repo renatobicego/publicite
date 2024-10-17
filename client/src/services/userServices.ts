@@ -9,6 +9,7 @@ import axios from "axios";
 import { query } from "@/lib/client";
 import getUserByUsernameQuery from "@/graphql/userQueries";
 import { cookies, headers } from "next/headers";
+import { ApolloError } from "@apollo/client";
 
 const baseUrl = `${process.env.API_URL}/user/personal`;
 
@@ -111,7 +112,8 @@ export const getUserByUsername = async (username: string) => {
     });
 
     return data.findOneByUsername;
-  } catch (error) {
+  } catch (error: ApolloError | any) {
+    console.log(error.cause.result.errors)
     return {
       error:
         "Error al traer los datos del usuario. Por favor intenta de nuevo.",

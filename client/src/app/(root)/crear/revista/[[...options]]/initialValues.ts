@@ -18,6 +18,7 @@ export const groupMagazine: Omit<GroupMagazine, "_id"> = {
   name: "",
   sections: [],
   group: "",
+  visibility: "public",
   ownerType: "group",
 };
 
