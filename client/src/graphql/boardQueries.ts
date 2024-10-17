@@ -33,4 +33,24 @@ const editBoardByUsernameMutation = gql`
   }
 `;
 
-export { getBoardByUsernameQuery, editBoardByUsernameMutation };
+const getBoardsQuery = gql`
+  query GetBoardByAnnotationOrKeyword(
+    $board: String!
+    $limit: Float!
+    $page: Float!
+  ) {
+    getBoardByAnnotationOrKeyword(board: $board, limit: $limit, page: $page) {
+      boards {
+        visibility
+        user
+        keywords
+        color
+        annotations
+        _id
+      }
+      hasMore
+    }
+  }
+`;
+
+export { getBoardByUsernameQuery, editBoardByUsernameMutation, getBoardsQuery };

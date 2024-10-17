@@ -21,11 +21,11 @@ export const fetchDataByType = async(
     case "petition":
       return await getPetitions(searchTerm);
     case "boards":
-      return await getBoards(searchTerm);
+      return await getBoards(searchTerm, page);
     case "groups":
       return await getGroups(searchTerm, page);
     case "users":
-      return await getUsers(searchTerm);
+      return await getUsers(searchTerm, page);
     case "groupPosts":
       return await getGroupPosts(searchTerm, groupId);
   }

@@ -75,12 +75,12 @@ export const getUserPreferences = async (username: string) => {
   }
 };
 
-export const getUsers = async (searchTerm: string | null) => {
+export const getUsers = async (searchTerm: string | null, page: number) => {
   try {
     const res = await fetch(
       `${process.env.API_URL}/user?user=${
         searchTerm ? searchTerm : ""
-      }&limit=20`,
+      }&limit=2&page=${page}`,
       {
         headers: {
           Cookie: cookies().toString(),
