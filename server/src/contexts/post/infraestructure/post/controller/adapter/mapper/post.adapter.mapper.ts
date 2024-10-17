@@ -1,5 +1,5 @@
 // Transforma las solicitudes del exterior (controllers) a objetos de dominio (entities)
-import { omitBy, isNil } from 'lodash';
+import { omitBy, isNil, isUndefined } from 'lodash';
 import { BadRequestException } from '@nestjs/common';
 
 import { PostUpdateDto } from 'src/contexts/post/domain/post/entity/dto/post.update.dto';
@@ -15,6 +15,7 @@ import {
   PostServiceResponse,
   PostPetitionResponse,
 } from 'src/contexts/post/application/post/dto/HTTP-RESPONSE/post.response';
+import { FrequencyPrice } from 'src/contexts/post/domain/post/entity/enum/post-service-freq-type.enum';
 
 export class PostAdapterMapper implements PostMapperAdapterInterface {
   entityToResponse(entity: Post): PostResponse {
@@ -146,10 +147,8 @@ export class PostAdapterMapper implements PostMapperAdapterInterface {
       toPrice: postUpdateRequest.toPrice,
       petitionType: postUpdateRequest.petitionType,
     };
-    const postMapped = omitBy(postUpdateDto, isNil);
-    if ('toPrice' in postUpdateRequest) {
-      postMapped.toPrice = postUpdateRequest.toPrice;
-    }
+    const postMapped = omitBy(postUpdateDto, isUndefined);
+
     return postMapped;
   }
 }
