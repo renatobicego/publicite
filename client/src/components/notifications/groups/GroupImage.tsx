@@ -1,6 +1,7 @@
 import { Image } from "@nextui-org/react";
 import { NotificationImage } from "../NotificationCard";
 import { Group } from "@/types/userTypes";
+import { FILE_URL } from "@/utils/data/urls";
 
 const GroupImage = ({
   group,
@@ -11,7 +12,11 @@ const GroupImage = ({
     <NotificationImage>
       <Image
         radius="full"
-        src={group.profilePhotoUrl || "/groupLogo.png"}
+        src={
+          group.profilePhotoUrl
+            ? FILE_URL + group.profilePhotoUrl
+            : "/groupLogo.png"
+        }
         alt="foto"
         className="object-cover w-16 h-16"
       />

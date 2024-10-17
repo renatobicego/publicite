@@ -75,3 +75,9 @@ export const deleteMemberMutation = gql`
     )
   }
 `;
+
+export const editGroupMutation = gql`
+  mutation UpdateGroupById($groupToUpdate: GroupUpdateRequest!) {
+    updateGroupById(groupToUpdate: $groupToUpdate)
+  }
+`;

@@ -150,6 +150,8 @@ export interface Group {
   visibility: "private" | "public";
 }
 
+export interface EditGroupInterface extends Omit<Group, "admins" | "members"> {}
+
 export interface UserRelations {
   _id: ObjectId;
   userA: User;

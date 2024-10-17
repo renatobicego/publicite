@@ -12,7 +12,7 @@ const GroupInfo = async ({ group, isAdmin }: { group: Group; isAdmin: boolean })
   return (
     <section className="flex gap-4 md:gap-6 xl:gap-8 md:max-w-[65%] xl:max-w-[50%] max-md:flex-col">
       <Image
-        src={FILE_URL + group.profilePhotoUrl}
+        src={group.profilePhotoUrl ? FILE_URL + group.profilePhotoUrl : "/groupLogo.png"}
         alt={`foto de perfil de ${group.name}`}
         className="rounded-full "
         classNames={{
