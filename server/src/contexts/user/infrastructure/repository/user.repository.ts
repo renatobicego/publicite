@@ -55,26 +55,26 @@ export class UserRepository implements UserRepositoryInterface {
         .select(
           '_id profilePhotoUrl username contact lastName name countryRegion userType board description email suscriptions groups magazines userRelations posts',
         )
-        .populate('contact board groups')
-        .populate({
-          path: 'magazines',
-          select: '_id name sections',
-          populate: {
-            path: 'sections',
-            select: 'posts',
+        .populate([
+          { path: 'magazines' },
+          { path: 'board' },
+          { path: 'groups' },
+          {
+            path: 'posts',
+            select: '_id imagesUrls title description price reviews frequencyPrice toPrice petitionType',
+          },
+          {
+            path: 'magazines',
+            select: '_id name description sections ',
             populate: {
-              path: 'posts',
-              select: 'imagesUrls',
+              path: 'sections',
+              select: '_id posts',
+              populate: { path: 'posts', select: '_id imagesUrls' },
             },
           },
-        })
-        .populate({
-          path: 'posts',
-          select:
-            '_id imagesUrls title description price frequencyPrice petitionType postType toPrice',
-        })
-        .session(session);
-
+        ])
+        .session(session)
+        .lean();
       if (!user) {
         await session.abortTransaction();
         session.endSession();

@@ -104,6 +104,7 @@ type Magazines_Full_Graphql_Model {
   _id: ID
   name: String
   sections: [Sections_Full_Graphql_Model!]
+  description: String
 }
 
 type User_Full_Grapql_Model {
@@ -320,7 +321,7 @@ type Query {
   findPaymentByClerkId(id: String!): [PaymentResponse!]
 
   """Obtiene un usuario por su nombre de usuario"""
-  findOneByUsername(username: String!, id: String!): User_Full_Grapql_Model
+  findUserByUsername(username: String!): User_Full_Grapql_Model
 
   """Obtener Post por autor"""
   findPostsByAuthorId(authorId: String!): [Post_Full_Graphql_Model!]

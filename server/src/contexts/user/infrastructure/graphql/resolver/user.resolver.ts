@@ -21,7 +21,7 @@ export class UserResolver {
     description: 'Obtiene un usuario por su nombre de usuario',
   })
   @UseGuards(ClerkAuthGuard)
-  async findOneByUsername(
+  async findUserByUsername(
     @Args('username', { type: () => String }) username: string,
     @Args('id', { type: () => String }) id: string,
     @Context()

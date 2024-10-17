@@ -76,6 +76,10 @@ export class Magazines_Full_Graphql_Model {
 
   @Field(() => [Sections_Full_Graphql_Model], { nullable: true })
   sections: Sections_Full_Graphql_Model[];
+
+  @Field(() => String, { nullable: true })
+  description: string;
+
 }
 
 @ObjectType()

@@ -20,7 +20,7 @@ export class MercadoPagoSubscriptionPlanRepository
     this.logger.log('Find subscription plan by Meli ID: ' + id);
     const subscriptionPlanDocument = await this.subscriptionPlanModel
       .findOne({ mpPreapprovalPlanId: id })
-      .exec();
+      .lean();
     return subscriptionPlanDocument
       ? SubscriptionPlan.fromDocument(subscriptionPlanDocument)
       : null;
