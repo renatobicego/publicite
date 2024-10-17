@@ -188,35 +188,34 @@ export class MagazineRepository implements MagazineRepositoryInterface {
     session.startTransaction();
     try {
       const magazine = await this.magazineModel
-        .findById({ _id: id })
+        .findById(id)
         .select(
-          '_id collaborators name user description sections ownerType allowedColaborators group',
+          '_id collaborators name user description sections ownerType allowedColaborators group visibility',
         )
-        .populate({
-          path: 'collaborators',
-          select: '_id username profilePhotoUrl',
-        })
-        .populate({
-          path: 'user',
-          select: '_id username profilePhotoUrl',
-        })
-        .populate({
-          path: 'group',
-          select: '_id name profilePhotoUrl',
-        })
-        .populate({
-          path: 'sections',
-          select: '_id isFatherSection posts title',
-          populate: {
-            path: 'posts',
-            select:
-              '_id imagesUrls title description price frequencyPrice petitionType postType',
+        .populate([
+          { path: 'collaborators', select: '_id username profilePhotoUrl' },
+          {
+            path: 'user',
+            select: '_id username profilePhotoUrl',
           },
-        })
-        .populate({
-          path: 'allowedColaborators',
-          select: '_id username profilePhotoUrl',
-        })
+          {
+            path: 'group',
+            select: '_id name profilePhotoUrl',
+          },
+          {
+            path: 'sections',
+            select: '_id isFatherSection posts title',
+            populate: {
+              path: 'posts',
+              select:
+                '_id imagesUrls title description price frequencyPrice petitionType postType',
+            },
+          },
+          {
+            path: 'allowedColaborators',
+            select: '_id username profilePhotoUrl',
+          },
+        ])
         .session(session);
 
       if (!magazine) {
@@ -224,7 +223,6 @@ export class MagazineRepository implements MagazineRepositoryInterface {
         session.endSession();
         return null;
       }
-      console.log(magazine);
       await session.commitTransaction();
       session.endSession();
       return this.magazineRepositoryMapper.toReponse(magazine);
