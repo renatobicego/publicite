@@ -53,7 +53,7 @@ export class UserRepository implements UserRepositoryInterface {
       const user = await this.user
         .findOne({ username })
         .select(
-          '_id profilePhotoUrl username contact lastName name countryRegion userType board description email suscriptions groups magazines userRelations posts',
+          '_id profilePhotoUrl username contact lastName name businessName countryRegion userType board description email suscriptions groups magazines userRelations posts',
         )
         .populate([
           { path: 'magazines' },
