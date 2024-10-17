@@ -84,9 +84,11 @@ export class UserService implements UserServiceInterface {
   async findAllUsers(
     user: string,
     limit: number,
+    page: number,
   ): Promise<UserFindAllResponse> {
     try {
-      return await this.userRepository.findAllUsers(user, limit);
+      if (page <= 0) page = 1;
+      return await this.userRepository.findAllUsers(user, limit, page);
     } catch (error: any) {
       throw error;
     }

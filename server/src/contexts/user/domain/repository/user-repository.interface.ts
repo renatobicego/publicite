@@ -10,7 +10,11 @@ import { UserClerkUpdateDto } from '../entity/dto/user.clerk.update.dto';
 import { UserFindAllResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.response.dto';
 
 export interface UserRepositoryInterface {
-  findAllUsers(user: string, limit: number): Promise<UserFindAllResponse>;
+  findAllUsers(
+    user: string,
+    limit: number,
+    page: number,
+  ): Promise<UserFindAllResponse>;
   findUserByUsername(user: string): Promise<any>;
 
   getUserPersonalInformationByUsername(
