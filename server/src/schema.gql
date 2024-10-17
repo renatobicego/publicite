@@ -217,12 +217,20 @@ type members_graphQl {
   profilePhotoUrl: String
 }
 
-type post_magazines_section {
-  imagesUrls: String!
+type post_graphql_group {
+  _id: ID
+  imagesUrls: [String!]
 }
 
-type magazines_section {
-  posts: post_magazines_section
+type sections_graphql_group {
+  _id: ID
+  posts: [post_graphql_group!]
+}
+
+type magazine_graphql_group {
+  _id: ID
+  name: String
+  sections: [sections_graphql_group!]
 }
 
 type GroupResponse_admins {
@@ -236,7 +244,7 @@ type GroupResponse {
   admins: [GroupResponse_admins!]
   name: String!
   rules: String
-  magazines: [String!]
+  magazines: [magazine_graphql_group!]
   details: String
   profilePhotoUrl: String
   visibility: String!

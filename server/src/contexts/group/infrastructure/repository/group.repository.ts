@@ -222,23 +222,37 @@ export class GroupRepository implements GroupRepositoryInterface {
   }
 
   async findGroupById(id: string): Promise<GroupResponse> {
+    const session = await this.connection.startSession();
+    session.startTransaction();
     try {
       const group = await this.groupModel
         .findById(id)
-        .populate({
-          path: 'members',
-          select: '_id username profilePhotoUrl',
-        })
-        .populate({
-          path: 'admins',
-          select: '_id username',
-        })
+        .populate([
+          { path: 'members', select: '_id username profilePhotoUrl' },
+          { path: 'admins', select: '_id username' },
+          {
+            path: 'magazines',
+            select: '_id name sections',
+            populate: {
+              path: 'sections',
+              select: '_id posts',
+              populate: { path: 'posts', select: '_id imagesUrls' },
+            },
+          },
+        ])
+        .session(session)
         .lean();
+
+      await session.commitTransaction();
       return this.groupMapper.toGroupResponse(group);
     } catch (error: any) {
+      await session.abortTransaction();
       throw error;
+    } finally {
+      session.endSession();
     }
   }
+
   async findGroupByName(
     name: string,
     limit: number,

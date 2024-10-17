@@ -188,12 +188,14 @@ export class GroupResolver {
   @UseGuards(ClerkAuthGuard)
   async getGroupById(
     @Args('id', { type: () => String })
-    id: string,
+    groupId: string,
+    @Args('adminId', { type: () => String })
+    adminId: string,
     @Context() context: any,
   ): Promise<GroupResponse> {
     try {
-      PubliciteAuth.authorize(context, 'not admin');
-      return await this.groupAdapter.findGroupById(id);
+      PubliciteAuth.authorize(context, adminId);
+      return await this.groupAdapter.findGroupById(groupId);
     } catch (error: any) {
       throw error;
     }

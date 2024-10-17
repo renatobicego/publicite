@@ -1,4 +1,4 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { ObjectId } from 'mongoose';
 
 @ObjectType()
@@ -13,30 +13,32 @@ export class members_graphQl {
   profilePhotoUrl: string;
 }
 @ObjectType()
-export class post_magazines_section {
-  @Field(() => String)
-  imagesUrls: string;
+export class post_graphql_group {
+  @Field(() => ID, { nullable: true })
+  _id?: ObjectId;
+
+  @Field(() => [String], { nullable: true })
+  imagesUrls: string[];
+}
+@ObjectType()
+export class sections_graphql_group {
+  @Field(() => ID, { nullable: true })
+  _id?: ObjectId;
+
+  @Field(() => [post_graphql_group], { nullable: true })
+  posts: post_graphql_group[];
 }
 
 @ObjectType()
-export class magazines_section {
-  @Field(() => post_magazines_section, { nullable: true })
-  posts: post_magazines_section;
-}
+export class magazine_graphql_group {
+  @Field(() => ID, { nullable: true })
+  _id?: ObjectId;
 
-@ObjectType()
-export class magazines_graphQl {
-  @Field(() => String)
-  _id: string;
-
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   name: string;
 
-  @Field(() => magazines_section, { nullable: true })
-  sections: magazines_section;
-
-  @Field(() => String)
-  description: string;
+  @Field(() => [sections_graphql_group], { nullable: true })
+  sections: sections_graphql_group[];
 }
 
 @ObjectType()
@@ -65,8 +67,8 @@ export class GroupResponse {
   @Field(() => String, { nullable: true })
   rules: string;
 
-  @Field(() => [String], { nullable: true })
-  magazines: ObjectId[];
+  @Field(() => [magazine_graphql_group], { nullable: true })
+  magazines: magazine_graphql_group[];
 
   @Field(() => String, { nullable: true })
   details: string;
