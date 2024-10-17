@@ -12,19 +12,7 @@
       <h1 id="rutas-get">Rutas GET</h1>
       <h3 id="usuario">Usuario</h3>
       <ul>
-        <!-- <li>
-          <code>getUserProfileData</code>: Ruta que devuelva los datos
-          personales del usuario <strong>LISTA</strong>
-        </li> -->
-        <!-- <li>
-          <code>getBusinessSector</code>: traer rubros de empresas
-          <strong>LISTA</strong>
-        </li> -->
-        <!-- <li>
-          <code>getUserPreferences</code>: Devolver las userPreferences del
-          usuario
-          <strong>LISTA</strong>
-        </li> -->
+
         <li>
           <code>getContactOfUser</code>: Devolver los contactos del usuario que
           envio por id o username (como quieras). Solo necesito el id, el name
@@ -35,50 +23,7 @@
           del usuario (por id). Unicamente el número, debería chequearlo por
           endDate.
         </li>
-        <!-- <li>
-          <code>getUsers</code>: Debe devolver 50 usuarios aleatorios o los que
-          coincidan con la búsqueda (en caso de que se haga una búsqueda). La
-          búsqueda va a existir si envio una searchQuery, o sea voy a enviar una
-          query param opcional que va a ser el nombre, apellido o usuario y se
-          debería devolver usuarios que cumplan con la query (por ejemplo la
-          ruta sería <code>users?search=acá%20la%20busqueda</code>). La
-          respuesta debe ser una array con los siguientes datos (doy como
-          ejemplo si es Business o si es Person:
-        </li> -->
-      </ul>
-      <!-- <pre
-        class="language-json"
-      ><code class="prism  language-json"><span class="token punctuation">[</span>
-	<span class="token punctuation">{</span>
-		_id<span class="token punctuation">:</span>  <span class="token string">"1k2"</span><span class="token punctuation">,</span>
-		profilePhotoUrl<span class="token punctuation">:</span>  <span class="token string">"/avatar.png"</span><span class="token punctuation">,</span>
-		username<span class="token punctuation">:</span>  <span class="token string">"username"</span><span class="token punctuation">,</span>
-		contact<span class="token punctuation">:</span> <span class="token punctuation">{</span>
-			_id<span class="token punctuation">:</span>  <span class="token string">"12qdas1"</span><span class="token punctuation">,</span>
-			phone<span class="token punctuation">:</span>  <span class="token string">"phone"</span><span class="token punctuation">,</span>
-			<span class="token operator">...</span>todasLasRedesSocialesQueTenga
-		<span class="token punctuation">}</span><span class="token punctuation">,</span>
-		countryRegion<span class="token punctuation">:</span>  <span class="token string">"Córdoba, Argentina"</span><span class="token punctuation">,</span>
-		userType<span class="token punctuation">:</span>  <span class="token string">"Business"</span><span class="token punctuation">,</span>
-		businessName<span class="token punctuation">:</span>  <span class="token string">"Nombre de Empresa"</span><span class="token punctuation">,</span>
-	<span class="token punctuation">}</span><span class="token punctuation">,</span>
-	<span class="token punctuation">{</span>
-		_id<span class="token punctuation">:</span>  <span class="token string">"2k3"</span><span class="token punctuation">,</span>
-		profilePhotoUrl<span class="token punctuation">:</span>  <span class="token string">"/avatar.png"</span><span class="token punctuation">,</span>
-		username<span class="token punctuation">:</span>  <span class="token string">"username"</span><span class="token punctuation">,</span>
-		contact<span class="token punctuation">:</span> <span class="token punctuation">{</span>
-		_id<span class="token punctuation">:</span>  <span class="token string">"12daf1"</span><span class="token punctuation">,</span>
-		phone<span class="token punctuation">:</span>  <span class="token string">"phone"</span><span class="token punctuation">,</span>
-		instagram<span class="token punctuation">:</span>  <span class="token string">"instagram"</span><span class="token punctuation">,</span>
-		facebook<span class="token punctuation">:</span>  <span class="token string">"facebook"</span><span class="token punctuation">,</span>
-		<span class="token punctuation">}</span><span class="token punctuation">,</span>
-		lastName<span class="token punctuation">:</span>  <span class="token string">"Bicego"</span><span class="token punctuation">,</span>
-		name<span class="token punctuation">:</span>  <span class="token string">"Renato"</span><span class="token punctuation">,</span>
-		countryRegion<span class="token punctuation">:</span>  <span class="token string">"Mendoza, Argentina"</span><span class="token punctuation">,</span>
-		userType<span class="token punctuation">:</span>  <span class="token string">"Person"</span><span class="token punctuation">,</span>
-	<span class="token punctuation">}</span>
-<span class="token punctuation">]</span>
-</code></pre> -->
+
       <ul>
         <li>
           <code>getUserByUsername</code>: Devolver datos del usuario por su
@@ -410,9 +355,7 @@ en cuenta que los posts pueden estar en distintas secciones<span class="token pu
 <span class="token punctuation">}</span><span class="token punctuation">;</span>
  
 </code></pre>
-      <ul>
-        <li><code>getCategories</code>: devolver categorias de anuncios</li>
-      </ul>
+
       <p>
         <strong
           >Los siguientes gets hay que implementar un sistema de
@@ -510,152 +453,8 @@ en cuenta que los posts pueden estar en distintas secciones<span class="token pu
 	<span class="token punctuation">}</span>
 <span class="token punctuation">]</span>
 </code></pre>
-      <h3 id="revistas">Revistas</h3>
-      <ul>
-        <li>
-          <code>getMagazineById</code>: traer revista con sus datos por id,
-          donde los posts debería devolverlos con las mismas props que el
-          <code>getPosts</code>:
-        </li>
-      </ul>
-      <pre
-        class="language-js"
-      ><code class="prism  language-js"><span class="token keyword">export</span>  <span class="token keyword">const</span>  mockedCompleteMagazine<span class="token punctuation">:</span>  UserMagazine  <span class="token operator">=</span> <span class="token punctuation">{</span>
-	_id<span class="token punctuation">:</span>  <span class="token string">"1magaz"</span><span class="token punctuation">,</span>
-	collaborators<span class="token punctuation">:</span>  <span class="token punctuation">[</span>
-		<span class="token punctuation">{</span>
-			_id<span class="token punctuation">:</span> <span class="token string">"id"</span>
-			username<span class="token punctuation">:</span> <span class="token string">"username"</span><span class="token punctuation">,</span>
-			profilePhotoUrl<span class="token punctuation">:</span> <span class="token string">"foto"</span>
-		<span class="token punctuation">}</span>
-	<span class="token punctuation">]</span><span class="token punctuation">,</span>
-	name<span class="token punctuation">:</span>  <span class="token string">"Magazine 1"</span><span class="token punctuation">,</span>
-	user<span class="token punctuation">:</span>  <span class="token punctuation">{</span>
-		_id<span class="token punctuation">:</span> <span class="token string">"id"</span>
-		username<span class="token punctuation">:</span> <span class="token string">"username"</span><span class="token punctuation">,</span>
-		profilePhotoUrl<span class="token punctuation">:</span> <span class="token string">"foto"</span>
-	<span class="token punctuation">}</span><span class="token punctuation">,</span>
-	description<span class="token punctuation">:</span> <span class="token string">"Esta sería la descripción de la revista guitarras de Miguel abentin."</span><span class="token punctuation">,</span>
-	sections<span class="token punctuation">:</span>  <span class="token punctuation">[</span>
-		<span class="token punctuation">{</span>
-			_id<span class="token punctuation">:</span>  <span class="token string">"234sec"</span><span class="token punctuation">,</span>
-			isFatherSection<span class="token punctuation">:</span>  <span class="token boolean">true</span><span class="token punctuation">,</span>
-			posts<span class="token punctuation">:</span>  mockedPosts<span class="token punctuation">,</span>
-			title<span class="token punctuation">:</span>  <span class="token string">"Sección 1"</span><span class="token punctuation">,</span>
-		<span class="token punctuation">}</span><span class="token punctuation">,</span>
-		<span class="token punctuation">{</span>
-			_id<span class="token punctuation">:</span>  <span class="token string">"345sec"</span><span class="token punctuation">,</span>
-			isFatherSection<span class="token punctuation">:</span>  <span class="token boolean">false</span><span class="token punctuation">,</span>
-			posts<span class="token punctuation">:</span>  mockedPosts<span class="token punctuation">,</span>
-			title<span class="token punctuation">:</span>  <span class="token string">"Sección 2"</span><span class="token punctuation">,</span>
-		<span class="token punctuation">}</span><span class="token punctuation">,</span>
-		<span class="token punctuation">{</span>
-			_id<span class="token punctuation">:</span>  <span class="token string">"3415sec"</span><span class="token punctuation">,</span>
-			isFatherSection<span class="token punctuation">:</span>  <span class="token boolean">false</span><span class="token punctuation">,</span>
-			posts<span class="token punctuation">:</span>  mockedPosts<span class="token punctuation">,</span>
-			title<span class="token punctuation">:</span>  <span class="token string">"Sección 3"</span><span class="token punctuation">,</span>
-		<span class="token punctuation">}</span><span class="token punctuation">,</span>
-	<span class="token punctuation">]</span><span class="token punctuation">,</span>
-	ownerType<span class="token punctuation">:</span>  <span class="token string">"user"</span><span class="token punctuation">,</span>
-<span class="token punctuation">}</span><span class="token punctuation">;</span>
-<span class="token keyword">export</span>  <span class="token keyword">const</span>  mockedCompleteMagazineGroup<span class="token punctuation">:</span>  GroupMagazine  <span class="token operator">=</span> <span class="token punctuation">{</span>
-	_id<span class="token punctuation">:</span>  <span class="token string">"1magaz"</span><span class="token punctuation">,</span>
-	allowedCollaborators<span class="token punctuation">:</span>  <span class="token punctuation">[</span>
-		<span class="token punctuation">{</span>
-			_id<span class="token punctuation">:</span> <span class="token string">"id"</span>
-			username<span class="token punctuation">:</span> <span class="token string">"username"</span><span class="token punctuation">,</span>
-			profilePhotoUrl<span class="token punctuation">:</span> <span class="token string">"foto"</span>
-		<span class="token punctuation">}</span>
-	<span class="token punctuation">]</span><span class="token punctuation">,</span>
-	name<span class="token punctuation">:</span>  <span class="token string">"Magazine 1"</span><span class="token punctuation">,</span>
-	group<span class="token punctuation">:</span>  <span class="token punctuation">{</span>
-		_id<span class="token punctuation">:</span> <span class="token string">"id"</span>
-		name<span class="token punctuation">:</span> <span class="token string">"name"</span><span class="token punctuation">,</span>
-		profilePhotoUrl<span class="token punctuation">:</span> <span class="token string">"foto"</span>
-	<span class="token punctuation">}</span><span class="token punctuation">,</span>
-	description<span class="token punctuation">:</span> <span class="token string">"Esta sería la descripción de la revista guitarras de Miguel abentin."</span><span class="token punctuation">,</span>
-	sections<span class="token punctuation">:</span>  <span class="token punctuation">[</span>
-		<span class="token punctuation">{</span>
-			_id<span class="token punctuation">:</span>  <span class="token string">"234sec"</span><span class="token punctuation">,</span>
-			isFatherSection<span class="token punctuation">:</span>  <span class="token boolean">true</span><span class="token punctuation">,</span>
-			posts<span class="token punctuation">:</span>  mockedPosts<span class="token punctuation">,</span>
-			title<span class="token punctuation">:</span>  <span class="token string">"Sección 1"</span><span class="token punctuation">,</span>
-		<span class="token punctuation">}</span><span class="token punctuation">,</span>
-		<span class="token punctuation">{</span>
-			_id<span class="token punctuation">:</span>  <span class="token string">"345sec"</span><span class="token punctuation">,</span>
-			isFatherSection<span class="token punctuation">:</span>  <span class="token boolean">false</span><span class="token punctuation">,</span>
-			posts<span class="token punctuation">:</span>  mockedPosts<span class="token punctuation">,</span>
-			title<span class="token punctuation">:</span>  <span class="token string">"Sección 2"</span><span class="token punctuation">,</span>
-		<span class="token punctuation">}</span><span class="token punctuation">,</span>
-		<span class="token punctuation">{</span>
-			_id<span class="token punctuation">:</span>  <span class="token string">"3415sec"</span><span class="token punctuation">,</span>
-			isFatherSection<span class="token punctuation">:</span>  <span class="token boolean">false</span><span class="token punctuation">,</span>
-			posts<span class="token punctuation">:</span>  mockedPosts<span class="token punctuation">,</span>
-			title<span class="token punctuation">:</span>  <span class="token string">"Sección 3"</span><span class="token punctuation">,</span>
-		<span class="token punctuation">}</span><span class="token punctuation">,</span>
-	<span class="token punctuation">]</span><span class="token punctuation">,</span>
-	ownerType<span class="token punctuation">:</span>  <span class="token string">"group"</span><span class="token punctuation">,</span>
-<span class="token punctuation">}</span><span class="token punctuation">;</span>
-</code></pre>
-      <h3 id="grupos">Grupos</h3>
-      <ul>
-        <li>
-          <code>getGroups</code>: idem a getPosts solo que tiene que traer
-          grupos y únicamente se va a enviar un searchTerm nada más que va a ser
-          opcional. Tiene que devolver:
-        </li>
-      </ul>
-      <pre
-        class="language-js"
-      ><code class="prism  language-js"><span class="token punctuation">[</span>
-	<span class="token punctuation">{</span>
-		_id<span class="token punctuation">:</span> <span class="token string">"id"</span><span class="token punctuation">,</span>
-		name<span class="token punctuation">:</span> <span class="token string">"nombre del grupo"</span><span class="token punctuation">,</span>
-		profilePhotoUrl<span class="token punctuation">:</span> <span class="token string">"url"</span><span class="token punctuation">,</span>
-		members<span class="token punctuation">:</span> <span class="token punctuation">[</span>solo los ids<span class="token punctuation">]</span>
-	<span class="token punctuation">}</span>
-<span class="token punctuation">]</span><span class="token punctuation">,</span>
-</code></pre>
-      <ul>
-        <li>
-          <code>getGroupById</code>: traer todos los datos de grupo. Tiene que
-          devolver:
-        </li>
-      </ul>
-      <pre
-        class="language-js"
-      ><code class="prism  language-js"><span class="token punctuation">{</span>
-	_id<span class="token punctuation">:</span>  <span class="token string">"9ievfm"</span><span class="token punctuation">,</span>
-	members<span class="token punctuation">:</span>  <span class="token punctuation">[</span>
-		<span class="token punctuation">{</span>
-			_id<span class="token punctuation">:</span> <span class="token string">"id"</span>
-			username<span class="token punctuation">:</span> <span class="token string">"username"</span><span class="token punctuation">,</span>
-			profilePhotoUrl<span class="token punctuation">:</span> <span class="token string">"foto"</span>
-		<span class="token punctuation">}</span>
-	<span class="token punctuation">]</span><span class="token punctuation">,</span>
-	admins<span class="token punctuation">:</span>  <span class="token punctuation">[</span>solo los ids<span class="token punctuation">]</span><span class="token punctuation">,</span>
-	details<span class="token punctuation">:</span>  <span class="token string">"details"</span><span class="token punctuation">,</span>
-	name<span class="token punctuation">:</span>  <span class="token string">"Computadoras"</span><span class="token punctuation">,</span>
-	magazines<span class="token punctuation">:</span>  <span class="token punctuation">[</span>
-		<span class="token punctuation">{</span>
-			_id<span class="token punctuation">:</span>  <span class="token string">"1magaz"</span><span class="token punctuation">,</span>
-			name<span class="token punctuation">:</span>  <span class="token string">"Magazine 1"</span><span class="token punctuation">,</span>
-			sections<span class="token punctuation">:</span>  <span class="token punctuation">[</span>
-				<span class="token punctuation">{</span>
-					posts<span class="token punctuation">:</span> <span class="token punctuation">[</span>
-						<span class="token punctuation">{</span>
-							imagesUrls<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">"url"</span><span class="token punctuation">]</span>
-						<span class="token punctuation">}</span>
-					<span class="token punctuation">]</span>
-				<span class="token punctuation">}</span>
-			<span class="token punctuation">]</span> <span class="token operator">**</span><span class="token operator">*</span>lo mismo que con getUserByUsername
-			description<span class="token punctuation">:</span>  <span class="token string">""</span>
-		<span class="token punctuation">}</span>
-	<span class="token punctuation">]</span><span class="token punctuation">,</span>
-	rules<span class="token punctuation">:</span>  <span class="token string">"rules"</span><span class="token punctuation">,</span>
-	profilePhotoUrl<span class="token punctuation">:</span>  <span class="token string">"/group1.png"</span><span class="token punctuation">,</span>
-<span class="token punctuation">}</span><span class="token punctuation">,</span>
-</code></pre>
+
+
       <ul>
         <li>
           <code>getGroupPosts</code>: debería devolver cualquier tipo de post

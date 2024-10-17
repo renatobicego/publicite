@@ -7,7 +7,10 @@ import { BoardDocument } from '../schemas/board.schema';
 import { Board } from '../../domain/entity/board.entity';
 import { BoardRepositoryMapperInterface } from '../../domain/repository/mapper/board.repository.mapper';
 import { UpdateBoardDto } from '../../application/dto/HTTP-REQUEST/board.update';
-import { BoardResponse } from '../../application/dto/HTTP-RESPONSE/board.response';
+import {
+  BoardGetAllResponse,
+  BoardResponse,
+} from '../../application/dto/HTTP-RESPONSE/board.response';
 
 export class BoardRepository implements BoardRespositoryInterface {
   constructor(
@@ -16,6 +19,37 @@ export class BoardRepository implements BoardRespositoryInterface {
     @Inject('BoardRepositoryMapperInterface')
     private readonly boardMapper: BoardRepositoryMapperInterface,
   ) {}
+  async getBoardByAnnotationOrKeyword(
+    board: string,
+    limit: number,
+    page: number,
+  ): Promise<BoardGetAllResponse> {
+    try {
+      const regex = new RegExp(`${board}`, 'i');
+      const boards = await this.boardModel
+        .find({
+          $or: [
+            { annotations: { $regex: regex } },
+            { keywords: { $regex: regex } },
+          ],
+        })
+        .limit(limit + 1)
+        .skip((page - 1) * limit)
+        .lean();
+
+      const hasMore = boards.length > limit;
+      const boardsResponse = boards.slice(0, limit).map((board) => {
+        return this.boardMapper.toResponse(board);
+      });
+      return {
+        boards: boardsResponse,
+        hasMore: hasMore,
+      };
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
   async updateBoardById(
     id: string,
     board: UpdateBoardDto,

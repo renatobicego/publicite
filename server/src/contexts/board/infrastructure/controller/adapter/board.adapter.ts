@@ -3,7 +3,10 @@ import { Inject } from '@nestjs/common';
 import { BoardAdapterInterface } from 'src/contexts/board/application/adapter/board.adapter.interface';
 import { BoardRequest } from 'src/contexts/board/application/dto/HTTP-REQUEST/board.request';
 import { UpdateBoardDto } from 'src/contexts/board/application/dto/HTTP-REQUEST/board.update';
-import { BoardResponse } from 'src/contexts/board/application/dto/HTTP-RESPONSE/board.response';
+import {
+  BoardGetAllResponse,
+  BoardResponse,
+} from 'src/contexts/board/application/dto/HTTP-RESPONSE/board.response';
 import { BoardServiceInterface } from 'src/contexts/board/domain/service/board.service.interface';
 
 export class BoardAdapter implements BoardAdapterInterface {
@@ -11,6 +14,22 @@ export class BoardAdapter implements BoardAdapterInterface {
     @Inject('BoardServiceInterface')
     private readonly boardService: BoardServiceInterface,
   ) {}
+  async getBoardByAnnotationOrKeyword(
+    board: string,
+    limit: number,
+    page: number,
+  ): Promise<BoardGetAllResponse> {
+    try {
+      return await this.boardService.getBoardByAnnotationOrKeyword(
+        board,
+        limit,
+        page,
+      );
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
   async updateBoardById(
     id: string,
     board: UpdateBoardDto,

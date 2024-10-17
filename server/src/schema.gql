@@ -144,6 +144,20 @@ type PaymentResponse {
   status: String!
 }
 
+type BoardResponse {
+  _id: ID
+  annotations: [String!]
+  visibility: String
+  user: String
+  color: String
+  keywords: [String!]
+}
+
+type BoardGetAllResponse {
+  boards: [BoardResponse!]!
+  hasMore: Boolean!
+}
+
 type location {
   type: String!
   coordinates: [Float!]!
@@ -331,6 +345,9 @@ type Query {
 
   """Obtener Post por su Id"""
   findPostById(id: String!): Post_response_graphql_model
+
+  """Obtener un board por anotaciones o palabras clave"""
+  getBoardByAnnotationOrKeyword(board: String!, limit: Float!, page: Float!): BoardGetAllResponse
 
   """Busca un grupo por su id"""
   getGroupById(id: String!): GroupResponse
