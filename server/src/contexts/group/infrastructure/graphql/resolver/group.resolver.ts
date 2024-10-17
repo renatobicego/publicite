@@ -189,12 +189,9 @@ export class GroupResolver {
   async getGroupById(
     @Args('id', { type: () => String })
     groupId: string,
-    @Args('adminId', { type: () => String })
-    adminId: string,
     @Context() context: any,
   ): Promise<GroupResponse> {
     try {
-      PubliciteAuth.authorize(context, adminId);
       return await this.groupAdapter.findGroupById(groupId);
     } catch (error: any) {
       throw error;
