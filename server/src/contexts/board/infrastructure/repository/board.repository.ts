@@ -32,7 +32,11 @@ export class BoardRepository implements BoardRespositoryInterface {
             { annotations: { $regex: regex } },
             { keywords: { $regex: regex } },
           ],
-          $and: [{ visibility: 'public' }],
+          //$and: [{ visibility: 'public' }],
+        })
+        .populate({
+          path: 'user',
+          select: '_id profilePhotoUrl name',
         })
         .limit(limit + 1)
         .skip((page - 1) * limit)

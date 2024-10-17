@@ -144,11 +144,17 @@ type PaymentResponse {
   status: String!
 }
 
+type userBoardGraphql {
+  _id: ID
+  profilePhotoUrl: String
+  name: String
+}
+
 type BoardResponse {
   _id: ID
   annotations: [String!]
   visibility: String
-  user: String
+  user: userBoardGraphql!
   color: String
   keywords: [String!]
 }
