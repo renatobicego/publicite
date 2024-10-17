@@ -20,15 +20,15 @@ export class UserResolver {
     nullable: true,
     description: 'Obtiene un usuario por su nombre de usuario',
   })
-  //@UseGuards(ClerkAuthGuard)
+  @UseGuards(ClerkAuthGuard)
   async findUserByUsername(
     @Args('username', { type: () => String }) username: string,
-    //@Args('id', { type: () => String }) id: string,
+    @Args('id', { type: () => String }) id: string,
     @Context()
     context: any,
   ): Promise<User_Full_Grapql_Model | null> {
     try {
-      //PubliciteAuth.authorize(context, id);
+      PubliciteAuth.authorize(context, id);
       return await this.userAdapter.findUserByUsername(username);
     } catch (error: any) {
       throw error;
