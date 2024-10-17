@@ -92,9 +92,9 @@ export class UserService implements UserServiceInterface {
     }
   }
 
-  async findUserByUsername(username: string, keys: string[]): Promise<any> {
+  async findUserByUsername(username: string): Promise<any> {
     try {
-      return await this.userRepository.findUserByUsername(username, keys);
+      return await this.userRepository.findUserByUsername(username);
     } catch (error: any) {
       throw error;
     }

@@ -16,7 +16,7 @@ export interface UserServiceInterface {
   ): Promise<Types.ObjectId>;
 
   findAllUsers(user: string, limit: number): Promise<UserFindAllResponse>;
-  findUserByUsername(username: string, keys: string[]): Promise<any>;
+  findUserByUsername(username: string): Promise<any>;
 
   getUserPersonalInformationByUsername(username: string): Promise<any>;
   getUserPreferencesByUsername(

@@ -46,7 +46,7 @@ export class UserRepository implements UserRepositoryInterface {
     @InjectConnection() private readonly connection: Connection,
   ) {}
 
-  async findUserByUsername(username: string, keys: string[]): Promise<any> {
+  async findUserByUsername(username: string): Promise<any> {
     try {
       const session = await this.connection.startSession();
       session.startTransaction();

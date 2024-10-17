@@ -312,7 +312,7 @@ type Query {
   findPaymentByClerkId(id: String!): [PaymentResponse!]
 
   """Obtiene un usuario por su nombre de usuario"""
-  findOneByUsername(username: String!): User_Full_Grapql_Model
+  findOneByUsername(username: String!, id: String!): User_Full_Grapql_Model
 
   """Obtener Post por autor"""
   findPostsByAuthorId(authorId: String!): [Post_Full_Graphql_Model!]

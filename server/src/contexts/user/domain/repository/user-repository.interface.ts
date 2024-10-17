@@ -11,7 +11,7 @@ import { UserFindAllResponse } from '../../application/adapter/dto/HTTP-RESPONSE
 
 export interface UserRepositoryInterface {
   findAllUsers(user: string, limit: number): Promise<UserFindAllResponse>;
-  findUserByUsername(user: string, keys: string[]): Promise<any>;
+  findUserByUsername(user: string): Promise<any>;
 
   getUserPersonalInformationByUsername(
     username: string,

@@ -3,6 +3,8 @@ import {
   UserPersonResponse,
   UserResponse,
 } from 'src/contexts/user/application/adapter/dto/HTTP-RESPONSE/user.response.dto';
+import { omitBy, isNil } from 'lodash';
+
 import { UserMapperInterface } from 'src/contexts/user/application/adapter/mapper/user.mapper.interface';
 import { User } from 'src/contexts/user/domain/entity/user.entity';
 import { UserPerson } from '../../../domain/entity/userPerson.entity';
@@ -156,27 +158,24 @@ export class UserMapper implements UserMapperInterface {
   ): UserPersonalUpdateResponse | UserBusinessUpdateResponse {
     if (type === 0) {
       const caster = entity as UserPersonalUpdateDto;
-      const userUpdate: UserPersonalUpdateResponse = {};
+      const userUpdate: UserPersonalUpdateResponse = {
+        birthDate: caster.getBirthDate,
+        gender: caster.getGender,
+        countryRegion: caster.getCountryRegion,
+        description: caster.getDescription,
+      };
 
-      if (caster.getBirthDate) userUpdate.birthDate = caster.getBirthDate;
-      if (caster.getGender) userUpdate.gender = caster.getGender;
-      if (caster.getCountryRegion)
-        userUpdate.countryRegion = caster.getCountryRegion;
-      if (caster.getDescription) userUpdate.description = caster.getDescription;
-
-      return userUpdate;
+      return omitBy(userUpdate, isNil);
     } else if (type === 1) {
       const caster = entity as UserBusinessUpdateDto;
-      const userUpdated: UserBusinessUpdateResponse = {};
+      const userUpdated: UserBusinessUpdateResponse = {
+        businessName: caster.getBusinessName,
+        sector: caster.getSector,
+        countryRegion: caster.getCountryRegion,
+        description: caster.getDescription,
+      };
 
-      if (caster.getBusinessName)
-        userUpdated.businessName = caster.getBusinessName;
-      if (caster.getSector) userUpdated.sector = caster.getSector;
-      if (caster.getCountryRegion)
-        userUpdated.countryRegion = caster.getCountryRegion;
-      if (caster.getDescription)
-        userUpdated.description = caster.getDescription;
-      return userUpdated;
+      return omitBy(userUpdated, isNil);
     } else {
       throw new Error('Invalid user type');
     }

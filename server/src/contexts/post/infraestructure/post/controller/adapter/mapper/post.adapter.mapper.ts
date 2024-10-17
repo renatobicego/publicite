@@ -1,5 +1,5 @@
 // Transforma las solicitudes del exterior (controllers) a objetos de dominio (entities)
-import { omitBy, isNil, isUndefined } from 'lodash';
+import { omitBy, isUndefined } from 'lodash';
 import { BadRequestException } from '@nestjs/common';
 
 import { PostUpdateDto } from 'src/contexts/post/domain/post/entity/dto/post.update.dto';
