@@ -189,7 +189,6 @@ export class GroupResolver {
   async getGroupById(
     @Args('id', { type: () => String })
     groupId: string,
-    @Context() context: any,
   ): Promise<GroupResponse> {
     try {
       return await this.groupAdapter.findGroupById(groupId);

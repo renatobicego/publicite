@@ -61,7 +61,8 @@ export class UserRepository implements UserRepositoryInterface {
           { path: 'groups' },
           {
             path: 'posts',
-            select: '_id imagesUrls title description price reviews frequencyPrice toPrice petitionType',
+            select:
+              '_id imagesUrls title description price reviews frequencyPrice toPrice petitionType',
           },
           {
             path: 'magazines',
@@ -169,11 +170,12 @@ export class UserRepository implements UserRepositoryInterface {
 
       const populatedUser = await this.user
         .findOne({ username })
-        .populate('contact')
-        .populate(user.userType.toLowerCase() === 'business' ? 'sector' : '')
         .select(projection)
-        .lean()
-        .exec();
+        .populate([
+          { path: 'contact' },
+          { path: user.userType.toLowerCase() === 'business' ? 'sector' : '' },
+        ])
+        .lean();
 
       return populatedUser as Partial<User>;
     } catch (error) {
@@ -258,7 +260,7 @@ export class UserRepository implements UserRepositoryInterface {
       );
       const userUpdated = await this.user
         .findOneAndUpdate({ clerkId: clerkId }, reqUser, { new: true })
-        .lean(); // Aplicar lean() aquí si no necesitas métodos Mongoose
+        .lean();
       if (!userUpdated) {
         throw new BadRequestException('User not found');
       }
