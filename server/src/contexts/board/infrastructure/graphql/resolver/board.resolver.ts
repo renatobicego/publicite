@@ -1,9 +1,11 @@
-import { Inject } from '@nestjs/common';
-import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
+import { Inject, UseGuards } from '@nestjs/common';
+import { Args, Mutation, Resolver, Query, Context } from '@nestjs/graphql';
 import { BoardAdapterInterface } from 'src/contexts/board/application/adapter/board.adapter.interface';
 import { UpdateBoardDto } from 'src/contexts/board/application/dto/HTTP-REQUEST/board.update';
 import { BoardGetAllResponse } from 'src/contexts/board/application/dto/HTTP-RESPONSE/board.response';
 import { Board } from 'src/contexts/board/domain/entity/board.entity';
+import { ClerkAuthGuard } from 'src/contexts/clerk-auth/clerk.auth.guard';
+import { PubliciteAuth } from 'src/contexts/shared/publicite_auth/publicite_auth';
 
 //´Provee instrucciones para transformar las insttrucciones provenientes del cliente en data que graph puede utilizar
 // Los resolvers son similareas a los controladores traicionales de un rest enpoint. SON PROVIDERS para nest
@@ -20,12 +22,16 @@ export class BoardResolver {
     nullable: true,
     description: 'Actualiza el board del usuario',
   })
-  async updateBoardByUsername(
+  @UseGuards(ClerkAuthGuard)
+  async updateBoardById(
     @Args('id', { type: () => String }) id: string,
+    @Args('ownerId', { type: () => String }) ownerId: string,
     @Args('boardData', { type: () => UpdateBoardDto })
     boardData: UpdateBoardDto,
+    @Context() context: any,
   ): Promise<any> {
     try {
+      PubliciteAuth.authorize(context, ownerId);
       return await this.boardAdapter.updateBoardById(id, boardData);
     } catch (error: any) {
       throw error;

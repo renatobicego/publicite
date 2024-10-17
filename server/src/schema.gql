@@ -144,11 +144,17 @@ type PaymentResponse {
   status: String!
 }
 
+type userBoardGraphql {
+  _id: ID
+  profilePhotoUrl: String
+  name: String
+}
+
 type BoardResponse {
   _id: ID
   annotations: [String!]
   visibility: String
-  user: String
+  user: userBoardGraphql!
   color: String
   keywords: [String!]
 }
@@ -370,7 +376,7 @@ type Mutation {
   updatePostById(postUpdate: PostUpdateRequest!, id: String!, author_id: String!): String
 
   """Actualiza el board del usuario"""
-  updateBoardByUsername(id: String!, boardData: UpdateBoardDto!): Board
+  updateBoardById(id: String!, ownerId: String!, boardData: UpdateBoardDto!): Board
 
   """Agregar admins un grupo"""
   addAdminsToGroupByGroupId(newAdmins: [String!]!, groupAdmin: String!, groupId: String!): String
@@ -474,7 +480,6 @@ enum FrequencyPrice {
 input UpdateBoardDto {
   annotations: [String!]
   visibility: Visibility_Enum_board
-  user: String
   color: String
   keywords: [String!]
 }

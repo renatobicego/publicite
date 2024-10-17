@@ -1,7 +1,6 @@
 import { BoardRequest } from '../dto/HTTP-REQUEST/board.request';
 import { UpdateBoardDto } from '../dto/HTTP-REQUEST/board.update';
-import { BoardGetAllResponse } from '../dto/HTTP-RESPONSE/board.getAll.response';
-import { BoardResponse } from '../dto/HTTP-RESPONSE/board.response';
+import { BoardGetAllResponse, BoardResponse } from '../dto/HTTP-RESPONSE/board.response';
 
 export interface BoardAdapterInterface {
   save(board: BoardRequest): Promise<BoardResponse>;

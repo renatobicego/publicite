@@ -1,7 +1,9 @@
 import { BoardRequest } from '../../application/dto/HTTP-REQUEST/board.request';
 import { UpdateBoardDto } from '../../application/dto/HTTP-REQUEST/board.update';
-import { BoardGetAllResponse } from '../../application/dto/HTTP-RESPONSE/board.getAll.response';
-import { BoardResponse } from '../../application/dto/HTTP-RESPONSE/board.response';
+import {
+  BoardGetAllResponse,
+  BoardResponse,
+} from '../../application/dto/HTTP-RESPONSE/board.response';
 
 export interface BoardServiceInterface {
   getBoardByAnnotationOrKeyword(

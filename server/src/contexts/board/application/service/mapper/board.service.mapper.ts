@@ -21,7 +21,7 @@ export class BoardServiceMapper implements BoardMapperServiceInterface {
       _id: board.getId ?? undefined,
       annotations: board.getAnnotations,
       visibility: board.getVisibility,
-      user: board.getUser,
+      user: board.getUser as any,
       color: board.getColor,
       keywords: board.getkeywords,
     };

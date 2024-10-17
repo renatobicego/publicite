@@ -2,6 +2,18 @@ import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { ObjectId } from 'mongoose';
 
 @ObjectType()
+class userBoardGraphql {
+  @Field(() => ID, { nullable: true })
+  _id: ObjectId;
+
+  @Field(() => String, { nullable: true })
+  profilePhotoUrl: string;
+
+  @Field(() => String, { nullable: true })
+  name: string;
+}
+
+@ObjectType()
 export class BoardResponse {
   @Field(() => ID, { nullable: true })
   _id: ObjectId | undefined;
@@ -12,8 +24,8 @@ export class BoardResponse {
   @Field(() => String, { nullable: true })
   visibility: string;
 
-  @Field(() => String, { nullable: true })
-  user: ObjectId;
+  @Field(() => userBoardGraphql)
+  user: userBoardGraphql;
 
   @Field(() => String, { nullable: true })
   color: string;
