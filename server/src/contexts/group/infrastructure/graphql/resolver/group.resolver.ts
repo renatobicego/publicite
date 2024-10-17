@@ -201,14 +201,15 @@ export class GroupResolver {
     nullable: true,
     description: 'Busca un grupo por su nombre',
   })
-  @UseGuards(ClerkAuthGuard)
+  //@UseGuards(ClerkAuthGuard)
   async getGroupByName(
     @Args('name', { type: () => String })
     name: string,
-    @Args('limit', { type: () => Number, nullable: true }) limit: number,
+    @Args('limit', { type: () => Number }) limit: number,
+    @Args('page', { type: () => Number }) page: number,
   ): Promise<GroupListResponse> {
     try {
-      return await this.groupAdapter.findGroupByName(name, limit);
+      return await this.groupAdapter.findGroupByName(name, limit, page);
     } catch (error: any) {
       throw error;
     }

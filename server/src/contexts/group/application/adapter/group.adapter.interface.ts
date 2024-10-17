@@ -22,7 +22,7 @@ export interface GroupAdapterInterface {
   findGroupByName(
     name: string,
     limit: number,
-    keys?: string[],
+    page: number,
   ): Promise<GroupListResponse>;
   saveGroup(group: GroupRequest): Promise<GroupResponse>;
   updateGroupById(group: GroupUpdateRequest): Promise<any>;

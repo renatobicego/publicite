@@ -216,6 +216,9 @@ type members_graphQl {
   _id: String!
   username: String!
   profilePhotoUrl: String
+  name: String
+  lastName: String
+  businessName: String
 }
 
 type post_graphql_group {
@@ -321,7 +324,7 @@ type Query {
   findPaymentByClerkId(id: String!): [PaymentResponse!]
 
   """Obtiene un usuario por su nombre de usuario"""
-  findUserByUsername(username: String!, id: String!): User_Full_Grapql_Model
+  findUserByUsername(username: String!): User_Full_Grapql_Model
 
   """Obtener Post por autor"""
   findPostsByAuthorId(authorId: String!): [Post_Full_Graphql_Model!]
@@ -333,7 +336,7 @@ type Query {
   getGroupById(id: String!): GroupResponse
 
   """Busca un grupo por su nombre"""
-  getGroupByName(name: String!, limit: Float): GroupListResponse
+  getGroupByName(name: String!, limit: Float!, page: Float!): GroupListResponse
 
   """Obtener una revista"""
   getMagazineByMagazineId(id: String!): MagazineResponse

@@ -25,7 +25,10 @@ export class GroupService implements GroupServiceInterface {
   ): Promise<any> {
     try {
       this.logger.log('Adding Magazines to group: ' + groupId);
-      return await this.groupRepository.addMagazinesToGroup(magazineIds, groupId);
+      return await this.groupRepository.addMagazinesToGroup(
+        magazineIds,
+        groupId,
+      );
     } catch (error: any) {
       this.logger.error(
         'An error was ocurred when adding magazines to group: ',
@@ -109,10 +112,12 @@ export class GroupService implements GroupServiceInterface {
   async findGroupByName(
     name: string,
     limit: number,
+    page: number,
   ): Promise<GroupListResponse> {
     try {
       this.logger.log('Finding group by name: ' + name);
-      return await this.groupRepository.findGroupByName(name, limit);
+      if (page <= 0) page = 1;
+      return await this.groupRepository.findGroupByName(name, limit, page);
     } catch (error: any) {
       throw error;
     }

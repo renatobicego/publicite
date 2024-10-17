@@ -259,40 +259,42 @@ export class GroupRepository implements GroupRepositoryInterface {
   async findGroupByName(
     name: string,
     limit: number,
+    page: number,
   ): Promise<GroupListResponse> {
     try {
-      const regex = new RegExp(`${name}`, 'i'); // de esta forma buscamos el nombre en TODO EL STRING DE NAME
-      // const regex = new RegExp(`^${name}`, 'i'); // de esta forma buscamos el nombre SOLO COMO EMPIEZA, SI EL NAME QUE BUSCA ESTA EN EL MEDIO NO APARECE
+      const regex = new RegExp(`${name}`, 'i');
       const session = await this.connection.startSession();
       session.startTransaction();
       const groups = await this.groupModel
         .find({ name: { $regex: regex } })
         .limit(limit + 1)
+        .skip((page - 1) * limit)
         .select(
           '_id name profilePhotoUrl members admins details name magazines rules profilePhotoUrl visibility',
         )
-        .populate({
-          path: 'members',
-          select: '_id username profilePhotoUrl',
-        })
-        .populate({
-          path: 'admins',
-          select: '_id username',
-        })
-        .populate({
-          path: 'magazines',
-          select: '_id name sections',
-          populate: {
-            path: 'sections',
-            select: 'posts',
+        .populate([
+          {
+            path: 'members',
+            select: '_id username profilePhotoUrl',
+          },
+          {
+            path: 'admins',
+            select: '_id username',
+          },
+          {
+            path: 'magazines',
+            select: '_id name sections',
             populate: {
-              path: 'posts',
-              select: 'imagesUrls',
+              path: 'sections',
+              select: 'posts',
+              populate: {
+                path: 'posts',
+                select: 'imagesUrls',
+              },
             },
           },
-        })
+        ])
         .sort({ name: 1 })
-
         .session(session);
       const hasMore = groups.length > limit;
       const groupResponse = groups
