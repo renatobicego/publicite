@@ -212,13 +212,13 @@ type Post_response_graphql_model {
 }
 
 type members_graphQl {
-  _id: String
-  username: String
+  _id: String!
+  username: String!
   profilePhotoUrl: String
 }
 
 type post_magazines_section {
-  imagesUrls: String
+  imagesUrls: String!
 }
 
 type magazines_section {
@@ -226,19 +226,19 @@ type magazines_section {
 }
 
 type GroupResponse_admins {
-  _id: String
-  username: String
+  _id: String!
+  username: String!
 }
 
 type GroupResponse {
   _id: String!
-  members: [members_graphQl!]!
-  admins: [GroupResponse_admins!]!
+  members: [members_graphQl!]
+  admins: [GroupResponse_admins!]
   name: String!
-  rules: String!
-  magazines: [String!]!
-  details: String!
-  profilePhotoUrl: String!
+  rules: String
+  magazines: [String!]
+  details: String
+  profilePhotoUrl: String
   visibility: String!
 }
 

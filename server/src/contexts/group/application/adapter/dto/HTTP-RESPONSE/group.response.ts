@@ -3,10 +3,10 @@ import { ObjectId } from 'mongoose';
 
 @ObjectType()
 export class members_graphQl {
-  @Field(() => String, { nullable: true })
+  @Field(() => String)
   _id: string;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => String)
   username: string;
 
   @Field(() => String, { nullable: true })
@@ -14,7 +14,7 @@ export class members_graphQl {
 }
 @ObjectType()
 export class post_magazines_section {
-  @Field(() => String, { nullable: true })
+  @Field(() => String)
   imagesUrls: string;
 }
 
@@ -26,25 +26,25 @@ export class magazines_section {
 
 @ObjectType()
 export class magazines_graphQl {
-  @Field(() => String, { nullable: true })
+  @Field(() => String)
   _id: string;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => String)
   name: string;
 
   @Field(() => magazines_section, { nullable: true })
   sections: magazines_section;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => String)
   description: string;
 }
 
 @ObjectType()
 export class GroupResponse_admins {
-  @Field(() => String, { nullable: true })
+  @Field(() => String)
   _id: string;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => String)
   username: string;
 }
 
@@ -53,25 +53,25 @@ export class GroupResponse {
   @Field(() => String)
   _id: ObjectId;
 
-  @Field(() => [members_graphQl])
+  @Field(() => [members_graphQl], { nullable: true })
   members: members_graphQl[];
 
-  @Field(() => [GroupResponse_admins])
+  @Field(() => [GroupResponse_admins], { nullable: true })
   admins: GroupResponse_admins[];
 
   @Field(() => String)
   name: string;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   rules: string;
 
-  @Field(() => [String])
+  @Field(() => [String], { nullable: true })
   magazines: ObjectId[];
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   details: string;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   profilePhotoUrl: string;
 
   @Field(() => String)

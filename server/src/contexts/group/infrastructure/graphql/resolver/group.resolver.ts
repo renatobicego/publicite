@@ -23,6 +23,7 @@ export class GroupResolver {
     nullable: true,
     description: 'Agregar admins un grupo',
   })
+  @UseGuards(ClerkAuthGuard)
   async addAdminsToGroupByGroupId(
     @Args('newAdmins', { type: () => [String] })
     newAdmins: string[],
@@ -46,6 +47,7 @@ export class GroupResolver {
     nullable: true,
     description: 'Agregar miembros a  un grupo',
   })
+  @UseGuards(ClerkAuthGuard)
   async addMembersToGroupByGroupId(
     @Args('newMembers', { type: () => [String] })
     newMembers: string[],
@@ -69,6 +71,7 @@ export class GroupResolver {
     nullable: true,
     description: 'Agregar revistas a un grupo',
   })
+  @UseGuards(ClerkAuthGuard)
   async addMagazinezToGroupByGroupId(
     @Args('newMagazines', { type: () => [String] })
     newMagazines: string[],
@@ -92,6 +95,7 @@ export class GroupResolver {
     nullable: true,
     description: 'Crear un grupo',
   })
+  @UseGuards(ClerkAuthGuard)
   async createNewGroup(
     @Args('groupDto', { type: () => GroupRequest }) groupDto: GroupRequest,
   ): Promise<GroupResponse> {
@@ -106,6 +110,7 @@ export class GroupResolver {
     nullable: true,
     description: 'Eliminar admins un grupo',
   })
+  @UseGuards(ClerkAuthGuard)
   async deleteAdminsFromGroupByGroupId(
     @Args('adminsToDelete', { type: () => [String] })
     adminsToDelete: string[],
@@ -129,6 +134,7 @@ export class GroupResolver {
     nullable: true,
     description: 'Eliminar miembros un grupo',
   })
+  @UseGuards(ClerkAuthGuard)
   async deleteMembersFromGroupByGroupId(
     @Args('membersToDelete', { type: () => [String] })
     membersToDelete: string[],
@@ -152,6 +158,7 @@ export class GroupResolver {
     nullable: true,
     description: 'Eliminar revistas de un grupo',
   })
+  @UseGuards(ClerkAuthGuard)
   async deleteMagazinesFromGroupByGroupId(
     @Args('magazinesToDelete', { type: () => [String] })
     magazinesToDelete: string[],
@@ -196,6 +203,7 @@ export class GroupResolver {
     nullable: true,
     description: 'Busca un grupo por su nombre',
   })
+  @UseGuards(ClerkAuthGuard)
   async getGroupByName(
     @Args('name', { type: () => String })
     name: string,
@@ -212,6 +220,7 @@ export class GroupResolver {
     nullable: true,
     description: 'Actualizar un grupo',
   })
+  @UseGuards(ClerkAuthGuard)
   async updateGroupById(
     @Args('groupToUpdate', { type: () => GroupUpdateRequest })
     groupToUpdate: GroupUpdateRequest,
