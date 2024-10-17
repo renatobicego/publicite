@@ -66,7 +66,7 @@ const GroupSolapas = ({
         <PostListLogic postType="groupPosts" groupId={group._id} />
       </Tab>
       <Tab
-        className="w-full"
+        className="w-full flex gap-4 flex-col"
         key={`${GROUP_URL}${MAGAZINES}`}
         title="Revistas del Grupo"
         href={`${GROUP_URL}${MAGAZINES}`}

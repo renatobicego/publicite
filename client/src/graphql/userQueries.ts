@@ -1,7 +1,7 @@
 import { gql } from "@apollo/client";
 
 const getUserByUsernameQuery = gql`
-  query GetUserByUsername($username: String!) {
+  query FindUserByUsername($username: String!) {
     findUserByUsername(username: $username) {
       _id
       businessName

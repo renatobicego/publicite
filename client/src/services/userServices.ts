@@ -111,7 +111,7 @@ export const getUserByUsername = async (username: string) => {
       },
     });
 
-    return data.findOneByUsername;
+    return data.findUserByUsername;
   } catch (error: ApolloError | any) {
     console.log(error.cause.result.errors)
     return {

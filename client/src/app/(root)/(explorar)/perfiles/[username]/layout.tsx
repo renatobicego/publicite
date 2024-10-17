@@ -32,7 +32,7 @@ export default async function ProfileLayout({
 
   const user = await getUserByUsername(params.username);
   if (!user || "error" in user) {
-    return <ErrorCard message={user.error} />;
+    return <ErrorCard message={user?.error ?? "Error al cargar el perfil."} />;
   }
   const loggedUser = await currentUser();
   const isMyProfile = user.username === loggedUser?.username;

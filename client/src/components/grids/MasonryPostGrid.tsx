@@ -15,6 +15,7 @@ const MasonryPostGrid = ({ posts, isGroupPost }: { posts: Post[], isGroupPost: b
             <PostCard
               key={post._id + index}
               postData={post}
+              className={post.postType === "petition" ? "mt-3" : ""}
               isGroupPost={isGroupPost}
             />
           ))}

@@ -61,7 +61,7 @@ const UserSolapas = ({ user }: { user: GetUser }) => {
       >
         {isMyProfile && (
           <PrimaryButton
-            className="mb-2 ml-2 md:float-right"
+            className="mb-2 md:ml-2 md:float-right"
             startContent={<FaPlus />}
             as={Link}
             href={CREATE}

@@ -19,6 +19,7 @@ export const useInfiniteFetch = (
   const [isLoading, setIsLoading] = useState(false);
   // has more data to fetch (used for infinite scroll)
   const [hasMoreData, setHasMoreData] = useState(true);
+  const [page, setPage] = useState(1);
   const [items, setItems] = useState<any[]>([]);
   // Error flag to prevent repeated calls
   const [errorOccurred, setErrorOccurred] = useState(false);
@@ -29,8 +30,9 @@ export const useInfiniteFetch = (
 
   // Create fetchData function based on postType and searchTerm
   const fetchData = useMemo(() => {
-    return fetchDataByType(postType, busqueda, groupId);
-  }, [postType, busqueda, groupId]);
+    return fetchDataByType(postType, busqueda, page, groupId);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [postType, busqueda]);
 
   // Function to handle initial fetch and scroll-based fetch
   const loadMore = useCallback(async () => {
@@ -45,6 +47,9 @@ export const useInfiniteFetch = (
         setErrorOccurred(true); // Set error flag to true
       } else {
         setHasMoreData(data.hasMore);
+        if (data.hasMore) {
+          setPage((prevPage) => prevPage + 1);
+        }
         setItems((prevItems) => [...prevItems, ...data.items]);
         setErrorOccurred(false); // Reset error flag if the call is successful
       }
@@ -61,6 +66,7 @@ export const useInfiniteFetch = (
     // Reset state when postType or searchParams change
     setItems([]); // Clear items first
     setHasMoreData(true); // Reset to allow API fetching
+    setPage(1); // Reset page number
     setIsLoading(false); // Reset loading state if needed
     setErrorOccurred(false); // Reset error flag when postType or search params change
   }, [postType, busqueda]);
