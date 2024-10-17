@@ -15,7 +15,11 @@ export interface UserServiceInterface {
     options?: { session?: ClientSession },
   ): Promise<Types.ObjectId>;
 
-  findAllUsers(user: string, limit: number): Promise<UserFindAllResponse>;
+  findAllUsers(
+    user: string,
+    limit: number,
+    page: number,
+  ): Promise<UserFindAllResponse>;
   findUserByUsername(username: string): Promise<any>;
 
   getUserPersonalInformationByUsername(username: string): Promise<any>;

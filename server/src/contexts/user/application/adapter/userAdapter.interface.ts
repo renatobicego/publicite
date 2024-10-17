@@ -13,11 +13,13 @@ import {
 export interface UserAdapterInterface {
   createUser(req: UserRequest): Promise<UserResponse>;
 
-  updateUser(
-    username: string,
-    req: businessAccountUpdateRequest | personalAccountUpdateRequest,
-    type: number,
-  ): Promise<UserPersonalUpdateResponse | UserBusinessUpdateResponse>;
+  findAllUsers(
+    user: string,
+    limit: number,
+    page: number,
+  ): Promise<UserFindAllResponse>;
+
+  findUserByUsername(username: string): Promise<any>;
 
   getUserPersonalInformationByUsername(
     username: string,
@@ -30,6 +32,9 @@ export interface UserAdapterInterface {
     userPreference: UserPreferenceResponse,
   ): Promise<UserPreferenceResponse | null>;
 
-  findAllUsers(user: string, limit: number): Promise<UserFindAllResponse>;
-  findUserByUsername(username: string): Promise<any>;
+  updateUser(
+    username: string,
+    req: businessAccountUpdateRequest | personalAccountUpdateRequest,
+    type: number,
+  ): Promise<UserPersonalUpdateResponse | UserBusinessUpdateResponse>;
 }

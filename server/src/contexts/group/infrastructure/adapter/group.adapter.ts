@@ -82,9 +82,10 @@ export class GroupAdapter implements GroupAdapterInterface {
   async findGroupByName(
     name: string,
     limit: number,
+    page: number,
   ): Promise<GroupListResponse> {
     try {
-      const response = await this.groupService.findGroupByName(name, limit);
+      const response = await this.groupService.findGroupByName(name, limit, page);
       return response;
     } catch (error: any) {
       throw error;

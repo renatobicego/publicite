@@ -70,9 +70,10 @@ export class UserAdapter implements UserAdapterInterface {
   async findAllUsers(
     user: string,
     limit: number,
+    page: number,
   ): Promise<UserFindAllResponse> {
     try {
-      return await this.userService.findAllUsers(user, limit);
+      return await this.userService.findAllUsers(user, limit, page);
     } catch (error: any) {
       throw error;
     }

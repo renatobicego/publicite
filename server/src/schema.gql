@@ -336,7 +336,7 @@ type Query {
   getGroupById(id: String!): GroupResponse
 
   """Busca un grupo por su nombre"""
-  getGroupByName(name: String!, limit: Float): GroupListResponse
+  getGroupByName(name: String!, limit: Float!, page: Float!): GroupListResponse
 
   """Obtener una revista"""
   getMagazineByMagazineId(id: String!): MagazineResponse

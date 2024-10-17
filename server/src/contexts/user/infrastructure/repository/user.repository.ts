@@ -93,6 +93,7 @@ export class UserRepository implements UserRepositoryInterface {
   async findAllUsers(
     user: string,
     limit: number,
+    page: number,
   ): Promise<UserFindAllResponse> {
     try {
       const users = await this.user
@@ -104,6 +105,7 @@ export class UserRepository implements UserRepositoryInterface {
           ],
         })
         .limit(limit + 1)
+        .skip((page - 1) * limit)
         .select(
           'profilePhotoUrl username contact countryRegion userType businessName lastName name',
         )

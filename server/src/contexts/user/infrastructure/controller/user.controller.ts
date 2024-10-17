@@ -116,6 +116,7 @@ export class UserController {
     description: 'Internal server error.',
   })
   @ApiBody({ type: PersonalUpdateRequest_SWAGGER })
+  @UseGuards(ClerkAuthGuard)
   async updatePersonalAccount(
     @Body() updateRequest: personalAccountUpdateRequest,
     @Param('username') username: string,
@@ -142,6 +143,7 @@ export class UserController {
     description: 'Internal server error.',
   })
   @ApiBody({ type: BusinessUpdateRequest_SWAGGER })
+  @UseGuards(ClerkAuthGuard)
   async updateBusinessAccount(
     @Body() updateRequest: businessAccountUpdateRequest,
     @Param('username') username: string,
@@ -173,6 +175,7 @@ export class UserController {
     status: 404,
     description: 'User not found.',
   })
+  @UseGuards(ClerkAuthGuard)
   async getPersonalInformation(
     @Param('username') username: string,
   ): Promise<any> {
@@ -197,6 +200,7 @@ export class UserController {
     status: 404,
     description: 'User not found.',
   })
+  @UseGuards(ClerkAuthGuard)
   async getUserPreferences(
     @Param('username') username: string,
   ): Promise<UserPreferenceResponse | null> {
@@ -219,6 +223,7 @@ export class UserController {
     description: 'Internal server error.',
   })
   @ApiBody({ type: UserPreferencesDto_SWAGGER })
+  @UseGuards(ClerkAuthGuard)
   async updateUserPreferences(
     @Body() userPreference: UserPreferencesRequest,
     @Param('username') username: string,
@@ -233,11 +238,6 @@ export class UserController {
     }
   }
 
-  @Get('/auth')
-  @UseGuards(ClerkAuthGuard)
-  async test_auth(): Promise<string> {
-    return 'auth ok';
-  }
 
   @Get()
   @ApiOperation({ summary: 'Get all users by username, lastName or Name' })
@@ -265,9 +265,10 @@ export class UserController {
   async getAllUsers(
     @Query('user') user: string,
     @Query('limit') limit: number,
+    @Query('page') page: number,
   ): Promise<any> {
     try {
-      const users = await this.userAdapter.findAllUsers(user, limit);
+      const users = await this.userAdapter.findAllUsers(user, limit, page);
       return users;
     } catch (error: any) {
       throw error;
