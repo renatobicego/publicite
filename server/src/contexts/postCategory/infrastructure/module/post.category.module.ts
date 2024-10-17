@@ -4,7 +4,7 @@ import { PostCategoryRepository } from '../repository/post.category.repository';
 import { PostCategorySchema } from '../schemas/post.cateogory.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PostCategoryService } from '../../application/service/post.category.service';
-import { PostCategoryAdapter } from '../resolver/post.category.adapter';
+import { PostCategoryAdapter } from '../resolver/adapter/post.category.adapter';
 import { PostCategoryResolver } from '../resolver/post.category.resolver';
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
 
