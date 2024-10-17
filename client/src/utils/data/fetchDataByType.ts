@@ -7,7 +7,7 @@ import {
 } from "@/services/postsServices";
 import { getUsers } from "@/services/userServices";
 
-export const fetchDataByType = (
+export const fetchDataByType = async(
   postType: "good" | "service" | "petition" | "boards" | "users" | "groups" | "groupPosts",
   searchTerm: string | null,
   page: number,
@@ -15,18 +15,18 @@ export const fetchDataByType = (
 ) => {
   switch (postType) {
     case "good":
-      return async () => await getGoods(searchTerm);
+      return await getGoods(searchTerm);
     case "service":
-      return async () => await getServices(searchTerm);
+      return await getServices(searchTerm);
     case "petition":
-      return async () => await getPetitions(searchTerm);
+      return await getPetitions(searchTerm);
     case "boards":
-      return async () => await getBoards(searchTerm);
+      return await getBoards(searchTerm);
     case "groups":
-      return async () => await getGroups(searchTerm, page);
+      return await getGroups(searchTerm, page);
     case "users":
-      return async () => await getUsers(searchTerm);
+      return await getUsers(searchTerm);
     case "groupPosts":
-      return async () => await getGroupPosts(searchTerm, groupId);
+      return await getGroupPosts(searchTerm, groupId);
   }
 };

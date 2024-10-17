@@ -59,8 +59,8 @@ export const getGroupMembersByIdQuery = gql`
 `;
 
 export const getGroupsQuery = gql`
-  query GetGroupByName($name: String!, $limit: Float) {
-    getGroupByName(name: $name, limit: $limit) {
+  query GetGroupByName($name: String!, $limit: Float!, $page: Float!) {
+    getGroupByName(name: $name, limit: $limit, page: $page) {
       groups {
         _id
         name

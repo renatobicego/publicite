@@ -17,7 +17,7 @@ export const getGroups = async (searchTerm: string | null, page: number) => {
   try {
     const { data } = await query({
       query: getGroupsQuery,
-      variables: { name: searchTerm ? searchTerm : "", limit: 20.0, page },
+      variables: { name: searchTerm ? searchTerm : "", limit: 3, page },
       context: {
         headers: {
           Cookie: cookies().toString(),
