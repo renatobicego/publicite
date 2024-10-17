@@ -11,6 +11,15 @@ export class members_graphQl {
 
   @Field(() => String, { nullable: true })
   profilePhotoUrl: string;
+
+  @Field(() => String, { nullable: true })
+  name: string;
+
+  @Field(() => String, { nullable: true })
+  lastName: string;
+
+  @Field(() => String, { nullable: true })
+  businessName: string;
 }
 @ObjectType()
 export class post_graphql_group {

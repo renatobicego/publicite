@@ -228,8 +228,11 @@ export class GroupRepository implements GroupRepositoryInterface {
       const group = await this.groupModel
         .findById(id)
         .populate([
-          { path: 'members', select: '_id username profilePhotoUrl' },
-          { path: 'admins', select: '_id username' },
+          {
+            path: 'members',
+            select: '_id username profilePhotoUrl name lastName',
+          },
+          { path: 'admins', select: '_id username name lastName' },
           {
             path: 'magazines',
             select: '_id name sections',
