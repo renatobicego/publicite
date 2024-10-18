@@ -9,8 +9,12 @@ import {
 import { Server, Socket } from 'socket.io';
 
 import { SocketNotificationServiceInterface } from '../../domain/service/socket.notification.service.interface';
-import { Inject } from '@nestjs/common';
-import { GroupInvitation } from '../../domain/entity/group.invitation.notification';
+import { BadRequestException, Inject } from '@nestjs/common';
+import {
+  allowedEvents,
+  EventTypes,
+  GroupInvitation,
+} from '../../domain/entity/group.invitation.notification';
 import { GroupNotificationEvents } from '../../domain/notification/group.notification.events';
 
 @WebSocketGateway({
@@ -56,6 +60,10 @@ export class NotificationGatewaySocket
     const { event } = groupInvitation;
     const client = this.clients[userToSendId]?.socket;
 
+    if (!allowedEvents.has(event as EventTypes)) {
+      throw new Error(`Invalid event type: ${event}`);
+    }
+
     return {
       groupInvitation,
       event,
@@ -76,21 +84,8 @@ export class NotificationGatewaySocket
     }
   }
 
-  //Enviar solicitud de grupo a un usuario especifico
-  @SubscribeMessage('notification_group_ivitation')
-  notification_group_ivitation(@MessageBody() data: GroupInvitation) {
-    try {
-      const { groupInvitation, event, client } =
-        this.getInformationFromNotificationGroup(data);
-
-      this.handleNotification(groupInvitation, event, client);
-    } catch (error: any) {
-      throw error;
-    }
-  }
-
-  @SubscribeMessage('notification_group_user_delete')
-  notification_group_user_delete(@MessageBody() data: GroupInvitation) {
+  @SubscribeMessage('group_notifications')
+  group_notifications(@MessageBody() data: GroupInvitation) {
     try {
       const { groupInvitation, event, client } =
         this.getInformationFromNotificationGroup(data);
