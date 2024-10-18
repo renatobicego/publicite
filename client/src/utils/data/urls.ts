@@ -21,6 +21,7 @@ const EDIT_PETITION = "/editar/necesidad";
 const EDIT_MAGAZINE = "/editar/revista";
 const EDIT_GROUP = "/editar/grupo";
 const FILE_URL = process.env.NEXT_PUBLIC_UPLOADTHING_URL
+const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL;
 export {
   MAGAZINES,
   GROUPS,
@@ -44,5 +45,6 @@ export {
   EDIT_PETITION,
   EDIT_MAGAZINE,
   EDIT_GROUP,
-  FILE_URL
+  FILE_URL,
+  socketUrl
 };

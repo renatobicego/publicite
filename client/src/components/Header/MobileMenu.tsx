@@ -9,7 +9,7 @@ import { SignedIn, SignedOut, UserButton, useUser } from "@clerk/nextjs";
 import { Link, NavbarMenu, NavbarMenuItem } from "@nextui-org/react";
 import { Variants } from "framer-motion";
 import React, { Dispatch, SetStateAction } from "react";
-import Notifications from "./Notifications";
+import Notifications from "./Notifications/Notifications";
 import SecondaryButton from "../buttons/SecondaryButton";
 import DropdownItems from "./DropdownItems";
 import NextLink from "next/link"; 

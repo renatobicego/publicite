@@ -31,7 +31,6 @@ const InviteCollabMagazine = ({ magazine }: { magazine: Magazine }) => {
       setSelectedUsers([]);
     }
   }, [isOpen])
-  console.log(selectedUsers)
   return (
     <>
       <SecondaryButton onPress={onOpen} variant="flat" className="order-last">
