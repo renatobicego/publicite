@@ -2,7 +2,7 @@ import { Link, NavbarItem, NavbarMenuToggle } from "@nextui-org/react";
 import React from "react";
 import SecondaryButton from "../buttons/SecondaryButton";
 import { SignedIn, SignedOut, UserButton, useUser } from "@clerk/nextjs";
-import Notifications from "./Notifications";
+import Notifications from "./Notifications/Notifications";
 
 import { CONFIGURATION, PROFILE } from "@/utils/data/urls";
 import DropdownItems from "./DropdownItems";
