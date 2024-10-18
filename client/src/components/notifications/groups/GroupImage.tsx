@@ -1,6 +1,6 @@
 import { Image } from "@nextui-org/react";
 import { NotificationImage } from "../NotificationCard";
-import { Group } from "@/types/userTypes";
+import { Group } from "@/types/groupTypes";;
 import { FILE_URL } from "@/utils/data/urls";
 
 const GroupImage = ({

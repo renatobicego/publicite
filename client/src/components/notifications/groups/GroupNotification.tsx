@@ -7,11 +7,9 @@ import {
   NotificationBody,
   NotificationOptions,
 } from "../NotificationCard";
-import {
-  GroupInvitationNotification,
-  GroupNotificationType,
-} from "@/types/userTypes";
+
 import GroupImage from "./GroupImage";
+import { GroupInvitationNotification, GroupNotificationType } from "@/types/groupTypes";
 
 const noticationMessages: Record<
   GroupNotificationType,

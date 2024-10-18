@@ -1,4 +1,5 @@
-import { Good, Magazine, Petition, Service } from "@/types/postTypes";
+import { Magazine } from "@/types/magazineTypes";
+import { Good, Petition, Service } from "@/types/postTypes";
 import { Button, Tooltip } from "@nextui-org/react";
 import { FaShareAlt } from "react-icons/fa";
 

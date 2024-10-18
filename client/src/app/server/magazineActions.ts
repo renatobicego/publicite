@@ -28,7 +28,7 @@ export const editMagazine = async (formData: any) => {
   }
 
   try {
-    const resApi: any = await putMagazine(formData);
+    const resApi: any = await putMagazine(formData, user.publicMetadata.mongoId);
     return { message: "Revista editada exitosamente", id: resApi.updateMagazineById };
   } catch (err) {
     console.log(err)

@@ -53,8 +53,40 @@ export const getMagazineByIdQuery = gql`
   }
 `;
 
+export const getMagazineWithoutPostsByIdQuery = gql`
+  query GetMagazineByMagazineId($getMagazineByMagazineIdId: String!) {
+    getMagazineByMagazineId(id: $getMagazineByMagazineIdId) {
+      _id
+      allowedCollaborators {
+        _id
+        profilePhotoUrl
+        username
+      }
+      collaborators {
+        username
+        profilePhotoUrl
+        _id
+      }
+      description
+      group {
+        profilePhotoUrl
+        name
+        _id
+      }
+      name
+      ownerType
+      user {
+        username
+        profilePhotoUrl
+        _id
+      }
+      visibility
+    }
+  }
+`
+
 export const editMagazineMutation = gql`
-  mutation UpdateMagazineById($magazineUpdateRequest: MagazineUpdateRequest!) {
-    updateMagazineById(magazineUpdateRequest: $magazineUpdateRequest)
+  mutation UpdateMagazineById($magazineUpdateRequest: MagazineUpdateRequest!, $owner: String!) {
+    updateMagazineById(magazineUpdateRequest: $magazineUpdateRequest, owner: $owner)
   }
 `;

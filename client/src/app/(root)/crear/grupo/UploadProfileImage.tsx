@@ -3,7 +3,7 @@ import { Dispatch, memo, SetStateAction, useCallback } from "react";
 import Dropzone from "./Dropzone";
 import { Button, Image } from "@nextui-org/react";
 import { IoClose } from "react-icons/io5";
-import { Group } from "@/types/userTypes";
+import { Group } from "@/types/groupTypes";;
 import { FormikErrors } from "formik";
 import { FILE_URL } from "@/utils/data/urls";
 

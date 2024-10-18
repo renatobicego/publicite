@@ -1,4 +1,4 @@
-import { Magazine } from "@/types/postTypes";
+import { Magazine } from "@/types/magazineTypes";
 import { Spinner } from "@nextui-org/react";
 import MagazineCard from "../cards/MagazineCard";
 

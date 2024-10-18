@@ -1,7 +1,8 @@
 import BreadcrumbsAdmin from "@/components/BreadcrumbsAdmin";
 import ErrorCard from "@/components/ErrorCard";
 import { getGroupById } from "@/services/groupsService";
-import { Group, User } from "@/types/userTypes";
+import { User } from "@/types/userTypes";
+import { Group } from "@/types/groupTypes";
 import { EDIT_GROUP, EDIT_POST, GROUPS, POSTS } from "@/utils/data/urls";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";

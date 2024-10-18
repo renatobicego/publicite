@@ -1,11 +1,11 @@
 import SendRequest from "@/components/buttons/SendRequest";
-import { Group } from "@/types/userTypes";
 import { Image, Link } from "@nextui-org/react";
 import { FaUser } from "react-icons/fa6";
 import OptionsDropdown from "./OptionsDropdown";
 import RulesPopover from "./RulesPopover";
 import SecondaryButton from "@/components/buttons/SecondaryButton";
 import { EDIT_GROUP, FILE_URL } from "@/utils/data/urls";
+import { Group } from "@/types/groupTypes";
 
 const GroupInfo = async ({
   group,

@@ -1,6 +1,9 @@
 import BreadcrumbsAdmin from "@/components/BreadcrumbsAdmin";
 import ErrorCard from "@/components/ErrorCard";
-import { getMagazineById } from "@/services/magazineService";
+import {
+  getMagazineById,
+  getMagazineWithoutPostsById,
+} from "@/services/magazineService";
 import { EDIT_MAGAZINE, GROUPS, MAGAZINES, PROFILE } from "@/utils/data/urls";
 import { currentUser } from "@clerk/nextjs/server";
 import { GetUser } from "@/types/userTypes";
@@ -8,24 +11,20 @@ import {
   getOwner,
   getProfileUrl,
 } from "@/app/(root)/(explorar)/revistas/[id]/utils";
-import { Magazine } from "@/types/magazineTypes";
+import { GroupMagazine, Magazine, UserMagazine } from "@/types/magazineTypes";
 import { Group } from "@/types/groupTypes";
 import EditMagazineForm from "./EditMagazineForm";
+import { redirect } from "next/navigation";
 export default async function EditMagazinePage({
   params,
 }: {
   params: { id: string };
 }) {
-  const magazineData: Magazine | { error: string } = await getMagazineById(
-    params.id
+  const magazineData: Magazine | { error: string } =
+    await getMagazineWithoutPostsById(params.id);
+  const userLoggedId = await currentUser().then(
+    (user) => user?.publicMetadata.mongoId
   );
-  const userLogged = await currentUser();
-  //   if (
-  //     !("error" in magazineData) &&
-  //     userLogged?.username !== magazineData.author.username
-  //   ) {
-  //     redirect(`${POSTS}/${params.id}`);
-  //   }
   if ("error" in magazineData) {
     return <ErrorCard message={magazineData.error} />;
   }
@@ -34,6 +33,24 @@ export default async function EditMagazinePage({
   const urlProfile = getProfileUrl(owner, isOwnerTypeUser);
   const ownerAsUser = owner as GetUser;
   const ownerAsGroup = owner as Group;
+
+  //Check if the user is allowed to edit the magazine
+  if (
+    isOwnerTypeUser &&
+    (magazineData as UserMagazine).user._id !== userLoggedId &&
+    !(magazineData as UserMagazine).collaborators.some(
+      (collaborator: any) => collaborator._id === userLoggedId
+    )
+  ) {
+    redirect(`${MAGAZINES}/${magazineData._id}`);
+  } else if (
+    !isOwnerTypeUser && 
+    !(magazineData as GroupMagazine).allowedCollaborators.some(
+      (collaborator: any) => collaborator._id === userLoggedId
+    )
+  ) {
+    redirect(`${MAGAZINES}/${magazineData._id}`);
+  }
   const breadcrumbsItems = [
     {
       label: "Inicio",

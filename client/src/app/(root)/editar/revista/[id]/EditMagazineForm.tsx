@@ -8,6 +8,7 @@ import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { Form, Formik, FormikHelpers } from "formik";
 import { useRouter } from "next-nprogress-bar";
 import EditMagazineInputs from "./EditMagazineInputs";
+import { editMagazine } from "@/app/server/magazineActions";
 
 const EditMagazineForm = ({
   isGroupMagazine,
@@ -17,6 +18,7 @@ const EditMagazineForm = ({
   magazineData: Magazine;
 }) => {
   const initialValues: EditMagazine = {
+    _id: magazineData._id,
     name: magazineData.name,
     description: magazineData.description,
     ownerType: isGroupMagazine ? "group" : "user",
@@ -30,14 +32,14 @@ const EditMagazineForm = ({
     values: EditMagazine,
     actions: FormikHelpers<EditMagazine>
   ) => {
-    // const resApi = await createMagazine(finalValues);
-    // if (resApi.error) {
-    //   toastifyError(resApi.error);
-    //   actions.setSubmitting(false);
-    //   return;
-    // }
-    // toastifySuccess(resApi.message as string);
-    // router.push(`${MAGAZINES}/${resApi.id}`);
+    const resApi = await editMagazine(values);
+    if (resApi.error) {
+      toastifyError(resApi.error);
+      actions.setSubmitting(false);
+      return;
+    }
+    toastifySuccess(resApi.message as string);
+    router.push(`${MAGAZINES}/${resApi.id}`);
   };
   return (
     <Formik

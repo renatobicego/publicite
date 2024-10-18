@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 const useSearchUsers = () => {
   const [users, setUsers] = useState([]);
   const getUsersByQuery = (query: string | null) => {
-    getUsers(query).then((users) => setUsers(users.items));
+    getUsers(query, 1).then((users) => setUsers(users.items));
   };
 
   useEffect(() => {

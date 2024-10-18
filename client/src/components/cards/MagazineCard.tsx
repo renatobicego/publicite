@@ -1,4 +1,5 @@
-import { Good, Magazine, Post } from "@/types/postTypes";
+import { Magazine } from "@/types/magazineTypes";
+import { Good, Post } from "@/types/postTypes";
 import { FILE_URL, MAGAZINES, PROFILE } from "@/utils/data/urls";
 import { Card, CardBody, CardFooter, Image, Link } from "@nextui-org/react";
 

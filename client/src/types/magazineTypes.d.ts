@@ -33,4 +33,4 @@ export interface MagazineInvitationNotification {
 
 export type PostUserMagazine = Omit<UserMagazine, "_id">;
 export type PostGroupMagazine = Omit<GroupMagazine, "_id">;
-export type EditMagazine = Omit<Magazine, "sections" | "_id"> & {visibility?: Visibility}
+export type EditMagazine = Omit<Magazine, "sections"> & {visibility?: Visibility}

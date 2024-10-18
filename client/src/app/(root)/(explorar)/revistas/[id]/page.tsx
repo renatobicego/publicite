@@ -5,11 +5,13 @@ import { getMagazineById } from "@/services/magazineService";
 import { GROUPS, MAGAZINES, PROFILE } from "@/utils/data/urls";
 import AccordionSections from "./AccordionSections";
 import { currentUser } from "@clerk/nextjs/server";
-import { Magazine, Post } from "@/types/postTypes";
-import { GetUser, Group } from "@/types/userTypes";
+import { Post } from "@/types/postTypes";
+import { Group } from "@/types/groupTypes";
+import { GetUser } from "@/types/userTypes";
 import { getOwner, checkIsOwner, getProfileUrl } from "./utils";
 import MagazineHeader from "./MagazineHeader";
 import MagazineActions from "./MagazineActions";
+import { Magazine } from "@/types/magazineTypes";
 
 export default async function MagazinePage({
   params,
