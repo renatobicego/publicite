@@ -13,7 +13,7 @@ const BoardGrid = ({ items, isLoading }: { items: Board[]; isLoading: boolean })
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 3xl:grid-cols-4 gap-4">
         {columns.map((column, colIndex) => (
-          <div key={colIndex} className="grid gap-4">
+          <div key={colIndex} className="grid gap-4 items-start">
             {column.map((board: Board, index) => (
               <BoardCard
                 isMyBoard={user?.username === (board.user as User).username}

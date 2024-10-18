@@ -1,4 +1,4 @@
-import { createMagazineMutation, getMagazineByIdQuery } from "@/graphql/magazineQueries";
+import { createMagazineMutation, editMagazineMutation, getMagazineByIdQuery } from "@/graphql/magazineQueries";
 import { getClient, query } from "@/lib/client";
 
 export const getMagazineById = async (id: string) => {
@@ -20,6 +20,14 @@ export const postMagazine = async (formData: any) => {
   const { data } =  await getClient().mutate({
     mutation: createMagazineMutation,
     variables: { magazineCreateRequest: formData },
+  })
+  return data
+}
+
+export const putMagazine = async (formData: any) => { 
+  const { data } =  await getClient().mutate({
+    mutation: editMagazineMutation,
+    variables: { magazineUpdateRequest: formData },
   })
   return data
 }

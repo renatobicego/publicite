@@ -147,32 +147,7 @@ export interface AttachedFileValues {
   _id: string;
 }
 
-export interface Magazine {
-  _id: ObjectId;
-  name: string;
-  sections: MagazineSection[];
-  ownerType: "user" | "group";
-  description: string;
-}
 
-export interface UserMagazine extends Magazine {
-  collaborators: ObjectId[] | GetUser[];
-  user: ObjectId | GetUser;
-  visibility: Visibility;
-}
-
-export interface GroupMagazine extends Magazine {
-  allowedCollaborators: ObjectId[] | GetUser[];
-  visibility: Visibility;
-  group: ObjectId | Group;
-}
-
-export interface MagazineSection {
-  _id: ObjectId;
-  title: string;
-  isFatherSection: boolean;
-  posts: ObjectId[] | Post[];
-}
 
 export interface PetitionContact {
   userContacting?: ObjectId;
@@ -198,12 +173,7 @@ export interface PostSharedNotification {
   userSharing: Pick<User, "_id" | "username">;
 }
 
-export interface MagazineInvitationNotification {
-  _id: ObjectId;
-  magazine: Pick<Magazine, "_id" | "name">;
-  userInviting: Pick<User, "username">;
-  date: string;
-}
+
 
 export interface ReviewPostNotification {
   _id: ObjectId;

@@ -4,8 +4,6 @@ import ErrorCard from "@/components/ErrorCard";
 import {
   createMagazineValues,
   groupMagazine,
-  PostGroupMagazine,
-  PostUserMagazine,
   userMagazine,
 } from "./initialValues";
 import { useRouter } from "next-nprogress-bar";
@@ -18,6 +16,7 @@ import { createMagazine } from "../../../../server/magazineActions";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { MAGAZINES } from "@/utils/data/urls";
 import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
+import { PostUserMagazine, PostGroupMagazine } from "@/types/magazineTypes";
 
 const CreateMagazineForm = ({
   isGroupMagazine,

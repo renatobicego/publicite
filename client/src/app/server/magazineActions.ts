@@ -1,5 +1,5 @@
 "use server";
-import { postMagazine } from "@/services/magazineService";
+import { postMagazine, putMagazine } from "@/services/magazineService";
 import { currentUser } from "@clerk/nextjs/server";
 
 export const createMagazine = async (formData: any) => {
@@ -16,6 +16,24 @@ export const createMagazine = async (formData: any) => {
     console.log(err)
     return {
       error: "Error al crear la revista. Por favor intenta de nuevo.",
+    };
+  }
+};
+
+export const editMagazine = async (formData: any) => {
+  const user = await currentUser();
+
+  if (!user?.username) {
+    return { error: "Usuario no autenticado. Por favor inicie sesión." };
+  }
+
+  try {
+    const resApi: any = await putMagazine(formData);
+    return { message: "Revista editada exitosamente", id: resApi.updateMagazineById };
+  } catch (err) {
+    console.log(err)
+    return {
+      error: "Error al editar la revista. Por favor intenta de nuevo.",
     };
   }
 };

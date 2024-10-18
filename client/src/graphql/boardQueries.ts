@@ -41,12 +41,16 @@ const getBoardsQuery = gql`
   ) {
     getBoardByAnnotationOrKeyword(board: $board, limit: $limit, page: $page) {
       boards {
+        _id
+        annotations
+        user {
+          profilePhotoUrl
+          name
+          _id
+        }
         visibility
-        user
         keywords
         color
-        annotations
-        _id
       }
       hasMore
     }

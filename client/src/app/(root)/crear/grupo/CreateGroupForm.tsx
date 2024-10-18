@@ -1,6 +1,5 @@
 "use client";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
-import { Group } from "@/types/userTypes";
 import { useUser } from "@clerk/nextjs";
 import { Form, Formik, FormikHelpers } from "formik";
 import Inputs from "./Inputs";
@@ -13,6 +12,7 @@ import { GROUPS } from "@/utils/data/urls";
 import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
 import { useRouter } from "next-nprogress-bar";
 import { groupValidation } from "./validation";
+import { Group } from "@/types/groupTypes";
 
 export type PostGroup = Omit<Group, "_id">;
 const CreateGroupForm = () => {
@@ -71,18 +71,23 @@ const CreateGroupForm = () => {
               <h2>Crear Grupo</h2>
               <Inputs setFieldValue={setFieldValue} errors={errors} />
               <RequiredFieldsMsg />
-              <PrimaryButton
-                isDisabled={isSubmitting}
-                isLoading={isSubmitting}
-                type="submit"
-                className="self-start"
-              >
-                {isSubmitting
-                  ? photoFile
-                    ? `Creando ${progress}%`
-                    : "Creando"
-                  : "Crear Grupo"}
-              </PrimaryButton>
+              <div className="mt-4 flex gap-2 items-center">
+                <PrimaryButton onPress={() => router.back()}>
+                  Cancelar
+                </PrimaryButton>
+                <PrimaryButton
+                  isDisabled={isSubmitting}
+                  isLoading={isSubmitting}
+                  type="submit"
+                  className="self-start"
+                >
+                  {isSubmitting
+                    ? photoFile
+                      ? `Creando ${progress}%`
+                      : "Creando"
+                    : "Crear Grupo"}
+                </PrimaryButton>
+              </div>
               {Object.keys(errors).length > 0 && (
                 <p className="text-danger text-sm">
                   Por favor corrija los errores

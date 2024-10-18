@@ -52,3 +52,9 @@ export const getMagazineByIdQuery = gql`
     }
   }
 `;
+
+export const editMagazineMutation = gql`
+  mutation UpdateMagazineById($magazineUpdateRequest: MagazineUpdateRequest!) {
+    updateMagazineById(magazineUpdateRequest: $magazineUpdateRequest)
+  }
+`;

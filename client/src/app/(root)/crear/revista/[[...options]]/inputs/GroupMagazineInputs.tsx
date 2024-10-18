@@ -1,5 +1,4 @@
 import { Divider, SharedSelection } from "@nextui-org/react";
-import { PostGroupMagazine, PostUserMagazine } from "../initialValues";
 import SecondaryButton from "@/components/buttons/SecondaryButton";
 import { SelectUsers } from "@/components/inputs/SelectUsers";
 import { mockedUsers } from "@/utils/data/mockedData";
@@ -8,6 +7,7 @@ import { User } from "@/types/userTypes";
 import { useEffect, useState } from "react";
 import { getGroupMembersById } from "@/services/groupsService";
 import { toastifyError } from "@/utils/functions/toastify";
+import { PostGroupMagazine } from "@/types/magazineTypes";
 
 const GroupMagazineInputs = ({
   setValues,

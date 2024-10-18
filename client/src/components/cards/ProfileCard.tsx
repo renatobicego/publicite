@@ -41,8 +41,8 @@ const ProfileCard = ({
           </Link>
           {!groupGrid ? (
             <>
-              <div className="flex items-center gap-1">
-                <TbWorldPin className="size-4 min-w-4" />
+              <div className="flex items-start gap-1">
+                <TbWorldPin className="size-4 min-w-4 mt-0.5" />
                 <p className="text-xs md:text-sm">{user.countryRegion}</p>
               </div>
               <SendRequest />
