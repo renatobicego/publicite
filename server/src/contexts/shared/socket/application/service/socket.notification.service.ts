@@ -1,19 +1,19 @@
+import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
 import { SocketNotificationServiceInterface } from '../../domain/service/socket.notification.service.interface';
-import { Notification } from '../../domain/entity/notification.entity';
+import { Inject } from '@nestjs/common';
+import { UserServiceInterface } from 'src/contexts/user/domain/service/user.service.interface';
 export class SocketNotificationService
   implements SocketNotificationServiceInterface
 {
-  async sendNotificationToUser(d: any): Promise<any> {
-    const { data } = d;
+  constructor(
+    private readonly logger: MyLoggerService,
+    @Inject('UserServiceInterface')
+    private readonly userService: UserServiceInterface,
+  ) {}
+  async sendNotificationToUser(notification: any): Promise<any> {
+    const { userToSendId } = notification.backData;
     try {
-      const notificationToSend = new Notification(
-        data.toId,
-        data.message,
-        data.ids,
-      );
-      console.log(notificationToSend);
-
-      return notificationToSend; //Deberiamos llamar al servicio para pushear la notificacion
+      await this.userService.pushNotification(notification);
     } catch (error: any) {
       throw error;
     }

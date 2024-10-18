@@ -10,6 +10,7 @@ import { Server, Socket } from 'socket.io';
 
 import { SocketNotificationServiceInterface } from '../../domain/service/socket.notification.service.interface';
 import { Inject } from '@nestjs/common';
+import { GroupInvitation } from '../../domain/entity/group.invitation.notification';
 
 @WebSocketGateway({
   cors: {
@@ -45,24 +46,17 @@ export class NotificationGatewaySocket
   }
 
   //Enviar solicitud de grupo a un usuario especifico
-  @SubscribeMessage('member_group_request')
-  notification_member_group_request(
-    @MessageBody()
-    data: {
-      toId: string;
-      message: any;
-      ids: Map<string, string>;
-    },
-  ) {
-    const toJsonData = JSON.parse(data as any);
-    const client = this.clients[toJsonData.data.toId]?.socket;
+  @SubscribeMessage('notification_group_ivitation')
+  notification_member_group_request(@MessageBody() data: GroupInvitation) {
+    const { groupInvitation } = data;
+    const { userToSendId } = groupInvitation.backData;
+    const client = this.clients[userToSendId]?.socket;
 
     if (client) {
-      const messageHtml = `Nueva notif`;
-      client.emit('member_group_request', messageHtml);
-      this.notificatorService.sendNotificationToUser(toJsonData);
+      client.emit(groupInvitation.event, groupInvitation);
+      this.notificatorService.sendNotificationToUser(groupInvitation);
     } else {
-      this.notificatorService.sendNotificationToUser(toJsonData);
+      this.notificatorService.sendNotificationToUser(groupInvitation);
     }
   }
 }
