@@ -55,6 +55,7 @@ export class NotificationGatewaySocket
     event: string;
     client: Socket;
   } {
+    
     const { groupInvitation } = data;
     const { userToSendId } = groupInvitation.backData;
     const { event } = groupInvitation;
