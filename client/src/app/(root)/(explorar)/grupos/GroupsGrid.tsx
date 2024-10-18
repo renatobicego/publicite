@@ -1,6 +1,7 @@
 import GroupCard from "@/components/cards/GroupCard";
 import ProfileCard from "@/components/cards/ProfileCard";
-import { Group, User } from "@/types/userTypes";
+import { User } from "@/types/userTypes";
+import { Group } from "@/types/groupTypes";
 import { Spinner } from "@nextui-org/react";
 
 const GroupsGrid = ({

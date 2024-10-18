@@ -1,14 +1,12 @@
 import BreadcrumbsAdmin from "@/components/BreadcrumbsAdmin";
-import { GROUPS, PROFILE } from "@/utils/data/urls";
-import { getUserByUsername } from "@/services/userServices";
+import { GROUPS } from "@/utils/data/urls";
 import ErrorCard from "@/components/ErrorCard";
-import BoardCard from "@/components/Board/Board";
 import { currentUser } from "@clerk/nextjs/server";
-import UserSolapas from "@/components/solapas/UserSolapas";
 import GroupInfo from "./(components)/GroupInfo";
 import { getGroupById } from "@/services/groupsService";
 import GroupSolapas from "@/components/solapas/GroupSolapas";
-import { Group, User } from "@/types/userTypes";
+import { User } from "@/types/userTypes";
+import { Group } from "@/types/groupTypes";
 import { FaLock } from "react-icons/fa6";
 
 export default async function GroupLayout({

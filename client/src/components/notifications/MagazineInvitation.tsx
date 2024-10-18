@@ -3,8 +3,8 @@ import { showDate } from "@/utils/functions/dates";
 import { parseDate } from "@internationalized/date";
 import Link from "next/link";
 import { NotificationCard, NotificationImage, NotificationBody, NotificationOptions } from "./NotificationCard";
-import { MagazineInvitationNotification } from "@/types/postTypes";
 import { IoBook } from "react-icons/io5";
+import { MagazineInvitationNotification } from "@/types/magazineTypes";
 
 const MagazineInvitation = ({
   notification,

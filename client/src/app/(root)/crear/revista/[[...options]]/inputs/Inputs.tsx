@@ -1,9 +1,9 @@
 import { Field, FormikErrors } from "formik";
 import { memo } from "react";
 import { CustomInput, CustomTextarea } from "@/components/inputs/CustomInputs";
-import { PostGroupMagazine, PostUserMagazine } from "../initialValues";
 import UserMagazineInputs from "./UserMagazineInputs";
 import GroupMagazineInputs from "./GroupMagazineInputs";
+import { PostGroupMagazine, PostUserMagazine } from "@/types/magazineTypes";
 
 const Inputs = ({
   errors,

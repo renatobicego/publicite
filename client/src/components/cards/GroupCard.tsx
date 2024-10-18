@@ -1,4 +1,4 @@
-import { Group } from "@/types/userTypes";
+import { Group } from "@/types/groupTypes";;
 import { Avatar, Card, CardBody, Link } from "@nextui-org/react";
 import SendRequest from "../buttons/SendRequest";
 import { FILE_URL, GROUPS } from "@/utils/data/urls";

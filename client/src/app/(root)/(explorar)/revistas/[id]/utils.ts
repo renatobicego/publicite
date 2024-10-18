@@ -1,5 +1,6 @@
-import { GroupMagazine, Magazine, UserMagazine } from "@/types/postTypes";
-import { GetUser, Group } from "@/types/userTypes";
+import { Group } from "@/types/groupTypes";
+import { GroupMagazine, Magazine, UserMagazine } from "@/types/magazineTypes";
+import { GetUser } from "@/types/userTypes";
 import { PROFILE } from "@/utils/data/urls";
 
 function getOwner(magazine: Magazine): GetUser | Group  {

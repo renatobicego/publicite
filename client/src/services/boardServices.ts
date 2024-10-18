@@ -11,7 +11,7 @@ export const getBoards = async (searchTerm: string | null, page: number) => {
   try {
     const { data } = await query({
       query: getBoardsQuery,
-      variables: { board: searchTerm ? searchTerm : "", page, limit: 3 },
+      variables: { board: searchTerm ? searchTerm : "", page, limit: 20 },
     });
     return {
       items: data.getBoardByAnnotationOrKeyword.boards,

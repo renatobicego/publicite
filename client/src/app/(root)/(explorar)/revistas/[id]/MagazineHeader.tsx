@@ -1,5 +1,6 @@
-import { Magazine, UserMagazine } from "@/types/postTypes";
-import { GetUser, Group } from "@/types/userTypes";
+import { Magazine, UserMagazine } from "@/types/magazineTypes";
+import { Group } from "@/types/groupTypes";
+import { GetUser } from "@/types/userTypes";
 import { PROFILE } from "@/utils/data/urls";
 import { Avatar, AvatarGroup, Link } from "@nextui-org/react";
 interface MagazineProps {

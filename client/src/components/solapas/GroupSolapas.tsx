@@ -1,13 +1,14 @@
 "use client";
 
 import { MAGAZINES, GROUPS, CREATE_MAGAZINE } from "@/utils/data/urls";
-import { Group, User } from "@/types/userTypes";
+import { User } from "@/types/userTypes";
+import { Group } from "@/types/groupTypes";
 import { Link, Tab, Tabs } from "@nextui-org/react";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 import MagazinesGrid from "../grids/MagazinesGrid";
 import PostListLogic from "@/app/(root)/(explorar)/anuncios/components/PostListLogic";
-import { Magazine } from "@/types/postTypes";
+import { Magazine } from "@/types/magazineTypes";
 import UsersGrid from "@/app/(root)/(explorar)/perfiles/UsersGrid";
 import InviteUsersGroup from "../modals/InviteUsersGroup";
 import PrimaryButton from "../buttons/PrimaryButton";

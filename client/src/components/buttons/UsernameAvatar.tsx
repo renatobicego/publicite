@@ -22,7 +22,7 @@ const UsernameAvatar = ({
           color="primary"
           isBordered
           className="max-md:w-8 max-md:h-8"
-          src={author.profilePhotoUrl ? FILE_URL + author.profilePhotoUrl : ""}
+          src={author.profilePhotoUrl ? author.profilePhotoUrl : ""}
         />
       )}
       <p className={`${textColor} font-medium text-sm xl:text-base`}>

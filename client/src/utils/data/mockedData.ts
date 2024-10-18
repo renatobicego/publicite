@@ -4,11 +4,11 @@ import {
   Petition,
   PostCategory,
   Service,
-  UserMagazine,
 } from "@/types/postTypes";
 import { SubscriptionPlan } from "@/types/subscriptions";
 import { boardColors } from "./selectData";
 import { GetUser } from "@/types/userTypes";
+import { UserMagazine } from "@/types/magazineTypes";
 
 export const categories: PostCategory[] = [
   {

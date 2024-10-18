@@ -3,8 +3,8 @@ import { SearchUsers } from "@/components/inputs/SelectUsers";
 import { visibilityItems } from "@/utils/data/selectData";
 import { Divider } from "@nextui-org/react";
 import { Field, FormikErrors } from "formik";
-import { PostGroupMagazine, PostUserMagazine } from "../initialValues";
 import useSearchUsers from "@/utils/hooks/useSearchUsers";
+import { PostGroupMagazine, PostUserMagazine } from "@/types/magazineTypes";
 
 const UserMagazineInputs = ({
   errors,

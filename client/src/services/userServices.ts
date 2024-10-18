@@ -80,7 +80,7 @@ export const getUsers = async (searchTerm: string | null, page: number) => {
     const res = await fetch(
       `${process.env.API_URL}/user?user=${
         searchTerm ? searchTerm : ""
-      }&limit=2&page=${page}`,
+      }&limit=20&page=${page}`,
       {
         headers: {
           Cookie: cookies().toString(),

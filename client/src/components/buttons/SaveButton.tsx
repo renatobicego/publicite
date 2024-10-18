@@ -1,5 +1,5 @@
 "use client";
-import { Good, Magazine, Petition, Service } from "@/types/postTypes";
+import { Good, Petition, Service } from "@/types/postTypes";
 import {
   Accordion,
   AccordionItem,
@@ -14,6 +14,7 @@ import { FaBookmark, FaChevronLeft, FaRegBookmark } from "react-icons/fa6";
 import PrimaryButton from "./PrimaryButton";
 import { CREATE_MAGAZINE } from "@/utils/data/urls";
 import { mockedMagazines } from "@/utils/data/mockedData";
+import { Magazine } from "@/types/magazineTypes";
 
 interface SaveButtonProps extends ButtonProps {
   saved: boolean;

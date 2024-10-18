@@ -7,7 +7,8 @@ import {
 import { editGroup } from "@/app/server/groupActions";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
-import { EditGroupInterface, Group, User } from "@/types/userTypes";
+import { EditGroupInterface, Group } from "@/types/groupTypes";
+import { User } from "@/types/userTypes";
 import { GROUPS } from "@/utils/data/urls";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import useUploadImage from "@/utils/hooks/useUploadImage";

@@ -9,7 +9,7 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import SecondaryButton from "../buttons/SecondaryButton";
-import { Magazine } from "@/types/postTypes";
+import { Magazine } from "@/types/magazineTypes";
 import { SearchUsers } from "../inputs/SelectUsers";
 import useSearchUsers from "@/utils/hooks/useSearchUsers";
 import { useEffect, useState } from "react";

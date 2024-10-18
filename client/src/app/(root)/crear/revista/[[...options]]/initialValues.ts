@@ -1,7 +1,10 @@
-import { GroupMagazine, UserMagazine } from "@/types/postTypes";
+import {
+  GroupMagazine,
+  PostGroupMagazine,
+  PostUserMagazine,
+  UserMagazine,
+} from "@/types/magazineTypes";
 
-export type PostUserMagazine = Omit<UserMagazine, "_id">;
-export type PostGroupMagazine = Omit<GroupMagazine, "_id">;
 export const userMagazine: Omit<UserMagazine, "_id"> = {
   collaborators: [],
   description: "",
@@ -21,7 +24,6 @@ export const groupMagazine: Omit<GroupMagazine, "_id"> = {
   visibility: "public",
   ownerType: "group",
 };
-
 export const createMagazineValues = (
   values: PostUserMagazine | PostGroupMagazine,
   isGroupMagazine: boolean,

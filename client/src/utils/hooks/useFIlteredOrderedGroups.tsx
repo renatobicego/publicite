@@ -1,4 +1,4 @@
-import { Group } from "@/types/userTypes";
+import { Group } from "@/types/groupTypes";;
 import { useState, useMemo } from "react";
 
 export const useFilteredAndSortedGroups = (items: any[]) => {

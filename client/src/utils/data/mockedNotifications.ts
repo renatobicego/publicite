@@ -1,15 +1,15 @@
 import {
-  MagazineInvitationNotification,
   PostContactNotification,
   PostSharedNotification,
   ReviewPostNotification,
 } from "@/types/postTypes";
 import { mockedPosts, mockedUsers } from "./mockedData";
 import {
-  GroupInvitationNotification,
   NewContactRelationNotification,
 } from "@/types/userTypes";
 import { PaymentSuccesNotification } from "@/types/subscriptions";
+import { GroupInvitationNotification } from "@/types/groupTypes";
+import { MagazineInvitationNotification } from "@/types/magazineTypes";
 
 export const mockedNewContactPost: PostContactNotification = {
   _id: "1",

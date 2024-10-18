@@ -1,6 +1,7 @@
 "use client";
 import PostsGrid from "@/components/grids/PostGrid";
-import { MagazineSection, Post } from "@/types/postTypes";
+import { MagazineSection } from "@/types/magazineTypes";
+import { Post } from "@/types/postTypes";
 import { Accordion, AccordionItem } from "@nextui-org/react";
 
 const AccordionSections = ({ sections }: { sections: MagazineSection[] }) => {
