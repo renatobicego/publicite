@@ -8,7 +8,8 @@ const GroupCard = ({ group }: { group: Group }) => {
     <Card className="bg-fondo">
       <CardBody className="sm:flex-row gap-2 md:gap-6 sm:items-center">
         <Avatar
-          className="shrink-0 bg-white border"
+          className="shrink-0 bg-white"
+          isBordered
           src={group.profilePhotoUrl ? FILE_URL + group.profilePhotoUrl : "/groupLogo.png" }
           classNames={{
             base: "!w-14 md:!w-16 2xl:!w-20 !h-14 md:!h-16 2xl:!h-20",

@@ -13,11 +13,11 @@ import {
 import { cookies } from "next/headers";
 import { auth } from "@clerk/nextjs/server";
 
-export const getGroups = async (searchTerm: string | null) => {
+export const getGroups = async (searchTerm: string | null, page: number) => {
   try {
     const { data } = await query({
       query: getGroupsQuery,
-      variables: { name: searchTerm ? searchTerm : "", limit: 20.0 },
+      variables: { name: searchTerm ? searchTerm : "", limit: 3, page },
       context: {
         headers: {
           Cookie: cookies().toString(),

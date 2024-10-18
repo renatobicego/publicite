@@ -45,7 +45,7 @@ const PostListHeader = ({
     },
   ];
   return (
-    <div className="flex gap-2 items-center max-md:flex-wrap justify-end">
+    <div className="flex gap-2 items-center max-md:flex-wrap justify-end w-full">
       <SearchPosts
         searchTerms={searchTerms}
         setSearchTerms={setSearchTerms}

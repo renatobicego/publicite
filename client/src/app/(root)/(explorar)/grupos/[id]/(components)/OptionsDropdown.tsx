@@ -10,7 +10,13 @@ import { FaShareAlt } from "react-icons/fa";
 import { FaChevronDown } from "react-icons/fa6";
 import { IoIosExit } from "react-icons/io";
 
-const OptionsDropdown = ({ groupId }: { groupId: string }) => {
+const OptionsDropdown = ({
+  groupId,
+  isMember,
+}: {
+  groupId: string;
+  isMember: boolean;
+}) => {
   return (
     <Dropdown placement="bottom-end">
       <DropdownTrigger>
@@ -27,14 +33,14 @@ const OptionsDropdown = ({ groupId }: { groupId: string }) => {
         >
           Compartir
         </DropdownItem>
-        <DropdownItem
-          startContent={<IoIosExit className="size-5" />}
-          color="danger"
-          key="salir"
-          className="rounded-full px-4"
-        >
-          Salir del Grupo
-        </DropdownItem>
+          <DropdownItem
+            startContent={<IoIosExit className="size-5" />}
+            color="danger"
+            key="salir"
+            className={`rounded-full px-4 ${isMember ? "" : "hidden"}`}
+          >
+            Salir del Grupo
+          </DropdownItem>
       </DropdownMenu>
     </Dropdown>
   );

@@ -2,11 +2,16 @@ import { Good, Magazine, Post } from "@/types/postTypes";
 import { FILE_URL, MAGAZINES, PROFILE } from "@/utils/data/urls";
 import { Card, CardBody, CardFooter, Image, Link } from "@nextui-org/react";
 
-const MagazineCard = ({ magazineData }: { magazineData: Magazine; }) => {
-  console.log(magazineData)
-  const posts = magazineData.sections[0].posts as Post[];
+const MagazineCard = ({ magazineData }: { magazineData: Magazine }) => {
+  const posts = magazineData.sections[0]
+    ? (magazineData.sections[0].posts as Post[])
+    : [];
   return (
-    <Card as={Link} href={`${MAGAZINES}/${magazineData._id}`} className="w-full">
+    <Card
+      as={Link}
+      href={`${MAGAZINES}/${magazineData._id}`}
+      className="w-full"
+    >
       <CardBody className="flex gap-1 flex-row w-full p-1">
         {posts[0] ? (
           <Image
@@ -18,7 +23,9 @@ const MagazineCard = ({ magazineData }: { magazineData: Magazine; }) => {
             }}
             src={FILE_URL + (posts[0] as Good).imagesUrls[0]}
           />
-        ) : null}
+        ) : (
+          <div className="bg-gray-200 w-2/3 h-36 lg:h-52 rounded-md"></div>
+        )}
         <div className="flex gap-1 flex-1 flex-col h-full">
           {posts[1] ? (
             <Image

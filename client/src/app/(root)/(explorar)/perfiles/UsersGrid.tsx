@@ -13,7 +13,6 @@ const UsersGrid = ({
   groupGrid?: boolean;
   group?: Group;
 }) => {
-  console.log(items);
   return (
     <>
       <div className="grid grid-cols-2 lg:grid-cols-3 3xl:grid-cols-4 gap-4">
