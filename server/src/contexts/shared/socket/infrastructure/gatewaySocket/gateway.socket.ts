@@ -61,7 +61,7 @@ export class NotificationGatewaySocket
     const client = this.clients[userToSendId]?.socket;
 
     if (!allowedEvents.has(event as EventTypes)) {
-      throw new Error(`Invalid event type: ${event}`);
+      throw Error(`Invalid event type: ${event}`);
     }
 
     return {

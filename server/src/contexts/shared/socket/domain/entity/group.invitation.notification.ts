@@ -1,4 +1,5 @@
 const eventTypes = [
+  'notification_group_ivitation',
   'notification_group_user_delete',
   'notification_group_user_added',
   'notification_group_user_request_rejected',
@@ -22,6 +23,7 @@ class GroupInvitation {
       group: Pick<any, '_id' | 'name' | 'profilePhotoUrl'>;
       userInviting: Pick<any, 'username'>;
     };
+    type: string;
   };
 }
 

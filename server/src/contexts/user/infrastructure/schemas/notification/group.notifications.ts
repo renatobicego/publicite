@@ -1,12 +1,15 @@
-const groupNotification = {
-  group: {
-    _id: { type: String },
-    name: { type: String },
-    profilePhotoUrl: { type: String },
-  },
-  userInviting: {
-    username: { type: String, required: true },
-  },
-};
+import { Schema } from 'mongoose';
 
-export { groupNotification };
+const groupNotification = new Schema(
+  {
+    group: {
+      _id: { type: String },
+      name: { type: String },
+      profilePhotoUrl: { type: String },
+    },
+    userInviting: {
+      username: { type: String, required: true },
+    },
+  },
+  { _id: false },
+);
