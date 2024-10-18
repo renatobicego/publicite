@@ -25,6 +25,8 @@ export interface UserRepositoryInterface {
     username: string,
   ): Promise<UserPreferences | null>;
 
+  pushNotification(notification: any): Promise<any>;
+
   save(reqUser: User, session?: ClientSession): Promise<User>;
 
   saveBusinessAccount(

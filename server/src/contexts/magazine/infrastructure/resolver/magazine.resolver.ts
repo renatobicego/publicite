@@ -1,12 +1,13 @@
-import { Inject } from '@nestjs/common';
+import { Inject, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Resolver, Query, Context } from '@nestjs/graphql';
-import { ObjectId } from 'mongoose';
+import { ObjectId, StringExpressionOperatorReturningNumber } from 'mongoose';
 
 import { MagazineAdapterInterface } from '../../application/adapter/magazine.adapter.interface';
 import { MagazineCreateRequest } from '../../application/adapter/dto/HTTP-REQUEST/magazine.create.request';
 import { MagazineResponse } from '../../application/adapter/dto/HTTP-RESPONSE/magazine.reponse';
 import { MagazineUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/magazine.update.request';
 import { PubliciteAuth } from 'src/contexts/shared/publicite_auth/publicite_auth';
+import { ClerkAuthGuard } from 'src/contexts/clerk-auth/clerk.auth.guard';
 
 @Resolver()
 export class MagazineResolver {
@@ -153,13 +154,16 @@ export class MagazineResolver {
     nullable: true,
     description: 'Actualizar una revista',
   })
+  @UseGuards(ClerkAuthGuard)
   async updateMagazineById(
     @Args('magazineUpdateRequest', { type: () => MagazineUpdateRequest })
     magazineRequest: MagazineUpdateRequest,
+    @Args('owner', { type: () => String })
+    owner: string,
     @Context() context: any,
   ): Promise<any> {
     try {
-      PubliciteAuth.authorize(context, magazineRequest.user);
+      PubliciteAuth.authorize(context, owner);
       return await this.magazineAdapter.updateMagazineById(magazineRequest);
     } catch (error: any) {
       throw error;

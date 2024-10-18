@@ -27,6 +27,7 @@ export class User {
   private userRelations?: ObjectId[];
   private userType?: UserType;
   private userPreferences?: UserPreferences;
+  private notifications?: any[];
 
   constructor(
     clerkId: string,
@@ -49,6 +50,7 @@ export class User {
     userType?: UserType,
     userPreferences?: UserPreferences,
     _id?: ObjectId,
+    notifications?: any[],
   ) {
     this.clerkId = clerkId;
     this.email = email;
@@ -73,6 +75,7 @@ export class User {
       backgroundColor: undefined,
     };
     this._id = _id;
+    this.notifications = notifications ?? [];
   }
 
   setContact(contact: ObjectId) {

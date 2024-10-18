@@ -153,6 +153,14 @@ export class UserService implements UserServiceInterface {
     }
   }
 
+  async pushNotification(notification: any): Promise<any> {
+    try {
+      await this.userRepository.pushNotification(notification);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
   async updateUserPreferencesByUsername(
     username: string,
     userPreference: UserPreferencesEntityDto,

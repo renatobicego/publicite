@@ -26,6 +26,8 @@ export interface UserServiceInterface {
   getUserPreferencesByUsername(
     username: string,
   ): Promise<UserPreferences | null>;
+
+  pushNotification(notification: any): Promise<any>;
   updateUser(
     username: string,
     req: UserPersonalUpdateDto | UserBusinessUpdateDto,

@@ -267,6 +267,7 @@ export class GroupRepository implements GroupRepositoryInterface {
       session.startTransaction();
       const groups = await this.groupModel
         .find({ name: { $regex: regex } })
+        .and([{ visibility: 'public' }])
         .limit(limit + 1)
         .skip((page - 1) * limit)
         .select(
