@@ -11,10 +11,12 @@ export class SocketNotificationService
     private readonly userService: UserServiceInterface,
   ) {}
   async sendNotificationToUser(notification: any): Promise<any> {
-    const { userToSendId } = notification.backData;
     try {
+      this.logger.log('Sending new notification to user');
       await this.userService.pushNotification(notification);
     } catch (error: any) {
+      this.logger.error('An error occurred while sending notification to user');
+      this.logger.error(error);
       throw error;
     }
   }

@@ -191,15 +191,16 @@ export class UserRepository implements UserRepositoryInterface {
 
   async pushNotification(notification: any): Promise<any> {
     const { userToSendId } = notification.backData;
-    console.log(userToSendId);
-    console.log(notification);
     try {
-      // await this.user
-      //   .findOneAndUpdate(
-      //     { _id: userToSendId },
-      //     { $addToSet: { notifications: notification } },
-      //   )
-      //   .lean();
+      await this.user
+        .findOneAndUpdate(
+          { _id: userToSendId },
+          { $addToSet: { notifications: notification } },
+        )
+        .lean();
+      this.logger.log(
+        "notification saved successfully in user's notification array",
+      );
     } catch (error: any) {
       throw error;
     }

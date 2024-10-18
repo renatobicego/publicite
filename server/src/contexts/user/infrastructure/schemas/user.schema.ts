@@ -1,5 +1,6 @@
 import { Schema, model, Document } from 'mongoose';
 import { UserType } from '../../domain/entity/enum/user.enums';
+import { groupNotification } from './notification/group.notifications';
 
 export interface UserPreferences {
   searchPreference: Schema.Types.ObjectId[];
@@ -57,10 +58,20 @@ const UserSchema = new Schema<IUser>(
       searchPreference: [{ type: Schema.Types.ObjectId, ref: 'PostCategory' }],
       backgroundColor: { type: Number, default: undefined },
     },
-    notifications: {
-      event: { type: String, required: true },
-      viewed: { type: Boolean, required: true, default: false },
-    },
+    notifications: [
+      {
+        event: { type: String, required: true },
+        viewed: { type: Boolean, required: true, default: false },
+        date: { type: String, required: true },
+        backData: {
+          userToSendId: { type: String, required: true },
+        },
+        frontData: {
+          groupNotification,
+
+        },
+      },
+    ],
   },
   { discriminatorKey: 'userType', collection: 'users' },
 );
