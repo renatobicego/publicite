@@ -12,6 +12,7 @@ import {
 } from "@/graphql/groupQueries";
 import { cookies } from "next/headers";
 import { auth } from "@clerk/nextjs/server";
+import { ApolloError } from "@apollo/client";
 
 export const getGroups = async (searchTerm: string | null, page: number) => {
   try {
@@ -41,19 +42,19 @@ export const getGroupById = async (id: string) => {
     const { data } = await query({
       query: getGroupByIdQuery,
       variables: { getGroupByIdId: id },
-      context: {
-        headers: {
-          Cookie: cookies().toString(),
-        },
-      },
+      // context: {
+      //   headers: {
+      //     Cookie: cookies().toString(),
+      //   },
+      // },
     });
 
     return data.getGroupById;
-  } catch (error: any) {
+  } catch (error: ApolloError | any) {
     console.log(error)
     return {
       error:
-        "Error al traer información del grupo. Por favor intenta de nuevo.", error2: error,
+        "Error al traer información del grupo. Por favor intenta de nuevo.", error2: error.cause,
     };
   }
 };

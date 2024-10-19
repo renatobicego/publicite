@@ -30,7 +30,7 @@ export const useInfiniteFetch = (
 
   // Function to handle initial fetch and scroll-based fetch
   const loadMore = useCallback(async () => {
-    console.log("Loading more data...", busqueda, hasMoreData);
+    // console.log("Loading more data...", busqueda, hasMoreData);
     if (isLoading || !hasMoreData || errorOccurred) return;
     setIsLoading(true);
     try {
