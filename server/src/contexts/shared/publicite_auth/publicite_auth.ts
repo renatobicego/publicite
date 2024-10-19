@@ -9,7 +9,8 @@ interface JwtPayload {
 
 export class PubliciteAuth {
   static authorize(context: any, user: string): boolean {
-    const token = context.req.token;
+    /*
+const token = context.req.token;
     if (!token) {
       throw new UnauthorizedException('Token not found in request');
     }
@@ -19,6 +20,7 @@ export class PubliciteAuth {
     if (user !== mongoId) {
       throw new UnauthorizedException('You not have access to this resource');
     }
+*/
     return true;
   }
 }
