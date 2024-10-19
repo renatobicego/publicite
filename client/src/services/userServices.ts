@@ -4,7 +4,7 @@ import {
   UserPersonFormValues,
   UserPreferences,
 } from "@/types/userTypes";
-import { currentUser } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import axios from "axios";
 import { query } from "@/lib/client";
 import getUserByUsernameQuery from "@/graphql/userQueries";
@@ -97,6 +97,7 @@ export const getUsers = async (searchTerm: string | null, page: number) => {
 };
 
 export const getUserByUsername = async (username: string) => {
+  const user = auth();
   try {
     const { data } = await query({
       query: getUserByUsernameQuery,
@@ -113,7 +114,6 @@ export const getUserByUsername = async (username: string) => {
 
     return data.findUserByUsername;
   } catch (error: ApolloError | any) {
-    console.log(error.cause.result.errors)
     return {
       error:
         "Error al traer los datos del usuario. Por favor intenta de nuevo.",
