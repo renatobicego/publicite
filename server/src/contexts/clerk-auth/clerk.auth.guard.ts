@@ -1,4 +1,3 @@
-import { clerkClient } from '@clerk/clerk-sdk-node';
 import {
   CanActivate,
   ExecutionContext,
@@ -6,7 +5,6 @@ import {
   Injectable,
   Logger,
 } from '@nestjs/common';
-import { GqlExecutionContext } from '@nestjs/graphql';
 
 @Injectable()
 export class ClerkAuthGuard implements CanActivate {
@@ -18,8 +16,8 @@ export class ClerkAuthGuard implements CanActivate {
 
     // const authToken = request.headers.authorization;
     // console.log(authToken.substring(7).trim());
-/* 
     try {
+      /* 
       if (context.getType() === 'http') {
         request = context.switchToHttp().getRequest();
       } else {
