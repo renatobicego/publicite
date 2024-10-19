@@ -10,7 +10,7 @@ interface IPostPetition extends PostDocument {
 }
 // El esquema del discriminador para PostGood
 const PostPetitionSchema = new Schema<IPostPetition>({
-  toPrice: { type: Number, required: true },
+  toPrice: { type: Number },
   frequencyPrice: {
     type: String,
     enum: Object.values(FrequencyPrice),
