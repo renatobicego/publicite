@@ -10,7 +10,7 @@ export interface Group {
   visibility: "private" | "public";
 }
 
-export interface EditGroupInterface extends Omit<Group, "admins" | "members"> {}
+export interface EditGroupInterface extends Omit<Group, "admins" | "members" | "magazines"> {}
 export interface GroupInvitationNotification {
   _id: ObjectId;
   group: Pick<Group, "_id" | "name" | "profilePhotoUrl">;
