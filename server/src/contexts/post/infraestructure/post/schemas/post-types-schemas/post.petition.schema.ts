@@ -14,12 +14,12 @@ const PostPetitionSchema = new Schema<IPostPetition>({
   frequencyPrice: {
     type: String,
     enum: Object.values(FrequencyPrice),
-    required: true,
+
   },
   petitionType: {
     type: String,
     enum: Object.values(PetitionType),
-    required: true,
+
   },
 });
 
