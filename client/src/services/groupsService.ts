@@ -42,11 +42,11 @@ export const getGroupById = async (id: string) => {
     const { data } = await query({
       query: getGroupByIdQuery,
       variables: { getGroupByIdId: id },
-      // context: {
-      //   headers: {
-      //     Cookie: cookies().toString(),
-      //   },
-      // },
+      context: {
+        headers: {
+          Cookie: cookies().toString(),
+        },
+      },
     });
 
     return data.getGroupById;
