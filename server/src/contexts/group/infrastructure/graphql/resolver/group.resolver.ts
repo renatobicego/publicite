@@ -185,7 +185,7 @@ export class GroupResolver {
     nullable: true,
     description: 'Busca un grupo por su id',
   })
-  @UseGuards(ClerkAuthGuard)
+  //@UseGuards(ClerkAuthGuard)
   async getGroupById(
     @Args('id', { type: () => String })
     groupId: string,
