@@ -40,7 +40,7 @@ export class Post {
     this.title = title;
     this.author = author;
     this.postType = postType;
-    this.description = description;
+    this.description = description ?? null;
     this.visibility = visibility;
     this.recomendations = recomendations;
     this.price = price;
