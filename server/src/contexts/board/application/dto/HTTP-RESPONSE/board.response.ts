@@ -11,6 +11,9 @@ class userBoardGraphql {
 
   @Field(() => String, { nullable: true })
   name: string;
+
+ @Field(() => String, { nullable: true })
+  lastName: string;
 }
 
 @ObjectType()
