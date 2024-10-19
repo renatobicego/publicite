@@ -16,9 +16,9 @@ export default async function GroupLayout({
   params: { id: string };
   children: React.ReactNode;
 }) {
-  const group: Group | { error: string } = await getGroupById(params.id);
+  const group: Group | { error: string; error2: string } = await getGroupById(params.id);
   if ("error" in group) {
-    return <ErrorCard message={group.error} />;
+    return <ErrorCard message={group.error} error={group.error2} />;
   }
   const breadcrumbsItems = [
     {

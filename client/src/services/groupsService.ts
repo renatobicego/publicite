@@ -49,11 +49,11 @@ export const getGroupById = async (id: string) => {
     });
 
     return data.getGroupById;
-  } catch (error) {
+  } catch (error: any) {
     console.log(error)
     return {
       error:
-        "Error al traer información del grupo. Por favor intenta de nuevo.",
+        "Error al traer información del grupo. Por favor intenta de nuevo.", error2: error,
     };
   }
 };
