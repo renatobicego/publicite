@@ -19,7 +19,7 @@ const PostPetitionSchema = new Schema<IPostPetition>({
   petitionType: {
     type: String,
     enum: Object.values(PetitionType),
-
+    required: true,
   },
 });
 
