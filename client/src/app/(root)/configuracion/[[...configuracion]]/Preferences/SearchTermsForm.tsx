@@ -1,30 +1,50 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FormCard from "../FormCard";
 import { Button, Select, Selection, SelectItem } from "@nextui-org/react";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
+import { PostCategory } from "@/types/postTypes";
+import { getCategories } from "@/services/postsServices";
+import { changeUserPreferences } from "@/services/userServices";
+import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 
 const SearchTermsForm = ({
   setIsFormVisible,
+  prevValues,
 }: {
   setIsFormVisible: (value: boolean) => void;
+  prevValues: PostCategory[];
 }) => {
-  const [values, setValues] = useState<Selection>(new Set([]));
-  const categories = [
-    {
-      _id: 1,
-      label: "Animales",
-    },
-    {
-      _id: 2,
-      label: "Comida",
-    },
-    {
-      _id: 3,
-      label: "Deportes",
-    },
-  ];
+  const [values, setValues] = useState<Selection>(
+    new Set(prevValues.map((c) => c._id))
+  );
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [categories, setCategories] = useState<PostCategory[]>();
+
+  useEffect(() => {
+    getCategories().then((data) => {
+      setCategories(data);
+    });
+  }, []);
+
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    const res = await changeUserPreferences({
+      searchPreference: Array.from(values) as string[],
+    });
+    if (res.error) {
+      setIsSubmitting(false);
+      toastifyError(res.error);
+      return;
+    }
+    setIsSubmitting(false);
+    toastifySuccess("Preferencias guardadas");
+    setIsFormVisible(false);
+  };
   return (
-    <FormCard title="Preferencias de búsqueda" cardBodyClassname="flex gap-4 flec-col">
+    <FormCard
+      title="Preferencias de búsqueda"
+      cardBodyClassname="flex gap-4 flec-col"
+    >
       <Select
         label="Intereses"
         placeholder="Seleccione una o más categorías"
@@ -41,12 +61,14 @@ const SearchTermsForm = ({
         radius="full"
         variant="bordered"
         labelPlacement="outside"
+        isLoading={categories === undefined}
         selectedKeys={values}
         onSelectionChange={setValues}
+        items={categories ?? []}
       >
-        {categories.map((category) => (
+        {(category) => (
           <SelectItem key={category._id}>{category.label}</SelectItem>
-        ))}
+        )}
       </Select>
       <div className="flex gap-2 w-full justify-end">
         <Button
@@ -57,7 +79,14 @@ const SearchTermsForm = ({
         >
           Cancelar
         </Button>
-        <PrimaryButton type="submit">Actualizar</PrimaryButton>
+        <PrimaryButton
+          isDisabled={isSubmitting}
+          isLoading={isSubmitting}
+          type="submit"
+          onPress={handleSubmit}
+        >
+          Actualizar
+        </PrimaryButton>
       </div>
     </FormCard>
   );

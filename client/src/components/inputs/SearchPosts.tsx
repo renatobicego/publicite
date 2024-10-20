@@ -34,8 +34,8 @@ const SearchPosts = ({
           variant="bordered"
           radius="full"
           startContent={<FaSearch className="text-light-text min-w-3.5" />}
-          value={currentTerm}
-          onValueChange={setCurrentTerm}
+          value={isMultiSearch ? currentTerm : searchTerms as string}
+          onValueChange={isMultiSearch ? setCurrentTerm : setSearchTerms}
           placeholder="Buscar en resultados..."
           // Disable input when there are 2 search terms (in multi-search mode)
           isDisabled={isMultiSearch && searchTerms.length >= 2}

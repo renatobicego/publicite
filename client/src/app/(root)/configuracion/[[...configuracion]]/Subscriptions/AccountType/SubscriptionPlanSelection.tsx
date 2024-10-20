@@ -8,7 +8,7 @@ const SubscriptionPlanSelection = ({
   onPlanChange,
 }: {
   subscriptionPlans: SubscriptionPlan[];
-  selected: string;
+  selected?: string;
   onPlanChange: (planId: string) => void;
 }) => {
   return (

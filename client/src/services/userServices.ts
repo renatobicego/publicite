@@ -40,7 +40,7 @@ export const getUserProfileData = async (username: string) => {
 };
 
 export const changeUserPreferences = async (
-  userPreferences: UserPreferences
+  userPreferences: Partial<UserPreferences>
 ) => {
   const user = await currentUser();
   try {
@@ -97,7 +97,6 @@ export const getUsers = async (searchTerm: string | null, page: number) => {
 };
 
 export const getUserByUsername = async (username: string) => {
-  const user = auth();
   try {
     const { data } = await query({
       query: getUserByUsernameQuery,

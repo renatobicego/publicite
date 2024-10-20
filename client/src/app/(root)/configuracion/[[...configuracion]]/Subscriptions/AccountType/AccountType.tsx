@@ -1,16 +1,21 @@
-import {  useState } from "react";
+import { useState } from "react";
 import AccountTypeForm from "./AccountTypeForm";
 import AnimatedBox from "../../AnimatedBox";
 import DataBox, { CardDataItem, EditButton } from "../../DataBox";
+import { Subscription } from "@/types/subscriptions";
 
-const AccountType = () => {
+const AccountType = ({ subscription }: { subscription?: Subscription }) => {
   const [isFormVisible, setIsFormVisible] = useState(false);
-
   return (
-    <AnimatedBox isVisible={isFormVisible} className="flex-1" keyValue="account-type">
+    <AnimatedBox
+      isVisible={isFormVisible}
+      className="flex-1"
+      keyValue="account-type"
+    >
       {isFormVisible ? (
         <AccountTypeForm
           key={"formAccountType"}
+          subscription={subscription}
           setIsFormVisible={setIsFormVisible}
         />
       ) : (
@@ -20,13 +25,25 @@ const AccountType = () => {
           labelText="Tipo de Cuenta"
           labelClassname="md:w-1/4 md:mt-2.5"
         >
-          <CardDataItem
-            title="Publicité Premium"
-            subtitle="Próximo pago: 03/09"
-            boldLabel="$100.00 por mes"
-          />
+          {subscription ? (
+            <CardDataItem
+              title={subscription.subscriptionPlan.reason}
+              subtitle={`Próximo pago: ${subscription.endDate}`}
+              boldLabel={`$${subscription.subscriptionPlan.price} por mes`}
+            />
+          ) : (
+            <CardDataItem
+              title="Gratuita"
+              subtitle="No tiene suscripción activa"
+            />
+          )}
           <EditButton
-            text={<>Actualizar<span className="hidden min-[900px]:inline"> - Cancelar</span></>}
+            text={
+              <>
+                Actualizar
+                <span className="hidden min-[900px]:inline"> - Cancelar</span>
+              </>
+            }
             onPress={() => setIsFormVisible(true)}
           />
         </DataBox>

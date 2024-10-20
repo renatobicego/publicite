@@ -1,10 +1,7 @@
 import PostListHeader from "@/app/(root)/(explorar)/anuncios/components/PostListHeader";
 import MasonryPostGrid from "@/components/grids/MasonryPostGrid";
-import PostsGrid from "@/components/grids/PostGrid";
-import PostGridList from "@/components/grids/PostGridList";
 import { Post } from "@/types/postTypes";
 import { useFilteredAndSortedPosts } from "@/utils/hooks/useFilteredOrderedPosts";
-import { useState } from "react";
 
 const UserPosts = ({ posts }: { posts: Post[] }) => {
   const {

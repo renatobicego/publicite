@@ -1,8 +1,14 @@
-
+import { Subscription } from "@/types/subscriptions";
 import DataBox, { CardDataItem, DataItem } from "../../DataBox";
 import { Button } from "@nextui-org/react";
+import useUserPostLimit from "@/utils/hooks/useUserPostLimit";
 
-const LimitPosts = () => {
+const LimitPosts = ({
+  userSubscriptions,
+}: {
+  userSubscriptions?: { accountType: Subscription; postsPacks: Subscription[] };
+  }) => {
+  const {numberOfPosts} = useUserPostLimit();
   return (
     <DataBox
       key={"dataLimitPosts"}
@@ -11,13 +17,23 @@ const LimitPosts = () => {
       labelClassname="md:w-1/4 md:my-2.5 max-md:flex-none max-md:max-w-[65%] max-md:min-w-[40px]"
     >
       <div className="flex flex-col gap-2 flex-1 my-2.5">
-        <DataItem className="font-semibold">60 publicaciones activas</DataItem>
-        <CardDataItem title="50 publicaciones" subtitle="Publicité Premium" />
+        <DataItem className="font-semibold">{numberOfPosts} publicaciones activas</DataItem>
         <CardDataItem
-          title="10 publicaciones"
-          subtitle="Pack de 10 publicaciones"
-          boldLabel="Disponible hasta: 17/09"
+          title={`${
+            userSubscriptions?.accountType?.subscriptionPlan.postLimit || 5
+          } publicaciones`}
+          subtitle={
+            userSubscriptions?.accountType?.subscriptionPlan.reason || "Gratuita"
+          }
         />
+        {userSubscriptions?.postsPacks?.map((subscription: Subscription) => (
+          <CardDataItem
+            key={subscription.subscriptionPlan.reason}
+            title={`${subscription.subscriptionPlan.postLimit} publicaciones`}
+            subtitle={subscription.subscriptionPlan.reason}
+            boldLabel={`Disponible hasta ${subscription.endDate}`}
+          />
+        ))}
       </div>
       <Button
         color="secondary"

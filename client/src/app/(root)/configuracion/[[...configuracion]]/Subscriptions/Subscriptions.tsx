@@ -1,5 +1,5 @@
 import { Button, Divider } from "@nextui-org/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AccountType from "./AccountType/AccountType";
 import PaymentMethod from "./PaymentMethod/PaymentMethod";
 import LimitPosts from "./LimitPosts/LimitPosts";
@@ -7,9 +7,27 @@ import { AnimatePresence, motion } from "framer-motion";
 import PaymentsTable from "./Payments/PaymentsTable";
 import { FaChevronLeft } from "react-icons/fa6";
 import SecondaryButton from "@/components/buttons/SecondaryButton";
+import { Subscription } from "@/types/subscriptions";
+import { getSubscriptionsOfUser } from "@/services/subscriptionServices";
 
-const Subscriptions = () => {
+const Subscriptions = ({userId} : {userId: string}) => {
   const [arePaymentsShown, setArePaymentsShown] = useState(false);
+  const [userSubscriptions, setUserSubscriptions] = useState<{ accountType: Subscription; postsPacks: Subscription[] }>();
+  
+  useEffect(() => {
+    const fetchUserSubscriptions = async () => {
+      const subscriptions = await getSubscriptionsOfUser(userId);
+      const accountType = subscriptions.find(
+        (subscription: Subscription) => !subscription.subscriptionPlan.isPostPack
+      )
+      const postsPacks = subscriptions.filter(
+        (subscription: Subscription) => subscription.subscriptionPlan.isPostPack
+      )
+      setUserSubscriptions({ accountType, postsPacks });
+    }
+    fetchUserSubscriptions();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   return (
     <AnimatePresence mode="popLayout" initial={false}>
       {arePaymentsShown ? (
@@ -42,7 +60,7 @@ const Subscriptions = () => {
         >
           <h2 className="profile-title">Datos de Suscripción</h2>
           <Divider />
-          <AccountType />
+          <AccountType subscription={userSubscriptions?.accountType} />
           <Divider />
           <PaymentMethod />
           <SecondaryButton
@@ -53,7 +71,7 @@ const Subscriptions = () => {
             Ver Pagos Realizados
           </SecondaryButton>
           <Divider />
-          <LimitPosts />
+          <LimitPosts userSubscriptions={userSubscriptions} />
         </motion.section>
       )}
     </AnimatePresence>

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { memo, useMemo } from "react";
 import { UserProfile, useUser } from "@clerk/nextjs";
 import { BiSolidUserDetail } from "react-icons/bi";
@@ -45,6 +45,7 @@ const UserProfilePage = () => {
         return null;
     }
   }, [userType]);
+  console.log("render page");
 
   return (
     <main className="flex flex-col items-center min-h-screen main-style">
@@ -58,7 +59,6 @@ const UserProfilePage = () => {
             navbar: "bg-fondo max-lg:max-w-48",
           },
         }}
-        
       >
         {pageToReturn}
         <UserProfile.Page
@@ -66,7 +66,7 @@ const UserProfilePage = () => {
           labelIcon={<MdPayments className="size-4" />}
           url="suscripcion"
         >
-          <Subscriptions />
+          <Subscriptions userId={user?.publicMetadata.mongoId as string} />
         </UserProfile.Page>
         <UserProfile.Page label="security" />
         <UserProfile.Page
@@ -76,19 +76,19 @@ const UserProfilePage = () => {
         >
           <Privacy />
         </UserProfile.Page>
-        <UserProfile.Page
+        {/* <UserProfile.Page
           label="Notificaciones"
           labelIcon={<FaBell className="size-4" />}
           url="notificaciones"
         >
           <Notifications />
-        </UserProfile.Page>
+        </UserProfile.Page> */}
         <UserProfile.Page
           label="Preferencias"
           labelIcon={<FaSliders className="size-4" />}
           url="preferencias"
         >
-          <Preferences />
+          <Preferences username={user?.username as string} />
         </UserProfile.Page>
       </UserProfile>
     </main>

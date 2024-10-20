@@ -3,13 +3,16 @@ import FormCard from "../../FormCard";
 import SubscriptionPlanSelection from "./SubscriptionPlanSelection";
 import ActionButtons from "./ActionButtons";
 import { getSubscriptionsPlans } from "@/services/subscriptionServices";
+import { Subscription } from "@/types/subscriptions";
 
 const AccountTypeForm = ({
   setIsFormVisible,
+  subscription,
 }: {
   setIsFormVisible: (value: boolean) => void;
+  subscription?: Subscription;
 }) => {
-  const previousSubscriptionPlan = "2c9380849146ff3d01914739031d0028";
+  const previousSubscriptionPlan = subscription?.subscriptionPlan._id;
   const [selected, setSelected] = useState(previousSubscriptionPlan);
   const [subscriptionPlans, setSubscriptionPlans] = useState([]);
 

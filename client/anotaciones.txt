@@ -11,12 +11,18 @@ Podríamos:
 boton de compartir app
 agregar endate a post
 carpeta posts
-paginacion
-buscador pete
+buscador
 marcar como visto peticion de contaacto
 
-solo administradores de grupo pueden crear revista?
-miembors de grupo pueden ver anuncios d eotro aunque esten como solo para amigos?
-las publciaciones de necesidad se suman al limite?
 colaboradores de revista y miembros es por invitación o se lo agrega directamente
 el tema de tener distintos tipos de relaciones va a costar hacer get de posts por visibilidad
+
+-Agregar el @user en el campo de grupo para hacerlo unico
+En este caso habria que hacer una ruta para verificar si ya existe el usuario de grupo
+-Agregar una especie de top administrador o "creador del grupo" para poder eliminar a los administradores que designaste y te confundiste como un pajero
+esto es una pelotudez pero bueno habría que hacer una nueva notificación en este caso
+-Ver si se puede poner un deadtime en las anotaciones de la pizzara
+la verdad que es una  re paja para el usuario eso y es una paja para nosotros asi que le diria que no hinche los huevos
+-En la busqueda de pizarra poder buscar por el nombre y apellido o nombre de usuario del creador
+
+CUENTA GRATUITA CREAR PLAN DE SUSCRIPTION

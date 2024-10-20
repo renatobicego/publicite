@@ -6,6 +6,7 @@ import {
   getBoardByUsernameQuery,
   getBoardsQuery,
 } from "@/graphql/boardQueries";
+import { currentUser } from "@clerk/nextjs/server";
 
 export const getBoards = async (searchTerm: string | null, page: number) => {
   try {
@@ -29,10 +30,15 @@ export const postBoard = async (values: any) => {
 };
 
 export const putBoard = async (id: string, values: any) => {
+  const user = await currentUser();
   try {
     const { data } = await getClient().mutate({
       mutation: editBoardByUsernameMutation,
-      variables: { updateBoardByUsernameId: id, boardData: values },
+      variables: {
+        updateBoardByIdId: id,
+        boardData: values,
+        ownerId: user?.publicMetadata.mongoId,
+      },
     });
     return data;
   } catch (error) {
@@ -48,11 +54,11 @@ export const getBoardByUsername = async (username: string) => {
       query: getBoardByUsernameQuery,
       variables: { username },
     });
-    return data.findOneByUsername;
+    return data.findUserByUsername;
   } catch (error) {
     return {
       error:
-        "Error al traer los datos del usuario. Por favor intenta de nuevo.",
+        "Error al traer la pizarra del usuario. Por favor intenta de nuevo.",
     };
   }
 };

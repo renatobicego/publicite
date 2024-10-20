@@ -31,7 +31,7 @@ const BoardPersonalization = ({ board }: { board: Board }) => {
           setColorSelected={setColorSelected}
         />
         <BoardCard
-          isMyBoard
+          isMyBoard={false}
           isProfile
           widthFull
           name={board.user.username}

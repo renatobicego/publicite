@@ -1,4 +1,7 @@
 "use server";
+import { getPaymentsQuery } from "@/graphql/suscriptionsQueries";
+import { query } from "@/lib/client";
+import { currentUser } from "@clerk/nextjs/server";
 import axios from "axios";
 
 export const processPayment = async (
@@ -171,5 +174,38 @@ export const getAuthorizedPayments = async (subscriptionId: string) => {
     return data;
   } catch (error) {
     console.log(error);
+  }
+};
+export const getPaymentMethod = async () => {
+  const user = await currentUser();
+  try {
+    const { data } = await axios.get(
+      "https://api.mercadopago.com/v1/payments/search?sort=date_created&criteria=desc&external_reference=" +
+        // user?.id,
+        "user_2mqEcO17ANFiFguUEwmrfPtU6wa",
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}`,
+        },
+      }
+    );
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getPayments = async () => {
+  const user = await currentUser();
+  try {
+    const { data } = await query({
+      query: getPaymentsQuery,
+      variables: { findPaymentByClerkIdId: user?.id },
+    });
+    return data.findPaymentByClerkId;
+  } catch (error) {
+    return {
+      error: "Error al traer los pagos. Por favor intenta de nuevo.",
+    }
   }
 };
