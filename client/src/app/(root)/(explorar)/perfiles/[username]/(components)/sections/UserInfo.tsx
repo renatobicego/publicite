@@ -58,12 +58,7 @@ const UserInfo = ({
         {user.contact && <SocialMedia contact={user.contact} />}
         <div className="flex gap-2 items-center">
           {isMyProfile ? (
-            <>
-              <PrimaryButton as={Link} href="/configuracion">
-                Editar Perfil
-              </PrimaryButton>
-              <ContactPetitionsList userId={user._id} />
-            </>
+            <ContactPetitionsList userId={user._id} />
           ) : (
             <SendRequest variant="solid" removeMargin={false} />
           )}

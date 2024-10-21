@@ -1,4 +1,4 @@
-import { phoneRegex } from "@/app/(root)/configuracion/[[...configuracion]]/Profile/SocialMedia/socialMediaValidation";
+import { phoneRegex } from "@/app/(root)/(configuracion)/Profile/SocialMedia/socialMediaValidation";
 import { object, string } from "yup";
 
 export const contactFormValidation = object({

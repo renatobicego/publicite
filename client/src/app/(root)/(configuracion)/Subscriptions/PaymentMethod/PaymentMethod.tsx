@@ -10,7 +10,6 @@ const PaymentMethod = () => {
   useEffect(() => {
     const fetchPaymentMethod = async () => {
       const res = await getPaymentMethod();
-      console.log(res)
     }
     fetchPaymentMethod()
   }, [])

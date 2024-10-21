@@ -1,12 +1,10 @@
 import { Link, NavbarItem, NavbarMenuToggle } from "@nextui-org/react";
 import React from "react";
 import SecondaryButton from "../buttons/SecondaryButton";
-import { SignedIn, SignedOut, UserButton, useUser } from "@clerk/nextjs";
+import { SignedIn, SignedOut, useUser } from "@clerk/nextjs";
 import Notifications from "./Notifications/Notifications";
-
-import { CONFIGURATION, PROFILE } from "@/utils/data/urls";
 import DropdownItems from "./DropdownItems";
-import { FaUser } from "react-icons/fa6";
+import UserButtonModal from "@/app/(root)/(configuracion)/UserButtonPage";
 
 const UserNavItems = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
   const { user } = useUser();
@@ -15,25 +13,7 @@ const UserNavItems = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
       <NavbarItem className="max-lg:hidden flex gap-2 items-center">
         <SignedIn>
           <Notifications />
-          <UserButton
-            appearance={{
-              elements: {
-                rootBox: "size-8",
-                avatarBox: "h-full w-full border-[0.8px]",
-              },
-            }}
-            userProfileMode="navigation"
-            userProfileUrl={CONFIGURATION}
-          >
-            <UserButton.MenuItems>
-              <UserButton.Link
-                label="Mi Perfil"
-                labelIcon={<FaUser />}
-                href={`${PROFILE}/${user?.username}`}
-              />
-              <UserButton.Action label="manageAccount" />
-            </UserButton.MenuItems>
-          </UserButton>
+          <UserButtonModal />
           <DropdownItems />
         </SignedIn>
         <SignedOut>

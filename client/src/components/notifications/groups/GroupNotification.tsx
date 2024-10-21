@@ -10,36 +10,7 @@ import {
 
 import GroupImage from "./GroupImage";
 import { GroupInvitationNotification, GroupNotificationType } from "@/types/groupTypes";
-
-const noticationMessages: Record<
-  GroupNotificationType,
-  { message: string; showUser: boolean }
-> = {
-  admin: {
-    message: "te ha asignado administrador del grupo",
-    showUser: true,
-  },
-  groupAccepted: {
-    message: "Has sido aceptado en el grupo",
-    showUser: false,
-  },
-  groupDeclined: {
-    message: "Has sido rechazado en el grupo",
-    showUser: false,
-  },
-  groupInvitation: {
-    message: "te ha invitado al grupo",
-    showUser: true,
-  },
-  memberDeleted: {
-    message: "Has sido eliminado del grupo",
-    showUser: false,
-  },
-  newMemberRequest: {
-    message: "ha solicitado unirse al grupo",
-    showUser: true,
-  },
-};
+import { noticationMessages } from "./notificationMessages";
 
 const GroupNotification = ({
   notification,

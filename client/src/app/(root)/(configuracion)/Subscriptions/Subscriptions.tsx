@@ -10,24 +10,15 @@ import SecondaryButton from "@/components/buttons/SecondaryButton";
 import { Subscription } from "@/types/subscriptions";
 import { getSubscriptionsOfUser } from "@/services/subscriptionServices";
 
-const Subscriptions = ({userId} : {userId: string}) => {
+const Subscriptions = ({
+  accountType,
+  postsPacks,
+}: {
+  accountType?: Subscription;
+  postsPacks?: Subscription[];
+}) => {
   const [arePaymentsShown, setArePaymentsShown] = useState(false);
-  const [userSubscriptions, setUserSubscriptions] = useState<{ accountType: Subscription; postsPacks: Subscription[] }>();
-  
-  useEffect(() => {
-    const fetchUserSubscriptions = async () => {
-      const subscriptions = await getSubscriptionsOfUser(userId);
-      const accountType = subscriptions.find(
-        (subscription: Subscription) => !subscription.subscriptionPlan.isPostPack
-      )
-      const postsPacks = subscriptions.filter(
-        (subscription: Subscription) => subscription.subscriptionPlan.isPostPack
-      )
-      setUserSubscriptions({ accountType, postsPacks });
-    }
-    fetchUserSubscriptions();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+
   return (
     <AnimatePresence mode="popLayout" initial={false}>
       {arePaymentsShown ? (
@@ -60,7 +51,7 @@ const Subscriptions = ({userId} : {userId: string}) => {
         >
           <h2 className="profile-title">Datos de Suscripción</h2>
           <Divider />
-          <AccountType subscription={userSubscriptions?.accountType} />
+          <AccountType subscription={accountType} />
           <Divider />
           <PaymentMethod />
           <SecondaryButton
@@ -71,7 +62,13 @@ const Subscriptions = ({userId} : {userId: string}) => {
             Ver Pagos Realizados
           </SecondaryButton>
           <Divider />
-          <LimitPosts userSubscriptions={userSubscriptions} />
+          <LimitPosts
+            userSubscriptions={
+              accountType && postsPacks
+                ? { accountType, postsPacks }
+                : undefined
+            }
+          />
         </motion.section>
       )}
     </AnimatePresence>

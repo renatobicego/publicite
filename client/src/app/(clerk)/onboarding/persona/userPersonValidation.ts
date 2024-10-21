@@ -1,4 +1,4 @@
-import { contactSchema } from "@/app/(root)/configuracion/[[...configuracion]]/Profile/SocialMedia/socialMediaValidation";
+import { contactSchema } from "@/app/(root)/(configuracion)/Profile/SocialMedia/socialMediaValidation";
 import { object, string } from "yup";
 
 export const userPersonValidation = object({

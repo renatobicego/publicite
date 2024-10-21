@@ -1,11 +1,10 @@
 import {
-  CONFIGURATION,
   CREATE,
   POSTS,
   PROFILE,
   TUTORIALS,
 } from "@/utils/data/urls";
-import { SignedIn, SignedOut, UserButton, useUser } from "@clerk/nextjs";
+import { SignedIn, SignedOut, useUser } from "@clerk/nextjs";
 import { Link, NavbarMenu, NavbarMenuItem } from "@nextui-org/react";
 import { Variants } from "framer-motion";
 import React, { Dispatch, SetStateAction } from "react";
@@ -13,6 +12,7 @@ import Notifications from "./Notifications/Notifications";
 import SecondaryButton from "../buttons/SecondaryButton";
 import DropdownItems from "./DropdownItems";
 import NextLink from "next/link"; 
+import UserButtonModal from "@/app/(root)/(configuracion)/UserButtonPage";
 
 const MobileMenu = ({
   setIsMenuOpen,
@@ -37,11 +37,6 @@ const MobileMenu = ({
     {
       title: "Mi Perfil",
       url: `${PROFILE}/${user?.username}`,
-      isPrivate: true,
-    },
-    {
-      title: "Configuración",
-      url: `${CONFIGURATION}`,
       isPrivate: true,
     },
     {
@@ -88,16 +83,7 @@ const MobileMenu = ({
       <div className="flex gap-2 items-center">
         <SignedIn>
           <Notifications />
-          <UserButton
-            appearance={{
-              elements: {
-                rootBox: "size-8",
-                avatarBox: "h-full w-full border-[0.8px]",
-              },
-            }}
-            userProfileMode="navigation"
-            userProfileUrl={CONFIGURATION}
-          />
+          <UserButtonModal />
           <DropdownItems />
         </SignedIn>
         <SignedOut>

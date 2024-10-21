@@ -13,33 +13,50 @@ import { addAdmin, removeMember } from "@/app/server/groupActions";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { useRouter } from "next-nprogress-bar";
 import { IoTrashOutline } from "react-icons/io5";
+import { Group } from "@/types/groupTypes";
+import useSocket from "@/utils/hooks/useSocket";
+import generateGroupNotification from "../notifications/groups/generateGroupNotification";
+import { useUser } from "@clerk/nextjs";
 
 const HandleGroupMember = ({
   user,
   nameToShow,
-  groupId,
+  group,
   isAdmin,
 }: {
   user: User;
   nameToShow: string;
-  groupId?: string;
+  group?: Group;
   isAdmin?: boolean;
 }) => {
   const router = useRouter();
+  const socket = useSocket();
+  const { user: userLogged } = useUser();
+
   const makeAdmin = async () => {
-    if (groupId) {
-      const res = await addAdmin(groupId, [user._id]);
+    if (group?._id) {
+      const res = await addAdmin(group?._id, [user._id]);
       if ("error" in res) {
         toastifyError(res.error as string);
         return;
       }
+      socket?.emit("group_notifications", {
+        gorupInvitation: {
+          ...generateGroupNotification(
+            "notification_group_user_request_sent",
+            group,
+            { username: user.username },
+            userLogged?.publicMetadata.mongoId as string
+          ),
+        },
+      });
       toastifySuccess(res.message);
       router.refresh();
     }
   };
 
   const deleteMember = async () => {
-    const res = await removeMember(groupId as string, [user._id]);
+    const res = await removeMember(group?._id as string, [user._id]);
     if ("error" in res) {
       toastifyError(res.error as string);
       return;
