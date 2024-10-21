@@ -205,7 +205,7 @@ export class UserController {
     @Param('username') username: string,
   ): Promise<UserPreferenceResponse | null> {
     try {
-      return this.userAdapter.getUserPreferencesByUsername(username);
+      return await this.userAdapter.getUserPreferencesByUsername(username);
     } catch (error: any) {
       throw error;
     }

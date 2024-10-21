@@ -16,7 +16,7 @@ const Preferences = ({username} : {username: string}) => {
     const fetchPreferences = async () => {
       const preferences = await getUserPreferences(username as string);
       const userBoard = await getBoardByUsername(username as string);
-      if (preferences.error || userBoard.error) {
+      if (!preferences || preferences.error || !userBoard || userBoard.error) {
         toastifyError(preferences.error || userBoard.error);
         return;
       }
@@ -33,7 +33,6 @@ const Preferences = ({username} : {username: string}) => {
     fetchPreferences();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  console.log("rendering Preferences");
   if (!userPreferences) return <Spinner color="warning" />;
   return (
     <section className="flex flex-col gap-4 items-start w-full">

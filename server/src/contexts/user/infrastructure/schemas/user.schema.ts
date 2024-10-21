@@ -58,9 +58,9 @@ const UserSchema = new Schema<IUser>(
       backgroundColor: { type: Number, default: undefined },
     },
     notifications: {
-      event: { type: String  },
-      viewed: { type: BooleDan, default: false },
-      date: { type: String},
+      event: { type: String },
+      viewed: { type: Boolean, default: false },
+      date: { type: String },
       backData: {
         userToSendId: { type: String, required: true },
         eventNotification: { type: String, required: true },

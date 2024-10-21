@@ -69,6 +69,7 @@ export const getUserPreferences = async (username: string) => {
     );
     return await res.json();
   } catch (error) {
+    console.log(error)
     return {
       error: "Error al traer las preferencias. Por favor intenta de nuevo.",
     };

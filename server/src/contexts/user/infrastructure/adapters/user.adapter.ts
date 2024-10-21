@@ -90,7 +90,11 @@ export class UserAdapter implements UserAdapterInterface {
     try {
       const userPreference =
         await this.userService.getUserPreferencesByUsername(username);
-      if (!userPreference) return null;
+      if (!userPreference)
+        return {
+          searchPreference: [],
+          backgroundColor: undefined,
+        };
       const userPreferenceResponse: UserPreferenceResponse = {
         searchPreference: userPreference?.searchPreference ?? [],
         backgroundColor: userPreference?.backgroundColor ?? undefined,
