@@ -17,33 +17,54 @@ export class GroupAdapter implements GroupAdapterInterface {
   async addMagazinesToGroup(
     magazineIds: string[],
     groupId: string,
+    groupAdmin: string,
   ): Promise<any> {
     try {
-      await this.groupService.addMagazinesToGroup(magazineIds, groupId);
+      await this.groupService.addMagazinesToGroup(
+        magazineIds,
+        groupId,
+        groupAdmin,
+      );
     } catch (error: any) {
       throw error;
     }
   }
 
-  async addMembersToGroup(newMembers: string[], groupId: string): Promise<any> {
+  async addMembersToGroup(
+    newMembers: string[],
+    groupId: string,
+    groupAdmin: string,
+  ): Promise<any> {
     try {
-      await this.groupService.addMembersToGroup(newMembers, groupId);
+      await this.groupService.addMembersToGroup(
+        newMembers,
+        groupId,
+        groupAdmin,
+      );
     } catch (error: any) {
       throw error;
     }
   }
 
-  async addAdminsToGroup(admins: string[], groupId: string): Promise<any> {
+  async addAdminsToGroup(
+    admins: string[],
+    groupId: string,
+    groupAdmin: string,
+  ): Promise<any> {
     try {
-      await this.groupService.addAdminsToGroup(admins, groupId);
+      await this.groupService.addAdminsToGroup(admins, groupId, groupAdmin);
     } catch (error: any) {
       throw error;
     }
   }
 
-  async deleteAdminsToGroup(admins: string[], groupId: string): Promise<any> {
+  async deleteAdminsToGroup(
+    admins: string[],
+    groupId: string,
+    groupAdmin: string,
+  ): Promise<any> {
     try {
-      await this.groupService.deleteAdminsToGroup(admins, groupId);
+      await this.groupService.deleteAdminsToGroup(admins, groupId, groupAdmin);
     } catch (error: any) {
       throw error;
     }
@@ -52,9 +73,14 @@ export class GroupAdapter implements GroupAdapterInterface {
   async deleteMembersToGroup(
     membersToDelete: string[],
     groupId: string,
+    groupAdmin: string,
   ): Promise<any> {
     try {
-      await this.groupService.deleteMembersToGroup(membersToDelete, groupId);
+      await this.groupService.deleteMembersToGroup(
+        membersToDelete,
+        groupId,
+        groupAdmin,
+      );
     } catch (error: any) {
       throw error;
     }
@@ -63,9 +89,14 @@ export class GroupAdapter implements GroupAdapterInterface {
   async deleteMagazinesFromGroup(
     magazinesToDelete: string[],
     groupId: string,
+    groupAdmin: string,
   ): Promise<any> {
     try {
-      await this.groupService.deleteMagazinesFromGroup(magazinesToDelete, groupId);
+      await this.groupService.deleteMagazinesFromGroup(
+        magazinesToDelete,
+        groupId,
+        groupAdmin,
+      );
     } catch (error: any) {
       throw error;
     }
@@ -85,7 +116,11 @@ export class GroupAdapter implements GroupAdapterInterface {
     page: number,
   ): Promise<GroupListResponse> {
     try {
-      const response = await this.groupService.findGroupByName(name, limit, page);
+      const response = await this.groupService.findGroupByName(
+        name,
+        limit,
+        page,
+      );
       return response;
     } catch (error: any) {
       throw error;

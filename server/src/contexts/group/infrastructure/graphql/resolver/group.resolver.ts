@@ -36,7 +36,7 @@ export class GroupResolver {
   ): Promise<any> {
     try {
       PubliciteAuth.authorize(context, groupAdmin);
-      await this.groupAdapter.addAdminsToGroup(newAdmins, groupId);
+      await this.groupAdapter.addAdminsToGroup(newAdmins, groupId, groupAdmin);
       return 'Admins added';
     } catch (error: any) {
       throw error;
@@ -60,8 +60,12 @@ export class GroupResolver {
   ): Promise<any> {
     try {
       PubliciteAuth.authorize(context, groupAdmin);
-      await this.groupAdapter.addMembersToGroup(newMembers, groupId);
-      return 'Admins added';
+      await this.groupAdapter.addMembersToGroup(
+        newMembers,
+        groupId,
+        groupAdmin,
+      );
+      return 'Members added';
     } catch (error: any) {
       throw error;
     }
@@ -71,7 +75,7 @@ export class GroupResolver {
     nullable: true,
     description: 'Agregar revistas a un grupo',
   })
-  @UseGuards(ClerkAuthGuard)
+  //@UseGuards(ClerkAuthGuard)
   async addMagazinezToGroupByGroupId(
     @Args('newMagazines', { type: () => [String] })
     newMagazines: string[],
@@ -83,8 +87,12 @@ export class GroupResolver {
     context: any,
   ): Promise<any> {
     try {
-      PubliciteAuth.authorize(context, groupAdmin);
-      await this.groupAdapter.addMagazinesToGroup(newMagazines, groupId);
+      //PubliciteAuth.authorize(context, groupAdmin);
+      await this.groupAdapter.addMagazinesToGroup(
+        newMagazines,
+        groupId,
+        groupAdmin,
+      );
       return 'Magazines added';
     } catch (error: any) {
       throw error;
@@ -110,7 +118,7 @@ export class GroupResolver {
     nullable: true,
     description: 'Eliminar admins un grupo',
   })
-  @UseGuards(ClerkAuthGuard)
+  //@UseGuards(ClerkAuthGuard)
   async deleteAdminsFromGroupByGroupId(
     @Args('adminsToDelete', { type: () => [String] })
     adminsToDelete: string[],
@@ -122,8 +130,8 @@ export class GroupResolver {
     context: any,
   ): Promise<any> {
     try {
-      PubliciteAuth.authorize(context, groupAdmin);
-      await this.groupAdapter.deleteAdminsToGroup(adminsToDelete, groupId);
+      //PubliciteAuth.authorize(context, groupAdmin);
+      await this.groupAdapter.deleteAdminsToGroup(adminsToDelete, groupId,groupAdmin);
       return 'Users deleted';
     } catch (error: any) {
       throw error;
@@ -147,7 +155,7 @@ export class GroupResolver {
   ): Promise<any> {
     try {
       PubliciteAuth.authorize(context, groupAdmin);
-      await this.groupAdapter.deleteMembersToGroup(membersToDelete, groupId);
+      await this.groupAdapter.deleteMembersToGroup(membersToDelete, groupId,groupAdmin);
       return 'Users deleted';
     } catch (error: any) {
       throw error;
@@ -174,6 +182,7 @@ export class GroupResolver {
       await this.groupAdapter.deleteMagazinesFromGroup(
         magazinesToDelete,
         groupId,
+        groupAdmin,
       );
       return 'Magazines deleted';
     } catch (error: any) {

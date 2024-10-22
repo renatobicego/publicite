@@ -28,3 +28,4 @@ export interface GroupDocument extends Document {
 }
 
 GroupSchema.index({ name: 1 });
+GroupSchema.index({ admins: 1 });

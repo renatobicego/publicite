@@ -40,7 +40,7 @@ export class PostResolver {
     nullable: true,
     description: 'Actualizar un post',
   })
-  //@UseGuards(ClerkAuthGuard)
+  @UseGuards(ClerkAuthGuard)
   async updatePostById(
     @Args('postUpdate', { type: () => PostUpdateRequest })
     postUpdate: PostUpdateRequest,

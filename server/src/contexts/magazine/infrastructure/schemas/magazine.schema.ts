@@ -24,6 +24,22 @@ const MagazineSchema = new Schema<MagazineDocument>(
   },
 );
 
+// Middleware para eliminar secciones asociadas antes de eliminar las revistas
+MagazineSchema.pre(
+  'deleteMany',
+  { document: false, query: true },
+  async function (next) {
+    const docs = await this.model.find(this.getFilter());
+    for (const doc of docs) {
+      console.log('eliminando las secciones de la revista ' + doc.name);
+      await doc
+        .model('MagazineSection')
+        .deleteMany({ _id: { $in: doc.sections } });
+    }
+    next();
+  },
+);
+
 //Aca creamoos un modelo en mongo llamado Magazine, se basa en el schema de arriba
 // y esta tipado como magazineDocument
 const MagazineModel = model<MagazineDocument>('Magazine', MagazineSchema);

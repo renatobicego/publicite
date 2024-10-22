@@ -9,47 +9,28 @@ export class PostPetition extends Post {
 
   constructor(
     post: Post,
-
     //Good atributes
-
     toPrice: number,
-
     frequencyPrice: string,
-
     petitionType: string,
   ) {
     super(
       post.getTitle,
-
       post.getAuthor,
-
       post.getPostType,
-
       post.getDescription,
-
       post.getVisibility,
-
       post.getRecomendations,
-
       post.getPrice,
-
       post.getLocation,
-
       post.getCategory,
-
       post.getComments,
-
       post.getAttachedFiles as any,
-
       post.getCreateAt,
-
       post.getId,
     );
-
     this.toPrice = toPrice;
-
     this.frequencyPrice = frequencyPrice;
-
     this.petitionType = petitionType;
   }
 
@@ -65,4 +46,3 @@ export class PostPetition extends Post {
     return this.petitionType;
   }
 }
-

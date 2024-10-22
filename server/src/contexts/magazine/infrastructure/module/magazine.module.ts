@@ -8,13 +8,14 @@ import { MagazineModel, MagazineSchema } from '../schemas/magazine.schema';
 import { MagazineSectionModel } from '../schemas/section/magazine.section.schema';
 import { MagazineResolver } from '../resolver/magazine.resolver';
 import { UserMagazineModel } from '../schemas/magazine.user.schema';
-import { GroupMagazineModel } from '../schemas/magazine.group.schema';
 import { MagazineRepositoryMapper } from '../repository/mapper/magazine.repository.mapper';
 import { UserSchema } from 'src/contexts/user/infrastructure/schemas/user.schema';
 import { GroupSchema } from 'src/contexts/group/infrastructure/schemas/group.schema';
+import { SharedModule } from 'src/contexts/shared/sharedModule/sharedModules';
 
 @Module({
   imports: [
+    SharedModule,
     MongooseModule.forFeature([
       {
         name: MagazineModel.modelName,
@@ -23,10 +24,6 @@ import { GroupSchema } from 'src/contexts/group/infrastructure/schemas/group.sch
           {
             name: UserMagazineModel.modelName,
             schema: UserMagazineModel.schema,
-          },
-          {
-            name: GroupMagazineModel.modelName,
-            schema: GroupMagazineModel.schema,
           },
         ],
       },

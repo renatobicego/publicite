@@ -4,35 +4,56 @@ import { Inject } from '@nestjs/common';
 
 import { Group } from '../../domain/entity/group.entity';
 import { GroupRepositoryInterface } from '../../domain/repository/group.repository.interface';
-import { GroupDocument } from '../schemas/group.schema';
 import { GroupRepositoryMapperInterface } from '../../domain/repository/mapper/group.repository.mapper.interface';
 import {
   GroupListResponse,
   GroupResponse,
 } from '../../application/adapter/dto/HTTP-RESPONSE/group.response';
 import { GroupUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/group.update.request';
-import { IUser } from 'src/contexts/user/infrastructure/schemas/user.schema';
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
+import { IUser } from 'src/contexts/user/infrastructure/schemas/user.schema';
+import { GroupDocument } from '../schemas/group.schema';
+import { GroupMagazineDocument } from 'src/contexts/magazine/infrastructure/schemas/magazine.group.schema';
 
 export class GroupRepository implements GroupRepositoryInterface {
   constructor(
     @InjectModel('Group') private readonly groupModel: Model<GroupDocument>,
     @InjectModel('User') private readonly userModel: Model<IUser>,
+
+    @InjectModel('GroupMagazine')
+    private readonly groupMagazine: Model<GroupMagazineDocument>,
+
     @Inject('GroupRepositoryMapperInterface')
     private readonly groupMapper: GroupRepositoryMapperInterface,
     @InjectConnection() private readonly connection: Connection,
     private readonly logger: MyLoggerService,
   ) {}
+
+  checkResultModification(result: any) {
+    if (result.matchedCount === 0) {
+      throw new Error(
+        'Group admin does not have permission or group does not exist.',
+      );
+    }
+  }
   async addMagazinesToGroup(
     magazineIds: string[],
     groupId: string,
+    groupAdmin: string,
   ): Promise<any> {
     try {
-      await this.groupModel
-        .findByIdAndUpdate(groupId, {
-          $addToSet: { magazines: { $each: magazineIds } },
-        })
+      const result = await this.groupModel
+        .updateOne(
+          {
+            _id: groupId,
+            admins: groupAdmin,
+          },
+          {
+            $addToSet: { magazines: { $each: magazineIds } },
+          },
+        )
         .lean();
+      this.checkResultModification(result);
       this.logger.log(
         'Magazines added to group successfully Group ID: ' + groupId,
       );
@@ -45,19 +66,22 @@ export class GroupRepository implements GroupRepositoryInterface {
     }
   }
 
-  async addMembersToGroup(members: string[], groupId: string): Promise<any> {
+  async addMembersToGroup(
+    members: string[],
+    groupId: string,
+    groupAdmin: string,
+  ): Promise<any> {
     const session = await this.connection.startSession();
     try {
       await session.withTransaction(async () => {
-        //Enfoque FOR
-
-        await this.groupModel
-          .findByIdAndUpdate(
-            groupId,
+        const result = await this.groupModel
+          .updateOne(
+            { _id: groupId, admins: groupAdmin },
             { $addToSet: { members: { $each: members } } },
             { session },
           )
           .lean();
+        this.checkResultModification(result);
         await this.userModel
           .updateMany(
             { _id: { $in: members } },
@@ -65,14 +89,16 @@ export class GroupRepository implements GroupRepositoryInterface {
             { session },
           )
           .lean();
+        await session.commitTransaction();
       });
-      await session.commitTransaction();
       this.logger.log(
         'Members added to group successfully Group ID: ' + groupId,
       );
       return;
     } catch (error: any) {
-      await session.abortTransaction();
+      if (session.inTransaction()) {
+        await session.abortTransaction();
+      }
       this.logger.error(
         'An error was ocurred when adding Members to group: ' + error,
       );
@@ -82,19 +108,23 @@ export class GroupRepository implements GroupRepositoryInterface {
     }
   }
 
-  async addAdminsToGroup(admins: string[], groupId: string): Promise<any> {
+  async addAdminsToGroup(
+    admins: string[],
+    groupId: string,
+    groupAdmin: string,
+  ): Promise<any> {
     const session = await this.connection.startSession();
+
     try {
       await session.withTransaction(async () => {
-        //Enfoque FOR
-
-        await this.groupModel
-          .findByIdAndUpdate(
-            groupId,
+        const result = await this.groupModel
+          .updateOne(
+            { _id: groupId, admins: groupAdmin },
             { $addToSet: { admins: { $each: admins } } },
             { session },
           )
           .lean();
+        this.checkResultModification(result);
         await this.userModel
           .updateMany(
             { _id: { $in: admins } },
@@ -102,14 +132,17 @@ export class GroupRepository implements GroupRepositoryInterface {
             { session },
           )
           .lean();
+
+        await session.commitTransaction();
       });
-      await session.commitTransaction();
       this.logger.log(
         'Admins added to group successfully Group ID: ' + groupId,
       );
       return;
     } catch (error: any) {
-      await session.abortTransaction();
+      if (session.inTransaction()) {
+        await session.abortTransaction();
+      }
       this.logger.error(
         'An error was ocurred when adding admins to group: ' + error,
       );
@@ -118,37 +151,85 @@ export class GroupRepository implements GroupRepositoryInterface {
       session.endSession();
     }
   }
-
-  async deleteAdminsToGroup(admins: string[], groupId: string): Promise<any> {
+  async deleteAdminsFromGroup(
+    admins: string[],
+    groupId: string,
+    groupAdmin: string,
+  ): Promise<any> {
     const session = await this.connection.startSession();
+
     try {
       await session.withTransaction(async () => {
-        await this.groupModel
-          .findByIdAndUpdate(
-            groupId,
+        // Buscar el grupo y mantener la referencia
+        const groupToTakeOffAdmin = await this.groupModel
+          .findOne({ _id: groupId, admins: groupAdmin })
+          .lean();
+
+        if (!groupToTakeOffAdmin) {
+          throw new Error('Group does not exist or invalid admin');
+        }
+        const amountOfAdmins = groupToTakeOffAdmin.admins.length
+        const amountOfMembers = groupToTakeOffAdmin.members.length
+        if (amountOfAdmins === 1) {
+          if (amountOfMembers > 0) {
+            throw new Error(
+              'Group must have at least one admin if there are members in the group, if you want to delete the admin, you must delete the members first.',
+            );
+          } else if (amountOfMembers === 0) {
+            // 1- Elimino el grupo
+            await this.groupModel.deleteOne({ _id: groupId }, { session });
+
+            // 2 - Elimino el id del grupo en el admin
+            await this.userModel.updateMany(
+              { _id: { $in: admins } },
+              { $pull: { groups: groupId } },
+              { session },
+            );
+
+            // 3-Elimino las revistas (utilizo el middle para eliminar todas las secciones asociadas)
+            await this.groupMagazine.deleteMany(
+              { group: groupId },
+              { session },
+            );
+
+            this.logger.log(
+              'Group deleted successfully - No members and one admin in the group. Group ID: ' +
+                groupId +
+                'Magazines deleted from group successfully - sections of magazines deleted',
+            );
+            await session.commitTransaction();
+            return;
+          }
+        } else {
+          await this.groupModel.updateOne(
+            { _id: groupId },
             { $pullAll: { admins: admins } },
             { session },
-          )
-          .lean();
-        await this.userModel
-          .updateMany(
-            { _id: { $in: admins } },
-            {
-              $pull: { groups: groupId },
-            },
-            { session },
-          )
-          .lean();
+          );
+
+          await this.userModel
+            .updateMany(
+              { _id: { $in: admins } },
+              { $pull: { groups: groupId } },
+              { session },
+            )
+            .lean();
+
+          await session.commitTransaction();
+          return;
+        }
       });
-      await session.commitTransaction();
+
       this.logger.log(
-        'Admins deleted to group successfully Group ID: ' + groupId,
+        'Admins deleted from group successfully. Group ID: ' + groupId,
       );
       return;
     } catch (error: any) {
-      await session.abortTransaction();
+      if (session.inTransaction()) {
+        await session.abortTransaction();
+      }
       this.logger.error(
-        'An error was ocurred when deleting admins to group: ' + error,
+        'An error occurred when deleting admins from group: ' + error,
       );
       throw error;
     } finally {
@@ -156,15 +237,15 @@ export class GroupRepository implements GroupRepositoryInterface {
     }
   }
 
+  //ME FALTA ELIMINAR MIEMBNROS DEL GRUPO
   async deleteMembersToGroup(
     membersToDelete: string[],
     groupId: string,
+    groupAdmin: string,
   ): Promise<any> {
     const session = await this.connection.startSession();
     try {
       await session.withTransaction(async () => {
-        //Enfoque FOR
-
         await this.groupModel
           .findByIdAndUpdate(
             groupId,
@@ -182,14 +263,16 @@ export class GroupRepository implements GroupRepositoryInterface {
             { session },
           )
           .lean();
+        await session.commitTransaction();
       });
-      await session.commitTransaction();
       this.logger.log(
         'Members deleted to group successfully Group ID: ' + groupId,
       );
       return;
     } catch (error: any) {
-      await session.abortTransaction();
+      if (session.inTransaction()) {
+        await session.abortTransaction();
+      }
       this.logger.error(
         'An error was ocurred when deleted Members to group: ' + error,
       );
@@ -202,6 +285,7 @@ export class GroupRepository implements GroupRepositoryInterface {
   async deleteMagazinesFromGroup(
     magazinesToDelete: string[],
     groupId: string,
+    groupAdmin: string,
   ): Promise<any> {
     try {
       await this.groupModel

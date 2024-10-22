@@ -87,7 +87,7 @@ export class PostAdapterMapper implements PostMapperAdapterInterface {
       request.title,
       request.author,
       postTypetNormalized,
-      request.description,
+      request.description ?? null,
       visibilityNormalizated,
       request.recomendation ?? [],
       request.price,
@@ -120,8 +120,8 @@ export class PostAdapterMapper implements PostMapperAdapterInterface {
       case 'petition':
         return new PostPetition(
           postBase,
-          request.toPrice,
-          request.frequencyPrice,
+          request.toPrice ?? null,
+          request.frequencyPrice ?? null,
           request.petitionType,
         );
 

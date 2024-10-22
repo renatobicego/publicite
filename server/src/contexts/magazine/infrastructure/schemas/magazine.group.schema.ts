@@ -11,11 +11,13 @@ export const GroupMagazineSchema = new Schema<GroupMagazineDocument>({
     {
       type: Schema.Types.ObjectId,
       ref: 'User',
+      required: true,
     },
   ],
   group: {
     type: Schema.Types.ObjectId,
     ref: 'Group',
+    required: true,
   },
 });
 

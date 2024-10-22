@@ -35,12 +35,16 @@ export class MagazineRepository implements MagazineRepositoryInterface {
 
     @InjectModel(MagazineModel.modelName)
     private readonly magazineModel: Model<MagazineDocument>,
+
     @InjectModel(MagazineSectionModel.modelName)
     private readonly magazineSection: Model<MagazineSectionDocument>,
+
     @InjectModel(UserMagazineModel.modelName)
     private readonly userMagazine: Model<UserMagazineDocument>,
+
     @InjectModel(GroupMagazineModel.modelName)
     private readonly groupMagazine: Model<GroupMagazineDocument>,
+
     @InjectModel('User') private readonly userModel: Model<IUser>,
     @InjectModel('Group') private readonly groupModel: Model<GroupDocument>,
   ) {}
@@ -159,7 +163,9 @@ export class MagazineRepository implements MagazineRepositoryInterface {
         await this.groupMagazine
           .findByIdAndUpdate(
             magazineId,
-            { $pullAll: { allowedCollaborators: allowedCollaboratorsToDelete } },
+            {
+              $pullAll: { allowedCollaborators: allowedCollaboratorsToDelete },
+            },
             { session },
           )
           .lean();
@@ -262,12 +268,14 @@ export class MagazineRepository implements MagazineRepositoryInterface {
             case OwnerType.group: {
               const groupMagazine = new this.groupMagazine(magazine);
               magazineSaved = await groupMagazine.save({ session });
-              await this.groupModel.findByIdAndUpdate(
-                //Updateo la revista en el grupo
-                groupMagazine.group,
+              const result = await this.groupModel.updateOne(
+                { _id: groupMagazine.group },
                 { $addToSet: { magazines: magazineSaved._id } },
                 { session },
               );
+              if (result.matchedCount === 0) {
+                throw new Error('Group not found');
+              }
               return magazineSaved._id;
             }
             default: {

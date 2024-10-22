@@ -22,12 +22,14 @@ export class GroupService implements GroupServiceInterface {
   async addMagazinesToGroup(
     magazineIds: string[],
     groupId: string,
+    groupAdmin: string,
   ): Promise<any> {
     try {
       this.logger.log('Adding Magazines to group: ' + groupId);
       return await this.groupRepository.addMagazinesToGroup(
         magazineIds,
         groupId,
+        groupAdmin,
       );
     } catch (error: any) {
       this.logger.error(
@@ -37,29 +39,53 @@ export class GroupService implements GroupServiceInterface {
     }
   }
 
-  async addMembersToGroup(newMembers: string[], groupId: string): Promise<any> {
+  async addMembersToGroup(
+    newMembers: string[],
+    groupId: string,
+    groupAdmin: string,
+  ): Promise<any> {
     try {
       this.logger.log('Adding users to group: ' + groupId);
-      return await this.groupRepository.addMembersToGroup(newMembers, groupId);
+      return await this.groupRepository.addMembersToGroup(
+        newMembers,
+        groupId,
+        groupAdmin,
+      );
     } catch (error: any) {
       this.logger.error('An error was ocurred when adding admins to group: ');
       throw error;
     }
   }
 
-  async addAdminsToGroup(admins: string[], groupId: string): Promise<any> {
+  async addAdminsToGroup(
+    admins: string[],
+    groupId: string,
+    groupAdmin: string,
+  ): Promise<any> {
     try {
       this.logger.log('Adding admins to group: ' + admins);
-      return await this.groupRepository.addAdminsToGroup(admins, groupId);
+      return await this.groupRepository.addAdminsToGroup(
+        admins,
+        groupId,
+        groupAdmin,
+      );
     } catch (error: any) {
       this.logger.error('An error was ocurred when adding admins to group: ');
       throw error;
     }
   }
-  async deleteAdminsToGroup(admins: string[], groupId: string): Promise<any> {
+  async deleteAdminsToGroup(
+    admins: string[],
+    groupId: string,
+    groupAdmin: string,
+  ): Promise<any> {
     try {
       this.logger.log('Deleting admins to group: ' + admins);
-      return await this.groupRepository.deleteAdminsToGroup(admins, groupId);
+      return await this.groupRepository.deleteAdminsFromGroup(
+        admins,
+        groupId,
+        groupAdmin,
+      );
     } catch (error: any) {
       throw error;
     }
@@ -68,12 +94,14 @@ export class GroupService implements GroupServiceInterface {
   async deleteMembersToGroup(
     membersToDelete: string[],
     groupId: string,
+    groupAdmin: string,
   ): Promise<any> {
     try {
       this.logger.log('Deleting users to group: ' + groupId);
       return await this.groupRepository.deleteMembersToGroup(
         membersToDelete,
         groupId,
+        groupAdmin,
       );
     } catch (error: any) {
       this.logger.error(
@@ -86,12 +114,14 @@ export class GroupService implements GroupServiceInterface {
   async deleteMagazinesFromGroup(
     magazineIds: string[],
     groupId: string,
+    groupAdmin: string,
   ): Promise<any> {
     try {
       this.logger.log('Deleting magazines to group: ' + groupId);
       return await this.groupRepository.deleteMagazinesFromGroup(
         magazineIds,
         groupId,
+        groupAdmin,
       );
     } catch (error: any) {
       this.logger.error(
