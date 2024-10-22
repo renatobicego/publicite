@@ -9,27 +9,27 @@ import {
 } from "../NotificationCard";
 
 import GroupImage from "./GroupImage";
-import { GroupInvitationNotification, GroupNotificationType } from "@/types/groupTypes";
+import { GroupNotification, GroupNotificationType } from "@/types/groupTypes";
 import { noticationMessages } from "./notificationMessages";
 
-const GroupNotification = ({
+const GroupNotificationCard = ({
   notification,
 }: {
-  notification: GroupInvitationNotification;
+  notification: GroupNotification;
 }) => {
-  const { group } = notification;
-  const { type } = notification;
+  const { group } = notification.frontData;
+  const { event } = notification;
   return (
     <NotificationCard>
       <GroupImage group={group} />
       <NotificationBody>
         <p className="text-sm">
-          {noticationMessages[type].showUser && (
+          {noticationMessages[event as GroupNotificationType].showUser && (
             <span className="font-semibold">
-              {notification.userInviting.username}
+              {notification.frontData.userInviting.username}
             </span>
           )} {" "}
-          {noticationMessages[type].message}
+          {noticationMessages[event as GroupNotificationType].message}
           <span className="font-semibold"> {group.name}</span>
         </p>
       </NotificationBody>
@@ -55,4 +55,4 @@ const GroupNotification = ({
   );
 };
 
-export default GroupNotification;
+export default GroupNotificationCard;

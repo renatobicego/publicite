@@ -9,7 +9,7 @@ import {
 import { Server, Socket } from 'socket.io';
 
 import { SocketNotificationServiceInterface } from '../../domain/service/socket.notification.service.interface';
-import { BadRequestException, Inject } from '@nestjs/common';
+import { Inject } from '@nestjs/common';
 import {
   allowedEvents,
   EventTypes,
@@ -55,12 +55,10 @@ export class NotificationGatewaySocket
     event: string;
     client: Socket;
   } {
-    
     const { groupInvitation } = data;
     const { userToSendId } = groupInvitation.backData;
     const { event } = groupInvitation;
     const client = this.clients[userToSendId]?.socket;
-
     if (!allowedEvents.has(event as EventTypes)) {
       throw Error(`Invalid event type: ${event}`);
     }
@@ -78,7 +76,7 @@ export class NotificationGatewaySocket
     client: Socket,
   ) {
     if (client) {
-      client.emit(event, groupInvitation);
+      client.emit('group_notifications', groupInvitation);
       this.notificatorService.sendNotificationToUser(groupInvitation);
     } else {
       this.notificatorService.sendNotificationToUser(groupInvitation);

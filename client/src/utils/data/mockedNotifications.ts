@@ -8,8 +8,8 @@ import {
   NewContactRelationNotification,
 } from "@/types/userTypes";
 import { PaymentSuccesNotification } from "@/types/subscriptions";
-import { GroupInvitationNotification } from "@/types/groupTypes";
 import { MagazineInvitationNotification } from "@/types/magazineTypes";
+import { GroupNotification } from "@/types/groupTypes";
 
 export const mockedNewContactPost: PostContactNotification = {
   _id: "1",
@@ -63,12 +63,12 @@ export const mockedNewContactRelation: NewContactRelationNotification = {
   },
 };
 
-export const mockedGroupInvitation: GroupInvitationNotification = {
-  _id: "3",
+export const mockedGroupInvitation: GroupNotification = {
   date: "2022-01-01",
-  group: { _id: "1", name: "Computadoras", profilePhotoUrl: "" },
-  userInviting: { username: "username" },
-  type: "notification_group_user_request_sent",
+  frontData: { group: { _id: "1", name: "Computadoras", profilePhotoUrl: "" } , userInviting: { username: "username" } },
+  event: "notification_group_user_request_sent",
+  backData: { userToSendId: "1" },
+  viewed: false,
 };
 
 export const mockedPostShared: PostSharedNotification = {
