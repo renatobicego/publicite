@@ -1,6 +1,6 @@
 import { Inject, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Resolver, Query, Context } from '@nestjs/graphql';
-import { ObjectId, StringExpressionOperatorReturningNumber } from 'mongoose';
+import { ObjectId } from 'mongoose';
 
 import { MagazineAdapterInterface } from '../../application/adapter/magazine.adapter.interface';
 import { MagazineCreateRequest } from '../../application/adapter/dto/HTTP-REQUEST/magazine.create.request';
@@ -35,38 +35,13 @@ export class MagazineResolver {
       await this.magazineAdapter.addCollaboratorsToMagazine(
         newColaborators,
         magazineId,
+        magazineAdmin,
       );
       return 'Colaborators added';
     } catch (error: any) {
       throw error;
     }
   }
-
-  // @Mutation(() => String, {
-  //   nullable: true,
-  //   description: 'Agregar allowedCollaborators a la revista',
-  // })
-  // async addAllowedCollaboratorsToMagazine(
-  //   @Args('newAllowedColaborators', { type: () => [String] })
-  //   newAllowedColaborators: string[],
-  //   @Args('magazineAdmin', { type: () => String })
-  //   magazineAdmin: string,
-  //   @Args('magazineId', { type: () => String })
-  //   magazineId: string,
-  //   @Context()
-  //   context: any,
-  // ): Promise<any> {
-  //   try {
-  //     PubliciteAuth.authorize(context, magazineAdmin);
-  //     await this.magazineAdapter.addAllowedCollaboratorsToMagazine(
-  //       newAllowedColaborators,
-  //       magazineId,
-  //     );
-  //     return 'Colaborators added';
-  //   } catch (error: any) {
-  //     throw error;
-  //   }
-  // }
 
   @Mutation(() => String, {
     nullable: true,
@@ -87,38 +62,13 @@ export class MagazineResolver {
       await this.magazineAdapter.deleteCollaboratorsFromMagazine(
         colaboratorsToDelete,
         magazineId,
+        magazineAdmin,
       );
       return 'Colaborators deleted';
     } catch (error: any) {
       throw error;
     }
   }
-
-  // @Mutation(() => String, {
-  //   nullable: true,
-  //   description: 'Eliminar allowed colaboradores de la revista',
-  // })
-  // async deleteAllowedCollaboratorsFromMagazine(
-  //   @Args('allowedCollaboratorsToDelete', { type: () => [String] })
-  //   allowedCollaboratorsToDelete: string[],
-  //   @Args('magazineAdmin', { type: () => String })
-  //   magazineAdmin: string,
-  //   @Args('magazineId', { type: () => String })
-  //   magazineId: string,
-  //   @Context()
-  //   context: any,
-  // ): Promise<any> {
-  //   try {
-  //     PubliciteAuth.authorize(context, magazineAdmin);
-  //     await this.magazineAdapter.deleteAllowedCollaboratorsFromMagazine(
-  //       allowedCollaboratorsToDelete,
-  //       magazineId,
-  //     );
-  //     return 'Colaborators deleted';
-  //   } catch (error: any) {
-  //     throw error;
-  //   }
-  // }
 
   @Mutation(() => String, {
     nullable: true,
@@ -170,3 +120,55 @@ export class MagazineResolver {
     }
   }
 }
+
+// @Mutation(() => String, {
+//   nullable: true,
+//   description: 'Agregar allowedCollaborators a la revista',
+// })
+// async addAllowedCollaboratorsToMagazine(
+//   @Args('newAllowedColaborators', { type: () => [String] })
+//   newAllowedColaborators: string[],
+//   @Args('magazineAdmin', { type: () => String })
+//   magazineAdmin: string,
+//   @Args('magazineId', { type: () => String })
+//   magazineId: string,
+//   @Context()
+//   context: any,
+// ): Promise<any> {
+//   try {
+//     PubliciteAuth.authorize(context, magazineAdmin);
+//     await this.magazineAdapter.addAllowedCollaboratorsToMagazine(
+//       newAllowedColaborators,
+//       magazineId,
+//     );
+//     return 'Colaborators added';
+//   } catch (error: any) {
+//     throw error;
+//   }
+// }
+
+// @Mutation(() => String, {
+//   nullable: true,
+//   description: 'Eliminar allowed colaboradores de la revista',
+// })
+// async deleteAllowedCollaboratorsFromMagazine(
+//   @Args('allowedCollaboratorsToDelete', { type: () => [String] })
+//   allowedCollaboratorsToDelete: string[],
+//   @Args('magazineAdmin', { type: () => String })
+//   magazineAdmin: string,
+//   @Args('magazineId', { type: () => String })
+//   magazineId: string,
+//   @Context()
+//   context: any,
+// ): Promise<any> {
+//   try {
+//     PubliciteAuth.authorize(context, magazineAdmin);
+//     await this.magazineAdapter.deleteAllowedCollaboratorsFromMagazine(
+//       allowedCollaboratorsToDelete,
+//       magazineId,
+//     );
+//     return 'Colaborators deleted';
+//   } catch (error: any) {
+//     throw error;
+//   }
+// }

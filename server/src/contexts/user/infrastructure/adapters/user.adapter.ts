@@ -19,7 +19,7 @@ import { UserPersonalUpdateResponse } from '../../application/adapter/dto/HTTP-R
 import { UserBusinessUpdateResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.business.response.UPDATE';
 import { UserPersonalInformationResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.information.response';
 import { UserPreferenceResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.preferences.response';
-import { GROUP_notification_graph_model_get_all } from '../../application/adapter/dto/HTTP-RESPONSE/notifications/group/user.notifications.response';
+import { GROUP_notification_graph_model_get_all } from '../../application/adapter/dto/HTTP-RESPONSE/notifications/user.notifications.response';
 
 @Injectable()
 export class UserAdapter implements UserAdapterInterface {

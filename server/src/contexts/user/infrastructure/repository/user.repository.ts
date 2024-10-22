@@ -23,7 +23,7 @@ import { UP_clerkUpdateRequestDto } from 'src/contexts/webhook/application/clerk
 import { UserClerkUpdateDto } from '../../domain/entity/dto/user.clerk.update.dto';
 import { UserFindAllResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.response.dto';
 import { fullNameNormalization } from '../../application/functions/utils';
-import { GROUP_notification_graph_model_get_all } from '../../application/adapter/dto/HTTP-RESPONSE/notifications/group/user.notifications.response';
+import { GROUP_notification_graph_model_get_all } from '../../application/adapter/dto/HTTP-RESPONSE/notifications/user.notifications.response';
 
 @Injectable()
 export class UserRepository implements UserRepositoryInterface {

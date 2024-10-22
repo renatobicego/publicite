@@ -8,19 +8,15 @@ export interface MagazineRepositoryInterface {
   addCollaboratorsToMagazine(
     newColaborators: string[],
     magazineId: string,
+    magazineAdmin: string,
   ): Promise<void>;
-  // addAllowedCollaboratorsToMagazine(
-  //   newAllowedCollaborators: string[],
-  //   magazineId: string,
-  // ): Promise<any>;
+
   deleteCollaboratorsFromMagazine(
     colaboratorsToDelete: string[],
     magazineId: string,
+    magazineAdmin: string,
   ): Promise<void>;
-  // deleteAllowedCollaboratorsFromMagazine(
-  //   allowedCollaboratorsToDelete: string[],
-  //   magazineId: string,
-  // ): Promise<any>;
+
   save(magazine: Magazine): Promise<any>;
   saveMagazineWithSection(magazine: Magazine): Promise<any>;
   findMagazineByMagazineId(
@@ -28,3 +24,13 @@ export interface MagazineRepositoryInterface {
   ): Promise<Partial<MagazineResponse> | null>;
   updateMagazineById(magazine: MagazineUpdateRequest): Promise<any>;
 }
+
+// deleteAllowedCollaboratorsFromMagazine(
+//   allowedCollaboratorsToDelete: string[],
+//   magazineId: string,
+// ): Promise<any>;
+
+// addAllowedCollaboratorsToMagazine(
+//   newAllowedCollaborators: string[],
+//   magazineId: string,
+// ): Promise<any>;

@@ -9,7 +9,7 @@ import {
   UserFindAllResponse,
   UserResponse,
 } from './dto/HTTP-RESPONSE/user.response.dto';
-import { GROUP_notification_graph_model_get_all } from './dto/HTTP-RESPONSE/notifications/group/user.notifications.response';
+import { GROUP_notification_graph_model_get_all } from './dto/HTTP-RESPONSE/notifications/user.notifications.response';
 
 export interface UserAdapterInterface {
   createUser(req: UserRequest): Promise<UserResponse>;

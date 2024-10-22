@@ -40,12 +40,14 @@ export class MagazineService implements MagazineServiceInterface {
   async addCollaboratorsToMagazine(
     newColaborators: string[],
     magazineId: string,
+    magazineAdmin: string,
   ): Promise<void> {
     try {
       this.logger.log('Adding Colaborators to Magazine in service..');
       await this.magazineRepository.addCollaboratorsToMagazine(
         newColaborators,
         magazineId,
+        magazineAdmin,
       );
     } catch (error: any) {
       this.logger.error(
@@ -109,12 +111,14 @@ export class MagazineService implements MagazineServiceInterface {
   async deleteCollaboratorsFromMagazine(
     colaboratorsToDelete: string[],
     magazineId: string,
+    magazineAdmin: string,
   ): Promise<void> {
     try {
       this.logger.log('Deleting Colaborators from Magazine in service..');
       await this.magazineRepository.deleteCollaboratorsFromMagazine(
         colaboratorsToDelete,
         magazineId,
+        magazineAdmin,
       );
     } catch (error: any) {
       this.logger.error('Error deleting Colaborators from Magazine in service');

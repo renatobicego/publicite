@@ -4,7 +4,7 @@ import { Args, Query, Resolver } from '@nestjs/graphql';
 import { ClerkAuthGuard } from 'src/contexts/clerk-auth/clerk.auth.guard';
 import { User_Full_Grapql_Model } from 'src/contexts/user/domain/entity/models_graphql/user.full.grapql.model';
 import { UserAdapterInterface } from 'src/contexts/user/application/adapter/userAdapter.interface';
-import { GROUP_notification_graph_model_get_all } from 'src/contexts/user/application/adapter/dto/HTTP-RESPONSE/notifications/group/user.notifications.response';
+import { GROUP_notification_graph_model_get_all } from 'src/contexts/user/application/adapter/dto/HTTP-RESPONSE/notifications/user.notifications.response';
 
 //´Provee instrucciones para transformar las insttrucciones provenientes del cliente en data que graph puede utilizar
 // Los resolvers son similareas a los controladores traicionales de un rest enpoint. SON PROVIDERS para nest
