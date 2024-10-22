@@ -5,6 +5,14 @@ export interface UserPreferences {
   searchPreference: Schema.Types.ObjectId[];
   backgroundColor: number | undefined;
 }
+export interface Notification {
+  event: string;
+  viewed: boolean;
+  date: string;
+  backData: {
+    userToSendId: string;
+  };
+}
 
 interface IUser extends Document {
   clerkId: string;
@@ -59,11 +67,13 @@ const UserSchema = new Schema<IUser>(
     },
     notifications: [
       {
-        event: { type: String },
-        viewed: { type: Boolean, default: false },
-        date: { type: String },
-        backData: {
-          userToSendId: { type: String },
+        notification: {
+          event: { type: String },
+          viewed: { type: Boolean, default: false },
+          date: { type: String },
+          backData: {
+            userToSendId: { type: String },
+          },
         },
         frontData: {
           type: SchemaTypes.Mixed,

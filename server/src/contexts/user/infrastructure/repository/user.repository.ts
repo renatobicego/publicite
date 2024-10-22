@@ -226,7 +226,7 @@ export class UserRepository implements UserRepositoryInterface {
   }
 
   async pushNotification(notification: any): Promise<any> {
-    const { userToSendId } = notification.backData;
+    const { userToSendId } = notification.notification.backData;
 
     try {
       await this.user

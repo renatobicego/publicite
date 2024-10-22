@@ -52,12 +52,11 @@ export class NotificationGatewaySocket
 
   getInformationFromNotificationGroup(data: any): {
     groupInvitation: GroupInvitation;
-    event: string;
     client: Socket;
   } {
     const { groupInvitation } = data;
-    const { userToSendId } = groupInvitation.backData;
-    const { event } = groupInvitation;
+    const { userToSendId } = groupInvitation.notification.backData;
+    const { event } = groupInvitation.notification;
     const client = this.clients[userToSendId]?.socket;
     if (!allowedEvents.has(event as EventTypes)) {
       throw Error(`Invalid event type: ${event}`);
@@ -65,7 +64,6 @@ export class NotificationGatewaySocket
 
     return {
       groupInvitation,
-      event,
       client,
     };
   }
@@ -76,7 +74,7 @@ export class NotificationGatewaySocket
     client: Socket,
   ) {
     if (client) {
-      client.emit('group_notifications', groupInvitation);
+      client.emit(event, groupInvitation);
       this.notificatorService.sendNotificationToUser(groupInvitation);
     } else {
       this.notificatorService.sendNotificationToUser(groupInvitation);
@@ -86,10 +84,10 @@ export class NotificationGatewaySocket
   @SubscribeMessage('group_notifications')
   group_notifications(@MessageBody() data: GroupInvitation) {
     try {
-      const { groupInvitation, event, client } =
+      const { groupInvitation, client } =
         this.getInformationFromNotificationGroup(data);
 
-      this.handleNotification(groupInvitation, event, client);
+      this.handleNotification(groupInvitation, 'group_notifications', client);
     } catch (error: any) {
       throw error;
     }

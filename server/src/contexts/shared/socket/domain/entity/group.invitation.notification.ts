@@ -1,3 +1,5 @@
+import { Notification } from './notification.entity';
+
 const eventTypes = [
   'notification_group_new_user_invited', // Te han invitado a un grupo
   'notification_group_new_user_added', // Te han agregado a un grupo
@@ -14,17 +16,11 @@ const allowedEvents: Set<EventTypes> = new Set(eventTypes);
 
 class GroupInvitation {
   groupInvitation: {
-    event: EventTypes;
-    viewed: boolean;
-    date: string;
-    backData: {
-      userToSendId: string;
-    };
+    notification: Notification;
     frontData: {
       group: Pick<any, '_id' | 'name' | 'profilePhotoUrl'>;
       userInviting: Pick<any, 'username'>;
     };
-    type: string;
   };
 }
 
