@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import { Noto_Sans } from "next/font/google";
 import "./globals.css";
-import "./clerk.css"
+import "./clerk.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Providers } from "./providers";
 import { ClerkProvider } from "@clerk/nextjs";
 import { esES } from "@clerk/localizations";
+import { SocketProvider } from "./socketProvider";
 
 const noto = Noto_Sans({ subsets: ["latin"], variable: "--font-noto" });
 export const metadata: Metadata = {
@@ -40,14 +41,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider localization={localization} >
+    <ClerkProvider localization={localization}>
       <html lang="en">
         <body
           className={` ${noto.className}  text-text-color overflow-x-hidden`}
         >
           <Providers>
-            {children}
-            <ToastContainer />
+            <SocketProvider>
+              {children}
+              <ToastContainer />
+            </SocketProvider>
           </Providers>
         </body>
       </html>

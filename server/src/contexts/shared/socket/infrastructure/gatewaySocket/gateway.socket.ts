@@ -55,12 +55,11 @@ export class NotificationGatewaySocket
     event: string;
     client: Socket;
   } {
-    
     const { groupInvitation } = data;
     const { userToSendId } = groupInvitation.backData;
     const { event } = groupInvitation;
     const client = this.clients[userToSendId]?.socket;
-
+    console.log(client);
     if (!allowedEvents.has(event as EventTypes)) {
       throw Error(`Invalid event type: ${event}`);
     }

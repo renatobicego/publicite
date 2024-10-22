@@ -1,10 +1,31 @@
 "use client";
-import { useState, useEffect } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
+import { UserPreferences } from "@/types/userTypes";
 import { Socket } from "socket.io-client";
 import { useUser } from "@clerk/nextjs";
 import { getSocket } from "@/socket";
 
-const useSocket = () => {
+interface SocketContextType {
+  socket: Socket | null;
+}
+
+const SocketContext = createContext<SocketContextType | undefined>(undefined);
+
+export const useSocket = () => {
+  const context = useContext(SocketContext);
+  if (!context) {
+    throw new Error("useSocket must be used within a SocketProvider");
+  }
+  return context;
+};
+
+export const SocketProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useUser();
 
   const [socket, setSocket] = useState<Socket | null>(null);
@@ -17,7 +38,8 @@ const useSocket = () => {
       socketInstance.disconnect();
     };
   }, [user?.publicMetadata.mongoId]);
-  //   Log socket connection status
+    
+      //   Log socket connection status
   useEffect(() => {
     if (socket) {
       socket.on("connect", () => {
@@ -31,10 +53,17 @@ const useSocket = () => {
       socket.on("connect_error", (err: any) => {
         console.log("Socket connection error:", err);
       });
+      
     }
+
+    return () => {
+      socket?.disconnect();
+    };
   }, [socket]);
 
-  return socket;
+  return (
+    <SocketContext.Provider value={{ socket }}>
+      {children}
+    </SocketContext.Provider>
+  );
 };
-
-export default useSocket;

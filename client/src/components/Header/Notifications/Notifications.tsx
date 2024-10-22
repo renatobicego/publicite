@@ -1,11 +1,11 @@
 import { use, useEffect, useState } from "react";
 import MobileNotifications from "./MobileNotifications";
 import DesktopNotifications from "./DesktopNotifications";
-import useSocket from "@/utils/hooks/useSocket";
+import { useSocket } from "@/app/socketProvider";
 
 const Notifications = () => {
   const [screenSize, setScreenSize] = useState(0);
-  const socket = useSocket();
+  const {socket} = useSocket();
   useEffect(() => {
     if (typeof window !== "undefined") {
       setScreenSize(window.innerWidth);
@@ -21,10 +21,10 @@ const Notifications = () => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
-
+  
   useEffect(() => {
     if (socket) {
-      socket.on("group_notifications", (data) => {
+      socket.on("notification_group_user_request_sent", (data) => {
         console.log(data);
       });
     }

@@ -22,6 +22,7 @@ const generateGroupNotification = (
       userToSendId,
     },
   };
+  console.log(notification)
   return notification;
 };
 

@@ -14,9 +14,9 @@ import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { useRouter } from "next-nprogress-bar";
 import { IoTrashOutline } from "react-icons/io5";
 import { Group } from "@/types/groupTypes";
-import useSocket from "@/utils/hooks/useSocket";
-import generateGroupNotification from "../notifications/groups/generateGroupNotification";
 import { useUser } from "@clerk/nextjs";
+import { useSocket } from "@/app/socketProvider";
+import { emitNewAdminNotification } from "../notifications/groups/emitNotifications";
 
 const HandleGroupMember = ({
   user,
@@ -30,7 +30,7 @@ const HandleGroupMember = ({
   isAdmin?: boolean;
 }) => {
   const router = useRouter();
-  const socket = useSocket();
+  const { socket } = useSocket();
   const { user: userLogged } = useUser();
 
   const makeAdmin = async () => {
@@ -40,16 +40,12 @@ const HandleGroupMember = ({
         toastifyError(res.error as string);
         return;
       }
-      socket?.emit("group_notifications", {
-        gorupInvitation: {
-          ...generateGroupNotification(
-            "notification_group_user_request_sent",
-            group,
-            { username: user.username },
-            userLogged?.publicMetadata.mongoId as string
-          ),
-        },
-      });
+      emitNewAdminNotification(
+        socket,
+        group,
+        userLogged?.username as string,
+        user._id
+      );
       toastifySuccess(res.message);
       router.refresh();
     }
