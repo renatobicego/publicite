@@ -77,7 +77,7 @@ export class NotificationGatewaySocket
     client: Socket,
   ) {
     if (client) {
-      client.emit(event, groupInvitation);
+      client.emit("group_notifications", groupInvitation);
       this.notificatorService.sendNotificationToUser(groupInvitation);
     } else {
       this.notificatorService.sendNotificationToUser(groupInvitation);
