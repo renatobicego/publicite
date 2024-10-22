@@ -270,6 +270,7 @@ type GroupResponse {
   members: [members_graphQl!]
   admins: [GroupResponse_admins!]
   name: String!
+  creator: String!
   rules: String
   magazines: [magazine_graphql_group!]
   details: String

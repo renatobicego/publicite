@@ -1,6 +1,5 @@
 "use client";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
-import { useUser } from "@clerk/nextjs";
 import { Form, Formik, FormikHelpers } from "formik";
 import Inputs from "./Inputs";
 import UploadProfileImage from "./UploadProfileImage";
@@ -14,12 +13,11 @@ import { useRouter } from "next-nprogress-bar";
 import { groupValidation } from "./validation";
 import { Group } from "@/types/groupTypes";
 
-export type PostGroup = Omit<Group, "_id">;
+export type PostGroup = Omit<Group, "_id" |"creator">;
 const CreateGroupForm = () => {
-  const { user } = useUser();
   const initialValues: PostGroup = {
     name: "",
-    admins: [user?.publicMetadata.mongoId as string],
+    admins: [],
     details: "",
     rules: "",
     magazines: [],

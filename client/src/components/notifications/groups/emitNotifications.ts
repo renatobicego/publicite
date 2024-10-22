@@ -1,16 +1,17 @@
 import { Socket } from "socket.io-client";
 import generateGroupNotification from "./generateGroupNotification";
-import { Group } from "@/types/groupTypes";
+import { Group, GroupNotificationType } from "@/types/groupTypes";
 
-export const emitNewAdminNotification = (
+export const emitGroupNotification = (
   socket: Socket | null,
   group: Group,
   userUsernameSending: string,
-  userToSendId: string
+  userToSendId: string,
+  event: GroupNotificationType
 ) => {
   const notification = {
     groupInvitation: generateGroupNotification(
-      "notification_group_user_request_sent",
+      event,
       group,
       { username: userUsernameSending },
       userToSendId

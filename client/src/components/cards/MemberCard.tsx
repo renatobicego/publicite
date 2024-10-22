@@ -1,16 +1,18 @@
-import { User, UserBusiness } from "@/types/userTypes";
+import { User } from "@/types/userTypes";
 import { Avatar, Card, CardBody, Link } from "@nextui-org/react";
-import { TbWorldPin } from "react-icons/tb";
-import SendRequest from "../buttons/SendRequest";
 import { PROFILE } from "@/utils/data/urls";
+import HandleGroupMember from "../buttons/HandleGroupMember";
+import { Group } from "@/types/groupTypes";
 
-const ProfileCard = ({ user }: { user: User }) => {
-  const { userType } = user;
-  const nameToShow =
-    userType === "Business"
-      ? (user as UserBusiness).businessName
-      : `${user.name} ${user.lastName}`;
-
+const MemberCard = ({
+  user,
+  group,
+  isAdmin,
+}: {
+  user: User;
+  group: Group;
+  isAdmin?: boolean;
+}) => {
   return (
     <Card className="bg-fondo">
       <CardBody className="sm:flex-row gap-2 md:gap-4 lg:gap-6 sm:items-center">
@@ -27,18 +29,22 @@ const ProfileCard = ({ user }: { user: User }) => {
             className="text-text-color hover:text-primary"
             href={`${PROFILE}/${user.username}`}
           >
-            <h6>{nameToShow}</h6>
+            <h6>{user.username}</h6>
           </Link>
 
-          <div className="flex items-start gap-1">
-            <TbWorldPin className="size-4 min-w-4 mt-0.5" />
-            <p className="text-xs md:text-sm">{user.countryRegion}</p>
-          </div>
-          <SendRequest />
+          {isAdmin && (
+            <p className="text-xs font-normal italic">Administrador</p>
+          )}
+          <HandleGroupMember
+            user={user}
+            nameToShow={user.username}
+            group={group}
+            isAdmin={isAdmin}
+          />
         </div>
       </CardBody>
     </Card>
   );
 };
 
-export default ProfileCard;
+export default MemberCard;

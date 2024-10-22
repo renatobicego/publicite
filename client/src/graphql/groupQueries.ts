@@ -16,6 +16,7 @@ export const getGroupByIdQuery = gql`
         username
         _id
       }
+      creator
       details
       magazines {
         sections {
@@ -49,6 +50,7 @@ export const getGroupMembersByIdQuery = gql`
         username
         _id
       }
+
       members {
         username
         profilePhotoUrl

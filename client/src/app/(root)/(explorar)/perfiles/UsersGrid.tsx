@@ -1,10 +1,8 @@
 import ProfileCard from "@/components/cards/ProfileCard";
 import { User } from "@/types/userTypes";
 import { Group } from "@/types/groupTypes";
-import { Spinner, user } from "@nextui-org/react";
-import { addAdmin, removeMember } from "@/app/server/groupActions";
-import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
-import { useRouter } from "next-nprogress-bar";
+import { Spinner } from "@nextui-org/react";
+import MemberCard from "@/components/cards/MemberCard";
 
 const UsersGrid = ({
   items,
@@ -16,22 +14,25 @@ const UsersGrid = ({
   isLoading?: boolean;
   groupGrid?: boolean;
   group?: Group;
-  }) => {
+}) => {
+  const isAdmin = (user: User) =>
+    group?.admins.some((admin) => (admin as User)._id === user._id);
   return (
     <>
       <div className="grid grid-cols-2 lg:grid-cols-3 3xl:grid-cols-4 gap-4">
         {items &&
-          items.map((user: User, index) => (
-            <ProfileCard
-              user={user}
-              key={user._id + index}
-              groupGrid={groupGrid}
-              group={group}
-              isAdmin={group?.admins.some(
-                (admin) => (admin as User)._id === user._id
-              )}
-            />
-          ))}
+          items.map((user: User, index) =>
+            (groupGrid && group) ? (
+              <MemberCard
+                user={user}
+                group={group}
+                key={user._id}
+                isAdmin={isAdmin(user)}
+              />
+            ) : (
+              <ProfileCard user={user} key={user._id} />
+            )
+          )}
       </div>
       {!isLoading && (!items || items.length === 0) && (
         <p className="max-md:text-sm text-light-text">

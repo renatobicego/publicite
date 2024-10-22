@@ -16,7 +16,7 @@ import { IoTrashOutline } from "react-icons/io5";
 import { Group } from "@/types/groupTypes";
 import { useUser } from "@clerk/nextjs";
 import { useSocket } from "@/app/socketProvider";
-import { emitNewAdminNotification } from "../notifications/groups/emitNotifications";
+import { emitGroupNotification } from "../notifications/groups/emitNotifications";
 
 const HandleGroupMember = ({
   user,
@@ -26,37 +26,44 @@ const HandleGroupMember = ({
 }: {
   user: User;
   nameToShow: string;
-  group?: Group;
+  group: Group;
   isAdmin?: boolean;
 }) => {
   const router = useRouter();
   const { socket } = useSocket();
   const { user: userLogged } = useUser();
+  const isCreator = group?.creator === userLogged?.publicMetadata.mongoId;
 
   const makeAdmin = async () => {
-    if (group?._id) {
-      const res = await addAdmin(group?._id, [user._id]);
-      if ("error" in res) {
-        toastifyError(res.error as string);
-        return;
-      }
-      emitNewAdminNotification(
-        socket,
-        group,
-        userLogged?.username as string,
-        user._id
-      );
-      toastifySuccess(res.message);
-      router.refresh();
-    }
-  };
-
-  const deleteMember = async () => {
-    const res = await removeMember(group?._id as string, [user._id]);
+    const res = await addAdmin(group?._id, [user._id]);
     if ("error" in res) {
       toastifyError(res.error as string);
       return;
     }
+    emitGroupNotification(
+      socket,
+      group,
+      userLogged?.username as string,
+      user._id,
+      "notification_group_user_new_admin"
+    );
+    toastifySuccess(res.message);
+    router.refresh();
+  };
+
+  const deleteMember = async () => {
+    const res = await removeMember(group._id as string, [user._id]);
+    if ("error" in res) {
+      toastifyError(res.error as string);
+      return;
+    }
+    emitGroupNotification(
+      socket,
+      group,
+      userLogged?.username as string,
+      user._id,
+      "notification_group_user_removed_from_group"
+    );
     toastifySuccess(res.message);
     router.refresh();
   };
@@ -122,6 +129,26 @@ const HandleGroupMember = ({
             onConfirm={deleteMember}
           />
         </>
+      )}
+
+      {isAdmin && isCreator && (
+        <ConfirmModal
+          ButtonAction={
+            <Button
+              size="sm"
+              isIconOnly
+              color="danger"
+              variant="flat"
+              radius="full"
+            >
+              <IoTrashOutline />
+            </Button>
+          }
+          message={`¿Desea eliminar a ${nameToShow} del grupo?`}
+          tooltipMessage="Eliminar"
+          confirmText="Eliminar"
+          onConfirm={deleteMember}
+        />
       )}
     </div>
   );

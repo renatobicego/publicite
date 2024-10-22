@@ -8,6 +8,7 @@ export interface Group {
   magazines: ObjectId[] | Magazine[];
   profilePhotoUrl: string;
   visibility: "private" | "public";
+  creator: ObjectId
 }
 
 export interface EditGroupInterface
@@ -23,9 +24,11 @@ export interface GroupNotification extends BaseNotification {
 }
 
 export type GroupNotificationType =
-  | "notification_group_user_delete"
-  | "notification_group_user_added"
-  | "notification_group_user_request_rejected"
-  | "notification_group_user_invite_declined"
-  | "notification_group_user_request_sent"
-  | "notification_group_user_new_admin";
+  | "notification_group_new_user_invited" // Te han invitado a un grupo
+  | "notification_group_new_user_added" // Te han agregado a un grupo
+  | "notification_group_user_accepted" // Te han aceptado en un grupo
+  | "notification_group_user_rejected" // Te han rechazado en un grupo
+  | "notification_group_user_rejected_group_invitation" // Usuario B rechazó unirse al grupo
+  | "notification_group_user_request_group_invitation" // Usuario A quiere pertenecer a un grupo
+  | "notification_group_user_removed_from_group" // Te han eliminado del grupo
+  | "notification_group_user_new_admin"; // Te han convertido en administrador
