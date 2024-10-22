@@ -11,6 +11,39 @@ type Contact {
   website: String
 }
 
+type backData {
+  userToSendId: String!
+}
+
+type front_data_group {
+  _id: String!
+  name: String!
+  profilePhotoUrl: String!
+}
+
+type userInviting {
+  username: String!
+}
+
+type frontData {
+  group: front_data_group!
+  userInviting: userInviting!
+}
+
+type GROUP_notification {
+  _id: ID!
+  event: String!
+  viewed: Boolean!
+  date: String!
+  backData: backData!
+  frontData: frontData!
+}
+
+type GROUP_notification_graph_model_get_all {
+  notifications: [GROUP_notification!]!
+  hasMore: Boolean!
+}
+
 type Board {
   _id: ID
   annotations: [String!]
@@ -349,6 +382,9 @@ type Query {
 
   """Obtiene un usuario por su nombre de usuario"""
   findUserByUsername(username: String!): User_Full_Grapql_Model
+
+  """Obtiene un usuario por su nombre de usuario"""
+  getAllNotificationsFromUserById(id: String!, limit: Float!, page: Float!): GROUP_notification_graph_model_get_all
 
   """Obtener Post por autor"""
   findPostsByAuthorId(authorId: String!): [Post_Full_Graphql_Model!]

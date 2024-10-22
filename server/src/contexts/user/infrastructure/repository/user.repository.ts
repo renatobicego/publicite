@@ -23,6 +23,7 @@ import { UP_clerkUpdateRequestDto } from 'src/contexts/webhook/application/clerk
 import { UserClerkUpdateDto } from '../../domain/entity/dto/user.clerk.update.dto';
 import { UserFindAllResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.response.dto';
 import { fullNameNormalization } from '../../application/functions/utils';
+import { GROUP_notification_graph_model_get_all } from '../../application/adapter/dto/HTTP-RESPONSE/notifications/group/user.notifications.response';
 
 @Injectable()
 export class UserRepository implements UserRepositoryInterface {
@@ -186,6 +187,40 @@ export class UserRepository implements UserRepositoryInterface {
         'Error in getUserPersonalInformationByUsername method',
         error,
       );
+      throw error;
+    }
+  }
+
+  async getAllNotificationsFromUserById(
+    id: string,
+    limit: number,
+    page: number,
+  ): Promise<GROUP_notification_graph_model_get_all> {
+    try {
+      const userWithNotifications = await this.user
+        .find({ _id: id })
+        .select('notifications')
+        .limit(limit + 1)
+        .skip((page - 1) * limit)
+        .lean();
+
+      const hasMore = userWithNotifications.length > limit;
+
+      const notificationsResponse = userWithNotifications
+        .flatMap((user) => user.notifications)
+        .slice(0, limit)
+        .map((notification) => {
+          console.log(notification);
+          return this.userRepositoryMapper.documentNotificationToNotificationResponse(
+            notification,
+          );
+        });
+
+      return {
+        notifications: notificationsResponse,
+        hasMore: hasMore,
+      };
+    } catch (error: any) {
       throw error;
     }
   }
