@@ -30,8 +30,6 @@ export class GroupRepository implements GroupRepositoryInterface {
     private readonly logger: MyLoggerService,
   ) {}
 
-
-
   async addMagazinesToGroup(
     magazineIds: string[],
     groupId: string,
@@ -411,12 +409,29 @@ export class GroupRepository implements GroupRepositoryInterface {
   }
 
   async save(group: Group): Promise<GroupResponse> {
+    let groupCreator = group.getCreator;
+    let newGroup;
+    let groupSaved;
+
+    const session = await this.connection.startSession();
     try {
-      const newGroup = new this.groupModel(group);
-      const groupSaved = await newGroup.save();
+      await session.withTransaction(async () => {
+        newGroup = new this.groupModel(group);
+        groupSaved = await newGroup.save({ session });
+
+        await this.userModel.findByIdAndUpdate(
+          { _id: groupCreator },
+          { $addToSet: { groups: groupSaved._id } },
+          { session },
+        );
+      });
+      this.logger.log('Group created successfully');
       return this.groupMapper.toGroupResponse(groupSaved);
     } catch (error: any) {
+      this.logger.error('An error was ocurred when creating group: ' + error);
       throw error;
+    } finally {
+      session.endSession();
     }
   }
 

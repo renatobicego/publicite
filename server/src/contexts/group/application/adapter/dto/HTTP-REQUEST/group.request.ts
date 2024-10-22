@@ -1,5 +1,6 @@
 import { Field, InputType } from '@nestjs/graphql';
 import { ObjectId } from 'mongoose';
+import { Visibility } from 'src/contexts/group/domain/entity/enum/group.visibility.enum';
 
 @InputType()
 export class GroupRequest {
@@ -13,6 +14,9 @@ export class GroupRequest {
   name: string;
 
   @Field(() => String)
+  alias: string;
+
+  @Field(() => String)
   rules: string;
 
   @Field(() => [String])
@@ -24,6 +28,6 @@ export class GroupRequest {
   @Field(() => String)
   profilePhotoUrl: string;
 
-  @Field(() => String)
-  visibility: string;
+  @Field(() => Visibility)
+  visibility: Visibility;
 }

@@ -157,6 +157,7 @@ export class GroupService implements GroupServiceInterface {
     groupCreator: string,
   ): Promise<GroupResponse> {
     try {
+      this.logger.log('creating group: ' + group.name);
       const groupMapped = this.groupMapper.toEntity(group, groupCreator);
       return await this.groupRepository.save(groupMapped);
     } catch (err) {

@@ -4,6 +4,7 @@ export class Group {
   private members: ObjectId[];
   private admins: ObjectId[];
   private name: string;
+  private alias: string;
   private creator: string;
   private rules: string;
   private magazines: ObjectId[];
@@ -15,6 +16,7 @@ export class Group {
     members: ObjectId[],
     admins: ObjectId[],
     name: string,
+    alias: string,
     creator: string,
     rules: string,
     magazines: ObjectId[],
@@ -25,6 +27,7 @@ export class Group {
     this.members = members ?? [];
     this.admins = admins ?? [];
     this.name = name;
+    this.alias = alias;
     this.creator = creator;
     this.rules = rules ? rules : 'no rules';
     this.magazines = magazines ?? [];
@@ -35,6 +38,9 @@ export class Group {
 
   get getMembers() {
     return this.members;
+  }
+  get getAlias() {
+    return this.alias;
   }
 
   get getAdmins() {
