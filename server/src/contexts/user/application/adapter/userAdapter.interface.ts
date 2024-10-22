@@ -9,6 +9,7 @@ import {
   UserFindAllResponse,
   UserResponse,
 } from './dto/HTTP-RESPONSE/user.response.dto';
+import { GROUP_notification_graph_model_get_all } from './dto/HTTP-RESPONSE/notifications/group/user.notifications.response';
 
 export interface UserAdapterInterface {
   createUser(req: UserRequest): Promise<UserResponse>;
@@ -27,6 +28,13 @@ export interface UserAdapterInterface {
   getUserPreferencesByUsername(
     username: string,
   ): Promise<UserPreferenceResponse | null>;
+
+  getAllNotificationsFromUserById(
+    id: string,
+    limit: number,
+    page: number,
+  ): Promise<GROUP_notification_graph_model_get_all>;
+
   updateUserPreferencesByUsername(
     username: string,
     userPreference: UserPreferenceResponse,

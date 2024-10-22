@@ -18,24 +18,24 @@ export class MagazineService implements MagazineServiceInterface {
     private readonly magazineRepository: MagazineRepositoryInterface,
     private readonly logger: MyLoggerService,
   ) {}
-  async addAllowedCollaboratorsToMagazine(
-    newAllowedCollaborators: string[],
-    magazineId: string,
-  ): Promise<any> {
-    try {
-      this.logger.log('Adding Allowed Colaborators to Magazine in service..');
-      await this.magazineRepository.addAllowedCollaboratorsToMagazine(
-        newAllowedCollaborators,
-        magazineId,
-      );
-    } catch (error: any) {
-      this.logger.error(
-        'Error adding Allowed Colaborators to Magazine in service',
-        error,
-      );
-      throw error;
-    }
-  }
+  // async addAllowedCollaboratorsToMagazine(
+  //   newAllowedCollaborators: string[],
+  //   magazineId: string,
+  // ): Promise<any> {
+  //   try {
+  //     this.logger.log('Adding Allowed Colaborators to Magazine in service..');
+  //     await this.magazineRepository.addAllowedCollaboratorsToMagazine(
+  //       newAllowedCollaborators,
+  //       magazineId,
+  //     );
+  //   } catch (error: any) {
+  //     this.logger.error(
+  //       'Error adding Allowed Colaborators to Magazine in service',
+  //       error,
+  //     );
+  //     throw error;
+  //   }
+  // }
 
   async addCollaboratorsToMagazine(
     newColaborators: string[],
@@ -122,25 +122,25 @@ export class MagazineService implements MagazineServiceInterface {
     }
   }
 
-  async deleteAllowedCollaboratorsFromMagazine(
-    allowedCollaboratorsToDelete: string[],
-    magazineId: string,
-  ): Promise<any> {
-    try {
-      this.logger.log(
-        'Deleting allowedCollaborators from Magazine in service..',
-      );
-      await this.magazineRepository.deleteAllowedCollaboratorsFromMagazine(
-        allowedCollaboratorsToDelete,
-        magazineId,
-      );
-    } catch (error: any) {
-      this.logger.error(
-        'Error deleting  Allowedolaborators from Magazine in service',
-      );
-      throw error;
-    }
-  }
+  // async deleteAllowedCollaboratorsFromMagazine(
+  //   allowedCollaboratorsToDelete: string[],
+  //   magazineId: string,
+  // ): Promise<any> {
+  //   try {
+  //     this.logger.log(
+  //       'Deleting allowedCollaborators from Magazine in service..',
+  //     );
+  //     await this.magazineRepository.deleteAllowedCollaboratorsFromMagazine(
+  //       allowedCollaboratorsToDelete,
+  //       magazineId,
+  //     );
+  //   } catch (error: any) {
+  //     this.logger.error(
+  //       'Error deleting  Allowedolaborators from Magazine in service',
+  //     );
+  //     throw error;
+  //   }
+  // }
 
   async findMagazineByMagazineId(
     id: ObjectId,

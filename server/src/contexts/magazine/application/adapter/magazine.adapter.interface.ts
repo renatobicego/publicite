@@ -8,19 +8,19 @@ export interface MagazineAdapterInterface {
     newColaborators: string[],
     magazineId: string,
   ): Promise<any>;
-  addAllowedCollaboratorsToMagazine(
-    newAllowedCollaborators: string[],
-    magazineId: string,
-  ): Promise<any>;
+  // addAllowedCollaboratorsToMagazine(
+  //   newAllowedCollaborators: string[],
+  //   magazineId: string,
+  // ): Promise<any>;
 
   deleteCollaboratorsFromMagazine(
     colaboratorsToDelete: string[],
     magazineId: string,
   ): Promise<any>;
-  deleteAllowedCollaboratorsFromMagazine(
-    allowedCollaboratorsToDelete: string[],
-    magazineId: string,
-  ): Promise<any>;
+  // deleteAllowedCollaboratorsFromMagazine(
+  //   allowedCollaboratorsToDelete: string[],
+  //   magazineId: string,
+  // ): Promise<any>;
 
   createMagazine(magazineRequest: MagazineCreateRequest): Promise<any>;
   findMagazineByMagazineId(

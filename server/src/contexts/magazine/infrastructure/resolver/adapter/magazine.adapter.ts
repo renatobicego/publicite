@@ -12,19 +12,19 @@ export class MagazineAdapter implements MagazineAdapterInterface {
     @Inject('MagazineServiceInterface')
     private readonly magazineService: MagazineServiceInterface,
   ) {}
-  async addAllowedCollaboratorsToMagazine(
-    newAllowedCollaborators: string[],
-    magazineId: string,
-  ): Promise<any> {
-    try {
-      await this.magazineService.addAllowedCollaboratorsToMagazine(
-        newAllowedCollaborators,
-        magazineId,
-      );
-    } catch (error: any) {
-      throw error;
-    }
-  }
+  // async addAllowedCollaboratorsToMagazine(
+  //   newAllowedCollaborators: string[],
+  //   magazineId: string,
+  // ): Promise<any> {
+  //   try {
+  //     await this.magazineService.addAllowedCollaboratorsToMagazine(
+  //       newAllowedCollaborators,
+  //       magazineId,
+  //     );
+  //   } catch (error: any) {
+  //     throw error;
+  //   }
+  // }
 
   async addCollaboratorsToMagazine(
     newColaborators: string[],
@@ -62,19 +62,19 @@ export class MagazineAdapter implements MagazineAdapterInterface {
     }
   }
 
-  async deleteAllowedCollaboratorsFromMagazine(
-    allowedCollaboratorsToDelete: string[],
-    magazineId: string,
-  ): Promise<any> {
-    try {
-      await this.magazineService.deleteAllowedCollaboratorsFromMagazine(
-        allowedCollaboratorsToDelete,
-        magazineId,
-      );
-    } catch (error: any) {
-      throw error;
-    }
-  }
+  // async deleteAllowedCollaboratorsFromMagazine(
+  //   allowedCollaboratorsToDelete: string[],
+  //   magazineId: string,
+  // ): Promise<any> {
+  //   try {
+  //     await this.magazineService.deleteAllowedCollaboratorsFromMagazine(
+  //       allowedCollaboratorsToDelete,
+  //       magazineId,
+  //     );
+  //   } catch (error: any) {
+  //     throw error;
+  //   }
+  // }
 
   async findMagazineByMagazineId(
     id: ObjectId,

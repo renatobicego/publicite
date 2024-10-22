@@ -57,17 +57,19 @@ const UserSchema = new Schema<IUser>(
       searchPreference: [{ type: Schema.Types.ObjectId, ref: 'PostCategory' }],
       backgroundColor: { type: Number, default: undefined },
     },
-    notifications: {
-      event: { type: String },
-      viewed: { type: Boolean, default: false },
-      date: { type: String },
-      backData: {
-        userToSendId: { type: String },
+    notifications: [
+      {
+        event: { type: String },
+        viewed: { type: Boolean, default: false },
+        date: { type: String },
+        backData: {
+          userToSendId: { type: String },
+        },
+        frontData: {
+          type: SchemaTypes.Mixed,
+        },
       },
-      frontData: {
-        type: SchemaTypes.Mixed,
-      },
-    },
+    ],
   },
   { discriminatorKey: 'userType', collection: 'users' },
 );
