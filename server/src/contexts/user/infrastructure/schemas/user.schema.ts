@@ -5,14 +5,6 @@ export interface UserPreferences {
   searchPreference: Schema.Types.ObjectId[];
   backgroundColor: number | undefined;
 }
-export interface Notification {
-  event: string;
-  viewed: boolean;
-  date: string;
-  backData: {
-    userToSendId: string;
-  };
-}
 
 interface IUser extends Document {
   clerkId: string;

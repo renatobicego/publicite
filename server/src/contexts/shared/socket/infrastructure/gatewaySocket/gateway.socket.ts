@@ -50,44 +50,40 @@ export class NotificationGatewaySocket
     console.log('Client disconnected', client.id);
   }
 
-  getInformationFromNotificationGroup(data: any): {
-    groupInvitation: GroupInvitation;
+  getInformationFromNotification(data: any): {
+    notificationBody: any;
     client: Socket;
   } {
-    const { groupInvitation } = data;
-    const { userToSendId } = groupInvitation.notification.backData;
-    const { event } = groupInvitation.notification;
+    const { notificationBody } = data;
+    const { userToSendId } = notificationBody.notification.backData;
+    const { event } = notificationBody.notification;
     const client = this.clients[userToSendId]?.socket;
     if (!allowedEvents.has(event as EventTypes)) {
       throw Error(`Invalid event type: ${event}`);
     }
 
     return {
-      groupInvitation,
+      notificationBody,
       client,
     };
   }
 
-  handleNotification(
-    groupInvitation: GroupInvitation,
-    event: string,
-    client: Socket,
-  ) {
+  handleNotification(notificationBody: any, event: string, client: Socket) {
     if (client) {
-      client.emit(event, groupInvitation);
-      this.notificatorService.sendNotificationToUser(groupInvitation);
+      client.emit(event, notificationBody);
+      this.notificatorService.sendNotificationToUser(notificationBody);
     } else {
-      this.notificatorService.sendNotificationToUser(groupInvitation);
+      this.notificatorService.sendNotificationToUser(notificationBody);
     }
   }
 
   @SubscribeMessage('group_notifications')
   group_notifications(@MessageBody() data: GroupInvitation) {
     try {
-      const { groupInvitation, client } =
-        this.getInformationFromNotificationGroup(data);
+      const { notificationBody, client } =
+        this.getInformationFromNotification(data);
 
-      this.handleNotification(groupInvitation, 'group_notifications', client);
+      this.handleNotification(notificationBody, 'group_notifications', client);
     } catch (error: any) {
       throw error;
     }
