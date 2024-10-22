@@ -5,11 +5,17 @@ import {
   Badge,
   PopoverContent,
 } from "@nextui-org/react";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { FaBell } from "react-icons/fa6";
 import NotificationsContent from "./NotificationContent";
 
-const DesktopNotifications = () => {
+const DesktopNotifications = ({
+  newNotifications,
+  setNewNotifications,
+}: {
+  newNotifications: boolean;
+  setNewNotifications: Dispatch<SetStateAction<boolean>>;
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   return (
     <Popover
@@ -24,13 +30,20 @@ const DesktopNotifications = () => {
         content: "mt-2",
       }}
       isOpen={isOpen}
-      onOpenChange={(open) => setIsOpen(open)}
+      onOpenChange={(open) => {
+        if(open) setNewNotifications(false)
+        setIsOpen(open)
+      }}
     >
       <PopoverTrigger>
         <Button radius="full" variant="light" isIconOnly>
-          <Badge content="" size="sm" color="primary">
+          {newNotifications ? (
+            <Badge content="" size="sm" color="primary">
+              <FaBell className="size-6" />
+            </Badge>
+          ) : (
             <FaBell className="size-6" />
-          </Badge>
+          )}
         </Button>
       </PopoverTrigger>
       <PopoverContent>

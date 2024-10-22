@@ -1,8 +1,23 @@
-import { useDisclosure, Button, Badge, Modal, ModalContent, ModalHeader, ModalBody } from "@nextui-org/react";
+import {
+  useDisclosure,
+  Button,
+  Badge,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+} from "@nextui-org/react";
 import { FaBell } from "react-icons/fa6";
 import NotificationsContent from "./NotificationContent";
+import { Dispatch, SetStateAction } from "react";
 
-const MobileNotifications = () => {
+const MobileNotifications = ({
+  newNotifications,
+  setNewNotifications,
+}: {
+  newNotifications: boolean;
+  setNewNotifications: Dispatch<SetStateAction<boolean>>;
+}) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   return (
@@ -14,16 +29,26 @@ const MobileNotifications = () => {
         isIconOnly
         className="lg:hidden"
       >
-        <Badge content="" size="sm" color="primary">
+        {newNotifications ? (
+          <Badge content="" size="sm" color="primary">
+            <FaBell className="size-6" />
+          </Badge>
+        ) : (
           <FaBell className="size-6" />
-        </Badge>
+        )}
       </Button>
       <Modal
-        classNames={{ body: "max-h-[80vh] overflow-y-auto px-0", header: "px-0" }}
+        classNames={{
+          body: "max-h-[80vh] overflow-y-auto px-0",
+          header: "px-0",
+        }}
         placement="center"
         className="max-md:px-4"
         isOpen={isOpen}
-        onOpenChange={onOpenChange}
+        onOpenChange={(isOpen) => {
+          if(isOpen) setNewNotifications(false)
+          onOpenChange()
+        }}
       >
         <ModalContent>
           <ModalHeader>
