@@ -270,6 +270,7 @@ type GroupResponse {
   members: [members_graphQl!]
   admins: [GroupResponse_admins!]
   name: String!
+  creator: String!
   rules: String
   magazines: [magazine_graphql_group!]
   details: String
@@ -408,14 +409,8 @@ type Mutation {
   """Agregar colaboradores a la revista"""
   addColaboratorsToMagazine(newColaborators: [String!]!, magazineAdmin: String!, magazineId: String!): String
 
-  """Agregar allowedCollaborators a la revista"""
-  addAllowedCollaboratorsToMagazine(newAllowedColaborators: [String!]!, magazineAdmin: String!, magazineId: String!): String
-
   """Eliminar colaboradores de la revista"""
   deleteColaboratorsFromMagazine(colaboratorsToDelete: [String!]!, magazineAdmin: String!, magazineId: String!): String
-
-  """Eliminar allowed colaboradores de la revista"""
-  deleteAllowedCollaboratorsFromMagazine(allowedCollaboratorsToDelete: [String!]!, magazineAdmin: String!, magazineId: String!): String
 
   """Crear una revista"""
   createMagazine(magazineCreateRequest: MagazineCreateRequest!): String
