@@ -68,7 +68,7 @@ export const mockedGroupInvitation: GroupInvitationNotification = {
   date: "2022-01-01",
   group: { _id: "1", name: "Computadoras", profilePhotoUrl: "" },
   userInviting: { username: "username" },
-  type: "groupInvitation",
+  type: "notification_group_user_request_sent",
 };
 
 export const mockedPostShared: PostSharedNotification = {

@@ -11,6 +11,9 @@ const SearchTerms = ({
   userPreferences: UserPreferences;
 }) => {
   const [isFormVisible, setIsFormVisible] = useState(false);
+  const { searchPreference } = userPreferences;
+  const length = searchPreference.length;
+  const lastItem = searchPreference[length - 1] as PostCategory;
   return (
     <AnimatedBox
       isVisible={isFormVisible}
@@ -20,6 +23,7 @@ const SearchTerms = ({
       {isFormVisible ? (
         <SearchTermsForm
           key={"searchTermsForm"}
+          prevValues={userPreferences.searchPreference as PostCategory[]}
           setIsFormVisible={setIsFormVisible}
         />
       ) : (
@@ -30,10 +34,15 @@ const SearchTerms = ({
           labelClassname="md:mt-2.5"
         >
           <DataItem className="flex-1 md:mt-2.5">
-            {userPreferences.searchPreference.length > 0 ? (
-              (userPreferences.searchPreference as PostCategory[]).map((searchP) => (
-                <span key={searchP._id}>{searchP.label}</span>
-              ))
+            {length > 0 ? (
+              <>
+                {(searchPreference.slice(0, length - 1) as PostCategory[]).map(
+                  (searchP) => (
+                    <span key={searchP._id}>{searchP.label}, </span>
+                  )
+                )}
+                <span key={lastItem._id}>{lastItem.label}</span>
+              </>
             ) : (
               <span>No ha seleccionado preferencias de búsqueda</span>
             )}

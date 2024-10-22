@@ -4,7 +4,7 @@ import {
   UserPersonFormValues,
   UserPreferences,
 } from "@/types/userTypes";
-import { currentUser } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import axios from "axios";
 import { query } from "@/lib/client";
 import getUserByUsernameQuery from "@/graphql/userQueries";
@@ -40,7 +40,7 @@ export const getUserProfileData = async (username: string) => {
 };
 
 export const changeUserPreferences = async (
-  userPreferences: UserPreferences
+  userPreferences: Partial<UserPreferences>
 ) => {
   const user = await currentUser();
   try {
@@ -69,6 +69,7 @@ export const getUserPreferences = async (username: string) => {
     );
     return await res.json();
   } catch (error) {
+    console.log(error)
     return {
       error: "Error al traer las preferencias. Por favor intenta de nuevo.",
     };
@@ -113,7 +114,6 @@ export const getUserByUsername = async (username: string) => {
 
     return data.findUserByUsername;
   } catch (error: ApolloError | any) {
-    console.log(error.cause.result.errors)
     return {
       error:
         "Error al traer los datos del usuario. Por favor intenta de nuevo.",

@@ -8,8 +8,8 @@ const ActionButtons = ({
   subscriptionPlans,
   onClose,
 }: {
-  previousPlan: string;
-  selectedPlan: string;
+  previousPlan?: string;
+  selectedPlan?: string;
   onClose: () => void;
   subscriptionPlans: SubscriptionPlan[];
 }) => {

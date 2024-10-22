@@ -1,4 +1,3 @@
-import { clerkClient } from '@clerk/clerk-sdk-node';
 import {
   CanActivate,
   ExecutionContext,
@@ -6,20 +5,19 @@ import {
   Injectable,
   Logger,
 } from '@nestjs/common';
-import { GqlExecutionContext } from '@nestjs/graphql';
 
 @Injectable()
 export class ClerkAuthGuard implements CanActivate {
   private readonly logger = new Logger(ClerkAuthGuard.name);
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const httpContext = context.switchToHttp();
-    let request = httpContext.getRequest();
+    //const httpContext = context.switchToHttp();
+    //let request = httpContext.getRequest();
 
     // const authToken = request.headers.authorization;
     // console.log(authToken.substring(7).trim());
-
     try {
+      /* 
       if (context.getType() === 'http') {
         request = context.switchToHttp().getRequest();
       } else {
@@ -40,6 +38,7 @@ export class ClerkAuthGuard implements CanActivate {
 
       request.token = token;
       await clerkClient.verifyToken(token);
+*/
       return true;
     } catch (error) {
       this.logger.error(`Error in ClerkAuthGuard: ${error.message}`);

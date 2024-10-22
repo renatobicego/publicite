@@ -1,7 +1,7 @@
 import { Group } from "@/types/groupTypes";
 import { GroupMagazine, Magazine, UserMagazine } from "@/types/magazineTypes";
 import { GetUser } from "@/types/userTypes";
-import { PROFILE } from "@/utils/data/urls";
+import { GROUPS, PROFILE } from "@/utils/data/urls";
 
 function getOwner(magazine: Magazine): GetUser | Group  {
   return magazine.ownerType === "user"
@@ -28,7 +28,7 @@ function getProfileUrl(
 ): string {
   return isOwnerTypeUser
     ? `${PROFILE}/${(owner as GetUser).username}`
-    : `${PROFILE}/${(owner as Group)._id}`;
+    : `${GROUPS}/${(owner as Group)._id}`;
 }
 
 export { getOwner, checkIsOwner, getProfileUrl };

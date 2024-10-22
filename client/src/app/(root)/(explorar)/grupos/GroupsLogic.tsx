@@ -20,7 +20,6 @@ const GroupsLogic = () => {
     { label: "A-Z", key: "aZ", direction: "ascending", column: "name" },
     { label: "Z-A", key: "zA", direction: "descending", column: "name" },
   ];
-
   return (
     <section className="w-full flex-col flex gap-4">
       <h2>Grupos</h2>

@@ -148,6 +148,9 @@ type userBoardGraphql {
   _id: ID
   profilePhotoUrl: String
   name: String
+  lastName: String
+  businessName: String
+  username: String
 }
 
 type BoardResponse {

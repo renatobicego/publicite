@@ -59,6 +59,7 @@ export class UserRepository implements UserRepositoryInterface {
           { path: 'magazines' },
           { path: 'board' },
           { path: 'groups' },
+          { path: 'contact' },
           {
             path: 'posts',
             select:

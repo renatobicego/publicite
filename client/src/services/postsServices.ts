@@ -139,7 +139,7 @@ export const deletePostService = async(post: Post) => {
       },
     })
     await deleteFilesService(post.attachedFiles.map((file) => file.url));
-    if("imagesUrls" in post && (post as Good).imagesUrls.length > 0) {
+    if("imagesUrls" in post && post.imagesUrls && (post as Good).imagesUrls.length > 0) {
       await deleteFilesService((post as Good).imagesUrls);
     }
     return { message: "Anuncio borrado exitosamente" };

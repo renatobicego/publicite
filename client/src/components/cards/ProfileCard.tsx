@@ -4,16 +4,17 @@ import { TbWorldPin } from "react-icons/tb";
 import SendRequest from "../buttons/SendRequest";
 import { PROFILE } from "@/utils/data/urls";
 import HandleGroupMember from "../buttons/HandleGroupMember";
+import { Group } from "@/types/groupTypes";
 
 const ProfileCard = ({
   user,
   groupGrid,
-  groupId,
+  group,
   isAdmin,
 }: {
   user: User;
   groupGrid?: boolean;
-  groupId?: string;
+  group?: Group;
   isAdmin?: boolean;
 }) => {
   const { userType } = user;
@@ -21,6 +22,7 @@ const ProfileCard = ({
     userType === "Business"
       ? (user as UserBusiness).businessName
       : `${user.name} ${user.lastName}`;
+  
   return (
     <Card className="bg-fondo">
       <CardBody className="sm:flex-row gap-2 md:gap-4 lg:gap-6 sm:items-center">
@@ -53,7 +55,7 @@ const ProfileCard = ({
               <HandleGroupMember
                 user={user}
                 nameToShow={user.username}
-                groupId={groupId}
+                group={group}
                 isAdmin={isAdmin}
               />
             </>

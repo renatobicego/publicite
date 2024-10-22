@@ -22,7 +22,6 @@ const EditGroup = ({ groupData }: { groupData: Group }) => {
     name: groupData.name,
     details: groupData.details,
     rules: groupData.rules,
-    magazines: groupData.magazines,
     profilePhotoUrl: groupData.profilePhotoUrl,
     visibility: groupData.visibility,
   };

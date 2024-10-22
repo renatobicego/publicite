@@ -28,7 +28,7 @@ interface IUser extends Document {
   lastName: string;
   finder: string;
   userPreferences: UserPreferences | null | undefined;
-  notifications: any[];
+  notifications: any[] | null;
 }
 
 const UserSchema = new Schema<IUser>(
@@ -58,12 +58,12 @@ const UserSchema = new Schema<IUser>(
       backgroundColor: { type: Number, default: undefined },
     },
     notifications: {
-      event: { type: String, required: true },
-      viewed: { type: Boolean, required: true, default: false },
-      date: { type: String, required: true },
+      event: { type: String },
+      viewed: { type: Boolean, default: false },
+      date: { type: String },
       backData: {
-        userToSendId: { type: String, required: true },
-        eventNotification: { type: String, required: true },
+        userToSendId: { type: String },
+        eventNotification: { type: String },
       },
       frontData: {
         type: SchemaTypes.Mixed,

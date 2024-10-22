@@ -69,7 +69,7 @@ const UserSolapas = ({ user }: { user: GetUser }) => {
             Crear
           </PrimaryButton>
         )}
-        <UserPosts posts={user.posts} />
+        <UserPosts posts={user.posts || []} />
       </Tab>
       <Tab
         className="w-full"

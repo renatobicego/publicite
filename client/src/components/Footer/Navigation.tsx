@@ -1,5 +1,5 @@
 "use client"
-import { CONFIGURATION, GROUPS, MAGAZINES, PROFILE } from "@/utils/data/urls";
+import { GROUPS, MAGAZINES, PROFILE } from "@/utils/data/urls";
 import { useUser } from "@clerk/nextjs";
 import { Link } from "@nextui-org/react";
 import React from "react";
@@ -27,11 +27,6 @@ const Navigation = () => {
       <li>
         <Link size="sm" className="text-white" href={`${PROFILE}/${user?.username}/${GROUPS}}`}>
           Mis Grupos
-        </Link>
-      </li>
-      <li>
-        <Link size="sm" className="text-white" href={`${CONFIGURATION}`}>
-          Preferencias y Configuración
         </Link>
       </li>
     </ul>

@@ -52,6 +52,9 @@ export const getGroupMembersByIdQuery = gql`
       members {
         username
         profilePhotoUrl
+        businessName
+        lastName
+        name
         _id
       }
     }

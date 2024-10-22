@@ -36,7 +36,7 @@ export class BoardRepository implements BoardRespositoryInterface {
         })
         .populate({
           path: 'user',
-          select: '_id profilePhotoUrl name',
+          select: '_id profilePhotoUrl name lastName businessName username',
         })
         .limit(limit + 1)
         .skip((page - 1) * limit)

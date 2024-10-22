@@ -2,7 +2,7 @@ import { gql } from "@apollo/client";
 
 const getBoardByUsernameQuery = gql`
   query GetUserByUsername($username: String!) {
-    findOneByUsername(username: $username) {
+    findUserByUsername(username: $username) {
       _id
       businessName
       lastName
@@ -23,11 +23,16 @@ const getBoardByUsernameQuery = gql`
 `;
 
 const editBoardByUsernameMutation = gql`
-  mutation UpdateBoardByUsername(
-    $updateBoardByUsernameId: String!
+  mutation UpdateBoardById(
+    $updateBoardByIdId: String!
     $boardData: UpdateBoardDto!
+    $ownerId: String!
   ) {
-    updateBoardByUsername(id: $updateBoardByUsernameId, boardData: $boardData) {
+    updateBoardById(
+      id: $updateBoardByIdId
+      boardData: $boardData
+      ownerId: $ownerId
+    ) {
       _id
     }
   }
@@ -46,6 +51,7 @@ const getBoardsQuery = gql`
         user {
           profilePhotoUrl
           name
+          lastName
           _id
         }
         visibility

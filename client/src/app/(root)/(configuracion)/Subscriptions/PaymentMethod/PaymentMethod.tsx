@@ -1,13 +1,18 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AnimatedBox from "../../AnimatedBox";
 import DataBox, { DataItem, EditButton } from "../../DataBox";
 import PaymentMethodForm from "./PaymentMethodForm";
-import { FaCcAmex, FaCcMastercard, FaCcVisa } from "react-icons/fa6";
-import { Chip } from "@nextui-org/react";
+import { FaCcVisa } from "react-icons/fa6";
+import { getPaymentMethod } from "@/services/subscriptionServices";
 
 const PaymentMethod = () => {
   const [isFormVisible, setIsFormVisible] = useState(false);
-
+  useEffect(() => {
+    const fetchPaymentMethod = async () => {
+      const res = await getPaymentMethod();
+    }
+    fetchPaymentMethod()
+  }, [])
   return (
     <AnimatedBox isVisible={isFormVisible} className="flex-1" keyValue="payment-method">
       {isFormVisible ? (

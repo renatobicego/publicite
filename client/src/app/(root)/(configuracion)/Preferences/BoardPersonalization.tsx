@@ -1,5 +1,4 @@
 import DataBox from "../DataBox";
-import { useState } from "react";
 import BoardCard from "@/components/Board/Board";
 import BoardColor from "@/components/Board/inputs/BoardColor";
 import { Board } from "@/types/board";
@@ -31,7 +30,7 @@ const BoardPersonalization = ({ board }: { board: Board }) => {
           setColorSelected={setColorSelected}
         />
         <BoardCard
-          isMyBoard
+          isMyBoard={false}
           isProfile
           widthFull
           name={board.user.username}

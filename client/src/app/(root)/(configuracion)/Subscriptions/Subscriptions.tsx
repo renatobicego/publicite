@@ -1,5 +1,5 @@
 import { Button, Divider } from "@nextui-org/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AccountType from "./AccountType/AccountType";
 import PaymentMethod from "./PaymentMethod/PaymentMethod";
 import LimitPosts from "./LimitPosts/LimitPosts";
@@ -7,9 +7,18 @@ import { AnimatePresence, motion } from "framer-motion";
 import PaymentsTable from "./Payments/PaymentsTable";
 import { FaChevronLeft } from "react-icons/fa6";
 import SecondaryButton from "@/components/buttons/SecondaryButton";
+import { Subscription } from "@/types/subscriptions";
+import { getSubscriptionsOfUser } from "@/services/subscriptionServices";
 
-const Subscriptions = () => {
+const Subscriptions = ({
+  accountType,
+  postsPacks,
+}: {
+  accountType?: Subscription;
+  postsPacks?: Subscription[];
+}) => {
   const [arePaymentsShown, setArePaymentsShown] = useState(false);
+
   return (
     <AnimatePresence mode="popLayout" initial={false}>
       {arePaymentsShown ? (
@@ -42,7 +51,7 @@ const Subscriptions = () => {
         >
           <h2 className="profile-title">Datos de Suscripción</h2>
           <Divider />
-          <AccountType />
+          <AccountType subscription={accountType} />
           <Divider />
           <PaymentMethod />
           <SecondaryButton
@@ -53,7 +62,13 @@ const Subscriptions = () => {
             Ver Pagos Realizados
           </SecondaryButton>
           <Divider />
-          <LimitPosts />
+          <LimitPosts
+            userSubscriptions={
+              accountType && postsPacks
+                ? { accountType, postsPacks }
+                : undefined
+            }
+          />
         </motion.section>
       )}
     </AnimatePresence>

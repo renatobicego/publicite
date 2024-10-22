@@ -35,7 +35,7 @@ export const PostSchema = new Schema<PostDocument>(
       required: true,
     },
     postType: { type: String, enum: Object.values(PostType), required: true },
-    description: { type: String, required: true },
+    description: { type: String },
     visibility: {
       post: { type: String, enum: Object.values(Visibility), required: true },
       socialMedia: {

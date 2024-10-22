@@ -1,7 +1,10 @@
 import ProfileCard from "@/components/cards/ProfileCard";
 import { User } from "@/types/userTypes";
 import { Group } from "@/types/groupTypes";
-import { Spinner } from "@nextui-org/react";
+import { Spinner, user } from "@nextui-org/react";
+import { addAdmin, removeMember } from "@/app/server/groupActions";
+import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
+import { useRouter } from "next-nprogress-bar";
 
 const UsersGrid = ({
   items,
@@ -13,7 +16,7 @@ const UsersGrid = ({
   isLoading?: boolean;
   groupGrid?: boolean;
   group?: Group;
-}) => {
+  }) => {
   return (
     <>
       <div className="grid grid-cols-2 lg:grid-cols-3 3xl:grid-cols-4 gap-4">
@@ -23,7 +26,7 @@ const UsersGrid = ({
               user={user}
               key={user._id + index}
               groupGrid={groupGrid}
-              groupId={group?._id}
+              group={group}
               isAdmin={group?.admins.some(
                 (admin) => (admin as User)._id === user._id
               )}
