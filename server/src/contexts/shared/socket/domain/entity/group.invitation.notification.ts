@@ -1,11 +1,12 @@
 const eventTypes = [
-  'notification_group_ivitation',
-  'notification_group_user_delete',
-  'notification_group_user_added',
-  'notification_group_user_request_rejected',
-  'notification_group_user_invite_declined',
-  'notification_group_user_request_sent',
-  'notification_group_user_new_admin',
+  'notification_group_new_user_invited', // Te han invitado a un grupo
+  'notification_group_new_user_added', // Te han agregado a un grupo
+  'notification_group_user_accepted', // te han aceptado en un grupo
+  'notification_group_user_rejected', // te han rechazado en un grupo
+  'notification_group_user_rejected_group_invitation', // usuario B rechazo unirse al grupo
+  'notification_group_user_request_group_invitation', // Usuario A quiere pertenecer a grupo
+  'notification_group_user_removed_from_group', // te han eliminado del grupo,
+  'notification_group_user_new_admin', // te han convertido en administrador
 ] as const;
 
 type EventTypes = (typeof eventTypes)[number];
