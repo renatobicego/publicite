@@ -63,7 +63,6 @@ const UserSchema = new Schema<IUser>(
       date: { type: String },
       backData: {
         userToSendId: { type: String },
-        eventNotification: { type: String },
       },
       frontData: {
         type: SchemaTypes.Mixed,
