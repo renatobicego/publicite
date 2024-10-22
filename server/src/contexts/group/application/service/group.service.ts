@@ -91,14 +91,14 @@ export class GroupService implements GroupServiceInterface {
     }
   }
 
-  async deleteMembersToGroup(
+  async deleteMembersFromGroup(
     membersToDelete: string[],
     groupId: string,
     groupAdmin: string,
   ): Promise<any> {
     try {
       this.logger.log('Deleting users to group: ' + groupId);
-      return await this.groupRepository.deleteMembersToGroup(
+      return await this.groupRepository.deleteMembersFromGroup(
         membersToDelete,
         groupId,
         groupAdmin,
@@ -152,9 +152,12 @@ export class GroupService implements GroupServiceInterface {
       throw error;
     }
   }
-  async saveGroup(group: GroupRequest): Promise<GroupResponse> {
+  async saveGroup(
+    group: GroupRequest,
+    groupCreator: string,
+  ): Promise<GroupResponse> {
     try {
-      const groupMapped = this.groupMapper.toEntity(group);
+      const groupMapped = this.groupMapper.toEntity(group, groupCreator);
       return await this.groupRepository.save(groupMapped);
     } catch (err) {
       throw err;

@@ -26,7 +26,7 @@ export interface GroupRepositoryInterface {
     groupId: string,
     groupAdmin: string,
   ): Promise<any>;
-  deleteMembersToGroup(
+  deleteMembersFromGroup(
     membersToDelete: string[],
     groupId: string,
     groupAdmin: string,

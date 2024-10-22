@@ -29,7 +29,8 @@ export class GroupRepository implements GroupRepositoryInterface {
     private readonly logger: MyLoggerService,
   ) {}
 
-  checkResultModification(result: any) {
+
+  checkResultModificationOfOperation(result: any) {
     if (result.matchedCount === 0) {
       throw new Error(
         'Group admin does not have permission or group does not exist.',
@@ -46,14 +47,14 @@ export class GroupRepository implements GroupRepositoryInterface {
         .updateOne(
           {
             _id: groupId,
-            admins: groupAdmin,
+            $or: [{ admins: groupAdmin }, { creator: groupAdmin }],
           },
           {
             $addToSet: { magazines: { $each: magazineIds } },
           },
         )
         .lean();
-      this.checkResultModification(result);
+      this.checkResultModificationOfOperation(result);
       this.logger.log(
         'Magazines added to group successfully Group ID: ' + groupId,
       );
@@ -76,12 +77,16 @@ export class GroupRepository implements GroupRepositoryInterface {
       await session.withTransaction(async () => {
         const result = await this.groupModel
           .updateOne(
-            { _id: groupId, admins: groupAdmin },
+            {
+              _id: groupId,
+              $or: [{ admins: groupAdmin }, { creator: groupAdmin }],
+            },
+
             { $addToSet: { members: { $each: members } } },
             { session },
           )
           .lean();
-        this.checkResultModification(result);
+        this.checkResultModificationOfOperation(result);
         await this.userModel
           .updateMany(
             { _id: { $in: members } },
@@ -119,12 +124,15 @@ export class GroupRepository implements GroupRepositoryInterface {
       await session.withTransaction(async () => {
         const result = await this.groupModel
           .updateOne(
-            { _id: groupId, admins: groupAdmin },
+            {
+              _id: groupId,
+              $or: [{ admins: groupAdmin }, { creator: groupAdmin }],
+            },
             { $addToSet: { admins: { $each: admins } } },
             { session },
           )
           .lean();
-        this.checkResultModification(result);
+        this.checkResultModificationOfOperation(result);
         await this.userModel
           .updateMany(
             { _id: { $in: admins } },
@@ -162,14 +170,14 @@ export class GroupRepository implements GroupRepositoryInterface {
       await session.withTransaction(async () => {
         // Buscar el grupo y mantener la referencia
         const groupToTakeOffAdmin = await this.groupModel
-          .findOne({ _id: groupId, admins: groupAdmin })
+          .findOne({ _id: groupId, creator: groupAdmin })
           .lean();
 
         if (!groupToTakeOffAdmin) {
           throw new Error('Group does not exist or invalid admin');
         }
-        const amountOfAdmins = groupToTakeOffAdmin.admins.length
-        const amountOfMembers = groupToTakeOffAdmin.members.length
+        const amountOfAdmins = groupToTakeOffAdmin.admins.length;
+        const amountOfMembers = groupToTakeOffAdmin.members.length;
         if (amountOfAdmins === 1) {
           if (amountOfMembers > 0) {
             throw new Error(
@@ -237,8 +245,7 @@ export class GroupRepository implements GroupRepositoryInterface {
     }
   }
 
-  //ME FALTA ELIMINAR MIEMBNROS DEL GRUPO
-  async deleteMembersToGroup(
+  async deleteMembersFromGroup(
     membersToDelete: string[],
     groupId: string,
     groupAdmin: string,
@@ -246,13 +253,18 @@ export class GroupRepository implements GroupRepositoryInterface {
     const session = await this.connection.startSession();
     try {
       await session.withTransaction(async () => {
-        await this.groupModel
+        const result = await this.groupModel
           .findByIdAndUpdate(
-            groupId,
+            {
+              _id: groupId,
+              $or: [{ admins: groupAdmin }, { creator: groupAdmin }],
+            },
             { $pullAll: { members: membersToDelete } },
             { session },
           )
           .lean();
+
+        this.checkResultModificationOfOperation(result);
 
         await this.userModel
           .updateMany(
@@ -289,9 +301,15 @@ export class GroupRepository implements GroupRepositoryInterface {
   ): Promise<any> {
     try {
       await this.groupModel
-        .findByIdAndUpdate(groupId, {
-          $pullAll: { magazines: magazinesToDelete },
-        })
+        .findByIdAndUpdate(
+          {
+            _id: groupId,
+            $or: [{ admins: groupAdmin }, { creator: groupAdmin }],
+          },
+          {
+            $pullAll: { magazines: magazinesToDelete },
+          },
+        )
         .lean();
       this.logger.log(
         'Magazines deleted to group successfully Group ID: ' + groupId,

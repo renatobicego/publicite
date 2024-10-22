@@ -8,19 +8,22 @@ interface JwtPayload {
 }
 
 export class PubliciteAuth {
-  static authorize(context: any, user: string): boolean {
-    /*
-const token = context.req.token;
-    if (!token) {
-      throw new UnauthorizedException('Token not found in request');
-    }
+  static getIdFromClerkToken(token: string): string {
     const claims = decodeJwt(token);
     const payload = claims.payload as unknown as JwtPayload;
     const mongoId = payload.metadata.mongoId;
+    return mongoId;
+  }
+  static authorize(context: any, user: string): boolean {
+    const token = context.req.token;
+    if (!token) {
+      throw new UnauthorizedException('Token not found in request');
+    }
+    const mongoId = this.getIdFromClerkToken(token);
     if (user !== mongoId) {
       throw new UnauthorizedException('You not have access to this resource');
     }
-*/
+
     return true;
   }
 }

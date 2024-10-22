@@ -106,9 +106,12 @@ export class GroupResolver {
   @UseGuards(ClerkAuthGuard)
   async createNewGroup(
     @Args('groupDto', { type: () => GroupRequest }) groupDto: GroupRequest,
+    @Context() context: any,
   ): Promise<GroupResponse> {
     try {
-      return await this.groupAdapter.saveGroup(groupDto);
+      const token = context.req.token;
+      const groupCreator = PubliciteAuth.getIdFromClerkToken(token);
+      return await this.groupAdapter.saveGroup(groupDto,groupCreator);
     } catch (error: any) {
       throw error;
     }
@@ -131,7 +134,11 @@ export class GroupResolver {
   ): Promise<any> {
     try {
       //PubliciteAuth.authorize(context, groupAdmin);
-      await this.groupAdapter.deleteAdminsToGroup(adminsToDelete, groupId,groupAdmin);
+      await this.groupAdapter.deleteAdminsToGroup(
+        adminsToDelete,
+        groupId,
+        groupAdmin,
+      );
       return 'Users deleted';
     } catch (error: any) {
       throw error;
@@ -155,7 +162,11 @@ export class GroupResolver {
   ): Promise<any> {
     try {
       PubliciteAuth.authorize(context, groupAdmin);
-      await this.groupAdapter.deleteMembersToGroup(membersToDelete, groupId,groupAdmin);
+      await this.groupAdapter.deleteMembersToGroup(
+        membersToDelete,
+        groupId,
+        groupAdmin,
+      );
       return 'Users deleted';
     } catch (error: any) {
       throw error;

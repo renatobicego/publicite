@@ -42,6 +42,6 @@ export interface GroupAdapterInterface {
     limit: number,
     page: number,
   ): Promise<GroupListResponse>;
-  saveGroup(group: GroupRequest): Promise<GroupResponse>;
+  saveGroup(group: GroupRequest, groupCreator: string): Promise<GroupResponse>;
   updateGroupById(group: GroupUpdateRequest): Promise<any>;
 }

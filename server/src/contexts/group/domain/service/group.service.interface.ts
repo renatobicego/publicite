@@ -21,7 +21,7 @@ export interface GroupServiceInterface {
     groupId: string,
     groupAdmin: string,
   ): Promise<any>;
-  deleteMembersToGroup(
+  deleteMembersFromGroup(
     membersToDelete: string[],
     groupId: string,
     groupAdmin: string,
@@ -42,6 +42,6 @@ export interface GroupServiceInterface {
     limit: number,
     page: number,
   ): Promise<GroupListResponse>;
-  saveGroup(group: GroupRequest): Promise<GroupResponse>;
+  saveGroup(group: GroupRequest, groupCreator: string): Promise<GroupResponse>;
   updateGroupById(group: GroupUpdateRequest): Promise<any>;
 }

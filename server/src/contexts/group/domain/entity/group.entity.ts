@@ -2,25 +2,20 @@ import { ObjectId } from 'mongoose';
 
 export class Group {
   private members: ObjectId[];
-
   private admins: ObjectId[];
-
   private name: string;
-
+  private creator: string;
   private rules: string;
-
   private magazines: ObjectId[];
-
   private details: string;
-
   private profilePhotoUrl: string;
-
   private visibility: string;
 
   constructor(
     members: ObjectId[],
     admins: ObjectId[],
     name: string,
+    creator: string,
     rules: string,
     magazines: ObjectId[],
     details: string,
@@ -30,6 +25,7 @@ export class Group {
     this.members = members ?? [];
     this.admins = admins ?? [];
     this.name = name;
+    this.creator = creator;
     this.rules = rules ? rules : 'no rules';
     this.magazines = magazines ?? [];
     this.details = details ?? 'no details';
@@ -67,5 +63,8 @@ export class Group {
 
   get getVisibility() {
     return this.visibility;
+  }
+  get getCreator() {
+    return this.creator;
   }
 }

@@ -76,7 +76,7 @@ export class GroupAdapter implements GroupAdapterInterface {
     groupAdmin: string,
   ): Promise<any> {
     try {
-      await this.groupService.deleteMembersToGroup(
+      await this.groupService.deleteMembersFromGroup(
         membersToDelete,
         groupId,
         groupAdmin,
@@ -126,9 +126,12 @@ export class GroupAdapter implements GroupAdapterInterface {
       throw error;
     }
   }
-  async saveGroup(group: GroupRequest): Promise<GroupResponse> {
+  async saveGroup(
+    group: GroupRequest,
+    groupCreator: string,
+  ): Promise<GroupResponse> {
     try {
-      return await this.groupService.saveGroup(group);
+      return await this.groupService.saveGroup(group, groupCreator);
     } catch (error: any) {
       throw error;
     }

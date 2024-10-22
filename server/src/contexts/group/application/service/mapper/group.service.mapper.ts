@@ -3,11 +3,12 @@ import { GroupServiceMapperInterface } from 'src/contexts/group/domain/service/m
 import { GroupRequest } from '../../adapter/dto/HTTP-REQUEST/group.request';
 
 export class GroupServiceMapper implements GroupServiceMapperInterface {
-  toEntity(group: GroupRequest): Group {
+  toEntity(group: GroupRequest, groupCreator: string): Group {
     return new Group(
       group.members,
       group.admins,
       group.name,
+      groupCreator,
       group.rules,
       group.magazines,
       group.details,

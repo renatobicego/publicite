@@ -2,5 +2,5 @@ import { GroupRequest } from 'src/contexts/group/application/adapter/dto/HTTP-RE
 import { Group } from '../../entity/group.entity';
 
 export interface GroupServiceMapperInterface {
-  toEntity(group: GroupRequest): Group;
+  toEntity(group: GroupRequest, groupCreator: string): Group;
 }
