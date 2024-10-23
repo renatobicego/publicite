@@ -72,7 +72,7 @@ export const getAllNotificationsQuery = gql`
     ) {
       hasMore
       notifications {
-        viewed
+        _id
         frontData {
           userInviting {
             username
@@ -83,12 +83,14 @@ export const getAllNotificationsQuery = gql`
             profilePhotoUrl
           }
         }
-        event
-        date
-        backData {
-          userToSendId
+        notification {
+          backData {
+            userToSendId
+          }
+          date
+          event
+          viewed
         }
-        _id
       }
     }
   }

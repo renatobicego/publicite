@@ -10,7 +10,7 @@ import MagazinesGrid from "../grids/MagazinesGrid";
 import PostListLogic from "@/app/(root)/(explorar)/anuncios/components/PostListLogic";
 import { Magazine } from "@/types/magazineTypes";
 import UsersGrid from "@/app/(root)/(explorar)/perfiles/UsersGrid";
-import InviteUsersGroup from "../modals/InviteUsersGroup";
+import InviteUsersGroup from "../modals/InvitationModal/InviteUsersGroup";
 import PrimaryButton from "../buttons/PrimaryButton";
 import { FaPlus } from "react-icons/fa6";
 const GroupSolapas = ({
@@ -96,7 +96,7 @@ const GroupSolapas = ({
       >
         <div className="w-full flex justify-between items-center">
           <h3>Miembros del Grupo</h3>
-          <InviteUsersGroup />
+          <InviteUsersGroup group={group}/>
         </div>
         <UsersGrid
           items={group.members as User[]}

@@ -39,10 +39,22 @@ const Inputs = ({
       <Field
         as={CustomInput}
         name="name"
-        label="Nombre del grupo"
+        label="Nombre del Grupo"
         placeholder="Agregue un nombre"
         isRequired
         aria-label="nombre"
+        isInvalid={!!errors.name}
+        errorMessage={errors.name}
+      />
+      <Field
+        as={CustomInput}
+        name="alias"
+        label="Alias del grupo"
+        placeholder="alias"
+        isRequired
+        aria-label="alias"
+        startContent={"@"}
+        description="Mínimo 2 caracteres. Debe ser único."
         isInvalid={!!errors.name}
         errorMessage={errors.name}
       />

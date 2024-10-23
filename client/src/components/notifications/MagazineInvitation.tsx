@@ -1,6 +1,6 @@
 import { MAGAZINES } from "@/utils/data/urls";
 import { showDate } from "@/utils/functions/dates";
-import { parseDate } from "@internationalized/date";
+import { parseDate, parseZonedDateTime } from "@internationalized/date";
 import Link from "next/link";
 import { NotificationCard, NotificationImage, NotificationBody, NotificationOptions } from "./NotificationCard";
 import { IoBook } from "react-icons/io5";
@@ -26,7 +26,7 @@ const MagazineInvitation = ({
         </p>
       </NotificationBody>
       <NotificationOptions
-        date={showDate(parseDate(notification.date))}
+        date={showDate(parseZonedDateTime(notification.date))}
         items={[
           {
             label: "Aceptar Invitación",

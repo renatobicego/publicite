@@ -27,6 +27,7 @@ declare global {
   type PostType = "service" | "good" | "petition";
 
   interface BaseNotification {
+    _id: string;
     notification: {
       viewed: boolean;
       event: string;

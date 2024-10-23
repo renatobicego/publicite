@@ -1,5 +1,6 @@
 "use server";
 import {
+  deleteAdmin,
   deleteMember,
   postGroup,
   putAdminGroup,
@@ -20,8 +21,14 @@ export const createGroup = async (formData: any) => {
     if (res.error) {
       return { error: res.error };
     }
-    return { message: "Grupo creado exitosamente", id: res._id };
+    return {
+      message: "Grupo creado exitosamente",
+      id: res._id,
+      members: res.members.map((member: any) => member._id),
+      creator: res.creator,
+    };
   } catch (err) {
+    console.log(err);
     return {
       error: "Error al crear el grupo. Por favor intenta de nuevo.",
     };
@@ -74,13 +81,14 @@ export const removeMember = async (
   groupId: string,
   membersToDelete: string[]
 ) => {
-  try {
-    const res = await deleteMember(groupId, membersToDelete);
-    return res;
-  } catch (err) {
-    return {
-      error:
-        "Error al agregar administrador al grupo. Por favor intenta de nuevo.",
-    };
-  }
+  const res = await deleteMember(groupId, membersToDelete);
+  return res;
+};
+
+export const removeAdmin = async (
+  groupId: string,
+  membersToDelete: string[]
+) => {
+  const res = await deleteAdmin(groupId, membersToDelete);
+  return res;
 };

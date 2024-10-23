@@ -36,6 +36,7 @@ const CreateBoard = ({
     user: user._id,
     visibility: prevBoard ? prevBoard.visibility : "public",
     color: bgColor,
+    searchTerm: `${user.username} ${user.name}`,
   };
   const { borderColor, textColor } = handleBoardColor(bgColor);
   const handleSubmit = async (
@@ -44,7 +45,13 @@ const CreateBoard = ({
   ) => {
     let resApi;
     if (prevBoard) {
-      resApi = await editBoard(prevBoard._id, { ...values, color: bgColor });
+      const editValues = {
+        annotations: values.annotations,
+        keywords: values.keywords,
+        color: bgColor,
+        visibility: values.visibility,
+      }
+      resApi = await editBoard(prevBoard._id, editValues);
     } else {
       resApi = await createBoard({ ...values, color: bgColor });
     }

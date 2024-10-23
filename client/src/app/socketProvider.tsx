@@ -5,14 +5,17 @@ import {
   useState,
   useEffect,
   ReactNode,
+  Dispatch,
+  SetStateAction,
 } from "react";
-import { UserPreferences } from "@/types/userTypes";
 import { Socket } from "socket.io-client";
 import { useUser } from "@clerk/nextjs";
 import { getSocket } from "@/socket";
 
 interface SocketContextType {
   socket: Socket | null;
+  newNotifications: boolean;
+  setNewNotifications: Dispatch<SetStateAction<boolean>>;
 }
 
 const SocketContext = createContext<SocketContextType | undefined>(undefined);
@@ -27,6 +30,7 @@ export const useSocket = () => {
 
 export const SocketProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useUser();
+  const [newNotifications, setNewNotifications] = useState(false);
 
   const [socket, setSocket] = useState<Socket | null>(null);
   useEffect(() => {
@@ -38,8 +42,8 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
       socketInstance.disconnect();
     };
   }, [user?.publicMetadata.mongoId]);
-    
-      //   Log socket connection status
+
+  //   Log socket connection status
   useEffect(() => {
     if (socket) {
       socket.on("connect", () => {
@@ -53,7 +57,10 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
       socket.on("connect_error", (err: any) => {
         console.log("Socket connection error:", err);
       });
-
+      socket.on("group_notifications", (data) => {
+        console.log(data);
+        setNewNotifications(true);
+      });
     }
 
     return () => {
@@ -62,7 +69,9 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
   }, [socket]);
 
   return (
-    <SocketContext.Provider value={{ socket }}>
+    <SocketContext.Provider
+      value={{ socket, newNotifications, setNewNotifications }}
+    >
       {children}
     </SocketContext.Provider>
   );

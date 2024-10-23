@@ -20,6 +20,7 @@ const EditGroup = ({ groupData }: { groupData: Group }) => {
   const initialValues: EditGroupInterface = {
     _id: groupData._id,
     name: groupData.name,
+    alias: groupData.alias,
     details: groupData.details,
     rules: groupData.rules,
     profilePhotoUrl: groupData.profilePhotoUrl,

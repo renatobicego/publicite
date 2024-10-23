@@ -4,6 +4,10 @@ export const createNewGroupMutation = gql`
   mutation CreateNewGroup($groupDto: GroupRequest!) {
     createNewGroup(groupDto: $groupDto) {
       _id
+      members {
+        _id
+      }
+      creator
     }
   }
 `;
@@ -102,6 +106,20 @@ export const deleteMemberMutation = gql`
   ) {
     deleteMembersFromGroupByGroupId(
       membersToDelete: $membersToDelete
+      groupAdmin: $groupAdmin
+      groupId: $groupId
+    )
+  }
+`;
+
+export const deleteAdminMutation = gql`
+  mutation DeleteAdminsFromGroupByGroupId(
+    $adminsToDelete: [String!]!
+    $groupAdmin: String!
+    $groupId: String!
+  ) {
+    deleteAdminsFromGroupByGroupId(
+      adminsToDelete: $adminsToDelete
       groupAdmin: $groupAdmin
       groupId: $groupId
     )

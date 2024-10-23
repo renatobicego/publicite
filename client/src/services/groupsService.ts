@@ -3,6 +3,7 @@ import { getClient, query } from "@/lib/client";
 import { mockedPetitions, mockedPosts } from "../utils/data/mockedData";
 import {
   createNewGroupMutation,
+  deleteAdminMutation,
   deleteMemberMutation,
   editGroupMutation,
   getGroupByIdQuery,
@@ -30,7 +31,7 @@ export const getGroups = async (searchTerm: string | null, page: number) => {
       hasMore: data.getGroupByName.hasMore,
     };
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return {
       error: "Error al traer grupos. Por favor intenta de nuevo.",
     };
@@ -51,10 +52,11 @@ export const getGroupById = async (id: string) => {
 
     return data.getGroupById;
   } catch (error: ApolloError | any) {
-    console.log(error)
+    console.log(error);
     return {
       error:
-        "Error al traer información del grupo. Por favor intenta de nuevo.", error2: error.cause,
+        "Error al traer información del grupo. Por favor intenta de nuevo.",
+      error2: error.cause,
     };
   }
 };
@@ -73,7 +75,7 @@ export const getGroupMembersById = async (id: string) => {
 
     return data.getGroupById;
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return {
       error:
         "Error al traer los miembros del grupo. Por favor intenta de nuevo.",
@@ -104,6 +106,11 @@ export const postGroup = async (formData: any) => {
     .mutate({
       mutation: createNewGroupMutation,
       variables: { groupDto: formData },
+      context: {
+        headers: {
+          Authorization: await auth().getToken(),
+        },
+      },
     })
     .then((res) => res.data.createNewGroup);
 };
@@ -116,13 +123,12 @@ export const putGroup = async (groupToUpdate: any) => {
         variables: { groupToUpdate },
       })
       .then((res) => res);
-    console.log(data);
     return {
       message: "Grupo editado exitosamente",
       id: data.updateGroupById,
     };
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return {
       error: "Error al editar el grupo. Por favor intenta de nuevo.",
     };
@@ -159,16 +165,39 @@ export const deleteMember = async (groupId: string, userIds: string[]) => {
         variables: { groupId, membersToDelete: userIds, groupAdmin },
         context: {
           headers: {
-            Cookie: cookies().toString(),
+            Authorization: await auth().getToken(),
           },
-        }
+        },
       })
       .then((res) => res);
 
     return { message: "Miembro eliminado" };
   } catch (error) {
     return {
-      error: "Error al quitar mimebro del grupo. Por favor intenta de nuevo.",
+      error: "Error al quitar miembro del grupo. Por favor intenta de nuevo.",
+    };
+  }
+};
+
+export const deleteAdmin = async (groupId: string, userIds: string[]) => {
+  const groupAdmin = auth().sessionClaims?.metadata.mongoId;
+  try {
+    await getClient()
+      .mutate({
+        mutation: deleteAdminMutation,
+        variables: { groupId, adminsToDelete: userIds, groupAdmin },
+        context: {
+          headers: {
+            Authorization: `Bearer ${await auth().getToken()}`,
+          },
+        },
+      })
+      .then((res) => res);
+
+    return { message: "Administrador eliminado" };
+  } catch (error) {
+    return {
+      error: "Error al eliminar administrador. Por favor intenta de nuevo.",
     };
   }
 };

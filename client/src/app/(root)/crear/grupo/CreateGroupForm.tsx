@@ -12,11 +12,15 @@ import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
 import { useRouter } from "next-nprogress-bar";
 import { groupValidation } from "./validation";
 import { Group } from "@/types/groupTypes";
+import { emitGroupNotification } from "@/components/notifications/groups/emitNotifications";
+import { useSocket } from "@/app/socketProvider";
+import { useUser } from "@clerk/nextjs";
 
-export type PostGroup = Omit<Group, "_id" |"creator">;
+export type PostGroup = Omit<Group, "_id" | "creator">;
 const CreateGroupForm = () => {
   const initialValues: PostGroup = {
     name: "",
+    alias: "",
     admins: [],
     details: "",
     rules: "",
@@ -26,9 +30,10 @@ const CreateGroupForm = () => {
     visibility: "public",
   };
   const router = useRouter();
+  const { user } = useUser();
   const [photoFile, setPhotoFile] = useState<File>();
-  const { submitFiles, progress } = useUploadImage();
-
+  const { submitFiles, progress, deleteFile } = useUploadImage();
+  const { socket } = useSocket();
   const handleSubmit = async (
     values: PostGroup,
     actions: FormikHelpers<PostGroup>
@@ -43,10 +48,20 @@ const CreateGroupForm = () => {
     }
     const resApi = await createGroup(values);
     if (resApi.error) {
+      await deleteFile(values.profilePhotoUrl);
       toastifyError(resApi.error);
       actions.setSubmitting(false);
       return;
     }
+    resApi.members.forEach((member: string) => {
+      emitGroupNotification(
+        socket,
+        resApi.id,
+        user?.username as string,
+        member,
+        "notification_group_new_user_added"
+      );
+    });
     toastifySuccess(resApi.message as string);
     router.push(`${GROUPS}/${resApi.id}`);
   };
@@ -70,7 +85,7 @@ const CreateGroupForm = () => {
               <Inputs setFieldValue={setFieldValue} errors={errors} />
               <RequiredFieldsMsg />
               <div className="mt-4 flex gap-2 items-center">
-                <PrimaryButton onPress={() => router.back()}>
+                <PrimaryButton variant="light" onPress={() => router.back()}>
                   Cancelar
                 </PrimaryButton>
                 <PrimaryButton

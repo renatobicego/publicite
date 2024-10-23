@@ -1,6 +1,6 @@
 import { CREATE_MAGAZINE, FILE_URL, POSTS } from "@/utils/data/urls";
 import { showDate } from "@/utils/functions/dates";
-import { parseDate } from "@internationalized/date";
+import { parseDate, parseZonedDateTime } from "@internationalized/date";
 import { Image, Link } from "@nextui-org/react";
 import {
   NotificationCard,
@@ -43,7 +43,7 @@ const PostShared = ({
         </p>
       </NotificationBody>
       <NotificationOptions
-        date={showDate(parseDate(notification.date))}
+        date={showDate(parseZonedDateTime(notification.date))}
         items={[
           {
             label: "Ver Publicación",

@@ -10,7 +10,7 @@ const useNotifications = (isOpen: boolean) => {
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [notifications, setNotifications] = useState<BaseNotification[]>([]);
-  const [hasMore, setHasMore] = useState(true);
+  const [hasMore, setHasMore] = useState(false);
   // Error flag to prevent repeated calls
   const [errorOccurred, setErrorOccurred] = useState(false);
   const fetchNotifications = useCallback(async () => {
@@ -18,6 +18,7 @@ const useNotifications = (isOpen: boolean) => {
     setIsLoading(true);
     try {
       const data = await getNotifications(page);
+      console.log("fetch", data);
       if ("error" in data && data.error) {
         toastifyError(data.error);
         setErrorOccurred(true);
@@ -27,7 +28,7 @@ const useNotifications = (isOpen: boolean) => {
         if (data.hasMore) {
           setPage((prevPage) => prevPage + 1);
         }
-        setNotifications(prev => [...prev, ...data.items]);
+        setNotifications((prev) => [...prev, ...data.items]);
         setHasMore(data.hasMore);
         setErrorOccurred(false);
       }
@@ -38,6 +39,18 @@ const useNotifications = (isOpen: boolean) => {
       setIsLoading(false);
     }
   }, [isLoading, hasMore, errorOccurred, page]);
+
+  // Trigger to reset state when postType or search term changes
+  useEffect(() => {
+    // Reset state when postType or searchParams change
+
+    setNotifications([]); // Clear items first
+    setPage(1); // Reset page number
+    setErrorOccurred(false); // Reset error flag when postType or search params change
+
+    // Set `hasMoreData` to true first
+    setHasMore(true);
+  }, []);
 
   // Effect to call `fetchNotifications` only after `hasMore` is set to true
   useEffect(() => {

@@ -1,6 +1,6 @@
 import { GROUPS } from "@/utils/data/urls";
 import { showDate } from "@/utils/functions/dates";
-import { parseDate } from "@internationalized/date";
+import { parseDate, parseDateTime, parseZonedDateTime } from "@internationalized/date";
 import Link from "next/link";
 import {
   NotificationCard,
@@ -61,7 +61,7 @@ const GroupNotificationCard = ({
         </p>
       </NotificationBody>
       <NotificationOptions
-        date={showDate(parseDate(notification.notification.date))}
+        date={showDate(parseZonedDateTime(notification.notification.date))}
         items={getNotificationOptionsList()}
       />
     </NotificationCard>

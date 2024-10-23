@@ -8,7 +8,7 @@ import {
 import { Good, PostContactNotification } from "@/types/postTypes";
 import { FILE_URL, POSTS } from "@/utils/data/urls";
 import { showDate } from "@/utils/functions/dates";
-import { parseDate } from "@internationalized/date";
+import { parseDate, parseZonedDateTime } from "@internationalized/date";
 import ContactPetition from "@/components/modals/ContactPetition/ContactPetition";
 
 const NewContactPost = ({
@@ -38,7 +38,7 @@ const NewContactPost = ({
       </NotificationImage>
       <NotificationBody>{notification.message}</NotificationBody>
       <NotificationOptions
-        date={showDate(parseDate(notification.date))}
+        date={showDate(parseZonedDateTime(notification.date))}
         items={[
           {
             label: "Ver Solicitud",

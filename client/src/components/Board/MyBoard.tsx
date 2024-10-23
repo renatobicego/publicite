@@ -31,6 +31,7 @@ const MyBoard = ({
         setShowEditBoard={setShowEditBoard}
         user={
           {
+            name: user?.fullName as string,
             username: user?.username as string,
             _id: board.user as any,
           } as any

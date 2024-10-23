@@ -17,7 +17,7 @@ const GroupInfo = async ({
   isMember: boolean;
 }) => {
   return (
-    <section className="flex gap-4 md:gap-6 xl:gap-8 md:max-w-[65%] xl:max-w-[50%] max-md:flex-col">
+    <section className="flex gap-4 md:gap-6 xl:gap-8 md:max-w-[75%] xl:max-w-[65%] max-md:flex-col">
       <Image
         src={
           group.profilePhotoUrl

@@ -42,6 +42,7 @@ export const putBoard = async (id: string, values: any) => {
     });
     return data;
   } catch (error) {
+    console.log(error)
     return {
       error: "Error al editar la pizarra. Por favor intenta de nuevo.",
     };

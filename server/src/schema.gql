@@ -25,6 +25,13 @@ type userInviting {
   username: String!
 }
 
+type notification {
+  event: String!
+  viewed: Boolean!
+  date: String!
+  backData: backData!
+}
+
 type frontData {
   group: front_data_GROUP
   userInviting: userInviting!
@@ -32,10 +39,7 @@ type frontData {
 
 type Notification {
   _id: ID!
-  event: String!
-  viewed: Boolean!
-  date: String!
-  backData: backData!
+  notification: notification!
   frontData: frontData!
 }
 
@@ -51,6 +55,7 @@ type Board {
   user: String
   color: String
   keywords: [String!]
+  searchTerm: String
 }
 
 type Location_graphQl {
@@ -381,10 +386,10 @@ type Query {
   """Buscar los pagos por id de clerk"""
   findPaymentByClerkId(id: String!): [PaymentResponse!]
 
-  """Obtiene un usuario por su nombre de usuario"""
+  """Obtiene un usuario por su nombre de usuario """
   findUserByUsername(username: String!): User_Full_Grapql_Model
 
-  """Obtiene un usuario por su nombre de usuario"""
+  """obtener todas las notificaciones de un usuario por su Id"""
   getAllNotificationsFromUserById(id: String!, limit: Float!, page: Float!): GROUP_notification_graph_model_get_all
 
   """Obtener Post por autor"""

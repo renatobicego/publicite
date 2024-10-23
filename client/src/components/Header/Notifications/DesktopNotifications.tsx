@@ -5,21 +5,19 @@ import {
   Badge,
   PopoverContent,
 } from "@nextui-org/react";
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { FaBell } from "react-icons/fa6";
 import NotificationsContent from "./NotificationContent";
 import useNotifications from "@/utils/hooks/useNotifications";
+import { useSocket } from "@/app/socketProvider";
 
-const DesktopNotifications = ({
-  newNotifications,
-  setNewNotifications,
-}: {
-  newNotifications: boolean;
-  setNewNotifications: Dispatch<SetStateAction<boolean>>;
-}) => {
+const DesktopNotifications = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const {newNotifications, setNewNotifications} = useSocket();
+  
   const { notifications, fetchNotifications, isLoading, hasMore } =
     useNotifications(isOpen);
+  
   return (
     <Popover
       className=" max-lg:hidden"

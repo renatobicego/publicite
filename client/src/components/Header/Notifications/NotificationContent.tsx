@@ -17,7 +17,7 @@ const NotificationsContent = ({
     switch (true) {
       case notificationData.event.includes("group"):
         return (
-          <GroupInvitation notification={notification as GroupNotification} />
+          <GroupInvitation key={notification._id} notification={notification as GroupNotification} />
         );
       default:
         return null;

@@ -8,7 +8,7 @@ import {
 import { Good, ReviewPostNotification } from "@/types/postTypes";
 import { FILE_URL, POSTS } from "@/utils/data/urls";
 import { showDate } from "@/utils/functions/dates";
-import { parseDate } from "@internationalized/date";
+import { parseDate, parseZonedDateTime } from "@internationalized/date";
 import ReviewPost from "@/components/modals/ReviewModal/ReviewPost";
 
 const ReviewRequest = ({
@@ -42,7 +42,7 @@ const ReviewRequest = ({
         </p>
       </NotificationBody>
       <NotificationOptions
-        date={showDate(parseDate(notification.date))}
+        date={showDate(parseZonedDateTime(notification.date))}
         items={[
           {
             label: "Calificar Anuncio",

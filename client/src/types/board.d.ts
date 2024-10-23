@@ -11,4 +11,5 @@ export interface Board {
 
 export interface PostBoard extends Omit<Board, "_id" | "user"> {
   user: ObjectId;
+  searchTerm: string;
 }

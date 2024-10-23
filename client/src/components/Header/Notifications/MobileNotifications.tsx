@@ -9,20 +9,14 @@ import {
 } from "@nextui-org/react";
 import { FaBell } from "react-icons/fa6";
 import NotificationsContent from "./NotificationContent";
-import { Dispatch, SetStateAction, useRef } from "react";
 import useNotifications from "@/utils/hooks/useNotifications";
+import { useSocket } from "@/app/socketProvider";
 
-const MobileNotifications = ({
-  newNotifications,
-  setNewNotifications,
-}: {
-  newNotifications: boolean;
-  setNewNotifications: Dispatch<SetStateAction<boolean>>;
-}) => {
+const MobileNotifications = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const {newNotifications, setNewNotifications} = useSocket();
   const { notifications, fetchNotifications, isLoading, hasMore } =
     useNotifications(isOpen);
-  console.log(notifications);
   return (
     <>
       <Button

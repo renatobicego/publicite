@@ -1,6 +1,6 @@
 import SecondaryButton from "@/components/buttons/SecondaryButton";
 import ShareButton from "@/components/buttons/ShareButton";
-import InviteCollabMagazine from "@/components/modals/InviteCollabMagazine";
+import InviteCollabMagazine from "@/components/modals/InvitationModal/InviteCollabMagazine";
 import { Magazine } from "@/types/magazineTypes";
 import { EDIT_MAGAZINE } from "@/utils/data/urls";
 import { Link } from "@nextui-org/react";

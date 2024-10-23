@@ -46,4 +46,8 @@ export const noticationMessages: Record<
     message: "te ha agregado al grupo",
     showUser: true,
   },
+  notification_group_user_removed_admin: {
+    message: "Te han quitado el rol de administrador en el grupo ",
+    showUser: false,
+  }
 };

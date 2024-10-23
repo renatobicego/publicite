@@ -1,4 +1,6 @@
 "use client";
+import { SearchUsers } from "@/components/inputs/SelectUsers";
+import useSearchUsers from "@/utils/hooks/useSearchUsers";
 import {
   Button,
   Modal,
@@ -8,13 +10,29 @@ import {
   ModalHeader,
   useDisclosure,
 } from "@nextui-org/react";
-import SecondaryButton from "../buttons/SecondaryButton";
-import { Magazine } from "@/types/magazineTypes";
-import { SearchUsers } from "../inputs/SelectUsers";
-import useSearchUsers from "@/utils/hooks/useSearchUsers";
-import { useEffect, useState } from "react";
+import {
+  cloneElement,
+  ReactElement,
+  ReactNode,
+  useEffect,
+  useState,
+} from "react";
 
-const InviteCollabMagazine = ({ magazine }: { magazine: Magazine }) => {
+interface InvitationModalProps {
+  title: string;
+  handleSubmit: (selectedUsers: string[]) => void;
+  submitLabel?: string; // Optional, defaults to 'Invitar'
+  triggerElement: ReactElement;
+  filterUsers?: string[];
+}
+
+const InvitationModal = ({
+  title,
+  handleSubmit,
+  submitLabel = "Invitar",
+  triggerElement,
+  filterUsers,
+}: InvitationModalProps) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const { users, getUsersByQuery } = useSearchUsers();
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
@@ -25,17 +43,20 @@ const InviteCollabMagazine = ({ magazine }: { magazine: Magazine }) => {
       setSelectedUsers([...selectedUsers, key]);
     }
   };
-  
+
   useEffect(() => {
     if (isOpen) {
       setSelectedUsers([]);
     }
-  }, [isOpen])
+  }, [isOpen]);
+
+  // Clone the trigger element and pass the onPress handler
+  const trigger = cloneElement(triggerElement, {
+    onPress: onOpen,
+  });
   return (
     <>
-      <SecondaryButton onPress={onOpen} variant="flat" className="order-last">
-        Invitar Colaboradores
-      </SecondaryButton>
+      {trigger}
       <Modal
         radius="lg"
         className="p-2"
@@ -45,12 +66,14 @@ const InviteCollabMagazine = ({ magazine }: { magazine: Magazine }) => {
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1">
-                Invitar Colaboradores a {magazine.name}
-              </ModalHeader>
+              <ModalHeader className="flex flex-col gap-1">{title}</ModalHeader>
               <ModalBody>
                 <SearchUsers
-                  items={users}
+                  items={
+                    filterUsers
+                      ? users.filter((user) => !filterUsers.includes(user._id))
+                      : users
+                  }
                   onValueChange={(value: string | null) =>
                     getUsersByQuery(value)
                   }
@@ -61,8 +84,15 @@ const InviteCollabMagazine = ({ magazine }: { magazine: Magazine }) => {
                 <Button color="danger" variant="light" onPress={onClose}>
                   Cerrar
                 </Button>
-                <Button color="primary" onPress={onClose}>
-                  Invitar
+                <Button
+                  color="primary"
+                  onPress={() => {
+                    handleSubmit(selectedUsers);
+                    onClose();
+                  }}
+                  isDisabled={selectedUsers.length === 0}
+                >
+                  {submitLabel}
                 </Button>
               </ModalFooter>
             </>
@@ -73,4 +103,4 @@ const InviteCollabMagazine = ({ magazine }: { magazine: Magazine }) => {
   );
 };
 
-export default InviteCollabMagazine;
+export default InvitationModal;

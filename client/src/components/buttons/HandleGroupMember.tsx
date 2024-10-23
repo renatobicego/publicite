@@ -9,7 +9,7 @@ import {
 } from "@nextui-org/react";
 import { FaPencil } from "react-icons/fa6";
 import ConfirmModal from "../modals/ConfirmModal";
-import { addAdmin, removeMember } from "@/app/server/groupActions";
+import { addAdmin, removeAdmin, removeMember } from "@/app/server/groupActions";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { useRouter } from "next-nprogress-bar";
 import { IoTrashOutline } from "react-icons/io5";
@@ -63,6 +63,23 @@ const HandleGroupMember = ({
       userLogged?.username as string,
       user._id,
       "notification_group_user_removed_from_group"
+    );
+    toastifySuccess(res.message);
+    router.refresh();
+  };
+
+  const deleteAdmin = async () => {
+    const res = await removeAdmin(group._id as string, [user._id]);
+    if ("error" in res) {
+      toastifyError(res.error as string);
+      return;
+    }
+    emitGroupNotification(
+      socket,
+      group,
+      userLogged?.username as string,
+      user._id,
+      "notification_group_user_removed_admin"
     );
     toastifySuccess(res.message);
     router.refresh();
@@ -132,23 +149,56 @@ const HandleGroupMember = ({
       )}
 
       {isAdmin && isCreator && (
-        <ConfirmModal
-          ButtonAction={
-            <Button
-              size="sm"
-              isIconOnly
-              color="danger"
-              variant="flat"
-              radius="full"
-            >
-              <IoTrashOutline />
-            </Button>
-          }
-          message={`¿Desea eliminar a ${nameToShow} del grupo?`}
-          tooltipMessage="Eliminar"
-          confirmText="Eliminar"
-          onConfirm={deleteMember}
-        />
+        <>
+          <Dropdown placement="bottom">
+            <DropdownTrigger>
+              <Button
+                size="sm"
+                isIconOnly
+                color="danger"
+                variant="flat"
+                radius="full"
+              >
+                <FaPencil />
+              </Button>
+            </DropdownTrigger>
+            <DropdownMenu aria-label="Static Actions">
+              <DropdownItem
+                className="rounded-full"
+                key="delete-admin"
+                color="danger"
+                onClick={handleAssignAdminClick} // Open ConfirmModal on dropdown item click
+              >
+                Eliminar de Administradores
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+          <ConfirmModal
+            ButtonAction={
+              <Button
+                size="sm"
+                isIconOnly
+                color="danger"
+                variant="flat"
+                radius="full"
+              >
+                <IoTrashOutline />
+              </Button>
+            }
+            message={`¿Desea eliminar a ${nameToShow} del grupo?`}
+            tooltipMessage="Eliminar"
+            confirmText="Eliminar"
+            onConfirm={deleteMember}
+          />
+          <ConfirmModal
+            ButtonAction={<></>}
+            message={`¿Desea eliminar a ${nameToShow} como administrador del grupo?`}
+            tooltipMessage="Eliminar"
+            confirmText="Eliminar"
+            onConfirm={deleteAdmin}
+            customOpen={(openModal) => (assignAdminRef.current = openModal)} // Set the reference for customOpen
+          />
+        </>
       )}
     </div>
   );

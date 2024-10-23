@@ -1,13 +1,18 @@
-import { Link, NavbarItem, NavbarMenuToggle } from "@nextui-org/react";
-import React from "react";
+import { Badge, Link, NavbarItem, NavbarMenuToggle } from "@nextui-org/react";
+import React, { useEffect } from "react";
 import SecondaryButton from "../buttons/SecondaryButton";
 import { SignedIn, SignedOut, useUser } from "@clerk/nextjs";
 import Notifications from "./Notifications/Notifications";
 import DropdownItems from "./DropdownItems";
 import UserButtonModal from "@/app/(root)/(configuracion)/UserButtonPage";
+import { useSocket } from "@/app/socketProvider";
 
 const UserNavItems = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
-  const { user } = useUser();
+  const { newNotifications, setNewNotifications } = useSocket();
+  useEffect(() => {
+    if (isMenuOpen) setNewNotifications(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isMenuOpen]);
   return (
     <>
       <NavbarItem className="max-lg:hidden flex gap-2 items-center">
@@ -22,11 +27,19 @@ const UserNavItems = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
           </SecondaryButton>
         </SignedOut>
       </NavbarItem>
-      <NavbarMenuToggle
-        // icon={isMenuOpen ? <IoIosClose className="size-6"/> : <IoIosMenu className="size-6"/>}
-        aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-        className="lg:hidden min-h-12"
-      />
+      {newNotifications ? (
+        <Badge content="" color="primary" className="lg:hidden mt-2.5">
+          <NavbarMenuToggle
+            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+            className="lg:hidden min-h-12"
+          />
+        </Badge>
+      ) : (
+        <NavbarMenuToggle
+          aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+          className="lg:hidden min-h-12"
+        />
+      )}
     </>
   );
 };
