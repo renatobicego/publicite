@@ -14,6 +14,21 @@ export class userInviting {
 }
 
 @ObjectType()
+export class notification {
+   @Field(() => String)
+  event: string;
+
+  @Field(() => Boolean)
+  viewed: boolean;
+
+  @Field(() => String)
+  date: string;
+
+  @Field(() => backData)
+  backData: backData;
+}
+
+@ObjectType()
 export class frontData {
   @Field(() => front_data_GROUP, { nullable: true })
   group: front_data_GROUP;
@@ -27,27 +42,15 @@ export class Notification {
   @Field(() => ID)
   _id: string;
 
-  @Field(() => String)
-  event: string;
-
-  @Field(() => Boolean)
-  viewed: boolean;
-
-  @Field(() => String)
-  date: string;
-
-  @Field(() => backData)
-  backData: backData;
+  @Field(() => notification)
+  notification: notification;
 
   @Field(() => frontData)
   frontData: frontData;
 
   constructor(notification: any) {
     this._id = notification._id;
-    this.event = notification.event;
-    this.viewed = notification.viewed;
-    this.date = notification.date;
-    this.backData = notification.backData;
+    this.notification = notification.notification;
     this.frontData = notification.frontData;
   }
 }
