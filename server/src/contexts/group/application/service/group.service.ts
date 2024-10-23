@@ -105,7 +105,7 @@ export class GroupService implements GroupServiceInterface {
       );
     } catch (error: any) {
       this.logger.error(
-        'An error was ocurred when deleting admins to group: ' + groupId,
+        'An error was ocurred when deleting members to group: ' + groupId,
       );
       throw error;
     }
