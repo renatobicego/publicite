@@ -6,7 +6,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
-import { clerkClient } from '@clerk/clerk-sdk-node'; // Asegúrate de importar correctamente el cliente de Clerk
+import { clerkClient } from '@clerk/clerk-sdk-node'; 
 
 @Injectable()
 export class ClerkAuthGuard implements CanActivate {
