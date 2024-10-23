@@ -19,7 +19,11 @@ export interface UserAdapterInterface {
     limit: number,
     page: number,
   ): Promise<UserFindAllResponse>;
-
+  findBoardByFullNameOrUsername(
+    searchTerm: string,
+    limit: number,
+    page: number,
+  ): Promise<any>;
   findUserByUsername(username: string): Promise<any>;
 
   getUserPersonalInformationByUsername(
@@ -46,3 +50,4 @@ export interface UserAdapterInterface {
     type: number,
   ): Promise<UserPersonalUpdateResponse | UserBusinessUpdateResponse>;
 }
+

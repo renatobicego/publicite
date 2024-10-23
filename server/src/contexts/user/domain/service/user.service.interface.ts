@@ -22,7 +22,11 @@ export interface UserServiceInterface {
     page: number,
   ): Promise<UserFindAllResponse>;
   findUserByUsername(username: string): Promise<any>;
-
+  findBoardByFullNameOrUsername(
+    searchTerm: string,
+    limit: number,
+    page: number,
+  ): Promise<any>;
   getUserPersonalInformationByUsername(username: string): Promise<any>;
   getUserPreferencesByUsername(
     username: string,

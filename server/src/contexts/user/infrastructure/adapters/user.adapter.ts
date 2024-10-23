@@ -86,6 +86,21 @@ export class UserAdapter implements UserAdapterInterface {
       throw error;
     }
   }
+  async findBoardByFullNameOrUsername(
+    searchTerm: string,
+    limit: number,
+    page: number,
+  ): Promise<any> {
+    try {
+      return this.userService.findBoardByFullNameOrUsername(
+        searchTerm,
+        limit,
+        page,
+      );
+    } catch (error: any) {
+      throw error;
+    }
+  }
 
   async getUserPreferencesByUsername(username: string): Promise<any> {
     try {
@@ -186,3 +201,4 @@ export class UserAdapter implements UserAdapterInterface {
     }
   }
 }
+

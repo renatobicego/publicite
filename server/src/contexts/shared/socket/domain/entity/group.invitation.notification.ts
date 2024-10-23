@@ -9,6 +9,7 @@ const eventTypes = [
   'notification_group_user_request_group_invitation', // Usuario A quiere pertenecer a grupo
   'notification_group_user_removed_from_group', // te han eliminado del grupo,
   'notification_group_user_new_admin', // te han convertido en administrador
+  'notification_group_user_removed_admin'// Te han quitado el rol de administrador
 ] as const;
 
 type EventTypes = (typeof eventTypes)[number];

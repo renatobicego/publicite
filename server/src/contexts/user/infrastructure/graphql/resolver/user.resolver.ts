@@ -51,4 +51,26 @@ export class UserResolver {
       throw error;
     }
   }
+
+  @Query(() => String, {
+    nullable: true,
+    description: 'obtener todas las notificaciones de un usuario por su Id',
+  })
+  //@UseGuards(ClerkAuthGuard)
+  async findBoardByFullNameOrUsername(
+    @Args('searchTerm', { type: () => String }) searchTerm: string,
+    @Args('limit', { type: () => Number }) limit: number,
+    @Args('page', { type: () => Number }) page: number,
+  ): Promise<any> {
+    try {
+      return await this.userAdapter.findBoardByFullNameOrUsername(
+        searchTerm,
+        limit,
+        page,
+      );
+    } catch (error: any) {
+      throw error;
+    }
+  }
 }
+
