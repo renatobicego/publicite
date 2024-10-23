@@ -227,7 +227,7 @@ export class GroupRepository implements GroupRepositoryInterface {
     try {
       await session.withTransaction(async () => {
         const result = await this.groupModel
-          .findByIdAndUpdate(
+          .findOneAndUpdate(
             {
               _id: groupId,
               $or: [{ admins: groupAdmin }, { creator: groupAdmin }],
@@ -236,9 +236,9 @@ export class GroupRepository implements GroupRepositoryInterface {
             { session },
           )
           .lean();
-
+  
         checkResultModificationOfOperation(result);
-
+  
         await this.userModel
           .updateMany(
             { _id: { $in: membersToDelete } },
@@ -251,7 +251,7 @@ export class GroupRepository implements GroupRepositoryInterface {
         await session.commitTransaction();
       });
       this.logger.log(
-        'Members deleted to group successfully Group ID: ' + groupId,
+        'Members deleted from group successfully. Group ID: ' + groupId,
       );
       return;
     } catch (error: any) {
@@ -259,13 +259,14 @@ export class GroupRepository implements GroupRepositoryInterface {
         await session.abortTransaction();
       }
       this.logger.error(
-        'An error was ocurred when deleted Members to group: ' + error,
+        'An error occurred when deleting members from group: ' + error,
       );
       throw error;
     } finally {
       session.endSession();
     }
   }
+  
 
   async deleteMagazinesFromGroup(
     magazinesToDelete: string[],
