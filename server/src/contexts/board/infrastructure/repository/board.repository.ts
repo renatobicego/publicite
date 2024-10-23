@@ -31,19 +31,12 @@ export class BoardRepository implements BoardRespositoryInterface {
           $or: [
             { annotations: { $regex: regex } },
             { keywords: { $regex: regex } },
+            { searchTerm: { $regex: regex } },
           ],
           //$and: [{ visibility: 'public' }],
         })
         .populate({
           path: 'user',
-          match: {
-            $or: [
-              { username: { $regex: regex } },
-              { name: { $regex: regex } },
-              { lastName: { $regex: regex } },
-              { businessName: { $regex: regex } },
-            ],
-          },
           select: '_id profilePhotoUrl name lastName businessName username',
         })
         .limit(limit + 1)
@@ -89,3 +82,4 @@ export class BoardRepository implements BoardRespositoryInterface {
     }
   }
 }
+

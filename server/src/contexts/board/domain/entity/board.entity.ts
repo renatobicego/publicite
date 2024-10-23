@@ -21,12 +21,16 @@ export class Board {
   @Field(() => [String], { nullable: true })
   private keywords: string[];
 
+  @Field(() => String, { nullable: true })
+  private searchTerm: string;
+
   constructor(
     annotations: string[],
     visibility: string,
     user: ObjectId,
     color: string,
     keywords: string[],
+    searchTerm: string,
     id?: ObjectId,
   ) {
     this.annotations = annotations;
@@ -34,6 +38,7 @@ export class Board {
     this.user = user;
     this.color = color ?? '';
     this.keywords = keywords;
+    this.searchTerm = searchTerm;
     this._id = id;
   }
 
@@ -60,4 +65,9 @@ export class Board {
   get getColor() {
     return this.color;
   }
+
+  get getSearchTermm() {
+    return this.searchTerm;
+  }
 }
+

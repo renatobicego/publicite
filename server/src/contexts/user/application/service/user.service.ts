@@ -102,13 +102,7 @@ export class UserService implements UserServiceInterface {
       throw error;
     }
   }
-  async findBoardByFullNameOrUsername(
-    searchTerm: string,
-    limit: number,
-    page: number,
-  ): Promise<any> {
-    throw new Error('Method not implemented.');
-  }
+
   async getUserPersonalInformationByUsername(username: string): Promise<any> {
     try {
       const user =

@@ -6,4 +6,6 @@ export interface BoardRequest {
   user: ObjectId;
   color: string;
   keywords: string[];
+  searchTerm: string;
 }
+

@@ -14,6 +14,7 @@ export class BoardServiceMapper implements BoardMapperServiceInterface {
       boardRequest.user,
       boardRequest.color,
       boardRequest.keywords,
+      boardRequest.searchTerm,
     );
   }
   entityToResponse(board: Board): BoardResponse {
@@ -28,3 +29,4 @@ export class BoardServiceMapper implements BoardMapperServiceInterface {
     return boardresponse;
   }
 }
+
