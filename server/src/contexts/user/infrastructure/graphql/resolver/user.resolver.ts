@@ -18,7 +18,7 @@ export class UserResolver {
 
   @Query(() => User_Full_Grapql_Model, {
     nullable: true,
-    description: 'obtener todas las notificaciones de un usuario por su Id',
+    description: 'Obtiene un usuario por su nombre de usuario ',
   })
   @UseGuards(ClerkAuthGuard)
   async findUserByUsername(
@@ -33,7 +33,7 @@ export class UserResolver {
 
   @Query(() => GROUP_notification_graph_model_get_all, {
     nullable: true,
-    description: 'Obtiene un usuario por su nombre de usuario',
+    description: 'obtener todas las notificaciones de un usuario por su Id',
   })
   //@UseGuards(ClerkAuthGuard)
   async getAllNotificationsFromUserById(
