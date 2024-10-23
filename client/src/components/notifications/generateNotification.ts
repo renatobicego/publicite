@@ -1,10 +1,13 @@
 import { getLocalTimeZone, now } from "@internationalized/date";
 
-const generateNotification = (event: string) => {
+const generateNotification = (event: string, userToSendId: string) => {
   const baseNotification: BaseNotification = {
-    date: now(getLocalTimeZone()).toString(),
-    event,
-    viewed: false,
+    notification: {
+      date: now(getLocalTimeZone()).toString(),
+      event,
+      viewed: false,
+      backData: { userToSendId },
+    },
   };
   return baseNotification;
 };

@@ -15,7 +15,7 @@ export class PubliciteAuth {
     return mongoId;
   }
   static authorize(context: any, user: string): boolean {
-    const token = context.req.token;
+    const token = context.req.headers.authorization;
     if (!token) {
       throw new UnauthorizedException('Token not found in request');
     }

@@ -20,7 +20,6 @@ const DesktopNotifications = ({
   const [isOpen, setIsOpen] = useState(false);
   const { notifications, fetchNotifications, isLoading, hasMore } =
     useNotifications(isOpen);
-  console.log(notifications);
   return (
     <Popover
       className=" max-lg:hidden"
@@ -54,9 +53,13 @@ const DesktopNotifications = ({
         </Button>
       </PopoverTrigger>
       <PopoverContent>
-        <h6>Notificaciones</h6>
+        <h6 className="self-start m-2">Notificaciones</h6>
 
-        {isOpen ? <NotificationsContent notifications={notifications} /> : <></>}
+        {isOpen ? (
+          <NotificationsContent notifications={notifications} />
+        ) : (
+          <></>
+        )}
       </PopoverContent>
     </Popover>
   );

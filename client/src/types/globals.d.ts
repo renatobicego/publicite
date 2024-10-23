@@ -25,10 +25,15 @@ declare global {
 
   type FrequencyPrice = "hour" | "day" | "week" | "month" | "year";
   type PostType = "service" | "good" | "petition";
-  
+
   interface BaseNotification {
-    viewed: boolean;
-    event: string;
-    date: string;
+    notification: {
+      viewed: boolean;
+      event: string;
+      date: string;
+      backData: {
+        userToSendId: string;
+      };
+    };
   }
 }

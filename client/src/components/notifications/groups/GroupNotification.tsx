@@ -19,11 +19,9 @@ const GroupNotificationCard = ({
   notification: GroupNotification;
 }) => {
   const { group } = notification.frontData;
-  const { event } = notification;
+  const { event } = notification.notification;
   const getNotificationOptionsList = () => {
-    const optionsList: NotificationOptionProps[] = [
-      
-    ]
+    const optionsList: NotificationOptionProps[] = []
     const notificationMessage = noticationMessages[event as GroupNotificationType];
 
     // Check if acceptAction exists before adding it to options
@@ -63,7 +61,7 @@ const GroupNotificationCard = ({
         </p>
       </NotificationBody>
       <NotificationOptions
-        date={showDate(parseDate(notification.date))}
+        date={showDate(parseDate(notification.notification.date))}
         items={getNotificationOptionsList()}
       />
     </NotificationCard>

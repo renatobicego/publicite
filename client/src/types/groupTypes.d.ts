@@ -13,10 +13,7 @@ export interface Group {
 
 export interface EditGroupInterface
   extends Omit<Group, "admins" | "members" | "magazines"> {}
-export interface GroupNotification extends BaseNotification {
-  backData: {
-    userToSendId: string;
-  };
+export interface GroupNotification extends BaseNotification{
   frontData: {
     group: Pick<Group, "_id" | "name" | "profilePhotoUrl">;
     userInviting: Pick<User, "username">;

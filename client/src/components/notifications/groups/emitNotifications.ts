@@ -10,7 +10,7 @@ export const emitGroupNotification = (
   event: GroupNotificationType
 ) => {
   const notification = {
-    groupInvitation: generateGroupNotification(
+    notificationBody: generateGroupNotification(
       event,
       group,
       { username: userUsernameSending },

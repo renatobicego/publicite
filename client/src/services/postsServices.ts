@@ -77,7 +77,7 @@ export const putPost = async (
       variables: { updatePostByIdId: id, postUpdate: values, authorId },
       context: {
         headers: {
-          Cookie: cookies().toString(),
+          Authorization: await auth().getToken(),
         },
       },
     });
@@ -134,7 +134,7 @@ export const deletePostService = async(post: Post) => {
       variables: { deletePostByIdId: post._id },
       context: {
         headers: {
-          Cookie: cookies().toString(),
+          Authorization: await auth().getToken(),
         },
       },
     })

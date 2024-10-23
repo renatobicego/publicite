@@ -21,7 +21,7 @@ export const getGroups = async (searchTerm: string | null, page: number) => {
       variables: { name: searchTerm ? searchTerm : "", limit: 20, page },
       context: {
         headers: {
-          Cookie: cookies().toString(),
+          Authorization: await auth().getToken(),
         },
       },
     });
@@ -44,7 +44,7 @@ export const getGroupById = async (id: string) => {
       variables: { getGroupByIdId: id },
       context: {
         headers: {
-          Cookie: cookies().toString(),
+          Authorization: await auth().getToken(),
         },
       },
     });
@@ -66,7 +66,7 @@ export const getGroupMembersById = async (id: string) => {
       variables: { getGroupByIdId: id },
       context: {
         headers: {
-          Cookie: cookies().toString(),
+          Authorization: await auth().getToken(),
         },
       },
     });
@@ -135,6 +135,11 @@ export const putAdminGroup = async (groupId: string, userIds: string[]) => {
     await getClient().mutate({
       mutation: makeAdminMutation,
       variables: { groupId, newAdmins: userIds, groupAdmin },
+      context: {
+        headers: {
+          Authorization: await auth().getToken(),
+        },
+      },
     });
     return { message: "Administrador agregado" };
   } catch (error) {
@@ -152,6 +157,11 @@ export const deleteMember = async (groupId: string, userIds: string[]) => {
       .mutate({
         mutation: deleteMemberMutation,
         variables: { groupId, membersToDelete: userIds, groupAdmin },
+        context: {
+          headers: {
+            Cookie: cookies().toString(),
+          },
+        }
       })
       .then((res) => res);
 

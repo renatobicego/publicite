@@ -13,17 +13,14 @@ const generateGroupNotification = (
   userToSendId: string
 ) => {
   const notification: GroupNotification = {
-    ...generateNotification(event),
+    ...generateNotification(event, userToSendId),
     frontData: {
       group,
       userInviting: userSending,
     },
-    backData: {
-      userToSendId,
-    },
   };
-  console.log(notification)
+  console.log(notification);
   return notification;
 };
 
-export default generateGroupNotification
+export default generateGroupNotification;

@@ -85,7 +85,7 @@ export const getUsers = async (searchTerm: string | null, page: number) => {
       }&limit=20&page=${page}`,
       {
         headers: {
-          Cookie: cookies().toString(),
+          Authorization: `${await auth().getToken()}`,
         },
       }
     );
@@ -105,7 +105,7 @@ export const getUserByUsername = async (username: string) => {
       variables: { username },
       context: {
         headers: {
-          Cookie: cookies().toString(),
+          Authorization: await auth().getToken(),
         },
         fetchOptions: {
           next: { revalidate: 60 },
@@ -135,25 +135,23 @@ export const getNotifications = async (
 ): Promise<GetNotificationsResponse | ErrorResponse> => {
   const user = await currentUser();
   try {
-    // const { data } = await query({
-    //   query: getAllNotificationsQuery,
-    //   variables: {
-    //     getAllNotificationsFromUserByIdId: user?.publicMetadata.mongoId,
-    //     limit: 10,
-    //     page,
-    //   },
-    //   context: {
-    //     headers: {
-    //       Cookie: cookies().toString(),
-    //     },
-    //   },
-    // });
-    // console.log(data)
+    const { data } = await query({
+      query: getAllNotificationsQuery,
+      variables: {
+        getAllNotificationsFromUserByIdId: user?.publicMetadata.mongoId,
+        limit: 10,
+        page,
+      },
+      context: {
+        headers: {
+          Authorization: await auth().getToken(),
+        },
+      },
+    });
+
     return {
-      // items: data.getAllNotificationsFromUserById.notifications || [],
-      // hasMore: data.getAllNotificationsFromUserById.hasMore,
-      items: [],
-      hasMore: false,
+      items: data.getAllNotificationsFromUserById.notifications || [],
+      hasMore: data.getAllNotificationsFromUserById.hasMore,
     };
   } catch (error: ApolloError | any) {
     return {
