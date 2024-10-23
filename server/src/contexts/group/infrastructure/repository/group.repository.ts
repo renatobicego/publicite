@@ -178,18 +178,18 @@ export class GroupRepository implements GroupRepositoryInterface {
     groupAdmin: string,
   ): Promise<any> {
     const session = await this.connection.startSession();
-
+  
     try {
       await session.withTransaction(async () => {
         // Buscar el grupo y mantener la referencia
         const groupToTakeOffAdmin = await this.groupModel
-          .findOne({ _id: groupId, creator: groupAdmin }, { session })
-          .lean();
-
+          .findOne({ _id: groupId, creator: groupAdmin })
+          .session(session); // Añadir la sesión aquí
+  
         if (!groupToTakeOffAdmin) {
           throw new Error('Group does not exist or invalid admin');
         }
-
+  
         await this.groupModel.updateOne(
           { _id: groupId },
           {
@@ -198,7 +198,7 @@ export class GroupRepository implements GroupRepositoryInterface {
           },
           { session },
         );
-
+  
         await session.commitTransaction();
         this.logger.log(
           'Admins deleted from group successfully. Group ID: ' + groupId,
@@ -217,6 +217,7 @@ export class GroupRepository implements GroupRepositoryInterface {
       session.endSession();
     }
   }
+  
 
   async deleteMembersFromGroup(
     membersToDelete: string[],
