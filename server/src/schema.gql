@@ -437,7 +437,7 @@ type Mutation {
   createNewGroup(groupDto: GroupRequest!): GroupResponse
 
   """Eliminar admins un grupo"""
-  deleteAdminsFromGroupByGroupId(adminsToDelete: [String!]!, groupAdmin: String!, groupId: String!): String
+  removeAdminsFromGroupByGroupId(adminsToDelete: [String!]!, groupAdmin: String!, groupId: String!): String
 
   """Eliminar miembros un grupo"""
   deleteMembersFromGroupByGroupId(membersToDelete: [String!]!, groupAdmin: String!, groupId: String!): String
@@ -447,6 +447,9 @@ type Mutation {
 
   """Actualizar un grupo"""
   updateGroupById(groupToUpdate: GroupUpdateRequest!): String
+
+  """Eliminar un grupo por su id"""
+  deleteGroupById(groupId: String!, groupCreator: String!): String
 
   """Agregar colaboradores a la revista"""
   addColaboratorsToMagazine(newColaborators: [String!]!, magazineAdmin: String!, magazineId: String!): String

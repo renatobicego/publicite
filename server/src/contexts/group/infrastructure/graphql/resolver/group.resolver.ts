@@ -122,7 +122,7 @@ export class GroupResolver {
     description: 'Eliminar admins un grupo',
   })
   @UseGuards(ClerkAuthGuard)
-  async deleteAdminsFromGroupByGroupId(
+  async removeAdminsFromGroupByGroupId(
     @Args('adminsToDelete', { type: () => [String] })
     adminsToDelete: string[],
     @Args('groupAdmin', { type: () => String })
@@ -134,7 +134,7 @@ export class GroupResolver {
   ): Promise<any> {
     try {
       PubliciteAuth.authorize(context, groupAdmin);
-      await this.groupAdapter.deleteAdminsToGroup(
+      await this.groupAdapter.removeAdminsFromGroupByGroupId(
         adminsToDelete,
         groupId,
         groupAdmin,
@@ -248,6 +248,26 @@ export class GroupResolver {
     try {
       PubliciteAuth.authorize(context, groupToUpdate.admin);
       return await this.groupAdapter.updateGroupById(groupToUpdate);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  @Mutation(() => String, {
+    nullable: true,
+    description: 'Eliminar un grupo por su id',
+  })
+  @UseGuards(ClerkAuthGuard)
+  async deleteGroupById(
+    @Args('groupId', { type: () => String })
+    groupId: string,
+    @Args('groupCreator', { type: () => String })
+    groupCreator: string,
+    @Context() context: any,
+  ): Promise<any> {
+    try {
+      PubliciteAuth.authorize(context, groupCreator);
+      await this.groupAdapter.deleteGroupById(groupId, groupCreator);
     } catch (error: any) {
       throw error;
     }

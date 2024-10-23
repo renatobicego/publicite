@@ -37,7 +37,6 @@ export class NotificationGatewaySocket
     if (userId) {
       this.clients[userId] = { socket: client, userId };
     }
-    console.log('New client connected', client.id);
   }
 
   handleDisconnect(client: Socket) {
@@ -47,7 +46,6 @@ export class NotificationGatewaySocket
     if (userId) {
       delete this.clients[userId];
     }
-    console.log('Client disconnected', client.id);
   }
 
   getInformationFromNotification(data: any): {

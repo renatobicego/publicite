@@ -58,18 +58,6 @@ export class GroupAdapter implements GroupAdapterInterface {
     }
   }
 
-  async deleteAdminsToGroup(
-    admins: string[],
-    groupId: string,
-    groupAdmin: string,
-  ): Promise<any> {
-    try {
-      await this.groupService.deleteAdminsToGroup(admins, groupId, groupAdmin);
-    } catch (error: any) {
-      throw error;
-    }
-  }
-
   async deleteMembersToGroup(
     membersToDelete: string[],
     groupId: string,
@@ -102,6 +90,14 @@ export class GroupAdapter implements GroupAdapterInterface {
     }
   }
 
+  async deleteGroupById(groupId: string, groupAdmin: string): Promise<any> {
+    try {
+      await this.groupService.deleteGroupById(groupId, groupAdmin);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
   async findGroupById(id: string): Promise<GroupResponse> {
     try {
       const response = await this.groupService.findGroupById(id);
@@ -126,6 +122,23 @@ export class GroupAdapter implements GroupAdapterInterface {
       throw error;
     }
   }
+
+  async removeAdminsFromGroupByGroupId(
+    admins: string[],
+    groupId: string,
+    groupAdmin: string,
+  ): Promise<any> {
+    try {
+      await this.groupService.removeAdminsFromGroupByGroupId(
+        admins,
+        groupId,
+        groupAdmin,
+      );
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
   async saveGroup(
     group: GroupRequest,
     groupCreator: string,

@@ -153,71 +153,33 @@ export class GroupRepository implements GroupRepositoryInterface {
     }
   }
 
-  async deleteGroup() {
-    // 1- Elimino el grupo
-    //await this.groupModel.deleteOne({ _id: groupId }, { session });
-    // 2 - Elimino el id del grupo en el admin
-    // await this.userModel.updateMany(
-    //   { _id: { $in: admins } },
-    //   { $pull: { groups: groupId } },
-    //   { session }
-    // );
-    // 3-Elimino las revistas (utilizo el middle para eliminar todas las secciones asociadas)
-    //await this.groupMagazine.deleteMany({ group: groupId }, { session });
-    // await this.userModel
-    // .updateMany(
-    //   { _id: { $in: admins } },
-    //   { $pull: { groups: groupId } },
-    //   { session },
-    // )
-    // .lean();
-  }
-  async deleteAdminsFromGroup(
-    admins: string[],
-    groupId: string,
-    groupAdmin: string,
-  ): Promise<any> {
+  async deleteGroupById(groupId: string, groupCreator: string): Promise<any> {
     const session = await this.connection.startSession();
-  
+
     try {
       await session.withTransaction(async () => {
-        // Buscar el grupo y mantener la referencia
-        const groupToTakeOffAdmin = await this.groupModel
-          .findOne({ _id: groupId, creator: groupAdmin })
-          .session(session); // Añadir la sesión aquí
-  
-        if (!groupToTakeOffAdmin) {
-          throw new Error('Group does not exist or invalid admin');
-        }
-  
-        await this.groupModel.updateOne(
-          { _id: groupId },
-          {
-            $pullAll: { admins: admins },
-            $addToSet: { members: { $each: admins } },
-          },
+        const groupToDelete = await this.groupModel.findOneAndDelete(
+          { _id: groupId, creator: groupCreator },
           { session },
         );
-  
-        await session.commitTransaction();
-        this.logger.log(
-          'Admins deleted from group successfully. Group ID: ' + groupId,
-        );
-        return;
+
+        if (groupToDelete === null) {
+          throw new Error('Group does not exist or invalid creator');
+        }
+
+        // 3-Elimino las revistas (utilizo el middle para eliminar todas las secciones asociadas)
+        await this.groupMagazine.deleteMany({ group: groupId }, { session });
       });
     } catch (error: any) {
       if (session.inTransaction()) {
         await session.abortTransaction();
       }
-      this.logger.error(
-        'An error occurred when deleting admins from group: ' + error,
-      );
-      throw error;
+
+      throw new Error('Failed to delete group: ' + error.message);
     } finally {
       session.endSession();
     }
   }
-  
 
   async deleteMembersFromGroup(
     membersToDelete: string[],
@@ -237,9 +199,9 @@ export class GroupRepository implements GroupRepositoryInterface {
             { session },
           )
           .lean();
-  
+
         checkResultModificationOfOperation(result);
-  
+
         await this.userModel
           .updateMany(
             { _id: { $in: membersToDelete } },
@@ -267,7 +229,6 @@ export class GroupRepository implements GroupRepositoryInterface {
       session.endSession();
     }
   }
-  
 
   async deleteMagazinesFromGroup(
     magazinesToDelete: string[],
@@ -390,6 +351,52 @@ export class GroupRepository implements GroupRepositoryInterface {
     }
   }
 
+  async removeAdminsFromGroupByGroupId(
+    admins: string[],
+    groupId: string,
+    groupAdmin: string,
+  ): Promise<any> {
+    const session = await this.connection.startSession();
+
+    try {
+      await session.withTransaction(async () => {
+        // Buscar el grupo y mantener la referencia
+        const groupToTakeOffAdmin = await this.groupModel
+          .findOne({ _id: groupId, creator: groupAdmin })
+          .session(session); // Añadir la sesión aquí
+
+        if (!groupToTakeOffAdmin) {
+          throw new Error('Group does not exist or invalid admin');
+        }
+
+        await this.groupModel.updateOne(
+          { _id: groupId },
+          {
+            $pullAll: { admins: admins },
+            $addToSet: { members: { $each: admins } },
+          },
+          { session },
+        );
+
+        await session.commitTransaction();
+        this.logger.log(
+          'Admins deleted from group successfully. Group ID: ' + groupId,
+        );
+        return;
+      });
+    } catch (error: any) {
+      if (session.inTransaction()) {
+        await session.abortTransaction();
+      }
+      this.logger.error(
+        'An error occurred when deleting admins from group: ' + error,
+      );
+      throw error;
+    } finally {
+      session.endSession();
+    }
+  }
+
   async save(group: Group): Promise<GroupResponse> {
     let groupCreator = group.getCreator;
     let newGroup;
@@ -428,4 +435,3 @@ export class GroupRepository implements GroupRepositoryInterface {
     }
   }
 }
-

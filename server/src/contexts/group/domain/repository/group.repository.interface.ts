@@ -21,11 +21,7 @@ export interface GroupRepositoryInterface {
     groupId: string,
     groupAdmin: string,
   ): Promise<any>;
-  deleteAdminsFromGroup(
-    admins: string[],
-    groupId: string,
-    groupAdmin: string,
-  ): Promise<any>;
+
   deleteMembersFromGroup(
     membersToDelete: string[],
     groupId: string,
@@ -36,6 +32,9 @@ export interface GroupRepositoryInterface {
     groupId: string,
     groupAdmin: string,
   ): Promise<any>;
+
+  deleteGroupById(groupId: string, groupCreator: string): Promise<any>;
+
   findGroupById(id: string): Promise<GroupResponse>;
   findGroupByName(
     name: string,
@@ -43,5 +42,11 @@ export interface GroupRepositoryInterface {
     page: number,
   ): Promise<GroupListResponse>;
   save(group: Group): Promise<GroupResponse>;
+  removeAdminsFromGroupByGroupId(
+    admins: string[],
+    groupId: string,
+    groupAdmin: string,
+  ): Promise<any>;
+
   updateGroupById(group: GroupUpdateRequest): Promise<any>;
 }

@@ -19,6 +19,7 @@ export class GroupService implements GroupServiceInterface {
     @Inject('GroupServiceMapperInterface')
     private readonly groupMapper: GroupServiceMapperInterface,
   ) {}
+
   async addMagazinesToGroup(
     magazineIds: string[],
     groupId: string,
@@ -74,22 +75,6 @@ export class GroupService implements GroupServiceInterface {
       throw error;
     }
   }
-  async deleteAdminsToGroup(
-    admins: string[],
-    groupId: string,
-    groupAdmin: string,
-  ): Promise<any> {
-    try {
-      this.logger.log('Deleting admins to group: ' + admins);
-      return await this.groupRepository.deleteAdminsFromGroup(
-        admins,
-        groupId,
-        groupAdmin,
-      );
-    } catch (error: any) {
-      throw error;
-    }
-  }
 
   async deleteMembersFromGroup(
     membersToDelete: string[],
@@ -131,6 +116,16 @@ export class GroupService implements GroupServiceInterface {
     }
   }
 
+  async deleteGroupById(groupId: string, groupAdmin: string): Promise<any> {
+    try {
+      this.logger.log('Deleting group: ' + groupId);
+      await this.groupRepository.deleteGroupById(groupId, groupAdmin);
+    } catch (error: any) {
+      this.logger.error('An error was ocurred when deleting group by id: ');
+      throw error;
+    }
+  }
+
   async findGroupById(id: string): Promise<GroupResponse> {
     try {
       this.logger.log('Finding group by id: ' + id);
@@ -148,6 +143,23 @@ export class GroupService implements GroupServiceInterface {
       this.logger.log('Finding group by name: ' + name);
       if (page <= 0) page = 1;
       return await this.groupRepository.findGroupByName(name, limit, page);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  async removeAdminsFromGroupByGroupId(
+    admins: string[],
+    groupId: string,
+    groupAdmin: string,
+  ): Promise<any> {
+    try {
+      this.logger.log('Deleting admins to group: ' + admins);
+      return await this.groupRepository.removeAdminsFromGroupByGroupId(
+        admins,
+        groupId,
+        groupAdmin,
+      );
     } catch (error: any) {
       throw error;
     }

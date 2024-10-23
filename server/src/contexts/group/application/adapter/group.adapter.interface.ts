@@ -21,11 +21,7 @@ export interface GroupAdapterInterface {
     groupId: string,
     groupAdmin: string,
   ): Promise<any>;
-  deleteAdminsToGroup(
-    admins: string[],
-    groupId: string,
-    groupAdmin: string,
-  ): Promise<any>;
+
   deleteMembersToGroup(
     membersToDelete: string[],
     groupId: string,
@@ -36,12 +32,18 @@ export interface GroupAdapterInterface {
     groupId: string,
     groupAdmin: string,
   ): Promise<any>;
+  deleteGroupById(groupId: string, groupAdmin: string): Promise<any>;
   findGroupById(id: string): Promise<GroupResponse>;
   findGroupByName(
     name: string,
     limit: number,
     page: number,
   ): Promise<GroupListResponse>;
+  removeAdminsFromGroupByGroupId(
+    admins: string[],
+    groupId: string,
+    groupAdmin: string,
+  ): Promise<any>;
   saveGroup(group: GroupRequest, groupCreator: string): Promise<GroupResponse>;
   updateGroupById(group: GroupUpdateRequest): Promise<any>;
 }

@@ -26,16 +26,13 @@ export interface GroupServiceInterface {
     groupId: string,
     groupAdmin: string,
   ): Promise<any>;
-  deleteAdminsToGroup(
-    admins: string[],
-    groupId: string,
-    groupAdmin: string,
-  ): Promise<any>;
+
   deleteMagazinesFromGroup(
     magazineIds: string[],
     groupId: string,
     groupAdmin: string,
   ): Promise<any>;
+  deleteGroupById(groupId: string, groupAdmin: string): Promise<any>;
   findGroupById(id: string): Promise<GroupResponse>;
   findGroupByName(
     name: string,
@@ -43,5 +40,10 @@ export interface GroupServiceInterface {
     page: number,
   ): Promise<GroupListResponse>;
   saveGroup(group: GroupRequest, groupCreator: string): Promise<GroupResponse>;
+  removeAdminsFromGroupByGroupId(
+    admins: string[],
+    groupId: string,
+    groupAdmin: string,
+  ): Promise<any>;
   updateGroupById(group: GroupUpdateRequest): Promise<any>;
 }

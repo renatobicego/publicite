@@ -31,5 +31,37 @@ export interface GroupDocument extends Document {
   visibility: Visibility;
 }
 
+// Middleware para eliminar secciones asociadas antes de eliminar las revistas
+GroupSchema.pre(
+  'findOneAndDelete',
+  { document: false, query: true },
+  async function (next) {
+    try {
+      const group = await this.model.findOne(this.getFilter());
+
+      if (!group || group === null) {
+        return null;
+      }
+      const peopleToDelete: any[] = [];
+
+      console.log('group found, remove group in user');
+      group.members.forEach((member: string) => peopleToDelete.push(member));
+      group.admins.forEach((admin: string) => peopleToDelete.push(admin));
+
+      await group
+        .model('User')
+        .updateMany(
+          { _id: { $in: peopleToDelete } },
+          { $pull: { groups: group._id } },
+          { multi: true },
+        );
+
+      next();
+    } catch (error) {
+      throw error;
+    }
+  },
+);
+
 GroupSchema.index({ name: 1 });
 GroupSchema.index({ admins: 1 });
