@@ -74,6 +74,9 @@ export class GroupResponse {
   name: string;
 
   @Field(() => String)
+  alias: string;
+
+  @Field(() => String)
   creator: string;
 
   @Field(() => String, { nullable: true })
@@ -96,6 +99,7 @@ export class GroupResponse {
     this.members = group.members;
     this.admins = group.admins ?? [];
     this.name = group.name;
+    this.alias = group.alias;
     this.creator = group.creator;
     this.rules = group.rules;
     this.magazines = group.magazines ?? [];

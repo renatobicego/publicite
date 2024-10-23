@@ -24,6 +24,7 @@ import { MagazineRepositoryMapperInterface } from '../../domain/repository/mappe
 import { IUser } from 'src/contexts/user/infrastructure/schemas/user.schema';
 import { GroupDocument } from 'src/contexts/group/infrastructure/schemas/group.schema';
 import { MagazineUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/magazine.update.request';
+import { checkResultModificationOfOperation } from 'src/contexts/shared/functions/checkResultModificationOfOperation';
 
 export class MagazineRepository implements MagazineRepositoryInterface {
   constructor(
@@ -48,61 +49,31 @@ export class MagazineRepository implements MagazineRepositoryInterface {
     @InjectModel('User') private readonly userModel: Model<IUser>,
     @InjectModel('Group') private readonly groupModel: Model<GroupDocument>,
   ) {}
-  // async addAllowedCollaboratorsToMagazine(
-  //   newAllowedCollaborators: string[],
-  //   magazineId: string,
-  // ): Promise<any> {
-  //   // const session = await this.connection.startSession();
-  //   // try {
-  //   //   await session.withTransaction(async () => {
-  //   //     await this.userModel.updateMany(
-  //   //       { _id: { $in: newAllowedCollaborators } },
-  //   //       { $addToSet: { magazines: magazineId } },
-  //   //       { session },
-  //   //     );
-  //   //     await this.groupMagazine.findByIdAndUpdate(
-  //   //       magazineId,
-  //   //       {
-  //   //         $addToSet: {
-  //   //           allowedCollaborators: { $each: newAllowedCollaborators },
-  //   //         },
-  //   //       },
-  //   //       { session },
-  //   //     );
-  //   //   });
-  //   //   await session.commitTransaction();
-  //   //   this.logger.log('Allowed Colaborators added to Magazine successfully');
-  //   //   return;
-  //   // } catch (error: any) {
-  //   //   this.logger.error('Error adding Allowed Colaborators to Magazine', error);
-  //   //   await session.abortTransaction();
-  //   //   throw error;
-  //   // } finally {
-  //   //   session.endSession();
-  //   // }
-  // }
 
   async addCollaboratorsToMagazine(
     newColaborators: string[],
     magazineId: string,
+    magazineAdmin: string,
   ): Promise<void> {
     const session = await this.connection.startSession();
     try {
       await session.withTransaction(async () => {
+        const result = await this.userMagazine.updateOne(
+          { _id: magazineId, user: magazineAdmin },
+          { $addToSet: { collaborators: { $each: newColaborators } } },
+          { session },
+        );
+
+        checkResultModificationOfOperation(result);
+
         await this.userModel.updateMany(
           { _id: { $in: newColaborators } },
           { $addToSet: { magazines: magazineId } },
           { session },
         );
-        await this.userMagazine.findByIdAndUpdate(
-          magazineId,
-          { $addToSet: { collaborators: { $each: newColaborators } } },
-          { session },
-        );
+        await session.commitTransaction();
+        this.logger.log('Colaborators added to Magazine successfully');
       });
-      await session.commitTransaction();
-      this.logger.log('Colaborators added to Magazine successfully');
-      return;
     } catch (error: any) {
       this.logger.error('Error adding Colaborators to Magazine', error);
       await session.abortTransaction();
@@ -115,10 +86,21 @@ export class MagazineRepository implements MagazineRepositoryInterface {
   async deleteCollaboratorsFromMagazine(
     colaboratorsToDelete: string[],
     magazineId: string,
+    magazineAdmin: string,
   ): Promise<void> {
     const session = await this.connection.startSession();
     try {
       await session.withTransaction(async () => {
+        const result = await this.userMagazine
+          .updateOne(
+            { _id: magazineId, user: magazineAdmin },
+            { $pullAll: { collaborators: colaboratorsToDelete } },
+            { session },
+          )
+          .lean();
+
+        checkResultModificationOfOperation(result);
+
         await this.userModel
           .updateMany(
             { _id: { $in: colaboratorsToDelete } },
@@ -126,17 +108,9 @@ export class MagazineRepository implements MagazineRepositoryInterface {
             { session },
           )
           .lean();
-        await this.userMagazine
-          .findByIdAndUpdate(
-            magazineId,
-            { $pullAll: { collaborators: colaboratorsToDelete } },
-            { session },
-          )
-          .lean();
+        await session.commitTransaction();
+        this.logger.log('Colaborators deleted from Magazine successfully');
       });
-      await session.commitTransaction();
-      this.logger.log('Colaborators deleted from Magazine successfully');
-      return;
     } catch (error: any) {
       await session.abortTransaction();
       this.logger.error('Error deleting Colaborators from Magazine', error);
@@ -145,47 +119,6 @@ export class MagazineRepository implements MagazineRepositoryInterface {
       session.endSession();
     }
   }
-
-  // async deleteAllowedCollaboratorsFromMagazine(
-  //   allowedCollaboratorsToDelete: string[],
-  //   magazineId: string,
-  // ): Promise<any> {
-  //   const session = await this.connection.startSession();
-  //   try {
-  //     await session.withTransaction(async () => {
-  //       await this.userModel
-  //         .updateMany(
-  //           { _id: { $in: allowedCollaboratorsToDelete } },
-  //           { $pull: { magazines: magazineId } },
-  //           { session },
-  //         )
-  //         .lean();
-  //       await this.groupMagazine
-  //         .findByIdAndUpdate(
-  //           magazineId,
-  //           {
-  //             $pullAll: { allowedCollaborators: allowedCollaboratorsToDelete },
-  //           },
-  //           { session },
-  //         )
-  //         .lean();
-  //     });
-  //     await session.commitTransaction();
-  //     this.logger.log(
-  //       'Allowed Colaborators deleted from Magazine successfully',
-  //     );
-  //     return;
-  //   } catch (error: any) {
-  //     await session.abortTransaction();
-  //     this.logger.error(
-  //       'Error deleting Allowed Colaborators from Magazine',
-  //       error,
-  //     );
-  //     throw error;
-  //   } finally {
-  //     session.endSession();
-  //   }
-  // }
 
   async findMagazineByMagazineId(
     id: ObjectId,
@@ -377,3 +310,78 @@ export class MagazineRepository implements MagazineRepositoryInterface {
     }
   }
 }
+
+// async deleteAllowedCollaboratorsFromMagazine(
+//   allowedCollaboratorsToDelete: string[],
+//   magazineId: string,
+// ): Promise<any> {
+//   const session = await this.connection.startSession();
+//   try {
+//     await session.withTransaction(async () => {
+//       await this.userModel
+//         .updateMany(
+//           { _id: { $in: allowedCollaboratorsToDelete } },
+//           { $pull: { magazines: magazineId } },
+//           { session },
+//         )
+//         .lean();
+//       await this.groupMagazine
+//         .findByIdAndUpdate(
+//           magazineId,
+//           {
+//             $pullAll: { allowedCollaborators: allowedCollaboratorsToDelete },
+//           },
+//           { session },
+//         )
+//         .lean();
+//     });
+//     await session.commitTransaction();
+//     this.logger.log(
+//       'Allowed Colaborators deleted from Magazine successfully',
+//     );
+//     return;
+//   } catch (error: any) {
+//     await session.abortTransaction();
+//     this.logger.error(
+//       'Error deleting Allowed Colaborators from Magazine',
+//       error,
+//     );
+//     throw error;
+//   } finally {
+//     session.endSession();
+//   }
+// }
+
+// async addAllowedCollaboratorsToMagazine(
+//   newAllowedCollaborators: string[],
+//   magazineId: string,
+// ): Promise<any> {
+//   // const session = await this.connection.startSession();
+//   // try {
+//   //   await session.withTransaction(async () => {
+//   //     await this.userModel.updateMany(
+//   //       { _id: { $in: newAllowedCollaborators } },
+//   //       { $addToSet: { magazines: magazineId } },
+//   //       { session },
+//   //     );
+//   //     await this.groupMagazine.findByIdAndUpdate(
+//   //       magazineId,
+//   //       {
+//   //         $addToSet: {
+//   //           allowedCollaborators: { $each: newAllowedCollaborators },
+//   //         },
+//   //       },
+//   //       { session },
+//   //     );
+//   //   });
+//   //   await session.commitTransaction();
+//   //   this.logger.log('Allowed Colaborators added to Magazine successfully');
+//   //   return;
+//   // } catch (error: any) {
+//   //   this.logger.error('Error adding Allowed Colaborators to Magazine', error);
+//   //   await session.abortTransaction();
+//   //   throw error;
+//   // } finally {
+//   //   session.endSession();
+//   // }
+// }

@@ -16,14 +16,12 @@ import { UserBusinessUpdateDto } from 'src/contexts/user/domain/entity/dto/user.
 import { UserPreferencesEntityDto } from 'src/contexts/user/domain/entity/dto/user.preferences.update.dto';
 import { UserClerkUpdateDto } from 'src/contexts/user/domain/entity/dto/user.clerk.update.dto';
 import { UserFindAllResponse } from 'src/contexts/user/application/adapter/dto/HTTP-RESPONSE/user.response.dto';
-import { GROUP_notification } from 'src/contexts/user/application/adapter/dto/HTTP-RESPONSE/notifications/group/user.notifications.response';
+import { Notification } from 'src/contexts/user/application/adapter/dto/HTTP-RESPONSE/notifications/user.notifications.response';
 
 export class UserRepositoryMapper implements UserRepositoryMapperInterface {
   constructor() {}
-  documentNotificationToNotificationResponse(
-    document: any,
-  ): GROUP_notification {
-    return new GROUP_notification(document);
+  documentNotificationToNotificationResponse(document: any): Notification {
+    return new Notification(document);
   }
   documentToResponseAllUsers(document: any): UserFindAllResponse['user'][0] {
     return {

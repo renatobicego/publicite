@@ -1,4 +1,5 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { front_data_GROUP } from './group/user.notification';
 
 @ObjectType()
 export class backData {
@@ -7,17 +8,6 @@ export class backData {
 }
 
 @ObjectType()
-export class front_data_group {
-  @Field(() => String)
-  _id: string;
-
-  @Field(() => String)
-  name: string;
-
-  @Field(() => String)
-  profilePhotoUrl: string;
-}
-@ObjectType()
 export class userInviting {
   @Field(() => String)
   username: string;
@@ -25,15 +15,15 @@ export class userInviting {
 
 @ObjectType()
 export class frontData {
-  @Field(() => front_data_group)
-  group: front_data_group;
+  @Field(() => front_data_GROUP, { nullable: true })
+  group: front_data_GROUP;
 
   @Field(() => userInviting)
   userInviting: userInviting;
 }
 
 @ObjectType()
-export class GROUP_notification {
+export class Notification {
   @Field(() => ID)
   _id: string;
 
@@ -64,8 +54,8 @@ export class GROUP_notification {
 
 @ObjectType()
 export class GROUP_notification_graph_model_get_all {
-  @Field(() => [GROUP_notification])
-  notifications: GROUP_notification[];
+  @Field(() => [Notification])
+  notifications: Notification[];
 
   @Field(() => Boolean)
   hasMore: boolean;

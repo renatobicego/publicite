@@ -111,7 +111,7 @@ export class GroupResolver {
     try {
       const token = context.req.token;
       const groupCreator = PubliciteAuth.getIdFromClerkToken(token);
-      return await this.groupAdapter.saveGroup(groupDto,groupCreator);
+      return await this.groupAdapter.saveGroup(groupDto, groupCreator);
     } catch (error: any) {
       throw error;
     }
@@ -121,7 +121,7 @@ export class GroupResolver {
     nullable: true,
     description: 'Eliminar admins un grupo',
   })
-  //@UseGuards(ClerkAuthGuard)
+  @UseGuards(ClerkAuthGuard)
   async deleteAdminsFromGroupByGroupId(
     @Args('adminsToDelete', { type: () => [String] })
     adminsToDelete: string[],
@@ -133,7 +133,7 @@ export class GroupResolver {
     context: any,
   ): Promise<any> {
     try {
-      //PubliciteAuth.authorize(context, groupAdmin);
+      PubliciteAuth.authorize(context, groupAdmin);
       await this.groupAdapter.deleteAdminsToGroup(
         adminsToDelete,
         groupId,

@@ -59,11 +59,13 @@ const UserSchema = new Schema<IUser>(
     },
     notifications: [
       {
-        event: { type: String },
-        viewed: { type: Boolean, default: false },
-        date: { type: String },
-        backData: {
-          userToSendId: { type: String },
+        notification: {
+          event: { type: String },
+          viewed: { type: Boolean, default: false },
+          date: { type: String },
+          backData: {
+            userToSendId: { type: String },
+          },
         },
         frontData: {
           type: SchemaTypes.Mixed,

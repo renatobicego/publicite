@@ -11,14 +11,14 @@ type Contact {
   website: String
 }
 
-type backData {
-  userToSendId: String!
-}
-
-type front_data_group {
+type front_data_GROUP {
   _id: String!
   name: String!
   profilePhotoUrl: String!
+}
+
+type backData {
+  userToSendId: String!
 }
 
 type userInviting {
@@ -26,11 +26,11 @@ type userInviting {
 }
 
 type frontData {
-  group: front_data_group!
+  group: front_data_GROUP
   userInviting: userInviting!
 }
 
-type GROUP_notification {
+type Notification {
   _id: ID!
   event: String!
   viewed: Boolean!
@@ -40,7 +40,7 @@ type GROUP_notification {
 }
 
 type GROUP_notification_graph_model_get_all {
-  notifications: [GROUP_notification!]!
+  notifications: [Notification!]!
   hasMore: Boolean!
 }
 
@@ -303,6 +303,7 @@ type GroupResponse {
   members: [members_graphQl!]
   admins: [GroupResponse_admins!]
   name: String!
+  alias: String!
   creator: String!
   rules: String
   magazines: [magazine_graphql_group!]
@@ -530,11 +531,17 @@ input GroupRequest {
   members: [String!]!
   admins: [String!]!
   name: String!
+  alias: String!
   rules: String!
   magazines: [String!]!
   details: String!
   profilePhotoUrl: String!
-  visibility: String!
+  visibility: Visibility_Enum_Group!
+}
+
+enum Visibility_Enum_Group {
+  public
+  private
 }
 
 input GroupUpdateRequest {

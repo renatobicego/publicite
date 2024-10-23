@@ -14,6 +14,7 @@ import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
 import { IUser } from 'src/contexts/user/infrastructure/schemas/user.schema';
 import { GroupDocument } from '../schemas/group.schema';
 import { GroupMagazineDocument } from 'src/contexts/magazine/infrastructure/schemas/magazine.group.schema';
+import { checkResultModificationOfOperation } from 'src/contexts/shared/functions/checkResultModificationOfOperation';
 
 export class GroupRepository implements GroupRepositoryInterface {
   constructor(
@@ -29,14 +30,6 @@ export class GroupRepository implements GroupRepositoryInterface {
     private readonly logger: MyLoggerService,
   ) {}
 
-
-  checkResultModificationOfOperation(result: any) {
-    if (result.matchedCount === 0) {
-      throw new Error(
-        'Group admin does not have permission or group does not exist.',
-      );
-    }
-  }
   async addMagazinesToGroup(
     magazineIds: string[],
     groupId: string,
@@ -54,7 +47,7 @@ export class GroupRepository implements GroupRepositoryInterface {
           },
         )
         .lean();
-      this.checkResultModificationOfOperation(result);
+      checkResultModificationOfOperation(result);
       this.logger.log(
         'Magazines added to group successfully Group ID: ' + groupId,
       );
@@ -86,7 +79,7 @@ export class GroupRepository implements GroupRepositoryInterface {
             { session },
           )
           .lean();
-        this.checkResultModificationOfOperation(result);
+        checkResultModificationOfOperation(result);
         await this.userModel
           .updateMany(
             { _id: { $in: members } },
@@ -132,7 +125,7 @@ export class GroupRepository implements GroupRepositoryInterface {
             { session },
           )
           .lean();
-        this.checkResultModificationOfOperation(result);
+        checkResultModificationOfOperation(result);
         await this.userModel
           .updateMany(
             { _id: { $in: admins } },
@@ -264,7 +257,7 @@ export class GroupRepository implements GroupRepositoryInterface {
           )
           .lean();
 
-        this.checkResultModificationOfOperation(result);
+        checkResultModificationOfOperation(result);
 
         await this.userModel
           .updateMany(
@@ -416,12 +409,29 @@ export class GroupRepository implements GroupRepositoryInterface {
   }
 
   async save(group: Group): Promise<GroupResponse> {
+    let groupCreator = group.getCreator;
+    let newGroup;
+    let groupSaved;
+
+    const session = await this.connection.startSession();
     try {
-      const newGroup = new this.groupModel(group);
-      const groupSaved = await newGroup.save();
+      await session.withTransaction(async () => {
+        newGroup = new this.groupModel(group);
+        groupSaved = await newGroup.save({ session });
+
+        await this.userModel.findByIdAndUpdate(
+          { _id: groupCreator },
+          { $addToSet: { groups: groupSaved._id } },
+          { session },
+        );
+      });
+      this.logger.log('Group created successfully');
       return this.groupMapper.toGroupResponse(groupSaved);
     } catch (error: any) {
+      this.logger.error('An error was ocurred when creating group: ' + error);
       throw error;
+    } finally {
+      session.endSession();
     }
   }
 

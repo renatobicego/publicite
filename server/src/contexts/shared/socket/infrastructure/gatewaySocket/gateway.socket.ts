@@ -50,46 +50,40 @@ export class NotificationGatewaySocket
     console.log('Client disconnected', client.id);
   }
 
-  getInformationFromNotificationGroup(data: any): {
-    groupInvitation: GroupInvitation;
-    event: string;
+  getInformationFromNotification(data: any): {
+    notificationBody: any;
     client: Socket;
   } {
-    const { groupInvitation } = data;
-    const { userToSendId } = groupInvitation.backData;
-    const { event } = groupInvitation;
+    const { notificationBody } = data;
+    const { userToSendId } = notificationBody.notification.backData;
+    const { event } = notificationBody.notification;
     const client = this.clients[userToSendId]?.socket;
     if (!allowedEvents.has(event as EventTypes)) {
       throw Error(`Invalid event type: ${event}`);
     }
 
     return {
-      groupInvitation,
-      event,
+      notificationBody,
       client,
     };
   }
 
-  handleNotification(
-    groupInvitation: GroupInvitation,
-    event: string,
-    client: Socket,
-  ) {
+  handleNotification(notificationBody: any, event: string, client: Socket) {
     if (client) {
-      client.emit('group_notifications', groupInvitation);
-      this.notificatorService.sendNotificationToUser(groupInvitation);
+      client.emit(event, notificationBody);
+      this.notificatorService.sendNotificationToUser(notificationBody);
     } else {
-      this.notificatorService.sendNotificationToUser(groupInvitation);
+      this.notificatorService.sendNotificationToUser(notificationBody);
     }
   }
 
   @SubscribeMessage('group_notifications')
   group_notifications(@MessageBody() data: GroupInvitation) {
     try {
-      const { groupInvitation, event, client } =
-        this.getInformationFromNotificationGroup(data);
+      const { notificationBody, client } =
+        this.getInformationFromNotification(data);
 
-      this.handleNotification(groupInvitation, event, client);
+      this.handleNotification(notificationBody, 'group_notifications', client);
     } catch (error: any) {
       throw error;
     }
