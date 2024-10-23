@@ -152,6 +152,26 @@ export class GroupRepository implements GroupRepositoryInterface {
       session.endSession();
     }
   }
+
+  async deleteGroup() {
+    // 1- Elimino el grupo
+    //await this.groupModel.deleteOne({ _id: groupId }, { session });
+    // 2 - Elimino el id del grupo en el admin
+    // await this.userModel.updateMany(
+    //   { _id: { $in: admins } },
+    //   { $pull: { groups: groupId } },
+    //   { session }
+    // );
+    // 3-Elimino las revistas (utilizo el middle para eliminar todas las secciones asociadas)
+    //await this.groupMagazine.deleteMany({ group: groupId }, { session });
+    // await this.userModel
+    // .updateMany(
+    //   { _id: { $in: admins } },
+    //   { $pull: { groups: groupId } },
+    //   { session },
+    // )
+    // .lean();
+  }
   async deleteAdminsFromGroup(
     admins: string[],
     groupId: string,
@@ -163,68 +183,28 @@ export class GroupRepository implements GroupRepositoryInterface {
       await session.withTransaction(async () => {
         // Buscar el grupo y mantener la referencia
         const groupToTakeOffAdmin = await this.groupModel
-          .findOne({ _id: groupId, creator: groupAdmin })
+          .findOne({ _id: groupId, creator: groupAdmin }, { session })
           .lean();
 
         if (!groupToTakeOffAdmin) {
           throw new Error('Group does not exist or invalid admin');
         }
-        const amountOfAdmins = groupToTakeOffAdmin.admins.length;
-        const amountOfMembers = groupToTakeOffAdmin.members.length;
-        if (amountOfAdmins === 1) {
-          if (amountOfMembers > 0) {
-            throw new Error(
-              'Group must have at least one admin if there are members in the group, if you want to delete the admin, you must delete the members first.',
-            );
-          } else if (amountOfMembers === 0) {
-            // 1- Elimino el grupo
-            await this.groupModel.deleteOne({ _id: groupId }, { session });
 
-            // 2 - Elimino el id del grupo en el admin
-            await this.userModel.updateMany(
-              { _id: { $in: admins } },
-              { $pull: { groups: groupId } },
-              { session },
-            );
+        await this.groupModel.updateOne(
+          { _id: groupId },
+          {
+            $pullAll: { admins: admins },
+            $addToSet: { members: { $each: admins } },
+          },
+          { session },
+        );
 
-            // 3-Elimino las revistas (utilizo el middle para eliminar todas las secciones asociadas)
-            await this.groupMagazine.deleteMany(
-              { group: groupId },
-              { session },
-            );
-
-            this.logger.log(
-              'Group deleted successfully - No members and one admin in the group. Group ID: ' +
-                groupId +
-                'Magazines deleted from group successfully - sections of magazines deleted',
-            );
-            await session.commitTransaction();
-            return;
-          }
-        } else {
-          await this.groupModel.updateOne(
-            { _id: groupId },
-            { $pullAll: { admins: admins } },
-            { session },
-          );
-
-          await this.userModel
-            .updateMany(
-              { _id: { $in: admins } },
-              { $pull: { groups: groupId } },
-              { session },
-            )
-            .lean();
-
-          await session.commitTransaction();
-          return;
-        }
+        await session.commitTransaction();
+        this.logger.log(
+          'Admins deleted from group successfully. Group ID: ' + groupId,
+        );
+        return;
       });
-
-      this.logger.log(
-        'Admins deleted from group successfully. Group ID: ' + groupId,
-      );
-      return;
     } catch (error: any) {
       if (session.inTransaction()) {
         await session.abortTransaction();
@@ -446,3 +426,4 @@ export class GroupRepository implements GroupRepositoryInterface {
     }
   }
 }
+
