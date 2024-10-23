@@ -59,4 +59,39 @@ const getUserByUsernameQuery = gql`
   }
 `;
 
+export const getAllNotificationsQuery = gql`
+  query GetAllNotificationsFromUserById(
+    $getAllNotificationsFromUserByIdId: String!
+    $limit: Float!
+    $page: Float!
+  ) {
+    getAllNotificationsFromUserById(
+      id: $getAllNotificationsFromUserByIdId
+      limit: $limit
+      page: $page
+    ) {
+      hasMore
+      notifications {
+        viewed
+        frontData {
+          userInviting {
+            username
+          }
+          group {
+            _id
+            name
+            profilePhotoUrl
+          }
+        }
+        event
+        date
+        backData {
+          userToSendId
+        }
+        _id
+      }
+    }
+  }
+`;
+
 export default getUserByUsernameQuery;

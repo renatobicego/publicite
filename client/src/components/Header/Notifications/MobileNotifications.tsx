@@ -9,7 +9,8 @@ import {
 } from "@nextui-org/react";
 import { FaBell } from "react-icons/fa6";
 import NotificationsContent from "./NotificationContent";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useRef } from "react";
+import useNotifications from "@/utils/hooks/useNotifications";
 
 const MobileNotifications = ({
   newNotifications,
@@ -19,7 +20,9 @@ const MobileNotifications = ({
   setNewNotifications: Dispatch<SetStateAction<boolean>>;
 }) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-
+  const { notifications, fetchNotifications, isLoading, hasMore } =
+    useNotifications(isOpen);
+  console.log(notifications);
   return (
     <>
       <Button
@@ -46,15 +49,17 @@ const MobileNotifications = ({
         className="max-md:px-4"
         isOpen={isOpen}
         onOpenChange={(isOpen) => {
-          if(isOpen) setNewNotifications(false)
-          onOpenChange()
+          if (isOpen) setNewNotifications(false);
+          onOpenChange();
         }}
       >
         <ModalContent>
           <ModalHeader>
             <h5>Notificaciones</h5>
           </ModalHeader>
-          <ModalBody>{isOpen && <NotificationsContent />}</ModalBody>
+          <ModalBody id="notifications-popover">
+            {isOpen && <NotificationsContent notifications={notifications} />}
+          </ModalBody>
         </ModalContent>
       </Modal>
     </>

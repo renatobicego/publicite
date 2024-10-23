@@ -6,6 +6,7 @@ import {
   NotificationCard,
   NotificationBody,
   NotificationOptions,
+  NotificationOptionProps,
 } from "../NotificationCard";
 
 import GroupImage from "./GroupImage";
@@ -19,6 +20,34 @@ const GroupNotificationCard = ({
 }) => {
   const { group } = notification.frontData;
   const { event } = notification;
+  const getNotificationOptionsList = () => {
+    const optionsList: NotificationOptionProps[] = [
+      
+    ]
+    const notificationMessage = noticationMessages[event as GroupNotificationType];
+
+    // Check if acceptAction exists before adding it to options
+    if (notificationMessage?.acceptAction) {
+      optionsList.push({
+        label: "Aceptar Solicitud",
+        onPress: () => notificationMessage.acceptAction?.(),
+      });
+    }
+    optionsList.push({
+      label: "Ver Grupo",
+      as: Link,
+      className: "text-text-color",
+      href: `${GROUPS}/${group._id}`,
+    })
+    if (notificationMessage?.rejectAction) {
+      optionsList.push({
+        label: "Rechazar Solicitud",
+        color: "danger",
+        onPress: () => notificationMessage.rejectAction?.(),
+      });
+    }
+    return optionsList;
+  };
   return (
     <NotificationCard>
       <GroupImage group={group} />
@@ -35,21 +64,7 @@ const GroupNotificationCard = ({
       </NotificationBody>
       <NotificationOptions
         date={showDate(parseDate(notification.date))}
-        items={[
-          {
-            label: "Aceptar Solicitud",
-          },
-          {
-            label: "Ver Grupo",
-            as: Link,
-            className: "text-text-color",
-            href: `${GROUPS}/${group._id}`,
-          },
-          {
-            label: "Rechazar Solicitud",
-            color: "danger",
-          },
-        ]}
+        items={getNotificationOptionsList()}
       />
     </NotificationCard>
   );

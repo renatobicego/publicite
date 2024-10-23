@@ -5,9 +5,10 @@ import {
   Badge,
   PopoverContent,
 } from "@nextui-org/react";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { FaBell } from "react-icons/fa6";
 import NotificationsContent from "./NotificationContent";
+import useNotifications from "@/utils/hooks/useNotifications";
 
 const DesktopNotifications = ({
   newNotifications,
@@ -17,6 +18,9 @@ const DesktopNotifications = ({
   setNewNotifications: Dispatch<SetStateAction<boolean>>;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const { notifications, fetchNotifications, isLoading, hasMore } =
+    useNotifications(isOpen);
+  console.log(notifications);
   return (
     <Popover
       className=" max-lg:hidden"
@@ -24,6 +28,9 @@ const DesktopNotifications = ({
       placement="bottom-end"
       triggerType="menu"
       containerPadding={10}
+      dialogProps={{
+        id: "notifications-popover",
+      }}
       backdrop="transparent"
       classNames={{
         base: "max-h-[60vh] overflow-y-auto shadow-lg rounded-xl",
@@ -31,8 +38,8 @@ const DesktopNotifications = ({
       }}
       isOpen={isOpen}
       onOpenChange={(open) => {
-        if(open) setNewNotifications(false)
-        setIsOpen(open)
+        if (open) setNewNotifications(false);
+        setIsOpen(open);
       }}
     >
       <PopoverTrigger>
@@ -47,7 +54,9 @@ const DesktopNotifications = ({
         </Button>
       </PopoverTrigger>
       <PopoverContent>
-        {isOpen ? <NotificationsContent /> : <></>}
+        <h6>Notificaciones</h6>
+
+        {isOpen ? <NotificationsContent notifications={notifications} /> : <></>}
       </PopoverContent>
     </Popover>
   );

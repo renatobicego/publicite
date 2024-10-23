@@ -7,9 +7,10 @@ import {
 import { auth, currentUser } from "@clerk/nextjs/server";
 import axios from "axios";
 import { query } from "@/lib/client";
-import getUserByUsernameQuery from "@/graphql/userQueries";
+import getUserByUsernameQuery, { getAllNotificationsQuery } from "@/graphql/userQueries";
 import { cookies, headers } from "next/headers";
 import { ApolloError } from "@apollo/client";
+import { mockedGroupInvitation } from "@/utils/data/mockedNotifications";
 
 const baseUrl = `${process.env.API_URL}/user/personal`;
 
@@ -69,7 +70,7 @@ export const getUserPreferences = async (username: string) => {
     );
     return await res.json();
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return {
       error: "Error al traer las preferencias. Por favor intenta de nuevo.",
     };
@@ -117,6 +118,47 @@ export const getUserByUsername = async (username: string) => {
     return {
       error:
         "Error al traer los datos del usuario. Por favor intenta de nuevo.",
+    };
+  }
+};
+
+type GetNotificationsResponse = {
+  items: BaseNotification[];
+  hasMore: boolean;
+};
+
+type ErrorResponse = {
+  error: string;
+};
+export const getNotifications = async (
+  page: number
+): Promise<GetNotificationsResponse | ErrorResponse> => {
+  const user = await currentUser();
+  try {
+    // const { data } = await query({
+    //   query: getAllNotificationsQuery,
+    //   variables: {
+    //     getAllNotificationsFromUserByIdId: user?.publicMetadata.mongoId,
+    //     limit: 10,
+    //     page,
+    //   },
+    //   context: {
+    //     headers: {
+    //       Cookie: cookies().toString(),
+    //     },
+    //   },
+    // });
+    // console.log(data)
+    return {
+      // items: data.getAllNotificationsFromUserById.notifications || [],
+      // hasMore: data.getAllNotificationsFromUserById.hasMore,
+      items: [],
+      hasMore: false,
+    };
+  } catch (error: ApolloError | any) {
+    return {
+      error:
+        "Error al traer las notificaciones.",
     };
   }
 };
