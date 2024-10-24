@@ -18,6 +18,40 @@ export class MagazineService implements MagazineServiceInterface {
     private readonly magazineRepository: MagazineRepositoryInterface,
     private readonly logger: MyLoggerService,
   ) {}
+  async addPostInGroupMagazine(
+    postId: string,
+    magazineId: string,
+    magazineAdmin: string,
+  ): Promise<any> {
+    try {
+      this.logger.log('Adding Post in Group Magazine in service..');
+      await this.magazineRepository.addPostInGroupMagazine(
+        postId,
+        magazineId,
+        magazineAdmin,
+      );
+    } catch (error: any) {
+      this.logger.error('Error adding Post in Group Magazine in service');
+      throw error;
+    }
+  }
+  async addPostInUserMagazine(
+    postId: string,
+    magazineId: string,
+    magazineAdmin: string,
+  ): Promise<any> {
+    try {
+      this.logger.log('Adding Post in User Magazine in service..');
+      await this.magazineRepository.addPostInUserMagazine(
+        postId,
+        magazineId,
+        magazineAdmin,
+      );
+    } catch (error: any) {
+      this.logger.error('Error adding Post in User Magazine in service');
+      throw error;
+    }
+  }
 
   async addAllowedCollaboratorsToGroupMagazine(
     newAllowedCollaborators: string[],
@@ -196,9 +230,15 @@ export class MagazineService implements MagazineServiceInterface {
 
   async updateMagazineById(
     magazineRequest: MagazineUpdateRequest,
+    owner: string,
+    groupId?: string,
   ): Promise<any> {
     try {
-      return await this.magazineRepository.updateMagazineById(magazineRequest);
+      return await this.magazineRepository.updateMagazineById(
+        magazineRequest,
+        owner,
+        groupId,
+      );
     } catch (error: any) {
       throw error;
     }

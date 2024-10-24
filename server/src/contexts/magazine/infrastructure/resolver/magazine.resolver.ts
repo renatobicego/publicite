@@ -18,7 +18,63 @@ export class MagazineResolver {
 
   @Mutation(() => String, {
     nullable: true,
-    description: 'Agregar colaboradores a la revista',
+    description: 'Agregar post en la revista de usuario',
+  })
+  async addPostInUserMagazine(
+    @Args('postId', { type: () => [String] })
+    postId: string,
+    @Args('magazineAdmin', { type: () => String })
+    magazineAdmin: string,
+    @Args('magazineId', { type: () => String })
+    magazineId: string,
+    @Context()
+    context: any,
+  ): Promise<any> {
+    try {
+      PubliciteAuth.authorize(context, magazineAdmin);
+      await this.magazineAdapter.addPostInUserMagazine(
+        postId,
+        magazineId,
+        magazineAdmin,
+      );
+      return 'Posts added in user magazine';
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  @Mutation(() => String, {
+    nullable: true,
+    description: 'Agregar post en la revista de grupo',
+  })
+  async addPostInGroupMagazine(
+    @Args('postId', { type: () => [String] })
+    postId: string,
+    @Args('magazineAdmin', { type: () => String })
+    magazineAdmin: string,
+    @Args('magazineId', { type: () => String })
+    magazineId: string,
+    @Args('sectionId', { type: () => String })
+    sectionId: string,
+    @Context()
+    context: any,
+  ): Promise<any> {
+    try {
+      PubliciteAuth.authorize(context, magazineAdmin);
+      await this.magazineAdapter.addPostInGroupMagazine(
+        postId,
+        magazineId,
+        magazineAdmin,
+      );
+      return 'Posts added in group magazine';
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  @Mutation(() => String, {
+    nullable: true,
+    description: 'Agregar colaboradores a la revista de usuario',
   })
   async addCollaboratorsToUserMagazine(
     @Args('newColaborators', { type: () => [String] })
@@ -37,7 +93,7 @@ export class MagazineResolver {
         magazineId,
         magazineAdmin,
       );
-      return 'Colaborators added';
+      return 'Colaborators added in user magazine';
     } catch (error: any) {
       throw error;
     }
@@ -45,7 +101,7 @@ export class MagazineResolver {
 
   @Mutation(() => String, {
     nullable: true,
-    description: 'Agregar allowedCollaborators a la revista',
+    description: 'Agregar allowedCollaborators a la revista de grupo',
   })
   async addAllowedCollaboratorsToGroupMagazine(
     @Args('newAllowedColaborators', { type: () => [String] })
@@ -64,7 +120,7 @@ export class MagazineResolver {
         magazineId,
         magazineAdmin,
       );
-      return 'Colaborators added';
+      return 'Colaborators added in group magazine';
     } catch (error: any) {
       throw error;
     }
@@ -72,7 +128,7 @@ export class MagazineResolver {
 
   @Mutation(() => String, {
     nullable: true,
-    description: 'Eliminar colaboradores de la revista',
+    description: 'Eliminar colaboradores de la revista de usuario',
   })
   async deleteColaboratorsFromUserMagazine(
     @Args('colaboratorsToDelete', { type: () => [String] })
@@ -91,14 +147,14 @@ export class MagazineResolver {
         magazineId,
         magazineAdmin,
       );
-      return 'Colaborators deleted';
+      return 'Colaborators deleted in user magazine';
     } catch (error: any) {
       throw error;
     }
   }
   @Mutation(() => String, {
     nullable: true,
-    description: 'Eliminar allowed colaboradores de la revista',
+    description: 'Eliminar allowed colaboradores de la revista de grupo',
   })
   async deleteAllowedCollaboratorsFromMagazineGroup(
     @Args('allowedCollaboratorsToDelete', { type: () => [String] })
@@ -115,9 +171,9 @@ export class MagazineResolver {
       await this.magazineAdapter.deleteAllowedCollaboratorsFromMagazineGroup(
         allowedCollaboratorsToDelete,
         magazineId,
-        magazineAdmin
+        magazineAdmin,
       );
-      return 'Colaborators deleted';
+      return 'Colaborators deleted in group magazine';
     } catch (error: any) {
       throw error;
     }
@@ -205,10 +261,20 @@ export class MagazineResolver {
     @Args('owner', { type: () => String })
     owner: string,
     @Context() context: any,
+    @Args('groupId', {
+      type: () => String,
+      description: 'El id del grupo en el caso de que la revista sea de grupo',
+      nullable: true,
+    })
+    groupId?: string,
   ): Promise<any> {
     try {
       PubliciteAuth.authorize(context, owner);
-      return await this.magazineAdapter.updateMagazineById(magazineRequest);
+      return await this.magazineAdapter.updateMagazineById(
+        magazineRequest,
+        owner,
+        groupId,
+      );
     } catch (error: any) {
       throw error;
     }

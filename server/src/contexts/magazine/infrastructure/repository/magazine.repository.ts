@@ -49,6 +49,52 @@ export class MagazineRepository implements MagazineRepositoryInterface {
     @InjectModel('User') private readonly userModel: Model<IUser>,
     @InjectModel('Group') private readonly groupModel: Model<GroupDocument>,
   ) {}
+  async addPostInGroupMagazine(
+    postId: string,
+    magazineId: string,
+    magazineAdmin: string,
+  ): Promise<any> {
+    try {
+      const resultOfOperation = await this.groupMagazine
+        .updateOne(
+          { _id: magazineId, allowedCollaborators: magazineAdmin },
+          { $addToSet: { posts: postId } },
+        )
+        .lean();
+
+      if (resultOfOperation.modifiedCount === 0) {
+        const group = await this.groupModel
+          .findOne({
+            magazines: magazineId,
+            $or: [{ admins: magazineAdmin }, { creator: magazineAdmin }],
+          })
+          .lean();
+        if (group) {
+          await this.groupMagazine
+            .updateOne({ _id: magazineId }, { $addToSet: { posts: postId } })
+            .lean();
+        } else {
+          throw new Error('Not allowed or group not found');
+        }
+      }
+    } catch (error: any) {
+      throw error;
+    }
+  }
+  async addPostInUserMagazine(
+    postId: string,
+    magazineId: string,
+    magazineAdmin: string,
+  ): Promise<any> {
+    try {
+      await this.userMagazine.updateOne(
+        { _id: magazineId, user: magazineAdmin },
+        { $addToSet: { posts: postId } },
+      );
+    } catch (error: any) {
+      throw error;
+    }
+  }
 
   async addCollaboratorsToUserMagazine(
     newColaborators: string[],
@@ -502,16 +548,30 @@ export class MagazineRepository implements MagazineRepositoryInterface {
     }
   }
 
-  async updateMagazineById(magazine: MagazineUpdateRequest): Promise<any> {
+  async updateMagazineById(
+    magazine: MagazineUpdateRequest,
+    owner: string,
+    groupId?: string,
+  ): Promise<any> {
     try {
       switch (magazine.ownerType) {
         case OwnerType.user: {
           const response = await this.userMagazine
-            .findByIdAndUpdate(magazine._id, magazine)
+            .findOneAndUpdate({ _id: magazine._id, user: owner }, magazine)
             .lean();
           return response?._id;
         }
         case OwnerType.group: {
+          const group = await this.groupModel
+            .findOne({
+              _id: groupId,
+              $or: [{ admins: owner }, { creator: owner }],
+            })
+            .lean();
+          if (!group) {
+            throw new Error('Not allowed or group not found');
+          }
+
           const response = await this.groupMagazine
             .findByIdAndUpdate(magazine._id, magazine)
             .lean();

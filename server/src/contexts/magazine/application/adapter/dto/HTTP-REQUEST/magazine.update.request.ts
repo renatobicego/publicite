@@ -14,7 +14,7 @@ export class MagazineUpdateRequest {
   ownerType: OwnerType;
 
   @Field(() => String, { nullable: true })
-  description?: string;
+  description: string;
 
   @Field(() => String, { nullable: true })
   visibility: string;

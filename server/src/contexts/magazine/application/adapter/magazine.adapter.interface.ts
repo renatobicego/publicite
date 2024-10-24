@@ -16,6 +16,18 @@ export interface MagazineAdapterInterface {
     magazineAdmin: string,
   ): Promise<any>;
 
+  addPostInGroupMagazine(
+    postId: string,
+    magazineId: string,
+    magazineAdmin: string,
+  ): Promise<any>;
+
+  addPostInUserMagazine(
+    postId: string,
+    magazineId: string,
+    magazineAdmin: string,
+  ): Promise<any>;
+
   deleteCollaboratorsFromMagazine(
     colaboratorsToDelete: string[],
     magazineId: string,
@@ -37,5 +49,9 @@ export interface MagazineAdapterInterface {
   findMagazineByMagazineId(
     userId: ObjectId,
   ): Promise<Partial<MagazineResponse> | null>;
-  updateMagazineById(magazineRequest: MagazineUpdateRequest): Promise<any>;
+  updateMagazineById(
+    magazineRequest: MagazineUpdateRequest,
+    owner: string,
+    groupId?: string,
+  ): Promise<any>;
 }

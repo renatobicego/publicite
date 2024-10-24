@@ -12,6 +12,36 @@ export class MagazineAdapter implements MagazineAdapterInterface {
     @Inject('MagazineServiceInterface')
     private readonly magazineService: MagazineServiceInterface,
   ) {}
+  async addPostInGroupMagazine(
+    postId: string,
+    magazineId: string,
+    magazineAdmin: string,
+  ): Promise<any> {
+    try {
+      await this.magazineService.addPostInGroupMagazine(
+        postId,
+        magazineId,
+        magazineAdmin,
+      );
+    } catch (error: any) {
+      throw error;
+    }
+  }
+  async addPostInUserMagazine(
+    postId: string,
+    magazineId: string,
+    magazineAdmin: string,
+  ): Promise<any> {
+    try {
+      await this.magazineService.addPostInUserMagazine(
+        postId,
+        magazineId,
+        magazineAdmin,
+      );
+    } catch (error: any) {
+      throw error;
+    }
+  }
 
   async addCollaboratorsToUserMagazine(
     newColaborators: string[],
@@ -121,9 +151,15 @@ export class MagazineAdapter implements MagazineAdapterInterface {
 
   async updateMagazineById(
     magazineRequest: MagazineUpdateRequest,
+    owner: string,
+    groupId?: string,
   ): Promise<any> {
     try {
-      return await this.magazineService.updateMagazineById(magazineRequest);
+      return await this.magazineService.updateMagazineById(
+        magazineRequest,
+        owner,
+        groupId,
+      );
     } catch (error: any) {
       throw error;
     }
