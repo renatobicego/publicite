@@ -4,8 +4,14 @@ import { MagazineResponse } from './dto/HTTP-RESPONSE/magazine.reponse';
 import { MagazineUpdateRequest } from './dto/HTTP-REQUEST/magazine.update.request';
 
 export interface MagazineAdapterInterface {
-  addCollaboratorsToMagazine(
+  addCollaboratorsToUserMagazine(
     newColaborators: string[],
+    magazineId: string,
+    magazineAdmin: string,
+  ): Promise<any>;
+
+  addAllowedCollaboratorsToGroupMagazine(
+    newAllowedCollaborators: string[],
     magazineId: string,
     magazineAdmin: string,
   ): Promise<any>;
@@ -21,6 +27,11 @@ export interface MagazineAdapterInterface {
     allowedCollaboratorId?: string,
     userMagazineAllowed?: string,
   ): Promise<any>;
+  deleteAllowedCollaboratorsFromMagazineGroup(
+    allowedCollaboratorsToDelete: string[],
+    magazineId: string,
+    magazineAdmin: string,
+  ): Promise<any>;
 
   createMagazine(magazineRequest: MagazineCreateRequest): Promise<any>;
   findMagazineByMagazineId(
@@ -28,13 +39,3 @@ export interface MagazineAdapterInterface {
   ): Promise<Partial<MagazineResponse> | null>;
   updateMagazineById(magazineRequest: MagazineUpdateRequest): Promise<any>;
 }
-
-// deleteAllowedCollaboratorsFromMagazine(
-//   allowedCollaboratorsToDelete: string[],
-//   magazineId: string,
-// ): Promise<any>;
-
-// addAllowedCollaboratorsToMagazine(
-//   newAllowedCollaborators: string[],
-//   magazineId: string,
-// ): Promise<any>;

@@ -18,68 +18,45 @@ export class MagazineService implements MagazineServiceInterface {
     private readonly magazineRepository: MagazineRepositoryInterface,
     private readonly logger: MyLoggerService,
   ) {}
-  deleteSectionFromMagazineById(
-    sectionIdsToDelete: string[],
+
+  async addAllowedCollaboratorsToGroupMagazine(
+    newAllowedCollaborators: string[],
     magazineId: string,
-    allowedCollaboratorId?: string,
-    userMagazineAllowed?: string,
-  ): Promise<void> {
+    magazineAdmin: string,
+  ): Promise<any> {
     try {
-      if (!allowedCollaboratorId && userMagazineAllowed) {
-        this.logger.log('Deleting Section from User Magazine in service..');
-        return this.magazineRepository.deleteSectionFromUserMagazineById(
-          sectionIdsToDelete,
-          magazineId,
-          userMagazineAllowed,
-        );
-      } else if (allowedCollaboratorId) {
-        this.logger.log('Deleting Section from Group Magazine in service..');
-        return this.magazineRepository.deleteSectionFromGroupMagazineById(
-          sectionIdsToDelete,
-          magazineId,
-          allowedCollaboratorId,
-        );
-      } else {
-        throw new Error('Not allowed');
-      }
+      this.logger.log(
+        'Adding Allowed Colaborators to User Magazine in service..',
+      );
+      await this.magazineRepository.addAllowedCollaboratorsToGroupMagazine(
+        newAllowedCollaborators,
+        magazineId,
+        magazineAdmin,
+      );
     } catch (error: any) {
+      this.logger.error(
+        'Error adding Allowed Colaborators to User Magazine in service',
+        error,
+      );
       throw error;
     }
   }
-  // async addAllowedCollaboratorsToMagazine(
-  //   newAllowedCollaborators: string[],
-  //   magazineId: string,
-  // ): Promise<any> {
-  //   try {
-  //     this.logger.log('Adding Allowed Colaborators to Magazine in service..');
-  //     await this.magazineRepository.addAllowedCollaboratorsToMagazine(
-  //       newAllowedCollaborators,
-  //       magazineId,
-  //     );
-  //   } catch (error: any) {
-  //     this.logger.error(
-  //       'Error adding Allowed Colaborators to Magazine in service',
-  //       error,
-  //     );
-  //     throw error;
-  //   }
-  // }
 
-  async addCollaboratorsToMagazine(
+  async addCollaboratorsToUserMagazine(
     newColaborators: string[],
     magazineId: string,
     magazineAdmin: string,
   ): Promise<void> {
     try {
-      this.logger.log('Adding Colaborators to Magazine in service..');
-      await this.magazineRepository.addCollaboratorsToMagazine(
+      this.logger.log('Adding Colaborators to Group Magazine in service..');
+      await this.magazineRepository.addCollaboratorsToUserMagazine(
         newColaborators,
         magazineId,
         magazineAdmin,
       );
     } catch (error: any) {
       this.logger.error(
-        'Error adding Colaborators to Magazine in service',
+        'Error adding Colaborators to Group Magazine in service',
         error,
       );
       throw error;
@@ -154,25 +131,56 @@ export class MagazineService implements MagazineServiceInterface {
     }
   }
 
-  // async deleteAllowedCollaboratorsFromMagazine(
-  //   allowedCollaboratorsToDelete: string[],
-  //   magazineId: string,
-  // ): Promise<any> {
-  //   try {
-  //     this.logger.log(
-  //       'Deleting allowedCollaborators from Magazine in service..',
-  //     );
-  //     await this.magazineRepository.deleteAllowedCollaboratorsFromMagazine(
-  //       allowedCollaboratorsToDelete,
-  //       magazineId,
-  //     );
-  //   } catch (error: any) {
-  //     this.logger.error(
-  //       'Error deleting  Allowedolaborators from Magazine in service',
-  //     );
-  //     throw error;
-  //   }
-  // }
+  async deleteAllowedCollaboratorsFromMagazineGroup(
+    allowedCollaboratorsToDelete: string[],
+    magazineId: string,
+    magazineAdmin: string,
+  ): Promise<any> {
+    try {
+      this.logger.log(
+        'Deleting allowedCollaborators from Magazine in service..',
+      );
+      await this.magazineRepository.deleteAllowedCollaboratorsFromMagazineGroup(
+        allowedCollaboratorsToDelete,
+        magazineId,
+        magazineAdmin,
+      );
+    } catch (error: any) {
+      this.logger.error(
+        'Error deleting  Allowedolaborators from Magazine in service',
+      );
+      throw error;
+    }
+  }
+
+  async deleteSectionFromMagazineById(
+    sectionIdsToDelete: string[],
+    magazineId: string,
+    allowedCollaboratorId?: string,
+    userMagazineAllowed?: string,
+  ): Promise<void> {
+    try {
+      if (!allowedCollaboratorId && userMagazineAllowed) {
+        this.logger.log('Deleting Section from User Magazine in service..');
+        return this.magazineRepository.deleteSectionFromUserMagazineById(
+          sectionIdsToDelete,
+          magazineId,
+          userMagazineAllowed,
+        );
+      } else if (allowedCollaboratorId) {
+        this.logger.log('Deleting Section from Group Magazine in service..');
+        return this.magazineRepository.deleteSectionFromGroupMagazineById(
+          sectionIdsToDelete,
+          magazineId,
+          allowedCollaboratorId,
+        );
+      } else {
+        throw new Error('Not allowed');
+      }
+    } catch (error: any) {
+      throw error;
+    }
+  }
 
   async findMagazineByMagazineId(
     id: ObjectId,

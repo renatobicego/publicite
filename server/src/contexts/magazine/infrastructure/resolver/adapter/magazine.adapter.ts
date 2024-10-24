@@ -13,14 +13,30 @@ export class MagazineAdapter implements MagazineAdapterInterface {
     private readonly magazineService: MagazineServiceInterface,
   ) {}
 
-  async addCollaboratorsToMagazine(
+  async addCollaboratorsToUserMagazine(
     newColaborators: string[],
     magazineId: string,
     magazineAdmin: string,
   ): Promise<any> {
     try {
-      await this.magazineService.addCollaboratorsToMagazine(
+      await this.magazineService.addCollaboratorsToUserMagazine(
         newColaborators,
+        magazineId,
+        magazineAdmin,
+      );
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  async addAllowedCollaboratorsToGroupMagazine(
+    newAllowedCollaborators: string[],
+    magazineId: string,
+    magazineAdmin: string,
+  ): Promise<any> {
+    try {
+      await this.magazineService.addAllowedCollaboratorsToGroupMagazine(
+        newAllowedCollaborators,
         magazineId,
         magazineAdmin,
       );
@@ -77,6 +93,21 @@ export class MagazineAdapter implements MagazineAdapterInterface {
       throw error;
     }
   }
+  async deleteAllowedCollaboratorsFromMagazineGroup(
+    allowedCollaboratorsToDelete: string[],
+    magazineId: string,
+    magazineAdmin: string,
+  ): Promise<any> {
+    try {
+      await this.magazineService.deleteAllowedCollaboratorsFromMagazineGroup(
+        allowedCollaboratorsToDelete,
+        magazineId,
+        magazineAdmin,
+      );
+    } catch (error: any) {
+      throw error;
+    }
+  }
 
   async findMagazineByMagazineId(
     id: ObjectId,
@@ -98,31 +129,3 @@ export class MagazineAdapter implements MagazineAdapterInterface {
     }
   }
 }
-
-// async deleteAllowedCollaboratorsFromMagazine(
-//   allowedCollaboratorsToDelete: string[],
-//   magazineId: string,
-// ): Promise<any> {
-//   try {
-//     await this.magazineService.deleteAllowedCollaboratorsFromMagazine(
-//       allowedCollaboratorsToDelete,
-//       magazineId,
-//     );
-//   } catch (error: any) {
-//     throw error;
-//   }
-// }
-
-// async addAllowedCollaboratorsToMagazine(
-//   newAllowedCollaborators: string[],
-//   magazineId: string,
-// ): Promise<any> {
-//   try {
-//     await this.magazineService.addAllowedCollaboratorsToMagazine(
-//       newAllowedCollaborators,
-//       magazineId,
-//     );
-//   } catch (error: any) {
-//     throw error;
-//   }
-// }
