@@ -457,6 +457,11 @@ type Mutation {
   """Eliminar colaboradores de la revista"""
   deleteColaboratorsFromMagazine(colaboratorsToDelete: [String!]!, magazineAdmin: String!, magazineId: String!): String
 
+  """
+  Eliminar secciones de la revista, siendo un colaborador de la misma o un administrador de del grupo de la revista
+  """
+  deleteSectionFromMagazineById(sectionIdsToDelete: [String!]!, magazineId: String!, allowedCollaboratorId: String, userMagazineAllowed: String): String
+
   """Crear una revista"""
   createMagazine(magazineCreateRequest: MagazineCreateRequest!): String
 

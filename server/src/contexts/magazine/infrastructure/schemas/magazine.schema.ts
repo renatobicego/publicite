@@ -40,6 +40,8 @@ MagazineSchema.pre(
   },
 );
 
+MagazineSchema.index({ sections: 1 });
+
 //Aca creamoos un modelo en mongo llamado Magazine, se basa en el schema de arriba
 // y esta tipado como magazineDocument
 const MagazineModel = model<MagazineDocument>('Magazine', MagazineSchema);

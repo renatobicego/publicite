@@ -20,7 +20,7 @@ export class MagazineResolver {
     nullable: true,
     description: 'Agregar colaboradores a la revista',
   })
-  async addColaboratorsToMagazine(
+  async addCollaboratorsToUserMagazine(
     @Args('newColaborators', { type: () => [String] })
     newColaborators: string[],
     @Args('magazineAdmin', { type: () => String })
@@ -32,8 +32,35 @@ export class MagazineResolver {
   ): Promise<any> {
     try {
       PubliciteAuth.authorize(context, magazineAdmin);
-      await this.magazineAdapter.addCollaboratorsToMagazine(
+      await this.magazineAdapter.addCollaboratorsToUserMagazine(
         newColaborators,
+        magazineId,
+        magazineAdmin,
+      );
+      return 'Colaborators added';
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  @Mutation(() => String, {
+    nullable: true,
+    description: 'Agregar allowedCollaborators a la revista',
+  })
+  async addAllowedCollaboratorsToGroupMagazine(
+    @Args('newAllowedColaborators', { type: () => [String] })
+    newAllowedColaborators: string[],
+    @Args('magazineId', { type: () => String })
+    magazineId: string,
+    @Args('magazineAdmin', { type: () => String })
+    magazineAdmin: string,
+    @Context()
+    context: any,
+  ): Promise<any> {
+    try {
+      PubliciteAuth.authorize(context, magazineAdmin);
+      await this.magazineAdapter.addAllowedCollaboratorsToGroupMagazine(
+        newAllowedColaborators,
         magazineId,
         magazineAdmin,
       );
@@ -47,13 +74,13 @@ export class MagazineResolver {
     nullable: true,
     description: 'Eliminar colaboradores de la revista',
   })
-  async deleteColaboratorsFromMagazine(
+  async deleteColaboratorsFromUserMagazine(
     @Args('colaboratorsToDelete', { type: () => [String] })
     colaboratorsToDelete: string[],
-    @Args('magazineAdmin', { type: () => String })
-    magazineAdmin: string,
     @Args('magazineId', { type: () => String })
     magazineId: string,
+    @Args('magazineAdmin', { type: () => String })
+    magazineAdmin: string,
     @Context()
     context: any,
   ): Promise<any> {
@@ -65,6 +92,73 @@ export class MagazineResolver {
         magazineAdmin,
       );
       return 'Colaborators deleted';
+    } catch (error: any) {
+      throw error;
+    }
+  }
+  @Mutation(() => String, {
+    nullable: true,
+    description: 'Eliminar allowed colaboradores de la revista',
+  })
+  async deleteAllowedCollaboratorsFromMagazineGroup(
+    @Args('allowedCollaboratorsToDelete', { type: () => [String] })
+    allowedCollaboratorsToDelete: string[],
+    @Args('magazineId', { type: () => String })
+    magazineId: string,
+    @Args('magazineAdmin', { type: () => String })
+    magazineAdmin: string,
+    @Context()
+    context: any,
+  ): Promise<any> {
+    try {
+      PubliciteAuth.authorize(context, magazineAdmin);
+      await this.magazineAdapter.deleteAllowedCollaboratorsFromMagazineGroup(
+        allowedCollaboratorsToDelete,
+        magazineId,
+        magazineAdmin
+      );
+      return 'Colaborators deleted';
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  @Mutation(() => String, {
+    nullable: true,
+    description:
+      'Eliminar secciones de la revista, siendo un colaborador de la misma o un administrador de del grupo de la revista',
+  })
+  async deleteSectionFromMagazineById(
+    @Args('sectionIdsToDelete', { type: () => [String] })
+    sectionIdsToDelete: string[],
+    @Args('magazineId', { type: () => String })
+    magazineId: string,
+    @Context()
+    context: any,
+    @Args('allowedCollaboratorId', { type: () => String, nullable: true })
+    allowedCollaboratorId?: string,
+    @Args('userMagazineAllowed', { type: () => String, nullable: true })
+    userMagazineAllowed?: string,
+  ): Promise<any> {
+    try {
+      if (!allowedCollaboratorId && userMagazineAllowed) {
+        //PubliciteAuth.authorize(context, userMagazineAllowed);
+        await this.magazineAdapter.deleteSectionFromMagazineById(
+          sectionIdsToDelete,
+          magazineId,
+          userMagazineAllowed,
+        );
+      } else if (allowedCollaboratorId) {
+        //PubliciteAuth.authorize(context, allowedCollaboratorId);
+        await this.magazineAdapter.deleteSectionFromMagazineById(
+          sectionIdsToDelete,
+          magazineId,
+          allowedCollaboratorId,
+        );
+      } else {
+        throw new Error('Unauthorized');
+      }
+      return 'Sections deleted';
     } catch (error: any) {
       throw error;
     }
@@ -120,55 +214,3 @@ export class MagazineResolver {
     }
   }
 }
-
-// @Mutation(() => String, {
-//   nullable: true,
-//   description: 'Agregar allowedCollaborators a la revista',
-// })
-// async addAllowedCollaboratorsToMagazine(
-//   @Args('newAllowedColaborators', { type: () => [String] })
-//   newAllowedColaborators: string[],
-//   @Args('magazineAdmin', { type: () => String })
-//   magazineAdmin: string,
-//   @Args('magazineId', { type: () => String })
-//   magazineId: string,
-//   @Context()
-//   context: any,
-// ): Promise<any> {
-//   try {
-//     PubliciteAuth.authorize(context, magazineAdmin);
-//     await this.magazineAdapter.addAllowedCollaboratorsToMagazine(
-//       newAllowedColaborators,
-//       magazineId,
-//     );
-//     return 'Colaborators added';
-//   } catch (error: any) {
-//     throw error;
-//   }
-// }
-
-// @Mutation(() => String, {
-//   nullable: true,
-//   description: 'Eliminar allowed colaboradores de la revista',
-// })
-// async deleteAllowedCollaboratorsFromMagazine(
-//   @Args('allowedCollaboratorsToDelete', { type: () => [String] })
-//   allowedCollaboratorsToDelete: string[],
-//   @Args('magazineAdmin', { type: () => String })
-//   magazineAdmin: string,
-//   @Args('magazineId', { type: () => String })
-//   magazineId: string,
-//   @Context()
-//   context: any,
-// ): Promise<any> {
-//   try {
-//     PubliciteAuth.authorize(context, magazineAdmin);
-//     await this.magazineAdapter.deleteAllowedCollaboratorsFromMagazine(
-//       allowedCollaboratorsToDelete,
-//       magazineId,
-//     );
-//     return 'Colaborators deleted';
-//   } catch (error: any) {
-//     throw error;
-//   }
-// }

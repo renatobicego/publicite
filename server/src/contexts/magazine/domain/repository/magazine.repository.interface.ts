@@ -5,11 +5,17 @@ import { MagazineResponse } from '../../application/adapter/dto/HTTP-RESPONSE/ma
 import { MagazineUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/magazine.update.request';
 
 export interface MagazineRepositoryInterface {
-  addCollaboratorsToMagazine(
+  addCollaboratorsToUserMagazine(
     newColaborators: string[],
     magazineId: string,
     magazineAdmin: string,
   ): Promise<void>;
+
+  addAllowedCollaboratorsToGroupMagazine(
+    newAllowedCollaborators: string[],
+    magazineId: string,
+    magazineAdmin: string,
+  ): Promise<any>;
 
   deleteCollaboratorsFromMagazine(
     colaboratorsToDelete: string[],
@@ -17,6 +23,22 @@ export interface MagazineRepositoryInterface {
     magazineAdmin: string,
   ): Promise<void>;
 
+  deleteAllowedCollaboratorsFromMagazineGroup(
+    allowedCollaboratorsToDelete: string[],
+    magazineId: string,
+    magazineAdmin: string,
+  ): Promise<any>;
+
+  deleteSectionFromGroupMagazineById(
+    sectionIdsToDelete: string[],
+    magazineId: string,
+    allowedCollaboratorId: string,
+  ): Promise<void>;
+  deleteSectionFromUserMagazineById(
+    sectionIdsToDelete: string[],
+    magazineId: string,
+    allowedCollaboratorId: string,
+  ): Promise<void>;
   save(magazine: Magazine): Promise<any>;
   saveMagazineWithSection(magazine: Magazine): Promise<any>;
   findMagazineByMagazineId(
@@ -24,13 +46,3 @@ export interface MagazineRepositoryInterface {
   ): Promise<Partial<MagazineResponse> | null>;
   updateMagazineById(magazine: MagazineUpdateRequest): Promise<any>;
 }
-
-// deleteAllowedCollaboratorsFromMagazine(
-//   allowedCollaboratorsToDelete: string[],
-//   magazineId: string,
-// ): Promise<any>;
-
-// addAllowedCollaboratorsToMagazine(
-//   newAllowedCollaborators: string[],
-//   magazineId: string,
-// ): Promise<any>;

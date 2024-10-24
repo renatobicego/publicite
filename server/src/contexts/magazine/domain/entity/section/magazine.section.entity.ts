@@ -1,5 +1,4 @@
 import { ObjectId } from 'mongoose';
-import { Magazine } from '../magazine.entity';
 
 export class MagazineSection {
   private title: string;
