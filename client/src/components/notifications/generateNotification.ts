@@ -1,7 +1,7 @@
 import { getLocalTimeZone, now } from "@internationalized/date";
 
 const generateNotification = (event: string, userToSendId: string) => {
-  const baseNotification: BaseNotification = {
+  const baseNotification: Omit<BaseNotification, "_id"> = {
     notification: {
       date: now(getLocalTimeZone()).toString(),
       event,

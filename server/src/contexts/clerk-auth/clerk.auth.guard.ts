@@ -6,7 +6,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
-import { clerkClient } from '@clerk/clerk-sdk-node'; 
+import { clerkClient } from '@clerk/clerk-sdk-node';
 
 @Injectable()
 export class ClerkAuthGuard implements CanActivate {
@@ -39,7 +39,6 @@ export class ClerkAuthGuard implements CanActivate {
         this.logger.error('Token not found');
         throw new ForbiddenException('Unauthorized');
       }
-
       request.token = token;
       await clerkClient.verifyToken(token);
 
@@ -50,4 +49,3 @@ export class ClerkAuthGuard implements CanActivate {
     }
   }
 }
-

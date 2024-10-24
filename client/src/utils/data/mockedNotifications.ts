@@ -4,9 +4,7 @@ import {
   ReviewPostNotification,
 } from "@/types/postTypes";
 import { mockedPosts, mockedUsers } from "./mockedData";
-import {
-  NewContactRelationNotification,
-} from "@/types/userTypes";
+import { NewContactRelationNotification } from "@/types/userTypes";
 import { PaymentSuccesNotification } from "@/types/subscriptions";
 import { MagazineInvitationNotification } from "@/types/magazineTypes";
 import { GroupNotification } from "@/types/groupTypes";
@@ -46,7 +44,7 @@ export const mockedNewContactPost2: PostContactNotification = {
   contactPetition: {
     email: "email@example.com",
     message: "Este es el mensaje enviado por el usuario maxi",
-    phone: "1234567890", 
+    phone: "1234567890",
     post: mockedPosts[1]._id,
     fullName: "Maxi Cattaneo",
   },
@@ -64,11 +62,17 @@ export const mockedNewContactRelation: NewContactRelationNotification = {
 };
 
 export const mockedGroupInvitation: GroupNotification = {
-  date: "2022-01-01",
-  frontData: { group: { _id: "1", name: "Computadoras", profilePhotoUrl: "" } , userInviting: { username: "username" } },
-  event: "notification_group_user_request_sent",
-  backData: { userToSendId: "1" },
-  viewed: false,
+  _id: "3",
+  notification: {
+    backData: { userToSendId: "1" },
+    date: "2022-01-01",
+    event: "notification_group_user_request_sent",
+    viewed: false,
+  },
+  frontData: {
+    group: { _id: "1", name: "Computadoras", profilePhotoUrl: "" },
+    userInviting: { username: "username" },
+  },
 };
 
 export const mockedPostShared: PostSharedNotification = {

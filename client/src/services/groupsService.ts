@@ -4,6 +4,7 @@ import { mockedPetitions, mockedPosts } from "../utils/data/mockedData";
 import {
   createNewGroupMutation,
   deleteAdminMutation,
+  deleteGroupMutation,
   deleteMemberMutation,
   editGroupMutation,
   getGroupByIdQuery,
@@ -198,6 +199,30 @@ export const deleteAdmin = async (groupId: string, userIds: string[]) => {
   } catch (error) {
     return {
       error: "Error al eliminar administrador. Por favor intenta de nuevo.",
+    };
+  }
+};
+
+export const deleteGroup = async (groupId: string) => {
+  try {
+    await getClient()
+      .mutate({
+        mutation: deleteGroupMutation,
+        variables: {
+          groupId,
+          groupCreator: auth().sessionClaims?.metadata.mongoId,
+        },
+        context: {
+          headers: {
+            Authorization: `Bearer ${await auth().getToken()}`,
+          },
+        },
+      })
+      .then((res) => res);
+    return { message: "Grupo eliminado exitosamente" };
+  } catch (error) {
+    return {
+      error: "Error al eliminar el grupo. Por favor intenta de nuevo.",
     };
   }
 };

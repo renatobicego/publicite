@@ -131,3 +131,9 @@ export const editGroupMutation = gql`
     updateGroupById(groupToUpdate: $groupToUpdate)
   }
 `;
+
+export const deleteGroupMutation = gql`
+  mutation DeleteGroupById($groupId: String!, $groupCreator: String!) {
+    deleteGroupById(groupId: $groupId, groupCreator: $groupCreator)
+  }
+`;
