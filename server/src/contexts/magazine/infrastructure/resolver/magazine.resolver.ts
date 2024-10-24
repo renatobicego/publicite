@@ -82,28 +82,30 @@ export class MagazineResolver {
     magazineId: string,
     @Context()
     context: any,
-    @Args('allowedCollaboratorId', { type: () => String })
+    @Args('allowedCollaboratorId', { type: () => String, nullable: true })
     allowedCollaboratorId?: string,
-    @Args('userMagazineAllowed', { type: () => String })
+    @Args('userMagazineAllowed', { type: () => String, nullable: true })
     userMagazineAllowed?: string,
   ): Promise<any> {
     try {
       if (!allowedCollaboratorId && userMagazineAllowed) {
-        PubliciteAuth.authorize(context, userMagazineAllowed);
+        //PubliciteAuth.authorize(context, userMagazineAllowed);
         await this.magazineAdapter.deleteSectionFromMagazineById(
           sectionIdsToDelete,
           magazineId,
           userMagazineAllowed,
         );
       } else if (allowedCollaboratorId) {
-        PubliciteAuth.authorize(context, allowedCollaboratorId);
+        //PubliciteAuth.authorize(context, allowedCollaboratorId);
         await this.magazineAdapter.deleteSectionFromMagazineById(
           sectionIdsToDelete,
           magazineId,
           allowedCollaboratorId,
         );
+      } else {
+        throw new Error('Unauthorized');
       }
-      return 'Colaborators deleted';
+      return 'Sections deleted';
     } catch (error: any) {
       throw error;
     }
