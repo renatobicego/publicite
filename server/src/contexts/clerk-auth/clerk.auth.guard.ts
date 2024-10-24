@@ -6,7 +6,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
-import { clerkClient } from '@clerk/clerk-sdk-node'; 
+import { clerkClient } from '@clerk/clerk-sdk-node';
 
 @Injectable()
 export class ClerkAuthGuard implements CanActivate {
@@ -14,6 +14,7 @@ export class ClerkAuthGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     let request;
+    let token;
 
     try {
       const contextType = context.getType<string>();
@@ -23,24 +24,21 @@ export class ClerkAuthGuard implements CanActivate {
       } else if (contextType === 'graphql') {
         const gqlContext = GqlExecutionContext.create(context);
         request = gqlContext.getContext().req;
+        token = request.headers['authorization'];
       } else {
         throw new ForbiddenException('Unsupported context type');
       }
 
-      if (!request || !request.cookies) {
+      if (!request) {
         this.logger.error('Cookies or request not found');
         throw new ForbiddenException('Unauthorized');
       }
 
-      const token =
-        request.cookies.__session ||
-        request.headers.authorization?.split(' ')[1];
       if (!token) {
         this.logger.error('Token not found');
         throw new ForbiddenException('Unauthorized');
       }
-
-      request.token = token;
+      console.log('verificando token ' + token);
       await clerkClient.verifyToken(token);
 
       return true;
@@ -50,4 +48,3 @@ export class ClerkAuthGuard implements CanActivate {
     }
   }
 }
-
