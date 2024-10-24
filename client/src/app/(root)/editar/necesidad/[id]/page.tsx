@@ -6,11 +6,12 @@ import { EDIT_PETITION, EDIT_POST, POSTS } from "@/utils/data/urls";
 import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import EditPetitionClient from "./EditPetitionClient";
-export default async function EditPetitionPage({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default async function EditPetitionPage(
+  props: {
+    params: Promise<{ id: string }>;
+  }
+) {
+  const params = await props.params;
   const postData: Petition | { error: string } = await getPostData(params.id);
   const userLogged = await currentUser();
   if (

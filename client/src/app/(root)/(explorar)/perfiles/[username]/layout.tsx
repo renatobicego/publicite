@@ -8,13 +8,18 @@ import { currentUser } from "@clerk/nextjs/server";
 import UserSolapas from "@/components/solapas/UserSolapas";
 import CreateBoard from "@/components/Board/CreateBoard/CreateBoard";
 
-export default async function ProfileLayout({
-  children,
-  params,
-}: {
-  params: { username: string };
-  children: React.ReactNode;
-}) {
+export default async function ProfileLayout(
+  props: {
+    params: Promise<{ username: string }>;
+    children: React.ReactNode;
+  }
+) {
+  const params = await props.params;
+
+  const {
+    children
+  } = props;
+
   const breadcrumbsItems = [
     {
       label: "Inicio",

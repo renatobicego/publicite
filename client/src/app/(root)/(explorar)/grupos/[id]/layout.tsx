@@ -9,13 +9,18 @@ import { User } from "@/types/userTypes";
 import { Group } from "@/types/groupTypes";
 import { FaLock } from "react-icons/fa6";
 
-export default async function GroupLayout({
-  children,
-  params,
-}: {
-  params: { id: string };
-  children: React.ReactNode;
-}) {
+export default async function GroupLayout(
+  props: {
+    params: Promise<{ id: string }>;
+    children: React.ReactNode;
+  }
+) {
+  const params = await props.params;
+
+  const {
+    children
+  } = props;
+
   const group: Group | { error: string; error2: string } = await getGroupById(params.id);
   if ("error" in group) {
     return <ErrorCard message={group.error} error={group.error2} />;

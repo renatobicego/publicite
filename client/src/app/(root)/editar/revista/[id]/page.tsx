@@ -15,11 +15,12 @@ import { GroupMagazine, Magazine, UserMagazine } from "@/types/magazineTypes";
 import { Group } from "@/types/groupTypes";
 import EditMagazineForm from "./EditMagazineForm";
 import { redirect } from "next/navigation";
-export default async function EditMagazinePage({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default async function EditMagazinePage(
+  props: {
+    params: Promise<{ id: string }>;
+  }
+) {
+  const params = await props.params;
   const magazineData: Magazine | { error: string } =
     await getMagazineWithoutPostsById(params.id);
   const userLoggedId = await currentUser().then(
