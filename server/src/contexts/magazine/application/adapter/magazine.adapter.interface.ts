@@ -2,8 +2,16 @@ import { ObjectId } from 'mongoose';
 import { MagazineCreateRequest } from './dto/HTTP-REQUEST/magazine.create.request';
 import { MagazineResponse } from './dto/HTTP-RESPONSE/magazine.reponse';
 import { MagazineUpdateRequest } from './dto/HTTP-REQUEST/magazine.update.request';
+import { MagazineSectionCreateRequest } from './dto/HTTP-REQUEST/magazineSection.create.request';
 
 export interface MagazineAdapterInterface {
+  addNewMagazineSection(
+    magazineAdmin: string,
+    magazineId: string,
+    section: MagazineSectionCreateRequest,
+    groupId?: string,
+  ): Promise<any>;
+
   addCollaboratorsToUserMagazine(
     newColaborators: string[],
     magazineId: string,

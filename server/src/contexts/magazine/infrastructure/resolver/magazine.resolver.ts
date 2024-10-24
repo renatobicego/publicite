@@ -8,6 +8,7 @@ import { MagazineResponse } from '../../application/adapter/dto/HTTP-RESPONSE/ma
 import { MagazineUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/magazine.update.request';
 import { PubliciteAuth } from 'src/contexts/shared/auth/publicite_auth/publicite_auth';
 import { ClerkAuthGuard } from 'src/contexts/shared/auth/clerk-auth/clerk.auth.guard';
+import { MagazineSectionCreateRequest } from '../../application/adapter/dto/HTTP-REQUEST/magazineSection.create.request';
 
 @Resolver()
 export class MagazineResolver {
@@ -15,6 +16,36 @@ export class MagazineResolver {
     @Inject('MagazineAdapterInterface')
     private readonly magazineAdapter: MagazineAdapterInterface,
   ) {}
+
+  @Mutation(() => String, {
+    nullable: true,
+    description: 'Agregar nueva seccion en la revista',
+  })
+  async addNewMagazineSection(
+    @Args('magazineAdmin', { type: () => String })
+    magazineAdmin: string,
+    @Args('magazineId', { type: () => String })
+    magazineId: string,
+    @Args('section', { type: () => MagazineSectionCreateRequest })
+    section: MagazineSectionCreateRequest,
+    @Context()
+    context: any,
+    @Args('groupId', { type: () => String, nullable: true })
+    groupId?: string,
+  ): Promise<any> {
+    try {
+      PubliciteAuth.authorize(context, magazineAdmin);
+      await this.magazineAdapter.addNewMagazineSection(
+        magazineAdmin,
+        magazineId,
+        section,
+        groupId,
+      );
+      return 'Section added in magazine';
+    } catch (error: any) {
+      throw error;
+    }
+  }
 
   @Mutation(() => String, {
     nullable: true,

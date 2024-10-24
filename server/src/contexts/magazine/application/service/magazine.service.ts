@@ -11,6 +11,7 @@ import { UserMagazine } from '../../domain/entity/user.magazine';
 import { GroupMagazine } from '../../domain/entity/group.magazine';
 import { MagazineResponse } from '../adapter/dto/HTTP-RESPONSE/magazine.reponse';
 import { MagazineUpdateRequest } from '../adapter/dto/HTTP-REQUEST/magazine.update.request';
+import { MagazineSectionCreateRequest } from '../adapter/dto/HTTP-REQUEST/magazineSection.create.request';
 
 export class MagazineService implements MagazineServiceInterface {
   constructor(
@@ -18,6 +19,25 @@ export class MagazineService implements MagazineServiceInterface {
     private readonly magazineRepository: MagazineRepositoryInterface,
     private readonly logger: MyLoggerService,
   ) {}
+  async addNewMagazineSection(
+    magazineAdmin: string,
+    magazineId: string,
+    section: MagazineSectionCreateRequest,
+    groupId?: string,
+  ): Promise<any> {
+    try {
+      this.logger.log('Adding new section in magazine...');
+      await this.magazineRepository.addNewMagazineSection(
+        magazineAdmin,
+        magazineId,
+        section,
+        groupId,
+      );
+    } catch (error: any) {
+      this.logger.error('Error adding new section in  Magazine');
+      throw error;
+    }
+  }
   async addPostInGroupMagazine(
     postId: string,
     magazineId: string,

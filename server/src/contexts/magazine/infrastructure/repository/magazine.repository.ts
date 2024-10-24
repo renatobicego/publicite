@@ -25,6 +25,7 @@ import { IUser } from 'src/contexts/user/infrastructure/schemas/user.schema';
 import { GroupDocument } from 'src/contexts/group/infrastructure/schemas/group.schema';
 import { MagazineUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/magazine.update.request';
 import { checkResultModificationOfOperation } from 'src/contexts/shared/functions/checkResultModificationOfOperation';
+import { MagazineSectionCreateRequest } from '../../application/adapter/dto/HTTP-REQUEST/magazineSection.create.request';
 
 export class MagazineRepository implements MagazineRepositoryInterface {
   constructor(
@@ -49,38 +50,124 @@ export class MagazineRepository implements MagazineRepositoryInterface {
     @InjectModel('User') private readonly userModel: Model<IUser>,
     @InjectModel('Group') private readonly groupModel: Model<GroupDocument>,
   ) {}
+  async addNewMagazineSection(
+    magazineAdmin: string,
+    magazineId: string,
+    section: MagazineSectionCreateRequest,
+    groupId?: string,
+  ): Promise<any> {
+    const session = await this.connection.startSession();
+    session.startTransaction();
+    try {
+      if (groupId) {
+        const resultOfOperation = await this.groupMagazine
+          .updateOne(
+            { _id: magazineId, allowedCollaborators: magazineAdmin },
+            { $addToSet: { sections: section } },
+            { session },
+          )
+          .lean();
+
+        if (resultOfOperation.modifiedCount === 0) {
+          this.logger.log(
+            'No sections were created, because the magazine was not found or the user was not allowed to create it',
+          );
+          this.logger.log('Verification if user is an allowed admin group');
+
+          const isAdminOrCreator = await this.groupModel
+            .findOne(
+              {
+                _id: groupId,
+                $or: [{ admins: magazineAdmin }, { creator: magazineAdmin }],
+              },
+              { session },
+            )
+            .lean();
+
+          if (isAdminOrCreator) {
+            this.logger.log('User is an allowed admin group');
+            await this.groupMagazine
+              .updateOne(
+                { _id: groupId },
+                { $addToSet: { sections: section } },
+                { session },
+              )
+              .lean();
+          } else {
+            throw new Error('User is not an allowed admin group');
+          }
+        }
+      } else {
+        await this.userMagazine.updateOne(
+          {
+            _id: magazineId,
+            $or: [{ collaborators: magazineAdmin }, { user: magazineAdmin }],
+          },
+          { $addToSet: { sections: section } },
+          { session },
+        );
+      }
+
+      await session.commitTransaction();
+    } catch (error: any) {
+      if (session.inTransaction()) {
+        await session.abortTransaction();
+      }
+      throw error;
+    } finally {
+      session.endSession();
+    }
+  }
+
   async addPostInGroupMagazine(
     postId: string,
     magazineId: string,
     magazineAdmin: string,
     sectionId: string,
   ): Promise<any> {
-    let isAllowedUser;
-    let isAdminOrCreatorGroup;
+    const session = await this.connection.startSession();
+    session.startTransaction();
     try {
-      isAllowedUser = await this.groupMagazine.findOne({
-        _id: magazineId,
-        allowedCollaborators: magazineAdmin,
-      });
+      const isAllowedUser = await this.groupMagazine.findOne(
+        {
+          _id: magazineId,
+          allowedCollaborators: magazineAdmin,
+        },
+        { session },
+      );
 
       if (!isAllowedUser) {
-        isAdminOrCreatorGroup = await this.groupModel.findOne({
-          magazines: magazineId,
-          $or: [{ admins: magazineAdmin }, { creator: magazineAdmin }],
-        });
+        const isAdminOrCreatorGroup = await this.groupModel.findOne(
+          {
+            magazines: magazineId,
+            $or: [{ admins: magazineAdmin }, { creator: magazineAdmin }],
+          },
+          { session },
+        );
+
+        if (!isAdminOrCreatorGroup) {
+          throw new Error(
+            'The user is not allowed to add a post in this magazine',
+          );
+        }
       }
 
-      if (isAllowedUser || isAdminOrCreatorGroup) {
-        await this.magazineSection
-          .updateOne({ _id: sectionId }, { $addToSet: { posts: postId } })
-          .lean();
-      } else {
-        throw new Error(
-          'The user is not allowed to add a post in this magazine',
-        );
-      }
+      await this.magazineSection
+        .updateOne(
+          { _id: sectionId },
+          { $addToSet: { posts: postId } },
+          { session },
+        )
+        .lean();
+
+      await session.commitTransaction();
     } catch (error: any) {
+      if (session.inTransaction()) {
+        await session.abortTransaction();
+      }
       throw error;
+    } finally {
+      session.endSession();
     }
   }
 
@@ -90,23 +177,39 @@ export class MagazineRepository implements MagazineRepositoryInterface {
     magazineAdmin: string,
     sectionId: string,
   ): Promise<any> {
+    const session = await this.connection.startSession();
+    session.startTransaction();
     try {
-      const isUserAllowed = await this.userMagazine.findOne({
-        _id: magazineId,
-        $or: [{ user: magazineAdmin, collaborators: magazineAdmin }],
-      });
+      const isUserAllowed = await this.userMagazine.findOne(
+        {
+          _id: magazineId,
+          $or: [{ user: magazineAdmin }, { collaborators: magazineAdmin }],
+        },
+        { session },
+      );
 
       if (isUserAllowed) {
         await this.magazineSection
-          .updateOne({ _id: sectionId }, { $addToSet: { posts: postId } })
+          .updateOne(
+            { _id: sectionId },
+            { $addToSet: { posts: postId } },
+            { session },
+          )
           .lean();
+
+        await session.commitTransaction();
       } else {
         throw new Error(
           'The user is not allowed to add a post in this magazine',
         );
       }
     } catch (error: any) {
+      if (session.inTransaction()) {
+        await session.abortTransaction();
+      }
       throw error;
+    } finally {
+      session.endSession();
     }
   }
 

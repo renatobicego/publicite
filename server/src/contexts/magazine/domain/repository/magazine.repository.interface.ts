@@ -3,8 +3,16 @@ import { ObjectId } from 'mongoose';
 import { Magazine } from '../entity/magazine.entity';
 import { MagazineResponse } from '../../application/adapter/dto/HTTP-RESPONSE/magazine.reponse';
 import { MagazineUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/magazine.update.request';
+import { MagazineSectionCreateRequest } from '../../application/adapter/dto/HTTP-REQUEST/magazineSection.create.request';
 
 export interface MagazineRepositoryInterface {
+  addNewMagazineSection(
+    magazineAdmin: string,
+    magazineId: string,
+    section: MagazineSectionCreateRequest,
+    groupId?: string,
+  ): Promise<any>;
+
   addPostInGroupMagazine(
     postId: string,
     magazineId: string,

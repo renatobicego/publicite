@@ -3,6 +3,7 @@ import { ObjectId } from 'mongoose';
 
 import { MagazineCreateRequest } from 'src/contexts/magazine/application/adapter/dto/HTTP-REQUEST/magazine.create.request';
 import { MagazineUpdateRequest } from 'src/contexts/magazine/application/adapter/dto/HTTP-REQUEST/magazine.update.request';
+import { MagazineSectionCreateRequest } from 'src/contexts/magazine/application/adapter/dto/HTTP-REQUEST/magazineSection.create.request';
 import { MagazineResponse } from 'src/contexts/magazine/application/adapter/dto/HTTP-RESPONSE/magazine.reponse';
 import { MagazineAdapterInterface } from 'src/contexts/magazine/application/adapter/magazine.adapter.interface';
 import { MagazineServiceInterface } from 'src/contexts/magazine/domain/service/magazine.service.interface';
@@ -12,6 +13,23 @@ export class MagazineAdapter implements MagazineAdapterInterface {
     @Inject('MagazineServiceInterface')
     private readonly magazineService: MagazineServiceInterface,
   ) {}
+  async addNewMagazineSection(
+    magazineAdmin: string,
+    magazineId: string,
+    section: MagazineSectionCreateRequest,
+    groupId?: string,
+  ): Promise<any> {
+    try {
+      await this.magazineService.addNewMagazineSection(
+        magazineAdmin,
+        magazineId,
+        section,
+        groupId,
+      );
+    } catch (error: any) {
+      throw error;
+    }
+  }
   async addPostInGroupMagazine(
     postId: string,
     magazineId: string,
