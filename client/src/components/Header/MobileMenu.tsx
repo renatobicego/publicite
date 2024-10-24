@@ -20,9 +20,9 @@ const MobileMenu = ({
 }: {
   setIsMenuOpen: Dispatch<SetStateAction<boolean>>;
   isSignedIn: boolean;
-  username: string;
+  username?: string | null;
   configData?: ConfigData;
-  userType: UserType;
+  userType?: UserType;
 }) => {
   const menuItems = [
     {
@@ -87,11 +87,13 @@ const MobileMenu = ({
       <div className="flex gap-2 items-center">
         <SignedIn>
           <Notifications />
-          <UserButtonModal
-            configData={configData}
-            userType={userType}
-            username={username}
-          />
+          {userType && username && (
+            <UserButtonModal
+              configData={configData}
+              userType={userType}
+              username={username}
+            />
+          )}
           <DropdownItems />
         </SignedIn>
         <SignedOut>

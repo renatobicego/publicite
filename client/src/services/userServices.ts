@@ -73,7 +73,12 @@ export const changeUserPreferences = async (
 export const getUserPreferences = async (username: string) => {
   try {
     const res = await fetch(
-      `${process.env.API_URL}/user/preferences/${username}`
+      `${process.env.API_URL}/user/preferences/${username}`,
+      {
+        headers: {
+          Authorization: `Bearer ${await auth().getToken()}`,
+        },
+      }
     );
     return await res.json();
   } catch (error) {
@@ -159,12 +164,12 @@ export const getNotifications = async (
         },
       },
     });
-
     return {
       items: data.getAllNotificationsFromUserById.notifications || [],
       hasMore: data.getAllNotificationsFromUserById.hasMore,
     };
   } catch (error: ApolloError | any) {
+    console.log(error);
     return {
       error: "Error al traer las notificaciones.",
     };

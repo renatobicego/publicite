@@ -26,5 +26,3 @@ la verdad que es una  re paja para el usuario eso y es una paja para nosotros as
 -En la busqueda de pizarra poder buscar por el nombre y apellido o nombre de usuario del creador
 
 CUENTA GRATUITA CREAR PLAN DE SUSCRIPTION
-
-agregar alias grupo

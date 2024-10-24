@@ -5,7 +5,7 @@ import {
   Injectable,
   Logger,
 } from '@nestjs/common';
-import { clerkClient } from '@clerk/clerk-sdk-node';
+import { verifyToken } from '@clerk/express';
 
 import { getTokenFromRequest } from '../../functions/getTokenFromRequest';
 
@@ -22,9 +22,9 @@ export class ClerkAuthGuard implements CanActivate {
         this.logger.error('Token not found');
         throw new ForbiddenException('Unauthorized');
       }
-
-      await clerkClient.verifyToken(token);
-
+      await verifyToken(token.toString(), {
+        secretKey: process.env.CLERK_SECRET_KEY,
+      });
       return true;
     } catch (error) {
       this.logger.error(`Error in ClerkAuthGuard: ${error.message}`);

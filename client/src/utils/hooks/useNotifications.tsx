@@ -42,14 +42,14 @@ const useNotifications = (isOpen: boolean) => {
   // Trigger to reset state when postType or search term changes
   useEffect(() => {
     // Reset state when postType or searchParams change
-
+    if (!isOpen) return;
     setNotifications([]); // Clear items first
     setPage(1); // Reset page number
     setErrorOccurred(false); // Reset error flag when postType or search params change
 
     // Set `hasMoreData` to true first
     setHasMore(true);
-  }, []);
+  }, [isOpen]);
 
   // Effect to call `fetchNotifications` only after `hasMore` is set to true
   useEffect(() => {

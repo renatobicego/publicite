@@ -6,18 +6,19 @@ import RulesPopover from "./RulesPopover";
 import SecondaryButton from "@/components/buttons/SecondaryButton";
 import { EDIT_GROUP, FILE_URL } from "@/utils/data/urls";
 import { Group } from "@/types/groupTypes";
-import { currentUser } from "@clerk/nextjs/server";
+import { currentUser, User } from "@clerk/nextjs/server";
 
 const GroupInfo = async ({
   group,
   isAdmin,
   isMember,
+  userId
 }: {
   group: Group;
   isAdmin: boolean;
-  isMember: boolean;
+    isMember: boolean;
+    userId: string;
 }) => {
-  const user = await currentUser();
   return (
     <section className="flex gap-4 md:gap-6 xl:gap-8 md:max-w-[75%] xl:max-w-[65%] max-md:flex-col">
       <Image
@@ -59,7 +60,7 @@ const GroupInfo = async ({
           <OptionsDropdown
             groupId={group._id}
             isMember={isMember}
-            isCreator={user?.publicMetadata.mongoId === group.creator}
+            isCreator={userId === group.creator}
             image={group.profilePhotoUrl}
           />
         </div>

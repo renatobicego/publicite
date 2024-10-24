@@ -26,7 +26,7 @@ export class MagazineResolver {
     magazineAdmin: string,
     @Args('magazineId', { type: () => String })
     magazineId: string,
-    @Args('section', { type: () => MagazineSectionCreateRequest })
+    @Args('section', { type: () => String })
     section: MagazineSectionCreateRequest,
     @Context()
     context: any,

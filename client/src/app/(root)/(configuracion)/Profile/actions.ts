@@ -78,7 +78,7 @@ export interface ConfigData {
 }
 export const getConfigData = async (user: User | null) => {
   if (!user?.username) {
-    return { error: "Usuario no autenticado. Por favor inicie sesión." };
+    return;
   }
   const userBoard = await getBoardByUsername(user?.username as string);
   const subscriptions = await getSubscriptionsOfUser(
@@ -92,9 +92,7 @@ export const getConfigData = async (user: User | null) => {
   );
   const preferences = await getUserPreferences(user.username);
   if (!preferences || preferences.error || !userBoard || userBoard.error) {
-    return {
-      error: preferences.error || userBoard.error,
-    };
+    return;
   }
   const configData: ConfigData  = {
     accountType,

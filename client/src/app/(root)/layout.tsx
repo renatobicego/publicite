@@ -19,16 +19,13 @@ export default async function NavigationLayout({
   const user = await currentUser();
   const configData = await getConfigData(user);
 
-  if (configData && "error" in configData && configData.error) {
-    return <ErrorCard error={configData.error} />;
-  }
   return (
     <SocketProvider userId={user?.publicMetadata.mongoId as string}>
       <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
       <Header
-        username={user?.username as string}
-        userType={user?.publicMetadata.userType as UserType}
-        configData={configData as ConfigData}
+        username={user?.username}
+        userType={user?.publicMetadata.userType}
+        configData={configData}
         isSignedIn={!!user}
       />
       <BackgroundProvider username={user?.username}>

@@ -60,6 +60,7 @@ export default async function GroupLayout(props: {
           group={group as Group}
           isAdmin={isAdmin}
           isMember={isMember}
+          userId={loggedUser.publicMetadata.mongoId as string}
         />
       </div>
       {isMember ? (
@@ -67,7 +68,10 @@ export default async function GroupLayout(props: {
           <GroupSolapas
             group={group as Group}
             isAdmin={isAdmin}
-            userLogged={loggedUser}
+            userLogged={{
+              username: loggedUser.username as string,
+              _id: loggedUser.publicMetadata.mongoId as string,
+            }}
           />
           {children}
         </>

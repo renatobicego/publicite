@@ -451,11 +451,26 @@ type Mutation {
   """Eliminar un grupo por su id"""
   deleteGroupById(groupId: String!, groupCreator: String!): String
 
-  """Agregar colaboradores a la revista"""
-  addColaboratorsToMagazine(newColaborators: [String!]!, magazineAdmin: String!, magazineId: String!): String
+  """Agregar nueva seccion en la revista"""
+  addNewMagazineSection(magazineAdmin: String!, magazineId: String!, section: String!, groupId: String): String
 
-  """Eliminar colaboradores de la revista"""
-  deleteColaboratorsFromMagazine(colaboratorsToDelete: [String!]!, magazineAdmin: String!, magazineId: String!): String
+  """Agregar post en la revista de usuario"""
+  addPostInUserMagazine(postId: [String!]!, magazineAdmin: String!, magazineId: String!, sectionId: String!): String
+
+  """Agregar post en la revista de grupo"""
+  addPostInGroupMagazine(postId: [String!]!, magazineAdmin: String!, magazineId: String!, sectionId: String!): String
+
+  """Agregar colaboradores a la revista de usuario"""
+  addCollaboratorsToUserMagazine(newColaborators: [String!]!, magazineAdmin: String!, magazineId: String!): String
+
+  """Agregar allowedCollaborators a la revista de grupo"""
+  addAllowedCollaboratorsToGroupMagazine(newAllowedColaborators: [String!]!, magazineId: String!, magazineAdmin: String!): String
+
+  """Eliminar colaboradores de la revista de usuario"""
+  deleteColaboratorsFromUserMagazine(colaboratorsToDelete: [String!]!, magazineId: String!, magazineAdmin: String!): String
+
+  """Eliminar allowed colaboradores de la revista de grupo"""
+  deleteAllowedCollaboratorsFromMagazineGroup(allowedCollaboratorsToDelete: [String!]!, magazineId: String!, magazineAdmin: String!): String
 
   """
   Eliminar secciones de la revista, siendo un colaborador de la misma o un administrador de del grupo de la revista
@@ -466,7 +481,13 @@ type Mutation {
   createMagazine(magazineCreateRequest: MagazineCreateRequest!): String
 
   """Actualizar una revista"""
-  updateMagazineById(magazineUpdateRequest: MagazineUpdateRequest!, owner: String!): String
+  updateMagazineById(
+    magazineUpdateRequest: MagazineUpdateRequest!
+    owner: String!
+
+    """El id del grupo en el caso de que la revista sea de grupo"""
+    groupId: String
+  ): String
 
   """Crear una categoria de un post"""
   createNewCategoryPost(category: PostCategoryRequest!): PostCategoryResponse

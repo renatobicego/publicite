@@ -18,8 +18,8 @@ const UserNavItems = ({
   username,
 }: {
   isMenuOpen: boolean;
-  username: string;
-  userType: UserType;
+  username?: string | null;
+  userType?: UserType;
   configData: ConfigData | undefined;
 }) => {
   const { newNotifications, setNewNotifications } = useSocket();
@@ -32,11 +32,13 @@ const UserNavItems = ({
       <NavbarItem className="max-lg:hidden flex gap-2 items-center">
         <SignedIn>
           <Notifications />
-          <UserButtonModal
-            configData={configData}
-            userType={userType}
-            username={username}
-          />
+          {userType && username && (
+            <UserButtonModal
+              configData={configData}
+              userType={userType}
+              username={username}
+            />
+          )}
           <DropdownItems />
         </SignedIn>
         <SignedOut>

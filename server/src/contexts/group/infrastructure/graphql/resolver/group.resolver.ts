@@ -109,7 +109,7 @@ export class GroupResolver {
     @Context() context: any,
   ): Promise<GroupResponse> {
     try {
-      const token = context.req.token;
+      const token = context.req.headers.authorization;
       const groupCreator = PubliciteAuth.getIdFromClerkToken(token);
       return await this.groupAdapter.saveGroup(groupDto, groupCreator);
     } catch (error: any) {

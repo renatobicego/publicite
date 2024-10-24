@@ -25,8 +25,8 @@ const Header = ({
   isSignedIn,
 }: {
   configData?: ConfigData;
-  username: string;
-  userType: UserType;
+  username?: string | null;
+  userType?: UserType;
   isSignedIn: boolean;
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -84,8 +84,8 @@ const Header = ({
         <UserNavItems
           configData={configData}
           isMenuOpen={isMenuOpen}
-          username={username || ""}
-          userType={userType as UserType}
+          username={username}
+          userType={userType}
         />
       </NavbarContent>
       <MobileMenu

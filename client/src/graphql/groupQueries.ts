@@ -8,6 +8,8 @@ export const createNewGroupMutation = gql`
         _id
       }
       creator
+      name
+      profilePhotoUrl
     }
   }
 `;

@@ -1,5 +1,7 @@
 import BreadcrumbsAdmin from "@/components/BreadcrumbsAdmin";
+import SolapasTabs from "@/components/solapas/SolapasTabs";
 import { BOARDS } from "@/utils/data/urls";
+import { currentUser } from "@clerk/nextjs/server";
 
 export default async function Boards() {
   const breadcrumbsItems = [
@@ -13,5 +15,10 @@ export default async function Boards() {
     },
   ];
 
-  return <BreadcrumbsAdmin items={breadcrumbsItems} />;
+  return (
+    <main className="flex min-h-screen flex-col items-start main-style gap-4">
+      <BreadcrumbsAdmin items={breadcrumbsItems} />
+      <SolapasTabs />
+    </main>
+  );
 }

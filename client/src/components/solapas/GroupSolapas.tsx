@@ -12,7 +12,6 @@ import UsersGrid from "@/app/(root)/(explorar)/perfiles/UsersGrid";
 import InviteUsersGroup from "../modals/InvitationModal/InviteUsersGroup";
 import PrimaryButton from "../buttons/PrimaryButton";
 import { FaPlus } from "react-icons/fa6";
-import { User as UserClerk } from "@clerk/nextjs/server";
 import { User } from "@/types/userTypes";
 const GroupSolapas = ({
   group,
@@ -21,7 +20,10 @@ const GroupSolapas = ({
 }: {
   group: Group;
   isAdmin: boolean;
-  userLogged: UserClerk;
+  userLogged: {
+    username: string;
+    _id: string;
+  };
 }) => {
   const pathname = usePathname();
   const tabsRef = useRef<HTMLDivElement | null>(null);
@@ -109,7 +111,7 @@ const GroupSolapas = ({
           groupGrid
           group={group}
           userLogged={{
-            _id: userLogged.publicMetadata.mongoId,
+            _id: userLogged._id,
             username: userLogged.username as string,
           }}
         />

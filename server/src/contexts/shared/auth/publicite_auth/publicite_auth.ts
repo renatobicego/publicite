@@ -26,7 +26,6 @@ export class PubliciteAuth {
     if (!token) {
       throw new UnauthorizedException('Token not found in request');
     }
-
     const mongoId = this.getIdFromClerkToken(token);
     if (user !== mongoId) {
       throw new UnauthorizedException('You not have access to this resource');

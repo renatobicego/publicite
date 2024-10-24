@@ -19,7 +19,10 @@ const UserSolapas = ({
   loggedUser,
 }: {
   user: GetUser;
-  loggedUser: User;
+  loggedUser: {
+    username: string;
+    _id: string;
+  };
 }) => {
   const pathname = usePathname();
   const tabsRef = useRef<HTMLDivElement | null>(null);
@@ -115,7 +118,7 @@ const UserSolapas = ({
           items={user.userRelations}
           userLogged={{
             username: loggedUser.username as string,
-            _id: loggedUser.publicMetadata.mongoId,
+            _id: loggedUser._id,
           }}
         />
       </Tab>

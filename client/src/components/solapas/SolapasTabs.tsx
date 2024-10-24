@@ -13,18 +13,14 @@ import {
   PROFILE,
   GROUPS,
 } from "@/utils/data/urls";
+import { useUser } from "@clerk/nextjs";
 import { Tab, Tabs } from "@nextui-org/react";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 
-const SolapasTabs = ({
-  usernameUserLogged,
-  idUserLogged,
-}: {
-  usernameUserLogged?: string | null;
-  idUserLogged?: string;
-}) => {
+const SolapasTabs = () => {
   const pathname = usePathname();
+  const {user: userLogged} = useUser();
   const tabsRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -61,7 +57,62 @@ const SolapasTabs = ({
       ? "/necesidades"
       : postTypeVisited === "service"
       ? "/servicios"
-      : "";
+        : "";
+  
+  // Array of tab definitions
+  const tabDefinitions = [
+    {
+      key: `${POSTS}${postTypeUrlVisited}`,
+      title: "Recomendados",
+      component: <PostsList postTypeVisited={postTypeVisited} />,
+    },
+    {
+      key: `${POST_RECENTS}${postTypeUrlVisited}`,
+      title: "Anuncios de Hoy",
+      component: <PostsList postTypeVisited={postTypeVisited} />,
+    },
+    {
+      key: `${POST_BEST}${postTypeUrlVisited}`,
+      title: "Mejor Puntuados",
+      component: <PostsList postTypeVisited={postTypeVisited} />,
+    },
+    {
+      key: `${POST_NEXT_TO_EXPIRE}${postTypeUrlVisited}`,
+      title: "Próximos a Vencer",
+      component: <PostsList postTypeVisited={postTypeVisited} />,
+    },
+    {
+      key: BOARDS,
+      title: "Pizarras",
+      component: <BoardsLogic username={userLogged?.username} />,
+      requiresLogin: true,
+    },
+    {
+      key: PROFILE,
+      title: "Perfiles",
+      component: (
+        <UsersLogic
+          userLogged={{
+            username: userLogged?.username as string,
+            _id: userLogged?.publicMetadata.mongoId as string,
+          }}
+        />
+      ),
+      requiresLogin: true,
+    },
+    {
+      key: GROUPS,
+      title: "Grupos",
+      component: <GroupsLogic />,
+      requiresLogin: true,
+    },
+  ];
+
+  // Filter out tabs that require login if the user is not logged in
+  const filteredTabs = tabDefinitions.filter(
+    (tab) => !tab.requiresLogin || (tab.requiresLogin && userLogged)
+  );
+
   return (
     <Tabs
       classNames={{
@@ -76,74 +127,17 @@ const SolapasTabs = ({
       variant="underlined"
       selectedKey={pathname}
     >
-      <Tab
-        className="w-full"
-        key={`${POSTS}${postTypeUrlVisited}`}
-        title="Recomendados"
-        href={`${POSTS}${postTypeUrlVisited}`}
-        data-key={`${POSTS}${postTypeUrlVisited}`}
-      >
-        <PostsList postTypeVisited={postTypeVisited} />
-      </Tab>
-      <Tab
-        className="w-full"
-        key={`${POST_RECENTS}${postTypeUrlVisited}`}
-        title="Anuncios de Hoy"
-        href={`${POST_RECENTS}${postTypeUrlVisited}`}
-        data-key={`${POST_RECENTS}${postTypeUrlVisited}`}
-      >
-        <PostsList postTypeVisited={postTypeVisited} />
-      </Tab>
-      <Tab
-        className="w-full"
-        key={`${POST_BEST}${postTypeUrlVisited}`}
-        title="Mejor Puntuados"
-        href={`${POST_BEST}${postTypeUrlVisited}`}
-        data-key={`${POST_BEST}${postTypeUrlVisited}`}
-      >
-        <PostsList postTypeVisited={postTypeVisited} />
-      </Tab>
-      <Tab
-        className="w-full"
-        key={`${POST_NEXT_TO_EXPIRE}${postTypeUrlVisited}`}
-        title="Próximos a Vencer"
-        href={`${POST_NEXT_TO_EXPIRE}${postTypeUrlVisited}`}
-        data-key={`${POST_NEXT_TO_EXPIRE}${postTypeUrlVisited}`}
-      >
-        <PostsList postTypeVisited={postTypeVisited} />
-      </Tab>
-      <Tab
-        className="w-full"
-        key={BOARDS}
-        title="Pizarras"
-        href={BOARDS}
-        data-key={BOARDS}
-      >
-        <BoardsLogic username={usernameUserLogged} />
-      </Tab>
-      <Tab
-        className="w-full"
-        key={PROFILE}
-        title="Perfiles"
-        href={PROFILE}
-        data-key={PROFILE}
-      >
-        <UsersLogic
-          userLogged={{
-            username: usernameUserLogged || "",
-            _id: idUserLogged as string,
-          }}
-        />
-      </Tab>
-      <Tab
-        className="w-full"
-        key={GROUPS}
-        title="Grupos"
-        href={GROUPS}
-        data-key={GROUPS}
-      >
-        <GroupsLogic />
-      </Tab>
+      {filteredTabs.map((tab) => (
+        <Tab
+          className="w-full"
+          key={tab.key}
+          title={tab.title}
+          href={tab.key}
+          data-key={tab.key}
+        >
+          {tab.component}
+        </Tab>
+      ))}
     </Tabs>
   );
 };

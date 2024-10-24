@@ -17,5 +17,5 @@ export default async function PostsList() {
     },
   ];
 
-  return <BreadcrumbsAdmin items={breadcrumbsItems} />;
+  return <BreadcrumbsAdmin items={breadcrumbsItems} />
 }

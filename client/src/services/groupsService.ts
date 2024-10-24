@@ -109,7 +109,7 @@ export const postGroup = async (formData: any) => {
       variables: { groupDto: formData },
       context: {
         headers: {
-          Authorization: await auth().getToken(),
+          Authorization: `${await auth().getToken()}`,
         },
       },
     })

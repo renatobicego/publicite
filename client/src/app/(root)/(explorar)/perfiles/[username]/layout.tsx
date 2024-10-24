@@ -9,17 +9,13 @@ import UserSolapas from "@/components/solapas/UserSolapas";
 import CreateBoard from "@/components/Board/CreateBoard/CreateBoard";
 import { redirect } from "next/navigation";
 
-export default async function ProfileLayout(
-  props: {
-    params: Promise<{ username: string }>;
-    children: React.ReactNode;
-  }
-) {
+export default async function ProfileLayout(props: {
+  params: Promise<{ username: string }>;
+  children: React.ReactNode;
+}) {
   const params = await props.params;
 
-  const {
-    children
-  } = props;
+  const { children } = props;
 
   const breadcrumbsItems = [
     {
@@ -50,7 +46,7 @@ export default async function ProfileLayout(
       <BreadcrumbsAdmin items={breadcrumbsItems} />
       <div className="items-start flex gap-4 justify-between w-full max-md:flex-wrap">
         <UserInfo user={user} isMyProfile={isMyProfile} />
-        {(user.board || !isMyProfile) ? (
+        {user.board || !isMyProfile ? (
           <BoardCard
             board={user.board}
             isMyBoard={isMyProfile}
@@ -61,7 +57,13 @@ export default async function ProfileLayout(
           <CreateBoard user={user} />
         )}
       </div>
-      <UserSolapas user={user} loggedUser={loggedUser } />
+      <UserSolapas
+        user={user}
+        loggedUser={{
+          username: loggedUser?.username as string,
+          _id: loggedUser?.publicMetadata.mongoId as string,
+        }}
+      />
       {children}
     </main>
   );

@@ -51,17 +51,17 @@ const CreateGroupForm = ({ username }: { username: string | null }) => {
       actions.setSubmitting(false);
       return;
     }
-    resApi.members.forEach((member: string) => {
+    resApi.group.members.forEach((member: string) => {
       emitGroupNotification(
         socket,
-        resApi.id,
+        resApi.group,
         username as string,
         member,
         "notification_group_new_user_added"
       );
     });
     toastifySuccess(resApi.message as string);
-    router.push(`${GROUPS}/${resApi.id}`);
+    router.push(`${GROUPS}/${resApi.group._id}`);
   };
   return (
     <Formik

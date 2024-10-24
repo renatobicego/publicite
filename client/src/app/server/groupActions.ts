@@ -24,9 +24,7 @@ export const createGroup = async (formData: any) => {
     }
     return {
       message: "Grupo creado exitosamente",
-      id: res._id,
-      members: res.members.map((member: any) => member._id),
-      creator: res.creator,
+      group: res,
     };
   } catch (err) {
     console.log(err);

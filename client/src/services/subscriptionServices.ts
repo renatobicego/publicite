@@ -69,6 +69,9 @@ export const getSubscriptionsPlansMP = async () => {
 export const getSubscriptionsPlans = async () => {
   const res = await fetch(process.env.API_URL + "/subscriptionplans", {
     next: { revalidate: 180 },
+    headers: {
+      Authorization: `${await auth().getToken()}`,
+    }
   });
   if (!res.ok) {
     return {

@@ -18,6 +18,7 @@ const DesktopNotifications = () => {
   const { notifications, fetchNotifications, isLoading, hasMore } =
     useNotifications(isOpen);
   
+  
   return (
     <Popover
       className=" max-lg:hidden"
