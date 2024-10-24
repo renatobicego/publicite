@@ -9,12 +9,14 @@ export interface MagazineServiceInterface {
     postId: string,
     magazineId: string,
     magazineAdmin: string,
+    sectionId: string,
   ): Promise<any>;
 
   addPostInUserMagazine(
     postId: string,
     magazineId: string,
     magazineAdmin: string,
+    sectionId: string,
   ): Promise<any>;
 
   addCollaboratorsToUserMagazine(

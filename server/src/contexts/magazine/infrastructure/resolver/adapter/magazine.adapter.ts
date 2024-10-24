@@ -16,12 +16,14 @@ export class MagazineAdapter implements MagazineAdapterInterface {
     postId: string,
     magazineId: string,
     magazineAdmin: string,
+    sectionId: string,
   ): Promise<any> {
     try {
       await this.magazineService.addPostInGroupMagazine(
         postId,
         magazineId,
         magazineAdmin,
+        sectionId,
       );
     } catch (error: any) {
       throw error;
@@ -31,12 +33,14 @@ export class MagazineAdapter implements MagazineAdapterInterface {
     postId: string,
     magazineId: string,
     magazineAdmin: string,
+    sectionId: string,
   ): Promise<any> {
     try {
       await this.magazineService.addPostInUserMagazine(
         postId,
         magazineId,
         magazineAdmin,
+        sectionId,
       );
     } catch (error: any) {
       throw error;

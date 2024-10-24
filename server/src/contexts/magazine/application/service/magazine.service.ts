@@ -22,6 +22,7 @@ export class MagazineService implements MagazineServiceInterface {
     postId: string,
     magazineId: string,
     magazineAdmin: string,
+    sectionId: string,
   ): Promise<any> {
     try {
       this.logger.log('Adding Post in Group Magazine in service..');
@@ -29,6 +30,7 @@ export class MagazineService implements MagazineServiceInterface {
         postId,
         magazineId,
         magazineAdmin,
+        sectionId,
       );
     } catch (error: any) {
       this.logger.error('Error adding Post in Group Magazine in service');
@@ -39,6 +41,7 @@ export class MagazineService implements MagazineServiceInterface {
     postId: string,
     magazineId: string,
     magazineAdmin: string,
+    sectionId: string,
   ): Promise<any> {
     try {
       this.logger.log('Adding Post in User Magazine in service..');
@@ -46,6 +49,7 @@ export class MagazineService implements MagazineServiceInterface {
         postId,
         magazineId,
         magazineAdmin,
+        sectionId,
       );
     } catch (error: any) {
       this.logger.error('Error adding Post in User Magazine in service');

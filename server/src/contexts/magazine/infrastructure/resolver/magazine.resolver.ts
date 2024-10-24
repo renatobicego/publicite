@@ -27,6 +27,8 @@ export class MagazineResolver {
     magazineAdmin: string,
     @Args('magazineId', { type: () => String })
     magazineId: string,
+    @Args('sectionId', { type: () => String })
+    sectionId: string,
     @Context()
     context: any,
   ): Promise<any> {
@@ -36,6 +38,7 @@ export class MagazineResolver {
         postId,
         magazineId,
         magazineAdmin,
+        sectionId,
       );
       return 'Posts added in user magazine';
     } catch (error: any) {
@@ -65,6 +68,7 @@ export class MagazineResolver {
         postId,
         magazineId,
         magazineAdmin,
+        sectionId,
       );
       return 'Posts added in group magazine';
     } catch (error: any) {

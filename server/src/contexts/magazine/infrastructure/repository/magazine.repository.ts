@@ -53,44 +53,58 @@ export class MagazineRepository implements MagazineRepositoryInterface {
     postId: string,
     magazineId: string,
     magazineAdmin: string,
+    sectionId: string,
   ): Promise<any> {
+    let isAllowedUser;
+    let isAdminOrCreatorGroup;
     try {
-      const resultOfOperation = await this.groupMagazine
-        .updateOne(
-          { _id: magazineId, allowedCollaborators: magazineAdmin },
-          { $addToSet: { posts: postId } },
-        )
-        .lean();
+      isAllowedUser = await this.groupMagazine.findOne({
+        _id: magazineId,
+        allowedCollaborators: magazineAdmin,
+      });
 
-      if (resultOfOperation.modifiedCount === 0) {
-        const group = await this.groupModel
-          .findOne({
-            magazines: magazineId,
-            $or: [{ admins: magazineAdmin }, { creator: magazineAdmin }],
-          })
+      if (!isAllowedUser) {
+        isAdminOrCreatorGroup = await this.groupModel.findOne({
+          magazines: magazineId,
+          $or: [{ admins: magazineAdmin }, { creator: magazineAdmin }],
+        });
+      }
+
+      if (isAllowedUser || isAdminOrCreatorGroup) {
+        await this.magazineSection
+          .updateOne({ _id: sectionId }, { $addToSet: { posts: postId } })
           .lean();
-        if (group) {
-          await this.groupMagazine
-            .updateOne({ _id: magazineId }, { $addToSet: { posts: postId } })
-            .lean();
-        } else {
-          throw new Error('Not allowed or group not found');
-        }
+      } else {
+        throw new Error(
+          'The user is not allowed to add a post in this magazine',
+        );
       }
     } catch (error: any) {
       throw error;
     }
   }
+
   async addPostInUserMagazine(
     postId: string,
     magazineId: string,
     magazineAdmin: string,
+    sectionId: string,
   ): Promise<any> {
     try {
-      await this.userMagazine.updateOne(
-        { _id: magazineId, user: magazineAdmin },
-        { $addToSet: { posts: postId } },
-      );
+      const isUserAllowed = await this.userMagazine.findOne({
+        _id: magazineId,
+        $or: [{ user: magazineAdmin, collaborators: magazineAdmin }],
+      });
+
+      if (isUserAllowed) {
+        await this.magazineSection
+          .updateOne({ _id: sectionId }, { $addToSet: { posts: postId } })
+          .lean();
+      } else {
+        throw new Error(
+          'The user is not allowed to add a post in this magazine',
+        );
+      }
     } catch (error: any) {
       throw error;
     }
