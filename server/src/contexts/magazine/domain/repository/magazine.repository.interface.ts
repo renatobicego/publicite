@@ -17,6 +17,16 @@ export interface MagazineRepositoryInterface {
     magazineAdmin: string,
   ): Promise<void>;
 
+  deleteSectionFromGroupMagazineById(
+    sectionIdsToDelete: string[],
+    magazineId : string,
+    allowedCollaboratorId: string,
+  ): Promise<void>;
+  deleteSectionFromUserMagazineById(
+    sectionIdsToDelete: string[],
+    magazineId : string,
+    allowedCollaboratorId: string,
+  ): Promise<void>;
   save(magazine: Magazine): Promise<any>;
   saveMagazineWithSection(magazine: Magazine): Promise<any>;
   findMagazineByMagazineId(

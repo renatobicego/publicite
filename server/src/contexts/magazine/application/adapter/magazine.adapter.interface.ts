@@ -15,6 +15,12 @@ export interface MagazineAdapterInterface {
     magazineId: string,
     magazineAdmin: string,
   ): Promise<any>;
+  deleteSectionFromMagazineById(
+    sectionIdsToDelete: string[],
+    magazineId: string,
+    allowedCollaboratorId?: string,
+    userMagazineAllowed?: string,
+  ): Promise<any>;
 
   createMagazine(magazineRequest: MagazineCreateRequest): Promise<any>;
   findMagazineByMagazineId(

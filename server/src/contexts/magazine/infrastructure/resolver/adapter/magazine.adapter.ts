@@ -53,6 +53,31 @@ export class MagazineAdapter implements MagazineAdapterInterface {
     }
   }
 
+  async deleteSectionFromMagazineById(
+    sectionIdsToDelete: string[],
+    magazineId: string,
+    allowedCollaboratorId?: string,
+    userMagazineAllowed?: string,
+  ): Promise<any> {
+    try {
+      if (!allowedCollaboratorId && userMagazineAllowed) {
+        await this.magazineService.deleteSectionFromMagazineById(
+          sectionIdsToDelete,
+          magazineId,
+          userMagazineAllowed,
+        );
+      } else if (allowedCollaboratorId) {
+        await this.magazineService.deleteSectionFromMagazineById(
+          sectionIdsToDelete,
+          magazineId,
+          allowedCollaboratorId,
+        );
+      }
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
   async findMagazineByMagazineId(
     id: ObjectId,
   ): Promise<Partial<MagazineResponse> | null> {

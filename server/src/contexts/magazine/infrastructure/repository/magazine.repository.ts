@@ -120,6 +120,114 @@ export class MagazineRepository implements MagazineRepositoryInterface {
     }
   }
 
+  async deleteSectionFromGroupMagazineById(
+    sectionIdsToDelete: string[],
+    magazineId: string,
+    allowedCollaboratorId: string,
+  ): Promise<void> {
+    const session = await this.connection.startSession();
+    try {
+      await session.withTransaction(async () => {
+        //Eliminamos las secciones de las revistas
+
+        const resultOfOperation = await this.groupMagazine.updateMany(
+          {
+            _id: magazineId,
+            allowedCollaborators: allowedCollaboratorId,
+          },
+          { $pull: { sections: sectionIdsToDelete } },
+          { session },
+        );
+
+        // Si no se modifico nada quiere decir que o no existe la seccion o no el usuario tiene permiso para borrarla
+        if (resultOfOperation.modifiedCount === 0) {
+          this.logger.log(
+            'No sections were deleted, because the section was not found or the user was not allowed to delete it',
+          );
+          this.logger.log('Verfification if user is an allowed admin group');
+          // Verifico si el user es un admin de grupo o creador
+          const group = await this.groupModel.findOne(
+            {
+              magazines: magazineId,
+              $or: [
+                { admins: allowedCollaboratorId },
+                { creator: allowedCollaboratorId },
+              ],
+            },
+            { session },
+          );
+          if (!group) {
+            throw new Error('The user is not allowed to delete this section');
+          } else {
+            this.logger.log(
+              'The user is admin or creator, deleting sections in magazine',
+            );
+            await this.groupMagazine.updateMany(
+              { _id: magazineId },
+              { $pull: { sections: sectionIdsToDelete } },
+              { session },
+            );
+            this.logger.log('Deleting sections...');
+            await this.magazineSection.deleteMany(
+              {
+                _id: { $in: sectionIdsToDelete },
+              },
+              { session },
+            );
+          }
+        } else if (resultOfOperation.modifiedCount > 0) {
+          this.logger.log('Sections deleting in group magazine successfully');
+          await this.magazineSection.deleteMany(
+            {
+              _id: { $in: sectionIdsToDelete },
+            },
+            { session },
+          );
+          this.logger.log('MagazineSections was deleted successfully');
+        }
+      });
+    } catch (error: any) {
+      await session.abortTransaction();
+      throw error;
+    } finally {
+      session.endSession();
+    }
+  }
+  async deleteSectionFromUserMagazineById(
+    sectionIdsToDelete: string[],
+    magazineId: string,
+    userMagazineAllowed: string,
+  ): Promise<void> {
+    const session = await this.connection.startSession();
+    try {
+      await session.withTransaction(async () => {
+        const resultOfOperation = await this.userMagazine.updateOne(
+          {
+            _id: magazineId,
+            $or: [
+              { user: userMagazineAllowed },
+              { collaborators: userMagazineAllowed },
+            ],
+          },
+          { $pull: { sections: sectionIdsToDelete } },
+          { session },
+        );
+        checkResultModificationOfOperation(resultOfOperation);
+        await this.magazineSection.deleteMany(
+          {
+            _id: { $in: sectionIdsToDelete },
+          },
+          { session },
+        );
+      });
+    } catch (error: any) {
+      await session.abortTransaction();
+      throw error;
+    } finally {
+      session.endSession();
+    }
+  }
+
   async findMagazineByMagazineId(
     id: ObjectId,
   ): Promise<Partial<MagazineResponse> | null> {

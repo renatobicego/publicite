@@ -18,6 +18,34 @@ export class MagazineService implements MagazineServiceInterface {
     private readonly magazineRepository: MagazineRepositoryInterface,
     private readonly logger: MyLoggerService,
   ) {}
+  deleteSectionFromMagazineById(
+    sectionIdsToDelete: string[],
+    magazineId: string,
+    allowedCollaboratorId?: string,
+    userMagazineAllowed?: string,
+  ): Promise<void> {
+    try {
+      if (!allowedCollaboratorId && userMagazineAllowed) {
+        this.logger.log('Deleting Section from User Magazine in service..');
+        return this.magazineRepository.deleteSectionFromUserMagazineById(
+          sectionIdsToDelete,
+          magazineId,
+          userMagazineAllowed,
+        );
+      } else if (allowedCollaboratorId) {
+        this.logger.log('Deleting Section from Group Magazine in service..');
+        return this.magazineRepository.deleteSectionFromGroupMagazineById(
+          sectionIdsToDelete,
+          magazineId,
+          allowedCollaboratorId,
+        );
+      } else {
+        throw new Error('Not allowed');
+      }
+    } catch (error: any) {
+      throw error;
+    }
+  }
   // async addAllowedCollaboratorsToMagazine(
   //   newAllowedCollaborators: string[],
   //   magazineId: string,

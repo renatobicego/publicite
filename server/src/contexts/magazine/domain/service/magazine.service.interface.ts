@@ -20,6 +20,11 @@ export interface MagazineServiceInterface {
     magazineId: string,
     magazineAdmin: string,
   ): Promise<void>;
+  deleteSectionFromMagazineById(
+    sectionIdsToDelete: string[],
+    allowedCollaboratorId?: string,
+    userMagazineAllowed?: string,
+  ): Promise<any>;
 
   // deleteAllowedCollaboratorsFromMagazine(
   //   allowedCollaboratorsToDelete: string[],

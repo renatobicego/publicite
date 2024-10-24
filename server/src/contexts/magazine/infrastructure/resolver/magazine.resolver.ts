@@ -72,6 +72,45 @@ export class MagazineResolver {
 
   @Mutation(() => String, {
     nullable: true,
+    description:
+      'Eliminar secciones de la revista, siendo un colaborador de la misma o un administrador de del grupo de la revista',
+  })
+  async deleteSectionFromMagazineById(
+    @Args('sectionIdsToDelete', { type: () => [String] })
+    sectionIdsToDelete: string[],
+    @Args('magazineId', { type: () => String })
+    magazineId: string,
+    @Context()
+    context: any,
+    @Args('allowedCollaboratorId', { type: () => String })
+    allowedCollaboratorId?: string,
+    @Args('userMagazineAllowed', { type: () => String })
+    userMagazineAllowed?: string,
+  ): Promise<any> {
+    try {
+      if (!allowedCollaboratorId && userMagazineAllowed) {
+        PubliciteAuth.authorize(context, userMagazineAllowed);
+        await this.magazineAdapter.deleteSectionFromMagazineById(
+          sectionIdsToDelete,
+          magazineId,
+          userMagazineAllowed,
+        );
+      } else if (allowedCollaboratorId) {
+        PubliciteAuth.authorize(context, allowedCollaboratorId);
+        await this.magazineAdapter.deleteSectionFromMagazineById(
+          sectionIdsToDelete,
+          magazineId,
+          allowedCollaboratorId,
+        );
+      }
+      return 'Colaborators deleted';
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  @Mutation(() => String, {
+    nullable: true,
     description: 'Crear una revista',
   })
   async createMagazine(
