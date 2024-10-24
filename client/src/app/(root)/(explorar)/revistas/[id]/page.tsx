@@ -13,11 +13,12 @@ import MagazineHeader from "./MagazineHeader";
 import MagazineActions from "./MagazineActions";
 import { Magazine } from "@/types/magazineTypes";
 
-export default async function MagazinePage({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default async function MagazinePage(
+  props: {
+    params: Promise<{ id: string }>;
+  }
+) {
+  const params = await props.params;
   const magazine: Magazine | { error: string } = await getMagazineById(
     params.id
   );

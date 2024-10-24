@@ -51,7 +51,7 @@ export const putMagazine = async (formData: any, userId: string) => {
     variables: { magazineUpdateRequest: formData, owner: userId },
     context: {
       headers: {
-        Cookie: cookies().toString(),
+        Cookie: (await cookies()).toString(),
       },
     }
   });
