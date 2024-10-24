@@ -9,7 +9,8 @@ export interface MagazineServiceInterface {
   addNewMagazineSection(
     magazineAdmin: string,
     magazineId: string,
-    section: MagazineSectionCreateRequest, groupId?:string,
+    section: MagazineSectionCreateRequest,
+    groupId?: string,
   ): Promise<any>;
 
   addPostInGroupMagazine(
