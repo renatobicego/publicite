@@ -214,7 +214,7 @@ export const deleteGroup = async (groupId: string) => {
         },
         context: {
           headers: {
-            Authorization: `Bearer ${await auth().getToken()}`,
+            Authorization: `${await auth().getToken()}`,
           },
         },
       })
