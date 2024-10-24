@@ -11,10 +11,10 @@ import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { PACKS, SUBSCRIPTIONS } from "@/utils/data/urls";
 import SecondaryButton from "@/components/buttons/SecondaryButton";
 
-const CreateForm = () => {
+const CreateForm = ({ userId, userClerkId }: { userId?: string; userClerkId: string}) => {
   const [type, setType] = useState<"good" | "service">();
   const [files, setFiles] = useState<File[]>([]);
-  const { userCanPublishPost, limit, numberOfPosts } = useUserPostLimit();
+  const { userCanPublishPost, limit, numberOfPosts } = useUserPostLimit(userClerkId);
   return (
     <section className="w-full flex gap-4 items-start max-md:flex-col relative">
       <UploadImages
@@ -33,9 +33,9 @@ const CreateForm = () => {
             </p>
           )}
           {type === "good" ? (
-            <CreateGood files={files} userCanPublishPost={userCanPublishPost}/>
+            <CreateGood files={files} userCanPublishPost={userCanPublishPost} userId={userId}/>
           ) : (
-            type === "service" && <CreateService files={files} userCanPublishPost={userCanPublishPost}/>
+            type === "service" && <CreateService files={files} userCanPublishPost={userCanPublishPost} userId={userId}/>
           )}
         </div>
       </AttachedFilesProvider>

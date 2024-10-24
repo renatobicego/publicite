@@ -5,6 +5,7 @@ import PostCard from "@/components/cards/PostCard/PostCard";
 import { getPostData } from "@/services/postsServices";
 import ErrorCard from "@/components/ErrorCard";
 import { getId, getMagazineType, getSharedMagazineIds } from "@/utils/functions/utils";
+import { auth } from "@clerk/nextjs/server";
 
 export default async function CreateMagazine(
   props: {
@@ -44,6 +45,8 @@ export default async function CreateMagazine(
   if (postData && "error" in postData) {
     return <ErrorCard message={postData.error} />;
   }
+  
+  const userId = auth().sessionClaims?.metadata.mongoId;
   return (
     <main className="flex min-h-screen flex-col items-start main-style gap-4 md:gap-6 lg:gap-8">
       <BreadcrumbsAdmin items={breadcrumbsItems} />
@@ -57,6 +60,7 @@ export default async function CreateMagazine(
           />
         )}
         <CreateMagazineForm
+          userId={userId as string}
           isGroupMagazine={isGroupMagazine}
           id={id}
           shareMagazineIds={sharedMagazineIds}

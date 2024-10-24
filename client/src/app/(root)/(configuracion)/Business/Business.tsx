@@ -6,12 +6,12 @@ import { useEffect, useState } from "react";
 import { EditBusinessProfileProps } from "@/types/userTypes";
 import { getProfileData } from "../Profile/actions";
 
-const Business = () => {
+const Business = ({username} : {username: string}) => {
   const [userData, setUserData] = useState<EditBusinessProfileProps>();
 
   useEffect(() => {
     const getUserData = async () => {
-      setUserData(await getProfileData());
+      setUserData(await getProfileData(username));
     };
     if (!userData) {
       getUserData();
@@ -19,7 +19,7 @@ const Business = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if(!userData) return <Spinner color="warning"/>
+  if (!userData) return <Spinner color="warning" />
   return (
     <section className="flex flex-col gap-4">
       <h2 className="profile-title">Datos de Perfil - Empresa</h2>

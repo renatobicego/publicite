@@ -12,11 +12,17 @@ import PrimaryButton from "../buttons/PrimaryButton";
 import { FaPlus } from "react-icons/fa6";
 import { useUser } from "@clerk/nextjs";
 import UserPosts from "@/app/(root)/(explorar)/perfiles/[username]/(components)/UserPosts/UserPosts";
+import { User } from "@clerk/nextjs/server";
 
-const UserSolapas = ({ user }: { user: GetUser }) => {
+const UserSolapas = ({
+  user,
+  loggedUser,
+}: {
+  user: GetUser;
+  loggedUser: User;
+}) => {
   const pathname = usePathname();
   const tabsRef = useRef<HTMLDivElement | null>(null);
-  const { user: loggedUser } = useUser();
   const isMyProfile = loggedUser && user.username === loggedUser.username;
 
   useEffect(() => {
@@ -105,7 +111,13 @@ const UserSolapas = ({ user }: { user: GetUser }) => {
             Agregar Contactos
           </PrimaryButton>
         )}
-        <UsersGrid items={user.userRelations} />
+        <UsersGrid
+          items={user.userRelations}
+          userLogged={{
+            username: loggedUser.username as string,
+            _id: loggedUser.publicMetadata.mongoId,
+          }}
+        />
       </Tab>
       <Tab
         className="w-full"

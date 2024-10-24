@@ -1,11 +1,11 @@
 "use server";
 import { postBoard, putBoard } from "@/services/boardServices";
-import { currentUser } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 
 export const createBoard = async (formData: any) => {
-  const user = await currentUser();
+  const user = auth();
 
-  if (!user?.username) {
+  if (!user.sessionId) {
     return { error: "Usuario no autenticado. Por favor inicie sesión." };
   }
 

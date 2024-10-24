@@ -8,12 +8,12 @@ import {
   putGroup,
 } from "@/services/groupsService";
 import { EditGroupInterface } from "@/types/groupTypes";
-import { currentUser } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 
 export const createGroup = async (formData: any) => {
-  const user = await currentUser();
+  const user = auth();
 
-  if (!user?.username) {
+  if (!user.sessionId) {
     return { error: "Usuario no autenticado. Por favor inicie sesión." };
   }
 
@@ -40,20 +40,20 @@ export const editGroup = async (
   formData: EditGroupInterface,
   admins: string[]
 ) => {
-  const user = await currentUser();
+  const user = auth();
 
-  if (!user?.username) {
+  if (!user.sessionId) {
     return { error: "Usuario no autenticado. Por favor inicie sesión." };
   }
 
-  if (!admins.includes(user.publicMetadata.mongoId)) {
+  if (!admins.includes(user.sessionClaims.metadata.mongoId)) {
     return { error: "No puedes editar este grupo" };
   }
 
   try {
     const res = await putGroup({
       ...formData,
-      admin: user.publicMetadata.mongoId,
+      admin: user.sessionClaims.metadata.mongoId,
     });
     return res;
   } catch (err) {

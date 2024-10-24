@@ -10,6 +10,11 @@ interface BoardProps {
   isProfile?: boolean; // if true, the card will be a profile card
   name?: string;
   widthFull?: boolean; // if true, the card will take 100% of the parent width
+  user?: {
+    fullName: string;
+    username: string;
+    _id: string;
+  }
 }
 const BoardCard = ({
   isMyBoard,
@@ -17,6 +22,7 @@ const BoardCard = ({
   isProfile = false,
   name,
   widthFull = false, 
+  user
 }: BoardProps) => {
   const bg = board?.color || "bg-fondo";
   // Change style of board based in color of the board
@@ -35,6 +41,7 @@ const BoardCard = ({
         borderColor={borderColor}
         textColor={textColor}
         name={name}
+        user={user}
         widthFull={widthFull}
       />
     );

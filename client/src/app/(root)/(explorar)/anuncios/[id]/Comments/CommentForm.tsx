@@ -2,10 +2,8 @@
 import SecondaryButton from "@/components/buttons/SecondaryButton";
 import { CustomTextarea } from "@/components/inputs/CustomInputs";
 import { PostCommentForm } from "@/types/postTypes";
-import { useUser } from "@clerk/nextjs";
 import { getLocalTimeZone, today } from "@internationalized/date";
 import { Field, Form, Formik, FormikHelpers } from "formik";
-import { comment } from "postcss";
 import { object, string } from "yup";
 
 const commentSchema = object({
@@ -19,15 +17,15 @@ const CommentForm = ({
   postId,
   isReply,
   closeForm,
+  loggedUserId,
 }: {
   postId: ObjectId;
   isReply?: boolean;
   closeForm?: () => void;
+  loggedUserId: ObjectId;
 }) => {
-  const { user } = useUser();
-
   const initialValues: PostCommentForm = {
-    author: user?.id as ObjectId,
+    author: loggedUserId,
     comment: "",
     date: today(getLocalTimeZone()).toString(),
   };

@@ -18,9 +18,8 @@ const useNotifications = (isOpen: boolean) => {
     setIsLoading(true);
     try {
       const data = await getNotifications(page);
-      console.log("fetch", data);
       if ("error" in data && data.error) {
-        toastifyError(data.error);
+        // toastifyError(data.error);
         setErrorOccurred(true);
         return;
       }

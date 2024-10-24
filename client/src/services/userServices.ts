@@ -7,7 +7,9 @@ import {
 import { auth, currentUser } from "@clerk/nextjs/server";
 import axios from "axios";
 import { query } from "@/lib/client";
-import getUserByUsernameQuery, { getAllNotificationsQuery } from "@/graphql/userQueries";
+import getUserByUsernameQuery, {
+  getAllNotificationsQuery,
+} from "@/graphql/userQueries";
 import { cookies, headers } from "next/headers";
 import { ApolloError } from "@apollo/client";
 import { mockedGroupInvitation } from "@/utils/data/mockedNotifications";
@@ -28,7 +30,12 @@ export const putUserProfileData = async (
 export const getUserProfileData = async (username: string) => {
   try {
     const res = await fetch(
-      `${process.env.API_URL}/user/personal-data/${username}`
+      `${process.env.API_URL}/user/personal-data/${username}`,
+      {
+        headers: {
+          Authorization: `Bearer ${await auth().getToken()}`,
+        },
+      }
     );
 
     return await res.json();
@@ -133,12 +140,16 @@ type ErrorResponse = {
 export const getNotifications = async (
   page: number
 ): Promise<GetNotificationsResponse | ErrorResponse> => {
-  const user = await currentUser();
+  const user = auth();
+
+  if (!user.sessionId) {
+    return { error: "Usuario no autenticado. Por favor inicie sesión." };
+  }
   try {
     const { data } = await query({
       query: getAllNotificationsQuery,
       variables: {
-        getAllNotificationsFromUserByIdId: user?.publicMetadata.mongoId,
+        getAllNotificationsFromUserByIdId: user.sessionClaims.metadata.mongoId,
         limit: 10,
         page,
       },
@@ -154,10 +165,8 @@ export const getNotifications = async (
       hasMore: data.getAllNotificationsFromUserById.hasMore,
     };
   } catch (error: ApolloError | any) {
-    console.log(error)
     return {
-      error:
-        "Error al traer las notificaciones.",
+      error: "Error al traer las notificaciones.",
     };
   }
 };

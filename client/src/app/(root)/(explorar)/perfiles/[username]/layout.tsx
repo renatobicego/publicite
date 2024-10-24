@@ -7,6 +7,7 @@ import BoardCard from "@/components/Board/Board";
 import { currentUser } from "@clerk/nextjs/server";
 import UserSolapas from "@/components/solapas/UserSolapas";
 import CreateBoard from "@/components/Board/CreateBoard/CreateBoard";
+import { redirect } from "next/navigation";
 
 export default async function ProfileLayout(
   props: {
@@ -34,12 +35,15 @@ export default async function ProfileLayout(
       href: `${PROFILE}/${params.username}`,
     },
   ];
+  const loggedUser = await currentUser();
+  if (!loggedUser) {
+    redirect("/iniciar-sesion");
+  }
 
   const user = await getUserByUsername(params.username);
   if (!user || "error" in user) {
     return <ErrorCard message={user?.error ?? "Error al cargar el perfil."} />;
   }
-  const loggedUser = await currentUser();
   const isMyProfile = user.username === loggedUser?.username;
   return (
     <main className="flex min-h-screen flex-col items-start main-style gap-4 md:gap-6 xl:gap-8">
@@ -57,7 +61,7 @@ export default async function ProfileLayout(
           <CreateBoard user={user} />
         )}
       </div>
-      <UserSolapas user={user} />
+      <UserSolapas user={user} loggedUser={loggedUser } />
       {children}
     </main>
   );

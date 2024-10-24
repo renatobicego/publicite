@@ -1,7 +1,7 @@
 "use server";
 import { getPaymentsQuery } from "@/graphql/suscriptionsQueries";
 import { query } from "@/lib/client";
-import { currentUser } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import axios from "axios";
 
 export const processPayment = async (
@@ -196,11 +196,15 @@ export const getPaymentMethod = async () => {
 };
 
 export const getPayments = async () => {
-  const user = await currentUser();
+  const user = auth();
+
+  if (!user.sessionId) {
+    return { error: "Usuario no autenticado. Por favor inicie sesión." };
+  }
   try {
     const { data } = await query({
       query: getPaymentsQuery,
-      variables: { findPaymentByClerkIdId: user?.id },
+      variables: { findPaymentByClerkIdId: user.userId },
     });
     return data.findPaymentByClerkId;
   } catch (error) {

@@ -6,7 +6,7 @@ import {
   getBoardByUsernameQuery,
   getBoardsQuery,
 } from "@/graphql/boardQueries";
-import { currentUser } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 
 export const getBoards = async (searchTerm: string | null, page: number) => {
   try {
@@ -30,14 +30,18 @@ export const postBoard = async (values: any) => {
 };
 
 export const putBoard = async (id: string, values: any) => {
-  const user = await currentUser();
+  const user = auth();
+
+  if (!user.sessionId) {
+    return { error: "Usuario no autenticado. Por favor inicie sesión." };
+  }
   try {
     const { data } = await getClient().mutate({
       mutation: editBoardByUsernameMutation,
       variables: {
         updateBoardByIdId: id,
         boardData: values,
-        ownerId: user?.publicMetadata.mongoId,
+        ownerId: user.sessionClaims.metadata.mongoId,
       },
     });
     return data;
@@ -54,9 +58,15 @@ export const getBoardByUsername = async (username: string) => {
     const { data } = await query({
       query: getBoardByUsernameQuery,
       variables: { username },
+      context: {
+        headers: {
+          Authorization: `${await auth().getToken()}`,
+        },
+      }
     });
     return data.findUserByUsername;
   } catch (error) {
+    
     return {
       error:
         "Error al traer la pizarra del usuario. Por favor intenta de nuevo.",

@@ -2,13 +2,18 @@ import { Subscription } from "@/types/subscriptions";
 import DataBox, { CardDataItem, DataItem } from "../../DataBox";
 import { Button } from "@nextui-org/react";
 import useUserPostLimit from "@/utils/hooks/useUserPostLimit";
+import { useUser } from "@clerk/nextjs";
 
 const LimitPosts = ({
   userSubscriptions,
 }: {
-  userSubscriptions?: { accountType: Subscription; postsPacks: Subscription[] };
-  }) => {
-  const {numberOfPosts} = useUserPostLimit();
+  userSubscriptions?: {
+    accountType: Subscription;
+    postsPacks: Subscription[];
+  };
+}) => {
+  const { user } = useUser();
+  const { numberOfPosts } = useUserPostLimit(user?.id as string);
   return (
     <DataBox
       key={"dataLimitPosts"}
@@ -17,13 +22,16 @@ const LimitPosts = ({
       labelClassname="md:w-1/4 md:my-2.5 max-md:flex-none max-md:max-w-[65%] max-md:min-w-[40px]"
     >
       <div className="flex flex-col gap-2 flex-1 my-2.5">
-        <DataItem className="font-semibold">{numberOfPosts} publicaciones activas</DataItem>
+        <DataItem className="font-semibold">
+          {numberOfPosts} publicaciones activas
+        </DataItem>
         <CardDataItem
           title={`${
             userSubscriptions?.accountType?.subscriptionPlan.postLimit || 5
           } publicaciones`}
           subtitle={
-            userSubscriptions?.accountType?.subscriptionPlan.reason || "Gratuita"
+            userSubscriptions?.accountType?.subscriptionPlan.reason ||
+            "Gratuita"
           }
         />
         {userSubscriptions?.postsPacks?.map((subscription: Subscription) => (

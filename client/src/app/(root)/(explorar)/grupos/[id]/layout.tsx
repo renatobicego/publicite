@@ -1,29 +1,32 @@
 import BreadcrumbsAdmin from "@/components/BreadcrumbsAdmin";
 import { GROUPS } from "@/utils/data/urls";
 import ErrorCard from "@/components/ErrorCard";
-import { currentUser } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import GroupInfo from "./(components)/GroupInfo";
 import { getGroupById } from "@/services/groupsService";
 import GroupSolapas from "@/components/solapas/GroupSolapas";
 import { User } from "@/types/userTypes";
 import { Group } from "@/types/groupTypes";
 import { FaLock } from "react-icons/fa6";
+import { redirect } from "next/navigation";
 
-export default async function GroupLayout(
-  props: {
-    params: Promise<{ id: string }>;
-    children: React.ReactNode;
-  }
-) {
+export default async function GroupLayout(props: {
+  params: Promise<{ id: string }>;
+  children: React.ReactNode;
+}) {
   const params = await props.params;
 
-  const {
-    children
-  } = props;
+  const { children } = props;
 
-  const group: Group | { error: string; error2: string } = await getGroupById(params.id);
+  const group: Group | { error: string; error2: string } = await getGroupById(
+    params.id
+  );
   if ("error" in group) {
     return <ErrorCard message={group.error} error={group.error2} />;
+  }
+  const loggedUser = await currentUser();
+  if (!loggedUser) {
+    redirect("/iniciar-sesion");
   }
   const breadcrumbsItems = [
     {
@@ -39,7 +42,6 @@ export default async function GroupLayout(
       href: `${GROUPS}/${params.id}`,
     },
   ];
-  const loggedUser = await currentUser();
   const isAdmin = group.admins.some(
     (admin) =>
       (admin as User)._id === (loggedUser?.publicMetadata.mongoId as string)
@@ -62,7 +64,11 @@ export default async function GroupLayout(
       </div>
       {isMember ? (
         <>
-          <GroupSolapas group={group as Group} isAdmin={isAdmin} />
+          <GroupSolapas
+            group={group as Group}
+            isAdmin={isAdmin}
+            userLogged={loggedUser}
+          />
           {children}
         </>
       ) : (

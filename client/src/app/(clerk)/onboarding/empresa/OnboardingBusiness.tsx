@@ -1,18 +1,16 @@
 "use client";
-import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next-nprogress-bar";
 import { Form, Formik, FormikHelpers } from "formik";
 import { UserBusinessFormValues } from "@/types/userTypes";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
-import { parseDateTime } from "@internationalized/date";
+import { fromAbsolute, getLocalTimeZone } from "@internationalized/date";
 import OnboardingBusinessInputs from "./OnboardingBusinessInputs";
 import { userBusinessValidation } from "./userBusinessValidation";
 import { Divider } from "@nextui-org/react";
 import { completeOnboardingBusiness } from "../_actions";
 import { toastifyError } from "@/utils/functions/toastify";
 import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
-const OnboardingBusiness = () => {
-  const { user } = useUser();
+const OnboardingBusiness = ({user} : {user: any}) => {
   const router = useRouter();
   if (!user) return null;
   const initialValues: UserBusinessFormValues = {
@@ -25,11 +23,9 @@ const OnboardingBusiness = () => {
       website: "",
     },
     countryRegion: "",
-    createdTime: user.createdAt
-      ? parseDateTime(user.createdAt.toISOString().split(".")[0]).toString()
-      : parseDateTime(new Date().toISOString().split(".")[0]).toString(),
+    createdTime: fromAbsolute(user.createdAt, getLocalTimeZone()).toAbsoluteString().split(".")[0],
     description: "",
-    email: user?.emailAddresses[0].emailAddress,
+    email: user.emailAddress,
     isActive: true,
     businessName: "",
     profilePhotoUrl: user?.imageUrl,
@@ -46,8 +42,6 @@ const OnboardingBusiness = () => {
   ) => {
     const res = await completeOnboardingBusiness(formData);
     if (res?.message) {
-      // Reloads the user's data from Clerk's API
-      await user?.reload();
       router.replace("/");
     }
     if (res?.error) {

@@ -8,7 +8,6 @@ import Condition from "./Condition";
 import PlacePicker from "../CreateForm/inputs/PlacePicker";
 import AccordionInputs from "../CreateForm/inputs/AccordionInputs/AccordionInputs";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
-import { useUser } from "@clerk/nextjs";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { getLocalTimeZone, today } from "@internationalized/date";
 import { createPost } from "../../../../../server/postActions";
@@ -21,18 +20,19 @@ import { useRouter } from "next-nprogress-bar";
 const CreateGood = ({
   files,
   userCanPublishPost,
+  userId,
 }: {
   files: File[];
   userCanPublishPost: boolean;
+  userId?: string;
 }) => {
-  const { user } = useUser();
   const initialValues: GoodPostValues = {
     attachedFiles: [],
     description: "",
     title: "",
     price: undefined,
     category: "",
-    author: (user?.publicMetadata.mongoId as string) || "",
+    author: userId || "",
     condition: undefined,
     imagesUrls: [],
     location: {
@@ -60,10 +60,10 @@ const CreateGood = ({
     values: GoodPostValues,
     actions: FormikHelpers<GoodPostValues>
   ) => {
-    if(!userCanPublishPost) {
+    if (!userCanPublishPost) {
       actions.setSubmitting(false);
-      return
-    };
+      return;
+    }
     const newValuesWithUrlFiles = await submitFiles(values, actions);
     if (!newValuesWithUrlFiles) {
       actions.setSubmitting(false);
@@ -85,12 +85,15 @@ const CreateGood = ({
       label: file.label,
     }));
 
-    const resApi = await createPost({
-      ...values,
-      location: dbLocation,
-      attachedFiles,
-      category: [values.category],
-    }, userCanPublishPost);
+    const resApi = await createPost(
+      {
+        ...values,
+        location: dbLocation,
+        attachedFiles,
+        category: [values.category],
+      },
+      userCanPublishPost
+    );
     if (resApi.error) {
       toastifyError(resApi.error);
       return;
@@ -145,5 +148,3 @@ const CreateGood = ({
 };
 
 export default CreateGood;
-
-

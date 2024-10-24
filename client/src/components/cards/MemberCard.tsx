@@ -8,10 +8,12 @@ const MemberCard = ({
   user,
   group,
   isAdmin,
+  userLogged,
 }: {
   user: User;
   group: Group;
   isAdmin?: boolean;
+  userLogged: { username: string; _id: string };
 }) => {
   return (
     <Card className="bg-fondo">
@@ -40,6 +42,7 @@ const MemberCard = ({
             nameToShow={user.username}
             group={group}
             isAdmin={isAdmin}
+            userLogged={{ username: userLogged.username, _id: userLogged._id }}
           />
         </div>
       </CardBody>

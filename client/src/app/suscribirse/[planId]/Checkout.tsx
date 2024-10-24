@@ -22,7 +22,6 @@ const Checkout = ({subscriptionPlan} : CheckoutProps) => {
   };
 
   const onSubmit = async (formData: any, additionalData: any) => {
-    console.log(formData, additionalData)
     const res = await processPayment(formData, subscriptionPlan, user?.id as string);
   };
 

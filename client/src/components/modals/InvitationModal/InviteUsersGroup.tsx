@@ -5,11 +5,9 @@ import { Group } from "@/types/groupTypes";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { emitGroupNotification } from "@/components/notifications/groups/emitNotifications";
 import { useSocket } from "@/app/socketProvider";
-import { useUser } from "@clerk/nextjs";
 
-const InviteUsersGroup = ({ group }: { group: Group }) => {
+const InviteUsersGroup = ({ group, username }: { group: Group; username: string }) => {
   const { socket } = useSocket();
-  const { user: userLogged } = useUser();
 
   const handleInvite = (selectedUsers: string[]) => {
     try {
@@ -17,7 +15,7 @@ const InviteUsersGroup = ({ group }: { group: Group }) => {
         emitGroupNotification(
           socket,
           group,
-          userLogged?.username as string,
+          username,
           user,
           "notification_group_new_user_invited"
         );

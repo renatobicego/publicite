@@ -1,8 +1,7 @@
 "use client";
-import { AttachedFileValues, PetitionPostValues } from "@/types/postTypes";
+import { PetitionPostValues } from "@/types/postTypes";
 import { Form, Formik, FormikHelpers } from "formik";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
-import { useUser } from "@clerk/nextjs";
 import { getLocalTimeZone, today } from "@internationalized/date";
 import { petitionValidation } from "./petititonValidation";
 import TitleDescription from "../anuncio/components/CreateForm/inputs/TitleDescription";
@@ -14,22 +13,20 @@ import { createPost } from "../../../server/postActions";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { useRouter } from "next-nprogress-bar";
 import { POSTS } from "@/utils/data/urls";
-import { useState } from "react";
 import useUploadFiles from "@/utils/hooks/useUploadFiles";
 import AttachedFiles from "../anuncio/components/CreateForm/inputs/AccordionInputs/AttachedFIles/AttachedFiles";
 import PetitionType from "./PetitionType";
 import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
 import { useAttachedFiles } from "../anuncio/components/CreateForm/inputs/AccordionInputs/AttachedFIles/AttachedFilesContext";
 
-const CreatePetition = () => {
-  const { user } = useUser();
+const CreatePetition = ({ userId } : { userId?: string}) => {
   const initialValues: PetitionPostValues = {
     attachedFiles: [],
     description: "",
     title: "",
     price: undefined,
     category: "",
-    author: (user?.publicMetadata.mongoId as string) || "",
+    author: userId || "",
     location: {
       lat: undefined,
       lng: undefined,

@@ -7,20 +7,19 @@ import { EDIT_GROUP, EDIT_POST, GROUPS, POSTS } from "@/utils/data/urls";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import EditGroup from "./EditGroup";
-export default async function EditGroupPage(
-  props: {
-    params: Promise<{ id: string }>;
-  }
-) {
+export default async function EditGroupPage(props: {
+  params: Promise<{ id: string }>;
+}) {
   const params = await props.params;
   const groupData: Group | { error: string } = await getGroupById(params.id);
-  const loggedUser = await currentUser();
+  const loggedUser = auth();
 
   if (
     !("error" in groupData) &&
     !groupData.admins.some(
       (admin) =>
-        (admin as User)._id === (loggedUser?.publicMetadata.mongoId as string)
+        (admin as User)._id ===
+        (loggedUser?.sessionClaims?.metadata.mongoId as string)
     )
   ) {
     redirect(`${GROUPS}/${params.id}`);

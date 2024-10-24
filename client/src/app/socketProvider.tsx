@@ -9,7 +9,6 @@ import {
   SetStateAction,
 } from "react";
 import { Socket } from "socket.io-client";
-import { useUser } from "@clerk/nextjs";
 import { getSocket } from "@/socket";
 
 interface SocketContextType {
@@ -28,20 +27,20 @@ export const useSocket = () => {
   return context;
 };
 
-export const SocketProvider = ({ children }: { children: ReactNode }) => {
-  const { user } = useUser();
+export const SocketProvider = ({ children, userId }: { children: ReactNode; userId: string }) => {
   const [newNotifications, setNewNotifications] = useState(false);
 
   const [socket, setSocket] = useState<Socket | null>(null);
   useEffect(() => {
     // Initialize Socket.IO connection
-    const socketInstance = getSocket(user?.publicMetadata.mongoId);
+    const socketInstance = getSocket(userId);
     setSocket(socketInstance);
     // Clean up on unmount
     return () => {
       socketInstance.disconnect();
     };
-  }, [user?.publicMetadata.mongoId]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   //   Log socket connection status
   useEffect(() => {

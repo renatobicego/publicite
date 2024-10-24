@@ -13,7 +13,7 @@ const Checkout = dynamic(() => import("./Checkout"), {
 });
 export default async function Page(props: { params: Promise<{ planId: string }> }) {
   const params = await props.params;
-  const { userId } = auth();
+  const { userId, sessionClaims } = auth();
   const subscriptionsOfUser = await getSubscriptionsOfUser(userId as string);
   if (checkIfUserIsSubscribed(subscriptionsOfUser, params.planId, true)) {
     redirect("/suscripciones");

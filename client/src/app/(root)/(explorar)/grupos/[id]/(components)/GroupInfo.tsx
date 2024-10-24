@@ -60,6 +60,7 @@ const GroupInfo = async ({
             groupId={group._id}
             isMember={isMember}
             isCreator={user?.publicMetadata.mongoId === group.creator}
+            image={group.profilePhotoUrl}
           />
         </div>
       </div>

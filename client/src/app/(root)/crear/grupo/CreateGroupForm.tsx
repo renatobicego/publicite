@@ -14,10 +14,9 @@ import { groupValidation } from "./validation";
 import { Group } from "@/types/groupTypes";
 import { emitGroupNotification } from "@/components/notifications/groups/emitNotifications";
 import { useSocket } from "@/app/socketProvider";
-import { useUser } from "@clerk/nextjs";
 
 export type PostGroup = Omit<Group, "_id" | "creator">;
-const CreateGroupForm = () => {
+const CreateGroupForm = ({ username }: { username: string | null }) => {
   const initialValues: PostGroup = {
     name: "",
     alias: "",
@@ -30,7 +29,6 @@ const CreateGroupForm = () => {
     visibility: "public",
   };
   const router = useRouter();
-  const { user } = useUser();
   const [photoFile, setPhotoFile] = useState<File>();
   const { submitFiles, progress, deleteFile } = useUploadImage();
   const { socket } = useSocket();
@@ -57,7 +55,7 @@ const CreateGroupForm = () => {
       emitGroupNotification(
         socket,
         resApi.id,
-        user?.username as string,
+        username as string,
         member,
         "notification_group_new_user_added"
       );

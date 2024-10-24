@@ -5,27 +5,20 @@ import {
   getMagazineWithoutPostsById,
 } from "@/services/magazineService";
 import { EDIT_MAGAZINE, GROUPS, MAGAZINES, PROFILE } from "@/utils/data/urls";
-import { currentUser } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { GetUser } from "@/types/userTypes";
-import {
-  getOwner,
-  getProfileUrl,
-} from "@/app/(root)/(explorar)/revistas/[id]/utils";
+import { getOwner, getProfileUrl } from "@/app/(root)/revistas/[id]/utils";
 import { GroupMagazine, Magazine, UserMagazine } from "@/types/magazineTypes";
 import { Group } from "@/types/groupTypes";
 import EditMagazineForm from "./EditMagazineForm";
 import { redirect } from "next/navigation";
-export default async function EditMagazinePage(
-  props: {
-    params: Promise<{ id: string }>;
-  }
-) {
+export default async function EditMagazinePage(props: {
+  params: Promise<{ id: string }>;
+}) {
   const params = await props.params;
   const magazineData: Magazine | { error: string } =
     await getMagazineWithoutPostsById(params.id);
-  const userLoggedId = await currentUser().then(
-    (user) => user?.publicMetadata.mongoId
-  );
+  const userLoggedId = auth().sessionClaims?.metadata.mongoId;
   if ("error" in magazineData) {
     return <ErrorCard message={magazineData.error} />;
   }
@@ -45,7 +38,7 @@ export default async function EditMagazinePage(
   ) {
     redirect(`${MAGAZINES}/${magazineData._id}`);
   } else if (
-    !isOwnerTypeUser && 
+    !isOwnerTypeUser &&
     !(magazineData as GroupMagazine).allowedCollaborators.some(
       (collaborator: any) => collaborator._id === userLoggedId
     )

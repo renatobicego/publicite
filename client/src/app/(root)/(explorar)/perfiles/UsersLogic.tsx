@@ -5,7 +5,7 @@ import Order, { SortOption } from "@/components/inputs/Order";
 import FilterUsers from "./FilterUsers";
 import { useFilteredAndSortedUsers } from "@/utils/hooks/useFilteredOrderedUsers";
 
-const UsersLogic = () => {
+const UsersLogic = ({userLogged} : {userLogged: { username: string; _id: string; }}) => {
   const { items, isLoading } = useInfiniteFetch("users");
 
   // Use custom hook for filtering and sorting logic
@@ -35,7 +35,7 @@ const UsersLogic = () => {
           sortOptions={sortOptions}
         />
       </div>
-      <UsersGrid items={sortedItems} isLoading={isLoading} />
+      <UsersGrid items={sortedItems} isLoading={isLoading} userLogged={userLogged}/>
     </section>
   );
 };

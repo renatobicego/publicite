@@ -6,7 +6,6 @@ import Annotations from "./sections/Annotations";
 import Keywords from "./sections/Keywords";
 import { FaPencil } from "react-icons/fa6";
 import CreateBoard from "./CreateBoard/CreateBoard";
-import { useUser } from "@clerk/nextjs";
 
 const MyBoard = ({
   board,
@@ -14,15 +13,20 @@ const MyBoard = ({
   borderColor,
   name,
   widthFull,
+  user,
 }: {
   board: Board;
   textColor: string;
   borderColor: string;
   name?: string;
   widthFull?: boolean;
+  user?: {
+    fullName: string;
+    username: string;
+    _id: string;
+  };
 }) => {
   const [showEditBoard, setShowEditBoard] = useState(false);
-  const { user } = useUser();
   // if the board is being edited, return the create board component
   if (showEditBoard) {
     return (

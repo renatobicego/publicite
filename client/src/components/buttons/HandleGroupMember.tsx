@@ -14,7 +14,6 @@ import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { useRouter } from "next-nprogress-bar";
 import { IoTrashOutline } from "react-icons/io5";
 import { Group } from "@/types/groupTypes";
-import { useUser } from "@clerk/nextjs";
 import { useSocket } from "@/app/socketProvider";
 import { emitGroupNotification } from "../notifications/groups/emitNotifications";
 
@@ -23,16 +22,20 @@ const HandleGroupMember = ({
   nameToShow,
   group,
   isAdmin,
+  userLogged,
 }: {
   user: User;
   nameToShow: string;
   group: Group;
   isAdmin?: boolean;
+  userLogged: {
+    username: string;
+    _id: string;
+  };
 }) => {
   const router = useRouter();
   const { socket } = useSocket();
-  const { user: userLogged } = useUser();
-  const isCreator = group?.creator === userLogged?.publicMetadata.mongoId;
+  const isCreator = group?.creator === userLogged._id;
 
   const makeAdmin = async () => {
     const res = await addAdmin(group?._id, [user._id]);
@@ -43,7 +46,7 @@ const HandleGroupMember = ({
     emitGroupNotification(
       socket,
       group,
-      userLogged?.username as string,
+      userLogged.username as string,
       user._id,
       "notification_group_user_new_admin"
     );
@@ -60,7 +63,7 @@ const HandleGroupMember = ({
     emitGroupNotification(
       socket,
       group,
-      userLogged?.username as string,
+      userLogged.username as string,
       user._id,
       "notification_group_user_removed_from_group"
     );
@@ -77,7 +80,7 @@ const HandleGroupMember = ({
     emitGroupNotification(
       socket,
       group,
-      userLogged?.username as string,
+      userLogged.username as string,
       user._id,
       "notification_group_user_removed_admin"
     );

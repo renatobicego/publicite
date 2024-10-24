@@ -12,11 +12,23 @@ import Search from "./Search";
 import MobileMenu from "./MobileMenu";
 import dynamic from "next/dynamic";
 import NavMenuItems from "./NavMenuItems";
+import { UserType } from "@/types/userTypes";
+import { ConfigData } from "@/app/(root)/(configuracion)/Profile/actions";
 const UserNavItems = dynamic(() => import("./UserNavItems"), {
   ssr: false,
-})
+});
 
-const Header = () => {
+const Header = ({
+  configData,
+  username,
+  userType,
+  isSignedIn,
+}: {
+  configData?: ConfigData;
+  username: string;
+  userType: UserType;
+  isSignedIn: boolean;
+}) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   return (
@@ -69,9 +81,20 @@ const Header = () => {
         justify="end"
         className={`max-w-fit gap-2 !transition-all duration-300`}
       >
-        <UserNavItems isMenuOpen={isMenuOpen} />
+        <UserNavItems
+          configData={configData}
+          isMenuOpen={isMenuOpen}
+          username={username || ""}
+          userType={userType as UserType}
+        />
       </NavbarContent>
-      <MobileMenu setIsMenuOpen={setIsMenuOpen} />
+      <MobileMenu
+        setIsMenuOpen={setIsMenuOpen}
+        isSignedIn={isSignedIn}
+        username={username}
+        userType={userType}
+        configData={configData}
+      />
     </Navbar>
   );
 };

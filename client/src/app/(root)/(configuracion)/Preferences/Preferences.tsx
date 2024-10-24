@@ -3,26 +3,23 @@ import SearchTerms from "./SearchTerms";
 import Background from "./Background";
 import BoardPersonalization from "./BoardPersonalization";
 import { memo } from "react";
-import { UserPreferences } from "@/types/userTypes";
-import { Board } from "@/types/board";
+import { ConfigData } from "../Profile/actions";
 
 const Preferences = ({
-  userPreferences,
-  board,
+  configData
 }: {
-  userPreferences?: UserPreferences;
-  board?: Board;
-}) => {
-  if (!userPreferences) return <Spinner color="warning" />;
+  configData?: ConfigData;
+  }) => {
+  if(!configData) return <Spinner color="warning"/>
   return (
     <section className="flex flex-col gap-4 items-start w-full">
       <h2 className="profile-title">Preferencias y Personalización</h2>
       <Divider />
-      <SearchTerms userPreferences={userPreferences} />
+      <SearchTerms userPreferences={configData.userPreferences} />
       <Divider />
-      <Background userPreferences={userPreferences} />
+      <Background userPreferences={configData.userPreferences} />
       <Divider />
-      {board && <BoardPersonalization board={board} />}
+      {configData.board && <BoardPersonalization board={configData.board} />}
     </section>
   );
 };

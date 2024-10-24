@@ -1,11 +1,11 @@
 "use server";
 import { postMagazine, putMagazine } from "@/services/magazineService";
-import { currentUser } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 
 export const createMagazine = async (formData: any) => {
-  const user = await currentUser();
+  const user = auth();
 
-  if (!user?.username) {
+  if (!user.sessionId) {
     return { error: "Usuario no autenticado. Por favor inicie sesión." };
   }
 
@@ -21,14 +21,14 @@ export const createMagazine = async (formData: any) => {
 };
 
 export const editMagazine = async (formData: any) => {
-  const user = await currentUser();
+  const user = auth();
 
-  if (!user?.username) {
+  if (!user.sessionId) {
     return { error: "Usuario no autenticado. Por favor inicie sesión." };
   }
 
   try {
-    const resApi: any = await putMagazine(formData, user.publicMetadata.mongoId);
+    const resApi: any = await putMagazine(formData, user.sessionClaims.metadata.mongoId);
     return { message: "Revista editada exitosamente", id: resApi.updateMagazineById };
   } catch (err) {
     console.log(err)
