@@ -21,6 +21,7 @@ export class BoardRepositoryMapper implements BoardRepositoryMapperInterface {
       document.user,
       document.color,
       document.keywords,
+      document.searchTerm,
       document._id,
     );
   }

@@ -497,24 +497,5 @@ export class UserRepository implements UserRepositoryInterface {
     }
   }
 
-  async saveBoard(
-    boardId: ObjectId,
-    userId: ObjectId,
-    options?: { session?: ClientSession },
-  ): Promise<void> {
-    this.logger.log(`Asignando el board al usuario: ${userId}`);
-    try {
-      const userUpdated = await this.user.findOneAndUpdate(
-        { _id: userId },
-        { board: boardId },
-        options,
-      );
-      if (!userUpdated) {
-        this.logger.error('No se encontro el usuario');
-        throw new Error('No se encontro el usuario');
-      }
-    } catch (error) {
-      throw new Error(`Error al actualizar el usuario: ${error.message}`);
-    }
-  }
+
 }

@@ -4,8 +4,8 @@ import { BoardAdapterInterface } from 'src/contexts/board/application/adapter/bo
 import { UpdateBoardDto } from 'src/contexts/board/application/dto/HTTP-REQUEST/board.update';
 import { BoardGetAllResponse } from 'src/contexts/board/application/dto/HTTP-RESPONSE/board.response';
 import { Board } from 'src/contexts/board/domain/entity/board.entity';
-import { ClerkAuthGuard } from 'src/contexts/clerk-auth/clerk.auth.guard';
-import { PubliciteAuth } from 'src/contexts/shared/publicite_auth/publicite_auth';
+import { ClerkAuthGuard } from 'src/contexts/shared/auth/clerk-auth/clerk.auth.guard';
+import { PubliciteAuth } from 'src/contexts/shared/auth/publicite_auth/publicite_auth';
 
 //´Provee instrucciones para transformar las insttrucciones provenientes del cliente en data que graph puede utilizar
 // Los resolvers son similareas a los controladores traicionales de un rest enpoint. SON PROVIDERS para nest

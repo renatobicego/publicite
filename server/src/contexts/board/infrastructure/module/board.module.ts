@@ -11,9 +11,13 @@ import { BoardRepositoryMapper } from '../repository/mapper/board.repository.map
 import { BoardAdapter } from '../controller/adapter/board.adapter';
 import { UserModule } from 'src/contexts/user/infrastructure/module/user.module';
 import { BoardResolver } from '../graphql/resolver/board.resolver';
+import { UserModel } from 'src/contexts/user/infrastructure/schemas/user.schema';
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: 'Board', schema: BoardSchema }]),
+    MongooseModule.forFeature([
+      { name: 'Board', schema: BoardSchema },
+      { name: UserModel.modelName, schema: UserModel.schema },
+    ]),
     UserModule,
   ],
 

@@ -11,7 +11,7 @@ import { LoggerModule } from './contexts/shared/logger/logger.module';
 import { UserModule } from './contexts/user/infrastructure/module/user.module';
 import { ContactModule } from './contexts/contact/infrastructure/module/contact.module';
 import { SectorModule } from './contexts/businessSector/infrastructure/module/sector.module';
-import { BoardModule } from './contexts/board/infrastructure/module/user.module';
+import { BoardModule } from './contexts/board/infrastructure/module/board.module';
 import { PostModule } from './contexts/post/infraestructure/module/post.module';
 import { AllExceptionsFilter } from './contexts/shared/exceptionFilter/infrastructure/exception.filter';
 import { DatabaseModule } from './contexts/shared/database/infrastructure/database.module';

@@ -54,12 +54,6 @@ export interface UserRepositoryInterface {
     options?: { session?: ClientSession },
   ): Promise<User>;
 
-  saveBoard(
-    boardId: ObjectId,
-    authorId: ObjectId,
-    options?: { session?: ClientSession },
-  ): Promise<void>;
-
   update(
     username: string,
     reqUser: UserPersonalUpdateDto | UserBusinessUpdateDto,

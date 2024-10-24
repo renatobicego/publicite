@@ -1,11 +1,8 @@
-import { ObjectId } from 'mongoose';
-
 export interface BoardRequest {
   annotations: string[];
   visibility: string;
-  user: ObjectId;
+  user: string;
   color: string;
   keywords: string[];
   searchTerm: string;
 }
-

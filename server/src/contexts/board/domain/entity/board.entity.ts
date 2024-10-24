@@ -13,7 +13,7 @@ export class Board {
   private visibility: string;
 
   @Field(() => String, { nullable: true })
-  private user: ObjectId;
+  private user: string;
 
   @Field(() => String, { nullable: true })
   private color: string;
@@ -27,7 +27,7 @@ export class Board {
   constructor(
     annotations: string[],
     visibility: string,
-    user: ObjectId,
+    user: string,
     color: string,
     keywords: string[],
     searchTerm: string,
@@ -70,4 +70,3 @@ export class Board {
     return this.searchTerm;
   }
 }
-

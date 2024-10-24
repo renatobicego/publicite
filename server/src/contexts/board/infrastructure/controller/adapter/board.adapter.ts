@@ -42,10 +42,6 @@ export class BoardAdapter implements BoardAdapterInterface {
   }
 
   async save(board: BoardRequest): Promise<BoardResponse> {
-    try {
-      return await this.boardService.save(board);
-    } catch (error: any) {
-      throw error;
-    }
+    return await this.boardService.save(board);
   }
 }

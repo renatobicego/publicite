@@ -1,12 +1,12 @@
 import { Inject, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Resolver, Query, Context } from '@nestjs/graphql';
-import { ClerkAuthGuard } from 'src/contexts/clerk-auth/clerk.auth.guard';
+import { ClerkAuthGuard } from 'src/contexts/shared/auth/clerk-auth/clerk.auth.guard';
 
 import { PostAdapterInterface } from 'src/contexts/post/application/post/adapter/post.adapter.interface';
 import { PostUpdateRequest } from 'src/contexts/post/application/post/dto/HTTP-REQUEST/post.update.request';
 import { Post_response_graphql_model } from 'src/contexts/post/application/post/dto/HTTP-RESPONSE/post.response.graphql';
 import { Post_Full_Graphql_Model } from 'src/contexts/post/domain/post/entity/models_graphql/post.full.grapql.model';
-import { PubliciteAuth } from 'src/contexts/shared/publicite_auth/publicite_auth';
+import { PubliciteAuth } from 'src/contexts/shared/auth/publicite_auth/publicite_auth';
 
 @Resolver('Post')
 export class PostResolver {

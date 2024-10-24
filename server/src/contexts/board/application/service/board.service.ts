@@ -56,34 +56,9 @@ export class BoardService implements BoardServiceInterface {
     }
   }
   async save(boardRequest: BoardRequest): Promise<BoardResponse> {
-    const session: ClientSession = await this.connection.startSession();
     this.logger.log('Saving new board for the user id: ' + boardRequest.user);
-    try {
-      session.startTransaction();
-      const boardMapper = this.boardMapper.requestToEntitiy(boardRequest);
-      const boardSaved = await this.boardRepository.save(boardMapper, {
-        session,
-      });
-
-      await this.userService.saveBoard(
-        boardSaved.getId as ObjectId,
-        boardSaved.getUser as ObjectId,
-        { session },
-      );
-
-      await session.commitTransaction();
-
-      return this.boardMapper.entityToResponse(boardSaved);
-    } catch (error) {
-      await session.abortTransaction();
-      this.logger.error(
-        'An error was ocurred while trying to save board: ' + boardRequest.user,
-      );
-      throw new Error(
-        `Error al guardar el board y actualizar el user: ${error.message}`,
-      );
-    } finally {
-      await session.endSession();
-    }
+    const boardMapper = this.boardMapper.requestToEntitiy(boardRequest);
+    const boardSaved = await this.boardRepository.save(boardMapper);
+    return this.boardMapper.entityToResponse(boardSaved);
   }
 }

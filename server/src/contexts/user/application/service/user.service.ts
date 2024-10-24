@@ -156,19 +156,6 @@ export class UserService implements UserServiceInterface {
     }
   }
 
-  async saveBoard(
-    boardId: ObjectId,
-    authorId: ObjectId,
-    options?: { session?: ClientSession },
-  ): Promise<void> {
-    this.logger.log('Creating board in the user: ' + UserService.name);
-    try {
-      return await this.userRepository.saveBoard(boardId, authorId, options);
-    } catch (error: any) {
-      throw error;
-    }
-  }
-
   async pushNotification(notification: any): Promise<any> {
     try {
       this.logger.log(
@@ -234,4 +221,3 @@ export class UserService implements UserServiceInterface {
     }
   }
 }
-

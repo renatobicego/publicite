@@ -51,10 +51,4 @@ export interface UserServiceInterface {
     authorId: ObjectId,
     options?: { session?: ClientSession },
   ): Promise<void>;
-
-  saveBoard(
-    boardId: ObjectId,
-    authorId: ObjectId,
-    options?: { session?: ClientSession },
-  ): Promise<void>;
 }

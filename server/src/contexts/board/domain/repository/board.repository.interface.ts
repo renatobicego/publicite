@@ -12,6 +12,6 @@ export interface BoardRespositoryInterface {
     limit: number,
     page: number,
   ): Promise<BoardGetAllResponse>;
-  save(board: Board, options?: { session?: ClientSession }): Promise<Board>;
+  save(board: Board): Promise<Board>;
   updateBoardById(id: string, board: UpdateBoardDto): Promise<BoardResponse>;
 }

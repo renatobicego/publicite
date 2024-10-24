@@ -19,7 +19,7 @@ import {
 
 import { UserAdapterInterface } from '../../application/adapter/userAdapter.interface';
 
-import { ClerkAuthGuard } from 'src/contexts/clerk-auth/clerk.auth.guard';
+import { ClerkAuthGuard } from 'src/contexts/shared/auth/clerk-auth/clerk.auth.guard';
 import {
   UserPersonRequestDto_SWAGGER,
   UserPersonResponseDto_SWAGGER,

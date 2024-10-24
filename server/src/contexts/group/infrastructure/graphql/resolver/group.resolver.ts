@@ -1,6 +1,6 @@
 import { Inject, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Resolver, Query, Context } from '@nestjs/graphql';
-import { ClerkAuthGuard } from 'src/contexts/clerk-auth/clerk.auth.guard';
+import { ClerkAuthGuard } from 'src/contexts/shared/auth/clerk-auth/clerk.auth.guard';
 
 import { GroupRequest } from 'src/contexts/group/application/adapter/dto/HTTP-REQUEST/group.request';
 import { GroupUpdateRequest } from 'src/contexts/group/application/adapter/dto/HTTP-REQUEST/group.update.request';
@@ -10,7 +10,7 @@ import {
 } from 'src/contexts/group/application/adapter/dto/HTTP-RESPONSE/group.response';
 
 import { GroupAdapterInterface } from 'src/contexts/group/application/adapter/group.adapter.interface';
-import { PubliciteAuth } from 'src/contexts/shared/publicite_auth/publicite_auth';
+import { PubliciteAuth } from 'src/contexts/shared/auth/publicite_auth/publicite_auth';
 
 @Resolver('Group')
 export class GroupResolver {

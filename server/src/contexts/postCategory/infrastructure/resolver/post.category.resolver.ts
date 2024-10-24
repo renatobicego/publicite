@@ -4,7 +4,7 @@ import { Inject, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { PostCategoryRequest } from '../../application/adapter/dto/HTTP-REQUEST/post.category.request';
 import { PostCategoryAdapterInterface } from '../../application/adapter/post.category.adapter.interface';
 import { PostCategoryResponse } from '../../application/adapter/dto/HTTP-RESPONSE/post.category.response';
-import { ClerkAuthGuard } from 'src/contexts/clerk-auth/clerk.auth.guard';
+import { ClerkAuthGuard } from 'src/contexts/shared/auth/clerk-auth/clerk.auth.guard';
 
 @Resolver()
 export class PostCategoryResolver {

@@ -6,8 +6,8 @@ import { MagazineAdapterInterface } from '../../application/adapter/magazine.ada
 import { MagazineCreateRequest } from '../../application/adapter/dto/HTTP-REQUEST/magazine.create.request';
 import { MagazineResponse } from '../../application/adapter/dto/HTTP-RESPONSE/magazine.reponse';
 import { MagazineUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/magazine.update.request';
-import { PubliciteAuth } from 'src/contexts/shared/publicite_auth/publicite_auth';
-import { ClerkAuthGuard } from 'src/contexts/clerk-auth/clerk.auth.guard';
+import { PubliciteAuth } from 'src/contexts/shared/auth/publicite_auth/publicite_auth';
+import { ClerkAuthGuard } from 'src/contexts/shared/auth/clerk-auth/clerk.auth.guard';
 
 @Resolver()
 export class MagazineResolver {
