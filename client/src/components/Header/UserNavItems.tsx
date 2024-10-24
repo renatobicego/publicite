@@ -1,13 +1,27 @@
 import { Badge, Link, NavbarItem, NavbarMenuToggle } from "@nextui-org/react";
 import React, { useEffect } from "react";
 import SecondaryButton from "../buttons/SecondaryButton";
-import { SignedIn, SignedOut, useUser } from "@clerk/nextjs";
+import { SignedIn, SignedOut } from "@clerk/nextjs";
 import Notifications from "./Notifications/Notifications";
 import DropdownItems from "./DropdownItems";
 import UserButtonModal from "@/app/(root)/(configuracion)/UserButtonPage";
 import { useSocket } from "@/app/socketProvider";
+import { Subscription } from "@/types/subscriptions";
+import { Board } from "@/types/board";
+import { UserPreferences, UserType } from "@/types/userTypes";
+import { ConfigData } from "@/app/(root)/(configuracion)/Profile/actions";
 
-const UserNavItems = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
+const UserNavItems = ({
+  isMenuOpen,
+  configData,
+  userType,
+  username,
+}: {
+  isMenuOpen: boolean;
+  username: string;
+  userType: UserType;
+  configData: ConfigData | undefined;
+}) => {
   const { newNotifications, setNewNotifications } = useSocket();
   useEffect(() => {
     if (isMenuOpen) setNewNotifications(false);
@@ -18,7 +32,11 @@ const UserNavItems = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
       <NavbarItem className="max-lg:hidden flex gap-2 items-center">
         <SignedIn>
           <Notifications />
-          <UserButtonModal />
+          <UserButtonModal
+            configData={configData}
+            userType={userType}
+            username={username}
+          />
           <DropdownItems />
         </SignedIn>
         <SignedOut>

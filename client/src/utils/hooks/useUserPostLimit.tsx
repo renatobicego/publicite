@@ -3,26 +3,22 @@ import {
   getUserActivePostNumber,
 } from "@/services/subscriptionServices";
 import { Subscription } from "@/types/subscriptions";
-import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 
-const useUserPostLimit = () => {
+const useUserPostLimit = (userId: string) => {
   const [subscriptionsUser, setSubscriptionsUser] = useState<Subscription[]>(
     []
   );
   const [numberOfPosts, setNumberOfPosts] = useState(0);
-  const { user } = useUser();
 
   useEffect(() => {
     const fetchSubscriptionsUser = async () => {
-      const susbcriptionsOfUser = await getSubscriptionsOfUser(
-        user?.id as string
-        );
+      const susbcriptionsOfUser = await getSubscriptionsOfUser(userId);
       setSubscriptionsUser(susbcriptionsOfUser);
     };
 
     const fetchNumberOfPosts = async () => {
-      setNumberOfPosts(await getUserActivePostNumber(user?.id as string));
+      setNumberOfPosts(await getUserActivePostNumber(userId));
     };
 
     fetchSubscriptionsUser();

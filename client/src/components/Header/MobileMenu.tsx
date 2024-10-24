@@ -1,25 +1,29 @@
-import {
-  CREATE,
-  POSTS,
-  PROFILE,
-  TUTORIALS,
-} from "@/utils/data/urls";
-import { SignedIn, SignedOut, useUser } from "@clerk/nextjs";
+import { CREATE, POSTS, PROFILE, TUTORIALS } from "@/utils/data/urls";
+import { SignedIn, SignedOut } from "@clerk/nextjs";
 import { Link, NavbarMenu, NavbarMenuItem } from "@nextui-org/react";
 import { Variants } from "framer-motion";
 import React, { Dispatch, SetStateAction } from "react";
 import Notifications from "./Notifications/Notifications";
 import SecondaryButton from "../buttons/SecondaryButton";
 import DropdownItems from "./DropdownItems";
-import NextLink from "next/link"; 
+import NextLink from "next/link";
 import UserButtonModal from "@/app/(root)/(configuracion)/UserButtonPage";
+import { ConfigData } from "@/app/(root)/(configuracion)/Profile/actions";
+import { UserType } from "@/types/userTypes";
 
 const MobileMenu = ({
   setIsMenuOpen,
+  isSignedIn,
+  username,
+  configData,
+  userType,
 }: {
   setIsMenuOpen: Dispatch<SetStateAction<boolean>>;
+  isSignedIn: boolean;
+  username: string;
+  configData?: ConfigData;
+  userType: UserType;
 }) => {
-  const { user, isSignedIn } = useUser();
   const menuItems = [
     {
       title: "Inicio",
@@ -36,7 +40,7 @@ const MobileMenu = ({
     },
     {
       title: "Mi Perfil",
-      url: `${PROFILE}/${user?.username}`,
+      url: `${PROFILE}/${username}`,
       isPrivate: true,
     },
     {
@@ -83,7 +87,11 @@ const MobileMenu = ({
       <div className="flex gap-2 items-center">
         <SignedIn>
           <Notifications />
-          <UserButtonModal />
+          <UserButtonModal
+            configData={configData}
+            userType={userType}
+            username={username}
+          />
           <DropdownItems />
         </SignedIn>
         <SignedOut>

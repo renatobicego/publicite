@@ -16,7 +16,14 @@ const ContactModal = ({ postId }: { postId: string }) => {
   return (
     <>
       <PrimaryButton onPress={onOpen}>Contactar</PrimaryButton>
-      <Modal radius="lg" className="p-2" size="2xl" placement="center" isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal
+        radius="lg"
+        className="p-2"
+        size="2xl"
+        placement="center"
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+      >
         <ModalContent>
           {(onClose) => (
             <>
@@ -24,7 +31,7 @@ const ContactModal = ({ postId }: { postId: string }) => {
                 Solicitud de Contacto
               </ModalHeader>
               <ModalBody className="pt-0">
-                <ContactForm postId={postId} onClose={onClose}/>
+                {isOpen && <ContactForm postId={postId} onClose={onClose} />}
               </ModalBody>
             </>
           )}

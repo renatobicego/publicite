@@ -11,7 +11,6 @@ import { Form, Formik, FormikHelpers } from "formik";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { magazineValidation } from "./validation";
 import Inputs from "./inputs/Inputs";
-import { useUser } from "@clerk/nextjs";
 import { createMagazine } from "../../../../server/magazineActions";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { MAGAZINES } from "@/utils/data/urls";
@@ -22,13 +21,15 @@ const CreateMagazineForm = ({
   isGroupMagazine,
   id,
   shareMagazineIds,
+  userId
 }: {
   isGroupMagazine: boolean;
   id: string | null;
   shareMagazineIds: {
     user: string;
     post: string;
-  } | null;
+    } | null;
+  userId: string
 }) => {
   const initialValues = isGroupMagazine
     ? groupMagazine
@@ -37,7 +38,6 @@ const CreateMagazineForm = ({
         collaborators: shareMagazineIds ? [shareMagazineIds.user] : [],
       } as PostUserMagazine);
   const router = useRouter();
-  const { user } = useUser();
 
   if (isGroupMagazine && !id) {
     return (
@@ -54,7 +54,7 @@ const CreateMagazineForm = ({
       isGroupMagazine,
       id,
       shareMagazineIds,
-      user
+      userId
     );
 
     const resApi = await createMagazine(finalValues);

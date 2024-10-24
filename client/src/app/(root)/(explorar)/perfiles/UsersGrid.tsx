@@ -9,11 +9,13 @@ const UsersGrid = ({
   isLoading = false,
   groupGrid = false,
   group,
+  userLogged,
 }: {
   items: User[];
   isLoading?: boolean;
   groupGrid?: boolean;
   group?: Group;
+  userLogged: { username: string; _id: string };
 }) => {
   const isAdmin = (user: User) =>
     group?.admins.some((admin) => (admin as User)._id === user._id);
@@ -22,12 +24,13 @@ const UsersGrid = ({
       <div className="grid grid-cols-2 lg:grid-cols-3 3xl:grid-cols-4 gap-4">
         {items &&
           items.map((user: User, index) =>
-            (groupGrid && group) ? (
+            groupGrid && group ? (
               <MemberCard
                 user={user}
                 group={group}
                 key={user._id}
                 isAdmin={isAdmin(user)}
+                userLogged={userLogged}
               />
             ) : (
               <ProfileCard user={user} key={user._id} />

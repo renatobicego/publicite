@@ -1,6 +1,7 @@
 import BreadcrumbsAdmin from "@/components/BreadcrumbsAdmin";
 import { CREATE, CREATE_PETITION } from "@/utils/data/urls";
 import CreatePetitionClient from "./CreatePetitionClient";
+import { auth } from "@clerk/nextjs/server";
 
 export default function CreatePost() {
   const breadcrumbsItems = [
@@ -17,11 +18,12 @@ export default function CreatePost() {
       href: CREATE_PETITION,
     },
   ];
+  const userId = auth().sessionClaims?.metadata.mongoId;
   return (
     <main className="flex min-h-screen flex-col items-start main-style gap-4 md:gap-6 lg:gap-8">
       <BreadcrumbsAdmin items={breadcrumbsItems} />
       <h2>Crear Necesidad</h2>
-      <CreatePetitionClient />
+      <CreatePetitionClient userId={userId} />
     </main>
   );
 }

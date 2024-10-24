@@ -1,7 +1,7 @@
 "use server";
 import { deletePostService, postPost, putPost } from "@/services/postsServices";
 import { PetitionContact, Post } from "@/types/postTypes";
-import { currentUser } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 
 export const createPost = async (
   formData: any,
@@ -10,9 +10,9 @@ export const createPost = async (
   if (!userCanPublishPost) {
     return { error: "Límite de anuncios activos alcanzado" };
   }
-  const user = await currentUser();
+  const user = auth();
 
-  if (!user?.username) {
+  if (!user.sessionId) {
     return { error: "Usuario no autenticado. Por favor inicie sesión." };
   }
 

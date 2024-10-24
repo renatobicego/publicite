@@ -6,7 +6,6 @@ import { Divider } from "@nextui-org/react";
 import PlacePicker from "../CreateForm/inputs/PlacePicker";
 import AccordionInputs from "../CreateForm/inputs/AccordionInputs/AccordionInputs";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
-import { useUser } from "@clerk/nextjs";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { serviceValidation } from "./serviceValidation";
 import { getLocalTimeZone, today } from "@internationalized/date";
@@ -20,11 +19,12 @@ import { useAttachedFiles } from "../CreateForm/inputs/AccordionInputs/AttachedF
 const CreateService = ({
   files,
   userCanPublishPost,
+  userId,
 }: {
   files: File[];
   userCanPublishPost: boolean;
+  userId?: string;
 }) => {
-  const { user } = useUser();
   const initialValues: ServicePostValues = {
     attachedFiles: [],
     description: "",
@@ -32,7 +32,7 @@ const CreateService = ({
     price: undefined,
     frequencyPrice: undefined,
     category: "",
-    author: (user?.publicMetadata.mongoId as string) || "",
+    author: userId || "",
     imagesUrls: [],
     location: {
       lat: undefined,
@@ -57,15 +57,15 @@ const CreateService = ({
     values: GoodPostValues,
     actions: FormikHelpers<GoodPostValues>
   ) => {
-    if(!userCanPublishPost) {
+    if (!userCanPublishPost) {
       actions.setSubmitting(false);
-      return
-    };
+      return;
+    }
     const newValuesWithUrlFiles = await submitFiles(values, actions);
     if (!newValuesWithUrlFiles) {
       actions.setSubmitting(false);
-      return
-    };
+      return;
+    }
     values = newValuesWithUrlFiles;
 
     const dbLocation = {
@@ -82,12 +82,15 @@ const CreateService = ({
       label: file.label,
     }));
 
-    const resApi = await createPost({
-      ...values,
-      location: dbLocation,
-      attachedFiles,
-      category: [values.category],
-    }, userCanPublishPost);
+    const resApi = await createPost(
+      {
+        ...values,
+        location: dbLocation,
+        attachedFiles,
+        category: [values.category],
+      },
+      userCanPublishPost
+    );
     if (resApi.error) {
       toastifyError(resApi.error);
       return;

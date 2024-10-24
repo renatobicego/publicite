@@ -17,7 +17,13 @@ import { Tab, Tabs } from "@nextui-org/react";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 
-const SolapasTabs = () => {
+const SolapasTabs = ({
+  usernameUserLogged,
+  idUserLogged,
+}: {
+  usernameUserLogged?: string | null;
+  idUserLogged?: string;
+}) => {
   const pathname = usePathname();
   const tabsRef = useRef<HTMLDivElement | null>(null);
 
@@ -113,7 +119,7 @@ const SolapasTabs = () => {
         href={BOARDS}
         data-key={BOARDS}
       >
-        <BoardsLogic />
+        <BoardsLogic username={usernameUserLogged} />
       </Tab>
       <Tab
         className="w-full"
@@ -122,7 +128,12 @@ const SolapasTabs = () => {
         href={PROFILE}
         data-key={PROFILE}
       >
-        <UsersLogic />
+        <UsersLogic
+          userLogged={{
+            username: usernameUserLogged || "",
+            _id: idUserLogged as string,
+          }}
+        />
       </Tab>
       <Tab
         className="w-full"

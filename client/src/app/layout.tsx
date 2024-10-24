@@ -47,10 +47,8 @@ export default function RootLayout({
           className={` ${noto.className}  text-text-color overflow-x-hidden`}
         >
           <Providers>
-            <SocketProvider>
-              {children}
-              <ToastContainer />
-            </SocketProvider>
+            {children}
+            <ToastContainer />
           </Providers>
         </body>
       </html>

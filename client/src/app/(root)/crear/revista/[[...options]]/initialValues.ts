@@ -29,7 +29,7 @@ export const createMagazineValues = (
   isGroupMagazine: boolean,
   id: string | null,
   shareMagazineIds: { user: string; post: string } | null,
-  user: any
+  userId: any
 ) => {
   if (isGroupMagazine) {
     return {
@@ -40,7 +40,7 @@ export const createMagazineValues = (
 
   const baseValues = {
     ...values,
-    user: user?.publicMetadata.mongoId,
+    user: userId,
   } as PostUserMagazine;
 
   if (shareMagazineIds) {

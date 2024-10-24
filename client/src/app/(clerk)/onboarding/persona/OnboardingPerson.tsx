@@ -1,18 +1,16 @@
 "use client";
-import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next-nprogress-bar";
 import { Form, Formik, FormikHelpers } from "formik";
 import { UserPersonFormValues } from "@/types/userTypes";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
-import { parseDateTime } from "@internationalized/date";
+import { fromAbsolute, getLocalTimeZone } from "@internationalized/date";
 import { userPersonValidation } from "./userPersonValidation";
 import { Divider } from "@nextui-org/react";
 import OnboardingPersonInputs from "./OnboardingPersonInputs";
 import { completeOnboardingPerson } from "../_actions";
 import { toastifyError } from "@/utils/functions/toastify";
 import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
-const OnboardingPerson = () => {
-  const { user } = useUser();
+const OnboardingPerson = ({user} : {user: any}) => {
   const router = useRouter();
   if (!user) return null;
 
@@ -22,11 +20,9 @@ const OnboardingPerson = () => {
       phone: "",
     },
     countryRegion: "",
-    createdTime: user.createdAt
-      ? parseDateTime(user.createdAt.toISOString().split(".")[0]).toString()
-      : parseDateTime(new Date().toISOString().split(".")[0]).toString(),
+    createdTime:fromAbsolute(user.createdAt, getLocalTimeZone()).toAbsoluteString().split(".")[0],
     description: "",
-    email: user?.emailAddresses[0].emailAddress,
+    email: user.emailAddress,
     isActive: true,
     lastName: user.lastName ?? "",
     name: user.firstName ?? "",

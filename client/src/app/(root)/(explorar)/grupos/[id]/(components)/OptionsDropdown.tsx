@@ -3,6 +3,7 @@ import { removeGroup } from "@/app/server/groupActions";
 import ConfirmModal from "@/components/modals/ConfirmModal";
 import { GROUPS } from "@/utils/data/urls";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
+import useUploadImage from "@/utils/hooks/useUploadImage";
 import {
   Button,
   Dropdown,
@@ -21,13 +22,16 @@ const OptionsDropdown = ({
   groupId,
   isMember,
   isCreator,
+  image,
 }: {
   groupId: string;
   isMember: boolean;
   isCreator: boolean;
+  image?: string;
 }) => {
   const deleteGroupRef = useRef<() => void>(() => {});
   const router = useRouter();
+  const { deleteFile } = useUploadImage();
   const handleDeleteGroupClick = () => {
     if (deleteGroupRef.current) {
       deleteGroupRef.current(); // Trigger custom open function to open the modal
@@ -41,8 +45,11 @@ const OptionsDropdown = ({
         toastifyError(res.error as string);
         return;
       }
+      if (image) {
+        await deleteFile(image);
+      }
       toastifySuccess(res.message);
-      router.push(GROUPS)
+      router.push(GROUPS);
     } else {
       toastifyError("No puedes eliminar este grupo");
     }

@@ -1,8 +1,8 @@
 "use client";
 import { useMemo } from "react";
-import { UserButton, useUser } from "@clerk/nextjs";
+import { UserButton } from "@clerk/nextjs";
 import { BiSolidUserDetail } from "react-icons/bi";
-import { FaEyeSlash,  FaSliders, FaUser } from "react-icons/fa6";
+import { FaEyeSlash, FaSliders, FaUser } from "react-icons/fa6";
 import Profile from "./Profile/Profile";
 import Subscriptions from "./Subscriptions/Subscriptions";
 import { MdPayments } from "react-icons/md";
@@ -11,14 +11,19 @@ import Preferences from "./Preferences/Preferences";
 import { PROFILE } from "@/utils/data/urls";
 import Business from "./Business/Business";
 import { IoBusiness } from "react-icons/io5";
-import useConfigData from "@/utils/hooks/useConfigData";
 import { BackgroundProvider } from "../backgroundProvider";
+import { UserType } from "@/types/userTypes";
+import { ConfigData } from "./Profile/actions";
 
-const UserButtonModal = () => {
-  const { user } = useUser();
-  const userType = user?.publicMetadata?.userType;
-  const configData = useConfigData(user);
-
+const UserButtonModal = ({
+  userType,
+  configData,
+  username,
+}: {
+  configData: ConfigData | undefined; 
+  userType: UserType;
+  username: string;
+}) => {
   const pageToReturn = useMemo(() => {
     switch (userType) {
       case "Person":
@@ -29,7 +34,7 @@ const UserButtonModal = () => {
             url="perfil"
             key="Profile"
           >
-            <Profile />
+            <Profile username={username}/>
           </UserButton.UserProfilePage>
         );
       case "Business":
@@ -40,13 +45,13 @@ const UserButtonModal = () => {
             labelIcon={<IoBusiness className="size-4" />}
             key="Business"
           >
-            <Business />
+            <Business username={username}/>
           </UserButton.UserProfilePage>
         );
       default:
         return null;
     }
-  }, [userType]);
+  }, [userType, username]);
 
   return (
     <UserButton
@@ -56,13 +61,12 @@ const UserButtonModal = () => {
           avatarBox: "h-full w-full border-[0.8px]",
         },
       }}
-      
     >
       <UserButton.MenuItems>
         <UserButton.Link
           label="Mi Perfil"
           labelIcon={<FaUser />}
-          href={`${PROFILE}/${user?.username}`}
+          href={`${PROFILE}/${username}`}
         />
         <UserButton.Action label="manageAccount" />
       </UserButton.MenuItems>
@@ -99,8 +103,7 @@ const UserButtonModal = () => {
       >
         <BackgroundProvider>
           <Preferences
-            userPreferences={configData?.userPreferences}
-            board={configData?.board}
+            configData={configData}
           />
         </BackgroundProvider>
       </UserButton.UserProfilePage>

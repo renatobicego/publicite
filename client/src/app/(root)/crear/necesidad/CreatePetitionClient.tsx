@@ -3,10 +3,10 @@
 import { AttachedFilesProvider } from "../anuncio/components/CreateForm/inputs/AccordionInputs/AttachedFIles/AttachedFilesContext";
 import CreatePetition from "./CreatePetition";
 
-const CreatePetitionClient = () => {
+const CreatePetitionClient = ({ userId } : { userId?: string}) => {
   return (
     <AttachedFilesProvider>
-      <CreatePetition />
+      <CreatePetition userId={userId}/>
     </AttachedFilesProvider>
   );
 };

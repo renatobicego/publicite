@@ -11,11 +11,11 @@ const MemoizedPersonalData = memo(PersonalData);
 const MemoizedDescription = memo(Description);
 const MemoizedSocialMedia = memo(SocialMedia);
 
-const Profile = () => {
+const Profile = ({username} : {username: string}) => {
   const [userData, setUserData] = useState<EditPersonProfileProps>();
 
   const getUserData = async () => {
-    const data = await getProfileData();
+    const data = await getProfileData(username);
     if (data.error) {
       toastifyError(data.error);
       return;

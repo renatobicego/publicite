@@ -1,4 +1,4 @@
-import { currentUser } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { UploadThingError } from "uploadthing/server";
 
@@ -14,7 +14,7 @@ export const ourFileRouter = {
   })
     // Set permissions and file types for this FileRoute
     .middleware(async ({ req }) => {
-      const user = await currentUser();
+      const user = auth();
 
       // Throw if user isn't signed in
       if (!user)
@@ -23,7 +23,7 @@ export const ourFileRouter = {
         );
 
       // Whatever is returned here is accessible in onUploadComplete as `metadata`
-      return { userId: user.id };
+      return { userId: user.sessionClaims?.metadata.mongoId };
     })
     .onUploadComplete(async ({ metadata, file }) => {
       // This code RUNS ON YOUR SERVER after upload
@@ -40,7 +40,7 @@ export const ourFileRouter = {
     pdf: { maxFileSize: "8MB", maxFileCount: 1 },
   }) // Set permissions and file types for this FileRoute
     .middleware(async ({ req }) => {
-      const user = await currentUser();
+      const user = auth();
 
       // Throw if user isn't signed in
       if (!user)
@@ -49,7 +49,7 @@ export const ourFileRouter = {
         );
 
       // Whatever is returned here is accessible in onUploadComplete as `metadata`
-      return { userId: user.id };
+      return { userId: user.sessionClaims?.metadata.mongoId };
     })
     .onUploadComplete(async ({ metadata, file }) => {
       // This code RUNS ON YOUR SERVER after upload

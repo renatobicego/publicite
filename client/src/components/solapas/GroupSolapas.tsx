@@ -1,7 +1,6 @@
 "use client";
 
 import { MAGAZINES, GROUPS, CREATE_MAGAZINE } from "@/utils/data/urls";
-import { User } from "@/types/userTypes";
 import { Group } from "@/types/groupTypes";
 import { Link, Tab, Tabs } from "@nextui-org/react";
 import { usePathname } from "next/navigation";
@@ -13,12 +12,16 @@ import UsersGrid from "@/app/(root)/(explorar)/perfiles/UsersGrid";
 import InviteUsersGroup from "../modals/InvitationModal/InviteUsersGroup";
 import PrimaryButton from "../buttons/PrimaryButton";
 import { FaPlus } from "react-icons/fa6";
+import { User as UserClerk } from "@clerk/nextjs/server";
+import { User } from "@/types/userTypes";
 const GroupSolapas = ({
   group,
   isAdmin,
+  userLogged,
 }: {
   group: Group;
   isAdmin: boolean;
+  userLogged: UserClerk;
 }) => {
   const pathname = usePathname();
   const tabsRef = useRef<HTMLDivElement | null>(null);
@@ -96,12 +99,19 @@ const GroupSolapas = ({
       >
         <div className="w-full flex justify-between items-center">
           <h3>Miembros del Grupo</h3>
-          <InviteUsersGroup group={group}/>
+          <InviteUsersGroup
+            group={group}
+            username={userLogged.username as string}
+          />
         </div>
         <UsersGrid
           items={group.members as User[]}
           groupGrid
           group={group}
+          userLogged={{
+            _id: userLogged.publicMetadata.mongoId,
+            username: userLogged.username as string,
+          }}
         />
       </Tab>
     </Tabs>
