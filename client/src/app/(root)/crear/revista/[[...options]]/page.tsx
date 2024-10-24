@@ -6,11 +6,12 @@ import { getPostData } from "@/services/postsServices";
 import ErrorCard from "@/components/ErrorCard";
 import { getId, getMagazineType, getSharedMagazineIds } from "@/utils/functions/utils";
 
-export default async function CreateMagazine({
-  params,
-}: {
-  params: { options: string[] | undefined };
-}) {
+export default async function CreateMagazine(
+  props: {
+    params: Promise<{ options: string[] | undefined }>;
+  }
+) {
+  const params = await props.params;
   const breadcrumbsItems = [
     {
       label: "Inicio",

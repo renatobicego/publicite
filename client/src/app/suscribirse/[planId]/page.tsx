@@ -11,7 +11,8 @@ import { checkIfUserIsSubscribed } from "@/utils/functions/utils";
 const Checkout = dynamic(() => import("./Checkout"), {
   ssr: false,
 });
-export default async function Page({ params }: { params: { planId: string } }) {
+export default async function Page(props: { params: Promise<{ planId: string }> }) {
+  const params = await props.params;
   const { userId } = auth();
   const subscriptionsOfUser = await getSubscriptionsOfUser(userId as string);
   if (checkIfUserIsSubscribed(subscriptionsOfUser, params.planId, true)) {

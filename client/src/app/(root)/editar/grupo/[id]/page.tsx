@@ -7,11 +7,12 @@ import { EDIT_GROUP, EDIT_POST, GROUPS, POSTS } from "@/utils/data/urls";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import EditGroup from "./EditGroup";
-export default async function EditGroupPage({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default async function EditGroupPage(
+  props: {
+    params: Promise<{ id: string }>;
+  }
+) {
+  const params = await props.params;
   const groupData: Group | { error: string } = await getGroupById(params.id);
   const loggedUser = await currentUser();
 

@@ -6,7 +6,8 @@ import { EDIT_PETITION, EDIT_POST, POSTS } from "@/utils/data/urls";
 import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import EditPostClient from "./EditPost";
-export default async function EditPost({ params }: { params: { id: string } }) {
+export default async function EditPost(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const postData: Good | Service | { error: string } = await getPostData(
     params.id
   );

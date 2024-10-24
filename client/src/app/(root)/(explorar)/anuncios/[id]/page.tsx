@@ -10,10 +10,11 @@ import { mockedPosts } from "@/utils/data/mockedData";
 import RecommendedPosts from "./RecommendedPosts";
 import { currentUser } from "@clerk/nextjs/server";
 
-export default async function PostPage({ params }: { params: { id: string } }) {
+export default async function PostPage(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const postData: Good | Service | Petition | { error: string } =
     await getPostData(params.id);
-  
+
   if(!postData) {
     return <ErrorCard message="Error al traer los datos. El anuncio no existe."/>
   }

@@ -12,7 +12,7 @@ const generateGroupNotification = (
   userSending: Pick<User, "username">,
   userToSendId: string
 ) => {
-  const notification: GroupNotification = {
+  const notification: Omit<GroupNotification, "_id"> = {
     ...generateNotification(event, userToSendId),
     frontData: {
       group,

@@ -1,6 +1,7 @@
 "use server";
 import {
   deleteAdmin,
+  deleteGroup,
   deleteMember,
   postGroup,
   putAdminGroup,
@@ -92,3 +93,11 @@ export const removeAdmin = async (
   const res = await deleteAdmin(groupId, membersToDelete);
   return res;
 };
+
+export const removeGroup = async (
+  groupId: string,
+) => {
+  const res = await deleteGroup(groupId);
+  return res;
+};
+
