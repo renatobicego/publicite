@@ -1,4 +1,4 @@
-import SendRequest from "@/components/buttons/SendRequest";
+import SendRequest from "@/components/buttons/SendRequest/SendRequest";
 import { Image, Link } from "@nextui-org/react";
 import { FaUser } from "react-icons/fa6";
 import OptionsDropdown from "./OptionsDropdown";
@@ -6,45 +6,44 @@ import RulesPopover from "./RulesPopover";
 import SecondaryButton from "@/components/buttons/SecondaryButton";
 import { EDIT_GROUP, FILE_URL } from "@/utils/data/urls";
 import { Group } from "@/types/groupTypes";
-import { currentUser, User } from "@clerk/nextjs/server";
 
 const GroupInfo = async ({
   group,
   isAdmin,
   isMember,
-  userId
+  isCreator,
+  usernameLogged,
 }: {
   group: Group;
   isAdmin: boolean;
-    isMember: boolean;
-    userId: string;
+  isMember: boolean;
+  usernameLogged: string;
+  isCreator: boolean;
 }) => {
+  const { profilePhotoUrl, name, _id, details, rules, members, alias } = group;
   return (
     <section className="flex gap-4 md:gap-6 xl:gap-8 md:max-w-[75%] xl:max-w-[65%] max-md:flex-col">
       <Image
-        src={
-          group.profilePhotoUrl
-            ? FILE_URL + group.profilePhotoUrl
-            : "/groupLogo.png"
-        }
-        alt={`foto de perfil de ${group.name}`}
+        src={profilePhotoUrl ? FILE_URL + profilePhotoUrl : "/groupLogo.png"}
+        alt={`foto de perfil de ${name}`}
         radius="full"
         classNames={{
-          img: "object-cover w-full !h-24 md:!h-32 xl:!h-52 ",
+          img: "object-cover w-full !h-32 md:!h-40 xl:!h-52 ",
           wrapper:
-            "!min-w-24 w-24 md:!min-w-32 md:!w-32 xl:!w-52 xl:!min-w-52 border",
+            "min-w-32 !w-32 md:!w-40 md:!min-w-40 xl:!w-52 xl:!min-w-52 border h-fit",
         }}
       />
       <div className="flex gap-2 md:gap-4 items-start flex-col">
-        <h2>{group.name}</h2>
-        <p className="text-sm lg:text-base">{group.details}</p>
+        <h2>{name}</h2>
+        <h6>@{alias}</h6>
+        {details && <p className="text-sm lg:text-base">{details}</p>}
         <div className="flex items-center gap-1">
           <FaUser className="size-4 min-w-4" />
-          <p className="text-xs md:text-sm">{group.members.length} miembro/s</p>
+          <p className="text-xs md:text-sm">{members.length + 1} miembro/s</p>
         </div>
         <div className="flex gap-2 items-center max-md:flex-wrap">
           {isAdmin && (
-            <SecondaryButton as={Link} href={`${EDIT_GROUP}/${group._id}`}>
+            <SecondaryButton as={Link} href={`${EDIT_GROUP}/${_id}`}>
               {" "}
               Editar Grupo{" "}
             </SecondaryButton>
@@ -52,16 +51,22 @@ const GroupInfo = async ({
 
           {isMember ? (
             <>
-              <RulesPopover rules={group.rules} />
+              <RulesPopover rules={rules} />
             </>
           ) : (
-            <SendRequest variant="solid" removeMargin={false} isGroup />
+            <SendRequest
+              variant="solid"
+              removeMargin={false}
+              isGroup
+              idToSendRequest={_id}
+              usernameLogged={usernameLogged}
+            />
           )}
           <OptionsDropdown
-            groupId={group._id}
+            groupId={_id}
             isMember={isMember}
-            isCreator={userId === group.creator}
-            image={group.profilePhotoUrl}
+            isCreator={isCreator}
+            image={profilePhotoUrl}
           />
         </div>
       </div>

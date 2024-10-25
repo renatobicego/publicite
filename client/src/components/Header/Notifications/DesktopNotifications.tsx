@@ -13,12 +13,11 @@ import { useSocket } from "@/app/socketProvider";
 
 const DesktopNotifications = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const {newNotifications, setNewNotifications} = useSocket();
-  
-  const { notifications, fetchNotifications, isLoading, hasMore } =
+  const { newNotifications, setNewNotifications } = useSocket();
+
+  const { notifications, isLoading } =
     useNotifications(isOpen);
-  
-  
+
   return (
     <Popover
       className=" max-lg:hidden"
@@ -55,7 +54,10 @@ const DesktopNotifications = () => {
         <h6 className="self-start m-2">Notificaciones</h6>
 
         {isOpen ? (
-          <NotificationsContent notifications={notifications} />
+          <NotificationsContent
+            notifications={notifications}
+            isLoading={isLoading}
+          />
         ) : (
           <></>
         )}

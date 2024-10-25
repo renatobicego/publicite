@@ -42,15 +42,16 @@ export default async function GroupLayout(props: {
       href: `${GROUPS}/${params.id}`,
     },
   ];
+  const isCreator = loggedUser.publicMetadata.mongoId === group.creator
   const isAdmin = group.admins.some(
     (admin) =>
       (admin as User)._id === (loggedUser?.publicMetadata.mongoId as string)
-  );
+  ) || isCreator;
   const isMember =
     group.members.some(
       (member) =>
         (member as User)._id === (loggedUser?.publicMetadata.mongoId as string)
-    ) || isAdmin;
+    ) || isAdmin || isCreator;
 
   return (
     <main className="flex min-h-screen flex-col items-start main-style gap-4 md:gap-6 xl:gap-8">
@@ -60,7 +61,8 @@ export default async function GroupLayout(props: {
           group={group as Group}
           isAdmin={isAdmin}
           isMember={isMember}
-          userId={loggedUser.publicMetadata.mongoId as string}
+          isCreator={isCreator}
+          usernameLogged={loggedUser.username as string}
         />
       </div>
       {isMember ? (

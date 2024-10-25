@@ -45,7 +45,7 @@ const Search = ({
       puntuados: POST_BEST,
       vencer: POST_NEXT_TO_EXPIRE,
       pizarras: BOARDS,
-      contactos: PROFILE,
+      perfiles: PROFILE,
       grupos: GROUPS,
     };
 
@@ -116,7 +116,7 @@ const DropdownSolapas = ({
     puntuados: "Mejor Puntuados",
     vencer: "Próximos a Vencer",
     pizarras: "Pizarras",
-    contactos: "Perfiles",
+    perfiles: "Perfiles",
     grupos: "Grupos",
   };
 
@@ -160,7 +160,7 @@ const DropdownSolapas = ({
           <DropdownItem key="puntuados">Mejor Puntuados</DropdownItem>
           <DropdownItem key="vencer">Próximos a Vencer</DropdownItem>
           <DropdownItem key="pizarras">Pizarras</DropdownItem>
-          <DropdownItem key="contactos">Contactos</DropdownItem>
+          <DropdownItem key="perfiles">Perfiles</DropdownItem>
           <DropdownItem key="grupos">Grupos</DropdownItem>
         </DropdownMenu>
       </Dropdown>

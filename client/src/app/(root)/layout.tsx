@@ -8,9 +8,8 @@ import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { extractRouterConfig } from "uploadthing/server";
 import { ourFileRouter } from "../api/uploadthing/core";
 import { SocketProvider } from "../socketProvider";
-import { ConfigData, getConfigData } from "./(configuracion)/Profile/actions";
-import { UserType } from "@/types/userTypes";
-import ErrorCard from "@/components/ErrorCard";
+import { getConfigData } from "./(configuracion)/Profile/actions";
+import { MagazineProvider } from "./magazinesProvider";
 export default async function NavigationLayout({
   children,
 }: {
@@ -29,9 +28,11 @@ export default async function NavigationLayout({
         isSignedIn={!!user}
       />
       <BackgroundProvider username={user?.username}>
-        <BackgroundStyle />
-        {children}
-        <HelpButton />
+        <MagazineProvider username={user?.username}>
+          <BackgroundStyle />
+          {children}
+          <HelpButton />
+        </MagazineProvider>
       </BackgroundProvider>
       <Footer username={user?.username} />
     </SocketProvider>

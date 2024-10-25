@@ -7,6 +7,7 @@ import {
   deleteGroupMutation,
   deleteMemberMutation,
   editGroupMutation,
+  getGroupAdminsByIdQuery,
   getGroupByIdQuery,
   getGroupMembersByIdQuery,
   getGroupsQuery,
@@ -80,6 +81,28 @@ export const getGroupMembersById = async (id: string) => {
     return {
       error:
         "Error al traer los miembros del grupo. Por favor intenta de nuevo.",
+    };
+  }
+};
+
+export const getGroupAdminsById = async (id: string) => {
+  try {
+    const { data } = await query({
+      query: getGroupAdminsByIdQuery,
+      variables: { getGroupByIdId: id },
+      context: {
+        headers: {
+          Authorization: await auth().getToken(),
+        },
+      },
+    });
+
+    return data.getGroupById;
+  } catch (error) {
+    console.log(error);
+    return {
+      error:
+        "Error al traer los administradores del grupo. Por favor intenta de nuevo.",
     };
   }
 };

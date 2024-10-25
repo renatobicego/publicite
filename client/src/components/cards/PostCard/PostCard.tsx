@@ -16,7 +16,7 @@ const PostCard = ({
   className?: string;
   savePostMagazine?: boolean;
   isGroupPost?: boolean;
-  }) => {
+}) => {
   const { postType } = postData;
   const PostCardToReturn = () => {
     switch (postType) {
@@ -24,6 +24,7 @@ const PostCard = ({
         return (
           <GoodCard
             post={postData as Good}
+            isGroupPost={isGroupPost}
             recommendation={recommendation}
             savePostMagazine={savePostMagazine}
           />
@@ -32,6 +33,7 @@ const PostCard = ({
         return (
           <ServiceCard
             post={postData as Service}
+            isGroupPost={isGroupPost}
             recommendation={recommendation}
             savePostMagazine={savePostMagazine}
           />
@@ -39,6 +41,7 @@ const PostCard = ({
       case "petition":
         return (
           <PetitionCard
+            isGroupPost={isGroupPost}
             post={postData as Petition}
             recommendation={recommendation}
           />
@@ -51,7 +54,9 @@ const PostCard = ({
   return (
     <Card
       className={`w-full ease-in-out hover:shadow md:hover:shadow-md gap-4 
-        !transition-shadow duration-500 !opacity-100 ${isGroupPost ? "self-start" : ""}
+        !transition-shadow duration-500 !opacity-100 ${
+          isGroupPost ? "self-start" : ""
+        }
         ${
           postType === "petition" ? "border border-petition" : ""
         } ${className}`}
@@ -59,7 +64,7 @@ const PostCard = ({
     >
       {PostCardToReturn()}
       {isGroupPost && (
-        <CardFooter>
+        <CardFooter className="-mt-4">
           <UsernameAvatar author={postData.author} showAvatar />
         </CardFooter>
       )}

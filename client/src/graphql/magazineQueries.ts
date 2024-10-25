@@ -83,10 +83,32 @@ export const getMagazineWithoutPostsByIdQuery = gql`
       visibility
     }
   }
-`
+`;
 
 export const editMagazineMutation = gql`
-  mutation UpdateMagazineById($magazineUpdateRequest: MagazineUpdateRequest!, $owner: String!) {
-    updateMagazineById(magazineUpdateRequest: $magazineUpdateRequest, owner: $owner)
+  mutation UpdateMagazineById(
+    $magazineUpdateRequest: MagazineUpdateRequest!
+    $owner: String!
+  ) {
+    updateMagazineById(
+      magazineUpdateRequest: $magazineUpdateRequest
+      owner: $owner
+    )
+  }
+`;
+
+export const createMagazineSectionMutation = gql`
+  mutation AddNewMagazineSection(
+    $magazineAdmin: String!
+    $magazineId: String!
+    $section: String!
+    $groupId: String
+  ) {
+    addNewMagazineSection(
+      magazineAdmin: $magazineAdmin
+      magazineId: $magazineId
+      section: $section
+      groupId: $groupId
+    )
   }
 `;

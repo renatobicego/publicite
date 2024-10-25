@@ -12,12 +12,11 @@ import { getOwner, checkIsOwner, getProfileUrl } from "./utils";
 import MagazineHeader from "./MagazineHeader";
 import MagazineActions from "./MagazineActions";
 import { Magazine } from "@/types/magazineTypes";
+import CreateMagazineSection from "@/components/modals/CreateMagazineSection";
 
-export default async function MagazinePage(
-  props: {
-    params: Promise<{ id: string }>;
-  }
-) {
+export default async function MagazinePage(props: {
+  params: Promise<{ id: string }>;
+}) {
   const params = await props.params;
   const magazine: Magazine | { error: string } = await getMagazineById(
     params.id
@@ -39,7 +38,7 @@ export default async function MagazinePage(
       href: "/",
     },
     {
-      label: isOwnerTypeUser ?  "Perfiles" : "Grupos",
+      label: isOwnerTypeUser ? "Perfiles" : "Grupos",
       href: isOwnerTypeUser ? PROFILE : GROUPS,
     },
     {
@@ -68,12 +67,18 @@ export default async function MagazinePage(
         />
         <MagazineActions isOwner={isOwner} magazine={magazine} />
       </section>
-      <PostsGrid
-        posts={
-          (magazine.sections.find((section) => section.isFatherSection)
-            ?.posts as Post[]) || []
-        }
-      />
+      <div className="w-full relative">
+        <CreateMagazineSection
+          magazineId={magazine._id}
+          groupId={!isOwnerTypeUser ? ownerAsGroup._id : undefined}
+        />
+        <PostsGrid
+          posts={
+            (magazine.sections.find((section) => section.isFatherSection)
+              ?.posts as Post[]) || []
+          }
+        />
+      </div>
       {magazine.sections.length > 1 && (
         <AccordionSections
           sections={magazine.sections.filter(

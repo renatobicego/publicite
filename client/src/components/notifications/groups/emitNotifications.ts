@@ -4,7 +4,7 @@ import { Group, GroupNotificationType } from "@/types/groupTypes";
 
 export const emitGroupNotification = (
   socket: Socket | null,
-  group: Group,
+  group: Pick<Group, "name" | "_id" | "profilePhotoUrl">,
   userUsernameSending: string,
   userToSendId: string,
   event: GroupNotificationType

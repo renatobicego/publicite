@@ -1,6 +1,6 @@
 import { Group } from "@/types/groupTypes";;
 import { Avatar, Card, CardBody, Link } from "@nextui-org/react";
-import SendRequest from "../buttons/SendRequest";
+import SendRequest from "../buttons/SendRequest/SendRequest";
 import { FILE_URL, GROUPS } from "@/utils/data/urls";
 
 const GroupCard = ({ group }: { group: Group }) => {
@@ -19,8 +19,8 @@ const GroupCard = ({ group }: { group: Group }) => {
           <Link color="foreground" href={`${GROUPS}/${group._id}`}>
             <h6>{group.name}</h6>
           </Link>
-          <p className="text-xs md:text-sm">{group.members.length} miembros</p>
-          <SendRequest isGroup />
+          <p className="text-xs md:text-sm">{group.members.length + 1} miembros</p>
+          {/* <SendRequest isGroup /> */}
         </div>
       </CardBody>
     </Card>

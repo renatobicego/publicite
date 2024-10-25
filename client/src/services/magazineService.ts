@@ -1,11 +1,12 @@
 import {
   createMagazineMutation,
+  createMagazineSectionMutation,
   editMagazineMutation,
   getMagazineByIdQuery,
   getMagazineWithoutPostsByIdQuery,
 } from "@/graphql/magazineQueries";
 import { getClient, query } from "@/lib/client";
-import { cookies } from "next/headers";
+import { auth } from "@clerk/nextjs/server";
 
 export const getMagazineById = async (id: string) => {
   try {
@@ -40,7 +41,6 @@ export const postMagazine = async (formData: any) => {
   const { data } = await getClient().mutate({
     mutation: createMagazineMutation,
     variables: { magazineCreateRequest: formData },
-    
   });
   return data;
 };
@@ -51,9 +51,32 @@ export const putMagazine = async (formData: any, userId: string) => {
     variables: { magazineUpdateRequest: formData, owner: userId },
     context: {
       headers: {
-        Cookie: (await cookies()).toString(),
+        Authorization: await auth().getToken(),
       },
-    }
+    },
+  });
+  return data;
+};
+
+export const postMagazineSection = async (
+  sectionName: string,
+  userId: string,
+  magazineId: string,
+  groupId?: string
+) => {
+  const { data } = await getClient().mutate({
+    mutation: createMagazineSectionMutation,
+    variables: {
+      magazineAdmin: userId,
+      magazineId,
+      section: sectionName,
+      groupId,
+    },
+    context: {
+      headers: {
+        Authorization: await auth().getToken(),
+      },
+    },
   });
   return data;
 };

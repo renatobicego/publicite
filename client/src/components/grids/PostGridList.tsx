@@ -54,7 +54,7 @@ const PostGridList = ({
                   alt={data.title}
                   classNames={{
                     wrapper:
-                      "w-28 h-24 md:w-32 lg:w-36 md:h-28 lg:h-32 xl:w-40 object-cover xl:h-36 !max-w-40",
+                      "w-28 h-24 md:w-32 md:h-28 xl:w-36 object-cover xl:h-32 2xl:w-40 2xl:h-36 !max-w-40",
                     img: "w-full h-full max-h-40 object-cover",
                   }}
                 />
@@ -69,7 +69,7 @@ const PostGridList = ({
           return (
             <div className="flex gap-2 2xl:gap-4 items-center justify-between">
               <Link className="text-text-color" href={`${POSTS}/${data._id}`}>
-                <h6 className="max-w-60 max-lg:min-w-28 max-md:text-xs 2xl:text-base">
+                <h6 className="max-w-60 min-w-28 lg:min-w-36 text-xs lg:text-small 2xl:text-base">
                   {data.title}
                 </h6>
               </Link>
@@ -82,7 +82,7 @@ const PostGridList = ({
         case "description":
           return (
             <div className="flex gap-2 2xl:gap-4 items-center justify-between text-light-text">
-              <p className="max-xl:text-xs 2xl:text-sm line-clamp-3 min-w-56 max-w-72">
+              <p className="text-xs 2xl:text-small line-clamp-3 min-w-56 max-w-72">
                 {data.description}
               </p>
               <Divider
@@ -125,12 +125,12 @@ const PostGridList = ({
             data.reviews.length;
           return (
             <div
-              className={`flex max-md:gap-8 gap-2 2xl:gap-4 items-center ${
+              className={`flex gap-8 3xl:gap-4 items-center ${
                 data.reviews.length > 0 ? "justify-between" : "justify-end"
               }`}
             >
               {data.reviews.length > 0 && (
-                <div className="flex gap-1 items-center text-light-text max-md:text-xs ml-4 md:ml-2 text-sm">
+                <div className="flex gap-1 items-center text-light-text max-md:text-xs ml-4 md:ml-3 text-sm">
                   <FaStar className="size-3 md:size-4" />
                   <span>{averageRating.toFixed(1)}</span>
                 </div>
@@ -144,7 +144,7 @@ const PostGridList = ({
         case "location":
           return (
             <div className="flex gap-2 2xl:gap-4 items-center justify-between text-light-text">
-              <p className="max-xl:text-xs 2xl:text-sm min-w-36 max-w-52">
+              <p className="text-xs 2xl:text-small min-w-32 max-w-52">
                 {data.location.description}
               </p>
               <Divider
@@ -174,11 +174,11 @@ const PostGridList = ({
       className="w-full"
       bottomContent={isLoading ? <Spinner color="warning" /> : null}
       classNames={{
-        base: "w-full !overflow-x-auto",
-        th: "bg-white max-md:pl-1",
+        base: "w-full !overflow-x-auto max-xl:max-h-[75vh] overflow-y-auto",
+        th: "bg-white pl-1",
         thead: "[&>tr]:!shadow-none",
-        wrapper: "overflow-y-hidden p-0",
-        td: "max-h-fit max-md:p-1",
+        wrapper: "p-0",
+        td: "max-h-fit max-md:p-1 pl-1",
       }}
     >
       <TableHeader className="!shadow-none">

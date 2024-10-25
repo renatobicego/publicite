@@ -3,12 +3,12 @@ import {
   GroupNotification,
   GroupNotificationType,
 } from "@/types/groupTypes";
-import generateNotification from "../generateNotification";
 import { User } from "@/types/userTypes";
+import generateNotification from "../generateNotification";
 
 const generateGroupNotification = (
   event: GroupNotificationType,
-  group: Group,
+  group: Pick<Group, "name" | "_id" | "profilePhotoUrl">,
   userSending: Pick<User, "username">,
   userToSendId: string
 ) => {

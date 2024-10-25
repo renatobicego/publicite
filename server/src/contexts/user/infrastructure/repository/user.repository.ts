@@ -24,6 +24,7 @@ import { UserClerkUpdateDto } from '../../domain/entity/dto/user.clerk.update.dt
 import { UserFindAllResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.response.dto';
 import { fullNameNormalization } from '../../application/functions/utils';
 import { GROUP_notification_graph_model_get_all } from '../../application/adapter/dto/HTTP-RESPONSE/notifications/user.notifications.response';
+import { parseZonedDateTime } from '@internationalized/date';
 
 @Injectable()
 export class UserRepository implements UserRepositoryInterface {
@@ -197,24 +198,44 @@ export class UserRepository implements UserRepositoryInterface {
     page: number,
   ): Promise<GROUP_notification_graph_model_get_all> {
     try {
+      // Fetch the user with notifications
       const userWithNotifications = await this.user
-        .find({ _id: id })
-        .select('notifications')
-        .limit(limit + 1)
-        .skip((page - 1) * limit)
-        .lean();
+        .findOne({ _id: id })
+        .select('notifications') // Get only notifications
+        .lean(); // Use lean for performance
 
-      const hasMore = userWithNotifications.length > limit;
+      if (!userWithNotifications || !userWithNotifications.notifications) {
+        return {
+          notifications: [],
+          hasMore: false,
+        };
+      }
 
-      const notificationsResponse = userWithNotifications
-        .flatMap((user) => user.notifications)
-        .slice(0, limit)
-        .map((notification) => {
-          console.log(notification);
+      // Sort the notifications array by date (most recent first)
+      const sortedNotifications = userWithNotifications.notifications.sort(
+        (a, b) =>
+          parseZonedDateTime(b.notification.date).compare(
+            parseZonedDateTime(a.notification.date),
+          ),
+      );
+
+      // Pagination: Apply skip and limit
+      const paginatedNotifications = sortedNotifications.slice(
+        (page - 1) * limit,
+        page * limit,
+      );
+
+      // Convert the notifications using the mapper
+      const notificationsResponse = paginatedNotifications.map(
+        (notification) => {
           return this.userRepositoryMapper.documentNotificationToNotificationResponse(
             notification,
           );
-        });
+        },
+      );
+
+      // Check if there are more notifications beyond this page
+      const hasMore = sortedNotifications.length > page * limit;
 
       return {
         notifications: notificationsResponse,
@@ -496,6 +517,4 @@ export class UserRepository implements UserRepositoryInterface {
       throw error;
     }
   }
-
-
 }

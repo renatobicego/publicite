@@ -5,7 +5,7 @@ const FileChip = ({ children }: { children: React.ReactNode }) => {
   return (
     <Chip
       color="secondary"
-      className="px-2"
+      className="px-2 text-xs"
       variant="flat"
       startContent={<FaFile />}
       classNames={{

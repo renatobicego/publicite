@@ -7,11 +7,13 @@ import PostImage from "./PostImage";
 const GoodCard = ({
   post,
   recommendation,
-  savePostMagazine
+  savePostMagazine,
+  isGroupPost
 }: {
   post: Good;
   recommendation: boolean;
-  savePostMagazine: boolean;
+    savePostMagazine: boolean;
+  isGroupPost: boolean;
 }) => {
   const { title, reviews, description, price } = post;
   return (
@@ -22,6 +24,7 @@ const GoodCard = ({
         reviews={reviews}
         description={description}
         price={price}
+        isGroupPost={isGroupPost}
         isService={false}
       />
     </>

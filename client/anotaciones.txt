@@ -23,6 +23,5 @@ En este caso habria que hacer una ruta para verificar si ya existe el usuario de
 esto es una pelotudez pero bueno habría que hacer una nueva notificación en este caso
 -Ver si se puede poner un deadtime en las anotaciones de la pizzara
 la verdad que es una  re paja para el usuario eso y es una paja para nosotros asi que le diria que no hinche los huevos
--En la busqueda de pizarra poder buscar por el nombre y apellido o nombre de usuario del creador
 
 CUENTA GRATUITA CREAR PLAN DE SUSCRIPTION

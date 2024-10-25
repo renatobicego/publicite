@@ -8,9 +8,11 @@ import { POSTS } from "@/utils/data/urls";
 const PetitionCard = ({
   post,
   recommendation,
+  isGroupPost,
 }: {
   post: Petition;
   recommendation: boolean;
+  isGroupPost: boolean;
 }) => {
   const price = post.toPrice
     ? `De $${post.price} a $${post.toPrice}`
@@ -25,7 +27,9 @@ const PetitionCard = ({
     <CardBody
       as={Link}
       href={`${POSTS}/${post._id}`}
-      className="flex flex-col gap-2 pb-5 justify-start items-start"
+      className={`flex flex-col gap-2 ${
+        !isGroupPost && "pb-5"
+      }  justify-start items-start`}
     >
       <h6 className="text-text-color">{post.title}</h6>
       <div className="flex gap-1">
@@ -35,11 +39,11 @@ const PetitionCard = ({
         {post.petitionType === "service" && <ServiceChip />}
       </div>
       {post.description && (
-        <div className="text-light-text line-clamp-2 max-md:text-xs">
+        <div className="text-light-text line-clamp-2 text-xs lg:max-2xl:text-small 2xl:text-sm">
           {post.description}
         </div>
       )}
-      <p className="text-light-text max-md:text-xs font-semibold">
+      <p className="text-light-text text-xs lg:max-2xl:text-small 2xl:text-sm font-semibold">
         {price} {frequencyShown}
       </p>
     </CardBody>

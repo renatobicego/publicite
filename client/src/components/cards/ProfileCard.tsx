@@ -1,7 +1,7 @@
 import { User, UserBusiness } from "@/types/userTypes";
 import { Avatar, Card, CardBody, Link } from "@nextui-org/react";
 import { TbWorldPin } from "react-icons/tb";
-import SendRequest from "../buttons/SendRequest";
+import SendRequest from "../buttons/SendRequest/SendRequest";
 import { PROFILE } from "@/utils/data/urls";
 
 const ProfileCard = ({ user }: { user: User }) => {
@@ -34,7 +34,7 @@ const ProfileCard = ({ user }: { user: User }) => {
             <TbWorldPin className="size-4 min-w-4 mt-0.5" />
             <p className="text-xs md:text-sm">{user.countryRegion}</p>
           </div>
-          <SendRequest />
+          {/* <SendRequest /> */}
         </div>
       </CardBody>
     </Card>

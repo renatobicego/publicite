@@ -1,4 +1,4 @@
-import SendRequest from "@/components/buttons/SendRequest";
+import SendRequest from "@/components/buttons/SendRequest/SendRequest";
 import { Contact, GetUser, UserBusiness } from "@/types/userTypes";
 import {
   Button,
@@ -24,9 +24,11 @@ import ContactPetitionsList from "@/components/modals/ContactPetition/ContactPet
 const UserInfo = ({
   user,
   isMyProfile,
+  usernameLogged,
 }: {
   user: GetUser;
   isMyProfile: boolean;
+  usernameLogged: string;
 }) => {
   const { userType } = user;
   const business = user as unknown as UserBusiness;
@@ -60,7 +62,12 @@ const UserInfo = ({
           {isMyProfile ? (
             <ContactPetitionsList userId={user._id} />
           ) : (
-            <SendRequest variant="solid" removeMargin={false} />
+            <SendRequest
+              variant="solid"
+              removeMargin={false}
+              idToSendRequest={user._id}
+              usernameLogged={usernameLogged}
+            />
           )}
           <OptionsDropdown username={user.username} />
         </div>

@@ -44,6 +44,7 @@ export const getGroupByIdQuery = gql`
       profilePhotoUrl
       rules
       visibility
+      alias
     }
   }
 `;
@@ -65,6 +66,21 @@ export const getGroupMembersByIdQuery = gql`
         name
         _id
       }
+    }
+  }
+`;
+
+export const getGroupAdminsByIdQuery = gql`
+  query GetGroupById($getGroupByIdId: String!) {
+    getGroupById(id: $getGroupByIdId) {
+      _id
+      admins {
+        username
+        _id
+      }
+      creator
+      name
+      profilePhotoUrl
     }
   }
 `;

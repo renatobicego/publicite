@@ -45,7 +45,11 @@ export default async function ProfileLayout(props: {
     <main className="flex min-h-screen flex-col items-start main-style gap-4 md:gap-6 xl:gap-8">
       <BreadcrumbsAdmin items={breadcrumbsItems} />
       <div className="items-start flex gap-4 justify-between w-full max-md:flex-wrap">
-        <UserInfo user={user} isMyProfile={isMyProfile} />
+        <UserInfo
+          user={user}
+          isMyProfile={isMyProfile}
+          usernameLogged={loggedUser?.username as string}
+        />
         {user.board || !isMyProfile ? (
           <BoardCard
             board={user.board}
