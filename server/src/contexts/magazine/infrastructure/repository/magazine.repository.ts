@@ -214,7 +214,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
   }
 
   async addCollaboratorsToUserMagazine(
-    newColaborators: string[],
+    newCollaborators: string[],
     magazineId: string,
     magazineAdmin: string,
   ): Promise<void> {
@@ -223,22 +223,22 @@ export class MagazineRepository implements MagazineRepositoryInterface {
       await session.withTransaction(async () => {
         const result = await this.userMagazine.updateOne(
           { _id: magazineId, user: magazineAdmin },
-          { $addToSet: { collaborators: { $each: newColaborators } } },
+          { $addToSet: { collaborators: { $each: newCollaborators } } },
           { session },
         );
 
         checkResultModificationOfOperation(result);
 
         await this.userModel.updateMany(
-          { _id: { $in: newColaborators } },
+          { _id: { $in: newCollaborators } },
           { $addToSet: { magazines: magazineId } },
           { session },
         );
         await session.commitTransaction();
-        this.logger.log('Colaborators added to Magazine successfully');
+        this.logger.log('Collaborators added to Magazine successfully');
       });
     } catch (error: any) {
-      this.logger.error('Error adding Colaborators to Magazine', error);
+      this.logger.error('Error adding Collaborators to Magazine', error);
       await session.abortTransaction();
       throw error;
     } finally {
@@ -289,10 +289,13 @@ export class MagazineRepository implements MagazineRepositoryInterface {
         }
       });
       await session.commitTransaction();
-      this.logger.log('Allowed Colaborators added to Magazine successfully');
+      this.logger.log('Allowed Collaborators added to Magazine successfully');
       return;
     } catch (error: any) {
-      this.logger.error('Error adding Allowed Colaborators to Magazine', error);
+      this.logger.error(
+        'Error adding Allowed Collaborators to Magazine',
+        error,
+      );
       await session.abortTransaction();
       throw error;
     } finally {
@@ -301,7 +304,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
   }
 
   async deleteCollaboratorsFromMagazine(
-    colaboratorsToDelete: string[],
+    collaboratorsToDelete: string[],
     magazineId: string,
     magazineAdmin: string,
   ): Promise<void> {
@@ -311,7 +314,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
         const result = await this.userMagazine
           .updateOne(
             { _id: magazineId, user: magazineAdmin },
-            { $pullAll: { collaborators: colaboratorsToDelete } },
+            { $pullAll: { collaborators: collaboratorsToDelete } },
             { session },
           )
           .lean();
@@ -320,19 +323,19 @@ export class MagazineRepository implements MagazineRepositoryInterface {
 
         await this.userModel
           .updateMany(
-            { _id: { $in: colaboratorsToDelete } },
+            { _id: { $in: collaboratorsToDelete } },
             { $pull: { magazines: magazineId } },
             { session },
           )
           .lean();
         await session.commitTransaction();
-        this.logger.log('Colaborators deleted from Magazine successfully');
+        this.logger.log('Collaborators deleted from Magazine successfully');
       });
     } catch (error: any) {
       if (session.inTransaction()) {
         await session.abortTransaction();
       }
-      this.logger.error('Error deleting Colaborators from Magazine', error);
+      this.logger.error('Error deleting Collaborators from Magazine', error);
       throw error;
     } finally {
       session.endSession();
@@ -377,13 +380,13 @@ export class MagazineRepository implements MagazineRepositoryInterface {
       });
       await session.commitTransaction();
       this.logger.log(
-        'Allowed Colaborators deleted from Magazine Group successfully',
+        'Allowed Collaborators deleted from Magazine Group successfully',
       );
       return;
     } catch (error: any) {
       await session.abortTransaction();
       this.logger.error(
-        'Error deleting Allowed Colaborators from Magazine Group',
+        'Error deleting Allowed Collaborators from Magazine Group',
         error,
       );
       throw error;
@@ -519,6 +522,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
           {
             path: 'group',
             select: '_id name profilePhotoUrl',
+            model: 'Group',
           },
           {
             path: 'sections',
@@ -535,21 +539,21 @@ export class MagazineRepository implements MagazineRepositoryInterface {
           },
         ])
         .session(session);
-  
+
       if (!magazine) {
         await session.abortTransaction();
         return null;
       }
       await session.commitTransaction();
       return this.magazineRepositoryMapper.toReponse(magazine);
-    } catch (error:any) {
+    } catch (error: any) {
       await session.abortTransaction();
       throw error;
     } finally {
       session.endSession();
     }
   }
-  
+
   async save(magazine: Magazine): Promise<any> {
     let magazineSaved;
     if (magazine.getSections.length <= 0) {

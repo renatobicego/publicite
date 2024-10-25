@@ -71,7 +71,7 @@ export class group_graphql_magazine {
 }
 
 @ObjectType()
-export class allowedColaborators_graphql_magazine {
+export class allowedCollaborators_graphql_magazine {
   @Field(() => String, { nullable: true })
   _id: ObjectId;
 
@@ -121,8 +121,8 @@ export class MagazineResponse {
   @Field(() => String, { nullable: true })
   visibility?: string;
 
-  @Field(() => [allowedColaborators_graphql_magazine], { nullable: true })
-  allowedCollaborators?: allowedColaborators_graphql_magazine;
+  @Field(() => [allowedCollaborators_graphql_magazine], { nullable: true })
+  allowedCollaborators?: allowedCollaborators_graphql_magazine[];
 
   @Field(() => group_graphql_magazine, { nullable: true })
   group?: group_graphql_magazine;

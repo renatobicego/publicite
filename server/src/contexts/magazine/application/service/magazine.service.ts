@@ -84,7 +84,7 @@ export class MagazineService implements MagazineServiceInterface {
   ): Promise<any> {
     try {
       this.logger.log(
-        'Adding Allowed Colaborators to User Magazine in service..',
+        'Adding Allowed Collaborators to User Magazine in service..',
       );
       await this.magazineRepository.addAllowedCollaboratorsToGroupMagazine(
         newAllowedCollaborators,
@@ -93,7 +93,7 @@ export class MagazineService implements MagazineServiceInterface {
       );
     } catch (error: any) {
       this.logger.error(
-        'Error adding Allowed Colaborators to User Magazine in service',
+        'Error adding Allowed Collaborators to User Magazine in service',
         error,
       );
       throw error;
@@ -101,20 +101,20 @@ export class MagazineService implements MagazineServiceInterface {
   }
 
   async addCollaboratorsToUserMagazine(
-    newColaborators: string[],
+    newCollaborators: string[],
     magazineId: string,
     magazineAdmin: string,
   ): Promise<void> {
     try {
-      this.logger.log('Adding Colaborators to Group Magazine in service..');
+      this.logger.log('Adding Collaborators to Group Magazine in service..');
       await this.magazineRepository.addCollaboratorsToUserMagazine(
-        newColaborators,
+        newCollaborators,
         magazineId,
         magazineAdmin,
       );
     } catch (error: any) {
       this.logger.error(
-        'Error adding Colaborators to Group Magazine in service',
+        'Error adding Collaborators to Group Magazine in service',
         error,
       );
       throw error;
@@ -172,19 +172,19 @@ export class MagazineService implements MagazineServiceInterface {
   }
 
   async deleteCollaboratorsFromMagazine(
-    colaboratorsToDelete: string[],
+    collaboratorsToDelete: string[],
     magazineId: string,
     magazineAdmin: string,
   ): Promise<void> {
     try {
-      this.logger.log('Deleting Colaborators from Magazine in service..');
+      this.logger.log('Deleting Collaborators from Magazine in service..');
       await this.magazineRepository.deleteCollaboratorsFromMagazine(
-        colaboratorsToDelete,
+        collaboratorsToDelete,
         magazineId,
         magazineAdmin,
       );
     } catch (error: any) {
-      this.logger.error('Error deleting Colaborators from Magazine in service');
+      this.logger.error('Error deleting Collaborators from Magazine in service');
       throw error;
     }
   }

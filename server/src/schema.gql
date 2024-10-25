@@ -352,7 +352,7 @@ type group_graphql_magazine {
   profilePhotoUrl: String
 }
 
-type allowedColaborators_graphql_magazine {
+type allowedCollaborators_graphql_magazine {
   _id: String
   username: String
   profilePhotoUrl: String
@@ -373,7 +373,7 @@ type MagazineResponse {
   collaborators: [collaborators_graphql!]
   user: user_graphql_magazine
   visibility: String
-  allowedCollaborators: [allowedColaborators_graphql_magazine!]
+  allowedCollaborators: [allowedCollaborators_graphql_magazine!]
   group: group_graphql_magazine
 }
 
@@ -461,13 +461,13 @@ type Mutation {
   addPostInGroupMagazine(postId: [String!]!, magazineAdmin: String!, magazineId: String!, sectionId: String!): String
 
   """Agregar colaboradores a la revista de usuario"""
-  addCollaboratorsToUserMagazine(newColaborators: [String!]!, magazineAdmin: String!, magazineId: String!): String
+  addCollaboratorsToUserMagazine(newCollaborators: [String!]!, magazineAdmin: String!, magazineId: String!): String
 
   """Agregar allowedCollaborators a la revista de grupo"""
-  addAllowedCollaboratorsToGroupMagazine(newAllowedColaborators: [String!]!, magazineId: String!, magazineAdmin: String!): String
+  addAllowedCollaboratorsToGroupMagazine(newallowedCollaborators: [String!]!, magazineId: String!, magazineAdmin: String!): String
 
   """Eliminar colaboradores de la revista de usuario"""
-  deleteColaboratorsFromUserMagazine(colaboratorsToDelete: [String!]!, magazineId: String!, magazineAdmin: String!): String
+  deleteCollaboratorsFromUserMagazine(collaboratorsToDelete: [String!]!, magazineId: String!, magazineAdmin: String!): String
 
   """Eliminar allowed colaboradores de la revista de grupo"""
   deleteAllowedCollaboratorsFromMagazineGroup(allowedCollaboratorsToDelete: [String!]!, magazineId: String!, magazineAdmin: String!): String

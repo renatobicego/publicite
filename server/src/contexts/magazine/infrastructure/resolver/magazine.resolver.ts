@@ -112,8 +112,8 @@ export class MagazineResolver {
     description: 'Agregar colaboradores a la revista de usuario',
   })
   async addCollaboratorsToUserMagazine(
-    @Args('newColaborators', { type: () => [String] })
-    newColaborators: string[],
+    @Args('newCollaborators', { type: () => [String] })
+    newCollaborators: string[],
     @Args('magazineAdmin', { type: () => String })
     magazineAdmin: string,
     @Args('magazineId', { type: () => String })
@@ -124,11 +124,11 @@ export class MagazineResolver {
     try {
       PubliciteAuth.authorize(context, magazineAdmin);
       await this.magazineAdapter.addCollaboratorsToUserMagazine(
-        newColaborators,
+        newCollaborators,
         magazineId,
         magazineAdmin,
       );
-      return 'Colaborators added in user magazine';
+      return 'Collaborators added in user magazine';
     } catch (error: any) {
       throw error;
     }
@@ -139,8 +139,8 @@ export class MagazineResolver {
     description: 'Agregar allowedCollaborators a la revista de grupo',
   })
   async addAllowedCollaboratorsToGroupMagazine(
-    @Args('newAllowedColaborators', { type: () => [String] })
-    newAllowedColaborators: string[],
+    @Args('newallowedCollaborators', { type: () => [String] })
+    newallowedCollaborators: string[],
     @Args('magazineId', { type: () => String })
     magazineId: string,
     @Args('magazineAdmin', { type: () => String })
@@ -151,11 +151,11 @@ export class MagazineResolver {
     try {
       PubliciteAuth.authorize(context, magazineAdmin);
       await this.magazineAdapter.addAllowedCollaboratorsToGroupMagazine(
-        newAllowedColaborators,
+        newallowedCollaborators,
         magazineId,
         magazineAdmin,
       );
-      return 'Colaborators added in group magazine';
+      return 'Collaborators added in group magazine';
     } catch (error: any) {
       throw error;
     }
@@ -165,9 +165,9 @@ export class MagazineResolver {
     nullable: true,
     description: 'Eliminar colaboradores de la revista de usuario',
   })
-  async deleteColaboratorsFromUserMagazine(
-    @Args('colaboratorsToDelete', { type: () => [String] })
-    colaboratorsToDelete: string[],
+  async deleteCollaboratorsFromUserMagazine(
+    @Args('collaboratorsToDelete', { type: () => [String] })
+    collaboratorsToDelete: string[],
     @Args('magazineId', { type: () => String })
     magazineId: string,
     @Args('magazineAdmin', { type: () => String })
@@ -178,11 +178,11 @@ export class MagazineResolver {
     try {
       PubliciteAuth.authorize(context, magazineAdmin);
       await this.magazineAdapter.deleteCollaboratorsFromMagazine(
-        colaboratorsToDelete,
+        collaboratorsToDelete,
         magazineId,
         magazineAdmin,
       );
-      return 'Colaborators deleted in user magazine';
+      return 'Collaborators deleted in user magazine';
     } catch (error: any) {
       throw error;
     }
@@ -208,7 +208,7 @@ export class MagazineResolver {
         magazineId,
         magazineAdmin,
       );
-      return 'Colaborators deleted in group magazine';
+      return 'Collaborators deleted in group magazine';
     } catch (error: any) {
       throw error;
     }

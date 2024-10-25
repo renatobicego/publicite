@@ -13,7 +13,7 @@ export interface MagazineAdapterInterface {
   ): Promise<any>;
 
   addCollaboratorsToUserMagazine(
-    newColaborators: string[],
+    newCollaborators: string[],
     magazineId: string,
     magazineAdmin: string,
   ): Promise<any>;
@@ -39,7 +39,7 @@ export interface MagazineAdapterInterface {
   ): Promise<any>;
 
   deleteCollaboratorsFromMagazine(
-    colaboratorsToDelete: string[],
+    collaboratorsToDelete: string[],
     magazineId: string,
     magazineAdmin: string,
   ): Promise<any>;

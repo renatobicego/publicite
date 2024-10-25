@@ -66,13 +66,13 @@ export class MagazineAdapter implements MagazineAdapterInterface {
   }
 
   async addCollaboratorsToUserMagazine(
-    newColaborators: string[],
+    newCollaborators: string[],
     magazineId: string,
     magazineAdmin: string,
   ): Promise<any> {
     try {
       await this.magazineService.addCollaboratorsToUserMagazine(
-        newColaborators,
+        newCollaborators,
         magazineId,
         magazineAdmin,
       );
@@ -106,13 +106,13 @@ export class MagazineAdapter implements MagazineAdapterInterface {
   }
 
   async deleteCollaboratorsFromMagazine(
-    colaboratorsToDelete: string[],
+    collaboratorsToDelete: string[],
     magazineId: string,
     magazineAdmin: string,
   ): Promise<any> {
     try {
       await this.magazineService.deleteCollaboratorsFromMagazine(
-        colaboratorsToDelete,
+        collaboratorsToDelete,
         magazineId,
         magazineAdmin,
       );
