@@ -5,6 +5,7 @@ export class MagazineRepositoryMapper
   implements MagazineRepositoryMapperInterface
 {
   toReponse(magazineDocument: any): Partial<MagazineResponse> {
-    return new MagazineResponse(magazineDocument);
+    const response = new MagazineResponse(magazineDocument);
+    return response;
   }
 }
