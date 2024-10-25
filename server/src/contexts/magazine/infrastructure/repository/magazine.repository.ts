@@ -535,22 +535,21 @@ export class MagazineRepository implements MagazineRepositoryInterface {
           },
         ])
         .session(session);
-
+  
       if (!magazine) {
         await session.abortTransaction();
-        session.endSession();
         return null;
       }
       await session.commitTransaction();
-      session.endSession();
       return this.magazineRepositoryMapper.toReponse(magazine);
-    } catch (error: any) {
+    } catch (error:any) {
       await session.abortTransaction();
-      session.endSession();
       throw error;
+    } finally {
+      session.endSession();
     }
   }
-
+  
   async save(magazine: Magazine): Promise<any> {
     let magazineSaved;
     if (magazine.getSections.length <= 0) {
