@@ -315,6 +315,7 @@ type GroupResponse {
   details: String
   profilePhotoUrl: String
   visibility: String!
+  notifications: [String!]!
 }
 
 type GroupListResponse {

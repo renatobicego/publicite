@@ -94,6 +94,9 @@ export class GroupResponse {
   @Field(() => String)
   visibility: string;
 
+  @Field(() => [String])
+  notifications: string[];
+
   constructor(group: any) {
     this._id = group._id;
     this.members = group.members;
@@ -106,6 +109,7 @@ export class GroupResponse {
     this.details = group.details;
     this.profilePhotoUrl = group.profilePhotoUrl;
     this.visibility = group.visibility;
+    this.notifications = group.notifications ?? [];
   }
 }
 

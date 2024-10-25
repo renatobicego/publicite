@@ -11,6 +11,7 @@ export class Group {
   private details: string;
   private profilePhotoUrl: string;
   private visibility: string;
+  private pendingNotifications: string[];
 
   constructor(
     members: ObjectId[],
@@ -23,6 +24,7 @@ export class Group {
     details: string,
     profilePhotoUrl: string,
     visibility: string,
+    pendingNotifications: string[],
   ) {
     this.members = members ?? [];
     this.admins = admins ?? [];
@@ -34,6 +36,7 @@ export class Group {
     this.details = details ?? 'no details';
     this.profilePhotoUrl = profilePhotoUrl;
     this.visibility = visibility ?? 'public';
+    this.pendingNotifications = pendingNotifications ?? [];
   }
 
   get getMembers() {

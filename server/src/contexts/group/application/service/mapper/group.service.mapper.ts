@@ -16,6 +16,7 @@ export class GroupServiceMapper implements GroupServiceMapperInterface {
       group.details,
       group.profilePhotoUrl,
       group.visibility,
+      [],
     );
   }
 }
