@@ -511,13 +511,18 @@ export class MagazineRepository implements MagazineRepositoryInterface {
       const magazine = await this.magazineModel
         .findById(id)
         .select(
-          '_id collaborators name user description sections ownerType allowedCollaborators group visibility',
+          '_id collaborators name user description sections ownerType allowedCollaborators group -kind',
         )
         .populate([
-          { path: 'collaborators', select: '_id username profilePhotoUrl' },
+          {
+            path: 'collaborators',
+            select: '_id username profilePhotoUrl',
+            model: 'User',
+          },
           {
             path: 'user',
             select: '_id username profilePhotoUrl',
+            model: 'User',
           },
           {
             path: 'group',
@@ -527,18 +532,22 @@ export class MagazineRepository implements MagazineRepositoryInterface {
           {
             path: 'sections',
             select: '_id isFatherSection posts title',
+            model: 'MagazineSection',
             populate: {
               path: 'posts',
               select:
                 '_id imagesUrls title description price frequencyPrice petitionType postType',
+              model: 'Post',
             },
           },
           {
             path: 'allowedCollaborators',
             select: '_id username profilePhotoUrl',
+            model: 'User',
           },
         ])
-        .session(session);
+        .session(session)
+        .lean();
 
       if (!magazine) {
         await session.abortTransaction();

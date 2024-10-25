@@ -372,7 +372,6 @@ type MagazineResponse {
   description: String
   collaborators: [collaborators_graphql!]
   user: user_graphql_magazine
-  visibility: String
   allowedCollaborators: [allowedCollaborators_graphql_magazine!]
   group: group_graphql_magazine
 }
@@ -597,7 +596,7 @@ input MagazineCreateRequest {
   addedPost: String
   collaborators: [String!]
   user: String
-  visibility: String!
+  visibility: String
   allowedCollaborators: [String!]
   group: String
 }

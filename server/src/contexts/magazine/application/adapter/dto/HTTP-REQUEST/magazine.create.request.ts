@@ -26,7 +26,7 @@ export class MagazineCreateRequest {
   @Field(() => String, { nullable: true })
   user: ObjectId;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   visibility: string;
 
   // Group Magazines Atributes

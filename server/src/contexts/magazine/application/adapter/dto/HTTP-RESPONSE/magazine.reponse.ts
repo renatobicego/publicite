@@ -109,23 +109,20 @@ export class MagazineResponse {
   ownerType: string;
 
   @Field(() => String, { nullable: true })
-  description?: string;
+  description: string;
 
   //User Magazine
   @Field(() => [collaborators_graphql], { nullable: true })
-  collaborators?: collaborators_graphql[];
+  collaborators: collaborators_graphql[];
 
   @Field(() => user_graphql_magazine, { nullable: true })
-  user?: user_graphql_magazine;
-
-  @Field(() => String, { nullable: true })
-  visibility?: string;
+  user: user_graphql_magazine;
 
   @Field(() => [allowedCollaborators_graphql_magazine], { nullable: true })
-  allowedCollaborators?: allowedCollaborators_graphql_magazine[];
+  allowedCollaborators: allowedCollaborators_graphql_magazine[];
 
   @Field(() => group_graphql_magazine, { nullable: true })
-  group?: group_graphql_magazine;
+  group: group_graphql_magazine;
 
   constructor(magazine: any) {
     this._id = magazine._id;
@@ -133,10 +130,9 @@ export class MagazineResponse {
     this.sections = magazine.sections;
     this.ownerType = magazine.ownerType;
     this.description = magazine.description;
-    this.collaborators = magazine.collaborators;
-    this.user = magazine.user;
-    this.visibility = magazine.visibility;
-    this.allowedCollaborators = magazine.allowedCollaborators;
-    this.group = magazine.group;
+    this.collaborators = magazine.collaborators ?? null;
+    this.user = magazine.user ?? null;
+    this.allowedCollaborators = magazine.allowedCollaborators ?? null;
+    this.group = magazine.group ?? null;
   }
 }
