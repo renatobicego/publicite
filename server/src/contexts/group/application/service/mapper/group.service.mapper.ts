@@ -5,10 +5,14 @@ import { GroupRequest } from '../../adapter/dto/HTTP-REQUEST/group.request';
 export class GroupServiceMapper implements GroupServiceMapperInterface {
   toEntity(group: GroupRequest, groupCreator: string): Group {
     const aliasWithOutSpaces = group.alias.replace(/\s+/g, '');
-    const groupNotificationsRequest = {
-      pendingNotifications: [],
-      pendingInvitations: [],
+    let groupNotificationsRequest: {
+      joinRequests: string[];
+      groupInvitations: string[];
+    } = {
+      joinRequests: [],
+      groupInvitations: [],
     };
+
     return new Group(
       group.members,
       group.admins,

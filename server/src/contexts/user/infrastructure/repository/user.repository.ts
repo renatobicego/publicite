@@ -246,7 +246,7 @@ export class UserRepository implements UserRepositoryInterface {
     }
   }
 
-  async pushNotification(notification: any): Promise<any> {
+  async pushNotification(notification: any, session: any): Promise<any> {
     const { userToSendId } = notification.notification.backData;
 
     try {
@@ -255,7 +255,8 @@ export class UserRepository implements UserRepositoryInterface {
           { _id: userToSendId },
           { $addToSet: { notifications: notification } },
         )
-        .lean();
+        .lean()
+        .session(session);
       this.logger.log(
         "notification saved successfully in user's notification array",
       );

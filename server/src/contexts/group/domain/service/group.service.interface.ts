@@ -40,6 +40,12 @@ export interface GroupServiceInterface {
     page: number,
   ): Promise<GroupListResponse>;
   saveGroup(group: GroupRequest, groupCreator: string): Promise<GroupResponse>;
+  pushNotificationToGroup(
+    groupId: string,
+    userId: string,
+    event: string,
+    session: any,
+  ): Promise<any>;
   removeAdminsFromGroupByGroupId(
     admins: string[],
     groupId: string,

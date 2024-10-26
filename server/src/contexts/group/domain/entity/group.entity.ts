@@ -12,8 +12,8 @@ export class Group {
   private profilePhotoUrl: string;
   private visibility: string;
   private groupNotificationsRequest: {
-    pendingNotifications: string[];
-    pendingInvitations: string[];
+    joinRequests: string[];
+    groupInvitations: string[];
   };
 
   constructor(
@@ -28,8 +28,8 @@ export class Group {
     profilePhotoUrl: string,
     visibility: string,
     groupNotificationsRequest: {
-      pendingNotifications: string[];
-      pendingInvitations: string[];
+      joinRequests: string[];
+      groupInvitations: string[];
     },
   ) {
     this.members = members ?? [];
@@ -43,8 +43,8 @@ export class Group {
     this.profilePhotoUrl = profilePhotoUrl;
     this.visibility = visibility ?? 'public';
     this.groupNotificationsRequest = groupNotificationsRequest ?? {
-      pendingNotifications: [],
-      pendingInvitations: [],
+      joinRequests: [],
+      groupInvitations: [],
     };
   }
 

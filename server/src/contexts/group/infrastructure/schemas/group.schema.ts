@@ -17,8 +17,8 @@ export const GroupSchema = new Schema({
     default: 'public',
   },
   groupNotificationsRequest: {
-    pendingNotifications: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-    pendingInvitations: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    joinRequests: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    groupInvitations: [{ type: Schema.Types.ObjectId, ref: 'User' }],
   },
 });
 
@@ -34,8 +34,8 @@ export interface GroupDocument extends Document {
   profilePhotoUrl: string;
   visibility: Visibility;
   groupNotificationsRequest: {
-    pendingNotifications: string[];
-    pendingInvitations: string[];
+    joinRequests: string[];
+    groupInvitations: string[];
   };
 }
 

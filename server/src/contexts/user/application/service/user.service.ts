@@ -156,12 +156,12 @@ export class UserService implements UserServiceInterface {
     }
   }
 
-  async pushNotification(notification: any): Promise<any> {
+  async pushNotification(notification: any, session: any): Promise<any> {
     try {
       this.logger.log(
         'Notification received in the service: ' + UserService.name,
       );
-      await this.userRepository.pushNotification(notification);
+      await this.userRepository.pushNotification(notification, session);
     } catch (error: any) {
       throw error;
     }

@@ -1,3 +1,5 @@
+
+
 export interface SocketNotificationServiceInterface {
-  sendNotificationToUser(data: any): Promise<void>;
+  handleEventNotification(notificationBody: any): Promise<any>;
 }

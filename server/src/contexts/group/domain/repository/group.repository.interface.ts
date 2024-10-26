@@ -42,6 +42,18 @@ export interface GroupRepositoryInterface {
     page: number,
   ): Promise<GroupListResponse>;
   save(group: Group): Promise<GroupResponse>;
+  pushJoinRequest(groupId: string, userId: string, session: any): Promise<any>;
+  pushGroupInvitations(
+    groupId: string,
+    userId: string,
+    session: any,
+  ): Promise<any>;
+  pullJoinRequest(groupId: string, userId: string, session: any): Promise<any>;
+  pullGroupInvitations(
+    groupId: string,
+    userId: string,
+    session: any,
+  ): Promise<any>;
   removeAdminsFromGroupByGroupId(
     admins: string[],
     groupId: string,

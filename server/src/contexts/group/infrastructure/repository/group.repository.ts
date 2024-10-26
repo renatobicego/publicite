@@ -424,6 +424,109 @@ export class GroupRepository implements GroupRepositoryInterface {
     }
   }
 
+  async pushJoinRequest(
+    groupId: string,
+    userId: string,
+    session: any,
+  ): Promise<any> {
+    try {
+      await this.groupModel
+        .findOneAndUpdate(
+          { _id: groupId },
+          {
+            $addToSet: {
+              'groupNotificationsRequest.joinRequests': userId,
+            },
+          },
+        )
+        .session(session)
+        .lean();
+
+      this.logger.log(
+        'Join request added to group successfully. Group ID: ' + groupId,
+      );
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  async pushGroupInvitations(
+    groupId: string,
+    userId: string,
+    session: any,
+  ): Promise<any> {
+    try {
+      await this.groupModel
+        .findOneAndUpdate(
+          { _id: groupId },
+          {
+            $addToSet: {
+              'groupNotificationsRequest.groupInvitations': userId,
+            },
+          },
+        )
+        .session(session)
+        .lean();
+
+      this.logger.log(
+        'Group request added to group successfully. Group ID: ' + groupId,
+      );
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  async pullGroupInvitations(
+    groupId: string,
+    userId: string,
+    session: any,
+  ): Promise<any> {
+    try {
+      await this.groupModel
+        .findOneAndUpdate(
+          { _id: groupId },
+          {
+            $pull: {
+              'groupNotificationsRequest.groupInvitations': userId,
+            },
+          },
+        )
+        .session(session)
+        .lean();
+
+      this.logger.log(
+        'Group request remove to group successfully. Group ID: ' + groupId,
+      );
+    } catch (error: any) {
+      throw error;
+    }
+  }
+  async pullJoinRequest(
+    groupId: string,
+    userId: string,
+    session: any,
+  ): Promise<any> {
+    try {
+      await this.groupModel
+        .findOneAndUpdate(
+          { _id: groupId },
+          {
+            $pull: {
+              'groupNotificationsRequest.joinRequests': userId,
+            },
+          },
+        )
+        .session(session)
+        .lean();
+
+      this.logger.log(
+        'Join request remove to group successfully. Group ID: ' + groupId,
+      );
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
   async updateGroupById(group: GroupUpdateRequest): Promise<any> {
     try {
       const response = await this.groupModel

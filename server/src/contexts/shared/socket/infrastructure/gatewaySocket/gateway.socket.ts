@@ -69,9 +69,9 @@ export class NotificationGatewaySocket
   handleNotification(notificationBody: any, event: string, client: Socket) {
     if (client) {
       client.emit(event, notificationBody);
-      this.notificatorService.sendNotificationToUser(notificationBody);
+      this.notificatorService.handleEventNotification(notificationBody);
     } else {
-      this.notificatorService.sendNotificationToUser(notificationBody);
+      this.notificatorService.handleEventNotification(notificationBody);
     }
   }
 

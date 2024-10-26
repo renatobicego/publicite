@@ -19,7 +19,6 @@ import { MagazineSectionModel } from 'src/contexts/magazine/infrastructure/schem
     MongooseModule.forFeature([
       { name: 'Group', schema: GroupSchema },
       { name: 'User', schema: UserSchema },
-
     ]),
   ],
   controllers: [],
@@ -46,5 +45,6 @@ import { MagazineSectionModel } from 'src/contexts/magazine/infrastructure/schem
       useClass: GroupServiceMapper,
     },
   ],
+  exports: ['GroupServiceInterface'],
 })
 export class GroupModule {}
