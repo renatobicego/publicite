@@ -103,15 +103,15 @@ export class GroupResolver {
     nullable: true,
     description: 'Crear un grupo',
   })
-  @UseGuards(ClerkAuthGuard)
+  //@UseGuards(ClerkAuthGuard)
   async createNewGroup(
     @Args('groupDto', { type: () => GroupRequest }) groupDto: GroupRequest,
     @Context() context: any,
   ): Promise<GroupResponse> {
     try {
       const token = context.req.headers.authorization;
-      const groupCreator = PubliciteAuth.getIdFromClerkToken(token);
-      return await this.groupAdapter.saveGroup(groupDto, groupCreator);
+      //const groupCreator = PubliciteAuth.getIdFromClerkToken(token);
+      return await this.groupAdapter.saveGroup(groupDto, "66fac933316723a55b9d0c90");
     } catch (error: any) {
       throw error;
     }

@@ -16,7 +16,10 @@ export const GroupSchema = new Schema({
     enum: Object.values(Visibility),
     default: 'public',
   },
-  pendingNotifications: [{ type: String, default: [] }],
+  groupNotificationsRequest: {
+    pendingNotifications: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    pendingInvitations: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+  },
 });
 
 export interface GroupDocument extends Document {
@@ -30,7 +33,10 @@ export interface GroupDocument extends Document {
   details: string;
   profilePhotoUrl: string;
   visibility: Visibility;
-  pendingNotifications: string[];
+  groupNotificationsRequest: {
+    pendingNotifications: string[];
+    pendingInvitations: string[];
+  };
 }
 
 // Middleware para eliminar secciones asociadas antes de eliminar las revistas
@@ -67,5 +73,5 @@ GroupSchema.pre(
 
 GroupSchema.index({ name: 1 });
 GroupSchema.index({ admins: 1 });
-GroupSchema.index({ pendingNotifications: 1 });
 GroupSchema.index({ members: 1 });
+GroupSchema.index({ groupNotificationsRequest: 1 });
