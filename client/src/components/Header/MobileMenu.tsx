@@ -10,20 +10,18 @@ import NextLink from "next/link";
 import UserButtonModal from "@/app/(root)/(configuracion)/UserButtonPage";
 import { ConfigData } from "@/app/(root)/(configuracion)/Profile/actions";
 import { UserType } from "@/types/userTypes";
+import { useUserData } from "@/app/(root)/userDataProvider";
 
 const MobileMenu = ({
   setIsMenuOpen,
   isSignedIn,
-  username,
   configData,
-  userType,
 }: {
   setIsMenuOpen: Dispatch<SetStateAction<boolean>>;
   isSignedIn: boolean;
-  username?: string | null;
   configData?: ConfigData;
-  userType?: UserType;
 }) => {
+  const { usernameLogged } = useUserData();
   const menuItems = [
     {
       title: "Inicio",
@@ -40,7 +38,7 @@ const MobileMenu = ({
     },
     {
       title: "Mi Perfil",
-      url: `${PROFILE}/${username}`,
+      url: `${PROFILE}/${usernameLogged}`,
       isPrivate: true,
     },
     {
@@ -87,13 +85,7 @@ const MobileMenu = ({
       <div className="flex gap-2 items-center">
         <SignedIn>
           <Notifications />
-          {userType && username && (
-            <UserButtonModal
-              configData={configData}
-              userType={userType}
-              username={username}
-            />
-          )}
+          <UserButtonModal configData={configData} />
           <DropdownItems />
         </SignedIn>
         <SignedOut>

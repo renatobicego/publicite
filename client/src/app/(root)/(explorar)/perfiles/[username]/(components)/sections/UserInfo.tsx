@@ -18,17 +18,14 @@ import {
 } from "react-icons/fa6";
 import { TbWorldPin } from "react-icons/tb";
 import OptionsDropdown from "../OptionsDropdown";
-import PrimaryButton from "@/components/buttons/PrimaryButton";
 import ContactPetitionsList from "@/components/modals/ContactPetition/ContactPetitionsList";
 
 const UserInfo = ({
   user,
   isMyProfile,
-  usernameLogged,
 }: {
   user: GetUser;
   isMyProfile: boolean;
-  usernameLogged: string;
 }) => {
   const { userType } = user;
   const business = user as unknown as UserBusiness;
@@ -66,7 +63,6 @@ const UserInfo = ({
               variant="solid"
               removeMargin={false}
               idToSendRequest={user._id}
-              usernameLogged={usernameLogged}
             />
           )}
           <OptionsDropdown username={user.username} />

@@ -9,6 +9,7 @@ import { User } from "@/types/userTypes";
 import { Group } from "@/types/groupTypes";
 import { FaLock } from "react-icons/fa6";
 import { redirect } from "next/navigation";
+import JoinGroupCard from "./JoinGroupCard";
 
 export default async function GroupLayout(props: {
   params: Promise<{ id: string }>;
@@ -42,16 +43,19 @@ export default async function GroupLayout(props: {
       href: `${GROUPS}/${params.id}`,
     },
   ];
-  const isCreator = loggedUser.publicMetadata.mongoId === group.creator
-  const isAdmin = group.admins.some(
-    (admin) =>
-      (admin as User)._id === (loggedUser?.publicMetadata.mongoId as string)
-  ) || isCreator;
+  const isCreator = loggedUser.publicMetadata.mongoId === group.creator;
+  const isAdmin =
+    group.admins.some(
+      (admin) =>
+        (admin as User)._id === (loggedUser?.publicMetadata.mongoId as string)
+    ) || isCreator;
   const isMember =
     group.members.some(
       (member) =>
         (member as User)._id === (loggedUser?.publicMetadata.mongoId as string)
-    ) || isAdmin || isCreator;
+    ) ||
+    isAdmin ||
+    isCreator;
 
   return (
     <main className="flex min-h-screen flex-col items-start main-style gap-4 md:gap-6 xl:gap-8">
@@ -62,28 +66,15 @@ export default async function GroupLayout(props: {
           isAdmin={isAdmin}
           isMember={isMember}
           isCreator={isCreator}
-          usernameLogged={loggedUser.username as string}
         />
       </div>
       {isMember ? (
         <>
-          <GroupSolapas
-            group={group as Group}
-            isAdmin={isAdmin}
-            userLogged={{
-              username: loggedUser.username as string,
-              _id: loggedUser.publicMetadata.mongoId as string,
-            }}
-          />
+          <GroupSolapas group={group as Group} isAdmin={isAdmin} />
           {children}
         </>
       ) : (
-        <div className="flex flex-col gap-6 items-center justify-center w-full mt-8">
-          <FaLock className="size-10 min-w-10 text-light-text" />
-          <p className="text-center text-light-text text-small md:text-base">
-            No eres miembro de este grupo. ¡Únete para acceder a su contenido!
-          </p>
-        </div>
+        <JoinGroupCard groupId={params.id}/>
       )}
     </main>
   );

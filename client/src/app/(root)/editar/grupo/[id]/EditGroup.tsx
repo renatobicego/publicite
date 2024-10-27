@@ -1,9 +1,7 @@
 "use client";
 import Inputs from "@/app/(root)/crear/grupo/Inputs";
 import UploadProfileImage from "@/app/(root)/crear/grupo/UploadProfileImage";
-import {
-  groupEditValidation,
-} from "@/app/(root)/crear/grupo/validation";
+import { groupEditValidation } from "@/app/(root)/crear/grupo/validation";
 import { editGroup } from "@/app/server/groupActions";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
@@ -70,7 +68,7 @@ const EditGroup = ({ groupData }: { groupData: Group }) => {
       onSubmit={handleSubmit}
       validationSchema={groupEditValidation}
     >
-      {({ isSubmitting, errors, setFieldValue, values }) => {
+      {({ isSubmitting, errors, setFieldValue, values, setFieldError }) => {
         return (
           <Form className="flex gap-8 max-md:flex-col w-full lg:w-5/6 xl:w-3/4 self-center">
             <UploadProfileImage
@@ -86,6 +84,8 @@ const EditGroup = ({ groupData }: { groupData: Group }) => {
                 errors={errors}
                 showMembers={false}
                 id={groupData._id}
+                prevAlias={groupData.alias}
+                setFieldError={setFieldError}
               />
               <RequiredFieldsMsg />
               <div className="flex gap-2">

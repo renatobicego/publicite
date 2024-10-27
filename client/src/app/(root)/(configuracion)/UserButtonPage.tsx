@@ -12,20 +12,17 @@ import { PROFILE } from "@/utils/data/urls";
 import Business from "./Business/Business";
 import { IoBusiness } from "react-icons/io5";
 import { BackgroundProvider } from "../backgroundProvider";
-import { UserType } from "@/types/userTypes";
 import { ConfigData } from "./Profile/actions";
+import { useUserData } from "../userDataProvider";
 
 const UserButtonModal = ({
-  userType,
   configData,
-  username,
 }: {
-  configData: ConfigData | undefined; 
-  userType: UserType;
-  username: string;
+  configData: ConfigData | undefined;
 }) => {
+  const { userTypeLogged, usernameLogged } = useUserData();
   const pageToReturn = useMemo(() => {
-    switch (userType) {
+    switch (userTypeLogged) {
       case "Person":
         return (
           <UserButton.UserProfilePage
@@ -34,7 +31,7 @@ const UserButtonModal = ({
             url="perfil"
             key="Profile"
           >
-            <Profile username={username}/>
+            <Profile username={usernameLogged as string} />
           </UserButton.UserProfilePage>
         );
       case "Business":
@@ -45,13 +42,14 @@ const UserButtonModal = ({
             labelIcon={<IoBusiness className="size-4" />}
             key="Business"
           >
-            <Business username={username}/>
+            <Business username={usernameLogged as string} />
           </UserButton.UserProfilePage>
         );
       default:
         return null;
     }
-  }, [userType, username]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <UserButton
@@ -66,7 +64,7 @@ const UserButtonModal = ({
         <UserButton.Link
           label="Mi Perfil"
           labelIcon={<FaUser />}
-          href={`${PROFILE}/${username}`}
+          href={`${PROFILE}/${usernameLogged}`}
         />
         <UserButton.Action label="manageAccount" />
       </UserButton.MenuItems>
@@ -102,9 +100,7 @@ const UserButtonModal = ({
         url="preferencias"
       >
         <BackgroundProvider>
-          <Preferences
-            configData={configData}
-          />
+          <Preferences configData={configData} />
         </BackgroundProvider>
       </UserButton.UserProfilePage>
     </UserButton>

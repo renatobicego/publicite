@@ -1,22 +1,27 @@
 import GroupCard from "@/components/cards/GroupCard";
-import ProfileCard from "@/components/cards/ProfileCard";
-import { User } from "@/types/userTypes";
-import { Group } from "@/types/groupTypes";
+import { GetGroups, Group } from "@/types/groupTypes";
 import { Spinner } from "@nextui-org/react";
 
 const GroupsGrid = ({
   items,
   isLoading = false,
+  isUserProfile = false,
 }: {
-  items: Group[];
+  items: GetGroups[];
   isLoading?: boolean;
+  isUserProfile?: boolean;
 }) => {
   return (
     <>
       <div className="grid grid-cols-2 lg:grid-cols-3 3xl:grid-cols-4 gap-4">
-        {items && items.map((group: Group, index) => (
-          <GroupCard group={group} key={group._id + index} />
-        ))}
+        {items &&
+          items.map((group: GetGroups, index) => (
+            <GroupCard
+              group={group}
+              key={group.group._id}
+              isUserProfile={isUserProfile}
+            />
+          ))}
       </div>
       {!isLoading && items.length === 0 && (
         <p className="max-md:text-sm text-light-text">

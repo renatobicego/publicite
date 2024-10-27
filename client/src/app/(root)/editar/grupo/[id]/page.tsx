@@ -3,8 +3,8 @@ import ErrorCard from "@/components/ErrorCard";
 import { getGroupById } from "@/services/groupsService";
 import { User } from "@/types/userTypes";
 import { Group } from "@/types/groupTypes";
-import { EDIT_GROUP, EDIT_POST, GROUPS, POSTS } from "@/utils/data/urls";
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { EDIT_GROUP, GROUPS } from "@/utils/data/urls";
+import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import EditGroup from "./EditGroup";
 export default async function EditGroupPage(props: {

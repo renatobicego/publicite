@@ -13,22 +13,22 @@ import InviteUsersGroup from "../modals/InvitationModal/InviteUsersGroup";
 import PrimaryButton from "../buttons/PrimaryButton";
 import { FaPlus } from "react-icons/fa6";
 import { User } from "@/types/userTypes";
+import { useRouter } from "next-nprogress-bar";
 const GroupSolapas = ({
   group,
   isAdmin,
-  userLogged,
 }: {
   group: Group;
   isAdmin: boolean;
-  userLogged: {
-    username: string;
-    _id: string;
-  };
 }) => {
   const pathname = usePathname();
   const tabsRef = useRef<HTMLDivElement | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
+    if (((pathname.includes('miembros') || pathname.includes('solicitudes')) && !isAdmin)) {
+      router.push(`${GROUPS}/${group._id}`);
+    }
     if (tabsRef.current) {
       // Find the active tab using a data attribute or class
       const activeTab = tabsRef.current.querySelector(
@@ -43,9 +43,75 @@ const GroupSolapas = ({
         });
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
   const GROUP_URL = `${GROUPS}/${group._id}`;
+
+  const tabDefinitions = [
+    {
+      key: `${GROUP_URL}`,
+      title: "Anuncios del Grupo",
+      component: (
+        <>
+          <h3>Anuncios de Miembros del Grupo</h3>
+          <PostListLogic postType="groupPosts" groupId={group._id} />
+        </>
+      ),
+    },
+    {
+      key: `${GROUP_URL}${MAGAZINES}`,
+      title: "Revistas del Grupo",
+      component: (
+        <>
+          <div className="w-full flex justify-between items-center">
+            <h3>Revistas del Grupo</h3>
+            {isAdmin && (
+              <PrimaryButton
+                as={Link}
+                startContent={<FaPlus />}
+                href={`${CREATE_MAGAZINE}/grupos/${group._id}`}
+              >
+                Crear Revista
+              </PrimaryButton>
+            )}
+          </div>
+          <MagazinesGrid magazines={group.magazines as Magazine[]} />
+        </>
+      ),
+    },
+    {
+      key: `${GROUP_URL}/miembros`,
+      title: "Administrar Miembros",
+      component: (
+        <>
+          <div className="w-full flex justify-between items-center">
+            <h3>Miembros del Grupo</h3>
+            <InviteUsersGroup group={group} />
+          </div>
+          <UsersGrid items={group.members as User[]} groupGrid group={group} />
+        </>
+      ),
+      requiredAdmin: true,
+    },
+    {
+      key: `${GROUP_URL}/solicitudes`,
+      title: "Administrar Solicitudes",
+      component: (
+        <>
+          <div className="w-full flex justify-between items-center">
+            <h3>Solicitudes de Ingreso</h3>
+          </div>
+        </>
+      ),
+      requiredAdmin: true,
+    },
+  ];
+
+  // Filter out tabs that require login if the user is not logged in
+  const filteredTabs = tabDefinitions.filter(
+    (tab) => !tab.requiredAdmin || (tab.requiredAdmin && isAdmin)
+  );
 
   return (
     <Tabs
@@ -61,61 +127,17 @@ const GroupSolapas = ({
       variant="underlined"
       selectedKey={pathname}
     >
-      <Tab
-        className="w-full flex gap-4 flex-col"
-        key={GROUP_URL}
-        title="Anuncios del Grupo"
-        href={GROUP_URL}
-        data-key={GROUP_URL} // Use a data attribute to identify the tab
-      >
-        <h3>Anuncios de Miembros del Grupo</h3>
-        <PostListLogic postType="groupPosts" groupId={group._id} />
-      </Tab>
-      <Tab
-        className="w-full flex gap-4 flex-col"
-        key={`${GROUP_URL}${MAGAZINES}`}
-        title="Revistas del Grupo"
-        href={`${GROUP_URL}${MAGAZINES}`}
-        data-key={`${GROUP_URL}${MAGAZINES}`}
-      >
-        <div className="w-full flex justify-between items-center">
-          <h3>Revistas del Grupo</h3>
-          {isAdmin && (
-            <PrimaryButton
-              as={Link}
-              startContent={<FaPlus />}
-              href={`${CREATE_MAGAZINE}/grupos/${group._id}`}
-            >
-              Crear Revista
-            </PrimaryButton>
-          )}
-        </div>
-        <MagazinesGrid magazines={group.magazines as Magazine[]} />
-      </Tab>
-      <Tab
-        className={`w-full flex gap-4 flex-col ${isAdmin ? "" : "hidden"}`}
-        key={`${GROUP_URL}/miembros`}
-        title="Administrar Miembros"
-        href={`${GROUP_URL}/miembros`}
-        data-key={`${GROUP_URL}/miembros`}
-      >
-        <div className="w-full flex justify-between items-center">
-          <h3>Miembros del Grupo</h3>
-          <InviteUsersGroup
-            group={group}
-            username={userLogged.username as string}
-          />
-        </div>
-        <UsersGrid
-          items={group.members as User[]}
-          groupGrid
-          group={group}
-          userLogged={{
-            _id: userLogged._id,
-            username: userLogged.username as string,
-          }}
-        />
-      </Tab>
+      {filteredTabs.map((tab) => (
+        <Tab
+          className="w-full flex gap-4 flex-col"
+          key={tab.key}
+          title={tab.title}
+          href={tab.key}
+          data-key={tab.key}
+        >
+          {tab.component}
+        </Tab>
+      ))}
     </Tabs>
   );
 };

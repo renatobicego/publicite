@@ -35,8 +35,8 @@ const PostCardBody = ({
         )}
       </div>
       {isService && <ServiceChip />}
-      <p className="text-light-text line-clamp-2 text-xs lg:max-2xl:text-small 2xl:text-sm ">{description}</p>
-      <p className="text-light-text text-xs lg:max-2xl:text-small 2xl:text-sm font-semibold">${price}</p>
+      <p className="text-light-text line-clamp-2 text-xs lg:text-small 2xl:text-sm ">{description}</p>
+      <p className="text-light-text text-small lg:text-sm 2xl:text-base font-semibold">${price}</p>
       
     </CardBody>
   );

@@ -8,11 +8,9 @@ import ReplyForm from "./ReplyForm";
 const CommentCard = ({
   comment,
   isAuthor,
-  loggedUserId,
 }: {
   comment: PostComment;
   isAuthor: boolean;
-  loggedUserId: ObjectId;
 }) => {
   return (
     <div className="flex flex-col gap-2 items-end w-full">
@@ -23,7 +21,7 @@ const CommentCard = ({
             {showDate(parseDate(comment.date))}
           </p>
         </CardBody>
-        <ReplyForm comment={comment} isAuthor={isAuthor} loggedUserId={loggedUserId}/>
+        <ReplyForm comment={comment} isAuthor={isAuthor} />
       </Card>
       {comment.replies.map((reply) => (
         <ReplyCard key={reply._id} reply={reply} isAuthor={isAuthor} />

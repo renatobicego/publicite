@@ -1,11 +1,11 @@
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { CustomTextarea } from "@/components/inputs/CustomInputs";
 import { PostReview } from "@/types/postTypes";
-import { useUser } from "@clerk/nextjs";
 import { Button } from "@nextui-org/react";
 import { Form, Formik, Field } from "formik";
 import { useRouter } from "next-nprogress-bar";
 import StarRating from "./StarRating";
+import { useUserData } from "@/app/(root)/userDataProvider";
 
 export interface PostReviewValues extends Omit<PostReview, "_id"> {}
 
@@ -16,16 +16,16 @@ const ReviewPostForm = ({
   id: string;
   onClose: () => void;
 }) => {
-  const { user } = useUser();
+  const { userIdLogged } = useUserData();
   const router = useRouter();
 
-  if (!user) {
+  if (!userIdLogged) {
     router.replace("/iniciar-sesion");
     return null;
   }
 
   const initialValues: PostReviewValues = {
-    author: user.publicMetadata.mongoId,
+    author: userIdLogged,
     date: new Date().toISOString(),
     rating: 0,
     review: "",

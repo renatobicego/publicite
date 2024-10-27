@@ -52,7 +52,7 @@ const MobileNotifications = () => {
             <h5>Notificaciones</h5>
           </ModalHeader>
           <ModalBody id="notifications-popover">
-            {isOpen && <NotificationsContent notifications={notifications} />}
+            {isOpen && <NotificationsContent notifications={notifications} isLoading={isLoading}/>}
           </ModalBody>
         </ModalContent>
       </Modal>

@@ -10,9 +10,7 @@ import UsersGrid from "@/app/(root)/(explorar)/perfiles/UsersGrid";
 import GroupsGrid from "@/app/(root)/(explorar)/grupos/GroupsGrid";
 import PrimaryButton from "../buttons/PrimaryButton";
 import { FaPlus } from "react-icons/fa6";
-import { useUser } from "@clerk/nextjs";
 import UserPosts from "@/app/(root)/(explorar)/perfiles/[username]/(components)/UserPosts/UserPosts";
-import { User } from "@clerk/nextjs/server";
 
 const UserSolapas = ({
   user,
@@ -116,10 +114,6 @@ const UserSolapas = ({
         )}
         <UsersGrid
           items={user.userRelations}
-          userLogged={{
-            username: loggedUser.username as string,
-            _id: loggedUser._id,
-          }}
         />
       </Tab>
       <Tab
@@ -139,7 +133,7 @@ const UserSolapas = ({
             Crear
           </PrimaryButton>
         )}
-        <GroupsGrid items={user.groups} />
+        <GroupsGrid items={user.groups} isUserProfile />
       </Tab>
     </Tabs>
   );

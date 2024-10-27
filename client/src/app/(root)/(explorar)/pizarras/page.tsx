@@ -1,7 +1,6 @@
 import BreadcrumbsAdmin from "@/components/BreadcrumbsAdmin";
 import SolapasTabs from "@/components/solapas/SolapasTabs";
 import { BOARDS } from "@/utils/data/urls";
-import { currentUser } from "@clerk/nextjs/server";
 
 export default async function Boards() {
   const breadcrumbsItems = [

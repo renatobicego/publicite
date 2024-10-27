@@ -12,12 +12,10 @@ const GroupInfo = async ({
   isAdmin,
   isMember,
   isCreator,
-  usernameLogged,
 }: {
   group: Group;
   isAdmin: boolean;
   isMember: boolean;
-  usernameLogged: string;
   isCreator: boolean;
 }) => {
   const { profilePhotoUrl, name, _id, details, rules, members, alias } = group;
@@ -59,7 +57,6 @@ const GroupInfo = async ({
               removeMargin={false}
               isGroup
               idToSendRequest={_id}
-              usernameLogged={usernameLogged}
             />
           )}
           <OptionsDropdown

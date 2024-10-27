@@ -412,7 +412,12 @@ type Query {
   getGroupById(id: String!): GroupResponse
 
   """Busca un grupo por su nombre"""
-  getGroupByName(name: String!, limit: Float!, page: Float!): GroupListResponse
+  getGroupByNameOrAlias(
+    """nombre del grupo o el alias"""
+    name: String!
+    limit: Float!
+    page: Float!
+  ): GroupListResponse
 
   """Buscar si existe un grupo"""
   isThisGroupExist(alias: String!): Boolean

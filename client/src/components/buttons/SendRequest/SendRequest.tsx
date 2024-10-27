@@ -7,7 +7,6 @@ const SendRequest = ({
   variant = "light",
   removeMargin = true,
   idToSendRequest,
-  usernameLogged
 }: {
   isGroup?: boolean;
   variant?:
@@ -19,8 +18,7 @@ const SendRequest = ({
     | "shadow"
     | "ghost";
   removeMargin?: boolean;
-    idToSendRequest: string;
-    usernameLogged: string;
+  idToSendRequest: string;
 }) => {
   return (
     <>
@@ -29,7 +27,6 @@ const SendRequest = ({
           removeMargin={removeMargin}
           variant={variant}
           groupId={idToSendRequest}
-          usernameLogged={usernameLogged}
         />
       ) : (
         <>

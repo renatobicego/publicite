@@ -1,6 +1,6 @@
 "use server";
 import { postBoard, putBoard } from "@/services/boardServices";
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 
 export const createBoard = async (formData: any) => {
   const user = auth();

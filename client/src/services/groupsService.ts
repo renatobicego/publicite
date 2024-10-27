@@ -12,8 +12,8 @@ import {
   getGroupMembersByIdQuery,
   getGroupsQuery,
   makeAdminMutation,
+  validateGroupAliasQuery,
 } from "@/graphql/groupQueries";
-import { cookies } from "next/headers";
 import { auth } from "@clerk/nextjs/server";
 import { ApolloError } from "@apollo/client";
 
@@ -29,8 +29,8 @@ export const getGroups = async (searchTerm: string | null, page: number) => {
       },
     });
     return {
-      items: data.getGroupByName.groups,
-      hasMore: data.getGroupByName.hasMore,
+      items: data.getGroupByNameOrAlias.groups,
+      hasMore: data.getGroupByNameOrAlias.hasMore,
     };
   } catch (error) {
     console.log(error);
@@ -155,6 +155,21 @@ export const putGroup = async (groupToUpdate: any) => {
     console.log(error);
     return {
       error: "Error al editar el grupo. Por favor intenta de nuevo.",
+    };
+  }
+};
+
+export const groupAliasExists = async (alias: string) => {
+  try {
+    const { data } = await query({
+      query: validateGroupAliasQuery,
+      variables: { alias },
+    });
+    return data.isThisGroupExist
+  } catch (error) {
+    console.log(error);
+    return {
+      error: "Error al traer el grupo. Por favor intenta de nuevo.",
     };
   }
 };

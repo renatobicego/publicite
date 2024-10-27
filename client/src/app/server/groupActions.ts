@@ -8,7 +8,7 @@ import {
   putGroup,
 } from "@/services/groupsService";
 import { EditGroupInterface } from "@/types/groupTypes";
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 
 export const createGroup = async (formData: any) => {
   const user = auth();

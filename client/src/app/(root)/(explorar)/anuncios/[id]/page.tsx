@@ -51,7 +51,6 @@ export default async function PostPage(props: { params: Promise<{ id: string }> 
       </section>
       <section className="w-full flex max-lg:flex-col gap-4 lg:gap-6 3xl:gap-8 md:mt-6 xl:mt-8">
         <Comments
-          loggedUserId={user?.publicMetadata.mongoId as string}
           comments={[]}
           postId={postData._id}
           isAuthor={isAuthor}

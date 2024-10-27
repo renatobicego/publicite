@@ -5,7 +5,7 @@ import { useInfiniteFetch } from "@/utils/hooks/useInfiniteFetch";
 import { useMemo, useState } from "react";
 import { Board } from "@/types/board";
 
-const BoardsLogic = ({username} : {username?: string | null}) => {
+const BoardsLogic = () => {
   const { items, isLoading } = useInfiniteFetch("boards");
   const [searchTerms, setSearchTerms] = useState<(string | undefined)[]>([]);
 
@@ -62,7 +62,7 @@ const BoardsLogic = ({username} : {username?: string | null}) => {
           isMultiSearch
         />
       </div>
-      <BoardGrid items={filteredItems} isLoading={isLoading} username={username}/>
+      <BoardGrid items={filteredItems} isLoading={isLoading}/>
     </section>
   );
 };

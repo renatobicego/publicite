@@ -9,7 +9,7 @@ import { extractRouterConfig } from "uploadthing/server";
 import { ourFileRouter } from "../api/uploadthing/core";
 import { SocketProvider } from "../socketProvider";
 import { getConfigData } from "./(configuracion)/Profile/actions";
-import { MagazineProvider } from "./magazinesProvider";
+import { UserDataProvider } from "./userDataProvider";
 export default async function NavigationLayout({
   children,
 }: {
@@ -20,21 +20,21 @@ export default async function NavigationLayout({
 
   return (
     <SocketProvider userId={user?.publicMetadata.mongoId as string}>
-      <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
-      <Header
+      <UserDataProvider
         username={user?.username}
+        clerkId={user?.id}
         userType={user?.publicMetadata.userType}
-        configData={configData}
-        isSignedIn={!!user}
-      />
-      <BackgroundProvider username={user?.username}>
-        <MagazineProvider username={user?.username}>
+        userId={user?.publicMetadata.mongoId}
+      >
+        <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
+        <Header configData={configData} isSignedIn={!!user} />
+        <BackgroundProvider username={user?.username}>
           <BackgroundStyle />
           {children}
           <HelpButton />
-        </MagazineProvider>
-      </BackgroundProvider>
-      <Footer username={user?.username} />
+        </BackgroundProvider>
+        <Footer username={user?.username} />
+      </UserDataProvider>
     </SocketProvider>
   );
 }

@@ -4,7 +4,7 @@ import {
   postMagazineSection,
   putMagazine,
 } from "@/services/magazineService";
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 
 export const createMagazine = async (formData: any) => {
   const user = auth();

@@ -10,11 +10,9 @@ import DeleteComment from "./DeleteComment";
 const ReplyForm = ({
   comment,
   isAuthor,
-  loggedUserId,
 }: {
   comment: PostComment;
   isAuthor: boolean;
-  loggedUserId: ObjectId;
 }) => {
   const [showForm, setShowForm] = useState(false);
 
@@ -44,7 +42,6 @@ const ReplyForm = ({
         <CommentForm
           postId={comment._id}
           isReply
-          loggedUserId={loggedUserId}
           closeForm={() => setShowForm(false)}
         />
       )}

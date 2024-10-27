@@ -14,9 +14,11 @@ import { groupValidation } from "./validation";
 import { Group } from "@/types/groupTypes";
 import { emitGroupNotification } from "@/components/notifications/groups/emitNotifications";
 import { useSocket } from "@/app/socketProvider";
+import { useUserData } from "../../userDataProvider";
 
 export type PostGroup = Omit<Group, "_id" | "creator">;
-const CreateGroupForm = ({ username }: { username: string | null }) => {
+const CreateGroupForm = () => {
+  const { usernameLogged } = useUserData();
   const initialValues: PostGroup = {
     name: "",
     alias: "",
@@ -55,7 +57,7 @@ const CreateGroupForm = ({ username }: { username: string | null }) => {
       emitGroupNotification(
         socket,
         resApi.group,
-        username as string,
+        usernameLogged as string,
         member,
         "notification_group_new_user_added"
       );
@@ -71,7 +73,7 @@ const CreateGroupForm = ({ username }: { username: string | null }) => {
       onSubmit={handleSubmit}
       validationSchema={groupValidation}
     >
-      {({ isSubmitting, errors, setFieldValue }) => {
+      {({ isSubmitting, errors, setFieldValue, setFieldError }) => {
         return (
           <Form className="flex gap-8 max-md:flex-col w-full lg:w-5/6 xl:w-3/4 self-center">
             <UploadProfileImage
@@ -80,7 +82,11 @@ const CreateGroupForm = ({ username }: { username: string | null }) => {
             />
             <div className="flex flex-col gap-4 w-full">
               <h2>Crear Grupo</h2>
-              <Inputs setFieldValue={setFieldValue} errors={errors} />
+              <Inputs
+                setFieldValue={setFieldValue}
+                errors={errors}
+                setFieldError={setFieldError}
+              />
               <RequiredFieldsMsg />
               <div className="mt-4 flex gap-2 items-center">
                 <PrimaryButton variant="light" onPress={() => router.back()}>

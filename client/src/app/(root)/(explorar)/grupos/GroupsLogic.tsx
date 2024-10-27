@@ -31,7 +31,10 @@ const GroupsLogic = () => {
           sortOptions={sortOptions}
         />
       </div>
-      <GroupsGrid items={sortedItems} isLoading={isLoading} />
+      <GroupsGrid
+        items={sortedItems}
+        isLoading={isLoading}
+      />
     </section>
   );
 };

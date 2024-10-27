@@ -48,7 +48,6 @@ export default async function ProfileLayout(props: {
         <UserInfo
           user={user}
           isMyProfile={isMyProfile}
-          usernameLogged={loggedUser?.username as string}
         />
         {user.board || !isMyProfile ? (
           <BoardCard

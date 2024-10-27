@@ -2,7 +2,7 @@ import { Subscription } from "@/types/subscriptions";
 import DataBox, { CardDataItem, DataItem } from "../../DataBox";
 import { Button } from "@nextui-org/react";
 import useUserPostLimit from "@/utils/hooks/useUserPostLimit";
-import { useUser } from "@clerk/nextjs";
+import { useUserData } from "@/app/(root)/userDataProvider";
 
 const LimitPosts = ({
   userSubscriptions,
@@ -12,8 +12,8 @@ const LimitPosts = ({
     postsPacks: Subscription[];
   };
 }) => {
-  const { user } = useUser();
-  const { numberOfPosts } = useUserPostLimit(user?.id as string);
+  const { clerkIdLogged } = useUserData();
+  const { numberOfPosts } = useUserPostLimit(clerkIdLogged as string);
   return (
     <DataBox
       key={"dataLimitPosts"}

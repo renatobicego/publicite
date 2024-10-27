@@ -3,17 +3,17 @@ import useMasonryGrid from "@/utils/hooks/useMasonryGrid";
 import { Board } from "@/types/board";
 import { Spinner } from "@nextui-org/react";
 import { User } from "@/types/userTypes";
+import { useUserData } from "../../userDataProvider";
 
 const BoardGrid = ({
   items,
   isLoading,
-  username,
 }: {
   items: Board[];
   isLoading: boolean;
-  username?: string | null;
 }) => {
   const { columns } = useMasonryGrid(items);
+  const { usernameLogged } = useUserData();
   return (
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 3xl:grid-cols-4 gap-4">
@@ -22,7 +22,9 @@ const BoardGrid = ({
             {column.map((board: Board, index) => (
               <BoardCard
                 isMyBoard={
-                  username ? username === (board.user as User).username : false
+                  usernameLogged
+                    ? usernameLogged === (board.user as User).username
+                    : false
                 }
                 board={board}
                 key={board._id + index}

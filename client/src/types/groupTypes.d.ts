@@ -12,6 +12,13 @@ export interface Group {
   creator: ObjectId;
 }
 
+export interface GetGroups {
+  group: Group;
+  isMember: boolean;
+  hasJoinRequest: boolean;
+  hasGroupRequest: boolean;
+}
+
 export interface EditGroupInterface
   extends Omit<Group, "admins" | "members" | "magazines" | "creator"> {}
 export interface GroupNotification extends BaseNotification {

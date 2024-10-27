@@ -1,11 +1,10 @@
 import BreadcrumbsAdmin from "@/components/BreadcrumbsAdmin";
 import ErrorCard from "@/components/ErrorCard";
 import {
-  getMagazineById,
   getMagazineWithoutPostsById,
 } from "@/services/magazineService";
 import { EDIT_MAGAZINE, GROUPS, MAGAZINES, PROFILE } from "@/utils/data/urls";
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 import { GetUser } from "@/types/userTypes";
 import { getOwner, getProfileUrl } from "@/app/(root)/revistas/[id]/utils";
 import { GroupMagazine, Magazine, UserMagazine } from "@/types/magazineTypes";

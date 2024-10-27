@@ -4,6 +4,7 @@ import PostsList from "@/app/(root)/(explorar)/anuncios/components/PostsList";
 import GroupsLogic from "@/app/(root)/(explorar)/grupos/GroupsLogic";
 import UsersLogic from "@/app/(root)/(explorar)/perfiles/UsersLogic";
 import BoardsLogic from "@/app/(root)/(explorar)/pizarras/BoardsLogic";
+import { useUserData } from "@/app/(root)/userDataProvider";
 import {
   POSTS,
   POST_RECENTS,
@@ -13,14 +14,13 @@ import {
   PROFILE,
   GROUPS,
 } from "@/utils/data/urls";
-import { useUser } from "@clerk/nextjs";
 import { Tab, Tabs } from "@nextui-org/react";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 
 const SolapasTabs = () => {
   const pathname = usePathname();
-  const {user: userLogged} = useUser();
+  const {userIdLogged} = useUserData();
   const tabsRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -84,19 +84,14 @@ const SolapasTabs = () => {
     {
       key: BOARDS,
       title: "Pizarras",
-      component: <BoardsLogic username={userLogged?.username} />,
+      component: <BoardsLogic />,
       requiresLogin: true,
     },
     {
       key: PROFILE,
       title: "Perfiles",
       component: (
-        <UsersLogic
-          userLogged={{
-            username: userLogged?.username as string,
-            _id: userLogged?.publicMetadata.mongoId as string,
-          }}
-        />
+        <UsersLogic />
       ),
       requiresLogin: true,
     },
@@ -110,7 +105,7 @@ const SolapasTabs = () => {
 
   // Filter out tabs that require login if the user is not logged in
   const filteredTabs = tabDefinitions.filter(
-    (tab) => !tab.requiresLogin || (tab.requiresLogin && userLogged)
+    (tab) => !tab.requiresLogin || (tab.requiresLogin && userIdLogged)
   );
 
   return (

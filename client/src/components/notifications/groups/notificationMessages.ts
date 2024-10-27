@@ -8,6 +8,7 @@ export const noticationMessages: Record<
     showUser: boolean;
     acceptAction?: Function;
     rejectAction?: Function;
+    seeNotifications?: Function;
   }
 > = {
   notification_group_user_new_admin: {
@@ -35,8 +36,7 @@ export const noticationMessages: Record<
   notification_group_user_request_group_invitation: {
     message: "ha solicitado unirse al grupo",
     showUser: true,
-    acceptAction: acceptNewMember,
-    rejectAction: declineNewMember
+    seeNotifications: acceptNewMember,
   },
   notification_group_user_rejected_group_invitation: {
     message: "ha rechazado tu solicitud al grupo",

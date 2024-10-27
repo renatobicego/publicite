@@ -14,12 +14,8 @@ import { ConfigData } from "@/app/(root)/(configuracion)/Profile/actions";
 const UserNavItems = ({
   isMenuOpen,
   configData,
-  userType,
-  username,
 }: {
   isMenuOpen: boolean;
-  username?: string | null;
-  userType?: UserType;
   configData: ConfigData | undefined;
 }) => {
   const { newNotifications, setNewNotifications } = useSocket();
@@ -32,13 +28,7 @@ const UserNavItems = ({
       <NavbarItem className="max-lg:hidden flex gap-2 items-center">
         <SignedIn>
           <Notifications />
-          {userType && username && (
-            <UserButtonModal
-              configData={configData}
-              userType={userType}
-              username={username}
-            />
-          )}
+          <UserButtonModal configData={configData} />
           <DropdownItems />
         </SignedIn>
         <SignedOut>

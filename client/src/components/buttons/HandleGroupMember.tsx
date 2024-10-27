@@ -16,26 +16,24 @@ import { IoTrashOutline } from "react-icons/io5";
 import { Group } from "@/types/groupTypes";
 import { useSocket } from "@/app/socketProvider";
 import { emitGroupNotification } from "../notifications/groups/emitNotifications";
+import { useUserData } from "@/app/(root)/userDataProvider";
 
 const HandleGroupMember = ({
   user,
   nameToShow,
   group,
   isAdmin,
-  userLogged,
 }: {
   user: User;
   nameToShow: string;
   group: Group;
   isAdmin?: boolean;
-  userLogged: {
-    username: string;
-    _id: string;
-  };
+
 }) => {
   const router = useRouter();
+  const {userIdLogged, usernameLogged} = useUserData();
   const { socket } = useSocket();
-  const isCreator = group?.creator === userLogged._id;
+  const isCreator = group?.creator === userIdLogged;
 
   const makeAdmin = async () => {
     const res = await addAdmin(group?._id, [user._id]);
@@ -46,7 +44,7 @@ const HandleGroupMember = ({
     emitGroupNotification(
       socket,
       group,
-      userLogged.username as string,
+      usernameLogged as string,
       user._id,
       "notification_group_user_new_admin"
     );
@@ -63,7 +61,7 @@ const HandleGroupMember = ({
     emitGroupNotification(
       socket,
       group,
-      userLogged.username as string,
+      usernameLogged as string,
       user._id,
       "notification_group_user_removed_from_group"
     );
@@ -80,7 +78,7 @@ const HandleGroupMember = ({
     emitGroupNotification(
       socket,
       group,
-      userLogged.username as string,
+      usernameLogged as string,
       user._id,
       "notification_group_user_removed_admin"
     );

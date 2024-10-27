@@ -86,19 +86,30 @@ export const getGroupAdminsByIdQuery = gql`
 `;
 
 export const getGroupsQuery = gql`
-  query GetGroupByName($name: String!, $limit: Float!, $page: Float!) {
-    getGroupByName(name: $name, limit: $limit, page: $page) {
+  query GetGroupByNameOrAlias($name: String!, $limit: Float!, $page: Float!) {
+    getGroupByNameOrAlias(name: $name, limit: $limit, page: $page) {
       groups {
-        _id
-        name
-        members {
+        group {
           _id
+          name
+          members {
+            _id
+          }
+          profilePhotoUrl
+          visibility
         }
-        profilePhotoUrl
-        visibility
+        isMember
+        hasJoinRequest
+        hasGroupRequest
       }
       hasMore
     }
+  }
+`;
+
+export const validateGroupAliasQuery = gql`
+  query Query($alias: String!) {
+    isThisGroupExist(alias: $alias)
   }
 `;
 

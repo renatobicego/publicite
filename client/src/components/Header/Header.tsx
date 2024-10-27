@@ -20,13 +20,9 @@ const UserNavItems = dynamic(() => import("./UserNavItems"), {
 
 const Header = ({
   configData,
-  username,
-  userType,
   isSignedIn,
 }: {
   configData?: ConfigData;
-  username?: string | null;
-  userType?: UserType;
   isSignedIn: boolean;
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -84,15 +80,11 @@ const Header = ({
         <UserNavItems
           configData={configData}
           isMenuOpen={isMenuOpen}
-          username={username}
-          userType={userType}
         />
       </NavbarContent>
       <MobileMenu
         setIsMenuOpen={setIsMenuOpen}
         isSignedIn={isSignedIn}
-        username={username}
-        userType={userType}
         configData={configData}
       />
     </Navbar>

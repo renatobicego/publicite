@@ -11,12 +11,15 @@ import { PostGroup } from "./CreateGroupForm";
 import { fetchDataByType } from "@/utils/data/fetchDataByType";
 import { GROUPS } from "@/utils/data/urls";
 import { SelectUsers } from "@/components/inputs/SelectUsers";
+import { groupAliasExists } from "@/services/groupsService";
 
 const Inputs = ({
   errors,
   setFieldValue,
   showMembers = true,
   id,
+  setFieldError,
+  prevAlias,
 }: {
   errors: FormikErrors<PostGroup>;
   setFieldValue: (
@@ -26,6 +29,8 @@ const Inputs = ({
   ) => Promise<void | FormikErrors<PostGroup>>;
   showMembers?: boolean;
   id?: string;
+  setFieldError: (field: string, message: string | undefined) => void;
+  prevAlias?: string;
 }) => {
   const [listUsers, setListUsers] = useState([]);
   useEffect(() => {
@@ -34,6 +39,19 @@ const Inputs = ({
       setListUsers(data.items);
     });
   }, []);
+  const validateGroupAlias = async (alias: string) => {
+    const res = await groupAliasExists(alias);
+    if (typeof res === "object" && res !== null && "error" in res)  {
+      setFieldError(
+        "alias",
+        "Error al validar el alias. Por favor intenta de nuevo."
+      );
+      return;
+    }
+    if ((res && !prevAlias) || (res && prevAlias !== alias)) {
+      setFieldError("alias", "El alias ya existe. Por favor elija otro.");
+    }
+  };
   return (
     <>
       <Field
@@ -55,8 +73,11 @@ const Inputs = ({
         aria-label="alias"
         startContent={"@"}
         description="Mínimo 2 caracteres. Debe ser único."
-        isInvalid={!!errors.name}
-        errorMessage={errors.name}
+        isInvalid={!!errors.alias}
+        errorMessage={errors.alias}
+        onBlur={async (e: ChangeEvent<HTMLInputElement>) => {
+          await validateGroupAlias(e.target.value);
+        }}
       />
       <Field
         as={CustomTextarea}
@@ -99,7 +120,8 @@ const Inputs = ({
         </>
       ) : (
         <p className="text-xs md:text-sm">
-          Para gestionar los miembros del grupo, debe hacerlo desde la pestaña de {" "}
+          Para gestionar los miembros del grupo, debe hacerlo desde la pestaña
+          de{" "}
           <Link size="sm" href={`${GROUPS}/${id}/miembros`}>
             Administrar Miembros
           </Link>

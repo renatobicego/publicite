@@ -5,12 +5,12 @@ import { getGroupAdminsById } from "@/services/groupsService";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { emitGroupNotification } from "@/components/notifications/groups/emitNotifications";
 import { useSocket } from "@/app/socketProvider";
+import { useUserData } from "@/app/(root)/userDataProvider";
 
 const SendRequestGroup = ({
   variant,
   removeMargin,
   groupId,
-  usernameLogged,
 }: {
   variant:
     | "light"
@@ -22,8 +22,8 @@ const SendRequestGroup = ({
     | "ghost";
   removeMargin: boolean;
   groupId: string;
-  usernameLogged: string;
 }) => {
+  const { usernameLogged } = useUserData();
   const { socket } = useSocket();
   const sendRequestJoinGroup = async () => {
     try {
@@ -44,7 +44,7 @@ const SendRequestGroup = ({
             name: group.name,
             profilePhotoUrl: group.profilePhotoUrl,
           },
-          usernameLogged,
+          usernameLogged as string,
           adminId,
           "notification_group_user_request_group_invitation"
         );

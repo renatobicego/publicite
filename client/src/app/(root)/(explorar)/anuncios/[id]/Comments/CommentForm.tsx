@@ -1,4 +1,5 @@
 "use client";
+import { useUserData } from "@/app/(root)/userDataProvider";
 import SecondaryButton from "@/components/buttons/SecondaryButton";
 import { CustomTextarea } from "@/components/inputs/CustomInputs";
 import { PostCommentForm } from "@/types/postTypes";
@@ -17,15 +18,14 @@ const CommentForm = ({
   postId,
   isReply,
   closeForm,
-  loggedUserId,
 }: {
   postId: ObjectId;
   isReply?: boolean;
   closeForm?: () => void;
-  loggedUserId: ObjectId;
-}) => {
+  }) => {
+  const {userIdLogged} = useUserData();
   const initialValues: PostCommentForm = {
-    author: loggedUserId,
+    author: userIdLogged as ObjectId,
     comment: "",
     date: today(getLocalTimeZone()).toString(),
   };

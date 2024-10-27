@@ -1,5 +1,5 @@
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
-import mongoose, { Connection, Model } from 'mongoose';
+import { Connection, Model } from 'mongoose';
 import { Inject } from '@nestjs/common';
 
 import { Group } from '../../domain/entity/group.entity';
@@ -433,7 +433,7 @@ export class GroupRepository implements GroupRepositoryInterface {
   }
 
   async save(group: Group): Promise<GroupResponse> {
-    let groupCreator = group.getCreator;
+    const groupCreator = group.getCreator;
     let newGroup;
     let groupSaved;
 
@@ -459,7 +459,7 @@ export class GroupRepository implements GroupRepositoryInterface {
     }
   }
 
-  async isThisGroupExist(alias: string): Promise<Boolean> {
+  async isThisGroupExist(alias: string): Promise<boolean> {
     try {
       const group = await this.groupModel.findOne({ alias: alias }).lean();
       if (group) return true;

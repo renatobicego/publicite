@@ -19,7 +19,7 @@ export const useFilteredAndSortedGroups = (items: any[]) => {
     // Search filter
     if (hasSearchFilter) {
       filteredGroups = filteredGroups.filter(
-        (group: Group) =>
+        ({group}) =>
           group.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }

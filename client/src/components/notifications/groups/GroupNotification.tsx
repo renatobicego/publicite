@@ -1,6 +1,10 @@
 import { GROUPS } from "@/utils/data/urls";
 import { showDate } from "@/utils/functions/dates";
-import { parseDate, parseDateTime, parseZonedDateTime } from "@internationalized/date";
+import {
+  parseDate,
+  parseDateTime,
+  parseZonedDateTime,
+} from "@internationalized/date";
 import Link from "next/link";
 import {
   NotificationCard,
@@ -21,8 +25,9 @@ const GroupNotificationCard = ({
   const { group } = notification.frontData;
   const { event } = notification.notification;
   const getNotificationOptionsList = () => {
-    const optionsList: NotificationOptionProps[] = []
-    const notificationMessage = noticationMessages[event as GroupNotificationType];
+    const optionsList: NotificationOptionProps[] = [];
+    const notificationMessage =
+      noticationMessages[event as GroupNotificationType];
 
     // Check if acceptAction exists before adding it to options
     if (notificationMessage?.acceptAction) {
@@ -31,12 +36,19 @@ const GroupNotificationCard = ({
         onPress: () => notificationMessage.acceptAction?.(),
       });
     }
+    if (notificationMessage?.seeNotifications) {
+      optionsList.push({
+        label: "Ver Solicitud",
+        as: Link,
+        href: `${GROUPS}/${group._id}/solicitudes`,
+      });
+    }
     optionsList.push({
       label: "Ver Grupo",
       as: Link,
       className: "text-text-color",
       href: `${GROUPS}/${group._id}`,
-    })
+    });
     if (notificationMessage?.rejectAction) {
       optionsList.push({
         label: "Rechazar Solicitud",
@@ -55,7 +67,7 @@ const GroupNotificationCard = ({
             <span className="font-semibold">
               {notification.frontData.userInviting.username}
             </span>
-          )} {" "}
+          )}{" "}
           {noticationMessages[event as GroupNotificationType].message}
           <span className="font-semibold"> {group.name}</span>
         </p>
