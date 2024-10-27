@@ -4,7 +4,7 @@ import { GroupRequest } from '../../adapter/dto/HTTP-REQUEST/group.request';
 
 export class GroupServiceMapper implements GroupServiceMapperInterface {
   toEntity(group: GroupRequest, groupCreator: string): Group {
-    const aliasWithOutSpaces = group.alias.replace(/\s+/g, '');
+    const aliasWithOutSpaces = group.alias.replace(/\s+/g, '').toLowerCase();
     let groupNotificationsRequest: {
       joinRequests: string[];
       groupInvitations: string[];

@@ -36,12 +36,15 @@ export interface GroupRepositoryInterface {
   deleteGroupById(groupId: string, groupCreator: string): Promise<any>;
 
   findGroupById(id: string): Promise<GroupResponse>;
-  findGroupByName(
+  findGroupByNameOrAlias(
     name: string,
     limit: number,
     page: number,
+    userRequest: string,
   ): Promise<GroupListResponse>;
+  isThisGroupExist(alias: string): Promise<Boolean>;
   save(group: Group): Promise<GroupResponse>;
+
   pushJoinRequest(groupId: string, userId: string, session: any): Promise<any>;
   pushGroupInvitations(
     groupId: string,

@@ -112,11 +112,27 @@ export class GroupResponse {
     this.notifications = group.notifications ?? [];
   }
 }
+// Tengo que indicar si el user tiene una invitacion pendiente, si lo invitaron o si es miembro
 
 @ObjectType()
+class GroupList {
+  @Field(() => GroupResponse, { nullable: true })
+  group: GroupResponse; // Grupo
+
+  @Field(() => Boolean, { nullable: true })
+  isMember: Boolean; // Es miembro del grupo?
+
+  @Field(() => Boolean, { nullable: true })
+  hasJoinRequest: Boolean; // Tiene una solicitud de unirse aun no aceptada por el grupo
+
+  @Field(() => Boolean, { nullable: true })
+  hasGroupRequest: Boolean; // Tiene una solicitud del grupo para que se una
+}
+                                                                                                                                                                                                                                          
+@ObjectType()
 export class GroupListResponse {
-  @Field(() => [GroupResponse])
-  groups: GroupResponse[];
+  @Field(() => [GroupList])
+  groups: GroupList[];
 
   @Field(() => Boolean)
   hasMore: boolean;

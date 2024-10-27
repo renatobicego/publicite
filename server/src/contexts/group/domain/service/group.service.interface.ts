@@ -34,11 +34,13 @@ export interface GroupServiceInterface {
   ): Promise<any>;
   deleteGroupById(groupId: string, groupAdmin: string): Promise<any>;
   findGroupById(id: string): Promise<GroupResponse>;
-  findGroupByName(
+  findGroupByNameOrAlias(
     name: string,
     limit: number,
     page: number,
+    userRequest: string,
   ): Promise<GroupListResponse>;
+  isThisGroupExist(alias: string): Promise<Boolean>
   saveGroup(group: GroupRequest, groupCreator: string): Promise<GroupResponse>;
   pushNotificationToGroup(
     groupId: string,

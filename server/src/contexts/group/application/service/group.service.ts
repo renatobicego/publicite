@@ -143,15 +143,31 @@ export class GroupService implements GroupServiceInterface {
       throw error;
     }
   }
-  async findGroupByName(
+  async findGroupByNameOrAlias(
     name: string,
     limit: number,
     page: number,
+    userRequest: string,
   ): Promise<GroupListResponse> {
     try {
       this.logger.log('Finding group by name: ' + name);
       if (page <= 0) page = 1;
-      return await this.groupRepository.findGroupByName(name, limit, page);
+      return await this.groupRepository.findGroupByNameOrAlias(
+        name,
+        limit,
+        page,
+        userRequest,
+      );
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  async isThisGroupExist(alias: string): Promise<Boolean> {
+    const aliasWithOutSpaces = alias.replace(/\s+/g, '').toLowerCase();
+    try {
+      this.logger.log('Finding group by alias: ' + alias);
+      return await this.groupRepository.isThisGroupExist(aliasWithOutSpaces);
     } catch (error: any) {
       throw error;
     }

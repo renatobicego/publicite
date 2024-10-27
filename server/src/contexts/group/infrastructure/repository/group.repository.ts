@@ -1,5 +1,5 @@
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
-import { Connection, Model } from 'mongoose';
+import mongoose, { Connection, Model } from 'mongoose';
 import { Inject } from '@nestjs/common';
 
 import { Group } from '../../domain/entity/group.entity';
@@ -294,22 +294,25 @@ export class GroupRepository implements GroupRepositoryInterface {
     }
   }
 
-  async findGroupByName(
+  async findGroupByNameOrAlias(
     name: string,
     limit: number,
     page: number,
+    userRequest: string,
   ): Promise<GroupListResponse> {
     try {
       const regex = new RegExp(`${name}`, 'i');
       const session = await this.connection.startSession();
       session.startTransaction();
       const groups = await this.groupModel
-        .find({ name: { $regex: regex } })
+        .find({
+          $or: [{ name: regex }, { alias: regex }],
+        })
         .and([{ visibility: 'public' }])
         .limit(limit + 1)
         .skip((page - 1) * limit)
         .select(
-          '_id name profilePhotoUrl members admins details name magazines rules profilePhotoUrl visibility',
+          '_id name profilePhotoUrl members admins details name magazines rules profilePhotoUrl visibility groupNotificationsRequest alias creator',
         )
         .populate([
           {
@@ -334,11 +337,43 @@ export class GroupRepository implements GroupRepositoryInterface {
           },
         ])
         .sort({ name: 1 })
-        .session(session);
+        .session(session)
+        .lean();
+
       const hasMore = groups.length > limit;
-      const groupResponse = groups
-        .slice(0, limit)
-        .map((group) => this.groupMapper.toGroupResponse(group));
+
+      const groupResponse = groups.slice(0, limit).map((group) => {
+        let isMember = false;
+        let hasJoinRequest = false;
+        let hasGroupRequest = false;
+
+        if (
+          group.members.map((id) => id.toString()).includes(userRequest) ||
+          group.admins.map((id) => id.toString()).includes(userRequest) ||
+          group.creator.toString() === userRequest
+        ) {
+          isMember = true;
+        } else if (
+          group.groupNotificationsRequest?.joinRequests
+            .map((id) => id.toString())
+            .includes(userRequest)
+        ) {
+          hasJoinRequest = true;
+        } else if (
+          group.groupNotificationsRequest?.groupInvitations
+            .map((id) => id.toString())
+            .includes(userRequest)
+        ) {
+          hasGroupRequest = true;
+        }
+
+        return {
+          group: this.groupMapper.toGroupResponse(group),
+          isMember: isMember,
+          hasJoinRequest: hasJoinRequest,
+          hasGroupRequest: hasGroupRequest,
+        };
+      });
 
       await session.commitTransaction();
       session.endSession();
@@ -421,6 +456,16 @@ export class GroupRepository implements GroupRepositoryInterface {
       throw error;
     } finally {
       session.endSession();
+    }
+  }
+
+  async isThisGroupExist(alias: string): Promise<Boolean> {
+    try {
+      const group = await this.groupModel.findOne({ alias: alias }).lean();
+      if (group) return true;
+      return false;
+    } catch (error: any) {
+      throw error;
     }
   }
 

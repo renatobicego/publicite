@@ -318,8 +318,15 @@ type GroupResponse {
   notifications: [String!]!
 }
 
+type GroupList {
+  group: GroupResponse
+  isMember: Boolean
+  hasJoinRequest: Boolean
+  hasGroupRequest: Boolean
+}
+
 type GroupListResponse {
-  groups: [GroupResponse!]!
+  groups: [GroupList!]!
   hasMore: Boolean!
 }
 
@@ -406,6 +413,9 @@ type Query {
 
   """Busca un grupo por su nombre"""
   getGroupByName(name: String!, limit: Float!, page: Float!): GroupListResponse
+
+  """Buscar si existe un grupo"""
+  isThisGroupExist(alias: String!): Boolean
 
   """Obtener una revista"""
   getMagazineByMagazineId(id: String!): MagazineResponse

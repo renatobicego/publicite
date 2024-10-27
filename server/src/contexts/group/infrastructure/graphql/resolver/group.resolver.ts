@@ -75,7 +75,7 @@ export class GroupResolver {
     nullable: true,
     description: 'Agregar revistas a un grupo',
   })
-  //@UseGuards(ClerkAuthGuard)
+  @UseGuards(ClerkAuthGuard)
   async addMagazinezToGroupByGroupId(
     @Args('newMagazines', { type: () => [String] })
     newMagazines: string[],
@@ -87,7 +87,7 @@ export class GroupResolver {
     context: any,
   ): Promise<any> {
     try {
-      //PubliciteAuth.authorize(context, groupAdmin);
+      PubliciteAuth.authorize(context, groupAdmin);
       await this.groupAdapter.addMagazinesToGroup(
         newMagazines,
         groupId,
@@ -205,7 +205,7 @@ export class GroupResolver {
     nullable: true,
     description: 'Busca un grupo por su id',
   })
-  //@UseGuards(ClerkAuthGuard)
+  @UseGuards(ClerkAuthGuard)
   async getGroupById(
     @Args('id', { type: () => String })
     groupId: string,
@@ -221,15 +221,23 @@ export class GroupResolver {
     nullable: true,
     description: 'Busca un grupo por su nombre',
   })
-  //@UseGuards(ClerkAuthGuard)
-  async getGroupByName(
-    @Args('name', { type: () => String })
+  @UseGuards(ClerkAuthGuard)
+  async getGroupByNameOrAlias(
+    @Args('name', { type: () => String, description: 'nombre del grupo o el alias' })
     name: string,
     @Args('limit', { type: () => Number }) limit: number,
     @Args('page', { type: () => Number }) page: number,
+    @Context() context: any,
   ): Promise<GroupListResponse> {
     try {
-      return await this.groupAdapter.findGroupByName(name, limit, page);
+      const token = context.req.headers.authorization;
+      const userRequest = PubliciteAuth.getIdFromClerkToken(token);
+      return await this.groupAdapter.findGroupByNameOrAlias(
+        name,
+        limit,
+        page,
+        userRequest,
+      );
     } catch (error: any) {
       throw error;
     }
@@ -268,6 +276,22 @@ export class GroupResolver {
     try {
       PubliciteAuth.authorize(context, groupCreator);
       await this.groupAdapter.deleteGroupById(groupId, groupCreator);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  @Query(() => Boolean, {
+    nullable: true,
+    description: 'Buscar si existe un grupo',
+  })
+  //@UseGuards(ClerkAuthGuard)
+  async isThisGroupExist(
+    @Args('alias', { type: () => String })
+    alias: string,
+  ): Promise<Boolean> {
+    try {
+      return await this.groupAdapter.isThisGroupExist(alias);
     } catch (error: any) {
       throw error;
     }

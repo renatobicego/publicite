@@ -14,6 +14,7 @@ export class GroupAdapter implements GroupAdapterInterface {
     @Inject('GroupServiceInterface')
     private readonly groupService: GroupServiceInterface,
   ) {}
+
   async addMagazinesToGroup(
     magazineIds: string[],
     groupId: string,
@@ -106,23 +107,31 @@ export class GroupAdapter implements GroupAdapterInterface {
       throw error;
     }
   }
-  async findGroupByName(
+  async findGroupByNameOrAlias(
     name: string,
     limit: number,
     page: number,
+    userRequest: string,
   ): Promise<GroupListResponse> {
     try {
-      const response = await this.groupService.findGroupByName(
+      const response = await this.groupService.findGroupByNameOrAlias(
         name,
         limit,
         page,
+        userRequest,
       );
       return response;
     } catch (error: any) {
       throw error;
     }
   }
-
+  async isThisGroupExist(alias: string): Promise<Boolean> {
+    try {
+      return await this.groupService.isThisGroupExist(alias);
+    } catch (error: any) {
+      throw error;
+    }
+  }
   async removeAdminsFromGroupByGroupId(
     admins: string[],
     groupId: string,
