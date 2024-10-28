@@ -223,7 +223,10 @@ export class GroupResolver {
   })
   @UseGuards(ClerkAuthGuard)
   async getGroupByNameOrAlias(
-    @Args('name', { type: () => String, description: 'nombre del grupo o el alias' })
+    @Args('name', {
+      type: () => String,
+      description: 'nombre del grupo o el alias',
+    })
     name: string,
     @Args('limit', { type: () => Number }) limit: number,
     @Args('page', { type: () => Number }) page: number,
@@ -285,7 +288,7 @@ export class GroupResolver {
     nullable: true,
     description: 'Buscar si existe un grupo',
   })
-  //@UseGuards(ClerkAuthGuard)
+  @UseGuards(ClerkAuthGuard)
   async isThisGroupExist(
     @Args('alias', { type: () => String })
     alias: string,
