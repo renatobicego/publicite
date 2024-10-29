@@ -8,6 +8,7 @@ import { Post_response_graphql_model } from 'src/contexts/post/application/post/
 import { Post_Full_Graphql_Model } from 'src/contexts/post/domain/post/entity/models_graphql/post.full.grapql.model';
 import { PubliciteAuth } from 'src/contexts/shared/auth/publicite_auth/publicite_auth';
 import { PostType } from 'src/contexts/post/domain/post/entity/enum/post-type.enum';
+import { PostFindAllResponse } from 'src/contexts/post/application/post/dto/HTTP-RESPONSE/findAll-response/post.findAll.response';
 
 @Resolver('Post')
 export class PostResolver {
@@ -88,7 +89,7 @@ export class PostResolver {
     }
   }
 
-  @Query(() => Post_response_graphql_model, {
+  @Query(() => PostFindAllResponse, {
     nullable: true,
     description: 'Buscar todos los post',
   })

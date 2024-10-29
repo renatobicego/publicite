@@ -5,10 +5,9 @@ import { Connection, ClientSession } from 'mongoose';
 import { PostService } from 'src/contexts/post/application/post/service/post.service';
 import { PostRepositoryInterface } from 'src/contexts/post/domain/post/repository/post.repository.interface';
 import { PostGood } from 'src/contexts/post/domain/post/entity/post-types/post.good.entity';
-
-import { postGoodStub } from '../../../../../test/model/post.stub';
-import { PostServiceInterface } from '../../domain/service/post.service.interface';
-import { Post } from '../../domain/entity/post.entity';
+import { Post } from 'src/contexts/post/domain/post/entity/post.entity';
+import { PostServiceInterface } from 'src/contexts/post/domain/post/service/post.service.interface';
+import { postGoodStub } from 'test/model/post.stub';
 
 describe('PostService', () => {
   let postService: PostServiceInterface;

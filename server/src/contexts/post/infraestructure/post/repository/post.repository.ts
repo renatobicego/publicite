@@ -209,10 +209,13 @@ export class PostRepository implements PostRepositoryInterface {
     try {
       this.logger.log('Finding posts By postType: ' + postType);
 
-      return await this.postDocument
+      const posts = await this.postDocument
         .find({
           postType: postType,
         })
+        //.and([{ visibility: 'public' }])
+        .limit(limit + 1)
+        .skip((page - 1) * limit)
         .populate({
           path: 'location',
           model: 'PostLocation',
@@ -232,6 +235,13 @@ export class PostRepository implements PostRepositoryInterface {
           },
         })
         .lean();
+      const hasMore = posts.length > limit;
+      const postResponse = posts.slice(0, limit);
+
+      return {
+        posts: postResponse,
+        hasMore: hasMore,
+      };
     } catch (error: any) {
       this.logger.error(
         'An error occurred finding all post by postType: ' + postType,
