@@ -2,282 +2,6 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type Contact {
-  _id: ID
-  phone: String
-  instagram: String
-  facebook: String
-  x: String
-  website: String
-}
-
-type front_data_GROUP {
-  _id: String!
-  name: String!
-  profilePhotoUrl: String!
-}
-
-type backData {
-  userToSendId: String!
-}
-
-type userInviting {
-  username: String!
-}
-
-type notification {
-  event: String!
-  viewed: Boolean!
-  date: String!
-  backData: backData!
-}
-
-type frontData {
-  group: front_data_GROUP
-  userInviting: userInviting!
-}
-
-type Notification {
-  _id: ID!
-  notification: notification!
-  frontData: frontData!
-}
-
-type GROUP_notification_graph_model_get_all {
-  notifications: [Notification!]!
-  hasMore: Boolean!
-}
-
-type Board {
-  _id: ID
-  annotations: [String!]
-  visibility: String
-  user: String
-  color: String
-  keywords: [String!]
-  searchTerm: String
-}
-
-type Location_graphQl {
-  type: String!
-  coordinates: [Float!]!
-}
-
-type PostLocation_Grapql_Model {
-  location: Location_graphQl!
-  userSetted: Boolean!
-  description: String!
-}
-
-type Visibility {
-  post: String
-  socialMedia: String
-}
-
-type AttachedFile {
-  url: String!
-  label: String!
-}
-
-type Post_Full_Graphql_Model {
-  _id: ID
-  title: String
-  postType: String
-  description: String
-  visibility: Visibility
-  price: Float
-  location: PostLocation_Grapql_Model
-  category: [String!]
-  comments: [String!]
-  attachedFiles: [AttachedFile!]
-  createAt: String
-  imagesUrls: [String!]
-  year: Int
-  brand: String
-  modelType: String
-  reviews: [String!]
-  condition: GoodCondition
-  frequencyPrice: String
-  toPrice: Float
-  petitionType: String
-}
-
-"""Condition of the good"""
-enum GoodCondition {
-  New
-  Used
-  Broke
-}
-
-type Subscriptions_Full_Graphql_Model {
-  _id: ID!
-  mpPreapprovalId: String
-  payerId: String
-  status: String
-  subscriptionPlan: String
-  startDate: String
-  endDate: String
-  external_reference: String
-  timeOfUpdate: String
-}
-
-type Post_full_Graph {
-  _id: ID
-  imagesUrls: [String!]
-}
-
-type Groups_Full_Graphql_Model {
-  _id: ID
-  name: String
-  members: [String!]
-  profilePhotoUrl: String
-}
-
-type Sections_Full_Graphql_Model {
-  _id: ID
-  posts: [Post_full_Graph!]
-}
-
-type Magazines_Full_Graphql_Model {
-  _id: ID
-  name: String
-  sections: [Sections_Full_Graphql_Model!]
-  description: String
-}
-
-type User_Full_Grapql_Model {
-  _id: ID
-  clerkId: String
-  email: String
-  username: String
-  description: String
-  profilePhotoUrl: String
-  countryRegion: String
-  name: String
-  lastName: String
-  isActive: String
-  businessName: String
-  contact: Contact
-  createdTime: String
-  magazines: [Magazines_Full_Graphql_Model]
-  board: Board
-  posts: [Post_Full_Graphql_Model]
-  subscriptions: [Subscriptions_Full_Graphql_Model]
-  userType: String
-  groups: [Groups_Full_Graphql_Model]
-}
-
-type PaymentResponse {
-  _id: String!
-  mpPaymentId: String!
-  payerId: String!
-  payerEmail: String
-  paymentTypeId: String!
-  paymentMethodId: String!
-  transactionAmount: String!
-  dateApproved: String
-  external_reference: String!
-  status_detail: String!
-  timeOfUpdate: String!
-  status: String!
-}
-
-type userBoardGraphql {
-  _id: ID
-  profilePhotoUrl: String
-  name: String
-  lastName: String
-  businessName: String
-  username: String
-}
-
-type BoardResponse {
-  _id: ID
-  annotations: [String!]
-  visibility: String
-  user: userBoardGraphql!
-  color: String
-  keywords: [String!]
-}
-
-type BoardGetAllResponse {
-  boards: [BoardResponse!]!
-  hasMore: Boolean!
-}
-
-type location {
-  type: String!
-  coordinates: [Float!]!
-}
-
-type Contact_graph {
-  _id: ID
-  phone: String
-  instagram: String
-  facebook: String
-  x: String
-  website: String
-}
-
-type author {
-  profilePhotoUrl: String!
-  username: String!
-  contact: Contact_graph!
-  lastName: String!
-  name: String!
-}
-
-type PostLocation_Grapql {
-  _id: String
-  location: location
-  userSetted: Boolean
-  description: String
-}
-
-type Visibility_post {
-  post: String
-  socialMedia: String
-}
-
-type AttachedFile_post {
-  url: String!
-  label: String!
-}
-
-type Post_Category {
-  _id: String
-  label: String
-}
-
-type Post_response_graphql_model {
-  _id: String
-  title: String
-  postType: String
-  description: String
-  visibility: Visibility_post
-  author: author
-  price: Float
-  location: PostLocation_Grapql
-  category: [Post_Category!]
-  comments: [String!]
-  attachedFiles: [AttachedFile_post!]
-  createAt: String
-  imagesUrls: [String!]
-  year: Int
-  brand: String
-  modelType: String
-  reviews: [String!]
-  condition: String
-  frequencyPrice: String
-  toPrice: Float
-  petitionType: String
-}
-
-type PostFindAllResponse {
-  posts: [Post_response_graphql_model!]!
-  hasMore: Boolean!
-}
-
 type members_graphQl {
   _id: String!
   username: String!
@@ -389,9 +113,286 @@ type MagazineResponse {
   group: group_graphql_magazine
 }
 
+type location {
+  type: String!
+  coordinates: [Float!]!
+}
+
+type Contact_graph {
+  _id: ID
+  phone: String
+  instagram: String
+  facebook: String
+  x: String
+  website: String
+}
+
+type author {
+  profilePhotoUrl: String!
+  username: String!
+  contact: Contact_graph!
+  lastName: String!
+  name: String!
+}
+
+type PostLocation_Grapql {
+  _id: String
+  location: location
+  userSetted: Boolean
+  description: String
+}
+
+type Visibility_post {
+  post: String
+  socialMedia: String
+}
+
+type AttachedFile_post {
+  url: String!
+  label: String!
+}
+
+type Post_Category {
+  _id: String
+  label: String
+}
+
+type Post_response_graphql_model {
+  _id: String
+  title: String
+  postType: String
+  description: String
+  visibility: Visibility_post
+  author: author
+  price: Float
+  location: PostLocation_Grapql
+  category: [Post_Category!]
+  comments: [String!]
+  attachedFiles: [AttachedFile_post!]
+  createAt: String
+  imagesUrls: [String!]
+  year: Int
+  brand: String
+  modelType: String
+  reviews: [String!]
+  condition: String
+  frequencyPrice: String
+  toPrice: Float
+  petitionType: String
+}
+
+type PostFindAllResponse {
+  posts: [Post_response_graphql_model!]!
+  hasMore: Boolean!
+}
+
+type Location_graphQl {
+  type: String!
+  coordinates: [Float!]!
+}
+
+type PostLocation_Grapql_Model {
+  location: Location_graphQl!
+  userSetted: Boolean!
+  description: String!
+}
+
+type Visibility {
+  post: String
+  socialMedia: String
+}
+
+type AttachedFile {
+  url: String!
+  label: String!
+}
+
+type Post_Full_Graphql_Model {
+  _id: ID
+  title: String
+  postType: String
+  description: String
+  visibility: Visibility
+  price: Float
+  location: PostLocation_Grapql_Model
+  category: [String!]
+  comments: [String!]
+  attachedFiles: [AttachedFile!]
+  createAt: String
+  imagesUrls: [String!]
+  year: Int
+  brand: String
+  modelType: String
+  reviews: [String!]
+  condition: GoodCondition
+  frequencyPrice: String
+  toPrice: Float
+  petitionType: String
+}
+
+"""Condition of the good"""
+enum GoodCondition {
+  New
+  Used
+  Broke
+}
+
+type Contact {
+  _id: ID
+  phone: String
+  instagram: String
+  facebook: String
+  x: String
+  website: String
+}
+
+type front_data_GROUP {
+  _id: String!
+  name: String!
+  profilePhotoUrl: String!
+}
+
+type backData {
+  userIdTo: String
+  userIdFrom: String
+}
+
+type userInviting {
+  username: String!
+}
+
+type notification {
+  event: String!
+  viewed: Boolean!
+  date: String!
+  backData: backData!
+}
+
+type frontData {
+  group: front_data_GROUP
+  userInviting: userInviting!
+}
+
+type Notification {
+  _id: String!
+  notification: notification!
+  frontData: frontData!
+}
+
+type GROUP_notification_graph_model_get_all {
+  notifications: [Notification!]!
+  hasMore: Boolean!
+}
+
+type Board {
+  _id: ID
+  annotations: [String!]
+  visibility: String
+  user: String
+  color: String
+  keywords: [String!]
+  searchTerm: String
+}
+
+type Subscriptions_Full_Graphql_Model {
+  _id: ID!
+  mpPreapprovalId: String
+  payerId: String
+  status: String
+  subscriptionPlan: String
+  startDate: String
+  endDate: String
+  external_reference: String
+  timeOfUpdate: String
+}
+
+type Post_full_Graph {
+  _id: ID
+  imagesUrls: [String!]
+}
+
+type Groups_Full_Graphql_Model {
+  _id: ID
+  name: String
+  members: [String!]
+  profilePhotoUrl: String
+}
+
+type Sections_Full_Graphql_Model {
+  _id: ID
+  posts: [Post_full_Graph!]
+}
+
+type Magazines_Full_Graphql_Model {
+  _id: ID
+  name: String
+  sections: [Sections_Full_Graphql_Model!]
+  description: String
+}
+
+type User_Full_Grapql_Model {
+  _id: ID
+  clerkId: String
+  email: String
+  username: String
+  description: String
+  profilePhotoUrl: String
+  countryRegion: String
+  name: String
+  lastName: String
+  isActive: String
+  businessName: String
+  contact: Contact
+  createdTime: String
+  magazines: [Magazines_Full_Graphql_Model]
+  board: Board
+  posts: [Post_Full_Graphql_Model]
+  subscriptions: [Subscriptions_Full_Graphql_Model]
+  userType: String
+  groups: [Groups_Full_Graphql_Model]
+}
+
 type PostCategoryResponse {
   label: String!
   _id: String!
+}
+
+type userBoardGraphql {
+  _id: ID
+  profilePhotoUrl: String
+  name: String
+  lastName: String
+  businessName: String
+  username: String
+}
+
+type BoardResponse {
+  _id: ID
+  annotations: [String!]
+  visibility: String
+  user: userBoardGraphql!
+  color: String
+  keywords: [String!]
+}
+
+type BoardGetAllResponse {
+  boards: [BoardResponse!]!
+  hasMore: Boolean!
+}
+
+type PaymentResponse {
+  _id: String!
+  mpPaymentId: String!
+  payerId: String!
+  payerEmail: String
+  paymentTypeId: String!
+  paymentMethodId: String!
+  transactionAmount: String!
+  dateApproved: String
+  external_reference: String!
+  status_detail: String!
+  timeOfUpdate: String!
+  status: String!
 }
 
 type Query {
