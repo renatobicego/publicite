@@ -10,6 +10,7 @@ import { GroupRequest } from '../adapter/dto/HTTP-REQUEST/group.request';
 import { GroupServiceMapperInterface } from '../../domain/service/mapper/group.service.mapper.interface';
 import { MyLoggerService } from 'src/contexts/shared/logger/logger.service';
 import { GroupUpdateRequest } from '../adapter/dto/HTTP-REQUEST/group.update.request';
+import { error } from 'console';
 
 const eventTypes = [
   'notification_group_new_user_invited', // Te han invitado a un grupo -> 0
@@ -28,6 +29,7 @@ export class GroupService implements GroupServiceInterface {
     @Inject('GroupServiceMapperInterface')
     private readonly groupMapper: GroupServiceMapperInterface,
   ) {}
+
   async acceptGroupInvitation(
     groupId: string,
     userRequestId: string,
@@ -148,6 +150,31 @@ export class GroupService implements GroupServiceInterface {
       await this.groupRepository.deleteGroupById(groupId, groupAdmin);
     } catch (error: any) {
       this.logger.error('An error was ocurred when deleting group by id: ');
+      throw error;
+    }
+  }
+
+  async exitGroupById(
+    groupId: string,
+    member: string,
+    creator?: string,
+    newCreator?: string,
+  ): Promise<any> {
+    try {
+      if (creator && newCreator) {
+        this.logger.log('Exit group and assign new creator ');
+        await this.groupRepository.assignNewCreatorAndExitGroupById(
+          groupId,
+          newCreator,
+          creator,
+        );
+      } else if (!creator && !newCreator) {
+        this.logger.log('Exiting group member or admin');
+        await this.groupRepository.exitMemberOrAdminGroupById(groupId, member);
+      } else {
+        throw new Error('Invalid Request');
+      }
+    } catch (error: any) {
       throw error;
     }
   }

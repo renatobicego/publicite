@@ -66,7 +66,8 @@ export class GroupResolver {
 
   @Mutation(() => String, {
     nullable: true,
-    description: 'Agregar miembros a  un grupo',
+    description:
+      'Aceptar la invitacion de un miembro a un grupo- Solo admins o creadores pueden aceptar',
   })
   @UseGuards(ClerkAuthGuard)
   async acceptJoinGroupRequest(
@@ -316,6 +317,41 @@ export class GroupResolver {
   ): Promise<Boolean> {
     try {
       return await this.groupAdapter.isThisGroupExist(alias);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  @Mutation(() => String, {
+    nullable: true,
+    description:
+      'Salir de un grupo - En el caso de que sea el creador debera asignar otro creador',
+  })
+  @UseGuards(ClerkAuthGuard)
+  async exitGroupById(
+    @Args('groupId', { type: () => String })
+    groupId: string,
+    @Args('member', { type: () => String })
+    member: string,
+    @Context() context: any,
+    @Args('creator', { type: () => String, nullable: true })
+    creator?: string,
+    @Args('newCreator', { type: () => String, nullable: true })
+    newCreator?: string,
+  ): Promise<any> {
+    try {
+      if (creator) {
+        if (!newCreator) {
+          throw new Error('newCreator is required');
+        }
+      }
+      PubliciteAuth.authorize(context, creator ?? member);
+      await this.groupAdapter.exitGroupById(
+        groupId,
+        member,
+        creator,
+        newCreator,
+      );
     } catch (error: any) {
       throw error;
     }

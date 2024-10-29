@@ -29,6 +29,49 @@ export class GroupRepository implements GroupRepositoryInterface {
     @InjectConnection() private readonly connection: Connection,
     private readonly logger: MyLoggerService,
   ) {}
+
+  async assignNewCreatorAndExitGroupById(
+    groupId: string,
+    newCreator: string,
+    creator: string,
+  ): Promise<any> {
+    const session = await this.connection.startSession();
+
+    try {
+      await session.withTransaction(async () => {
+        this.logger.log('Assign new creator ID: ' + newCreator);
+
+        await this.groupModel.updateOne(
+          { _id: groupId, creator: creator },
+          {
+            $set: {
+              creator: newCreator,
+            },
+            $pull: {
+              admins: newCreator,
+            },
+          },
+          { session },
+        );
+
+        await this.userModel.updateOne(
+          { _id: creator },
+          { $pull: { groups: groupId } },
+          { session },
+        );
+      });
+
+      this.logger.log('creator has leaved the group');
+      this.logger.log(
+        'Assign new creator and exit group successfully. Group ID: ' + groupId,
+      );
+    } catch (error: any) {
+      throw error;
+    } finally {
+      await session.endSession();
+    }
+  }
+
   async acceptGroupInvitation(
     groupId: string,
     userRequestId: string,
@@ -62,7 +105,10 @@ export class GroupRepository implements GroupRepositoryInterface {
         'Member added to group successfully Group ID: ' + groupId,
       );
     } catch (error: any) {
+      session.endSession();
       throw error;
+    } finally {
+      await session.endSession();
     }
   }
 
@@ -292,6 +338,40 @@ export class GroupRepository implements GroupRepositoryInterface {
         'An error was ocurred when deleted magazines to group: ' + error,
       );
       throw error;
+    }
+  }
+
+  async exitMemberOrAdminGroupById(
+    groupId: string,
+    member: string,
+  ): Promise<any> {
+    const session = await this.connection.startSession();
+
+    try {
+      await session.withTransaction(async () => {
+        await this.groupModel.updateOne(
+          { _id: groupId },
+          {
+            $pull: {
+              member: member,
+              admins: member,
+            },
+          },
+          { session },
+        );
+
+        await this.userModel.updateOne(
+          { _id: member },
+          { $pull: { groups: groupId } },
+          { session },
+        );
+      });
+
+      this.logger.log('User exit group successfully. Group ID: ' + groupId);
+    } catch (error: any) {
+      throw error;
+    } finally {
+      await session.endSession();
     }
   }
 

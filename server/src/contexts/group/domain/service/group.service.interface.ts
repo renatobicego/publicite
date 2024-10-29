@@ -35,6 +35,12 @@ export interface GroupServiceInterface {
     groupAdmin: string,
   ): Promise<any>;
   deleteGroupById(groupId: string, groupAdmin: string): Promise<any>;
+  exitGroupById(
+    groupId: string,
+    member: string,
+    creator?: string,
+    newCreator?: string,
+  ): Promise<any>;
   findGroupById(id: string): Promise<GroupResponse>;
   findGroupByNameOrAlias(
     name: string,

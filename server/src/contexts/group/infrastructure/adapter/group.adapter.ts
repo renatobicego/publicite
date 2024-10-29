@@ -14,6 +14,7 @@ export class GroupAdapter implements GroupAdapterInterface {
     @Inject('GroupServiceInterface')
     private readonly groupService: GroupServiceInterface,
   ) {}
+
   async acceptGroupInvitation(
     groupId: string,
     userRequestId: string,
@@ -104,6 +105,24 @@ export class GroupAdapter implements GroupAdapterInterface {
   async deleteGroupById(groupId: string, groupAdmin: string): Promise<any> {
     try {
       await this.groupService.deleteGroupById(groupId, groupAdmin);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  async exitGroupById(
+    groupId: string,
+    member: string,
+    creator?: string,
+    newCreator?: string,
+  ): Promise<any> {
+    try {
+      await this.groupService.exitGroupById(
+        groupId,
+        member,
+        creator,
+        newCreator,
+      );
     } catch (error: any) {
       throw error;
     }
