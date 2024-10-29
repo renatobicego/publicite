@@ -439,11 +439,16 @@ type Mutation {
   """Actualiza el board del usuario"""
   updateBoardById(id: String!, ownerId: String!, boardData: UpdateBoardDto!): Board
 
+  """Aceptar la invitacion a un grupo"""
+  acceptGroupInvitation(groupId: String!): String
+
   """Agregar admins un grupo"""
   addAdminsToGroupByGroupId(newAdmins: [String!]!, groupAdmin: String!, groupId: String!): String
 
-  """Agregar miembros a  un grupo"""
-  addMembersToGroupByGroupId(newMembers: [String!]!, groupAdmin: String!, groupId: String!): String
+  """
+  Aceptar la invitacion de un miembro a un grupo- Solo admins o creadores pueden aceptar
+  """
+  acceptJoinGroupRequest(newMember: String!, groupAdmin: String!, groupId: String!): String
 
   """Agregar revistas a un grupo"""
   addMagazinezToGroupByGroupId(newMagazines: [String!]!, groupAdmin: String!, groupId: String!): String
@@ -465,6 +470,11 @@ type Mutation {
 
   """Eliminar un grupo por su id"""
   deleteGroupById(groupId: String!, groupCreator: String!): String
+
+  """
+  Salir de un grupo - En el caso de que sea el creador debera asignar otro creador
+  """
+  exitGroupById(groupId: String!, member: String!, creator: String, newCreator: String): String
 
   """Agregar nueva seccion en la revista"""
   addNewMagazineSection(magazineAdmin: String!, magazineId: String!, section: String!, groupId: String): String

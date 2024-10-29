@@ -1,10 +1,6 @@
 import { GROUPS } from "@/utils/data/urls";
 import { showDate } from "@/utils/functions/dates";
-import {
-  parseDate,
-  parseDateTime,
-  parseZonedDateTime,
-} from "@internationalized/date";
+import { parseZonedDateTime } from "@internationalized/date";
 import Link from "next/link";
 import {
   NotificationCard,
@@ -16,6 +12,7 @@ import {
 import GroupImage from "./GroupImage";
 import { GroupNotification, GroupNotificationType } from "@/types/groupTypes";
 import { noticationMessages } from "./notificationMessages";
+import { useSocket } from "@/app/socketProvider";
 
 const GroupNotificationCard = ({
   notification,
@@ -24,6 +21,7 @@ const GroupNotificationCard = ({
 }) => {
   const { group } = notification.frontData;
   const { event } = notification.notification;
+  const { socket } = useSocket();
   const getNotificationOptionsList = () => {
     const optionsList: NotificationOptionProps[] = [];
     const notificationMessage =
@@ -33,7 +31,7 @@ const GroupNotificationCard = ({
     if (notificationMessage?.acceptAction) {
       optionsList.push({
         label: "Aceptar Solicitud",
-        onPress: () => notificationMessage.acceptAction?.(),
+        onPress: () => notificationMessage.acceptAction?.(group._id),
       });
     }
     if (notificationMessage?.seeNotifications) {
@@ -53,7 +51,7 @@ const GroupNotificationCard = ({
       optionsList.push({
         label: "Rechazar Solicitud",
         color: "danger",
-        onPress: () => notificationMessage.rejectAction?.(),
+        onPress: () => notificationMessage.rejectAction?.(group._id, socket),
       });
     }
     return optionsList;

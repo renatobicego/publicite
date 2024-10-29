@@ -166,3 +166,9 @@ export const deleteGroupMutation = gql`
     deleteGroupById(groupId: $groupId, groupCreator: $groupCreator)
   }
 `;
+
+export const acceptGroupInvitationMutation = gql`
+  mutation AcceptGroupInvitation($groupId: String!) {
+    acceptGroupInvitation(groupId: $groupId)
+  }
+`;

@@ -112,9 +112,7 @@ const UserSolapas = ({
             Agregar Contactos
           </PrimaryButton>
         )}
-        <UsersGrid
-          items={user.userRelations}
-        />
+        <UsersGrid items={user.userRelations} />
       </Tab>
       <Tab
         className="w-full"
@@ -133,7 +131,16 @@ const UserSolapas = ({
             Crear
           </PrimaryButton>
         )}
-        <GroupsGrid items={user.groups} isUserProfile />
+        <GroupsGrid
+          items={user.groups.map((group) => ({
+            group,
+            isMember: false,
+            hasGroupRequest: false,
+            hasJoinRequest: false,
+            isUserProfile: true,
+          }))}
+          isUserProfile
+        />
       </Tab>
     </Tabs>
   );

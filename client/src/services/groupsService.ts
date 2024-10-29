@@ -2,6 +2,7 @@
 import { getClient, query } from "@/lib/client";
 import { mockedPetitions, mockedPosts } from "../utils/data/mockedData";
 import {
+  acceptGroupInvitationMutation,
   createNewGroupMutation,
   deleteAdminMutation,
   deleteGroupMutation,
@@ -165,7 +166,7 @@ export const groupAliasExists = async (alias: string) => {
       query: validateGroupAliasQuery,
       variables: { alias },
     });
-    return data.isThisGroupExist
+    return data.isThisGroupExist;
   } catch (error) {
     console.log(error);
     return {
@@ -261,6 +262,29 @@ export const deleteGroup = async (groupId: string) => {
   } catch (error) {
     return {
       error: "Error al eliminar el grupo. Por favor intenta de nuevo.",
+    };
+  }
+};
+
+export const putMemberGroup = async (groupId: string) => {
+  try {
+    await getClient()
+      .mutate({
+        mutation: acceptGroupInvitationMutation,
+        variables: {
+          groupId,
+        },
+        context: {
+          headers: {
+            Authorization: `${await auth().getToken()}`,
+          },
+        },
+      })
+      .then((res) => res);
+    return { message: "Has aceptado la invitación exitosamente" };
+  } catch (error) {
+    return {
+      error: "Error al aceptar la invitación. Por favor intenta de nuevo.",
     };
   }
 };

@@ -19,7 +19,6 @@ const generateGroupNotification = (
       userInviting: userSending,
     },
   };
-  console.log(notification);
   return notification;
 };
 

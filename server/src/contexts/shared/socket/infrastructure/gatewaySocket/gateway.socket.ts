@@ -77,7 +77,7 @@ export class NotificationGatewaySocket
   }
 
   @SubscribeMessage('group_notifications')
-  @UseGuards(ClerkAuthGuard)
+  // @UseGuards(ClerkAuthGuard)
   group_notifications(@MessageBody() data: GroupInvitation) {
     try {
       const { notificationBody, client } =
