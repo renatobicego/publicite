@@ -258,7 +258,7 @@ export class GroupService implements GroupServiceInterface {
       switch (event) {
         case eventTypes[0]: // Te han invitado a un grupo -> 0
           this.logger.log('Pushing join request to group: ' + groupId);
-          await this.groupRepository.pushGroupInvitations(
+          await this.groupRepository.pushGroupInvitations( 
             groupId,
             userIdTo,
             session,
