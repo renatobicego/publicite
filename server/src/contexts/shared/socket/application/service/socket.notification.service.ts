@@ -95,11 +95,11 @@ export class SocketNotificationService
   ): Promise<any> {
     try {
       const { _id } = notification.frontData.group; //Id del grupo
-      const { userToSendId } = notification.notification.backData;
+      const { backData } = notification.notification;
       this.logger.log('Sending new notification to Group');
       await this.groupService.pushNotificationToGroup(
         _id,
-        userToSendId,
+        backData,
         event,
         session,
       );

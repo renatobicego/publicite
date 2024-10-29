@@ -3,6 +3,7 @@ export interface Notification {
   viewed: boolean;
   date: string;
   backData: {
-    userToSendId: string;
+    userIdTo: string;
+    userIdFrom: string;
   };
 }

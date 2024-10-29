@@ -83,8 +83,8 @@ export class Post_Category {
 
 @ObjectType()
 export class Post_response_graphql_model {
-  @Field(() => ID, { nullable: true }) // _id puede ser nulo
-  _id?: ObjectId;
+  @Field(() => String, { nullable: true })
+  _id: ObjectId;
 
   @Field(() => String, { nullable: true })
   title: string;

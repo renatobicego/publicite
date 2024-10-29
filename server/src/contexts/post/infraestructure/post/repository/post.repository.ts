@@ -201,6 +201,44 @@ export class PostRepository implements PostRepositoryInterface {
       throw error;
     }
   }
+  async findAllPostByPostType(
+    page: number,
+    limit: number,
+    postType: string,
+  ): Promise<any> {
+    try {
+      this.logger.log('Finding posts By postType: ' + postType);
+
+      return await this.postDocument
+        .find({
+          postType: postType,
+        })
+        .populate({
+          path: 'location',
+          model: 'PostLocation',
+          select: 'location description userSetted coordinates',
+        })
+        .populate({
+          path: 'category',
+          model: 'PostCategory',
+        })
+        .populate({
+          path: 'author',
+          model: 'User',
+          select: '_id profilePhotoUrl username lastName name contact',
+          populate: {
+            path: 'contact',
+            model: 'Contact',
+          },
+        })
+        .lean();
+    } catch (error: any) {
+      this.logger.error(
+        'An error occurred finding all post by postType: ' + postType,
+      );
+      throw error;
+    }
+  }
 
   async saveLocation(
     location: PostLocation,

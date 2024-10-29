@@ -54,9 +54,9 @@ export class NotificationGatewaySocket
     client: Socket;
   } {
     const { notificationBody } = data;
-    const { userToSendId } = notificationBody.notification.backData;
+    const { userIdTo } = notificationBody.notification.backData;
     const { event } = notificationBody.notification;
-    const client = this.clients[userToSendId]?.socket;
+    const client = this.clients[userIdTo]?.socket;
     if (!allowedEvents.has(event as EventTypes)) {
       throw Error(`Invalid event type: ${event}`);
     }

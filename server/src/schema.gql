@@ -250,7 +250,7 @@ type Post_Category {
 }
 
 type Post_response_graphql_model {
-  _id: ID
+  _id: String
   title: String
   postType: String
   description: String
@@ -405,6 +405,9 @@ type Query {
   """Obtener Post por su Id"""
   findPostById(id: String!): Post_response_graphql_model
 
+  """Buscar todos los post"""
+  findAllPostByPostType(page: Float!, limit: Float!, postType: PostType!): Post_response_graphql_model
+
   """Obtener un board por anotaciones o palabras clave"""
   getBoardByAnnotationOrKeyword(board: String!, limit: Float!, page: Float!): BoardGetAllResponse
 
@@ -429,6 +432,13 @@ type Query {
   getAllCategoryPost: [PostCategoryResponse!]
 }
 
+"""Type of the post """
+enum PostType {
+  good
+  service
+  petition
+}
+
 type Mutation {
   """eliminar un post por id"""
   deletePostById(id: String!): String
@@ -439,11 +449,16 @@ type Mutation {
   """Actualiza el board del usuario"""
   updateBoardById(id: String!, ownerId: String!, boardData: UpdateBoardDto!): Board
 
+  """Aceptar la invitacion a un grupo"""
+  acceptGroupInvitation(groupId: String!): String
+
   """Agregar admins un grupo"""
   addAdminsToGroupByGroupId(newAdmins: [String!]!, groupAdmin: String!, groupId: String!): String
 
-  """Agregar miembros a  un grupo"""
-  addMembersToGroupByGroupId(newMembers: [String!]!, groupAdmin: String!, groupId: String!): String
+  """
+  Aceptar la invitacion de un miembro a un grupo- Solo admins o creadores pueden aceptar
+  """
+  acceptJoinGroupRequest(newMember: String!, groupAdmin: String!, groupId: String!): String
 
   """Agregar revistas a un grupo"""
   addMagazinezToGroupByGroupId(newMagazines: [String!]!, groupAdmin: String!, groupId: String!): String
@@ -465,6 +480,11 @@ type Mutation {
 
   """Eliminar un grupo por su id"""
   deleteGroupById(groupId: String!, groupCreator: String!): String
+
+  """
+  Salir de un grupo - En el caso de que sea el creador debera asignar otro creador
+  """
+  exitGroupById(groupId: String!, member: String!, creator: String, newCreator: String): String
 
   """Agregar nueva seccion en la revista"""
   addNewMagazineSection(magazineAdmin: String!, magazineId: String!, section: String!, groupId: String): String
@@ -538,13 +558,6 @@ enum Visibility_of_the_post {
   contacts
   friends
   topfriends
-}
-
-"""Type of the post """
-enum PostType {
-  good
-  service
-  petition
 }
 
 input AttachedFiles {

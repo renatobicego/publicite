@@ -24,7 +24,6 @@ export class PostAdapter implements PostAdapterInterface {
     private readonly postMapper: PostMapperAdapterInterface,
     private readonly logger: MyLoggerService,
   ) {}
-
   async create(post: PostRequest): Promise<PostResponse> {
     try {
       let postMapped;
@@ -75,6 +74,22 @@ export class PostAdapter implements PostAdapterInterface {
   async findPostById(id: string): Promise<any> {
     try {
       return await this.postService.findPostById(id);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  async findAllPostByPostType(
+    page: number,
+    limit: number,
+    postType: string,
+  ): Promise<void> {
+    try {
+      return await this.postService.findAllPostByPostType(
+        page,
+        limit,
+        postType,
+      );
     } catch (error: any) {
       throw error;
     }

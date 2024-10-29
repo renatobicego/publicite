@@ -7,6 +7,7 @@ import { PostUpdateRequest } from 'src/contexts/post/application/post/dto/HTTP-R
 import { Post_response_graphql_model } from 'src/contexts/post/application/post/dto/HTTP-RESPONSE/post.response.graphql';
 import { Post_Full_Graphql_Model } from 'src/contexts/post/domain/post/entity/models_graphql/post.full.grapql.model';
 import { PubliciteAuth } from 'src/contexts/shared/auth/publicite_auth/publicite_auth';
+import { PostType } from 'src/contexts/post/domain/post/entity/enum/post-type.enum';
 
 @Resolver('Post')
 export class PostResolver {
@@ -82,6 +83,26 @@ export class PostResolver {
     try {
       let post = await this.postAdapter.findPostById(id);
       return post;
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  @Query(() => Post_response_graphql_model, {
+    nullable: true,
+    description: 'Buscar todos los post',
+  })
+  async findAllPostByPostType(
+    @Args('page', { type: () => Number }) page: number,
+    @Args('limit', { type: () => Number }) limit: number,
+    @Args('postType', { type: () => PostType }) postType: PostType,
+  ): Promise<any> {
+    try {
+      return await this.postAdapter.findAllPostByPostType(
+        page,
+        limit,
+        postType,
+      );
     } catch (error: any) {
       throw error;
     }

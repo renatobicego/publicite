@@ -52,7 +52,7 @@ export interface GroupServiceInterface {
   saveGroup(group: GroupRequest, groupCreator: string): Promise<GroupResponse>;
   pushNotificationToGroup(
     groupId: string,
-    userId: string,
+    backData: any,
     event: string,
     session: any,
   ): Promise<any>;

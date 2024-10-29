@@ -8,6 +8,11 @@ export interface PostAdapterInterface {
   deletePostById(id: string): Promise<void>;
   findPostsByAuthorId(id: string): Promise<void>;
   findPostById(id: string): Promise<void>;
+  findAllPostByPostType(
+    page: number,
+    limit: number,
+    postType: string,
+  ): Promise<void>;
   updatePostById(
     postUpdate: PostUpdateRequest,
     id: string,

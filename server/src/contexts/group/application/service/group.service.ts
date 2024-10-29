@@ -248,39 +248,54 @@ export class GroupService implements GroupServiceInterface {
 
   async pushNotificationToGroup(
     groupId: string,
-    userId: string,
+    backData: any,
     event: string,
     session: any,
   ): Promise<any> {
     this.logger.log('Pushing notification to group - event recieved: ' + event);
+    const { userIdTo, userIdFrom } = backData;
     try {
       switch (event) {
         case eventTypes[0]: // Te han invitado a un grupo -> 0
           this.logger.log('Pushing join request to group: ' + groupId);
           await this.groupRepository.pushGroupInvitations(
             groupId,
-            userId,
+            userIdTo,
             session,
           );
           break;
 
         case eventTypes[1]: // Te han agregado a un grupo -> 1
+          await this.groupRepository.pullGroupInvitations(
+            groupId,
+            userIdTo,
+            session,
+          );
+          break;
         case eventTypes[4]: // usuario B rechazo unirse al grupo -> 4
           await this.groupRepository.pullGroupInvitations(
             groupId,
-            userId,
+            userIdFrom,
             session,
           );
           break;
 
         case eventTypes[2]: // te han aceptado en un grupo -> 2
         case eventTypes[3]: // te han rechazado en un grupo -> 3
-          await this.groupRepository.pullJoinRequest(groupId, userId, session);
+          await this.groupRepository.pullJoinRequest(
+            groupId,
+            userIdTo,
+            session,
+          );
           break;
 
         case eventTypes[5]: // Usuario A quiere pertenecer a grupo -> 5
           this.logger.log('Pushing join request to group: ' + groupId);
-          await this.groupRepository.pushJoinRequest(groupId, userId, session);
+          await this.groupRepository.pushJoinRequest(
+            groupId,
+            userIdTo,
+            session,
+          );
           break;
 
         default:

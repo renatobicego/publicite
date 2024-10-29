@@ -18,6 +18,17 @@ export class PostService implements PostServiceInterface {
     @Inject('UserServiceInterface')
     private readonly userService: UserServiceInterface,
   ) {}
+  findAllPostByPostType(
+    page: number,
+    limit: number,
+    postType: string,
+  ): Promise<void> {
+    try {
+      return this.postRepository.findAllPostByPostType(page, limit, postType);
+    } catch (error: any) {
+      throw error;
+    }
+  }
 
   async create(post: Post): Promise<Post> {
     const session = await this.connection.startSession();

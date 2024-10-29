@@ -13,6 +13,12 @@ export interface PostRepositoryInterface {
   deletePostById(id: string): Promise<any>;
   findPostsByAuthorId(id: string): Promise<void>;
   findPostById(id: string): Promise<void>;
+  findAllPostByPostType(
+    page: number,
+    limit: number,
+    postType: string,
+  ): Promise<void>;
+
   saveLocation(
     location: PostLocation,
     options?: { session?: ClientSession },
