@@ -66,15 +66,15 @@ export class GroupService implements GroupServiceInterface {
     }
   }
 
-  async addMembersToGroup(
-    newMembers: string[],
+  async acceptJoinGroupRequest(
+    newMember: string,
     groupId: string,
     groupAdmin: string,
   ): Promise<any> {
     try {
-      this.logger.log('Adding users to group: ' + groupId);
-      return await this.groupRepository.addMembersToGroup(
-        newMembers,
+      this.logger.log('Adding user to group: ' + groupId);
+      return await this.groupRepository.acceptJoinGroupRequest(
+        newMember,
         groupId,
         groupAdmin,
       );

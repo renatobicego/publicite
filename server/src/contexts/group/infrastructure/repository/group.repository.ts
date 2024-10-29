@@ -96,8 +96,8 @@ export class GroupRepository implements GroupRepositoryInterface {
     }
   }
 
-  async addMembersToGroup(
-    members: string[],
+  async acceptJoinGroupRequest(
+    newMember: string,
     groupId: string,
     groupAdmin: string,
   ): Promise<any> {
@@ -111,14 +111,14 @@ export class GroupRepository implements GroupRepositoryInterface {
               $or: [{ admins: groupAdmin }, { creator: groupAdmin }],
             },
 
-            { $addToSet: { members: { $each: members } } },
+            { $addToSet: { members: newMember } },
             { session },
           )
           .lean();
         checkResultModificationOfOperation(result);
         await this.userModel
-          .updateMany(
-            { _id: { $in: members } },
+          .updateOne(
+            { _id: newMember },
             { $addToSet: { groups: groupId } },
             { session },
           )
@@ -126,7 +126,7 @@ export class GroupRepository implements GroupRepositoryInterface {
         await session.commitTransaction();
       });
       this.logger.log(
-        'Members added to group successfully Group ID: ' + groupId,
+        'Member added to group successfully Group ID: ' + groupId,
       );
       return;
     } catch (error: any) {
@@ -134,7 +134,7 @@ export class GroupRepository implements GroupRepositoryInterface {
         await session.abortTransaction();
       }
       this.logger.error(
-        'An error was ocurred when adding Members to group: ' + error,
+        'An error was ocurred when adding Member to group: ' + error,
       );
       throw error;
     } finally {

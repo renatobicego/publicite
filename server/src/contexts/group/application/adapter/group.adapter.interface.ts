@@ -12,8 +12,8 @@ export interface GroupAdapterInterface {
     groupId: string,
     groupAdmin: string,
   ): Promise<any>;
-  addMembersToGroup(
-    newMembers: string[],
+  acceptJoinGroupRequest(
+    newMember: string,
     groupId: string,
     groupAdmin: string,
   ): Promise<any>;

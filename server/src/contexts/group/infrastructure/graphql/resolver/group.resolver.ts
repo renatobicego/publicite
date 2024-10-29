@@ -69,9 +69,9 @@ export class GroupResolver {
     description: 'Agregar miembros a  un grupo',
   })
   @UseGuards(ClerkAuthGuard)
-  async addMembersToGroupByGroupId(
-    @Args('newMembers', { type: () => [String] })
-    newMembers: string[],
+  async acceptJoinGroupRequest(
+    @Args('newMember', { type: () => String })
+    newMember: string,
     @Args('groupAdmin', { type: () => String })
     groupAdmin: string,
     @Args('groupId', { type: () => String })
@@ -81,12 +81,12 @@ export class GroupResolver {
   ): Promise<any> {
     try {
       PubliciteAuth.authorize(context, groupAdmin);
-      await this.groupAdapter.addMembersToGroup(
-        newMembers,
+      await this.groupAdapter.acceptJoinGroupRequest(
+        newMember,
         groupId,
         groupAdmin,
       );
-      return 'Members added';
+      return 'Member added';
     } catch (error: any) {
       throw error;
     }

@@ -13,8 +13,8 @@ export interface GroupRepositoryInterface {
     groupId: string,
     groupAdmin: string,
   ): Promise<any>;
-  addMembersToGroup(
-    newMembers: string[],
+  acceptJoinGroupRequest(
+    newMembers: string,
     groupId: string,
     groupAdmin: string,
   ): Promise<any>;

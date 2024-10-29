@@ -41,14 +41,14 @@ export class GroupAdapter implements GroupAdapterInterface {
     }
   }
 
-  async addMembersToGroup(
-    newMembers: string[],
+  async acceptJoinGroupRequest(
+    newMember: string,
     groupId: string,
     groupAdmin: string,
   ): Promise<any> {
     try {
-      await this.groupService.addMembersToGroup(
-        newMembers,
+      await this.groupService.acceptJoinGroupRequest(
+        newMember,
         groupId,
         groupAdmin,
       );
