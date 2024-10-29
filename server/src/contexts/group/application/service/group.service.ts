@@ -28,6 +28,23 @@ export class GroupService implements GroupServiceInterface {
     @Inject('GroupServiceMapperInterface')
     private readonly groupMapper: GroupServiceMapperInterface,
   ) {}
+  async acceptGroupInvitation(
+    groupId: string,
+    userRequestId: string,
+  ): Promise<void> {
+    try {
+      this.logger.log('Accepting group invitation: ' + groupId);
+      return await this.groupRepository.acceptGroupInvitation(
+        groupId,
+        userRequestId,
+      );
+    } catch (error: any) {
+      this.logger.error(
+        'An error was ocurred when accepting group invitation: ',
+      );
+      throw error;
+    }
+  }
 
   async addMagazinesToGroup(
     magazineIds: string[],
@@ -220,8 +237,8 @@ export class GroupService implements GroupServiceInterface {
           );
           break;
 
-        case eventTypes[1]:
-        case eventTypes[4]: // Te han agregado a un grupo -> 1 | usuario B rechazo unirse al grupo -> 4
+        case eventTypes[1]: // Te han agregado a un grupo -> 1
+        case eventTypes[4]: // usuario B rechazo unirse al grupo -> 4
           await this.groupRepository.pullGroupInvitations(
             groupId,
             userId,
@@ -229,8 +246,8 @@ export class GroupService implements GroupServiceInterface {
           );
           break;
 
-        case eventTypes[2]:
-        case eventTypes[3]: // te han aceptado en un grupo -> 2 | te han rechazado en un grupo -> 3
+        case eventTypes[2]: // te han aceptado en un grupo -> 2
+        case eventTypes[3]: // te han rechazado en un grupo -> 3
           await this.groupRepository.pullJoinRequest(groupId, userId, session);
           break;
 

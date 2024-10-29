@@ -6,6 +6,8 @@ import {
 import { Group } from '../entity/group.entity';
 
 export interface GroupRepositoryInterface {
+  acceptGroupInvitation(groupId: string, userRequestId: string): Promise<void>;
+
   addAdminsToGroup(
     admins: string[],
     groupId: string,

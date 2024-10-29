@@ -9,13 +9,14 @@ import {
 import { Server, Socket } from 'socket.io';
 
 import { SocketNotificationServiceInterface } from '../../domain/service/socket.notification.service.interface';
-import { Inject } from '@nestjs/common';
+import { Inject, UseGuards } from '@nestjs/common';
 import {
   allowedEvents,
   EventTypes,
   GroupInvitation,
 } from '../../domain/entity/group.invitation.notification';
 import { GroupNotificationEvents } from '../../domain/notification/group.notification.events';
+import { ClerkAuthGuard } from 'src/contexts/shared/auth/clerk-auth/clerk.auth.guard';
 
 @WebSocketGateway({
   cors: {
@@ -76,6 +77,7 @@ export class NotificationGatewaySocket
   }
 
   @SubscribeMessage('group_notifications')
+  @UseGuards(ClerkAuthGuard)
   group_notifications(@MessageBody() data: GroupInvitation) {
     try {
       const { notificationBody, client } =

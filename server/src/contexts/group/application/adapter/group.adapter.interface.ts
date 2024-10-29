@@ -6,6 +6,7 @@ import {
 } from './dto/HTTP-RESPONSE/group.response';
 
 export interface GroupAdapterInterface {
+  acceptGroupInvitation(groupId: string, userRequestId: string): Promise<void>;
   addAdminsToGroup(
     admins: string[],
     groupId: string,

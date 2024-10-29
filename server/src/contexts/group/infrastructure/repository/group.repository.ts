@@ -29,6 +29,42 @@ export class GroupRepository implements GroupRepositoryInterface {
     @InjectConnection() private readonly connection: Connection,
     private readonly logger: MyLoggerService,
   ) {}
+  async acceptGroupInvitation(
+    groupId: string,
+    userRequestId: string,
+  ): Promise<void> {
+    const session = await this.connection.startSession();
+    try {
+      await session.withTransaction(async () => {
+        const result = await this.groupModel
+          .updateOne(
+            {
+              _id: groupId,
+              'groupNotificationsRequest.groupInvitations': userRequestId,
+            },
+
+            { $addToSet: { members: userRequestId } },
+            { session },
+          )
+          .lean();
+        checkResultModificationOfOperation(
+          result,
+          'Member cant be added to group, member is not in group invitation or group does not exist',
+        );
+        await this.userModel.updateOne(
+          { _id: userRequestId },
+          { $addToSet: { groups: groupId } },
+          { session },
+        );
+      });
+
+      this.logger.log(
+        'Member added to group successfully Group ID: ' + groupId,
+      );
+    } catch (error: any) {
+      throw error;
+    }
+  }
 
   async addMagazinesToGroup(
     magazineIds: string[],

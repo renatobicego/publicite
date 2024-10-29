@@ -45,7 +45,7 @@ export class SocketNotificationService
     try {
       await session.withTransaction(async () => {
         switch (event) {
-          case eventTypes[0]: // Te han invitado a un grupo -> 0
+          case eventTypes[0]: // Te han invitado a un grupo -> 0 
           case eventTypes[1]: // Te han agregado a un grupo -> 1
           case eventTypes[2]: // Te han aceptado en un grupo -> 2
           case eventTypes[3]: // Te han rechazado en un grupo -> 3

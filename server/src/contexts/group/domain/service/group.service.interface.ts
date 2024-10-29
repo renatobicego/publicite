@@ -6,6 +6,8 @@ import {
 } from '../../application/adapter/dto/HTTP-RESPONSE/group.response';
 
 export interface GroupServiceInterface {
+  acceptGroupInvitation(groupId: string, userRequestId: string): Promise<void>;
+
   addAdminsToGroup(
     admins: string[],
     groupId: string,
@@ -40,7 +42,7 @@ export interface GroupServiceInterface {
     page: number,
     userRequest: string,
   ): Promise<GroupListResponse>;
-  isThisGroupExist(alias: string): Promise<Boolean>
+  isThisGroupExist(alias: string): Promise<Boolean>;
   saveGroup(group: GroupRequest, groupCreator: string): Promise<GroupResponse>;
   pushNotificationToGroup(
     groupId: string,

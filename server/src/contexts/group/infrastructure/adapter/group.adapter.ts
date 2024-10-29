@@ -14,6 +14,16 @@ export class GroupAdapter implements GroupAdapterInterface {
     @Inject('GroupServiceInterface')
     private readonly groupService: GroupServiceInterface,
   ) {}
+  async acceptGroupInvitation(
+    groupId: string,
+    userRequestId: string,
+  ): Promise<void> {
+    try {
+      await this.groupService.acceptGroupInvitation(groupId, userRequestId);
+    } catch (error: any) {
+      throw error;
+    }
+  }
 
   async addMagazinesToGroup(
     magazineIds: string[],

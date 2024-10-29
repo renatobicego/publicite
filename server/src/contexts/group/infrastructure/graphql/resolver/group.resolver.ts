@@ -21,6 +21,27 @@ export class GroupResolver {
 
   @Mutation(() => String, {
     nullable: true,
+    description: 'Aceptar la invitacion a un grupo',
+  })
+  @UseGuards(ClerkAuthGuard)
+  async acceptGroupInvitation(
+    @Args('groupId', { type: () => String })
+    groupId: string,
+    @Context()
+    context: any,
+  ): Promise<any> {
+    try {
+      const token = context.req.headers.authorization;
+      const userRequestId = PubliciteAuth.getIdFromClerkToken(token);
+      await this.groupAdapter.acceptGroupInvitation(groupId, userRequestId);
+      return 'Invitation accepted';
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  @Mutation(() => String, {
+    nullable: true,
     description: 'Agregar admins un grupo',
   })
   @UseGuards(ClerkAuthGuard)
