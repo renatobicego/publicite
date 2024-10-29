@@ -293,7 +293,7 @@ export class GroupService implements GroupServiceInterface {
           this.logger.log('Pushing join request to group: ' + groupId);
           await this.groupRepository.pushJoinRequest(
             groupId,
-            userIdTo,
+            userIdFrom,
             session,
           );
           break;
