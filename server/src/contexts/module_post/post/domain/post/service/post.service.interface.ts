@@ -9,6 +9,7 @@ export interface PostServiceInterface {
     page: number,
     limit: number,
     postType: string,
+    searchTerm?: string,
   ): Promise<void>;
   deletePostById(id: string): Promise<void>;
   updatePostById(

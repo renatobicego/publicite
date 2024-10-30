@@ -22,9 +22,15 @@ export class PostService implements PostServiceInterface {
     page: number,
     limit: number,
     postType: string,
+    searchTerm?: string,
   ): Promise<void> {
     try {
-      return this.postRepository.findAllPostByPostType(page, limit, postType);
+      return this.postRepository.findAllPostByPostType(
+        page,
+        limit,
+        postType,
+        searchTerm,
+      );
     } catch (error: any) {
       throw error;
     }

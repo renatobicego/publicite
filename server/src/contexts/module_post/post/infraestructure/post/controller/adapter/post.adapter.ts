@@ -83,12 +83,14 @@ export class PostAdapter implements PostAdapterInterface {
     page: number,
     limit: number,
     postType: string,
+    searchTerm?: string,
   ): Promise<void> {
     try {
       return await this.postService.findAllPostByPostType(
         page,
         limit,
         postType,
+        searchTerm,
       );
     } catch (error: any) {
       throw error;

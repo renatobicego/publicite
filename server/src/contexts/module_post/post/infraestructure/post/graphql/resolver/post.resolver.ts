@@ -97,12 +97,15 @@ export class PostResolver {
     @Args('page', { type: () => Number }) page: number,
     @Args('limit', { type: () => Number }) limit: number,
     @Args('postType', { type: () => PostType }) postType: PostType,
+    @Args('searchTerm', { type: () => String, nullable: true })
+    searchTerm?: string,
   ): Promise<any> {
     try {
       return await this.postAdapter.findAllPostByPostType(
         page,
         limit,
         postType,
+        searchTerm,
       );
     } catch (error: any) {
       throw error;

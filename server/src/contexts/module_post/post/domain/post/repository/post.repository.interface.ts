@@ -17,6 +17,7 @@ export interface PostRepositoryInterface {
     page: number,
     limit: number,
     postType: string,
+    searchTerm?: string,
   ): Promise<void>;
 
   saveLocation(

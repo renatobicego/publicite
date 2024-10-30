@@ -12,6 +12,7 @@ export interface PostAdapterInterface {
     page: number,
     limit: number,
     postType: string,
+    searchTerm?: string,
   ): Promise<void>;
   updatePostById(
     postUpdate: PostUpdateRequest,

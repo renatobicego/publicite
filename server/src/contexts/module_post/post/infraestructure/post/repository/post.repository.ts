@@ -205,13 +205,15 @@ export class PostRepository implements PostRepositoryInterface {
     page: number,
     limit: number,
     postType: string,
+    searchTerm?: string,
   ): Promise<any> {
     try {
       this.logger.log('Finding posts By postType: ' + postType);
-
+      const regex = new RegExp(`${searchTerm}`, 'i');
       const posts = await this.postDocument
         .find({
           postType: postType,
+          $or: [{ title: regex }, { description: regex }],
         })
         //.and([{ visibility: 'public' }])
         .limit(limit + 1)
