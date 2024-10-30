@@ -41,7 +41,7 @@ export interface GroupServiceInterface {
     creator?: string,
     newCreator?: string,
   ): Promise<any>;
-  findGroupById(id: string): Promise<GroupResponse>;
+  findGroupById(id: string, userRequest: string): Promise<GroupResponse>;
   findGroupByNameOrAlias(
     name: string,
     limit: number,

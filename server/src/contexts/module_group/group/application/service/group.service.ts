@@ -10,7 +10,6 @@ import { GroupRequest } from '../adapter/dto/HTTP-REQUEST/group.request';
 import { GroupServiceMapperInterface } from '../../domain/service/mapper/group.service.mapper.interface';
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { GroupUpdateRequest } from '../adapter/dto/HTTP-REQUEST/group.update.request';
-import { error } from 'console';
 
 const eventTypes = [
   'notification_group_new_user_invited', // Te han invitado a un grupo -> 0
@@ -179,10 +178,10 @@ export class GroupService implements GroupServiceInterface {
     }
   }
 
-  async findGroupById(id: string): Promise<GroupResponse> {
+  async findGroupById(id: string, userRequest: string): Promise<GroupResponse> {
     try {
       this.logger.log('Finding group by id: ' + id);
-      return await this.groupRepository.findGroupById(id);
+      return await this.groupRepository.findGroupById(id, userRequest);
     } catch (error: any) {
       throw error;
     }

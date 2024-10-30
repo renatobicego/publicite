@@ -1,15 +1,15 @@
 import { Inject, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Resolver, Query, Context } from '@nestjs/graphql';
 
-
-
 import { ClerkAuthGuard } from 'src/contexts/module_shared/auth/clerk-auth/clerk.auth.guard';
 import { PubliciteAuth } from 'src/contexts/module_shared/auth/publicite_auth/publicite_auth';
 import { GroupRequest } from '../../../application/adapter/dto/HTTP-REQUEST/group.request';
 import { GroupUpdateRequest } from '../../../application/adapter/dto/HTTP-REQUEST/group.update.request';
-import { GroupResponse, GroupListResponse } from '../../../application/adapter/dto/HTTP-RESPONSE/group.response';
+import {
+  GroupResponse,
+  GroupListResponse,
+} from '../../../application/adapter/dto/HTTP-RESPONSE/group.response';
 import { GroupAdapterInterface } from '../../../application/adapter/group.adapter.interface';
-
 
 @Resolver('Group')
 export class GroupResolver {
@@ -230,9 +230,12 @@ export class GroupResolver {
   async getGroupById(
     @Args('id', { type: () => String })
     groupId: string,
+    @Context() context: any,
   ): Promise<GroupResponse> {
     try {
-      return await this.groupAdapter.findGroupById(groupId);
+      const token = context.req.headers.authorization;
+      const userRequest = PubliciteAuth.getIdFromClerkToken(token);
+      return await this.groupAdapter.findGroupById(groupId, userRequest);
     } catch (error: any) {
       throw error;
     }
@@ -240,7 +243,7 @@ export class GroupResolver {
 
   @Query(() => GroupListResponse, {
     nullable: true,
-    description: 'Busca un grupo por su nombre',
+    description: 'Busca un grupo por su nombre o alias',
   })
   @UseGuards(ClerkAuthGuard)
   async getGroupByNameOrAlias(

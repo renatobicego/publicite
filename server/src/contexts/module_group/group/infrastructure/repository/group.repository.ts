@@ -375,7 +375,7 @@ export class GroupRepository implements GroupRepositoryInterface {
     }
   }
 
-  async findGroupById(id: string): Promise<GroupResponse> {
+  async findGroupById(id: string, userRequest: string): Promise<GroupResponse> {
     const session = await this.connection.startSession();
     session.startTransaction();
     try {
@@ -388,6 +388,14 @@ export class GroupRepository implements GroupRepositoryInterface {
           },
           { path: 'admins', select: '_id username name lastName' },
           {
+            path: 'groupNotificationsRequest.groupInvitations',
+            select: '_id username profilePhotoUrl ',
+          },
+          {
+            path: 'groupNotificationsRequest.joinRequests',
+            select: '_id username profilePhotoUrl ',
+          },
+          {
             path: 'magazines',
             select: '_id name sections',
             populate: {
@@ -399,6 +407,20 @@ export class GroupRepository implements GroupRepositoryInterface {
         ])
         .session(session)
         .lean();
+
+      if (group) {
+        if (
+          !group.admins.map((id) => id.toString()).includes(userRequest) &&
+          group.creator.toString() !== userRequest
+        ) {
+          group.groupNotificationsRequest.groupInvitations = [
+            'You cant access here you are not admin',
+          ];
+          group.groupNotificationsRequest.joinRequests = [
+            'You cant access here you are not admin',
+          ];
+        }
+      }
 
       await session.commitTransaction();
       return this.groupMapper.toGroupResponse(group);
@@ -483,6 +505,13 @@ export class GroupRepository implements GroupRepositoryInterface {
           hasGroupRequest = true;
         }
 
+        //Retornamos los ids vacios ya que no queremos que esta ruta los devuelva
+        group.groupNotificationsRequest.groupInvitations = [
+          'You cant access here from this route',
+        ];
+        group.groupNotificationsRequest.joinRequests = [
+          'You cant access here from this route',
+        ];
         return {
           group: this.groupMapper.toGroupResponse(group),
           isMember: isMember,

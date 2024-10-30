@@ -60,6 +60,25 @@ export class GroupResponse_admins {
 }
 
 @ObjectType()
+class notification_user_populate {
+  @Field(() => String)
+  _id: string;
+
+  @Field(() => String)
+  username: string;
+
+  @Field(() => String, { nullable: true })
+  profilePhotoUrl: string;
+}
+@ObjectType()
+class Notification_group {
+  @Field(() => [notification_user_populate], { nullable: true })
+  groupInvitations: notification_user_populate[];
+  @Field(() => [notification_user_populate], { nullable: true })
+  joinRequests: notification_user_populate[];
+}
+
+@ObjectType()
 export class GroupResponse {
   @Field(() => String)
   _id: ObjectId;
@@ -94,8 +113,8 @@ export class GroupResponse {
   @Field(() => String)
   visibility: string;
 
-  @Field(() => [String])
-  notifications: string[];
+  @Field(() => Notification_group, { nullable: true })
+  groupNotificationsRequest: Notification_group;
 
   constructor(group: any) {
     this._id = group._id;
@@ -109,10 +128,9 @@ export class GroupResponse {
     this.details = group.details;
     this.profilePhotoUrl = group.profilePhotoUrl;
     this.visibility = group.visibility;
-    this.notifications = group.notifications ?? [];
+    this.groupNotificationsRequest = group.groupNotificationsRequest;
   }
 }
-// Tengo que indicar si el user tiene una invitacion pendiente, si lo invitaron o si es miembro
 
 @ObjectType()
 class GroupList {
@@ -128,7 +146,7 @@ class GroupList {
   @Field(() => Boolean, { nullable: true })
   hasGroupRequest: Boolean; // Tiene una solicitud del grupo para que se una
 }
-                                                                                                                                                                                                                                          
+
 @ObjectType()
 export class GroupListResponse {
   @Field(() => [GroupList])

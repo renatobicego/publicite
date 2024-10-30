@@ -16,12 +16,15 @@ import {
   GroupInvitation,
 } from '../../domain/entity/group.invitation.notification';
 import { GroupNotificationEvents } from '../../domain/notification/group.notification.events';
-import { ClerkAuthGuard } from 'src/contexts/module_shared/auth/clerk-auth/clerk.auth.guard';
 
 @WebSocketGateway({
   cors: {
     origin: '*',
+    methods: ['GET', 'POST'],
+    credentials: true,
   },
+  path: '/socket.io',
+  transports: ['websocket', 'polling'],
 })
 export class NotificationGatewaySocket
   implements OnGatewayConnection, OnGatewayDisconnect, GroupNotificationEvents

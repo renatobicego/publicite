@@ -40,13 +40,19 @@ export interface GroupAdapterInterface {
     creator?: string,
     newCreator?: string,
   ): Promise<any>;
-  findGroupById(id: string): Promise<GroupResponse>;
+  findGroupById(id: string, userRequest: string): Promise<GroupResponse>;
   findGroupByNameOrAlias(
     name: string,
     limit: number,
     page: number,
     userRequest: string,
   ): Promise<GroupListResponse>;
+  findAllGroupNotifications(
+    groupId: string,
+    groupAdminOrCreator: string,
+    limit: number,
+    page: number,
+  ): Promise<GroupResponse>;
   isThisGroupExist(alias: string): Promise<Boolean>;
   removeAdminsFromGroupByGroupId(
     admins: string[],

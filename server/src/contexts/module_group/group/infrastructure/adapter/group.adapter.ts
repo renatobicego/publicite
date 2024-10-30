@@ -14,6 +14,14 @@ export class GroupAdapter implements GroupAdapterInterface {
     @Inject('GroupServiceInterface')
     private readonly groupService: GroupServiceInterface,
   ) {}
+  findAllGroupNotifications(
+    groupId: string,
+    groupAdminOrCreator: string,
+    limit: number,
+    page: number,
+  ): Promise<GroupResponse> {
+    throw new Error('Method not implemented.');
+  }
 
   async acceptGroupInvitation(
     groupId: string,
@@ -128,9 +136,9 @@ export class GroupAdapter implements GroupAdapterInterface {
     }
   }
 
-  async findGroupById(id: string): Promise<GroupResponse> {
+  async findGroupById(id: string, userRequest: string): Promise<GroupResponse> {
     try {
-      const response = await this.groupService.findGroupById(id);
+      const response = await this.groupService.findGroupById(id, userRequest);
       return response;
     } catch (error: any) {
       throw error;

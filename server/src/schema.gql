@@ -32,6 +32,17 @@ type GroupResponse_admins {
   username: String!
 }
 
+type notification_user_populate {
+  _id: String!
+  username: String!
+  profilePhotoUrl: String
+}
+
+type Notification_group {
+  groupInvitations: [notification_user_populate!]
+  joinRequests: [notification_user_populate!]
+}
+
 type GroupResponse {
   _id: String!
   members: [members_graphQl!]
@@ -44,7 +55,7 @@ type GroupResponse {
   details: String
   profilePhotoUrl: String
   visibility: String!
-  notifications: [String!]!
+  groupNotificationsRequest: Notification_group
 }
 
 type GroupList {
@@ -420,7 +431,7 @@ type Query {
   """Busca un grupo por su id"""
   getGroupById(id: String!): GroupResponse
 
-  """Busca un grupo por su nombre"""
+  """Busca un grupo por su nombre o alias"""
   getGroupByNameOrAlias(
     """nombre del grupo o el alias"""
     name: String!
