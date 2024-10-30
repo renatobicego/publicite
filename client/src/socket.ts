@@ -7,6 +7,8 @@ const URL = socketUrl;
 export const getSocket = (userId?: string) => {
   return io(URL, {
     query: { userId: userId ? userId : "" }, // Pass user ID as query parameter
-    transports: ["websocket"], // Ensure only WebSocket is used
+    transports: ["websocket", "polling"], // Ensure only WebSocket is used
+    reconnectionAttempts: 5,     // Attempt to reconnect 5 times
+    reconnectionDelay: 2000,  
   });
 };
