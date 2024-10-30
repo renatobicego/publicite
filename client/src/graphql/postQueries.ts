@@ -58,6 +58,30 @@ export const getPostByIdQuery = gql`
   }
 `;
 
+export const getPostsQuery = gql`
+  query FindAllPostByPostType(
+    $page: Float!
+    $postType: PostType!
+    $limit: Float!
+  ) {
+    findAllPostByPostType(page: $page, postType: $postType, limit: $limit) {
+      hasMore
+      posts {
+        _id
+        title
+        description
+        frequencyPrice
+        imagesUrls
+        petitionType
+        postType
+        price
+        reviews
+        toPrice
+      }
+    }
+  }
+`;
+
 export const getPostCategories = gql`
   query GetAllCategoryPost {
     getAllCategoryPost {

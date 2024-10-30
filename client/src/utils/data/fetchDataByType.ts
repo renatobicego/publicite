@@ -15,11 +15,11 @@ export const fetchDataByType = async(
 ) => {
   switch (postType) {
     case "good":
-      return await getGoods(searchTerm);
+      return await getGoods(searchTerm, page);
     case "service":
-      return await getServices(searchTerm);
+      return await getServices(searchTerm, page);
     case "petition":
-      return await getPetitions(searchTerm);
+      return await getPetitions(searchTerm, page);
     case "boards":
       return await getBoards(searchTerm, page);
     case "groups":

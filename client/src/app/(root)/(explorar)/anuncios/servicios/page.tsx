@@ -1,8 +1,8 @@
 import BreadcrumbsAdmin from "@/components/BreadcrumbsAdmin";
+import SolapasTabs from "@/components/solapas/SolapasTabs";
 import { POSTS } from "@/utils/data/urls";
 
 export default async function PostsList() {
-
   const breadcrumbsItems = [
     {
       label: "Inicio",
@@ -11,7 +11,7 @@ export default async function PostsList() {
     {
       label: "Anuncios",
       href: POSTS,
-      },
+    },
     {
       label: "Servicios",
       href: `${POSTS}/servicios`,
@@ -19,6 +19,9 @@ export default async function PostsList() {
   ];
 
   return (
+    <main className="flex min-h-screen flex-col items-start main-style gap-4">
       <BreadcrumbsAdmin items={breadcrumbsItems} />
+      <SolapasTabs />
+    </main>
   );
 }

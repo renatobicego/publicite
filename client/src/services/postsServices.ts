@@ -14,6 +14,7 @@ import {
   editPostMutation,
   getPostByIdQuery,
   getPostCategories,
+  getPostsQuery,
 } from "@/graphql/postQueries";
 import { auth } from "@clerk/nextjs/server";
 import { cookies } from "next/headers";
@@ -26,7 +27,7 @@ export const getPostData = async (id: string) => {
       variables: { findPostByIdId: id },
       context: {
         fetchOptions: {
-          cache: 'no-store' 
+          cache: "no-store",
         },
       },
     });
@@ -90,44 +91,41 @@ export const putPost = async (
   }
 };
 
-export const getGoods = async (searchTerm: string | null) => {
+const getPosts = async (
+  searchTerm: string | null,
+  page: number,
+  postType: PostType
+) => {
   try {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const { data } = await query({
+      query: getPostsQuery,
+      variables: { postType, limit: 20, page },
+    });
     return {
-      items: [mockedPosts[0], mockedPosts[0], mockedPosts[0], mockedPosts[0]],
+      items: data.findAllPostByPostType.posts,
+      hasMore: data.findAllPostByPostType.hasMore,
     }; // Return the same mocked data
   } catch (error) {
+    console.log(error)
     return {
       error: "Error al traer los anuncios. Por favor intenta de nuevo.",
     };
   }
 };
 
-export const getServices = async (searchTerm: string | null) => {
-  try {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    return {
-      items: [mockedPosts[1], mockedPosts[1], mockedPosts[1], mockedPosts[1]],
-    }; // Return the same mocked data
-  } catch (error) {
-    return {
-      error: "Error al traer los anuncios. Por favor intenta de nuevo.",
-    };
-  }
+export const getGoods = async (searchTerm: string | null, page: number) => {
+  return await getPosts(searchTerm, page, "good");
 };
 
-export const getPetitions = async (searchTerm: string | null) => {
-  try {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    return { items: mockedPetitions }; // Return the same mocked data
-  } catch (error) {
-    return {
-      error: "Error al traer los anuncios. Por favor intenta de nuevo.",
-    };
-  }
+export const getServices = async (searchTerm: string | null, page: number) => {
+  return await getPosts(searchTerm, page, "service");
 };
 
-export const deletePostService = async(post: Post) => {
+export const getPetitions = async (searchTerm: string | null, page: number) => {
+  return await getPosts(searchTerm, page, "petition");
+};
+
+export const deletePostService = async (post: Post) => {
   try {
     await getClient().mutate({
       mutation: deletePostMutation,
@@ -137,16 +135,20 @@ export const deletePostService = async(post: Post) => {
           Authorization: await auth().getToken(),
         },
       },
-    })
+    });
     await deleteFilesService(post.attachedFiles.map((file) => file.url));
-    if("imagesUrls" in post && post.imagesUrls && (post as Good).imagesUrls.length > 0) {
+    if (
+      "imagesUrls" in post &&
+      post.imagesUrls &&
+      (post as Good).imagesUrls.length > 0
+    ) {
       await deleteFilesService((post as Good).imagesUrls);
     }
     return { message: "Anuncio borrado exitosamente" };
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return {
       error: "Error al eliminar el anuncio. Por favor intenta de nuevo.",
     };
   }
-}
+};
