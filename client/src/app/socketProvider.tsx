@@ -54,8 +54,8 @@ export const SocketProvider = ({ children, userId }: { children: ReactNode; user
       });
 
       socket.on("connect_error", (err: any) => {
-        console.log("Socket connection error:", err);
-      });
+      console.error("Socket connection error:", err.message, err.data || err);
+    });
       socket.on("group_notifications", (data) => {
         console.log(data);
         setNewNotifications(true);

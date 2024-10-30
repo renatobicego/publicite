@@ -10,5 +10,6 @@ export const getSocket = (userId?: string) => {
     transports: ["websocket", "polling"], // Ensure only WebSocket is used
     reconnectionAttempts: 5,     // Attempt to reconnect 5 times
     reconnectionDelay: 2000,  
+    
   });
 };
