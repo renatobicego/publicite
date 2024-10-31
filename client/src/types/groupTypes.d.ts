@@ -1,3 +1,5 @@
+import { User } from "./userTypes";
+
 export interface Group {
   _id: ObjectId;
   alias: string;
@@ -10,6 +12,13 @@ export interface Group {
   profilePhotoUrl: string;
   visibility: "private" | "public";
   creator: ObjectId;
+}
+
+export interface GroupAdmin extends Group {
+  groupNotificationsRequest: {
+    joinRequests: Pick<User, "_id" | "username" | "profilePhotoUrl">[];
+    groupInvitations: Pick<User, "_id" | "username" | "profilePhotoUrl">[];
+  }
 }
 
 export interface GetGroups {

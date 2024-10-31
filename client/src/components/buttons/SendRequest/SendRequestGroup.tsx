@@ -6,6 +6,7 @@ import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { emitGroupNotification } from "@/components/notifications/groups/emitNotifications";
 import { useSocket } from "@/app/socketProvider";
 import { useUserData } from "@/app/(root)/userDataProvider";
+import { useRouter } from "next-nprogress-bar";
 
 const SendRequestGroup = ({
   variant,
@@ -25,6 +26,7 @@ const SendRequestGroup = ({
 }) => {
   const { usernameLogged } = useUserData();
   const { socket } = useSocket();
+  const router = useRouter();
   const sendRequestJoinGroup = async () => {
     try {
       const group = await getGroupAdminsById(groupId);
@@ -50,6 +52,7 @@ const SendRequestGroup = ({
         );
       });
       toastifySuccess("Solicitud enviada correctamente");
+      router.refresh();
     } catch (error) {
       toastifyError(
         "Error al enviar la solicitud. Por favor intenta de nuevo."

@@ -52,8 +52,10 @@ export const getGroupById = async (id: string) => {
         },
       },
     });
+    const { getGroupById } = data;
+    const { group, isMember, hasJoinRequest, hasGroupRequest } = getGroupById;
 
-    return data.getGroupById;
+    return { group, isMember, hasJoinRequest, hasGroupRequest };
   } catch (error: ApolloError | any) {
     console.log(error);
     return {
@@ -76,7 +78,7 @@ export const getGroupMembersById = async (id: string) => {
       },
     });
 
-    return data.getGroupById;
+    return data.getGroupById.group;
   } catch (error) {
     console.log(error);
     return {
@@ -98,7 +100,7 @@ export const getGroupAdminsById = async (id: string) => {
       },
     });
 
-    return data.getGroupById;
+    return data.getGroupById.group;
   } catch (error) {
     console.log(error);
     return {

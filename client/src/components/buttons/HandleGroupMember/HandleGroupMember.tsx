@@ -8,14 +8,14 @@ import {
   DropdownTrigger,
 } from "@nextui-org/react";
 import { FaPencil } from "react-icons/fa6";
-import ConfirmModal from "../modals/ConfirmModal";
+import ConfirmModal from "../../modals/ConfirmModal";
 import { addAdmin, removeAdmin, removeMember } from "@/app/server/groupActions";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { useRouter } from "next-nprogress-bar";
 import { IoTrashOutline } from "react-icons/io5";
 import { Group } from "@/types/groupTypes";
 import { useSocket } from "@/app/socketProvider";
-import { emitGroupNotification } from "../notifications/groups/emitNotifications";
+import { emitGroupNotification } from "../../notifications/groups/emitNotifications";
 import { useUserData } from "@/app/(root)/userDataProvider";
 
 const HandleGroupMember = ({

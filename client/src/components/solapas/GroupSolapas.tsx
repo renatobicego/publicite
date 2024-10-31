@@ -1,7 +1,7 @@
 "use client";
 
 import { MAGAZINES, GROUPS, CREATE_MAGAZINE } from "@/utils/data/urls";
-import { Group } from "@/types/groupTypes";
+import { Group, GroupAdmin } from "@/types/groupTypes";
 import { Link, Tab, Tabs } from "@nextui-org/react";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
@@ -18,7 +18,7 @@ const GroupSolapas = ({
   group,
   isAdmin,
 }: {
-  group: Group;
+  group: GroupAdmin;
   isAdmin: boolean;
 }) => {
   const pathname = usePathname();
@@ -26,7 +26,10 @@ const GroupSolapas = ({
   const router = useRouter();
 
   useEffect(() => {
-    if (((pathname.includes('miembros') || pathname.includes('solicitudes')) && !isAdmin)) {
+    if (
+      (pathname.includes("miembros") || pathname.includes("solicitudes")) &&
+      !isAdmin
+    ) {
       router.push(`${GROUPS}/${group._id}`);
     }
     if (tabsRef.current) {
@@ -43,7 +46,7 @@ const GroupSolapas = ({
         });
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
   const GROUP_URL = `${GROUPS}/${group._id}`;
@@ -102,6 +105,12 @@ const GroupSolapas = ({
           <div className="w-full flex justify-between items-center">
             <h3>Solicitudes de Ingreso</h3>
           </div>
+          <UsersGrid
+            items={group.groupNotificationsRequest.groupInvitations as User[]}
+            groupGrid
+            group={group}
+            groupRequestGrid
+          />
         </>
       ),
       requiredAdmin: true,

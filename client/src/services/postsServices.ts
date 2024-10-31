@@ -99,14 +99,19 @@ const getPosts = async (
   try {
     const { data } = await query({
       query: getPostsQuery,
-      variables: { postType, limit: 20, page },
+      variables: {
+        postType,
+        limit: 20,
+        page,
+        searchTerm: searchTerm ? searchTerm : "",
+      },
     });
     return {
       items: data.findAllPostByPostType.posts,
       hasMore: data.findAllPostByPostType.hasMore,
     }; // Return the same mocked data
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return {
       error: "Error al traer los anuncios. Por favor intenta de nuevo.",
     };

@@ -14,7 +14,9 @@ const SecondaryButton: React.FC<SecondaryButtonProps> = ({
       radius="full"
       color="secondary"
       {...props}
-      className={`px-4 py-[10px] hover:bg-text-color hover:text-white
+      className={`px-4 py-[10px] hover:bg-text-color ${
+        props.variant !== "light" && "hover:text-white"
+      } 
          hover:opacity-100 max-md:text-xs text-sm ${props.className}`}
     >
       {children}
