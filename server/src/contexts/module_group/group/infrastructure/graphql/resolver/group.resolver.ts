@@ -8,6 +8,7 @@ import { GroupUpdateRequest } from '../../../application/adapter/dto/HTTP-REQUES
 import {
   GroupResponse,
   GroupListResponse,
+  GroupResponseById,
 } from '../../../application/adapter/dto/HTTP-RESPONSE/group.response';
 import { GroupAdapterInterface } from '../../../application/adapter/group.adapter.interface';
 
@@ -16,7 +17,7 @@ export class GroupResolver {
   constructor(
     @Inject('GroupAdapterInterface')
     private readonly groupAdapter: GroupAdapterInterface,
-  ) {}
+  ) { }
 
   @Mutation(() => String, {
     nullable: true,
@@ -222,7 +223,7 @@ export class GroupResolver {
     }
   }
 
-  @Query(() => GroupResponse, {
+  @Query(() => GroupResponseById, {
     nullable: true,
     description: 'Busca un grupo por su id',
   })
@@ -231,7 +232,7 @@ export class GroupResolver {
     @Args('id', { type: () => String })
     groupId: string,
     @Context() context: any,
-  ): Promise<GroupResponse> {
+  ): Promise<GroupResponseById> {
     try {
       const token = context.req.headers.authorization;
       const userRequest = PubliciteAuth.getIdFromClerkToken(token);

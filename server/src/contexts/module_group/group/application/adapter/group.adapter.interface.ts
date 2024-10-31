@@ -3,6 +3,7 @@ import { GroupUpdateRequest } from './dto/HTTP-REQUEST/group.update.request';
 import {
   GroupListResponse,
   GroupResponse,
+  GroupResponseById,
 } from './dto/HTTP-RESPONSE/group.response';
 
 export interface GroupAdapterInterface {
@@ -40,7 +41,7 @@ export interface GroupAdapterInterface {
     creator?: string,
     newCreator?: string,
   ): Promise<any>;
-  findGroupById(id: string, userRequest: string): Promise<GroupResponse>;
+  findGroupById(id: string, userRequest: string): Promise<GroupResponseById>;
   findGroupByNameOrAlias(
     name: string,
     limit: number,

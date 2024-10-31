@@ -61,10 +61,10 @@ export class GroupResponse_admins {
 
 @ObjectType()
 class notification_user_populate {
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   _id: string;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   username: string;
 
   @Field(() => String, { nullable: true })
@@ -130,6 +130,22 @@ export class GroupResponse {
     this.visibility = group.visibility;
     this.groupNotificationsRequest = group.groupNotificationsRequest;
   }
+}
+
+
+@ObjectType()
+export class GroupResponseById {
+  @Field(() => GroupResponse)
+  group: GroupResponse;
+
+  @Field(() => Boolean)
+  isMember: boolean;
+
+  @Field(() => Boolean)
+  hasJoinRequest: boolean;
+
+  @Field(() => Boolean)
+  hasGroupRequest: boolean;
 }
 
 @ObjectType()

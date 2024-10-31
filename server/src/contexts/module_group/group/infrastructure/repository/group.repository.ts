@@ -8,6 +8,7 @@ import { GroupRepositoryMapperInterface } from '../../domain/repository/mapper/g
 import {
   GroupListResponse,
   GroupResponse,
+  GroupResponseById,
 } from '../../application/adapter/dto/HTTP-RESPONSE/group.response';
 import { GroupUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/group.update.request';
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
@@ -15,6 +16,8 @@ import { GroupMagazineDocument } from 'src/contexts/module_magazine/magazine/inf
 import { checkResultModificationOfOperation } from 'src/contexts/module_shared/functions/checkResultModificationOfOperation';
 import { IUser } from 'src/contexts/module_user/user/infrastructure/schemas/user.schema';
 import { GroupDocument } from '../schemas/group.schema';
+
+
 
 export class GroupRepository implements GroupRepositoryInterface {
   constructor(
@@ -28,7 +31,7 @@ export class GroupRepository implements GroupRepositoryInterface {
     private readonly groupMapper: GroupRepositoryMapperInterface,
     @InjectConnection() private readonly connection: Connection,
     private readonly logger: MyLoggerService,
-  ) {}
+  ) { }
 
   async assignNewCreatorAndExitGroupById(
     groupId: string,
@@ -375,7 +378,7 @@ export class GroupRepository implements GroupRepositoryInterface {
     }
   }
 
-  async findGroupById(id: string, userRequest: string): Promise<GroupResponse> {
+  async findGroupById(id: string, userRequest: string): Promise<GroupResponseById> {
     const session = await this.connection.startSession();
     session.startTransaction();
     try {
@@ -408,22 +411,39 @@ export class GroupRepository implements GroupRepositoryInterface {
         .session(session)
         .lean();
 
+      let isMember = false;
+      let hasJoinRequest = false;
+      let hasGroupRequest = false;
+
       if (group) {
-        if (
-          !group.admins.map((id) => id.toString()).includes(userRequest) &&
-          group.creator.toString() !== userRequest
-        ) {
+        const userIsMember = group.members.map((member: any) => member._id.toString()).includes(userRequest);
+        const userIsAdmin = group.admins.map((admin: any) => admin._id.toString()).includes(userRequest);
+        const userIsCreator = group.creator.toString() === userRequest;
+        hasJoinRequest = group.groupNotificationsRequest?.joinRequests?.some((user: any) => user._id.toString() === userRequest) || false;
+        hasGroupRequest = group.groupNotificationsRequest?.groupInvitations?.some((user: any) => user._id.toString() === userRequest) || false;
+        if (userIsMember || userIsAdmin || userIsCreator) {
+          isMember = true;
+        } else if (!userIsAdmin && !userIsCreator) {
           group.groupNotificationsRequest.groupInvitations = [
-            'You cant access here you are not admin',
+            'You can’t access here; you are not an admin',
           ];
           group.groupNotificationsRequest.joinRequests = [
-            'You cant access here you are not admin',
+            'You can’t access here; you are not an admin',
           ];
         }
       }
 
+
       await session.commitTransaction();
-      return this.groupMapper.toGroupResponse(group);
+      const groupResponse = this.groupMapper.toGroupResponse(group);
+
+      return {
+        group: groupResponse,
+        isMember,
+        hasJoinRequest,
+        hasGroupRequest,
+      }
+
     } catch (error: any) {
       await session.abortTransaction();
       throw error;
@@ -486,8 +506,8 @@ export class GroupRepository implements GroupRepositoryInterface {
         let hasGroupRequest = false;
 
         if (
-          group.members.map((id) => id.toString()).includes(userRequest) ||
-          group.admins.map((id) => id.toString()).includes(userRequest) ||
+          group.members.map((member: any) => member._id.toString()).includes(userRequest) ||
+          group.admins.map((admin: any) => admin._id.toString()).includes(userRequest) ||
           group.creator.toString() === userRequest
         ) {
           isMember = true;

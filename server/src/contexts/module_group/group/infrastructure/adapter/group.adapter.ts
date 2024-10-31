@@ -5,6 +5,7 @@ import { GroupServiceInterface } from '../../domain/service/group.service.interf
 import {
   GroupListResponse,
   GroupResponse,
+  GroupResponseById,
 } from '../../application/adapter/dto/HTTP-RESPONSE/group.response';
 import { GroupRequest } from '../../application/adapter/dto/HTTP-REQUEST/group.request';
 import { GroupUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/group.update.request';
@@ -136,7 +137,7 @@ export class GroupAdapter implements GroupAdapterInterface {
     }
   }
 
-  async findGroupById(id: string, userRequest: string): Promise<GroupResponse> {
+  async findGroupById(id: string, userRequest: string): Promise<GroupResponseById> {
     try {
       const response = await this.groupService.findGroupById(id, userRequest);
       return response;

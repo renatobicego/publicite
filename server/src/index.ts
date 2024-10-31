@@ -10,15 +10,15 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import * as http from 'http';
 import { Server } from 'socket.io';
+import { WebSocketServer } from 'ws';
 
-// Create an instance of Express server
 const expressServer = express();
-
-// Apply compression middleware
 expressServer.use(compression());
 
 let nestApp: NestExpressApplication;
 let io: Server;
+
+const wss = new WebSocketServer({ noServer: true });
 
 const initializeNestApp = async (): Promise<void> => {
   if (!nestApp) {
@@ -32,7 +32,8 @@ const initializeNestApp = async (): Promise<void> => {
 
     const server = http.createServer(expressServer);
     io = new Server(server, {
-      path: '/socket.io',
+      path: 'https://api-7u63p4eg4q-uc.a.run.app/socket',
+      transports: ['websocket', 'polling'],
       cors: {
         origin: '*',
         methods: ['GET', 'POST'],
@@ -41,19 +42,15 @@ const initializeNestApp = async (): Promise<void> => {
 
     io.on('connection', (socket) => {
       console.log('New client connected:', socket.id);
-
       socket.on('disconnect', () => {
         console.log('Client disconnected:', socket.id);
       });
-
-      // Define other event handlers here
     });
 
-    console.log(`Server running`);
+    console.log(`Server initialized`);
   }
 };
 
-// Export Firebase function
 export const api = onRequest(async (request, response) => {
   await initializeNestApp();
   expressServer(request, response);

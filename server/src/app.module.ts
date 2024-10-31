@@ -52,6 +52,7 @@ import { DatabaseService } from './contexts/module_shared/database/infrastructur
       useClass: AllExceptionsFilter,
     },
     DatabaseService,
+    NotificationSocketModule,
   ],
 })
 export class AppModule {}

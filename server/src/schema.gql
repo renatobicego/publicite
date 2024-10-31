@@ -33,8 +33,8 @@ type GroupResponse_admins {
 }
 
 type notification_user_populate {
-  _id: String!
-  username: String!
+  _id: String
+  username: String
   profilePhotoUrl: String
 }
 
@@ -56,6 +56,13 @@ type GroupResponse {
   profilePhotoUrl: String
   visibility: String!
   groupNotificationsRequest: Notification_group
+}
+
+type GroupResponseById {
+  group: GroupResponse!
+  isMember: Boolean!
+  hasJoinRequest: Boolean!
+  hasGroupRequest: Boolean!
 }
 
 type GroupList {
@@ -423,13 +430,13 @@ type Query {
   findPostById(id: String!): Post_response_graphql_model
 
   """Buscar todos los post"""
-  findAllPostByPostType(page: Float!, limit: Float!, postType: PostType!): PostFindAllResponse
+  findAllPostByPostType(page: Float!, limit: Float!, postType: PostType!, searchTerm: String): PostFindAllResponse
 
   """Obtener un board por anotaciones o palabras clave"""
   getBoardByAnnotationOrKeyword(board: String!, limit: Float!, page: Float!): BoardGetAllResponse
 
   """Busca un grupo por su id"""
-  getGroupById(id: String!): GroupResponse
+  getGroupById(id: String!): GroupResponseById
 
   """Busca un grupo por su nombre o alias"""
   getGroupByNameOrAlias(

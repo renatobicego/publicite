@@ -51,6 +51,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     console.log(
       `Error en el servidor. Status: ${status}, message: ${message}, location: ${location}`,
     );
+    console.log(message);
 
     response.status(status).json({
       statusCode: status,

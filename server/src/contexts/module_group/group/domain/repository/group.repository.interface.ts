@@ -2,6 +2,7 @@ import { GroupUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/g
 import {
   GroupListResponse,
   GroupResponse,
+  GroupResponseById,
 } from '../../application/adapter/dto/HTTP-RESPONSE/group.response';
 import { Group } from '../entity/group.entity';
 
@@ -42,7 +43,7 @@ export interface GroupRepositoryInterface {
     newCreator: string,
     creator: string,
   ): Promise<any>;
-  findGroupById(id: string, userRequest: string): Promise<GroupResponse>;
+  findGroupById(id: string, userRequest: string): Promise<GroupResponseById>;
   findGroupByNameOrAlias(
     name: string,
     limit: number,
