@@ -205,3 +205,9 @@ export const acceptJoinRequestMutation = gql`
     )
   }
 `;
+
+export const exitGroupMutation = gql`
+  mutation ExitGroupById($groupId: String!, $member: String!) {
+    exitGroupById(groupId: $groupId, member: $member)
+  }
+`;

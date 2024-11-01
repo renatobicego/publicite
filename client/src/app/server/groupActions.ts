@@ -5,6 +5,7 @@ import {
   deleteMember,
   postGroup,
   putAdminGroup,
+  putExitGroup,
   putGroup,
 } from "@/services/groupsService";
 import { EditGroupInterface } from "@/types/groupTypes";
@@ -96,6 +97,13 @@ export const removeGroup = async (
   groupId: string,
 ) => {
   const res = await deleteGroup(groupId);
+  return res;
+};
+
+export const exitFromGroup = async (
+  groupId: string
+) => {
+  const res = await putExitGroup(groupId);
   return res;
 };
 

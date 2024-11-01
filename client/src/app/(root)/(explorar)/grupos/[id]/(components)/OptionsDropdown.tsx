@@ -1,5 +1,5 @@
 "use client";
-import { removeGroup } from "@/app/server/groupActions";
+import { exitFromGroup, removeGroup } from "@/app/server/groupActions";
 import ConfirmModal from "@/components/modals/ConfirmModal";
 import { GROUPS } from "@/utils/data/urls";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
@@ -23,11 +23,13 @@ const OptionsDropdown = ({
   isMember,
   isCreator,
   image,
+  membersIds
 }: {
   groupId: string;
   isMember: boolean;
   isCreator: boolean;
-  image?: string;
+    image?: string;
+  membersIds: string[]
 }) => {
   const deleteGroupRef = useRef<() => void>(() => {});
   const router = useRouter();
@@ -54,6 +56,21 @@ const OptionsDropdown = ({
       toastifyError("No puedes eliminar este grupo");
     }
   };
+  
+  const exitGroup = async () => {
+    if(isCreator && membersIds.length > 0) {
+      toastifyError("No puedes abandonar el grupo si eres el creador.");
+      return
+    }
+    const res = await exitFromGroup(groupId);
+    if ("error" in res) {
+      toastifyError(res.error as string);
+      return;
+    }
+    toastifySuccess(res.message);
+    router.refresh();
+    router.replace(GROUPS);
+  }
   return (
     <>
       <Dropdown placement="bottom-end">
@@ -75,6 +92,7 @@ const OptionsDropdown = ({
             startContent={<IoIosExit className="size-5" />}
             color="danger"
             key="salir"
+            onPress={exitGroup}
             className={`rounded-full px-4 ${isMember ? "" : "hidden"}`}
           >
             Salir del Grupo

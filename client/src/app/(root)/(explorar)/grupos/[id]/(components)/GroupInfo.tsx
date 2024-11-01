@@ -7,6 +7,7 @@ import SecondaryButton from "@/components/buttons/SecondaryButton";
 import { EDIT_GROUP, FILE_URL } from "@/utils/data/urls";
 import { GetGroups, Group } from "@/types/groupTypes";
 import AcceptGroupInvitation from "@/components/buttons/SendRequest/AcceptGroupInvitation";
+import { User } from "@/types/userTypes";
 
 const GroupInfo = async ({
   group,
@@ -75,6 +76,7 @@ const GroupInfo = async ({
           {actionButtonToReturn()}
           <OptionsDropdown
             groupId={_id}
+            membersIds={(members as User[]).map((member) => member._id)}
             isMember={isMember}
             isCreator={isCreator}
             image={profilePhotoUrl}
