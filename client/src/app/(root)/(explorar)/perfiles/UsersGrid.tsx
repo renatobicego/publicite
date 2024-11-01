@@ -9,11 +9,13 @@ const UsersGrid = ({
   isLoading = false,
   groupGrid = false,
   group,
+  groupRequestGrid,
 }: {
   items: User[];
   isLoading?: boolean;
   groupGrid?: boolean;
   group?: Group;
+  groupRequestGrid?: boolean;
 }) => {
   const isAdmin = (user: User) =>
     group?.admins.some((admin) => (admin as User)._id === user._id);
@@ -28,6 +30,7 @@ const UsersGrid = ({
                 group={group}
                 key={user._id}
                 isAdmin={isAdmin(user)}
+                groupRequestGrid={groupRequestGrid}
               />
             ) : (
               <ProfileCard user={user} key={user._id} />

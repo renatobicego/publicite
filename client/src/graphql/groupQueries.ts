@@ -17,34 +17,49 @@ export const createNewGroupMutation = gql`
 export const getGroupByIdQuery = gql`
   query GetGroupById($getGroupByIdId: String!) {
     getGroupById(id: $getGroupByIdId) {
-      _id
-      admins {
-        username
+      group {
         _id
-      }
-      creator
-      details
-      magazines {
-        sections {
-          posts {
+        admins {
+          username
+          _id
+        }
+        creator
+        details
+        magazines {
+          sections {
+            posts {
+              _id
+              imagesUrls
+            }
             _id
-            imagesUrls
           }
+          name
+          _id
+        }
+        members {
+          username
+          profilePhotoUrl
           _id
         }
         name
-        _id
-      }
-      members {
-        username
         profilePhotoUrl
-        _id
+        rules
+        visibility
+        alias
+        groupNotificationsRequest {
+          joinRequests {
+            _id
+            profilePhotoUrl
+            username
+          }
+          groupInvitations {
+            _id
+          }
+        }
       }
-      name
-      profilePhotoUrl
-      rules
-      visibility
-      alias
+      isMember
+      hasJoinRequest
+      hasGroupRequest
     }
   }
 `;
@@ -52,19 +67,21 @@ export const getGroupByIdQuery = gql`
 export const getGroupMembersByIdQuery = gql`
   query GetGroupById($getGroupByIdId: String!) {
     getGroupById(id: $getGroupByIdId) {
-      _id
-      admins {
-        username
+      group {
         _id
-      }
+        admins {
+          username
+          _id
+        }
 
-      members {
-        username
-        profilePhotoUrl
-        businessName
-        lastName
-        name
-        _id
+        members {
+          username
+          profilePhotoUrl
+          businessName
+          lastName
+          name
+          _id
+        }
       }
     }
   }
@@ -73,14 +90,16 @@ export const getGroupMembersByIdQuery = gql`
 export const getGroupAdminsByIdQuery = gql`
   query GetGroupById($getGroupByIdId: String!) {
     getGroupById(id: $getGroupByIdId) {
-      _id
-      admins {
-        username
+      group {
         _id
+        admins {
+          username
+          _id
+        }
+        creator
+        name
+        profilePhotoUrl
       }
-      creator
-      name
-      profilePhotoUrl
     }
   }
 `;
@@ -170,5 +189,19 @@ export const deleteGroupMutation = gql`
 export const acceptGroupInvitationMutation = gql`
   mutation AcceptGroupInvitation($groupId: String!) {
     acceptGroupInvitation(groupId: $groupId)
+  }
+`;
+
+export const acceptJoinRequestMutation = gql`
+  mutation Mutation(
+    $newMember: String!
+    $groupAdmin: String!
+    $groupId: String!
+  ) {
+    acceptJoinGroupRequest(
+      newMember: $newMember
+      groupAdmin: $groupAdmin
+      groupId: $groupId
+    )
   }
 `;

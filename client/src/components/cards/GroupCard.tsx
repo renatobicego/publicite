@@ -19,12 +19,17 @@ const GroupCard = ({
         return;
       case group.isMember:
         return (
-          <SecondaryButton as={Link} href={`${GROUPS}/${groupData._id}`}>
+          <SecondaryButton
+            variant="light"
+            as={Link}
+            className="-ml-4"
+            href={`${GROUPS}/${groupData._id}`}
+          >
             Ver Grupo
           </SecondaryButton>
         );
       case group.hasGroupRequest:
-        return <AcceptGroupInvitation />;
+        return <AcceptGroupInvitation groupId={groupData._id} />;
       case group.hasJoinRequest:
         return (
           <p className="text-sm lg:text-small text-light-text">
@@ -32,12 +37,7 @@ const GroupCard = ({
           </p>
         );
       default:
-        return (
-          <SendRequest
-            isGroup
-            idToSendRequest={groupData._id}
-          />
-        );
+        return <SendRequest isGroup idToSendRequest={groupData._id} />;
     }
   };
   return (

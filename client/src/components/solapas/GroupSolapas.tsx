@@ -1,7 +1,7 @@
 "use client";
 
 import { MAGAZINES, GROUPS, CREATE_MAGAZINE } from "@/utils/data/urls";
-import { Group } from "@/types/groupTypes";
+import { Group, GroupAdmin } from "@/types/groupTypes";
 import { Link, Tab, Tabs } from "@nextui-org/react";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
@@ -14,19 +14,24 @@ import PrimaryButton from "../buttons/PrimaryButton";
 import { FaPlus } from "react-icons/fa6";
 import { User } from "@/types/userTypes";
 import { useRouter } from "next-nprogress-bar";
+import { useUserData } from "@/app/(root)/userDataProvider";
 const GroupSolapas = ({
   group,
   isAdmin,
 }: {
-  group: Group;
+  group: GroupAdmin;
   isAdmin: boolean;
 }) => {
   const pathname = usePathname();
   const tabsRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
+  const { userIdLogged } = useUserData();
 
   useEffect(() => {
-    if (((pathname.includes('miembros') || pathname.includes('solicitudes')) && !isAdmin)) {
+    if (
+      (pathname.includes("miembros") || pathname.includes("solicitudes")) &&
+      !isAdmin
+    ) {
       router.push(`${GROUPS}/${group._id}`);
     }
     if (tabsRef.current) {
@@ -43,7 +48,7 @@ const GroupSolapas = ({
         });
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
   const GROUP_URL = `${GROUPS}/${group._id}`;
@@ -89,7 +94,13 @@ const GroupSolapas = ({
             <h3>Miembros del Grupo</h3>
             <InviteUsersGroup group={group} />
           </div>
-          <UsersGrid items={group.members as User[]} groupGrid group={group} />
+          <UsersGrid
+            items={(group.members as User[]).filter(
+              (member) => member._id !== userIdLogged
+            )}
+            groupGrid
+            group={group}
+          />
         </>
       ),
       requiredAdmin: true,
@@ -102,6 +113,18 @@ const GroupSolapas = ({
           <div className="w-full flex justify-between items-center">
             <h3>Solicitudes de Ingreso</h3>
           </div>
+          {!group.groupNotificationsRequest ||
+          !group.groupNotificationsRequest.joinRequests ||
+          group.groupNotificationsRequest.joinRequests.length === 0 ? (
+            <p className="text-light-text">No hay solicitudes de ingreso</p>
+          ) : (
+            <UsersGrid
+              items={group.groupNotificationsRequest.joinRequests as User[]}
+              groupGrid
+              group={group}
+              groupRequestGrid
+            />
+          )}
         </>
       ),
       requiredAdmin: true,

@@ -63,8 +63,14 @@ export const getPostsQuery = gql`
     $page: Float!
     $postType: PostType!
     $limit: Float!
+    $searchTerm: String
   ) {
-    findAllPostByPostType(page: $page, postType: $postType, limit: $limit) {
+    findAllPostByPostType(
+      page: $page
+      postType: $postType
+      limit: $limit
+      searchTerm: $searchTerm
+    ) {
       hasMore
       posts {
         _id

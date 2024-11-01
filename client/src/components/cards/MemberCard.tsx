@@ -1,17 +1,20 @@
 import { User } from "@/types/userTypes";
 import { Avatar, Card, CardBody, Link } from "@nextui-org/react";
 import { PROFILE } from "@/utils/data/urls";
-import HandleGroupMember from "../buttons/HandleGroupMember";
+import HandleGroupMember from "../buttons/HandleGroupMember/HandleGroupMember";
 import { Group } from "@/types/groupTypes";
+import HandleGroupRequest from "../buttons/HandleGroupMember/HandleGroupRequest";
 
 const MemberCard = ({
   user,
   group,
   isAdmin,
+  groupRequestGrid,
 }: {
   user: User;
   group: Group;
   isAdmin?: boolean;
+  groupRequestGrid?: boolean;
 }) => {
   return (
     <Card className="bg-fondo">
@@ -35,12 +38,16 @@ const MemberCard = ({
           {isAdmin && (
             <p className="text-xs font-normal italic">Administrador</p>
           )}
-          <HandleGroupMember
-            user={user}
-            nameToShow={user.username}
-            group={group}
-            isAdmin={isAdmin}
-          />
+          {groupRequestGrid ? (
+            <HandleGroupRequest user={user} group={group} />
+          ) : (
+            <HandleGroupMember
+              user={user}
+              nameToShow={user.username}
+              group={group}
+              isAdmin={isAdmin}
+            />
+          )}
         </div>
       </CardBody>
     </Card>

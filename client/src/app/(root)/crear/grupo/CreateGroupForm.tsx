@@ -18,7 +18,7 @@ import { useUserData } from "../../userDataProvider";
 
 export type PostGroup = Omit<Group, "_id" | "creator">;
 const CreateGroupForm = () => {
-  const { usernameLogged } = useUserData();
+  const { usernameLogged, userIdLogged } = useUserData();
   const initialValues: PostGroup = {
     name: "",
     alias: "",
@@ -57,7 +57,7 @@ const CreateGroupForm = () => {
       emitGroupNotification(
         socket,
         resApi.group,
-        usernameLogged as string,
+        { username: usernameLogged as string, _id: userIdLogged as string },
         member,
         "notification_group_new_user_added"
       );

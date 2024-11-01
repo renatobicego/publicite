@@ -7,6 +7,7 @@ import {
   DropdownTrigger,
   Input,
   Selection,
+  Tooltip,
 } from "@nextui-org/react";
 import React, { Dispatch, SetStateAction, useMemo, useState } from "react";
 import { FaChevronDown, FaSearch } from "react-icons/fa";
@@ -14,7 +15,6 @@ import SecondaryButton from "../buttons/SecondaryButton";
 import {
   BOARDS,
   GROUPS,
-  MAGAZINES,
   POST_BEST,
   POST_NEXT_TO_EXPIRE,
   POST_RECENTS,
@@ -22,6 +22,8 @@ import {
   PROFILE,
 } from "@/utils/data/urls";
 import { useRouter } from "next-nprogress-bar";
+import { useSearchParams } from "next/navigation";
+import { FaX } from "react-icons/fa6";
 
 const Search = ({
   isFocused,
@@ -35,10 +37,10 @@ const Search = ({
     new Set(["recomendados"])
   );
   const router = useRouter(); // Next.js router for redirection
-  
+  const searchParams = useSearchParams();
 
   // Dynamically set the URL based on the selected search category
-  const getSearchURL = () => {
+  const getSearchURL = (getBaseUrl?: boolean) => {
     const keyToPath: { [key: string]: string } = {
       recomendados: POSTS,
       hoy: POST_RECENTS,
@@ -51,6 +53,9 @@ const Search = ({
 
     const selectedKey = Array.from(selectedKeys)[0] as string;
     const basePath = keyToPath[selectedKey];
+    if (getBaseUrl) {
+      return basePath;
+    }
     return `${basePath}?busqueda=${encodeURIComponent(searchTerm)}`;
   };
 
@@ -67,10 +72,31 @@ const Search = ({
     }
   };
 
+  //Reset url and search
+  const resetSearch = () => {
+    setSearchTerm("");
+    router.push(getSearchURL(true));
+  };
+
   return (
     <Input
       startContent={
-        <SearchButton searchTerm={searchTerm} handleSearch={handleSearch} />
+        searchParams.get("busqueda") && !searchTerm ? (
+          <Tooltip content="Limpiar búsqueda">
+            <Button
+              onPress={resetSearch}
+              isIconOnly
+              size="sm"
+              variant="light"
+              radius="full"
+              color="default"
+            >
+              <FaX />
+            </Button>
+          </Tooltip>
+        ) : (
+          <SearchButton searchTerm={searchTerm} handleSearch={handleSearch} />
+        )
       }
       endContent={
         <DropdownSolapas
@@ -176,7 +202,11 @@ const SearchButton = ({
   handleSearch: () => void;
 }) => {
   return (
-    <div className={`relative flex items-center ${searchTerm ? "min-w-fit" : "min-w-5"}`}>
+    <div
+      className={`relative flex items-center ${
+        searchTerm ? "min-w-fit" : "min-w-5"
+      }`}
+    >
       <FaSearch
         className={`text-light-text min-w-3.5 absolute transition-opacity transform duration-300 ${
           searchTerm ? "opacity-0 scale-0" : "opacity-100 scale-100"

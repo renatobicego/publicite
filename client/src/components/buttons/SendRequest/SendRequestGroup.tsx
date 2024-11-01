@@ -6,6 +6,8 @@ import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { emitGroupNotification } from "@/components/notifications/groups/emitNotifications";
 import { useSocket } from "@/app/socketProvider";
 import { useUserData } from "@/app/(root)/userDataProvider";
+import { useRouter } from "next-nprogress-bar";
+import { useState } from "react";
 
 const SendRequestGroup = ({
   variant,
@@ -23,10 +25,19 @@ const SendRequestGroup = ({
   removeMargin: boolean;
   groupId: string;
 }) => {
-  const { usernameLogged } = useUserData();
+  const { usernameLogged, userIdLogged } = useUserData();
   const { socket } = useSocket();
+  const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const sendRequestJoinGroup = async () => {
+    setIsSubmitting(true);
     try {
+      if (!socket) {
+        toastifyError(
+          "Error al enviar la solicitud. Por favor recarga la página e intenta de nuevo."
+        );
+        return;
+      }
       const group = await getGroupAdminsById(groupId);
       if (group.error) {
         toastifyError(
@@ -34,7 +45,7 @@ const SendRequestGroup = ({
         );
         return;
       }
-      const adminIds = group.admins.map((admin: any) => admin.id);
+      const adminIds = group.admins.map((admin: any) => admin._id);
       const creatorId = group.creator;
       [...adminIds, creatorId].forEach((adminId) => {
         emitGroupNotification(
@@ -44,22 +55,27 @@ const SendRequestGroup = ({
             name: group.name,
             profilePhotoUrl: group.profilePhotoUrl,
           },
-          usernameLogged as string,
+          { username: usernameLogged as string, _id: userIdLogged as string },
           adminId,
           "notification_group_user_request_group_invitation"
         );
       });
       toastifySuccess("Solicitud enviada correctamente");
+      router.refresh();
     } catch (error) {
       toastifyError(
         "Error al enviar la solicitud. Por favor intenta de nuevo."
       );
+    } finally {
+      setIsSubmitting(false);
     }
   };
   return (
     <>
       <SecondaryButton
         variant={variant}
+        isLoading={isSubmitting}
+        isDisabled={isSubmitting}
         className={`max-md:hidden mt-auto ${removeMargin && "-ml-4"}`}
         onPress={sendRequestJoinGroup}
       >
@@ -67,6 +83,8 @@ const SendRequestGroup = ({
       </SecondaryButton>
       <SecondaryButton
         isIconOnly
+        isLoading={isSubmitting}
+        isDisabled={isSubmitting}
         className="md:hidden p-0.5 mt-auto hover:text-secondary"
         size="sm"
         onPress={sendRequestJoinGroup}

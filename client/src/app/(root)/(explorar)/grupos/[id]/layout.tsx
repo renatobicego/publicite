@@ -6,8 +6,7 @@ import GroupInfo from "./(components)/GroupInfo";
 import { getGroupById } from "@/services/groupsService";
 import GroupSolapas from "@/components/solapas/GroupSolapas";
 import { User } from "@/types/userTypes";
-import { Group } from "@/types/groupTypes";
-import { FaLock } from "react-icons/fa6";
+import { GroupAdmin } from "@/types/groupTypes";
 import { redirect } from "next/navigation";
 import JoinGroupCard from "./JoinGroupCard";
 
@@ -19,12 +18,18 @@ export default async function GroupLayout(props: {
 
   const { children } = props;
 
-  const group: Group | { error: string; error2: string } = await getGroupById(
-    params.id
-  );
-  if ("error" in group) {
-    return <ErrorCard message={group.error} error={group.error2} />;
+  const groupData:
+    | {
+        group: GroupAdmin;
+        isMember: boolean;
+        hasJoinRequest: boolean;
+        hasGroupRequest: boolean;
+      }
+    | { error: string; error2: string } = await getGroupById(params.id);
+  if ("error" in groupData) {
+    return <ErrorCard message={groupData.error} error={groupData.error2} />;
   }
+  const { group, isMember } = groupData;
   const loggedUser = await currentUser();
   if (!loggedUser) {
     redirect("/iniciar-sesion");
@@ -49,32 +54,20 @@ export default async function GroupLayout(props: {
       (admin) =>
         (admin as User)._id === (loggedUser?.publicMetadata.mongoId as string)
     ) || isCreator;
-  const isMember =
-    group.members.some(
-      (member) =>
-        (member as User)._id === (loggedUser?.publicMetadata.mongoId as string)
-    ) ||
-    isAdmin ||
-    isCreator;
 
   return (
     <main className="flex min-h-screen flex-col items-start main-style gap-4 md:gap-6 xl:gap-8">
       <BreadcrumbsAdmin items={breadcrumbsItems} />
       <div className="items-start flex gap-4 justify-between w-full max-md:flex-wrap">
-        <GroupInfo
-          group={group as Group}
-          isAdmin={isAdmin}
-          isMember={isMember}
-          isCreator={isCreator}
-        />
+        <GroupInfo group={groupData} isAdmin={isAdmin} isCreator={isCreator} />
       </div>
       {isMember ? (
         <>
-          <GroupSolapas group={group as Group} isAdmin={isAdmin} />
+          <GroupSolapas group={group} isAdmin={isAdmin} />
           {children}
         </>
       ) : (
-        <JoinGroupCard groupId={params.id}/>
+        <JoinGroupCard groupId={params.id} />
       )}
     </main>
   );

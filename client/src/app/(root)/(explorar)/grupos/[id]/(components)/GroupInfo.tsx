@@ -5,20 +5,45 @@ import OptionsDropdown from "./OptionsDropdown";
 import RulesPopover from "./RulesPopover";
 import SecondaryButton from "@/components/buttons/SecondaryButton";
 import { EDIT_GROUP, FILE_URL } from "@/utils/data/urls";
-import { Group } from "@/types/groupTypes";
+import { GetGroups, Group } from "@/types/groupTypes";
+import AcceptGroupInvitation from "@/components/buttons/SendRequest/AcceptGroupInvitation";
 
 const GroupInfo = async ({
   group,
   isAdmin,
-  isMember,
   isCreator,
 }: {
-  group: Group;
+  group: GetGroups;
   isAdmin: boolean;
-  isMember: boolean;
   isCreator: boolean;
 }) => {
-  const { profilePhotoUrl, name, _id, details, rules, members, alias } = group;
+  const { profilePhotoUrl, name, _id, details, rules, members, alias } =
+    group.group;
+  const { isMember, hasGroupRequest, hasJoinRequest } = group;
+
+  const actionButtonToReturn = () => {
+    switch (true) {
+      case isMember:
+        return <RulesPopover rules={rules} />;
+      case hasGroupRequest:
+        return <AcceptGroupInvitation groupId={_id} />;
+      case hasJoinRequest:
+        return (
+          <p className="text-sm lg:text-small text-light-text">
+            Solicitud Enviada
+          </p>
+        );
+      default:
+        return (
+          <SendRequest
+            variant="solid"
+            removeMargin={false}
+            isGroup
+            idToSendRequest={_id}
+          />
+        );
+    }
+  };
   return (
     <section className="flex gap-4 md:gap-6 xl:gap-8 md:max-w-[75%] xl:max-w-[65%] max-md:flex-col">
       <Image
@@ -47,18 +72,7 @@ const GroupInfo = async ({
             </SecondaryButton>
           )}
 
-          {isMember ? (
-            <>
-              <RulesPopover rules={rules} />
-            </>
-          ) : (
-            <SendRequest
-              variant="solid"
-              removeMargin={false}
-              isGroup
-              idToSendRequest={_id}
-            />
-          )}
+          {actionButtonToReturn()}
           <OptionsDropdown
             groupId={_id}
             isMember={isMember}

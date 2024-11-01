@@ -17,8 +17,6 @@ import { checkResultModificationOfOperation } from 'src/contexts/module_shared/f
 import { IUser } from 'src/contexts/module_user/user/infrastructure/schemas/user.schema';
 import { GroupDocument } from '../schemas/group.schema';
 
-
-
 export class GroupRepository implements GroupRepositoryInterface {
   constructor(
     @InjectModel('Group') private readonly groupModel: Model<GroupDocument>,
@@ -31,7 +29,7 @@ export class GroupRepository implements GroupRepositoryInterface {
     private readonly groupMapper: GroupRepositoryMapperInterface,
     @InjectConnection() private readonly connection: Connection,
     private readonly logger: MyLoggerService,
-  ) { }
+  ) {}
 
   async assignNewCreatorAndExitGroupById(
     groupId: string,
@@ -378,7 +376,10 @@ export class GroupRepository implements GroupRepositoryInterface {
     }
   }
 
-  async findGroupById(id: string, userRequest: string): Promise<GroupResponseById> {
+  async findGroupById(
+    id: string,
+    userRequest: string,
+  ): Promise<GroupResponseById> {
     const session = await this.connection.startSession();
     session.startTransaction();
     try {
@@ -416,14 +417,26 @@ export class GroupRepository implements GroupRepositoryInterface {
       let hasGroupRequest = false;
 
       if (group) {
-        const userIsMember = group.members.map((member: any) => member._id.toString()).includes(userRequest);
-        const userIsAdmin = group.admins.map((admin: any) => admin._id.toString()).includes(userRequest);
+        const userIsMember = group.members
+          .map((member: any) => member._id.toString())
+          .includes(userRequest);
+        const userIsAdmin = group.admins
+          .map((admin: any) => admin._id.toString())
+          .includes(userRequest);
         const userIsCreator = group.creator.toString() === userRequest;
-        hasJoinRequest = group.groupNotificationsRequest?.joinRequests?.some((user: any) => user._id.toString() === userRequest) || false;
-        hasGroupRequest = group.groupNotificationsRequest?.groupInvitations?.some((user: any) => user._id.toString() === userRequest) || false;
+        hasJoinRequest =
+          group.groupNotificationsRequest?.joinRequests?.some(
+            (user: any) => user._id.toString() === userRequest,
+          ) || false;
+        hasGroupRequest =
+          group.groupNotificationsRequest?.groupInvitations?.some(
+            (user: any) => user._id.toString() === userRequest,
+          ) || false;
         if (userIsMember || userIsAdmin || userIsCreator) {
           isMember = true;
         } else if (!userIsAdmin && !userIsCreator) {
+          group.groupNotificationsRequest =
+            group.groupNotificationsRequest || {};
           group.groupNotificationsRequest.groupInvitations = [
             'You can’t access here; you are not an admin',
           ];
@@ -433,7 +446,6 @@ export class GroupRepository implements GroupRepositoryInterface {
         }
       }
 
-
       await session.commitTransaction();
       const groupResponse = this.groupMapper.toGroupResponse(group);
 
@@ -442,8 +454,7 @@ export class GroupRepository implements GroupRepositoryInterface {
         isMember,
         hasJoinRequest,
         hasGroupRequest,
-      }
-
+      };
     } catch (error: any) {
       await session.abortTransaction();
       throw error;
@@ -506,8 +517,12 @@ export class GroupRepository implements GroupRepositoryInterface {
         let hasGroupRequest = false;
 
         if (
-          group.members.map((member: any) => member._id.toString()).includes(userRequest) ||
-          group.admins.map((admin: any) => admin._id.toString()).includes(userRequest) ||
+          group.members
+            .map((member: any) => member._id.toString())
+            .includes(userRequest) ||
+          group.admins
+            .map((admin: any) => admin._id.toString())
+            .includes(userRequest) ||
           group.creator.toString() === userRequest
         ) {
           isMember = true;
@@ -524,6 +539,8 @@ export class GroupRepository implements GroupRepositoryInterface {
         ) {
           hasGroupRequest = true;
         }
+        // Ensure groupNotificationsRequest is initialized
+        group.groupNotificationsRequest = group.groupNotificationsRequest || {};
 
         //Retornamos los ids vacios ya que no queremos que esta ruta los devuelva
         group.groupNotificationsRequest.groupInvitations = [
