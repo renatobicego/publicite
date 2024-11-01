@@ -29,7 +29,7 @@ export class GroupRepository implements GroupRepositoryInterface {
     private readonly groupMapper: GroupRepositoryMapperInterface,
     @InjectConnection() private readonly connection: Connection,
     private readonly logger: MyLoggerService,
-  ) {}
+  ) { }
 
   async assignNewCreatorAndExitGroupById(
     groupId: string,
@@ -510,6 +510,12 @@ export class GroupRepository implements GroupRepositoryInterface {
         .lean();
 
       const hasMore = groups.length > limit;
+      if (groups.length <= 0) {
+        return {
+          groups: [],
+          hasMore: false,
+        }
+      }
 
       const groupResponse = groups.slice(0, limit).map((group) => {
         let isMember = false;
@@ -527,18 +533,23 @@ export class GroupRepository implements GroupRepositoryInterface {
         ) {
           isMember = true;
         } else if (
-          group.groupNotificationsRequest?.joinRequests
-            .map((id) => id.toString())
+          group.groupNotificationsRequest &&
+          group.groupNotificationsRequest.joinRequests &&
+          group.groupNotificationsRequest.joinRequests
+            .map((id: any) => id.toString())
             .includes(userRequest)
         ) {
           hasJoinRequest = true;
         } else if (
-          group.groupNotificationsRequest?.groupInvitations
-            .map((id) => id.toString())
+          group.groupNotificationsRequest &&
+          group.groupNotificationsRequest.groupInvitations &&
+          group.groupNotificationsRequest.groupInvitations
+            .map((id: any) => id.toString())
             .includes(userRequest)
         ) {
           hasGroupRequest = true;
         }
+
         // Ensure groupNotificationsRequest is initialized
         group.groupNotificationsRequest = group.groupNotificationsRequest || {};
 
@@ -549,6 +560,7 @@ export class GroupRepository implements GroupRepositoryInterface {
         group.groupNotificationsRequest.joinRequests = [
           'You cant access here from this route',
         ];
+
         return {
           group: this.groupMapper.toGroupResponse(group),
           isMember: isMember,
@@ -567,6 +579,7 @@ export class GroupRepository implements GroupRepositoryInterface {
       throw error;
     }
   }
+
 
   async removeAdminsFromGroupByGroupId(
     admins: string[],
