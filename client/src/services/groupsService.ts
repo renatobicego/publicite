@@ -9,6 +9,7 @@ import {
   deleteGroupMutation,
   deleteMemberMutation,
   editGroupMutation,
+  exitGroupMutation,
   getGroupAdminsByIdQuery,
   getGroupByIdQuery,
   getGroupMembersByIdQuery,
@@ -314,6 +315,31 @@ export const putMemberGroupByRequest = async (groupId: string, newMember: string
   } catch (error) {
     return {
       error: "Error al aceptar la solicitud. Por favor intenta de nuevo.",
+    };
+  }
+};
+
+export const putExitGroup = async (groupId: string) => {
+  const userId = auth().sessionClaims?.metadata.mongoId;
+  try {
+    await getClient()
+      .mutate({
+        mutation: exitGroupMutation,
+        variables: {
+          groupId,
+          member: userId
+        },
+        context: {
+          headers: {
+            Authorization: `${await auth().getToken()}`,
+          },
+        },
+      })
+      .then((res) => res);
+    return { message: "Has salido del grupo exitosamente" };
+  } catch (error) {
+    return {
+      error: "Error al salir del grupo. Por favor intenta de nuevo.",
     };
   }
 };
