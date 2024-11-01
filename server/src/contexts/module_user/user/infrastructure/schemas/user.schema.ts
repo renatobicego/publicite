@@ -64,7 +64,8 @@ const UserSchema = new Schema<IUser>(
           viewed: { type: Boolean, default: false },
           date: { type: String },
           backData: {
-            userToSendId: { type: String },
+            userIdTo: { type: String },
+            userIdFrom: { type: String },
           },
         },
         frontData: {
