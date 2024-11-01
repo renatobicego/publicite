@@ -35,9 +35,6 @@ import { UserModule } from 'src/contexts/module_user/user/infrastructure/module/
 
 @Module({
   imports: [
-    //UserModule, // Importa el UserModule que posiblemente sea necesario en tu WebhookModule
-    //ConfigModule.forRoot(), // Importa ConfigModule para manejar variables de entorno
-
     //Definimos los modelos que utilizara el modulo
     MongooseModule.forFeature([
       { name: 'Subscription', schema: SubscriptionSchema },
@@ -52,7 +49,7 @@ import { UserModule } from 'src/contexts/module_user/user/infrastructure/module/
     WebhookController,
     SubscriptionController,
     MercadopagoSubscriptionPlanController,
-  ], // Controlador del módulo
+  ],
   providers: [
     // Proveedor para ClerkWebhookAdapter
     {
@@ -144,4 +141,4 @@ import { UserModule } from 'src/contexts/module_user/user/infrastructure/module/
     },
   ],
 })
-export class WebhookModule {}
+export class WebhookModule { }

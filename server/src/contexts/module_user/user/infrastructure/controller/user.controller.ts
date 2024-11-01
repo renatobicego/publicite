@@ -53,7 +53,7 @@ export class UserController {
   constructor(
     @Inject('UserAdapterInterface')
     private readonly userAdapter: UserAdapterInterface,
-  ) {}
+  ) { }
 
   ///------------CONTROLLERS CREATE ACCOUNT-------------------
   @Post('/personal')
@@ -274,4 +274,8 @@ export class UserController {
       throw error;
     }
   }
+
+
+
+
 }
