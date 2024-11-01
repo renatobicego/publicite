@@ -3,6 +3,7 @@ import { getClient, query } from "@/lib/client";
 import { mockedPetitions, mockedPosts } from "../utils/data/mockedData";
 import {
   acceptGroupInvitationMutation,
+  acceptJoinRequestMutation,
   createNewGroupMutation,
   deleteAdminMutation,
   deleteGroupMutation,
@@ -287,6 +288,32 @@ export const putMemberGroup = async (groupId: string) => {
   } catch (error) {
     return {
       error: "Error al aceptar la invitación. Por favor intenta de nuevo.",
+    };
+  }
+};
+
+export const putMemberGroupByRequest = async (groupId: string, newMember: string,) => {
+  const userId = auth().sessionClaims?.metadata.mongoId;
+  try {
+    await getClient()
+      .mutate({
+        mutation: acceptJoinRequestMutation,
+        variables: {
+          groupId,
+          newMember,
+          groupAdmin: userId
+        },
+        context: {
+          headers: {
+            Authorization: `${await auth().getToken()}`,
+          },
+        },
+      })
+      .then((res) => res);
+    return { message: "Has aceptado la solicitud exitosamente" };
+  } catch (error) {
+    return {
+      error: "Error al aceptar la solicitud. Por favor intenta de nuevo.",
     };
   }
 };

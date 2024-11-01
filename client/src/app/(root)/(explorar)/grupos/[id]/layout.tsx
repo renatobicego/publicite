@@ -29,7 +29,7 @@ export default async function GroupLayout(props: {
   if ("error" in groupData) {
     return <ErrorCard message={groupData.error} error={groupData.error2} />;
   }
-  const { group, isMember, hasJoinRequest, hasGroupRequest } = groupData;
+  const { group, isMember } = groupData;
   const loggedUser = await currentUser();
   if (!loggedUser) {
     redirect("/iniciar-sesion");

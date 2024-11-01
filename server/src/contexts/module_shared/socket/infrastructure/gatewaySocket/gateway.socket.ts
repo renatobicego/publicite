@@ -22,7 +22,7 @@ import { GroupNotificationEvents } from '../../domain/notification/group.notific
     methods: ['GET', 'POST'],
     credentials: true,
   },
-  path: 'https://api-7u63p4eg4q-uc.a.run.app/socket',
+  // path: 'https://api-7u63p4eg4q-uc.a.run.app/socket',
   transports: ['websocket'],
 })
 export class NotificationGatewaySocket

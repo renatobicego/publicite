@@ -28,14 +28,19 @@ const HandleGroupMember = ({
   nameToShow: string;
   group: Group;
   isAdmin?: boolean;
-
 }) => {
   const router = useRouter();
-  const {userIdLogged, usernameLogged} = useUserData();
+  const { userIdLogged, usernameLogged } = useUserData();
   const { socket } = useSocket();
   const isCreator = group?.creator === userIdLogged;
 
   const makeAdmin = async () => {
+    if (!socket) {
+      toastifyError(
+        "Error al enviar la solicitud. Por favor recarga la página e intenta de nuevo."
+      );
+      return;
+    }
     const res = await addAdmin(group?._id, [user._id]);
     if ("error" in res) {
       toastifyError(res.error as string);
@@ -44,7 +49,7 @@ const HandleGroupMember = ({
     emitGroupNotification(
       socket,
       group,
-      usernameLogged as string,
+      { username: usernameLogged as string, _id: userIdLogged as string },
       user._id,
       "notification_group_user_new_admin"
     );
@@ -53,6 +58,12 @@ const HandleGroupMember = ({
   };
 
   const deleteMember = async () => {
+    if (!socket) {
+      toastifyError(
+        "Error al enviar la solicitud. Por favor recarga la página e intenta de nuevo."
+      );
+      return;
+    }
     const res = await removeMember(group._id as string, [user._id]);
     if ("error" in res) {
       toastifyError(res.error as string);
@@ -61,7 +72,7 @@ const HandleGroupMember = ({
     emitGroupNotification(
       socket,
       group,
-      usernameLogged as string,
+      { username: usernameLogged as string, _id: userIdLogged as string },
       user._id,
       "notification_group_user_removed_from_group"
     );
@@ -70,6 +81,12 @@ const HandleGroupMember = ({
   };
 
   const deleteAdmin = async () => {
+    if (!socket) {
+      toastifyError(
+        "Error al enviar la solicitud. Por favor recarga la página e intenta de nuevo."
+      );
+      return;
+    }
     const res = await removeAdmin(group._id as string, [user._id]);
     if ("error" in res) {
       toastifyError(res.error as string);
@@ -78,7 +95,7 @@ const HandleGroupMember = ({
     emitGroupNotification(
       socket,
       group,
-      usernameLogged as string,
+      { username: usernameLogged as string, _id: userIdLogged as string },
       user._id,
       "notification_group_user_removed_admin"
     );

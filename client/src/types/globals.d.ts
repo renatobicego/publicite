@@ -33,7 +33,8 @@ declare global {
       event: string;
       date: string;
       backData: {
-        userToSendId: string;
+        userIdTo: string;
+        userIdFrom: string;
       };
     };
   }

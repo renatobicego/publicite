@@ -70,28 +70,29 @@ export const getAllNotificationsQuery = gql`
       limit: $limit
       page: $page
     ) {
-      hasMore
       notifications {
         _id
-        frontData {
-          userInviting {
-            username
-          }
-          group {
-            _id
-            name
-            profilePhotoUrl
-          }
-        }
         notification {
           backData {
-            userToSendId
+            userIdTo
+            userIdFrom
           }
           date
           event
           viewed
         }
+        frontData {
+          group {
+            profilePhotoUrl
+            name
+            _id
+          }
+          userInviting {
+            username
+          }
+        }
       }
+      hasMore
     }
   }
 `;

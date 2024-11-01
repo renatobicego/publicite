@@ -39,7 +39,7 @@ const MemberCard = ({
             <p className="text-xs font-normal italic">Administrador</p>
           )}
           {groupRequestGrid ? (
-            <HandleGroupRequest user={user} groupId={group._id} />
+            <HandleGroupRequest user={user} group={group} />
           ) : (
             <HandleGroupMember
               user={user}

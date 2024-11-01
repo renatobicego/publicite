@@ -14,6 +14,7 @@ import PrimaryButton from "../buttons/PrimaryButton";
 import { FaPlus } from "react-icons/fa6";
 import { User } from "@/types/userTypes";
 import { useRouter } from "next-nprogress-bar";
+import { useUserData } from "@/app/(root)/userDataProvider";
 const GroupSolapas = ({
   group,
   isAdmin,
@@ -24,6 +25,7 @@ const GroupSolapas = ({
   const pathname = usePathname();
   const tabsRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
+  const { userIdLogged } = useUserData();
 
   useEffect(() => {
     if (
@@ -92,7 +94,13 @@ const GroupSolapas = ({
             <h3>Miembros del Grupo</h3>
             <InviteUsersGroup group={group} />
           </div>
-          <UsersGrid items={group.members as User[]} groupGrid group={group} />
+          <UsersGrid
+            items={(group.members as User[]).filter(
+              (member) => member._id !== userIdLogged
+            )}
+            groupGrid
+            group={group}
+          />
         </>
       ),
       requiredAdmin: true,
@@ -105,12 +113,18 @@ const GroupSolapas = ({
           <div className="w-full flex justify-between items-center">
             <h3>Solicitudes de Ingreso</h3>
           </div>
-          <UsersGrid
-            items={group.groupNotificationsRequest.groupInvitations as User[]}
-            groupGrid
-            group={group}
-            groupRequestGrid
-          />
+          {!group.groupNotificationsRequest ||
+          !group.groupNotificationsRequest.joinRequests ||
+          group.groupNotificationsRequest.joinRequests.length === 0 ? (
+            <p className="text-light-text">No hay solicitudes de ingreso</p>
+          ) : (
+            <UsersGrid
+              items={group.groupNotificationsRequest.joinRequests as User[]}
+              groupGrid
+              group={group}
+              groupRequestGrid
+            />
+          )}
         </>
       ),
       requiredAdmin: true,

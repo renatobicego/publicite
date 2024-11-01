@@ -191,3 +191,17 @@ export const acceptGroupInvitationMutation = gql`
     acceptGroupInvitation(groupId: $groupId)
   }
 `;
+
+export const acceptJoinRequestMutation = gql`
+  mutation Mutation(
+    $newMember: String!
+    $groupAdmin: String!
+    $groupId: String!
+  ) {
+    acceptJoinGroupRequest(
+      newMember: $newMember
+      groupAdmin: $groupAdmin
+      groupId: $groupId
+    )
+  }
+`;
