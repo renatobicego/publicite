@@ -64,7 +64,7 @@ export const mockedNewContactRelation: NewContactRelationNotification = {
 export const mockedGroupInvitation: GroupNotification = {
   _id: "3",
   notification: {
-    backData: { userIdTo: "1" },
+    backData: { userIdTo: "1", userIdFrom: "2" },
     date: "2022-01-01",
     event: "notification_group_user_request_sent",
     viewed: false,

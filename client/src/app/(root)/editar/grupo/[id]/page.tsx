@@ -11,16 +11,18 @@ export default async function EditGroupPage(props: {
   params: Promise<{ id: string }>;
 }) {
   const params = await props.params;
-  const groupData: Group | { error: string } = await getGroupById(params.id);
+  const groupData: { group: Group } | { error: string } = await getGroupById(
+    params.id
+  );
   const loggedUser = auth();
+  const loggedUserId = loggedUser?.sessionClaims?.metadata.mongoId as string;
 
   if (
     !("error" in groupData) &&
-    !groupData.admins.some(
-      (admin) =>
-        (admin as User)._id ===
-        (loggedUser?.sessionClaims?.metadata.mongoId as string)
-    )
+    (!groupData.group.admins.some(
+      (admin) => (admin as User)._id === loggedUserId
+    ) ||
+      groupData.group.creator !== loggedUserId)
   ) {
     redirect(`${GROUPS}/${params.id}`);
   }
@@ -37,7 +39,7 @@ export default async function EditGroupPage(props: {
       href: GROUPS,
     },
     {
-      label: groupData.name,
+      label: groupData.group.name,
       href: `${GROUPS}/${params.id}`,
     },
     {
@@ -48,7 +50,7 @@ export default async function EditGroupPage(props: {
   return (
     <main className="flex min-h-screen flex-col items-start main-style gap-4 md:gap-6 lg:gap-8">
       <BreadcrumbsAdmin items={breadcrumbsItems} />
-      <EditGroup groupData={groupData} />
+      <EditGroup groupData={groupData.group} />
     </main>
   );
 }
