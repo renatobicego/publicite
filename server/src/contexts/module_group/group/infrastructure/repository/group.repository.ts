@@ -29,7 +29,7 @@ export class GroupRepository implements GroupRepositoryInterface {
     private readonly groupMapper: GroupRepositoryMapperInterface,
     @InjectConnection() private readonly connection: Connection,
     private readonly logger: MyLoggerService,
-  ) { }
+  ) {}
 
   async assignNewCreatorAndExitGroupById(
     groupId: string,
@@ -514,7 +514,7 @@ export class GroupRepository implements GroupRepositoryInterface {
         return {
           groups: [],
           hasMore: false,
-        }
+        };
       }
 
       const groupResponse = groups.slice(0, limit).map((group) => {
@@ -579,7 +579,6 @@ export class GroupRepository implements GroupRepositoryInterface {
       throw error;
     }
   }
-
 
   async removeAdminsFromGroupByGroupId(
     admins: string[],

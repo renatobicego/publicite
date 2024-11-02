@@ -33,7 +33,7 @@ const Dropzone = ({
           "image/png": [],
           "image/jpeg": [], // Accepts both jpg and jpeg
         },
-    maxSize: allowVideos ? maxVideoSize : 4 * 1024 * 1024, // Use video max size if videos are allowed
+    maxSize: allowVideos ? maxVideoSize : 8 * 1024 * 1024, // Use video max size if videos are allowed
     maxFiles: maxTotalFiles,
     onDropRejected: (fileRejections) => {
       fileRejections.forEach((fileRejection) => {
@@ -66,8 +66,8 @@ const Dropzone = ({
         </p>
         <p className="text-text-color font-semibold text-xs lg:text-sm text-center max-w-[80%]">
           {allowVideos
-            ? `Tamaño máximo de 4MB para imágenes y 32MB para videos. Máximo ${maxTotalFiles} archivos y únicamente se permite 1 video.`
-            : `Tamaño máximo de 4MB, máximo ${maxTotalFiles} imágenes`}
+            ? `Tamaño máximo de 8MB para imágenes y 32MB para videos. Máximo ${maxTotalFiles} archivos y únicamente se permite 1 video.`
+            : `Tamaño máximo de 8MB, máximo ${maxTotalFiles} imágenes`}
         </p>
       </div>
     </div>

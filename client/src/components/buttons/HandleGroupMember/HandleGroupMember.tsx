@@ -192,23 +192,6 @@ const HandleGroupMember = ({
             </DropdownMenu>
           </Dropdown>
           <ConfirmModal
-            ButtonAction={
-              <Button
-                size="sm"
-                isIconOnly
-                color="danger"
-                variant="flat"
-                radius="full"
-              >
-                <IoTrashOutline />
-              </Button>
-            }
-            message={`¿Desea eliminar a ${nameToShow} del grupo?`}
-            tooltipMessage="Eliminar"
-            confirmText="Eliminar"
-            onConfirm={deleteMember}
-          />
-          <ConfirmModal
             ButtonAction={<></>}
             message={`¿Desea eliminar a ${nameToShow} como administrador del grupo?`}
             tooltipMessage="Eliminar"

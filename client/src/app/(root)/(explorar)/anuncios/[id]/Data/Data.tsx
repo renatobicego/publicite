@@ -86,7 +86,7 @@ const Data = async ({
         )}
         <h3 className="font-medium">{priceToShow()}</h3>
         <div className="flex gap-2">
-          <CategoryChip>{(post.category as any)[0].label}</CategoryChip>
+          <CategoryChip>{(post.category as any)[0] ? (post.category as any)[0].label : ""}</CategoryChip>
           {post.postType === "petition" && <PetitionChip />}
           {post.postType === "service" ||
             (petition.petitionType === "service" && <ServiceChip />)}

@@ -57,23 +57,29 @@ const FilterPosts = ({
       {(filter.category.length > 0 ||
         filter.priceRange[0] ||
         filter.priceRange[1]) && (
-          <Button
-            size="sm"
-            color="secondary"
-            variant="ghost"
-            className="min-w-fit"
-            radius="full"
-            onPress={() => {
-              setFilter({ category: [], priceRange: [undefined, undefined] });
-              setCategory(new Set([]));
-              setPriceRange([undefined, undefined]);
-            }}
-            startContent={<FaX className="text-secondary min-w-3" />}
-          >
-            Borrar Filtros
-          </Button>
-        )}
-      <Modal radius="lg" className="p-2"  isOpen={isOpen} onOpenChange={onOpenChange}>
+        <Button
+          size="sm"
+          color="secondary"
+          variant="ghost"
+          className="min-w-fit"
+          radius="full"
+          onPress={() => {
+            setFilter({ category: [], priceRange: [undefined, undefined] });
+            setCategory(new Set([]));
+            setPriceRange([undefined, undefined]);
+          }}
+          startContent={<FaX className="text-secondary min-w-3" />}
+        >
+          Borrar Filtros
+        </Button>
+      )}
+      <Modal
+        radius="lg"
+        className="p-2"
+        placement="center"
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+      >
         <ModalContent>
           {(onClose) => (
             <>

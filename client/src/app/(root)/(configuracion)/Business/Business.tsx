@@ -21,7 +21,7 @@ const Business = ({username} : {username: string}) => {
 
   if (!userData) return <Spinner color="warning" />
   return (
-    <section className="flex flex-col gap-4">
+    <section className="flex flex-col gap-4 w-full">
       <h2 className="profile-title">Datos de Perfil - Empresa</h2>
       <Divider />
       <BusinessData data={userData}/>

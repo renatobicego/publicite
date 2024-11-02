@@ -169,6 +169,11 @@ export const groupAliasExists = async (alias: string) => {
     const { data } = await query({
       query: validateGroupAliasQuery,
       variables: { alias },
+      context: {
+        headers: {
+          Authorization: await auth().getToken(),
+        },
+      },
     });
     return data.isThisGroupExist;
   } catch (error) {
@@ -232,7 +237,7 @@ export const deleteAdmin = async (groupId: string, userIds: string[]) => {
         variables: { groupId, adminsToDelete: userIds, groupAdmin },
         context: {
           headers: {
-            Authorization: `Bearer ${await auth().getToken()}`,
+            Authorization: `${await auth().getToken()}`,
           },
         },
       })
@@ -240,6 +245,7 @@ export const deleteAdmin = async (groupId: string, userIds: string[]) => {
 
     return { message: "Administrador eliminado" };
   } catch (error) {
+    console.log(error)
     return {
       error: "Error al eliminar administrador. Por favor intenta de nuevo.",
     };

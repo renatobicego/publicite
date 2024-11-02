@@ -32,7 +32,7 @@ const SendRequest = ({
         <>
           <PrimaryButton
             variant={variant}
-            className={`"max-md:hidden mt-auto ${removeMargin && "-ml-4"}`}
+            className={`"max-md:hidden mt-auto ${removeMargin && "md:-ml-4"}`}
           >
             Enviar solicitud
           </PrimaryButton>

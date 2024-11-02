@@ -50,7 +50,7 @@ export interface GroupRepositoryInterface {
     page: number,
     userRequest: string,
   ): Promise<GroupListResponse>;
-  isThisGroupExist(alias: string): Promise<Boolean>;
+  isThisGroupExist(alias: string): Promise<boolean>;
   save(group: Group): Promise<GroupResponse>;
 
   pushJoinRequest(groupId: string, userId: string, session: any): Promise<any>;

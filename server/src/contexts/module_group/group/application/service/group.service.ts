@@ -179,7 +179,10 @@ export class GroupService implements GroupServiceInterface {
     }
   }
 
-  async findGroupById(id: string, userRequest: string): Promise<GroupResponseById> {
+  async findGroupById(
+    id: string,
+    userRequest: string,
+  ): Promise<GroupResponseById> {
     try {
       this.logger.log('Finding group by id: ' + id);
       return await this.groupRepository.findGroupById(id, userRequest);
@@ -207,7 +210,7 @@ export class GroupService implements GroupServiceInterface {
     }
   }
 
-  async isThisGroupExist(alias: string): Promise<Boolean> {
+  async isThisGroupExist(alias: string): Promise<boolean> {
     const aliasWithOutSpaces = alias.replace(/\s+/g, '').toLowerCase();
     try {
       this.logger.log('Finding group by alias: ' + alias);
