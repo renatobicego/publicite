@@ -353,9 +353,9 @@ export class GroupRepository implements GroupRepositoryInterface {
         await this.groupModel.updateOne(
           { _id: groupId },
           {
-            $pull: {
-              member: member,
-              admins: member,
+            $pullAll: {
+              member: [member],
+              admins: [member],
             },
           },
           { session },
@@ -363,7 +363,7 @@ export class GroupRepository implements GroupRepositoryInterface {
 
         await this.userModel.updateOne(
           { _id: member },
-          { $pull: { groups: groupId } },
+          { $pullAll: groups: [groupId] },
           { session },
         );
       });
