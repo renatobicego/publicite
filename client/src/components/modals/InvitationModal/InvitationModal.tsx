@@ -60,6 +60,7 @@ const InvitationModal = ({
       <Modal
         radius="lg"
         className="p-2"
+        placement="center"
         isOpen={isOpen}
         onOpenChange={onOpenChange}
       >

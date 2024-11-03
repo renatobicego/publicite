@@ -22,7 +22,7 @@ const UploadProfileImage = ({
     shouldValidate?: boolean
   ) => Promise<void | FormikErrors<Group>>;
 }) => {
-  const maxImageSize = 4 * 1024 * 1024; // 4MB for images
+  const maxImageSize = 8 * 1024 * 1024; // 4MB for images
   const maxTotalFiles = 1;
 
   // Handle file drop

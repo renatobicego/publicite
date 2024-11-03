@@ -54,7 +54,7 @@ export interface GroupAdapterInterface {
     limit: number,
     page: number,
   ): Promise<GroupResponse>;
-  isThisGroupExist(alias: string): Promise<Boolean>;
+  isThisGroupExist(alias: string): Promise<boolean>;
   removeAdminsFromGroupByGroupId(
     admins: string[],
     groupId: string,

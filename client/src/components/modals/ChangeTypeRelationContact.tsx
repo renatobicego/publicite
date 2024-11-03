@@ -15,7 +15,7 @@ const ChangeTypeRelationContact = ({
   onOpenChange: () => void;
 }) => {
   return (
-    <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+    <Modal placement="center" isOpen={isOpen} onOpenChange={onOpenChange}>
       <ModalContent>
         {(onClose) =>
           isOpen && (

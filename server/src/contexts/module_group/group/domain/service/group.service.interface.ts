@@ -49,7 +49,7 @@ export interface GroupServiceInterface {
     page: number,
     userRequest: string,
   ): Promise<GroupListResponse>;
-  isThisGroupExist(alias: string): Promise<Boolean>;
+  isThisGroupExist(alias: string): Promise<boolean>;
   saveGroup(group: GroupRequest, groupCreator: string): Promise<GroupResponse>;
   pushNotificationToGroup(
     groupId: string,

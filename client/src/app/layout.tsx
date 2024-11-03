@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Noto_Sans } from "next/font/google";
 import "./globals.css";
 import "./clerk.css";
@@ -34,6 +34,12 @@ const localization = {
     },
   },
 };
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+}
 
 export default function RootLayout({
   children,

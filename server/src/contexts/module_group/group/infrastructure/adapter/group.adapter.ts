@@ -137,7 +137,10 @@ export class GroupAdapter implements GroupAdapterInterface {
     }
   }
 
-  async findGroupById(id: string, userRequest: string): Promise<GroupResponseById> {
+  async findGroupById(
+    id: string,
+    userRequest: string,
+  ): Promise<GroupResponseById> {
     try {
       const response = await this.groupService.findGroupById(id, userRequest);
       return response;
@@ -163,7 +166,7 @@ export class GroupAdapter implements GroupAdapterInterface {
       throw error;
     }
   }
-  async isThisGroupExist(alias: string): Promise<Boolean> {
+  async isThisGroupExist(alias: string): Promise<boolean> {
     try {
       return await this.groupService.isThisGroupExist(alias);
     } catch (error: any) {

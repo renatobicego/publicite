@@ -76,7 +76,7 @@ const SendRequestGroup = ({
         variant={variant}
         isLoading={isSubmitting}
         isDisabled={isSubmitting}
-        className={`max-md:hidden mt-auto ${removeMargin && "-ml-4"}`}
+        className={`max-md:hidden mt-auto ${removeMargin && "md:-ml-4"}`}
         onPress={sendRequestJoinGroup}
       >
         Enviar solicitud

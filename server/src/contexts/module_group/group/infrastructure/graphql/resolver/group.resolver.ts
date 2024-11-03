@@ -17,7 +17,7 @@ export class GroupResolver {
   constructor(
     @Inject('GroupAdapterInterface')
     private readonly groupAdapter: GroupAdapterInterface,
-  ) { }
+  ) {}
 
   @Mutation(() => String, {
     nullable: true,
@@ -317,7 +317,7 @@ export class GroupResolver {
   async isThisGroupExist(
     @Args('alias', { type: () => String })
     alias: string,
-  ): Promise<Boolean> {
+  ): Promise<boolean> {
     try {
       return await this.groupAdapter.isThisGroupExist(alias);
     } catch (error: any) {

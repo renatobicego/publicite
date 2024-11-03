@@ -161,12 +161,12 @@ export const deleteMemberMutation = gql`
 `;
 
 export const deleteAdminMutation = gql`
-  mutation DeleteAdminsFromGroupByGroupId(
+  mutation RemoveAdminsFromGroupByGroupId(
     $adminsToDelete: [String!]!
     $groupAdmin: String!
     $groupId: String!
   ) {
-    deleteAdminsFromGroupByGroupId(
+    removeAdminsFromGroupByGroupId(
       adminsToDelete: $adminsToDelete
       groupAdmin: $groupAdmin
       groupId: $groupId

@@ -14,7 +14,7 @@ const Dropzone = ({ onDrop, maxTotalFiles }: DropzoneProps) => {
       "image/png": [],
       "image/jpeg": [], // Accepts both jpg and jpeg
     },
-    maxSize: 4 * 1024 * 1024, // Use video max size if videos are allowed
+    maxSize: 8 * 1024 * 1024, // Use video max size if videos are allowed
     maxFiles: maxTotalFiles,
     onDropRejected: (fileRejections) => {
       fileRejections.forEach((fileRejection) => {
@@ -44,7 +44,7 @@ const Dropzone = ({ onDrop, maxTotalFiles }: DropzoneProps) => {
           Subir foto de perfil del grupo
         </p>
         <p className="text-text-color font-semibold text-xs lg:text-sm text-center max-w-[80%]">
-          Tamaño máximo de 4MB
+          Tamaño máximo de 8MB
         </p>
       </div>
     </div>

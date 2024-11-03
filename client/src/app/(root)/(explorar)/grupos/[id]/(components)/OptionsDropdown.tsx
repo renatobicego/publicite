@@ -59,7 +59,7 @@ const OptionsDropdown = ({
   
   const exitGroup = async () => {
     if(isCreator && membersIds.length > 0) {
-      toastifyError("No puedes abandonar el grupo si eres el creador.");
+      toastifyError("No puedes abandonar el grupo si eres el dueño.");
       return
     }
     const res = await exitFromGroup(groupId);

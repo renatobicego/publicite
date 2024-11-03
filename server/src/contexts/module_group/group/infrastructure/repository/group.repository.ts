@@ -363,7 +363,7 @@ export class GroupRepository implements GroupRepositoryInterface {
 
         await this.userModel.updateOne(
           { _id: member },
-          { $pull: { groups: groupId } },
+          { $pullAll: { groups: groupId } },
           { session },
         );
       });
@@ -514,7 +514,7 @@ export class GroupRepository implements GroupRepositoryInterface {
         return {
           groups: [],
           hasMore: false,
-        }
+        };
       }
 
       const groupResponse = groups.slice(0, limit).map((group) => {
@@ -579,7 +579,6 @@ export class GroupRepository implements GroupRepositoryInterface {
       throw error;
     }
   }
-
 
   async removeAdminsFromGroupByGroupId(
     admins: string[],

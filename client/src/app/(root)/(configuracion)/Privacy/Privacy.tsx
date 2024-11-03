@@ -2,7 +2,7 @@ import { Divider, Switch } from "@nextui-org/react";
 
 const Privacy = () => {
   return (
-    <section className="flex flex-col gap-4 items-start">
+    <section className="flex flex-col gap-4 items-start w-full">
       <h2 className="profile-title">Privacidad y Visibilidad del Perfil</h2>
       <Divider />
       <div className="flex gap-4 w-full justify-between items-center">
