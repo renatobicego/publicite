@@ -1,14 +1,14 @@
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
-import { Post } from '../../../domain/post/entity/post.entity';
-import { PostRepositoryInterface } from '../../../domain/post/repository/post.repository.interface';
 import { ClientSession, Connection, Model, ObjectId } from 'mongoose';
 import { Inject } from '@nestjs/common';
 
-import { PostRepositoryMapperInterface } from '../../../domain/post/repository/mapper/post.repository.mapper.interface';
+
+import { Post } from '../../domain/entity/post.entity';
+import { PostRepositoryInterface } from '../../domain/repository/post.repository.interface';
+import { PostRepositoryMapperInterface } from '../../domain/repository/mapper/post.repository.mapper.interface';
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
-import { PostLocation } from '../../../domain/post/entity/postLocation.entity';
-import { PostLocationDocument } from '../schemas/postLocation.schema';
-import { PostGood } from '../../../domain/post/entity/post-types/post.good.entity';
+import { PostLocation } from '../../domain/entity/postLocation.entity';
+import { PostGood } from '../../domain/entity/post-types/post.good.entity';
 import {
   IPostGood,
   PostGoodModel,
@@ -17,19 +17,20 @@ import {
   IPostService,
   PostServiceModel,
 } from '../schemas/post-types-schemas/post.service.schema';
-import { PostService } from '../../../domain/post/entity/post-types/post.service.entity';
-import { PostPetition } from '../../../domain/post/entity/post-types/post.petition.entity';
+import { PostService } from '../../domain/entity/post-types/post.service.entity';
+import { PostPetition } from '../../domain/entity/post-types/post.petition.entity';
 import {
   IPostPetition,
   PostPetitionModel,
 } from '../schemas/post-types-schemas/post.petition.schema';
-import { PostUpdateDto } from '../../../domain/post/entity/dto/post.update.dto';
-import { PostType } from '../../../domain/post/entity/enum/post-type.enum';
+import { PostUpdateDto } from '../../domain/entity/dto/post.update.dto';
+import { PostType } from '../../domain/entity/enum/post-type.enum';
 import {
   UserModel,
   IUser,
 } from 'src/contexts/module_user/user/infrastructure/schemas/user.schema';
 import { PostDocument } from '../schemas/post.schema';
+import { PostLocationDocument } from '../schemas/postLocation.schema';
 
 export class PostRepository implements PostRepositoryInterface {
   constructor(
@@ -55,7 +56,7 @@ export class PostRepository implements PostRepositoryInterface {
 
     private readonly logger: MyLoggerService,
     @InjectConnection() private readonly connection: Connection,
-  ) {}
+  ) { }
 
   async create(
     post: Post,

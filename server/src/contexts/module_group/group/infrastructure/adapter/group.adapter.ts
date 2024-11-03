@@ -173,13 +173,13 @@ export class GroupAdapter implements GroupAdapterInterface {
   async removeAdminsFromGroupByGroupId(
     admins: string[],
     groupId: string,
-    groupAdmin: string,
+    groupCreator: string,
   ): Promise<any> {
     try {
       await this.groupService.removeAdminsFromGroupByGroupId(
         admins,
         groupId,
-        groupAdmin,
+        groupCreator,
       );
     } catch (error: any) {
       throw error;

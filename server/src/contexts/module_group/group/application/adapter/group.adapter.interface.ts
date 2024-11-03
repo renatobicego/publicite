@@ -58,7 +58,7 @@ export interface GroupAdapterInterface {
   removeAdminsFromGroupByGroupId(
     admins: string[],
     groupId: string,
-    groupAdmin: string,
+    groupCreator: string,
   ): Promise<any>;
   saveGroup(group: GroupRequest, groupCreator: string): Promise<GroupResponse>;
   updateGroupById(group: GroupUpdateRequest): Promise<any>;

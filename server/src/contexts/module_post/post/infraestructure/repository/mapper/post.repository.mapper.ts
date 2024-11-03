@@ -1,9 +1,9 @@
 import { error } from 'console';
-import { PostGood } from 'src/contexts/module_post/post/domain/post/entity/post-types/post.good.entity';
-import { PostPetition } from 'src/contexts/module_post/post/domain/post/entity/post-types/post.petition.entity';
-import { PostService } from 'src/contexts/module_post/post/domain/post/entity/post-types/post.service.entity';
-import { Post } from 'src/contexts/module_post/post/domain/post/entity/post.entity';
-import { PostRepositoryMapperInterface } from 'src/contexts/module_post/post/domain/post/repository/mapper/post.repository.mapper.interface';
+import { PostGood } from 'src/contexts/module_post/post/domain/entity/post-types/post.good.entity';
+import { PostPetition } from 'src/contexts/module_post/post/domain/entity/post-types/post.petition.entity';
+import { PostService } from 'src/contexts/module_post/post/domain/entity/post-types/post.service.entity';
+import { Post } from 'src/contexts/module_post/post/domain/entity/post.entity';
+import { PostRepositoryMapperInterface } from 'src/contexts/module_post/post/domain/repository/mapper/post.repository.mapper.interface';
 
 export class PostRepositoryMapper implements PostRepositoryMapperInterface {
   documentToEntityMapped(document: any): Post {

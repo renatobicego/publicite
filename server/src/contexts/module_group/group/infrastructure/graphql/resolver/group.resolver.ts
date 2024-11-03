@@ -147,21 +147,21 @@ export class GroupResolver {
   async removeAdminsFromGroupByGroupId(
     @Args('adminsToDelete', { type: () => [String] })
     adminsToDelete: string[],
-    @Args('groupAdmin', { type: () => String })
-    groupAdmin: string,
+    @Args('groupCreator', { type: () => String })
+    groupCreator: string,
     @Args('groupId', { type: () => String })
     groupId: string,
     @Context()
     context: any,
   ): Promise<any> {
     try {
-      PubliciteAuth.authorize(context, groupAdmin);
+      PubliciteAuth.authorize(context, groupCreator);
       await this.groupAdapter.removeAdminsFromGroupByGroupId(
         adminsToDelete,
         groupId,
-        groupAdmin,
+        groupCreator,
       );
-      return 'Users deleted';
+      return 'Admins deleted';
     } catch (error: any) {
       throw error;
     }
@@ -330,7 +330,7 @@ export class GroupResolver {
     description:
       'Salir de un grupo - En el caso de que sea el creador debera asignar otro creador',
   })
-  @UseGuards(ClerkAuthGuard)
+  //@UseGuards(ClerkAuthGuard)
   async exitGroupById(
     @Args('groupId', { type: () => String })
     groupId: string,
@@ -348,7 +348,7 @@ export class GroupResolver {
           throw new Error('newCreator is required');
         }
       }
-      PubliciteAuth.authorize(context, creator ?? member);
+      //PubliciteAuth.authorize(context, creator ?? member);
       await this.groupAdapter.exitGroupById(
         groupId,
         member,

@@ -1,7 +1,7 @@
 import { Schema } from 'mongoose';
 import PostModel, { PostDocument } from '../post.schema';
-import { FrequencyPrice } from 'src/contexts/module_post/post/domain/post/entity/enum/post-service-freq-type.enum';
-import { PetitionType } from 'src/contexts/module_post/post/domain/post/entity/enum/post-petition-type.enum';
+import { FrequencyPrice } from 'src/contexts/module_post/post/domain/entity/enum/post-service-freq-type.enum';
+import { PetitionType } from 'src/contexts/module_post/post/domain/entity/enum/post-petition-type.enum';
 
 interface IPostPetition extends PostDocument {
   toPrice: number;

@@ -2,12 +2,12 @@ import { Inject, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Resolver, Query, Context } from '@nestjs/graphql';
 import { ClerkAuthGuard } from 'src/contexts/module_shared/auth/clerk-auth/clerk.auth.guard';
 
-import { PostAdapterInterface } from 'src/contexts/module_post/post/application/post/adapter/post.adapter.interface';
-import { PostUpdateRequest } from 'src/contexts/module_post/post/application/post/dto/HTTP-REQUEST/post.update.request';
-import { Post_response_graphql_model } from 'src/contexts/module_post/post/application/post/dto/HTTP-RESPONSE/post.response.graphql';
-import { PostFindAllResponse } from 'src/contexts/module_post/post/application/post/dto/HTTP-RESPONSE/findAll-response/post.findAll.response';
-import { Post_Full_Graphql_Model } from 'src/contexts/module_post/post/domain/post/entity/models_graphql/post.full.grapql.model';
-import { PostType } from 'src/contexts/module_post/post/domain/post/entity/enum/post-type.enum';
+import { PostAdapterInterface } from 'src/contexts/module_post/post/application/adapter/post.adapter.interface';
+import { PostUpdateRequest } from 'src/contexts/module_post/post/application/dto/HTTP-REQUEST/post.update.request';
+import { Post_response_graphql_model } from 'src/contexts/module_post/post/application/dto/HTTP-RESPONSE/post.response.graphql';
+import { PostFindAllResponse } from 'src/contexts/module_post/post/application/dto/HTTP-RESPONSE/findAll-response/post.findAll.response';
+import { Post_Full_Graphql_Model } from 'src/contexts/module_post/post/domain/entity/models_graphql/post.full.grapql.model';
+import { PostType } from 'src/contexts/module_post/post/domain/entity/enum/post-type.enum';
 import { PubliciteAuth } from 'src/contexts/module_shared/auth/publicite_auth/publicite_auth';
 
 @Resolver('Post')

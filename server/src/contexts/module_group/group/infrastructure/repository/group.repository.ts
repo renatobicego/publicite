@@ -354,7 +354,7 @@ export class GroupRepository implements GroupRepositoryInterface {
           { _id: groupId },
           {
             $pull: {
-              member: member,
+              members: member,
               admins: member,
             },
           },
@@ -584,7 +584,7 @@ export class GroupRepository implements GroupRepositoryInterface {
   async removeAdminsFromGroupByGroupId(
     admins: string[],
     groupId: string,
-    groupAdmin: string,
+    groupCreator: string,
   ): Promise<any> {
     const session = await this.connection.startSession();
 
@@ -592,7 +592,7 @@ export class GroupRepository implements GroupRepositoryInterface {
       await session.withTransaction(async () => {
         // Buscar el grupo y mantener la referencia
         const groupToTakeOffAdmin = await this.groupModel
-          .findOne({ _id: groupId, creator: groupAdmin })
+          .findOne({ _id: groupId, creator: groupCreator })
           .session(session); // Añadir la sesión aquí
 
         if (!groupToTakeOffAdmin) {

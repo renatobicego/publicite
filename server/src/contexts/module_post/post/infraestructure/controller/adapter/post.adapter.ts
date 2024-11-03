@@ -1,19 +1,19 @@
 import { Inject } from '@nestjs/common';
 import { error } from 'console';
 
-import { PostMapperAdapterInterface } from 'src/contexts/module_post/post/application/post/adapter/mapper/post.adapter.mapper.interface';
-import { PostAdapterInterface } from 'src/contexts/module_post/post/application/post/adapter/post.adapter.interface';
+import { PostMapperAdapterInterface } from 'src/contexts/module_post/post/application/adapter/mapper/post.adapter.mapper.interface';
+import { PostAdapterInterface } from 'src/contexts/module_post/post/application/adapter/post.adapter.interface';
 import {
   PostRequest,
   PostGoodRequest,
   PostServiceRequest,
   PostPetitionRequest,
-} from 'src/contexts/module_post/post/application/post/dto/HTTP-REQUEST/post.request';
-import { PostUpdateRequest } from 'src/contexts/module_post/post/application/post/dto/HTTP-REQUEST/post.update.request';
-import { PostResponse } from 'src/contexts/module_post/post/application/post/dto/HTTP-RESPONSE/post.response';
-import { PostType } from 'src/contexts/module_post/post/domain/post/entity/enum/post-type.enum';
-import { PostServiceInterface } from 'src/contexts/module_post/post/domain/post/service/post.service.interface';
+} from 'src/contexts/module_post/post/application/dto/HTTP-REQUEST/post.request';
+import { PostUpdateRequest } from 'src/contexts/module_post/post/application/dto/HTTP-REQUEST/post.update.request';
+import { PostResponse } from 'src/contexts/module_post/post/application/dto/HTTP-RESPONSE/post.response';
+import { PostType } from 'src/contexts/module_post/post/domain/entity/enum/post-type.enum';
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
+import { PostServiceInterface } from '../../../domain/service/post.service.interface';
 
 export class PostAdapter implements PostAdapterInterface {
   constructor(

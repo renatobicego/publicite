@@ -2,7 +2,7 @@ import { Field, ObjectType, ID, Float } from '@nestjs/graphql';
 import { ObjectId } from 'mongoose';
 import { Board } from 'src/contexts/module_user/board/domain/entity/board.entity';
 import { Contact } from 'src/contexts/module_user/contact/domain/entity/contact.entity';
-import { Post_Full_Graphql_Model } from 'src/contexts/module_post/post/domain/post/entity/models_graphql/post.full.grapql.model';
+import { Post_Full_Graphql_Model } from 'src/contexts/module_post/post/domain/entity/models_graphql/post.full.grapql.model';
 
 @ObjectType()
 export class Subscriptions_Full_Graphql_Model {

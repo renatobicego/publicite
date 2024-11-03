@@ -2,12 +2,15 @@ import { Inject } from '@nestjs/common';
 import { Connection, ObjectId } from 'mongoose';
 import { InjectConnection } from '@nestjs/mongoose';
 
-import { Post } from '../../../domain/post/entity/post.entity';
+
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
-import { PostUpdateDto } from '../../../domain/post/entity/dto/post.update.dto';
 import { UserServiceInterface } from 'src/contexts/module_user/user/domain/service/user.service.interface';
-import { PostRepositoryInterface } from '../../../domain/post/repository/post.repository.interface';
-import { PostServiceInterface } from '../../../domain/post/service/post.service.interface';
+import { PostUpdateDto } from '../../domain/entity/dto/post.update.dto';
+import { Post } from '../../domain/entity/post.entity';
+import { PostRepositoryInterface } from '../../domain/repository/post.repository.interface';
+import { PostServiceInterface } from '../../domain/service/post.service.interface';
+
+
 
 export class PostService implements PostServiceInterface {
   constructor(

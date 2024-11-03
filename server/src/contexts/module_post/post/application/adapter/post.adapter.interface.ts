@@ -1,4 +1,4 @@
-import { PostUpdateDto } from 'src/contexts/module_post/post/domain/post/entity/dto/post.update.dto';
+import { PostUpdateDto } from 'src/contexts/module_post/post/domain/entity/dto/post.update.dto';
 import { PostRequest } from '../dto/HTTP-REQUEST/post.request';
 import { PostUpdateRequest } from '../dto/HTTP-REQUEST/post.update.request';
 import { PostResponse } from '../dto/HTTP-RESPONSE/post.response';

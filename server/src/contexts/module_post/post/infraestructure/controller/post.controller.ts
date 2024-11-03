@@ -3,9 +3,9 @@ import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 
 import { PostRequestDto } from './swagger/post.request.swagger';
 import { PostResponseDto } from './swagger/post.response.swagger';
-import { PostAdapterInterface } from 'src/contexts/module_post/post/application/post/adapter/post.adapter.interface';
-import { PostRequest } from 'src/contexts/module_post/post/application/post/dto/HTTP-REQUEST/post.request';
-import { PostResponse } from 'src/contexts/module_post/post/application/post/dto/HTTP-RESPONSE/post.response';
+import { PostAdapterInterface } from 'src/contexts/module_post/post/application/adapter/post.adapter.interface';
+import { PostRequest } from 'src/contexts/module_post/post/application/dto/HTTP-REQUEST/post.request';
+import { PostResponse } from 'src/contexts/module_post/post/application/dto/HTTP-RESPONSE/post.response';
 
 @ApiTags('Posts  ')
 @Controller('post')

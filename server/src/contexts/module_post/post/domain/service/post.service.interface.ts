@@ -1,5 +1,5 @@
-import { PostUpdateDto } from '../entity/dto/post.update.dto';
-import { Post } from '../entity/post.entity';
+import { PostUpdateDto } from '../../entity/dto/post.update.dto';
+import { Post } from '../../entity/post.entity';
 
 export interface PostServiceInterface {
   create(post: Post): Promise<Post>;

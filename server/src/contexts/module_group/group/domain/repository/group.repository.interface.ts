@@ -68,7 +68,7 @@ export interface GroupRepositoryInterface {
   removeAdminsFromGroupByGroupId(
     admins: string[],
     groupId: string,
-    groupAdmin: string,
+    groupCreator: string,
   ): Promise<any>;
 
   updateGroupById(group: GroupUpdateRequest): Promise<any>;

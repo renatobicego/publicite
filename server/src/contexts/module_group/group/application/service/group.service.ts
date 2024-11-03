@@ -220,14 +220,14 @@ export class GroupService implements GroupServiceInterface {
   async removeAdminsFromGroupByGroupId(
     admins: string[],
     groupId: string,
-    groupAdmin: string,
+    groupCreator: string,
   ): Promise<any> {
     try {
       this.logger.log('Deleting admins to group: ' + admins);
       return await this.groupRepository.removeAdminsFromGroupByGroupId(
         admins,
         groupId,
-        groupAdmin,
+        groupCreator,
       );
     } catch (error: any) {
       throw error;

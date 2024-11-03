@@ -491,7 +491,7 @@ type Mutation {
   createNewGroup(groupDto: GroupRequest!): GroupResponse
 
   """Eliminar admins un grupo"""
-  removeAdminsFromGroupByGroupId(adminsToDelete: [String!]!, groupAdmin: String!, groupId: String!): String
+  removeAdminsFromGroupByGroupId(adminsToDelete: [String!]!, groupCreator: String!, groupId: String!): String
 
   """Eliminar miembros un grupo"""
   deleteMembersFromGroupByGroupId(membersToDelete: [String!]!, groupAdmin: String!, groupId: String!): String

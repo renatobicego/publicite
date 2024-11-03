@@ -2,19 +2,19 @@
 import { omitBy, isUndefined } from 'lodash';
 import { BadRequestException } from '@nestjs/common';
 
-import { PostUpdateDto } from 'src/contexts/module_post/post/domain/post/entity/dto/post.update.dto';
-import { PostGood } from 'src/contexts/module_post/post/domain/post/entity/post-types/post.good.entity';
-import { PostPetition } from 'src/contexts/module_post/post/domain/post/entity/post-types/post.petition.entity';
-import { PostService } from 'src/contexts/module_post/post/domain/post/entity/post-types/post.service.entity';
-import { Post } from 'src/contexts/module_post/post/domain/post/entity/post.entity';
-import { PostMapperAdapterInterface } from 'src/contexts/module_post/post/application/post/adapter/mapper/post.adapter.mapper.interface';
-import { PostUpdateRequest } from 'src/contexts/module_post/post/application/post/dto/HTTP-REQUEST/post.update.request';
+import { PostUpdateDto } from 'src/contexts/module_post/post/domain/entity/dto/post.update.dto';
+import { PostGood } from 'src/contexts/module_post/post/domain/entity/post-types/post.good.entity';
+import { PostPetition } from 'src/contexts/module_post/post/domain/entity/post-types/post.petition.entity';
+import { PostService } from 'src/contexts/module_post/post/domain/entity/post-types/post.service.entity';
+import { Post } from 'src/contexts/module_post/post/domain/entity/post.entity';
+import { PostMapperAdapterInterface } from 'src/contexts/module_post/post/application/adapter/mapper/post.adapter.mapper.interface';
+import { PostUpdateRequest } from 'src/contexts/module_post/post/application/dto/HTTP-REQUEST/post.update.request';
 import {
   PostResponse,
   PostGoodResponse,
   PostServiceResponse,
   PostPetitionResponse,
-} from 'src/contexts/module_post/post/application/post/dto/HTTP-RESPONSE/post.response';
+} from 'src/contexts/module_post/post/application/dto/HTTP-RESPONSE/post.response';
 
 export class PostAdapterMapper implements PostMapperAdapterInterface {
   entityToResponse(entity: Post): PostResponse {

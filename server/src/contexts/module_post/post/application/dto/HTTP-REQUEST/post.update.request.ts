@@ -1,8 +1,8 @@
 import { Field, Float, InputType, Int } from '@nestjs/graphql';
 import { ObjectId } from 'mongoose';
-import { FrequencyPrice } from 'src/contexts/module_post/post/domain/post/entity/enum/post-service-freq-type.enum';
-import { PostType } from 'src/contexts/module_post/post/domain/post/entity/enum/post-type.enum';
-import { Visibility } from 'src/contexts/module_post/post/domain/post/entity/enum/post-visibility.enum';
+import { FrequencyPrice } from 'src/contexts/module_post/post/domain/entity/enum/post-service-freq-type.enum';
+import { PostType } from 'src/contexts/module_post/post/domain/entity/enum/post-type.enum';
+import { Visibility } from 'src/contexts/module_post/post/domain/entity/enum/post-visibility.enum';
 
 @InputType()
 export class VisibilityEnum {
