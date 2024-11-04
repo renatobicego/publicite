@@ -1,7 +1,16 @@
 import { ExecutionContext, ForbiddenException } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
+import { decodeJwt } from '@clerk/backend/jwt';
 
-export function getTokenFromRequest(context: ExecutionContext) {
+
+interface JwtPayload {
+  metadata: {
+    mongoId: string;
+  };
+}
+
+
+function getTokenFromRequest(context: ExecutionContext) {
   let request;
   let token;
   try {
@@ -30,3 +39,13 @@ export function getTokenFromRequest(context: ExecutionContext) {
     throw error;
   }
 }
+
+
+function getIdFromClerkToken(token: string): string {
+  const claims = decodeJwt(token);
+  const payload = claims.payload as unknown as JwtPayload;
+  const mongoId = payload.metadata.mongoId;
+  return mongoId;
+}
+
+export { getTokenFromRequest, getIdFromClerkToken };

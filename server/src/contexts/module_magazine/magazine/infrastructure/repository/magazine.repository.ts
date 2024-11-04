@@ -52,6 +52,9 @@ export class MagazineRepository implements MagazineRepositoryInterface {
     @InjectModel('Group') private readonly groupModel: Model<GroupDocument>,
   ) { }
 
+
+
+
   async addNewMagazineSection(
     magazineAdmin: string,
     magazineId: string,
@@ -563,11 +566,6 @@ export class MagazineRepository implements MagazineRepositoryInterface {
     }
   }
 
-
-  // // revistas que has creado, revista en la que sos colaborador, en las que sos colaborador permitido en revistas de grupo (todas las revista del user en las que puede participar)
-  // //  -deberia traer nombre de revista, secciones, junto con el nombre de seccion y id de los post que hay dentro de cada seccion
-
-
   async findAllMagazinesByUserId(userId: string): Promise<MagazineResponse[] | []> {
     /*
     revistas que puede tener el usuario  
@@ -601,6 +599,31 @@ export class MagazineRepository implements MagazineRepositoryInterface {
     userMagazines.push(...personalMagazines, ...groupMagazines)
     return userMagazines;
 
+  }
+
+  async isUserAllowedToEditSectionUserMagazine(sectionId: string, userId: string): Promise<boolean> {
+    try {
+      const result = await this.userMagazine.findOne({
+        sections: sectionId,
+        $or: [{ user: userId }, { collaborators: userId }],
+      })
+
+      return !!result
+    } catch (error: any) {
+      throw error;
+    }
+  }
+  async isUserAllowedToEditSectionGroupMagazine(sectionId: string, userId: string): Promise<boolean> {
+    try {
+      const result = await this.groupMagazine.findOne({
+        sections: sectionId,
+        allowedCollaborators: userId,
+      })
+
+      return !!result
+    } catch (error: any) {
+      throw error;
+    }
   }
 
   async save(magazine: Magazine): Promise<any> {
@@ -750,6 +773,17 @@ export class MagazineRepository implements MagazineRepositoryInterface {
           throw new Error('Invalid owner type');
         }
       }
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  async updateTitleOfSectionById(sectionId: string, newTitle: string): Promise<void> {
+    try {
+      await this.magazineSection.updateOne(
+        { _id: sectionId },
+        { $set: { title: newTitle } },
+      )
     } catch (error: any) {
       throw error;
     }

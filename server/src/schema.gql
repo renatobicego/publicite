@@ -551,6 +551,9 @@ type Mutation {
     groupId: String
   ): String
 
+  """Actualizar el nombre de una seccion en una revista"""
+  updateTitleOfSectionById(sectionId: String!, newTitle: String!, ownerType: OwnerType!): String
+
   """Crear una categoria de un post"""
   createNewCategoryPost(category: PostCategoryRequest!): PostCategoryResponse
 }

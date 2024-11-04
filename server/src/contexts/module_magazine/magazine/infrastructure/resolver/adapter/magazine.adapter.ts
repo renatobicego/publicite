@@ -196,4 +196,13 @@ export class MagazineAdapter implements MagazineAdapterInterface {
       throw error;
     }
   }
+
+
+  async updateTitleOfSectionById(sectionId: string, newTitle: string, userRequestId: string, ownerType: string): Promise<any> {
+    try {
+      await this.magazineService.updateTitleOfSectionById(sectionId, newTitle, userRequestId,ownerType);
+    } catch (error: any) {
+      throw error;
+    }
+  }
 }

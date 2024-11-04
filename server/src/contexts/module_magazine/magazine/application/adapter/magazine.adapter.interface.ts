@@ -68,4 +68,11 @@ export interface MagazineAdapterInterface {
     owner: string,
     groupId?: string,
   ): Promise<any>;
+
+  updateTitleOfSectionById(
+    sectionId: string,
+    newTitle: string,
+    userRequestId: string,
+    ownerType: string,
+  ): Promise<any>
 }

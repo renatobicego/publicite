@@ -9,6 +9,9 @@ import { MagazineUpdateRequest } from '../../application/adapter/dto/HTTP-REQUES
 import { PubliciteAuth } from 'src/contexts/module_shared/auth/publicite_auth/publicite_auth';
 import { ClerkAuthGuard } from 'src/contexts/module_shared/auth/clerk-auth/clerk.auth.guard';
 import { MagazineSectionCreateRequest } from '../../application/adapter/dto/HTTP-REQUEST/magazineSection.create.request';
+import { getIdFromClerkToken, getTokenFromRequest } from 'src/contexts/module_shared/functions/getTokenFromRequest';
+import { get } from 'http';
+import { OwnerType } from '../../domain/entity/enum/magazine.ownerType.enum';
 
 @Resolver()
 export class MagazineResolver {
@@ -302,8 +305,6 @@ export class MagazineResolver {
   }
 
 
-
-
   @Mutation(() => String, {
     nullable: true,
     description: 'Actualizar una revista',
@@ -333,4 +334,42 @@ export class MagazineResolver {
       throw error;
     }
   }
+
+
+
+  @Mutation(() => String, {
+    nullable: true,
+    description: 'Actualizar el nombre de una seccion en una revista',
+  })
+  @UseGuards(ClerkAuthGuard)
+  async updateTitleOfSectionById(
+    @Args('sectionId', { type: () => String })
+    sectionId: string,
+    @Args('newTitle', { type: () => String })
+    newTitle: string,
+    @Args('ownerType', { type: () => OwnerType })
+    ownerType: OwnerType,
+    @Context()
+    context: any,
+  ): Promise<any> {
+    try {
+      const token = getTokenFromRequest(context);
+      const userRequestId = getIdFromClerkToken(token);
+      return await this.magazineAdapter.updateTitleOfSectionById(
+        sectionId,
+        newTitle,
+        userRequestId,
+        ownerType
+      )
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
+
+
+
+
+
 }

@@ -61,6 +61,15 @@ export interface MagazineRepositoryInterface {
     magazineId: string,
     allowedCollaboratorId: string,
   ): Promise<void>;
+  isUserAllowedToEditSectionUserMagazine(
+    sectionId: string,
+    userId: string,
+    
+  ): Promise<boolean>;
+
+  isUserAllowedToEditSectionGroupMagazine(
+    sectionId: string,
+    userId: string): Promise<boolean>;
   save(magazine: Magazine): Promise<any>;
   saveMagazineWithSection(magazine: Magazine): Promise<any>;
   findMagazineByMagazineId(
@@ -73,4 +82,10 @@ export interface MagazineRepositoryInterface {
     owner: string,
     groupId?: string,
   ): Promise<any>;
+
+  updateTitleOfSectionById(
+    sectionId: string,
+    newTitle: string,
+    userRequestId: string,
+  ): Promise<void>;
 }

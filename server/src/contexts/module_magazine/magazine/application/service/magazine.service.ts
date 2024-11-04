@@ -277,4 +277,31 @@ export class MagazineService implements MagazineServiceInterface {
       throw error;
     }
   }
+
+  async updateTitleOfSectionById(sectionId: string, newTitle: string, userRequestId: string, ownerType: string): Promise<any> {
+    try {
+      let isUserAllowed = false;
+      switch (ownerType) {
+        case OwnerType.user: {
+          isUserAllowed = await this.magazineRepository.isUserAllowedToEditSectionUserMagazine(sectionId, userRequestId);
+          break;
+        }
+        case OwnerType.group: {
+          isUserAllowed = await this.magazineRepository.isUserAllowedToEditSectionGroupMagazine(sectionId, userRequestId);
+          break
+        }
+        default: {
+          throw new Error('Please select a valid owner type');
+        }
+      }
+      if (!isUserAllowed) throw new Error('User not allowed to update this section');
+
+      return await this.magazineRepository.updateTitleOfSectionById(sectionId, newTitle, userRequestId);
+
+    } catch (error: any) {
+      this.logger.error('Error updating Title of section', error);
+      throw error;
+    }
+  }
+
 }

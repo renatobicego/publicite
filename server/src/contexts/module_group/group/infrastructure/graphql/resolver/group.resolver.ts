@@ -11,6 +11,7 @@ import {
   GroupResponseById,
 } from '../../../application/adapter/dto/HTTP-RESPONSE/group.response';
 import { GroupAdapterInterface } from '../../../application/adapter/group.adapter.interface';
+import { getIdFromClerkToken } from 'src/contexts/module_shared/functions/getTokenFromRequest';
 
 @Resolver('Group')
 export class GroupResolver {
@@ -32,7 +33,7 @@ export class GroupResolver {
   ): Promise<any> {
     try {
       const token = context.req.headers.authorization;
-      const userRequestId = PubliciteAuth.getIdFromClerkToken(token);
+      const userRequestId = getIdFromClerkToken(token);
       await this.groupAdapter.acceptGroupInvitation(groupId, userRequestId);
       return 'Invitation accepted';
     } catch (error: any) {
@@ -132,7 +133,7 @@ export class GroupResolver {
   ): Promise<GroupResponse> {
     try {
       const token = context.req.headers.authorization;
-      const groupCreator = PubliciteAuth.getIdFromClerkToken(token);
+      const groupCreator = getIdFromClerkToken(token);
       return await this.groupAdapter.saveGroup(groupDto, groupCreator);
     } catch (error: any) {
       throw error;
@@ -235,7 +236,7 @@ export class GroupResolver {
   ): Promise<GroupResponseById> {
     try {
       const token = context.req.headers.authorization;
-      const userRequest = PubliciteAuth.getIdFromClerkToken(token);
+      const userRequest = getIdFromClerkToken(token);
       return await this.groupAdapter.findGroupById(groupId, userRequest);
     } catch (error: any) {
       throw error;
@@ -259,7 +260,7 @@ export class GroupResolver {
   ): Promise<GroupListResponse> {
     try {
       const token = context.req.headers.authorization;
-      const userRequest = PubliciteAuth.getIdFromClerkToken(token);
+      const userRequest = getIdFromClerkToken(token);
       return await this.groupAdapter.findGroupByNameOrAlias(
         name,
         limit,
