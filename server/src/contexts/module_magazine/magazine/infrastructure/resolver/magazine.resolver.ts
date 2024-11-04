@@ -295,7 +295,7 @@ export class MagazineResolver {
     id: ObjectId,
   ): Promise<any> {
     try {
-      return await this.magazineAdapter.findAllMagazinesByUserId(id);
+      //return await this.magazineAdapter.findAllMagazinesByUserId(id);
     } catch (error: any) {
       throw error;
     }
