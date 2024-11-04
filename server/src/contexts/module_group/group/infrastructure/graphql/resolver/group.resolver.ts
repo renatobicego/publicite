@@ -46,7 +46,7 @@ export class GroupResolver {
   })
   //@UseGuards(ClerkAuthGuard)
   async addAdminsToGroupByGroupId(
-    @Args('newAdmin', { type: () => [String] })
+    @Args('newAdmin', { type: () => String })
     newAdmin: string,
     @Args('groupAdmin', { type: () => String })
     groupAdmin: string,
@@ -69,7 +69,7 @@ export class GroupResolver {
     description:
       'Aceptar la invitacion de un miembro a un grupo- Solo admins o creadores pueden aceptar',
   })
-  @UseGuards(ClerkAuthGuard)
+  //@UseGuards(ClerkAuthGuard)
   async acceptJoinGroupRequest(
     @Args('newMember', { type: () => String })
     newMember: string,
@@ -81,7 +81,7 @@ export class GroupResolver {
     context: any,
   ): Promise<any> {
     try {
-      PubliciteAuth.authorize(context, groupAdmin);
+      //PubliciteAuth.authorize(context, groupAdmin);
       await this.groupAdapter.acceptJoinGroupRequest(
         newMember,
         groupId,
@@ -293,7 +293,7 @@ export class GroupResolver {
     nullable: true,
     description: 'Eliminar un grupo por su id',
   })
-  @UseGuards(ClerkAuthGuard)
+  //@UseGuards(ClerkAuthGuard)
   async deleteGroupById(
     @Args('groupId', { type: () => String })
     groupId: string,
@@ -302,7 +302,7 @@ export class GroupResolver {
     @Context() context: any,
   ): Promise<any> {
     try {
-      PubliciteAuth.authorize(context, groupCreator);
+      //PubliciteAuth.authorize(context, groupCreator);
       await this.groupAdapter.deleteGroupById(groupId, groupCreator);
     } catch (error: any) {
       throw error;

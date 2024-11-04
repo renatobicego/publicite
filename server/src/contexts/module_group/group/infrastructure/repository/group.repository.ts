@@ -209,7 +209,7 @@ export class GroupRepository implements GroupRepositoryInterface {
               $or: [{ admins: groupAdmin }, { creator: groupAdmin }],
             },
             {
-              $addToSet: { admins: newAdmin }, //Agregamos nuevos admins
+              $addToSet: { admins: newAdmin }, //Agregamos nuevo
               $pullAll: { members: [newAdmin] }, // los sacamos de miembros
             },
 
@@ -260,13 +260,16 @@ export class GroupRepository implements GroupRepositoryInterface {
         if (groupToDelete === null) {
           throw new Error('Group does not exist or invalid creator');
         }
-
-
         idsGroupPeopleToDelete.push(...groupToDelete.members);
         idsGroupPeopleToDelete.push(...groupToDelete.admins);
-        idsGroupPeopleToDelete.push(...groupCreator);
+        idsGroupPeopleToDelete.push(groupCreator);
+        const idsMappedToString = idsGroupPeopleToDelete.map(
+          (id) => id.toString(),
+        );
+
+
         await this.userModel.updateMany(
-          { _id: { $in: idsGroupPeopleToDelete } },
+          { _id: { $in: idsMappedToString } },
           {
             $pullAll: { groups: [groupId] },
           },
