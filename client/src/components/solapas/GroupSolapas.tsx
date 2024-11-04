@@ -95,9 +95,7 @@ const GroupSolapas = ({
             <InviteUsersGroup group={group} />
           </div>
           <UsersGrid
-            items={(group.members as User[]).filter(
-              (member) => member._id !== userIdLogged
-            )}
+            items={(group.members as User[])}
             groupGrid
             group={group}
           />

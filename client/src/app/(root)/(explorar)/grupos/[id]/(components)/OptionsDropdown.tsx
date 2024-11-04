@@ -10,6 +10,7 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
+  useDisclosure,
 } from "@nextui-org/react";
 import { useRouter } from "next-nprogress-bar";
 import { useRef } from "react";
@@ -17,24 +18,33 @@ import { FaShareAlt } from "react-icons/fa";
 import { FaChevronDown } from "react-icons/fa6";
 import { IoIosExit } from "react-icons/io";
 import { IoTrashOutline } from "react-icons/io5";
+import ExitGroupAsCreator from "./ExitGroupAsCreator";
+import { User } from "@/types/userTypes";
 
 const OptionsDropdown = ({
   groupId,
   isMember,
   isCreator,
   image,
-  membersIds
+  membersIds,
+  admins
 }: {
   groupId: string;
   isMember: boolean;
   isCreator: boolean;
-    image?: string;
-  membersIds: string[]
+  image?: string;
+  membersIds: string[];
+  admins: User[]
 }) => {
   const deleteGroupRef = useRef<() => void>(() => {});
+  const {isOpen, onOpenChange, onOpen} = useDisclosure();
   const router = useRouter();
   const { deleteFile } = useUploadImage();
   const handleDeleteGroupClick = () => {
+    if (isCreator && membersIds.length > 0) {
+      onOpen();
+      return;
+    }
     if (deleteGroupRef.current) {
       deleteGroupRef.current(); // Trigger custom open function to open the modal
     }
@@ -56,13 +66,9 @@ const OptionsDropdown = ({
       toastifyError("No puedes eliminar este grupo");
     }
   };
-  
-  const exitGroup = async () => {
-    if(isCreator && membersIds.length > 0) {
-      toastifyError("No puedes abandonar el grupo si eres el dueño.");
-      return
-    }
-    const res = await exitFromGroup(groupId);
+
+  const exitGroup = async (newCreatorId?: string) => {
+    const res = await exitFromGroup(groupId, isCreator, newCreatorId);
     if ("error" in res) {
       toastifyError(res.error as string);
       return;
@@ -70,7 +76,7 @@ const OptionsDropdown = ({
     toastifySuccess(res.message);
     router.refresh();
     router.replace(GROUPS);
-  }
+  };
   return (
     <>
       <Dropdown placement="bottom-end">
@@ -92,8 +98,10 @@ const OptionsDropdown = ({
             startContent={<IoIosExit className="size-5" />}
             color="danger"
             key="salir"
-            onPress={exitGroup}
-            className={`rounded-full px-4 ${isMember ? "" : "hidden"}`}
+            onPress={handleDeleteGroupClick}
+            className={`rounded-full px-4 ${
+              isMember || isCreator ? "" : "hidden"
+            }`}
           >
             Salir del Grupo
           </DropdownItem>
@@ -115,6 +123,20 @@ const OptionsDropdown = ({
         confirmText="Eliminar"
         onConfirm={deleteGroup}
         customOpen={(openModal) => (deleteGroupRef.current = openModal)} // Set the reference for customOpen
+      />
+      <ConfirmModal
+        ButtonAction={<></>}
+        message={`¿Está seguro que desea salir del grupo?`}
+        tooltipMessage="Salir"
+        confirmText="Salir"
+        onConfirm={exitGroup}
+        customOpen={(openModal) => (deleteGroupRef.current = openModal)} // Set the reference for customOpen
+      />
+      <ExitGroupAsCreator
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        admins={admins}
+        exitGroup={exitGroup}
       />
     </>
   );

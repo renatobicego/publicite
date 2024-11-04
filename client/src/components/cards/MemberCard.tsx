@@ -4,6 +4,7 @@ import { PROFILE } from "@/utils/data/urls";
 import HandleGroupMember from "../buttons/HandleGroupMember/HandleGroupMember";
 import { Group } from "@/types/groupTypes";
 import HandleGroupRequest from "../buttons/HandleGroupMember/HandleGroupRequest";
+import { useUserData } from "@/app/(root)/userDataProvider";
 
 const MemberCard = ({
   user,
@@ -16,6 +17,8 @@ const MemberCard = ({
   isAdmin?: boolean;
   groupRequestGrid?: boolean;
 }) => {
+  const { userIdLogged } = useUserData();
+  const isMe = userIdLogged === user._id;
   return (
     <Card className="bg-fondo">
       <CardBody className="sm:flex-row gap-2 md:gap-4 lg:gap-6 sm:items-center">
@@ -34,20 +37,22 @@ const MemberCard = ({
           >
             <h6>{user.username}</h6>
           </Link>
+          {isMe && <p className="text-xs font-normal italic">Tú</p>}
 
           {isAdmin && (
             <p className="text-xs font-normal italic">Administrador</p>
           )}
-          {groupRequestGrid ? (
-            <HandleGroupRequest user={user} group={group} />
-          ) : (
-            <HandleGroupMember
-              user={user}
-              nameToShow={user.username}
-              group={group}
-              isAdmin={isAdmin}
-            />
-          )}
+          {!isMe &&
+            (groupRequestGrid ? (
+              <HandleGroupRequest user={user} group={group} />
+            ) : (
+              <HandleGroupMember
+                user={user}
+                nameToShow={user.username}
+                group={group}
+                isAdmin={isAdmin}
+              />
+            ))}
         </div>
       </CardBody>
     </Card>

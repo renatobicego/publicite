@@ -22,7 +22,7 @@ const GroupCard = ({
           <SecondaryButton
             variant="light"
             as={Link}
-            className="-ml-4"
+            className="md:-ml-4"
             href={`${GROUPS}/${groupData._id}`}
           >
             Ver Grupo
@@ -60,7 +60,7 @@ const GroupCard = ({
             <h6>{groupData.name}</h6>
           </Link>
           <p className="text-xs md:text-sm">
-            {groupData.members.length + 1} miembros
+            {groupData.members.length} miembros
           </p>
           {actionButtonToReturn()}
         </div>

@@ -46,7 +46,7 @@ const CreateGroupForm = () => {
       }
       values.profilePhotoUrl = url;
     }
-    const resApi = await createGroup(values);
+    const resApi = await createGroup({...values, members: []});
     if (resApi.error) {
       await deleteFile(values.profilePhotoUrl);
       toastifyError(resApi.error);
