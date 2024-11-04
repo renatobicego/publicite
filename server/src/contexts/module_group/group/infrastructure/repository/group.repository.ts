@@ -260,9 +260,7 @@ export class GroupRepository implements GroupRepositoryInterface {
         if (groupToDelete === null) {
           throw new Error('Group does not exist or invalid creator');
         }
-        idsGroupPeopleToDelete.push(...groupToDelete.members);
-        idsGroupPeopleToDelete.push(...groupToDelete.admins);
-        idsGroupPeopleToDelete.push(groupCreator);
+        idsGroupPeopleToDelete.push(...groupToDelete.members, ...groupToDelete.admins, groupCreator);
         const idsMappedToString = idsGroupPeopleToDelete.map(
           (id) => id.toString(),
         );

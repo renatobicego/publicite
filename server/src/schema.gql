@@ -452,6 +452,9 @@ type Query {
   """Obtener una revista"""
   getMagazineByMagazineId(id: String!): MagazineResponse
 
+  """Obtener todas las revistas en las que un usuario puede colaborar"""
+  getAllMagazinesByUserId(userId: String!): [MagazineResponse!]
+
   """Devuelve todas las categorias creadas"""
   getAllCategoryPost: [PostCategoryResponse!]
 }

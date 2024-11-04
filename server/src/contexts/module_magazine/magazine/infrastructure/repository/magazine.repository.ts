@@ -51,6 +51,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
     @InjectModel('User') private readonly userModel: Model<IUser>,
     @InjectModel('Group') private readonly groupModel: Model<GroupDocument>,
   ) { }
+
   async addNewMagazineSection(
     magazineAdmin: string,
     magazineId: string,
@@ -560,6 +561,46 @@ export class MagazineRepository implements MagazineRepositoryInterface {
     } finally {
       session.endSession();
     }
+  }
+
+
+  // // revistas que has creado, revista en la que sos colaborador, en las que sos colaborador permitido en revistas de grupo (todas las revista del user en las que puede participar)
+  // //  -deberia traer nombre de revista, secciones, junto con el nombre de seccion y id de los post que hay dentro de cada seccion
+
+
+  async findAllMagazinesByUserId(userId: string): Promise<MagazineResponse[] | []> {
+    /*
+    revistas que puede tener el usuario  
+    1. Revistas en su propio array (contiene revistas propias y revistas de usuarios en las que es colaborador)
+    2. Revistas de grupo. estas no se encuentran en su personal array, pero las buscamos en la revista de grupo.
+    */
+    const session = await this.connection.startSession();
+    const userMagazines: any = []
+    const fieldSelect = '_id name sections';
+    const populateField = [
+      {
+        path: 'sections',
+        select: '_id title posts isFatherSection',
+        model: 'MagazineSection',
+      }
+    ];
+    const personalMagazines = await this.userMagazine.find({
+      $or: [{ user: userId }, { collaborators: userId }]
+    }, null,
+      { session })
+      .select(fieldSelect)
+      .populate(populateField)
+
+    const groupMagazines = await this.groupMagazine.find({
+      allowedCollaborators: userId
+    }, null,
+      { session })
+      .select(fieldSelect)
+      .populate(populateField)
+
+    userMagazines.push(...personalMagazines, ...groupMagazines)
+    return userMagazines;
+
   }
 
   async save(magazine: Magazine): Promise<any> {

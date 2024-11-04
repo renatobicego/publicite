@@ -285,17 +285,17 @@ export class MagazineResolver {
     }
   }
 
-  @Query(() => MagazineResponse, {
+  @Query(() => [MagazineResponse], {
     nullable: true,
     description: 'Obtener todas las revistas en las que un usuario puede colaborar',
   })
   @UseGuards(ClerkAuthGuard)
-  async getMyMagazinesByUserId(
-    @Args('id', { type: () => String })
-    id: ObjectId,
-  ): Promise<any> {
+  async getAllMagazinesByUserId(
+    @Args('userId', { type: () => String })
+    userId: string,
+  ): Promise<MagazineResponse[] | []> {
     try {
-      //return await this.magazineAdapter.findAllMagazinesByUserId(id);
+      return await this.magazineAdapter.findAllMagazinesByUserId(userId);
     } catch (error: any) {
       throw error;
     }

@@ -58,6 +58,10 @@ export interface MagazineServiceInterface {
   findMagazineByMagazineId(
     userId: ObjectId,
   ): Promise<Partial<MagazineResponse> | null>;
+
+  findAllMagazinesByUserId(
+    userId: string,
+  ): Promise<MagazineResponse[] | []>;
   updateMagazineById(
     magazineRequest: MagazineUpdateRequest,
     owner: string,

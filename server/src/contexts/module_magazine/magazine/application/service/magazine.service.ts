@@ -18,7 +18,8 @@ export class MagazineService implements MagazineServiceInterface {
     @Inject('MagazineRepositoryInterface')
     private readonly magazineRepository: MagazineRepositoryInterface,
     private readonly logger: MyLoggerService,
-  ) {}
+  ) { }
+
   async addNewMagazineSection(
     magazineAdmin: string,
     magazineId: string,
@@ -246,6 +247,15 @@ export class MagazineService implements MagazineServiceInterface {
     this.logger.log('Finding user Magazines, user ID: ' + id);
     try {
       return await this.magazineRepository.findMagazineByMagazineId(id);
+    } catch (error: any) {
+      this.logger.error('Error finding new Magazine in service', error);
+      throw error;
+    }
+  }
+
+  async findAllMagazinesByUserId(userId: string): Promise<MagazineResponse[] | []> {
+    try {
+      return this.magazineRepository.findAllMagazinesByUserId(userId)
     } catch (error: any) {
       this.logger.error('Error finding new Magazine in service', error);
       throw error;

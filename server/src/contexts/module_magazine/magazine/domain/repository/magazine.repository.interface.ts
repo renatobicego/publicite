@@ -66,6 +66,8 @@ export interface MagazineRepositoryInterface {
   findMagazineByMagazineId(
     userId: ObjectId,
   ): Promise<Partial<MagazineResponse> | null>;
+
+  findAllMagazinesByUserId(userId: string): Promise<MagazineResponse[] | []>;
   updateMagazineById(
     magazine: MagazineUpdateRequest,
     owner: string,

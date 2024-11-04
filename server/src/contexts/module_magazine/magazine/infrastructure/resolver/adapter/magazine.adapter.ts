@@ -12,7 +12,8 @@ export class MagazineAdapter implements MagazineAdapterInterface {
   constructor(
     @Inject('MagazineServiceInterface')
     private readonly magazineService: MagazineServiceInterface,
-  ) {}
+  ) { }
+
   async addNewMagazineSection(
     magazineAdmin: string,
     magazineId: string,
@@ -166,6 +167,15 @@ export class MagazineAdapter implements MagazineAdapterInterface {
   ): Promise<Partial<MagazineResponse> | null> {
     try {
       return await this.magazineService.findMagazineByMagazineId(id);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
+  async findAllMagazinesByUserId(userId: string): Promise<MagazineResponse[] | []> {
+    try {
+      return await this.magazineService.findAllMagazinesByUserId(userId);
     } catch (error: any) {
       throw error;
     }
