@@ -44,10 +44,10 @@ export class GroupResolver {
     nullable: true,
     description: 'Agregar admins un grupo',
   })
-  @UseGuards(ClerkAuthGuard)
+  //@UseGuards(ClerkAuthGuard)
   async addAdminsToGroupByGroupId(
-    @Args('newAdmins', { type: () => [String] })
-    newAdmins: string[],
+    @Args('newAdmin', { type: () => [String] })
+    newAdmin: string,
     @Args('groupAdmin', { type: () => String })
     groupAdmin: string,
     @Args('groupId', { type: () => String })
@@ -56,8 +56,8 @@ export class GroupResolver {
     context: any,
   ): Promise<any> {
     try {
-      PubliciteAuth.authorize(context, groupAdmin);
-      await this.groupAdapter.addAdminsToGroup(newAdmins, groupId, groupAdmin);
+      //PubliciteAuth.authorize(context, groupAdmin);
+      await this.groupAdapter.addAdminToGroup(newAdmin, groupId, groupAdmin);
       return 'Admins added';
     } catch (error: any) {
       throw error;
@@ -131,9 +131,9 @@ export class GroupResolver {
     @Context() context: any,
   ): Promise<GroupResponse> {
     try {
-      const token = context.req.headers.authorization;
-      const groupCreator = PubliciteAuth.getIdFromClerkToken(token);
-      return await this.groupAdapter.saveGroup(groupDto, groupCreator);
+      //const token = context.req.headers.authorization;
+      //const groupCreator = PubliciteAuth.getIdFromClerkToken(token);
+      return await this.groupAdapter.saveGroup(groupDto, "66fc125ae161be9a67ccd728");
     } catch (error: any) {
       throw error;
     }

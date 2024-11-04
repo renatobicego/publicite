@@ -477,7 +477,7 @@ type Mutation {
   acceptGroupInvitation(groupId: String!): String
 
   """Agregar admins un grupo"""
-  addAdminsToGroupByGroupId(newAdmins: [String!]!, groupAdmin: String!, groupId: String!): String
+  addAdminsToGroupByGroupId(newAdmin: [String!]!, groupAdmin: String!, groupId: String!): String
 
   """
   Aceptar la invitacion de un miembro a un grupo- Solo admins o creadores pueden aceptar

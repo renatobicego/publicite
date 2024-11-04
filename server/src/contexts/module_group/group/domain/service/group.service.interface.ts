@@ -9,8 +9,8 @@ import {
 export interface GroupServiceInterface {
   acceptGroupInvitation(groupId: string, userRequestId: string): Promise<void>;
 
-  addAdminsToGroup(
-    admins: string[],
+  addAdminToGroup(
+    newAdmin: string,
     groupId: string,
     groupAdmin: string,
   ): Promise<any>;

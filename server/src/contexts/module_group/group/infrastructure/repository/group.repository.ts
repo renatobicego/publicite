@@ -193,8 +193,8 @@ export class GroupRepository implements GroupRepositoryInterface {
     }
   }
 
-  async addAdminsToGroup(
-    admins: string[],
+  async addAdminToGroup(
+    newAdmin: string,
     groupId: string,
     groupAdmin: string,
   ): Promise<any> {
@@ -205,21 +205,25 @@ export class GroupRepository implements GroupRepositoryInterface {
         const result = await this.groupModel
           .updateOne(
             {
-              _id: groupId,
+              _id: groupId, members: newAdmin,
               $or: [{ admins: groupAdmin }, { creator: groupAdmin }],
             },
-            { $addToSet: { admins: { $each: admins } } },
+            {
+              $addToSet: { admins: newAdmin }, //Agregamos nuevos admins
+              $pullAll: { members: [newAdmin] }, // los sacamos de miembros
+            },
+
             { session },
           )
           .lean();
-        checkResultModificationOfOperation(result);
-        await this.userModel
-          .updateMany(
-            { _id: { $in: admins } },
-            { $addToSet: { groups: groupId } },
-            { session },
-          )
-          .lean();
+        checkResultModificationOfOperation(result, 'You dont have permissions or the new admin is not a member');
+        // await this.userModel
+        //   .updateMany(
+        //     { _id: { $in: admins } },
+        //     { $addToSet: { groups: groupId } },
+        //     { session },
+        //   )
+        //   .lean();
 
         await session.commitTransaction();
       });

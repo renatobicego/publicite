@@ -67,13 +67,13 @@ export class GroupAdapter implements GroupAdapterInterface {
     }
   }
 
-  async addAdminsToGroup(
-    admins: string[],
+  async addAdminToGroup(
+    newAdmin: string,
     groupId: string,
     groupAdmin: string,
   ): Promise<any> {
     try {
-      await this.groupService.addAdminsToGroup(admins, groupId, groupAdmin);
+      await this.groupService.addAdminToGroup(newAdmin, groupId, groupAdmin);
     } catch (error: any) {
       throw error;
     }
