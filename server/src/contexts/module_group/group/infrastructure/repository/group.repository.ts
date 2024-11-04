@@ -42,18 +42,22 @@ export class GroupRepository implements GroupRepositoryInterface {
       await session.withTransaction(async () => {
         this.logger.log('Assign new creator ID: ' + newCreator);
 
-        await this.groupModel.updateOne(
-          { _id: groupId, creator: creator },
-          {
-            $set: {
-              creator: newCreator,
+        const resultOfOperation = await this.groupModel
+          .updateOne(
+            { _id: groupId, creator: creator, admins: newCreator },
+            {
+              $set: {
+                creator: newCreator,
+              },
+              $pull: {
+                admins: newCreator,
+              },
             },
-            $pull: {
-              admins: newCreator,
-            },
-          },
-          { session },
-        );
+            { session },
+          );
+
+        checkResultModificationOfOperation(resultOfOperation, 'Group not found or the new creator is not an admin');
+
 
         await this.userModel.updateOne(
           { _id: creator },
@@ -344,7 +348,7 @@ export class GroupRepository implements GroupRepositoryInterface {
 
   async exitMemberOrAdminGroupById(
     groupId: string,
-    member: string,
+    member?: string,
   ): Promise<any> {
     const session = await this.connection.startSession();
 

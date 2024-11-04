@@ -37,7 +37,7 @@ export interface GroupAdapterInterface {
   deleteGroupById(groupId: string, groupAdmin: string): Promise<any>;
   exitGroupById(
     groupId: string,
-    member: string,
+    member?: string,
     creator?: string,
     newCreator?: string,
   ): Promise<any>;

@@ -17,7 +17,7 @@ export class GroupResolver {
   constructor(
     @Inject('GroupAdapterInterface')
     private readonly groupAdapter: GroupAdapterInterface,
-  ) {}
+  ) { }
 
   @Mutation(() => String, {
     nullable: true,
@@ -330,13 +330,13 @@ export class GroupResolver {
     description:
       'Salir de un grupo - En el caso de que sea el creador debera asignar otro creador',
   })
-  //@UseGuards(ClerkAuthGuard)
+  @UseGuards(ClerkAuthGuard)
   async exitGroupById(
     @Args('groupId', { type: () => String })
     groupId: string,
-    @Args('member', { type: () => String })
-    member: string,
     @Context() context: any,
+    @Args('member', { type: () => String, nullable: true })
+    member?: string,
     @Args('creator', { type: () => String, nullable: true })
     creator?: string,
     @Args('newCreator', { type: () => String, nullable: true })
@@ -344,11 +344,17 @@ export class GroupResolver {
   ): Promise<any> {
     try {
       if (creator) {
-        if (!newCreator) {
-          throw new Error('newCreator is required');
+        if (!newCreator || member) {
+          return 'newCreator is required';
         }
+        PubliciteAuth.authorize(context, creator)
+      } else {
+        if (!member) {
+          return 'member is required';
+        }
+        PubliciteAuth.authorize(context, member);
       }
-      //PubliciteAuth.authorize(context, creator ?? member);
+
       await this.groupAdapter.exitGroupById(
         groupId,
         member,

@@ -37,7 +37,7 @@ export interface GroupRepositoryInterface {
   ): Promise<any>;
 
   deleteGroupById(groupId: string, groupCreator: string): Promise<any>;
-  exitMemberOrAdminGroupById(groupId: string, member: string): Promise<any>;
+  exitMemberOrAdminGroupById(groupId: string, member?: string): Promise<any>;
   assignNewCreatorAndExitGroupById(
     groupId: string,
     newCreator: string,

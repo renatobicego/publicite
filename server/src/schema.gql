@@ -508,7 +508,7 @@ type Mutation {
   """
   Salir de un grupo - En el caso de que sea el creador debera asignar otro creador
   """
-  exitGroupById(groupId: String!, member: String!, creator: String, newCreator: String): String
+  exitGroupById(groupId: String!, member: String, creator: String, newCreator: String): String
 
   """Agregar nueva seccion en la revista"""
   addNewMagazineSection(magazineAdmin: String!, magazineId: String!, section: String!, groupId: String): String

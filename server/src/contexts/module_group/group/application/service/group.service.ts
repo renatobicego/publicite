@@ -156,7 +156,7 @@ export class GroupService implements GroupServiceInterface {
 
   async exitGroupById(
     groupId: string,
-    member: string,
+    member?: string,
     creator?: string,
     newCreator?: string,
   ): Promise<any> {
@@ -168,7 +168,7 @@ export class GroupService implements GroupServiceInterface {
           newCreator,
           creator,
         );
-      } else if (!creator && !newCreator) {
+      } else if (!creator && !newCreator && member) {
         this.logger.log('Exiting group member or admin');
         await this.groupRepository.exitMemberOrAdminGroupById(groupId, member);
       } else {

@@ -121,7 +121,7 @@ export class GroupAdapter implements GroupAdapterInterface {
 
   async exitGroupById(
     groupId: string,
-    member: string,
+    member?: string,
     creator?: string,
     newCreator?: string,
   ): Promise<any> {
