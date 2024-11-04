@@ -50,7 +50,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
 
     @InjectModel('User') private readonly userModel: Model<IUser>,
     @InjectModel('Group') private readonly groupModel: Model<GroupDocument>,
-  ) {}
+  ) { }
   async addNewMagazineSection(
     magazineAdmin: string,
     magazineId: string,
@@ -255,39 +255,37 @@ export class MagazineRepository implements MagazineRepositoryInterface {
     try {
       await session.withTransaction(async () => {
         //Verifico si es un admin en el grupo
-        const group = await this.groupModel
+        const result = await this.groupModel
           .findOne({
             magazines: magazineId,
             $or: [{ admins: magazineAdmin }, { creator: magazineAdmin }],
           })
           .session(session)
           .lean();
+        checkResultModificationOfOperation(result)
 
-        if (!group) {
-          throw new Error('Not allowed');
-        } else if (group) {
-          this.logger.log('User is an allowed admin group');
-          await this.groupMagazine
-            .updateOne(
-              { _id: magazineId },
-              {
-                $addToSet: {
-                  allowedCollaborators: { $each: newAllowedCollaborators },
-                },
+        await this.groupMagazine
+          .updateOne(
+            { _id: magazineId },
+            {
+              $addToSet: {
+                allowedCollaborators: { $each: newAllowedCollaborators },
               },
-              { session },
-            )
-            .lean();
-          await this.userModel
-            .updateMany(
-              { _id: { $in: newAllowedCollaborators } },
-              { $addToSet: { magazines: magazineId } },
-              { session },
-            )
-            .lean();
-        } else {
-          throw new Error('Not allowed');
-        }
+            },
+            { session },
+          )
+          .lean();
+
+
+        // await this.userModel
+        //   .updateMany(
+        //     { _id: { $in: newAllowedCollaborators } },
+        //     { $addToSet: { magazines: magazineId } },
+        //     { session },
+        //   )
+        //   .lean();
+
+
       });
       await session.commitTransaction();
       this.logger.log('Allowed Collaborators added to Magazine successfully');

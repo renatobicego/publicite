@@ -144,10 +144,10 @@ export class GroupService implements GroupServiceInterface {
     }
   }
 
-  async deleteGroupById(groupId: string, groupAdmin: string): Promise<any> {
+  async deleteGroupById(groupId: string, groupCreator: string): Promise<any> {
     try {
       this.logger.log('Deleting group: ' + groupId);
-      await this.groupRepository.deleteGroupById(groupId, groupAdmin);
+      await this.groupRepository.deleteGroupById(groupId, groupCreator);
     } catch (error: any) {
       this.logger.error('An error was ocurred when deleting group by id: ');
       throw error;

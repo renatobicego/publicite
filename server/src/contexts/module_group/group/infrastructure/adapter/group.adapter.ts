@@ -111,9 +111,9 @@ export class GroupAdapter implements GroupAdapterInterface {
     }
   }
 
-  async deleteGroupById(groupId: string, groupAdmin: string): Promise<any> {
+  async deleteGroupById(groupId: string, groupCreator: string): Promise<any> {
     try {
-      await this.groupService.deleteGroupById(groupId, groupAdmin);
+      await this.groupService.deleteGroupById(groupId, groupCreator);
     } catch (error: any) {
       throw error;
     }

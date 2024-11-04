@@ -22,4 +22,6 @@ const MagazineSectionModel = model<MagazineSectionDocument>(
   MagazineSchem,
 );
 
+
+
 export { MagazineSectionModel, MagazineSectionDocument };

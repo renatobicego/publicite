@@ -242,6 +242,8 @@ export class GroupRepository implements GroupRepositoryInterface {
 
   async deleteGroupById(groupId: string, groupCreator: string): Promise<any> {
     const session = await this.connection.startSession();
+    const idsGroupPeopleToDelete: string[] = [];
+
 
     try {
       await session.withTransaction(async () => {
@@ -250,9 +252,22 @@ export class GroupRepository implements GroupRepositoryInterface {
           { session },
         );
 
+
         if (groupToDelete === null) {
           throw new Error('Group does not exist or invalid creator');
         }
+
+
+        idsGroupPeopleToDelete.push(...groupToDelete.members);
+        idsGroupPeopleToDelete.push(...groupToDelete.admins);
+        idsGroupPeopleToDelete.push(...groupCreator);
+        await this.userModel.updateMany(
+          { _id: { $in: idsGroupPeopleToDelete } },
+          {
+            $pullAll: { groups: [groupId] },
+          },
+          { session },
+        )
 
         // 3-Elimino las revistas (utilizo el middle para eliminar todas las secciones asociadas)
         await this.groupMagazine.deleteMany({ group: groupId }, { session });
