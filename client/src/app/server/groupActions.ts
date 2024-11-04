@@ -101,9 +101,11 @@ export const removeGroup = async (
 };
 
 export const exitFromGroup = async (
-  groupId: string
+  groupId: string,
+  isCreator: boolean,
+  newCreatorId?: string
 ) => {
-  const res = await putExitGroup(groupId);
+  const res = await putExitGroup(groupId, isCreator, newCreatorId);
   return res;
 };
 

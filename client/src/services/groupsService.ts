@@ -325,16 +325,28 @@ export const putMemberGroupByRequest = async (groupId: string, newMember: string
   }
 };
 
-export const putExitGroup = async (groupId: string) => {
+export const putExitGroup = async (groupId: string, isCreator?: boolean, newCreator?: string) => {
   const userId = auth().sessionClaims?.metadata.mongoId;
+  const variables: {
+    groupId: string
+    member?: string
+    creator?: string
+    newCreator?: string
+  } = {
+    groupId,
+  }
+
+  if (isCreator) {
+    variables.creator = userId
+    variables.newCreator = newCreator
+  }else{
+    variables.member = userId
+  }
   try {
     await getClient()
       .mutate({
         mutation: exitGroupMutation,
-        variables: {
-          groupId,
-          member: userId
-        },
+        variables,
         context: {
           headers: {
             Authorization: `${await auth().getToken()}`,

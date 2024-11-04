@@ -5,7 +5,7 @@ import OptionsDropdown from "./OptionsDropdown";
 import RulesPopover from "./RulesPopover";
 import SecondaryButton from "@/components/buttons/SecondaryButton";
 import { EDIT_GROUP, FILE_URL } from "@/utils/data/urls";
-import { GetGroups, Group } from "@/types/groupTypes";
+import { GetGroups } from "@/types/groupTypes";
 import AcceptGroupInvitation from "@/components/buttons/SendRequest/AcceptGroupInvitation";
 import { User } from "@/types/userTypes";
 
@@ -18,9 +18,10 @@ const GroupInfo = async ({
   isAdmin: boolean;
   isCreator: boolean;
 }) => {
-  const { profilePhotoUrl, name, _id, details, rules, members, alias } =
+  const { profilePhotoUrl, name, _id, details, rules, members, alias, admins } =
     group.group;
   const { isMember, hasGroupRequest, hasJoinRequest } = group;
+  const adminsIds = admins.map((admin) => (admin as User)._id);
 
   const actionButtonToReturn = () => {
     switch (true) {
@@ -63,7 +64,7 @@ const GroupInfo = async ({
         {details && <p className="text-sm lg:text-base">{details}</p>}
         <div className="flex items-center gap-1">
           <FaUser className="size-4 min-w-4" />
-          <p className="text-xs md:text-sm">{members.length + 1} miembro/s</p>
+          <p className="text-xs md:text-sm">{members.length} miembro/s</p>
         </div>
         <div className="flex gap-2 items-center max-md:flex-wrap">
           {isAdmin && (
@@ -80,6 +81,9 @@ const GroupInfo = async ({
             isMember={isMember}
             isCreator={isCreator}
             image={profilePhotoUrl}
+            admins={(members as User[]).filter((member) =>
+              adminsIds.includes(member._id)
+            )}
           />
         </div>
       </div>

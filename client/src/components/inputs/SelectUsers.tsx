@@ -89,6 +89,7 @@ interface SearchUsersProps extends Omit<AutocompleteProps<User>, "children"> {
   items: User[];
   onValueChange: (value: string) => void;
   onSelectionChange: (key: Key | null) => void;
+  showOnlyUsername?: boolean;
 }
 const SearchUsers = (props: SearchUsersProps) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -99,6 +100,9 @@ const SearchUsers = (props: SearchUsersProps) => {
     }[]
   >([]);
   const nameToShow = (user: User) => {
+    if(props.showOnlyUsername){
+      return user.username;
+    }
     const { userType } = user;
     return userType === "Business"
       ? (user as UserBusiness).businessName
@@ -166,7 +170,7 @@ const SearchUsers = (props: SearchUsersProps) => {
           >
             <div className="flex gap-2 items-center">
               <Avatar
-                alt={user.name}
+                alt={props.showOnlyUsername ? user.username : user.name}
                 className="flex-shrink-0"
                 size="sm"
                 src={user.profilePhotoUrl}
