@@ -54,7 +54,7 @@ export interface MagazineAdapterInterface {
     magazineId: string,
     magazineAdmin: string,
   ): Promise<any>;
-
+  deletePostInMagazineSection(postIdToRemove: string, sectionId: string, ownerType: string, userRequestId: string): Promise<any>;
   createMagazine(magazineRequest: MagazineCreateRequest): Promise<any>;
   findMagazineByMagazineId(
     userId: ObjectId,

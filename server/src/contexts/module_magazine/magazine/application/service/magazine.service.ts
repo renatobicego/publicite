@@ -241,6 +241,21 @@ export class MagazineService implements MagazineServiceInterface {
     }
   }
 
+
+  async deletePostInMagazineSection(postIdToRemove: string, sectionId: string, ownerType: string, userRequestId: string): Promise<any> {
+
+    try {
+      const isUserAllowed = await this.isUserAllowedToModifySection(sectionId, userRequestId, ownerType);
+      if (!isUserAllowed) return
+      return await this.magazineRepository.deletePostInMagazineSection(postIdToRemove, sectionId);
+
+    } catch (error: any) {
+      this.logger.error('Error removing post of section', error);
+      throw error;
+    }
+
+  }
+
   async findMagazineByMagazineId(
     id: ObjectId,
   ): Promise<Partial<MagazineResponse> | null> {
@@ -262,6 +277,25 @@ export class MagazineService implements MagazineServiceInterface {
     }
   }
 
+  async isUserAllowedToModifySection(sectionId: string, userRequestId: string, ownerType: string): Promise<any> {
+    let isUserAllowed = false;
+    switch (ownerType) {
+      case OwnerType.user: {
+        isUserAllowed = await this.magazineRepository.isUserAllowedToEditSectionUserMagazine(sectionId, userRequestId);
+        break;
+      }
+      case OwnerType.group: {
+        isUserAllowed = await this.magazineRepository.isUserAllowedToEditSectionGroupMagazine(sectionId, userRequestId);
+        break
+      }
+      default: {
+        throw new Error('Please select a valid owner type');
+      }
+    }
+    if (!isUserAllowed) throw new Error('User not allowed to update this section');
+  }
+
+
   async updateMagazineById(
     magazineRequest: MagazineUpdateRequest,
     owner: string,
@@ -280,24 +314,9 @@ export class MagazineService implements MagazineServiceInterface {
 
   async updateTitleOfSectionById(sectionId: string, newTitle: string, userRequestId: string, ownerType: string): Promise<any> {
     try {
-      let isUserAllowed = false;
-      switch (ownerType) {
-        case OwnerType.user: {
-          isUserAllowed = await this.magazineRepository.isUserAllowedToEditSectionUserMagazine(sectionId, userRequestId);
-          break;
-        }
-        case OwnerType.group: {
-          isUserAllowed = await this.magazineRepository.isUserAllowedToEditSectionGroupMagazine(sectionId, userRequestId);
-          break
-        }
-        default: {
-          throw new Error('Please select a valid owner type');
-        }
-      }
-      if (!isUserAllowed) throw new Error('User not allowed to update this section');
-
+      const isUserAllowed = await this.isUserAllowedToModifySection(sectionId, userRequestId, ownerType);
+      if (!isUserAllowed) return
       return await this.magazineRepository.updateTitleOfSectionById(sectionId, newTitle, userRequestId);
-
     } catch (error: any) {
       this.logger.error('Error updating Title of section', error);
       throw error;

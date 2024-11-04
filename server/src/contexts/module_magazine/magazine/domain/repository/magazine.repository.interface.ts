@@ -61,10 +61,14 @@ export interface MagazineRepositoryInterface {
     magazineId: string,
     allowedCollaboratorId: string,
   ): Promise<void>;
+
+  deletePostInMagazineSection(
+    postIdToRemove: string,
+    sectionId: string): Promise<any>;
   isUserAllowedToEditSectionUserMagazine(
     sectionId: string,
     userId: string,
-    
+
   ): Promise<boolean>;
 
   isUserAllowedToEditSectionGroupMagazine(

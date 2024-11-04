@@ -14,6 +14,7 @@ export class MagazineAdapter implements MagazineAdapterInterface {
     private readonly magazineService: MagazineServiceInterface,
   ) { }
 
+
   async addNewMagazineSection(
     magazineAdmin: string,
     magazineId: string,
@@ -162,6 +163,14 @@ export class MagazineAdapter implements MagazineAdapterInterface {
     }
   }
 
+  async deletePostInMagazineSection(postIdToRemove: string, sectionId: string, ownerType: string, userRequestId: string): Promise<any> {
+    try {
+      await this.magazineService.deletePostInMagazineSection(postIdToRemove, sectionId, ownerType, userRequestId);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
   async findMagazineByMagazineId(
     id: ObjectId,
   ): Promise<Partial<MagazineResponse> | null> {
@@ -200,7 +209,7 @@ export class MagazineAdapter implements MagazineAdapterInterface {
 
   async updateTitleOfSectionById(sectionId: string, newTitle: string, userRequestId: string, ownerType: string): Promise<any> {
     try {
-      await this.magazineService.updateTitleOfSectionById(sectionId, newTitle, userRequestId,ownerType);
+      await this.magazineService.updateTitleOfSectionById(sectionId, newTitle, userRequestId, ownerType);
     } catch (error: any) {
       throw error;
     }

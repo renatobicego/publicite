@@ -368,6 +368,35 @@ export class MagazineResolver {
 
 
 
+  @Mutation(() => String, {
+    nullable: true,
+    description: 'Eliminar posts de una seccion en una revista',
+  })
+  @UseGuards(ClerkAuthGuard)
+  async deletePostInMagazineSection(
+    @Args('postIdToRemove', { type: () => String })
+    postIdToRemove: string,
+    @Args('sectionId', { type: () => String })
+    sectionId: string,
+    @Args('ownerType', { type: () => OwnerType })
+    ownerType: OwnerType,
+    @Context()
+    context: any,
+  ): Promise<any> {
+    try {
+      const token = getTokenFromRequest(context);
+      const userRequestId = getIdFromClerkToken(token);
+      await this.magazineAdapter.deletePostInMagazineSection(
+        postIdToRemove,
+        sectionId,
+        ownerType,
+        userRequestId
+      )
+      return 'Post remove from section succesfully';
+    } catch (error: any) {
+      throw error;
+    }
+  }
 
 
 

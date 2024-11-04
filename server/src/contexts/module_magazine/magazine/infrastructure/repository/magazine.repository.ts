@@ -505,6 +505,20 @@ export class MagazineRepository implements MagazineRepositoryInterface {
     }
   }
 
+  async deletePostInMagazineSection(postIdToRemove: string, sectionId: string): Promise<any> {
+    try {
+      await this.magazineSection.updateOne(
+        { _id: sectionId },
+        { $pullAll: { posts: postIdToRemove } },
+      )
+    } catch (error: any) {
+      throw error;
+    }
+
+  }
+
+
+
   async findMagazineByMagazineId(
     id: ObjectId,
   ): Promise<Partial<MagazineResponse> | null> {

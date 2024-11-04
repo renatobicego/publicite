@@ -55,6 +55,8 @@ export interface MagazineServiceInterface {
     magazineAdmin: string,
   ): Promise<any>;
 
+  deletePostInMagazineSection(postIdToRemove: string, sectionId: string, ownerType: string, userRequestId: string): Promise<any>;
+
   findMagazineByMagazineId(
     userId: ObjectId,
   ): Promise<Partial<MagazineResponse> | null>;
