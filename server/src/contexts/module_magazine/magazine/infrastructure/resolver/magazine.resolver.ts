@@ -15,7 +15,7 @@ export class MagazineResolver {
   constructor(
     @Inject('MagazineAdapterInterface')
     private readonly magazineAdapter: MagazineAdapterInterface,
-  ) {}
+  ) { }
 
   @Mutation(() => String, {
     nullable: true,
@@ -284,6 +284,25 @@ export class MagazineResolver {
       throw error;
     }
   }
+
+  @Query(() => MagazineResponse, {
+    nullable: true,
+    description: 'Obtener todas las revistas en las que un usuario puede colaborar',
+  })
+  @UseGuards(ClerkAuthGuard)
+  async getMyMagazinesByUserId(
+    @Args('id', { type: () => String })
+    id: ObjectId,
+  ): Promise<any> {
+    try {
+      return await this.magazineAdapter.findAllMagazinesByUserId(id);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
+
 
   @Mutation(() => String, {
     nullable: true,
