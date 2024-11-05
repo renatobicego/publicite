@@ -40,6 +40,7 @@ const OptionsDropdown = ({
   const {isOpen, onOpenChange, onOpen} = useDisclosure();
   const router = useRouter();
   const { deleteFile } = useUploadImage();
+  const isEmptyGroup = membersIds.length === 1;
   const handleDeleteGroupClick = () => {
     if (isCreator && membersIds.length > 0) {
       onOpen();
@@ -68,6 +69,9 @@ const OptionsDropdown = ({
   };
 
   const exitGroup = async (newCreatorId?: string) => {
+    if(!isEmptyGroup) {
+      return
+    }
     const res = await exitFromGroup(groupId, isCreator, newCreatorId);
     if ("error" in res) {
       toastifyError(res.error as string);
@@ -100,7 +104,7 @@ const OptionsDropdown = ({
             key="salir"
             onPress={handleDeleteGroupClick}
             className={`rounded-full px-4 ${
-              isMember || isCreator ? "" : "hidden"
+              (isMember || isCreator) && !isEmptyGroup ? "" : "hidden"
             }`}
           >
             Salir del Grupo
