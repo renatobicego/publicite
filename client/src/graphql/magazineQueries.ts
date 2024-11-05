@@ -6,6 +6,24 @@ export const createMagazineMutation = gql`
   }
 `;
 
+export const getMagazinesQuery = gql`
+  query GetAllMagazinesByUserId($userId: String!) {
+    getAllMagazinesByUserId(userId: $userId) {
+      _id
+      name
+      sections {
+        _id
+        isFatherSection
+        posts {
+          _id
+        }
+        title
+      }
+      ownerType
+    }
+  }
+`;
+
 export const getMagazineByIdQuery = gql`
   query GetMagazineByMagazineId($getMagazineByMagazineIdId: String!) {
     getMagazineByMagazineId(id: $getMagazineByMagazineIdId) {
@@ -109,6 +127,38 @@ export const createMagazineSectionMutation = gql`
       magazineId: $magazineId
       section: $section
       groupId: $groupId
+    )
+  }
+`;
+
+export const addPostMagazineUserMutation = gql`
+  mutation AddPostInUserMagazine(
+    $postId: [String!]!
+    $magazineAdmin: String!
+    $magazineId: String!
+    $sectionId: String!
+  ) {
+    addPostInUserMagazine(
+      postId: $postId
+      magazineAdmin: $magazineAdmin
+      magazineId: $magazineId
+      sectionId: $sectionId
+    )
+  }
+`;
+
+export const addPostMagazineGroupMutation = gql`
+  mutation AddPostInGroupMagazine(
+    $postId: [String!]!
+    $magazineAdmin: String!
+    $magazineId: String!
+    $sectionId: String!
+  ) {
+    addPostInGroupMagazine(
+      postId: $postId
+      magazineAdmin: $magazineAdmin
+      magazineId: $magazineId
+      sectionId: $sectionId
     )
   }
 `;

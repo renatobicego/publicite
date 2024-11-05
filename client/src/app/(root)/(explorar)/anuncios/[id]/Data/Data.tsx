@@ -6,7 +6,7 @@ import ReviewsStars from "./ReviewsStars";
 import CategoryChip from "@/components/chips/CategoryChip";
 import ServiceChip from "@/components/chips/ServiceChip";
 import ShareButton from "@/components/buttons/ShareButton";
-import SaveButton from "@/components/buttons/SaveButton";
+import SaveButton from "@/components/buttons/SaveMagazine/SaveButton";
 import AccordionData from "./AccordionData/AccordionData";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { EDIT_POST } from "@/utils/data/urls";
@@ -104,7 +104,7 @@ const Data = async ({
             {isAuthor && <ContactPetitionsList post={post} />}
             <ShareButton post={post} />
             <SignedIn>
-              <SaveButton saved={false} post={post} />
+              <SaveButton post={post} />
             </SignedIn>
           </div>
         </div>

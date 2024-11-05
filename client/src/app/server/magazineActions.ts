@@ -3,6 +3,7 @@ import {
   postMagazine,
   postMagazineSection,
   putMagazine,
+  putPostInMagazine,
 } from "@/services/magazineService";
 import { auth } from "@clerk/nextjs/server";
 
@@ -74,6 +75,23 @@ export const createMagazineSection = async (
     console.log(err);
     return {
       error: "Error al crear la sección. Por favor intenta de nuevo.",
+    };
+  }
+};
+
+export const addPostToMagazine = async (
+  magazineId: string,
+  postId: string,
+  sectionId: string,
+  ownerType: "user" | "group"
+) => {
+  try {
+    await putPostInMagazine(magazineId, postId, sectionId, ownerType);
+    return { message: "Anuncio agregado exitosamente" };
+  } catch (error) {
+    console.log(error);
+    return {
+      error: "Error al agregar el anuncio. Por favor intenta de nuevo.",
     };
   }
 };

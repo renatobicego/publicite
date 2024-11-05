@@ -8,6 +8,7 @@ import {
 } from "react";
 import { UserPreferences, UserType } from "@/types/userTypes";
 import { Magazine } from "@/types/magazineTypes";
+import { getMagazinesOfUser } from "@/services/magazineService";
 
 interface UserDataContextType {
   magazines: Magazine[];
@@ -15,6 +16,7 @@ interface UserDataContextType {
   userIdLogged: string | undefined;
   clerkIdLogged: string | undefined;
   userTypeLogged?: UserType;
+  postsInMagazine: string[];
 }
 
 const UserDataContext = createContext<UserDataContextType | undefined>(
@@ -43,25 +45,26 @@ export const UserDataProvider = ({
   userType?: UserType;
 }) => {
   const [magazines, setMagazines] = useState<Magazine[]>([]);
-  const [usernameLogged, setUsernameLogged] = useState<
-    string | null | undefined
-  >(username);
-  const [userIdLogged, setUserIdLogged] = useState<string | undefined>(userId);
-  const [clerkIdLogged, setClerkIdLogged] = useState<string | undefined>(
-    clerkId
-  );
-  const [userTypeLogged, setUserType] = useState<UserType | undefined>(
-    userType
-  );
+  const [postsInMagazine, setPostsInMagazine] = useState<string[]>([]);
+  const [usernameLogged] = useState<string | null | undefined>(username);
+  const [userIdLogged] = useState<string | undefined>(userId);
+  const [clerkIdLogged] = useState<string | undefined>(clerkId);
+  const [userTypeLogged] = useState<UserType | undefined>(userType);
 
-  // useEffect(() => {
-  //   if (!username) return;
-  //   const fetchMagazines = async () => {
-  //     const magazines = await getMagazines(username);
-  //     setMagazines(magazines);
-  //   };
-  //   fetchMagazines();
-  // }, [username]);
+  useEffect(() => {
+    const fetchMagazines = async () => {
+      const magazines: Magazine[] = await getMagazinesOfUser();
+      setMagazines(magazines);
+      // Flatten post IDs from each magazine's sections
+      const postsIds = magazines.flatMap((magazine) =>
+        magazine.sections.flatMap((section) =>
+          section.posts.map((post) => post._id)
+        )
+      );
+      setPostsInMagazine(postsIds);
+    };
+    fetchMagazines();
+  }, []);
 
   return (
     <UserDataContext.Provider
@@ -71,6 +74,7 @@ export const UserDataProvider = ({
         userIdLogged,
         clerkIdLogged,
         userTypeLogged,
+        postsInMagazine,
       }}
     >
       {children}

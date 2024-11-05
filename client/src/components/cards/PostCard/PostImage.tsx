@@ -1,6 +1,6 @@
 "use client";
 import { CardHeader, Image, Link } from "@nextui-org/react";
-import SaveButton from "../../buttons/SaveButton";
+import SaveButton from "../../buttons/SaveMagazine/SaveButton";
 import { FILE_URL, POSTS } from "@/utils/data/urls";
 import { Good, Service } from "@/types/postTypes";
 import { SignedIn } from "@clerk/nextjs";
@@ -38,7 +38,6 @@ const PostImage = ({
         {!savePostMagazine && (
           <SaveButton
             post={post}
-            saved={false}
             className="absolute top-4 right-2 md:right-4 z-10 max-md:min-w-8 max-md:size-8"
           />
         )}

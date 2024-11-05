@@ -1,8 +1,12 @@
+"use server";
 import {
+  addPostMagazineGroupMutation,
+  addPostMagazineUserMutation,
   createMagazineMutation,
   createMagazineSectionMutation,
   editMagazineMutation,
   getMagazineByIdQuery,
+  getMagazinesQuery,
   getMagazineWithoutPostsByIdQuery,
 } from "@/graphql/magazineQueries";
 import { getClient, query } from "@/lib/client";
@@ -79,4 +83,39 @@ export const postMagazineSection = async (
     },
   });
   return data;
+};
+
+export const getMagazinesOfUser = async () => {
+  const userId = auth().sessionClaims?.metadata.mongoId;
+  const { data } = await query({
+    query: getMagazinesQuery,
+    variables: { userId },
+    context: {
+      headers: {
+        Authorization: await auth().getToken(),
+      },
+    },
+  });
+  return data.getAllMagazinesByUserId;
+};
+
+export const putPostInMagazine = async (
+  magazineId: string,
+  postId: string,
+  sectionId: string,
+  ownerType: "user" | "group"
+) => {
+  const magazineAdmin = auth().sessionClaims?.metadata.mongoId;
+  await getClient().mutate({
+    mutation:
+      ownerType === "user"
+        ? addPostMagazineUserMutation
+        : addPostMagazineGroupMutation,
+    variables: { postId: [postId], magazineAdmin, magazineId, sectionId },
+    context: {
+      headers: {
+        Authorization: await auth().getToken(),
+      },
+    },
+  });
 };

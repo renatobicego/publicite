@@ -14,7 +14,7 @@ import {
 } from "@nextui-org/react";
 import { useCallback } from "react";
 import { FaStar } from "react-icons/fa6";
-import SaveButton from "../buttons/SaveButton";
+import SaveButton from "../buttons/SaveMagazine/SaveButton";
 import ShareButton from "../buttons/ShareButton";
 import { FILE_URL, POSTS } from "@/utils/data/urls";
 import { MdQuestionAnswer } from "react-icons/md";
@@ -158,7 +158,7 @@ const PostGridList = ({
           return (
             <div className="flex gap-1 items-center">
               <ShareButton post={data} />
-              <SaveButton post={data} saved={false} />
+              <SaveButton post={data}  />
             </div>
           );
       }

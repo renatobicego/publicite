@@ -11,14 +11,15 @@ Podríamos:
 boton de compartir app
 agregar endate a post
 carpeta posts
-buscador
 marcar como visto peticion de contaacto
 
-colaboradores de revista y miembros es por invitación o se lo agrega directamente
 el tema de tener distintos tipos de relaciones va a costar hacer get de posts por visibilidad
 
 CUENTA GRATUITA CREAR PLAN DE SUSCRIPTION
 
-- join request group: request de unirse en un grupo
 
-- ver socket produ
+- get revistas
+- agregar post en revista
+- borrar posts en revista
+- borrar seccion
+- editar seccion
