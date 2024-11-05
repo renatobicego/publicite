@@ -262,7 +262,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
         const result = await this.groupModel
           .findOne({
             magazines: magazineId,
-            $or: [{ admins: magazineAdmin }, { creator: magazineAdmin }],
+            creator: magazineAdmin,
           })
           .session(session)
           .lean();
@@ -356,7 +356,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
         const group = await this.groupModel
           .findOne({
             magazines: magazineId,
-            $or: [{ admins: magazineAdmin }, { creator: magazineAdmin }],
+            creator: magazineAdmin,
           })
           .session(session)
           .lean();
