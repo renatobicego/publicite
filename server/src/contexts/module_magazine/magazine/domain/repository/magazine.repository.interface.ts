@@ -4,13 +4,18 @@ import { Magazine } from '../entity/magazine.entity';
 import { MagazineResponse } from '../../application/adapter/dto/HTTP-RESPONSE/magazine.reponse';
 import { MagazineUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/magazine.update.request';
 import { MagazineSectionCreateRequest } from '../../application/adapter/dto/HTTP-REQUEST/magazineSection.create.request';
+import { MagazineSection } from '../entity/section/magazine.section.entity';
 
 export interface MagazineRepositoryInterface {
-  addNewMagazineSection(
-    magazineAdmin: string,
+  addNewMagazineGroupSection(
     magazineId: string,
     section: MagazineSectionCreateRequest,
-    groupId?: string,
+  ): Promise<any>;
+
+  addNewMagazineUserSection(
+    magazineId: string,
+    section: MagazineSectionCreateRequest,
+    magazineAdmin: string
   ): Promise<any>;
 
   addPostInGroupMagazine(
@@ -76,8 +81,10 @@ export interface MagazineRepositoryInterface {
     userId: string,
     magazineId: string
   ): Promise<boolean>;
+  isAdminOrCollaborator(magazineId: string, userId: string): Promise<boolean>
   save(magazine: Magazine): Promise<any>;
   saveMagazineWithSection(magazine: Magazine): Promise<any>;
+  saveSection(section: MagazineSectionCreateRequest, session: any): Promise<any>
   findMagazineByMagazineId(
     userId: ObjectId,
   ): Promise<Partial<MagazineResponse> | null>;

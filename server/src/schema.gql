@@ -514,7 +514,7 @@ type Mutation {
   exitGroupById(groupId: String!, member: String, creator: String, newCreator: String): String
 
   """Agregar nueva seccion en la revista"""
-  addNewMagazineSection(magazineAdmin: String!, magazineId: String!, section: String!, groupId: String): String
+  addNewMagazineSection(magazineAdmin: String!, magazineId: String!, section: MagazineSectionCreateRequest!, groupId: String): String
 
   """Agregar post en la revista de usuario"""
   addPostInUserMagazine(postId: [String!]!, magazineAdmin: String!, magazineId: String!, sectionId: String!): String
@@ -648,6 +648,11 @@ input GroupUpdateRequest {
   details: String
   profilePhotoUrl: String
   visibility: String
+}
+
+input MagazineSectionCreateRequest {
+  title: String!
+  isFatherSection: Boolean!
 }
 
 input MagazineCreateRequest {
