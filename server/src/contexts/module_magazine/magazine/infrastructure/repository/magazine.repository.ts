@@ -85,8 +85,8 @@ export class MagazineRepository implements MagazineRepositoryInterface {
                 _id: groupId,
                 $or: [{ admins: magazineAdmin }, { creator: magazineAdmin }],
               },
-              { session },
             )
+            .session(session)
             .lean();
 
           if (isAdminOrCreator) {
@@ -138,18 +138,16 @@ export class MagazineRepository implements MagazineRepositoryInterface {
           _id: magazineId,
           allowedCollaborators: magazineAdmin,
         },
-        { session },
-      );
+      ).session(session).lean();
 
       if (!isAllowedUser) {
         const isAdminOrCreatorGroup = await this.groupModel.findOne(
           {
             magazines: magazineId,
             $or: [{ admins: magazineAdmin }, { creator: magazineAdmin }],
-          },
-          { session },
-        );
-
+          }
+        ).session(session)
+          .lean()
         if (!isAdminOrCreatorGroup) {
           throw new Error(
             'The user is not allowed to add a post in this magazine',
@@ -189,9 +187,8 @@ export class MagazineRepository implements MagazineRepositoryInterface {
         {
           _id: magazineId,
           $or: [{ user: magazineAdmin }, { collaborators: magazineAdmin }],
-        },
-        { session },
-      );
+        }
+      ).session(session).lean();
 
       if (isUserAllowed) {
         await this.magazineSection
@@ -620,7 +617,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
       const result = await this.userMagazine.findOne({
         sections: sectionId,
         $or: [{ user: userId }, { collaborators: userId }],
-      })
+      }).lean()
 
       return !!result
     } catch (error: any) {
@@ -636,12 +633,12 @@ export class MagazineRepository implements MagazineRepositoryInterface {
         const result1 = await this.groupMagazine.findOne({
           sections: sectionId,
           allowedCollaborators: userId,
-        }, null, { session })
+        }, null, { session }).lean()
         if (result1) isAllowedUser = true
         const result2 = await this.groupModel.findOne({
           magazines: magazineId,
           $or: [{ admins: userId }, { creator: userId }]
-        }, null, { session })
+        }, null, { session }).lean()
         if (result2) isAdminOrCreator = true
       })
 
@@ -771,11 +768,13 @@ export class MagazineRepository implements MagazineRepositoryInterface {
     owner: string,
     groupId?: string,
   ): Promise<any> {
+    const session = await this.connection.startSession();
     try {
       switch (magazine.ownerType) {
         case OwnerType.user: {
           const response = await this.userMagazine
             .findOneAndUpdate({ _id: magazine._id, user: owner }, magazine)
+            .session(session)
             .lean();
           return response?._id;
         }
@@ -784,7 +783,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
             .findOne({
               _id: groupId,
               $or: [{ admins: owner }, { creator: owner }],
-            })
+            }).session(session)
             .lean();
           if (!group) {
             throw new Error('Not allowed or group not found');
@@ -792,6 +791,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
 
           const response = await this.groupMagazine
             .findByIdAndUpdate(magazine._id, magazine)
+            .session(session)
             .lean();
           return response?._id;
         }
@@ -801,6 +801,8 @@ export class MagazineRepository implements MagazineRepositoryInterface {
       }
     } catch (error: any) {
       throw error;
+    } finally {
+      session.endSession();
     }
   }
 
@@ -809,7 +811,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
       await this.magazineSection.updateOne(
         { _id: sectionId },
         { $set: { title: newTitle } },
-      )
+      ).lean()
     } catch (error: any) {
       throw error;
     }
