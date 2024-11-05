@@ -12,6 +12,7 @@ import { GroupMagazine } from '../../domain/entity/group.magazine';
 import { MagazineResponse } from '../adapter/dto/HTTP-RESPONSE/magazine.reponse';
 import { MagazineUpdateRequest } from '../adapter/dto/HTTP-REQUEST/magazine.update.request';
 import { MagazineSectionCreateRequest } from '../adapter/dto/HTTP-REQUEST/magazineSection.create.request';
+import { MagazineSectionModel } from '../../infrastructure/schemas/section/magazine.section.schema';
 
 export class MagazineService implements MagazineServiceInterface {
   constructor(
@@ -242,10 +243,10 @@ export class MagazineService implements MagazineServiceInterface {
   }
 
 
-  async deletePostInMagazineSection(postIdToRemove: string, sectionId: string, ownerType: string, userRequestId: string): Promise<any> {
+  async deletePostInMagazineSection(postIdToRemove: string, sectionId: string, ownerType: string, userRequestId: string, magazineId?: string): Promise<any> {
 
     try {
-      const isUserAllowed = await this.isUserAllowedToModifySection(sectionId, userRequestId, ownerType);
+      const isUserAllowed = await this.isUserAllowedToModifySection(sectionId, userRequestId, ownerType, magazineId);
       if (!isUserAllowed) return
       return await this.magazineRepository.deletePostInMagazineSection(postIdToRemove, sectionId);
 
@@ -277,7 +278,7 @@ export class MagazineService implements MagazineServiceInterface {
     }
   }
 
-  async isUserAllowedToModifySection(sectionId: string, userRequestId: string, ownerType: string): Promise<any> {
+  async isUserAllowedToModifySection(sectionId: string, userRequestId: string, ownerType: string, magazineId?: string): Promise<any> {
     let isUserAllowed = false;
     switch (ownerType) {
       case OwnerType.user: {
@@ -285,7 +286,8 @@ export class MagazineService implements MagazineServiceInterface {
         break;
       }
       case OwnerType.group: {
-        isUserAllowed = await this.magazineRepository.isUserAllowedToEditSectionGroupMagazine(sectionId, userRequestId);
+        if (!magazineId) return false
+        isUserAllowed = await this.magazineRepository.isUserAllowedToEditSectionGroupMagazine(sectionId, userRequestId, magazineId);
         break
       }
       default: {
@@ -312,9 +314,9 @@ export class MagazineService implements MagazineServiceInterface {
     }
   }
 
-  async updateTitleOfSectionById(sectionId: string, newTitle: string, userRequestId: string, ownerType: string): Promise<any> {
+  async updateTitleOfSectionById(sectionId: string, newTitle: string, userRequestId: string, ownerType: string, magazineId?: string): Promise<any> {
     try {
-      const isUserAllowed = await this.isUserAllowedToModifySection(sectionId, userRequestId, ownerType);
+      const isUserAllowed = await this.isUserAllowedToModifySection(sectionId, userRequestId, ownerType, magazineId);
       if (!isUserAllowed) return
       return await this.magazineRepository.updateTitleOfSectionById(sectionId, newTitle, userRequestId);
     } catch (error: any) {

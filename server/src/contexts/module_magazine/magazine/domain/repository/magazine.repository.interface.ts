@@ -73,7 +73,9 @@ export interface MagazineRepositoryInterface {
 
   isUserAllowedToEditSectionGroupMagazine(
     sectionId: string,
-    userId: string): Promise<boolean>;
+    userId: string,
+    magazineId: string
+  ): Promise<boolean>;
   save(magazine: Magazine): Promise<any>;
   saveMagazineWithSection(magazine: Magazine): Promise<any>;
   findMagazineByMagazineId(

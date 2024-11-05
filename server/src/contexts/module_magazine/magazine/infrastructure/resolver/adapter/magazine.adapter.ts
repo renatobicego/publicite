@@ -163,9 +163,9 @@ export class MagazineAdapter implements MagazineAdapterInterface {
     }
   }
 
-  async deletePostInMagazineSection(postIdToRemove: string, sectionId: string, ownerType: string, userRequestId: string): Promise<any> {
+  async deletePostInMagazineSection(postIdToRemove: string, sectionId: string, ownerType: string, userRequestId: string, magazineId?: string): Promise<any> {
     try {
-      await this.magazineService.deletePostInMagazineSection(postIdToRemove, sectionId, ownerType, userRequestId);
+      await this.magazineService.deletePostInMagazineSection(postIdToRemove, sectionId, ownerType, userRequestId, magazineId);
     } catch (error: any) {
       throw error;
     }
@@ -207,9 +207,9 @@ export class MagazineAdapter implements MagazineAdapterInterface {
   }
 
 
-  async updateTitleOfSectionById(sectionId: string, newTitle: string, userRequestId: string, ownerType: string): Promise<any> {
+  async updateTitleOfSectionById(sectionId: string, newTitle: string, userRequestId: string, ownerType: string, magazineId?: string): Promise<any> {
     try {
-      await this.magazineService.updateTitleOfSectionById(sectionId, newTitle, userRequestId, ownerType);
+      await this.magazineService.updateTitleOfSectionById(sectionId, newTitle, userRequestId, ownerType, magazineId);
     } catch (error: any) {
       throw error;
     }

@@ -552,7 +552,10 @@ type Mutation {
   ): String
 
   """Actualizar el nombre de una seccion en una revista"""
-  updateTitleOfSectionById(sectionId: String!, newTitle: String!, ownerType: OwnerType!): String
+  updateTitleOfSectionById(sectionId: String!, newTitle: String!, ownerType: OwnerType!, magazineId: String): String
+
+  """Eliminar posts de una seccion en una revista"""
+  deletePostInMagazineSection(postIdToRemove: String!, sectionId: String!, ownerType: OwnerType!, magazineId: String): String
 
   """Crear una categoria de un post"""
   createNewCategoryPost(category: PostCategoryRequest!): PostCategoryResponse

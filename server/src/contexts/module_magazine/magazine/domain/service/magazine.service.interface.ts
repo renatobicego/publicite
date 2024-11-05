@@ -55,7 +55,7 @@ export interface MagazineServiceInterface {
     magazineAdmin: string,
   ): Promise<any>;
 
-  deletePostInMagazineSection(postIdToRemove: string, sectionId: string, ownerType: string, userRequestId: string): Promise<any>;
+  deletePostInMagazineSection(postIdToRemove: string, sectionId: string, ownerType: string, userRequestId: string, magazineId?: string): Promise<any>;
 
   findMagazineByMagazineId(
     userId: ObjectId,
@@ -70,5 +70,5 @@ export interface MagazineServiceInterface {
     groupId?: string,
   ): Promise<any>;
 
-  updateTitleOfSectionById(sectionId: string, newTitle: string, userRequestId: string, ownerType: string): Promise<any>;
+  updateTitleOfSectionById(sectionId: string, newTitle: string, userRequestId: string, ownerType: string, magazineId?: string): Promise<any>;
 }

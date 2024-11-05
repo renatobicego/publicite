@@ -351,6 +351,8 @@ export class MagazineResolver {
     ownerType: OwnerType,
     @Context()
     context: any,
+    @Args('magazineId', { type: () => String, nullable: true })
+    magazineId?: string,
   ): Promise<any> {
     try {
       const token = getTokenFromRequest(context);
@@ -359,7 +361,8 @@ export class MagazineResolver {
         sectionId,
         newTitle,
         userRequestId,
-        ownerType
+        ownerType,
+        magazineId
       )
     } catch (error: any) {
       throw error;
@@ -382,15 +385,19 @@ export class MagazineResolver {
     ownerType: OwnerType,
     @Context()
     context: any,
+    @Args('magazineId', { type: () => String, nullable: true })
+    magazineId?: string,
   ): Promise<any> {
     try {
+
       const token = getTokenFromRequest(context);
       const userRequestId = getIdFromClerkToken(token);
       await this.magazineAdapter.deletePostInMagazineSection(
         postIdToRemove,
         sectionId,
         ownerType,
-        userRequestId
+        userRequestId,
+        magazineId
       )
       return 'Post remove from section succesfully';
     } catch (error: any) {

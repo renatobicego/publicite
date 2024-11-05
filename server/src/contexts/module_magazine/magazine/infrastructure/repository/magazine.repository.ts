@@ -588,7 +588,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
     */
     const session = await this.connection.startSession();
     const userMagazines: any = []
-    const fieldSelect = '_id name sections';
+    const fieldSelect = '_id name sections ownerType';
     const populateField = [
       {
         path: 'sections',
@@ -627,14 +627,26 @@ export class MagazineRepository implements MagazineRepositoryInterface {
       throw error;
     }
   }
-  async isUserAllowedToEditSectionGroupMagazine(sectionId: string, userId: string): Promise<boolean> {
+  async isUserAllowedToEditSectionGroupMagazine(sectionId: string, userId: string, magazineId: string): Promise<boolean> {
     try {
-      const result = await this.groupMagazine.findOne({
-        sections: sectionId,
-        allowedCollaborators: userId,
+      const session = await this.connection.startSession();
+      let isAllowedUser = false
+      let isAdminOrCreator = false
+      await session.withTransaction(async () => {
+        const result1 = await this.groupMagazine.findOne({
+          sections: sectionId,
+          allowedCollaborators: userId,
+        }, null, { session })
+        if (result1) isAllowedUser = true
+        const result2 = await this.groupModel.findOne({
+          magazines: magazineId,
+          $or: [{ admins: userId }, { creator: userId }]
+        }, null, { session })
+        if (result2) isAdminOrCreator = true
       })
 
-      return !!result
+      return isAllowedUser || isAdminOrCreator
+
     } catch (error: any) {
       throw error;
     }
