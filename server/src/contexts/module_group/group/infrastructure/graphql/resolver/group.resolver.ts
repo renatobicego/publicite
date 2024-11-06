@@ -12,6 +12,7 @@ import {
 } from '../../../application/adapter/dto/HTTP-RESPONSE/group.response';
 import { GroupAdapterInterface } from '../../../application/adapter/group.adapter.interface';
 import { getIdFromClerkToken } from 'src/contexts/module_shared/functions/getTokenFromRequest';
+import { CustomContextRequestInterface } from 'src/contexts/module_shared/auth/custom_request/custom.context.request.interface';
 
 @Resolver('Group')
 export class GroupResolver {
@@ -28,12 +29,10 @@ export class GroupResolver {
   async acceptGroupInvitation(
     @Args('groupId', { type: () => String })
     groupId: string,
-    @Context()
-    context: any,
+    @Context() context: { req: CustomContextRequestInterface },
   ): Promise<any> {
     try {
-      const token = context.req.headers.authorization;
-      const userRequestId = getIdFromClerkToken(token);
+      const userRequestId = context.req.userRequestId;
       await this.groupAdapter.acceptGroupInvitation(groupId, userRequestId);
       return 'Invitation accepted';
     } catch (error: any) {
@@ -53,11 +52,11 @@ export class GroupResolver {
     groupAdmin: string,
     @Args('groupId', { type: () => String })
     groupId: string,
-    @Context()
-    context: any,
+    @Context() context: { req: CustomContextRequestInterface },
   ): Promise<any> {
     try {
-      PubliciteAuth.authorize(context, groupAdmin);
+      const userRequestId = context.req.userRequestId;
+      PubliciteAuth.authorize(userRequestId, groupAdmin);
       await this.groupAdapter.addAdminToGroup(newAdmin, groupId, groupAdmin);
       return 'Admins added';
     } catch (error: any) {
@@ -78,11 +77,11 @@ export class GroupResolver {
     groupAdmin: string,
     @Args('groupId', { type: () => String })
     groupId: string,
-    @Context()
-    context: any,
+    @Context() context: { req: CustomContextRequestInterface },
   ): Promise<any> {
     try {
-      PubliciteAuth.authorize(context, groupAdmin);
+      const userRequestId = context.req.userRequestId;
+      PubliciteAuth.authorize(userRequestId, groupAdmin);
       await this.groupAdapter.acceptJoinGroupRequest(
         newMember,
         groupId,
@@ -106,11 +105,11 @@ export class GroupResolver {
     groupAdmin: string,
     @Args('groupId', { type: () => String })
     groupId: string,
-    @Context()
-    context: any,
+    @Context() context: { req: CustomContextRequestInterface },
   ): Promise<any> {
     try {
-      PubliciteAuth.authorize(context, groupAdmin);
+      const userRequestId = context.req.userRequestId;
+      PubliciteAuth.authorize(userRequestId, groupAdmin);
       await this.groupAdapter.addMagazinesToGroup(
         newMagazines,
         groupId,
@@ -129,11 +128,10 @@ export class GroupResolver {
   @UseGuards(ClerkAuthGuard)
   async createNewGroup(
     @Args('groupDto', { type: () => GroupRequest }) groupDto: GroupRequest,
-    @Context() context: any,
+    @Context() context: { req: CustomContextRequestInterface },
   ): Promise<GroupResponse> {
     try {
-      const token = context.req.headers.authorization;
-      const groupCreator = getIdFromClerkToken(token);
+      const groupCreator = context.req.userRequestId;
       return await this.groupAdapter.saveGroup(groupDto, groupCreator);
     } catch (error: any) {
       throw error;
@@ -152,11 +150,11 @@ export class GroupResolver {
     groupCreator: string,
     @Args('groupId', { type: () => String })
     groupId: string,
-    @Context()
-    context: any,
+    @Context() context: { req: CustomContextRequestInterface },
   ): Promise<any> {
     try {
-      PubliciteAuth.authorize(context, groupCreator);
+      const userRequestId = context.req.userRequestId;
+      PubliciteAuth.authorize(userRequestId, groupCreator);
       await this.groupAdapter.removeAdminsFromGroupByGroupId(
         adminsToDelete,
         groupId,
@@ -180,11 +178,11 @@ export class GroupResolver {
     groupAdmin: string,
     @Args('groupId', { type: () => String })
     groupId: string,
-    @Context()
-    context: any,
+    @Context() context: { req: CustomContextRequestInterface },
   ): Promise<any> {
     try {
-      PubliciteAuth.authorize(context, groupAdmin);
+      const userRequestId = context.req.userRequestId;
+      PubliciteAuth.authorize(userRequestId, groupAdmin);
       await this.groupAdapter.deleteMembersToGroup(
         membersToDelete,
         groupId,
@@ -208,11 +206,11 @@ export class GroupResolver {
     groupAdmin: string,
     @Args('groupId', { type: () => String })
     groupId: string,
-    @Context()
-    context: any,
+    @Context() context: { req: CustomContextRequestInterface },
   ): Promise<any> {
     try {
-      PubliciteAuth.authorize(context, groupAdmin);
+      const userRequestId = context.req.userRequestId;
+      PubliciteAuth.authorize(userRequestId, groupAdmin);
       await this.groupAdapter.deleteMagazinesFromGroup(
         magazinesToDelete,
         groupId,
@@ -232,12 +230,11 @@ export class GroupResolver {
   async getGroupById(
     @Args('id', { type: () => String })
     groupId: string,
-    @Context() context: any,
+    @Context() context: { req: CustomContextRequestInterface },
   ): Promise<GroupResponseById> {
     try {
-      const token = context.req.headers.authorization;
-      const userRequest = getIdFromClerkToken(token);
-      return await this.groupAdapter.findGroupById(groupId, userRequest);
+      const userRequestId = context.req.userRequestId;
+      return await this.groupAdapter.findGroupById(groupId, userRequestId);
     } catch (error: any) {
       throw error;
     }
@@ -256,16 +253,15 @@ export class GroupResolver {
     name: string,
     @Args('limit', { type: () => Number }) limit: number,
     @Args('page', { type: () => Number }) page: number,
-    @Context() context: any,
+    @Context() context: { req: CustomContextRequestInterface },
   ): Promise<GroupListResponse> {
     try {
-      const token = context.req.headers.authorization;
-      const userRequest = getIdFromClerkToken(token);
+      const userRequestId = context.req.userRequestId;
       return await this.groupAdapter.findGroupByNameOrAlias(
         name,
         limit,
         page,
-        userRequest,
+        userRequestId,
       );
     } catch (error: any) {
       throw error;
@@ -280,10 +276,12 @@ export class GroupResolver {
   async updateGroupById(
     @Args('groupToUpdate', { type: () => GroupUpdateRequest })
     groupToUpdate: GroupUpdateRequest,
-    @Context() context: any,
+    @Context() context: { req: CustomContextRequestInterface },
   ): Promise<any> {
     try {
-      PubliciteAuth.authorize(context, groupToUpdate.admin);
+      const userRequestId = context.req.userRequestId;
+      if (!groupToUpdate.admin) return 'Admin is required';
+      PubliciteAuth.authorize(userRequestId, groupToUpdate.admin);
       return await this.groupAdapter.updateGroupById(groupToUpdate);
     } catch (error: any) {
       throw error;
@@ -300,10 +298,11 @@ export class GroupResolver {
     groupId: string,
     @Args('groupCreator', { type: () => String })
     groupCreator: string,
-    @Context() context: any,
+    @Context() context: { req: CustomContextRequestInterface },
   ): Promise<any> {
     try {
-      PubliciteAuth.authorize(context, groupCreator);
+      const userRequestId = context.req.userRequestId;
+      PubliciteAuth.authorize(userRequestId, groupCreator);
       await this.groupAdapter.deleteGroupById(groupId, groupCreator);
     } catch (error: any) {
       throw error;
@@ -335,7 +334,7 @@ export class GroupResolver {
   async exitGroupById(
     @Args('groupId', { type: () => String })
     groupId: string,
-    @Context() context: any,
+    @Context() context: { req: CustomContextRequestInterface },
     @Args('member', { type: () => String, nullable: true })
     member?: string,
     @Args('creator', { type: () => String, nullable: true })
@@ -344,16 +343,17 @@ export class GroupResolver {
     newCreator?: string,
   ): Promise<any> {
     try {
+      const userRequestId = context.req.userRequestId;
       if (creator) {
         if (!newCreator || member) {
           return 'newCreator is required';
         }
-        PubliciteAuth.authorize(context, creator)
+        PubliciteAuth.authorize(userRequestId, creator)
       } else {
         if (!member) {
           return 'member is required';
         }
-        PubliciteAuth.authorize(context, member);
+        PubliciteAuth.authorize(userRequestId, member);
       }
 
       await this.groupAdapter.exitGroupById(

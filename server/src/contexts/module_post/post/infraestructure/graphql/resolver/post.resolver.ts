@@ -9,13 +9,14 @@ import { PostFindAllResponse } from 'src/contexts/module_post/post/application/d
 import { Post_Full_Graphql_Model } from 'src/contexts/module_post/post/domain/entity/models_graphql/post.full.grapql.model';
 import { PostType } from 'src/contexts/module_post/post/domain/entity/enum/post-type.enum';
 import { PubliciteAuth } from 'src/contexts/module_shared/auth/publicite_auth/publicite_auth';
+import { CustomContextRequestInterface } from 'src/contexts/module_shared/auth/custom_request/custom.context.request.interface';
 
 @Resolver('Post')
 export class PostResolver {
   constructor(
     @Inject('PostAdapterInterface')
     private readonly postAdapter: PostAdapterInterface,
-  ) {}
+  ) { }
 
   @Mutation(() => String, {
     nullable: true,
@@ -27,10 +28,12 @@ export class PostResolver {
     id: string,
     @Args('id', { type: () => String })
     author_id: string,
-    @Context() context: any,
+    @Context() context: { req: CustomContextRequestInterface },
   ): Promise<any> {
     try {
-      PubliciteAuth.authorize(context, author_id);
+      const userRequestId = context.req.userRequestId;
+      if (!author_id) throw new Error('author_id is required');
+      PubliciteAuth.authorize(userRequestId, author_id);
       await this.postAdapter.deletePostById(id);
       return 'Eliminado con exito';
     } catch (error: any) {
@@ -50,10 +53,12 @@ export class PostResolver {
     id: string,
     @Args('author_id', { type: () => String })
     admin_id: string,
-    @Context() context: any,
+    @Context() context: { req: CustomContextRequestInterface },
   ): Promise<any> {
     try {
-      PubliciteAuth.authorize(context, admin_id);
+      const userRequestId = context.req.userRequestId;
+      if (!admin_id) throw new Error('admin_id is required');
+      PubliciteAuth.authorize(userRequestId, admin_id);
       return await this.postAdapter.updatePostById(postUpdate, id);
     } catch (error: any) {
       throw error;

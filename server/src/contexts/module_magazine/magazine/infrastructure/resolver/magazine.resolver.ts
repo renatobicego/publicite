@@ -1,5 +1,5 @@
-import { Inject, UseGuards } from '@nestjs/common';
-import { Args, Mutation, Resolver, Query, Context } from '@nestjs/graphql';
+import { ExecutionContext, Inject, UseGuards } from '@nestjs/common';
+import { Args, Mutation, Resolver, Query, Context, } from '@nestjs/graphql';
 import { ObjectId } from 'mongoose';
 
 import { MagazineAdapterInterface } from '../../application/adapter/magazine.adapter.interface';
@@ -10,8 +10,10 @@ import { PubliciteAuth } from 'src/contexts/module_shared/auth/publicite_auth/pu
 import { ClerkAuthGuard } from 'src/contexts/module_shared/auth/clerk-auth/clerk.auth.guard';
 import { MagazineSectionCreateRequest } from '../../application/adapter/dto/HTTP-REQUEST/magazineSection.create.request';
 import { getIdFromClerkToken, getTokenFromRequest } from 'src/contexts/module_shared/functions/getTokenFromRequest';
-import { get } from 'http';
 import { OwnerType } from '../../domain/entity/enum/magazine.ownerType.enum';
+import { CustomContextRequestInterface } from 'src/contexts/module_shared/auth/custom_request/custom.context.request.interface';
+
+
 
 @Resolver()
 export class MagazineResolver {
@@ -24,7 +26,7 @@ export class MagazineResolver {
     nullable: true,
     description: 'Agregar nueva seccion en la revista',
   })
-  //@UseGuards(ClerkAuthGuard)
+  @UseGuards(ClerkAuthGuard)
   async addNewMagazineSection(
     @Args('magazineAdmin', { type: () => String })
     magazineAdmin: string,
@@ -32,13 +34,13 @@ export class MagazineResolver {
     magazineId: string,
     @Args('section', { type: () => MagazineSectionCreateRequest })
     section: MagazineSectionCreateRequest,
-    @Context()
-    context: any,
+    @Context() context: { req: CustomContextRequestInterface },
     @Args('groupId', { type: () => String, nullable: true })
     groupId?: string,
   ): Promise<any> {
     try {
-      //PubliciteAuth.authorize(context, magazineAdmin);
+      const userRequestId = context.req.userRequestId;
+      PubliciteAuth.authorize(userRequestId, magazineAdmin);
       await this.magazineAdapter.addNewMagazineSection(
         magazineAdmin,
         magazineId,
@@ -64,11 +66,11 @@ export class MagazineResolver {
     magazineId: string,
     @Args('sectionId', { type: () => String })
     sectionId: string,
-    @Context()
-    context: any,
+    @Context() context: { req: CustomContextRequestInterface },
   ): Promise<any> {
     try {
-      PubliciteAuth.authorize(context, magazineAdmin);
+      const userRequestId = context.req.userRequestId;
+      PubliciteAuth.authorize(userRequestId, magazineAdmin);
       await this.magazineAdapter.addPostInUserMagazine(
         postId,
         magazineId,
@@ -94,11 +96,11 @@ export class MagazineResolver {
     magazineId: string,
     @Args('sectionId', { type: () => String })
     sectionId: string,
-    @Context()
-    context: any,
+    @Context() context: { req: CustomContextRequestInterface },
   ): Promise<any> {
     try {
-      PubliciteAuth.authorize(context, magazineAdmin);
+      const userRequestId = context.req.userRequestId;
+      PubliciteAuth.authorize(userRequestId, magazineAdmin);
       await this.magazineAdapter.addPostInGroupMagazine(
         postId,
         magazineId,
@@ -122,11 +124,11 @@ export class MagazineResolver {
     magazineAdmin: string,
     @Args('magazineId', { type: () => String })
     magazineId: string,
-    @Context()
-    context: any,
+    @Context() context: { req: CustomContextRequestInterface },
   ): Promise<any> {
     try {
-      PubliciteAuth.authorize(context, magazineAdmin);
+      const userRequestId = context.req.userRequestId;
+      PubliciteAuth.authorize(userRequestId, magazineAdmin);
       await this.magazineAdapter.addCollaboratorsToUserMagazine(
         newCollaborators,
         magazineId,
@@ -149,11 +151,11 @@ export class MagazineResolver {
     magazineId: string,
     @Args('magazineAdmin', { type: () => String })
     magazineAdmin: string,
-    @Context()
-    context: any,
+    @Context() context: { req: CustomContextRequestInterface },
   ): Promise<any> {
     try {
-      PubliciteAuth.authorize(context, magazineAdmin);
+      const userRequestId = context.req.userRequestId;
+      PubliciteAuth.authorize(userRequestId, magazineAdmin);
       await this.magazineAdapter.addAllowedCollaboratorsToGroupMagazine(
         newallowedCollaborators,
         magazineId,
@@ -176,11 +178,11 @@ export class MagazineResolver {
     magazineId: string,
     @Args('magazineAdmin', { type: () => String })
     magazineAdmin: string,
-    @Context()
-    context: any,
+    @Context() context: { req: CustomContextRequestInterface },
   ): Promise<any> {
     try {
-      PubliciteAuth.authorize(context, magazineAdmin);
+      const userRequestId = context.req.userRequestId;
+      PubliciteAuth.authorize(userRequestId, magazineAdmin);
       await this.magazineAdapter.deleteCollaboratorsFromMagazine(
         collaboratorsToDelete,
         magazineId,
@@ -202,11 +204,11 @@ export class MagazineResolver {
     magazineId: string,
     @Args('magazineAdmin', { type: () => String })
     magazineAdmin: string,
-    @Context()
-    context: any,
+    @Context() context: { req: CustomContextRequestInterface },
   ): Promise<any> {
     try {
-      PubliciteAuth.authorize(context, magazineAdmin);
+      const userRequestId = context.req.userRequestId;
+      PubliciteAuth.authorize(userRequestId, magazineAdmin);
       await this.magazineAdapter.deleteAllowedCollaboratorsFromMagazineGroup(
         allowedCollaboratorsToDelete,
         magazineId,
@@ -228,23 +230,23 @@ export class MagazineResolver {
     sectionIdsToDelete: string[],
     @Args('magazineId', { type: () => String })
     magazineId: string,
-    @Context()
-    context: any,
+    @Context() context: { req: CustomContextRequestInterface },
     @Args('allowedCollaboratorId', { type: () => String, nullable: true })
     allowedCollaboratorId?: string,
     @Args('userMagazineAllowed', { type: () => String, nullable: true })
     userMagazineAllowed?: string,
   ): Promise<any> {
     try {
+      const userRequestId = context.req.userRequestId;
       if (!allowedCollaboratorId && userMagazineAllowed) {
-        //PubliciteAuth.authorize(context, userMagazineAllowed);
+        PubliciteAuth.authorize(userRequestId, userMagazineAllowed);
         await this.magazineAdapter.deleteSectionFromMagazineById(
           sectionIdsToDelete,
           magazineId,
           userMagazineAllowed,
         );
       } else if (allowedCollaboratorId) {
-        //PubliciteAuth.authorize(context, allowedCollaboratorId);
+        PubliciteAuth.authorize(userRequestId, allowedCollaboratorId);
         await this.magazineAdapter.deleteSectionFromMagazineById(
           sectionIdsToDelete,
           magazineId,
@@ -316,7 +318,7 @@ export class MagazineResolver {
     magazineRequest: MagazineUpdateRequest,
     @Args('owner', { type: () => String })
     owner: string,
-    @Context() context: any,
+    @Context() context: { req: CustomContextRequestInterface },
     @Args('groupId', {
       type: () => String,
       description: 'El id del grupo en el caso de que la revista sea de grupo',
@@ -325,7 +327,8 @@ export class MagazineResolver {
     groupId?: string,
   ): Promise<any> {
     try {
-      PubliciteAuth.authorize(context, owner);
+      const userRequestId = context.req.userRequestId;
+      PubliciteAuth.authorize(userRequestId, owner);
       return await this.magazineAdapter.updateMagazineById(
         magazineRequest,
         owner,
@@ -350,14 +353,12 @@ export class MagazineResolver {
     newTitle: string,
     @Args('ownerType', { type: () => OwnerType })
     ownerType: OwnerType,
-    @Context()
-    context: any,
+    @Context() context: { req: CustomContextRequestInterface },
     @Args('magazineId', { type: () => String, nullable: true })
     magazineId?: string,
   ): Promise<any> {
     try {
-      const token = getTokenFromRequest(context);
-      const userRequestId = getIdFromClerkToken(token);
+      const userRequestId = context.req.userRequestId;
       return await this.magazineAdapter.updateTitleOfSectionById(
         sectionId,
         newTitle,
@@ -384,15 +385,12 @@ export class MagazineResolver {
     sectionId: string,
     @Args('ownerType', { type: () => OwnerType })
     ownerType: OwnerType,
-    @Context()
-    context: any,
+    @Context() context: { req: CustomContextRequestInterface },
     @Args('magazineId', { type: () => String, nullable: true })
     magazineId?: string,
   ): Promise<any> {
     try {
-
-      const token = getTokenFromRequest(context);
-      const userRequestId = getIdFromClerkToken(token);
+      const userRequestId = context.req.userRequestId;
       await this.magazineAdapter.deletePostInMagazineSection(
         postIdToRemove,
         sectionId,

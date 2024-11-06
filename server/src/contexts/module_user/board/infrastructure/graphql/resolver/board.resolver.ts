@@ -6,6 +6,7 @@ import { BoardAdapterInterface } from '../../../application/adapter/board.adapte
 import { UpdateBoardDto } from '../../../application/dto/HTTP-REQUEST/board.update';
 import { BoardGetAllResponse } from '../../../application/dto/HTTP-RESPONSE/board.response';
 import { Board } from '../../../domain/entity/board.entity';
+import { CustomContextRequestInterface } from 'src/contexts/module_shared/auth/custom_request/custom.context.request.interface';
 
 
 //´Provee instrucciones para transformar las insttrucciones provenientes del cliente en data que graph puede utilizar
@@ -17,7 +18,7 @@ export class BoardResolver {
   constructor(
     @Inject('BoardAdapterInterface')
     private readonly boardAdapter: BoardAdapterInterface,
-  ) {}
+  ) { }
 
   @Mutation(() => Board, {
     nullable: true,
@@ -29,10 +30,11 @@ export class BoardResolver {
     @Args('ownerId', { type: () => String }) ownerId: string,
     @Args('boardData', { type: () => UpdateBoardDto })
     boardData: UpdateBoardDto,
-    @Context() context: any,
+    @Context() context: { req: CustomContextRequestInterface },
   ): Promise<any> {
     try {
-      PubliciteAuth.authorize(context, ownerId);
+      const userRequestId = context.req.userRequestId;
+      PubliciteAuth.authorize(userRequestId, ownerId);
       return await this.boardAdapter.updateBoardById(id, boardData);
     } catch (error: any) {
       throw error;

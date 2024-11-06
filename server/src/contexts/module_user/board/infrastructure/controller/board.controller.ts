@@ -9,6 +9,7 @@ import { BoardRequest_swagger } from './swagger/board.request.swagger';
 import { BoardResponse_swagger } from './swagger/board.response.swagger';
 import { PubliciteAuth } from 'src/contexts/module_shared/auth/publicite_auth/publicite_auth';
 import { Context } from '@nestjs/graphql';
+import { CustomContextRequestInterface } from 'src/contexts/module_shared/auth/custom_request/custom.context.request.interface';
 
 @ApiTags('Board')
 @Controller('board')
@@ -16,7 +17,7 @@ export class BoardController {
   constructor(
     @Inject('BoardAdapterInterface')
     private readonly boardAdapter: BoardAdapterInterface,
-  ) {}
+  ) { }
 
   @Post()
   @ApiOperation({ summary: 'Create a board' })
@@ -33,12 +34,13 @@ export class BoardController {
   @UseGuards(ClerkAuthGuard)
   async createBoard(
     @Body() boardRequest: BoardRequest,
-    @Req() request: Request,
+    @Context() context: { req: CustomContextRequestInterface },
   ): Promise<BoardResponse> {
     try {
-      PubliciteAuth.authorize(request, boardRequest.user, 'http');
+      const userRequestId = context.req.userRequestId;
+      if (!boardRequest.user) throw Error('User is required');
+      PubliciteAuth.authorize(userRequestId, boardRequest.user);
       const result = await this.boardAdapter.save(boardRequest);
-      console.log(result);
       return result;
     } catch (error: any) {
       throw error;
