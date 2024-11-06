@@ -29,26 +29,25 @@ export const getMagazineByIdQuery = gql`
     getMagazineByMagazineId(id: $getMagazineByMagazineIdId) {
       _id
       allowedCollaborators {
-        _id
-        profilePhotoUrl
         username
+        profilePhotoUrl
+        _id
       }
       collaborators {
         username
         profilePhotoUrl
         _id
       }
-      description
       group {
         profilePhotoUrl
         name
         _id
       }
+      description
       name
       ownerType
       sections {
-        _id
-        isFatherSection
+        title
         posts {
           _id
           description
@@ -59,14 +58,14 @@ export const getMagazineByIdQuery = gql`
           price
           title
         }
-        title
+        isFatherSection
+        _id
       }
       user {
         username
         profilePhotoUrl
         _id
       }
-      visibility
     }
   }
 `;
@@ -159,6 +158,22 @@ export const addPostMagazineGroupMutation = gql`
       magazineAdmin: $magazineAdmin
       magazineId: $magazineId
       sectionId: $sectionId
+    )
+  }
+`;
+
+export const deletePostInSectionMutation = gql`
+  mutation DeletePostInMagazineSection(
+    $postIdToRemove: String!
+    $sectionId: String!
+    $ownerType: OwnerType!
+    $magazineId: String
+  ) {
+    deletePostInMagazineSection(
+      postIdToRemove: $postIdToRemove
+      sectionId: $sectionId
+      ownerType: $ownerType
+      magazineId: $magazineId
     )
   }
 `;

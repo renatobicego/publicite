@@ -27,13 +27,13 @@ export const useSocket = () => {
   return context;
 };
 
-export const SocketProvider = ({ children, userId }: { children: ReactNode; userId: string }) => {
+export const SocketProvider = ({ children, userId, token }: { children: ReactNode; userId: string; token: string }) => {
   const [newNotifications, setNewNotifications] = useState(false);
 
   const [socket, setSocket] = useState<Socket | null>(null);
   useEffect(() => {
     // Initialize Socket.IO connection
-    const socketInstance = getSocket(userId);
+    const socketInstance = getSocket(userId, token);
     setSocket(socketInstance);
     // Clean up on unmount
     return () => {

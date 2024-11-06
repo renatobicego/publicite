@@ -4,6 +4,7 @@ import {
   addPostMagazineUserMutation,
   createMagazineMutation,
   createMagazineSectionMutation,
+  deletePostInSectionMutation,
   editMagazineMutation,
   getMagazineByIdQuery,
   getMagazinesQuery,
@@ -20,6 +21,7 @@ export const getMagazineById = async (id: string) => {
     });
     return data.getMagazineByMagazineId;
   } catch (error) {
+    console.log(error)
     return {
       error:
         "Error al traer los datos de la revista. Por favor intenta de nuevo.",
@@ -112,6 +114,23 @@ export const putPostInMagazine = async (
         ? addPostMagazineUserMutation
         : addPostMagazineGroupMutation,
     variables: { postId: [postId], magazineAdmin, magazineId, sectionId },
+    context: {
+      headers: {
+        Authorization: await auth().getToken(),
+      },
+    },
+  });
+};
+
+export const deletPostInMagazine = async (
+  magazineId: string,
+  postIdToRemove: string,
+  sectionId: string,
+  ownerType: "user" | "group"
+) => {
+  await getClient().mutate({
+    mutation: deletePostInSectionMutation,
+    variables: { postIdToRemove, ownerType, magazineId, sectionId },
     context: {
       headers: {
         Authorization: await auth().getToken(),

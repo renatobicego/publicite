@@ -1,4 +1,4 @@
-import { currentUser } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import HelpButton from "../../components/buttons/HelpButton";
 import Footer from "../../components/Footer/Footer";
 import Header from "../../components/Header/Header";
@@ -16,10 +16,14 @@ export default async function NavigationLayout({
   children: React.ReactNode;
 }) {
   const user = await currentUser();
+  const token = await auth().getToken();
   const configData = await getConfigData(user);
 
   return (
-    <SocketProvider userId={user?.publicMetadata.mongoId as string}>
+    <SocketProvider
+      userId={user?.publicMetadata.mongoId as string}
+      token={token as string}
+    >
       <UserDataProvider
         username={user?.username}
         clerkId={user?.id}

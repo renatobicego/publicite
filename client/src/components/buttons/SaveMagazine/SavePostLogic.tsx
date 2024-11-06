@@ -12,11 +12,16 @@ const SavePostLogic = ({
   postId,
   magazines,
   setSavedRecently,
+  saved,
 }: {
   titleProps: DOMAttributes<HTMLElement>;
   postId: string;
   magazines: Magazine[];
   setSavedRecently: Dispatch<SetStateAction<boolean>>;
+  saved?: {
+    postId: string;
+    section: string;
+  };
 }) => {
   const [selectedMagazineSection, setSelectedMagazineSection] = useState<{
     id: string;
@@ -60,8 +65,14 @@ const SavePostLogic = ({
             magazine={magazine}
             selectedMagazineSection={selectedMagazineSection}
             setSelectedMagazineSection={setSelectedMagazineSection}
+            savedPost={saved}
           />
         ))}
+        {saved && (
+          <p className="text-xs">
+            Para eliminar de la revista, clickea en el ícono de la revista
+          </p>
+        )}
         {selectedMagazineSection.id !== "" ? (
           <PrimaryButton
             isDisabled={isSubmitting}
