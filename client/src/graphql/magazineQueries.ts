@@ -29,26 +29,25 @@ export const getMagazineByIdQuery = gql`
     getMagazineByMagazineId(id: $getMagazineByMagazineIdId) {
       _id
       allowedCollaborators {
-        _id
-        profilePhotoUrl
         username
+        profilePhotoUrl
+        _id
       }
       collaborators {
         username
         profilePhotoUrl
         _id
       }
-      description
       group {
         profilePhotoUrl
         name
         _id
       }
+      description
       name
       ownerType
       sections {
-        _id
-        isFatherSection
+        title
         posts {
           _id
           description
@@ -59,14 +58,14 @@ export const getMagazineByIdQuery = gql`
           price
           title
         }
-        title
+        isFatherSection
+        _id
       }
       user {
         username
         profilePhotoUrl
         _id
       }
-      visibility
     }
   }
 `;

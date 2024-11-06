@@ -19,7 +19,9 @@ interface SaveButtonProps extends ButtonProps {
 const SaveButton: React.FC<SaveButtonProps> = ({ post, ...props }) => {
   const { magazines, postsInMagazine } = useUserData();
   const [isOpen, setIsOpen] = useState(false);
-  const saved = postsInMagazine.includes(post._id);
+  const saved = postsInMagazine.find(
+    (postInMagazine) => postInMagazine.postId === post._id
+  )
   const [savedRecently, setSavedRecently] = useState(false);
   return (
     <Popover
@@ -47,6 +49,7 @@ const SaveButton: React.FC<SaveButtonProps> = ({ post, ...props }) => {
               titleProps={titleProps}
               magazines={magazines}
               postId={post._id}
+              saved={saved}
               setSavedRecently={setSavedRecently}
             />
           ) : (

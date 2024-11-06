@@ -16,7 +16,10 @@ interface UserDataContextType {
   userIdLogged: string | undefined;
   clerkIdLogged: string | undefined;
   userTypeLogged?: UserType;
-  postsInMagazine: string[];
+  postsInMagazine: {
+    postId: string;
+    section: string;
+  }[];
 }
 
 const UserDataContext = createContext<UserDataContextType | undefined>(
@@ -45,7 +48,10 @@ export const UserDataProvider = ({
   userType?: UserType;
 }) => {
   const [magazines, setMagazines] = useState<Magazine[]>([]);
-  const [postsInMagazine, setPostsInMagazine] = useState<string[]>([]);
+  const [postsInMagazine, setPostsInMagazine] = useState<{
+    postId: string;
+    section: string;
+  }[]>([]);
   const [usernameLogged] = useState<string | null | undefined>(username);
   const [userIdLogged] = useState<string | undefined>(userId);
   const [clerkIdLogged] = useState<string | undefined>(clerkId);
@@ -58,7 +64,7 @@ export const UserDataProvider = ({
       // Flatten post IDs from each magazine's sections
       const postsIds = magazines.flatMap((magazine) =>
         magazine.sections.flatMap((section) =>
-          section.posts.map((post) => post._id)
+          section.posts.map((post) => ({postId: post._id, section: section._id}))
         )
       );
       setPostsInMagazine(postsIds);
