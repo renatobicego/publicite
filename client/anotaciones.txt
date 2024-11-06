@@ -17,8 +17,6 @@ el tema de tener distintos tipos de relaciones va a costar hacer get de posts po
 
 CUENTA GRATUITA CREAR PLAN DE SUSCRIPTION
 
-
-- get revistas
 - agregar post en revista
 - borrar posts en revista
 - borrar seccion

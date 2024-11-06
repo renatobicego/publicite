@@ -161,3 +161,19 @@ export const addPostMagazineGroupMutation = gql`
     )
   }
 `;
+
+export const deletePostInSectionMutation = gql`
+  mutation DeletePostInMagazineSection(
+    $postIdToRemove: String!
+    $sectionId: String!
+    $ownerType: OwnerType!
+    $magazineId: String
+  ) {
+    deletePostInMagazineSection(
+      postIdToRemove: $postIdToRemove
+      sectionId: $sectionId
+      ownerType: $ownerType
+      magazineId: $magazineId
+    )
+  }
+`;

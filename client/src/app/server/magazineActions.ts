@@ -1,5 +1,6 @@
 "use server";
 import {
+  deletPostInMagazine,
   postMagazine,
   postMagazineSection,
   putMagazine,
@@ -93,5 +94,22 @@ export const addPostToMagazine = async (
     return {
       error: "Error al agregar el anuncio. Por favor intenta de nuevo.",
     };
+  }
+};
+
+export const removePostInMagazineSection = async (
+  magazineId: string,
+  postIdToRemove: string,
+  sectionId: string,
+  ownerType: "user" | "group"
+) => {
+  try {
+    await deletPostInMagazine(magazineId, postIdToRemove, sectionId, ownerType);
+    return { message: "Anuncio removido exitosamente" };
+  } catch (error) {
+    console.log(error)
+    return {
+      error: "Error al remover el anuncio. Por favor intenta de nuevo.",
+    }
   }
 };

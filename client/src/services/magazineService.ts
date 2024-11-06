@@ -4,6 +4,7 @@ import {
   addPostMagazineUserMutation,
   createMagazineMutation,
   createMagazineSectionMutation,
+  deletePostInSectionMutation,
   editMagazineMutation,
   getMagazineByIdQuery,
   getMagazinesQuery,
@@ -113,6 +114,23 @@ export const putPostInMagazine = async (
         ? addPostMagazineUserMutation
         : addPostMagazineGroupMutation,
     variables: { postId: [postId], magazineAdmin, magazineId, sectionId },
+    context: {
+      headers: {
+        Authorization: await auth().getToken(),
+      },
+    },
+  });
+};
+
+export const deletPostInMagazine = async (
+  magazineId: string,
+  postIdToRemove: string,
+  sectionId: string,
+  ownerType: "user" | "group"
+) => {
+  await getClient().mutate({
+    mutation: deletePostInSectionMutation,
+    variables: { postIdToRemove, ownerType, magazineId, sectionId },
     context: {
       headers: {
         Authorization: await auth().getToken(),

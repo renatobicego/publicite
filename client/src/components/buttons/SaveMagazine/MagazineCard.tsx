@@ -1,8 +1,11 @@
+import { removePostInMagazineSection } from "@/app/server/magazineActions";
 import ConfirmModal from "@/components/modals/ConfirmModal";
 import { Magazine } from "@/types/magazineTypes";
+import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { Accordion, AccordionItem, Button } from "@nextui-org/react";
-import { Dispatch, SetStateAction, useRef } from "react";
+import { Dispatch, SetStateAction, useRef, useState } from "react";
 import { FaChevronLeft } from "react-icons/fa6";
+import { IoTrashOutline } from "react-icons/io5";
 
 const MagazineCard = ({
   magazine,
@@ -26,6 +29,7 @@ const MagazineCard = ({
     section: string;
   };
 }) => {
+  const [sectionToDeletePost, setSectionToDeletePost] = useState("");
   const handleSelectMagazineSection = (sectionId: string) => {
     if (selectedMagazineSection.id === sectionId) {
       setSelectedMagazineSection({
@@ -46,7 +50,20 @@ const MagazineCard = ({
     section.posts.some((post) => post._id === savedPost?.postId)
   );
   const assignAdminRef = useRef<() => void>(() => {});
-  const deletePost = () => {};
+  const deletePost = async () => {
+    const res = await removePostInMagazineSection(
+      magazine._id,
+      savedPost?.postId as string,
+      sectionToDeletePost,
+      magazine.ownerType
+    );
+    if (res.error) {
+      toastifyError(res.error as string);
+      return;
+    }
+
+    toastifySuccess(res.message as string);
+  };
 
   const handleDeletePostClick = () => {
     if (assignAdminRef.current) {
@@ -76,53 +93,57 @@ const MagazineCard = ({
               }`,
             }}
           >
-            {magazine.sections.map((section) => (
-              <Button
-                key={section._id}
-                variant="bordered"
-                onPress={() => {
-                  if (savedPost && savedPost?.section === section._id) {
-                    handleDeletePostClick();
-                    return;
-                  }
-                  handleSelectMagazineSection(section._id);
-                }}
-                className={`justify-start w-full ${
-                  selectedMagazineSection.id === section._id
-                    ? "border-primary"
-                    : ""
-                } ${
-                  savedPost?.section === section._id
-                    ? "bg-primary text-white"
-                    : ""
-                }`}
-              >
-                {section.title}
-              </Button>
-            ))}
+            {magazine.sections.map((section) => {
+              const isPostInSection = savedPost?.section === section._id;
+              return (
+                <Button
+                  key={section._id}
+                  variant="bordered"
+                  startContent={isPostInSection ? <IoTrashOutline /> : <></>}
+                  onPress={() => {
+                    if (savedPost && isPostInSection) {
+                      setSectionToDeletePost(section._id);
+                      handleDeletePostClick();
+                      return;
+                    }
+                    handleSelectMagazineSection(section._id);
+                  }}
+                  className={`justify-start w-full ${
+                    selectedMagazineSection.id === section._id
+                      ? "border-primary"
+                      : ""
+                  } ${isPostInSection ? "text-primary border-primary" : ""}`}
+                >
+                  {section.title}
+                </Button>
+              );
+            })}
           </AccordionItem>
         </Accordion>
       </>
     );
   } else {
+    const isPostInSection = savedPost?.section === fatherSection?._id;
     return (
       <>
         <Button
           onPress={() => {
-            if (savedPost && savedPost?.section === fatherSection?._id) {
+            if (fatherSection && savedPost && isPostInSection) {
+              setSectionToDeletePost(fatherSection._id);
               handleDeletePostClick();
               return;
             }
             handleSelectMagazineSection(fatherSection?._id as string);
           }}
           variant="bordered"
+          startContent={isPostInSection ? <IoTrashOutline /> : <></>}
           className={`${
             selectedMagazineSection.id === fatherSection?._id
               ? "border-primary"
               : ""
           } justify-start ${
-            savedPost?.section === fatherSection?._id
-              ? "bg-primary text-white"
+            isPostInSection
+              ? "text-primary border-primary"
               : ""
           }`}
         >
