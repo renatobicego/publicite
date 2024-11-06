@@ -24,12 +24,13 @@ export class MagazineResolver {
     nullable: true,
     description: 'Agregar nueva seccion en la revista',
   })
+  //@UseGuards(ClerkAuthGuard)
   async addNewMagazineSection(
     @Args('magazineAdmin', { type: () => String })
     magazineAdmin: string,
     @Args('magazineId', { type: () => String })
     magazineId: string,
-    @Args('section', { type: () => String })
+    @Args('section', { type: () => MagazineSectionCreateRequest })
     section: MagazineSectionCreateRequest,
     @Context()
     context: any,
@@ -37,7 +38,7 @@ export class MagazineResolver {
     groupId?: string,
   ): Promise<any> {
     try {
-      PubliciteAuth.authorize(context, magazineAdmin);
+      //PubliciteAuth.authorize(context, magazineAdmin);
       await this.magazineAdapter.addNewMagazineSection(
         magazineAdmin,
         magazineId,

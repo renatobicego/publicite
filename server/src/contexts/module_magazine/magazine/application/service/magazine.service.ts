@@ -29,11 +29,25 @@ export class MagazineService implements MagazineServiceInterface {
   ): Promise<any> {
     try {
       this.logger.log('Adding new section in magazine...');
-      await this.magazineRepository.addNewMagazineSection(
-        magazineAdmin,
+      if (groupId) {
+        this.logger.log('Adding new section in group magazine...');
+        const isUserAllowedToAddNewSection = this.magazineRepository.isAdminOrCollaborator(
+          magazineId,
+          magazineAdmin,
+        )
+        if (!isUserAllowedToAddNewSection) {
+          throw new Error('User is not an allowed admin group');
+        }
+        
+        return this.magazineRepository.addNewMagazineGroupSection(
+          magazineId,
+          section
+        )
+      }
+      return this.magazineRepository.addNewMagazineUserSection(
         magazineId,
         section,
-        groupId,
+        magazineAdmin
       );
     } catch (error: any) {
       this.logger.error('Error adding new section in  Magazine');
