@@ -194,14 +194,13 @@ export class MagazineRepository implements MagazineRepositoryInterface {
       await session.withTransaction(async () => {
 
 
-        const result = await this.userMagazine.updateOne(
+        const result = await this.userMagazine.find(
           {
             _id: magazineId,
             $or: [{ user: magazineAdmin }, { collaborators: magazineAdmin }],
           }
         ).session(session)
 
-        checkResultModificationOfOperation(result);
 
         await this.magazineSection
           .updateOne(
