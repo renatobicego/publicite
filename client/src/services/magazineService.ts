@@ -47,6 +47,11 @@ export const postMagazine = async (formData: any) => {
   const { data } = await getClient().mutate({
     mutation: createMagazineMutation,
     variables: { magazineCreateRequest: formData },
+    context: {
+      headers: {
+        Authorization: await auth().getToken(),
+      },
+    }
   });
   return data;
 };

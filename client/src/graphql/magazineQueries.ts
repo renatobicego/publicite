@@ -119,11 +119,13 @@ export const createMagazineSectionMutation = gql`
     $magazineAdmin: String!
     $magazineId: String!
     $section: MagazineSectionCreateRequest!
+    $groupId: String
   ) {
     addNewMagazineSection(
       magazineAdmin: $magazineAdmin
       magazineId: $magazineId
       section: $section
+      groupId: $groupId
     )
   }
 `;

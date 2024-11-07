@@ -15,9 +15,9 @@ import { Magazine } from "@/types/magazineTypes";
 import CreateMagazineSection from "@/components/modals/CreateMagazineSection";
 
 export default async function MagazinePage(props: {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 }) {
-  const params = await props.params;
+  const params = props.params;
   const magazine: Magazine | { error: string } = await getMagazineById(
     params.id
   );
@@ -50,7 +50,6 @@ export default async function MagazinePage(props: {
       href: `${MAGAZINES}/${magazine._id}`,
     },
   ];
-  console.log(magazine.sections)
   return (
     <main className="flex min-h-screen flex-col items-start main-style gap-4 md:gap-6 xl:gap-8">
       <BreadcrumbsAdmin items={breadcrumbsItems} />

@@ -1,7 +1,7 @@
 import { Magazine, UserMagazine } from "@/types/magazineTypes";
 import { Group } from "@/types/groupTypes";
 import { GetUser } from "@/types/userTypes";
-import { PROFILE } from "@/utils/data/urls";
+import { FILE_URL, PROFILE } from "@/utils/data/urls";
 import { Avatar, AvatarGroup, Link } from "@nextui-org/react";
 interface MagazineProps {
   magazine: Magazine;
@@ -18,6 +18,7 @@ const MagazineHeader = ({
   isOwnerTypeUser,
 }: MagazineProps) => {
   const userMagazine = magazine as UserMagazine;
+
   return (
     <>
       <h2>{magazine.name}</h2>
@@ -28,8 +29,10 @@ const MagazineHeader = ({
         <AvatarGroup>
           <Avatar
             src={
-              ownerAsUser.profilePhotoUrl
+              isOwnerTypeUser
                 ? ownerAsUser.profilePhotoUrl
+                : ownerAsUser.profilePhotoUrl
+                ? FILE_URL + ownerAsUser.profilePhotoUrl
                 : "/groupLogo.png"
             }
             as={Link}
@@ -58,8 +61,10 @@ const MagazineHeader = ({
         >
           <Avatar
             src={
-              ownerAsUser.profilePhotoUrl
+              isOwnerTypeUser
                 ? ownerAsUser.profilePhotoUrl
+                : ownerAsUser.profilePhotoUrl
+                ? FILE_URL + ownerAsUser.profilePhotoUrl
                 : "/groupLogo.png"
             }
             size="lg"

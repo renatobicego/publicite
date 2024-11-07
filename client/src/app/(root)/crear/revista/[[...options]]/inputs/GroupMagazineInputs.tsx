@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { getGroupMembersById } from "@/services/groupsService";
 import { toastifyError } from "@/utils/functions/toastify";
 import { PostGroupMagazine } from "@/types/magazineTypes";
+import { useUserData } from "@/app/(root)/userDataProvider";
 
 const GroupMagazineInputs = ({
   setValues,
@@ -19,7 +20,8 @@ const GroupMagazineInputs = ({
   ) => Promise<void | FormikErrors<PostGroupMagazine>>;
 
   id: string | null;
-}) => {
+  }) => {
+  const {userIdLogged} = useUserData();
   const [groupMembers, setGroupMembers] = useState<User[]>();
 
   useEffect(() => {
@@ -66,7 +68,7 @@ const GroupMagazineInputs = ({
         onSelectionChange={handleSelectionChange}
         name={"allowedCollaborators"}
         aria-label="invitar colaboradores"
-        items={groupMembers ?? []}
+        items={groupMembers?.filter((user) => user._id !== userIdLogged) ?? []}
         isLoading={!groupMembers}
         onChange={() => {}}
       />
