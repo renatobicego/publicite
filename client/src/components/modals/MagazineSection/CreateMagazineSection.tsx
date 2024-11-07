@@ -1,7 +1,7 @@
 "use client";
 
 import { FaPlus } from "react-icons/fa6";
-import SecondaryButton from "../buttons/SecondaryButton";
+import SecondaryButton from "../../buttons/SecondaryButton";
 import {
   Button,
   Modal,
@@ -13,7 +13,7 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import { useState } from "react";
-import { CustomInputWithoutFormik } from "../inputs/CustomInputs";
+import { CustomInputWithoutFormik } from "../../inputs/CustomInputs";
 import { createMagazineSection } from "@/app/server/magazineActions";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { useRouter } from "next-nprogress-bar";

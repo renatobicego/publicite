@@ -1,10 +1,11 @@
 "use client";
 import PostsGrid from "@/components/grids/PostGrid";
+import EditMagazineSection from "@/components/modals/MagazineSection/EditMagazineSection";
 import { MagazineSection } from "@/types/magazineTypes";
 import { Post } from "@/types/postTypes";
 import { Accordion, AccordionItem } from "@nextui-org/react";
 
-const AccordionSections = ({ sections }: { sections: MagazineSection[] }) => {
+const AccordionSections = ({ sections, magazineId }: { sections: MagazineSection[]; magazineId: string }) => {
   return (
     <Accordion
       variant="splitted"
@@ -23,6 +24,7 @@ const AccordionSections = ({ sections }: { sections: MagazineSection[] }) => {
           HeadingComponent={"h6"}
           key={section._id}
           title={section.title}
+          startContent={<EditMagazineSection magazineId={magazineId}  />}
         >
           <PostsGrid posts={section.posts as Post[]} />
         </AccordionItem>

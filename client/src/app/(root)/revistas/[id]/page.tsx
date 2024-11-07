@@ -12,7 +12,7 @@ import { getOwner, checkIsOwner, getProfileUrl } from "./utils";
 import MagazineHeader from "./MagazineHeader";
 import MagazineActions from "./MagazineActions";
 import { Magazine } from "@/types/magazineTypes";
-import CreateMagazineSection from "@/components/modals/CreateMagazineSection";
+import CreateMagazineSection from "@/components/modals/MagazineSection/CreateMagazineSection";
 
 export default async function MagazinePage(props: {
   params: { id: string };
@@ -83,6 +83,7 @@ export default async function MagazinePage(props: {
           sections={magazine.sections.filter(
             (section) => !section.isFatherSection
           )}
+          magazineId={magazine._id}
         />
       )}
     </main>
