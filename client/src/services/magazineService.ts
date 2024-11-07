@@ -21,7 +21,7 @@ export const getMagazineById = async (id: string) => {
     });
     return data.getMagazineByMagazineId;
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return {
       error:
         "Error al traer los datos de la revista. Por favor intenta de nuevo.",
@@ -75,7 +75,7 @@ export const postMagazineSection = async (
     variables: {
       magazineAdmin: userId,
       magazineId,
-      section: sectionName,
+      section: { isFatherSection: false, title: sectionName },
       groupId,
     },
     context: {

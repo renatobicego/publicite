@@ -114,7 +114,7 @@ const MagazineCard = ({
                       : ""
                   } ${isPostInSection ? "text-primary border-primary" : ""}`}
                 >
-                  {section.title}
+                  {section.isFatherSection ? "Sección general" : section.title}
                 </Button>
               );
             })}

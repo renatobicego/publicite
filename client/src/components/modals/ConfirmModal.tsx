@@ -40,6 +40,11 @@ const ConfirmModal = ({
       <Modal
         radius="lg"
         className="p-2"
+        classNames={{
+          wrapper: "z-[100000000]",
+          backdrop: "z-[100000000]",
+        }}
+        backdrop="blur"
         placement="center"
         isOpen={isOpen}
         onOpenChange={onOpenChange}

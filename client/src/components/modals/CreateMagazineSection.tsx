@@ -34,6 +34,7 @@ const CreateMagazineSection = ({
     setIsSubmitting(true);
     const res = await createMagazineSection(inputValue, magazineId, groupId);
     if ("error" in res) {
+      setIsSubmitting(true);
       toastifyError(res.error as string);
       return;
     }

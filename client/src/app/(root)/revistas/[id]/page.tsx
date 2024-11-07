@@ -50,7 +50,7 @@ export default async function MagazinePage(props: {
       href: `${MAGAZINES}/${magazine._id}`,
     },
   ];
-
+  console.log(magazine.sections)
   return (
     <main className="flex min-h-screen flex-col items-start main-style gap-4 md:gap-6 xl:gap-8">
       <BreadcrumbsAdmin items={breadcrumbsItems} />
