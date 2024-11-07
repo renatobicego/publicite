@@ -311,6 +311,7 @@ export class MagazineService implements MagazineServiceInterface {
       }
     }
     if (!isUserAllowed) throw new Error('User not allowed to update this section');
+    return isUserAllowed;
   }
 
 
