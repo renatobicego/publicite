@@ -14,6 +14,8 @@ import { GqlExecutionContext } from '@nestjs/graphql';
 export class ClerkAuthGuard implements CanActivate {
   private readonly logger = new Logger(ClerkAuthGuard.name);
 
+
+
   async canActivate(context: ExecutionContext): Promise<boolean> {
     let token;
     let request;

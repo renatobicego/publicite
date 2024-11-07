@@ -57,39 +57,45 @@ export class MagazineRepository implements MagazineRepositoryInterface {
 
   async addNewMagazineGroupSection(magazineId: string, section: MagazineSectionCreateRequest): Promise<any> {
     const session = await this.connection.startSession();
-    session.startTransaction();
     try {
-      const sectionId = await this.saveSection(section, session)
-      if (sectionId === null || !sectionId) {
-        throw new Error('Error saving section in repository');
-      }
-      await this.groupMagazine
-        .updateOne(
-          { _id: magazineId },
-          { $addToSet: { sections: sectionId } },
-          { session },
-        )
-        .lean();
+      session.withTransaction(async () => {
+        const sectionId = await this.saveSection(section, session)
+        if (sectionId === null || !sectionId) {
+          throw new Error('Error saving section in repository');
+        }
+        await this.groupMagazine
+          .updateOne(
+            { _id: magazineId },
+            { $addToSet: { sections: sectionId } },
+            { session },
+          )
+          .lean();
+      })
+
     } catch (error: any) {
       throw error;
     }
   }
   async addNewMagazineUserSection(magazineId: string, section: MagazineSectionCreateRequest, magazineAdmin: string): Promise<any> {
     const session = await this.connection.startSession();
-    session.startTransaction();
+
     try {
-      const sectionId = await this.saveSection(section, session)
-      if (sectionId === null || !sectionId) {
-        throw new Error('Error saving section in repository');
-      }
-      await this.userMagazine.updateOne(
-        {
-          _id: magazineId,
-          $or: [{ collaborators: magazineAdmin }, { user: magazineAdmin }],
-        },
-        { $addToSet: { sections: sectionId } },
-        { session },
-      );
+      session.withTransaction(async () => {
+        const sectionId = await this.saveSection(section, session)
+        if (sectionId === null || !sectionId) {
+          throw new Error('Error saving section in repository');
+        }
+        await this.userMagazine.updateOne(
+          {
+            _id: magazineId,
+            $or: [{ collaborators: magazineAdmin }, { user: magazineAdmin }],
+          },
+          { $addToSet: { sections: sectionId } },
+          { session },
+        );
+      })
+
+
     } catch (error: any) {
       throw error;
     }

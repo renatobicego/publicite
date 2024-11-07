@@ -37,7 +37,7 @@ export interface MagazineServiceInterface {
     magazineId: string,
     magazineAdmin: string,
   ): Promise<any>;
-  createMagazine(magazineRequest: MagazineCreateRequest): Promise<void>;
+  createMagazine(magazineRequest: MagazineCreateRequest, userRequestId: string): Promise<void>;
   deleteCollaboratorsFromMagazine(
     collaboratorsToDelete: string[],
     magazineId: string,
