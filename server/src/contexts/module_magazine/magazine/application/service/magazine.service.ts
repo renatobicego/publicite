@@ -12,7 +12,6 @@ import { GroupMagazine } from '../../domain/entity/group.magazine';
 import { MagazineResponse } from '../adapter/dto/HTTP-RESPONSE/magazine.reponse';
 import { MagazineUpdateRequest } from '../adapter/dto/HTTP-REQUEST/magazine.update.request';
 import { MagazineSectionCreateRequest } from '../adapter/dto/HTTP-REQUEST/magazineSection.create.request';
-import { MagazineSectionModel } from '../../infrastructure/schemas/section/magazine.section.schema';
 
 export class MagazineService implements MagazineServiceInterface {
   constructor(

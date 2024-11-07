@@ -513,7 +513,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
     try {
       await this.magazineSection.updateOne(
         { _id: sectionId },
-        { $pullAll: { posts: postIdToRemove } },
+        { $pullAll: { posts: [postIdToRemove] } },
       )
     } catch (error: any) {
       throw error;

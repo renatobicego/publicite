@@ -9,7 +9,6 @@ import {
 
 import { decodeJwt } from '@clerk/backend/jwt';
 import { GqlExecutionContext } from '@nestjs/graphql';
-import { Request } from 'express';
 
 
 interface JwtPayload {
