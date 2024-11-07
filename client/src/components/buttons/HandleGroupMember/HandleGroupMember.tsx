@@ -16,7 +16,7 @@ import { IoTrashOutline } from "react-icons/io5";
 import { Group } from "@/types/groupTypes";
 import { useSocket } from "@/app/socketProvider";
 import { emitGroupNotification } from "../../notifications/groups/emitNotifications";
-import { useUserData } from "@/app/(root)/userDataProvider";
+import { useUserData } from "@/app/(root)/providers/userDataProvider";
 
 const HandleGroupMember = ({
   user,

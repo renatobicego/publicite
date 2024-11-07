@@ -8,7 +8,7 @@ import {
   PopoverTrigger,
 } from "@nextui-org/react";
 import { FaBookmark, FaRegBookmark } from "react-icons/fa6";
-import { useUserData } from "@/app/(root)/userDataProvider";
+import { useUserData } from "@/app/(root)/providers/userDataProvider";
 import { useState } from "react";
 import SavePostLogic from "./SavePostLogic";
 
@@ -22,7 +22,6 @@ const SaveButton: React.FC<SaveButtonProps> = ({ post, ...props }) => {
   const saved = postsInMagazine.find(
     (postInMagazine) => postInMagazine.postId === post._id
   )
-  const [savedRecently, setSavedRecently] = useState(false);
   return (
     <Popover
       isOpen={isOpen}
@@ -39,7 +38,7 @@ const SaveButton: React.FC<SaveButtonProps> = ({ post, ...props }) => {
           {...props}
           className={`opacity-75 data-[hover=true]:opacity-100 ${props.className}`}
         >
-          {savedRecently || saved ? <FaBookmark /> : <FaRegBookmark />}
+          { saved ? <FaBookmark /> : <FaRegBookmark />}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[240px]">
@@ -50,7 +49,6 @@ const SaveButton: React.FC<SaveButtonProps> = ({ post, ...props }) => {
               magazines={magazines}
               postId={post._id}
               saved={saved}
-              setSavedRecently={setSavedRecently}
             />
           ) : (
             <></>

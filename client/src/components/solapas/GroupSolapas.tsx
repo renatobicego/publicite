@@ -14,7 +14,7 @@ import PrimaryButton from "../buttons/PrimaryButton";
 import { FaPlus } from "react-icons/fa6";
 import { User } from "@/types/userTypes";
 import { useRouter } from "next-nprogress-bar";
-import { useUserData } from "@/app/(root)/userDataProvider";
+import { useUserData } from "@/app/(root)/providers/userDataProvider";
 const GroupSolapas = ({
   group,
   isAdmin,

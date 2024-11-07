@@ -21,3 +21,4 @@ CUENTA GRATUITA CREAR PLAN DE SUSCRIPTION
 - borrar posts en revista
 - borrar seccion
 - editar seccion
+- deberìa filtrar los colaboradores en revista, que le meustre funcionalidades de colaborador

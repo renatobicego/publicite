@@ -132,7 +132,7 @@ export const createMagazineSectionMutation = gql`
 
 export const addPostMagazineUserMutation = gql`
   mutation AddPostInUserMagazine(
-    $postId: [String!]!
+    $postId: String!
     $magazineAdmin: String!
     $magazineId: String!
     $sectionId: String!

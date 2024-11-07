@@ -10,7 +10,7 @@ import NextLink from "next/link";
 import UserButtonModal from "@/app/(root)/(configuracion)/UserButtonPage";
 import { ConfigData } from "@/app/(root)/(configuracion)/Profile/actions";
 import { UserType } from "@/types/userTypes";
-import { useUserData } from "@/app/(root)/userDataProvider";
+import { useUserData } from "@/app/(root)/providers/userDataProvider";
 
 const MobileMenu = ({
   setIsMenuOpen,

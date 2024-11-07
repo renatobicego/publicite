@@ -4,7 +4,7 @@ import PostsList from "@/app/(root)/(explorar)/anuncios/components/PostsList";
 import GroupsLogic from "@/app/(root)/(explorar)/grupos/GroupsLogic";
 import UsersLogic from "@/app/(root)/(explorar)/perfiles/UsersLogic";
 import BoardsLogic from "@/app/(root)/(explorar)/pizarras/BoardsLogic";
-import { useUserData } from "@/app/(root)/userDataProvider";
+import { useUserData } from "@/app/(root)/providers/userDataProvider";
 import {
   POSTS,
   POST_RECENTS,

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import DataBox, { DataItem, EditButton } from "../DataBox";
 import { Slider } from "@nextui-org/react";
-import { useBackground } from "@/app/(root)/backgroundProvider";
+import { useBackground } from "@/app/(root)/providers/backgroundProvider";
 import { UserPreferences } from "@/types/userTypes";
 
 const Background = ({userPreferences} : {userPreferences: UserPreferences}) => {

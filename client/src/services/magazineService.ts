@@ -118,7 +118,7 @@ export const putPostInMagazine = async (
       ownerType === "user"
         ? addPostMagazineUserMutation
         : addPostMagazineGroupMutation,
-    variables: { postId: [postId], magazineAdmin, magazineId, sectionId },
+    variables: { postId, magazineAdmin, magazineId, sectionId },
     context: {
       headers: {
         Authorization: await auth().getToken(),

@@ -11,9 +11,9 @@ import Preferences from "./Preferences/Preferences";
 import { PROFILE } from "@/utils/data/urls";
 import Business from "./Business/Business";
 import { IoBusiness } from "react-icons/io5";
-import { BackgroundProvider } from "../backgroundProvider";
+import { BackgroundProvider } from "../providers/backgroundProvider";
 import { ConfigData } from "./Profile/actions";
-import { useUserData } from "../userDataProvider";
+import { useUserData } from "../providers/userDataProvider";
 
 const UserButtonModal = ({
   configData,
@@ -57,6 +57,7 @@ const UserButtonModal = ({
         elements: {
           rootBox: "size-8",
           avatarBox: "h-full w-full border-[0.8px]",
+          
         },
       }}
     >

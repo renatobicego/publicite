@@ -6,23 +6,23 @@ import PrimaryButton from "../PrimaryButton";
 import MagazineCard from "./MagazineCard";
 import { Link } from "@nextui-org/react";
 import { Magazine } from "@/types/magazineTypes";
+import { useUserData } from "@/app/(root)/providers/userDataProvider";
 
 const SavePostLogic = ({
   titleProps,
   postId,
   magazines,
-  setSavedRecently,
   saved,
 }: {
   titleProps: DOMAttributes<HTMLElement>;
   postId: string;
   magazines: Magazine[];
-  setSavedRecently: Dispatch<SetStateAction<boolean>>;
   saved?: {
     postId: string;
     section: string;
   };
-}) => {
+  }) => {
+  const {fetchMagazines} = useUserData();
   const [selectedMagazineSection, setSelectedMagazineSection] = useState<{
     id: string;
     magazineId: string;
@@ -48,7 +48,7 @@ const SavePostLogic = ({
       return;
     }
 
-    setSavedRecently(true);
+    fetchMagazines()
     setIsSubmitting(false);
     toastifySuccess(res.message as string);
   };

@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { getGroupMembersById } from "@/services/groupsService";
 import { toastifyError } from "@/utils/functions/toastify";
 import { PostGroupMagazine } from "@/types/magazineTypes";
-import { useUserData } from "@/app/(root)/userDataProvider";
+import { useUserData } from "@/app/(root)/providers/userDataProvider";
 
 const GroupMagazineInputs = ({
   setValues,

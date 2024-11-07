@@ -1,3 +1,4 @@
+import { useUserData } from "@/app/(root)/providers/userDataProvider";
 import { removePostInMagazineSection } from "@/app/server/magazineActions";
 import ConfirmModal from "@/components/modals/ConfirmModal";
 import { Magazine } from "@/types/magazineTypes";
@@ -31,7 +32,7 @@ const MagazineCard = ({
   };
 }) => {
   const [sectionToDeletePost, setSectionToDeletePost] = useState("");
-  const router = useRouter();
+  const {fetchMagazines} = useUserData();
   const handleSelectMagazineSection = (sectionId: string) => {
     if (selectedMagazineSection.id === sectionId) {
       setSelectedMagazineSection({
@@ -64,7 +65,7 @@ const MagazineCard = ({
       return;
     }
 
-    router.refresh();
+    fetchMagazines()
     toastifySuccess(res.message as string);
   };
 

@@ -1,4 +1,4 @@
-import { useUserData } from "@/app/(root)/userDataProvider";
+import { useUserData } from "@/app/(root)/providers/userDataProvider";
 import { useSocket } from "@/app/socketProvider";
 import ConfirmModal from "@/components/modals/ConfirmModal";
 import { emitGroupNotification } from "@/components/notifications/groups/emitNotifications";

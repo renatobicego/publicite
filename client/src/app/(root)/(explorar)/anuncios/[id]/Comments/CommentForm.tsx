@@ -1,5 +1,5 @@
 "use client";
-import { useUserData } from "@/app/(root)/userDataProvider";
+import { useUserData } from "@/app/(root)/providers/userDataProvider";
 import SecondaryButton from "@/components/buttons/SecondaryButton";
 import { CustomTextarea } from "@/components/inputs/CustomInputs";
 import { PostCommentForm } from "@/types/postTypes";
