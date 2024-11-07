@@ -99,9 +99,9 @@ export class MagazineAdapter implements MagazineAdapterInterface {
     }
   }
 
-  async createMagazine(magazineRequest: MagazineCreateRequest): Promise<any> {
+  async createMagazine(magazineRequest: MagazineCreateRequest, userRequestId: string): Promise<any> {
     try {
-      return await this.magazineService.createMagazine(magazineRequest);
+      return await this.magazineService.createMagazine(magazineRequest, userRequestId);
     } catch (error: any) {
       throw error;
     }

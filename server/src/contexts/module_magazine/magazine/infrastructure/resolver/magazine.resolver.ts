@@ -9,7 +9,6 @@ import { MagazineUpdateRequest } from '../../application/adapter/dto/HTTP-REQUES
 import { PubliciteAuth } from 'src/contexts/module_shared/auth/publicite_auth/publicite_auth';
 import { ClerkAuthGuard } from 'src/contexts/module_shared/auth/clerk-auth/clerk.auth.guard';
 import { MagazineSectionCreateRequest } from '../../application/adapter/dto/HTTP-REQUEST/magazineSection.create.request';
-import { getIdFromClerkToken, getTokenFromRequest } from 'src/contexts/module_shared/functions/getTokenFromRequest';
 import { OwnerType } from '../../domain/entity/enum/magazine.ownerType.enum';
 import { CustomContextRequestInterface } from 'src/contexts/module_shared/auth/custom_request/custom.context.request.interface';
 
@@ -26,7 +25,7 @@ export class MagazineResolver {
     nullable: true,
     description: 'Agregar nueva seccion en la revista',
   })
-  @UseGuards(ClerkAuthGuard)
+  //@UseGuards(ClerkAuthGuard)
   async addNewMagazineSection(
     @Args('magazineAdmin', { type: () => String })
     magazineAdmin: string,
@@ -39,8 +38,8 @@ export class MagazineResolver {
     groupId?: string,
   ): Promise<any> {
     try {
-      const userRequestId = context.req.userRequestId;
-      PubliciteAuth.authorize(userRequestId, magazineAdmin);
+      //const userRequestId = context.req.userRequestId;
+      //PubliciteAuth.authorize(userRequestId, magazineAdmin);
       await this.magazineAdapter.addNewMagazineSection(
         magazineAdmin,
         magazineId,
@@ -265,12 +264,15 @@ export class MagazineResolver {
     nullable: true,
     description: 'Crear una revista',
   })
+  @UseGuards(ClerkAuthGuard)
   async createMagazine(
     @Args('magazineCreateRequest', { type: () => MagazineCreateRequest })
     magazineRequest: MagazineCreateRequest,
+    @Context() context: { req: CustomContextRequestInterface },
   ): Promise<any> {
     try {
-      return await this.magazineAdapter.createMagazine(magazineRequest);
+      const userRequestId = context.req.userRequestId;
+      return await this.magazineAdapter.createMagazine(magazineRequest,userRequestId);
     } catch (error: any) {
       throw error;
     }

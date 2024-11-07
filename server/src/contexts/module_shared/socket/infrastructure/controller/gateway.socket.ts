@@ -1,6 +1,8 @@
 import { Body, Controller, Inject, Post, UseGuards } from "@nestjs/common";
+
+
 import { SocketAdapterInterface } from "../../application/adapter/socket.adapter.interface";
-import { ClerkAuthGuard } from "src/contexts/module_shared/auth/clerk-auth/clerk.auth.guard";
+import { AuthSocket } from "../auth/socket.auth";
 
 @Controller('socket')
 export class SocketContrroller {
@@ -9,13 +11,13 @@ export class SocketContrroller {
     private readonly socketAdapter: SocketAdapterInterface
   ) { }
   @Post()
-  @UseGuards(ClerkAuthGuard)
+  @UseGuards(AuthSocket)
   async socketController(
     @Body() notificationBody: any,
   ): Promise<any> {
     try {
 
-      await this.socketAdapter.handleEventNotification(notificationBody);
+      //await this.socketAdapter.handleEventNotification(notificationBody);
     } catch (error: any) {
       throw error;
     }
