@@ -56,8 +56,9 @@ export class MagazineResolver {
     nullable: true,
     description: 'Agregar post en la revista de usuario',
   })
+  @UseGuards(ClerkAuthGuard)
   async addPostInUserMagazine(
-    @Args('postId', { type: () => [String] })
+    @Args('postId', { type: () => String })
     postId: string,
     @Args('magazineAdmin', { type: () => String })
     magazineAdmin: string,
@@ -86,6 +87,7 @@ export class MagazineResolver {
     nullable: true,
     description: 'Agregar post en la revista de grupo',
   })
+  @UseGuards(ClerkAuthGuard)
   async addPostInGroupMagazine(
     @Args('postId', { type: () => [String] })
     postId: string,

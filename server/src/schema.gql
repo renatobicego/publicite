@@ -517,7 +517,7 @@ type Mutation {
   addNewMagazineSection(magazineAdmin: String!, magazineId: String!, section: MagazineSectionCreateRequest!, groupId: String): String
 
   """Agregar post en la revista de usuario"""
-  addPostInUserMagazine(postId: [String!]!, magazineAdmin: String!, magazineId: String!, sectionId: String!): String
+  addPostInUserMagazine(postId: String!, magazineAdmin: String!, magazineId: String!, sectionId: String!): String
 
   """Agregar post en la revista de grupo"""
   addPostInGroupMagazine(postId: [String!]!, magazineAdmin: String!, magazineId: String!, sectionId: String!): String

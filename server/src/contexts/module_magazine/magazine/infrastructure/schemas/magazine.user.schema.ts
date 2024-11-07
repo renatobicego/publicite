@@ -9,7 +9,7 @@ interface UserMagazineDocument extends MagazineDocument {
 
 const UserMagazineSchema = new Schema<UserMagazineDocument>({
   collaborators: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-  user: { type: Schema.Types.ObjectId, ref: 'User' },
+  user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   visibility: { type: String, required: true },
 });
 

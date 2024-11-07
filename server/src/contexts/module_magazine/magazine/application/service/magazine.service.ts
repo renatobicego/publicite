@@ -139,7 +139,9 @@ export class MagazineService implements MagazineServiceInterface {
   async createMagazine(magazineRequest: MagazineCreateRequest, userRequestId: string): Promise<void> {
     try {
       this.logger.log('Creating new Magazine in service..');
+      const postArray = [];
       const { addedPost } = magazineRequest;
+      if (addedPost) postArray.push(addedPost)
       let section: any = [];
       const magazineBase = new Magazine(
         magazineRequest.name,
@@ -148,16 +150,15 @@ export class MagazineService implements MagazineServiceInterface {
         magazineRequest.description ?? null,
         undefined,
       );
-      if (addedPost != undefined || addedPost != null) {
-        //La revista tiene un post, tenemos que proceder a crear la Magazine Section
-        const newFatherSection = new MagazineSection(
-          '',
-          [addedPost as ObjectId],
-          true,
-        );
-        section.push(newFatherSection);
-        magazineBase.setSections = section;
-      }
+
+      const newFatherSection = new MagazineSection(
+        '',
+        postArray,
+        true,
+      );
+      section.push(newFatherSection);
+      magazineBase.setSections = section;
+
 
       switch (magazineRequest.ownerType) {
         case OwnerType.user: {
@@ -165,7 +166,7 @@ export class MagazineService implements MagazineServiceInterface {
           const userMagazine = new UserMagazine(
             magazineBase,
             magazineRequest.collaborators,
-            magazineRequest.user,
+            userRequestId,
             magazineRequest.visibility,
           );
           return await this.magazineRepository.save(userMagazine);

@@ -187,31 +187,34 @@ export class MagazineRepository implements MagazineRepositoryInterface {
     magazineAdmin: string,
     sectionId: string,
   ): Promise<any> {
-    const session = await this.connection.startSession();
-    session.startTransaction();
-    try {
-      const isUserAllowed = await this.userMagazine.findOne(
-        {
-          _id: magazineId,
-          $or: [{ user: magazineAdmin }, { collaborators: magazineAdmin }],
-        }
-      ).session(session).lean();
 
-      if (isUserAllowed) {
+    const session = await this.connection.startSession();
+
+    try {
+      await session.withTransaction(async () => {
+
+
+        const result = await this.userMagazine.updateOne(
+          {
+            _id: magazineId,
+            $or: [{ user: magazineAdmin }, { collaborators: magazineAdmin }],
+          }
+        ).session(session)
+
+        checkResultModificationOfOperation(result);
+
         await this.magazineSection
           .updateOne(
             { _id: sectionId },
             { $addToSet: { posts: postId } },
-            { session },
+            { session }
           )
-          .lean();
 
-        await session.commitTransaction();
-      } else {
-        throw new Error(
-          'The user is not allowed to add a post in this magazine',
-        );
-      }
+
+
+      });
+
+      await session.commitTransaction();
     } catch (error: any) {
       if (session.inTransaction()) {
         await session.abortTransaction();
@@ -221,6 +224,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
       session.endSession();
     }
   }
+
 
   async addCollaboratorsToUserMagazine(
     newCollaborators: string[],
@@ -654,7 +658,6 @@ export class MagazineRepository implements MagazineRepositoryInterface {
       throw error;
     }
   }
-
   async save(magazine: Magazine): Promise<any> {
     let magazineSaved;
     if (magazine.getSections.length <= 0) {
