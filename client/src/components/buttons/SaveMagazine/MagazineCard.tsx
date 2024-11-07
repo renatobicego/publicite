@@ -3,6 +3,7 @@ import ConfirmModal from "@/components/modals/ConfirmModal";
 import { Magazine } from "@/types/magazineTypes";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { Accordion, AccordionItem, Button } from "@nextui-org/react";
+import { useRouter } from "next-nprogress-bar";
 import { Dispatch, SetStateAction, useRef, useState } from "react";
 import { FaChevronLeft } from "react-icons/fa6";
 import { IoTrashOutline } from "react-icons/io5";
@@ -30,6 +31,7 @@ const MagazineCard = ({
   };
 }) => {
   const [sectionToDeletePost, setSectionToDeletePost] = useState("");
+  const router = useRouter();
   const handleSelectMagazineSection = (sectionId: string) => {
     if (selectedMagazineSection.id === sectionId) {
       setSelectedMagazineSection({
@@ -62,6 +64,7 @@ const MagazineCard = ({
       return;
     }
 
+    router.refresh();
     toastifySuccess(res.message as string);
   };
 
@@ -84,13 +87,20 @@ const MagazineCard = ({
         <Accordion variant="bordered" isCompact>
           <AccordionItem
             HeadingComponent={"h6"}
-            indicator={<FaChevronLeft className="size-3" />}
+            indicator={
+              <FaChevronLeft
+                className={`size-3`}
+              />
+            }
             title={magazine.name}
+            subtitle={isSavedInSection ? "Guardado" : ""}
             classNames={{
-              title: "text-small font-normal",
-              content: `flex flex-col gap-1 ${
-                isSavedInSection ? "bg-primary text-white" : ""
-              }`,
+              title: `text-small font-normal ${
+                isSavedInSection ? "text-primary" : ""
+                }`,
+              subtitle: "text-xs text-primary",
+              content: `flex flex-col gap-1 `,
+     
             }}
           >
             {magazine.sections.map((section) => {
@@ -114,7 +124,11 @@ const MagazineCard = ({
                       : ""
                   } ${isPostInSection ? "text-primary border-primary" : ""}`}
                 >
-                  {section.isFatherSection ? "Sección general" : section.title}
+                  {section.isFatherSection ? (
+                    <span className="italic">Seccion General</span>
+                  ) : (
+                    section.title
+                  )}
                 </Button>
               );
             })}
@@ -142,9 +156,7 @@ const MagazineCard = ({
               ? "border-primary"
               : ""
           } justify-start ${
-            isPostInSection
-              ? "text-primary border-primary"
-              : ""
+            isPostInSection ? "text-primary border-primary" : ""
           }`}
         >
           {magazine.name}
