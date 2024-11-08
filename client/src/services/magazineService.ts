@@ -2,9 +2,11 @@
 import {
   addPostMagazineGroupMutation,
   addPostMagazineUserMutation,
+  changeSectionNameMutation,
   createMagazineMutation,
   createMagazineSectionMutation,
   deletePostInSectionMutation,
+  deleteSectionMutation,
   editMagazineMutation,
   getMagazineByIdQuery,
   getMagazinesQuery,
@@ -82,6 +84,51 @@ export const postMagazineSection = async (
       magazineId,
       section: { isFatherSection: false, title: sectionName },
       groupId,
+    },
+    context: {
+      headers: {
+        Authorization: await auth().getToken(),
+      },
+    },
+  });
+  return data;
+};
+
+export const editMagazineSection = async (
+  newTitle: string,
+  sectionId: string,
+  ownerType: "user" | "group"
+) => {
+  const { data } = await getClient().mutate({
+    mutation: changeSectionNameMutation,
+    variables: {
+      newTitle,
+      sectionId,
+      ownerType,
+    },
+    context: {
+      headers: {
+        Authorization: await auth().getToken(),
+      },
+    },
+  });
+  return data;
+};
+
+export const deleteMagazineSection = async (
+  sectionId: string,
+  magazineId: string,
+  ownerType: "user" | "group",
+  userId: string
+) => {
+  const { data } = await getClient().mutate({
+    mutation: deleteSectionMutation,
+    variables: {
+      sectionIdsToDelete: [sectionId],
+      magazineId,
+      ...(ownerType === "user"
+        ? { userMagazineAllowed: userId }
+        : { allowedCollaboratorId: userId }),
     },
     context: {
       headers: {

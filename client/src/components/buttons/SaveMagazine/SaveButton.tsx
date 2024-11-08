@@ -17,9 +17,11 @@ interface SaveButtonProps extends ButtonProps {
 }
 
 const SaveButton: React.FC<SaveButtonProps> = ({ post, ...props }) => {
+  // get magazines and posts that are in magazines
   const { magazines, postsInMagazine } = useUserData();
   const [isOpen, setIsOpen] = useState(false);
-  const saved = postsInMagazine.find(
+  // get posts in each magazine and section
+  const saved = postsInMagazine.filter(
     (postInMagazine) => postInMagazine.postId === post._id
   )
   return (
@@ -27,6 +29,7 @@ const SaveButton: React.FC<SaveButtonProps> = ({ post, ...props }) => {
       isOpen={isOpen}
       onOpenChange={(open) => setIsOpen(open)}
       placement="bottom"
+      shouldFlip={false}
       showArrow
       offset={10}
     >
@@ -38,7 +41,7 @@ const SaveButton: React.FC<SaveButtonProps> = ({ post, ...props }) => {
           {...props}
           className={`opacity-75 data-[hover=true]:opacity-100 ${props.className}`}
         >
-          { saved ? <FaBookmark /> : <FaRegBookmark />}
+          { saved.length > 0 ? <FaBookmark /> : <FaRegBookmark />}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[240px]">

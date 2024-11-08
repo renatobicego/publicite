@@ -4,10 +4,12 @@ import ConfirmModal from "@/components/modals/ConfirmModal";
 import { Magazine } from "@/types/magazineTypes";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { Accordion, AccordionItem, Button } from "@nextui-org/react";
-import { useRouter } from "next-nprogress-bar";
 import { Dispatch, SetStateAction, useRef, useState } from "react";
 import { FaChevronLeft } from "react-icons/fa6";
 import { IoTrashOutline } from "react-icons/io5";
+import AccordionSections from "./AccordionSections";
+import SectionCard from "./SectionCard";
+import ConfirmDelete from "./ConfirmDelete";
 
 const MagazineCard = ({
   magazine,
@@ -31,8 +33,11 @@ const MagazineCard = ({
     section: string;
   };
 }) => {
-  const [sectionToDeletePost, setSectionToDeletePost] = useState("");
-  const {fetchMagazines} = useUserData();
+  const [sectionToDeletePost, setSectionToDeletePost] = useState<string | null>(
+    null
+  );
+  const { fetchMagazines } = useUserData();
+
   const handleSelectMagazineSection = (sectionId: string) => {
     if (selectedMagazineSection.id === sectionId) {
       setSelectedMagazineSection({
@@ -46,133 +51,62 @@ const MagazineCard = ({
       magazineId: magazine._id,
     });
   };
-  const fatherSection = magazine.sections.find(
-    (section) => section.isFatherSection
-  );
-  const isSavedInSection = magazine.sections.some((section) =>
-    section.posts.some((post) => post._id === savedPost?.postId)
-  );
-  const assignAdminRef = useRef<() => void>(() => {});
+
   const deletePost = async () => {
+    if (!sectionToDeletePost) return;
+
     const res = await removePostInMagazineSection(
       magazine._id,
       savedPost?.postId as string,
       sectionToDeletePost,
       magazine.ownerType
     );
+
     if (res.error) {
       toastifyError(res.error as string);
       return;
     }
 
-    fetchMagazines()
+    fetchMagazines();
     toastifySuccess(res.message as string);
   };
+  const deletePostRef = useRef<() => void>(() => {});
 
-  const handleDeletePostClick = () => {
-    if (assignAdminRef.current) {
-      assignAdminRef.current(); // Trigger custom open function to open the modal
+  const handleDeletePostClick = (sectionId: string) => {
+    setSectionToDeletePost(sectionId);
+    if (deletePostRef.current) {
+      deletePostRef.current();
     }
   };
-  if (magazine.sections.length > 1) {
-    return (
-      <>
-        <ConfirmModal
-          ButtonAction={<></>}
-          message={`¿Está seguro de eliminar el anuncio de la revista/sección?`}
-          tooltipMessage="Eliminar"
-          confirmText="Eliminar"
-          onConfirm={deletePost}
-          customOpen={(openModal) => (assignAdminRef.current = openModal)} // Set the reference for customOpen
+
+  const isPostInSection = (sectionId: string) => {
+    return savedPost?.section === sectionId;
+  };
+
+  return (
+    <>
+      <ConfirmDelete deletePost={deletePost} deletePostRef={deletePostRef} />
+      {magazine.sections.length > 1 ? (
+        <AccordionSections
+          isPostInSection={isPostInSection}
+          savedPost={savedPost}
+          magazine={magazine}
+          handleDeletePostClick={handleDeletePostClick}
+          handleSelectMagazineSection={handleSelectMagazineSection}
+          selectedMagazineSection={selectedMagazineSection}
         />
-        <Accordion variant="bordered" isCompact>
-          <AccordionItem
-            HeadingComponent={"h6"}
-            indicator={
-              <FaChevronLeft
-                className={`size-3`}
-              />
-            }
-            title={magazine.name}
-            subtitle={isSavedInSection ? "Guardado" : ""}
-            classNames={{
-              title: `text-small font-normal ${
-                isSavedInSection ? "text-primary" : ""
-                }`,
-              subtitle: "text-xs text-primary",
-              content: `flex flex-col gap-1 `,
-     
-            }}
-          >
-            {magazine.sections.map((section) => {
-              const isPostInSection = savedPost?.section === section._id;
-              return (
-                <Button
-                  key={section._id}
-                  variant="bordered"
-                  startContent={isPostInSection ? <IoTrashOutline /> : <></>}
-                  onPress={() => {
-                    if (savedPost && isPostInSection) {
-                      setSectionToDeletePost(section._id);
-                      handleDeletePostClick();
-                      return;
-                    }
-                    handleSelectMagazineSection(section._id);
-                  }}
-                  className={`justify-start w-full ${
-                    selectedMagazineSection.id === section._id
-                      ? "border-primary"
-                      : ""
-                  } ${isPostInSection ? "text-primary border-primary" : ""}`}
-                >
-                  {section.isFatherSection ? (
-                    <span className="italic">Seccion General</span>
-                  ) : (
-                    section.title
-                  )}
-                </Button>
-              );
-            })}
-          </AccordionItem>
-        </Accordion>
-      </>
-    );
-  } else {
-    const isPostInSection = savedPost?.section === fatherSection?._id;
-    return (
-      <>
-        <Button
-          onPress={() => {
-            if (fatherSection && savedPost && isPostInSection) {
-              setSectionToDeletePost(fatherSection._id);
-              handleDeletePostClick();
-              return;
-            }
-            handleSelectMagazineSection(fatherSection?._id as string);
-          }}
-          variant="bordered"
-          startContent={isPostInSection ? <IoTrashOutline /> : <></>}
-          className={`${
-            selectedMagazineSection.id === fatherSection?._id
-              ? "border-primary"
-              : ""
-          } justify-start ${
-            isPostInSection ? "text-primary border-primary" : ""
-          }`}
-        >
-          {magazine.name}
-        </Button>
-        <ConfirmModal
-          ButtonAction={<></>}
-          message={`¿Está seguro de eliminar el anuncio de la revista/sección?`}
-          tooltipMessage="Eliminar"
-          confirmText="Eliminar"
-          onConfirm={deletePost}
-          customOpen={(openModal) => (assignAdminRef.current = openModal)} // Set the reference for customOpen
+      ) : (
+        <SectionCard
+          magazineName={magazine.name}
+          handleDeletePostClick={handleDeletePostClick}
+          isPostInSection={isPostInSection}
+          section={magazine.sections[0]}
+          handleSelectMagazineSection={handleSelectMagazineSection}
+          selectedMagazineSection={selectedMagazineSection}
         />
-      </>
-    );
-  }
+      )}
+    </>
+  );
 };
 
 export default MagazineCard;

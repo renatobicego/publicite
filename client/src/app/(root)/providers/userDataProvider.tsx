@@ -77,7 +77,6 @@ export const UserDataProvider = ({
   useEffect(() => {
     fetchMagazines();
   }, []);
-
   return (
     <UserDataContext.Provider
       value={{

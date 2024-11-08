@@ -4,8 +4,19 @@ import EditMagazineSection from "@/components/modals/MagazineSection/EditMagazin
 import { MagazineSection } from "@/types/magazineTypes";
 import { Post } from "@/types/postTypes";
 import { Accordion, AccordionItem } from "@nextui-org/react";
+import DeleteMagazineSection from "./DeleteMagazineSection";
 
-const AccordionSections = ({ sections, magazineId }: { sections: MagazineSection[]; magazineId: string }) => {
+const AccordionSections = ({
+  sections,
+  ownerType,
+  canEdit,
+  magazineId,
+}: {
+  sections: MagazineSection[];
+  ownerType: "user" | "group";
+  canEdit: boolean;
+  magazineId: string;
+}) => {
   return (
     <Accordion
       variant="splitted"
@@ -24,7 +35,22 @@ const AccordionSections = ({ sections, magazineId }: { sections: MagazineSection
           HeadingComponent={"h6"}
           key={section._id}
           title={section.title}
-          startContent={<EditMagazineSection magazineId={magazineId}  />}
+          startContent={
+            canEdit && (
+              <div className="flex gap-1 items-center">
+                <EditMagazineSection
+                  prevSectionName={section.title}
+                  ownerType={ownerType}
+                  sectionId={section._id}
+                />
+                <DeleteMagazineSection
+                  sectionId={section._id}
+                  magazineId={magazineId}
+                  ownerType={ownerType}
+                />
+              </div>
+            )
+          }
         >
           <PostsGrid posts={section.posts as Post[]} />
         </AccordionItem>

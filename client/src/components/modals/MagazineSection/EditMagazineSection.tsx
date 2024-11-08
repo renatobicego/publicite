@@ -14,25 +14,30 @@ import {
 } from "@nextui-org/react";
 import { useState } from "react";
 import { CustomInputWithoutFormik } from "../../inputs/CustomInputs";
-import { createMagazineSection } from "@/app/server/magazineActions";
+import {
+  createMagazineSection,
+  putMagazineSection,
+} from "@/app/server/magazineActions";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { useRouter } from "next-nprogress-bar";
 
 const EditMagazineSection = ({
-  magazineId,
-  groupId,
+  sectionId,
+  ownerType,
+  prevSectionName,
 }: {
-  magazineId: string;
-  groupId?: string;
+  sectionId: string;
+  ownerType: "user" | "group";
+  prevSectionName: string;
 }) => {
   const router = useRouter();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState(prevSectionName);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const handleCreate = async () => {
+  const handleEdit = async () => {
     if (!inputValue) return;
     setIsSubmitting(true);
-    const res = await createMagazineSection(inputValue, magazineId, groupId);
+    const res = await putMagazineSection(inputValue, sectionId, ownerType);
     if ("error" in res) {
       setIsSubmitting(true);
       toastifyError(res.error as string);
@@ -50,7 +55,6 @@ const EditMagazineSection = ({
           color="secondary"
           radius="full"
           variant="flat"
-          className="absolute top-0 right-0"
           onPress={onOpen}
           isIconOnly
         >
@@ -62,7 +66,7 @@ const EditMagazineSection = ({
           {(onClose) => (
             <>
               <ModalHeader className="flex flex-col gap-1">
-                Crear Sección de Revista
+                Editar Nombre de Sección
               </ModalHeader>
               <ModalBody>
                 <CustomInputWithoutFormik
@@ -73,18 +77,23 @@ const EditMagazineSection = ({
                 />
               </ModalBody>
               <ModalFooter>
-                <Button color="secondary" variant="light" onPress={onClose}>
+                <Button
+                  color="secondary"
+                  radius="full"
+                  variant="light"
+                  onPress={onClose}
+                >
                   Cerrar
                 </Button>
                 <SecondaryButton
                   isLoading={isSubmitting}
                   isDisabled={!inputValue || isSubmitting}
                   onPress={async () => {
-                    await handleCreate();
+                    await handleEdit();
                     onClose();
                   }}
                 >
-                  Crear
+                  Editar
                 </SecondaryButton>
               </ModalFooter>
             </>

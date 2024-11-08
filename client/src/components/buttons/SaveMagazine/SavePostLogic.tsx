@@ -17,12 +17,13 @@ const SavePostLogic = ({
   titleProps: DOMAttributes<HTMLElement>;
   postId: string;
   magazines: Magazine[];
-  saved?: {
+  saved: {
     postId: string;
     section: string;
-  };
-  }) => {
-  const {fetchMagazines} = useUserData();
+  }[];
+}) => {
+  const { fetchMagazines } = useUserData();
+  // the selected magazine section and magazine id
   const [selectedMagazineSection, setSelectedMagazineSection] = useState<{
     id: string;
     magazineId: string;
@@ -31,7 +32,7 @@ const SavePostLogic = ({
     magazineId: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  // add post to section
   const handleAddPost = async () => {
     setIsSubmitting(true);
     const res = await addPostToMagazine(
@@ -40,7 +41,7 @@ const SavePostLogic = ({
       selectedMagazineSection.id,
       magazines.find(
         (magazine) => magazine._id === selectedMagazineSection.magazineId
-      )?.ownerType as "user" | "group"
+      )?.ownerType as "user" | "group" // get the ownerType of the magazine where the post will be added
     );
     if (res.error) {
       setIsSubmitting(false);
@@ -48,7 +49,7 @@ const SavePostLogic = ({
       return;
     }
 
-    fetchMagazines()
+    fetchMagazines();
     setIsSubmitting(false);
     toastifySuccess(res.message as string);
   };
@@ -59,16 +60,24 @@ const SavePostLogic = ({
       </p>
       <div className="mt-2 flex flex-col gap-2 w-full">
         <p className="text-xs">Tus revistas</p>
-        {magazines.map((magazine) => (
-          <MagazineCard
-            key={magazine._id}
-            magazine={magazine}
-            selectedMagazineSection={selectedMagazineSection}
-            setSelectedMagazineSection={setSelectedMagazineSection}
-            savedPost={saved}
-          />
-        ))}
-        {saved && (
+        {magazines.map((magazine) => {
+          const magazineSectionsIds = magazine.sections.map(
+            (section) => section._id
+          )
+          const getPostSavedInThisMagazine = saved?.find((post) =>
+            magazineSectionsIds.includes(post.section)
+          )
+          return (
+            <MagazineCard
+              key={magazine._id}
+              magazine={magazine}
+              selectedMagazineSection={selectedMagazineSection}
+              setSelectedMagazineSection={setSelectedMagazineSection}
+              savedPost={getPostSavedInThisMagazine}
+            />
+          );
+        })}
+        {saved.length > 0 && (
           <p className="text-xs">
             Para eliminar de la revista, clickea en el ícono de la revista
           </p>
