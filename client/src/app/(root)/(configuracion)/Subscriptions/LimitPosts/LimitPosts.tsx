@@ -2,7 +2,7 @@ import { Subscription } from "@/types/subscriptions";
 import DataBox, { CardDataItem, DataItem } from "../../DataBox";
 import { Button } from "@nextui-org/react";
 import useUserPostLimit from "@/utils/hooks/useUserPostLimit";
-import { useUserData } from "@/app/(root)/userDataProvider";
+import { useUserData } from "@/app/(root)/providers/userDataProvider";
 
 const LimitPosts = ({
   userSubscriptions,

@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { getGroupMembersById } from "@/services/groupsService";
 import { toastifyError } from "@/utils/functions/toastify";
 import { PostGroupMagazine } from "@/types/magazineTypes";
-import { useUserData } from "@/app/(root)/userDataProvider";
+import { useUserData } from "@/app/(root)/providers/userDataProvider";
 
 const GroupMagazineInputs = ({
   setValues,
@@ -21,10 +21,12 @@ const GroupMagazineInputs = ({
 
   id: string | null;
   }) => {
-  const {userIdLogged} = useUserData();
+  const { userIdLogged } = useUserData();
+  // Store members of the group
   const [groupMembers, setGroupMembers] = useState<User[]>();
 
   useEffect(() => {
+    // get members
     if (id) {
       getGroupMembersById(id).then((data) => {
         setGroupMembers(data.members);
@@ -39,7 +41,7 @@ const GroupMagazineInputs = ({
   const allowAllCollaborators = () => {
     setValues((prevValues) => ({
       ...prevValues,
-      allowedCollaborators: mockedUsers.map((user) => user._id),
+      allowedCollaborators: groupMembers?.map((user) => user._id) || [],
     }));
   };
 

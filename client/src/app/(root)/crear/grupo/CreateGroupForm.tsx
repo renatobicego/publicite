@@ -14,7 +14,7 @@ import { groupValidation } from "./validation";
 import { Group } from "@/types/groupTypes";
 import { emitGroupNotification } from "@/components/notifications/groups/emitNotifications";
 import { useSocket } from "@/app/socketProvider";
-import { useUserData } from "../../userDataProvider";
+import { useUserData } from "../../providers/userDataProvider";
 
 export type PostGroup = Omit<Group, "_id" | "creator">;
 const CreateGroupForm = () => {

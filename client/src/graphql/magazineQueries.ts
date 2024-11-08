@@ -130,9 +130,39 @@ export const createMagazineSectionMutation = gql`
   }
 `;
 
+export const changeSectionNameMutation = gql`
+  mutation UpdateTitleOfSectionById(
+    $sectionId: String!
+    $newTitle: String!
+    $ownerType: OwnerType!
+  ) {
+    updateTitleOfSectionById(
+      sectionId: $sectionId
+      newTitle: $newTitle
+      ownerType: $ownerType
+    )
+  }
+`;
+
+export const deleteSectionMutation = gql`
+  mutation DeleteSectionFromMagazineById(
+    $sectionIdsToDelete: [String!]!
+    $magazineId: String!
+    $allowedCollaboratorId: String
+    $userMagazineAllowed: String
+  ) {
+    deleteSectionFromMagazineById(
+      sectionIdsToDelete: $sectionIdsToDelete
+      magazineId: $magazineId
+      allowedCollaboratorId: $allowedCollaboratorId
+      userMagazineAllowed: $userMagazineAllowed
+    )
+  }
+`;
+
 export const addPostMagazineUserMutation = gql`
   mutation AddPostInUserMagazine(
-    $postId: [String!]!
+    $postId: String!
     $magazineAdmin: String!
     $magazineId: String!
     $sectionId: String!

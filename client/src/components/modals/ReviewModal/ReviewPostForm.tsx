@@ -5,7 +5,7 @@ import { Button } from "@nextui-org/react";
 import { Form, Formik, Field } from "formik";
 import { useRouter } from "next-nprogress-bar";
 import StarRating from "./StarRating";
-import { useUserData } from "@/app/(root)/userDataProvider";
+import { useUserData } from "@/app/(root)/providers/userDataProvider";
 
 export interface PostReviewValues extends Omit<PostReview, "_id"> {}
 

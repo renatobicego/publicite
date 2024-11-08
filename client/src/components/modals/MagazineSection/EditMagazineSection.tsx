@@ -1,7 +1,7 @@
 "use client";
 
-import { FaPlus } from "react-icons/fa6";
-import SecondaryButton from "../buttons/SecondaryButton";
+import { FaPencil, FaPlus } from "react-icons/fa6";
+import SecondaryButton from "../../buttons/SecondaryButton";
 import {
   Button,
   Modal,
@@ -13,26 +13,31 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import { useState } from "react";
-import { CustomInputWithoutFormik } from "../inputs/CustomInputs";
-import { createMagazineSection } from "@/app/server/magazineActions";
+import { CustomInputWithoutFormik } from "../../inputs/CustomInputs";
+import {
+  createMagazineSection,
+  putMagazineSection,
+} from "@/app/server/magazineActions";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { useRouter } from "next-nprogress-bar";
 
-const CreateMagazineSection = ({
-  magazineId,
-  groupId,
+const EditMagazineSection = ({
+  sectionId,
+  ownerType,
+  prevSectionName,
 }: {
-  magazineId: string;
-  groupId?: string;
+  sectionId: string;
+  ownerType: "user" | "group";
+  prevSectionName: string;
 }) => {
   const router = useRouter();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState(prevSectionName);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const handleCreate = async () => {
+  const handleEdit = async () => {
     if (!inputValue) return;
     setIsSubmitting(true);
-    const res = await createMagazineSection(inputValue, magazineId, groupId);
+    const res = await putMagazineSection(inputValue, sectionId, ownerType);
     if ("error" in res) {
       setIsSubmitting(true);
       toastifyError(res.error as string);
@@ -45,16 +50,15 @@ const CreateMagazineSection = ({
   };
   return (
     <>
-      <Tooltip placement="bottom" content="Crear sección">
+      <Tooltip placement="bottom" content="Editar sección">
         <Button
           color="secondary"
           radius="full"
           variant="flat"
-          className="absolute top-0 right-0"
           onPress={onOpen}
           isIconOnly
         >
-          <FaPlus />
+          <FaPencil />
         </Button>
       </Tooltip>
       <Modal isOpen={isOpen} placement="center" onOpenChange={onOpenChange}>
@@ -62,7 +66,7 @@ const CreateMagazineSection = ({
           {(onClose) => (
             <>
               <ModalHeader className="flex flex-col gap-1">
-                Crear Sección de Revista
+                Editar Nombre de Sección
               </ModalHeader>
               <ModalBody>
                 <CustomInputWithoutFormik
@@ -73,18 +77,23 @@ const CreateMagazineSection = ({
                 />
               </ModalBody>
               <ModalFooter>
-                <Button color="secondary" variant="light" onPress={onClose}>
+                <Button
+                  color="secondary"
+                  radius="full"
+                  variant="light"
+                  onPress={onClose}
+                >
                   Cerrar
                 </Button>
                 <SecondaryButton
                   isLoading={isSubmitting}
                   isDisabled={!inputValue || isSubmitting}
                   onPress={async () => {
-                    await handleCreate();
+                    await handleEdit();
                     onClose();
                   }}
                 >
-                  Crear
+                  Editar
                 </SecondaryButton>
               </ModalFooter>
             </>
@@ -95,4 +104,4 @@ const CreateMagazineSection = ({
   );
 };
 
-export default CreateMagazineSection;
+export default EditMagazineSection;

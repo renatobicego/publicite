@@ -1,6 +1,8 @@
 "use server";
 import {
+  deleteMagazineSection,
   deletPostInMagazine,
+  editMagazineSection,
   postMagazine,
   postMagazineSection,
   putMagazine,
@@ -80,6 +82,55 @@ export const createMagazineSection = async (
   }
 };
 
+export const putMagazineSection = async (
+  newTitle: string,
+  sectionId: string,
+  ownerType: "user" | "group"
+) => {
+  const user = auth();
+
+  if (!user.sessionId) {
+    return { error: "Usuario no autenticado. Por favor inicie sesión." };
+  }
+
+  try {
+    await editMagazineSection(newTitle, sectionId, ownerType);
+    return { message: "Sección editada exitosamente" };
+  } catch (err) {
+    console.log(err);
+    return {
+      error: "Error al editar la sección. Por favor intenta de nuevo.",
+    };
+  }
+};
+
+export const deleteSection = async (
+  sectionId: string,
+  magazineId: string,
+  ownerType: "user" | "group"
+) => {
+  const user = auth();
+
+  if (!user.sessionId) {
+    return { error: "Usuario no autenticado. Por favor inicie sesión." };
+  }
+
+  try {
+    await deleteMagazineSection(
+      sectionId,
+      magazineId,
+      ownerType,
+      user.sessionClaims.metadata.mongoId
+    );
+    return { message: "Sección eliminada exitosamente" };
+  } catch (err) {
+    console.log(err);
+    return {
+      error: "Error al eliminar la sección. Por favor intenta de nuevo.",
+    };
+  }
+};
+
 export const addPostToMagazine = async (
   magazineId: string,
   postId: string,
@@ -107,9 +158,9 @@ export const removePostInMagazineSection = async (
     await deletPostInMagazine(magazineId, postIdToRemove, sectionId, ownerType);
     return { message: "Anuncio removido exitosamente" };
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return {
       error: "Error al remover el anuncio. Por favor intenta de nuevo.",
-    }
+    };
   }
 };

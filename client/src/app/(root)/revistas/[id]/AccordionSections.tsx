@@ -1,10 +1,22 @@
 "use client";
 import PostsGrid from "@/components/grids/PostGrid";
+import EditMagazineSection from "@/components/modals/MagazineSection/EditMagazineSection";
 import { MagazineSection } from "@/types/magazineTypes";
 import { Post } from "@/types/postTypes";
 import { Accordion, AccordionItem } from "@nextui-org/react";
+import DeleteMagazineSection from "./DeleteMagazineSection";
 
-const AccordionSections = ({ sections }: { sections: MagazineSection[] }) => {
+const AccordionSections = ({
+  sections,
+  ownerType,
+  canEdit,
+  magazineId,
+}: {
+  sections: MagazineSection[];
+  ownerType: "user" | "group";
+  canEdit: boolean;
+  magazineId: string;
+}) => {
   return (
     <Accordion
       variant="splitted"
@@ -23,6 +35,22 @@ const AccordionSections = ({ sections }: { sections: MagazineSection[] }) => {
           HeadingComponent={"h6"}
           key={section._id}
           title={section.title}
+          startContent={
+            canEdit && (
+              <div className="flex gap-1 items-center">
+                <EditMagazineSection
+                  prevSectionName={section.title}
+                  ownerType={ownerType}
+                  sectionId={section._id}
+                />
+                <DeleteMagazineSection
+                  sectionId={section._id}
+                  magazineId={magazineId}
+                  ownerType={ownerType}
+                />
+              </div>
+            )
+          }
         >
           <PostsGrid posts={section.posts as Post[]} />
         </AccordionItem>

@@ -3,7 +3,7 @@ import useMasonryGrid from "@/utils/hooks/useMasonryGrid";
 import { Board } from "@/types/board";
 import { Spinner } from "@nextui-org/react";
 import { User } from "@/types/userTypes";
-import { useUserData } from "../../userDataProvider";
+import { useUserData } from "../../providers/userDataProvider";
 
 const BoardGrid = ({
   items,

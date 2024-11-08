@@ -2,9 +2,11 @@
 import {
   addPostMagazineGroupMutation,
   addPostMagazineUserMutation,
+  changeSectionNameMutation,
   createMagazineMutation,
   createMagazineSectionMutation,
   deletePostInSectionMutation,
+  deleteSectionMutation,
   editMagazineMutation,
   getMagazineByIdQuery,
   getMagazinesQuery,
@@ -92,6 +94,51 @@ export const postMagazineSection = async (
   return data;
 };
 
+export const editMagazineSection = async (
+  newTitle: string,
+  sectionId: string,
+  ownerType: "user" | "group"
+) => {
+  const { data } = await getClient().mutate({
+    mutation: changeSectionNameMutation,
+    variables: {
+      newTitle,
+      sectionId,
+      ownerType,
+    },
+    context: {
+      headers: {
+        Authorization: await auth().getToken(),
+      },
+    },
+  });
+  return data;
+};
+
+export const deleteMagazineSection = async (
+  sectionId: string,
+  magazineId: string,
+  ownerType: "user" | "group",
+  userId: string
+) => {
+  const { data } = await getClient().mutate({
+    mutation: deleteSectionMutation,
+    variables: {
+      sectionIdsToDelete: [sectionId],
+      magazineId,
+      ...(ownerType === "user"
+        ? { userMagazineAllowed: userId }
+        : { allowedCollaboratorId: userId }),
+    },
+    context: {
+      headers: {
+        Authorization: await auth().getToken(),
+      },
+    },
+  });
+  return data;
+};
+
 export const getMagazinesOfUser = async () => {
   const userId = auth().sessionClaims?.metadata.mongoId;
   const { data } = await query({
@@ -118,7 +165,7 @@ export const putPostInMagazine = async (
       ownerType === "user"
         ? addPostMagazineUserMutation
         : addPostMagazineGroupMutation,
-    variables: { postId: [postId], magazineAdmin, magazineId, sectionId },
+    variables: { postId, magazineAdmin, magazineId, sectionId },
     context: {
       headers: {
         Authorization: await auth().getToken(),

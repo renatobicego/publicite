@@ -1,24 +1,26 @@
 import { Group } from "@/types/groupTypes";
 import { GroupMagazine, Magazine, UserMagazine } from "@/types/magazineTypes";
-import { GetUser } from "@/types/userTypes";
+import { GetUser, User } from "@/types/userTypes";
 import { GROUPS, PROFILE } from "@/utils/data/urls";
 
-function getOwner(magazine: Magazine): GetUser | Group  {
+function getOwner(magazine: Magazine): GetUser | Group {
   return magazine.ownerType === "user"
-    ? (magazine as UserMagazine).user as GetUser
-    : (magazine as GroupMagazine).group as Group;
+    ? ((magazine as UserMagazine).user as GetUser)
+    : ((magazine as GroupMagazine).group as Group);
 }
 
 function checkIsOwner(
   magazine: Magazine,
   owner: GetUser | Group,
-  user: any // Clerk's user type or customize it as needed
+  userId: string // Clerk's user type or customize it as needed
 ): boolean {
   if (magazine.ownerType === "user") {
-    return (owner as GetUser).username === user?.username;
+    return (owner as GetUser)._id === userId;
   }
-  return ((magazine as GroupMagazine).allowedCollaborators as string[]).includes(
-    user?.publicMetadata.mongoId as string
+  const groupData: Group = (magazine as GroupMagazine).group;
+  return (
+    groupData.admins.some((admin) => (admin as User)._id === userId) ||
+    groupData.creator === userId
   );
 }
 

@@ -5,7 +5,7 @@ import { Group } from "@/types/groupTypes";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { emitGroupNotification } from "@/components/notifications/groups/emitNotifications";
 import { useSocket } from "@/app/socketProvider";
-import { useUserData } from "@/app/(root)/userDataProvider";
+import { useUserData } from "@/app/(root)/providers/userDataProvider";
 import { User } from "@/types/userTypes";
 
 const InviteUsersGroup = ({ group }: { group: Group }) => {

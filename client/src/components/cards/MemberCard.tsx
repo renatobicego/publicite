@@ -4,7 +4,7 @@ import { PROFILE } from "@/utils/data/urls";
 import HandleGroupMember from "../buttons/HandleGroupMember/HandleGroupMember";
 import { Group } from "@/types/groupTypes";
 import HandleGroupRequest from "../buttons/HandleGroupMember/HandleGroupRequest";
-import { useUserData } from "@/app/(root)/userDataProvider";
+import { useUserData } from "@/app/(root)/providers/userDataProvider";
 
 const MemberCard = ({
   user,

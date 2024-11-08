@@ -2,14 +2,14 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import HelpButton from "../../components/buttons/HelpButton";
 import Footer from "../../components/Footer/Footer";
 import Header from "../../components/Header/Header";
-import { BackgroundProvider } from "./backgroundProvider";
-import BackgroundStyle from "./BackgroundStyle.";
+import { BackgroundProvider } from "./providers/backgroundProvider";
+import BackgroundStyle from "./providers/BackgroundStyle.";
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { extractRouterConfig } from "uploadthing/server";
 import { ourFileRouter } from "../api/uploadthing/core";
 import { SocketProvider } from "../socketProvider";
 import { getConfigData } from "./(configuracion)/Profile/actions";
-import { UserDataProvider } from "./userDataProvider";
+import { UserDataProvider } from "./providers/userDataProvider";
 export default async function NavigationLayout({
   children,
 }: {
