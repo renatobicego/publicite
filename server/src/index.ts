@@ -32,7 +32,7 @@ const initializeNestApp = async (): Promise<void> => {
       options: {
         package: 'notification',
         protoPath: join(__dirname, 'contexts/module_shared/socket/infrastructure/proto/notification.proto'),
-        url: 'localhost:3001',
+        url: '0.0.0.0:3001',
       },
     });
 
