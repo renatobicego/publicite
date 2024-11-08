@@ -20,8 +20,7 @@ const eventTypes = [
 ] as const;
 
 export class SocketNotificationService
-  implements SocketNotificationServiceInterface
-{
+  implements SocketNotificationServiceInterface {
   constructor(
     private readonly logger: MyLoggerService,
     @Inject('UserServiceInterface')
@@ -29,13 +28,18 @@ export class SocketNotificationService
     @Inject('GroupServiceInterface')
     private readonly groupService: GroupServiceInterface,
     @InjectConnection() private readonly connection: Connection,
-  ) {}
+  ) { }
 
   async handleEventNotification(notificationBody: any): Promise<any> {
+    if (!notificationBody.notification) {
+      this.logger.error(
+        'Notification not found, check your notification socket',
+      )
+      return;
+    }
     const { event } = notificationBody.notification;
 
     const session = await this.connection.startSession();
-
     if (!event) {
       this.logger.error(
         'Event not found, check your notification socket EVENT: ' + event,
@@ -43,6 +47,7 @@ export class SocketNotificationService
       return;
     }
     try {
+
       await session.withTransaction(async () => {
         switch (event) {
           case eventTypes[0]: // Te han invitado a un grupo -> 0

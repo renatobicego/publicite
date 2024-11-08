@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package notification;
+
+service NotificationService {
+  rpc SendGroupNotification (NotificationRequest) returns (NotificationResponse);
+}
+
+message NotificationRequest {
+  NotificationBody notificationBody = 1;
+}
+
+message NotificationBody {
+  Notification notification = 1;
+  FrontData frontData = 2;
+}
+
+message Notification {
+  string event = 1;
+  bool viewed = 2;
+  string date = 3;
+  BackData backData = 4;
+}
+
+message BackData {
+  string userIdTo = 1;
+  string userIdFrom = 2;
+}
+
+message FrontData {
+  Group group = 1;
+  UserInviting userInviting = 2;
+}
+
+message Group {
+  string _id = 1;
+  string name = 2;
+  string profilePhotoUrl = 3;
+}
+
+message UserInviting {
+  string username = 1;
+}
+
+message NotificationResponse {
+  bool success = 1;
+}

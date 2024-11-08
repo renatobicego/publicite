@@ -4,8 +4,8 @@ import { Module } from '@nestjs/common';
 import { SocketNotificationService } from '../../application/service/socket.notification.service';
 import { UserModule } from 'src/contexts/module_user/user/infrastructure/module/user.module';
 import { GroupModule } from 'src/contexts/module_group/group/infrastructure/module/group.module';
-import { SocketContrroller } from '../controller/gateway.socket';
 import { SocketAdapter } from '../adapter/socket.adapter';
+import { NotificationController } from '../controller/gateway.socket';
 
 @Module({
   imports: [UserModule, GroupModule],
@@ -19,6 +19,6 @@ import { SocketAdapter } from '../adapter/socket.adapter';
       useClass: SocketAdapter,
     },
   ],
-  controllers: [SocketContrroller],
+  controllers: [NotificationController],
 })
 export class NotificationSocketModule { }

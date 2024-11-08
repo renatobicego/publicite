@@ -8,45 +8,37 @@ import * as compression from 'compression';
 import { onRequest } from 'firebase-functions/v2/https';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import * as http from 'http';
-import { Server } from 'socket.io';
-import { WebSocketServer } from 'ws';
+import { Transport } from '@nestjs/microservices';
+import { join } from 'path';
 
 const expressServer = express();
 expressServer.use(compression());
 
 let nestApp: NestExpressApplication;
-let io: Server;
-
-const wss = new WebSocketServer({ noServer: true });
 
 const initializeNestApp = async (): Promise<void> => {
   if (!nestApp) {
+    // Crear la aplicación HTTP
     nestApp = await NestFactory.create<NestExpressApplication>(
       AppModule,
       new ExpressAdapter(expressServer),
     );
     nestApp.useGlobalPipes(new ValidationPipe({ transform: true }));
     nestApp.enableCors({});
-    await nestApp.init();
 
-    const server = http.createServer(expressServer);
-    io = new Server(server, {
-      path: 'https://api-7u63p4eg4q-uc.a.run.app/socket',
-      transports: ['websocket', 'polling'],
-      cors: {
-        origin: '*',
-        methods: ['GET', 'POST'],
+    // Crear el microservicio gRPC
+    const grpcApp = await NestFactory.createMicroservice(AppModule, {
+      transport: Transport.GRPC,
+      options: {
+        package: 'notification',
+        protoPath: join(__dirname, 'contexts/module_shared/socket/infrastructure/proto/notification.proto'),
+        url: 'localhost:3001',
       },
     });
 
-    io.on('connection', (socket) => {
-      console.log('New client connected:', socket.id);
-      socket.on('disconnect', () => {
-        console.log('Client disconnected:', socket.id);
-      });
-    });
+    await grpcApp.listen();
 
+    await nestApp.init();
     console.log(`Server initialized`);
   }
 };
