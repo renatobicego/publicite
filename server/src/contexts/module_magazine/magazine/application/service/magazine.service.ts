@@ -30,7 +30,7 @@ export class MagazineService implements MagazineServiceInterface {
       this.logger.log('Adding new section in magazine...');
       if (groupId) {
         this.logger.log('Adding new section in group magazine...');
-        await this.magazineRepository.isAdminOrCollaborator(
+        await this.magazineRepository.isAdmin_creator_Or_Collaborator(
           magazineId,
           magazineAdmin,
         )
@@ -41,7 +41,7 @@ export class MagazineService implements MagazineServiceInterface {
           section
         )
       }
-      
+
       return this.magazineRepository.addNewMagazineUserSection(
         magazineId,
         section,
@@ -60,7 +60,7 @@ export class MagazineService implements MagazineServiceInterface {
   ): Promise<any> {
     try {
       this.logger.log('Adding Post in Group Magazine in service..');
-      await this.magazineRepository.isAdminOrCollaborator(
+      await this.magazineRepository.isAdmin_creator_Or_Collaborator(
         magazineId,
         magazineAdmin,
       );
@@ -231,30 +231,37 @@ export class MagazineService implements MagazineServiceInterface {
     }
   }
 
-  async deleteSectionFromMagazineById(
+  async deleteSectionFromMagazineGroupById(
     sectionIdsToDelete: string[],
     magazineId: string,
-    allowedCollaboratorId?: string,
-    userMagazineAllowed?: string,
+    allowedCollaboratorId: string,
   ): Promise<void> {
     try {
-      if (!allowedCollaboratorId && userMagazineAllowed) {
-        this.logger.log('Deleting Section from User Magazine in service..');
-        return this.magazineRepository.deleteSectionFromUserMagazineById(
+      await this.magazineRepository.isAdmin_creator_Or_Collaborator(
+        magazineId,
+        allowedCollaboratorId
+      )
+      return await this.magazineRepository.deleteSectionFromGroupMagazineById
+        (
           sectionIdsToDelete,
           magazineId,
-          userMagazineAllowed,
         );
-      } else if (allowedCollaboratorId) {
-        this.logger.log('Deleting Section from Group Magazine in service..');
-        return this.magazineRepository.deleteSectionFromGroupMagazineById(
-          sectionIdsToDelete,
-          magazineId,
-          allowedCollaboratorId,
-        );
-      } else {
-        throw new Error('Not allowed');
-      }
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  async deleteSectionFromMagazineUserById(
+    sectionIdsToDelete: string[],
+    magazineId: string,
+    userMagazineAllowed: string,
+  ): Promise<void> {
+    try {
+      return await this.magazineRepository.deleteSectionFromUserMagazineById(
+        sectionIdsToDelete,
+        magazineId,
+        userMagazineAllowed,
+      );
     } catch (error: any) {
       throw error;
     }

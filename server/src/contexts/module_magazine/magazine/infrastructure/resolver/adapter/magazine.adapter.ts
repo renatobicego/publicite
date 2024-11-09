@@ -126,23 +126,30 @@ export class MagazineAdapter implements MagazineAdapterInterface {
   async deleteSectionFromMagazineById(
     sectionIdsToDelete: string[],
     magazineId: string,
-    allowedCollaboratorId?: string,
-    userMagazineAllowed?: string,
+    magazineType: string,
+    userRequestId: string,
   ): Promise<any> {
     try {
-      if (!allowedCollaboratorId && userMagazineAllowed) {
-        await this.magazineService.deleteSectionFromMagazineById(
-          sectionIdsToDelete,
-          magazineId,
-          userMagazineAllowed,
-        );
-      } else if (allowedCollaboratorId) {
-        await this.magazineService.deleteSectionFromMagazineById(
-          sectionIdsToDelete,
-          magazineId,
-          allowedCollaboratorId,
-        );
+      switch (magazineType) {
+        case 'group':
+          await this.magazineService.deleteSectionFromMagazineGroupById(
+            sectionIdsToDelete,
+            magazineId,
+            userRequestId,
+          );
+          break;
+        case 'user':
+          await this.magazineService.deleteSectionFromMagazineUserById(
+            sectionIdsToDelete,
+            magazineId,
+            userRequestId,
+          );
+          break;
+        default:
+          return 'You are not allowed to delete this section';
+
       }
+
     } catch (error: any) {
       throw error;
     }

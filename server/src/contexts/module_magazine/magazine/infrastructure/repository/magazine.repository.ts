@@ -107,7 +107,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
     }
   }
 
-  async isAdminOrCollaborator(
+  async isAdmin_creator_Or_Collaborator(
     magazineId: string,
     userId: string,
   ): Promise<any> {
@@ -134,7 +134,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
         .lean();
 
       if (!collaborator && !isAdminOrCreatorOfGroup) {
-        throw new Error('The user is not allowed to add a post in this magazine');
+        throw new Error('The user is not allowed');
       }
     } catch (error: any) {
       throw error;
@@ -384,65 +384,23 @@ export class MagazineRepository implements MagazineRepositoryInterface {
   async deleteSectionFromGroupMagazineById(
     sectionIdsToDelete: string[],
     magazineId: string,
-    allowedCollaboratorId: string,
   ): Promise<void> {
     const session = await this.connection.startSession();
     try {
       await session.withTransaction(async () => {
-        // Eliminar las secciones de las revistas
-        const resultOfOperation = await this.groupMagazine.updateOne(
-          {
-            _id: magazineId,
-            allowedCollaborators: allowedCollaboratorId,
-          },
-          { $pull: { sections: { $in: sectionIdsToDelete } } },
-          { session },
-        );
-
-        // Si no se modificó nada, verificar si el usuario es admin o creador
-        if (resultOfOperation.modifiedCount === 0) {
-          this.logger.log(
-            'No sections were deleted, because the section was not found or the user was not allowed to delete it',
-          );
-          this.logger.log('Verification if user is an allowed admin group');
-
-          const group = await this.groupModel
-            .findOne({
-              magazines: magazineId,
-              $or: [
-                { admins: allowedCollaboratorId },
-                { creator: allowedCollaboratorId },
-              ],
-            })
-            .session(session)
-            .lean();
-
-          if (group) {
-            this.logger.log(
-              'The user is admin or creator, deleting sections in magazine',
-            );
-            await this.groupMagazine
-              .updateMany(
-                { _id: magazineId },
-                { $pull: { sections: { $in: sectionIdsToDelete } } },
-                { session },
-              )
-              .lean();
-            this.logger.log('Deleting sections...');
-            await this.magazineSection
-              .deleteMany({ _id: { $in: sectionIdsToDelete } }, { session })
-              .lean();
-          } else {
-            throw new Error('The user is not allowed to delete this section');
-          }
-        } else if (resultOfOperation.modifiedCount > 0) {
-          this.logger.log('Sections deleted in group magazine successfully');
-          await this.magazineSection
-            .deleteMany({ _id: { $in: sectionIdsToDelete } }, { session })
-            .lean();
-          this.logger.log('Magazine sections were deleted successfully');
-        }
+        await this.groupMagazine
+          .updateMany(
+            { _id: magazineId },
+            { $pull: { sections: { $in: sectionIdsToDelete } } },
+            { session },
+          )
+          .lean();
+        this.logger.log('Deleting sections...');
+        await this.magazineSection
+          .deleteMany({ _id: { $in: sectionIdsToDelete } }, { session })
+          .lean();
       });
+      this.logger.log('Sections successfully deleted...');
     } catch (error: any) {
       throw error;
     } finally {
@@ -456,7 +414,6 @@ export class MagazineRepository implements MagazineRepositoryInterface {
     userMagazineAllowed: string,
   ): Promise<void> {
     const session = await this.connection.startSession();
-    session.startTransaction();
     try {
       await session.withTransaction(async () => {
         const resultOfOperation = await this.userMagazine.updateOne(
@@ -467,7 +424,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
               { collaborators: userMagazineAllowed },
             ],
           },
-          { $pull: { sections: sectionIdsToDelete } },
+          { $pullAll: { sections: [sectionIdsToDelete] } },
           { session },
         );
         checkResultModificationOfOperation(resultOfOperation);
@@ -479,12 +436,10 @@ export class MagazineRepository implements MagazineRepositoryInterface {
         );
       });
 
-      await session.commitTransaction();
     } catch (error: any) {
-      await session.abortTransaction();
       throw error;
     } finally {
-      session.endSession();
+      await session.endSession();
     }
   }
 

@@ -226,6 +226,7 @@ export class MagazineResolver {
     description:
       'Eliminar secciones de la revista, siendo un colaborador de la misma o un administrador de del grupo de la revista',
   })
+  @UseGuards(ClerkAuthGuard)
   async deleteSectionFromMagazineById(
     @Args('sectionIdsToDelete', { type: () => [String] })
     sectionIdsToDelete: string[],
@@ -239,23 +240,26 @@ export class MagazineResolver {
   ): Promise<any> {
     try {
       const userRequestId = context.req.userRequestId;
-      if (!allowedCollaboratorId && userMagazineAllowed) {
-        PubliciteAuth.authorize(userRequestId, userMagazineAllowed);
-        await this.magazineAdapter.deleteSectionFromMagazineById(
-          sectionIdsToDelete,
-          magazineId,
-          userMagazineAllowed,
-        );
-      } else if (allowedCollaboratorId) {
+      if (allowedCollaboratorId) {
         PubliciteAuth.authorize(userRequestId, allowedCollaboratorId);
         await this.magazineAdapter.deleteSectionFromMagazineById(
           sectionIdsToDelete,
           magazineId,
-          allowedCollaboratorId,
+          "group",
+          userRequestId,
+        );
+      } else if (userMagazineAllowed) {
+        PubliciteAuth.authorize(userRequestId, userMagazineAllowed);
+        await this.magazineAdapter.deleteSectionFromMagazineById(
+          sectionIdsToDelete,
+          magazineId,
+          "user",
+          userRequestId,
         );
       } else {
-        throw new Error('Unauthorized');
+        return 'You are not allowed to delete this section';
       }
+
       return 'Sections deleted';
     } catch (error: any) {
       throw error;
