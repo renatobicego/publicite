@@ -6,9 +6,10 @@ import {
   useEffect,
   ReactNode,
 } from "react";
-import { UserPreferences, UserType } from "@/types/userTypes";
+import { UserType } from "@/types/userTypes";
 import { Magazine } from "@/types/magazineTypes";
 import { getMagazinesOfUser } from "@/services/magazineService";
+import { ConfigData, getConfigData } from "../(configuracion)/Profile/actions";
 
 interface UserDataContextType {
   magazines: Magazine[];
@@ -21,6 +22,7 @@ interface UserDataContextType {
     section: string;
   }[];
   fetchMagazines: () => Promise<void>;
+  configData?: ConfigData;
 }
 
 const UserDataContext = createContext<UserDataContextType | undefined>(
@@ -41,12 +43,14 @@ export const UserDataProvider = ({
   userId,
   clerkId,
   userType,
+  token,
 }: {
   children: ReactNode;
   username?: string | null;
   userId?: string;
   clerkId?: string;
   userType?: UserType;
+  token: string;
 }) => {
   const [magazines, setMagazines] = useState<Magazine[]>([]);
   const [postsInMagazine, setPostsInMagazine] = useState<
@@ -59,8 +63,10 @@ export const UserDataProvider = ({
   const [userIdLogged] = useState<string | undefined>(userId);
   const [clerkIdLogged] = useState<string | undefined>(clerkId);
   const [userTypeLogged] = useState<UserType | undefined>(userType);
+  const [configData, setConfigData] = useState<ConfigData>();
 
   const fetchMagazines = async () => {
+    if(!userId) return
     const magazines: Magazine[] = await getMagazinesOfUser();
     setMagazines(magazines);
     // Flatten post IDs from each magazine's sections
@@ -74,8 +80,19 @@ export const UserDataProvider = ({
     );
     setPostsInMagazine(postsIds);
   };
+
+  const fetchConfigData = async () => {
+    if (!usernameLogged || !userIdLogged) return;
+    const configData = await getConfigData({
+      username: usernameLogged,
+      id: userIdLogged,
+    });
+    setConfigData(configData);
+  };
   useEffect(() => {
+    fetchConfigData();
     fetchMagazines();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
     <UserDataContext.Provider
@@ -86,7 +103,8 @@ export const UserDataProvider = ({
         clerkIdLogged,
         userTypeLogged,
         postsInMagazine,
-        fetchMagazines
+        fetchMagazines,
+        configData,
       }}
     >
       {children}

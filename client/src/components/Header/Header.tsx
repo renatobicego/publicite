@@ -12,17 +12,13 @@ import Search from "./Search";
 import MobileMenu from "./MobileMenu";
 import dynamic from "next/dynamic";
 import NavMenuItems from "./NavMenuItems";
-import { UserType } from "@/types/userTypes";
-import { ConfigData } from "@/app/(root)/(configuracion)/Profile/actions";
 const UserNavItems = dynamic(() => import("./UserNavItems"), {
   ssr: false,
 });
 
 const Header = ({
-  configData,
   isSignedIn,
 }: {
-  configData?: ConfigData;
   isSignedIn: boolean;
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -31,6 +27,7 @@ const Header = ({
     <Navbar
       id="navbar"
       disableAnimation={false}
+      disableScrollHandler={true}
       classNames={{
         wrapper: `max-w-full header-spacing shadow-md mt-4 rounded-3xl md:rounded-[40px] lg:rounded-full max-md:gap-2 
             px-6 md:px-8 lg:px-10 max-md:h-12 bg-white
@@ -78,14 +75,12 @@ const Header = ({
         className={`max-w-fit gap-2 !transition-all duration-300`}
       >
         <UserNavItems
-          configData={configData}
           isMenuOpen={isMenuOpen}
         />
       </NavbarContent>
       <MobileMenu
         setIsMenuOpen={setIsMenuOpen}
         isSignedIn={isSignedIn}
-        configData={configData}
       />
     </Navbar>
   );

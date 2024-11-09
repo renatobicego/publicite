@@ -6,18 +6,8 @@ import Notifications from "./Notifications/Notifications";
 import DropdownItems from "./DropdownItems";
 import UserButtonModal from "@/app/(root)/(configuracion)/UserButtonPage";
 import { useSocket } from "@/app/socketProvider";
-import { Subscription } from "@/types/subscriptions";
-import { Board } from "@/types/board";
-import { UserPreferences, UserType } from "@/types/userTypes";
-import { ConfigData } from "@/app/(root)/(configuracion)/Profile/actions";
 
-const UserNavItems = ({
-  isMenuOpen,
-  configData,
-}: {
-  isMenuOpen: boolean;
-  configData: ConfigData | undefined;
-}) => {
+const UserNavItems = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
   const { newNotifications, setNewNotifications } = useSocket();
   useEffect(() => {
     if (isMenuOpen) setNewNotifications(false);
@@ -28,7 +18,7 @@ const UserNavItems = ({
       <NavbarItem className="max-lg:hidden flex gap-2 items-center">
         <SignedIn>
           <Notifications />
-          <UserButtonModal configData={configData} />
+          <UserButtonModal />
           <DropdownItems />
         </SignedIn>
         <SignedOut>
@@ -36,6 +26,9 @@ const UserNavItems = ({
             Iniciar Sesión
           </SecondaryButton>
         </SignedOut>
+      </NavbarItem>
+      <NavbarItem className="lg:hidden flex gap-2 items-center">
+        <UserButtonModal />
       </NavbarItem>
       {newNotifications ? (
         <Badge content="" color="primary" className="lg:hidden mt-2.5">

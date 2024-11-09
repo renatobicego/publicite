@@ -54,17 +54,17 @@ const UserInfo = ({
           <TbWorldPin className="size-4 min-w-4" />
           <p className="text-xs md:text-sm">{user.countryRegion}</p>
         </div>
-        {user.contact && <SocialMedia contact={user.contact} />}
         <div className="flex gap-2 items-center">
           {isMyProfile ? (
             <ContactPetitionsList userId={user._id} />
           ) : (
             <SendRequest
-              variant="solid"
-              removeMargin={false}
-              idToSendRequest={user._id}
+            variant="solid"
+            removeMargin={false}
+            idToSendRequest={user._id}
             />
           )}
+          {user.contact && <SocialMedia contact={user.contact} />}
           <OptionsDropdown username={user.username} />
         </div>
       </div>
