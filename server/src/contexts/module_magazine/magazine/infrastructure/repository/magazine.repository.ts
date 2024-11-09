@@ -29,6 +29,7 @@ import { IUser } from 'src/contexts/module_user/user/infrastructure/schemas/user
 import { MagazineUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/magazine.update.request';
 import { MagazineSection } from '../../domain/entity/section/magazine.section.entity';
 import { ListResponseTemplateOut } from 'svix';
+import { user } from 'firebase-functions/v1/auth';
 
 export class MagazineRepository implements MagazineRepositoryInterface {
   constructor(
@@ -95,9 +96,8 @@ export class MagazineRepository implements MagazineRepositoryInterface {
           { session },
         );
       })
-
-
     } catch (error: any) {
+      session.abortTransaction();
       throw error;
     }
   }
@@ -121,7 +121,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
         return true;
       }
 
-      const anyGroupRol = await this.groupModel
+      const isAdminOrCreatorOfGroup = await this.groupModel
         .findOne(
           {
             magazines: magazineId,
@@ -130,7 +130,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
         )
         .session(session)
         .lean();
-      if (anyGroupRol) {
+      if (isAdminOrCreatorOfGroup) {
         isAdminOrCreator = true;
       }
 
@@ -614,7 +614,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
 
     const group = await this.groupModel.find({
       $or: [{ admins: userId }, { creator: userId }]
-    }).select('magazines')
+    }).select('magazines -_id')
       .populate({
         path: 'magazines',
         select: '_id name sections ownerType',
@@ -628,6 +628,9 @@ export class MagazineRepository implements MagazineRepositoryInterface {
       .session(session)
       .lean()
 
+    if (group) {
+      group.map((group: any) => userMagazines.push(...group.magazines))
+    }
 
 
     const groupMagazines = await this.groupMagazine.find({
@@ -639,7 +642,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
       .lean()
 
 
-    userMagazines.push(...personalMagazines, ...groupMagazines, ...group[0].magazines ?? null)
+    userMagazines.push(...personalMagazines, ...groupMagazines)
     return userMagazines;
 
   }
