@@ -8,8 +8,8 @@ import * as compression from 'compression';
 import { onRequest } from 'firebase-functions/v2/https';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import { Transport } from '@nestjs/microservices';
-import { join } from 'path';
+// import { Transport } from '@nestjs/microservices';
+// import { join } from 'path';
 
 const expressServer = express();
 expressServer.use(compression());
@@ -27,16 +27,16 @@ const initializeNestApp = async (): Promise<void> => {
     nestApp.enableCors({});
 
     // Crear el microservicio gRPC
-    const grpcApp = await NestFactory.createMicroservice(AppModule, {
-      transport: Transport.GRPC,
-      options: {
-        package: 'notification',
-        protoPath: join(__dirname, 'contexts/module_shared/socket/infrastructure/proto/notification.proto'),
-        url: '0.0.0.0:3001',
-      },
-    });
+    // const grpcApp = await NestFactory.createMicroservice(AppModule, {
+    //   transport: Transport.GRPC,
+    //   options: {
+    //     package: 'notification',
+    //     protoPath: join(__dirname, 'contexts/module_shared/socket/infrastructure/proto/notification.proto'),
+    //     url: '0.0.0.0:3001',
+    //   },
+    // });
 
-    await grpcApp.listen();
+    //await grpcApp.listen();
 
     await nestApp.init();
     console.log(`Server initialized`);
