@@ -526,7 +526,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
           },
           {
             path: 'group',
-            select: '_id name profilePhotoUrl',
+            select: '_id name profilePhotoUrl admins creator',
             model: 'Group',
           },
           {
