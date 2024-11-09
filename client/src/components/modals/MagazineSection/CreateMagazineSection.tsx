@@ -73,7 +73,12 @@ const CreateMagazineSection = ({
                 />
               </ModalBody>
               <ModalFooter>
-                <Button color="secondary" radius="full" variant="light" onPress={onClose}>
+                <Button
+                  color="secondary"
+                  radius="full"
+                  variant="light"
+                  onPress={onClose}
+                >
                   Cerrar
                 </Button>
                 <SecondaryButton

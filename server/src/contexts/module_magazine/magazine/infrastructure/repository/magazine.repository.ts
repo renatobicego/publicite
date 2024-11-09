@@ -28,7 +28,6 @@ import { checkResultModificationOfOperation } from 'src/contexts/module_shared/f
 import { IUser } from 'src/contexts/module_user/user/infrastructure/schemas/user.schema';
 import { MagazineUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/magazine.update.request';
 
-
 export class MagazineRepository implements MagazineRepositoryInterface {
   constructor(
     @InjectConnection() private readonly connection: Connection,
@@ -123,12 +122,10 @@ export class MagazineRepository implements MagazineRepositoryInterface {
       }
 
       const isAdminOrCreatorOfGroup = await this.groupModel
-        .findOne(
-          {
-            magazines: magazineId,
-            $or: [{ admins: userId }, { creator: userId }],
-          },
-        )
+        .findOne({
+          magazines: magazineId,
+          $or: [{ admins: userId }, { creator: userId }],
+        })
         .session(session)
         .lean();
       if (isAdminOrCreatorOfGroup) {
@@ -604,9 +601,11 @@ export class MagazineRepository implements MagazineRepositoryInterface {
       .populate(populateField)
       .lean();
 
-    const group = await this.groupModel.find({
-      $or: [{ admins: userId }, { creator: userId }]
-    }).select('magazines -_id')
+    const group = await this.groupModel
+      .find({
+        $or: [{ admins: userId }, { creator: userId }],
+      })
+      .select('magazines -_id')
       .populate({
         path: 'magazines',
         select: '_id name sections ownerType',
@@ -618,12 +617,11 @@ export class MagazineRepository implements MagazineRepositoryInterface {
         },
       })
       .session(session)
-      .lean()
+      .lean();
 
     if (group) {
-      group.map((group: any) => userMagazines.push(...group.magazines))
+      group.map((group: any) => userMagazines.push(...group.magazines));
     }
-
 
     const groupMagazines = await this.groupMagazine
       .find(
@@ -637,7 +635,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
       .populate(populateField)
       .lean();
 
-    userMagazines.push(...personalMagazines, ...groupMagazines)
+    userMagazines.push(...personalMagazines, ...groupMagazines);
     return userMagazines;
   }
 

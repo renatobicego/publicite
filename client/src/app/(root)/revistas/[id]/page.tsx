@@ -36,8 +36,8 @@ export default async function MagazinePage(props: { params: { id: string } }) {
         (collaborator) => collaborator._id === userId
       )
     : (magazine as GroupMagazine).allowedCollaborators.some(
-      (collaborator) => collaborator._id === userId
-    );
+        (collaborator) => collaborator._id === userId
+      );
   const breadcrumbsItems = [
     {
       label: "Inicio",
@@ -74,10 +74,12 @@ export default async function MagazinePage(props: { params: { id: string } }) {
         <MagazineActions isOwner={isOwner} magazine={magazine} />
       </section>
       <div className="w-full relative">
-        <CreateMagazineSection
-          magazineId={magazine._id}
-          groupId={!isOwnerTypeUser ? ownerAsGroup._id : undefined}
-        />
+        {(isOwner || isCollaborator) && (
+          <CreateMagazineSection
+            magazineId={magazine._id}
+            groupId={!isOwnerTypeUser ? ownerAsGroup._id : undefined}
+          />
+        )}
         <PostsGrid
           posts={
             (magazine.sections.find((section) => section.isFatherSection)
