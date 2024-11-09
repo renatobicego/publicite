@@ -105,6 +105,8 @@ type group_graphql_magazine {
   _id: String
   name: String
   profilePhotoUrl: String
+  admins: [String!]
+  creator: String
 }
 
 type allowedCollaborators_graphql_magazine {

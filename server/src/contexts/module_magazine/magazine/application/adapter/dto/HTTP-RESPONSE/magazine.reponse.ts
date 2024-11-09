@@ -56,6 +56,7 @@ export class sections_graphql_magazine {
 
   @Field(() => String, { nullable: true })
   title: string;
+
 }
 
 @ObjectType()
@@ -68,6 +69,13 @@ export class group_graphql_magazine {
 
   @Field(() => String, { nullable: true })
   profilePhotoUrl: string;
+
+  @Field(() => [String], { nullable: true })
+  admins: string[];
+
+  @Field(() => String, { nullable: true })
+  creator: string;
+
 }
 
 @ObjectType()

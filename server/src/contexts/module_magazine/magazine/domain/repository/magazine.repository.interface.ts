@@ -20,8 +20,6 @@ export interface MagazineRepositoryInterface {
 
   addPostInGroupMagazine(
     postId: string,
-    magazineId: string,
-    magazineAdmin: string,
     sectionId: string,
   ): Promise<any>;
 
