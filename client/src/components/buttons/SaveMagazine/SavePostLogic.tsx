@@ -58,15 +58,15 @@ const SavePostLogic = ({
       <p className="text-sm font-semibold text-text-color" {...titleProps}>
         Guardar en Revista
       </p>
-      <div className="mt-2 flex flex-col gap-2 w-full">
+      <div className="my-2 py-1 flex flex-col gap-2 w-full max-h-[250px] overflow-y-auto overflow-x-hidden">
         <p className="text-xs">Tus revistas</p>
         {magazines.map((magazine) => {
           const magazineSectionsIds = magazine.sections.map(
             (section) => section._id
-          )
+          );
           const getPostSavedInThisMagazine = saved?.find((post) =>
             magazineSectionsIds.includes(post.section)
-          )
+          );
           return (
             <MagazineCard
               key={magazine._id}
@@ -82,20 +82,20 @@ const SavePostLogic = ({
             Para eliminar de la revista, clickea en el ícono de la revista
           </p>
         )}
-        {selectedMagazineSection.id !== "" ? (
-          <PrimaryButton
-            isDisabled={isSubmitting}
-            isLoading={isSubmitting}
-            onPress={handleAddPost}
-          >
-            Agregar Anuncio
-          </PrimaryButton>
-        ) : (
-          <PrimaryButton as={Link} href={`${CREATE_MAGAZINE}/${postId}`}>
-            Crear Revista
-          </PrimaryButton>
-        )}
       </div>
+      {selectedMagazineSection.id !== "" ? (
+        <PrimaryButton
+          isDisabled={isSubmitting}
+          isLoading={isSubmitting}
+          onPress={handleAddPost}
+        >
+          Agregar Anuncio
+        </PrimaryButton>
+      ) : (
+        <PrimaryButton as={Link} href={`${CREATE_MAGAZINE}/${postId}`}>
+          Crear Revista
+        </PrimaryButton>
+      )}
     </div>
   );
 };

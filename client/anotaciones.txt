@@ -18,8 +18,6 @@ el tema de tener distintos tipos de relaciones va a costar hacer get de posts po
 CUENTA GRATUITA CREAR PLAN DE SUSCRIPTION
 
 - borrar seccion
-- editar seccion
-- deberìa filtrar los colaboradores en revista, que le meustre funcionalidades de colaborador
 - reigstrarse en produ
 - borrar revista
 - crear revista de grupo deberia invitar a los miembros

@@ -44,7 +44,7 @@ const SaveButton: React.FC<SaveButtonProps> = ({ post, ...props }) => {
           { saved.length > 0 ? <FaBookmark /> : <FaRegBookmark />}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[240px]">
+      <PopoverContent className="w-[270px]">
         {(titleProps) =>
           isOpen ? (
             <SavePostLogic

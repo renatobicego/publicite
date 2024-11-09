@@ -19,7 +19,8 @@ const SectionCard = ({
     id: string;
     magazineId: string;
   };
-}) => {
+  }) => {
+  console.log(magazineName)
   return (
     <Button
       variant="bordered"

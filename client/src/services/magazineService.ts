@@ -150,7 +150,6 @@ export const getMagazinesOfUser = async () => {
       },
     },
   });
-  console.log(data)
   return data.getAllMagazinesByUserId;
 };
 
