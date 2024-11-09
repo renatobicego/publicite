@@ -27,6 +27,7 @@ import { GroupDocument } from 'src/contexts/module_group/group/infrastructure/sc
 import { checkResultModificationOfOperation } from 'src/contexts/module_shared/functions/checkResultModificationOfOperation';
 import { IUser } from 'src/contexts/module_user/user/infrastructure/schemas/user.schema';
 import { MagazineUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/magazine.update.request';
+import error from 'next/error';
 
 
 export class MagazineRepository implements MagazineRepositoryInterface {
@@ -51,7 +52,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
 
     @InjectModel('User') private readonly userModel: Model<IUser>,
     @InjectModel('Group') private readonly groupModel: Model<GroupDocument>,
-  ) {}
+  ) { }
 
   async addNewMagazineGroupSection(
     magazineId: string,
@@ -84,12 +85,12 @@ export class MagazineRepository implements MagazineRepositoryInterface {
     const session = await this.connection.startSession();
 
     try {
-      session.withTransaction(async () => {
+      await session.withTransaction(async () => {
         const sectionId = await this.saveSection(section, session);
         if (sectionId === null || !sectionId) {
           throw new Error('Error saving section in repository');
         }
-        await this.userMagazine.updateOne(
+        const result = await this.userMagazine.updateOne(
           {
             _id: magazineId,
             $or: [{ collaborators: magazineAdmin }, { user: magazineAdmin }],
@@ -97,30 +98,29 @@ export class MagazineRepository implements MagazineRepositoryInterface {
           { $addToSet: { sections: sectionId } },
           { session },
         );
+        checkResultModificationOfOperation(result, 'Error saving section in repository, you dont have permissions');
       });
     } catch (error: any) {
-      session.abortTransaction();
       throw error;
+    } finally {
+      await session.endSession();
     }
   }
 
   async isAdminOrCollaborator(
     magazineId: string,
     userId: string,
-  ): Promise<boolean> {
+  ): Promise<any> {
     const session = await this.connection.startSession();
     session.startTransaction();
-    let isCollaborator = false;
-    let isAdminOrCreator = false;
+
     try {
       const collaborator = await this.groupMagazine
         .findOne({ _id: magazineId, allowedCollaborators: userId })
         .session(session)
+        .select('_id')
         .lean();
-      if (collaborator) {
-        isCollaborator = true;
-        return true;
-      }
+
 
       const isAdminOrCreatorOfGroup = await this.groupModel
         .findOne(
@@ -130,12 +130,12 @@ export class MagazineRepository implements MagazineRepositoryInterface {
           },
         )
         .session(session)
+        .select('_id')
         .lean();
-      if (isAdminOrCreatorOfGroup) {
-        isAdminOrCreator = true;
-      }
 
-      return isCollaborator || isAdminOrCreator;
+      if (!collaborator && !isAdminOrCreatorOfGroup) {
+        throw new Error('The user is not allowed to add a post in this magazine');
+      }
     } catch (error: any) {
       throw error;
     }
@@ -143,23 +143,11 @@ export class MagazineRepository implements MagazineRepositoryInterface {
 
   async addPostInGroupMagazine(
     postId: string,
-    magazineId: string,
-    magazineAdmin: string,
     sectionId: string,
   ): Promise<any> {
     const session = await this.connection.startSession();
     session.startTransaction();
     try {
-      const isAllowedUser = this.isAdminOrCollaborator(
-        magazineId,
-        magazineAdmin,
-      );
-
-      if (!isAllowedUser) {
-        throw new Error(
-          'The user is not allowed to add a post in this magazine',
-        );
-      }
 
       await this.magazineSection
         .updateOne(
@@ -190,12 +178,13 @@ export class MagazineRepository implements MagazineRepositoryInterface {
 
     try {
       await session.withTransaction(async () => {
-        await this.userMagazine
+        const result = await this.userMagazine
           .find({
             _id: magazineId,
             $or: [{ user: magazineAdmin }, { collaborators: magazineAdmin }],
           })
           .session(session);
+        checkResultModificationOfOperation(result, 'You must be an admin or a collaborator to add a post to a magazine');
 
         await this.magazineSection.updateOne(
           { _id: sectionId },

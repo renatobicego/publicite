@@ -11,7 +11,6 @@ import {
   GroupResponseById,
 } from '../../../application/adapter/dto/HTTP-RESPONSE/group.response';
 import { GroupAdapterInterface } from '../../../application/adapter/group.adapter.interface';
-import { getIdFromClerkToken } from 'src/contexts/module_shared/functions/getTokenFromRequest';
 import { CustomContextRequestInterface } from 'src/contexts/module_shared/auth/custom_request/custom.context.request.interface';
 
 @Resolver('Group')
