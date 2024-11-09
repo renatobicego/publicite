@@ -608,6 +608,25 @@ export class MagazineRepository implements MagazineRepositoryInterface {
       { session })
       .select(fieldSelect)
       .populate(populateField)
+      .lean()
+
+
+    const group = await this.groupModel.find({
+      $or: [{ admins: userId }, { creator: userId }]
+    }).select('magazines')
+      .populate({
+        path: 'magazines',
+        select: '_id name sections ownerType',
+        model: 'GroupMagazine',
+        populate: {
+          path: 'sections',
+          select: '_id title posts isFatherSection',
+          model: 'MagazineSection',
+        }
+      })
+      .session(session)
+      .lean()
+
 
     const groupMagazines = await this.groupMagazine.find({
       allowedCollaborators: userId
@@ -615,8 +634,10 @@ export class MagazineRepository implements MagazineRepositoryInterface {
       { session })
       .select(fieldSelect)
       .populate(populateField)
+      .lean()
 
-    userMagazines.push(...personalMagazines, ...groupMagazines)
+
+    userMagazines.push(...personalMagazines, ...groupMagazines, ...group[0].magazines)
     return userMagazines;
 
   }
