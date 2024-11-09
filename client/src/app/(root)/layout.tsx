@@ -8,7 +8,6 @@ import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { extractRouterConfig } from "uploadthing/server";
 import { ourFileRouter } from "../api/uploadthing/core";
 import { SocketProvider } from "../socketProvider";
-import { getConfigData } from "./(configuracion)/Profile/actions";
 import { UserDataProvider } from "./providers/userDataProvider";
 export default async function NavigationLayout({
   children,
@@ -17,7 +16,6 @@ export default async function NavigationLayout({
 }) {
   const user = await currentUser();
   const token = await auth().getToken();
-  const configData = await getConfigData(user);
 
   return (
     <SocketProvider
@@ -29,9 +27,10 @@ export default async function NavigationLayout({
         clerkId={user?.id}
         userType={user?.publicMetadata.userType}
         userId={user?.publicMetadata.mongoId}
+        token={token as string}
       >
         <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
-        <Header configData={configData} isSignedIn={!!user} />
+        <Header isSignedIn={!!user} />
         <BackgroundProvider username={user?.username}>
           <BackgroundStyle />
           {children}

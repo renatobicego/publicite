@@ -76,13 +76,13 @@ export interface ConfigData {
   board: Board;
   userPreferences: UserPreferences;
 }
-export const getConfigData = async (user: User | null) => {
+export const getConfigData = async (user: { username?: string;  id: string}) => {
   if (!user?.username) {
     return;
   }
   const userBoard = await getBoardByUsername(user?.username as string);
   const subscriptions = await getSubscriptionsOfUser(
-    user?.publicMetadata.mongoId as string
+    user?.id as string
   );
   const accountType = subscriptions.find(
     (subscription: Subscription) => !subscription.subscriptionPlan.isPostPack

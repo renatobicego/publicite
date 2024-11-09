@@ -8,18 +8,14 @@ import SecondaryButton from "../buttons/SecondaryButton";
 import DropdownItems from "./DropdownItems";
 import NextLink from "next/link";
 import UserButtonModal from "@/app/(root)/(configuracion)/UserButtonPage";
-import { ConfigData } from "@/app/(root)/(configuracion)/Profile/actions";
-import { UserType } from "@/types/userTypes";
 import { useUserData } from "@/app/(root)/providers/userDataProvider";
 
 const MobileMenu = ({
   setIsMenuOpen,
   isSignedIn,
-  configData,
 }: {
   setIsMenuOpen: Dispatch<SetStateAction<boolean>>;
   isSignedIn: boolean;
-  configData?: ConfigData;
 }) => {
   const { usernameLogged } = useUserData();
   const menuItems = [
@@ -85,7 +81,6 @@ const MobileMenu = ({
       <div className="flex gap-2 items-center">
         <SignedIn>
           <Notifications />
-          <UserButtonModal configData={configData} />
           <DropdownItems />
         </SignedIn>
         <SignedOut>

@@ -27,9 +27,7 @@ import { GroupDocument } from 'src/contexts/module_group/group/infrastructure/sc
 import { checkResultModificationOfOperation } from 'src/contexts/module_shared/functions/checkResultModificationOfOperation';
 import { IUser } from 'src/contexts/module_user/user/infrastructure/schemas/user.schema';
 import { MagazineUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/magazine.update.request';
-import { MagazineSection } from '../../domain/entity/section/magazine.section.entity';
-import { ListResponseTemplateOut } from 'svix';
-import { user } from 'firebase-functions/v1/auth';
+
 
 export class MagazineRepository implements MagazineRepositoryInterface {
   constructor(
@@ -53,15 +51,16 @@ export class MagazineRepository implements MagazineRepositoryInterface {
 
     @InjectModel('User') private readonly userModel: Model<IUser>,
     @InjectModel('Group') private readonly groupModel: Model<GroupDocument>,
-  ) { }
+  ) {}
 
-
-
-  async addNewMagazineGroupSection(magazineId: string, section: MagazineSectionCreateRequest): Promise<any> {
+  async addNewMagazineGroupSection(
+    magazineId: string,
+    section: MagazineSectionCreateRequest,
+  ): Promise<any> {
     const session = await this.connection.startSession();
     try {
       session.withTransaction(async () => {
-        const sectionId = await this.saveSection(section, session)
+        const sectionId = await this.saveSection(section, session);
         if (sectionId === null || !sectionId) {
           throw new Error('Error saving section in repository');
         }
@@ -72,18 +71,21 @@ export class MagazineRepository implements MagazineRepositoryInterface {
             { session },
           )
           .lean();
-      })
-
+      });
     } catch (error: any) {
       throw error;
     }
   }
-  async addNewMagazineUserSection(magazineId: string, section: MagazineSectionCreateRequest, magazineAdmin: string): Promise<any> {
+  async addNewMagazineUserSection(
+    magazineId: string,
+    section: MagazineSectionCreateRequest,
+    magazineAdmin: string,
+  ): Promise<any> {
     const session = await this.connection.startSession();
 
     try {
       session.withTransaction(async () => {
-        const sectionId = await this.saveSection(section, session)
+        const sectionId = await this.saveSection(section, session);
         if (sectionId === null || !sectionId) {
           throw new Error('Error saving section in repository');
         }
@@ -95,25 +97,24 @@ export class MagazineRepository implements MagazineRepositoryInterface {
           { $addToSet: { sections: sectionId } },
           { session },
         );
-      })
+      });
     } catch (error: any) {
       session.abortTransaction();
       throw error;
     }
   }
 
-
-
-  async isAdminOrCollaborator(magazineId: string, userId: string): Promise<boolean> {
+  async isAdminOrCollaborator(
+    magazineId: string,
+    userId: string,
+  ): Promise<boolean> {
     const session = await this.connection.startSession();
     session.startTransaction();
     let isCollaborator = false;
     let isAdminOrCreator = false;
     try {
       const collaborator = await this.groupMagazine
-        .findOne(
-          { _id: magazineId, allowedCollaborators: userId },
-        )
+        .findOne({ _id: magazineId, allowedCollaborators: userId })
         .session(session)
         .lean();
       if (collaborator) {
@@ -135,12 +136,10 @@ export class MagazineRepository implements MagazineRepositoryInterface {
       }
 
       return isCollaborator || isAdminOrCreator;
-
     } catch (error: any) {
       throw error;
     }
   }
-
 
   async addPostInGroupMagazine(
     postId: string,
@@ -151,11 +150,10 @@ export class MagazineRepository implements MagazineRepositoryInterface {
     const session = await this.connection.startSession();
     session.startTransaction();
     try {
-
       const isAllowedUser = this.isAdminOrCollaborator(
-        magazineId, magazineAdmin
-
-      )
+        magazineId,
+        magazineAdmin,
+      );
 
       if (!isAllowedUser) {
         throw new Error(
@@ -188,30 +186,22 @@ export class MagazineRepository implements MagazineRepositoryInterface {
     magazineAdmin: string,
     sectionId: string,
   ): Promise<any> {
-
     const session = await this.connection.startSession();
 
     try {
       await session.withTransaction(async () => {
-
-
-        const result = await this.userMagazine.find(
-          {
+        await this.userMagazine
+          .find({
             _id: magazineId,
             $or: [{ user: magazineAdmin }, { collaborators: magazineAdmin }],
-          }
-        ).session(session)
+          })
+          .session(session);
 
-
-        await this.magazineSection
-          .updateOne(
-            { _id: sectionId },
-            { $addToSet: { posts: postId } },
-            { session }
-          )
-
-
-
+        await this.magazineSection.updateOne(
+          { _id: sectionId },
+          { $addToSet: { posts: postId } },
+          { session },
+        );
       });
 
       await session.commitTransaction();
@@ -224,7 +214,6 @@ export class MagazineRepository implements MagazineRepositoryInterface {
       session.endSession();
     }
   }
-
 
   async addCollaboratorsToUserMagazine(
     newCollaborators: string[],
@@ -274,7 +263,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
           })
           .session(session)
           .lean();
-        checkResultModificationOfOperation(result)
+        checkResultModificationOfOperation(result);
 
         await this.groupMagazine
           .updateOne(
@@ -288,7 +277,6 @@ export class MagazineRepository implements MagazineRepositoryInterface {
           )
           .lean();
 
-
         // await this.userModel
         //   .updateMany(
         //     { _id: { $in: newAllowedCollaborators } },
@@ -296,8 +284,6 @@ export class MagazineRepository implements MagazineRepositoryInterface {
         //     { session },
         //   )
         //   .lean();
-
-
       });
       await session.commitTransaction();
       this.logger.log('Allowed Collaborators added to Magazine successfully');
@@ -513,18 +499,19 @@ export class MagazineRepository implements MagazineRepositoryInterface {
     }
   }
 
-  async deletePostInMagazineSection(postIdToRemove: string, sectionId: string): Promise<any> {
+  async deletePostInMagazineSection(
+    postIdToRemove: string,
+    sectionId: string,
+  ): Promise<any> {
     try {
       await this.magazineSection.updateOne(
         { _id: sectionId },
         { $pullAll: { posts: [postIdToRemove] } },
-      )
+      );
     } catch (error: any) {
       throw error;
     }
-
   }
-
 
   async findMagazineByMagazineId(
     id: ObjectId,
@@ -587,30 +574,35 @@ export class MagazineRepository implements MagazineRepositoryInterface {
     }
   }
 
-  async findAllMagazinesByUserId(userId: string): Promise<MagazineResponse[] | []> {
+  async findAllMagazinesByUserId(
+    userId: string,
+  ): Promise<MagazineResponse[] | []> {
     /*
     revistas que puede tener el usuario  
     1. Revistas en su propio array (contiene revistas propias y revistas de usuarios en las que es colaborador)
     2. Revistas de grupo. estas no se encuentran en su personal array, pero las buscamos en la revista de grupo.
     */
     const session = await this.connection.startSession();
-    const userMagazines: any = []
+    const userMagazines: any = [];
     const fieldSelect = '_id name sections ownerType';
     const populateField = [
       {
         path: 'sections',
         select: '_id title posts isFatherSection',
         model: 'MagazineSection',
-      }
+      },
     ];
-    const personalMagazines = await this.userMagazine.find({
-      $or: [{ user: userId }, { collaborators: userId }]
-    }, null,
-      { session })
+    const personalMagazines = await this.userMagazine
+      .find(
+        {
+          $or: [{ user: userId }, { collaborators: userId }],
+        },
+        null,
+        { session },
+      )
       .select(fieldSelect)
       .populate(populateField)
-      .lean()
-
+      .lean();
 
     const group = await this.groupModel.find({
       $or: [{ admins: userId }, { creator: userId }]
@@ -623,7 +615,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
           path: 'sections',
           select: '_id title posts isFatherSection',
           model: 'MagazineSection',
-        }
+        },
       })
       .session(session)
       .lean()
@@ -633,52 +625,74 @@ export class MagazineRepository implements MagazineRepositoryInterface {
     }
 
 
-    const groupMagazines = await this.groupMagazine.find({
-      allowedCollaborators: userId
-    }, null,
-      { session })
+    const groupMagazines = await this.groupMagazine
+      .find(
+        {
+          allowedCollaborators: userId,
+        },
+        null,
+        { session },
+      )
       .select(fieldSelect)
       .populate(populateField)
-      .lean()
-
+      .lean();
 
     userMagazines.push(...personalMagazines, ...groupMagazines)
     return userMagazines;
-
   }
 
-  async isUserAllowedToEditSectionUserMagazine(sectionId: string, userId: string): Promise<boolean> {
+  async isUserAllowedToEditSectionUserMagazine(
+    sectionId: string,
+    userId: string,
+  ): Promise<boolean> {
     try {
-      const result = await this.userMagazine.findOne({
-        sections: sectionId,
-        $or: [{ user: userId }, { collaborators: userId }],
-      }).lean()
+      const result = await this.userMagazine
+        .findOne({
+          sections: sectionId,
+          $or: [{ user: userId }, { collaborators: userId }],
+        })
+        .lean();
 
-      return !!result
+      return !!result;
     } catch (error: any) {
       throw error;
     }
   }
-  async isUserAllowedToEditSectionGroupMagazine(sectionId: string, userId: string, magazineId: string): Promise<boolean> {
+  async isUserAllowedToEditSectionGroupMagazine(
+    sectionId: string,
+    userId: string,
+    magazineId: string,
+  ): Promise<boolean> {
     try {
       const session = await this.connection.startSession();
-      let isAllowedUser = false
-      let isAdminOrCreator = false
+      let isAllowedUser = false;
+      let isAdminOrCreator = false;
       await session.withTransaction(async () => {
-        const result1 = await this.groupMagazine.findOne({
-          sections: sectionId,
-          allowedCollaborators: userId,
-        }, null, { session }).lean()
-        if (result1) isAllowedUser = true
-        const result2 = await this.groupModel.findOne({
-          magazines: magazineId,
-          $or: [{ admins: userId }, { creator: userId }]
-        }, null, { session }).lean()
-        if (result2) isAdminOrCreator = true
-      })
+        const result1 = await this.groupMagazine
+          .findOne(
+            {
+              sections: sectionId,
+              allowedCollaborators: userId,
+            },
+            null,
+            { session },
+          )
+          .lean();
+        if (result1) isAllowedUser = true;
+        const result2 = await this.groupModel
+          .findOne(
+            {
+              magazines: magazineId,
+              $or: [{ admins: userId }, { creator: userId }],
+            },
+            null,
+            { session },
+          )
+          .lean();
+        if (result2) isAdminOrCreator = true;
+      });
 
-      return isAllowedUser || isAdminOrCreator
-
+      return isAllowedUser || isAdminOrCreator;
     } catch (error: any) {
       throw error;
     }
@@ -735,12 +749,15 @@ export class MagazineRepository implements MagazineRepositoryInterface {
     return this.saveMagazineWithSection(magazine);
   }
 
-  async saveSection(section: MagazineSectionCreateRequest, session: any): Promise<any> {
+  async saveSection(
+    section: MagazineSectionCreateRequest,
+    session: any,
+  ): Promise<any> {
     try {
       const newMagazineSection = new this.magazineSection(section);
       const sectionSave = await newMagazineSection.save({ session });
       if (sectionSave) {
-        return sectionSave._id
+        return sectionSave._id;
       } else {
         return null;
       }
@@ -830,7 +847,8 @@ export class MagazineRepository implements MagazineRepositoryInterface {
             .findOne({
               _id: groupId,
               $or: [{ admins: owner }, { creator: owner }],
-            }).session(session)
+            })
+            .session(session)
             .lean();
           if (!group) {
             throw new Error('Not allowed or group not found');
@@ -853,12 +871,14 @@ export class MagazineRepository implements MagazineRepositoryInterface {
     }
   }
 
-  async updateTitleOfSectionById(sectionId: string, newTitle: string): Promise<void> {
+  async updateTitleOfSectionById(
+    sectionId: string,
+    newTitle: string,
+  ): Promise<void> {
     try {
-      await this.magazineSection.updateOne(
-        { _id: sectionId },
-        { $set: { title: newTitle } },
-      ).lean()
+      await this.magazineSection
+        .updateOne({ _id: sectionId }, { $set: { title: newTitle } })
+        .lean();
     } catch (error: any) {
       throw error;
     }
