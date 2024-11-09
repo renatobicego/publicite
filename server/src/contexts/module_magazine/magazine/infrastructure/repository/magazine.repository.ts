@@ -633,7 +633,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
     userMagazines.push(
       ...personalMagazines,
       ...groupMagazines,
-      ...group[0].magazines,
+      ...(group[0].magazines ?? null),
     );
     return userMagazines;
   }
