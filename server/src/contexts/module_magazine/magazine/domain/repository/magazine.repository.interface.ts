@@ -57,7 +57,6 @@ export interface MagazineRepositoryInterface {
   deleteSectionFromGroupMagazineById(
     sectionIdsToDelete: string[],
     magazineId: string,
-    allowedCollaboratorId: string,
   ): Promise<void>;
   deleteSectionFromUserMagazineById(
     sectionIdsToDelete: string[],
@@ -79,7 +78,7 @@ export interface MagazineRepositoryInterface {
     userId: string,
     magazineId: string
   ): Promise<boolean>;
-  isAdminOrCollaborator(magazineId: string, userId: string): Promise<boolean>
+  isAdmin_creator_Or_Collaborator(magazineId: string, userId: string): Promise<boolean>
   save(magazine: Magazine): Promise<any>;
   saveMagazineWithSection(magazine: Magazine): Promise<any>;
   saveSection(section: MagazineSectionCreateRequest, session: any): Promise<any>

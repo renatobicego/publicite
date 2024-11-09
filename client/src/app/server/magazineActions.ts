@@ -164,3 +164,18 @@ export const removePostInMagazineSection = async (
     };
   }
 };
+
+export const removeMagazine = async (
+  magazineId: string,
+  ownerType: "user" | "group"
+) => {
+  // try {
+  //   await deletPostInMagazine(magazineId, postIdToRemove, sectionId, ownerType);
+  //   return { message: "Anuncio removido exitosamente" };
+  // } catch (error) {
+  //   console.log(error);
+  //   return {
+  //     error: "Error al remover el anuncio. Por favor intenta de nuevo.",
+  //   };
+  // }
+};

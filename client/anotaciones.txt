@@ -9,15 +9,19 @@ Podríamos:
 - Sino, si el usuario cambia el mail, podríamos actualizarlo en mp pero sería medio quilombo
 
 boton de compartir app
-agregar endate a post
-carpeta posts
 marcar como visto peticion de contaacto
 
 el tema de tener distintos tipos de relaciones va a costar hacer get de posts por visibilidad
 
 CUENTA GRATUITA CREAR PLAN DE SUSCRIPTION
 
-- borrar seccion
+- agregar endate a post
+- carpeta posts
 - reigstrarse en produ
 - borrar revista
 - crear revista de grupo deberia invitar a los miembros
+- tabla de pagos conectarla
+- tutoriales
+- ver anuncios del grupo
+- eliminar colaboradores de revista
+- visibilidad grupo, revista, pizarra y posts

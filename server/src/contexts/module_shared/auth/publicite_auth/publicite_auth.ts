@@ -1,6 +1,6 @@
 
 import { UnauthorizedException } from '@nestjs/common';
-import { getIdFromClerkToken } from '../../functions/getTokenFromRequest';
+
 
 
 export class PubliciteAuth {

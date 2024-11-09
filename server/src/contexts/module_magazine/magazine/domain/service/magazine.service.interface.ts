@@ -43,8 +43,16 @@ export interface MagazineServiceInterface {
     magazineId: string,
     magazineAdmin: string,
   ): Promise<void>;
-  deleteSectionFromMagazineById(
+  deleteSectionFromMagazineUserById(
     sectionIdsToDelete: string[],
+    magazineId: string,
+    allowedCollaboratorId?: string,
+    userMagazineAllowed?: string,
+  ): Promise<any>;
+
+  deleteSectionFromMagazineGroupById(
+    sectionIdsToDelete: string[],
+    magazineId: string,
     allowedCollaboratorId?: string,
     userMagazineAllowed?: string,
   ): Promise<any>;

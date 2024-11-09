@@ -3,6 +3,7 @@ import { deleteSection } from "@/app/server/magazineActions";
 import ConfirmModal from "@/components/modals/ConfirmModal";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { Button } from "@nextui-org/react";
+import { useRouter } from "next-nprogress-bar";
 import { IoTrashOutline } from "react-icons/io5";
 
 const DeleteMagazineSection = ({
@@ -14,6 +15,7 @@ const DeleteMagazineSection = ({
   magazineId: string;
   ownerType: "user" | "group";
 }) => {
+  const router = useRouter();
   const handleDelete = async () => {
     const res = await deleteSection(sectionId, magazineId, ownerType);
     if ("error" in res) {
@@ -21,6 +23,7 @@ const DeleteMagazineSection = ({
       return;
     }
     toastifySuccess(res.message);
+    router.refresh();
   };
 
   return (

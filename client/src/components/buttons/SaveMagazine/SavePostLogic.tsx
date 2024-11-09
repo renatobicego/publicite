@@ -77,12 +77,12 @@ const SavePostLogic = ({
             />
           );
         })}
-        {saved.length > 0 && (
-          <p className="text-xs">
-            Para eliminar de la revista, clickea en el ícono de la revista
-          </p>
-        )}
       </div>
+      {saved.length > 0 && (
+        <p className="text-xs mb-1">
+          Para eliminar de la revista, clickea en el ícono de la revista
+        </p>
+      )}
       {selectedMagazineSection.id !== "" ? (
         <PrimaryButton
           isDisabled={isSubmitting}

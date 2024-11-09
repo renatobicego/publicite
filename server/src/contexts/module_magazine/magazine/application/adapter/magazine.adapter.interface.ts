@@ -46,8 +46,8 @@ export interface MagazineAdapterInterface {
   deleteSectionFromMagazineById(
     sectionIdsToDelete: string[],
     magazineId: string,
-    allowedCollaboratorId?: string,
-    userMagazineAllowed?: string,
+    magazineType: string,
+    userRequestId: string,
   ): Promise<any>;
   deleteAllowedCollaboratorsFromMagazineGroup(
     allowedCollaboratorsToDelete: string[],

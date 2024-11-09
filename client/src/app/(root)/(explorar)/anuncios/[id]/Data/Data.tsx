@@ -74,7 +74,7 @@ const Data = async ({
     >
       <div className="flex flex-col gap-4 w-full">
         <div className="flex justify-between gap-2 md:gap-4">
-          <p className="text-sm text-light-text">
+          <p className="text-small lg:text-sm text-light-text">
             {showCondition}
             Publicado {datePublished} en {post.location.description}
           </p>

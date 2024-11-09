@@ -69,6 +69,7 @@ export default async function MagazinePage(props: { params: { id: string } }) {
             urlProfile,
             isOwner,
             isOwnerTypeUser,
+            canEdit: isOwner || isCollaborator,
           }}
         />
         <MagazineActions isOwner={isOwner} magazine={magazine} />
