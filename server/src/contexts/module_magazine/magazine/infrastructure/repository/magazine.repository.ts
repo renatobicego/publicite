@@ -28,6 +28,7 @@ import { checkResultModificationOfOperation } from 'src/contexts/module_shared/f
 import { IUser } from 'src/contexts/module_user/user/infrastructure/schemas/user.schema';
 import { MagazineUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/magazine.update.request';
 import { MagazineSection } from '../../domain/entity/section/magazine.section.entity';
+import { ListResponseTemplateOut } from 'svix';
 
 export class MagazineRepository implements MagazineRepositoryInterface {
   constructor(
@@ -628,6 +629,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
       .lean()
 
 
+
     const groupMagazines = await this.groupMagazine.find({
       allowedCollaborators: userId
     }, null,
@@ -637,7 +639,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
       .lean()
 
 
-    userMagazines.push(...personalMagazines, ...groupMagazines, ...group[0].magazines)
+    userMagazines.push(...personalMagazines, ...groupMagazines, ...group[0].magazines ?? null)
     return userMagazines;
 
   }
