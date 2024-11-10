@@ -5,7 +5,8 @@ import { SocketNotificationService } from '../../application/service/socket.noti
 import { UserModule } from 'src/contexts/module_user/user/infrastructure/module/user.module';
 import { GroupModule } from 'src/contexts/module_group/group/infrastructure/module/group.module';
 import { SocketAdapter } from '../adapter/socket.adapter';
-import { NotificationController } from '../controller/gateway.socket';
+import { SocketController } from '../controller/group.socket.controller';
+
 
 @Module({
   imports: [UserModule, GroupModule],
@@ -19,6 +20,6 @@ import { NotificationController } from '../controller/gateway.socket';
       useClass: SocketAdapter,
     },
   ],
-  controllers: [NotificationController],
+  controllers: [SocketController],
 })
 export class NotificationSocketModule { }

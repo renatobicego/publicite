@@ -79,7 +79,7 @@ export class SocketNotificationService
       this.logger.error('An error occurred while sending notification');
       throw error;
     } finally {
-      session.endSession();
+      await session.endSession();
     }
   }
 

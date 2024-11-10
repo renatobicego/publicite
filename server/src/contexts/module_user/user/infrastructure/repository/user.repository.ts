@@ -239,7 +239,7 @@ export class UserRepository implements UserRepositoryInterface {
 
     try {
       await this.user
-        .findOneAndUpdate(
+        .updateOne(
           { _id: userIdTo },
           { $addToSet: { notifications: notification } },
         )
