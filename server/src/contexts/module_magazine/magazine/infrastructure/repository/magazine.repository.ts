@@ -27,8 +27,6 @@ import { GroupDocument } from 'src/contexts/module_group/group/infrastructure/sc
 import { checkResultModificationOfOperation } from 'src/contexts/module_shared/functions/checkResultModificationOfOperation';
 import { IUser } from 'src/contexts/module_user/user/infrastructure/schemas/user.schema';
 import { MagazineUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/magazine.update.request';
-import error from 'next/error';
-
 
 export class MagazineRepository implements MagazineRepositoryInterface {
   constructor(
@@ -52,7 +50,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
 
     @InjectModel('User') private readonly userModel: Model<IUser>,
     @InjectModel('Group') private readonly groupModel: Model<GroupDocument>,
-  ) { }
+  ) {}
 
   async addNewMagazineGroupSection(
     magazineId: string,
@@ -98,7 +96,10 @@ export class MagazineRepository implements MagazineRepositoryInterface {
           { $addToSet: { sections: sectionId } },
           { session },
         );
-        checkResultModificationOfOperation(result, 'Error saving section in repository, you dont have permissions');
+        checkResultModificationOfOperation(
+          result,
+          'Error saving section in repository, you dont have permissions',
+        );
       });
     } catch (error: any) {
       throw error;
@@ -121,14 +122,11 @@ export class MagazineRepository implements MagazineRepositoryInterface {
         .select('_id')
         .lean();
 
-
       const isAdminOrCreatorOfGroup = await this.groupModel
-        .findOne(
-          {
-            magazines: magazineId,
-            $or: [{ admins: userId }, { creator: userId }],
-          },
-        )
+        .findOne({
+          magazines: magazineId,
+          $or: [{ admins: userId }, { creator: userId }],
+        })
         .session(session)
         .select('_id')
         .lean();
@@ -148,7 +146,6 @@ export class MagazineRepository implements MagazineRepositoryInterface {
     const session = await this.connection.startSession();
     session.startTransaction();
     try {
-
       await this.magazineSection
         .updateOne(
           { _id: sectionId },
@@ -184,7 +181,10 @@ export class MagazineRepository implements MagazineRepositoryInterface {
             $or: [{ user: magazineAdmin }, { collaborators: magazineAdmin }],
           })
           .session(session);
-        checkResultModificationOfOperation(result, 'You must be an admin or a collaborator to add a post to a magazine');
+        checkResultModificationOfOperation(
+          result,
+          'You must be an admin or a collaborator to add a post to a magazine',
+        );
 
         await this.magazineSection.updateOne(
           { _id: sectionId },
@@ -435,7 +435,6 @@ export class MagazineRepository implements MagazineRepositoryInterface {
           { session },
         );
       });
-
     } catch (error: any) {
       throw error;
     } finally {
@@ -548,9 +547,11 @@ export class MagazineRepository implements MagazineRepositoryInterface {
       .populate(populateField)
       .lean();
 
-    const group = await this.groupModel.find({
-      $or: [{ admins: userId }, { creator: userId }]
-    }).select('magazines -_id')
+    const groups = await this.groupModel
+      .find({
+        $or: [{ admins: userId }, { creator: userId }],
+      })
+      .select('magazines -_id')
       .populate({
         path: 'magazines',
         select: '_id name sections ownerType',
@@ -562,12 +563,19 @@ export class MagazineRepository implements MagazineRepositoryInterface {
         },
       })
       .session(session)
-      .lean()
+      .lean();
 
-    if (group) {
-      group.map((group: any) => userMagazines.push(...group.magazines))
+    const uniqueMagazineIds = new Set<string>(); // Track unique magazine IDs
+    if (groups) {
+      groups.forEach((group: any) => {
+        group.magazines.forEach((magazine: any) => {
+          if (!uniqueMagazineIds.has(magazine._id.toString())) {
+            uniqueMagazineIds.add(magazine._id.toString());
+            userMagazines.push(magazine);
+          }
+        });
+      });
     }
-
 
     const groupMagazines = await this.groupMagazine
       .find(
@@ -581,7 +589,14 @@ export class MagazineRepository implements MagazineRepositoryInterface {
       .populate(populateField)
       .lean();
 
-    userMagazines.push(...personalMagazines, ...groupMagazines)
+    // Add allowed-collaborator magazines to the result if unique
+    groupMagazines.forEach((magazine) => {
+      if (!uniqueMagazineIds.has(magazine._id.toString())) {
+        uniqueMagazineIds.add(magazine._id.toString());
+        userMagazines.push(magazine);
+      }
+    });
+    userMagazines.push(...personalMagazines);
     return userMagazines;
   }
 

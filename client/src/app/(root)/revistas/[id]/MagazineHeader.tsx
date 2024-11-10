@@ -3,12 +3,14 @@ import { Group } from "@/types/groupTypes";
 import { GetUser } from "@/types/userTypes";
 import { FILE_URL, PROFILE } from "@/utils/data/urls";
 import { Avatar, AvatarGroup, Link } from "@nextui-org/react";
+import MagazineOptionsDropdown from "./MagazineOptionsDropdown";
 interface MagazineProps {
   magazine: Magazine;
   ownerAsUser: GetUser;
   ownerAsGroup: Group;
   urlProfile: string;
   isOwnerTypeUser: boolean;
+  canEdit: boolean;
 }
 const MagazineHeader = ({
   magazine,
@@ -16,12 +18,16 @@ const MagazineHeader = ({
   ownerAsGroup,
   urlProfile,
   isOwnerTypeUser,
+  canEdit
 }: MagazineProps) => {
   const userMagazine = magazine as UserMagazine;
 
   return (
     <>
-      <h2>{magazine.name}</h2>
+      <div className="w-full relative">
+        {canEdit && <MagazineOptionsDropdown />} 
+        <h2 className="max-w-[95%] md:max-w-[75%] text-center mx-auto">{magazine.name}</h2>
+      </div>
       <p className="md:max-w-[75%] xl:max-w-[50%] text-center text-sm lg:text-base">
         {magazine.description}
       </p>

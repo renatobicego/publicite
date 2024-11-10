@@ -39,6 +39,8 @@ export const getMagazineByIdQuery = gql`
         _id
       }
       group {
+        creator
+        admins
         profilePhotoUrl
         name
         _id

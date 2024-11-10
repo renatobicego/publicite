@@ -37,11 +37,13 @@ const SectionCard = ({
         }
         handleSelectMagazineSection(section._id);
       }}
-      className={`justify-start w-full ${
+      className={`justify-start w-full flex-shrink-0 ${
         selectedMagazineSection.id === section._id ? "border-primary" : ""
       } ${isPostInSection(section._id) ? "text-primary border-primary" : ""}`}
     >
-      {magazineName ? magazineName : section.isFatherSection ? (
+      {magazineName ? (
+        magazineName
+      ) : section.isFatherSection ? (
         <span className="italic">Seccion General</span>
       ) : (
         section.title
