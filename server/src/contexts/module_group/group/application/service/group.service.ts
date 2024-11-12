@@ -11,6 +11,7 @@ import { GroupRequest } from '../adapter/dto/HTTP-REQUEST/group.request';
 import { GroupServiceMapperInterface } from '../../domain/service/mapper/group.service.mapper.interface';
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { GroupUpdateRequest } from '../adapter/dto/HTTP-REQUEST/group.update.request';
+import { PostsMemberGroupResponse } from '../adapter/dto/HTTP-RESPONSE/group.posts.member.response';
 
 const eventTypes = [
   'notification_group_new_user_invited', // Te han invitado a un grupo -> 0
@@ -28,7 +29,8 @@ export class GroupService implements GroupServiceInterface {
     private readonly groupRepository: GroupRepositoryInterface,
     @Inject('GroupServiceMapperInterface')
     private readonly groupMapper: GroupServiceMapperInterface,
-  ) {}
+  ) { }
+
 
   async acceptGroupInvitation(
     groupId: string,
@@ -182,7 +184,7 @@ export class GroupService implements GroupServiceInterface {
   async findGroupById(
     id: string,
     userRequest: string,
-  ): Promise<GroupResponseById> {
+  ): Promise<GroupResponseById | null> {
     try {
       this.logger.log('Finding group by id: ' + id);
       return await this.groupRepository.findGroupById(id, userRequest);
@@ -209,6 +211,16 @@ export class GroupService implements GroupServiceInterface {
       throw error;
     }
   }
+
+  async findAllPostsOfGroupMembers(groupId: string, userRequest: string, limit: number, page: number): Promise<PostsMemberGroupResponse | null> {
+    try {
+      this.logger.log('Finding posts of members of group by id: ' + groupId);
+      return await this.groupRepository.findAllPostsOfGroupMembers(groupId, userRequest, limit, page);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
 
   async isThisGroupExist(alias: string): Promise<boolean> {
     const aliasWithOutSpaces = alias.replace(/\s+/g, '').toLowerCase();

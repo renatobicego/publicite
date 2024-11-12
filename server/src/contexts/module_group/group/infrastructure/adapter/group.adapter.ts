@@ -9,12 +9,14 @@ import {
 } from '../../application/adapter/dto/HTTP-RESPONSE/group.response';
 import { GroupRequest } from '../../application/adapter/dto/HTTP-REQUEST/group.request';
 import { GroupUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/group.update.request';
+import { PostsMemberGroupResponse } from '../../application/adapter/dto/HTTP-RESPONSE/group.posts.member.response';
 
 export class GroupAdapter implements GroupAdapterInterface {
   constructor(
     @Inject('GroupServiceInterface')
     private readonly groupService: GroupServiceInterface,
-  ) {}
+  ) { }
+
   findAllGroupNotifications(
     groupId: string,
     groupAdminOrCreator: string,
@@ -140,7 +142,7 @@ export class GroupAdapter implements GroupAdapterInterface {
   async findGroupById(
     id: string,
     userRequest: string,
-  ): Promise<GroupResponseById> {
+  ): Promise<GroupResponseById | null> {
     try {
       const response = await this.groupService.findGroupById(id, userRequest);
       return response;
@@ -162,6 +164,14 @@ export class GroupAdapter implements GroupAdapterInterface {
         userRequest,
       );
       return response;
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  async findAllPostsOfGroupMembers(groupId: string, userRequest: string,limit:number,page:number): Promise<PostsMemberGroupResponse | null> {
+    try {
+      return await this.groupService.findAllPostsOfGroupMembers(groupId, userRequest,limit,page);
     } catch (error: any) {
       throw error;
     }

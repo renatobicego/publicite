@@ -1,5 +1,6 @@
 import { GroupRequest } from '../../application/adapter/dto/HTTP-REQUEST/group.request';
 import { GroupUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/group.update.request';
+import { PostsMemberGroupResponse } from '../../application/adapter/dto/HTTP-RESPONSE/group.posts.member.response';
 import {
   GroupListResponse,
   GroupResponse,
@@ -42,7 +43,10 @@ export interface GroupServiceInterface {
     creator?: string,
     newCreator?: string,
   ): Promise<any>;
-  findGroupById(id: string, userRequest: string): Promise<GroupResponseById>;
+
+  findGroupById(id: string, userRequest: string): Promise<GroupResponseById | null>;
+  findAllPostsOfGroupMembers(groupId: string, userRequest: string,limit:number,page:number): Promise<PostsMemberGroupResponse | null>;
+
   findGroupByNameOrAlias(
     name: string,
     limit: number,

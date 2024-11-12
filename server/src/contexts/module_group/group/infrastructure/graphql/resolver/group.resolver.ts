@@ -12,6 +12,7 @@ import {
 } from '../../../application/adapter/dto/HTTP-RESPONSE/group.response';
 import { GroupAdapterInterface } from '../../../application/adapter/group.adapter.interface';
 import { CustomContextRequestInterface } from 'src/contexts/module_shared/auth/custom_request/custom.context.request.interface';
+import { PostsMemberGroupResponse } from '../../../application/adapter/dto/HTTP-RESPONSE/group.posts.member.response';
 
 @Resolver('Group')
 export class GroupResolver {
@@ -230,7 +231,7 @@ export class GroupResolver {
     @Args('id', { type: () => String })
     groupId: string,
     @Context() context: { req: CustomContextRequestInterface },
-  ): Promise<GroupResponseById> {
+  ): Promise<GroupResponseById | null> {
     try {
       const userRequestId = context.req.userRequestId;
       return await this.groupAdapter.findGroupById(groupId, userRequestId);
@@ -238,6 +239,30 @@ export class GroupResolver {
       throw error;
     }
   }
+
+
+  @Query(() => PostsMemberGroupResponse, {
+    nullable: true,
+    description: 'Obtiene los posts de los miembros de un grupo, buscando el grupo por su ID',
+  })
+  @UseGuards(ClerkAuthGuard)
+  async getPostsOfGroupMembers(
+    @Args('id', { type: () => String })
+    groupId: string,
+    @Context() context: { req: CustomContextRequestInterface },
+    @Args('limit', { type: () => Number })
+    limit: number,
+    @Args('page', { type: () => Number })
+    page: number,
+  ): Promise<PostsMemberGroupResponse | null> {
+    try {
+      const userRequestId = context.req.userRequestId;
+      return await this.groupAdapter.findAllPostsOfGroupMembers(groupId, userRequestId, limit, page);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
 
   @Query(() => GroupListResponse, {
     nullable: true,

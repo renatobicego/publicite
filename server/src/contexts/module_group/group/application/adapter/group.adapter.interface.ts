@@ -1,5 +1,6 @@
 import { GroupRequest } from './dto/HTTP-REQUEST/group.request';
 import { GroupUpdateRequest } from './dto/HTTP-REQUEST/group.update.request';
+import { PostsMemberGroupResponse } from './dto/HTTP-RESPONSE/group.posts.member.response';
 import {
   GroupListResponse,
   GroupResponse,
@@ -41,7 +42,7 @@ export interface GroupAdapterInterface {
     creator?: string,
     newCreator?: string,
   ): Promise<any>;
-  findGroupById(id: string, userRequest: string): Promise<GroupResponseById>;
+  findGroupById(id: string, userRequest: string): Promise<GroupResponseById | null>;
   findGroupByNameOrAlias(
     name: string,
     limit: number,
@@ -54,6 +55,8 @@ export interface GroupAdapterInterface {
     limit: number,
     page: number,
   ): Promise<GroupResponse>;
+
+  findAllPostsOfGroupMembers(groupId: string, userRequest: string,limit:number,page:number): Promise<PostsMemberGroupResponse | null>;
   isThisGroupExist(alias: string): Promise<boolean>;
   removeAdminsFromGroupByGroupId(
     admins: string[],

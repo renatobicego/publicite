@@ -1,4 +1,5 @@
 import { GroupUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/group.update.request';
+import { PostsMemberGroupResponse } from '../../application/adapter/dto/HTTP-RESPONSE/group.posts.member.response';
 import {
   GroupListResponse,
   GroupResponse,
@@ -24,6 +25,12 @@ export interface GroupRepositoryInterface {
     groupId: string,
     groupAdmin: string,
   ): Promise<any>;
+  assignNewCreatorAndExitGroupById(
+    groupId: string,
+    newCreator: string,
+    creator: string,
+  ): Promise<any>;
+
 
   deleteMembersFromGroup(
     membersToDelete: string[],
@@ -35,22 +42,26 @@ export interface GroupRepositoryInterface {
     groupId: string,
     groupAdmin: string,
   ): Promise<any>;
-
   deleteGroupById(groupId: string, groupCreator: string): Promise<any>;
+
+
+
   exitMemberOrAdminGroupById(groupId: string, member?: string): Promise<any>;
-  assignNewCreatorAndExitGroupById(
-    groupId: string,
-    newCreator: string,
-    creator: string,
-  ): Promise<any>;
-  findGroupById(id: string, userRequest: string): Promise<GroupResponseById>;
+
+
+  findGroupById(id: string, userRequest: string): Promise<GroupResponseById | null>;
   findGroupByNameOrAlias(
     name: string,
     limit: number,
     page: number,
     userRequest: string,
   ): Promise<GroupListResponse>;
+  findAllPostsOfGroupMembers(groupId: string, userRequest: string,limit:number,page:number): Promise<PostsMemberGroupResponse | null>
+
+
   isThisGroupExist(alias: string): Promise<boolean>;
+
+
   save(group: Group): Promise<GroupResponse>;
 
   pushJoinRequest(groupId: string, userId: string, session: any): Promise<any>;
@@ -65,11 +76,15 @@ export interface GroupRepositoryInterface {
     userId: string,
     session: any,
   ): Promise<any>;
+
+
   removeAdminsFromGroupByGroupId(
     admins: string[],
     groupId: string,
     groupCreator: string,
   ): Promise<any>;
+
+
 
   updateGroupById(group: GroupUpdateRequest): Promise<any>;
 }

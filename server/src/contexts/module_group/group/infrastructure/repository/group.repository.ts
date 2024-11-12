@@ -16,6 +16,7 @@ import { GroupMagazineDocument } from 'src/contexts/module_magazine/magazine/inf
 import { checkResultModificationOfOperation } from 'src/contexts/module_shared/functions/checkResultModificationOfOperation';
 import { IUser } from 'src/contexts/module_user/user/infrastructure/schemas/user.schema';
 import { GroupDocument } from '../schemas/group.schema';
+import { PostsMemberGroupResponse } from '../../application/adapter/dto/HTTP-RESPONSE/group.posts.member.response';
 
 export class GroupRepository implements GroupRepositoryInterface {
   constructor(
@@ -30,6 +31,7 @@ export class GroupRepository implements GroupRepositoryInterface {
     @InjectConnection() private readonly connection: Connection,
     private readonly logger: MyLoggerService,
   ) { }
+
 
   async assignNewCreatorAndExitGroupById(
     groupId: string,
@@ -403,13 +405,9 @@ export class GroupRepository implements GroupRepositoryInterface {
   async findGroupById(
     id: string,
     userRequest: string,
-  ): Promise<GroupResponseById> {
+  ): Promise<GroupResponseById | null> {
     const session = await this.connection.startSession();
     session.startTransaction();
-    const populatePostsFields = {
-      path: 'posts',
-      select: '_id imagesUrls title description price frequencyPrice toPrice petitionType',
-    }
 
     try {
       const group = await this.groupModel
@@ -417,12 +415,10 @@ export class GroupRepository implements GroupRepositoryInterface {
         .populate([
           {
             path: 'members',
-            select: '_id username profilePhotoUrl name lastName posts',
-            populate: populatePostsFields
+            select: '_id username profilePhotoUrl name lastName',
           },
           {
-            path: 'admins', select: '_id username name lastName posts',
-            populate: populatePostsFields
+            path: 'admins', select: '_id username name lastName',
           },
           {
             path: 'groupNotificationsRequest.groupInvitations',
@@ -445,39 +441,13 @@ export class GroupRepository implements GroupRepositoryInterface {
         .session(session)
         .lean();
 
-      let isMember = false;
-      let hasJoinRequest = false;
-      let hasGroupRequest = false;
 
-      if (group) {
-        const userIsMember = group.members
-          .map((member: any) => member._id.toString())
-          .includes(userRequest);
-        const userIsAdmin = group.admins
-          .map((admin: any) => admin._id.toString())
-          .includes(userRequest);
-        const userIsCreator = group.creator.toString() === userRequest;
-        hasJoinRequest =
-          group.groupNotificationsRequest?.joinRequests?.some(
-            (user: any) => user._id.toString() === userRequest,
-          ) || false;
-        hasGroupRequest =
-          group.groupNotificationsRequest?.groupInvitations?.some(
-            (user: any) => user._id.toString() === userRequest,
-          ) || false;
-        if (userIsMember || userIsAdmin || userIsCreator) {
-          isMember = true;
-        } else if (!userIsAdmin && !userIsCreator) {
-          group.groupNotificationsRequest =
-            group.groupNotificationsRequest || {};
-          group.groupNotificationsRequest.groupInvitations = [
-            'You can’t access here; you are not an admin',
-          ];
-          group.groupNotificationsRequest.joinRequests = [
-            'You can’t access here; you are not an admin',
-          ];
-        }
+      if (!group) {
+        return null;
       }
+
+      const { isMember, hasJoinRequest, hasGroupRequest } =
+        this.verify_role_of_user(group, userRequest);
 
       await session.commitTransaction();
       const groupResponse = this.groupMapper.toGroupResponse(group);
@@ -495,6 +465,85 @@ export class GroupRepository implements GroupRepositoryInterface {
       session.endSession();
     }
   }
+
+  async findAllPostsOfGroupMembers(groupId: string, userRequest: string, limit: number, page: number): Promise<PostsMemberGroupResponse | null> {
+    const session = await this.connection.startSession();
+    session.startTransaction();
+    const populatePostsFields = {
+      path: 'posts',
+      select: '_id imagesUrls title description price frequencyPrice toPrice petitionType',
+      options: {
+        limit: limit,
+        skip: (page - 1) * limit,
+      }
+    };
+    const userSelectFields = "_id username name lastName posts"
+
+
+    try {
+      const group: any = await this.groupModel
+        .find(
+          {
+            _id: groupId,
+            $or: [{ members: userRequest }, { admins: userRequest }],
+          }
+        )
+        .select('_id members admins creator')
+        .populate([
+          {
+            path: 'members',
+            select: userSelectFields,
+            populate: populatePostsFields
+          },
+          {
+            path: 'creator',
+            select: userSelectFields,
+            populate: populatePostsFields
+          },
+          {
+            path: 'admins',
+            select: userSelectFields,
+            populate: populatePostsFields
+
+          },
+        ])
+        .session(session)
+        .lean();
+
+
+      if (!group) {
+        return null;
+      }
+
+      const memberWithPost = group[0].members.filter((member: any) => {
+        return member.posts.length > 0
+      })
+
+      const adminWithPost = group[0].admins.filter((admin: any) => {
+        return admin.posts.length > 0
+      })
+
+      const creatorWithPost = group[0].creator
+
+      const adminAndMemberPosts = memberWithPost.concat(adminWithPost).concat(creatorWithPost)
+
+      const hasMore = adminAndMemberPosts.length > limit;
+
+
+
+      return {
+        userAndPosts: adminAndMemberPosts,
+        hasMore: hasMore
+      }
+
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
+
+
 
   async findGroupByNameOrAlias(
     name: string,
@@ -613,6 +662,19 @@ export class GroupRepository implements GroupRepositoryInterface {
     }
   }
 
+
+  async isThisGroupExist(alias: string): Promise<boolean> {
+    try {
+      const group = await this.groupModel.findOne({ alias: alias }).lean();
+      if (group) return true;
+      return false;
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
+
   async removeAdminsFromGroupByGroupId(
     admins: string[],
     groupId: string,
@@ -686,15 +748,58 @@ export class GroupRepository implements GroupRepositoryInterface {
     }
   }
 
-  async isThisGroupExist(alias: string): Promise<boolean> {
-    try {
-      const group = await this.groupModel.findOne({ alias: alias }).lean();
-      if (group) return true;
-      return false;
-    } catch (error: any) {
-      throw error;
+  verify_role_of_user(group: any, userRequest: string): {
+    isMember: boolean,
+    hasJoinRequest: boolean,
+    hasGroupRequest: boolean
+  } {
+    let isMember = false;
+    let hasJoinRequest = false;
+    let hasGroupRequest = false;
+
+    const userIsMember = group.members
+      .map((member: any) => member._id.toString())
+      .includes(userRequest);
+
+    const userIsAdmin = group.admins
+      .map((admin: any) => admin._id.toString())
+      .includes(userRequest);
+
+    const userIsCreator = group.creator.toString() === userRequest;
+    hasJoinRequest =
+      group.groupNotificationsRequest?.joinRequests?.some(
+        (user: any) => user._id.toString() === userRequest,
+      ) || false;
+
+
+    hasGroupRequest =
+      group.groupNotificationsRequest?.groupInvitations?.some(
+        (user: any) => user._id.toString() === userRequest,
+      ) || false;
+
+
+    if (userIsMember || userIsAdmin || userIsCreator) {
+      isMember = true;
+
+
+    } else if (!userIsAdmin && !userIsCreator) {
+      group.groupNotificationsRequest =
+        group.groupNotificationsRequest || {};
+      group.groupNotificationsRequest.groupInvitations = [
+        'You can’t access here; you are not an admin',
+      ];
+      group.groupNotificationsRequest.joinRequests = [
+        'You can’t access here; you are not an admin',
+      ];
+    }
+
+    return {
+      isMember,
+      hasJoinRequest,
+      hasGroupRequest,
     }
   }
+
 
   async pushJoinRequest(
     groupId: string,
