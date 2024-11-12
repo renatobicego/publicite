@@ -52,5 +52,6 @@ import { UserSchema } from 'src/contexts/module_user/user/infrastructure/schemas
       useClass: MagazineRepositoryMapper,
     },
   ],
+  exports: ['MagazineServiceInterface', /*'MagazineRepositoryInterface'*/],
 })
-export class MagazineModule {}
+export class MagazineModule { }

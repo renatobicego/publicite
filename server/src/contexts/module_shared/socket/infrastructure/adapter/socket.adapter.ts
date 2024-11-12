@@ -7,9 +7,16 @@ export class SocketAdapter implements SocketAdapterInterface {
         @Inject('SocketNotificationServiceInterface')
         private readonly notificatorService: SocketNotificationServiceInterface
     ) { }
-    handleEventNotification(notificationBody: any): Promise<void> {
+    async handleMagazineNotification(notificationBody: any): Promise<void> {
         try {
-            return this.notificatorService.handleEventNotification(notificationBody);
+            return await this.notificatorService.handleMagazineNotification(notificationBody);
+        } catch (error: any) {
+            throw error;
+        }
+    }
+    async handleGroupNotification(notificationBody: any): Promise<void> {
+        try {
+            return await this.notificatorService.sendNotificationToUserAndGroup(notificationBody);
         } catch (error: any) {
             throw error;
         }

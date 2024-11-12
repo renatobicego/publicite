@@ -12,17 +12,27 @@ export class SocketController {
   ) { }
   @Post('group')
   @UseGuards(AuthSocket)
-  async socketController(
+  async socketGroupController(
     @Body() notificationBody: any,
   ): Promise<any> {
     try {
-
-      return await this.socketAdapter.handleEventNotification(notificationBody);
+      return await this.socketAdapter.handleGroupNotification(notificationBody);
     } catch (error: any) {
       throw error;
     }
   }
 
+  @Post('magazine')
+  @UseGuards(AuthSocket)
+  async socketMagazineController(
+    @Body() notificationBody: any,
+  ): Promise<any> {
+    try {
+      return await this.socketAdapter.handleMagazineNotification(notificationBody);
+    } catch (error: any) {
+      throw error;
+    }
+  }
 
 }
 

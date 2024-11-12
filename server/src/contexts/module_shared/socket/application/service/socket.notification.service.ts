@@ -3,75 +3,61 @@ import { InjectConnection } from '@nestjs/mongoose';
 import { Connection } from 'mongoose';
 
 import { SocketNotificationServiceInterface } from '../../domain/service/socket.notification.service.interface';
-import { GroupServiceInterface } from 'src/contexts/module_group/group/domain/service/group.service.interface';
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { UserServiceInterface } from 'src/contexts/module_user/user/domain/service/user.service.interface';
+import { GroupNotificatorInterface } from '../../domain/service/group.notificator.interface';
+import { GROUP_NOTIFICATION_eventTypes_send_only_user, GROUP_NOTIFICATION_eventTypes_send_user_and_group, MAGAZINE_NOTIFICATION_eventTypes, ownerType } from '../../domain/allowed-events/allowed.events.notifications';
+import { MagazineServiceInterface } from 'src/contexts/module_magazine/magazine/domain/service/magazine.service.interface';
 
-const eventTypes = [
-  'notification_group_new_user_invited', // Te han invitado a un grupo -> 0
-  'notification_group_new_user_added', // Te han agregado a un grupo -> 1
-  'notification_group_user_accepted', // Te han aceptado en un grupo -> 2
-  'notification_group_user_rejected', // Te han rechazado en un grupo -> 3
-  'notification_group_user_rejected_group_invitation', // usuario B rechazo unirse al grupo -> 4
-  'notification_group_user_request_group_invitation', // Usuario A quiere pertenecer a grupo -> 5
-  'notification_group_user_removed_from_group', // Te han eliminado del grupo, -> 6
-  'notification_group_user_new_admin', // Te han convertido en administrador -> 7
-  'notification_group_user_removed_admin', // Te han quitado el rol de administrador -> 8
-] as const;
+
+interface newMemberData {
+  newMember: string,
+  magazineAdmin: string,
+  magazineId: string,
+  magazineType: string
+}
 
 export class SocketNotificationService
   implements SocketNotificationServiceInterface {
   constructor(
     private readonly logger: MyLoggerService,
+    @InjectConnection() private readonly connection: Connection,
     @Inject('UserServiceInterface')
     private readonly userService: UserServiceInterface,
-    @Inject('GroupServiceInterface')
-    private readonly groupService: GroupServiceInterface,
-    @InjectConnection() private readonly connection: Connection,
+    @Inject('MagazineServiceInterface')
+    private readonly magazineService: MagazineServiceInterface,
+    @Inject('GroupNotificatorInterface')
+    private readonly groupNotificator: GroupNotificatorInterface,
+
   ) { }
 
-  async handleEventNotification(notificationBody: any): Promise<any> {
-    if (!notificationBody.notification) {
-      this.logger.error(
-        'Notification not found, check your notification socket',
-      )
-      return;
-    }
-    const { event } = notificationBody.notification;
-
-    const session = await this.connection.startSession();
+  async sendNotificationToUserAndGroup(notificationBody: any): Promise<any> {
+    const event = this.verifyNotificationAndExtractEvent(notificationBody);
     if (!event) {
       this.logger.error(
         'Event not found, check your notification socket EVENT: ' + event,
       );
       return;
     }
-    try {
 
+    const session = await this.connection.startSession();
+
+    try {
       await session.withTransaction(async () => {
-        switch (event) {
-          case eventTypes[0]: // Te han invitado a un grupo -> 0
-          case eventTypes[1]: // Te han agregado a un grupo -> 1
-          case eventTypes[2]: // Te han aceptado en un grupo -> 2
-          case eventTypes[3]: // Te han rechazado en un grupo -> 3
-          case eventTypes[4]: // usuario B rechazo unirse al grupo -> 4
-          case eventTypes[5]: // Usuario A quiere pertenecer a grupo -> 5
-            this.logger.log('Sending new notification to user and group');
-            await this.sendNotificationToUser(notificationBody, session);
-            await this.sendNotificationToGroup(
-              notificationBody,
-              event,
-              session,
-            );
-            break;
-          case eventTypes[6]: // Te han eliminado del grupo, -> 6
-          case eventTypes[7]: // Te han convertido en administrador -> 7
-          case eventTypes[8]: // Te han quitado el rol de administrador -> 8
-            this.logger.log('Sending new notification to user');
-            await this.sendNotificationToUser(notificationBody);
-            break;
-          default:
-            throw new Error(`Event type ${event} is not supported`);
+        if (GROUP_NOTIFICATION_eventTypes_send_user_and_group.includes(event as any)) {
+          this.logger.log('Sending new notification to user and group');
+          await this.sendNotificationToUser(notificationBody, session);
+          await this.groupNotificator.sendNotificationToGroup(
+            notificationBody,
+            event,
+            session,
+          );
+        } else if (GROUP_NOTIFICATION_eventTypes_send_only_user.includes(event as any)) {
+          this.logger.log('Sending new notification to user');
+          await this.sendNotificationToUser(notificationBody);
+        }
+        else {
+          throw new Error(`Event type ${event} is not supported`);
         }
       });
     } catch (error: any) {
@@ -93,25 +79,78 @@ export class SocketNotificationService
     }
   }
 
-  async sendNotificationToGroup(
-    notification: any,
-    event: string,
-    session?: any,
-  ): Promise<any> {
+  async handleMagazineNotification(notificationBody: any): Promise<void> {
     try {
-      const { _id } = notification.frontData.group; //Id del grupo
-      const { backData } = notification.notification;
-      this.logger.log('Sending new notification to Group');
-      await this.groupService.pushNotificationToGroup(
-        _id,
-        backData,
-        event,
-        session,
-      );
+      const userAceptTheInvitationOfCollaborator = MAGAZINE_NOTIFICATION_eventTypes.user_acept_the_invitation
+      const event = this.verifyNotificationAndExtractEvent(notificationBody);
+      if (!event) {
+        this.logger.error(
+          'Event not found, check your notification socket EVENT: ' + event,
+        );
+        return;
+      }
+
+
+      if (event === userAceptTheInvitationOfCollaborator) {
+        const newMemberData = this.extractDataForAceptInvitation(notificationBody)
+        await this.addNewMemberToMagazine(newMemberData)
+      }
+
+      await this.sendNotificationToUser(notificationBody);
+
     } catch (error: any) {
-      this.logger.error('An error occurred while sending notification to user');
-      this.logger.error(error);
       throw error;
     }
   }
+
+
+  verifyNotificationAndExtractEvent(notificationBody: any): string {
+    if (!notificationBody.notification) {
+      this.logger.error(
+        'Notification not found, check your notification socket',
+      )
+      return 'Notification not found, check your notification socket'
+    }
+
+    const { event } = notificationBody.notification;
+    return event;
+  }
+
+  private extractDataForAceptInvitation(notificationBody: any) {
+    const { userIdTo, userIdFrom } = notificationBody.notification.backData
+    const { _id, ownerType } = notificationBody.frontData.magazine
+
+    if (!userIdTo || !userIdFrom || !_id) {
+      this.logger.error('Invalid notification data');
+      throw new Error('Invalid notification data- userIdTo, userIdFrom and _id are required');
+    }
+
+
+    const newMemberData: newMemberData = {
+      newMember: userIdFrom,
+      magazineAdmin: userIdTo,
+      magazineId: _id,
+      magazineType: ownerType,
+    }
+    return newMemberData
+  }
+
+
+  async addNewMemberToMagazine(newMemberData: newMemberData) {
+    const { newMember, magazineAdmin, magazineId, magazineType } = newMemberData
+
+    try {
+      if (ownerType.user === magazineType) {
+        return await this.magazineService.addCollaboratorsToUserMagazine([newMember], magazineId, magazineAdmin)
+      } else if (ownerType.group === magazineType) {
+        return await this.magazineService.addAllowedCollaboratorsToGroupMagazine([newMember], magazineId, magazineAdmin)
+      } else {
+        throw new Error('Owner type not supported in socket, please check it');
+      }
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
 }
