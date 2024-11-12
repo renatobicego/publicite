@@ -406,15 +406,24 @@ export class GroupRepository implements GroupRepositoryInterface {
   ): Promise<GroupResponseById> {
     const session = await this.connection.startSession();
     session.startTransaction();
+    const populatePostsFields = {
+      path: 'posts',
+      select: '_id imagesUrls title description price frequencyPrice toPrice petitionType',
+    }
+
     try {
       const group = await this.groupModel
         .findById(id)
         .populate([
           {
             path: 'members',
-            select: '_id username profilePhotoUrl name lastName',
+            select: '_id username profilePhotoUrl name lastName posts',
+            populate: populatePostsFields
           },
-          { path: 'admins', select: '_id username name lastName' },
+          {
+            path: 'admins', select: '_id username name lastName posts',
+            populate: populatePostsFields
+          },
           {
             path: 'groupNotificationsRequest.groupInvitations',
             select: '_id username profilePhotoUrl ',
