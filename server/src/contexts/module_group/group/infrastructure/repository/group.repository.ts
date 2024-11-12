@@ -485,7 +485,7 @@ export class GroupRepository implements GroupRepositoryInterface {
         .find(
           {
             _id: groupId,
-            $or: [{ members: userRequest }, { admins: userRequest }],
+            $or: [{ members: userRequest }, { admins: userRequest }, { creator: userRequest }],
           }
         )
         .select('_id members admins creator')
