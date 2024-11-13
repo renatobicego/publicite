@@ -17,6 +17,12 @@ export class userInviting {
 }
 
 @ObjectType()
+export class groupInviting {
+  @Field(() => String)
+  name: string;
+}
+
+@ObjectType()
 export class notification {
   @Field(() => String)
   event: string;
@@ -27,8 +33,30 @@ export class notification {
   @Field(() => String)
   date: string;
 
-  @Field(() => backData)
+  @Field(() => backData, { nullable: true })
   backData: backData;
+}
+
+@ObjectType()
+export class magazineNotification {
+  @Field(() => String)
+  _id: string;
+
+  @Field(() => String)
+  name: string;
+
+  @Field(() => String)
+  ownerType: string;
+
+  @Field(() => userInviting, { nullable: true })
+  userInviting: userInviting;
+
+  @Field(() => groupInviting, { nullable: true })
+  groupInviting: groupInviting;
+
+
+
+
 }
 
 @ObjectType()
@@ -36,8 +64,13 @@ export class frontData {
   @Field(() => front_data_GROUP, { nullable: true })
   group: front_data_GROUP;
 
-  @Field(() => userInviting)
+  @Field(() => userInviting, { nullable: true })
   userInviting: userInviting;
+
+  @Field(() => magazineNotification, { nullable: true })
+  magazine: magazineNotification;
+
+
 }
 
 @ObjectType()

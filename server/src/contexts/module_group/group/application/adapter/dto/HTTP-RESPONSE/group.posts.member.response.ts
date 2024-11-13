@@ -50,6 +50,8 @@ export class GroupPostMemberResponse {
     @Field(() => String)
     lastName: string;
 
+    @Field(() => String)
+    profilePhotoUrl: string;
 
     @Field(() => [Post_of_members_group], { nullable: true })
     posts: Post_of_members_group[];

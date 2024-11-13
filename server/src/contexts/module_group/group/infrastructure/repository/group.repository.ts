@@ -477,7 +477,7 @@ export class GroupRepository implements GroupRepositoryInterface {
         skip: (page - 1) * limit,
       }
     };
-    const userSelectFields = "_id username name lastName posts"
+    const userSelectFields = "_id username name lastName posts profilePhotoUrl"
 
 
     try {

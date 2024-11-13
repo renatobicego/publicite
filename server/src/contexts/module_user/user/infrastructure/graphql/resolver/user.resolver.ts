@@ -39,13 +39,13 @@ export class UserResolver {
   })
   @UseGuards(ClerkAuthGuard)
   async getAllNotificationsFromUserById(
-    @Args('id', { type: () => String }) id: string,
     @Args('limit', { type: () => Number }) limit: number,
     @Args('page', { type: () => Number }) page: number,
     @Context() context: { req: CustomContextRequestInterface },
   ): Promise<GROUP_notification_graph_model_get_all> {
     const userRequestId = context.req.userRequestId;
     try {
+
       return await this.userAdapter.getAllNotificationsFromUserById(
         userRequestId,
         limit,

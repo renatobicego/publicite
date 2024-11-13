@@ -93,6 +93,7 @@ type GroupPostMemberResponse {
   username: String!
   name: String!
   lastName: String!
+  profilePhotoUrl: String!
   posts: [Post_of_members_group!]
 }
 
@@ -305,16 +306,29 @@ type userInviting {
   username: String!
 }
 
+type groupInviting {
+  name: String!
+}
+
 type notification {
   event: String!
   viewed: Boolean!
   date: String!
-  backData: backData!
+  backData: backData
+}
+
+type magazineNotification {
+  _id: String!
+  name: String!
+  ownerType: String!
+  userInviting: userInviting
+  groupInviting: groupInviting
 }
 
 type frontData {
   group: front_data_GROUP
-  userInviting: userInviting!
+  userInviting: userInviting
+  magazine: magazineNotification
 }
 
 type Notification {
@@ -447,7 +461,7 @@ type Query {
   findUserByUsername(username: String!): User_Full_Grapql_Model
 
   """obtener todas las notificaciones de un usuario por su Id"""
-  getAllNotificationsFromUserById(id: String!, limit: Float!, page: Float!): GROUP_notification_graph_model_get_all
+  getAllNotificationsFromUserById(limit: Float!, page: Float!): GROUP_notification_graph_model_get_all
 
   """Obtener Post por autor"""
   findPostsByAuthorId(authorId: String!): [Post_Full_Graphql_Model!]

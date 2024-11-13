@@ -45,7 +45,7 @@ export class UserRepository implements UserRepositoryInterface {
 
     private readonly logger: MyLoggerService,
     @InjectConnection() private readonly connection: Connection,
-  ) {}
+  ) { }
 
   async findUserByUsername(username: string): Promise<any> {
     try {
@@ -197,7 +197,6 @@ export class UserRepository implements UserRepositoryInterface {
     page: number,
   ): Promise<GROUP_notification_graph_model_get_all> {
     try {
-      // Fetch the user with notifications
       const userNotificationResponse = await this.user
         .find({ _id: id })
         .select('notifications -_id')
@@ -208,22 +207,20 @@ export class UserRepository implements UserRepositoryInterface {
       if (!userNotificationResponse[0].notifications)
         return { notifications: [], hasMore: false };
 
-      const hasMore =
-        userNotificationResponse[0].notifications.length > page * limit;
       const notifications = userNotificationResponse[0].notifications;
 
+
+      // Ordena las notificaciones por fecha en orden descendente
       const notificationsMapped = notifications
-        .sort((notification_A: any, notification_B: any) => {
-          return parseZonedDateTime(notification_B.notification.date).compare(
-            parseZonedDateTime(notification_A.notification.date),
-          );
+        .sort((notificationA: any, notificationB: any) => {
+          const dateA = new Date(notificationA.notification.date).getTime();
+          const dateB = new Date(notificationB.notification.date).getTime();
+          return dateB - dateA; // Orden descendente
         })
-        .slice(0, limit)
-        .map((document) => {
-          return this.userRepositoryMapper.documentNotificationToNotificationResponse(
-            document,
-          );
-        });
+        .slice(0, limit); // Limita al número de resultados deseado
+
+      const hasMore = notifications.length > page * limit;
+
 
       return {
         notifications: notificationsMapped,
@@ -496,7 +493,7 @@ export class UserRepository implements UserRepositoryInterface {
       }
       this.logger.log(
         'The post was successfully saved in the user profile: ' +
-          UserRepository.name,
+        UserRepository.name,
       );
 
       return obj;
