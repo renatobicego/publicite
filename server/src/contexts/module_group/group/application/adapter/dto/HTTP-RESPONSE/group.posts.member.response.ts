@@ -30,6 +30,9 @@ export class Post_of_members_group {
     @Field(() => String, { nullable: true })
     petitionType: string;
 
+    @Field(() => String, { nullable: true })
+    postType: string;
+
 
 
 }
