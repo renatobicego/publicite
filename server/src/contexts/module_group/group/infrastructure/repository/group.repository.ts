@@ -471,7 +471,7 @@ export class GroupRepository implements GroupRepositoryInterface {
     session.startTransaction();
     const populatePostsFields = {
       path: 'posts',
-      select: '_id imagesUrls title description price frequencyPrice toPrice petitionType',
+      select: '_id imagesUrls title description price frequencyPrice toPrice petitionType postType',
       options: {
         limit: limit,
         skip: (page - 1) * limit,
