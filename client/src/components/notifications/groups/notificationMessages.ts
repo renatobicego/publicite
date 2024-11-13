@@ -1,5 +1,5 @@
 import { GroupNotificationType } from "@/types/groupTypes";
-import { acceptGroupInvitation, acceptNewMember, declineGroupInvitation, declineNewMember } from "./actions";
+import { acceptGroupInvitation, declineGroupInvitation } from "./actions";
 
 export const noticationMessages: Record<
   GroupNotificationType,
@@ -8,7 +8,7 @@ export const noticationMessages: Record<
     showUser: boolean;
     acceptAction?: Function;
     rejectAction?: Function;
-    seeNotifications?: Function;
+    seeNotifications?: boolean;
   }
 > = {
   notification_group_user_new_admin: {
@@ -36,7 +36,7 @@ export const noticationMessages: Record<
   notification_group_user_request_group_invitation: {
     message: "ha solicitado unirse al grupo",
     showUser: true,
-    seeNotifications: acceptNewMember,
+    seeNotifications: true,
   },
   notification_group_user_rejected_group_invitation: {
     message: "ha rechazado tu invitación al grupo",

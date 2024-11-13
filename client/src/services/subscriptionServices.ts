@@ -9,22 +9,27 @@ export const processPayment = async (
   subscriptionPlan: any,
   userId: string
 ) => {
-  const { data, status } = await axios.post(
-    "/api/subscriptions/process_payment",
-    {
-      formData,
-      subscriptionPlan,
-      userId,
-    }
-  );
-
-  // if(status !== 200 && status !== 201){
-  //   console.log(data);
-  // }
-
-  // console.log(data)
-
-  return data;
+  try {
+    const { data, status } = await axios.post(
+      process.env.CLIENT_URL + "/api/subscriptions/process_payment",
+      {
+        formData,
+        subscriptionPlan,
+        userId,
+      }
+    );
+  
+    // if(status !== 200 && status !== 201){
+    //   console.log(data);
+    // }
+  
+    // console.log(data)
+  
+    return data;
+    
+  } catch (error) {
+    console.log("error", error)
+  }
 };
 
 export const editPayment = async (formData: any, subscription: any) => {

@@ -90,6 +90,10 @@ export const getAllNotificationsQuery = gql`
           userInviting {
             username
           }
+          magazine {
+            _id
+            name
+          }
         }
       }
       hasMore
