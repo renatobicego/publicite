@@ -25,3 +25,64 @@ CUENTA GRATUITA CREAR PLAN DE SUSCRIPTION
 - ver anuncios del grupo
 - eliminar colaboradores de revista
 - visibilidad grupo, revista, pizarra y posts
+- get posts de grupo
+- ver notificaciones magazine
+- suscripcion de grupp
+- editar secciones de revista modal
+- errorres de noti
+- cmbiar formato de notificacion
+
+1.Tema . Pizarra y sub pizzarra.
+Podemos armar una pizarra de grupo ?
+Concepto de Pizarra fragmentada.
+Es de respetar la pizarra general 
+Y diferenciarla con subpizzarras para los grupos.
+
+Pero mejor que no haya muchas pizarras sino una sola, entonces :
+Consideración de diseño.
+Desde el grupo poder asignar una nota al grupo. Se escribe una nota y se la verá en el grupo.
+Estas notas pueden verse desde la cuenta del usuario. En Notas enviadas a grupos.
+
+2.Tema app mobile 
+- contratación posición de derivación a sitio web app. Desde app mobile.
+- Condición. Solamente es que esté la app y derive al sitio web.
+
+Según vi en búsquedas realizadas, es posible hacer esto en pocos pasos.
+Averiguamos con alguien que se dedique a esto ?
+
+3.Tema. Generador de coincidencia.
+Diferencia con búsquedas de oferta y demanda.
+No es lo mismo que lo busque en”explorar”
+Este caso hace un macheo de lo más próximo a tu búsqueda. 
+Lo presenta individualmente considerando los filtros. Ejemplos de.
+Anuncio de oferta o demanda.
+Contra un espacio vacío.
+Generar coincidencia. 
+Según filtró.
+Aparece uno próximo. Como propuesta.
+
+Propuesta de sección dentro de la app como lo es el “explorar “.
+
+La diferencia central es que en el buscador general aparecen todos y dentro de estos podría haber uno que se destaca y no lo encontró.
+El generador de coincidencias procura acercar uno “indicado”
+
+Tema 4.
+En las credenciales, los usuarios deben tener mayoría de edad. Es más 18.
+
+Tema 5.
+Anuncios.
+Que dentro de los usuarios registrados de cuenta gratuita, estos tengan dentro de los 5 anuncios gratis.
+1- como si tuviera una cuenta Premium. Configurable para que lo vean todos, algunos o un radio limitado.
+2 con un radio limitado y configurable
+2. De menor rango. Configurable.
+
+Tema 6. Anuncios.
+Que aparezcan símbolos o iconos distintivos. Una simbología representativa a elección.
+
+Tema 7. Anuncios.
+Motivo del anuncio. 
+Es distinto de seleccionarlo como bien o servicio. 
+Puede ser a elección de que esté o no.
+Motivo. Puede ser urgente.
+Puede ser para una fiesta. Para un evento. etc.
+Motivo: académico. Universitario. etc

@@ -21,8 +21,8 @@ export async function POST(request: NextRequest) {
           },
           back_url: "http://localhost:3000/",
           card_token_id: formData.token,
-          // payer_email: formData.payer.email,
-          payer_email: "test_user_1345316664@testuser.com",
+          payer_email: formData.payer.email,
+          // payer_email: "test_user_1345316664@testuser.com",
           preapproval_plan_id: subscriptionPlan.id,
           reason: subscriptionPlan.reason,
           external_reference: userId
@@ -32,7 +32,8 @@ export async function POST(request: NextRequest) {
       .catch(console.log);
     return new Response("OK", { status: 200 });
   } catch (error) {
-    return new Response("Error", { status: 500 });
+    console.log(error)
+    return new Response("Error", { status: 500, statusText: error as string  });
   }
 }
 

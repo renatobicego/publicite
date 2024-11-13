@@ -24,6 +24,7 @@ interface InvitationModalProps {
   submitLabel?: string; // Optional, defaults to 'Invitar'
   triggerElement: ReactElement;
   filterUsers?: string[];
+  isGroupMembersInviteId?: string;
 }
 
 const InvitationModal = ({
@@ -32,9 +33,10 @@ const InvitationModal = ({
   submitLabel = "Invitar",
   triggerElement,
   filterUsers,
+  isGroupMembersInviteId
 }: InvitationModalProps) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const { users, getUsersByQuery } = useSearchUsers();
+  const { users, getUsersByQuery } = useSearchUsers(isGroupMembersInviteId);
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const handleSelectionChange = (key: any) => {
     if (selectedUsers.includes(key)) {
