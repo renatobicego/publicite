@@ -568,18 +568,6 @@ type Mutation {
   """Agregar post en la revista de grupo"""
   addPostInGroupMagazine(postId: [String!]!, magazineAdmin: String!, magazineId: String!, sectionId: String!): String
 
-  """Agregar colaboradores a la revista de usuario"""
-  addCollaboratorsToUserMagazine(newCollaborators: [String!]!, magazineAdmin: String!, magazineId: String!): String
-
-  """Agregar allowedCollaborators a la revista de grupo"""
-  addAllowedCollaboratorsToGroupMagazine(newallowedCollaborators: [String!]!, magazineId: String!, magazineAdmin: String!): String
-
-  """Eliminar colaboradores de la revista de usuario"""
-  deleteCollaboratorsFromUserMagazine(collaboratorsToDelete: [String!]!, magazineId: String!, magazineAdmin: String!): String
-
-  """Eliminar allowed colaboradores de la revista de grupo"""
-  deleteAllowedCollaboratorsFromMagazineGroup(allowedCollaboratorsToDelete: [String!]!, magazineId: String!, magazineAdmin: String!): String
-
   """
   Eliminar secciones de la revista, siendo un colaborador de la misma o un administrador de del grupo de la revista
   """
@@ -602,6 +590,14 @@ type Mutation {
 
   """Eliminar posts de una seccion en una revista"""
   deletePostInMagazineSection(postIdToRemove: String!, sectionId: String!, ownerType: OwnerType!, magazineId: String): String
+
+  """
+  Eliminar una revistga por su id, para esto debes ser creador de la revista, de grupo o usuario admin
+  """
+  deleteMagazineByMagazineId(magazineId: String!, ownerType: String!): String
+
+  """Salir de la revista, solo para quienes colaboran en ellas."""
+  exitMagazineByMagazineId(magazineId: String!, ownerType: String!): String
 
   """Crear una categoria de un post"""
   createNewCategoryPost(category: PostCategoryRequest!): PostCategoryResponse

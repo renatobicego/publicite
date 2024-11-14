@@ -67,26 +67,26 @@ export interface MagazineRepositoryInterface {
   deletePostInMagazineSection(
     postIdToRemove: string,
     sectionId: string): Promise<any>;
-  isUserAllowedToEditSectionUserMagazine(
-    sectionId: string,
-    userId: string,
 
-  ): Promise<boolean>;
+  deleteMagazineByMagazineId(magazineId: string): Promise<any>;
 
-  isUserAllowedToEditSectionGroupMagazine(
-    sectionId: string,
-    userId: string,
-    magazineId: string
-  ): Promise<boolean>;
-  isAdmin_creator_Or_Collaborator(magazineId: string, userId: string): Promise<boolean>
+
   save(magazine: Magazine): Promise<any>;
   saveMagazineWithSection(magazine: Magazine): Promise<any>;
   saveSection(section: MagazineSectionCreateRequest, session: any): Promise<any>
+
+
+
+  removeCollaboratorFromUserMagazine(magazineId: string, collaboratorId: string): Promise<any>
+  removeAllowedCollaboratorFromGroupMagazine(magazineId: string, collaboratorId: string): Promise<any>
+
+
   findMagazineByMagazineId(
     userId: ObjectId,
   ): Promise<Partial<MagazineResponse> | null>;
 
   findAllMagazinesByUserId(userId: string): Promise<MagazineResponse[] | []>;
+
   updateMagazineById(
     magazine: MagazineUpdateRequest,
     owner: string,

@@ -50,6 +50,8 @@ export interface MagazineServiceInterface {
     userMagazineAllowed?: string,
   ): Promise<any>;
 
+  deleteMagazineByMagazineId(magazineId: string, userRequestId: string, ownerType: string): Promise<any>;
+
   deleteSectionFromMagazineGroupById(
     sectionIdsToDelete: string[],
     magazineId: string,
@@ -64,7 +66,7 @@ export interface MagazineServiceInterface {
   ): Promise<any>;
 
   deletePostInMagazineSection(postIdToRemove: string, sectionId: string, ownerType: string, userRequestId: string, magazineId?: string): Promise<any>;
-
+  exitMagazineByMagazineId(magazineId: string, userRequestId: string, ownerType: string): Promise<any>;
   findMagazineByMagazineId(
     userId: ObjectId,
   ): Promise<Partial<MagazineResponse> | null>;

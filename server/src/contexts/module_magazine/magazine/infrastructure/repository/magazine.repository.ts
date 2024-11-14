@@ -1,7 +1,7 @@
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Magazine } from '../../domain/entity/magazine.entity';
 import { Connection, Model, ObjectId } from 'mongoose';
-import { Inject, UnauthorizedException } from '@nestjs/common';
+import { Inject } from '@nestjs/common';
 
 import { MagazineRepositoryInterface } from '../../domain/repository/magazine.repository.interface';
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
@@ -27,8 +27,18 @@ import { GroupDocument } from 'src/contexts/module_group/group/infrastructure/sc
 import { checkResultModificationOfOperation } from 'src/contexts/module_shared/functions/checkResultModificationOfOperation';
 import { IUser } from 'src/contexts/module_user/user/infrastructure/schemas/user.schema';
 import { MagazineUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/magazine.update.request';
+import { UserMagazineAllowedVerificationsInterface } from '../../domain/repository/user.allowed.verifications.interface';
+/*
 
-export class MagazineRepository implements MagazineRepositoryInterface {
+
+DOCUMENTACION IMPORTANTE DE LA CLASE 
+
+Al utilizar findOneAndDelete y deleteMany, se debe tener en cuenta que se eliminan las secciones asociadas a la revista. Automaticamente
+
+
+*/
+
+export class MagazineRepository implements MagazineRepositoryInterface, UserMagazineAllowedVerificationsInterface {
   constructor(
     @InjectConnection() private readonly connection: Connection,
     private readonly logger: MyLoggerService,
@@ -51,6 +61,8 @@ export class MagazineRepository implements MagazineRepositoryInterface {
     @InjectModel('User') private readonly userModel: Model<IUser>,
     @InjectModel('Group') private readonly groupModel: Model<GroupDocument>,
   ) { }
+
+
 
   async addNewMagazineGroupSection(
     magazineId: string,
@@ -108,36 +120,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
     }
   }
 
-  async isAdmin_creator_Or_Collaborator(
-    magazineId: string,
-    userId: string,
-  ): Promise<any> {
-    const session = await this.connection.startSession();
-    session.startTransaction();
 
-    try {
-      const collaborator = await this.groupMagazine
-        .findOne({ _id: magazineId, allowedCollaborators: userId })
-        .session(session)
-        .select('_id')
-        .lean();
-
-      const isAdminOrCreatorOfGroup = await this.groupModel
-        .findOne({
-          magazines: magazineId,
-          $or: [{ admins: userId }, { creator: userId }],
-        })
-        .session(session)
-        .select('_id')
-        .lean();
-
-      if (!collaborator && !isAdminOrCreatorOfGroup) {
-        throw new Error('The user is not allowed');
-      }
-    } catch (error: any) {
-      throw error;
-    }
-  }
 
   async addPostInGroupMagazine(
     postId: string,
@@ -340,7 +323,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
           .session(session)
           .lean();
 
-          checkResultModificationOfOperation(result);
+        checkResultModificationOfOperation(result);
 
         await this.userModel
           .updateMany(
@@ -444,6 +427,47 @@ export class MagazineRepository implements MagazineRepositoryInterface {
       throw error;
     }
   }
+  async deleteMagazineByMagazineId(magazineId: string): Promise<any> {
+    const session = await this.connection.startSession();
+
+    try {
+      await session.withTransaction(async () => {
+        const magazineDeleted = await this.magazineModel.findOneAndDelete({
+          _id: magazineId
+        }).session(session).lean();
+
+        if (magazineDeleted) {
+
+          await this.magazineSection.deleteMany({ _id: { $in: magazineDeleted.sections } }, { session });
+
+          if (magazineDeleted.ownerType === OwnerType.user) {
+            let userMagazine = magazineDeleted as UserMagazineDocument
+            let collaboratorsAndCreatorIds = userMagazine.collaborators
+            collaboratorsAndCreatorIds.push(userMagazine.user)
+            await this.userModel.updateMany({ _id: { $in: collaboratorsAndCreatorIds } }, { $pull: { magazines: magazineId } }, { session });
+            return 'Magazine deleted successfully';
+          } else if (magazineDeleted.ownerType === OwnerType.group) {
+
+            let userMagazine = magazineDeleted as GroupMagazineDocument
+            const groupOfMagazine = userMagazine.group;
+            await this.groupModel.updateOne({ _id: groupOfMagazine }, { $pull: { magazines: magazineId } }, { session });
+            return 'Magazine deleted successfully';
+          } else {
+            throw new Error('Error deleting magazine, please try again: INVALID OWNER TYPE');
+          }
+        }
+
+      })
+    } catch (error) {
+      throw error;
+    }
+
+  }
+
+
+
+
+
 
   async findMagazineByMagazineId(
     id: ObjectId,
@@ -589,7 +613,63 @@ export class MagazineRepository implements MagazineRepositoryInterface {
     return userMagazines;
   }
 
-  async isUserAllowedToEditSectionUserMagazine(
+  async is_admin_creator_or_collaborator_of_magazine_GROUP_MAGAZINE(
+    magazineId: string,
+    userId: string,
+  ): Promise<any> {
+    const session = await this.connection.startSession();
+    session.startTransaction();
+
+    try {
+      const collaborator = await this.groupMagazine
+        .findOne({ _id: magazineId, allowedCollaborators: userId })
+        .session(session)
+        .select('_id')
+        .lean();
+
+      const isAdminOrCreatorOfGroup = await this.groupModel
+        .findOne({
+          magazines: magazineId,
+          $or: [{ admins: userId }, { creator: userId }],
+        })
+        .session(session)
+        .select('_id')
+        .lean();
+
+      if (!collaborator && !isAdminOrCreatorOfGroup) {
+        throw new Error('The user is not allowed');
+      }
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  async is_admin_or_creator_of_magazine_GROUP_MAGAZINE(
+    magazineId: string,
+    userId: string,
+  ): Promise<any> {
+    const session = await this.connection.startSession();
+    session.startTransaction();
+
+    try {
+
+      const isAdminOrCreatorOfGroup = await this.groupModel
+        .findOne({
+          magazines: magazineId,
+          $or: [{ admins: userId }, { creator: userId }],
+        })
+        .session(session)
+        .select('_id')
+        .lean();
+
+      if (!isAdminOrCreatorOfGroup) {
+        throw new Error('The user is not allowed');
+      }
+    } catch (error: any) {
+      throw error;
+    }
+  }
+  async is_user_allowed_to_edit_section_USER_MAGAZINE(
     sectionId: string,
     userId: string,
   ): Promise<boolean> {
@@ -599,6 +679,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
           sections: sectionId,
           $or: [{ user: userId }, { collaborators: userId }],
         })
+        .select('_id')
         .lean();
 
       return !!result;
@@ -606,7 +687,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
       throw error;
     }
   }
-  async isUserAllowedToEditSectionGroupMagazine(
+  async is_user_allowed_to_edit_section_GROUP_MAGAZINE(
     sectionId: string,
     userId: string,
     magazineId: string,
@@ -625,6 +706,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
             null,
             { session },
           )
+          .select('_id')
           .lean();
         if (result1) isAllowedUser = true;
         const result2 = await this.groupModel
@@ -636,6 +718,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
             null,
             { session },
           )
+          .select('_id')
           .lean();
         if (result2) isAdminOrCreator = true;
       });
@@ -645,6 +728,26 @@ export class MagazineRepository implements MagazineRepositoryInterface {
       throw error;
     }
   }
+
+  async is_creator_of_magazine_USER_MAGAZINE(magazineId: string, userId: string): Promise<boolean> {
+    try {
+      const result = await this.userMagazine
+        .findOne({
+          _id: magazineId,
+          user: userId,
+        })
+        .select('_id')
+        .lean();
+
+      return !!result
+
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
+
   async save(magazine: Magazine): Promise<any> {
     let magazineSaved;
     if (magazine.getSections.length <= 0) {
@@ -774,6 +877,34 @@ export class MagazineRepository implements MagazineRepositoryInterface {
       session.endSession();
     }
   }
+
+  async removeCollaboratorFromUserMagazine(magazineId: string, collaboratorId: string): Promise<any> {
+    const session = await this.connection.startSession();
+    try {
+      await session.withTransaction(async () => {
+        await this.userModel.findByIdAndUpdate(collaboratorId, { $pull: { magazines: magazineId } }, { session });
+        await this.userMagazine.updateOne({ _id: magazineId }, { $pull: { collaborators: collaboratorId } }, { session });
+        return 'Collaborator removed successfully';
+      })
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
+  async removeAllowedCollaboratorFromGroupMagazine(magazineId: string, collaboratorId: string): Promise<any> {
+    const session = await this.connection.startSession();
+    try {
+      await session.withTransaction(async () => {
+        await this.groupModel.updateOne({ magazines: magazineId }, { $pull: { allowedCollaborators: collaboratorId } }, { session });
+        return 'Allowed collaborator removed successfully';
+      })
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
 
   async updateMagazineById(
     magazine: MagazineUpdateRequest,

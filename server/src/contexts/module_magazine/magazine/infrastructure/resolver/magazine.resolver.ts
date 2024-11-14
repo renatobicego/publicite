@@ -1,4 +1,4 @@
-import { ExecutionContext, Inject, UseGuards } from '@nestjs/common';
+import { Inject, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Resolver, Query, Context, } from '@nestjs/graphql';
 import { ObjectId } from 'mongoose';
 
@@ -114,112 +114,6 @@ export class MagazineResolver {
     }
   }
 
-  @Mutation(() => String, {
-    nullable: true,
-    description: 'Agregar colaboradores a la revista de usuario',
-  })
-  async addCollaboratorsToUserMagazine(
-    @Args('newCollaborators', { type: () => [String] })
-    newCollaborators: string[],
-    @Args('magazineAdmin', { type: () => String })
-    magazineAdmin: string,
-    @Args('magazineId', { type: () => String })
-    magazineId: string,
-    @Context() context: { req: CustomContextRequestInterface },
-  ): Promise<any> {
-    try {
-      const userRequestId = context.req.userRequestId;
-      PubliciteAuth.authorize(userRequestId, magazineAdmin);
-      await this.magazineAdapter.addCollaboratorsToUserMagazine(
-        newCollaborators,
-        magazineId,
-        magazineAdmin,
-      );
-      return 'Collaborators added in user magazine';
-    } catch (error: any) {
-      throw error;
-    }
-  }
-
-  @Mutation(() => String, {
-    nullable: true,
-    description: 'Agregar allowedCollaborators a la revista de grupo',
-  })
-  async addAllowedCollaboratorsToGroupMagazine(
-    @Args('newallowedCollaborators', { type: () => [String] })
-    newallowedCollaborators: string[],
-    @Args('magazineId', { type: () => String })
-    magazineId: string,
-    @Args('magazineAdmin', { type: () => String })
-    magazineAdmin: string,
-    @Context() context: { req: CustomContextRequestInterface },
-  ): Promise<any> {
-    try {
-      const userRequestId = context.req.userRequestId;
-      PubliciteAuth.authorize(userRequestId, magazineAdmin);
-      await this.magazineAdapter.addAllowedCollaboratorsToGroupMagazine(
-        newallowedCollaborators,
-        magazineId,
-        magazineAdmin,
-      );
-      return 'Collaborators added in group magazine';
-    } catch (error: any) {
-      throw error;
-    }
-  }
-
-  @Mutation(() => String, {
-    nullable: true,
-    description: 'Eliminar colaboradores de la revista de usuario',
-  })
-  async deleteCollaboratorsFromUserMagazine(
-    @Args('collaboratorsToDelete', { type: () => [String] })
-    collaboratorsToDelete: string[],
-    @Args('magazineId', { type: () => String })
-    magazineId: string,
-    @Args('magazineAdmin', { type: () => String })
-    magazineAdmin: string,
-    @Context() context: { req: CustomContextRequestInterface },
-  ): Promise<any> {
-    try {
-      const userRequestId = context.req.userRequestId;
-      PubliciteAuth.authorize(userRequestId, magazineAdmin);
-      await this.magazineAdapter.deleteCollaboratorsFromMagazine(
-        collaboratorsToDelete,
-        magazineId,
-        magazineAdmin,
-      );
-      return 'Collaborators deleted in user magazine';
-    } catch (error: any) {
-      throw error;
-    }
-  }
-  @Mutation(() => String, {
-    nullable: true,
-    description: 'Eliminar allowed colaboradores de la revista de grupo',
-  })
-  async deleteAllowedCollaboratorsFromMagazineGroup(
-    @Args('allowedCollaboratorsToDelete', { type: () => [String] })
-    allowedCollaboratorsToDelete: string[],
-    @Args('magazineId', { type: () => String })
-    magazineId: string,
-    @Args('magazineAdmin', { type: () => String })
-    magazineAdmin: string,
-    @Context() context: { req: CustomContextRequestInterface },
-  ): Promise<any> {
-    try {
-      const userRequestId = context.req.userRequestId;
-      PubliciteAuth.authorize(userRequestId, magazineAdmin);
-      await this.magazineAdapter.deleteAllowedCollaboratorsFromMagazineGroup(
-        allowedCollaboratorsToDelete,
-        magazineId,
-        magazineAdmin,
-      );
-      return 'Collaborators deleted in group magazine';
-    } catch (error: any) {
-      throw error;
-    }
-  }
 
   @Mutation(() => String, {
     nullable: true,
@@ -412,6 +306,49 @@ export class MagazineResolver {
     }
   }
 
+
+  @Mutation(() => String, {
+    nullable: true,
+    description: 'Eliminar una revistga por su id, para esto debes ser creador de la revista, de grupo o usuario admin',
+  })
+  @UseGuards(ClerkAuthGuard)
+  async deleteMagazineByMagazineId(
+    @Args('magazineId', { type: () => String })
+    magazineId: string,
+    @Args('ownerType', { type: () => String })
+    ownerType: string,
+    @Context() context: { req: CustomContextRequestInterface },
+  ): Promise<string> {
+    try {
+      const userRequestId = context.req.userRequestId;
+      await this.magazineAdapter.deleteMagazineByMagazineId(magazineId, userRequestId, ownerType);
+      return 'Magazine deleted succesfully';
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
+  @Mutation(() => String, {
+    nullable: true,
+    description: 'Salir de la revista, solo para quienes colaboran en ellas.',
+  })
+  @UseGuards(ClerkAuthGuard)
+  async exitMagazineByMagazineId(
+    @Args('magazineId', { type: () => String })
+    magazineId: string,
+    @Args('ownerType', { type: () => String })
+    ownerType: string,
+    @Context() context: { req: CustomContextRequestInterface },
+  ): Promise<string> {
+    try {
+      const userRequestId = context.req.userRequestId;
+      await this.magazineAdapter.exitMagazineByMagazineId(magazineId, userRequestId, ownerType);
+      return 'Magazine deleted succesfully';
+    } catch (error: any) {
+      throw error;
+    }
+  }
 
 
 

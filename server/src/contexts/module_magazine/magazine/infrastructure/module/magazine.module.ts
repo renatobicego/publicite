@@ -40,6 +40,10 @@ import { UserSchema } from 'src/contexts/module_user/user/infrastructure/schemas
       useClass: MagazineRepository,
     },
     {
+      provide: 'UserMagazineAllowedVerificationsInterface',
+      useClass: MagazineRepository,
+    },
+    {
       provide: 'MagazineServiceInterface',
       useClass: MagazineService,
     },
@@ -51,6 +55,9 @@ import { UserSchema } from 'src/contexts/module_user/user/infrastructure/schemas
       provide: 'MagazineRepositoryMapperInterface',
       useClass: MagazineRepositoryMapper,
     },
+
+
+
   ],
   exports: ['MagazineServiceInterface', /*'MagazineRepositoryInterface'*/],
 })

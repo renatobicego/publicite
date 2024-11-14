@@ -12,17 +12,6 @@ export interface MagazineAdapterInterface {
     groupId?: string,
   ): Promise<any>;
 
-  addCollaboratorsToUserMagazine(
-    newCollaborators: string[],
-    magazineId: string,
-    magazineAdmin: string,
-  ): Promise<any>;
-
-  addAllowedCollaboratorsToGroupMagazine(
-    newAllowedCollaborators: string[],
-    magazineId: string,
-    magazineAdmin: string,
-  ): Promise<any>;
 
   addPostInGroupMagazine(
     postId: string,
@@ -38,24 +27,20 @@ export interface MagazineAdapterInterface {
     sectionId: string,
   ): Promise<any>;
 
-  deleteCollaboratorsFromMagazine(
-    collaboratorsToDelete: string[],
-    magazineId: string,
-    magazineAdmin: string,
-  ): Promise<any>;
+  createMagazine(magazineRequest: MagazineCreateRequest, userRequestId: string): Promise<any>;
+
   deleteSectionFromMagazineById(
     sectionIdsToDelete: string[],
     magazineId: string,
     magazineType: string,
     userRequestId: string,
   ): Promise<any>;
-  deleteAllowedCollaboratorsFromMagazineGroup(
-    allowedCollaboratorsToDelete: string[],
-    magazineId: string,
-    magazineAdmin: string,
-  ): Promise<any>;
+
+  deleteMagazineByMagazineId(magazineId: string, userRequestId: string, ownerType: string): Promise<any>;
   deletePostInMagazineSection(postIdToRemove: string, sectionId: string, ownerType: string, userRequestId: string, magazineId?: string): Promise<any>;
-  createMagazine(magazineRequest: MagazineCreateRequest,userRequestId: string): Promise<any>;
+
+  exitMagazineByMagazineId(magazineId: string, userRequestId: string, ownerType: string): Promise<any>;
+
   findMagazineByMagazineId(
     userId: ObjectId,
   ): Promise<Partial<MagazineResponse> | null>;

@@ -1,4 +1,8 @@
-import { Inject } from '@nestjs/common';
+import { BadRequestException, Inject } from '@nestjs/common';
+import { ObjectId } from 'mongoose';
+
+
+
 import { MagazineServiceInterface } from '../../domain/service/magazine.service.interface';
 import { MagazineCreateRequest } from '../adapter/dto/HTTP-REQUEST/magazine.create.request';
 import { MagazineRepositoryInterface } from '../../domain/repository/magazine.repository.interface';
@@ -6,19 +10,23 @@ import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.servic
 import { MagazineSection } from '../../domain/entity/section/magazine.section.entity';
 import { OwnerType } from '../../domain/entity/enum/magazine.ownerType.enum';
 import { Magazine } from '../../domain/entity/magazine.entity';
-import { ObjectId } from 'mongoose';
 import { UserMagazine } from '../../domain/entity/user.magazine';
 import { GroupMagazine } from '../../domain/entity/group.magazine';
 import { MagazineResponse } from '../adapter/dto/HTTP-RESPONSE/magazine.reponse';
 import { MagazineUpdateRequest } from '../adapter/dto/HTTP-REQUEST/magazine.update.request';
 import { MagazineSectionCreateRequest } from '../adapter/dto/HTTP-REQUEST/magazineSection.create.request';
+import { UserMagazineAllowedVerificationsInterface } from '../../domain/repository/user.allowed.verifications.interface';
 
 export class MagazineService implements MagazineServiceInterface {
   constructor(
     @Inject('MagazineRepositoryInterface')
     private readonly magazineRepository: MagazineRepositoryInterface,
+    @Inject('UserMagazineAllowedVerificationsInterface')
+    private readonly userMagazineAllowedVerifications: UserMagazineAllowedVerificationsInterface,
     private readonly logger: MyLoggerService,
+
   ) { }
+
 
   async addNewMagazineSection(
     magazineAdmin: string,
@@ -30,7 +38,7 @@ export class MagazineService implements MagazineServiceInterface {
       this.logger.log('Adding new section in magazine...');
       if (groupId) {
         this.logger.log('Adding new section in group magazine...');
-        await this.magazineRepository.isAdmin_creator_Or_Collaborator(
+        await this.userMagazineAllowedVerifications.is_admin_creator_or_collaborator_of_magazine_GROUP_MAGAZINE(
           magazineId,
           magazineAdmin,
         )
@@ -60,7 +68,7 @@ export class MagazineService implements MagazineServiceInterface {
   ): Promise<any> {
     try {
       this.logger.log('Adding Post in Group Magazine in service..');
-      await this.magazineRepository.isAdmin_creator_Or_Collaborator(
+      await this.userMagazineAllowedVerifications.is_admin_creator_or_collaborator_of_magazine_GROUP_MAGAZINE(
         magazineId,
         magazineAdmin,
       );
@@ -237,7 +245,7 @@ export class MagazineService implements MagazineServiceInterface {
     allowedCollaboratorId: string,
   ): Promise<void> {
     try {
-      await this.magazineRepository.isAdmin_creator_Or_Collaborator(
+      await this.userMagazineAllowedVerifications.is_admin_creator_or_collaborator_of_magazine_GROUP_MAGAZINE(
         magazineId,
         allowedCollaboratorId
       )
@@ -267,6 +275,40 @@ export class MagazineService implements MagazineServiceInterface {
     }
   }
 
+  async deleteMagazineByMagazineId(magazineId: string, userRequestId: string, ownerType: string): Promise<any> {
+    let isUserAllowedToDelete = false;
+    try {
+      switch (ownerType.toLowerCase()) {
+        case OwnerType.user: {
+          isUserAllowedToDelete = await this.userMagazineAllowedVerifications.is_creator_of_magazine_USER_MAGAZINE(magazineId, userRequestId)
+          if (isUserAllowedToDelete) {
+            this.logger.log('You are allowed to delete this magazine');
+            return this.magazineRepository.deleteMagazineByMagazineId(magazineId)
+          } else {
+            return 'You are not allowed to delete this magazine'
+          }
+
+        }
+        case OwnerType.group: {
+          isUserAllowedToDelete = await this.userMagazineAllowedVerifications.is_admin_or_creator_of_magazine_GROUP_MAGAZINE(magazineId, userRequestId)
+          if (isUserAllowedToDelete) {
+            this.logger.log('You are allowed to delete this magazine');
+            return this.magazineRepository.deleteMagazineByMagazineId(magazineId)
+          } else {
+            return 'You are not allowed to delete this magazine'
+          }
+
+        }
+        default: {
+          throw new BadRequestException('Invalid owner type - check owner type Magazine in request');
+        }
+
+      }
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
 
   async deletePostInMagazineSection(postIdToRemove: string, sectionId: string, ownerType: string, userRequestId: string, magazineId?: string): Promise<any> {
 
@@ -281,6 +323,29 @@ export class MagazineService implements MagazineServiceInterface {
     }
 
   }
+
+  async exitMagazineByMagazineId(magazineId: string, userRequestId: string, ownerType: string): Promise<any> {
+    try {
+
+      switch (ownerType.toLowerCase()) {
+        case OwnerType.user: {
+          return await this.magazineRepository.removeCollaboratorFromUserMagazine(magazineId, userRequestId);
+        }
+        case OwnerType.group: {
+          return await this.magazineRepository.removeAllowedCollaboratorFromGroupMagazine(magazineId, userRequestId);
+        }
+        default: {
+          throw new BadRequestException('Invalid owner type - check owner type Magazine in request');
+        }
+      }
+
+    }
+    catch (error: any) {
+      this.logger.error('Error removing collaborator of Magazine', error);
+      throw error;
+    }
+  }
+
 
   async findMagazineByMagazineId(
     id: ObjectId,
@@ -307,12 +372,12 @@ export class MagazineService implements MagazineServiceInterface {
     let isUserAllowed = false;
     switch (ownerType) {
       case OwnerType.user: {
-        isUserAllowed = await this.magazineRepository.isUserAllowedToEditSectionUserMagazine(sectionId, userRequestId);
+        isUserAllowed = await this.userMagazineAllowedVerifications.is_user_allowed_to_edit_section_USER_MAGAZINE(sectionId, userRequestId);
         break;
       }
       case OwnerType.group: {
         if (!magazineId) return false
-        isUserAllowed = await this.magazineRepository.isUserAllowedToEditSectionGroupMagazine(sectionId, userRequestId, magazineId);
+        isUserAllowed = await this.userMagazineAllowedVerifications.is_user_allowed_to_edit_section_GROUP_MAGAZINE(sectionId, userRequestId, magazineId);
         break
       }
       default: {

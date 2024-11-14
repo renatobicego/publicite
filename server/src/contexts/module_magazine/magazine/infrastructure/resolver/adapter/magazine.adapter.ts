@@ -14,7 +14,6 @@ export class MagazineAdapter implements MagazineAdapterInterface {
     private readonly magazineService: MagazineServiceInterface,
   ) { }
 
-
   async addNewMagazineSection(
     magazineAdmin: string,
     magazineId: string,
@@ -67,37 +66,7 @@ export class MagazineAdapter implements MagazineAdapterInterface {
     }
   }
 
-  async addCollaboratorsToUserMagazine(
-    newCollaborators: string[],
-    magazineId: string,
-    magazineAdmin: string,
-  ): Promise<any> {
-    try {
-      await this.magazineService.addCollaboratorsToUserMagazine(
-        newCollaborators,
-        magazineId,
-        magazineAdmin,
-      );
-    } catch (error: any) {
-      throw error;
-    }
-  }
 
-  async addAllowedCollaboratorsToGroupMagazine(
-    newAllowedCollaborators: string[],
-    magazineId: string,
-    magazineAdmin: string,
-  ): Promise<any> {
-    try {
-      await this.magazineService.addAllowedCollaboratorsToGroupMagazine(
-        newAllowedCollaborators,
-        magazineId,
-        magazineAdmin,
-      );
-    } catch (error: any) {
-      throw error;
-    }
-  }
 
   async createMagazine(magazineRequest: MagazineCreateRequest, userRequestId: string): Promise<any> {
     try {
@@ -107,21 +76,16 @@ export class MagazineAdapter implements MagazineAdapterInterface {
     }
   }
 
-  async deleteCollaboratorsFromMagazine(
-    collaboratorsToDelete: string[],
-    magazineId: string,
-    magazineAdmin: string,
-  ): Promise<any> {
+
+  async deleteMagazineByMagazineId(magazineId: string, userRequestId: string, ownerType: string): Promise<any> {
     try {
-      await this.magazineService.deleteCollaboratorsFromMagazine(
-        collaboratorsToDelete,
-        magazineId,
-        magazineAdmin,
-      );
+      await this.magazineService.deleteMagazineByMagazineId(magazineId, userRequestId, ownerType);
     } catch (error: any) {
       throw error;
     }
   }
+
+
 
   async deleteSectionFromMagazineById(
     sectionIdsToDelete: string[],
@@ -154,21 +118,6 @@ export class MagazineAdapter implements MagazineAdapterInterface {
       throw error;
     }
   }
-  async deleteAllowedCollaboratorsFromMagazineGroup(
-    allowedCollaboratorsToDelete: string[],
-    magazineId: string,
-    magazineAdmin: string,
-  ): Promise<any> {
-    try {
-      await this.magazineService.deleteAllowedCollaboratorsFromMagazineGroup(
-        allowedCollaboratorsToDelete,
-        magazineId,
-        magazineAdmin,
-      );
-    } catch (error: any) {
-      throw error;
-    }
-  }
 
   async deletePostInMagazineSection(postIdToRemove: string, sectionId: string, ownerType: string, userRequestId: string, magazineId?: string): Promise<any> {
     try {
@@ -177,6 +126,15 @@ export class MagazineAdapter implements MagazineAdapterInterface {
       throw error;
     }
   }
+
+  async exitMagazineByMagazineId(magazineId: string, userRequestId: string, ownerType: string): Promise<any> {
+    try {
+      await this.magazineService.exitMagazineByMagazineId(magazineId, userRequestId, ownerType);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
 
   async findMagazineByMagazineId(
     id: ObjectId,
