@@ -13,7 +13,7 @@ import { PostCategoryModule } from './contexts/module_post/postCategory/infrastr
 import { DatabaseModule } from './contexts/module_shared/database/infrastructure/database.module';
 import { AllExceptionsFilter } from './contexts/module_shared/exceptionFilter/infrastructure/exception.filter';
 import { LoggerModule } from './contexts/module_shared/logger/logger.module';
-import { NotificationSocketModule } from './contexts/module_shared/socket/infrastructure/module/notification.socket.module';
+import { NotificationSocketModule } from './contexts/module_shared/module_socket/infrastructure/module/notification.socket.module';
 import { BoardModule } from './contexts/module_user/board/infrastructure/module/board.module';
 import { SectorModule } from './contexts/module_user/businessSector/infrastructure/module/sector.module';
 import { ContactModule } from './contexts/module_user/contact/infrastructure/module/contact.module';

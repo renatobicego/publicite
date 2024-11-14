@@ -1,7 +1,7 @@
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Magazine } from '../../domain/entity/magazine.entity';
 import { Connection, Model, ObjectId } from 'mongoose';
-import { Inject } from '@nestjs/common';
+import { Inject, UnauthorizedException } from '@nestjs/common';
 
 import { MagazineRepositoryInterface } from '../../domain/repository/magazine.repository.interface';
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
@@ -50,7 +50,7 @@ export class MagazineRepository implements MagazineRepositoryInterface {
 
     @InjectModel('User') private readonly userModel: Model<IUser>,
     @InjectModel('Group') private readonly groupModel: Model<GroupDocument>,
-  ) {}
+  ) { }
 
   async addNewMagazineGroupSection(
     magazineId: string,
@@ -303,7 +303,6 @@ export class MagazineRepository implements MagazineRepositoryInterface {
             { $pullAll: { collaborators: collaboratorsToDelete } },
             { session },
           )
-          .lean();
 
         checkResultModificationOfOperation(result);
 
@@ -313,18 +312,15 @@ export class MagazineRepository implements MagazineRepositoryInterface {
             { $pull: { magazines: magazineId } },
             { session },
           )
-          .lean();
-        await session.commitTransaction();
+
         this.logger.log('Collaborators deleted from Magazine successfully');
       });
     } catch (error: any) {
-      if (session.inTransaction()) {
-        await session.abortTransaction();
-      }
       this.logger.error('Error deleting Collaborators from Magazine', error);
       throw error;
     } finally {
-      session.endSession();
+
+
     }
   }
 
@@ -336,16 +332,15 @@ export class MagazineRepository implements MagazineRepositoryInterface {
     const session = await this.connection.startSession();
     try {
       await session.withTransaction(async () => {
-        const group = await this.groupModel
+        const result = await this.groupModel
           .findOne({
             magazines: magazineId,
             creator: magazineAdmin,
           })
           .session(session)
           .lean();
-        if (!group) {
-          throw new Error('Not allowed or group not found');
-        }
+
+          checkResultModificationOfOperation(result);
 
         await this.userModel
           .updateMany(
@@ -364,20 +359,14 @@ export class MagazineRepository implements MagazineRepositoryInterface {
           )
           .lean();
       });
-      await session.commitTransaction();
       this.logger.log(
         'Allowed Collaborators deleted from Magazine Group successfully',
       );
       return;
     } catch (error: any) {
-      await session.abortTransaction();
-      this.logger.error(
-        'Error deleting Allowed Collaborators from Magazine Group',
-        error,
-      );
+      this.logger.error('Error deleting Collaborators from Magazine', error);
       throw error;
-    } finally {
-      session.endSession();
+
     }
   }
 

@@ -15,6 +15,7 @@ const GROUP_NOTIFICATION_eventTypes_send_only_user = [
 
 const MAGAZINE_NOTIFICATION_eventTypes = {
     user_acept_the_invitation: 'notification_magazine_acepted',
+    user_has_been_removed_fom_magazine: 'notification_magazine_user_has_been_removed'
 }
 
 enum ownerType {

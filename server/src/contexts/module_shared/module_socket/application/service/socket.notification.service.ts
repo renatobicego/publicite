@@ -11,11 +11,19 @@ import { MagazineServiceInterface } from 'src/contexts/module_magazine/magazine/
 
 
 interface newMemberData {
-  newMember: string,
+  memberToAdd: string,
   magazineAdmin: string,
   magazineId: string,
   magazineType: string
 }
+
+interface memberForDeleteData {
+  memberToDelete: string,
+  magazineAdmin: string,
+  magazineId: string,
+  magazineType: string
+}
+
 
 export class SocketNotificationService
   implements SocketNotificationServiceInterface {
@@ -82,6 +90,9 @@ export class SocketNotificationService
   async handleMagazineNotification(notificationBody: any): Promise<void> {
     try {
       const userAceptTheInvitationOfCollaborator = MAGAZINE_NOTIFICATION_eventTypes.user_acept_the_invitation
+      const userHasBeenRemovedFromMagazine = MAGAZINE_NOTIFICATION_eventTypes.user_has_been_removed_fom_magazine
+
+
       const event = this.verifyNotificationAndExtractEvent(notificationBody);
       if (!event) {
         this.logger.error(
@@ -90,10 +101,18 @@ export class SocketNotificationService
         return;
       }
 
+      if (event === userHasBeenRemovedFromMagazine) {
+        const memberDeleteData = this.extractMagazineData(notificationBody, event
 
+        )
+        await this.deleteMemberFromMagazine(memberDeleteData as memberForDeleteData)
+
+      }
       if (event === userAceptTheInvitationOfCollaborator) {
-        const newMemberData = this.extractDataForAceptInvitation(notificationBody)
-        await this.addNewMemberToMagazine(newMemberData)
+        const newMemberData = this.extractMagazineData(notificationBody, event
+
+        )
+        await this.addNewMemberToMagazine(newMemberData as newMemberData)
       }
 
       await this.sendNotificationToUser(notificationBody);
@@ -116,7 +135,7 @@ export class SocketNotificationService
     return event;
   }
 
-  private extractDataForAceptInvitation(notificationBody: any) {
+  private extractMagazineData(notificationBody: any, event: string): newMemberData | memberForDeleteData {
     const { userIdTo, userIdFrom } = notificationBody.notification.backData
     const { _id, ownerType } = notificationBody.frontData.magazine
 
@@ -125,27 +144,44 @@ export class SocketNotificationService
       throw new Error('Invalid notification data- userIdTo, userIdFrom and _id are required');
     }
 
-
-    const newMemberData: newMemberData = {
-      newMember: userIdFrom,
-      magazineAdmin: userIdTo,
-      magazineId: _id,
-      magazineType: ownerType,
+    switch (event) {
+      case MAGAZINE_NOTIFICATION_eventTypes.user_acept_the_invitation:
+        return { memberToAdd: userIdFrom, magazineAdmin: userIdTo, magazineId: _id, magazineType: ownerType }
+      case MAGAZINE_NOTIFICATION_eventTypes.user_has_been_removed_fom_magazine:
+        return { memberToDelete: userIdTo, magazineAdmin: userIdFrom, magazineId: _id, magazineType: ownerType }
+      default:
+        throw new Error(`Event type ${event} is not supported`);
     }
-    return newMemberData
+
+
   }
 
+  async deleteMemberFromMagazine(memberDta: memberForDeleteData) {
+    const { memberToDelete, magazineAdmin, magazineId, magazineType } = memberDta
+    try {
+      if (ownerType.user === magazineType) {
+        return await this.magazineService.deleteCollaboratorsFromMagazine([memberToDelete], magazineId, magazineAdmin)
+      } else if (ownerType.group === magazineType) {
+        return await this.magazineService.deleteAllowedCollaboratorsFromMagazineGroup([memberToDelete], magazineId, magazineAdmin)
+      } else {
+        throw new Error('Owner type (delete member) not supported in socket, please check it');
+      }
+    } catch (error: any) {
+      throw error;
+    }
+
+  }
 
   async addNewMemberToMagazine(newMemberData: newMemberData) {
-    const { newMember, magazineAdmin, magazineId, magazineType } = newMemberData
+    const { memberToAdd, magazineAdmin, magazineId, magazineType } = newMemberData
 
     try {
       if (ownerType.user === magazineType) {
-        return await this.magazineService.addCollaboratorsToUserMagazine([newMember], magazineId, magazineAdmin)
+        return await this.magazineService.addCollaboratorsToUserMagazine([memberToAdd], magazineId, magazineAdmin)
       } else if (ownerType.group === magazineType) {
-        return await this.magazineService.addAllowedCollaboratorsToGroupMagazine([newMember], magazineId, magazineAdmin)
+        return await this.magazineService.addAllowedCollaboratorsToGroupMagazine([memberToAdd], magazineId, magazineAdmin)
       } else {
-        throw new Error('Owner type not supported in socket, please check it');
+        throw new Error('Owner type (add member)  not supported in socket, please check it');
       }
     } catch (error: any) {
       throw error;

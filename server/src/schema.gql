@@ -86,6 +86,7 @@ type Post_of_members_group {
   frequencyPrice: String
   toPrice: Float
   petitionType: String
+  postType: String
 }
 
 type GroupPostMemberResponse {
