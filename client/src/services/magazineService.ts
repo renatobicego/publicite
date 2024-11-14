@@ -5,6 +5,7 @@ import {
   changeSectionNameMutation,
   createMagazineMutation,
   createMagazineSectionMutation,
+  deleteCollaboratorMutation,
   deletePostInSectionMutation,
   deleteSectionMutation,
   editMagazineMutation,
@@ -53,7 +54,7 @@ export const postMagazine = async (formData: any) => {
       headers: {
         Authorization: await auth().getToken(),
       },
-    }
+    },
   });
   return data;
 };
@@ -186,6 +187,26 @@ export const deletPostInMagazine = async (
     context: {
       headers: {
         Authorization: await auth().getToken(),
+      },
+    },
+  });
+};
+
+export const deleteCollaboratorFromUserMagazine = async (
+  collaboratorsToDelete: string[],
+  magazineId: string
+) => {
+  const authData = auth();
+  await getClient().mutate({
+    mutation: deleteCollaboratorMutation,
+    variables: {
+      collaboratorsToDelete,
+      magazineId,
+      magazineAdmin: authData.sessionClaims?.metadata.mongoId,
+    },
+    context: {
+      headers: {
+        Authorization: await authData.getToken(),
       },
     },
   });

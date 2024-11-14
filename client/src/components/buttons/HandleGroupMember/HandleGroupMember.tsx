@@ -127,7 +127,7 @@ const HandleGroupMember = ({
                 <FaPencil />
               </Button>
             </DropdownTrigger>
-            <DropdownMenu aria-label="Static Actions">
+            <DropdownMenu aria-label="acciones de miembro de grupo">
               <DropdownItem
                 className="rounded-full"
                 key="assign-admin"
@@ -180,7 +180,7 @@ const HandleGroupMember = ({
                 <FaPencil />
               </Button>
             </DropdownTrigger>
-            <DropdownMenu aria-label="Static Actions">
+            <DropdownMenu aria-label="acciones de administrador de grupo">
               <DropdownItem
                 className="rounded-full"
                 key="delete-admin"

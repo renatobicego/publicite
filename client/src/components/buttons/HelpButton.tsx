@@ -34,7 +34,7 @@ const HelpButton = () => {
           </Button>
         </DropdownTrigger>
 
-        <DropdownMenu aria-label="Static Actions" className="bg-fondo">
+        <DropdownMenu aria-label="acciones de ayuda" className="bg-fondo">
           <DropdownItem key="new">New file</DropdownItem>
           <DropdownItem key="copy">Copy link</DropdownItem>
           <DropdownItem key="edit">Edit file</DropdownItem>

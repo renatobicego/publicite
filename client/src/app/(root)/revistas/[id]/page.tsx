@@ -3,8 +3,8 @@ import ErrorCard from "@/components/ErrorCard";
 import PostsGrid from "@/components/grids/PostGrid";
 import { getMagazineById } from "@/services/magazineService";
 import { GROUPS, MAGAZINES, PROFILE } from "@/utils/data/urls";
-import AccordionSections from "./AccordionSections";
-import { auth, currentUser } from "@clerk/nextjs/server";
+import AccordionSections from "./Sections/AccordionSections";
+import { auth } from "@clerk/nextjs/server";
 import { Post } from "@/types/postTypes";
 import { Group } from "@/types/groupTypes";
 import { GetUser } from "@/types/userTypes";
@@ -12,7 +12,7 @@ import { getOwner, checkIsOwner, getProfileUrl } from "./utils";
 import MagazineHeader from "./MagazineHeader";
 import MagazineActions from "./MagazineActions";
 import { GroupMagazine, Magazine, UserMagazine } from "@/types/magazineTypes";
-import MagazineSectionActions from "./MagazineSectionActions";
+import MagazineSectionActions from "./Sections/MagazineSectionActions";
 
 export default async function MagazinePage(props: { params: { id: string } }) {
   const params = props.params;
@@ -69,7 +69,7 @@ export default async function MagazinePage(props: { params: { id: string } }) {
             urlProfile,
             isOwner,
             isOwnerTypeUser,
-            canEdit: isOwner || isCollaborator,
+            canEdit: isOwner,
           }}
         />
         <MagazineActions isOwner={isOwner} magazine={magazine} />

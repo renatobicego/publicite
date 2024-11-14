@@ -1,5 +1,5 @@
 "use client";
-import DeleteMagazineSection from "@/app/(root)/revistas/[id]/DeleteMagazineSection";
+import DeleteMagazineSection from "@/app/(root)/revistas/[id]/Sections/DeleteMagazineSection";
 import { MagazineSection } from "@/types/magazineTypes";
 import {
   useDisclosure,
