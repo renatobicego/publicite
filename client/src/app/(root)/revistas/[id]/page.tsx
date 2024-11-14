@@ -12,7 +12,7 @@ import { getOwner, checkIsOwner, getProfileUrl } from "./utils";
 import MagazineHeader from "./MagazineHeader";
 import MagazineActions from "./MagazineActions";
 import { GroupMagazine, Magazine, UserMagazine } from "@/types/magazineTypes";
-import CreateMagazineSection from "@/components/modals/MagazineSection/CreateMagazineSection";
+import MagazineSectionActions from "./MagazineSectionActions";
 
 export default async function MagazinePage(props: { params: { id: string } }) {
   const params = props.params;
@@ -76,9 +76,12 @@ export default async function MagazinePage(props: { params: { id: string } }) {
       </section>
       <div className="w-full relative">
         {(isOwner || isCollaborator) && (
-          <CreateMagazineSection
+          <MagazineSectionActions
             magazineId={magazine._id}
             groupId={!isOwnerTypeUser ? ownerAsGroup._id : undefined}
+            ownerType={magazine.ownerType}
+            sections={magazine.sections.filter(
+              (section) => !section.isFatherSection)}
           />
         )}
         <PostsGrid

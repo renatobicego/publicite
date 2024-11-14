@@ -35,22 +35,6 @@ const AccordionSections = ({
           HeadingComponent={"h6"}
           key={section._id}
           title={section.title}
-          startContent={
-            canEdit && (
-              <div className="flex gap-1 items-center">
-                <EditMagazineSection
-                  prevSectionName={section.title}
-                  ownerType={ownerType}
-                  sectionId={section._id}
-                />
-                <DeleteMagazineSection
-                  sectionId={section._id}
-                  magazineId={magazineId}
-                  ownerType={ownerType}
-                />
-              </div>
-            )
-          }
         >
           <PostsGrid posts={section.posts as Post[]} />
         </AccordionItem>

@@ -116,12 +116,49 @@ export const getGroupsQuery = gql`
           }
           profilePhotoUrl
           visibility
+          admins {
+            _id
+          }
         }
         isMember
         hasJoinRequest
         hasGroupRequest
       }
       hasMore
+    }
+  }
+`;
+
+export const getMemberPosts = gql`
+  query GetPostsOfGroupMembers(
+    $getPostsOfGroupMembersId: String!
+    $limit: Float!
+    $page: Float!
+  ) {
+    getPostsOfGroupMembers(
+      id: $getPostsOfGroupMembersId
+      limit: $limit
+      page: $page
+    ) {
+      hasMore
+      userAndPosts {
+        username
+        posts {
+          _id
+          description
+          frequencyPrice
+          imagesUrls
+          petitionType
+          price
+          postType
+          title
+          toPrice
+        }
+        _id
+        lastName
+        name
+        profilePhotoUrl
+      }
     }
   }
 `;

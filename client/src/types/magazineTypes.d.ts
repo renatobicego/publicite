@@ -44,7 +44,8 @@ export type MagazineNotificationType =
 
 export interface MagazineNotification extends BaseNotification {
   frontData: {
-    magazine: Pick<Magazine, "_id" | "name">;
-    userInviting: Pick<User, "username">;
+    magazine: Pick<Magazine, "_id" | "name"> & { 
+      userInviting: Pick<User, "username">; 
+    };
   };
 }

@@ -30,8 +30,7 @@ export class GroupRepository implements GroupRepositoryInterface {
     private readonly groupMapper: GroupRepositoryMapperInterface,
     @InjectConnection() private readonly connection: Connection,
     private readonly logger: MyLoggerService,
-  ) { }
-
+  ) {}
 
   async assignNewCreatorAndExitGroupById(
     groupId: string,
@@ -44,22 +43,23 @@ export class GroupRepository implements GroupRepositoryInterface {
       await session.withTransaction(async () => {
         this.logger.log('Assign new creator ID: ' + newCreator);
 
-        const resultOfOperation = await this.groupModel
-          .updateOne(
-            { _id: groupId, creator: creator, admins: newCreator },
-            {
-              $set: {
-                creator: newCreator,
-              },
-              $pull: {
-                admins: newCreator,
-              },
+        const resultOfOperation = await this.groupModel.updateOne(
+          { _id: groupId, creator: creator, admins: newCreator },
+          {
+            $set: {
+              creator: newCreator,
             },
-            { session },
-          );
+            $pull: {
+              admins: newCreator,
+            },
+          },
+          { session },
+        );
 
-        checkResultModificationOfOperation(resultOfOperation, 'Group not found or the new creator is not an admin');
-
+        checkResultModificationOfOperation(
+          resultOfOperation,
+          'Group not found or the new creator is not an admin',
+        );
 
         await this.userModel.updateOne(
           { _id: creator },
@@ -207,7 +207,8 @@ export class GroupRepository implements GroupRepositoryInterface {
         const result = await this.groupModel
           .updateOne(
             {
-              _id: groupId, members: newAdmin,
+              _id: groupId,
+              members: newAdmin,
               $or: [{ admins: groupAdmin }, { creator: groupAdmin }],
             },
             {
@@ -218,7 +219,10 @@ export class GroupRepository implements GroupRepositoryInterface {
             { session },
           )
           .lean();
-        checkResultModificationOfOperation(result, 'You dont have permissions or the new admin is not a member');
+        checkResultModificationOfOperation(
+          result,
+          'You dont have permissions or the new admin is not a member',
+        );
         // await this.userModel
         //   .updateMany(
         //     { _id: { $in: admins } },
@@ -250,7 +254,6 @@ export class GroupRepository implements GroupRepositoryInterface {
     const session = await this.connection.startSession();
     const idsGroupPeopleToDelete: string[] = [];
 
-
     try {
       await session.withTransaction(async () => {
         const groupToDelete = await this.groupModel.findOneAndDelete(
@@ -258,15 +261,17 @@ export class GroupRepository implements GroupRepositoryInterface {
           { session },
         );
 
-
         if (groupToDelete === null) {
           throw new Error('Group does not exist or invalid creator');
         }
-        idsGroupPeopleToDelete.push(...groupToDelete.members, ...groupToDelete.admins, groupCreator);
-        const idsMappedToString = idsGroupPeopleToDelete.map(
-          (id) => id.toString(),
+        idsGroupPeopleToDelete.push(
+          ...groupToDelete.members,
+          ...groupToDelete.admins,
+          groupCreator,
         );
-
+        const idsMappedToString = idsGroupPeopleToDelete.map((id) =>
+          id.toString(),
+        );
 
         await this.userModel.updateMany(
           { _id: { $in: idsMappedToString } },
@@ -274,7 +279,7 @@ export class GroupRepository implements GroupRepositoryInterface {
             $pullAll: { groups: [groupId] },
           },
           { session },
-        )
+        );
 
         // 3-Elimino las revistas (utilizo el middle para eliminar todas las secciones asociadas)
         await this.groupMagazine.deleteMany({ group: groupId }, { session });
@@ -418,7 +423,8 @@ export class GroupRepository implements GroupRepositoryInterface {
             select: '_id username profilePhotoUrl name lastName',
           },
           {
-            path: 'admins', select: '_id username name lastName',
+            path: 'admins',
+            select: '_id username name lastName',
           },
           {
             path: 'groupNotificationsRequest.groupInvitations',
@@ -440,7 +446,6 @@ export class GroupRepository implements GroupRepositoryInterface {
         ])
         .session(session)
         .lean();
-
 
       if (!group) {
         return null;
@@ -466,84 +471,84 @@ export class GroupRepository implements GroupRepositoryInterface {
     }
   }
 
-  async findAllPostsOfGroupMembers(groupId: string, userRequest: string, limit: number, page: number): Promise<PostsMemberGroupResponse | null> {
+  async findAllPostsOfGroupMembers(
+    groupId: string,
+    userRequest: string,
+    limit: number,
+    page: number,
+  ): Promise<PostsMemberGroupResponse | null> {
     const session = await this.connection.startSession();
     session.startTransaction();
     const populatePostsFields = {
       path: 'posts',
-      select: '_id imagesUrls title description price frequencyPrice toPrice petitionType postType',
+      select:
+        '_id imagesUrls title description price frequencyPrice toPrice petitionType postType',
       options: {
         limit: limit,
         skip: (page - 1) * limit,
-      }
+      },
     };
-    const userSelectFields = "_id username name lastName posts profilePhotoUrl"
-
+    const userSelectFields = '_id username name lastName posts profilePhotoUrl';
 
     try {
       const group: any = await this.groupModel
-        .find(
-          {
-            _id: groupId,
-            $or: [{ members: userRequest }, { admins: userRequest }, { creator: userRequest }],
-          }
-        )
+        .find({
+          _id: groupId,
+          $or: [
+            { members: userRequest },
+            { admins: userRequest },
+            { creator: userRequest },
+          ],
+        })
         .select('_id members admins creator')
         .populate([
           {
             path: 'members',
             select: userSelectFields,
-            populate: populatePostsFields
+            populate: populatePostsFields,
           },
           {
             path: 'creator',
             select: userSelectFields,
-            populate: populatePostsFields
+            populate: populatePostsFields,
           },
           {
             path: 'admins',
             select: userSelectFields,
-            populate: populatePostsFields
-
+            populate: populatePostsFields,
           },
         ])
         .session(session)
         .lean();
-
 
       if (!group) {
         return null;
       }
 
       const memberWithPost = group[0].members.filter((member: any) => {
-        return member.posts.length > 0
-      })
+        return member.posts.length > 0;
+      });
 
       const adminWithPost = group[0].admins.filter((admin: any) => {
-        return admin.posts.length > 0
-      })
+        return admin.posts.length > 0;
+      });
 
-      const creatorWithPost = group[0].creator
+      const creatorWithPost = group[0].creator;
 
-      const adminAndMemberPosts = memberWithPost.concat(adminWithPost).concat(creatorWithPost)
+      const adminAndMemberPosts = memberWithPost
+        .concat(adminWithPost)
+        .concat(creatorWithPost);
 
       const hasMore = adminAndMemberPosts.length > limit;
 
-
-
       return {
         userAndPosts: adminAndMemberPosts,
-        hasMore: hasMore
-      }
-
+        hasMore: hasMore,
+      };
     } catch (error: any) {
       throw error;
     }
   }
-
-
-
-
 
   async findGroupByNameOrAlias(
     name: string,
@@ -662,7 +667,6 @@ export class GroupRepository implements GroupRepositoryInterface {
     }
   }
 
-
   async isThisGroupExist(alias: string): Promise<boolean> {
     try {
       const group = await this.groupModel.findOne({ alias: alias }).lean();
@@ -672,8 +676,6 @@ export class GroupRepository implements GroupRepositoryInterface {
       throw error;
     }
   }
-
-
 
   async removeAdminsFromGroupByGroupId(
     admins: string[],
@@ -748,10 +750,13 @@ export class GroupRepository implements GroupRepositoryInterface {
     }
   }
 
-  verify_role_of_user(group: any, userRequest: string): {
-    isMember: boolean,
-    hasJoinRequest: boolean,
-    hasGroupRequest: boolean
+  verify_role_of_user(
+    group: any,
+    userRequest: string,
+  ): {
+    isMember: boolean;
+    hasJoinRequest: boolean;
+    hasGroupRequest: boolean;
   } {
     let isMember = false;
     let hasJoinRequest = false;
@@ -771,20 +776,15 @@ export class GroupRepository implements GroupRepositoryInterface {
         (user: any) => user._id.toString() === userRequest,
       ) || false;
 
-
     hasGroupRequest =
       group.groupNotificationsRequest?.groupInvitations?.some(
         (user: any) => user._id.toString() === userRequest,
       ) || false;
 
-
     if (userIsMember || userIsAdmin || userIsCreator) {
       isMember = true;
-
-
     } else if (!userIsAdmin && !userIsCreator) {
-      group.groupNotificationsRequest =
-        group.groupNotificationsRequest || {};
+      group.groupNotificationsRequest = group.groupNotificationsRequest || {};
       group.groupNotificationsRequest.groupInvitations = [
         'You can’t access here; you are not an admin',
       ];
@@ -797,9 +797,8 @@ export class GroupRepository implements GroupRepositoryInterface {
       isMember,
       hasJoinRequest,
       hasGroupRequest,
-    }
+    };
   }
-
 
   async pushJoinRequest(
     groupId: string,

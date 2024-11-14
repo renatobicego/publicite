@@ -14,11 +14,13 @@ import {
   getGroupByIdQuery,
   getGroupMembersByIdQuery,
   getGroupsQuery,
+  getMemberPosts,
   makeAdminMutation,
   validateGroupAliasQuery,
 } from "@/graphql/groupQueries";
 import { auth } from "@clerk/nextjs/server";
 import { ApolloError } from "@apollo/client";
+import { Post } from "@/types/postTypes";
 
 export const getGroups = async (searchTerm: string | null, page: number) => {
   try {
@@ -112,18 +114,43 @@ export const getGroupAdminsById = async (id: string) => {
   }
 };
 
-export const getGroupPosts = async (
-  searchTerm: string | null,
-  groupId?: string
-) => {
+export const getGroupPosts = async (page: number, groupId?: string) => {
   if (!groupId)
     return {
       error: "Error al traer anuncios del grupo. Por favor intenta de nuevo.",
     };
   try {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    return { items: [...mockedPosts, ...mockedPetitions], hasMore: false };
+    const { data } = await query({
+      query: getMemberPosts,
+      variables: { getPostsOfGroupMembersId: groupId, limit: 30, page },
+      context: {
+        headers: {
+          Authorization: await auth().getToken(),
+        },
+      },
+    });
+    const items = data.getPostsOfGroupMembers.userAndPosts.flatMap((user: any) => {
+      const { posts, username, _id, profilePhotoUrl, name, lastName, } = user;
+      // Map over posts to add the author property
+      return posts.map((post: Post) => ({
+        ...post, // Spread the existing properties of the post
+        author: {
+          _id,
+          username,
+          profilePhotoUrl,
+          name,
+          lastName,
+        },
+      }));
+    });
+    // sort randomly posts
+    const randomizedItems = items.sort(() => Math.random() - 0.5);
+    return {
+      items: randomizedItems,
+      hasMore: data.getPostsOfGroupMembers.hasMore,
+    };
   } catch (error) {
+    console.log(error)
     return {
       error: "Error al traer anuncios del grupo. Por favor intenta de nuevo.",
     };
@@ -245,7 +272,7 @@ export const deleteAdmin = async (groupId: string, userIds: string[]) => {
 
     return { message: "Administrador eliminado" };
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return {
       error: "Error al eliminar administrador. Por favor intenta de nuevo.",
     };
@@ -299,7 +326,10 @@ export const putMemberGroup = async (groupId: string) => {
   }
 };
 
-export const putMemberGroupByRequest = async (groupId: string, newMember: string,) => {
+export const putMemberGroupByRequest = async (
+  groupId: string,
+  newMember: string
+) => {
   const userId = auth().sessionClaims?.metadata.mongoId;
   try {
     await getClient()
@@ -308,7 +338,7 @@ export const putMemberGroupByRequest = async (groupId: string, newMember: string
         variables: {
           groupId,
           newMember,
-          groupAdmin: userId
+          groupAdmin: userId,
         },
         context: {
           headers: {
@@ -325,22 +355,26 @@ export const putMemberGroupByRequest = async (groupId: string, newMember: string
   }
 };
 
-export const putExitGroup = async (groupId: string, isCreator?: boolean, newCreator?: string) => {
+export const putExitGroup = async (
+  groupId: string,
+  isCreator?: boolean,
+  newCreator?: string
+) => {
   const userId = auth().sessionClaims?.metadata.mongoId;
   const variables: {
-    groupId: string
-    member?: string
-    creator?: string
-    newCreator?: string
+    groupId: string;
+    member?: string;
+    creator?: string;
+    newCreator?: string;
   } = {
     groupId,
-  }
+  };
 
   if (isCreator) {
-    variables.creator = userId
-    variables.newCreator = newCreator
-  }else{
-    variables.member = userId
+    variables.creator = userId;
+    variables.newCreator = newCreator;
+  } else {
+    variables.member = userId;
   }
   try {
     await getClient()

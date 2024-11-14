@@ -60,7 +60,7 @@ const GroupCard = ({
             <h6>{groupData.name}</h6>
           </Link>
           <p className="text-xs md:text-sm">
-            {groupData.members.length} miembros
+            {groupData.members.length + 1 + groupData.admins.length} miembros
           </p>
           {actionButtonToReturn()}
         </div>
