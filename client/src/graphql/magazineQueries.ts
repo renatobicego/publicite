@@ -209,3 +209,17 @@ export const deletePostInSectionMutation = gql`
     )
   }
 `;
+
+export const deleteCollaboratorMutation = gql`
+  mutation DeleteCollaboratorsFromUserMagazine(
+    $collaboratorsToDelete: [String!]!
+    $magazineId: String!
+    $magazineAdmin: String!
+  ) {
+    deleteCollaboratorsFromUserMagazine(
+      collaboratorsToDelete: $collaboratorsToDelete
+      magazineId: $magazineId
+      magazineAdmin: $magazineAdmin
+    )
+  }
+`;

@@ -9,15 +9,29 @@ import {
   DropdownItem,
 } from "@nextui-org/react";
 import { useRef } from "react";
-import { FaChevronDown } from "react-icons/fa6";
+import { FaChevronDown, FaRegUser } from "react-icons/fa6";
 import { IoTrashOutline } from "react-icons/io5";
+import DeleteCollaborators from "./DeleteCollaborators";
+import { User } from "@/types/userTypes";
 
-const MagazineOptionsDropdown = () => {
+const MagazineOptionsDropdown = ({
+  collaborators,
+  ownerType,
+}: {
+  collaborators: User[];
+  ownerType: "user" | "group";
+}) => {
   const handleDelete = async () => {};
   const confirmDeleteRef = useRef<() => void>(() => {});
+  const modalDeleteCollaboratorRef = useRef<() => void>(() => {});
   const handleDeleteMagazineClick = () => {
     if (confirmDeleteRef.current) {
       confirmDeleteRef.current(); // Trigger custom open function to open the modal
+    }
+  };
+  const handleDeleteCollaboratorsClick = () => {
+    if (modalDeleteCollaboratorRef.current) {
+      modalDeleteCollaboratorRef.current(); // Trigger custom open function to open the modal
     }
   };
   return (
@@ -33,10 +47,19 @@ const MagazineOptionsDropdown = () => {
             <FaChevronDown />
           </Button>
         </DropdownTrigger>
-        <DropdownMenu aria-label="Static Actions">
+        <DropdownMenu aria-label="acciones de revista">
+          <DropdownItem
+            startContent={<FaRegUser />}
+            key="borrar colaboradores"
+            className="text-danger rounded-full px-4"
+            color="danger"
+            onPress={handleDeleteCollaboratorsClick}
+          >
+            Borrar Colaboradores
+          </DropdownItem>
           <DropdownItem
             startContent={<IoTrashOutline />}
-            key="delete"
+            key="borrar revista"
             className="text-danger rounded-full px-4"
             color="danger"
             onPress={handleDeleteMagazineClick}
@@ -52,6 +75,14 @@ const MagazineOptionsDropdown = () => {
         confirmText="Eliminar"
         onConfirm={handleDelete}
         customOpen={(openModal) => (confirmDeleteRef.current = openModal)}
+      />
+      <DeleteCollaborators
+        ButtonAction={<></>}
+        customOpen={(openModal) =>
+          (modalDeleteCollaboratorRef.current = openModal)
+        }
+        collaborators={collaborators}
+        ownerType={ownerType}
       />
     </>
   );

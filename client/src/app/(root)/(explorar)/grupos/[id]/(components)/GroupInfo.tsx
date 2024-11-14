@@ -64,7 +64,7 @@ const GroupInfo = async ({
         {details && <p className="text-sm lg:text-base">{details}</p>}
         <div className="flex items-center gap-1">
           <FaUser className="size-4 min-w-4" />
-          <p className="text-xs md:text-sm">{members.length} miembro/s</p>
+          <p className="text-xs md:text-sm">{members.length + 1 + admins.length} miembro/s</p>
         </div>
         <div className="flex gap-2 items-center max-md:flex-wrap">
           {isAdmin && (

@@ -1,6 +1,5 @@
 "use client";
 import { deletePost } from "@/app/server/postActions";
-import { deleteFilesService } from "@/app/server/uploadThing";
 import ConfirmModal from "@/components/modals/ConfirmModal";
 import { Post } from "@/types/postTypes";
 import { PROFILE } from "@/utils/data/urls";
@@ -54,7 +53,7 @@ const OptionsDropdown = ({ post }: { post: Post }) => {
             {isDeleting ? <Spinner size="sm" /> : <FaChevronDown />}
           </Button>
         </DropdownTrigger>
-        <DropdownMenu aria-label="Static Actions">
+        <DropdownMenu aria-label="borrar anuncio">
           <DropdownItem
             className="rounded-full text-danger pl-4"
             key="delete"

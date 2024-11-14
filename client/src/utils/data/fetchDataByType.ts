@@ -27,6 +27,6 @@ export const fetchDataByType = async(
     case "users":
       return await getUsers(searchTerm, page);
     case "groupPosts":
-      return await getGroupPosts(searchTerm, groupId);
+      return await getGroupPosts(page, groupId);
   }
 };

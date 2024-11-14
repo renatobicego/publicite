@@ -59,7 +59,7 @@ const MagazineNotificationCard = ({
         <p className="text-sm">
           {noticationMessages[event as MagazineNotificationType].showUser && (
             <span className="font-semibold">
-              {notification.frontData.userInviting.username}
+              {notification.frontData.magazine.userInviting.username}
             </span>
           )}{" "}
           {noticationMessages[event as MagazineNotificationType].message}

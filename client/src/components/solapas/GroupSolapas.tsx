@@ -25,7 +25,6 @@ const GroupSolapas = ({
   const pathname = usePathname();
   const tabsRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
-  const { userIdLogged } = useUserData();
 
   useEffect(() => {
     if (

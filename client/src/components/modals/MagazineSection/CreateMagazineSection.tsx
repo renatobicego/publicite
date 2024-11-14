@@ -50,7 +50,6 @@ const CreateMagazineSection = ({
           color="secondary"
           radius="full"
           variant="flat"
-          className="absolute top-0 right-0"
           onPress={onOpen}
           isIconOnly
         >
