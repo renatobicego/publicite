@@ -60,7 +60,7 @@ const UserSolapas = ({
       selectedKey={pathname}
     >
       <Tab
-        className="w-full"
+        className="w-full flex gap-4 flex-col"
         key={PROFILE_USERNAME}
         title="Anuncios"
         href={PROFILE_USERNAME}
@@ -96,7 +96,7 @@ const UserSolapas = ({
         <MagazinesGrid magazines={user.magazines} />
       </Tab>
       <Tab
-        className="w-full"
+        className="w-full flex-col gap-4"
         key={`${PROFILE_USERNAME}/contactos`}
         title="Contactos"
         href={`${PROFILE_USERNAME}/contactos`}
@@ -121,16 +121,6 @@ const UserSolapas = ({
         href={`${PROFILE_USERNAME}${GROUPS}`}
         data-key={`${PROFILE_USERNAME}${GROUPS}`}
       >
-        {isMyProfile && (
-          <PrimaryButton
-            className="mb-2 md:float-right"
-            startContent={<FaPlus />}
-            as={Link}
-            href={CREATE}
-          >
-            Crear
-          </PrimaryButton>
-        )}
         <GroupsGrid
           items={user.groups.map((group) => ({
             group,

@@ -22,7 +22,8 @@ const MagazineNotificationCard = ({
   notification,
 }: {
   notification: MagazineNotification;
-}) => {
+  }) => {
+  console.log(notification)
   const { magazine } = notification.frontData;
   const { event } = notification.notification;
   const { updateSocketToken } = useSocket();

@@ -42,6 +42,7 @@ const getUserByUsernameQuery = gql`
       groups {
         _id
         members
+        admins
         name
         profilePhotoUrl
       }
