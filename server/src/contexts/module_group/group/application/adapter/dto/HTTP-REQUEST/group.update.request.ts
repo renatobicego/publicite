@@ -13,6 +13,9 @@ export class GroupUpdateRequest {
   name: string;
 
   @Field(() => String, { nullable: true })
+  alias: string;
+
+  @Field(() => String, { nullable: true })
   rules: string;
 
   @Field(() => [String], { nullable: true })

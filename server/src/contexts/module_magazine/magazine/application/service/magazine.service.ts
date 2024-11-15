@@ -329,9 +329,11 @@ export class MagazineService implements MagazineServiceInterface {
 
       switch (ownerType.toLowerCase()) {
         case OwnerType.user: {
+          this.logger.log('Exiting from Magazine.. (userMagazine)');
           return await this.magazineRepository.removeCollaboratorFromUserMagazine(magazineId, userRequestId);
         }
         case OwnerType.group: {
+          this.logger.log('Exiting from Magazine.. (groupMagazine)');
           return await this.magazineRepository.removeAllowedCollaboratorFromGroupMagazine(magazineId, userRequestId);
         }
         default: {
