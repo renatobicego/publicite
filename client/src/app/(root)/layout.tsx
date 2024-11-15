@@ -20,7 +20,6 @@ export default async function NavigationLayout({
   return (
     <SocketProvider
       userId={user?.publicMetadata.mongoId as string}
-      token={token as string}
     >
       <UserDataProvider
         username={user?.username}
