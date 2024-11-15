@@ -24,7 +24,7 @@ export class BoardResolver {
     nullable: true,
     description: 'Actualiza el board del usuario',
   })
-  @UseGuards(ClerkAuthGuard)
+  //@UseGuards(ClerkAuthGuard)
   async updateBoardById(
     @Args('id', { type: () => String }) id: string,
     @Args('ownerId', { type: () => String }) ownerId: string,
@@ -33,8 +33,8 @@ export class BoardResolver {
     @Context() context: { req: CustomContextRequestInterface },
   ): Promise<any> {
     try {
-      const userRequestId = context.req.userRequestId;
-      PubliciteAuth.authorize(userRequestId, ownerId);
+      //const userRequestId = context.req.userRequestId;
+      //PubliciteAuth.authorize(userRequestId, ownerId);
       return await this.boardAdapter.updateBoardById(id, boardData);
     } catch (error: any) {
       throw error;

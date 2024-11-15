@@ -14,12 +14,17 @@ export class backData {
 export class userInviting {
   @Field(() => String)
   username: string;
+    @Field(() => String, { nullable: true })
+  _id: string;
 }
 
 @ObjectType()
 export class groupInviting {
   @Field(() => String)
   name: string;
+
+      @Field(() => String, { nullable: true })
+  _id: string;
 }
 
 @ObjectType()
