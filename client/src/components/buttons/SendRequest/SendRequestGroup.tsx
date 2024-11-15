@@ -26,18 +26,12 @@ const SendRequestGroup = ({
   groupId: string;
 }) => {
   const { usernameLogged, userIdLogged } = useUserData();
-  const { socket } = useSocket();
+  const { updateSocketToken } = useSocket();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const sendRequestJoinGroup = async () => {
     setIsSubmitting(true);
     try {
-      if (!socket) {
-        toastifyError(
-          "Error al enviar la solicitud. Por favor recarga la página e intenta de nuevo."
-        );
-        return;
-      }
       const group = await getGroupAdminsById(groupId);
       if (group.error) {
         toastifyError(
@@ -47,6 +41,8 @@ const SendRequestGroup = ({
       }
       const adminIds = group.admins.map((admin: any) => admin._id);
       const creatorId = group.creator;
+      const socket = await updateSocketToken();
+
       [...adminIds, creatorId].forEach((adminId) => {
         emitGroupNotification(
           socket,

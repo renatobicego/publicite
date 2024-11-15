@@ -25,11 +25,6 @@ export const getPostData = async (id: string) => {
     const { data } = await query({
       query: getPostByIdQuery,
       variables: { findPostByIdId: id },
-      context: {
-        fetchOptions: {
-          cache: "no-store",
-        },
-      },
     });
 
     return data.findPostById;
@@ -45,6 +40,11 @@ export const getCategories = async () => {
   try {
     const { data } = await query({
       query: getPostCategories,
+      context: {
+        headers: {
+          Authorization: await auth().getToken(),
+        },
+      }
     });
     return data.getAllCategoryPost;
   } catch (error) {
@@ -59,7 +59,11 @@ export const postPost = async (
   values: GoodPostValues | PetitionPostValues | ServicePostValues
 ) => {
   try {
-    const res = await axios.post(`${process.env.API_URL}/post`, values);
+    const res = await axios.post(`${process.env.API_URL}/post`, values, {
+      headers: {
+        Authorization: `${await auth().getToken()}`,
+      },
+    });
     return res;
   } catch (error) {
     return error;

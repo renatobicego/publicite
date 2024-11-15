@@ -10,15 +10,11 @@ import { User } from "@/types/userTypes";
 
 const InviteUsersGroup = ({ group }: { group: Group }) => {
   const { usernameLogged: username, userIdLogged } = useUserData();
-  const { socket } = useSocket();
+  const { updateSocketToken } = useSocket();
 
-  const handleInvite = (selectedUsers: string[]) => {
-    if (!socket) {
-      toastifyError(
-        "Error al enviar la solicitud. Por favor recarga la página e intenta de nuevo."
-      );
-      return;
-    }
+  const handleInvite = async(selectedUsers: string[]) => {
+    const socket = await updateSocketToken();
+
     try {
       selectedUsers.forEach((user) => {
         emitGroupNotification(

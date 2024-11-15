@@ -18,6 +18,8 @@ import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
 import { PostUserMagazine, PostGroupMagazine } from "@/types/magazineTypes";
 import { emitGroupNotification } from "@/components/notifications/groups/emitNotifications";
 import { useSocket } from "@/app/socketProvider";
+import { emitMagazineNotification } from "@/components/notifications/magazines/emitNotifications";
+import { useUserData } from "@/app/(root)/providers/userDataProvider";
 
 const CreateMagazineForm = ({
   isGroupMagazine,
@@ -40,7 +42,8 @@ const CreateMagazineForm = ({
         collaborators: shareMagazineIds ? [shareMagazineIds.user] : [],
       } as PostUserMagazine);
   const router = useRouter();
-  const { socket } = useSocket();
+  const { updateSocketToken } = useSocket();
+  const { userIdLogged, usernameLogged } = useUserData();
 
   if (isGroupMagazine && !id) {
     return (
@@ -66,11 +69,25 @@ const CreateMagazineForm = ({
       actions.setSubmitting(false);
       return;
     }
-
+    const socket = await updateSocketToken();
     if (isGroupMagazine) {
       (finalValues as PostGroupMagazine).allowedCollaborators.forEach(
         (collaborator) => {
           // emit notifications user invited to collaborate in magazine
+          emitMagazineNotification(
+            socket,
+            {
+              _id: resApi.id,
+              name: finalValues.name,
+              ownerType: finalValues.ownerType,
+            },
+            {
+              username: usernameLogged as string,
+              _id: userIdLogged as string,
+            },
+            collaborator,
+            "notification_magazine_new_user_invited"
+          );
         }
       );
     }

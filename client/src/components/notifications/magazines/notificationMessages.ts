@@ -22,6 +22,10 @@ export const noticationMessages: Record<
   },
   notification_magazine_rejected: {
     message: "ha rechazado colaborar en la revista ",
-    showUser: false,
+    showUser: true,
   },
+  notification_magazine_user_has_been_removed: {
+    message: "Has sido eliminado como colaborador de la revista ",
+    showUser: false,
+  }
 };

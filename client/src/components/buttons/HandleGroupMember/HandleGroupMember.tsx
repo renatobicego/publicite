@@ -31,21 +31,16 @@ const HandleGroupMember = ({
 }) => {
   const router = useRouter();
   const { userIdLogged, usernameLogged } = useUserData();
-  const { socket } = useSocket();
+  const { updateSocketToken } = useSocket();
   const isCreator = group?.creator === userIdLogged;
 
   const makeAdmin = async () => {
-    if (!socket) {
-      toastifyError(
-        "Error al enviar la solicitud. Por favor recarga la página e intenta de nuevo."
-      );
-      return;
-    }
     const res = await addAdmin(group?._id, [user._id]);
     if ("error" in res) {
       toastifyError(res.error as string);
       return;
     }
+    const socket = await updateSocketToken();
     emitGroupNotification(
       socket,
       group,
@@ -58,17 +53,13 @@ const HandleGroupMember = ({
   };
 
   const deleteMember = async () => {
-    if (!socket) {
-      toastifyError(
-        "Error al enviar la solicitud. Por favor recarga la página e intenta de nuevo."
-      );
-      return;
-    }
     const res = await removeMember(group._id as string, [user._id]);
     if ("error" in res) {
       toastifyError(res.error as string);
       return;
     }
+    const socket = await updateSocketToken();
+
     emitGroupNotification(
       socket,
       group,
@@ -81,17 +72,13 @@ const HandleGroupMember = ({
   };
 
   const deleteAdmin = async () => {
-    if (!socket) {
-      toastifyError(
-        "Error al enviar la solicitud. Por favor recarga la página e intenta de nuevo."
-      );
-      return;
-    }
     const res = await removeAdmin(group._id as string, [user._id]);
     if ("error" in res) {
       toastifyError(res.error as string);
       return;
     }
+    const socket = await updateSocketToken();
+
     emitGroupNotification(
       socket,
       group,

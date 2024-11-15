@@ -17,11 +17,12 @@ export default async function EditGroupPage(props: {
   const loggedUser = auth();
   const loggedUserId = loggedUser?.sessionClaims?.metadata.mongoId as string;
 
+
   if (
     !("error" in groupData) &&
     (!groupData.group.admins.some(
       (admin) => (admin as User)._id === loggedUserId
-    ) ||
+    ) &&
       groupData.group.creator !== loggedUserId)
   ) {
     redirect(`${GROUPS}/${params.id}`);

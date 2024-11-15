@@ -2,10 +2,11 @@ import { Socket } from "socket.io-client";
 import generateGroupNotification from "./generateMagazineNotification";
 import { User } from "@/types/userTypes";
 import { Magazine, MagazineNotificationType } from "@/types/magazineTypes";
+import { useAuth } from "@clerk/nextjs";
 
 export const emitMagazineNotification = (
   socket: Socket | null,
-  magazine: Pick<Magazine, "_id" | "name">,
+  magazine: Pick<Magazine, "_id" | "name" | "ownerType">,
   userSending: Pick<User, "_id" | "username">,
   userIdTo: string,
   event: MagazineNotificationType
@@ -13,7 +14,7 @@ export const emitMagazineNotification = (
   const notification = {
     notificationBody: generateGroupNotification(
       event,
-      { name: magazine.name, _id: magazine._id },
+      { name: magazine.name, _id: magazine._id, ownerType: magazine.ownerType },
       { username: userSending.username, _id: userSending._id },
       userIdTo,
     ),

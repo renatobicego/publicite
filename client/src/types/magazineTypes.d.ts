@@ -40,12 +40,13 @@ export type EditMagazine = Omit<Magazine, "sections"> & {
 export type MagazineNotificationType =
   | "notification_magazine_new_user_invited"
   | "notification_magazine_acepted"
-  | "notification_magazine_rejected";
+  | "notification_magazine_rejected"
+  | "notification_magazine_user_has_been_removed"; // Te han eliminado de la revista;
 
 export interface MagazineNotification extends BaseNotification {
   frontData: {
-    magazine: Pick<Magazine, "_id" | "name"> & { 
-      userInviting: Pick<User, "username">; 
+    magazine: Pick<Magazine, "_id" | "name"> & {
+      userInviting: Pick<User, "username">;
     };
   };
 }

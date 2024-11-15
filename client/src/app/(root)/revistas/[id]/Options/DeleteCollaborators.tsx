@@ -1,5 +1,9 @@
-import UsernameAvatar from "@/components/buttons/UsernameAvatar";
+import { useUserData } from "@/app/(root)/providers/userDataProvider";
+import { useSocket } from "@/app/socketProvider";
+import { emitMagazineNotification } from "@/components/notifications/magazines/emitNotifications";
+import { Magazine } from "@/types/magazineTypes";
 import { User } from "@/types/userTypes";
+import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import {
   useDisclosure,
   Tooltip,
@@ -13,21 +17,25 @@ import {
   Checkbox,
   Avatar,
 } from "@nextui-org/react";
-import { cloneElement, useEffect } from "react";
+import { cloneElement, useEffect, useState } from "react";
 
 const DeleteCollaborators = ({
   ButtonAction,
   customOpen,
   collaborators,
   ownerType,
+  magazine,
 }: {
   customOpen?: (openModal: () => void) => void;
   ButtonAction: JSX.Element;
   collaborators: User[];
   ownerType: "user" | "group";
+  magazine: Magazine;
 }) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  console.log(collaborators);
+  const [selected, setSelected] = useState<string[]>([]);
+  const { updateSocketToken } = useSocket();
+  const { userIdLogged, usernameLogged } = useUserData();
 
   useEffect(() => {
     // If customOpen is passed, set the openModal function to it
@@ -36,7 +44,25 @@ const DeleteCollaborators = ({
     }
   }, [customOpen, onOpen]);
 
-  const handleDelete = async () => {};
+  const handleDelete = async () => {
+    const newSocket = await updateSocketToken();
+    selected.forEach((collaboratorId) => {
+      emitMagazineNotification(
+        newSocket,
+        {
+          _id: magazine._id,
+          name: magazine.name,
+          ownerType: ownerType,
+        },
+        {
+          username: usernameLogged as string,
+          _id: userIdLogged as string,
+        },
+        collaboratorId,
+        "notification_magazine_user_has_been_removed"
+      );
+    });
+  };
   return (
     <>
       <Tooltip placement="bottom" content={"Eliminar colaboradores"}>
@@ -62,8 +88,9 @@ const DeleteCollaborators = ({
               </ModalHeader>
               <ModalBody>
                 <CheckboxGroup
-                  label="Select cities"
-                  defaultValue={["buenos-aires", "london"]}
+                  label="Seleccionar"
+                  value={selected}
+                  onValueChange={setSelected}
                 >
                   {collaborators.map((collaborator) => (
                     <Checkbox
@@ -71,6 +98,7 @@ const DeleteCollaborators = ({
                         base: "flex items-center gap-2",
                         label: "flex gap-2 items-center",
                       }}
+                      value={collaborator._id}
                       key={collaborator._id}
                     >
                       <Avatar

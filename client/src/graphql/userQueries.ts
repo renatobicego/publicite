@@ -60,43 +60,42 @@ const getUserByUsernameQuery = gql`
 `;
 
 export const getAllNotificationsQuery = gql`
-  query GetAllNotificationsFromUserById(
-    $getAllNotificationsFromUserByIdId: String!
-    $limit: Float!
-    $page: Float!
-  ) {
-    getAllNotificationsFromUserById(
-      id: $getAllNotificationsFromUserByIdId
-      limit: $limit
-      page: $page
-    ) {
+  query GetAllNotificationsFromUserById($limit: Float!, $page: Float!) {
+    getAllNotificationsFromUserById(limit: $limit, page: $page) {
+      hasMore
       notifications {
         _id
-        notification {
-          backData {
-            userIdTo
-            userIdFrom
-          }
-          date
-          event
-          viewed
-        }
         frontData {
           group {
-            profilePhotoUrl
-            name
             _id
+            name
+            profilePhotoUrl
+          }
+          magazine {
+            _id
+            groupInviting {
+              name
+            }
+            name
+            ownerType
+            userInviting {
+              username
+            }
           }
           userInviting {
             username
           }
-          magazine {
-            _id
-            name
+        }
+        notification {
+          date
+          viewed
+          event
+          backData {
+            userIdFrom
+            userIdTo
           }
         }
       }
-      hasMore
     }
   }
 `;

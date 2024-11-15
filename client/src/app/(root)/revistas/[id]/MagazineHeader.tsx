@@ -28,6 +28,7 @@ const MagazineHeader = ({
       <div className="w-full relative">
         {canEdit && (
           <MagazineOptionsDropdown
+            magazine={magazine}
             collaborators={
               isOwnerTypeUser
                 ? userMagazine.collaborators

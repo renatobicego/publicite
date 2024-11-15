@@ -26,7 +26,11 @@ export const getBoards = async (searchTerm: string | null, page: number) => {
 };
 
 export const postBoard = async (values: any) => {
-  return await axios.post(`${process.env.API_URL}/board`, values);
+  return await axios.post(`${process.env.API_URL}/board`, values, {
+    headers: {
+      Authorization: `${await auth().getToken()}`,
+    },
+  });
 };
 
 export const putBoard = async (id: string, values: any) => {

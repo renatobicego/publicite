@@ -210,16 +210,30 @@ export const deletePostInSectionMutation = gql`
   }
 `;
 
-export const deleteCollaboratorMutation = gql`
-  mutation DeleteCollaboratorsFromUserMagazine(
-    $collaboratorsToDelete: [String!]!
-    $magazineId: String!
-    $magazineAdmin: String!
-  ) {
-    deleteCollaboratorsFromUserMagazine(
-      collaboratorsToDelete: $collaboratorsToDelete
-      magazineId: $magazineId
-      magazineAdmin: $magazineAdmin
-    )
-  }
-`;
+// export const deleteCollaboratorMutation = gql`
+//   mutation DeleteCollaboratorsFromUserMagazine(
+//     $collaboratorsToDelete: [String!]!
+//     $magazineId: String!
+//     $magazineAdmin: String!
+//   ) {
+//     deleteCollaboratorsFromUserMagazine(
+//       collaboratorsToDelete: $collaboratorsToDelete
+//       magazineId: $magazineId
+//       magazineAdmin: $magazineAdmin
+//     )
+//   }
+// `;
+
+// export const deleteAllowedCollaboratorMutation = gql`
+//   mutation DeleteAllowedCollaboratorsFromMagazineGroup(
+//     $allowedCollaboratorsToDelete: [String!]!
+//     $magazineId: String!
+//     $magazineAdmin: String!
+//   ) {
+//     deleteAllowedCollaboratorsFromMagazineGroup(
+//       allowedCollaboratorsToDelete: $allowedCollaboratorsToDelete
+//       magazineId: $magazineId
+//       magazineAdmin: $magazineAdmin
+//     )
+//   }
+// `;

@@ -12,21 +12,17 @@ import { emit } from "process";
 import { FaCheck, FaX } from "react-icons/fa6";
 
 const HandleGroupRequest = ({ user, group }: { user: User; group: Group }) => {
-  const { socket } = useSocket();
+  const { updateSocketToken } = useSocket();
   const router = useRouter();
   const { usernameLogged, userIdLogged } = useUserData();
   const handleAcceptRequest = async () => {
-    if (!socket) {
-      toastifyError(
-        "Error al acceptar la solicitud. Por favor recarga la página e intenta de nuevo."
-      );
-      return;
-    }
     const res = await putMemberGroupByRequest(group._id, user._id);
     if ("error" in res) {
       toastifyError(res.error as string);
       return;
     }
+    const socket = await updateSocketToken();
+
     emitGroupNotification(
       socket,
       {
@@ -41,13 +37,9 @@ const HandleGroupRequest = ({ user, group }: { user: User; group: Group }) => {
     toastifySuccess("Solicitud aceptada correctamente");
     router.refresh();
   };
-  const rejectRequest = () => {
-    if (!socket) {
-      toastifyError(
-        "Error al enviar la solicitud. Por favor recarga la página e intenta de nuevo."
-      );
-      return;
-    }
+  const rejectRequest = async() => {
+    const socket = await updateSocketToken();
+
     emitGroupNotification(
       socket,
       {

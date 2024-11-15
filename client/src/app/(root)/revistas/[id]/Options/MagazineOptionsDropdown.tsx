@@ -13,13 +13,17 @@ import { FaChevronDown, FaRegUser } from "react-icons/fa6";
 import { IoTrashOutline } from "react-icons/io5";
 import DeleteCollaborators from "./DeleteCollaborators";
 import { User } from "@/types/userTypes";
+import { Magazine } from "@/types/magazineTypes";
 
 const MagazineOptionsDropdown = ({
   collaborators,
   ownerType,
+  magazine,
 }: {
   collaborators: User[];
   ownerType: "user" | "group";
+  magazine: Magazine;
+
 }) => {
   const handleDelete = async () => {};
   const confirmDeleteRef = useRef<() => void>(() => {});
@@ -78,6 +82,7 @@ const MagazineOptionsDropdown = ({
       />
       <DeleteCollaborators
         ButtonAction={<></>}
+        magazine={magazine}
         customOpen={(openModal) =>
           (modalDeleteCollaboratorRef.current = openModal)
         }

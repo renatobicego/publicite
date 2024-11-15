@@ -12,7 +12,10 @@ import {
 
 import { noticationMessages } from "./notificationMessages";
 import { useSocket } from "@/app/socketProvider";
-import { MagazineNotification, MagazineNotificationType } from "@/types/magazineTypes";
+import {
+  MagazineNotification,
+  MagazineNotificationType,
+} from "@/types/magazineTypes";
 import { IoBook } from "react-icons/io5";
 
 const MagazineNotificationCard = ({
@@ -22,7 +25,7 @@ const MagazineNotificationCard = ({
 }) => {
   const { magazine } = notification.frontData;
   const { event } = notification.notification;
-  const { socket } = useSocket();
+  const { updateSocketToken } = useSocket();
   const getNotificationOptionsList = () => {
     const optionsList: NotificationOptionProps[] = [];
     const notificationMessage =
@@ -45,7 +48,11 @@ const MagazineNotificationCard = ({
       optionsList.push({
         label: "Rechazar Solicitud",
         color: "danger",
-        onPress: () => notificationMessage.rejectAction?.(magazine._id, socket),
+        onPress: async () => {
+          const socket = await updateSocketToken();
+
+          notificationMessage.rejectAction?.(magazine._id, socket);
+        },
       });
     }
     return optionsList;

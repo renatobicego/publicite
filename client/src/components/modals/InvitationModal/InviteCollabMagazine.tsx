@@ -7,9 +7,11 @@ import { useSocket } from "@/app/socketProvider";
 import { useUserData } from "@/app/(root)/providers/userDataProvider";
 
 const InviteCollabMagazine = ({ magazine }: { magazine: Magazine }) => {
-  const { socket } = useSocket();
+  const { updateSocketToken } = useSocket();
   const { userIdLogged, usernameLogged } = useUserData();
-  const handleInvite = (selectedUsers: string[]) => {
+  const handleInvite = async(selectedUsers: string[]) => {
+    const socket = await updateSocketToken();
+
     selectedUsers.forEach((userId) =>
       emitMagazineNotification(
         socket,

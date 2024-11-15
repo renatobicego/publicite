@@ -10,11 +10,13 @@ import {
 } from "react";
 import { Socket } from "socket.io-client";
 import { getSocket } from "@/socket";
+import { useAuth } from "@clerk/nextjs";
 
 interface SocketContextType {
   socket: Socket | null;
   newNotifications: boolean;
   setNewNotifications: Dispatch<SetStateAction<boolean>>;
+  updateSocketToken: () => Promise<Socket>;
 }
 
 const SocketContext = createContext<SocketContextType | undefined>(undefined);
@@ -27,49 +29,62 @@ export const useSocket = () => {
   return context;
 };
 
-export const SocketProvider = ({ children, userId, token }: { children: ReactNode; userId: string; token: string }) => {
+export const SocketProvider = ({
+  children,
+  userId,
+}: {
+  children: ReactNode;
+  userId: string;
+}) => {
   const [newNotifications, setNewNotifications] = useState(false);
+  const { getToken } = useAuth();
 
   const [socket, setSocket] = useState<Socket | null>(null);
-  useEffect(() => {
-    // Initialize Socket.IO connection
-    const socketInstance = getSocket(userId, token);
-    setSocket(socketInstance);
-    // Clean up on unmount
-    return () => {
-      socketInstance.disconnect();
-    };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  //   Log socket connection status
-  useEffect(() => {
+  // Function to reinitialize the socket with a new token
+  const updateSocketToken = async () => {
+    const newToken = await getToken();
     if (socket) {
-      socket.on("connect", () => {
-        console.log("Socket connected:", socket.id);
-      });
-
-      socket.on("disconnect", () => {
-        console.log("Socket disconnected");
-      });
-
-      socket.on("connect_error", (err: any) => {
-      console.error("Socket connection error:", err.message, err.data || err);
-    });
-      socket.on("group_notifications", (data) => {
-        console.log(data);
-        setNewNotifications(true);
-      });
+      socket.disconnect(); // Disconnect the current socket
     }
 
+    const newSocket = getSocket(userId, newToken as string); // Create a new socket instance
+    setSocket(newSocket);
+
+    // Optionally, add any listeners or setup for the new socket
+    newSocket.on("connect", () => {
+      console.log("Socket reconnected with new token:", newSocket.id);
+    });
+
+    newSocket.on("disconnect", () => {
+      console.log("Socket disconnected");
+    });
+
+    newSocket.on("group_notifications", (data) => {
+      console.log("New notification:", data);
+      setNewNotifications(true);
+    });
+
+    newSocket.on("magazine_notifications", (data) => {
+      console.log("New notification:", data);
+      setNewNotifications(true);
+    });
+    return newSocket;
+  };
+
+  // Initialize socket on first render
+  useEffect(() => {
+    if(!socket) 
+    updateSocketToken();
+    // Cleanup on unmount
     return () => {
       socket?.disconnect();
     };
-  }, [socket]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <SocketContext.Provider
-      value={{ socket, newNotifications, setNewNotifications }}
+      value={{ socket, newNotifications, setNewNotifications, updateSocketToken }}
     >
       {children}
     </SocketContext.Provider>

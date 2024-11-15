@@ -179,3 +179,27 @@ export const removeMagazine = async (
   //   };
   // }
 };
+
+// export const deleteCollaborator = async (collaboratorIds: string[], magazineId: string,  ownerType: "user" | "group") => {
+//   if (ownerType === "user") {
+//     try {
+//       await deleteCollaboratorFromUserMagazine(collaboratorIds, magazineId);
+//       return { message: "Colaborador eliminado exitosamente" };
+//     } catch (error) {
+//       console.log(error);
+//       return {
+//         error: "Error al eliminar el colaborador. Por favor intenta de nuevo.",
+//       };
+//     }
+//   }else if (ownerType === "group") {
+//     try {
+//       await deleteCollaboratorFromGroupMagazine(collaboratorIds, magazineId);
+//       return { message: "Colaborador eliminado exitosamente" };
+//     } catch (error) {
+//       console.log(error);
+//       return {
+//         error: "Error al eliminar el colaborador. Por favor intenta de nuevo.",
+//       };
+//     }
+//   }
+// };

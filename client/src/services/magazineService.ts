@@ -5,7 +5,6 @@ import {
   changeSectionNameMutation,
   createMagazineMutation,
   createMagazineSectionMutation,
-  deleteCollaboratorMutation,
   deletePostInSectionMutation,
   deleteSectionMutation,
   editMagazineMutation,
@@ -15,12 +14,21 @@ import {
 } from "@/graphql/magazineQueries";
 import { getClient, query } from "@/lib/client";
 import { auth } from "@clerk/nextjs/server";
+import { cache } from "react";
 
 export const getMagazineById = async (id: string) => {
   try {
     const { data } = await query({
       query: getMagazineByIdQuery,
       variables: { getMagazineByMagazineIdId: id },
+      context: {
+        headers: {
+          Authorization: await auth().getToken(),
+        },
+        fetchOptions: {
+          cache: "no-store",
+        },
+      },
     });
     return data.getMagazineByMagazineId;
   } catch (error) {
@@ -192,22 +200,42 @@ export const deletPostInMagazine = async (
   });
 };
 
-export const deleteCollaboratorFromUserMagazine = async (
-  collaboratorsToDelete: string[],
-  magazineId: string
-) => {
-  const authData = auth();
-  await getClient().mutate({
-    mutation: deleteCollaboratorMutation,
-    variables: {
-      collaboratorsToDelete,
-      magazineId,
-      magazineAdmin: authData.sessionClaims?.metadata.mongoId,
-    },
-    context: {
-      headers: {
-        Authorization: await authData.getToken(),
-      },
-    },
-  });
-};
+// export const deleteCollaboratorFromUserMagazine = async (
+//   collaboratorsToDelete: string[],
+//   magazineId: string
+// ) => {
+//   const authData = auth();
+//   await getClient().mutate({
+//     mutation: deleteCollaboratorMutation,
+//     variables: {
+//       collaboratorsToDelete,
+//       magazineId,
+//       magazineAdmin: authData.sessionClaims?.metadata.mongoId,
+//     },
+//     context: {
+//       headers: {
+//         Authorization: await authData.getToken(),
+//       },
+//     },
+//   });
+// };
+
+// export const deleteCollaboratorFromGroupMagazine = async (
+//   allowedCollaboratorsToDelete: string[],
+//   magazineId: string
+// ) => {
+//   const authData = auth();
+//   await getClient().mutate({
+//     mutation: deleteAllowedCollaboratorMutation,
+//     variables: {
+//       allowedCollaboratorsToDelete,
+//       magazineId,
+//       magazineAdmin: authData.sessionClaims?.metadata.mongoId,
+//     },
+//     context: {
+//       headers: {
+//         Authorization: await authData.getToken(),
+//       },
+//     },
+//   });
+// };

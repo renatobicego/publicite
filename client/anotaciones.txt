@@ -31,6 +31,11 @@ CUENTA GRATUITA CREAR PLAN DE SUSCRIPTION
 - errorres de noti
 - cmbiar formato de notificacion (listo mag)
 - compartir cosas
+Editar revista no funca 
+
+Podriamos diferencias aca las revistas, por ejemplo la primer revista “debería traerme soy creador” 
+es una revista de grupo, por ahí con el ownerType poner en algun l
+ado ahí que es una revista de grupo, para hacerlo un poco mas friendly 
 
 1.Tema . Pizarra y sub pizzarra.
 Podemos armar una pizarra de grupo ?

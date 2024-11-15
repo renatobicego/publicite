@@ -33,7 +33,7 @@ const CreateGroupForm = () => {
   const router = useRouter();
   const [photoFile, setPhotoFile] = useState<File>();
   const { submitFiles, progress, deleteFile } = useUploadImage();
-  const { socket } = useSocket();
+  const { updateSocketToken } = useSocket();
   const handleSubmit = async (
     values: PostGroup,
     actions: FormikHelpers<PostGroup>
@@ -53,6 +53,7 @@ const CreateGroupForm = () => {
       actions.setSubmitting(false);
       return;
     }
+    const socket = await updateSocketToken();
     resApi.group.members.forEach((member: string) => {
       emitGroupNotification(
         socket,

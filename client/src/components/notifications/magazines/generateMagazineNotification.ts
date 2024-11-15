@@ -8,7 +8,7 @@ import {
 
 const generateMagazineNotification = (
   event: MagazineNotificationType,
-  magazine: Pick<Magazine, "_id" | "name">,
+  magazine: Pick<Magazine, "_id" | "name" | "ownerType">,
   userSending: Pick<User, "_id" | "username">,
   userIdTo: string
 ) => {
