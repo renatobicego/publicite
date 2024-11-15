@@ -45,7 +45,6 @@ export class UserResolver {
   ): Promise<GROUP_notification_graph_model_get_all> {
     const userRequestId = context.req.userRequestId;
     try {
-
       return await this.userAdapter.getAllNotificationsFromUserById(
         userRequestId,
         limit,

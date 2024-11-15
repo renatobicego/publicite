@@ -53,6 +53,9 @@ export class Groups_Full_Graphql_Model {
   @Field(() => [String], { nullable: true })
   members: ObjectId[];
 
+  @Field(() => [String], { nullable: true })
+  admins: ObjectId[];
+
   @Field(() => String, { nullable: true })
   profilePhotoUrl: string;
 }
