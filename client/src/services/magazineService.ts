@@ -5,6 +5,7 @@ import {
   changeSectionNameMutation,
   createMagazineMutation,
   createMagazineSectionMutation,
+  deleteMagazineMutation,
   deletePostInSectionMutation,
   deleteSectionMutation,
   editMagazineMutation,
@@ -198,6 +199,22 @@ export const deletPostInMagazine = async (
       },
     },
   });
+};
+
+export const deleteMagazine = async (
+  magazineId: string,
+  ownerType: "user" | "group"
+) => {
+  const { data } = await getClient().mutate({
+    mutation: deleteMagazineMutation,
+    variables: { magazineId, ownerType },
+    context: {
+      headers: {
+        Authorization: await auth().getToken(),
+      },
+    },
+  });
+  return data;
 };
 
 // export const deleteCollaboratorFromUserMagazine = async (
