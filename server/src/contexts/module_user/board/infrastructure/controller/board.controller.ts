@@ -31,15 +31,15 @@ export class BoardController {
     description: 'Internal server error.',
   })
   @ApiBody({ type: BoardRequest_swagger })
-  @UseGuards(ClerkAuthGuard)
+  //@UseGuards(ClerkAuthGuard)
   async createBoard(
     @Body() boardRequest: BoardRequest,
     @Context() context: { req: CustomContextRequestInterface },
   ): Promise<BoardResponse> {
     try {
-      const userRequestId = context.req.userRequestId;
+      //const userRequestId = context.req.userRequestId;
       if (!boardRequest.user) throw Error('User is required');
-      PubliciteAuth.authorize(userRequestId, boardRequest.user);
+      //PubliciteAuth.authorize(userRequestId, boardRequest.user);
       const result = await this.boardAdapter.save(boardRequest);
       return result;
     } catch (error: any) {
