@@ -50,7 +50,7 @@ const MagazineNotificationCard = ({
               _id: userIdLogged,
               username: usernameLogged,
             },
-            magazine.userInviting._id
+            notification.notification.backData.userIdFrom
           );
         },
       });

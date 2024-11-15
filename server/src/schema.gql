@@ -305,10 +305,12 @@ type backData {
 
 type userInviting {
   username: String!
+  _id: String
 }
 
 type groupInviting {
   name: String!
+  _id: String
 }
 
 type notification {

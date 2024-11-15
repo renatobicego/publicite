@@ -41,40 +41,45 @@ export const SocketProvider = ({
 
   const [socket, setSocket] = useState<Socket | null>(null);
   // Function to reinitialize the socket with a new token
-  const updateSocketToken = async () => {
+  const updateSocketToken = async (): Promise<Socket> => {
     const newToken = await getToken();
+
     if (socket) {
       socket.disconnect(); // Disconnect the current socket
     }
 
-    const newSocket = getSocket(userId, newToken as string); // Create a new socket instance
-    setSocket(newSocket);
+    return new Promise((resolve, reject) => {
+      const newSocket = getSocket(userId, newToken as string); // Create a new socket instance
 
-    // Optionally, add any listeners or setup for the new socket
-    newSocket.on("connect", () => {
-      console.log("Socket reconnected with new token:", newSocket.id);
-    });
+      newSocket.on("connect", () => {
+        console.log("Socket reconnected with new token:", newSocket.id);
+        setSocket(newSocket);
+        resolve(newSocket); // Resolve the promise when connected
+      });
 
-    newSocket.on("disconnect", () => {
-      console.log("Socket disconnected");
-    });
+      newSocket.on("connect_error", (error) => {
+        console.error("Socket connection error:", error);
+        reject(error); // Reject the promise if there's an error
+      });
 
-    newSocket.on("group_notifications", (data) => {
-      console.log("New notification:", data);
-      setNewNotifications(true);
-    });
+      newSocket.on("disconnect", () => {
+        console.log("Socket disconnected");
+      });
 
-    newSocket.on("magazine_notifications", (data) => {
-      console.log("New notification:", data);
-      setNewNotifications(true);
+      newSocket.on("group_notifications", (data) => {
+        console.log("New notification:", data);
+        setNewNotifications(true);
+      });
+
+      newSocket.on("magazine_notifications", (data) => {
+        console.log("New notification:", data);
+        setNewNotifications(true);
+      });
     });
-    return newSocket;
   };
-
   // Initialize socket on first render
   useEffect(() => {
-    if(!socket) 
-    updateSocketToken();
+    if (!socket) updateSocketToken();
     // Cleanup on unmount
     return () => {
       socket?.disconnect();
@@ -84,7 +89,12 @@ export const SocketProvider = ({
 
   return (
     <SocketContext.Provider
-      value={{ socket, newNotifications, setNewNotifications, updateSocketToken }}
+      value={{
+        socket,
+        newNotifications,
+        setNewNotifications,
+        updateSocketToken,
+      }}
     >
       {children}
     </SocketContext.Provider>

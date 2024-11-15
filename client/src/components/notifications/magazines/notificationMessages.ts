@@ -1,4 +1,5 @@
 import { MagazineNotificationType } from "@/types/magazineTypes";
+import { acceptMagazineInvitation, declineMagazineInvitation } from "./actions";
 
 export const noticationMessages: Record<
   MagazineNotificationType,
@@ -13,8 +14,8 @@ export const noticationMessages: Record<
     // Usuario A invita a Usuario B a colaborar en una revista: {
     message: "te ha invitado a colaborar en la revista ",
     showUser: true,
-    acceptAction: () => { },
-    rejectAction: () => { },
+    acceptAction: acceptMagazineInvitation,
+    rejectAction: declineMagazineInvitation,
   },
   notification_magazine_acepted: {
     message: "ha aceptado colaborar en la revista ",
