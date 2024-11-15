@@ -20,7 +20,7 @@ export const getBoards = async (searchTerm: string | null, page: number) => {
     };
   } catch (error) {
     return {
-      error: "Error al traer las pizarras. Por favor intenta de nuevo.",
+      error: "Error al traer las pizarras. Por favor intenta de nuevo. ",
     };
   }
 };
