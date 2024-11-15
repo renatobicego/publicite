@@ -40,6 +40,7 @@ const Inputs = ({
     });
   }, []);
   const validateGroupAlias = async (alias: string) => {
+    if(alias === prevAlias) return
     const res = await groupAliasExists(alias);
     if (typeof res === "object" && res !== null && "error" in res)  {
       setFieldError(
