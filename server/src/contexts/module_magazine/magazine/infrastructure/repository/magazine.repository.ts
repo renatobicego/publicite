@@ -437,28 +437,41 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
         }).session(session).lean();
 
         if (magazineDeleted) {
-
+          this.logger.log('Deleting Magazine... ');
           await this.magazineSection.deleteMany({ _id: { $in: magazineDeleted.sections } }, { session });
+
+
 
           if (magazineDeleted.ownerType === OwnerType.user) {
             let userMagazine = magazineDeleted as UserMagazineDocument
             let collaboratorsAndCreatorIds = userMagazine.collaborators
             collaboratorsAndCreatorIds.push(userMagazine.user)
-            await this.userModel.updateMany({ _id: { $in: collaboratorsAndCreatorIds } }, { $pull: { magazines: magazineId } }, { session });
+
+            if (collaboratorsAndCreatorIds && collaboratorsAndCreatorIds.length > 0) {
+              this.logger.log('Removing collaborators and creator from magazines... ');
+              await this.userModel.updateMany({ _id: { $in: collaboratorsAndCreatorIds } }, { $pull: { magazines: magazineId } }, { session });
+              this.logger.log('Removing collaborators successfully');
+            }
+
+            this.logger.log('Magazine deleted successfully');
             return 'Magazine deleted successfully';
           } else if (magazineDeleted.ownerType === OwnerType.group) {
 
             let userMagazine = magazineDeleted as GroupMagazineDocument
             const groupOfMagazine = userMagazine.group;
             await this.groupModel.updateOne({ _id: groupOfMagazine }, { $pull: { magazines: magazineId } }, { session });
+            this.logger.log('Magazine deleted successfully');
+
             return 'Magazine deleted successfully';
           } else {
+            this.logger.error('Error deleting magazine, please try again: INVALID OWNER TYPE');
             throw new Error('Error deleting magazine, please try again: INVALID OWNER TYPE');
           }
         }
 
       })
     } catch (error) {
+      this.logger.error('Error deleting magazine', error);
       throw error;
     }
 
@@ -478,7 +491,7 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
       const magazine = await this.magazineModel
         .findById(id)
         .select(
-          '_id collaborators name user description sections ownerType allowedCollaborators group -kind',
+          '_id collaborators name user description sections ownerType allowedCollaborators group visibility -kind',
         )
         .populate([
           {
@@ -540,7 +553,7 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
     */
     const session = await this.connection.startSession();
     const userMagazines: any = [];
-    const fieldSelect = '_id name sections ownerType';
+    const fieldSelect = '_id name sections ownerType visibility';
     const populateField = [
       {
         path: 'sections',
@@ -882,11 +895,15 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
     const session = await this.connection.startSession();
     try {
       await session.withTransaction(async () => {
+        this.logger.log('Deleting magazine from user schema ');
         await this.userModel.findByIdAndUpdate(collaboratorId, { $pull: { magazines: magazineId } }, { session });
+        this.logger.log('Deleting succsesfully');
+        this.logger.log('Deleting user from Magazine schema');
         await this.userMagazine.updateOne({ _id: magazineId }, { $pull: { collaborators: collaboratorId } }, { session });
-        return 'Collaborator removed successfully';
+        this.logger.log('User deleted from Magazine schema');
       })
     } catch (error: any) {
+      this.logger.error('A problem occurred while removing user from magazine: ' + error);
       throw error;
     }
   }
@@ -896,10 +913,13 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
     const session = await this.connection.startSession();
     try {
       await session.withTransaction(async () => {
+        this.logger.log('Deleting user from Magazine group schema');
         await this.groupModel.updateOne({ magazines: magazineId }, { $pull: { allowedCollaborators: collaboratorId } }, { session });
+        this.logger.log('User deleted from Magazine schema');
         return 'Allowed collaborator removed successfully';
       })
     } catch (error: any) {
+      this.logger.error('A problem occurred while removing user from magazine: ' + error);
       throw error;
     }
   }

@@ -113,6 +113,10 @@ export class MagazineResponse {
   @Field(() => [sections_graphql_magazine])
   sections: sections_graphql_magazine[];
 
+
+  @Field(() => String)
+  visibility: string;
+
   @Field(() => String)
   ownerType: string;
 
@@ -138,6 +142,7 @@ export class MagazineResponse {
     this.sections = magazine.sections;
     this.ownerType = magazine.ownerType;
     this.description = magazine.description;
+    this.visibility = magazine.visibility;
     this.collaborators = magazine.collaborators ?? null;
     this.user = magazine.user ?? null;
     this.allowedCollaborators = magazine.allowedCollaborators ?? null;

@@ -151,6 +151,7 @@ type MagazineResponse {
   _id: String!
   name: String!
   sections: [sections_graphql_magazine!]!
+  visibility: String!
   ownerType: String!
   description: String
   collaborators: [collaborators_graphql!]
