@@ -68,7 +68,7 @@ const UserSolapas = ({
       >
         {isMyProfile && (
           <PrimaryButton
-            className="mb-2 md:ml-2 md:float-right"
+            className="mb-2 md:ml-2 md:self-end md:float-right"
             startContent={<FaPlus />}
             as={Link}
             href={CREATE}
@@ -86,7 +86,7 @@ const UserSolapas = ({
         data-key={`${PROFILE_USERNAME}${MAGAZINES}`}
       >
         <PrimaryButton
-          className="mb-2 md:float-right"
+          className="mb-2 md:self-end md:float-right"
           startContent={<FaPlus />}
           as={Link}
           href={CREATE}
@@ -104,7 +104,7 @@ const UserSolapas = ({
       >
         {isMyProfile && (
           <PrimaryButton
-            className="mb-2 md:float-right"
+            className="mb-2 md:self-end md:float-right"
             startContent={<FaPlus />}
             as={Link}
             href={PROFILE}

@@ -55,6 +55,7 @@ const CreateBoard = ({
     } else {
       resApi = await createBoard({ ...values, color: bgColor });
     }
+    console.log(resApi)
     if (resApi.error) {
       toastifyError(resApi.error);
       actions.setSubmitting(false);

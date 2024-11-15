@@ -45,7 +45,7 @@ export class UserRepository implements UserRepositoryInterface {
 
     private readonly logger: MyLoggerService,
     @InjectConnection() private readonly connection: Connection,
-  ) { }
+  ) {}
 
   async findUserByUsername(username: string): Promise<any> {
     try {
@@ -209,7 +209,6 @@ export class UserRepository implements UserRepositoryInterface {
 
       const notifications = userNotificationResponse[0].notifications;
 
-
       // Ordena las notificaciones por fecha en orden descendente
       const notificationsMapped = notifications
         .sort((notificationA: any, notificationB: any) => {
@@ -220,7 +219,6 @@ export class UserRepository implements UserRepositoryInterface {
         .slice(0, limit); // Limita al número de resultados deseado
 
       const hasMore = notifications.length > page * limit;
-
 
       return {
         notifications: notificationsMapped,
@@ -493,7 +491,7 @@ export class UserRepository implements UserRepositoryInterface {
       }
       this.logger.log(
         'The post was successfully saved in the user profile: ' +
-        UserRepository.name,
+          UserRepository.name,
       );
 
       return obj;

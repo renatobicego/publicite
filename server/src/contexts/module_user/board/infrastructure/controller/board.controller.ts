@@ -1,4 +1,4 @@
-import { Body, Controller, Inject, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Inject, Post, UseGuards } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { ClerkAuthGuard } from 'src/contexts/module_shared/auth/clerk-auth/clerk.auth.guard';
@@ -17,7 +17,7 @@ export class BoardController {
   constructor(
     @Inject('BoardAdapterInterface')
     private readonly boardAdapter: BoardAdapterInterface,
-  ) { }
+  ) {}
 
   @Post()
   @ApiOperation({ summary: 'Create a board' })

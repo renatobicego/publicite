@@ -10,6 +10,7 @@ export const createBoard = async (formData: any) => {
   }
 
   try {
+    console.log("call action")
     const resApi: any = await postBoard(formData);
     if (resApi.status !== 200 && resApi.status !== 201) {
       return {
@@ -18,7 +19,7 @@ export const createBoard = async (formData: any) => {
           resApi.data.message,
       };
     }
-    return { message: "Pizarra creada exitosamente", id: "1" };
+    return { message: "Pizarra creada exitosamente" };
   } catch (err) {
     return {
       error: "Error al crear la pizarra. Por favor intenta de nuevo.",

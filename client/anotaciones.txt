@@ -32,6 +32,8 @@ CUENTA GRATUITA CREAR PLAN DE SUSCRIPTION
 - cmbiar formato de notificacion (listo mag)
 - compartir cosas
 Editar revista no funca 
+Deberíamos ponerle los decimales a los precios pa ser mas amigables 
+
 
 Podriamos diferencias aca las revistas, por ejemplo la primer revista “debería traerme soy creador” 
 es una revista de grupo, por ahí con el ownerType poner en algun l

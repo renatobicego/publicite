@@ -17,15 +17,16 @@ import {
   MagazineNotificationType,
 } from "@/types/magazineTypes";
 import { IoBook } from "react-icons/io5";
+import { useUserData } from "@/app/(root)/providers/userDataProvider";
 
 const MagazineNotificationCard = ({
   notification,
 }: {
   notification: MagazineNotification;
-  }) => {
-  console.log(notification)
+}) => {
   const { magazine } = notification.frontData;
   const { event } = notification.notification;
+  const { userIdLogged, usernameLogged } = useUserData();
   const { updateSocketToken } = useSocket();
   const getNotificationOptionsList = () => {
     const optionsList: NotificationOptionProps[] = [];
@@ -36,7 +37,22 @@ const MagazineNotificationCard = ({
     if (notificationMessage?.acceptAction) {
       optionsList.push({
         label: "Aceptar Solicitud",
-        onPress: () => notificationMessage.acceptAction?.(magazine._id),
+        onPress: async () => {
+          const socket = await updateSocketToken();
+          notificationMessage.acceptAction?.(
+            socket,
+            {
+              _id: magazine._id,
+              name: magazine.name,
+              ownerType: magazine.ownerType,
+            },
+            {
+              _id: userIdLogged,
+              username: usernameLogged,
+            },
+            magazine.userInviting._id
+          );
+        },
       });
     }
     optionsList.push({

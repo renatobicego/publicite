@@ -12,9 +12,7 @@ import Search from "./Search";
 import MobileMenu from "./MobileMenu";
 import dynamic from "next/dynamic";
 import NavMenuItems from "./NavMenuItems";
-const UserNavItems = dynamic(() => import("./UserNavItems"), {
-  ssr: false,
-});
+import UserNavItems from "./UserNavItems";
 
 const Header = ({
   isSignedIn,

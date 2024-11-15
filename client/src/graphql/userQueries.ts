@@ -85,6 +85,7 @@ export const getAllNotificationsQuery = gql`
           }
           userInviting {
             username
+            _id
           }
         }
         notification {

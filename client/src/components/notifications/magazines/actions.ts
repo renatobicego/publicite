@@ -1,15 +1,23 @@
 import { putMemberGroup } from "@/services/groupsService";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { Socket } from "socket.io-client";
+import { emitMagazineNotification } from "./emitNotifications";
+import { Magazine } from "@/types/magazineTypes";
+import { User } from "@/types/userTypes";
 
-const acceptMagazineInvitation = async (magazineId: string) => {
-  // const res = await putMemberGroup(magazineId);
-  // if (res.error) {
-  //   toastifyError(res.error as string);
-  //   return;
-  // }
-  // toastifySuccess(res.message as string);
-  console.log("accept")
+const acceptMagazineInvitation = async (
+  magazine: Pick<Magazine, "_id" | "name" | "ownerType">,
+  socket: Socket | null,
+  userSending: Pick<User, "_id" | "username">,
+  userIdTo: string
+) => {
+  emitMagazineNotification(
+    socket,
+    magazine,
+    userSending,
+    userIdTo,
+    "notification_magazine_acepted"
+  );
 };
 const declineMagazineInvitation = async (
   magazineId: string,

@@ -100,6 +100,9 @@ export const getMagazineWithoutPostsByIdQuery = gql`
         _id
       }
       visibility
+      sections {
+        _id
+      }
     }
   }
 `;
