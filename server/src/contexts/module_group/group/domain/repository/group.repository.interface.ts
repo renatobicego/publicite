@@ -56,10 +56,10 @@ export interface GroupRepositoryInterface {
     page: number,
     userRequest: string,
   ): Promise<GroupListResponse>;
-  findAllPostsOfGroupMembers(groupId: string, userRequest: string,limit:number,page:number): Promise<PostsMemberGroupResponse | null>
+  findAllPostsOfGroupMembers(groupId: string, userRequest: string, limit: number, page: number): Promise<PostsMemberGroupResponse | null>
 
 
-  isThisGroupExist(alias: string): Promise<boolean>;
+  isThisGroupExist(alias: string, _id?: string): Promise<boolean>;
 
 
   save(group: Group): Promise<GroupResponse>;

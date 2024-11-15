@@ -1,4 +1,4 @@
-import { Inject } from '@nestjs/common';
+import { BadRequestException, Inject } from '@nestjs/common';
 import { GroupServiceInterface } from '../../domain/service/group.service.interface';
 import { GroupRepositoryInterface } from '../../domain/repository/group.repository.interface';
 
@@ -222,11 +222,12 @@ export class GroupService implements GroupServiceInterface {
   }
 
 
-  async isThisGroupExist(alias: string): Promise<boolean> {
+  async isThisGroupExist(alias: string, _id?: string): Promise<boolean> {
     const aliasWithOutSpaces = alias.replace(/\s+/g, '').toLowerCase();
+    if (aliasWithOutSpaces.length < 1) return true;
     try {
       this.logger.log('Finding group by alias: ' + alias);
-      return await this.groupRepository.isThisGroupExist(aliasWithOutSpaces);
+      return await this.groupRepository.isThisGroupExist(aliasWithOutSpaces, _id);
     } catch (error: any) {
       throw error;
     }
@@ -323,7 +324,16 @@ export class GroupService implements GroupServiceInterface {
 
   async updateGroupById(group: GroupUpdateRequest): Promise<any> {
     try {
+
+
       this.logger.log('Updating group by id: ' + group._id);
+      if (group.alias != undefined && group.alias != null) {
+        this.logger.log('Verify if this group exist: ' + group.alias);
+        const isThisGroupExist = await this.isThisGroupExist(group.alias, group._id);
+        if (isThisGroupExist) {
+          throw new BadRequestException('This group already exist or the group alias is not valid');
+        }
+      }
       return await this.groupRepository.updateGroupById(group);
     } catch (error: any) {
       this.logger.error('An error was ocurred when updating group: ');

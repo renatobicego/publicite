@@ -689,6 +689,7 @@ input GroupUpdateRequest {
   _id: String!
   admin: String!
   name: String
+  alias: String
   rules: String
   magazines: [String!]
   details: String

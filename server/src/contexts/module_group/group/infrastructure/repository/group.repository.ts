@@ -30,7 +30,7 @@ export class GroupRepository implements GroupRepositoryInterface {
     private readonly groupMapper: GroupRepositoryMapperInterface,
     @InjectConnection() private readonly connection: Connection,
     private readonly logger: MyLoggerService,
-  ) {}
+  ) { }
 
   async assignNewCreatorAndExitGroupById(
     groupId: string,
@@ -667,15 +667,21 @@ export class GroupRepository implements GroupRepositoryInterface {
     }
   }
 
-  async isThisGroupExist(alias: string): Promise<boolean> {
+  async isThisGroupExist(alias: string, _id?: string): Promise<boolean> {
     try {
-      const group = await this.groupModel.findOne({ alias: alias }).lean();
-      if (group) return true;
-      return false;
+
+
+      const group = await this.groupModel.findOne({
+        alias: alias,
+        _id: { $ne: _id },
+      }).lean();
+
+      return !!group;
     } catch (error: any) {
       throw error;
     }
   }
+
 
   async removeAdminsFromGroupByGroupId(
     admins: string[],
