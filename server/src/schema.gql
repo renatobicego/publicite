@@ -374,6 +374,7 @@ type Groups_Full_Graphql_Model {
   _id: ID
   name: String
   members: [String!]
+  admins: [String!]
   profilePhotoUrl: String
 }
 
