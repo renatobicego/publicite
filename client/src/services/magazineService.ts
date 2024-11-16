@@ -151,6 +151,7 @@ export const deleteMagazineSection = async (
 
 export const getMagazinesOfUser = async () => {
   const authData = auth();
+  if(!authData.sessionClaims?.metadata.mongoId) return [];
   const { data } = await query({
     query: getMagazinesQuery,
     variables: { userId: authData.sessionClaims?.metadata.mongoId },

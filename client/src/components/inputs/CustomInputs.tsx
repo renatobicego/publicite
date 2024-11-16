@@ -1,4 +1,5 @@
 import {
+  Button,
   DateInput,
   Input,
   InputProps,
@@ -10,6 +11,8 @@ import {
 import { FieldInputProps, FormikProps } from "formik";
 import { I18nProvider } from "@react-aria/i18n";
 import { parseDate } from "@internationalized/date";
+import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
+import { useState } from "react";
 export const CustomInput = ({
   field,
   form,
@@ -18,12 +21,23 @@ export const CustomInput = ({
   field: FieldInputProps<any>;
   form: FormikProps<any>;
 }) => {
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  // Function to handle emoji selection
+  const handleEmojiClick = (emojiData: EmojiClickData) => {
+    const propsAsAny = props as any;
+    propsAsAny.setFieldValue(
+      propsAsAny.name,
+      propsAsAny.value + emojiData.emoji
+    );
+    setShowEmojiPicker(false); // Hide the picker after selection
+  };
   return (
     <Input
       variant="bordered"
       className="px-4 py-[10px] border-[0.5px]"
       classNames={{
-        inputWrapper: "shadow-none hover:shadow-sm border-[0.5px] group-data-[focus=true]:border-light-text py-1",
+        inputWrapper:
+          "shadow-none hover:shadow-sm border-[0.5px] group-data-[focus=true]:border-light-text py-1",
         input: "text-[0.8125rem]",
         label: "font-medium text-[0.8125rem]",
       }}
@@ -31,6 +45,32 @@ export const CustomInput = ({
       labelPlacement="outside"
       {...field}
       {...props}
+      endContent={
+        (props as any).showEmojiPicker && (
+          <div className="relative">
+            <Button
+              isIconOnly
+              size="sm"
+              radius="full"
+              onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+            >
+              😊
+            </Button>
+            {showEmojiPicker && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: "40px",
+                  right: "0",
+                  zIndex: 100,
+                }}
+              >
+                <EmojiPicker onEmojiClick={handleEmojiClick} />
+              </div>
+            )}
+          </div>
+        )
+      }
     />
   );
 };
@@ -43,7 +83,8 @@ export const CustomInputWithoutFormik: React.FC<InputProps> = (props) => {
       radius="full"
       {...props}
       classNames={{
-        inputWrapper: "shadow-none hover:shadow-sm border-[0.5px] group-data-[focus=true]:border-light-text py-1",
+        inputWrapper:
+          "shadow-none hover:shadow-sm border-[0.5px] group-data-[focus=true]:border-light-text py-1",
         input: "text-[0.8125rem]",
         label: `font-medium text-[0.8125rem] ${props.classNames?.label}`,
       }}
@@ -99,7 +140,8 @@ export const CustomDateInput = (props: FieldInputProps<any>) => {
       <DateInput
         {...props}
         classNames={{
-          inputWrapper: "shadow-none hover:shadow-sm border-[0.5px] group-data-[focus=true]:border-light-text",
+          inputWrapper:
+            "shadow-none hover:shadow-sm border-[0.5px] group-data-[focus=true]:border-light-text",
           input: "text-[0.8125rem]",
           label: "font-medium text-[0.8125rem]",
         }}
@@ -118,7 +160,7 @@ interface CustomSelectProps<T> extends FieldInputProps<any> {
   getItemValue: (item: T) => string;
   getItemTextValue?: (item: T) => string;
   renderItem?: (item: T) => React.ReactNode; // New prop for custom rendering
-  textColor?: string
+  textColor?: string;
 }
 
 export const CustomSelect = <T extends unknown>({
@@ -129,14 +171,14 @@ export const CustomSelect = <T extends unknown>({
   renderItem,
   ...props
 }: CustomSelectProps<T>) => {
-  
   return (
     <Select
       scrollShadowProps={{
         hideScrollBar: false,
       }}
       classNames={{
-        trigger: "shadow-none hover:shadow-sm border-[0.5px] group-data-[focus=true]:border-light-text py-1",
+        trigger:
+          "shadow-none hover:shadow-sm border-[0.5px] group-data-[focus=true]:border-light-text py-1",
         value: `text-[0.8125rem] ${props.textColor}`,
         label: `font-medium text-[0.8125rem] ${props.textColor}`,
       }}

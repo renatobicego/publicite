@@ -113,7 +113,7 @@ const CreateGood = ({
       {({ isSubmitting, errors, setFieldValue, values }) => {
         return (
           <Form className="flex flex-col gap-4">
-            <TitleDescription errors={errors} />
+            <TitleDescription errors={errors} setFieldValue={setFieldValue} />
             <PriceCategory errors={errors} />
             <Condition errors={errors} />
             <Divider />

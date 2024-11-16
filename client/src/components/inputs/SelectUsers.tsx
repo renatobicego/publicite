@@ -120,6 +120,7 @@ const SearchUsers = (props: SearchUsersProps) => {
         variant="bordered"
         radius="full"
         labelPlacement="outside"
+        
         isLoading={isLoading}
         selectedKey={null}
         startContent={<FaSearch className="text-light-text" />}

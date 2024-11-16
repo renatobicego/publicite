@@ -110,7 +110,7 @@ const CreateService = ({
       {({ isSubmitting, errors, setFieldValue, values }) => {
         return (
           <Form className="flex flex-col gap-4">
-            <TitleDescription errors={errors} />
+            <TitleDescription errors={errors} setFieldValue={setFieldValue}/>
             <PriceCategory errors={errors} isService={true} />
             <Divider />
             <h6>Busque su ubicación o seleccionela en el mapa</h6>

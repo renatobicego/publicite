@@ -15,7 +15,6 @@ export default async function NavigationLayout({
   children: React.ReactNode;
 }) {
   const user = await currentUser();
-  const token = await auth().getToken();
 
   return (
     <SocketProvider
@@ -26,7 +25,6 @@ export default async function NavigationLayout({
         clerkId={user?.id}
         userType={user?.publicMetadata.userType}
         userId={user?.publicMetadata.mongoId}
-        token={token as string}
       >
         <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
         <Header isSignedIn={!!user} />
