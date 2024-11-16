@@ -18,7 +18,7 @@ import { IUser, UserModel } from '../schemas/user.schema';
 import { UserBusinessUpdateDto } from '../../domain/entity/dto/user.business.update.dto';
 import { UserPersonalUpdateDto } from '../../domain/entity/dto/user.personal.update.dto';
 import { UserPreferencesEntityDto } from '../../domain/entity/dto/user.preferences.update.dto';
-import { UP_clerkUpdateRequestDto } from 'src/contexts/module_webhook/application/clerk/dto/UP-clerk.update.request';
+import { UP_clerkUpdateRequestDto } from 'src/contexts/module_webhook/clerk/application/dto/UP-clerk.update.request';
 import { UserClerkUpdateDto } from '../../domain/entity/dto/user.clerk.update.dto';
 import { UserFindAllResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.response.dto';
 import { fullNameNormalization } from '../../application/functions/utils';

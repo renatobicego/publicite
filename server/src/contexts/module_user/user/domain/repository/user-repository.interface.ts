@@ -5,7 +5,7 @@ import { UserBusiness } from '../entity/userBusiness.entity';
 import { UserBusinessUpdateDto } from '../entity/dto/user.business.update.dto';
 import { UserPersonalUpdateDto } from '../entity/dto/user.personal.update.dto';
 import { UserPreferencesEntityDto } from '../entity/dto/user.preferences.update.dto';
-import { UP_clerkUpdateRequestDto } from 'src/contexts/module_webhook/application/clerk/dto/UP-clerk.update.request';
+import { UP_clerkUpdateRequestDto } from 'src/contexts/module_webhook/clerk/application/dto/UP-clerk.update.request';
 import { UserClerkUpdateDto } from '../entity/dto/user.clerk.update.dto';
 import { UserFindAllResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.response.dto';
 import { GROUP_notification_graph_model_get_all } from '../../application/adapter/dto/HTTP-RESPONSE/notifications/user.notifications.response';

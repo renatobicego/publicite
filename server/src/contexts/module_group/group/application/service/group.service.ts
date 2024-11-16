@@ -224,7 +224,6 @@ export class GroupService implements GroupServiceInterface {
 
   async isThisGroupExist(alias: string, _id?: string): Promise<boolean> {
     const aliasWithOutSpaces = alias.replace(/\s+/g, '').toLowerCase();
-    if (aliasWithOutSpaces.length < 1) return true;
     try {
       this.logger.log('Finding group by alias: ' + alias);
       return await this.groupRepository.isThisGroupExist(aliasWithOutSpaces, _id);
@@ -329,9 +328,12 @@ export class GroupService implements GroupServiceInterface {
       this.logger.log('Updating group by id: ' + group._id);
       if (group.alias != undefined && group.alias != null) {
         this.logger.log('Verify if this group exist: ' + group.alias);
+        if(group.alias.length < 1){
+          throw new BadRequestException('Alias is not valid');
+        }
         const isThisGroupExist = await this.isThisGroupExist(group.alias, group._id);
         if (isThisGroupExist) {
-          throw new BadRequestException('This group already exist or the group alias is not valid');
+          throw new BadRequestException('Alias already exist');
         }
       }
       return await this.groupRepository.updateGroupById(group);

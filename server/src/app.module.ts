@@ -18,8 +18,9 @@ import { BoardModule } from './contexts/module_user/board/infrastructure/module/
 import { SectorModule } from './contexts/module_user/businessSector/infrastructure/module/sector.module';
 import { ContactModule } from './contexts/module_user/contact/infrastructure/module/contact.module';
 import { UserModule } from './contexts/module_user/user/infrastructure/module/user.module';
-import { WebhookModule } from './contexts/module_webhook/infrastructure/module/webhook.module';
 import { DatabaseService } from './contexts/module_shared/database/infrastructure/database.service';
+import { MercadoPagoModule } from './contexts/module_webhook/mercadopago/infastructure/module/mercadopago.module';
+import { ClerkModule } from './contexts/module_webhook/clerk/infrastructure/module/clerk.module';
 
 @Module({
   imports: [
@@ -35,7 +36,8 @@ import { DatabaseService } from './contexts/module_shared/database/infrastructur
     }),
     DatabaseModule,
     LoggerModule,
-    WebhookModule,
+    ClerkModule,
+    MercadoPagoModule,
     UserModule,
     ContactModule,
     SectorModule,
@@ -55,4 +57,4 @@ import { DatabaseService } from './contexts/module_shared/database/infrastructur
     NotificationSocketModule,
   ],
 })
-export class AppModule {}
+export class AppModule { }

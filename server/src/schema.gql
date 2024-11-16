@@ -459,14 +459,14 @@ type PaymentResponse {
 }
 
 type Query {
-  """Buscar los pagos por id de clerk"""
-  findPaymentByClerkId(id: String!): [PaymentResponse!]
-
   """Obtiene un usuario por su nombre de usuario """
   findUserByUsername(username: String!): User_Full_Grapql_Model
 
   """obtener todas las notificaciones de un usuario por su Id"""
   getAllNotificationsFromUserById(limit: Float!, page: Float!): GROUP_notification_graph_model_get_all
+
+  """Buscar los pagos por id de clerk"""
+  findPaymentByClerkId(id: String!): [PaymentResponse!]
 
   """Obtener Post por autor"""
   findPostsByAuthorId(authorId: String!): [Post_Full_Graphql_Model!]
