@@ -177,6 +177,11 @@ export const putGroup = async (groupToUpdate: any) => {
       .mutate({
         mutation: editGroupMutation,
         variables: { groupToUpdate },
+        context: {
+          headers: {
+            Authorization: `${await auth().getToken()}`,
+          },
+        }
       })
       .then((res) => res);
     return {

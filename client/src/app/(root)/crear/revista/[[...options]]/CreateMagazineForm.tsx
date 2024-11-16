@@ -63,34 +63,36 @@ const CreateMagazineForm = ({
       userId
     );
 
-    const resApi = await createMagazine(finalValues);
+    const resApi = await createMagazine({
+      ...finalValues,
+      [isGroupMagazine ? "allowedCollaborators" : "collaborators"]: [],
+    });
     if (resApi.error) {
       toastifyError(resApi.error);
       actions.setSubmitting(false);
       return;
     }
     const socket = await updateSocketToken();
-    if (isGroupMagazine) {
-      (finalValues as PostGroupMagazine).allowedCollaborators.forEach(
-        (collaborator) => {
-          // emit notifications user invited to collaborate in magazine
-          emitMagazineNotification(
-            socket,
-            {
-              _id: resApi.id,
-              name: finalValues.name,
-              ownerType: finalValues.ownerType,
-            },
-            {
-              username: usernameLogged as string,
-              _id: userIdLogged as string,
-            },
-            collaborator,
-            "notification_magazine_new_user_invited"
-          );
-        }
+    const usersToSendNotifications = isGroupMagazine
+      ? (finalValues as PostGroupMagazine).allowedCollaborators
+      : (finalValues as PostUserMagazine).collaborators;
+    usersToSendNotifications.forEach((collaborator) => {
+      // emit notifications user invited to collaborate in magazine
+      emitMagazineNotification(
+        socket,
+        {
+          _id: resApi.id,
+          name: finalValues.name,
+          ownerType: finalValues.ownerType,
+        },
+        {
+          username: usernameLogged as string,
+          _id: userIdLogged as string,
+        },
+        collaborator,
+        "notification_magazine_new_user_invited"
       );
-    }
+    });
 
     toastifySuccess(resApi.message as string);
     router.push(`${MAGAZINES}/${resApi.id}`);
