@@ -1,5 +1,5 @@
 import { Controller, Get, Inject, Param } from '@nestjs/common';
-import { InvoiceAdapterInterface } from '../../application/adapter/mp-invoice.adapter.internface';
+import { InvoiceAdapterInterface } from '../../application/adapter/in/mp-invoice.adapter.internface';
 
 @Controller('mercadopago/invoice')
 export class InvoiceController {

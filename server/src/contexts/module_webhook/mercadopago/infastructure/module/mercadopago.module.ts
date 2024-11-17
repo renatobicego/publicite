@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 
 
@@ -13,12 +13,11 @@ import { MpInvoiceService } from 'src/contexts/module_webhook/mercadopago/applic
 import { MpPaymentService } from 'src/contexts/module_webhook/mercadopago/application/service/mp-payment.service';
 import { MpSubscriptionService } from 'src/contexts/module_webhook/mercadopago/application/service/mp-subscription.service';
 import { MercadoPagoSubscriptionPlanService } from 'src/contexts/module_webhook/mercadopago/application/service/mp-subscriptionPlan.service';
-import { MpWebhookService } from 'src/contexts/module_webhook/mercadopago/application/service/mp-webhook.service';
-import { MpInvoiceAdapter } from 'src/contexts/module_webhook/mercadopago/infastructure/adapters/mp-invoice.adapter';
-import { MpPaymentAdapter } from 'src/contexts/module_webhook/mercadopago/infastructure/adapters/mp-payment.adapter';
-import { SubscriptionAdapter } from 'src/contexts/module_webhook/mercadopago/infastructure/adapters/mp-subscription.adapter';
-import { MercadoPagoSubscriptionPlanAdapter } from 'src/contexts/module_webhook/mercadopago/infastructure/adapters/mp-subscriptionPlan.adapter';
-import { MpWebhookAdapter } from 'src/contexts/module_webhook/mercadopago/infastructure/adapters/mp-webhook.adapter';
+import { MpInvoiceAdapter } from 'src/contexts/module_webhook/mercadopago/infastructure/adapters/in/mp-invoice.adapter';
+import { MpPaymentAdapter } from 'src/contexts/module_webhook/mercadopago/infastructure/adapters/in/mp-payment.adapter';
+import { SubscriptionAdapter } from 'src/contexts/module_webhook/mercadopago/infastructure/adapters/in/mp-subscription.adapter';
+import { MercadoPagoSubscriptionPlanAdapter } from 'src/contexts/module_webhook/mercadopago/infastructure/adapters/in/mp-subscriptionPlan.adapter';
+import { MpWebhookAdapter } from 'src/contexts/module_webhook/mercadopago/infastructure/adapters/in/mp-webhook.adapter';
 import { SubscriptionController } from 'src/contexts/module_webhook/mercadopago/infastructure/controllers/mp-subscription.controller';
 import { MercadopagoSubscriptionPlanController } from 'src/contexts/module_webhook/mercadopago/infastructure/controllers/mp-subscriptionPlan.controller';
 import { MpPaymentResolver } from 'src/contexts/module_webhook/mercadopago/infastructure/controllers/resolver/mp-payment.resolver';
@@ -31,8 +30,9 @@ import { InvoiceSchema } from '../schemas/invoice.schema';
 import { PaymentSchema } from '../schemas/payment.schema';
 import { SubscriptionSchema } from '../schemas/subscription.schema';
 import { SubscriptionPlanSchema } from '../schemas/subscriptionPlan.schema';
-import { MercadopagoController } from '../controllers/mercadopago.controller';
+import { MercadopagoController } from '../controllers/main.controller.mp/mercadopago.controller';
 import { MpHandlerEvents } from '../../application/handler/mpHandlerFETCHEvents';
+import { FetchToMercadoPagoAdapter } from '../adapters/out/fetch.to.mp';
 
 @Module({
     imports: [
@@ -58,10 +58,6 @@ import { MpHandlerEvents } from '../../application/handler/mpHandlerFETCHEvents'
         {
             provide: 'MpHandlerEventsInterface',
             useClass: MpHandlerEvents,
-        },
-        {
-            provide: 'MpWebhookServiceInterface',
-            useClass: MpWebhookService,
         },
         {
             provide: 'MpServiceInvoiceInterface',
@@ -116,10 +112,25 @@ import { MpHandlerEvents } from '../../application/handler/mpHandlerFETCHEvents'
             provide: 'MercadopagoSubscriptionPlanAdapterInterface',
             useClass: MercadoPagoSubscriptionPlanAdapter,
         },
+        // {
+        //     provide: 'FetchToMpInterface',
+        //     useClass: FetchToMercadoPagoAdapter,
+        // },
+        {
+            provide: 'MpHandlerValidationsInterface',
+            useClass: MpHandlerValidations,
+        },
         {
             provide: 'MpHandlerValidationsInterface',
             useFactory: (configService: ConfigService, logger: MyLoggerService) => {
                 return new MpHandlerValidations(configService, logger);
+            },
+            inject: [ConfigService, MyLoggerService],
+        },
+        {
+            provide: 'FetchToMpInterface',
+            useFactory: (configService: ConfigService, logger: MyLoggerService) => {
+                return new FetchToMercadoPagoAdapter(configService, logger);
             },
             inject: [ConfigService, MyLoggerService],
         },

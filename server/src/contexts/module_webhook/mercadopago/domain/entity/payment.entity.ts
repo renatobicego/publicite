@@ -2,6 +2,8 @@ import { ObjectId } from 'mongoose';
 
 export default class Payment {
   private mpPaymentId: string;
+  private mpPreapprovalId: string;
+  private descriptionOfPayment: string;
   private payerId: string;
   private payerEmail: string;
   private paymentTypeId: string;
@@ -16,6 +18,8 @@ export default class Payment {
 
   constructor(
     mpPaymentId: string,
+    descriptionOfPayment: string,
+    mpPreapprovalId: string,
     payerId: string,
     payerEmail: string,
     paymentTypeId: string,
@@ -29,6 +33,8 @@ export default class Payment {
     _id?: ObjectId,
   ) {
     this.mpPaymentId = mpPaymentId ?? ' ';
+    this.descriptionOfPayment = descriptionOfPayment ?? ' ';
+    this.mpPreapprovalId = mpPreapprovalId ?? ' ';
     this.payerId = payerId ?? ' ';
     this.payerEmail = payerEmail ?? ' ';
     this.paymentTypeId = paymentTypeId ?? ' ';
@@ -48,6 +54,14 @@ export default class Payment {
 
   public getId(): ObjectId | undefined {
     return this._id;
+  }
+
+  public getDescriptionOfPayment(): string {
+    return this.descriptionOfPayment;
+  }
+
+  public getMPPreapprovalId(): string {
+    return this.mpPreapprovalId;
   }
 
   public getStatus() {
@@ -87,6 +101,8 @@ export default class Payment {
   static fromDocument(doc: any): Payment {
     return new Payment(
       doc.mpPaymentId,
+      doc.descriptionOfPayment,
+      doc.mpPreapprovalId,
       doc.payerId,
       doc.payerEmail,
       doc.paymentTypeId,

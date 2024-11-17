@@ -11,18 +11,21 @@ import { MercadoPagoPaymentsRepositoryInterface } from '../../domain/repository/
 
 
 export class MercadoPagoPaymentsRepository
-  implements MercadoPagoPaymentsRepositoryInterface
-{
+  implements MercadoPagoPaymentsRepositoryInterface {
   constructor(
     private readonly logger: MyLoggerService,
     @InjectModel('Payment')
     private readonly paymentModel: Model<PaymentDocument>,
-  ) {}
+  ) { }
 
   async createPayment(payment: Payment): Promise<void> {
-    this.logger.log('Save payment: ' + payment.getMPPaymentId());
-    const newPayment = new this.paymentModel(payment);
-    await newPayment.save();
+    try {
+      this.logger.log('Save payment: ' + payment.getMPPaymentId() + ' with status ' + payment.getStatus() + ' and description ' + payment.getDescriptionOfPayment() + 'for preapproval id ' + payment.getMPPreapprovalId());
+      const newPayment = new this.paymentModel(payment);
+      await newPayment.save();
+    } catch (error: any) {
+      throw error;
+    }
   }
 
   async findPaymentByClerkId(id: any): Promise<PaymentResponse[]> {

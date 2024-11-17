@@ -8,6 +8,7 @@ import { MpServiceInvoiceInterface } from 'src/contexts/module_webhook/mercadopa
 import { MpPaymentServiceInterface } from 'src/contexts/module_webhook/mercadopago/domain/service/mp-payments.service.interface';
 import { SubscriptionServiceInterface } from 'src/contexts/module_webhook/mercadopago/domain/service/mp-subscription.service.interface';
 import { MercadoPagoInvoiceRepositoryInterface } from '../../domain/repository/mp-invoice.respository.interface';
+import { getTodayDateTime } from 'src/contexts/module_shared/functions/getTodayDateTime';
 
 export class MpInvoiceService implements MpServiceInvoiceInterface {
   constructor(
@@ -18,21 +19,24 @@ export class MpInvoiceService implements MpServiceInvoiceInterface {
     private readonly subscriptionService: SubscriptionServiceInterface,
     @Inject('MpPaymentServiceInterface')
     private readonly paymentService: MpPaymentServiceInterface,
-  ) {}
+  ) { }
   async updateInvoice(
     subscription_authorized_payment_to_update: any,
     id: string,
   ): Promise<void> {
     this.logger.log('---INVOICE SERVICE UPDATE ---');
 
-    const timeOfUpdate = now(getLocalTimeZone()).toString();
+    const timeOfUpdate = getTodayDateTime();
 
     try {
       // Crear el objeto subsToUpdate sin incluir paymentId inicialmente
       const subsToUpdate: any = {
-        status: subscription_authorized_payment_to_update.status,
-        paymentStatus: subscription_authorized_payment_to_update.payment.status,
+        status: subscription_authorized_payment_to_update.status ?? '',
+        paymentStatus: subscription_authorized_payment_to_update.payment.status ?? '',
         timeOfUpdate: timeOfUpdate,
+        retryAttempts:subscription_authorized_payment_to_update.retry_attempt ?? undefined,
+        nextRetryDay: subscription_authorized_payment_to_update.next_retry_date ?? undefined,
+        rejectionCode:subscription_authorized_payment_to_update.rejection_code ?? undefined,
       };
 
       // Solo agregar paymentId si existe en el objeto
@@ -74,8 +78,8 @@ export class MpInvoiceService implements MpServiceInvoiceInterface {
     if (!subscripcion || subscripcion === null) {
       this.logger.error(
         'Subscription not found. An error has ocurred with subscription_authorized_payment ID: ' +
-          subscription_authorized_payment.id +
-          '- Class:mpWebhookService',
+        subscription_authorized_payment.id +
+        '- Class:mpWebhookService',
       );
       throw new BadRequestException();
     }
@@ -86,10 +90,10 @@ export class MpInvoiceService implements MpServiceInvoiceInterface {
     ) {
       this.logger.log(
         'Status: ' +
-          subscription_authorized_payment.status +
-          ' Generate invoice to save',
+        subscription_authorized_payment.status +
+        ' Generate invoice to save',
       );
-      const timeOfUpdate = now(getLocalTimeZone()).toString();
+      const timeOfUpdate = getTodayDateTime();;
       const newInvoice = new Invoice(
         paymetnId as any,
         subscripcion.getId() ?? undefined, // Id de la suscripcion en nuestro schema
@@ -99,6 +103,13 @@ export class MpInvoiceService implements MpServiceInvoiceInterface {
         subscription_authorized_payment.external_reference,
         timeOfUpdate,
         subscription_authorized_payment.id, // ID de la factura en meli
+        subscription_authorized_payment.transaction_amount ?? 0,
+        subscription_authorized_payment.currency_id ?? 'ARS',
+        subscription_authorized_payment.reason ?? 'No data, please check',
+        subscription_authorized_payment.next_retry_date ?? 'No data, please check',
+        subscription_authorized_payment.retry_attempt ?? 0,
+        subscription_authorized_payment.rejection_code ?? 'No data, please check',
+
       );
       await this.mpInvoiceRepository.saveInvoice(newInvoice);
     }

@@ -10,7 +10,7 @@ export class MpHandlerValidations implements MpHandlerValidationsInterface {
     private readonly configService: ConfigService,
     private readonly logger: MyLoggerService,
   ) {}
-  checkHashValidation(req: Request, header: Record<string, string>): boolean {
+  isHashValid(req: Request, header: Record<string, string>): boolean {
     const request = req.url.split('?')[1];
     const queryObject = new URLSearchParams(request);
     const dataId = queryObject.get('data.id');

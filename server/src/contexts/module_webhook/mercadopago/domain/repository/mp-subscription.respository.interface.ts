@@ -7,4 +7,5 @@ export interface SubscriptionRepositoryInterface {
   updateSubscription(id: string, updateObject: any): Promise<void>;
   cancelSubscription(id: string): Promise<void>;
   pauseSubscription(id: string, updateObject: any): Promise<void>;
+  verifyIfSubscriptionWasPused(preapproval_id: string): Promise<boolean>
 }

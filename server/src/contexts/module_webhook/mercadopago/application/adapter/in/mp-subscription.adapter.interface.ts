@@ -1,4 +1,4 @@
-import { SubscriptionResponse } from './HTTP-RESPONSE/subscription.response';
+import { SubscriptionResponse } from '../HTTP-RESPONSE/subscription.response';
 
 export interface SubscriptionAdapterInterface {
   getSubscriptionHistory(

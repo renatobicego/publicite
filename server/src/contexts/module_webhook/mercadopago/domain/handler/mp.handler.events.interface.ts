@@ -1,15 +1,20 @@
 export interface MpHandlerEventsInterface {
-  handleEvent_payment_update(dataID: string): Promise<boolean>;
-  handleEvent_payment_create(dataID: string): Promise<boolean>;
-  handleEvent_subscription_preapproval_create(dataID: string): Promise<boolean>;
-  handleEvent_subscription_authorized_payment_update(
+  check_status_of_the_payment_and_create(dataID: string): Promise<boolean>;
+  
+  create_subscription_preapproval(dataID: string): Promise<boolean>;
+
+  
+  update_payment(dataID: string): Promise<boolean>;
+  update_subscription_preapproval(
     dataID: string,
   ): Promise<boolean>;
-  handleEvent_subscription_authorized_payment_create(
+  
+  update_subscription_authorized_payment(
+    dataID: string,
+  ): Promise<boolean>;
+  create_subscription_authorized_payment(
     dataID: string,
   ): Promise<boolean>;
 
-  handleEvent_subscription_preapproval_updated(
-    dataID: string,
-  ): Promise<boolean>;
+
 }

@@ -58,6 +58,26 @@ export class SubscriptionResponse {
   })
   readonly timeOfUpdate: string;
 
+  @ApiProperty({
+    description: 'Next payment date',
+    type: String,
+  })
+  readonly nextPaymentDate: string;
+
+
+  @ApiProperty({
+    description: 'Method of payment',
+    type: String,
+  })
+  readonly paymentMethodId: string;
+
+
+  @ApiProperty({
+    description: 'Card ID',
+    type: String,
+  })
+  readonly cardId: string;
+
   constructor(
     _id: ObjectId | null,
     mpPreapprovalId: string,
@@ -68,6 +88,9 @@ export class SubscriptionResponse {
     endDate: string,
     external_reference: string,
     timeOfUpdate: string,
+    nextPaymentDate: string,
+    paymentMethodId: string,
+    cardId: string,
   ) {
     this._id = _id;
     this.mpPreapprovalId = mpPreapprovalId;
@@ -78,5 +101,8 @@ export class SubscriptionResponse {
     this.endDate = endDate;
     this.external_reference = external_reference;
     this.timeOfUpdate = timeOfUpdate;
+    this.nextPaymentDate = nextPaymentDate;
+    this.paymentMethodId = paymentMethodId;
+    this.cardId = cardId;
   }
 }

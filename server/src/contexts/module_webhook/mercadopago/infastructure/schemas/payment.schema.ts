@@ -2,6 +2,8 @@ import { Schema } from 'mongoose';
 
 export const PaymentSchema = new Schema({
   mpPaymentId: { type: String, required: true },
+  descriptionOfPayment: { type: String, required: true },
+  mpPreapprovalId: { type: String, required: true },
   payerId: { type: String, required: true },
   payerEmail: { type: String, required: true },
   paymentTypeId: { type: String, required: true },
@@ -16,6 +18,8 @@ export const PaymentSchema = new Schema({
 
 export interface PaymentDocument extends Document {
   mpPaymentId: string;
+  descriptionOfPayment: string;
+  mpPreapprovalId: string;
   payerId: string;
   payerEmail: string;
   paymentTypeId: string;

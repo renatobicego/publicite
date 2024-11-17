@@ -17,6 +17,12 @@ export const InvoiceSchema = new Schema({
   external_reference: { type: String, required: true },
   timeOfUpdate: { type: String },
   invoice_id: { type: String, required: true },
+  transactionAmount: { type: Number, required: true },
+  currencyId: { type: String, required: true },
+  reason: { type: String, required: true },
+  nextRetryDay: { type: String },
+  retryAttempts: { type: Number },
+  rejectionCode: { type: String },
 });
 
 export interface InvoiceDocument extends Document {
@@ -28,4 +34,10 @@ export interface InvoiceDocument extends Document {
   external_reference: string;
   timeOfUpdate: string;
   invoice_id: string;
+  transactionAmount: number;
+  currencyId: string;
+  reason: string;
+  nextRetryDay: string;
+  retryAttempts: number;
+  rejectionCode: string;
 }

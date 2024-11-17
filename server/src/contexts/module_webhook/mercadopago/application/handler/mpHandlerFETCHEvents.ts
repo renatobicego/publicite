@@ -2,32 +2,17 @@ import { Inject, Injectable } from '@nestjs/common';
 
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { MpHandlerEventsInterface } from 'src/contexts/module_webhook/mercadopago/domain/handler/mp.handler.events.interface';
-import { MpWebhookServiceInterface } from 'src/contexts/module_webhook/mercadopago/domain/service/mp-webhook.service.interface';
+import { FetchToMpInterface } from '../adapter/out/fech.to.mp.interface';
+import { MpServiceInvoiceInterface } from '../../domain/service/mp-invoice.service.interface';
+import { MpPaymentServiceInterface } from '../../domain/service/mp-payments.service.interface';
+import { SubscriptionServiceInterface } from '../../domain/service/mp-subscription.service.interface';
 
 /*
 HandlerEvents de mercadopago: 
 Esta clase tiene la unica responsabilidad de procesar los eventos de mercadopago, no deberiamos tener otra logica que no se encargue de procesar eventos de webhook MP.
 Orquesta la logica de llamadas a la API de meli y comunica con el servicio 
 
-*/
-@Injectable()
-export class MpHandlerEvents implements MpHandlerEventsInterface {
-  constructor(
-    private readonly logger: MyLoggerService,
-    @Inject('MpWebhookServiceInterface')
-    private readonly mpWebhookService: MpWebhookServiceInterface,
-  ) {}
 
-  //Meli urls
-  private readonly URL_SUBCRIPTION_PREAPPROVAL_CHECK =
-    'https://api.mercadopago.com/preapproval/';
-  private readonly URL_SUBCRIPTION_AUTHORIZED_CHECK: string =
-    'https://api.mercadopago.com/authorized_payments/';
-  private readonly URL_PAYMENT_CHECK: string =
-    'https://api.mercadopago.com/v1/payments/';
-
-  async handleEvent_payment_create(dataID: string): Promise<boolean> {
-    /*
   pending: El usuario aún no ha completado el proceso de pago 
           (por ejemplo, después de generar un boleto, el pago se completará cuando el usuario pague en el lugar seleccionado).
   approved: El pago ha sido aprobado y acreditado con éxito.
@@ -39,227 +24,225 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
   refunded: El pago fue reembolsado al usuario.
   charged_back: Se realizó un contracargo en la tarjeta de crédito del comprador.
 
+*/
+@Injectable()
+export class MpHandlerEvents implements MpHandlerEventsInterface {
+  constructor(
+    private readonly logger: MyLoggerService,
+    @Inject('MpServiceInvoiceInterface')
+    private readonly MpInvoiceService: MpServiceInvoiceInterface,
+    @Inject('MpPaymentServiceInterface')
+    private readonly mpPaymentService: MpPaymentServiceInterface,
+    @Inject('SubscriptionServiceInterface')
+    private readonly subscriptionService: SubscriptionServiceInterface,
 
-    
-    */
 
-    this.logger.log(
-      `The proccess of payment are starting- PAYMENT.CREATE ARE RECEIVED: ${dataID}`,
-    );
-    this.logger.log(`Fetching to Mercadopago....`);
-    const paymentResponse: any = await this.mpWebhookService.fetchData(
-      `${this.URL_PAYMENT_CHECK}${dataID}`,
-    );
-    console.log('PAYMENT CREATE RESPONSE:');
-    console.log(paymentResponse);
+    @Inject('FetchToMpInterface')
+    private readonly fetchToMpAdapter: FetchToMpInterface
 
-    if (paymentResponse.operation_type === 'card_validation') {
-      this.logger.warn(
-        'MpWebhookAdapter - Case paymenty.created - type card_validation, sending response OK to meli & return',
+  ) { }
+
+  private availableStatusOfTheCreatePayment = ['approved', 'rejected', 'pending', 'in_process'];
+  private availableStatusOfTheUpdatePayment = ['approved', 'rejected', 'pending', 'in_process', 'cancelled'];
+
+  //Meli urls
+  private readonly URL_SUBCRIPTION_PREAPPROVAL_CHECK =
+    'https://api.mercadopago.com/preapproval/';
+  private readonly URL_SUBCRIPTION_AUTHORIZED_CHECK: string =
+    'https://api.mercadopago.com/authorized_payments/';
+  private readonly URL_PAYMENT_CHECK: string =
+    'https://api.mercadopago.com/v1/payments/';
+
+  async check_status_of_the_payment_and_create(dataID: string): Promise<boolean> {
+    try {
+
+      this.logger.log(
+        `The proccess of payment are starting- PAYMENT.CREATE ARE RECEIVED: ${dataID}`,
       );
-      return Promise.resolve(true);
-    }
 
-    if (paymentResponse.transaction_amount < 30) {
-      this.logger.warn('Payment amount is less than $50, returning OK to Meli');
-      return Promise.resolve(true);
-    }
+      this.logger.log(`Fetching to Mercadopago....`);
+      const mercadoPago_paymentResponse: any = await this.fetchToMpAdapter.getDataFromMp_fetch(
+        `${this.URL_PAYMENT_CHECK}${dataID}`,
+      );
 
-    switch (paymentResponse.status.toString().toLowerCase()) {
-      case 'approved':
-        this.logger.warn(
-          'MpWebhookAdapter - Case paymenty.created - STATUS: ' +
-            paymentResponse.status,
-        );
-        await this.mpWebhookService.create_payment(paymentResponse);
-        return Promise.resolve(true);
-      case 'rejected':
-        // VER SI HACEMOS ALGO CON EL STATUS REJECTED CUANDO LLEGA UN PAGO
-        this.logger.warn(
-          'MpWebhookAdapter - Case paymenty.created - STATUS: ' +
-            paymentResponse.status,
-        );
-        await this.mpWebhookService.create_payment(paymentResponse);
-        return Promise.resolve(true);
-      case 'pending':
-        this.logger.warn(
-          'MpWebhookAdapter - Case paymenty.created - STATUS: ' +
-            paymentResponse.status,
-        );
-        await this.mpWebhookService.create_payment(paymentResponse);
-        return Promise.resolve(true);
-      case 'in_process':
-        this.logger.warn(
-          'MpWebhookAdapter - Case paymenty.created - STATUS: ' +
-            paymentResponse.status,
-        );
-        await this.mpWebhookService.create_payment(paymentResponse);
-        return Promise.resolve(true);
-      default:
-        this.logger.warn(
-          'MpWebhookAdapter - Case paymenty.created - STATUS: default, sending response OK to meli & return',
-        );
-        throw new Error('Unknown payment status: ' + paymentResponse.status);
+      if (!mercadoPago_paymentResponse) return Promise.resolve(false);
+
+      console.log('PAYMENT CREATE RESPONSE:');
+      console.log(mercadoPago_paymentResponse);
+
+
+
+      const is_a_card_validation = await this.is_a_card_validation(mercadoPago_paymentResponse, "paymenty.created");
+      if (is_a_card_validation) return Promise.resolve(true);
+
+      const statusOfThePayment = mercadoPago_paymentResponse.status.toString().toLowerCase();
+
+
+      if (!this.availableStatusOfTheCreatePayment.includes(statusOfThePayment)) {
+        this.logger.error('Unknown payment CREATE status: ' + statusOfThePayment);
+        throw new Error('Unknown payment CREATE status: ' + statusOfThePayment);
+      }
+
+      this.logger.log(`MpWebhookAdapter - Case paymenty.created - STATUS: ${statusOfThePayment}`);
+
+      await this.mpPaymentService.createPayment(mercadoPago_paymentResponse);
+      return Promise.resolve(true);
+    } catch (error: any) {
+      this.logger.error('An error has ocurred while processing payment event: ' + error);
+      throw error;
     }
   }
-  async handleEvent_payment_update(dataID: string): Promise<boolean> {
-    this.logger.log(
-      `The proccess of payment are starting- PAYMENT.UPDATE ARE RECEIVED: ${dataID}`,
-    );
-    this.logger.log(`Fetching to Mercadopago....`);
-    const paymentResponse: any = await this.mpWebhookService.fetchData(
-      `${this.URL_PAYMENT_CHECK}${dataID}`,
-    );
-    console.log('PAYMENT UPDATE RESPONSE:');
-    console.log(paymentResponse);
-
-    if (paymentResponse.operation_type === 'card_validation') {
-      this.logger.warn(
-        'MpWebhookAdapter - Case payment.UPDATED - type card_validation, sending response OK to meli & return',
+  async update_payment(dataID: string): Promise<boolean> {
+    try {
+      this.logger.log(
+        `The proccess of payment are starting- PAYMENT.UPDATE ARE RECEIVED: ${dataID}`,
       );
+
+      this.logger.log(`Fetching to Mercadopago....`);
+      const mercadoPago_paymentResponse: any = await this.fetchToMpAdapter.getDataFromMp_fetch(
+        `${this.URL_PAYMENT_CHECK}${dataID}`,
+      );
+
+      const is_a_card_validation = await this.is_a_card_validation(mercadoPago_paymentResponse, "paymenty.created");
+      if (is_a_card_validation) return Promise.resolve(true);
+
+      const statusOfThePayment = mercadoPago_paymentResponse.status.toString().toLowerCase();
+
+      if (!this.availableStatusOfTheUpdatePayment.includes(statusOfThePayment)) {
+        this.logger.error('Unknown payment UPDATE status: ' + statusOfThePayment);
+        throw new Error('Unknown payment UPDATE status: ' + statusOfThePayment);
+      }
+
+      console.log('PAYMENT UPDATE RESPONSE:');
+      console.log(mercadoPago_paymentResponse);
+
+      this.logger.log(`MpWebhookAdapter - Case paymenty.UPDATE - STATUS: ${statusOfThePayment}`);
+
+
+      await this.mpPaymentService.updatePayment(mercadoPago_paymentResponse);
       return Promise.resolve(true);
+    } catch (error: any) {
+      this.logger.error('An error has ocurred while processing payment event: ' + error);
+      throw error;
     }
-    if (paymentResponse.transaction_amount < 50) {
-      this.logger.warn('Payment amount is less than $50, returning OK to Meli');
-      return Promise.resolve(true);
-    }
-    switch (paymentResponse.status.toString().toLowerCase()) {
-      case 'approved':
-        this.logger.warn(
-          'MpWebhookAdapter - Case payment.UPDATE - STATUS: ' +
-            paymentResponse.status,
-        );
-        await this.mpWebhookService.updatePayment(paymentResponse);
-        return Promise.resolve(true);
-      case 'pending':
-        this.logger.warn(
-          'MpWebhookAdapter - Case payment.UPDATE - STATUS: ' +
-            paymentResponse.status,
-        );
-        await this.mpWebhookService.updatePayment(paymentResponse);
-        return Promise.resolve(true);
-      case 'in_process':
-        this.logger.warn(
-          'MpWebhookAdapter - Case payment.UPDATE - STATUS: ' +
-            paymentResponse.status,
-        );
-        await this.mpWebhookService.updatePayment(paymentResponse);
-        return Promise.resolve(true);
-      case 'rejected':
-        this.logger.warn(
-          'MpWebhookAdapter - Case payment.UPDATE - STATUS: ' +
-            paymentResponse.status,
-        );
-        await this.mpWebhookService.updatePayment(paymentResponse);
-        return Promise.resolve(true);
-      case 'cancelled':
-        this.logger.warn(
-          'MpWebhookAdapter - Case payment.UPDATE - STATUS: ' +
-            paymentResponse.status,
-        );
-        await this.mpWebhookService.updatePayment(paymentResponse);
-        return Promise.resolve(true);
-      default:
-        this.logger.warn(
-          'MpWebhookAdapter - Case paymenty.UPDATE - STATUS: Unknown payment status, sending response OK to meli & return',
-        );
-        throw new Error('Unknown payment status: ' + paymentResponse.status);
-    }
+
+
   }
-  async handleEvent_subscription_preapproval_create(
+
+  async create_subscription_preapproval(
     dataID: string,
   ): Promise<boolean> {
     try {
       /*----------------------------------- FETCH TO MERCADOPAGO SUBSCRIPTION_PREAPPROVAL (CREACION DE SUSCRIPCION)------------------------------ */
-      const subscription_preapproval = await this.mpWebhookService.fetchData(
+      const subscription_preapproval = await this.fetchToMpAdapter.getDataFromMp_fetch(
         `${this.URL_SUBCRIPTION_PREAPPROVAL_CHECK}${dataID}`,
       );
       console.log('subscription_preapproval RESPONSE:');
       console.log(subscription_preapproval);
 
-      await this.mpWebhookService.subscription_preapproval_create(
+      await this.subscriptionService.createSubscription_preapproval(
         subscription_preapproval,
       );
       return Promise.resolve(true);
     } catch (error: any) {
       this.logger.error(
         'An error has ocurred while processing subscription_preapproval event: ' +
-          error,
+        error,
       );
       throw new Error(error);
     }
   }
 
-  async handleEvent_subscription_preapproval_updated(
+  async update_subscription_preapproval(
     dataID: string,
   ): Promise<boolean> {
     this.logger.log('handleEvent_subscription_preapproval_updated');
     try {
       /*----------------------------------- FETCH TO MERCADOPAGO SUBSCRIPTION_PREAPPROVAL (ACTUALIZACION DE SUSCRIPCION)------------------------------ */
       const subscription_preapproval_update =
-        await this.mpWebhookService.fetchData(
+        await this.fetchToMpAdapter.getDataFromMp_fetch(
           `${this.URL_SUBCRIPTION_PREAPPROVAL_CHECK}${dataID}`,
         );
       console.log('subscription_preapproval_update RESPONSE:');
       console.log(subscription_preapproval_update);
-      await this.mpWebhookService.subscription_preapproval_update(
+
+
+      await this.subscriptionService.updateSubscription_preapproval(
         subscription_preapproval_update,
       );
       return Promise.resolve(true);
     } catch (error: any) {
       this.logger.error(
         'An error has ocurred while processing subscription_preapproval_updated event: ' +
-          error,
+        error,
       );
       throw new Error(error);
     }
   }
 
-  async handleEvent_subscription_authorized_payment_create(
+  async create_subscription_authorized_payment(
     dataID: string,
   ): Promise<boolean> {
     try {
       this.logger.log(
         'The proccess of subscription_authorized_payment (CREATED) are starting - Class:mpHandlerEvents',
       );
+
       const subscription_authorized_payment =
-        await this.mpWebhookService.fetchData(
+        await this.fetchToMpAdapter.getDataFromMp_fetch(
           `${this.URL_SUBCRIPTION_AUTHORIZED_CHECK}${dataID}`,
         );
+
       console.log('subscription_authorized_payment CREATE RESPONSE:');
       console.log(subscription_authorized_payment);
+
       if (subscription_authorized_payment.transaction_amount < 30) {
         this.logger.warn(
           'Payment amount is less than $30, returning OK to Meli',
         );
         return Promise.resolve(true);
       }
-      await this.mpWebhookService.subscription_authorize_payment_create(
+      await this.MpInvoiceService.saveInvoice(
         subscription_authorized_payment,
       );
       return Promise.resolve(true);
     } catch (error: any) {
       this.logger.error(
         'An error has ocurred while processing subscription_authorized_payment event: ' +
-          error,
+        error,
       );
       throw new Error(error);
     }
   }
 
-  async handleEvent_subscription_authorized_payment_update(
+
+  async update_subscription_authorized_payment(
     dataID: string,
   ): Promise<boolean> {
     try {
       this.logger.log(
         'The proccess of subscription_authorized_payment (UPDATED) are starting - Class:mpHandlerEvents',
       );
+
+
+      const rejectedStatuses = new Set(['rejected', 'cancelled']);
+      const approvedStatuses = new Set(['approved', 'accredited']);
       const subscription_authorized_payment =
-        await this.mpWebhookService.fetchData(
+        await this.fetchToMpAdapter.getDataFromMp_fetch(
           `${this.URL_SUBCRIPTION_AUTHORIZED_CHECK}${dataID}`,
         );
+
+
       console.log('subscription_authorized_payment UPDATE RESPONSE:');
       console.log(subscription_authorized_payment);
+      if (!subscription_authorized_payment) {
+        this.logger.warn(
+          'subscription_authorized_payment is null, returning OK to Meli, please check suscription_authorized_payment ID:' +
+          dataID,
+        );
+        return true;
+      }
+
 
       if (subscription_authorized_payment.transaction_amount < 30) {
         this.logger.warn(
@@ -268,44 +251,113 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
         return true;
       }
 
-      const rejectedStatuses = new Set(['rejected', 'cancelled']);
+
       const paymentStatus =
         subscription_authorized_payment.payment?.status.toLowerCase();
+
       const subscriptionStatus =
         subscription_authorized_payment.status.toLowerCase();
 
-      if (
-        rejectedStatuses.has(subscriptionStatus) ||
-        paymentStatus === 'rejected' ||
-        paymentStatus === 'cancelled'
-      ) {
+      if (rejectedStatuses.has(subscriptionStatus) || rejectedStatuses.has(paymentStatus)) {
         this.logger.warn(
           `Status is rejected, returning OK to Meli and pausing the subscription. Preapproval_id: ${subscription_authorized_payment.preapproval_id}`,
         );
 
-        await this.mpWebhookService.subscription_authorize_payment_update(
+        const isThisSubscriptionWasPaused = await this.subscriptionService.verifyIfSubscriptionWasPused(subscription_authorized_payment.preapproval_id)
+
+        await this.MpInvoiceService.updateInvoice(
           subscription_authorized_payment,
+          subscription_authorized_payment.id
         );
-        await this.mpWebhookService.fetchPauseSuscription(
-          this.URL_SUBCRIPTION_PREAPPROVAL_CHECK,
-          subscription_authorized_payment.preapproval_id,
-        );
-        return true;
+
+
+        if (isThisSubscriptionWasPaused) {
+          return true;
+        } else {
+          await this.fetchToMpAdapter.changeSubscriptionStatusInMercadopago_fetch(
+            this.URL_SUBCRIPTION_PREAPPROVAL_CHECK,
+            subscription_authorized_payment.preapproval_id,
+            'paused',
+          );
+          return true;
+        }
+
       }
 
-      await this.mpWebhookService.subscription_authorize_payment_update(
+
+
+      if (subscription_authorized_payment && subscription_authorized_payment.retry_attempt && subscription_authorized_payment.retry_attempt > 0) {
+        this.logger.warn("This is a retry, we are updating the invoice and returning OK to Meli - The status of the subscription or payment is other than rejected or cancelled");
+        this.logger.log(paymentStatus);
+        this.logger.log(subscriptionStatus);
+
+        await this.MpInvoiceService.updateInvoice(
+          subscription_authorized_payment,
+          subscription_authorized_payment.id
+        )
+
+        const isThisSubscriptionWasPaused = await this.subscriptionService.verifyIfSubscriptionWasPused(subscription_authorized_payment.preapproval_id)
+
+        if (isThisSubscriptionWasPaused && (approvedStatuses.has(subscriptionStatus) || approvedStatuses.has(paymentStatus))) {
+          this.logger.warn(
+            `Status was paused, changing to new status. Preapproval_id: ${subscription_authorized_payment.preapproval_id}`,
+          );
+          this.logger.warn(
+            `Status of payment: ${paymentStatus}`,
+          );
+          this.logger.warn(
+            `Status of subscription: ${subscriptionStatus}`,
+          );
+
+          await this.fetchToMpAdapter.changeSubscriptionStatusInMercadopago_fetch(
+            this.URL_SUBCRIPTION_PREAPPROVAL_CHECK,
+            subscription_authorized_payment.preapproval_id,
+            'authorized',
+          );
+          return true
+        }
+        return true
+      }
+      this.logger.log('Updating subscription_authorized_payment...');
+      await this.MpInvoiceService.updateInvoice(
         subscription_authorized_payment,
+        subscription_authorized_payment.id
       );
       return true;
     } catch (error: any) {
       this.logger.error(
         'An error has ocurred while processing subscription_authorized_payment event: ' +
-          error,
+        error,
       );
-      throw new Error(error);
+      throw error;
     }
   }
+
+
+
+
+  is_a_card_validation(mercado_pago_response: any, type: string): Promise<boolean> {
+
+    if (mercado_pago_response.operation_type === 'card_validation') {
+      this.logger.warn(
+        `MpWebhookAdapter - Case ${type} - type card_validation, sending response OK to meli & return`,
+      );
+      return Promise.resolve(true);
+    }
+
+    if (mercado_pago_response.transaction_amount < 30) {
+      this.logger.warn('Payment amount is less than $50 is a card validation, returning OK to Meli');
+      return Promise.resolve(true);
+    }
+
+    return Promise.resolve(false);
+  }
+
+
 }
+
+
+
 
 /* CRONOLOGIA DE EVENTOS EJEMPLOS*/
 //PAYMENT CARD_VALIDATION

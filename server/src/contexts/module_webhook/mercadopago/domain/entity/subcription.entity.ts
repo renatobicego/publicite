@@ -12,6 +12,9 @@ export default class Subscription {
   private endDate: string;
   private external_reference: string;
   private timeOfUpdate: string;
+  private nextPaymentDate: string;
+  private paymentMethodId: string;
+  private cardId: string;
   private _id?: ObjectId | null;
 
   constructor(
@@ -23,6 +26,9 @@ export default class Subscription {
     endDate: string,
     external_reference: string,
     timeOfUpdate: string,
+    nextPaymentDate: string,
+    paymentMethodId: string,
+    cardId: string,
     _id?: ObjectId,
   ) {
     this.mpPreapprovalId = mpPreapprovalId;
@@ -33,7 +39,22 @@ export default class Subscription {
     this.endDate = endDate;
     this.external_reference = external_reference;
     this.timeOfUpdate = timeOfUpdate;
+    this.nextPaymentDate = nextPaymentDate;
+    this.paymentMethodId = paymentMethodId;
+    this.cardId = cardId;
     this._id = _id;
+  }
+
+  public getPaymentMethodId(): string {
+    return this.paymentMethodId;
+  }
+  
+  public getCardId(): string {
+    return this.cardId;
+  }
+
+  public getNextPaymentDate(): string {
+    return this.nextPaymentDate;
   }
 
   public getMpPreapprovalId(): string {
@@ -79,6 +100,9 @@ export default class Subscription {
       doc.endDate,
       doc.external_reference,
       doc.timeOfUpdate,
+      doc.nextPaymentDate,
+      doc.paymentMethodId,
+      doc.cardId,
       doc._id ? doc._id : ' ',
     );
   }
@@ -95,6 +119,9 @@ export default class Subscription {
       endDate: subscription.getEndDate(),
       external_reference: subscription.external_reference,
       timeOfUpdate: subscription.getDayOfUpdate(),
+      nextPaymentDate: subscription.getNextPaymentDate(),
+      paymentMethodId: subscription.getPaymentMethodId(),
+      cardId: subscription.getCardId(),
     };
   }
 }

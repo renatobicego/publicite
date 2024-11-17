@@ -1,3 +1,3 @@
 export interface MpHandlerValidationsInterface {
-  checkHashValidation(req: Request, header: Record<string, string>): boolean;
+  isHashValid(req: Request, header: Record<string, string>): boolean;
 }

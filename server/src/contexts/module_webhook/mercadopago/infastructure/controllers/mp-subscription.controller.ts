@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
-import { SubscriptionAdapterInterface } from '../../application/adapter/mp-subscription.adapter.interface';
+import { SubscriptionAdapterInterface } from '../../application/adapter/in/mp-subscription.adapter.interface';
 import { SubscriptionResponse } from '../../application/adapter/HTTP-RESPONSE/subscription.response';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 

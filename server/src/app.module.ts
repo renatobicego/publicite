@@ -26,6 +26,7 @@ import { ClerkModule } from './contexts/module_webhook/clerk/infrastructure/modu
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: '.env',
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,

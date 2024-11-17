@@ -1,7 +1,7 @@
 import { Inject } from '@nestjs/common';
 
-import { SubscriptionResponse } from '../../application/adapter/HTTP-RESPONSE/subscription.response';
-import { SubscriptionAdapterInterface } from 'src/contexts/module_webhook/mercadopago/application/adapter/mp-subscription.adapter.interface';
+import { SubscriptionResponse } from '../../../application/adapter/HTTP-RESPONSE/subscription.response';
+import { SubscriptionAdapterInterface } from 'src/contexts/module_webhook/mercadopago/application/adapter/in/mp-subscription.adapter.interface';
 import { SubscriptionServiceInterface } from 'src/contexts/module_webhook/mercadopago/domain/service/mp-subscription.service.interface';
 import Subscription from 'src/contexts/module_webhook/mercadopago/domain/entity/subcription.entity';
 

@@ -1,5 +1,5 @@
 import { Inject } from '@nestjs/common';
-import { InvoiceAdapterInterface } from 'src/contexts/module_webhook/mercadopago/application/adapter/mp-invoice.adapter.internface';
+import { InvoiceAdapterInterface } from 'src/contexts/module_webhook/mercadopago/application/adapter/in/mp-invoice.adapter.internface';
 import { MpServiceInvoiceInterface } from 'src/contexts/module_webhook/mercadopago/domain/service/mp-invoice.service.interface';
 
 export class MpInvoiceAdapter implements InvoiceAdapterInterface {

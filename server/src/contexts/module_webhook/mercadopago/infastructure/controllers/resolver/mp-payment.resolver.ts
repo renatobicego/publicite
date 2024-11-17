@@ -2,7 +2,7 @@ import { Inject } from '@nestjs/common';
 import { Args, Query, Resolver } from '@nestjs/graphql';
 
 import { PaymentResponse } from 'src/contexts/module_webhook/mercadopago/application/adapter/HTTP-RESPONSE/payment.response';
-import { MpPaymentAdapterInterface } from 'src/contexts/module_webhook/mercadopago/application/adapter/mp-payment.adapter.interface';
+import { MpPaymentAdapterInterface } from 'src/contexts/module_webhook/mercadopago/application/adapter/in/mp-payment.adapter.interface';
 
 @Resolver('payment')
 export class MpPaymentResolver {

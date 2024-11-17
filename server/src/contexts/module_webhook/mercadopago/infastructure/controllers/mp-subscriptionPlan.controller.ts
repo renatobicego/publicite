@@ -2,7 +2,7 @@ import { Controller, Get, HttpCode, HttpStatus, Inject } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
-import { MercadopagoSubscriptionPlanAdapterInterface } from '../../application/adapter/mp-subscriptionPlan.adapter.interface';
+import { MercadopagoSubscriptionPlanAdapterInterface } from '../../application/adapter/in/mp-subscriptionPlan.adapter.interface';
 import { SubscriptionPlanResponse } from '../../application/adapter/HTTP-RESPONSE/SubscriptionPlan.response';
 
 @ApiTags('SubscriptionPlans')

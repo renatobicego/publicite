@@ -243,11 +243,11 @@
 //     });
 //     // TEST USING TODAY
 //     it('Should return short time if less than today (YEAR) ', () => {
-//       const todayDate = today(getLocalTimeZone()).toString();
+//       const todayDate = today(getTodayDateTime()).toString();
 //       expect(todayDate > '2023-08-22').toBe(true);
 //     });
 //     it('Should return short time if less than today (MONTH) ', () => {
-//       const todayDate = today(getLocalTimeZone()).toString();
+//       const todayDate = today(getTodayDateTime()).toString();
 //       expect(todayDate > '2024-07-22').toBe(true);
 //     });
 //   });

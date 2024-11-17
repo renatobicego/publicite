@@ -7,4 +7,8 @@ export interface SubscriptionServiceInterface {
   updateSubscription_preapproval(
     subscription_preapproval_update: any,
   ): Promise<void>;
+
+  verifyIfSubscriptionWasPused(preapproval_id: string): Promise<boolean>;
+
+
 }

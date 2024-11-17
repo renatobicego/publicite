@@ -15,7 +15,7 @@ import { ApiExcludeEndpoint } from '@nestjs/swagger';
 
 
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
-import { MpWebhookAdapter } from '../adapters/mp-webhook.adapter';
+import { MpWebhookAdapter } from '../../adapters/in/mp-webhook.adapter';
 
 
 
@@ -38,7 +38,7 @@ export class MercadopagoController {
   ): Promise<Response> {
     try {
       //Valido el origen de la petición
-      this.mpWebhookAdapter.handleRequestWebHookOriginValidation(headers, req);
+      this.mpWebhookAdapter.handleMercadoPagoWebhookRequest(headers, req);
       this.logger.log(
         'Webhook MP OK - Credentials are valid - WEBHOOK_PROCESS: COMPLETE ---> sending response to Meli - Class:WebhookController 🚀',
       );
@@ -54,17 +54,14 @@ export class MercadopagoController {
   @ApiExcludeEndpoint()
   @HttpCode(HttpStatus.OK)
   async handleMpTest(
-    @Headers() headers: Record<string, string>,
     @Res() res: Response,
-    @Req() req: Request,
-    @Body() body: any,
   ): Promise<any> {
     try {
       //Valido el origen de la petición
 
       const authSecretValidation =
-        await this.mpWebhookAdapter.subscription_authorized_payment(
-          '7013371913',
+        await this.mpWebhookAdapter.process_subscription_authorized_payment(
+          '2214ff77082e46d58c3a75099b411777',
           'created',
         );
       if (authSecretValidation) {

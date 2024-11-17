@@ -15,7 +15,7 @@ import { UserPreferencesEntityDto } from '../../domain/entity/dto/user.preferenc
 import { UP_clerkUpdateRequestDto } from 'src/contexts/module_webhook/clerk/application/dto/UP-clerk.update.request';
 import { UserFindAllResponse } from '../adapter/dto/HTTP-RESPONSE/user.response.dto';
 import { GROUP_notification_graph_model_get_all } from '../adapter/dto/HTTP-RESPONSE/notifications/user.notifications.response';
-import { getLocalTimeZone, now } from '@internationalized/date';
+import { getTodayDateTime } from 'src/contexts/module_shared/functions/getTodayDateTime';
 
 @Injectable()
 export class UserService implements UserServiceInterface {
@@ -163,7 +163,7 @@ export class UserService implements UserServiceInterface {
         'Notification received in the service: ' + UserService.name,
       );
       if (notification.notification.date === null || notification.notification.date === undefined || notification.notification.date === '') {
-        notification.notification.date = now(getLocalTimeZone()).toString()
+        notification.notification.date = getTodayDateTime()
       }
       await this.userRepository.pushNotification(notification, session);
     } catch (error: any) {
