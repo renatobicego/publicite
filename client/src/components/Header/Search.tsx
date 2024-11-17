@@ -1,25 +1,30 @@
 import {
   Button,
   Divider,
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownTrigger,
   Input,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+  Select,
   Selection,
+  SelectItem,
   Tooltip,
+  useDisclosure,
 } from "@nextui-org/react";
-import React, { Dispatch, SetStateAction, useMemo, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import { FaChevronDown, FaSearch } from "react-icons/fa";
 import SecondaryButton from "../buttons/SecondaryButton";
 import {
   BOARDS,
   GROUPS,
+  NEEDS,
   POST_BEST,
   POST_NEXT_TO_EXPIRE,
   POST_RECENTS,
   POSTS,
   PROFILE,
+  SERVICES,
 } from "@/utils/data/urls";
 import { useRouter } from "next-nprogress-bar";
 import { useSearchParams } from "next/navigation";
@@ -36,6 +41,9 @@ const Search = ({
   const [selectedKeys, setSelectedKeys] = useState<Selection>(
     new Set(["recomendados"])
   );
+  const [selectedPost, setSelectedPost] = useState<Selection>(
+    new Set([])
+  );
   const router = useRouter(); // Next.js router for redirection
   const searchParams = useSearchParams();
 
@@ -50,9 +58,15 @@ const Search = ({
       perfiles: PROFILE,
       grupos: GROUPS,
     };
+    const postTypePath: { [key: string]: string } = {
+      bienes: "",
+      servicios: SERVICES,
+      necesidades: NEEDS,
+    };
 
     const selectedKey = Array.from(selectedKeys)[0] as string;
-    const basePath = keyToPath[selectedKey];
+    const postType = postTypePath[Array.from(selectedPost)[0] as string];
+    const basePath = postType ? keyToPath[selectedKey] + postType : keyToPath[selectedKey];
     if (getBaseUrl) {
       return basePath;
     }
@@ -102,6 +116,8 @@ const Search = ({
         <DropdownSolapas
           selectedKeys={selectedKeys}
           setSelectedKeys={setSelectedKeys}
+          selectedPost={selectedPost}
+          setSelectedPost={setSelectedPost}
         />
       }
       placeholder="Buscar"
@@ -132,10 +148,15 @@ export default Search;
 const DropdownSolapas = ({
   selectedKeys,
   setSelectedKeys,
+  selectedPost,
+  setSelectedPost,
 }: {
   selectedKeys: Selection;
   setSelectedKeys: Dispatch<SetStateAction<Selection>>;
+  selectedPost: Selection;
+  setSelectedPost: Dispatch<SetStateAction<Selection>>;
 }) => {
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const keyToLabel: { [key: string]: string } = {
     recomendados: "Recomendados",
     hoy: "Anuncios de Hoy",
@@ -155,41 +176,102 @@ const DropdownSolapas = ({
     [selectedKeys]
   );
 
+  // Check if the selected value is "Post"
+  const postSolapas = [
+    "Recomendados",
+    "Anuncios de Hoy",
+    "Mejor Puntuados",
+    "Próximos a Vencer",
+  ];
+  const selectedValueIsPost = useMemo(() => postSolapas.some((value) =>
+    selectedValue.includes(value)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  ), [selectedValue]);
+
+  useEffect(() => {
+    if(!selectedValueIsPost) {
+      setSelectedPost(new Set([]))
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedValueIsPost])
   return (
     <>
       <Divider className="h-1/2" orientation="vertical" />
-      <Dropdown className="ml-2" placement="bottom-end">
-        <DropdownTrigger>
-          <Button
-            radius="full"
-            variant="light"
-            className="rounded-l-none min-w-10 md:min-w-fit px-0 md:px-3 lg:px-4 
+      <Button
+        onPress={onOpen}
+        radius="full"
+        variant="light"
+        className="rounded-l-none min-w-10 md:min-w-fit px-0 md:px-3 lg:px-4 
             md:max-lg:h-9 min-h-6 max-md:h-7 text-sm text-light-text"
-            endContent={
-              <FaChevronDown className="min-w-1 md:min-w-2 mt-0.5 text-light-text max-md:hidden" />
-            }
-          >
-            <span className="max-md:hidden">{selectedValue}</span>
-            <FaChevronDown className="min-w-1 text-light-text md:hidden" />
-          </Button>
-        </DropdownTrigger>
-        <DropdownMenu
-          selectionMode="single"
-          selectedKeys={selectedKeys}
-          onSelectionChange={setSelectedKeys}
-          variant="light"
-          disallowEmptySelection
-          aria-label="opciones de búsqueda"
-        >
-          <DropdownItem key="recomendados">Recomendados</DropdownItem>
-          <DropdownItem key="hoy">Anuncios de Hoy</DropdownItem>
-          <DropdownItem key="puntuados">Mejor Puntuados</DropdownItem>
-          <DropdownItem key="vencer">Próximos a Vencer</DropdownItem>
-          <DropdownItem key="pizarras">Pizarras</DropdownItem>
-          <DropdownItem key="perfiles">Perfiles</DropdownItem>
-          <DropdownItem key="grupos">Grupos</DropdownItem>
-        </DropdownMenu>
-      </Dropdown>
+        endContent={
+          <FaChevronDown className="min-w-1 md:min-w-2 mt-0.5 text-light-text max-md:hidden" />
+        }
+      >
+        <span className="max-md:hidden">{selectedValue}</span>
+        <FaChevronDown className="min-w-1 text-light-text md:hidden" />
+      </Button>
+      <Modal placement="center" isOpen={isOpen} onOpenChange={onOpenChange}>
+        <ModalContent>
+          <ModalHeader className="flex flex-col gap-1">
+            Seleccionar Solapas
+          </ModalHeader>
+          <ModalBody className="pb-4">
+            <Select
+              selectionMode="single"
+              selectedKeys={selectedKeys}
+              onSelectionChange={setSelectedKeys}
+              scrollShadowProps={{
+                hideScrollBar: false,
+              }}
+              classNames={{
+                trigger:
+                  "shadow-none hover:shadow-sm border-[0.5px] group-data-[focus=true]:border-light-text py-1",
+                value: `text-[0.8125rem]`,
+                label: `font-medium text-[0.8125rem]`,
+              }}
+              radius="full"
+              variant="bordered"
+              labelPlacement="outside"
+              disallowEmptySelection
+              aria-label="opciones de búsqueda"
+            >
+              <SelectItem key="recomendados">Recomendados</SelectItem>
+              <SelectItem key="hoy">Anuncios de Hoy</SelectItem>
+              <SelectItem key="puntuados">Mejor Puntuados</SelectItem>
+              <SelectItem key="vencer">Próximos a Vencer</SelectItem>
+              <SelectItem key="pizarras">Pizarras</SelectItem>
+              <SelectItem key="perfiles">Perfiles</SelectItem>
+              <SelectItem key="grupos">Grupos</SelectItem>
+            </Select>
+            {selectedValueIsPost && (
+              <Select
+                selectionMode="single"
+                placeholder="Seleccione el tipo de anuncio"
+                selectedKeys={selectedPost}
+                onSelectionChange={setSelectedPost}
+                scrollShadowProps={{
+                  hideScrollBar: false,
+                }}
+                classNames={{
+                  trigger:
+                    "shadow-none hover:shadow-sm border-[0.5px] group-data-[focus=true]:border-light-text py-1",
+                  value: `text-[0.8125rem]`,
+                  label: `font-medium text-[0.8125rem]`,
+                }}
+                radius="full"
+                variant="bordered"
+                labelPlacement="outside"
+                disallowEmptySelection
+                aria-label="tipo de anuncio"
+              >
+                <SelectItem key="bienes">Bienes</SelectItem>
+                <SelectItem key="servicios">Servicios</SelectItem>
+                <SelectItem key="necesidades">Necesidades</SelectItem>
+              </Select>
+            )}
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </>
   );
 };

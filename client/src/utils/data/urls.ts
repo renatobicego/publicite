@@ -3,6 +3,8 @@ const GROUPS = "/grupos";
 const PROFILE = "/perfiles";
 const CONFIGURATION = "/configuracion";
 const POSTS = "/anuncios";
+const SERVICES = "/servicios";
+const NEEDS = "/necesidades";
 const TUTORIALS = "/tutoriales";
 const SUBSCRIPTIONS = "/suscripciones";
 const SUSCRIBE = "/suscribirse";
@@ -46,5 +48,7 @@ export {
   EDIT_MAGAZINE,
   EDIT_GROUP,
   FILE_URL,
-  socketUrl
+  socketUrl,
+  SERVICES,
+  NEEDS
 };

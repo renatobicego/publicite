@@ -5,8 +5,14 @@ import { memo } from "react";
 
 const TitleDescription = ({
   errors,
+  setFieldValue,
 }: {
   errors: FormikErrors<GoodPostValues> | FormikErrors<ServicePostValues>;
+  setFieldValue: (
+    field: string,
+    value: any,
+    shouldValidate?: boolean
+  ) => Promise<void | FormikErrors<GoodPostValues>>;
 }) => {
   return (
     <>
@@ -19,6 +25,8 @@ const TitleDescription = ({
         aria-label="título"
         isInvalid={!!errors.title}
         errorMessage={errors.title}
+        showEmojiPicker
+        setFieldValue={setFieldValue}
       />
       <Field
         as={CustomTextarea}

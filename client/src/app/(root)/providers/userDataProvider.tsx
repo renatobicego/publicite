@@ -43,14 +43,12 @@ export const UserDataProvider = ({
   userId,
   clerkId,
   userType,
-  token,
 }: {
   children: ReactNode;
   username?: string | null;
   userId?: string;
   clerkId?: string;
   userType?: UserType;
-  token: string;
 }) => {
   const [magazines, setMagazines] = useState<Magazine[]>([]);
   const [postsInMagazine, setPostsInMagazine] = useState<
@@ -66,7 +64,6 @@ export const UserDataProvider = ({
   const [configData, setConfigData] = useState<ConfigData>();
 
   const fetchMagazines = async () => {
-    if(!userId) return
     const magazines: Magazine[] = await getMagazinesOfUser();
     setMagazines(magazines);
     // Flatten post IDs from each magazine's sections

@@ -15,9 +15,7 @@ export default async function GroupLayout(props: {
   children: React.ReactNode;
 }) {
   const params = await props.params;
-
   const { children } = props;
-
   const groupData:
     | {
         group: GroupAdmin;

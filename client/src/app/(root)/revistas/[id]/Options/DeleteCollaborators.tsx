@@ -62,6 +62,7 @@ const DeleteCollaborators = ({
         "notification_magazine_user_has_been_removed"
       );
     });
+    toastifySuccess("Colaboradores eliminados con éxito");
   };
   return (
     <>

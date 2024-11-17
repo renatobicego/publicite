@@ -8,22 +8,29 @@ Podríamos:
 
 - Sino, si el usuario cambia el mail, podríamos actualizarlo en mp pero sería medio quilombo
 
-boton de compartir app
 marcar como visto peticion de contaacto
 
 el tema de tener distintos tipos de relaciones va a costar hacer get de posts por visibilidad
 
 CUENTA GRATUITA CREAR PLAN DE SUSCRIPTION
 
+- borrar revista (listo)
+- crear revista de grupo deberia invitar a los miembros (listo)
+- revistas get all a veces no trae (parece andar)
+- mensaje success eliminar colaboradores (listo)
+- eliminar colaboradores de revista (probar)
+- GENERADOR DE COINCIDENCIA PETE
+- mostrar anuncios como lista no anda
+- BOTON EMOJIS
+- BUSCADOR POR TIPO DE anuncio (listo)
+
+boton de compartir app
 - agregar endate a post
 - carpeta posts
 - reigstrarse en produ
-- borrar revista
-- crear revista de grupo deberia invitar a los miembros
 - tabla de pagos conectarla
 - tutoriales
 - ver anuncios del grupo (listo, falta probars)
-- eliminar colaboradores de revista
 - visibilidad grupo, revista, pizarra y posts
 - ver notificaciones magazine (listo)
 - suscripcion de grupp
@@ -31,9 +38,15 @@ CUENTA GRATUITA CREAR PLAN DE SUSCRIPTION
 - errorres de noti
 - cmbiar formato de notificacion (listo mag)
 - compartir cosas
+- notificacion de navegador
+- crear grupo invita colaborador pero no aparece notificacion o no se borra bien del array de inivtaciones
+- ERROR BOUNDARIES
+- editar imagen
 Editar revista no funca 
 Deberíamos ponerle los decimales a los precios pa ser mas amigables 
-
+- ORDEN REVISTAS
+- mensaje de grupo
+- APP: BUSCAR
 
 Podriamos diferencias aca las revistas, por ejemplo la primer revista “debería traerme soy creador” 
 es una revista de grupo, por ahí con el ownerType poner en algun l

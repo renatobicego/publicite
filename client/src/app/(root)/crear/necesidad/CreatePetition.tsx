@@ -102,7 +102,7 @@ const CreatePetition = ({ userId } : { userId?: string}) => {
           <Form className="flex flex-col gap-4 w-full">
             <div className="flex gap-8 md:gap-4 w-full max-md:flex-col">
               <div className="w-full md:w-1/2 flex flex-col gap-4">
-                <TitleDescription errors={errors} />
+                <TitleDescription errors={errors} setFieldValue={setFieldValue}/>
                 <PetitionType errors={errors.petitionType} />
                 <Divider />
                 <h6>Busque su ubicación o seleccionela en el mapa</h6>

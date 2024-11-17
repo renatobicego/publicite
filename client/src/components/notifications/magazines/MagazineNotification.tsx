@@ -68,7 +68,19 @@ const MagazineNotificationCard = ({
         onPress: async () => {
           const socket = await updateSocketToken();
 
-          notificationMessage.rejectAction?.(magazine._id, socket);
+          notificationMessage.rejectAction?.(
+            socket,
+            {
+              _id: magazine._id,
+              name: magazine.name,
+              ownerType: magazine.ownerType,
+            },
+            {
+              _id: userIdLogged,
+              username: usernameLogged,
+            },
+            notification.notification.backData.userIdFrom
+          );
         },
       });
     }

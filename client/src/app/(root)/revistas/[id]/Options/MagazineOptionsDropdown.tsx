@@ -14,9 +14,9 @@ import { IoTrashOutline } from "react-icons/io5";
 import DeleteCollaborators from "./DeleteCollaborators";
 import { User } from "@/types/userTypes";
 import { Magazine } from "@/types/magazineTypes";
-import { deleteMagazine } from "@/services/magazineService";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { useRouter } from "next-nprogress-bar";
+import { removeMagazine } from "@/app/server/magazineActions";
 
 const MagazineOptionsDropdown = ({
   collaborators,
@@ -30,12 +30,12 @@ const MagazineOptionsDropdown = ({
   }) => {
   const router = useRouter()
   const handleDelete = async () => {
-    const res = await deleteMagazine(magazine._id, ownerType);
+    const res = await removeMagazine(magazine._id, ownerType);
     if (res.error) {
       toastifyError(res.error);
       return
     }
-    toastifySuccess(res.message);
+    toastifySuccess(res.message as string);
     router.back();
   };
   const confirmDeleteRef = useRef<() => void>(() => {});
