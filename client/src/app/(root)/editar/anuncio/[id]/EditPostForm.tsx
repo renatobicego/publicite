@@ -103,7 +103,7 @@ const EditPostForm = ({ postData }: { postData: Good | Service }) => {
         postType === "good" ? goodEditValidation : serviceEditValidation
       }
     >
-      {({ isSubmitting, errors, values }) => {
+      {({ isSubmitting, errors, values, setFieldValue }) => {
         return (
           <Form className="w-full max-md:flex-col flex gap-4 items-start">
             <div className="flex flex-col gap-4 flex-1 max-md:w-full">
@@ -135,7 +135,7 @@ const EditPostForm = ({ postData }: { postData: Good | Service }) => {
               </div>
             </div>
             <div className="flex flex-col gap-4 flex-1 max-md:w-full">
-              <TitleDescription errors={errors} />
+              <TitleDescription errors={errors} setFieldValue={setFieldValue} />
               <PriceCategory errors={errors} />
               <Condition errors={errors} />
               <Divider />

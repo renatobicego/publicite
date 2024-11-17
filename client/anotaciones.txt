@@ -21,7 +21,7 @@ CUENTA GRATUITA CREAR PLAN DE SUSCRIPTION
 - eliminar colaboradores de revista (probar)
 - GENERADOR DE COINCIDENCIA PETE
 - mostrar anuncios como lista no anda
-- BOTON EMOJIS
+- BOTON EMOJIS (listo)
 - BUSCADOR POR TIPO DE anuncio (listo)
 
 boton de compartir app

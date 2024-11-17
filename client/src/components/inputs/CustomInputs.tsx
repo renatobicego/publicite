@@ -29,7 +29,6 @@ export const CustomInput = ({
       propsAsAny.name,
       propsAsAny.value + emojiData.emoji
     );
-    setShowEmojiPicker(false); // Hide the picker after selection
   };
   return (
     <Input
@@ -52,6 +51,7 @@ export const CustomInput = ({
               isIconOnly
               size="sm"
               radius="full"
+              variant="flat"
               onClick={() => setShowEmojiPicker(!showEmojiPicker)}
             >
               😊
