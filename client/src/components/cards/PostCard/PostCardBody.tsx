@@ -8,7 +8,7 @@ interface PostCardBodyProps {
   title: string;
   reviews: PostReview[];
   description?: string;
-  price: number;
+  price: string;
   isService: boolean;
   isGroupPost: boolean;
 }

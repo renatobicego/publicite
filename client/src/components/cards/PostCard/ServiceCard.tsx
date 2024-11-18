@@ -2,6 +2,8 @@ import { Service } from "@/types/postTypes";
 import { Card } from "@nextui-org/react";
 import PostImage from "./PostImage";
 import PostCardBody from "./PostCardBody";
+import { formatTotal } from "@/utils/functions/utils";
+import { frequencyPriceItems } from "@/utils/data/selectData";
 
 const ServiceCard = ({
   post,
@@ -14,8 +16,13 @@ const ServiceCard = ({
   savePostMagazine: boolean;
   isGroupPost: boolean;
 }) => {
-  const { title, reviews, description, price } = post;
-
+  const { title, reviews, description, price, frequencyPrice } = post;
+  const frequencyShown = frequencyPrice
+    ? `por ${
+        frequencyPriceItems.find((item) => item.value === post.frequencyPrice)
+          ?.text
+      }`
+    : "";
   return (
     <>
       <PostImage
@@ -28,7 +35,7 @@ const ServiceCard = ({
         reviews={reviews}
         isGroupPost={isGroupPost}
         description={description}
-        price={price}
+        price={`${formatTotal(price)} ${frequencyShown}`}
         isService={true}
       />
     </>

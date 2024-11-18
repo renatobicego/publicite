@@ -12,7 +12,7 @@ marcar como visto peticion de contaacto
 
 el tema de tener distintos tipos de relaciones va a costar hacer get de posts por visibilidad
 
-CUENTA GRATUITA CREAR PLAN DE SUSCRIPTION
+- CUENTA GRATUITA CREAR PLAN DE SUSCRIPTION
 
 - borrar revista (listo)
 - crear revista de grupo deberia invitar a los miembros (listo)
@@ -30,7 +30,7 @@ CUENTA GRATUITA CREAR PLAN DE SUSCRIPTION
 boton de compartir app
 - agregar endate a post
 - carpeta posts
-- reigstrarse en produ
+- reigstrarse en produ (parece que listo, probar)
 - tabla de pagos conectarla
 - tutoriales
 - ver anuncios del grupo (listo, falta probars)
@@ -45,26 +45,15 @@ boton de compartir app
 - crear grupo invita colaborador pero no aparece notificacion o no se borra bien del array de inivtaciones
 - ERROR BOUNDARIES (listo)
 - editar imagen
-Editar revista no funca 
-Deberíamos ponerle los decimales a los precios pa ser mas amigables 
+- Editar revista no funca 
+- Deberíamos ponerle los decimales a los precios pa ser mas amigables 
 - ORDEN REVISTAS
-- mensaje de grupo
+- mensaje de grupo tipo nota
 - APP: BUSCAR
 
-Podriamos diferencias aca las revistas, por ejemplo la primer revista “debería traerme soy creador” 
+- Podriamos diferencias aca las revistas, por ejemplo la primer revista “debería traerme soy creador” 
 es una revista de grupo, por ahí con el ownerType poner en algun l
 ado ahí que es una revista de grupo, para hacerlo un poco mas friendly (listo)
-
-1.Tema . Pizarra y sub pizzarra.
-Podemos armar una pizarra de grupo ?
-Concepto de Pizarra fragmentada.
-Es de respetar la pizarra general 
-Y diferenciarla con subpizzarras para los grupos.
-
-Pero mejor que no haya muchas pizarras sino una sola, entonces :
-Consideración de diseño.
-Desde el grupo poder asignar una nota al grupo. Se escribe una nota y se la verá en el grupo.
-Estas notas pueden verse desde la cuenta del usuario. En Notas enviadas a grupos.
 
 2.Tema app mobile 
 - contratación posición de derivación a sitio web app. Desde app mobile.
@@ -73,24 +62,8 @@ Estas notas pueden verse desde la cuenta del usuario. En Notas enviadas a grupos
 Según vi en búsquedas realizadas, es posible hacer esto en pocos pasos.
 Averiguamos con alguien que se dedique a esto ?
 
-3.Tema. Generador de coincidencia.
-Diferencia con búsquedas de oferta y demanda.
-No es lo mismo que lo busque en”explorar”
-Este caso hace un macheo de lo más próximo a tu búsqueda. 
-Lo presenta individualmente considerando los filtros. Ejemplos de.
-Anuncio de oferta o demanda.
-Contra un espacio vacío.
-Generar coincidencia. 
-Según filtró.
-Aparece uno próximo. Como propuesta.
-
-Propuesta de sección dentro de la app como lo es el “explorar “.
-
-La diferencia central es que en el buscador general aparecen todos y dentro de estos podría haber uno que se destaca y no lo encontró.
-El generador de coincidencias procura acercar uno “indicado”
-
 Tema 4.
-En las credenciales, los usuarios deben tener mayoría de edad. Es más 18.
+ - En las credenciales, los usuarios deben tener mayoría de edad. Es más 18. (listo)
 
 Tema 5.
 Anuncios.
@@ -100,12 +73,4 @@ Que dentro de los usuarios registrados de cuenta gratuita, estos tengan dentro d
 2. De menor rango. Configurable.
 
 Tema 6. Anuncios.
-Que aparezcan símbolos o iconos distintivos. Una simbología representativa a elección.
-
-Tema 7. Anuncios.
-Motivo del anuncio. 
-Es distinto de seleccionarlo como bien o servicio. 
-Puede ser a elección de que esté o no.
-Motivo. Puede ser urgente.
-Puede ser para una fiesta. Para un evento. etc.
-Motivo: académico. Universitario. etc
+- Que aparezcan símbolos o iconos distintivos. Una simbología representativa a elección. (listo con emojis)

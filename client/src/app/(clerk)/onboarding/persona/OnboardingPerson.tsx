@@ -40,8 +40,8 @@ const OnboardingPerson = ({user} : {user: any}) => {
     const res = await completeOnboardingPerson(formData);
     if (res?.message) {
       // Reloads the user's data from Clerk's API
-      await user?.reload();
-      router.replace("/");
+      router.refresh();
+      return
     }
     if (res?.error) {
       toastifyError(res.error);
@@ -56,7 +56,7 @@ const OnboardingPerson = ({user} : {user: any}) => {
         validateOnChange={false}
         validateOnBlur={false}
       >
-        {({ errors, setFieldValue, isSubmitting }) => (
+        {({ errors, setFieldValue, isSubmitting, setFieldError }) => (
           <Form className="card flex flex-col items-center bg-white px-6 md:px-10 py-8 gap-4 w-5/6 md:w-3/4 max-w-[400px]">
             <div>
               <h5>¡Ya casi terminamos!</h5>
@@ -68,6 +68,7 @@ const OnboardingPerson = ({user} : {user: any}) => {
               errors={errors}
               setFieldValue={setFieldValue}
               initialValues={initialValues}
+              setFieldError={setFieldError}
             />
             <RequiredFieldsMsg />
             <PrimaryButton

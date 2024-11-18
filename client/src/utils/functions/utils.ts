@@ -11,7 +11,7 @@ export const checkIfUserIsSubscribed = (
     const isSameId = byMpId
       ? subscription.subscriptionPlan.mpPreapprovalPlanId == subscriptionPlan
       : subscription.subscriptionPlan._id ==
-      (subscriptionPlan as SubscriptionPlan)._id;
+        (subscriptionPlan as SubscriptionPlan)._id;
 
     // Check if subscription is active
     if (isSameId) {
@@ -33,29 +33,31 @@ export const checkIfUserIsSubscribed = (
 };
 
 export const getMagazineType = (options?: string[]) => {
-  if(!options) return { isGroupMagazine: false, isSharedMagazine: false };
+  if (!options) return { isGroupMagazine: false, isSharedMagazine: false };
   const isGroupMagazine = options.includes("grupos");
   const isSharedMagazine = options.includes("compartida");
   return { isGroupMagazine, isSharedMagazine };
 };
 
 /**
- * 
+ *
  * The following functions are used to get id from options
  * and check magazine owner and magazine type (used in magazine page)
  */
 // Get id from options (used in magazine page)
-export const getId = (options: string[] | undefined, isGroupMagazine: boolean) => {
-  if(!options) return null;
+export const getId = (
+  options: string[] | undefined,
+  isGroupMagazine: boolean
+) => {
+  if (!options) return null;
   return isGroupMagazine ? options[1] : options[0] || null;
 };
-
 
 export const getSharedMagazineIds = (
   options: string[] | undefined,
   isSharedMagazine: boolean
 ) => {
-  if(!options) return null;
+  if (!options) return null;
   return isSharedMagazine ? { user: options[1], post: options[2] } : null;
 };
 
@@ -78,4 +80,20 @@ const videoExtensions = ["mp4", "mov", "avi", "mkv", "webm"]; // Add more as nee
 export const isVideo = (url: string) => {
   const extension = url.split(".").pop()?.toLowerCase();
   return extension ? videoExtensions.includes(extension) : false;
+};
+
+export const formatTotal = (total: number | undefined) => {
+  if (!total) return "";
+  // Check if the number has no decimal value after rounding
+  if (total % 1 === 0) {
+    return new Intl.NumberFormat("de-DE", { maximumFractionDigits: 0 }).format(
+      total
+    );
+  }
+
+  // Return with two decimals otherwise
+  return new Intl.NumberFormat("de-DE", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(total);
 };

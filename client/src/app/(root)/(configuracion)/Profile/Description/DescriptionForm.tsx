@@ -2,7 +2,6 @@ import { Button } from "@nextui-org/react";
 import FormCard from "../../FormCard";
 import { Field, Form, Formik, FormikHelpers } from "formik";
 import {
-  CustomInput,
   CustomTextarea,
 } from "@/components/inputs/CustomInputs";
 import PrimaryButton from "@/components/buttons/PrimaryButton";

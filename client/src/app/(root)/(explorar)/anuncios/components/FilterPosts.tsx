@@ -221,6 +221,7 @@ const PriceRange = ({
       <div className="flex gap-2 items-center">
         <CustomInputWithoutFormik
           label="Precio Mínimo"
+          name="minPrice"
           type="number"
           placeholder="Ingrese el precio"
           value={localPriceRange[0] || ""}
@@ -231,6 +232,7 @@ const PriceRange = ({
         />
         <CustomInputWithoutFormik
           label="Precio Máximo"
+          name="maxPrice"
           type="number"
           placeholder="Ingrese el precio"
           value={localPriceRange[1] || ""}

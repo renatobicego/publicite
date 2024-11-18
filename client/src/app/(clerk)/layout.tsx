@@ -8,7 +8,7 @@ export default function OnboardingLayout({
   children: React.ReactNode;
 }) {
   if (auth().sessionClaims?.metadata.onboardingComplete === true) {
-    redirect("/perfil");
+    redirect("/");
   }
 
   return (

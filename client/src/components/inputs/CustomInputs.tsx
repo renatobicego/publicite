@@ -23,8 +23,8 @@ export const CustomInput = ({
 }) => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   // Function to handle emoji selection
+  const propsAsAny = props as any;
   const handleEmojiClick = (emojiData: EmojiClickData) => {
-    const propsAsAny = props as any;
     propsAsAny.setFieldValue(
       propsAsAny.name,
       propsAsAny.value + emojiData.emoji
@@ -42,6 +42,7 @@ export const CustomInput = ({
       }}
       radius="full"
       labelPlacement="outside"
+      lang="es"
       {...field}
       {...props}
       endContent={

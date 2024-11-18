@@ -6,8 +6,9 @@ import {
 } from "@/components/inputs/CustomInputs";
 import PlaceAutocomplete from "@/components/inputs/PlaceAutocomplete";
 import { UserPersonFormValues } from "@/types/userTypes";
-import { CalendarDate } from "@internationalized/date";
+import { CalendarDate, getLocalTimeZone, today } from "@internationalized/date";
 import { Field, FormikErrors } from "formik";
+import { memo } from "react";
 
 interface OnboardingPersonInputsProps {
   initialValues: UserPersonFormValues;
@@ -17,12 +18,14 @@ interface OnboardingPersonInputsProps {
     value: any,
     shouldValidate?: boolean
   ) => Promise<void | FormikErrors<UserPersonFormValues>>;
+  setFieldError: (field: string, message: string | undefined) => void;
 }
 
 const OnboardingPersonInputs = ({
   initialValues,
   errors,
   setFieldValue,
+  setFieldError,
 }: OnboardingPersonInputsProps) => {
   const genderItems = [
     { name: "Masculino", value: "M" },
@@ -30,19 +33,28 @@ const OnboardingPersonInputs = ({
     { name: "No Binario", value: "X" },
     { name: "Otro", value: "O" },
   ];
+  const maxBirthdate = today(getLocalTimeZone()).subtract({ years: 18 });
   return (
     <>
       <Field
         as={CustomDateInput}
         isRequired
+        maxValue={maxBirthdate}
         name="birthDate"
         label="Fecha de Nacimiento"
+        description="Debe ser mayor de 18 años"
         aria-label="fecha de nacimiento"
         isInvalid={!!errors.birthDate}
         errorMessage={errors.birthDate}
-        onChange={(value: CalendarDate) =>
-          setFieldValue("birthDate", value ? value.toString() : "")
-        }
+        onChange={(value: CalendarDate) => {
+          if (!value) return
+          if (value.compare(maxBirthdate) > 0) {
+            setFieldError("birthDate", "Debe ser mayor de 18 años");
+            return;
+          }
+          setFieldValue("birthDate", value ? value.toString() : "");
+          setFieldError("birthDate", undefined);
+        }}
       />
       <Field
         as={CustomInput}
@@ -60,7 +72,9 @@ const OnboardingPersonInputs = ({
         name="countryRegion"
         isInvalid={!!errors.countryRegion}
         errorMessage={errors.countryRegion}
-        onSelectionChange={(value: string) => setFieldValue("countryRegion", value)}
+        onSelectionChange={(value: string) =>
+          setFieldValue("countryRegion", value)
+        }
       />
       <Field
         as={CustomSelect}
@@ -88,4 +102,4 @@ const OnboardingPersonInputs = ({
   );
 };
 
-export default OnboardingPersonInputs;
+export default memo(OnboardingPersonInputs);

@@ -4,6 +4,7 @@ import React from "react";
 import ServiceChip from "../chips/ServiceChip";
 import { frequencyPriceItems } from "@/utils/data/selectData";
 import { POSTS } from "@/utils/data/urls";
+import { formatTotal } from "@/utils/functions/utils";
 
 const PetitionCard = ({
   post,
@@ -15,7 +16,7 @@ const PetitionCard = ({
   isGroupPost: boolean;
 }) => {
   const price = post.toPrice
-    ? `De $${post.price} a $${post.toPrice}`
+    ? `De $${formatTotal(post.price)} a $${formatTotal(post.toPrice)}`
     : `$${post.price}`;
   const frequencyShown = post.frequencyPrice
     ? `por ${

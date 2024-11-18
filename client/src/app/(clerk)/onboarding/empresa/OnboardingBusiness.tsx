@@ -42,7 +42,8 @@ const OnboardingBusiness = ({user} : {user: any}) => {
   ) => {
     const res = await completeOnboardingBusiness(formData);
     if (res?.message) {
-      router.replace("/");
+      router.refresh();
+      return
     }
     if (res?.error) {
       toastifyError(res.error);
