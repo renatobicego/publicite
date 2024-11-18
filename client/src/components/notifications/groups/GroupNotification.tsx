@@ -11,7 +11,7 @@ import {
 
 import GroupImage from "./GroupImage";
 import { GroupNotification, GroupNotificationType } from "@/types/groupTypes";
-import { noticationMessages } from "./notificationMessages";
+import { groupNotificationMessages } from "./notificationMessages";
 import { useSocket } from "@/app/socketProvider";
 
 const GroupNotificationCard = ({
@@ -25,7 +25,7 @@ const GroupNotificationCard = ({
   const getNotificationOptionsList = () => {
     const optionsList: NotificationOptionProps[] = [];
     const notificationMessage =
-      noticationMessages[event as GroupNotificationType];
+      groupNotificationMessages[event as GroupNotificationType];
 
     // Check if acceptAction exists before adding it to options
     if (notificationMessage?.acceptAction) {
@@ -65,12 +65,12 @@ const GroupNotificationCard = ({
       <GroupImage group={group} />
       <NotificationBody>
         <p className="text-sm">
-          {noticationMessages[event as GroupNotificationType].showUser && (
+          {groupNotificationMessages[event as GroupNotificationType].showUser && (
             <span className="font-semibold">
               {notification.frontData.userInviting.username}
             </span>
           )}{" "}
-          {noticationMessages[event as GroupNotificationType].message}
+          {groupNotificationMessages[event as GroupNotificationType].message}
           <span className="font-semibold"> {group.name}</span>
         </p>
       </NotificationBody>

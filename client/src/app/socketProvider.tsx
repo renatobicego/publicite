@@ -11,6 +11,11 @@ import {
 import { Socket } from "socket.io-client";
 import { getSocket } from "@/socket";
 import { useAuth } from "@clerk/nextjs";
+import {
+  handleGroupNotification,
+  handleMagazineNotification,
+} from "@/utils/notifications/notificationHandlers";
+import { requestNotificationPermission } from "@/utils/notifications/browserNotifications";
 
 interface SocketContextType {
   socket: Socket | null;
@@ -38,8 +43,8 @@ export const SocketProvider = ({
 }) => {
   const [newNotifications, setNewNotifications] = useState(false);
   const { getToken } = useAuth();
-
   const [socket, setSocket] = useState<Socket | null>(null);
+
   // Function to reinitialize the socket with a new token
   const updateSocketToken = async (): Promise<Socket> => {
     const newToken = await getToken();
@@ -66,20 +71,25 @@ export const SocketProvider = ({
         console.log("Socket disconnected");
       });
 
+      // Handle notifications
       newSocket.on("group_notifications", (data) => {
-        console.log("New notification:", data);
         setNewNotifications(true);
+        handleGroupNotification(data); // Call the handler for group notifications
       });
 
       newSocket.on("magazine_notifications", (data) => {
-        console.log("New notification:", data);
         setNewNotifications(true);
+        handleMagazineNotification(data); // Call the handler for magazine notifications
       });
     });
   };
+
   // Initialize socket on first render
   useEffect(() => {
+    requestNotificationPermission(); // Request permission on component mount
+
     if (!socket) updateSocketToken();
+
     // Cleanup on unmount
     return () => {
       socket?.disconnect();

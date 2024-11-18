@@ -10,7 +10,7 @@ import {
   NotificationImage,
 } from "../NotificationCard";
 
-import { noticationMessages } from "./notificationMessages";
+import { magazineNotificationMessages } from "./notificationMessages";
 import { useSocket } from "@/app/socketProvider";
 import {
   MagazineNotification,
@@ -31,7 +31,7 @@ const MagazineNotificationCard = ({
   const getNotificationOptionsList = () => {
     const optionsList: NotificationOptionProps[] = [];
     const notificationMessage =
-      noticationMessages[event as MagazineNotificationType];
+      magazineNotificationMessages[event as MagazineNotificationType];
 
     // Check if acceptAction exists before adding it to options
     if (notificationMessage?.acceptAction) {
@@ -93,12 +93,12 @@ const MagazineNotificationCard = ({
       </NotificationImage>
       <NotificationBody>
         <p className="text-sm">
-          {noticationMessages[event as MagazineNotificationType].showUser && (
+          {magazineNotificationMessages[event as MagazineNotificationType].showUser && (
             <span className="font-semibold">
               {notification.frontData.magazine.userInviting.username}
             </span>
           )}{" "}
-          {noticationMessages[event as MagazineNotificationType].message}
+          {magazineNotificationMessages[event as MagazineNotificationType].message}
           <span className="font-semibold"> {magazine.name}</span>
         </p>
       </NotificationBody>

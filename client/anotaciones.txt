@@ -25,6 +25,8 @@ CUENTA GRATUITA CREAR PLAN DE SUSCRIPTION
 - BUSCADOR POR TIPO DE anuncio (listo)
 - salir de revista (listo)
 
+- no permitir invitar varias veces a un grupo
+
 boton de compartir app
 - agregar endate a post
 - carpeta posts
@@ -39,7 +41,7 @@ boton de compartir app
 - errorres de noti
 - cmbiar formato de notificacion (listo mag)
 - compartir cosas
-- notificacion de navegador
+- notificacion de navegador (listo)
 - crear grupo invita colaborador pero no aparece notificacion o no se borra bien del array de inivtaciones
 - ERROR BOUNDARIES (listo)
 - editar imagen

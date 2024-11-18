@@ -66,7 +66,7 @@ const useNotifications = (isOpen: boolean) => {
 
     const bottomReached =
       container.scrollHeight - container.scrollTop <=
-      container.clientHeight * 1.3;
+      container.clientHeight * 1.1;
 
     if (bottomReached) {
       fetchNotifications();

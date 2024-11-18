@@ -1,7 +1,6 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { ClientSession, Connection, Model, ObjectId } from 'mongoose';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
-import { parseZonedDateTime } from '@internationalized/date';
 
 import { IUserPerson, UserPersonModel } from '../schemas/userPerson.schema';
 import {
@@ -24,6 +23,7 @@ import { UserFindAllResponse } from '../../application/adapter/dto/HTTP-RESPONSE
 import { fullNameNormalization } from '../../application/functions/utils';
 import { GROUP_notification_graph_model_get_all } from '../../application/adapter/dto/HTTP-RESPONSE/notifications/user.notifications.response';
 import { SectorRepositoryInterface } from 'src/contexts/module_user/businessSector/domain/repository/sector.repository.interface';
+import { parseZonedDateTime } from '@internationalized/date';
 
 @Injectable()
 export class UserRepository implements UserRepositoryInterface {
@@ -200,10 +200,7 @@ export class UserRepository implements UserRepositoryInterface {
       const userNotificationResponse = await this.user
         .find({ _id: id })
         .select('notifications -_id')
-        .limit(limit + 1)
-        .skip((page - 1) * limit)
         .lean();
-
       if (!userNotificationResponse[0].notifications)
         return { notifications: [], hasMore: false };
 
@@ -212,11 +209,11 @@ export class UserRepository implements UserRepositoryInterface {
       // Ordena las notificaciones por fecha en orden descendente
       const notificationsMapped = notifications
         .sort((notificationA: any, notificationB: any) => {
-          const dateA = new Date(notificationA.notification.date).getTime();
-          const dateB = new Date(notificationB.notification.date).getTime();
-          return dateB - dateA; // Orden descendente
+          const dateA = parseZonedDateTime(notificationA.notification.date);
+          const dateB = parseZonedDateTime(notificationB.notification.date);
+          return dateB.compare(dateA); // Orden descendente
         })
-        .slice(0, limit); // Limita al número de resultados deseado
+        .slice((page - 1) * limit, limit * page); // Limita al número de resultados deseado
 
       const hasMore = notifications.length > page * limit;
 
