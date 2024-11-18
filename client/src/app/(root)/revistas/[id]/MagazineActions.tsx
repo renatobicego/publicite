@@ -5,13 +5,16 @@ import { Magazine } from "@/types/magazineTypes";
 import { EDIT_MAGAZINE } from "@/utils/data/urls";
 import { Link } from "@nextui-org/react";
 import React from "react";
+import ExitMagazine from "./Options/ExitMagazine";
 
 const MagazineActions = ({
   isOwner,
   magazine,
+  isCollaborator,
 }: {
   isOwner: boolean;
   magazine: Magazine;
+  isCollaborator: boolean;
 }) => {
   return (
     <div className="flex gap-2 items-center max-md:flex-wrap justify-center">
@@ -20,10 +23,16 @@ const MagazineActions = ({
           <SecondaryButton as={Link} href={`${EDIT_MAGAZINE}/${magazine._id}`}>
             Editar
           </SecondaryButton>
-          <InviteCollabMagazine magazine={magazine}/>
+          <InviteCollabMagazine magazine={magazine} />
         </>
       )}
       <ShareButton post={magazine} />
+      {isCollaborator && (
+        <ExitMagazine
+          magazineId={magazine._id}
+          ownerType={magazine.ownerType}
+        />
+      )}
     </div>
   );
 };

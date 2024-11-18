@@ -222,6 +222,12 @@ export const deleteMagazineMutation = gql`
   }
 `;
 
+export const exitMagazineMutation = gql`
+  mutation ExitMagazineByMagazineId($magazineId: String!, $ownerType: String!) {
+    exitMagazineByMagazineId(magazineId: $magazineId, ownerType: $ownerType)
+  }
+`;
+
 // export const deleteCollaboratorMutation = gql`
 //   mutation DeleteCollaboratorsFromUserMagazine(
 //     $collaboratorsToDelete: [String!]!

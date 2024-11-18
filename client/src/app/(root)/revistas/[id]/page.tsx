@@ -72,7 +72,7 @@ export default async function MagazinePage(props: { params: { id: string } }) {
             canEdit: isOwner,
           }}
         />
-        <MagazineActions isOwner={isOwner} magazine={magazine} />
+        <MagazineActions isOwner={isOwner} magazine={magazine} isCollaborator={isCollaborator}/>
       </section>
       <div className="w-full relative">
         {(isOwner || isCollaborator) && (

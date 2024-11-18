@@ -58,8 +58,8 @@ const ConfirmModal = ({
               </ModalHeader>
               <ModalFooter>
                 <Button
-                  color="danger"
-                  variant="light"
+                  color="secondary"
+                  variant="solid"
                   radius="full"
                   onPress={onClose}
                 >
@@ -68,6 +68,7 @@ const ConfirmModal = ({
                 <Button
                   color="danger"
                   radius="full"
+                  variant="solid"
                   onPress={() => {
                     onClose();
                     onConfirm();

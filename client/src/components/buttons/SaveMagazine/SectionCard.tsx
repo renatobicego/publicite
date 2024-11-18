@@ -4,6 +4,7 @@ import { IoTrashOutline } from "react-icons/io5";
 
 const SectionCard = ({
   magazineName,
+  ownerType,
   isPostInSection,
   section,
   handleDeletePostClick,
@@ -19,7 +20,13 @@ const SectionCard = ({
     id: string;
     magazineId: string;
   };
+  ownerType?: "user" | "group";
 }) => {
+  const showOwnerType = ownerType
+    ? ownerType === "group"
+      ? "Revista de grupo"
+      : "Revista de usuario"
+    : null;
   return (
     <Button
       variant="bordered"
@@ -39,7 +46,8 @@ const SectionCard = ({
       }}
       className={`justify-start w-full flex-shrink-0 ${
         selectedMagazineSection.id === section._id ? "border-primary" : ""
-      } ${isPostInSection(section._id) ? "text-primary border-primary" : ""}`}
+        } ${isPostInSection(section._id) ? "text-primary border-primary" : ""}
+      ${showOwnerType && "flex flex-col gap-0 items-start justify-center h-12"}`}
     >
       {magazineName ? (
         magazineName
@@ -47,6 +55,9 @@ const SectionCard = ({
         <span className="italic">Seccion General</span>
       ) : (
         section.title
+      )}
+      {showOwnerType && (
+        <span className="text-xs text-default-400">{showOwnerType}</span>
       )}
     </Button>
   );

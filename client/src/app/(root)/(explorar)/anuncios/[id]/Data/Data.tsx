@@ -17,6 +17,7 @@ import ContactModal from "@/components/modals/ContactModal/ContactModal";
 import { SignedIn } from "@clerk/nextjs";
 import { FaChevronDown } from "react-icons/fa6";
 import OptionsDropdown from "./OptionsDropdown";
+import MatchPetitionPost from "@/components/modals/MatchPetitionPost";
 
 const Data = async ({
   post,
@@ -72,9 +73,9 @@ const Data = async ({
         isPetition ? "max-lg:flex-col" : "lg:w-1/2 flex-col"
       }`}
     >
-      <div className="flex flex-col gap-4 w-full">
-        <div className="flex justify-between gap-2 md:gap-4">
-          <p className="text-small lg:text-sm text-light-text">
+      <div className="flex flex-col gap-3 md:gap-4 w-full">
+        <div className="flex justify-between gap-2 md:gap-4 items-start">
+          <p className="text-xs md:text-small lg:text-sm text-light-text">
             {showCondition}
             Publicado {datePublished} en {post.location.description}
           </p>
@@ -86,12 +87,14 @@ const Data = async ({
         )}
         <h3 className="font-medium">{priceToShow()}</h3>
         <div className="flex gap-2">
-          <CategoryChip>{(post.category as any)[0] ? (post.category as any)[0].label : ""}</CategoryChip>
+          <CategoryChip>
+            {(post.category as any)[0] ? (post.category as any)[0].label : ""}
+          </CategoryChip>
           {post.postType === "petition" && <PetitionChip />}
           {post.postType === "service" ||
             (petition.petitionType === "service" && <ServiceChip />)}
         </div>
-        <p className="text-sm xl:text-base">{post.description}</p>
+        <p className="text-small md:text-sm xl:text-base">{post.description}</p>
         <div className="flex w-full justify-between max-lg:flex-wrap gap-2">
           {isAuthor ? (
             <PrimaryButton as={Link} href={`${EDIT_POST}/${post._id}`}>
@@ -108,6 +111,12 @@ const Data = async ({
             </SignedIn>
           </div>
         </div>
+        {isPetition && (
+          <MatchPetitionPost
+            postTitle={post.title}
+            petitionType={petition.petitionType}
+          />
+        )}
       </div>
       <AccordionData post={post} isPetition={isPetition} />
     </div>

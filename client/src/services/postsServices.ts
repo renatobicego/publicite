@@ -95,17 +95,18 @@ export const putPost = async (
   }
 };
 
-const getPosts = async (
+export const getPosts = async (
   searchTerm: string | null,
   page: number,
-  postType: PostType
+  postType: PostType,
+  limit: number | undefined = 20
 ) => {
   try {
     const { data } = await query({
       query: getPostsQuery,
       variables: {
         postType,
-        limit: 20,
+        limit,
         page,
         searchTerm: searchTerm ? searchTerm : "",
       },

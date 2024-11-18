@@ -9,6 +9,7 @@ import {
   deletePostInSectionMutation,
   deleteSectionMutation,
   editMagazineMutation,
+  exitMagazineMutation,
   getMagazineByIdQuery,
   getMagazinesQuery,
   getMagazineWithoutPostsByIdQuery,
@@ -208,6 +209,19 @@ export const deleteMagazine = async (
 ) => {
   const { data } = await getClient().mutate({
     mutation: deleteMagazineMutation,
+    variables: { magazineId, ownerType },
+    context: {
+      headers: {
+        Authorization: await auth().getToken(),
+      },
+    },
+  });
+  return data;
+};
+
+export const putExitMagazine = async (magazineId: string, ownerType: "user" | "group") => {
+  const { data } = await getClient().mutate({
+    mutation: exitMagazineMutation,
     variables: { magazineId, ownerType },
     context: {
       headers: {

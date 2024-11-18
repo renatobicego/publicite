@@ -132,7 +132,7 @@ const OptionsDropdown = ({
         ButtonAction={<></>}
         message={`¿Está seguro que desea salir del grupo?`}
         tooltipMessage="Salir"
-        confirmText="Salir"
+        confirmText="Salir del Grupo"
         onConfirm={exitGroup}
         customOpen={(openModal) => (deleteGroupRef.current = openModal)} // Set the reference for customOpen
       />

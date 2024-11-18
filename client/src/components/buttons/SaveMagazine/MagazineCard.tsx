@@ -1,12 +1,8 @@
 import { useUserData } from "@/app/(root)/providers/userDataProvider";
 import { removePostInMagazineSection } from "@/app/server/magazineActions";
-import ConfirmModal from "@/components/modals/ConfirmModal";
 import { Magazine } from "@/types/magazineTypes";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
-import { Accordion, AccordionItem, Button } from "@nextui-org/react";
 import { Dispatch, SetStateAction, useRef, useState } from "react";
-import { FaChevronLeft } from "react-icons/fa6";
-import { IoTrashOutline } from "react-icons/io5";
 import AccordionSections from "./AccordionSections";
 import SectionCard from "./SectionCard";
 import ConfirmDelete from "./ConfirmDelete";
@@ -98,6 +94,7 @@ const MagazineCard = ({
       ) : (
         <SectionCard
           magazineName={magazine.name}
+          ownerType={magazine.ownerType}
           handleDeletePostClick={handleDeletePostClick}
           isPostInSection={isPostInSection}
           section={magazine.sections[0]}

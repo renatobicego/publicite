@@ -6,6 +6,7 @@ import {
   editMagazineSection,
   postMagazine,
   postMagazineSection,
+  putExitMagazine,
   putMagazine,
   putPostInMagazine,
 } from "@/services/magazineService";
@@ -177,6 +178,18 @@ export const removeMagazine = async (
     console.log(error);
     return {
       error: "Error al eliminar la revista. Por favor intenta de nuevo.",
+    };
+  }
+};
+
+export const exitMagazine = async (magazineId: string, ownerType: "user" | "group") => {
+  try {
+    await putExitMagazine(magazineId, ownerType);
+    return { message: "Has salido exitosamente" };
+  } catch (error) {
+    console.log(error);
+    return {
+      error: "Error al salir de la revista. Por favor intenta de nuevo.",
     };
   }
 };

@@ -20,7 +20,9 @@ const AccordionSections = ({
     magazineId: string;
   };
   isPostInSection: (sectionId: string) => boolean;
-}) => {
+  }) => {
+  const ownerType = magazine.ownerType === "user" ? "Revista de usuario" : "Revista de grupo";
+  const subtitle = savedPost ? " - Guardado" : "";
   return (
     <>
       <Accordion variant="bordered" isCompact>
@@ -28,10 +30,10 @@ const AccordionSections = ({
           HeadingComponent={"h6"}
           indicator={<FaChevronLeft className={`size-3`} />}
           title={magazine.name}
-          subtitle={savedPost ? "Guardado" : ""}
+          subtitle={`${ownerType}${subtitle}`}
           classNames={{
             title: `text-small font-normal ${savedPost ? "text-primary" : ""}`,
-            subtitle: "text-xs text-primary",
+            subtitle: "text-xs",
             content: `flex flex-col gap-1`,
           }}
         >

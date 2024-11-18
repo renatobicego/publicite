@@ -19,10 +19,11 @@ CUENTA GRATUITA CREAR PLAN DE SUSCRIPTION
 - revistas get all a veces no trae (parece andar)
 - mensaje success eliminar colaboradores (listo)
 - eliminar colaboradores de revista (probar)
-- GENERADOR DE COINCIDENCIA PETE
-- mostrar anuncios como lista no anda
+- GENERADOR DE COINCIDENCIA PETE (listo, falta buscar bien porque no lo hace)
+- mostrar anuncios como lista no anda (es location description)
 - BOTON EMOJIS (listo)
 - BUSCADOR POR TIPO DE anuncio (listo)
+- salir de revista (listo)
 
 boton de compartir app
 - agregar endate a post
@@ -40,7 +41,7 @@ boton de compartir app
 - compartir cosas
 - notificacion de navegador
 - crear grupo invita colaborador pero no aparece notificacion o no se borra bien del array de inivtaciones
-- ERROR BOUNDARIES
+- ERROR BOUNDARIES (listo)
 - editar imagen
 Editar revista no funca 
 Deberíamos ponerle los decimales a los precios pa ser mas amigables 
@@ -50,7 +51,7 @@ Deberíamos ponerle los decimales a los precios pa ser mas amigables
 
 Podriamos diferencias aca las revistas, por ejemplo la primer revista “debería traerme soy creador” 
 es una revista de grupo, por ahí con el ownerType poner en algun l
-ado ahí que es una revista de grupo, para hacerlo un poco mas friendly 
+ado ahí que es una revista de grupo, para hacerlo un poco mas friendly (listo)
 
 1.Tema . Pizarra y sub pizzarra.
 Podemos armar una pizarra de grupo ?

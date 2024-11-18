@@ -1,4 +1,7 @@
-'use client' // Error boundaries must be Client Components
+'use client'
+import ErrorCard from "@/components/ErrorCard"
+
+ // Error boundaries must be Client Components
  
 export default function GlobalError({
   error,
@@ -10,9 +13,8 @@ export default function GlobalError({
   return (
     // global-error must include html and body tags
     <html>
-      <body>
-        <h2>Algo salió mal!</h2>
-        <button onClick={() => reset()}>Probar nuevamente</button>
+      <body className="flex flex-col items-center w-screen h-screen">
+        <ErrorCard error={error.message} />
       </body>
     </html>
   )
