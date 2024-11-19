@@ -226,7 +226,7 @@ export class PostRepository implements PostRepositoryInterface {
 
         this.logger.log('Buscando posts con términos de búsqueda');
         const posts = await this.postDocument
-          .find({ $text: { $search: textSearchQuery } })
+          .find({ postType: postType, $text: { $search: textSearchQuery } })
           .limit(limit + 1)
           .skip((page - 1) * limit)
           .populate({
