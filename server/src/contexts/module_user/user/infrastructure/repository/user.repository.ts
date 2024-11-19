@@ -1,5 +1,5 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import { ClientSession, Connection, Model, ObjectId } from 'mongoose';
+import { ClientSession, Connection, Model, ObjectId, Types } from 'mongoose';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 
 import { IUserPerson, UserPersonModel } from '../schemas/userPerson.schema';
@@ -24,6 +24,7 @@ import { fullNameNormalization } from '../../application/functions/utils';
 import { GROUP_notification_graph_model_get_all } from '../../application/adapter/dto/HTTP-RESPONSE/notifications/user.notifications.response';
 import { SectorRepositoryInterface } from 'src/contexts/module_user/businessSector/domain/repository/sector.repository.interface';
 import { parseZonedDateTime } from '@internationalized/date';
+import { skip } from 'node:test';
 
 @Injectable()
 export class UserRepository implements UserRepositoryInterface {
@@ -45,7 +46,7 @@ export class UserRepository implements UserRepositoryInterface {
 
     private readonly logger: MyLoggerService,
     @InjectConnection() private readonly connection: Connection,
-  ) {}
+  ) { }
 
   async findUserByUsername(username: string): Promise<any> {
     try {
@@ -197,25 +198,38 @@ export class UserRepository implements UserRepositoryInterface {
     page: number,
   ): Promise<GROUP_notification_graph_model_get_all> {
     try {
-      const userNotificationResponse = await this.user
-        .find({ _id: id })
-        .select('notifications -_id')
-        .lean();
+      const from = (page - 1) * limit;
+      const to = limit * page;
+
+      const objectId = new Types.ObjectId(id);
+      const userNotificationResponse: any = await this.user.aggregate([
+        { $match: { _id: objectId } },
+        {
+          $project: {
+            notifications: {
+              $slice: ["$notifications", from, limit], 
+            },
+            totalNotifications: { $size: "$notifications" },
+          },
+        },
+      ]);
+
+
+      console.log(from, to)
       if (!userNotificationResponse[0].notifications)
         return { notifications: [], hasMore: false };
 
       const notifications = userNotificationResponse[0].notifications;
 
-      // Ordena las notificaciones por fecha en orden descendente
+
       const notificationsMapped = notifications
         .sort((notificationA: any, notificationB: any) => {
           const dateA = parseZonedDateTime(notificationA.notification.date);
           const dateB = parseZonedDateTime(notificationB.notification.date);
-          return dateB.compare(dateA); // Orden descendente
+          return dateB.compare(dateA); 
         })
-        .slice((page - 1) * limit, limit * page); // Limita al número de resultados deseado
 
-      const hasMore = notifications.length > page * limit;
+      const hasMore = userNotificationResponse[0].totalNotifications > page * limit;
 
       return {
         notifications: notificationsMapped,
@@ -488,7 +502,7 @@ export class UserRepository implements UserRepositoryInterface {
       }
       this.logger.log(
         'The post was successfully saved in the user profile: ' +
-          UserRepository.name,
+        UserRepository.name,
       );
 
       return obj;
