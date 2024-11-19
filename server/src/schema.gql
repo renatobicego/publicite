@@ -77,6 +77,10 @@ type GroupListResponse {
   hasMore: Boolean!
 }
 
+type location_of_group_posts {
+  description: String
+}
+
 type Post_of_members_group {
   _id: ID
   imagesUrls: [String!]
@@ -87,6 +91,7 @@ type Post_of_members_group {
   toPrice: Float
   petitionType: String
   postType: String
+  location: location_of_group_posts
 }
 
 type GroupPostMemberResponse {

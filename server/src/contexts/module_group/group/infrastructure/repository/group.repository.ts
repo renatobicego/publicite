@@ -482,7 +482,12 @@ export class GroupRepository implements GroupRepositoryInterface {
     const populatePostsFields = {
       path: 'posts',
       select:
-        '_id imagesUrls title description price frequencyPrice toPrice petitionType postType',
+        '_id imagesUrls title description price frequencyPrice toPrice petitionType postType location',
+      populate: {
+        path: 'location',
+        model: 'PostLocation',
+        select: 'description',
+      },
       options: {
         limit: limit,
         skip: (page - 1) * limit,

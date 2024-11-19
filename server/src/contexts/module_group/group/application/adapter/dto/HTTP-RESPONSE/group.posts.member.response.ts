@@ -2,6 +2,12 @@ import { Field, Float, ID, ObjectType } from '@nestjs/graphql';
 import { ObjectId } from 'mongoose';
 
 @ObjectType()
+class location_of_group_posts {
+    @Field(() => String, { nullable: true })
+    description: string;
+}
+
+@ObjectType()
 export class Post_of_members_group {
     @Field(() => ID, { nullable: true })
     _id?: ObjectId;
@@ -32,6 +38,9 @@ export class Post_of_members_group {
 
     @Field(() => String, { nullable: true })
     postType: string;
+
+    @Field(() => location_of_group_posts, { nullable: true })
+    location: location_of_group_posts;
 
 
 
