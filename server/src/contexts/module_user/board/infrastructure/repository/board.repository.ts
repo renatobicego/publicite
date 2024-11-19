@@ -25,39 +25,69 @@ export class BoardRepository implements BoardRespositoryInterface {
     private readonly userModel: Model<IUser>,
     @InjectConnection() private readonly connection: Connection,
     private readonly logger: MyLoggerService,
-  ) {}
+  ) { }
   async getBoardByAnnotationOrKeyword(
     board: string,
     limit: number,
     page: number,
   ): Promise<BoardGetAllResponse> {
     try {
-      const regex = new RegExp(`${board}`, 'i');
-      const boards = await this.boardModel
-        .find({
-          $or: [
-            { annotations: { $regex: regex } },
-            { keywords: { $regex: regex } },
-            { searchTerm: { $regex: regex } },
-          ],
-          //$and: [{ visibility: 'public' }],
-        })
-        .populate({
-          path: 'user',
-          select: '_id profilePhotoUrl name lastName businessName username',
-        })
-        .limit(limit + 1)
-        .skip((page - 1) * limit)
-        .lean();
 
-      const hasMore = boards.length > limit;
-      const boardsResponse = boards.slice(0, limit).map((board) => {
-        return this.boardMapper.toResponse(board);
-      });
-      return {
-        boards: boardsResponse,
-        hasMore: hasMore,
-      };
+      const boardSearchTermSeparate = board?.split(' ').filter(term => term.trim() !== '');
+      if (boardSearchTermSeparate.length > 0) {
+        const regexQueries = boardSearchTermSeparate.map(term => {
+          const regex = new RegExp(`.*${term}.*`, 'i');
+          return {
+            $or: [
+              { annotations: regex },
+              { keywords: regex },
+              { searchTerm: regex },
+            ]
+          };
+        });
+
+
+        const boards = await this.boardModel
+          .find({ $or: regexQueries })
+          .populate({
+            path: 'user',
+            select: '_id profilePhotoUrl name lastName businessName username',
+          })
+          .limit(limit + 1)
+          .skip((page - 1) * limit)
+          .lean();
+
+        const hasMore = boards.length > limit;
+        const boardsResponse = boards.slice(0, limit).map((board) => {
+          return this.boardMapper.toResponse(board);
+        });
+        return {
+          boards: boardsResponse,
+          hasMore: hasMore,
+        };
+      } else {
+        const boards = await this.boardModel
+          .find()
+          .populate({
+            path: 'user',
+            select: '_id profilePhotoUrl name lastName businessName username',
+          })
+          .limit(limit + 1)
+          .skip((page - 1) * limit)
+          .lean();
+
+        const hasMore = boards.length > limit;
+        const boardsResponse = boards.slice(0, limit).map((board) => {
+          return this.boardMapper.toResponse(board);
+        });
+        return {
+          boards: boardsResponse,
+          hasMore: hasMore,
+        };
+      }
+
+
+
     } catch (error: any) {
       throw error;
     }

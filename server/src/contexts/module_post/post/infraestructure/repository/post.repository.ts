@@ -210,13 +210,61 @@ export class PostRepository implements PostRepositoryInterface {
   ): Promise<any> {
     try {
       this.logger.log('Finding posts By postType: ' + postType);
-      const regex = new RegExp(`${searchTerm}`, 'i');
+
+      const searchTermSeparate = searchTerm?.split(' ').filter(term => term.trim() !== '');
+
+
+      if (searchTermSeparate && searchTermSeparate.length > 0) {
+
+        const regexQueries = searchTermSeparate.map(term => {
+          const regex = new RegExp(`.*${term}.*`, 'i');
+          return {
+            $or: [
+              { title: regex },
+              { description: regex }
+            ]
+          };
+        });
+
+        // Realizar la búsqueda con las condiciones generadas
+        const posts = await this.postDocument
+          .find({
+            postType: postType,
+            $and: regexQueries,
+          })
+          .limit(limit + 1)
+          .skip((page - 1) * limit)
+          .populate({
+            path: 'location',
+            model: 'PostLocation',
+            select: 'location description userSetted coordinates',
+          })
+          .populate({
+            path: 'category',
+            model: 'PostCategory',
+          })
+          .populate({
+            path: 'author',
+            model: 'User',
+            select: '_id profilePhotoUrl username lastName name contact',
+            populate: {
+              path: 'contact',
+              model: 'Contact',
+            },
+          })
+          .lean();
+
+        const hasMore = posts.length > limit;
+        const postResponse = posts.slice(0, limit);
+
+        return {
+          posts: postResponse,
+          hasMore: hasMore,
+        };
+      }
+
       const posts = await this.postDocument
-        .find({
-          postType: postType,
-          $or: [{ title: regex }, { description: regex }],
-        })
-        //.and([{ visibility: 'public' }])
+        .find({ postType: postType })
         .limit(limit + 1)
         .skip((page - 1) * limit)
         .populate({
@@ -238,6 +286,7 @@ export class PostRepository implements PostRepositoryInterface {
           },
         })
         .lean();
+
       const hasMore = posts.length > limit;
       const postResponse = posts.slice(0, limit);
 
@@ -252,6 +301,7 @@ export class PostRepository implements PostRepositoryInterface {
       throw error;
     }
   }
+
 
   async saveLocation(
     location: PostLocation,
