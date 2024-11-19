@@ -87,6 +87,12 @@ export const PostSchema = new Schema<PostDocument>(
 );
 
 PostSchema.index({ location: '2d' });
+PostSchema.index({
+  title: 'text',
+  description: 'text',
+});
+
+
 
 const PostModel = model<PostDocument>('Post', PostSchema);
 

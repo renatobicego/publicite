@@ -17,3 +17,11 @@ export interface BoardDocument extends Document {
   keywords: string[];
   searchTerm: string;
 }
+
+
+BoardSchema.index({
+  annotations: 'text',
+  keywords: 'text',
+  searchTerm: 'text'
+});
+

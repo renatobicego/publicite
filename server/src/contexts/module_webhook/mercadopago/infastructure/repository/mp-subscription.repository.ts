@@ -7,7 +7,7 @@ import { SubscriptionDocument } from '../schemas/subscription.schema';
 import Subscription from 'src/contexts/module_webhook/mercadopago/domain/entity/subcription.entity';
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { SubscriptionRepositoryInterface } from '../../domain/repository/mp-subscription.respository.interface';
-import { getTodayDateTime } from 'src/contexts/module_shared/functions/getTodayDateTime';
+import { getTodayDateTime } from 'src/contexts/module_shared/utils/functions/getTodayDateTime';
 
 
 export class SubscriptionRepository implements SubscriptionRepositoryInterface {

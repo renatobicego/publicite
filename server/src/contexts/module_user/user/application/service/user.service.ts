@@ -15,7 +15,7 @@ import { UserPreferencesEntityDto } from '../../domain/entity/dto/user.preferenc
 import { UP_clerkUpdateRequestDto } from 'src/contexts/module_webhook/clerk/application/dto/UP-clerk.update.request';
 import { UserFindAllResponse } from '../adapter/dto/HTTP-RESPONSE/user.response.dto';
 import { GROUP_notification_graph_model_get_all } from '../adapter/dto/HTTP-RESPONSE/notifications/user.notifications.response';
-import { getTodayDateTime } from 'src/contexts/module_shared/functions/getTodayDateTime';
+import { getTodayDateTime } from 'src/contexts/module_shared/utils/functions/getTodayDateTime';
 
 @Injectable()
 export class UserService implements UserServiceInterface {

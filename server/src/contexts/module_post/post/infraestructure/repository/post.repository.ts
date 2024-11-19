@@ -31,6 +31,7 @@ import {
 } from 'src/contexts/module_user/user/infrastructure/schemas/user.schema';
 import { PostDocument } from '../schemas/post.schema';
 import { PostLocationDocument } from '../schemas/postLocation.schema';
+import { stopWords } from 'src/contexts/module_shared/utils/functions/stopWords';
 
 export class PostRepository implements PostRepositoryInterface {
   constructor(
@@ -211,27 +212,21 @@ export class PostRepository implements PostRepositoryInterface {
     try {
       this.logger.log('Finding posts By postType: ' + postType);
 
-      const searchTermSeparate = searchTerm?.split(' ').filter(term => term.trim() !== '');
+      const searchTermSeparate = searchTerm
+        ?.split(' ')
+        .filter(term => term.trim() !== '' &&
+          !stopWords.has(term.trim().toLowerCase()) &&
+          term.trim().length > 2);
+
 
 
       if (searchTermSeparate && searchTermSeparate.length > 0) {
 
-        const regexQueries = searchTermSeparate.map(term => {
-          const regex = new RegExp(`.*${term}.*`, 'i');
-          return {
-            $or: [
-              { title: regex },
-              { description: regex }
-            ]
-          };
-        });
+        const textSearchQuery = searchTermSeparate.join(' ');
 
-        // Realizar la búsqueda con las condiciones generadas
+        this.logger.log('Buscando posts con términos de búsqueda');
         const posts = await this.postDocument
-          .find({
-            postType: postType,
-            $or: regexQueries,
-          })
+          .find({ $text: { $search: textSearchQuery } })
           .limit(limit + 1)
           .skip((page - 1) * limit)
           .populate({
@@ -262,7 +257,7 @@ export class PostRepository implements PostRepositoryInterface {
           hasMore: hasMore,
         };
       }
-
+      this.logger.log('Buscando posts sin términos de búsqueda');
       const posts = await this.postDocument
         .find({ postType: postType })
         .limit(limit + 1)

@@ -13,6 +13,7 @@ import {
   BoardResponse,
 } from '../../application/dto/HTTP-RESPONSE/board.response';
 import { IUser } from 'src/contexts/module_user/user/infrastructure/schemas/user.schema';
+import { stopWords } from 'src/contexts/module_shared/utils/functions/stopWords';
 
 
 export class BoardRepository implements BoardRespositoryInterface {
@@ -33,22 +34,21 @@ export class BoardRepository implements BoardRespositoryInterface {
   ): Promise<BoardGetAllResponse> {
     try {
 
-      const boardSearchTermSeparate = board?.split(' ').filter(term => term.trim() !== '');
+      const boardSearchTermSeparate = board
+        ?.split(' ')
+        .filter(term => term.trim() !== '' &&
+          !stopWords.has(term.trim().toLowerCase()) &&
+          term.trim().length > 2);
+  
       if (boardSearchTermSeparate.length > 0) {
-        const regexQueries = boardSearchTermSeparate.map(term => {
-          const regex = new RegExp(`.*${term}.*`, 'i');
-          return {
-            $or: [
-              { annotations: regex },
-              { keywords: regex },
-              { searchTerm: regex },
-            ]
-          };
-        });
-
-
+        this.logger.log('Buscando boards con términos de búsqueda');
+        
+    
+        const textSearchQuery = boardSearchTermSeparate.join(' ');
+  
+     
         const boards = await this.boardModel
-          .find({ $or: regexQueries })
+          .find({ $text: { $search: textSearchQuery } }) 
           .populate({
             path: 'user',
             select: '_id profilePhotoUrl name lastName businessName username',
@@ -56,7 +56,7 @@ export class BoardRepository implements BoardRespositoryInterface {
           .limit(limit + 1)
           .skip((page - 1) * limit)
           .lean();
-
+  
         const hasMore = boards.length > limit;
         const boardsResponse = boards.slice(0, limit).map((board) => {
           return this.boardMapper.toResponse(board);
@@ -66,6 +66,9 @@ export class BoardRepository implements BoardRespositoryInterface {
           hasMore: hasMore,
         };
       } else {
+        this.logger.log('No se encontraron términos de búsqueda o el término es muy pequeño, buscando todos los boards y paginando');
+        
+
         const boards = await this.boardModel
           .find()
           .populate({
@@ -75,7 +78,7 @@ export class BoardRepository implements BoardRespositoryInterface {
           .limit(limit + 1)
           .skip((page - 1) * limit)
           .lean();
-
+  
         const hasMore = boards.length > limit;
         const boardsResponse = boards.slice(0, limit).map((board) => {
           return this.boardMapper.toResponse(board);
@@ -85,13 +88,11 @@ export class BoardRepository implements BoardRespositoryInterface {
           hasMore: hasMore,
         };
       }
-
-
-
     } catch (error: any) {
       throw error;
     }
   }
+  
 
   async updateBoardById(
     id: string,

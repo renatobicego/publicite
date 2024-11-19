@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { verifyToken } from '@clerk/express';
 
-import { getIdFromClerkToken, getTokenFromRequest } from '../../functions/getTokenFromRequest';
+import { getIdFromClerkToken, getTokenFromRequest } from '../../utils/functions/getTokenFromRequest';
 import { GqlExecutionContext } from '@nestjs/graphql';
 
 @Injectable()

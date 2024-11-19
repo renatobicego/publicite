@@ -24,7 +24,7 @@ import { MagazineRepositoryMapperInterface } from '../../domain/repository/mappe
 
 import { MagazineSectionCreateRequest } from '../../application/adapter/dto/HTTP-REQUEST/magazineSection.create.request';
 import { GroupDocument } from 'src/contexts/module_group/group/infrastructure/schemas/group.schema';
-import { checkResultModificationOfOperation } from 'src/contexts/module_shared/functions/checkResultModificationOfOperation';
+import { checkResultModificationOfOperation } from 'src/contexts/module_shared/utils/functions/checkResultModificationOfOperation';
 import { IUser } from 'src/contexts/module_user/user/infrastructure/schemas/user.schema';
 import { MagazineUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/magazine.update.request';
 import { UserMagazineAllowedVerificationsInterface } from '../../domain/repository/user.allowed.verifications.interface';

@@ -6,7 +6,7 @@ import Subscription from 'src/contexts/module_webhook/mercadopago/domain/entity/
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { MercadoPagoSubscriptionPlanServiceInterface } from 'src/contexts/module_webhook/mercadopago/domain/service/mp-subscriptionPlan.service.interface';
 import { SubscriptionRepositoryInterface } from '../../domain/repository/mp-subscription.respository.interface';
-import { getTodayDateTime } from 'src/contexts/module_shared/functions/getTodayDateTime';
+import { getTodayDateTime } from 'src/contexts/module_shared/utils/functions/getTodayDateTime';
 
 export class MpSubscriptionService implements SubscriptionServiceInterface {
   constructor(

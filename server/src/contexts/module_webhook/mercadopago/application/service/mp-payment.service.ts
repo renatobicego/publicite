@@ -6,7 +6,7 @@ import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.servic
 import Payment from 'src/contexts/module_webhook/mercadopago/domain/entity/payment.entity';
 import { MpPaymentServiceInterface } from 'src/contexts/module_webhook/mercadopago/domain/service/mp-payments.service.interface';
 import { MercadoPagoPaymentsRepositoryInterface } from '../../domain/repository/mp-payments.repository.interface';
-import { getTodayDateTime } from 'src/contexts/module_shared/functions/getTodayDateTime';
+import { getTodayDateTime } from 'src/contexts/module_shared/utils/functions/getTodayDateTime';
 
 export class MpPaymentService implements MpPaymentServiceInterface {
   constructor(
