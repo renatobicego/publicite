@@ -230,7 +230,7 @@ export class PostRepository implements PostRepositoryInterface {
         const posts = await this.postDocument
           .find({
             postType: postType,
-            $and: regexQueries,
+            $or: regexQueries,
           })
           .limit(limit + 1)
           .skip((page - 1) * limit)
