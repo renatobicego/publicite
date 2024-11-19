@@ -199,7 +199,7 @@ export class UserRepository implements UserRepositoryInterface {
   ): Promise<GROUP_notification_graph_model_get_all> {
     try {
       const from = (page - 1) * limit;
-      const to = limit * page;
+
 
       const objectId = new Types.ObjectId(id);
       const userNotificationResponse: any = await this.user.aggregate([
