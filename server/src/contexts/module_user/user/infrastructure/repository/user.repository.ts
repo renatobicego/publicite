@@ -214,8 +214,6 @@ export class UserRepository implements UserRepositoryInterface {
         },
       ]);
 
-
-      console.log(from, to)
       if (!userNotificationResponse[0].notifications)
         return { notifications: [], hasMore: false };
 
