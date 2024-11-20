@@ -13,7 +13,7 @@ import { GROUP_notification_graph_model_get_all } from './dto/HTTP-RESPONSE/noti
 
 export interface UserAdapterInterface {
   createUser(req: UserRequest): Promise<UserResponse>;
-
+  changeNotificationStatus(userRequestId: string, notificationId: string, view: boolean): Promise<void>;
   findAllUsers(
     user: string,
     limit: number,

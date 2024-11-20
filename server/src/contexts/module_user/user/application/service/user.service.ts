@@ -28,6 +28,7 @@ export class UserService implements UserServiceInterface {
     @InjectConnection() private readonly connection: Connection,
   ) { }
 
+
   async createUser(req: User, contactDto: any): Promise<User> {
     const session = await this.connection.startSession();
     session.startTransaction();
@@ -83,6 +84,13 @@ export class UserService implements UserServiceInterface {
     }
   }
 
+  async changeNotificationStatus(userRequestId: string, notificationId: string, view: boolean): Promise<void> {
+    try {
+      return await this.userRepository.changeNotificationStatus(userRequestId, notificationId, view);
+    } catch (error: any) {
+      throw error;
+    }
+  }
   async findAllUsers(
     user: string,
     limit: number,

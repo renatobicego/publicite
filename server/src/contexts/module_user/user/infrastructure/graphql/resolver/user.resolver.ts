@@ -1,5 +1,5 @@
 import { Inject, UseGuards } from '@nestjs/common';
-import { Args, Context, Query, Resolver } from '@nestjs/graphql';
+import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 
 
 import { ClerkAuthGuard } from 'src/contexts/module_shared/auth/clerk-auth/clerk.auth.guard';
@@ -50,6 +50,26 @@ export class UserResolver {
         limit,
         page,
       );
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
+  @Mutation(() => String, {
+    nullable: true,
+    description: 'Cambia el estado de una notificacion a "vista o no vista"',
+  })
+  @UseGuards(ClerkAuthGuard)
+  async changeNotificationStatus(
+    @Args('notificationId', { type: () => String }) notificationId: string,
+    @Args('view', { type: () => Boolean }) view: boolean,
+    @Context() context: { req: CustomContextRequestInterface },
+  ): Promise<string> {
+    const userRequestId = context.req.userRequestId;
+    try {
+      await this.userAdapter.changeNotificationStatus(userRequestId, notificationId, view);
+      return 'Notification status is: ' + view
     } catch (error: any) {
       throw error;
     }
