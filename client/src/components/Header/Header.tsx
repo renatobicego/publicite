@@ -74,6 +74,7 @@ const Header = ({
       >
         <UserNavItems
           isMenuOpen={isMenuOpen}
+          isFocused={isFocused}
         />
       </NavbarContent>
       <MobileMenu

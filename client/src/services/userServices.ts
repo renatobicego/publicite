@@ -6,13 +6,12 @@ import {
 } from "@/types/userTypes";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import axios from "axios";
-import { query } from "@/lib/client";
+import { getClient, query } from "@/lib/client";
 import getUserByUsernameQuery, {
+  changeNotificationStatusMutation,
   getAllNotificationsQuery,
 } from "@/graphql/userQueries";
-import { cookies, headers } from "next/headers";
 import { ApolloError } from "@apollo/client";
-import { mockedGroupInvitation } from "@/utils/data/mockedNotifications";
 
 const baseUrl = `${process.env.API_URL}/user/personal`;
 
@@ -174,4 +173,17 @@ export const getNotifications = async (
       error: "Error al traer las notificaciones.",
     };
   }
+};
+
+export const putNotificationStatus = async (id: string) => {
+  const { data } = await getClient().mutate({
+    mutation: changeNotificationStatusMutation,
+    variables: { notificationId: id, view: true },
+    context: {
+      headers: {
+        Authorization: await auth().getToken(),
+      },
+    },
+  });
+  return data;
 };

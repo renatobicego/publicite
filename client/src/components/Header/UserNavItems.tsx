@@ -6,13 +6,15 @@ import Notifications from "./Notifications/Notifications";
 import DropdownItems from "./DropdownItems";
 import UserButtonModal from "@/app/(root)/(configuracion)/UserButtonPage";
 import { useSocket } from "@/app/socketProvider";
+import { useNotificationsContext } from "@/app/(root)/providers/notificationsProvider";
 
-const UserNavItems = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
-  const { newNotifications, setNewNotifications } = useSocket();
-  useEffect(() => {
-    if (isMenuOpen) setNewNotifications(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isMenuOpen]);
+const UserNavItems = ({
+  isMenuOpen,
+  isFocused,
+}: {
+  isMenuOpen: boolean;
+  isFocused: boolean;
+}) => {
   return (
     <>
       <NavbarItem className="max-lg:hidden flex gap-2 items-center">
@@ -27,22 +29,18 @@ const UserNavItems = ({ isMenuOpen }: { isMenuOpen: boolean }) => {
           </SecondaryButton>
         </SignedOut>
       </NavbarItem>
-      <NavbarItem className="lg:hidden flex gap-2 items-center">
+      <NavbarItem
+        className={`lg:hidden w-20 flex gap-1 items-center !transition-all duration-300 ${
+          isFocused ? "!w-0 flex-shrink" : ""
+        }`}
+      >
+        <Notifications />
         <UserButtonModal />
       </NavbarItem>
-      {newNotifications ? (
-        <Badge content="" color="primary" className="lg:hidden mt-2.5">
-          <NavbarMenuToggle
-            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-            className="lg:hidden min-h-12"
-          />
-        </Badge>
-      ) : (
-        <NavbarMenuToggle
-          aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-          className="lg:hidden min-h-12"
-        />
-      )}
+      <NavbarMenuToggle
+        aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+        className="lg:hidden min-h-12"
+      />
     </>
   );
 };

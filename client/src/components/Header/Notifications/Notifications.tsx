@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 import MobileNotifications from "./MobileNotifications";
 import DesktopNotifications from "./DesktopNotifications";
+import { NotificationsProvider } from "@/app/(root)/providers/notificationsProvider";
 
 const Notifications = () => {
   const [screenSize, setScreenSize] = useState(0);
+  const [isOpen, setIsOpen] = useState(false);
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       setScreenSize(window.innerWidth);
@@ -21,15 +24,13 @@ const Notifications = () => {
   }, []);
 
   return (
-    <>
+    <NotificationsProvider isOpen={isOpen}>
       {screenSize < 1024 ? (
-        <MobileNotifications
-        />
+        <MobileNotifications isOpen={isOpen} setIsOpen={setIsOpen} />
       ) : (
-        <DesktopNotifications
-        />
+        <DesktopNotifications isOpen={isOpen} setIsOpen={setIsOpen} />
       )}
-    </>
+    </NotificationsProvider>
   );
 };
 

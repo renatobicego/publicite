@@ -5,20 +5,27 @@ import {
   Badge,
   PopoverContent,
 } from "@nextui-org/react";
-import { useState } from "react";
 import { FaBell } from "react-icons/fa6";
 import NotificationsContent from "./NotificationContent";
-import useNotifications from "@/utils/hooks/useNotifications";
 import { useSocket } from "@/app/socketProvider";
+import { putNotificationStatus } from "@/services/userServices";
+import { useNotificationsContext } from "@/app/(root)/providers/notificationsProvider";
 
-const DesktopNotifications = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const { newNotifications: newNotificationsReceived, setNewNotifications } = useSocket();
+const DesktopNotifications = ({
+  isOpen,
+  setIsOpen,
+}: {
+  isOpen: boolean;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}) => {
+  const { newNotifications: newNotificationsReceived, setNewNotifications } =
+    useSocket();
 
-  const { notifications, isLoading } =
-    useNotifications(isOpen);
-  
-  const newNotifications = notifications.some((notification) => !notification.notification.viewed);
+  const { notifications, isLoading } = useNotificationsContext();
+
+  const newNotifications = notifications.some(
+    (notification) => !notification.notification.viewed
+  );
   return (
     <Popover
       className=" max-lg:hidden"
@@ -37,6 +44,13 @@ const DesktopNotifications = () => {
       isOpen={isOpen}
       onOpenChange={(open) => {
         if (open) setNewNotifications(false);
+        if (newNotifications && open) {
+          notifications.forEach(async (notification) => {
+            if (!notification.notification.viewed) {
+              await putNotificationStatus(notification._id);
+            }
+          });
+        }
         setIsOpen(open);
       }}
     >

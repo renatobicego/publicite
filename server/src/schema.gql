@@ -522,6 +522,11 @@ enum PostType {
 }
 
 type Mutation {
+  """
+  Cambia el estado de una notificacion a "vista o no vista"
+  """
+  changeNotificationStatus(notificationId: String!, view: Boolean!): String
+
   """eliminar un post por id"""
   deletePostById(id: String!): String
 

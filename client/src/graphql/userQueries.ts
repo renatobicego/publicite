@@ -102,4 +102,10 @@ export const getAllNotificationsQuery = gql`
   }
 `;
 
+export const changeNotificationStatusMutation = gql`
+  mutation ChangeNotificationStatus($notificationId: String!, $view: Boolean!) {
+    changeNotificationStatus(notificationId: $notificationId, view: $view)
+  }
+`;
+
 export default getUserByUsernameQuery;

@@ -26,9 +26,9 @@ el tema de tener distintos tipos de relaciones va a costar hacer get de posts po
 - salir de revista (listo)
 
 - no permitir invitar varias veces a un grupo
--notficiaciones viewed
+-notficiaciones viewed (listo falta probar con api probablemente array)
 
-boton de compartir app
+boton de compartir app 
 - agregar endate a post
 - carpeta posts
 - reigstrarse en produ (parece que listo, probar)
