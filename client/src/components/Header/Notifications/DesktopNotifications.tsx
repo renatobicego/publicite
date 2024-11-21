@@ -13,11 +13,12 @@ import { useSocket } from "@/app/socketProvider";
 
 const DesktopNotifications = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { newNotifications, setNewNotifications } = useSocket();
+  const { newNotifications: newNotificationsReceived, setNewNotifications } = useSocket();
 
   const { notifications, isLoading } =
     useNotifications(isOpen);
-
+  
+  const newNotifications = notifications.some((notification) => !notification.notification.viewed);
   return (
     <Popover
       className=" max-lg:hidden"
@@ -41,7 +42,7 @@ const DesktopNotifications = () => {
     >
       <PopoverTrigger>
         <Button radius="full" variant="light" isIconOnly>
-          {newNotifications ? (
+          {newNotificationsReceived || newNotifications ? (
             <Badge content="" size="sm" color="primary">
               <FaBell className="size-6" />
             </Badge>

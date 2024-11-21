@@ -22,9 +22,11 @@ import { MdQuestionAnswer } from "react-icons/md";
 const PostGridList = ({
   items,
   isLoading,
+  isSearchDone,
 }: {
   items: any[];
   isLoading: boolean;
+  isSearchDone: boolean;
 }) => {
   const renderCell = useCallback(
     (
@@ -158,7 +160,7 @@ const PostGridList = ({
           return (
             <div className="flex gap-1 items-center">
               <ShareButton post={data} />
-              <SaveButton post={data}  />
+              <SaveButton post={data} />
             </div>
           );
       }
@@ -192,7 +194,9 @@ const PostGridList = ({
       </TableHeader>
       <TableBody
         isLoading={isLoading}
-        emptyContent="No se encontraron resultados"
+        emptyContent={`No se encontraron resultados. ${
+          isSearchDone && "Por favor, intenta con otros términos de búsqueda."
+        }`}
       >
         {items.map((item, index) => (
           <TableRow key={index}>
