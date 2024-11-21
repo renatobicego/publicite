@@ -11,6 +11,9 @@ import { UserFindAllResponse } from '../../application/adapter/dto/HTTP-RESPONSE
 import { GROUP_notification_graph_model_get_all } from '../../application/adapter/dto/HTTP-RESPONSE/notifications/user.notifications.response';
 
 export interface UserRepositoryInterface {
+
+  changeNotificationStatus(userRequestId: string, notificationId: string, view: boolean): Promise<void>;
+
   findAllUsers(
     user: string,
     limit: number,

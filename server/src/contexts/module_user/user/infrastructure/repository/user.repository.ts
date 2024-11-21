@@ -24,7 +24,7 @@ import { fullNameNormalization } from '../../application/functions/utils';
 import { GROUP_notification_graph_model_get_all } from '../../application/adapter/dto/HTTP-RESPONSE/notifications/user.notifications.response';
 import { SectorRepositoryInterface } from 'src/contexts/module_user/businessSector/domain/repository/sector.repository.interface';
 import { parseZonedDateTime } from '@internationalized/date';
-import { skip } from 'node:test';
+
 
 @Injectable()
 export class UserRepository implements UserRepositoryInterface {
@@ -47,6 +47,13 @@ export class UserRepository implements UserRepositoryInterface {
     private readonly logger: MyLoggerService,
     @InjectConnection() private readonly connection: Connection,
   ) { }
+  async changeNotificationStatus(userRequestId: string, notificationId: string, view: boolean): Promise<void> {
+    try {
+      await this.user.updateOne({ _id: userRequestId, 'notifications._id': notificationId }, { $set: { 'notifications.$.view': view } });
+    } catch (error: any) {
+      throw error;
+    }
+  }
 
   async findUserByUsername(username: string): Promise<any> {
     try {
@@ -207,7 +214,7 @@ export class UserRepository implements UserRepositoryInterface {
         {
           $project: {
             notifications: {
-              $slice: ["$notifications", from, limit], 
+              $slice: ["$notifications", from, limit],
             },
             totalNotifications: { $size: "$notifications" },
           },
@@ -224,7 +231,7 @@ export class UserRepository implements UserRepositoryInterface {
         .sort((notificationA: any, notificationB: any) => {
           const dateA = parseZonedDateTime(notificationA.notification.date);
           const dateB = parseZonedDateTime(notificationB.notification.date);
-          return dateB.compare(dateA); 
+          return dateB.compare(dateA);
         })
 
       const hasMore = userNotificationResponse[0].totalNotifications > page * limit;

@@ -15,6 +15,7 @@ export interface UserServiceInterface {
     contactDto: ContactRequest,
     options?: { session?: ClientSession },
   ): Promise<Types.ObjectId>;
+  changeNotificationStatus(userRequestId: string, notificationId: string, view: boolean): Promise<void>;
 
   findAllUsers(
     user: string,

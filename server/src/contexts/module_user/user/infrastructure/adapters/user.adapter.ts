@@ -29,7 +29,7 @@ export class UserAdapter implements UserAdapterInterface {
     private readonly userService: UserServiceInterface,
     @Inject('UserMapperInterface')
     private readonly userMapper: UserMapperInterface,
-  ) {}
+  ) { }
 
   async createUser(req: UserRequest): Promise<UserResponse> {
     let userMapped;
@@ -68,6 +68,16 @@ export class UserAdapter implements UserAdapterInterface {
       throw error;
     }
   }
+
+
+  async changeNotificationStatus(userRequestId: string, notificationId: string, view: boolean): Promise<void> {
+    try {
+      await this.userService.changeNotificationStatus(userRequestId, notificationId, view);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
   async findAllUsers(
     user: string,
     limit: number,
