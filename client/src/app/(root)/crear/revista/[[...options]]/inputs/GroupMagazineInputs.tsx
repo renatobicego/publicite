@@ -1,6 +1,6 @@
 import { Divider, SharedSelection } from "@nextui-org/react";
 import SecondaryButton from "@/components/buttons/SecondaryButton";
-import { SelectUsers } from "@/components/inputs/SelectUsers";
+import { SelectUsers } from "@/components/inputs/SearchUsers";
 import { mockedUsers } from "@/utils/data/mockedData";
 import { FormikErrors, Field } from "formik";
 import { User } from "@/types/userTypes";

@@ -41,11 +41,11 @@ boton de compartir app
 - editar secciones de revista modal (listo)
 - errorres de noti
 - cmbiar formato de notificacion (listo mag)
-- compartir cosas
+- compartir cosas (ui lista, falta funcionaidad de compartir por notificacion)
 - notificacion de navegador (listo)
 - crear grupo invita colaborador pero no aparece notificacion o no se borra bien del array de inivtaciones
 - ERROR BOUNDARIES (listo)
-- editar imagen
+- editar imagen 
 - Editar revista no funca 
 - Deberíamos ponerle los decimales a los precios pa ser mas amigables (medio que listo, en inputs no me deja)
 - ORDEN REVISTAS
@@ -53,8 +53,8 @@ boton de compartir app
 - APP: BUSCAR
 
 - Podriamos diferencias aca las revistas, por ejemplo la primer revista “debería traerme soy creador” 
-es una revista de grupo, por ahí con el ownerType poner en algun l
-ado ahí que es una revista de grupo, para hacerlo un poco mas friendly (listo)
+    es una revista de grupo, por ahí con el ownerType poner en algun l
+    ado ahí que es una revista de grupo, para hacerlo un poco mas friendly (listo)
 
 2.Tema app mobile 
 - contratación posición de derivación a sitio web app. Desde app mobile.

@@ -105,7 +105,7 @@ const Data = async ({
           )}
           <div className="flex gap-2">
             {isAuthor && <ContactPetitionsList post={post} />}
-            <ShareButton post={post} />
+            <ShareButton shareType="post" data={post} />
             <SignedIn>
               <SaveButton post={post} />
             </SignedIn>

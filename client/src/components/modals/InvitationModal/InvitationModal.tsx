@@ -1,5 +1,5 @@
 "use client";
-import { SearchUsers } from "@/components/inputs/SelectUsers";
+import { SearchUsers } from "@/components/inputs/SearchUsers";
 import useSearchUsers from "@/utils/hooks/useSearchUsers";
 import {
   Button,

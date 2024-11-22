@@ -12,7 +12,7 @@ const MagazineInvitation = ({
   notification: MagazineInvitationNotification;
 }) => {
   return (
-    <NotificationCard>
+    <NotificationCard isNew>
       <NotificationImage>
         <IoBook className="text-secondary size-14" />
       </NotificationImage>

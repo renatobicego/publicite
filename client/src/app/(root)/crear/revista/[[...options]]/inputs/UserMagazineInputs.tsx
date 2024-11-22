@@ -1,5 +1,5 @@
 import { CustomSelect } from "@/components/inputs/CustomInputs";
-import { SearchUsers } from "@/components/inputs/SelectUsers";
+import { SearchUsers } from "@/components/inputs/SearchUsers";
 import { visibilityItems } from "@/utils/data/selectData";
 import { Divider } from "@nextui-org/react";
 import { Field, FormikErrors } from "formik";

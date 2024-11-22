@@ -3,7 +3,7 @@ import { FaInstagram, FaShare, FaXTwitter } from "react-icons/fa6";
 import Navigation from "./Navigation";
 import Legals from "./Legals";
 import Support from "./Support";
-import ShareButton from "./ShareButton";
+import ShareApp from "./ShareApp";
 
 const Footer = ({ username }: { username?: string | null}) => {
   return (
@@ -16,7 +16,7 @@ const Footer = ({ username }: { username?: string | null}) => {
         <nav>
           <ul className="flex gap-2">
             <li>
-              <ShareButton />
+              <ShareApp />
             </li>
             <li>
               <Button isIconOnly as={Link} href={""} size="sm" variant="light">

@@ -1,22 +1,36 @@
 import { getGroupMembersById } from "@/services/groupsService";
 import { getUsers } from "@/services/userServices";
 import { User } from "@/types/userTypes";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const useSearchUsers = (isGroupMembersInviteId?: string) => {
   const [users, setUsers] = useState<User[]>([]);
+  const lastChange = useRef<NodeJS.Timeout | null>(null);
   const getUsersByQuery = (query: string | null) => {
-    getUsers(query, 1).then((users) => setUsers(users.items));
+    if (lastChange.current) {
+      clearTimeout(lastChange.current);
+    }
+
+    lastChange.current = setTimeout(() => {
+      lastChange.current = null;
+      getUsers(query, 1).then((users) => setUsers(users.items));
+    }, 1000);
   };
 
   const getGroupMembers = (groupId: string) => {
-    getGroupMembersById(groupId).then((group) => setUsers(group.members));
-  }
+    if (lastChange.current) {
+      clearTimeout(lastChange.current);
+    }
+    lastChange.current = setTimeout(() => {
+      lastChange.current = null;
+      getGroupMembersById(groupId).then((group) => setUsers(group.members));
+    }, 1000);
+  };
 
   useEffect(() => {
     if (isGroupMembersInviteId) {
       getGroupMembers(isGroupMembersInviteId);
-      return
+      return;
     }
     getUsersByQuery("");
   }, [isGroupMembersInviteId]);

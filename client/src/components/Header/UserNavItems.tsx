@@ -1,12 +1,9 @@
-import { Badge, Link, NavbarItem, NavbarMenuToggle } from "@nextui-org/react";
-import React, { useEffect } from "react";
+import { Link, NavbarItem, NavbarMenuToggle } from "@nextui-org/react";
 import SecondaryButton from "../buttons/SecondaryButton";
 import { SignedIn, SignedOut } from "@clerk/nextjs";
 import Notifications from "./Notifications/Notifications";
 import DropdownItems from "./DropdownItems";
 import UserButtonModal from "@/app/(root)/(configuracion)/UserButtonPage";
-import { useSocket } from "@/app/socketProvider";
-import { useNotificationsContext } from "@/app/(root)/providers/notificationsProvider";
 
 const UserNavItems = ({
   isMenuOpen,

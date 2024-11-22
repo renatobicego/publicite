@@ -1,82 +1,66 @@
 "use client";
-import {
-  CREATE_GROUP,
-  CREATE_MAGAZINE,
-  CREATE_PETITION,
-  CREATE_POST,
-} from "@/utils/data/urls";
-import {
-  Button,
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownSection,
-  DropdownTrigger,
-  Link,
-} from "@nextui-org/react";
-import { FaPlus } from "react-icons/fa6";
+import { Button } from "@nextui-org/react";
 import { IoIosHelp } from "react-icons/io";
+import Joyride, { CallBackProps } from "react-joyride";
+import { useState } from "react";
 
 const HelpButton = () => {
+  const [run, setRun] = useState(false); // Initially, the tutorial doesn't run
+  const [stepIndex, setStepIndex] = useState(0);
+
+  const steps = [
+    {
+      target: "#navbar",
+      content: "This is your navigation bar where you can find key features!",
+    },
+    {
+      target: "#search",
+      content: "Use this search bar to find what you're looking for quickly!",
+    },
+  ];
+
+  const handleJoyrideCallback = (data: CallBackProps) => {
+    const { status, action, index } = data;
+    if (status === "finished" || action === "close") {
+      setRun(false); // Stop the tour when finished or closed
+    } else if (action === "reset" || status === "ready") {
+      setRun(true); // Restart the tour if reset
+    }
+    setStepIndex(index);
+  };
+
   return (
     <>
-      <Dropdown placement="top-end" className="bg-fondo max-lg:hidden">
-        <DropdownTrigger className="fixed bottom-8 right-8 z-40 max-lg:hidden">
-          <Button
-            isIconOnly
-            color="secondary"
-            size="lg"
-            radius="full"
-            variant="light"
-            className="bg-fondo shadow "
-          >
-            <IoIosHelp className="size-16" />
-          </Button>
-        </DropdownTrigger>
+      <Joyride
+        steps={steps}
+        run={run} // Determines whether the tutorial is active
+        continuous // Automatically transitions to the next step
+        showProgress // Displays progress in the tooltip
+        showSkipButton // Adds a "Skip" button to the tooltip
+        disableOverlayClose // Prevents closing by clicking outside
+        callback={handleJoyrideCallback}
+        styles={{
+          options: {
+            zIndex: 10000, // Ensures Joyride is above other UI elements
+          },
+        }}
+      />
 
-        <DropdownMenu aria-label="acciones de ayuda" className="bg-fondo">
-          <DropdownItem key="new">New file</DropdownItem>
-          <DropdownItem key="copy">Copy link</DropdownItem>
-          <DropdownItem key="edit">Edit file</DropdownItem>
-          <DropdownItem key="delete" className="text-danger" color="danger">
-            Delete file
-          </DropdownItem>
-        </DropdownMenu>
-      </Dropdown>
-      <Dropdown placement="top-end" className="bg-fondo lg:hidden">
-        <DropdownTrigger className="fixed bottom-4 right-4 md:bottom-8 md:right-8 z-40 lg:hidden">
-          <Button
-            isIconOnly
-            color="primary"
-            size="lg"
-            radius="full"
-            variant="light"
-            className="bg-fondo shadow "
-          >
-            <FaPlus className="size-6" />
-          </Button>
-        </DropdownTrigger>
-
-        <DropdownMenu
-          aria-label="opciones de publicaciones"
-          className="bg-fondo"
-        >
-          <DropdownSection title="Crear">
-            <DropdownItem as={Link} href={CREATE_POST} key="post">
-              Anuncio
-            </DropdownItem>
-            <DropdownItem as={Link} href={CREATE_PETITION} key="petition">
-              Necesidad
-            </DropdownItem>
-            <DropdownItem as={Link} href={CREATE_MAGAZINE} key="magazine">
-              Revista
-            </DropdownItem>
-            <DropdownItem as={Link} href={CREATE_GROUP} key="group">
-              Grupo
-            </DropdownItem>
-          </DropdownSection>
-        </DropdownMenu>
-      </Dropdown>
+      {/* Fixed help button */}
+      <Button
+        isIconOnly
+        color="secondary"
+        size="lg"
+        radius="full"
+        variant="light"
+        className="fixed bottom-8 right-8 bg-fondo shadow z-[10001]"
+        onClick={() => {
+          setRun(true); // Start the tutorial immediately
+          setStepIndex(0); // Restart from the first step
+        }}
+      >
+        <IoIosHelp className="size-16" />
+      </Button>
     </>
   );
 };

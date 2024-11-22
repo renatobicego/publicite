@@ -20,7 +20,7 @@ const ReviewRequest = ({
   const { imagesUrls } = post as Good;
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   return (
-    <NotificationCard>
+    <NotificationCard isNew>
       <NotificationImage>
         <Image
           radius="sm"

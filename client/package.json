@@ -40,6 +40,7 @@
     "react-gmap-picker": "github:renatobicego/react-gmap-picker",
     "react-google-autocomplete": "^2.7.3",
     "react-icons": "^5.3.0",
+    "react-joyride": "^2.9.3",
     "react-toastify": "^10.0.5",
     "react-use-websocket": "^4.9.0",
     "socket.io-client": "^4.8.0",

@@ -18,7 +18,7 @@ const PostShared = ({
 }) => {
   const { post } = notification;
   return (
-    <NotificationCard>
+    <NotificationCard isNew>
       <NotificationImage>
         {post.postType === "petition" ? (
           <MdQuestionAnswer className="text-petition size-14" />
