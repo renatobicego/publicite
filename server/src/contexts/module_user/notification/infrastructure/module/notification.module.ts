@@ -8,6 +8,8 @@ import { UserModule } from "src/contexts/module_user/user/infrastructure/module/
 import { GroupModule } from "src/contexts/module_group/group/infrastructure/module/group.module";
 import { NotificationMagazineModel } from "../schemas/notification.magazine.schema";
 import { MagazineModule } from "src/contexts/module_magazine/magazine/infrastructure/module/magazine.module";
+import { NotificationAdapter } from "../adapter/notification.adapter";
+import { NotificationResolver } from "../resolver/notification.resolver";
 
 @Module({
     imports: [
@@ -23,9 +25,11 @@ import { MagazineModule } from "src/contexts/module_magazine/magazine/infrastruc
         ]),
         UserModule,
         GroupModule,
-        MagazineModule
+        MagazineModule,
+
     ],
     providers: [
+        NotificationResolver,
         {
             provide: 'NotificationGroupServiceInterface',
             useClass: NotificationService
@@ -36,7 +40,14 @@ import { MagazineModule } from "src/contexts/module_magazine/magazine/infrastruc
         }, {
             provide: 'NotificationRepositoryInterface',
             useClass: NotificationRepository
-        },
+        }, {
+            provide: 'NotificationAdapterInterface',
+            useClass: NotificationAdapter
+        }
+        , {
+            provide: 'NotificationServiceInterface',
+            useClass: NotificationService
+        }
 
     ],
     exports: [

@@ -14,8 +14,7 @@ import { UserBusinessUpdateDto } from '../../domain/entity/dto/user.business.upd
 import { UserPreferencesEntityDto } from '../../domain/entity/dto/user.preferences.update.dto';
 import { UP_clerkUpdateRequestDto } from 'src/contexts/module_webhook/clerk/application/dto/UP-clerk.update.request';
 import { UserFindAllResponse } from '../adapter/dto/HTTP-RESPONSE/user.response.dto';
-import { GROUP_notification_graph_model_get_all } from '../adapter/dto/HTTP-RESPONSE/notifications/user.notifications.response';
-import { getTodayDateTime } from 'src/contexts/module_shared/utils/functions/getTodayDateTime';
+
 
 @Injectable()
 export class UserService implements UserServiceInterface {
@@ -83,14 +82,6 @@ export class UserService implements UserServiceInterface {
       throw error;
     }
   }
-
-  async changeNotificationStatus(userRequestId: string, notificationId: string, view: boolean): Promise<void> {
-    try {
-      return await this.userRepository.changeNotificationStatus(userRequestId, notificationId, view);
-    } catch (error: any) {
-      throw error;
-    }
-  }
   async findAllUsers(
     user: string,
     limit: number,
@@ -137,21 +128,7 @@ export class UserService implements UserServiceInterface {
     }
   }
 
-  async getAllNotificationsFromUserById(
-    id: string,
-    limit: number,
-    page: number,
-  ): Promise<GROUP_notification_graph_model_get_all> {
-    try {
-      return await this.userRepository.getAllNotificationsFromUserById(
-        id,
-        limit,
-        page,
-      );
-    } catch (error: any) {
-      throw error;
-    }
-  }
+
   async saveNewPost(
     postId: ObjectId,
     authorId: ObjectId,

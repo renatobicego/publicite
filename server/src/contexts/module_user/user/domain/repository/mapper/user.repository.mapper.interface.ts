@@ -1,4 +1,3 @@
-import { Notification } from '../../../application/adapter/dto/HTTP-RESPONSE/notifications/user.notifications.response';
 import { UserFindAllResponse } from '../../../application/adapter/dto/HTTP-RESPONSE/user.response.dto';
 import { IUserBusiness } from '../../../infrastructure/schemas/userBussiness.schema';
 import { IUserPerson } from '../../../infrastructure/schemas/userPerson.schema';
@@ -18,7 +17,7 @@ export interface UserRepositoryMapperInterface {
     document: any,
   ): UserPreferencesEntityDto | null;
   documentToEntityMapped_clerkUpdate(document: any): UserClerkUpdateDto;
-  documentNotificationToNotificationResponse(document: any): Notification;
+
   documentToEntityMapped(document: any): User;
   documentToEntityMapped_update(
     document: any,

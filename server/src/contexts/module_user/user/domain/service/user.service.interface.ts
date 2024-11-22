@@ -7,7 +7,6 @@ import { UserBusinessUpdateDto } from '../entity/dto/user.business.update.dto';
 import { UserPreferencesEntityDto } from '../entity/dto/user.preferences.update.dto';
 import { UP_clerkUpdateRequestDto } from 'src/contexts/module_webhook/clerk/application/dto/UP-clerk.update.request';
 import { UserFindAllResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.response.dto';
-import { GROUP_notification_graph_model_get_all } from '../../application/adapter/dto/HTTP-RESPONSE/notifications/user.notifications.response';
 
 export interface UserServiceInterface {
   createUser(req: User, contactDto: ContactRequest): Promise<User>;
@@ -15,7 +14,7 @@ export interface UserServiceInterface {
     contactDto: ContactRequest,
     options?: { session?: ClientSession },
   ): Promise<Types.ObjectId>;
-  changeNotificationStatus(userRequestId: string, notificationId: string, view: boolean): Promise<void>;
+
 
   findAllUsers(
     user: string,
@@ -28,11 +27,7 @@ export interface UserServiceInterface {
   getUserPreferencesByUsername(
     username: string,
   ): Promise<UserPreferences | null>;
-  getAllNotificationsFromUserById(
-    id: string,
-    limit: number,
-    page: number,
-  ): Promise<GROUP_notification_graph_model_get_all>;
+
 
   pushNotification(notificationId: Types.ObjectId, userIdTo: string, session?: any): Promise<any>;
   updateUser(

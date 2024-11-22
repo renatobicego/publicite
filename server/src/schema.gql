@@ -298,59 +298,6 @@ type Contact {
   website: String
 }
 
-type front_data_GROUP {
-  _id: String!
-  name: String!
-  profilePhotoUrl: String!
-}
-
-type backData {
-  userIdTo: String
-  userIdFrom: String
-}
-
-type userInviting {
-  username: String!
-  _id: String
-}
-
-type groupInviting {
-  name: String!
-  _id: String
-}
-
-type notification {
-  event: String!
-  viewed: Boolean!
-  date: String!
-  backData: backData
-}
-
-type magazineNotification {
-  _id: String!
-  name: String!
-  ownerType: String!
-  userInviting: userInviting
-  groupInviting: groupInviting
-}
-
-type frontData {
-  group: front_data_GROUP
-  userInviting: userInviting
-  magazine: magazineNotification
-}
-
-type Notification {
-  _id: String!
-  notification: notification!
-  frontData: frontData!
-}
-
-type GROUP_notification_graph_model_get_all {
-  notifications: [Notification!]!
-  hasMore: Boolean!
-}
-
 type Board {
   _id: ID
   annotations: [String!]
@@ -425,6 +372,57 @@ type PostCategoryResponse {
   _id: String!
 }
 
+type front_data_GROUP {
+  _id: String!
+  name: String!
+  profilePhotoUrl: String!
+}
+
+type backData {
+  userIdTo: String
+  userIdFrom: String
+}
+
+type userInviting {
+  username: String!
+  _id: String
+}
+
+type groupInviting {
+  name: String!
+  _id: String
+}
+
+type magazineNotification {
+  _id: String!
+  name: String!
+  ownerType: String!
+  userInviting: userInviting
+  groupInviting: groupInviting
+}
+
+type frontData {
+  group: front_data_GROUP
+  userInviting: userInviting
+  magazine: magazineNotification
+}
+
+type Notification {
+  _id: String!
+  event: String!
+  viewed: Boolean!
+  date: String!
+  user: String!
+  isActionsAvailable: String!
+  backData: backData
+  frontData: frontData!
+}
+
+type GROUP_notification_graph_model_get_all {
+  notifications: [Notification!]!
+  hasMore: Boolean!
+}
+
 type userBoardGraphql {
   _id: ID
   profilePhotoUrl: String
@@ -466,9 +464,6 @@ type PaymentResponse {
 type Query {
   """Obtiene un usuario por su nombre de usuario """
   findUserByUsername(username: String!): User_Full_Grapql_Model
-
-  """obtener todas las notificaciones de un usuario por su Id"""
-  getAllNotificationsFromUserById(limit: Float!, page: Float!): GROUP_notification_graph_model_get_all
 
   """Buscar los pagos por id de clerk"""
   findPaymentByClerkId(id: String!): [PaymentResponse!]
@@ -512,6 +507,9 @@ type Query {
 
   """Devuelve todas las categorias creadas"""
   getAllCategoryPost: [PostCategoryResponse!]
+
+  """obtener todas las notificaciones de un usuario por su Id"""
+  getAllNotificationsFromUserById(limit: Float!, page: Float!): GROUP_notification_graph_model_get_all
 }
 
 """Type of the post """
@@ -522,11 +520,6 @@ enum PostType {
 }
 
 type Mutation {
-  """
-  Cambia el estado de una notificacion a "vista o no vista"
-  """
-  changeNotificationStatus(notificationId: String!, view: Boolean!): String
-
   """eliminar un post por id"""
   deletePostById(id: String!): String
 
@@ -615,6 +608,11 @@ type Mutation {
 
   """Crear una categoria de un post"""
   createNewCategoryPost(category: PostCategoryRequest!): PostCategoryResponse
+
+  """
+  Cambia el estado de una notificacion a "vista o no vista"
+  """
+  changeNotificationStatus(notificationIds: [String!]!, view: Boolean!): String
 }
 
 input PostUpdateRequest {

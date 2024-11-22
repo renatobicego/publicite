@@ -15,11 +15,13 @@ import { NotificationMagazine } from "../../domain/entity/notification.magazine.
 import { NotificationFactory } from "../notification.factory";
 import { MagazineServiceInterface } from "src/contexts/module_magazine/magazine/domain/service/magazine.service.interface";
 import { MagazineEventsManager } from "./magazine.events.manager";
+import { NotificationServiceInterface } from "../../domain/service/notification.service.interface";
+import { GROUP_notification_graph_model_get_all } from "../dtos/getAll.notification.dto";
 
 
 
 
-export class NotificationService implements NotificationGroupServiceInterface, NotificationMagazineServiceInterface {
+export class NotificationService implements NotificationGroupServiceInterface, NotificationMagazineServiceInterface, NotificationServiceInterface {
 
     constructor(
         private readonly logger: MyLoggerService,
@@ -38,6 +40,29 @@ export class NotificationService implements NotificationGroupServiceInterface, N
 
     ) {
 
+    }
+    async getAllNotificationsFromUserById(
+        id: string,
+        limit: number,
+        page: number,
+    ): Promise<GROUP_notification_graph_model_get_all> {
+        try {
+            return await this.notificationRepository.getAllNotificationsFromUserById(
+                id,
+                limit,
+                page,
+            );
+        } catch (error: any) {
+            throw error;
+        }
+    }
+    async changeNotificationStatus(userRequestId: string, notificationId: string[], view: boolean): Promise<void> {
+        try {
+            await this.notificationRepository.changeNotificationStatus(userRequestId, notificationId, view);
+
+        } catch (error: any) {
+            throw error;
+        }
     }
     async handleMagazineNotificationAndCreateIt(notificationBody: any): Promise<void> {
 

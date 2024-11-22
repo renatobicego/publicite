@@ -21,9 +21,7 @@ import { UP_clerkUpdateRequestDto } from 'src/contexts/module_webhook/clerk/appl
 import { UserClerkUpdateDto } from '../../domain/entity/dto/user.clerk.update.dto';
 import { UserFindAllResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.response.dto';
 import { fullNameNormalization } from '../../application/functions/utils';
-import { GROUP_notification_graph_model_get_all } from '../../application/adapter/dto/HTTP-RESPONSE/notifications/user.notifications.response';
 import { SectorRepositoryInterface } from 'src/contexts/module_user/businessSector/domain/repository/sector.repository.interface';
-import { parseZonedDateTime } from '@internationalized/date';
 
 
 @Injectable()
@@ -47,13 +45,6 @@ export class UserRepository implements UserRepositoryInterface {
     private readonly logger: MyLoggerService,
     @InjectConnection() private readonly connection: Connection,
   ) { }
-  async changeNotificationStatus(userRequestId: string, notificationId: string, view: boolean): Promise<void> {
-    try {
-      await this.user.updateOne({ _id: userRequestId, 'notifications._id': notificationId }, { $set: { 'notifications.$.view': view } });
-    } catch (error: any) {
-      throw error;
-    }
-  }
 
   async findUserByUsername(username: string): Promise<any> {
     try {
@@ -199,51 +190,6 @@ export class UserRepository implements UserRepositoryInterface {
     }
   }
 
-  async getAllNotificationsFromUserById(
-    id: string,
-    limit: number,
-    page: number,
-  ): Promise<GROUP_notification_graph_model_get_all> {
-    try {
-      const from = (page - 1) * limit;
-
-
-      const objectId = new Types.ObjectId(id);
-      const userNotificationResponse: any = await this.user.aggregate([
-        { $match: { _id: objectId } },
-        {
-          $project: {
-            notifications: {
-              $slice: ["$notifications", from, limit],
-            },
-            totalNotifications: { $size: "$notifications" },
-          },
-        },
-      ]);
-
-      if (!userNotificationResponse[0].notifications)
-        return { notifications: [], hasMore: false };
-
-      const notifications = userNotificationResponse[0].notifications;
-
-
-      const notificationsMapped = notifications
-        .sort((notificationA: any, notificationB: any) => {
-          const dateA = parseZonedDateTime(notificationA.notification.date);
-          const dateB = parseZonedDateTime(notificationB.notification.date);
-          return dateB.compare(dateA);
-        })
-
-      const hasMore = userNotificationResponse[0].totalNotifications > page * limit;
-
-      return {
-        notifications: notificationsMapped,
-        hasMore: hasMore,
-      };
-    } catch (error: any) {
-      throw error;
-    }
-  }
 
   async pushNotification(notification: any, userId: string, session: any): Promise<any> {
     try {

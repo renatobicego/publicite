@@ -8,11 +8,10 @@ import { UserPreferencesEntityDto } from '../entity/dto/user.preferences.update.
 import { UP_clerkUpdateRequestDto } from 'src/contexts/module_webhook/clerk/application/dto/UP-clerk.update.request';
 import { UserClerkUpdateDto } from '../entity/dto/user.clerk.update.dto';
 import { UserFindAllResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.response.dto';
-import { GROUP_notification_graph_model_get_all } from '../../application/adapter/dto/HTTP-RESPONSE/notifications/user.notifications.response';
 
 export interface UserRepositoryInterface {
 
-  changeNotificationStatus(userRequestId: string, notificationId: string, view: boolean): Promise<void>;
+
 
   findAllUsers(
     user: string,
@@ -29,11 +28,7 @@ export interface UserRepositoryInterface {
     username: string,
   ): Promise<UserPreferences | null>;
 
-  getAllNotificationsFromUserById(
-    id: string,
-    limit: number,
-    page: number,
-  ): Promise<GROUP_notification_graph_model_get_all>;
+
 
   pushNotification(notification: any, userId: string, session?: any): Promise<any>;
 

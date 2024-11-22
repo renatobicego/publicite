@@ -1,4 +1,3 @@
-import { Notification } from '../../../application/adapter/dto/HTTP-RESPONSE/notifications/user.notifications.response';
 import { UserFindAllResponse } from '../../../application/adapter/dto/HTTP-RESPONSE/user.response.dto';
 import { UserBusinessUpdateDto } from '../../../domain/entity/dto/user.business.update.dto';
 import { UserClerkUpdateDto } from '../../../domain/entity/dto/user.clerk.update.dto';
@@ -19,10 +18,8 @@ import { IUserBusiness } from '../../schemas/userBussiness.schema';
 import { IUserPerson } from '../../schemas/userPerson.schema';
 
 export class UserRepositoryMapper implements UserRepositoryMapperInterface {
-  constructor() {}
-  documentNotificationToNotificationResponse(document: any): Notification {
-    return new Notification(document);
-  }
+  constructor() { }
+
   documentToResponseAllUsers(document: any): UserFindAllResponse['user'][0] {
     return {
       _id: document._id,
