@@ -34,7 +34,7 @@ export interface UserServiceInterface {
     page: number,
   ): Promise<GROUP_notification_graph_model_get_all>;
 
-  pushNotification(notification: any, session: any): Promise<any>;
+  pushNotification(notificationId: Types.ObjectId, userIdTo: string, session?: any): Promise<any>;
   updateUser(
     username: string,
     req: UserPersonalUpdateDto | UserBusinessUpdateDto,

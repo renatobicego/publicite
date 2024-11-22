@@ -16,7 +16,7 @@ export class SocketController {
     @Body() notificationBody: any,
   ): Promise<any> {
     try {
-      return await this.socketAdapter.handleGroupNotification(notificationBody);
+      return await this.socketAdapter.sendGroupNotificationToNotificationService(notificationBody);
     } catch (error: any) {
       throw error;
     }
@@ -28,7 +28,7 @@ export class SocketController {
     @Body() notificationBody: any,
   ): Promise<any> {
     try {
-      return await this.socketAdapter.handleMagazineNotification(notificationBody);
+      return await this.socketAdapter.sendMagazineNotificationToNotificationService(notificationBody);
     } catch (error: any) {
       throw error;
     }

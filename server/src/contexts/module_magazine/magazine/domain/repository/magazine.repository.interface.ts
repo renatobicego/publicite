@@ -34,24 +34,28 @@ export interface MagazineRepositoryInterface {
     newCollaborators: string[],
     magazineId: string,
     magazineAdmin: string,
+    session: any
   ): Promise<void>;
 
   addAllowedCollaboratorsToGroupMagazine(
     newAllowedCollaborators: string[],
     magazineId: string,
     magazineAdmin: string,
+    session: any
   ): Promise<any>;
 
   deleteCollaboratorsFromMagazine(
     collaboratorsToDelete: string[],
     magazineId: string,
     magazineAdmin: string,
+    session: any
   ): Promise<void>;
 
   deleteAllowedCollaboratorsFromMagazineGroup(
     allowedCollaboratorsToDelete: string[],
     magazineId: string,
     magazineAdmin: string,
+    session: any
   ): Promise<any>;
 
   deleteSectionFromGroupMagazineById(

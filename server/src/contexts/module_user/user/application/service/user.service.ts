@@ -165,19 +165,18 @@ export class UserService implements UserServiceInterface {
     }
   }
 
-  async pushNotification(notification: any, session: any): Promise<any> {
+
+  async pushNotification(notification: Types.ObjectId, userId: string, session?: any): Promise<any> {
     try {
       this.logger.log(
         'Notification received in the service: ' + UserService.name,
       );
-      if (notification.notification.date === null || notification.notification.date === undefined || notification.notification.date === '') {
-        notification.notification.date = getTodayDateTime()
-      }
-      await this.userRepository.pushNotification(notification, session);
+      await this.userRepository.pushNotification(notification, userId, session);
     } catch (error: any) {
       throw error;
     }
   }
+
 
   async updateUserPreferencesByUsername(
     username: string,

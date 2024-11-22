@@ -21,6 +21,7 @@ import { UserModule } from './contexts/module_user/user/infrastructure/module/us
 import { DatabaseService } from './contexts/module_shared/database/infrastructure/database.service';
 import { MercadoPagoModule } from './contexts/module_webhook/mercadopago/infastructure/module/mercadopago.module';
 import { ClerkModule } from './contexts/module_webhook/clerk/infrastructure/module/clerk.module';
+import { NotificationModule } from './contexts/module_user/notification/infrastructure/module/notification.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { ClerkModule } from './contexts/module_webhook/clerk/infrastructure/modu
     MagazineModule,
     PostCategoryModule,
     NotificationSocketModule,
+    NotificationModule,
   ],
   providers: [
     {

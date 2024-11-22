@@ -28,7 +28,7 @@ interface IUser extends Document {
   lastName: string;
   finder: string;
   userPreferences: UserPreferences | null | undefined;
-  notifications: any[] | null;
+  notifications: Schema.Types.ObjectId[];
 }
 
 const UserSchema = new Schema<IUser>(
@@ -57,22 +57,7 @@ const UserSchema = new Schema<IUser>(
       searchPreference: [{ type: Schema.Types.ObjectId, ref: 'PostCategory' }],
       backgroundColor: { type: Number, default: undefined },
     },
-    notifications: [
-      {
-        notification: {
-          event: { type: String },
-          viewed: { type: Boolean, default: false },
-          date: { type: String },
-          backData: {
-            userIdTo: { type: String },
-            userIdFrom: { type: String },
-          },
-        },
-        frontData: {
-          type: SchemaTypes.Mixed,
-        },
-      },
-    ],
+    notifications: [{ type: Schema.Types.ObjectId, ref: 'Notification' }],
   },
   { discriminatorKey: 'userType', collection: 'users' },
 );

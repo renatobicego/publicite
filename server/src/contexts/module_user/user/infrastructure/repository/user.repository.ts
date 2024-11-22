@@ -245,13 +245,11 @@ export class UserRepository implements UserRepositoryInterface {
     }
   }
 
-  async pushNotification(notification: any, session: any): Promise<any> {
-    const { userIdTo } = notification.notification.backData;
-
+  async pushNotification(notification: any, userId: string, session: any): Promise<any> {
     try {
       await this.user
         .updateOne(
-          { _id: userIdTo },
+          { _id: userId },
           { $addToSet: { notifications: notification } },
         )
         .lean()

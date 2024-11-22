@@ -22,6 +22,7 @@ const eventTypes = [
   'notification_group_user_request_group_invitation', // Usuario A quiere pertenecer a grupo -> 5
 ] as const;
 
+
 export class GroupService implements GroupServiceInterface {
   constructor(
     private readonly logger: MyLoggerService,
@@ -320,6 +321,8 @@ export class GroupService implements GroupServiceInterface {
       throw error;
     }
   }
+
+
 
   async updateGroupById(group: GroupUpdateRequest): Promise<any> {
     try {

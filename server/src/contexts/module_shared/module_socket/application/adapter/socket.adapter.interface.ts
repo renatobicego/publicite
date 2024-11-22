@@ -1,4 +1,4 @@
 export interface SocketAdapterInterface {
-    handleGroupNotification(notificationBody: any): Promise<void>;
-    handleMagazineNotification(notificationBody: any): Promise<void>;
+    sendGroupNotificationToNotificationService(notificationBody: any): Promise<void>;
+    sendMagazineNotificationToNotificationService(notificationBody: any): Promise<void>;
 }

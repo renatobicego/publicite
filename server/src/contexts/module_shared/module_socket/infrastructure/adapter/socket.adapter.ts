@@ -1,22 +1,27 @@
 import { Inject } from "@nestjs/common";
 import { SocketAdapterInterface } from "../../application/adapter/socket.adapter.interface";
-import { SocketNotificationServiceInterface } from "../../domain/service/socket.notification.service.interface";
+import { NotificationGroupServiceInterface } from "src/contexts/module_user/notification/domain/service/notification.group.service.interface";
+import { NotificationMagazineServiceInterface } from "src/contexts/module_user/notification/domain/service/notification.magazine.service.interface";
 
 export class SocketAdapter implements SocketAdapterInterface {
+
     constructor(
-        @Inject('SocketNotificationServiceInterface')
-        private readonly notificatorService: SocketNotificationServiceInterface
+        @Inject('NotificationGroupServiceInterface')
+        private readonly notificationGroupService: NotificationGroupServiceInterface,
+        @Inject('NotificationMagazineServiceInterface')
+        private readonly notificationMagazineService: NotificationMagazineServiceInterface
+
     ) { }
-    async handleMagazineNotification(notificationBody: any): Promise<void> {
+    async sendMagazineNotificationToNotificationService(notificationBody: any): Promise<void> {
         try {
-            return await this.notificatorService.handleMagazineNotification(notificationBody);
+            return await this.notificationMagazineService.handleMagazineNotificationAndCreateIt(notificationBody);
         } catch (error: any) {
             throw error;
         }
     }
-    async handleGroupNotification(notificationBody: any): Promise<void> {
+    async sendGroupNotificationToNotificationService(notificationBody: any): Promise<void> {
         try {
-            return await this.notificatorService.sendNotificationToUserAndGroup(notificationBody);
+            await this.notificationGroupService.handleGroupNotificationAndCreateIt(notificationBody);
         } catch (error: any) {
             throw error;
         }
