@@ -16,7 +16,7 @@ const PaymentSuccess = ({
   notification: PaymentSuccesNotification;
   }) => {
   return (
-    <NotificationCard>
+    <NotificationCard isNew>
       <NotificationImage>
         <FaFileInvoiceDollar className="text-success size-10" />
       </NotificationImage>

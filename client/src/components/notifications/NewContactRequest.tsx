@@ -24,7 +24,7 @@ const NewContactRequest = ({
   const { onOpenChange, onOpen, isOpen } = useDisclosure();
   return (
     <>
-      <NotificationCard>
+      <NotificationCard isNew>
         <NotificationImage>
           <Image
             radius="full"
