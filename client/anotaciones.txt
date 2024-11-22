@@ -26,8 +26,9 @@ el tema de tener distintos tipos de relaciones va a costar hacer get de posts po
 - salir de revista (listo)
 
 - no permitir invitar varias veces a un grupo
+-notficiaciones viewed (listo falta probar con api probablemente array)
 
-boton de compartir app
+boton de compartir app 
 - agregar endate a post
 - carpeta posts
 - reigstrarse en produ (parece que listo, probar)
@@ -46,7 +47,7 @@ boton de compartir app
 - ERROR BOUNDARIES (listo)
 - editar imagen
 - Editar revista no funca 
-- Deberíamos ponerle los decimales a los precios pa ser mas amigables 
+- Deberíamos ponerle los decimales a los precios pa ser mas amigables (medio que listo, en inputs no me deja)
 - ORDEN REVISTAS
 - mensaje de grupo tipo nota
 - APP: BUSCAR

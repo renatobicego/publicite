@@ -8,16 +8,18 @@ const PostsGrid = ({
   recommendation = false,
   isLoading = false,
   isGroupPosts = false,
+  isSearchDone = false,
 }: {
   posts: Post[];
   recommendation?: boolean;
   isLoading?: boolean;
   isGroupPosts?: boolean;
-  }) => {
+  isSearchDone?: boolean;
+}) => {
   return (
     <>
       {isGroupPosts ? (
-        <MasonryPostGrid posts={posts} isGroupPost={isGroupPosts}/>
+        <MasonryPostGrid posts={posts} isGroupPost={isGroupPosts} />
       ) : (
         <section
           className={`grid grid-cols-2 gap-3 md:gap-4  ${
@@ -37,7 +39,8 @@ const PostsGrid = ({
       )}
       {!isLoading && posts.length === 0 && (
         <p className="max-md:text-sm text-light-text">
-          No se encontraron anuncios para mostrar
+          No se encontraron anuncios para mostrar.{" "}
+          {isSearchDone && "Por favor, intenta con otros términos de búsqueda."}
         </p>
       )}
       {isLoading && <Spinner color="warning" />}

@@ -11,12 +11,24 @@ import { FaBell } from "react-icons/fa6";
 import NotificationsContent from "./NotificationContent";
 import useNotifications from "@/utils/hooks/useNotifications";
 import { useSocket } from "@/app/socketProvider";
+import { useNotificationsContext } from "@/app/(root)/providers/notificationsProvider";
 
-const MobileNotifications = () => {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const {newNotifications, setNewNotifications} = useSocket();
-  const { notifications, fetchNotifications, isLoading, hasMore } =
-    useNotifications(isOpen);
+const MobileNotifications = ({
+  isOpen,
+  setIsOpen,
+}: {
+  isOpen: boolean;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}) => {
+  const { isOpen: modalIsOpen, onOpen, onOpenChange } = useDisclosure({ isOpen });
+  const { newNotifications: newNotificationsReceived, setNewNotifications } =
+    useSocket();
+
+  const { notifications, isLoading } = useNotificationsContext();
+
+  const newNotifications = notifications.some(
+    (notification) => !notification.notification.viewed
+  );
   return (
     <>
       <Button
@@ -24,9 +36,9 @@ const MobileNotifications = () => {
         radius="full"
         variant="light"
         isIconOnly
-        className="lg:hidden"
+        className="lg:hidden min-w-0"
       >
-        {newNotifications ? (
+        {newNotifications || newNotificationsReceived ? (
           <Badge content="" size="sm" color="primary">
             <FaBell className="size-6" />
           </Badge>
@@ -41,9 +53,12 @@ const MobileNotifications = () => {
         }}
         placement="center"
         className="max-md:px-4"
-        isOpen={isOpen}
+        isOpen={modalIsOpen}
         onOpenChange={(isOpen) => {
-          if (isOpen) setNewNotifications(false);
+          if (isOpen) {
+            setNewNotifications(false)
+            setIsOpen(false);
+          };
           onOpenChange();
         }}
       >
@@ -52,7 +67,12 @@ const MobileNotifications = () => {
             <h5>Notificaciones</h5>
           </ModalHeader>
           <ModalBody id="notifications-popover">
-            {isOpen && <NotificationsContent notifications={notifications} isLoading={isLoading}/>}
+            {isOpen && (
+              <NotificationsContent
+                notifications={notifications}
+                isLoading={isLoading}
+              />
+            )}
           </ModalBody>
         </ModalContent>
       </Modal>

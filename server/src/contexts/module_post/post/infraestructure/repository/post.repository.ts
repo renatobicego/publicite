@@ -2,7 +2,6 @@ import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { ClientSession, Connection, Model, ObjectId } from 'mongoose';
 import { Inject } from '@nestjs/common';
 
-
 import { Post } from '../../domain/entity/post.entity';
 import { PostRepositoryInterface } from '../../domain/repository/post.repository.interface';
 import { PostRepositoryMapperInterface } from '../../domain/repository/mapper/post.repository.mapper.interface';
@@ -57,7 +56,7 @@ export class PostRepository implements PostRepositoryInterface {
 
     private readonly logger: MyLoggerService,
     @InjectConnection() private readonly connection: Connection,
-  ) { }
+  ) {}
 
   async create(
     post: Post,
@@ -214,19 +213,24 @@ export class PostRepository implements PostRepositoryInterface {
 
       const searchTermSeparate = searchTerm
         ?.split(' ')
-        .filter(term => term.trim() !== '' &&
-          !stopWords.has(term.trim().toLowerCase()) &&
-          term.trim().length > 2);
+        .filter(
+          (term) =>
+            term.trim() !== '' &&
+            !stopWords.has(term.trim().toLowerCase()) &&
+            term.trim().length > 2,
+        );
 
-
-
-      if (searchTermSeparate && searchTermSeparate.length > 0) {
-
+      if (searchTerm && searchTermSeparate) {
         const textSearchQuery = searchTermSeparate.join(' ');
 
         this.logger.log('Buscando posts con términos de búsqueda');
         const posts = await this.postDocument
-          .find({ postType: postType, $text: { $search: textSearchQuery } })
+          .find({
+            postType: postType,
+            $text: {
+              $search: textSearchQuery,
+            },
+          })
           .limit(limit + 1)
           .skip((page - 1) * limit)
           .populate({
@@ -296,7 +300,6 @@ export class PostRepository implements PostRepositoryInterface {
       throw error;
     }
   }
-
 
   async saveLocation(
     location: PostLocation,

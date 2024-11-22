@@ -15,7 +15,6 @@ import {
 import { IUser } from 'src/contexts/module_user/user/infrastructure/schemas/user.schema';
 import { stopWords } from 'src/contexts/module_shared/utils/functions/stopWords';
 
-
 export class BoardRepository implements BoardRespositoryInterface {
   constructor(
     @InjectModel('Board')
@@ -26,29 +25,29 @@ export class BoardRepository implements BoardRespositoryInterface {
     private readonly userModel: Model<IUser>,
     @InjectConnection() private readonly connection: Connection,
     private readonly logger: MyLoggerService,
-  ) { }
+  ) {}
   async getBoardByAnnotationOrKeyword(
     board: string,
     limit: number,
     page: number,
   ): Promise<BoardGetAllResponse> {
     try {
-
       const boardSearchTermSeparate = board
         ?.split(' ')
-        .filter(term => term.trim() !== '' &&
-          !stopWords.has(term.trim().toLowerCase()) &&
-          term.trim().length > 2);
-  
-      if (boardSearchTermSeparate.length > 0) {
+        .filter(
+          (term) =>
+            term.trim() !== '' &&
+            !stopWords.has(term.trim().toLowerCase()) &&
+            term.trim().length > 2,
+        );
+
+      if (board && boardSearchTermSeparate) {
         this.logger.log('Buscando boards con términos de búsqueda');
-        
-    
+
         const textSearchQuery = boardSearchTermSeparate.join(' ');
-  
-     
+
         const boards = await this.boardModel
-          .find({ $text: { $search: textSearchQuery } }) 
+          .find({ $text: { $search: textSearchQuery } })
           .populate({
             path: 'user',
             select: '_id profilePhotoUrl name lastName businessName username',
@@ -56,7 +55,7 @@ export class BoardRepository implements BoardRespositoryInterface {
           .limit(limit + 1)
           .skip((page - 1) * limit)
           .lean();
-  
+
         const hasMore = boards.length > limit;
         const boardsResponse = boards.slice(0, limit).map((board) => {
           return this.boardMapper.toResponse(board);
@@ -66,8 +65,9 @@ export class BoardRepository implements BoardRespositoryInterface {
           hasMore: hasMore,
         };
       } else {
-        this.logger.log('No se encontraron términos de búsqueda o el término es muy pequeño, buscando todos los boards y paginando');
-        
+        this.logger.log(
+          'No se encontraron términos de búsqueda o el término es muy pequeño, buscando todos los boards y paginando',
+        );
 
         const boards = await this.boardModel
           .find()
@@ -78,7 +78,7 @@ export class BoardRepository implements BoardRespositoryInterface {
           .limit(limit + 1)
           .skip((page - 1) * limit)
           .lean();
-  
+
         const hasMore = boards.length > limit;
         const boardsResponse = boards.slice(0, limit).map((board) => {
           return this.boardMapper.toResponse(board);
@@ -92,7 +92,6 @@ export class BoardRepository implements BoardRespositoryInterface {
       throw error;
     }
   }
-  
 
   async updateBoardById(
     id: string,

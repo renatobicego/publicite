@@ -15,12 +15,12 @@ import {
 } from "@nextui-org/react";
 import { FaEllipsis } from "react-icons/fa6";
 
-const NotificationCard = ({ children }: { children: React.ReactNode }) => {
+const NotificationCard = ({ isNew, children }: { isNew: boolean; children: React.ReactNode }) => {
   return (
     <Card
-      shadow="none"
+      shadow={isNew ? "sm" : "none"}
       isHoverable
-      className="flex flex-row relative max-w-96 "
+      className={`flex flex-row relative max-w-96 ${isNew ? "bg-fondo" : ""}`}
     >
       {children}
     </Card>

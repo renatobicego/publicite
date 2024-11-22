@@ -61,7 +61,7 @@ const GroupNotificationCard = ({
     return optionsList;
   };
   return (
-    <NotificationCard>
+    <NotificationCard isNew={!notification.notification.viewed}>
       <GroupImage group={group} />
       <NotificationBody>
         <p className="text-sm">
