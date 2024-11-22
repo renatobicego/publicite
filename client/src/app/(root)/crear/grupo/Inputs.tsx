@@ -10,7 +10,7 @@ import { Divider, Link } from "@nextui-org/react";
 import { PostGroup } from "./CreateGroupForm";
 import { fetchDataByType } from "@/utils/data/fetchDataByType";
 import { GROUPS } from "@/utils/data/urls";
-import { SelectUsers } from "@/components/inputs/SelectUsers";
+import { SelectUsers } from "@/components/inputs/SearchUsers";
 import { groupAliasExists } from "@/services/groupsService";
 
 const Inputs = ({

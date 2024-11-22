@@ -1,4 +1,4 @@
-import { SearchUsers } from "@/components/inputs/SelectUsers";
+import { SearchUsers } from "@/components/inputs/SearchUsers";
 import { User } from "@/types/userTypes";
 import {
   Button,

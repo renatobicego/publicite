@@ -94,6 +94,7 @@ const Search = ({
 
   return (
     <Input
+      id="search"
       startContent={
         searchParams.get("busqueda") && !searchTerm ? (
           <Tooltip content="Limpiar búsqueda">

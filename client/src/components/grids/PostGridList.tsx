@@ -159,7 +159,7 @@ const PostGridList = ({
         default:
           return (
             <div className="flex gap-1 items-center">
-              <ShareButton post={data} />
+              <ShareButton data={data} shareType="post" />
               <SaveButton post={data} />
             </div>
           );

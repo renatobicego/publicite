@@ -26,7 +26,7 @@ const MagazineActions = ({
           <InviteCollabMagazine magazine={magazine} />
         </>
       )}
-      <ShareButton post={magazine} />
+      <ShareButton shareType="magazine" data={magazine} />
       {isCollaborator && (
         <ExitMagazine
           magazineId={magazine._id}

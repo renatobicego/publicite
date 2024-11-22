@@ -90,6 +90,7 @@ interface SearchUsersProps extends Omit<AutocompleteProps<User>, "children"> {
   onValueChange: (value: string) => void;
   onSelectionChange: (key: Key | null) => void;
   showOnlyUsername?: boolean;
+  label?: string;
 }
 const SearchUsers = (props: SearchUsersProps) => {
   const [isLoading, setIsLoading] = useState(false);
