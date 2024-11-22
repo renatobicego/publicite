@@ -31,17 +31,20 @@ export interface MagazineServiceInterface {
     newCollaborators: string[],
     magazineId: string,
     magazineAdmin: string,
+    session: any
   ): Promise<void>;
   addAllowedCollaboratorsToGroupMagazine(
     newAllowedCollaborators: string[],
     magazineId: string,
     magazineAdmin: string,
+    session: any
   ): Promise<any>;
   createMagazine(magazineRequest: MagazineCreateRequest, userRequestId: string): Promise<void>;
   deleteCollaboratorsFromMagazine(
     collaboratorsToDelete: string[],
     magazineId: string,
     magazineAdmin: string,
+    session: any
   ): Promise<void>;
   deleteSectionFromMagazineUserById(
     sectionIdsToDelete: string[],
@@ -63,6 +66,7 @@ export interface MagazineServiceInterface {
     allowedCollaboratorsToDelete: string[],
     magazineId: string,
     magazineAdmin: string,
+    session: any
   ): Promise<any>;
 
   deletePostInMagazineSection(postIdToRemove: string, sectionId: string, ownerType: string, userRequestId: string, magazineId?: string): Promise<any>;

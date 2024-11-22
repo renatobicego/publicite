@@ -1,29 +1,22 @@
 import { Module } from '@nestjs/common';
 
 
-import { SocketNotificationService } from '../../application/service/socket.notification.service';
-import { UserModule } from 'src/contexts/module_user/user/infrastructure/module/user.module';
-import { GroupModule } from 'src/contexts/module_group/group/infrastructure/module/group.module';
+//import { SocketNotificationService } from '../../application/service/socket.notification.service';
 import { SocketAdapter } from '../adapter/socket.adapter';
 import { SocketController } from '../controller/socket.controller';
-import { GroupNotificator } from '../../application/service/group.notificator';
-import { MagazineModule } from 'src/contexts/module_magazine/magazine/infrastructure/module/magazine.module';
+import { NotificationModule } from 'src/contexts/module_user/notification/infrastructure/module/notification.module';
 
 
 @Module({
-  imports: [UserModule, GroupModule, MagazineModule],
+  imports: [NotificationModule],
   providers: [
-    {
-      provide: 'SocketNotificationServiceInterface',
-      useClass: SocketNotificationService,
-    },
+    // {
+    //   provide: 'SocketNotificationServiceInterface',
+    //   useClass: SocketNotificationService,
+    // },
     {
       provide: 'SocketAdapterInterface',
       useClass: SocketAdapter,
-    },
-    {
-      provide: 'GroupNotificatorInterface',
-      useClass: GroupNotificator,
     },
   ],
   controllers: [SocketController],
