@@ -1,5 +1,5 @@
 import { ObjectType, Field } from "@nestjs/graphql";
-import { front_data_GROUP } from "./user.notification";
+
 
 
 @ObjectType()
@@ -29,6 +29,23 @@ export class groupInviting {
 }
 
 
+
+@ObjectType()
+export class front_data_GROUP {
+    @Field(() => String)
+    _id: string;
+
+    @Field(() => String)
+    name: string;
+
+    @Field(() => String)
+    profilePhotoUrl: string;
+
+    @Field(() => userInviting, { nullable: true })
+    userInviting: userInviting;
+
+}
+
 @ObjectType()
 export class magazineNotification {
     @Field(() => String)
@@ -55,9 +72,6 @@ export class magazineNotification {
 export class frontData {
     @Field(() => front_data_GROUP, { nullable: true })
     group: front_data_GROUP;
-
-    @Field(() => userInviting, { nullable: true })
-    userInviting: userInviting;
 
     @Field(() => magazineNotification, { nullable: true })
     magazine: magazineNotification;

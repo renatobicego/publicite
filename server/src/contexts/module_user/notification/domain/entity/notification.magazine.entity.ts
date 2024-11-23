@@ -8,9 +8,11 @@ export class NotificationMagazine extends Notification {
             name: string;
             ownerType: string;
             groupInviting?: {
+                _id: string;
                 name: string;
             };
             userInviting?: {
+                _id: string;
                 username: string;
             };
         }
@@ -24,9 +26,11 @@ export class NotificationMagazine extends Notification {
                 name: string;
                 ownerType: string;
                 groupInviting?: {
+                    _id: string;
                     name: string;
                 };
                 userInviting?: {
+                    _id: string;
                     username: string;
                 };
             }

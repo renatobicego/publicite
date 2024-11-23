@@ -25,10 +25,10 @@ let WebhookController = class WebhookController {
         this.logger = logger;
     }
     async handleWebhookClerk(payload, headers) {
-        const WEBHOOK_SECRET = this.configService.get('WEBHOOK_SECRET');
-        if (!WEBHOOK_SECRET) {
-            this.logger.error('Please add WEBHOOK_SECRET to your environment variables', 'Class:WebhookController');
-            throw new Error('Please add WEBHOOK_SECRET to your environment variables');
+        const WEBHOOK_SECRET_CLERK = this.configService.get('WEBHOOK_SECRET_CLERK');
+        if (!WEBHOOK_SECRET_CLERK) {
+            this.logger.error('Please add WEBHOOK_SECRET_CLERK to your environment variables', 'Class:WebhookController');
+            throw new Error('Please add WEBHOOK_SECRET_CLERK to your environment variables');
         }
         await this.clerkWebhookAdapter.handleRequest(payload, headers);
     }

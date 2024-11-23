@@ -7,6 +7,7 @@ export class NotificationGroup extends Notification {
             name: string;
             profilePhotoUrl: string;
             userInviting: {
+                _id: string;
                 username: string;
             };
         }
@@ -20,6 +21,7 @@ export class NotificationGroup extends Notification {
                 name: string;
                 profilePhotoUrl: string;
                 userInviting: {
+                    _id: string;
                     username: string;
                 };
             }
