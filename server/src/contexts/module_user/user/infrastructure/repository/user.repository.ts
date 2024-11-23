@@ -22,6 +22,7 @@ import { UserClerkUpdateDto } from '../../domain/entity/dto/user.clerk.update.dt
 import { UserFindAllResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.response.dto';
 import { fullNameNormalization } from '../../application/functions/utils';
 import { SectorRepositoryInterface } from 'src/contexts/module_user/businessSector/domain/repository/sector.repository.interface';
+import { populate } from 'dotenv';
 
 
 @Injectable()
@@ -158,29 +159,21 @@ export class UserRepository implements UserRepositoryInterface {
 
   async getUserPersonalInformationByUsername(
     username: string,
-  ): Promise<Partial<User> | null> {
+  ): Promise<any> {
     try {
-      const user = await this.user.findOne({ username }).lean().exec();
-
-      if (!user) {
-        return null; // Devuelve undefined en lugar de lanzar un error
-      }
-
-      const projection =
-        user.userType.toLowerCase() === 'business'
-          ? 'countryRegion description contact sector businessName'
-          : 'birthDate gender countryRegion description contact';
-
+      const selectFields = 'sector businessName birthDate gender countryRegion description contact'
       const populatedUser = await this.user
         .findOne({ username })
-        .select(projection)
-        .populate([
-          { path: 'contact' },
-          { path: user.userType.toLowerCase() === 'business' ? 'sector' : '' },
-        ])
-        .lean();
+        .select(selectFields)
+        .populate([{
+          path: 'contact',
+        }, {
+          path: 'sector',
+        }]).lean()
 
-      return populatedUser as Partial<User>;
+      if (!populatedUser) return null
+
+      return populatedUser;
     } catch (error) {
       this.logger.error(
         'Error in getUserPersonalInformationByUsername method',

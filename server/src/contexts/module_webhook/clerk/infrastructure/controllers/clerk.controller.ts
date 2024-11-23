@@ -45,7 +45,7 @@ export class ClerkController {
         'Please add WEBHOOK_SECRET to your environment variables',
       );
     }
-    const user = await this.clerkWebhookAdapter.handleRequest(payload, headers);
+    const user = await this.clerkWebhookAdapter.validateRequestAndProcessEvent(payload, headers);
     return user;
   }
 

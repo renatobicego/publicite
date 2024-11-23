@@ -29,6 +29,9 @@ function getTokenFromRequest(context: any) {
     const contextType = context.getType();
     if (contextType === 'http') {
       request = context.switchToHttp().getRequest();
+      if (!request.headers['authorization']) {
+        throw new ForbiddenException('No auth header, Unauthorized');
+      }
       //Con el split dividimos la cadena y hacemos 2 arrays y con el 1 accedemos a la posicion 1 que es la del token
       const tokenWithOutBearer = request.headers['authorization'].split(' ')[1];
       token = tokenWithOutBearer;

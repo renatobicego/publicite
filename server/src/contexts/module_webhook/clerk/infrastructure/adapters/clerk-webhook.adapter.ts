@@ -20,7 +20,14 @@ export class ClerkWebhookAdapter {
     private readonly webhookSecret: string,
   ) { }
 
-  async handleRequest(payload: any, headers: any): Promise<void> {
+  async validateRequestAndProcessEvent(payload: any, headers: any): Promise<void> {
+    const event = this.validateRequest(payload, headers);
+
+    const userUpdated = await this.webhookService.processEvent(event);
+    return userUpdated;
+  }
+
+  private validateRequest(payload: any, headers: any): WebhookEventInterface {
     const svixId = headers['svix-id'];
     const svixTimestamp = headers['svix-timestamp'];
     const svixSignature = headers['svix-signature'];
@@ -35,7 +42,7 @@ export class ClerkWebhookAdapter {
     let evt: WebhookEventInterface;
 
     try {
-      evt = wh.verify(body, {
+      return evt = wh.verify(body, {
         'svix-id': svixId,
         'svix-timestamp': svixTimestamp,
         'svix-signature': svixSignature,
@@ -45,7 +52,5 @@ export class ClerkWebhookAdapter {
       throw new UnauthorizedException('Invalid webhook signature');
     }
 
-    const userUpdated = await this.webhookService.processEvent(evt);
-    return userUpdated;
   }
 }

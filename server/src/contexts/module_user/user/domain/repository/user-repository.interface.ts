@@ -22,7 +22,7 @@ export interface UserRepositoryInterface {
 
   getUserPersonalInformationByUsername(
     username: string,
-  ): Promise<Partial<User> | null>;
+  ): Promise<any>;
 
   getUserPreferencesByUsername(
     username: string,
