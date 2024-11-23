@@ -32,7 +32,7 @@ export class ContactRepository implements ContactRepositoryInterface {
   async updateContact(contactId: string, updateRequest: any): Promise<any> {
     try {
       const result = await this.contactModel.updateOne({ _id: contactId }, updateRequest);
-      console.log(result)
+
       if (result.matchedCount === 0) return 'No changes, contact not updated or not found';
       return 'Contact updated';
 
