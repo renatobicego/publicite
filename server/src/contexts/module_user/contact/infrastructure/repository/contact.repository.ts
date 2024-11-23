@@ -11,7 +11,8 @@ export class ContactRepository implements ContactRepositoryInterface {
   constructor(
     @InjectModel('Contact')
     private readonly contactModel: Model<ContactDocument>,
-  ) {}
+  ) { }
+
 
   async createContact(
     contact: Contact,
@@ -27,4 +28,17 @@ export class ContactRepository implements ContactRepositoryInterface {
     await createdContact.save({ session: options?.session });
     return createdContact._id;
   }
+
+  async updateContact(contactId: string, updateRequest: any): Promise<any> {
+    try {
+      const result = await this.contactModel.updateOne({ _id: contactId }, updateRequest);
+      console.log(result)
+      if (result.matchedCount === 0) return 'No changes, contact not updated or not found';
+      return 'Contact updated';
+
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
 }

@@ -1,19 +1,20 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
-import { ContactController } from '../controller/contact.controller';
+
 import { ContactAdapter } from '../adapter/contact.adapter';
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { ContactService } from '../../application/service/contact.service';
 import { ContactRepository } from '../repository/contact.repository';
 import { ContactSchema } from '../schema/contact.schema';
+import { ContactResolver } from '../controller/contact.resolver';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: 'Contact', schema: ContactSchema }]),
   ],
-  controllers: [ContactController],
   providers: [
+    ContactResolver,
     MyLoggerService,
     ContactService,
     ContactRepository,
@@ -42,4 +43,4 @@ import { ContactSchema } from '../schema/contact.schema';
     },
   ],
 })
-export class ContactModule {}
+export class ContactModule { }

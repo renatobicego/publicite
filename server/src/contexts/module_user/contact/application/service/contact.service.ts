@@ -6,6 +6,7 @@ import { ContactRepositoryInterface } from '../../domain/repository/contact.repo
 import { Contact } from '../../domain/entity/contact.entity';
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { ContactRequest } from 'src/contexts/module_user/user/application/adapter/dto/HTTP-REQUEST/user.request.CREATE';
+import { UpdateContactRequest } from '../adapter/dto/HTTP-REQUEST/update.contact.request';
 
 @Injectable()
 export class ContactService implements ContactServiceInterface {
@@ -13,7 +14,16 @@ export class ContactService implements ContactServiceInterface {
     @Inject('ContactRepositoryInterface')
     private readonly contactRepository: ContactRepositoryInterface,
     private logger: MyLoggerService,
-  ) {}
+  ) { }
+  async updateContact(contactId: string, updateRequest: UpdateContactRequest): Promise<void> {
+    try {
+      this.logger.log('Updating contact in service: ' + ContactService.name);
+      return await this.contactRepository.updateContact(contactId, updateRequest);
+    } catch (error: any) {
+      this.logger.error('An error was ocurred when updating contact: ' + contactId);
+      throw error;
+    }
+  }
 
   async createContact(
     contact: ContactRequest,

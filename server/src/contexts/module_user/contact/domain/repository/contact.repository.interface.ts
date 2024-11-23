@@ -6,4 +6,5 @@ export interface ContactRepositoryInterface {
     contact: Contact,
     options?: { session?: ClientSession },
   ): Promise<Types.ObjectId>;
+  updateContact(contactId: string, updateRequest: any): Promise<any>;
 }

@@ -520,6 +520,9 @@ enum PostType {
 }
 
 type Mutation {
+  """Actualizar los metodos de contacto de un usuario"""
+  updateContactById(contactId: String!, updateRequest: UpdateContactRequest!): String
+
   """eliminar un post por id"""
   deletePostById(id: String!): String
 
@@ -613,6 +616,14 @@ type Mutation {
   Cambia el estado de una notificacion a "vista o no vista"
   """
   changeNotificationStatus(notificationIds: [String!]!, view: Boolean!): String
+}
+
+input UpdateContactRequest {
+  phone: String
+  instagram: String
+  facebook: String
+  website: String
+  x: String
 }
 
 input PostUpdateRequest {
