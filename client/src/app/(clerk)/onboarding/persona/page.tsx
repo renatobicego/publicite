@@ -13,7 +13,7 @@ export default async function PersonaOnBoardingPage() {
     username: user.username,
     firstName: user.firstName,
     lastName: user.lastName,
-    createdAt: user.createdAt
+    createdAt: user.createdAt,
   };
   return <OnboardingPerson user={plainUser}/>;
 }

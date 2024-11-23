@@ -10,8 +10,10 @@ import { Divider } from "@nextui-org/react";
 import { completeOnboardingBusiness } from "../_actions";
 import { toastifyError } from "@/utils/functions/toastify";
 import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
+import { useUser } from "@clerk/nextjs";
 const OnboardingBusiness = ({user} : {user: any}) => {
   const router = useRouter();
+  const {user: clerkUser} = useUser();
   if (!user) return null;
   const initialValues: UserBusinessFormValues = {
     clerkId: user?.id as string,
@@ -42,6 +44,7 @@ const OnboardingBusiness = ({user} : {user: any}) => {
   ) => {
     const res = await completeOnboardingBusiness(formData);
     if (res?.message) {
+      await clerkUser?.reload();
       router.refresh();
       return
     }

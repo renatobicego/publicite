@@ -23,7 +23,11 @@ export const putUserProfileData = async (
   formData: EditPersonProfileProps,
   username: string
 ) => {
-  return await axios.put(`${baseUrl}/${username}`, formData);
+  return await axios.put(`${baseUrl}/${username}`, formData, {
+    headers: {
+      Authorization: `Bearer ${await auth().getToken()}`,
+    },
+  });
 };
 
 export const getUserProfileData = async (username: string) => {
@@ -53,7 +57,12 @@ export const changeUserPreferences = async (
   try {
     const { data, status } = await axios.put(
       `${process.env.API_URL}/user/user-preferences/${user?.username}`,
-      userPreferences
+      userPreferences, 
+      {
+        headers: {
+          Authorization: `Bearer ${await auth().getToken()}`,
+        },
+      }
     );
     if (status !== 200 && status !== 201) {
       return {
@@ -147,7 +156,10 @@ export const getNotifications = async (
   const user = auth();
 
   if (!user.sessionId) {
-    return { error: "Usuario no autenticado. Por favor inicie sesión." };
+    return {
+      items: [],
+      hasMore: false
+    };
   }
   try {
     const { data } = await query({

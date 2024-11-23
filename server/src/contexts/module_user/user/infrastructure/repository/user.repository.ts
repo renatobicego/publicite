@@ -1,5 +1,5 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import { ClientSession, Connection, Model, ObjectId, Types } from 'mongoose';
+import { ClientSession, Connection, Model, ObjectId } from 'mongoose';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 
 import { IUserPerson, UserPersonModel } from '../schemas/userPerson.schema';
@@ -22,8 +22,6 @@ import { UserClerkUpdateDto } from '../../domain/entity/dto/user.clerk.update.dt
 import { UserFindAllResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.response.dto';
 import { fullNameNormalization } from '../../application/functions/utils';
 import { SectorRepositoryInterface } from 'src/contexts/module_user/businessSector/domain/repository/sector.repository.interface';
-import { populate } from 'dotenv';
-
 
 @Injectable()
 export class UserRepository implements UserRepositoryInterface {
@@ -45,7 +43,7 @@ export class UserRepository implements UserRepositoryInterface {
 
     private readonly logger: MyLoggerService,
     @InjectConnection() private readonly connection: Connection,
-  ) { }
+  ) {}
 
   async findUserByUsername(username: string): Promise<any> {
     try {
@@ -157,21 +155,24 @@ export class UserRepository implements UserRepositoryInterface {
     }
   }
 
-  async getUserPersonalInformationByUsername(
-    username: string,
-  ): Promise<any> {
+  async getUserPersonalInformationByUsername(username: string): Promise<any> {
     try {
-      const selectFields = 'sector businessName birthDate gender countryRegion description contact'
+      const selectFields =
+        'sector businessName birthDate gender countryRegion description contact';
       const populatedUser = await this.user
         .findOne({ username })
         .select(selectFields)
-        .populate([{
-          path: 'contact',
-        }, {
-          path: 'sector',
-        }]).lean()
+        .populate([
+          {
+            path: 'contact',
+          },
+          {
+            path: 'sector',
+          },
+        ])
+        .lean();
 
-      if (!populatedUser) return null
+      if (!populatedUser) return null;
 
       return populatedUser;
     } catch (error) {
@@ -183,8 +184,11 @@ export class UserRepository implements UserRepositoryInterface {
     }
   }
 
-
-  async pushNotification(notification: any, userId: string, session: any): Promise<any> {
+  async pushNotification(
+    notification: any,
+    userId: string,
+    session: any,
+  ): Promise<any> {
     try {
       await this.user
         .updateOne(
@@ -444,7 +448,7 @@ export class UserRepository implements UserRepositoryInterface {
       }
       this.logger.log(
         'The post was successfully saved in the user profile: ' +
-        UserRepository.name,
+          UserRepository.name,
       );
 
       return obj;

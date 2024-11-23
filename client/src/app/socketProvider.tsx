@@ -57,7 +57,6 @@ export const SocketProvider = ({
       const newSocket = getSocket(userId, newToken as string); // Create a new socket instance
 
       newSocket.on("connect", () => {
-        console.log("Socket reconnected with new token:", newSocket.id);
         setSocket(newSocket);
         resolve(newSocket); // Resolve the promise when connected
       });
