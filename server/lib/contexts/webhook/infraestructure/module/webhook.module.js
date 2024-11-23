@@ -47,11 +47,11 @@ WebhookModule = __decorate([
             {
                 provide: clerk_webhook_adapter_1.ClerkWebhookAdapter,
                 useFactory: (webhookService, configService) => {
-                    const WEBHOOK_SECRET = configService.get('WEBHOOK_SECRET');
-                    if (!WEBHOOK_SECRET) {
-                        throw new Error('Please add WEBHOOK_SECRET to your environment variables');
+                    const WEBHOOK_SECRET_CLERK = configService.get('WEBHOOK_SECRET_CLERK');
+                    if (!WEBHOOK_SECRET_CLERK) {
+                        throw new Error('Please add WEBHOOK_SECRET_CLERK to your environment variables');
                     }
-                    return new clerk_webhook_adapter_1.ClerkWebhookAdapter(webhookService, WEBHOOK_SECRET);
+                    return new clerk_webhook_adapter_1.ClerkWebhookAdapter(webhookService, WEBHOOK_SECRET_CLERK);
                 },
                 inject: [clerkWebhook_service_1.WebhookService, config_1.ConfigService], // Inyecta dependencias necesarias
             },

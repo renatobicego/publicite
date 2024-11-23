@@ -35,14 +35,14 @@ export class ClerkController {
     @Body() payload: any,
     @Headers() headers: Record<string, string>,
   ): Promise<void> {
-    const WEBHOOK_SECRET = this.configService.get<string>('WEBHOOK_SECRET');
-    if (!WEBHOOK_SECRET) {
+    const WEBHOOK_SECRET_CLERK = this.configService.get<string>('WEBHOOK_SECRET_CLERK');
+    if (!WEBHOOK_SECRET_CLERK) {
       this.logger.error(
-        'Please add WEBHOOK_SECRET to your environment variables',
+        'Please add WEBHOOK_SECRET_CLERK to your environment variables',
         'Class:WebhookController',
       );
       throw new Error(
-        'Please add WEBHOOK_SECRET to your environment variables',
+        'Please add WEBHOOK_SECRET_CLERK to your environment variables',
       );
     }
     const user = await this.clerkWebhookAdapter.validateRequestAndProcessEvent(payload, headers);

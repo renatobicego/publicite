@@ -8,9 +8,11 @@ interface INotificationMagazine extends NotificationDocument {
             name: string;
             ownerType: string;
             groupInviting?: {
+                _id: string;
                 name: string;
             };
             userInviting?: {
+                _id: string;
                 username: string;
             };
         }
@@ -25,9 +27,11 @@ const NotificationMagazineSchema = new Schema<INotificationMagazine>({
             name: { type: String, required: true },
             ownerType: { type: String, required: true },
             groupInviting: {
+                _id: { type: String },
                 name: { type: String }
             },
             userInviting: {
+                _id: { type: String },
                 username: { type: String }
             }
         }

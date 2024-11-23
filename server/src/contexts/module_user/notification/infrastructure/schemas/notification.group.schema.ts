@@ -8,6 +8,7 @@ interface INotificationGroup extends NotificationDocument {
             name: string;
             profilePhotoUrl: string;
             userInviting: {
+                _id: string;
                 username: string;
             };
         }
@@ -22,8 +23,9 @@ const NotificationGroupSchema = new Schema<INotificationGroup>({
             name: { type: String, required: true },
             profilePhotoUrl: { type: String, required: true },
             userInviting: {
-                username: { type: String, required: true },
-            },
+                _id: { type: String },
+                username: { type: String }
+            }
         }
     }
 })

@@ -26,13 +26,13 @@ import { ClerkController } from '../controllers/clerk.controller';
         webhookService: WebhookService,
         configService: ConfigService,
       ) => {
-        const WEBHOOK_SECRET = configService.get<string>('WEBHOOK_SECRET');
-        if (!WEBHOOK_SECRET) {
+        const WEBHOOK_SECRET_CLERK = configService.get<string>('WEBHOOK_SECRET_CLERK');
+        if (!WEBHOOK_SECRET_CLERK) {
           throw new Error(
-            'Please add WEBHOOK_SECRET to your environment variables',
+            'Please add WEBHOOK_SECRET_CLERK to your environment variables',
           );
         }
-        return new ClerkWebhookAdapter(webhookService, WEBHOOK_SECRET);
+        return new ClerkWebhookAdapter(webhookService, WEBHOOK_SECRET_CLERK);
       },
       inject: [WebhookService, ConfigService], // Inyecta dependencias necesarias
     },
