@@ -16,16 +16,28 @@ import { Group } from "@/types/groupTypes";
 import { Post } from "@/types/postTypes";
 import { Magazine } from "@/types/magazineTypes";
 import useSearchUsers from "@/utils/hooks/useSearchUsers";
-import { useEffect, useState } from "react";
+import { cloneElement, useEffect, useState } from "react";
 import { SearchUsers } from "../inputs/SearchUsers";
+import { User } from "@/types/userTypes";
+
+type ShareButtonBaseProps = {
+  ButtonAction?: JSX.Element;
+  customOpen?: (openModal: () => void) => void;
+};
 
 type ShareButtonProps =
-  | { shareType: "group"; data: Group }
-  | { shareType: "post"; data: Post }
-  | { shareType: "magazine"; data: Magazine };
+  | ({ shareType: "group"; data: Group } & ShareButtonBaseProps)
+  | ({ shareType: "post"; data: Post } & ShareButtonBaseProps)
+  | ({ shareType: "user"; data: User } & ShareButtonBaseProps)
+  | ({ shareType: "magazine"; data: Magazine } & ShareButtonBaseProps);
 
-const ShareButton = ({ shareType, data }: ShareButtonProps) => {
-  const { isOpen, onOpenChange } = useDisclosure();
+const ShareButton = ({
+  shareType,
+  data,
+  ButtonAction = DefaultShareButton,
+  customOpen,
+}: ShareButtonProps) => {
+  const { onOpen, isOpen, onOpenChange } = useDisclosure();
   const { users, getUsersByQuery } = useSearchUsers();
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const url = window.location.href;
@@ -42,6 +54,13 @@ const ShareButton = ({ shareType, data }: ShareButtonProps) => {
       setSelectedUsers([]);
     }
   }, [isOpen]);
+
+  useEffect(() => {
+    // If customOpen is passed, set the openModal function to it
+    if (customOpen) {
+      customOpen(onOpen);
+    }
+  }, [customOpen, onOpen]);
 
   const handleShare = () => {
     switch (shareType) {
@@ -61,18 +80,8 @@ const ShareButton = ({ shareType, data }: ShareButtonProps) => {
   };
   return (
     <>
-      <Tooltip placement="bottom" content="Compartir">
-        <Button
-          isIconOnly
-          variant="flat"
-          color="secondary"
-          radius="full"
-          className="p-1"
-          onPress={onOpenChange}
-        >
-          <FaShareAlt />
-        </Button>
-      </Tooltip>
+      {cloneElement(ButtonAction, { onPress: onOpen })}
+
       <Modal placement="center" isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
           {(onClose) => (
@@ -117,3 +126,17 @@ const ShareButton = ({ shareType, data }: ShareButtonProps) => {
 };
 
 export default ShareButton;
+
+const DefaultShareButton = (
+  <Tooltip placement="bottom" content="Compartir">
+    <Button
+      isIconOnly
+      variant="flat"
+      color="secondary"
+      radius="full"
+      className="p-1"
+    >
+      <FaShareAlt />
+    </Button>
+  </Tooltip>
+);

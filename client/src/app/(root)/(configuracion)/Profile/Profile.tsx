@@ -1,4 +1,4 @@
-import { Divider, Spinner } from "@nextui-org/react";
+import { Divider, Spinner, user } from "@nextui-org/react";
 import PersonalData from "./PersonalData/PersonalData";
 import Description from "./Description/Description";
 import SocialMedia from "./SocialMedia/SocialMedia";
@@ -38,7 +38,7 @@ const Profile = ({username} : {username: string}) => {
       <Divider />
       <MemoizedPersonalData data={userData} />
       <Divider />
-      <MemoizedDescription description={userData.description} />
+      <MemoizedDescription description={userData.description} isBusiness={false} />
       <Divider />
       <MemoizedSocialMedia contact={userData.contact} />
     </section>

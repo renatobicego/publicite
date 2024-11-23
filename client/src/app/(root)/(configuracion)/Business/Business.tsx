@@ -26,7 +26,7 @@ const Business = ({username} : {username: string}) => {
       <Divider />
       <BusinessData data={userData}/>
       <Divider />
-      <Description description={userData.description}/>
+      <Description description={userData.description} isBusiness/>
       <Divider />
       <SocialMedia contact={userData.contact}/>
     </section>

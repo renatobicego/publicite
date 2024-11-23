@@ -372,12 +372,6 @@ type PostCategoryResponse {
   _id: String!
 }
 
-type front_data_GROUP {
-  _id: String!
-  name: String!
-  profilePhotoUrl: String!
-}
-
 type backData {
   userIdTo: String
   userIdFrom: String
@@ -393,6 +387,13 @@ type groupInviting {
   _id: String
 }
 
+type front_data_GROUP {
+  _id: String!
+  name: String!
+  profilePhotoUrl: String!
+  userInviting: userInviting
+}
+
 type magazineNotification {
   _id: String!
   name: String!
@@ -403,7 +404,6 @@ type magazineNotification {
 
 type frontData {
   group: front_data_GROUP
-  userInviting: userInviting
   magazine: magazineNotification
 }
 

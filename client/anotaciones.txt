@@ -51,6 +51,7 @@ boton de compartir app
 - ORDEN REVISTAS
 - mensaje de grupo tipo nota
 - APP: BUSCAR
+- PIZARRA CREAR NO RESPONDE BD
 
 - Podriamos diferencias aca las revistas, por ejemplo la primer revista “debería traerme soy creador” 
     es una revista de grupo, por ahí con el ownerType poner en algun l
