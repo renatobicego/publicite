@@ -34,7 +34,6 @@ export class NotificationFactory implements NotificationFactoryInterface {
 
         const baseNotification = new Notification(event, viewed, date, backData.userIdTo, isActionsAvailable, backData);
 
-
         switch (notificationType) {
             case typeOfNotification.group_notification:
                 return new NotificationGroup(baseNotification, frontData);

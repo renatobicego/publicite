@@ -1,6 +1,6 @@
 import { Logger, UnauthorizedException } from '@nestjs/common';
 
-function checkResultModificationOfOperation(result: any, message?: string) {
+function chekResultOfOperation(result: any, message?: string) {
   if (!result || result == null) {
     Logger.error(
       message ??
@@ -24,4 +24,12 @@ function checkResultModificationOfOperation(result: any, message?: string) {
   }
 }
 
-export { checkResultModificationOfOperation };
+
+function checkIfanyDataWasModified(result: any) {
+  chekResultOfOperation(result);
+  if (result.modifiedCount === 0) {
+    throw new Error('No data was modified in the database. Please verify you request.');
+  }
+}
+
+export { chekResultOfOperation, checkIfanyDataWasModified };

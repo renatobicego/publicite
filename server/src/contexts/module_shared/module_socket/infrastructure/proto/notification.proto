@@ -19,10 +19,10 @@ message Notification {
   string event = 1;
   bool viewed = 2;
   string date = 3;
-  BackData backData = 4;
+  backData backData = 4;
 }
 
-message BackData {
+message backData {
   string userIdTo = 1;
   string userIdFrom = 2;
 }

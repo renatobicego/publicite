@@ -1,6 +1,7 @@
 import { Notification } from "./notification.entity";
 
 export class NotificationGroup extends Notification {
+
     private frontData: {
         group: {
             _id: string;
@@ -27,7 +28,7 @@ export class NotificationGroup extends Notification {
             }
         }
     ) {
-        super(notification.getEvent, notification.getViewed, notification.getDate, notification.getUser, notification.getIsActionsAvailable, notification.getBackData);
+        super(notification.getEvent, notification.getViewed, notification.getDate, notification.getUser, notification.getIsActionsAvailable, notification.getbackData);
         this.frontData = frontData;
     }
 

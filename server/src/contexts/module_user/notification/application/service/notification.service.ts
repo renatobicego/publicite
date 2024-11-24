@@ -14,7 +14,6 @@ import { NotificationMagazineServiceInterface } from "../../domain/service/notif
 import { NotificationMagazine } from "../../domain/entity/notification.magazine.entity";
 import { NotificationFactory } from "../notification.factory";
 import { MagazineServiceInterface } from "src/contexts/module_magazine/magazine/domain/service/magazine.service.interface";
-import { MagazineEventsManager } from "./magazine.events.manager";
 import { NotificationServiceInterface } from "../../domain/service/notification.service.interface";
 import { GROUP_notification_graph_model_get_all } from "../dtos/getAll.notification.dto";
 
@@ -107,7 +106,7 @@ export class NotificationService implements NotificationGroupServiceInterface, N
                     await this.userService.pushNotification(notificationId, userIdToSendNotification, session);
                     await this.groupService.pushNotificationToGroup(
                         notificationGroup.getGroupId,
-                        notificationGroup.getBackData,
+                        notificationGroup.getbackData,
                         event,
                         session,
                     );
@@ -120,7 +119,6 @@ export class NotificationService implements NotificationGroupServiceInterface, N
                 }
             });
         } catch (error: any) {
-            if (session) await session.abortTransaction();
             this.logger.error('An error occurred while sending notification');
             throw error;
         } finally {
@@ -145,8 +143,8 @@ export class NotificationService implements NotificationGroupServiceInterface, N
                 if (event === userHasBeenRemovedFromMagazine) {
 
                     const memberDeleteData: memberForDeleteData = {
-                        memberToDelete: notificationMagazine.getBackData.userIdTo,
-                        magazineAdmin: notificationMagazine.getBackData.userIdFrom,
+                        memberToDelete: notificationMagazine.getbackData.userIdTo,
+                        magazineAdmin: notificationMagazine.getbackData.userIdFrom,
                         magazineId: magazineId,
                         magazineType: magazineType,
                     }
@@ -155,8 +153,8 @@ export class NotificationService implements NotificationGroupServiceInterface, N
                 }
                 if (event === userAceptTheInvitationOfCollaborator) {
                     const newMemberData: newMemberData = {
-                        memberToAdd: notificationMagazine.getBackData.userIdFrom,
-                        magazineAdmin: notificationMagazine.getBackData.userIdTo,
+                        memberToAdd: notificationMagazine.getbackData.userIdFrom,
+                        magazineAdmin: notificationMagazine.getbackData.userIdTo,
                         magazineId: magazineId,
                         magazineType: magazineType
                     }

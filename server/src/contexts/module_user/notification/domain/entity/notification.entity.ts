@@ -1,47 +1,52 @@
 
 export class Notification {
-    private event: string
-    private viewed: boolean
-    private date: string
-    private user: string;
-    private isActionsAvailable: boolean;
-    private backdata: {
-        userIdTo: string
-        userIdFrom: string
+    private notification: {
+        event: string;
+        viewed: boolean;
+        date: string;
+        user: string;
+        isActionsAvailable: boolean;
+        backData: {
+            userIdTo: string
+            userIdFrom: string
+        }
     }
 
 
-    constructor(event: string, viewed: boolean, date: string, user: string, isActionsAvailable: boolean, backdata: { userIdTo: string, userIdFrom: string }) {
-        this.event = event;
-        this.viewed = viewed;
-        this.date = date;
-        this.user = user;
-        this.isActionsAvailable = isActionsAvailable;
-        this.backdata = backdata;
+
+    constructor(event: string, viewed: boolean, date: string, user: string, isActionsAvailable: boolean, backData: { userIdTo: string, userIdFrom: string }) {
+        this.notification = {
+            event: event,
+            viewed: viewed,
+            date: date,
+            user: user,
+            isActionsAvailable: isActionsAvailable,
+            backData: backData,
+        };
     }
 
-    get getViewed() {
-        return this.viewed;
+    get getViewed(): boolean {
+        return this.notification.viewed;
     }
 
-    get getDate() {
-        return this.date;
+    get getDate(): string {
+        return this.notification.date;
     }
 
     get getIsActionsAvailable() {
-        return this.isActionsAvailable;
+        return this.notification.isActionsAvailable;
     }
 
 
     get getEvent(): string {
-        return this.event;
+        return this.notification.event;
     }
 
     get getUser(): string {
-        return this.user
+        return this.notification.user
     }
-    get getBackData(): { userIdTo: string, userIdFrom: string } {
-        return this.backdata
+    get getbackData(): { userIdTo: string, userIdFrom: string } {
+        return this.notification.backData
     }
 
 

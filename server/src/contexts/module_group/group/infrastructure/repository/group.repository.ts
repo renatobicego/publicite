@@ -13,7 +13,7 @@ import {
 import { GroupUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/group.update.request';
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { GroupMagazineDocument } from 'src/contexts/module_magazine/magazine/infrastructure/schemas/magazine.group.schema';
-import { checkResultModificationOfOperation } from 'src/contexts/module_shared/utils/functions/checkResultModificationOfOperation';
+import { checkIfanyDataWasModified, chekResultOfOperation } from 'src/contexts/module_shared/utils/functions/check.result.functions';
 import { IUser } from 'src/contexts/module_user/user/infrastructure/schemas/user.schema';
 import { GroupDocument } from '../schemas/group.schema';
 import { PostsMemberGroupResponse } from '../../application/adapter/dto/HTTP-RESPONSE/group.posts.member.response';
@@ -56,7 +56,7 @@ export class GroupRepository implements GroupRepositoryInterface {
           { session },
         );
 
-        checkResultModificationOfOperation(
+        chekResultOfOperation(
           resultOfOperation,
           'Group not found or the new creator is not an admin',
         );
@@ -97,7 +97,7 @@ export class GroupRepository implements GroupRepositoryInterface {
             { session },
           )
           .lean();
-        checkResultModificationOfOperation(
+        chekResultOfOperation(
           result,
           'Member cant be added to group, member is not in group invitation or group does not exist',
         );
@@ -136,7 +136,7 @@ export class GroupRepository implements GroupRepositoryInterface {
           },
         )
         .lean();
-      checkResultModificationOfOperation(result);
+      chekResultOfOperation(result);
       this.logger.log(
         'Magazines added to group successfully Group ID: ' + groupId,
       );
@@ -168,7 +168,7 @@ export class GroupRepository implements GroupRepositoryInterface {
             { session },
           )
           .lean();
-        checkResultModificationOfOperation(result);
+        chekResultOfOperation(result);
         await this.userModel
           .updateOne(
             { _id: newMember },
@@ -219,7 +219,7 @@ export class GroupRepository implements GroupRepositoryInterface {
             { session },
           )
           .lean();
-        checkResultModificationOfOperation(
+        chekResultOfOperation(
           result,
           'You dont have permissions or the new admin is not a member',
         );
@@ -314,7 +314,7 @@ export class GroupRepository implements GroupRepositoryInterface {
           )
           .lean();
 
-        checkResultModificationOfOperation(result);
+        chekResultOfOperation(result);
 
         await this.userModel
           .updateMany(
@@ -817,8 +817,8 @@ export class GroupRepository implements GroupRepositoryInterface {
     session: any,
   ): Promise<any> {
     try {
-      await this.groupModel
-        .findOneAndUpdate(
+      const result = await this.groupModel
+        .updateOne(
           { _id: groupId },
           {
             $addToSet: {
@@ -828,7 +828,7 @@ export class GroupRepository implements GroupRepositoryInterface {
         )
         .session(session)
         .lean();
-
+      checkIfanyDataWasModified(result);
       this.logger.log(
         'Join request added to group successfully. Group ID: ' + groupId,
       );
@@ -843,8 +843,9 @@ export class GroupRepository implements GroupRepositoryInterface {
     session: any,
   ): Promise<any> {
     try {
-      await this.groupModel
-        .findOneAndUpdate(
+      const result = await this.groupModel
+
+        .updateOne(
           { _id: groupId },
           {
             $addToSet: {
@@ -854,7 +855,7 @@ export class GroupRepository implements GroupRepositoryInterface {
         )
         .session(session)
         .lean();
-
+      checkIfanyDataWasModified(result);
       this.logger.log(
         'Group request added to group successfully. Group ID: ' + groupId,
       );
@@ -869,8 +870,8 @@ export class GroupRepository implements GroupRepositoryInterface {
     session: any,
   ): Promise<any> {
     try {
-      await this.groupModel
-        .findOneAndUpdate(
+      const result = await this.groupModel
+        .updateOne(
           { _id: groupId },
           {
             $pull: {
@@ -879,8 +880,7 @@ export class GroupRepository implements GroupRepositoryInterface {
           },
         )
         .session(session)
-        .lean();
-
+      checkIfanyDataWasModified(result);
       this.logger.log(
         'Group request remove to group successfully. Group ID: ' + groupId,
       );
@@ -894,8 +894,8 @@ export class GroupRepository implements GroupRepositoryInterface {
     session: any,
   ): Promise<any> {
     try {
-      await this.groupModel
-        .findOneAndUpdate(
+      const result = await this.groupModel
+        .updateOne(
           { _id: groupId },
           {
             $pull: {
@@ -904,7 +904,7 @@ export class GroupRepository implements GroupRepositoryInterface {
           },
         )
         .session(session)
-        .lean();
+      checkIfanyDataWasModified(result);
 
       this.logger.log(
         'Join request remove to group successfully. Group ID: ' + groupId,

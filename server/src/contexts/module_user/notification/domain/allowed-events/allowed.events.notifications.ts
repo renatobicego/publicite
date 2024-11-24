@@ -32,7 +32,7 @@ const eventsThatMakeActionsInactive = [
     'notification_group_user_accepted', // Te han aceptado en un grupo -> 2
     'notification_group_user_rejected', // Te han rechazado en un grupo -> 3
     'notification_group_user_rejected_group_invitation', // usuario B rechazo unirse al grupo -> 4
-    'notification_magazine_acepted',
+    'notification_magazine_acepted', //usuario acepto unirse
 
 ]
 

@@ -24,7 +24,7 @@ import { MagazineRepositoryMapperInterface } from '../../domain/repository/mappe
 
 import { MagazineSectionCreateRequest } from '../../application/adapter/dto/HTTP-REQUEST/magazineSection.create.request';
 import { GroupDocument } from 'src/contexts/module_group/group/infrastructure/schemas/group.schema';
-import { checkResultModificationOfOperation } from 'src/contexts/module_shared/utils/functions/checkResultModificationOfOperation';
+import { checkIfanyDataWasModified, chekResultOfOperation } from 'src/contexts/module_shared/utils/functions/check.result.functions';
 import { IUser } from 'src/contexts/module_user/user/infrastructure/schemas/user.schema';
 import { MagazineUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/magazine.update.request';
 import { UserMagazineAllowedVerificationsInterface } from '../../domain/repository/user.allowed.verifications.interface';
@@ -108,7 +108,7 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
           { $addToSet: { sections: sectionId } },
           { session },
         );
-        checkResultModificationOfOperation(
+        chekResultOfOperation(
           result,
           'Error saving section in repository, you dont have permissions',
         );
@@ -164,7 +164,7 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
             $or: [{ user: magazineAdmin }, { collaborators: magazineAdmin }],
           })
           .session(session);
-        checkResultModificationOfOperation(
+        chekResultOfOperation(
           result,
           'You must be an admin or a collaborator to add a post to a magazine',
         );
@@ -201,7 +201,7 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
       );
 
 
-      checkResultModificationOfOperation(result);
+      chekResultOfOperation(result);
 
       await this.userModel.updateMany(
         { _id: { $in: newCollaborators } },
@@ -233,7 +233,7 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
         })
         .session(session)
         .lean();
-      checkResultModificationOfOperation(result);
+      chekResultOfOperation(result);
 
       await this.groupMagazine
         .updateOne(
@@ -283,8 +283,9 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
           { $pullAll: { collaborators: collaboratorsToDelete } },
           { session },
         )
+      checkIfanyDataWasModified(result);
 
-      checkResultModificationOfOperation(result);
+
 
       await this.userModel
         .updateMany(
@@ -318,7 +319,7 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
         .session(session)
         .lean();
 
-      checkResultModificationOfOperation(result);
+      checkIfanyDataWasModified(result);
 
       await this.userModel
         .updateMany(
@@ -394,7 +395,7 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
           { $pullAll: { sections: [sectionIdsToDelete] } },
           { session },
         );
-        checkResultModificationOfOperation(resultOfOperation);
+        chekResultOfOperation(resultOfOperation);
         await this.magazineSection.deleteMany(
           {
             _id: { $in: sectionIdsToDelete },

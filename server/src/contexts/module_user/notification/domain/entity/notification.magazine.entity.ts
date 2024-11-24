@@ -36,7 +36,7 @@ export class NotificationMagazine extends Notification {
             }
         }
     ) {
-        super(notification.getEvent, notification.getViewed, notification.getDate, notification.getUser, notification.getIsActionsAvailable, notification.getBackData);
+        super(notification.getEvent, notification.getViewed, notification.getDate, notification.getUser, notification.getIsActionsAvailable, notification.getbackData);
         this.frontData = frontData;
     }
 

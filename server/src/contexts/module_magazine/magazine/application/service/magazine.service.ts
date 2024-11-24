@@ -217,6 +217,8 @@ export class MagazineService implements MagazineServiceInterface {
         magazineAdmin,
         session,
       );
+
+
     } catch (error: any) {
       this.logger.error('Error deleting Collaborators from Magazine in service');
       throw error;

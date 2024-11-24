@@ -8,7 +8,7 @@ import { INotificationGroup, NotificationGroupModel } from "../schemas/notificat
 import { NotificationMagazine } from "../../domain/entity/notification.magazine.entity";
 import { INotificationMagazine, NotificationMagazineModel } from "../schemas/notification.magazine.schema";
 import NotificationModel, { NotificationDocument } from "../schemas/notification.schema";
-import { GROUP_notification_graph_model_get_all } from "../../application/dtos/getAll.notification.dto";
+import { GROUP_notification_graph_model_get_all, Notification } from "../../application/dtos/getAll.notification.dto";
 import { parseZonedDateTime } from "@internationalized/date";
 
 
@@ -23,19 +23,33 @@ export class NotificationRepository implements NotificationRepositoryInterface {
         @InjectModel(NotificationModel.modelName)
         private readonly notificationBaseDocument: Model<NotificationDocument>,
 
-    ) {
+    ) { }
 
-    }
+
     async changeNotificationStatus(userRequestId: string, notificationId: string[], view: boolean): Promise<void> {
         try {
-            this.logger.log('');
-            await this.notificationBaseDocument.updateMany({ user: userRequestId, _id: { $in: notificationId } }, { viewed: view });
+            this.logger.log(`Changing notification status for user ${userRequestId}`);
+
+            await this.notificationBaseDocument.updateMany(
+                {
+                    "notification.user": userRequestId,
+                    "_id": { $in: notificationId }
+                },
+                {
+                    $set: { "notification.viewed": view }
+                }
+            );
+
+            this.logger.log(`Successfully updated notification status for user ${userRequestId}`);
         } catch (error: any) {
-            this.logger.error('', error.message);
-            this.logger.error(error)
+            this.logger.error('Error while changing notification status:', error.message);
+            this.logger.error(error);
             throw error;
         }
     }
+
+
+
 
     async getAllNotificationsFromUserById(
         id: string,
@@ -43,12 +57,9 @@ export class NotificationRepository implements NotificationRepositoryInterface {
         page: number,
     ): Promise<GROUP_notification_graph_model_get_all> {
         try {
-
-
-
             const userNotificationResponse =
                 await this.notificationBaseDocument
-                    .find({ user: id })
+                    .find({ "notification.user": id })
                     .limit(limit + 1)
                     .skip((page - 1) * limit)
 
@@ -56,24 +67,29 @@ export class NotificationRepository implements NotificationRepositoryInterface {
                 return { notifications: [], hasMore: false };
 
 
-
             const notificationsSorted = userNotificationResponse
-                .sort((notificationA: any, notificationB: any) => {
-                    const dateA = parseZonedDateTime(notificationA.date);
-                    const dateB = parseZonedDateTime(notificationB.date);
-                    return dateB.compare(dateA);
+                .map((notif: any) => {
+                    return new Notification(notif._id, notif.notification, notif.frontData);
                 })
+                .sort((notificationA: any, notificationB: any) => {
+
+                    const dateA = parseZonedDateTime(notificationA.notification.date).toDate();
+                    const dateB = parseZonedDateTime(notificationB.notification.date).toDate();
+
+                    return dateB.getTime() - dateA.getTime();
+                });
 
             const hasMore = notificationsSorted.length > page * limit;
             const notificationResponse = notificationsSorted.slice(0, limit);
             return {
-                notifications: notificationResponse as any,
+                notifications: notificationResponse,
                 hasMore: hasMore,
             };
         } catch (error: any) {
             throw error;
         }
     }
+
 
 
 

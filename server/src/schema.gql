@@ -372,49 +372,58 @@ type PostCategoryResponse {
   _id: String!
 }
 
-type front_data_GROUP {
-  _id: String!
-  name: String!
-  profilePhotoUrl: String!
-}
-
 type backData {
   userIdTo: String
   userIdFrom: String
 }
 
-type userInviting {
-  username: String!
-  _id: String
-}
-
-type groupInviting {
-  name: String!
-  _id: String
-}
-
-type magazineNotification {
-  _id: String!
-  name: String!
-  ownerType: String!
-  userInviting: userInviting
-  groupInviting: groupInviting
-}
-
-type frontData {
-  group: front_data_GROUP
-  userInviting: userInviting
-  magazine: magazineNotification
-}
-
-type Notification {
-  _id: String!
+type Notification_graph_general_schema {
   event: String!
   viewed: Boolean!
   date: String!
   user: String!
   isActionsAvailable: String!
-  backData: backData
+  backData: backData!
+}
+
+type userInviting_magazine {
+  _id: String
+  username: String
+}
+
+type groupInviting_magazine {
+  _id: String
+  name: String
+}
+
+type front_data_MAGAZINE {
+  _id: String!
+  name: String!
+  ownerType: String!
+  userInviting: userInviting_magazine
+  groupInviting: groupInviting_magazine
+}
+
+type userInviting_group {
+  _id: String
+  username: String
+}
+
+type front_data_GROUP {
+  _id: String!
+  name: String!
+  profilePhotoUrl: String!
+  userInviting: userInviting_group
+}
+
+type frontData {
+  group: front_data_GROUP
+  magazine: front_data_MAGAZINE
+}
+
+type Notification {
+  _id: String!
+  notification: Notification_graph_general_schema!
   frontData: frontData!
 }
 
