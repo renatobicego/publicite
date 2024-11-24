@@ -25,7 +25,7 @@ const MagazineNotificationCard = ({
   notification: MagazineNotification;
 }) => {
   const { magazine } = notification.frontData;
-  const { event } = notification.notification;
+  const { event, backData, viewed, date } = notification;
   const { userIdLogged, usernameLogged } = useUserData();
   const { updateSocketToken } = useSocket();
   const getNotificationOptionsList = () => {
@@ -50,7 +50,7 @@ const MagazineNotificationCard = ({
               _id: userIdLogged,
               username: usernameLogged,
             },
-            notification.notification.backData.userIdFrom
+            backData.userIdFrom
           );
         },
       });
@@ -79,7 +79,7 @@ const MagazineNotificationCard = ({
               _id: userIdLogged,
               username: usernameLogged,
             },
-            notification.notification.backData.userIdFrom
+            backData.userIdFrom
           );
         },
       });
@@ -87,23 +87,27 @@ const MagazineNotificationCard = ({
     return optionsList;
   };
   return (
-    <NotificationCard isNew={!notification.notification.viewed}>
+    <NotificationCard isNew={!viewed}>
       <NotificationImage>
         <IoBook className="text-secondary size-14" />
       </NotificationImage>
       <NotificationBody>
         <p className="text-sm">
-          {magazineNotificationMessages[event as MagazineNotificationType].showUser && (
+          {magazineNotificationMessages[event as MagazineNotificationType]
+            .showUser && (
             <span className="font-semibold">
               {notification.frontData.magazine.userInviting.username}
             </span>
           )}{" "}
-          {magazineNotificationMessages[event as MagazineNotificationType].message}
+          {
+            magazineNotificationMessages[event as MagazineNotificationType]
+              .message
+          }
           <span className="font-semibold"> {magazine.name}</span>
         </p>
       </NotificationBody>
       <NotificationOptions
-        date={showDate(parseZonedDateTime(notification.notification.date))}
+        date={showDate(parseZonedDateTime(date))}
         items={getNotificationOptionsList()}
       />
     </NotificationCard>

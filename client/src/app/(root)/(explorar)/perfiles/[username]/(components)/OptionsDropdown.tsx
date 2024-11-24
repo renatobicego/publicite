@@ -1,6 +1,6 @@
 "use client";
 import ShareButton from "@/components/buttons/ShareButton";
-import { User } from "@/types/userTypes";
+import { GetUser } from "@/types/userTypes";
 import {
   Button,
   Dropdown,
@@ -12,7 +12,7 @@ import { useRef } from "react";
 import { FaShareAlt } from "react-icons/fa";
 import { FaChevronDown } from "react-icons/fa6";
 
-const OptionsDropdown = ({ user }: { user: User }) => {
+const OptionsDropdown = ({ user }: { user: GetUser }) => {
   const userShareRef = useRef<() => void>(() => {});
   const handleShareOpenModal = () => {
     if (userShareRef.current) {

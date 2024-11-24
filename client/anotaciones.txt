@@ -40,7 +40,7 @@ boton de compartir app
 - suscripcion de grupp
 - editar secciones de revista modal (listo)
 - errorres de noti
-- cmbiar formato de notificacion (listo mag)
+- cmbiar formato de notificacion (HAY QUE HACERLO DE NUEVO)
 - compartir cosas (ui lista, falta funcionaidad de compartir por notificacion)
 - notificacion de navegador (listo)
 - crear grupo invita colaborador pero no aparece notificacion o no se borra bien del array de inivtaciones

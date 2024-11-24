@@ -7,11 +7,10 @@ import {
 import { groupNotificationBaseMessages } from "@/components/notifications/groups/notificationMessages";
 import { notificationMagazineBaseMessages } from "@/components/notifications/magazines/notificationMessages";
 import { showBrowserNotification } from "./browserNotifications";
-import { FILE_URL } from "../data/urls";
 
 // Handle group notifications
 export const handleGroupNotification = (data: GroupNotification) => {
-  const event = data.notification.event as GroupNotificationType;
+  const event = data.event as GroupNotificationType;
   const showUser = groupNotificationBaseMessages[event].showUser;
   const groupName = data.frontData.group.name;
   const message = showUser
@@ -26,7 +25,7 @@ export const handleGroupNotification = (data: GroupNotification) => {
 
 // Handle magazine notifications
 export const handleMagazineNotification = (data: MagazineNotification) => {
-  const event = data.notification.event as MagazineNotificationType;
+  const event = data.event as MagazineNotificationType;
   const showUser = notificationMagazineBaseMessages[event].showUser;
   const magazineName = data.frontData.magazine.name;
   const message = showUser

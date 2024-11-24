@@ -73,13 +73,16 @@ export const getAllNotificationsQuery = gql`
         date
         event
         isActionsAvailable
-        user
         viewed
         frontData {
           group {
             _id
             name
             profilePhotoUrl
+            userInviting {
+              _id
+              username
+            }
           }
           magazine {
             _id
@@ -93,10 +96,6 @@ export const getAllNotificationsQuery = gql`
               _id
               username
             }
-          }
-          userInviting {
-            _id
-            username
           }
         }
       }

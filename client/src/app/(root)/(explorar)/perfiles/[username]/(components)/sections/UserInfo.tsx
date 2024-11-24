@@ -65,7 +65,7 @@ const UserInfo = ({
             />
           )}
           {user.contact && <SocialMedia contact={user.contact} />}
-          <OptionsDropdown username={user.username} />
+          <OptionsDropdown user={user} />
         </div>
       </div>
     </section>

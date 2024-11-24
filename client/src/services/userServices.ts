@@ -161,6 +161,7 @@ export const getNotifications = async (
       hasMore: false
     };
   }
+  const token = await user.getToken({ template: "testing" })
   try {
     const { data } = await query({
       query: getAllNotificationsQuery,
@@ -171,7 +172,7 @@ export const getNotifications = async (
       },
       context: {
         headers: {
-          Authorization: await auth().getToken(),
+          Authorization: token,
         },
       },
     });

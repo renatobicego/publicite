@@ -18,7 +18,7 @@ import { Magazine } from "@/types/magazineTypes";
 import useSearchUsers from "@/utils/hooks/useSearchUsers";
 import { cloneElement, useEffect, useState } from "react";
 import { SearchUsers } from "../inputs/SearchUsers";
-import { User } from "@/types/userTypes";
+import { GetUser, User } from "@/types/userTypes";
 
 type ShareButtonBaseProps = {
   ButtonAction?: JSX.Element;
@@ -28,7 +28,7 @@ type ShareButtonBaseProps = {
 type ShareButtonProps =
   | ({ shareType: "group"; data: Group } & ShareButtonBaseProps)
   | ({ shareType: "post"; data: Post } & ShareButtonBaseProps)
-  | ({ shareType: "user"; data: User } & ShareButtonBaseProps)
+  | ({ shareType: "user"; data: User | GetUser } & ShareButtonBaseProps)
   | ({ shareType: "magazine"; data: Magazine } & ShareButtonBaseProps);
 
 const ShareButton = ({
