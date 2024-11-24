@@ -15,7 +15,6 @@ import { UserPreferencesEntityDto } from '../../domain/entity/dto/user.preferenc
 import { UP_clerkUpdateRequestDto } from 'src/contexts/module_webhook/clerk/application/dto/UP-clerk.update.request';
 import { UserFindAllResponse } from '../adapter/dto/HTTP-RESPONSE/user.response.dto';
 
-
 @Injectable()
 export class UserService implements UserServiceInterface {
   constructor(
@@ -25,8 +24,7 @@ export class UserService implements UserServiceInterface {
     private readonly contactService: ContactServiceInterface,
     private readonly logger: MyLoggerService,
     @InjectConnection() private readonly connection: Connection,
-  ) { }
-
+  ) {}
 
   async createUser(req: User, contactDto: any): Promise<User> {
     const session = await this.connection.startSession();
@@ -128,7 +126,6 @@ export class UserService implements UserServiceInterface {
     }
   }
 
-
   async saveNewPost(
     postId: ObjectId,
     authorId: ObjectId,
@@ -142,8 +139,11 @@ export class UserService implements UserServiceInterface {
     }
   }
 
-
-  async pushNotification(notification: Types.ObjectId, userId: string, session?: any): Promise<any> {
+  async pushNotification(
+    notification: Types.ObjectId,
+    userId: string,
+    session?: any,
+  ): Promise<any> {
     try {
       this.logger.log(
         'Notification received in the service: ' + UserService.name,
@@ -153,7 +153,6 @@ export class UserService implements UserServiceInterface {
       throw error;
     }
   }
-
 
   async updateUserPreferencesByUsername(
     username: string,
@@ -167,7 +166,7 @@ export class UserService implements UserServiceInterface {
     } catch (error: any) {
       this.logger.error(
         'An error has occurred in user service - updateUserPreferencesByUsername: ' +
-        error,
+          error,
       );
       throw error;
     }
@@ -203,7 +202,7 @@ export class UserService implements UserServiceInterface {
     } catch (error: any) {
       this.logger.error(
         'An error has occurred in user service - UpdateUserByClerk: ' +
-        error.message,
+          error.message,
       );
       throw error;
     }

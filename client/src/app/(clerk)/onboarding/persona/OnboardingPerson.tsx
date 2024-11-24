@@ -10,8 +10,10 @@ import OnboardingPersonInputs from "./OnboardingPersonInputs";
 import { completeOnboardingPerson } from "../_actions";
 import { toastifyError } from "@/utils/functions/toastify";
 import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
+import { useUser } from "@clerk/nextjs";
 const OnboardingPerson = ({user} : {user: any}) => {
   const router = useRouter();
+  const {user: clerkUser} = useUser();
   if (!user) return null;
 
   const initialValues: UserPersonFormValues = {
@@ -40,6 +42,7 @@ const OnboardingPerson = ({user} : {user: any}) => {
     const res = await completeOnboardingPerson(formData);
     if (res?.message) {
       // Reloads the user's data from Clerk's API
+      await clerkUser?.reload();
       router.refresh();
       return
     }

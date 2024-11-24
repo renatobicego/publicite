@@ -4,7 +4,13 @@ import DataBox, { DataItem, EditButton } from "../../DataBox";
 import AnimatedBox from "../../AnimatedBox";
 import DescriptionForm from "./DescriptionForm";
 
-const Description = ({ description }: { description?: string }) => {
+const Description = ({
+  description,
+  isBusiness,
+}: {
+  description?: string;
+  isBusiness?: boolean;
+}) => {
   const [isFormVisible, setIsFormVisible] = useState(false);
 
   return (
@@ -18,7 +24,7 @@ const Description = ({ description }: { description?: string }) => {
           key={"formDescription"}
           setIsFormVisible={setIsFormVisible}
           description={description}
-          isBusiness
+          isBusiness={isBusiness}
         />
       ) : (
         <DataBox labelText="Descripción" className="my-2.5">

@@ -20,7 +20,7 @@ const GroupNotificationCard = ({
   notification: GroupNotification;
 }) => {
   const { group } = notification.frontData;
-  const { event } = notification.notification;
+  const { event, viewed, date } = notification;
   const { updateSocketToken } = useSocket();
   const getNotificationOptionsList = () => {
     const optionsList: NotificationOptionProps[] = [];
@@ -61,7 +61,7 @@ const GroupNotificationCard = ({
     return optionsList;
   };
   return (
-    <NotificationCard isNew={!notification.notification.viewed}>
+    <NotificationCard isNew={!viewed}>
       <GroupImage group={group} />
       <NotificationBody>
         <p className="text-sm">
@@ -75,7 +75,7 @@ const GroupNotificationCard = ({
         </p>
       </NotificationBody>
       <NotificationOptions
-        date={showDate(parseZonedDateTime(notification.notification.date))}
+        date={showDate(parseZonedDateTime(date))}
         items={getNotificationOptionsList()}
       />
     </NotificationCard>

@@ -10,15 +10,10 @@ import {
 import { useState } from "react";
 import Search from "./Search";
 import MobileMenu from "./MobileMenu";
-import dynamic from "next/dynamic";
 import NavMenuItems from "./NavMenuItems";
 import UserNavItems from "./UserNavItems";
 
-const Header = ({
-  isSignedIn,
-}: {
-  isSignedIn: boolean;
-}) => {
+const Header = ({ isSignedIn }: { isSignedIn: boolean }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   return (
@@ -57,6 +52,7 @@ const Header = ({
           className={`flex-1 !transition-all duration-300 ${
             isFocused ? "w-full" : "w-auto"
           }`}
+          id="search"
         >
           <Search isFocused={isFocused} setIsFocused={setIsFocused} />
         </NavbarItem>
@@ -70,17 +66,12 @@ const Header = ({
       </NavbarContent>
       <NavbarContent
         justify="end"
+        id="user-options"
         className={`max-w-fit gap-2 !transition-all duration-300`}
       >
-        <UserNavItems
-          isMenuOpen={isMenuOpen}
-          isFocused={isFocused}
-        />
+        <UserNavItems isMenuOpen={isMenuOpen} isFocused={isFocused} />
       </NavbarContent>
-      <MobileMenu
-        setIsMenuOpen={setIsMenuOpen}
-        isSignedIn={isSignedIn}
-      />
+      <MobileMenu setIsMenuOpen={setIsMenuOpen} isSignedIn={isSignedIn} />
     </Navbar>
   );
 };

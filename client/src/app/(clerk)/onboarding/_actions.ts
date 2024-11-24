@@ -26,6 +26,7 @@ export const completeOnboardingPerson = async (formData: UserPersonFormValues) =
     });
     return { message: res.publicMetadata };
   } catch (err) {
+    console.log(err)
     return { error: "Error al completar el registro. Por favor intenta de nuevo." };
   }
 };

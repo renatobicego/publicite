@@ -1,5 +1,5 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
-import HelpButton from "../../components/buttons/HelpButton";
+import HelpButton from "../../components/buttons/HelpButton/HelpButton";
 import Footer from "../../components/Footer/Footer";
 import Header from "../../components/Header/Header";
 import { BackgroundProvider } from "./providers/backgroundProvider";

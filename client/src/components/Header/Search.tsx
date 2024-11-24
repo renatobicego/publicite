@@ -94,7 +94,6 @@ const Search = ({
 
   return (
     <Input
-      id="search"
       startContent={
         searchParams.get("busqueda") && !searchTerm ? (
           <Tooltip content="Limpiar búsqueda">
@@ -199,6 +198,7 @@ const DropdownSolapas = ({
     <>
       <Divider className="h-1/2" orientation="vertical" />
       <Button
+        id="solapas-button"
         onPress={onOpen}
         radius="full"
         variant="light"

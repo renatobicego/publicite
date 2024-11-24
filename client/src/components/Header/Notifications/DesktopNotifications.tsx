@@ -24,7 +24,7 @@ const DesktopNotifications = ({
   const { notifications, isLoading } = useNotificationsContext();
 
   const newNotifications = notifications.some(
-    (notification) => !notification.notification.viewed
+    (notification) => !notification.viewed
   );
   return (
     <Popover
@@ -46,7 +46,7 @@ const DesktopNotifications = ({
         if (open) setNewNotifications(false);
         if (newNotifications && open) {
           notifications.forEach(async (notification) => {
-            if (!notification.notification.viewed) {
+            if (!notification.viewed) {
               await putNotificationStatus(notification._id);
             }
           });

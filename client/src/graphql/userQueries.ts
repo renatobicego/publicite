@@ -66,35 +66,36 @@ export const getAllNotificationsQuery = gql`
       hasMore
       notifications {
         _id
+        backData {
+          userIdFrom
+          userIdTo
+        }
+        date
+        event
+        isActionsAvailable
+        viewed
         frontData {
           group {
             _id
             name
             profilePhotoUrl
+            userInviting {
+              _id
+              username
+            }
           }
           magazine {
             _id
             groupInviting {
+              _id
               name
             }
             name
             ownerType
             userInviting {
+              _id
               username
             }
-          }
-          userInviting {
-            username
-            _id
-          }
-        }
-        notification {
-          date
-          viewed
-          event
-          backData {
-            userIdFrom
-            userIdTo
           }
         }
       }

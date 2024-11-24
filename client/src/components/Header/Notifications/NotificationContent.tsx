@@ -18,16 +18,15 @@ const NotificationsContent = ({
   isLoading: boolean;
 }) => {
   const renderNotification = (notification: BaseNotification) => {
-    const { notification: notificationData } = notification;
     switch (true) {
-      case notificationData.event.includes("group"):
+      case notification.event.includes("group"):
         return (
           <GroupInvitation
             key={notification._id}
             notification={notification as GroupNotification}
           />
         );
-      case notificationData.event.includes("magazine"):
+      case notification.event.includes("magazine"):
         return (
           <MagazineNotificationCard
             key={notification._id}

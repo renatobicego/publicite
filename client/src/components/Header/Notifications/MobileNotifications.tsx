@@ -27,7 +27,7 @@ const MobileNotifications = ({
   const { notifications, isLoading } = useNotificationsContext();
 
   const newNotifications = notifications.some(
-    (notification) => !notification.notification.viewed
+    (notification) => !notification.viewed
   );
   return (
     <>

@@ -20,40 +20,56 @@ import { IoIosExit } from "react-icons/io";
 import { IoTrashOutline } from "react-icons/io5";
 import ExitGroupAsCreator from "./ExitGroupAsCreator";
 import { User } from "@/types/userTypes";
+import ShareButton from "@/components/buttons/ShareButton";
+import { Group } from "@/types/groupTypes";
 
 const OptionsDropdown = ({
-  groupId,
+  group,
   isMember,
   isCreator,
   image,
   membersIds,
-  admins
+  admins,
 }: {
-  groupId: string;
+  group: Group;
   isMember: boolean;
   isCreator: boolean;
   image?: string;
   membersIds: string[];
-  admins: User[]
+  admins: User[];
 }) => {
   const deleteGroupRef = useRef<() => void>(() => {});
-  const {isOpen, onOpenChange, onOpen} = useDisclosure();
+  const exitGroupRef = useRef<() => void>(() => {});
+  const shareGroupRef = useRef<() => void>(() => {});
+  const { isOpen, onOpenChange, onOpen } = useDisclosure();
   const router = useRouter();
   const { deleteFile } = useUploadImage();
   const isEmptyGroup = membersIds.length === 1;
   const handleDeleteGroupClick = () => {
+    if (deleteGroupRef.current) {
+      deleteGroupRef.current(); // Trigger custom open function to open the modal
+    }
+  };
+  
+  const exitGroupClick = () => {
     if (isCreator && membersIds.length > 0) {
       onOpen();
       return;
     }
-    if (deleteGroupRef.current) {
-      deleteGroupRef.current(); // Trigger custom open function to open the modal
+    if (exitGroupRef.current) {
+      exitGroupRef.current(); // Trigger custom open function to open the modal
+    }
+  };
+
+  const handleShareOpenModal = () => {
+    if (shareGroupRef.current) {
+      shareGroupRef.current(); // Trigger custom open function to open the modal
     }
   };
 
   const deleteGroup = async () => {
     if (isCreator) {
-      const res = await removeGroup(groupId);
+      const res = await removeGroup(group._id);
       if ("error" in res) {
         toastifyError(res.error as string);
         return;
@@ -69,10 +85,10 @@ const OptionsDropdown = ({
   };
 
   const exitGroup = async (newCreatorId?: string) => {
-    if(!isEmptyGroup) {
-      return
+    if (!isEmptyGroup) {
+      return;
     }
-    const res = await exitFromGroup(groupId, isCreator, newCreatorId);
+    const res = await exitFromGroup(group._id, isCreator, newCreatorId);
     if ("error" in res) {
       toastifyError(res.error as string);
       return;
@@ -95,6 +111,7 @@ const OptionsDropdown = ({
             color="secondary"
             key="compartir"
             className="rounded-full px-4"
+            onPress={handleShareOpenModal}
           >
             Compartir
           </DropdownItem>
@@ -102,7 +119,7 @@ const OptionsDropdown = ({
             startContent={<IoIosExit className="size-5" />}
             color="danger"
             key="salir"
-            onPress={handleDeleteGroupClick}
+            onPress={exitGroupClick}
             className={`rounded-full px-4 ${
               (isMember || isCreator) && !isEmptyGroup ? "" : "hidden"
             }`}
@@ -134,13 +151,19 @@ const OptionsDropdown = ({
         tooltipMessage="Salir"
         confirmText="Salir del Grupo"
         onConfirm={exitGroup}
-        customOpen={(openModal) => (deleteGroupRef.current = openModal)} // Set the reference for customOpen
+        customOpen={(openModal) => (exitGroupRef.current = openModal)} // Set the reference for customOpen
       />
       <ExitGroupAsCreator
         isOpen={isOpen}
         onOpenChange={onOpenChange}
         admins={admins}
         exitGroup={exitGroup}
+      />
+      <ShareButton
+        shareType="group"
+        ButtonAction={<></>}
+        data={group}
+        customOpen={(openModal) => (shareGroupRef.current = openModal)}
       />
     </>
   );

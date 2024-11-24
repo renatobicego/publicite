@@ -76,7 +76,7 @@ const GroupInfo = async ({
 
           {actionButtonToReturn()}
           <OptionsDropdown
-            groupId={_id}
+            group={group.group}
             membersIds={(members as User[]).map((member) => member._id)}
             isMember={isMember}
             isCreator={isCreator}

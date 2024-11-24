@@ -1,8 +1,9 @@
-"use server"
+"use server";
 import {
   EditBusinessProfileProps,
   UserBusinessFormValues,
 } from "@/types/userTypes";
+import { auth } from "@clerk/nextjs/server";
 import axios from "axios";
 
 export const postUserBusiness = async (formData: UserBusinessFormValues) => {
@@ -15,20 +16,24 @@ export const putBusinessProfileData = async (
 ) => {
   return await axios.put(
     `${process.env.API_URL}/user/business/${username}`,
-    formData
+    formData,
+    {
+      headers: {
+        Authorization: `Bearer ${await auth().getToken()}`,
+      },
+    }
   );
 };
 
 export const getBusinessSector = async () => {
   try {
-    const res = await fetch(
-      `${process.env.API_URL}/businessSector`
-    );
+    const res = await fetch(`${process.env.API_URL}/businessSector`);
 
     return await res.json();
   } catch (error) {
     return {
-      error: "Error al traer los datos de los sectores de negocios. Por favor intenta de nuevo.",
+      error:
+        "Error al traer los datos de los sectores de negocios. Por favor intenta de nuevo.",
     };
   }
 };

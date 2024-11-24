@@ -28,14 +28,13 @@ declare global {
 
   interface BaseNotification {
     _id: string;
-    notification: {
-      viewed: boolean;
-      event: string;
-      date: string;
-      backData: {
-        userIdTo: string;
-        userIdFrom: string;
-      };
+    viewed: boolean;
+    event: string;
+    date: string;
+    backData: {
+      userIdTo: string;
+      userIdFrom: string;
     };
+    isActionsAvailable: boolean; 
   }
 }
