@@ -87,10 +87,15 @@ export const PostSchema = new Schema<PostDocument>(
 );
 
 PostSchema.index({ location: '2d' });
-PostSchema.index({
-  title: 'text',
-  description: 'text',
-});
+
+PostSchema.index({ location: '2d' });
+PostSchema.index({ title: 'text', description: 'text' });
+
+
+PostSchema.index({ title: 1 });
+PostSchema.index({ description: 1 });
+
+PostSchema.index({ title: 1, description: 1 });
 
 
 

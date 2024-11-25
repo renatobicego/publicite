@@ -56,7 +56,7 @@ export class PostRepository implements PostRepositoryInterface {
 
     private readonly logger: MyLoggerService,
     @InjectConnection() private readonly connection: Connection,
-  ) {}
+  ) { }
 
   async create(
     post: Post,
@@ -211,13 +211,18 @@ export class PostRepository implements PostRepositoryInterface {
     try {
       this.logger.log('Finding posts By postType: ' + postType);
 
+      if (searchTerm && (stopWords.has(searchTerm) || searchTerm.length <= 2)) {
+        return {
+          posts: [],
+          hasMore: false,
+        }
+      }
       const searchTermSeparate = searchTerm
         ?.split(' ')
         .filter(
           (term) =>
             term.trim() !== '' &&
-            !stopWords.has(term.trim().toLowerCase()) &&
-            term.trim().length > 2,
+            !stopWords.has(term.trim().toLowerCase())
         );
 
       if (searchTerm && searchTermSeparate) {
@@ -227,9 +232,10 @@ export class PostRepository implements PostRepositoryInterface {
         const posts = await this.postDocument
           .find({
             postType: postType,
-            $text: {
-              $search: textSearchQuery,
-            },
+            $or: [
+              { title: { $regex: textSearchQuery, $options: 'i' } },
+              { description: { $regex: textSearchQuery, $options: 'i' } },
+            ]
           })
           .limit(limit + 1)
           .skip((page - 1) * limit)
