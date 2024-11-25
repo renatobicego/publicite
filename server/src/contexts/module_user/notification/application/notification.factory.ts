@@ -26,13 +26,14 @@ export class NotificationFactory implements NotificationFactoryInterface {
 
     createNotification(notificationType: typeOfNotification, notificationData: any): Notification {
         let isActionsAvailable = true;
-        const { event, viewed, date, backData } = this.verifyNotificationAndExtractAtributes(notificationData);
+        const { event, viewed, date, backData, socketJobId } = this.verifyNotificationAtributes(notificationData);
 
         const { frontData } = notificationData
+        const user = backData.userIdTo
 
         if (eventsThatMakeActionsInactive.includes(event)) isActionsAvailable = false;
 
-        const baseNotification = new Notification(event, viewed, date, backData.userIdTo, isActionsAvailable, backData);
+        const baseNotification = new Notification(event, viewed, date, user, isActionsAvailable, backData, socketJobId);
 
         switch (notificationType) {
             case typeOfNotification.group_notification:
@@ -47,22 +48,37 @@ export class NotificationFactory implements NotificationFactoryInterface {
         }
     }
 
-    private verifyNotificationAndExtractAtributes(notificationBody: any): {
+    private verifyNotificationAtributes(notificationBody: any): {
         event: string,
         viewed: boolean,
         date: string,
-        backData: { userIdTo: string, userIdFrom: string }
+        backData: { userIdTo: string, userIdFrom: string },
+        socketJobId: string
     } {
-        if (!notificationBody.notification || !notificationBody.notification.event || !notificationBody.notification.date || !notificationBody.notification.backData) {
-            this.logger.error('Notification not found, check your notification socket');
-            throw new Error('Notification not found, check your notification socket');
+
+
+        const { event, viewed, date, backData, socketJobId } = notificationBody;
+
+
+        if (
+            !event ||
+            viewed === undefined ||
+            !date ||
+            !backData ||
+            !backData.userIdTo ||
+            !backData.userIdFrom ||
+            !socketJobId
+        ) {
+            throw new Error("Notificacion no válida");
         }
 
         return {
-            event: notificationBody.notification.event,
-            viewed: notificationBody.notification.viewed,
-            date: notificationBody.notification.date,
-            backData: notificationBody.notification.backData
+            event: event,
+            viewed: viewed,
+            date: date,
+            backData: backData,
+            socketJobId: socketJobId
         };
     }
+
 }

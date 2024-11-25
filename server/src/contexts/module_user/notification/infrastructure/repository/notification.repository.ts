@@ -32,11 +32,11 @@ export class NotificationRepository implements NotificationRepositoryInterface {
 
             await this.notificationBaseDocument.updateMany(
                 {
-                    "notification.user": userRequestId,
-                    "_id": { $in: notificationId }
+                    user: userRequestId,
+                    _id: { $in: notificationId }
                 },
                 {
-                    $set: { "notification.viewed": view }
+                    $set: { viewed: view }
                 }
             );
 
@@ -59,7 +59,7 @@ export class NotificationRepository implements NotificationRepositoryInterface {
         try {
             const userNotificationResponse =
                 await this.notificationBaseDocument
-                    .find({ "notification.user": id })
+                    .find({ user: id })
                     .limit(limit + 1)
                     .skip((page - 1) * limit)
 
@@ -69,12 +69,21 @@ export class NotificationRepository implements NotificationRepositoryInterface {
 
             const notificationsSorted = userNotificationResponse
                 .map((notif: any) => {
-                    return new Notification(notif._id, notif.notification, notif.frontData);
+                    return new Notification(
+                        notif._id,
+                        notif.event,
+                        notif.viewed,
+                        notif.date,
+                        notif.user,
+                        notif.isActionsAvailable,
+                        notif.backData,
+                        notif.frontData
+                    );
                 })
                 .sort((notificationA: any, notificationB: any) => {
 
-                    const dateA = parseZonedDateTime(notificationA.notification.date).toDate();
-                    const dateB = parseZonedDateTime(notificationB.notification.date).toDate();
+                    const dateA = parseZonedDateTime(notificationA.date).toDate();
+                    const dateB = parseZonedDateTime(notificationB.date).toDate();
 
                     return dateB.getTime() - dateA.getTime();
                 });

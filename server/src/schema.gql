@@ -372,20 +372,6 @@ type PostCategoryResponse {
   _id: String!
 }
 
-type backData {
-  userIdTo: String
-  userIdFrom: String
-}
-
-type Notification_graph_general_schema {
-  event: String!
-  viewed: Boolean!
-  date: String!
-  user: String!
-  isActionsAvailable: String!
-  backData: backData!
-}
-
 type userInviting_magazine {
   _id: String
   username: String
@@ -421,9 +407,19 @@ type frontData {
   magazine: front_data_MAGAZINE
 }
 
+type backData {
+  userIdTo: String
+  userIdFrom: String
+}
+
 type Notification {
   _id: String!
-  notification: Notification_graph_general_schema!
+  event: String!
+  viewed: Boolean!
+  date: String!
+  user: String!
+  isActionsAvailable: String!
+  backData: backData!
   frontData: frontData!
 }
 

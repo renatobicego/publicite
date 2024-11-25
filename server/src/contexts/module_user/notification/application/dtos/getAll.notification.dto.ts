@@ -1,5 +1,6 @@
 import { ObjectType, Field } from "@nestjs/graphql";
-import { Notification_graph_general_schema } from "./notification.dto";
+
+
 import { front_data_MAGAZINE } from "./front.data.notification.magazine";
 import { front_data_GROUP } from "./front.data.notification.group.dto";
 
@@ -15,23 +16,51 @@ export class frontData {
 }
 
 @ObjectType()
+export class backData {
+    @Field(() => String, { nullable: true })
+    userIdTo: string;
+
+    @Field(() => String, { nullable: true })
+    userIdFrom: string;
+}
+
+
+@ObjectType()
 export class Notification {
 
     @Field(() => String)
     _id: string;
 
-    @Field(() => Notification_graph_general_schema)
-    notification: Notification_graph_general_schema;
+    @Field(() => String)
+    event: string;
 
+    @Field(() => Boolean)
+    viewed: boolean;
+
+    @Field(() => String)
+    date: string;
+
+    @Field(() => String)
+    user: string;
+
+    @Field(() => String)
+    isActionsAvailable: string;
+
+    @Field(() => backData)
+    backData: backData;
 
     @Field(() => frontData)
     frontData: frontData;
 
-    constructor(_id: string, notification: Notification_graph_general_schema, frontData: frontData) {
+    constructor(_id: string, event: string, viewed: boolean, date: string, user: string, isActionsAvailable: string, backData: backData, frontData: frontData) {
         this._id = _id;
-        this.notification = notification;
-        this.frontData = frontData;
-
+        this.event = event;
+        this.viewed = viewed;
+        this.date = date;
+        this.user = user;
+        this.isActionsAvailable = isActionsAvailable;
+        this.backData = backData;
+        this.frontData = frontData
     }
 }
 @ObjectType()

@@ -28,7 +28,7 @@ export class NotificationGroup extends Notification {
             }
         }
     ) {
-        super(notification.getEvent, notification.getViewed, notification.getDate, notification.getUser, notification.getIsActionsAvailable, notification.getbackData);
+        super(notification.getEvent, notification.getViewed, notification.getDate, notification.getUser, notification.getIsActionsAvailable, notification.getbackData, notification.getSocketJobId);
         this.frontData = frontData;
     }
 
