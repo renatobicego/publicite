@@ -55,7 +55,10 @@ export interface GroupRepositoryInterface {
     limit: number,
     page: number,
     userRequest: string,
-  ): Promise<GroupListResponse>;
+  ): Promise<{
+    groups: any[];
+    hasMore: boolean;
+  }>;
   findAllPostsOfGroupMembers(groupId: string, userRequest: string, limit: number, page: number): Promise<PostsMemberGroupResponse | null>
 
 

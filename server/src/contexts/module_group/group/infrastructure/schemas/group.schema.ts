@@ -71,7 +71,8 @@ GroupSchema.pre(
   },
 );
 
-GroupSchema.index({ name: 1 });
+
+GroupSchema.index({ name: 1, alias: 1 });
 GroupSchema.index({ admins: 1 });
 GroupSchema.index({ members: 1 });
 GroupSchema.index({ groupNotificationsRequest: 1 });

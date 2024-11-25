@@ -17,6 +17,7 @@ import { checkIfanyDataWasModified, chekResultOfOperation } from 'src/contexts/m
 import { IUser } from 'src/contexts/module_user/user/infrastructure/schemas/user.schema';
 import { GroupDocument } from '../schemas/group.schema';
 import { PostsMemberGroupResponse } from '../../application/adapter/dto/HTTP-RESPONSE/group.posts.member.response';
+import { stopWords } from 'src/contexts/module_shared/utils/functions/stopWords';
 
 export class GroupRepository implements GroupRepositoryInterface {
   constructor(
@@ -560,46 +561,106 @@ export class GroupRepository implements GroupRepositoryInterface {
     limit: number,
     page: number,
     userRequest: string,
-  ): Promise<GroupListResponse> {
+  ): Promise<{
+    groups: any[],
+    hasMore: boolean
+  }> {
     try {
-      const regex = new RegExp(`${name}`, 'i');
       const session = await this.connection.startSession();
       session.startTransaction();
-      const groups = await this.groupModel
-        .find({
-          $or: [{ name: regex }, { alias: regex }],
-        })
-        .and([{ visibility: 'public' }])
-        .limit(limit + 1)
-        .skip((page - 1) * limit)
-        .select(
-          '_id name profilePhotoUrl members admins details name magazines rules profilePhotoUrl visibility groupNotificationsRequest alias creator',
-        )
-        .populate([
-          {
-            path: 'members',
-            select: '_id username profilePhotoUrl',
-          },
-          {
-            path: 'admins',
-            select: '_id username',
-          },
-          {
-            path: 'magazines',
-            select: '_id name sections',
-            populate: {
-              path: 'sections',
-              select: 'posts',
+      let groups;
+
+      if (name && (stopWords.has(name) || name.length <= 2)) {
+        return {
+          groups: [],
+          hasMore: false,
+        }
+      }
+
+      const searchTermSeparate = name
+        ?.split(' ')
+        .filter(
+          (term) =>
+            term.trim() !== '' &&
+            !stopWords.has(term.trim().toLowerCase())
+        );
+
+      if (name && searchTermSeparate) {
+        const textSearchQuery = searchTermSeparate.join(' ');
+        groups = await this.groupModel
+          .find({
+            $or: [
+              { name: { $regex: textSearchQuery, $options: 'i' } },
+              { alias: { $regex: textSearchQuery, $options: 'i' } },
+            ]
+          })
+          .and([{ visibility: 'public' }])
+          .limit(limit + 1)
+          .skip((page - 1) * limit)
+          .select(
+            '_id name profilePhotoUrl members admins details name magazines rules profilePhotoUrl visibility groupNotificationsRequest alias creator',
+          )
+          .populate([
+            {
+              path: 'members',
+              select: '_id username profilePhotoUrl',
+            },
+            {
+              path: 'admins',
+              select: '_id username',
+            },
+            {
+              path: 'magazines',
+              select: '_id name sections',
               populate: {
-                path: 'posts',
-                select: 'imagesUrls',
+                path: 'sections',
+                select: 'posts',
+                populate: {
+                  path: 'posts',
+                  select: 'imagesUrls',
+                },
               },
             },
-          },
-        ])
-        .sort({ name: 1 })
-        .session(session)
-        .lean();
+          ])
+          .sort({ name: 1 })
+          .session(session)
+          .lean();
+
+      } else {
+        groups = await this.groupModel
+          .find()
+          .and([{ visibility: 'public' }])
+          .limit(limit + 1)
+          .skip((page - 1) * limit)
+          .select(
+            '_id name profilePhotoUrl members admins details name magazines rules profilePhotoUrl visibility groupNotificationsRequest alias creator',
+          )
+          .populate([
+            {
+              path: 'members',
+              select: '_id username profilePhotoUrl',
+            },
+            {
+              path: 'admins',
+              select: '_id username',
+            },
+            {
+              path: 'magazines',
+              select: '_id name sections',
+              populate: {
+                path: 'sections',
+                select: 'posts',
+                populate: {
+                  path: 'posts',
+                  select: 'imagesUrls',
+                },
+              },
+            },
+          ])
+          .sort({ name: 1 })
+          .session(session)
+          .lean();
+      }
 
       const hasMore = groups.length > limit;
       if (groups.length <= 0) {
@@ -609,57 +670,8 @@ export class GroupRepository implements GroupRepositoryInterface {
         };
       }
 
-      const groupResponse = groups.slice(0, limit).map((group) => {
-        let isMember = false;
-        let hasJoinRequest = false;
-        let hasGroupRequest = false;
 
-        if (
-          group.members
-            .map((member: any) => member._id.toString())
-            .includes(userRequest) ||
-          group.admins
-            .map((admin: any) => admin._id.toString())
-            .includes(userRequest) ||
-          group.creator.toString() === userRequest
-        ) {
-          isMember = true;
-        } else if (
-          group.groupNotificationsRequest &&
-          group.groupNotificationsRequest.joinRequests &&
-          group.groupNotificationsRequest.joinRequests
-            .map((id: any) => id.toString())
-            .includes(userRequest)
-        ) {
-          hasJoinRequest = true;
-        } else if (
-          group.groupNotificationsRequest &&
-          group.groupNotificationsRequest.groupInvitations &&
-          group.groupNotificationsRequest.groupInvitations
-            .map((id: any) => id.toString())
-            .includes(userRequest)
-        ) {
-          hasGroupRequest = true;
-        }
-
-        // Ensure groupNotificationsRequest is initialized
-        group.groupNotificationsRequest = group.groupNotificationsRequest || {};
-
-        //Retornamos los ids vacios ya que no queremos que esta ruta los devuelva
-        group.groupNotificationsRequest.groupInvitations = [
-          'You cant access here from this route',
-        ];
-        group.groupNotificationsRequest.joinRequests = [
-          'You cant access here from this route',
-        ];
-
-        return {
-          group: this.groupMapper.toGroupResponse(group),
-          isMember: isMember,
-          hasJoinRequest: hasJoinRequest,
-          hasGroupRequest: hasGroupRequest,
-        };
-      });
+      const groupResponse = groups.slice(0, limit)
 
       await session.commitTransaction();
       session.endSession();
@@ -671,6 +683,8 @@ export class GroupRepository implements GroupRepositoryInterface {
       throw error;
     }
   }
+
+
 
   async isThisGroupExist(alias: string, _id?: string): Promise<boolean> {
     try {

@@ -12,6 +12,7 @@ import { GroupServiceMapperInterface } from '../../domain/service/mapper/group.s
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { GroupUpdateRequest } from '../adapter/dto/HTTP-REQUEST/group.update.request';
 import { PostsMemberGroupResponse } from '../adapter/dto/HTTP-RESPONSE/group.posts.member.response';
+import { response } from 'express';
 
 const eventTypes = [
   'notification_group_new_user_invited', // Te han invitado a un grupo -> 0
@@ -30,6 +31,7 @@ export class GroupService implements GroupServiceInterface {
     private readonly groupRepository: GroupRepositoryInterface,
     @Inject('GroupServiceMapperInterface')
     private readonly groupMapper: GroupServiceMapperInterface,
+    
   ) { }
 
 
@@ -202,12 +204,69 @@ export class GroupService implements GroupServiceInterface {
     try {
       this.logger.log('Finding group by name: ' + name);
       if (page <= 0) page = 1;
-      return await this.groupRepository.findGroupByNameOrAlias(
+
+      const groupList = await this.groupRepository.findGroupByNameOrAlias(
         name,
         limit,
         page,
         userRequest,
       );
+
+      const respose = groupList.groups.map((group) => {
+        let isMember = false;
+        let hasJoinRequest = false;
+        let hasGroupRequest = false;
+
+        if (
+          group.members
+            .map((member: any) => member._id.toString())
+            .includes(userRequest) ||
+          group.admins
+            .map((admin: any) => admin._id.toString())
+            .includes(userRequest) ||
+          group.creator.toString() === userRequest
+        ) {
+          isMember = true;
+        } else if (
+          group.groupNotificationsRequest &&
+          group.groupNotificationsRequest.joinRequests &&
+          group.groupNotificationsRequest.joinRequests
+            .map((id: any) => id.toString())
+            .includes(userRequest)
+        ) {
+          hasJoinRequest = true;
+        } else if (
+          group.groupNotificationsRequest &&
+          group.groupNotificationsRequest.groupInvitations &&
+          group.groupNotificationsRequest.groupInvitations
+            .map((id: any) => id.toString())
+            .includes(userRequest)
+        ) {
+          hasGroupRequest = true;
+        }
+
+
+        group.groupNotificationsRequest = group.groupNotificationsRequest || {};
+
+
+        group.groupNotificationsRequest.groupInvitations = [
+          'You cant access here from this route',
+        ];
+        group.groupNotificationsRequest.joinRequests = [
+          'You cant access here from this route',
+        ];
+
+        return {
+          group: this.groupMapper.toGroupResponse(group),
+          isMember: isMember,
+          hasJoinRequest: hasJoinRequest,
+          hasGroupRequest: hasGroupRequest,
+        };
+      });
+
+      groupList.groups = respose;
+
+      return groupList;
     } catch (error: any) {
       throw error;
     }
@@ -331,7 +390,7 @@ export class GroupService implements GroupServiceInterface {
       this.logger.log('Updating group by id: ' + group._id);
       if (group.alias != undefined && group.alias != null) {
         this.logger.log('Verify if this group exist: ' + group.alias);
-        if(group.alias.length < 1){
+        if (group.alias.length < 1) {
           throw new BadRequestException('Alias is not valid');
         }
         const isThisGroupExist = await this.isThisGroupExist(group.alias, group._id);
