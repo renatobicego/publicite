@@ -541,6 +541,9 @@ type Mutation {
   """Actualiza el board del usuario"""
   updateBoardById(id: String!, ownerId: String!, boardData: UpdateBoardDto!): Board
 
+  """Crear una pizarra"""
+  createBoard(boardRequest: BoardRequest!): Board
+
   """Aceptar la invitacion a un grupo"""
   acceptGroupInvitation(groupId: String!): String
 
@@ -694,6 +697,15 @@ enum Visibility_Enum_board {
   contacts
   friends
   topfriends
+}
+
+input BoardRequest {
+  annotations: [String!]
+  visibility: Visibility_Enum_board
+  user: String
+  color: String
+  keywords: [String!]
+  searchTerm: String
 }
 
 input GroupRequest {

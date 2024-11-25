@@ -25,7 +25,7 @@ export class BoardRepository implements BoardRespositoryInterface {
     private readonly userModel: Model<IUser>,
     @InjectConnection() private readonly connection: Connection,
     private readonly logger: MyLoggerService,
-  ) {}
+  ) { }
   async getBoardByAnnotationOrKeyword(
     board: string,
     limit: number,
@@ -100,7 +100,7 @@ export class BoardRepository implements BoardRespositoryInterface {
     try {
       const boardUpdated = await this.boardModel.findByIdAndUpdate(id, board, {
         new: true,
-      });
+      }).lean()
       return this.boardMapper.toResponse(boardUpdated);
     } catch (error: any) {
       throw error;
@@ -109,19 +109,22 @@ export class BoardRepository implements BoardRespositoryInterface {
 
   async save(board: Board): Promise<Board> {
     const session = await this.connection.startSession();
-    session.startTransaction();
     try {
-      const newBoard = new this.boardModel(board);
-      const boardSaved = await newBoard.save({ session });
-      await this.userModel.updateOne(
-        { _id: board.getUser },
-        { $set: { board: boardSaved._id } },
-        { session },
-      );
-      await session.commitTransaction();
-      return this.boardMapper.toDomain(boardSaved);
+      const boardSaved = await session.withTransaction(async () => {
+        const newBoard = new this.boardModel(board);
+        const boardSaved = await newBoard.save({ session });
+
+        await this.userModel.updateOne(
+          { _id: board.getUser },
+          { $set: { board: boardSaved._id } },
+          { session },
+        );
+        return this.boardMapper.toDomain(boardSaved);
+      })
+      return boardSaved;
+
     } catch (error) {
-      await session.abortTransaction();
+
       throw error;
     } finally {
       session.endSession();

@@ -1,6 +1,5 @@
 import { Inject } from '@nestjs/common';
-import { ClientSession, Connection, ObjectId } from 'mongoose';
-import { InjectConnection } from '@nestjs/mongoose';
+
 
 import { BoardRespositoryInterface } from '../../domain/repository/board.repository.interface';
 import { BoardServiceInterface } from '../../domain/service/board.service.interface';
@@ -13,7 +12,6 @@ import {
 
 import { UpdateBoardDto } from '../dto/HTTP-REQUEST/board.update';
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
-import { UserServiceInterface } from 'src/contexts/module_user/user/domain/service/user.service.interface';
 
 export class BoardService implements BoardServiceInterface {
   constructor(
@@ -21,11 +19,8 @@ export class BoardService implements BoardServiceInterface {
     private readonly boardRepository: BoardRespositoryInterface,
     @Inject('BoardMapperServiceInterface')
     private readonly boardMapper: BoardMapperServiceInterface,
-    @Inject('UserServiceInterface')
-    private readonly userService: UserServiceInterface,
-    @InjectConnection() private readonly connection: Connection,
     private readonly logger: MyLoggerService,
-  ) {}
+  ) { }
   async getBoardByAnnotationOrKeyword(
     board: string,
     limit: number,
@@ -57,9 +52,15 @@ export class BoardService implements BoardServiceInterface {
     }
   }
   async save(boardRequest: BoardRequest): Promise<BoardResponse> {
-    this.logger.log('Saving new board for the user id: ' + boardRequest.user);
-    const boardMapper = this.boardMapper.requestToEntitiy(boardRequest);
-    const boardSaved = await this.boardRepository.save(boardMapper);
-    return this.boardMapper.entityToResponse(boardSaved);
+    try {
+      this.logger.log('Saving new board for the user id: ' + boardRequest.user);
+      const boardMapper = this.boardMapper.requestToEntitiy(boardRequest);
+      const boardSaved = await this.boardRepository.save(boardMapper);
+      return this.boardMapper.entityToResponse(boardSaved);
+    } catch (error: any) {
+      this.logger.error('An error was ocurred while trying to save board.');
+      throw error;
+    }
+
   }
 }

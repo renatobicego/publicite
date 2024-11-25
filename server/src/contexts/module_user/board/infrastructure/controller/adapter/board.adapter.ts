@@ -13,7 +13,7 @@ export class BoardAdapter implements BoardAdapterInterface {
   constructor(
     @Inject('BoardServiceInterface')
     private readonly boardService: BoardServiceInterface,
-  ) {}
+  ) { }
   async getBoardByAnnotationOrKeyword(
     board: string,
     limit: number,
@@ -41,7 +41,7 @@ export class BoardAdapter implements BoardAdapterInterface {
     }
   }
 
-  async save(board: BoardRequest): Promise<BoardResponse> {
+  async save(board: BoardRequest): Promise<any> {
     return await this.boardService.save(board);
   }
 }

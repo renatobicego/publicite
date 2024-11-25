@@ -1,12 +1,12 @@
 import { Inject, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Resolver, Query, Context } from '@nestjs/graphql';
 import { ClerkAuthGuard } from 'src/contexts/module_shared/auth/clerk-auth/clerk.auth.guard';
-import { PubliciteAuth } from 'src/contexts/module_shared/auth/publicite_auth/publicite_auth';
 import { BoardAdapterInterface } from '../../../application/adapter/board.adapter.interface';
 import { UpdateBoardDto } from '../../../application/dto/HTTP-REQUEST/board.update';
 import { BoardGetAllResponse } from '../../../application/dto/HTTP-RESPONSE/board.response';
 import { Board } from '../../../domain/entity/board.entity';
 import { CustomContextRequestInterface } from 'src/contexts/module_shared/auth/custom_request/custom.context.request.interface';
+import { BoardRequest } from '../../../application/dto/HTTP-REQUEST/board.request';
 
 
 //´Provee instrucciones para transformar las insttrucciones provenientes del cliente en data que graph puede utilizar
@@ -24,7 +24,7 @@ export class BoardResolver {
     nullable: true,
     description: 'Actualiza el board del usuario',
   })
-  //@UseGuards(ClerkAuthGuard)
+  @UseGuards(ClerkAuthGuard)
   async updateBoardById(
     @Args('id', { type: () => String }) id: string,
     @Args('ownerId', { type: () => String }) ownerId: string,
@@ -33,9 +33,8 @@ export class BoardResolver {
     @Context() context: { req: CustomContextRequestInterface },
   ): Promise<any> {
     try {
-      //const userRequestId = context.req.userRequestId;
-      //PubliciteAuth.authorize(userRequestId, ownerId);
-      return await this.boardAdapter.updateBoardById(id, boardData);
+      const userRequestId = context.req.userRequestId;
+      return await this.boardAdapter.updateBoardById(userRequestId, boardData);
     } catch (error: any) {
       throw error;
     }
@@ -60,4 +59,27 @@ export class BoardResolver {
       throw error;
     }
   }
+
+  @Mutation(() => Board, {
+    nullable: true,
+    description: 'Crear una pizarra',
+  })
+  @UseGuards(ClerkAuthGuard)
+  async createBoard(
+    @Args('boardRequest', { type: () => BoardRequest })
+    boardRequest: BoardRequest,
+    @Context() context: { req: CustomContextRequestInterface },
+  ): Promise<any> {
+    try {
+      const userRequestId = context.req.userRequestId;
+      boardRequest.user = userRequestId;
+      return await this.boardAdapter.save(boardRequest);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
+
+
 }

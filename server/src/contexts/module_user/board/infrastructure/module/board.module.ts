@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 
 import { BoardSchema } from '../schemas/board.schema';
-import { BoardController } from '../controller/board.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { BoardService } from '../../application/service/board.service';
@@ -23,7 +22,6 @@ import { UserModel } from 'src/contexts/module_user/user/infrastructure/schemas/
     UserModule,
   ],
 
-  controllers: [BoardController],
   providers: [
     MyLoggerService,
     BoardResolver,
