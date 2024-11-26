@@ -526,8 +526,7 @@ export class GroupRepository implements GroupRepositoryInterface {
         ])
         .session(session)
         .lean();
-
-      if (!group) {
+      if (!group || group.length === 0) {
         return null;
       }
 
