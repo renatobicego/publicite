@@ -42,7 +42,7 @@ export const getCategories = async () => {
       query: getPostCategories,
       context: {
         headers: {
-          Authorization: await auth().getToken(),
+          Authorization: await auth().getToken({ template: "testing" }),
         },
       }
     });
@@ -61,7 +61,7 @@ export const postPost = async (
   try {
     const res = await axios.post(`${process.env.API_URL}/post`, values, {
       headers: {
-        Authorization: `${await auth().getToken()}`,
+        Authorization: `${await auth().getToken({ template: "testing" })}`,
       },
     });
     return res;
@@ -82,7 +82,7 @@ export const putPost = async (
       variables: { updatePostByIdId: id, postUpdate: values, authorId },
       context: {
         headers: {
-          Authorization: await auth().getToken(),
+          Authorization: await auth().getToken({ template: "testing" }),
         },
       },
     });
@@ -142,7 +142,7 @@ export const deletePostService = async (post: Post) => {
       variables: { deletePostByIdId: post._id },
       context: {
         headers: {
-          Authorization: await auth().getToken(),
+          Authorization: await auth().getToken({ template: "testing" }),
         },
       },
     });

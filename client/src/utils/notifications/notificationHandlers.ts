@@ -14,7 +14,7 @@ export const handleGroupNotification = (data: GroupNotification) => {
   const showUser = groupNotificationBaseMessages[event].showUser;
   const groupName = data.frontData.group.name;
   const message = showUser
-    ? `${data.frontData.userInviting.username} ${groupNotificationBaseMessages[event].message} ${groupName}`
+    ? `${data.frontData.group.userInviting.username} ${groupNotificationBaseMessages[event].message} ${groupName}`
     : `${groupNotificationBaseMessages[event].message} ${groupName}`;
 
   showBrowserNotification("Publicité - Nueva notificación de grupo", {

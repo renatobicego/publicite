@@ -12,12 +12,10 @@ import { PROFILE } from "@/utils/data/urls";
 import Business from "./Business/Business";
 import { IoBusiness } from "react-icons/io5";
 import { BackgroundProvider } from "../providers/backgroundProvider";
-import { ConfigData } from "./Profile/actions";
 import { useUserData } from "../providers/userDataProvider";
 
 const UserButtonModal = () => {
-  const { userTypeLogged, usernameLogged } = useUserData();
-  const {configData} = useUserData();
+  const { userTypeLogged, usernameLogged, configData } = useUserData();
   const pageToReturn = useMemo(() => {
     switch (userTypeLogged) {
       case "Person":

@@ -25,16 +25,17 @@ const MagazineNotificationCard = ({
   notification: MagazineNotification;
 }) => {
   const { magazine } = notification.frontData;
-  const { event, backData, viewed, date } = notification;
+  const { event, backData, viewed, date, isActionsAvailable } = notification;
   const { userIdLogged, usernameLogged } = useUserData();
   const { updateSocketToken } = useSocket();
+  console.log(isActionsAvailable)
   const getNotificationOptionsList = () => {
     const optionsList: NotificationOptionProps[] = [];
     const notificationMessage =
       magazineNotificationMessages[event as MagazineNotificationType];
 
     // Check if acceptAction exists before adding it to options
-    if (notificationMessage?.acceptAction) {
+    if (notificationMessage?.acceptAction && isActionsAvailable) {
       optionsList.push({
         label: "Aceptar Solicitud",
         onPress: async () => {
@@ -61,7 +62,7 @@ const MagazineNotificationCard = ({
       className: "text-text-color",
       href: `${MAGAZINES}/${magazine._id}`,
     });
-    if (notificationMessage?.rejectAction) {
+    if (notificationMessage?.rejectAction && isActionsAvailable) {
       optionsList.push({
         label: "Rechazar Solicitud",
         color: "danger",

@@ -16,7 +16,6 @@ import {
 } from "@/graphql/magazineQueries";
 import { getClient, query } from "@/lib/client";
 import { auth } from "@clerk/nextjs/server";
-import { cache } from "react";
 
 export const getMagazineById = async (id: string) => {
   try {
@@ -25,7 +24,7 @@ export const getMagazineById = async (id: string) => {
       variables: { getMagazineByMagazineIdId: id },
       context: {
         headers: {
-          Authorization: await auth().getToken(),
+          Authorization: await auth().getToken({ template: "testing" }),
         },
         fetchOptions: {
           cache: "no-store",
@@ -62,7 +61,7 @@ export const postMagazine = async (formData: any) => {
     variables: { magazineCreateRequest: formData },
     context: {
       headers: {
-        Authorization: await auth().getToken(),
+        Authorization: await auth().getToken({ template: "testing" }),
       },
     },
   });
@@ -75,7 +74,7 @@ export const putMagazine = async (formData: any, userId: string) => {
     variables: { magazineUpdateRequest: formData, owner: userId },
     context: {
       headers: {
-        Authorization: await auth().getToken(),
+        Authorization: await auth().getToken({ template: "testing" }),
       },
     },
   });
@@ -98,7 +97,7 @@ export const postMagazineSection = async (
     },
     context: {
       headers: {
-        Authorization: await auth().getToken(),
+        Authorization: await auth().getToken({ template: "testing" }),
       },
     },
   });
@@ -119,7 +118,7 @@ export const editMagazineSection = async (
     },
     context: {
       headers: {
-        Authorization: await auth().getToken(),
+        Authorization: await auth().getToken({ template: "testing" }),
       },
     },
   });
@@ -143,7 +142,7 @@ export const deleteMagazineSection = async (
     },
     context: {
       headers: {
-        Authorization: await auth().getToken(),
+        Authorization: await auth().getToken({ template: "testing" }),
       },
     },
   });
@@ -158,7 +157,7 @@ export const getMagazinesOfUser = async () => {
     variables: { userId: authData.sessionClaims?.metadata.mongoId },
     context: {
       headers: {
-        Authorization: await authData.getToken(),
+        Authorization: await authData.getToken({ template: "testing" }),
       },
     },
   });
@@ -180,7 +179,7 @@ export const putPostInMagazine = async (
     variables: { postId, magazineAdmin, magazineId, sectionId },
     context: {
       headers: {
-        Authorization: await auth().getToken(),
+        Authorization: await auth().getToken({ template: "testing" }),
       },
     },
   });
@@ -197,7 +196,7 @@ export const deletPostInMagazine = async (
     variables: { postIdToRemove, ownerType, magazineId, sectionId },
     context: {
       headers: {
-        Authorization: await auth().getToken(),
+        Authorization: await auth().getToken({ template: "testing" }),
       },
     },
   });
@@ -212,7 +211,7 @@ export const deleteMagazine = async (
     variables: { magazineId, ownerType },
     context: {
       headers: {
-        Authorization: await auth().getToken(),
+        Authorization: await auth().getToken({ template: "testing" }),
       },
     },
   });
@@ -225,7 +224,7 @@ export const putExitMagazine = async (magazineId: string, ownerType: "user" | "g
     variables: { magazineId, ownerType },
     context: {
       headers: {
-        Authorization: await auth().getToken(),
+        Authorization: await auth().getToken({ template: "testing" }),
       },
     },
   });
@@ -246,7 +245,7 @@ export const putExitMagazine = async (magazineId: string, ownerType: "user" | "g
 //     },
 //     context: {
 //       headers: {
-//         Authorization: await authData.getToken(),
+//         Authorization: await authData.getToken({ template: "testing" }),
 //       },
 //     },
 //   });
@@ -266,7 +265,7 @@ export const putExitMagazine = async (magazineId: string, ownerType: "user" | "g
 //     },
 //     context: {
 //       headers: {
-//         Authorization: await authData.getToken(),
+//         Authorization: await authData.getToken({ template: "testing" }),
 //       },
 //     },
 //   });

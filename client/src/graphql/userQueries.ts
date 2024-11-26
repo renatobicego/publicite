@@ -72,6 +72,7 @@ export const getAllNotificationsQuery = gql`
         }
         date
         event
+        user
         isActionsAvailable
         viewed
         frontData {
@@ -104,8 +105,11 @@ export const getAllNotificationsQuery = gql`
 `;
 
 export const changeNotificationStatusMutation = gql`
-  mutation ChangeNotificationStatus($notificationId: String!, $view: Boolean!) {
-    changeNotificationStatus(notificationId: $notificationId, view: $view)
+  mutation ChangeNotificationStatus(
+    $notificationIds: [String!]!
+    $view: Boolean!
+  ) {
+    changeNotificationStatus(notificationIds: $notificationIds, view: $view)
   }
 `;
 

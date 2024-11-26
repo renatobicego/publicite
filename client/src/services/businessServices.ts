@@ -19,7 +19,7 @@ export const putBusinessProfileData = async (
     formData,
     {
       headers: {
-        Authorization: `Bearer ${await auth().getToken()}`,
+        Authorization: `Bearer ${await auth().getToken({ template: "testing" })}`,
       },
     }
   );

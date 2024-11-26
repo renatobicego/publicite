@@ -18,7 +18,7 @@ export interface GroupAdmin extends Group {
   groupNotificationsRequest: {
     joinRequests: Pick<User, "_id" | "username" | "profilePhotoUrl">[];
     groupInvitations: Pick<User, "_id" | "username" | "profilePhotoUrl">[];
-  }
+  };
 }
 
 export interface GetGroups {
@@ -32,8 +32,9 @@ export interface EditGroupInterface
   extends Omit<Group, "admins" | "members" | "magazines" | "creator"> {}
 export interface GroupNotification extends BaseNotification {
   frontData: {
-    group: Pick<Group, "_id" | "name" | "profilePhotoUrl">;
-    userInviting: Pick<User, "username">;
+    group: Pick<Group, "_id" | "name" | "profilePhotoUrl"> & {
+      userInviting: Pick<User, "_id" | "username">;
+    };
   };
 }
 

@@ -68,8 +68,12 @@ export const mockedGroupInvitation: GroupNotification = {
   event: "notification_group_user_request_sent",
   viewed: false,
   frontData: {
-    group: { _id: "1", name: "Computadoras", profilePhotoUrl: "" },
-    userInviting: { username: "username" },
+    group: {
+      _id: "1",
+      name: "Computadoras",
+      profilePhotoUrl: "",
+      userInviting: { _id: "2", username: "username" },
+    },
   },
   isActionsAvailable: true,
 };

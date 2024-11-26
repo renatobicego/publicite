@@ -4,6 +4,7 @@ import { useInfiniteFetch } from "@/utils/hooks/useInfiniteFetch";
 import { useState } from "react";
 import PostListHeader from "./PostListHeader";
 import { useFilteredAndSortedPosts } from "@/utils/hooks/useFilteredOrderedPosts";
+import { useSearchParams } from "next/navigation";
 
 const PostListLogic = ({
   postType,
@@ -14,6 +15,8 @@ const PostListLogic = ({
 }) => {
   const [showAsList, setShowAsList] = useState(false);
   const { items, isLoading } = useInfiniteFetch(postType, groupId);
+  const queryParams = useSearchParams();
+  const querySearch = queryParams.get("busqueda") || ""
   const {
     searchTerms,
     setSearchTerms,
@@ -39,14 +42,14 @@ const PostListLogic = ({
         <PostGridList
           items={sortedItems}
           isLoading={isLoading}
-          isSearchDone={searchTerms.length > 0}
+          isSearchDone={querySearch.length > 0}
         />
       ) : (
         <PostsGrid
           posts={sortedItems}
           isLoading={isLoading}
           isGroupPosts={postType === "groupPosts"}
-          isSearchDone={searchTerms.length > 0}
+          isSearchDone={querySearch.length > 0}
         />
       )}
     </>
