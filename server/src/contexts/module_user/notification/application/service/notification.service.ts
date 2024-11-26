@@ -8,7 +8,7 @@ import { UserServiceInterface } from "src/contexts/module_user/user/domain/servi
 import { NotificationGroup } from "../../domain/entity/notification.group.entity";
 
 import { NotificationGroupServiceInterface } from "../../domain/service/notification.group.service.interface";
-import { GROUP_NOTIFICATION_eventTypes_send_only_user, GROUP_NOTIFICATION_eventTypes_send_user_and_group, MAGAZINE_NOTIFICATION_eventTypes, memberForDeleteData, newMemberData, ownerType, typeOfNotification } from "src/contexts/module_user/notification/domain/allowed-events/allowed.events.notifications";
+import { GROUP_NOTIFICATION_eventTypes_send_only_user, GROUP_NOTIFICATION_eventTypes_send_user_and_group, MAGAZINE_NOTIFICATION_eventTypes, memberForDeleteData, newMemberData, ownerType, typeOfNotification, user_acept_the_invitation, user_has_been_removed_fom_magazine } from "src/contexts/module_user/notification/domain/allowed-events/allowed.events.notifications";
 import { GroupServiceInterface } from "src/contexts/module_group/group/domain/service/group.service.interface";
 import { NotificationMagazineServiceInterface } from "../../domain/service/notification.magazine.service.interface";
 import { NotificationMagazine } from "../../domain/entity/notification.magazine.entity";
@@ -128,8 +128,6 @@ export class NotificationService implements NotificationGroupServiceInterface, N
 
     async saveNotificationMagazineAndSentToUser(notificationMagazine: NotificationMagazine): Promise<any> {
         try {
-            const userAceptTheInvitationOfCollaborator = MAGAZINE_NOTIFICATION_eventTypes.user_acept_the_invitation
-            const userHasBeenRemovedFromMagazine = MAGAZINE_NOTIFICATION_eventTypes.user_has_been_removed_fom_magazine
             const event = notificationMagazine.getEvent;
             const magazineId = notificationMagazine.getFrontData.magazine._id;
             const magazineType = notificationMagazine.getFrontData.magazine.ownerType;
@@ -140,7 +138,7 @@ export class NotificationService implements NotificationGroupServiceInterface, N
             await session.withTransaction(async () => {
                 const notificationId = await this.notificationRepository.saveMagazineNotification(notificationMagazine, session);
 
-                if (event === userHasBeenRemovedFromMagazine) {
+                if (event === user_has_been_removed_fom_magazine) {
 
                     const memberDeleteData: memberForDeleteData = {
                         memberToDelete: notificationMagazine.getbackData.userIdTo,
@@ -151,7 +149,7 @@ export class NotificationService implements NotificationGroupServiceInterface, N
 
                     await this.deleteMemberFromMagazine(memberDeleteData, session)
                 }
-                if (event === userAceptTheInvitationOfCollaborator) {
+                if (event === user_acept_the_invitation) {
                     const newMemberData: newMemberData = {
                         memberToAdd: notificationMagazine.getbackData.userIdFrom,
                         magazineAdmin: notificationMagazine.getbackData.userIdTo,

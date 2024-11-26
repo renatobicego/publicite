@@ -910,7 +910,7 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
     try {
       await session.withTransaction(async () => {
         this.logger.log('Deleting user from Magazine group schema');
-        await this.groupModel.updateOne({ magazines: magazineId }, { $pull: { allowedCollaborators: collaboratorId } }, { session });
+        await this.groupMagazine.updateOne({ _id: magazineId }, { $pullAll: { allowedCollaborators: collaboratorId } }, { session });
         this.logger.log('User deleted from Magazine schema');
         return 'Allowed collaborator removed successfully';
       })

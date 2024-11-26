@@ -13,10 +13,16 @@ const GROUP_NOTIFICATION_eventTypes_send_only_user = [
     'notification_group_user_removed_admin', // Te han quitado el rol de administrador -> 8
 ] as const;
 
-const MAGAZINE_NOTIFICATION_eventTypes = {
-    user_acept_the_invitation: 'notification_magazine_acepted',
-    user_has_been_removed_fom_magazine: 'notification_magazine_user_has_been_removed'
-}
+const MAGAZINE_NOTIFICATION_eventTypes = [
+    'notification_magazine_new_user_invited', // Usuario A invita a Usuario B a colaborar en una revista
+    'notification_magazine_acepted', // Usuario B la acepta
+    'notification_magazine_rejected', // Usuario B la rechaza
+    'notification_magazine_user_has_been_removed', // Te han eliminado de la revista
+] as const
+
+const user_acept_the_invitation = MAGAZINE_NOTIFICATION_eventTypes[1]
+const user_has_been_removed_fom_magazine = MAGAZINE_NOTIFICATION_eventTypes[3]
+
 
 enum ownerType {
     user = 'user',
@@ -52,4 +58,15 @@ interface newMemberData {
 
 
 
-export { memberForDeleteData, newMemberData, typeOfNotification, ownerType, MAGAZINE_NOTIFICATION_eventTypes, GROUP_NOTIFICATION_eventTypes_send_user_and_group, GROUP_NOTIFICATION_eventTypes_send_only_user, eventsThatMakeActionsInactive, };
+export {
+    memberForDeleteData,
+    newMemberData,
+    typeOfNotification,
+    ownerType,
+    MAGAZINE_NOTIFICATION_eventTypes,
+    GROUP_NOTIFICATION_eventTypes_send_user_and_group,
+    GROUP_NOTIFICATION_eventTypes_send_only_user,
+    eventsThatMakeActionsInactive,
+    user_acept_the_invitation,
+    user_has_been_removed_fom_magazine
+};
