@@ -29,7 +29,7 @@ export const postBoard = async (values: any) => {
   console.log("call service")
   const res = await axios.post(`${process.env.API_URL}/board`, values, {
     headers: {
-      Authorization: `Bearer ${await auth().getToken()}`,
+      Authorization: `Bearer ${await auth().getToken({ template: "testing" })}`,
     },
   });
   console.log(res)
@@ -52,7 +52,7 @@ export const putBoard = async (id: string, values: any) => {
       },
       context: {
         headers: {
-          Authorization: `${await auth().getToken()}`,
+          Authorization: `${await auth().getToken({ template: "testing" })}`,
         },
       },
     });
@@ -72,7 +72,7 @@ export const getBoardByUsername = async (username: string) => {
       variables: { username },
       context: {
         headers: {
-          Authorization: `${await auth().getToken()}`,
+          Authorization: `${await auth().getToken({ template: "testing" })}`,
         },
       }
     });

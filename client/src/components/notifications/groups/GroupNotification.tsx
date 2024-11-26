@@ -20,7 +20,7 @@ const GroupNotificationCard = ({
   notification: GroupNotification;
 }) => {
   const { group } = notification.frontData;
-  const { event, viewed, date } = notification;
+  const { event, viewed, date, isActionsAvailable } = notification;
   const { updateSocketToken } = useSocket();
   const getNotificationOptionsList = () => {
     const optionsList: NotificationOptionProps[] = [];
@@ -28,7 +28,7 @@ const GroupNotificationCard = ({
       groupNotificationMessages[event as GroupNotificationType];
 
     // Check if acceptAction exists before adding it to options
-    if (notificationMessage?.acceptAction) {
+    if (notificationMessage?.acceptAction && isActionsAvailable) {
       optionsList.push({
         label: "Aceptar Solicitud",
         onPress: () => notificationMessage.acceptAction?.(group._id),
@@ -47,7 +47,7 @@ const GroupNotificationCard = ({
       className: "text-text-color",
       href: `${GROUPS}/${group._id}`,
     });
-    if (notificationMessage?.rejectAction) {
+    if (notificationMessage?.rejectAction && isActionsAvailable) {
       optionsList.push({
         label: "Rechazar Solicitud",
         color: "danger",
@@ -67,7 +67,7 @@ const GroupNotificationCard = ({
         <p className="text-sm">
           {groupNotificationMessages[event as GroupNotificationType].showUser && (
             <span className="font-semibold">
-              {notification.frontData.userInviting.username}
+              {notification.frontData.group.userInviting.username}
             </span>
           )}{" "}
           {groupNotificationMessages[event as GroupNotificationType].message}

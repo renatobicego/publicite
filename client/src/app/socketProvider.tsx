@@ -47,7 +47,7 @@ export const SocketProvider = ({
 
   // Function to reinitialize the socket with a new token
   const updateSocketToken = async (): Promise<Socket> => {
-    const newToken = await getToken();
+    const newToken = await getToken({ template: "testing" });
 
     if (socket) {
       socket.disconnect(); // Disconnect the current socket

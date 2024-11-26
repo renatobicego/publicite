@@ -16,8 +16,10 @@ const generateGroupNotification = (
   const notification: Omit<GroupNotification, "_id"> = {
     ...generateNotification(event, userIdTo, userIdFrom),
     frontData: {
-      group,
-      userInviting: userSending,
+      group: {
+        ...group,
+        userInviting: {...userSending, _id: userIdFrom},
+      },
     },
   };
   return notification;

@@ -45,11 +45,9 @@ const DesktopNotifications = ({
       onOpenChange={(open) => {
         if (open) setNewNotifications(false);
         if (newNotifications && open) {
-          notifications.forEach(async (notification) => {
-            if (!notification.viewed) {
-              await putNotificationStatus(notification._id);
-            }
-          });
+          putNotificationStatus(
+            notifications.map((notification) => notification._id)
+          );
         }
         setIsOpen(open);
       }}

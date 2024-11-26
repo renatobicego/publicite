@@ -29,7 +29,7 @@ export const getGroups = async (searchTerm: string | null, page: number) => {
       variables: { name: searchTerm ? searchTerm : "", limit: 20, page },
       context: {
         headers: {
-          Authorization: await auth().getToken(),
+          Authorization: await auth().getToken({ template: "testing" }),
         },
       },
     });
@@ -52,7 +52,7 @@ export const getGroupById = async (id: string) => {
       variables: { getGroupByIdId: id },
       context: {
         headers: {
-          Authorization: await auth().getToken(),
+          Authorization: await auth().getToken({ template: "testing" }),
         },
       },
     });
@@ -77,7 +77,7 @@ export const getGroupMembersById = async (id: string) => {
       variables: { getGroupByIdId: id },
       context: {
         headers: {
-          Authorization: await auth().getToken(),
+          Authorization: await auth().getToken({ template: "testing" }),
         },
       },
     });
@@ -99,7 +99,7 @@ export const getGroupAdminsById = async (id: string) => {
       variables: { getGroupByIdId: id },
       context: {
         headers: {
-          Authorization: await auth().getToken(),
+          Authorization: await auth().getToken({ template: "testing" }),
         },
       },
     });
@@ -125,7 +125,7 @@ export const getGroupPosts = async (page: number, groupId?: string) => {
       variables: { getPostsOfGroupMembersId: groupId, limit: 30, page },
       context: {
         headers: {
-          Authorization: await auth().getToken(),
+          Authorization: await auth().getToken({ template: "testing" }),
         },
       },
     });
@@ -164,7 +164,7 @@ export const postGroup = async (formData: any) => {
       variables: { groupDto: formData },
       context: {
         headers: {
-          Authorization: `${await auth().getToken()}`,
+          Authorization: `${await auth().getToken({ template: "testing" })}`,
         },
       },
     })
@@ -179,7 +179,7 @@ export const putGroup = async (groupToUpdate: any) => {
         variables: { groupToUpdate },
         context: {
           headers: {
-            Authorization: `${await auth().getToken()}`,
+            Authorization: `${await auth().getToken({ template: "testing" })}`,
           },
         }
       })
@@ -203,7 +203,7 @@ export const groupAliasExists = async (alias: string) => {
       variables: { alias },
       context: {
         headers: {
-          Authorization: await auth().getToken(),
+          Authorization: await auth().getToken({ template: "testing" }),
         },
       },
     });
@@ -224,7 +224,7 @@ export const putAdminGroup = async (groupId: string, userIds: string[]) => {
       variables: { groupId, newAdmins: userIds, groupAdmin },
       context: {
         headers: {
-          Authorization: await auth().getToken(),
+          Authorization: await auth().getToken({ template: "testing" }),
         },
       },
     });
@@ -246,7 +246,7 @@ export const deleteMember = async (groupId: string, userIds: string[]) => {
         variables: { groupId, membersToDelete: userIds, groupAdmin },
         context: {
           headers: {
-            Authorization: await auth().getToken(),
+            Authorization: await auth().getToken({ template: "testing" }),
           },
         },
       })
@@ -269,7 +269,7 @@ export const deleteAdmin = async (groupId: string, userIds: string[]) => {
         variables: { groupId, adminsToDelete: userIds, groupAdmin },
         context: {
           headers: {
-            Authorization: `${await auth().getToken()}`,
+            Authorization: `${await auth().getToken({ template: "testing" })}`,
           },
         },
       })
@@ -295,7 +295,7 @@ export const deleteGroup = async (groupId: string) => {
         },
         context: {
           headers: {
-            Authorization: `${await auth().getToken()}`,
+            Authorization: `${await auth().getToken({ template: "testing" })}`,
           },
         },
       })
@@ -318,7 +318,7 @@ export const putMemberGroup = async (groupId: string) => {
         },
         context: {
           headers: {
-            Authorization: `${await auth().getToken()}`,
+            Authorization: `${await auth().getToken({ template: "testing" })}`,
           },
         },
       })
@@ -347,7 +347,7 @@ export const putMemberGroupByRequest = async (
         },
         context: {
           headers: {
-            Authorization: `${await auth().getToken()}`,
+            Authorization: `${await auth().getToken({ template: "testing" })}`,
           },
         },
       })
@@ -388,7 +388,7 @@ export const putExitGroup = async (
         variables,
         context: {
           headers: {
-            Authorization: `${await auth().getToken()}`,
+            Authorization: `${await auth().getToken({ template: "testing" })}`,
           },
         },
       })

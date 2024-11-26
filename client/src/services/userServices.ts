@@ -25,7 +25,7 @@ export const putUserProfileData = async (
 ) => {
   return await axios.put(`${baseUrl}/${username}`, formData, {
     headers: {
-      Authorization: `Bearer ${await auth().getToken()}`,
+      Authorization: `Bearer ${await auth().getToken({ template: "testing" })}`,
     },
   });
 };
@@ -36,7 +36,9 @@ export const getUserProfileData = async (username: string) => {
       `${process.env.API_URL}/user/personal-data/${username}`,
       {
         headers: {
-          Authorization: `Bearer ${await auth().getToken()}`,
+          Authorization: `Bearer ${await auth().getToken({
+            template: "testing",
+          })}`,
         },
       }
     );
@@ -57,10 +59,12 @@ export const changeUserPreferences = async (
   try {
     const { data, status } = await axios.put(
       `${process.env.API_URL}/user/user-preferences/${user?.username}`,
-      userPreferences, 
+      userPreferences,
       {
         headers: {
-          Authorization: `Bearer ${await auth().getToken()}`,
+          Authorization: `Bearer ${await auth().getToken({
+            template: "testing",
+          })}`,
         },
       }
     );
@@ -84,7 +88,9 @@ export const getUserPreferences = async (username: string) => {
       `${process.env.API_URL}/user/preferences/${username}`,
       {
         headers: {
-          Authorization: `Bearer ${await auth().getToken()}`,
+          Authorization: `Bearer ${await auth().getToken({
+            template: "testing",
+          })}`,
         },
       }
     );
@@ -105,7 +111,7 @@ export const getUsers = async (searchTerm: string | null, page: number) => {
       }&limit=20&page=${page}`,
       {
         headers: {
-          Authorization: `${await auth().getToken()}`,
+          Authorization: `${await auth().getToken({ template: "testing" })}`,
         },
       }
     );
@@ -125,7 +131,7 @@ export const getUserByUsername = async (username: string) => {
       variables: { username },
       context: {
         headers: {
-          Authorization: await auth().getToken(),
+          Authorization: await auth().getToken({ template: "testing" }),
         },
         fetchOptions: {
           next: { revalidate: 60 },
@@ -158,10 +164,9 @@ export const getNotifications = async (
   if (!user.sessionId) {
     return {
       items: [],
-      hasMore: false
+      hasMore: false,
     };
   }
-  const token = await user.getToken({ template: "testing" })
   try {
     const { data } = await query({
       query: getAllNotificationsQuery,
@@ -172,7 +177,7 @@ export const getNotifications = async (
       },
       context: {
         headers: {
-          Authorization: token,
+          Authorization: await user.getToken({ template: "testing" }),
         },
       },
     });
@@ -181,22 +186,26 @@ export const getNotifications = async (
       hasMore: data.getAllNotificationsFromUserById.hasMore,
     };
   } catch (error: ApolloError | any) {
-    console.log(error);
+    // console.log(error.result.errors);
     return {
       error: "Error al traer las notificaciones.",
     };
   }
 };
 
-export const putNotificationStatus = async (id: string) => {
-  const { data } = await getClient().mutate({
-    mutation: changeNotificationStatusMutation,
-    variables: { notificationId: id, view: true },
-    context: {
-      headers: {
-        Authorization: await auth().getToken(),
+export const putNotificationStatus = async (id: string[]) => {
+  try {
+    const { data } = await getClient().mutate({
+      mutation: changeNotificationStatusMutation,
+      variables: { notificationIds: id, view: true },
+      context: {
+        headers: {
+          Authorization: await auth().getToken({ template: "testing" }),
+        },
       },
-    },
-  });
-  return data;
+    });
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
 };

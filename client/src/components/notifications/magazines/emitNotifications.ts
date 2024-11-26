@@ -2,7 +2,6 @@ import { Socket } from "socket.io-client";
 import generateGroupNotification from "./generateMagazineNotification";
 import { User } from "@/types/userTypes";
 import { Magazine, MagazineNotificationType } from "@/types/magazineTypes";
-import { useAuth } from "@clerk/nextjs";
 
 export const emitMagazineNotification = (
   socket: Socket | null,
