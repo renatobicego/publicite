@@ -425,7 +425,7 @@ export class GroupRepository implements GroupRepositoryInterface {
           },
           {
             path: 'admins',
-            select: '_id username name lastName',
+            select: '_id username name lastName profilePhotoUrl',
           },
           {
             path: 'groupNotificationsRequest.groupInvitations',
