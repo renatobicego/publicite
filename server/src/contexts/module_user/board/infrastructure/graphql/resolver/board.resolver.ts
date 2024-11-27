@@ -32,8 +32,7 @@ export class BoardResolver {
     @Context() context: { req: CustomContextRequestInterface },
   ): Promise<any> {
     try {
-      //const userRequestId = context.req.userRequestId;
-      const userRequestId = "6746090243bff1cab9d85bf4"
+      const userRequestId = context.req.userRequestId;
       return await this.boardAdapter.updateBoardById(id, userRequestId, boardData);
     } catch (error: any) {
       throw error;

@@ -34,7 +34,7 @@ export class BoardAdapter implements BoardAdapterInterface {
     id: string,
     owner: string,
     board: UpdateBoardDto,
-  ): Promise<BoardResponse> {
+  ): Promise<BoardResponse | null> {
     try {
       return await this.boardService.updateBoardById(id, owner, board);
     } catch (error: any) {

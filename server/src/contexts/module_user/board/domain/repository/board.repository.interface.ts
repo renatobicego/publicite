@@ -13,5 +13,5 @@ export interface BoardRespositoryInterface {
     page: number,
   ): Promise<BoardGetAllResponse>;
   save(board: Board): Promise<Board>;
-  updateBoardById(id: string, owner: string, board: UpdateBoardDto): Promise<BoardResponse>;
+  updateBoardById(id: string, owner: string, board: UpdateBoardDto): Promise<BoardResponse | null>;
 }

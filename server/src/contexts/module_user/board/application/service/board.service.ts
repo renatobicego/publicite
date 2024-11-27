@@ -41,7 +41,7 @@ export class BoardService implements BoardServiceInterface {
     id: string,
     owner: string,
     board: UpdateBoardDto,
-  ): Promise<BoardResponse> {
+  ): Promise<BoardResponse | null> {
     try {
       this.logger.log('Updating board with ID: ' + id);
       return await this.boardRepository.updateBoardById(id, owner, board);
