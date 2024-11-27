@@ -16,7 +16,6 @@ import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { MAGAZINES } from "@/utils/data/urls";
 import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
 import { PostUserMagazine, PostGroupMagazine } from "@/types/magazineTypes";
-import { emitGroupNotification } from "@/components/notifications/groups/emitNotifications";
 import { useSocket } from "@/app/socketProvider";
 import { emitMagazineNotification } from "@/components/notifications/magazines/emitNotifications";
 import { useUserData } from "@/app/(root)/providers/userDataProvider";
@@ -35,12 +34,7 @@ const CreateMagazineForm = ({
   } | null;
   userId: string;
 }) => {
-  const initialValues = isGroupMagazine
-    ? groupMagazine
-    : ({
-        ...userMagazine,
-        collaborators: shareMagazineIds ? [shareMagazineIds.user] : [],
-      } as PostUserMagazine);
+  const initialValues = isGroupMagazine ? groupMagazine : userMagazine;
   const router = useRouter();
   const { updateSocketToken } = useSocket();
   const { userIdLogged, usernameLogged } = useUserData();
@@ -75,6 +69,11 @@ const CreateMagazineForm = ({
     const socket = await updateSocketToken();
     const usersToSendNotifications = isGroupMagazine
       ? (finalValues as PostGroupMagazine).allowedCollaborators
+      : shareMagazineIds?.user
+      ? [
+          shareMagazineIds.user,
+          ...(finalValues as PostUserMagazine).collaborators,
+        ]
       : (finalValues as PostUserMagazine).collaborators;
     usersToSendNotifications.forEach((collaborator) => {
       // emit notifications user invited to collaborate in magazine

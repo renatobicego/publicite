@@ -35,7 +35,7 @@ const HandleGroupMember = ({
   const isCreator = group?.creator === userIdLogged;
 
   const makeAdmin = async () => {
-    const res = await addAdmin(group?._id, [user._id]);
+    const res = await addAdmin(group?._id, user._id);
     if ("error" in res) {
       toastifyError(res.error as string);
       return;

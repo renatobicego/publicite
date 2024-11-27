@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next-nprogress-bar";
 import { Form, Formik, FormikHelpers } from "formik";
-import { UserBusinessFormValues } from "@/types/userTypes";
+import { BusinessSector, UserBusinessFormValues } from "@/types/userTypes";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { fromAbsolute, getLocalTimeZone } from "@internationalized/date";
 import OnboardingBusinessInputs from "./OnboardingBusinessInputs";
@@ -11,7 +11,7 @@ import { completeOnboardingBusiness } from "../_actions";
 import { toastifyError } from "@/utils/functions/toastify";
 import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
 import { useUser } from "@clerk/nextjs";
-const OnboardingBusiness = ({user} : {user: any}) => {
+const OnboardingBusiness = ({ user, businessSectors }: { user: any;  businessSectors: BusinessSector[]}) => {
   const router = useRouter();
   const {user: clerkUser} = useUser();
   if (!user) return null;
@@ -70,6 +70,7 @@ const OnboardingBusiness = ({user} : {user: any}) => {
           <OnboardingBusinessInputs
             errors={errors}
             setFieldValue={setFieldValue}
+            businessSectors={businessSectors}
           />
           <RequiredFieldsMsg />
           <PrimaryButton

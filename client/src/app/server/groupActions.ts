@@ -62,9 +62,9 @@ export const editGroup = async (
   }
 };
 
-export const addAdmin = async (groupId: string, userIds: string[]) => {
+export const addAdmin = async (groupId: string, userId: string) => {
   try {
-    const res = await putAdminGroup(groupId, userIds);
+    const res = await putAdminGroup(groupId, userId);
     if ("error" in res) {
       return { error: res.error };
     }

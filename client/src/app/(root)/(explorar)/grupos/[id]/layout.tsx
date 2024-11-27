@@ -52,6 +52,7 @@ export default async function GroupLayout(props: {
       (admin) =>
         (admin as User)._id === (loggedUser?.publicMetadata.mongoId as string)
     ) || isCreator;
+  
 
   return (
     <main className="flex min-h-screen flex-col items-start main-style gap-4 md:gap-6 xl:gap-8">

@@ -54,13 +54,13 @@ const CreateGroupForm = () => {
       return;
     }
     const socket = await updateSocketToken();
-    resApi.group.members.forEach((member: string) => {
+    (values.members as string[]).forEach((member) => {
       emitGroupNotification(
         socket,
         resApi.group,
         { username: usernameLogged as string, _id: userIdLogged as string },
         member,
-        "notification_group_new_user_added"
+        "notification_group_new_user_invited"
       );
     });
     toastifySuccess(resApi.message as string);

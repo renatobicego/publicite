@@ -48,6 +48,7 @@ export const getMagazineWithoutPostsById = async (id: string) => {
     });
     return data.getMagazineByMagazineId;
   } catch (error) {
+    console.log(error)
     return {
       error:
         "Error al traer los datos de la revista. Por favor intenta de nuevo.",

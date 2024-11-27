@@ -37,7 +37,7 @@ const PostsGrid = ({
           ))}
         </section>
       )}
-      {!isLoading && posts.length === 0 && (
+      {(!isLoading && posts.length === 0) && (
         <p className="max-md:text-sm text-light-text">
           No se encontraron anuncios para mostrar.{" "}
           {isSearchDone && "Por favor, intenta con otros términos de búsqueda."}

@@ -18,13 +18,7 @@ const useSearchUsers = (isGroupMembersInviteId?: string) => {
   };
 
   const getGroupMembers = (groupId: string) => {
-    if (lastChange.current) {
-      clearTimeout(lastChange.current);
-    }
-    lastChange.current = setTimeout(() => {
-      lastChange.current = null;
-      getGroupMembersById(groupId).then((group) => setUsers(group.members));
-    }, 1000);
+    getGroupMembersById(groupId).then((group) => setUsers(group.members));
   };
 
   useEffect(() => {

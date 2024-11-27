@@ -22,6 +22,7 @@ export const getGroupByIdQuery = gql`
         admins {
           username
           _id
+          # profilePhotoUrl
         }
         creator
         details
@@ -171,12 +172,12 @@ export const validateGroupAliasQuery = gql`
 
 export const makeAdminMutation = gql`
   mutation AddAdminsToGroupByGroupId(
-    $newAdmins: [String!]!
+    $newAdmin: String!
     $groupAdmin: String!
     $groupId: String!
   ) {
     addAdminsToGroupByGroupId(
-      newAdmins: $newAdmins
+      newAdmin: $newAdmin
       groupAdmin: $groupAdmin
       groupId: $groupId
     )

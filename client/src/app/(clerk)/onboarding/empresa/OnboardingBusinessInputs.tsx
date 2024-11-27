@@ -26,22 +26,15 @@ interface OnboardingBusinessInputsProps {
     value: any,
     shouldValidate?: boolean
   ) => Promise<void | FormikErrors<UserBusinessFormValues>>;
+  businessSectors: BusinessSector[]
 }
 
 const OnboardingBusinessInputs = ({
   errors,
   setFieldValue,
+  businessSectors
 }: OnboardingBusinessInputsProps) => {
-  const [businessSectors, setBusinessSectors] = useState<BusinessSector[]>([]);
-  useEffect(() => {
-    const fetchBusinessSectors = async () => {
-      setBusinessSectors(await getBusinessSector());
-    }
-    if(businessSectors.length === 0){
-      fetchBusinessSectors();
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+
   return (
     <>
       <div className="flex gap-4 w-full max-2xl:flex-col">

@@ -33,7 +33,7 @@ const InvitationModal = ({
   submitLabel = "Invitar",
   triggerElement,
   filterUsers,
-  isGroupMembersInviteId
+  isGroupMembersInviteId,
 }: InvitationModalProps) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const { users, getUsersByQuery } = useSearchUsers(isGroupMembersInviteId);
@@ -78,10 +78,16 @@ const InvitationModal = ({
                       : users
                   }
                   onValueChange={(value: string | null) =>
-                    getUsersByQuery(value)
+                    isGroupMembersInviteId ? null : getUsersByQuery(value)
                   }
                   onSelectionChange={handleSelectionChange}
                 />
+                {isGroupMembersInviteId && (
+                  <p className="text-xs 2xl:text-small">
+                    Únicamente se pueden invitar miembros del grupo. Los
+                    administradores ya son colaboradores de la revista.
+                  </p>
+                )}
               </ModalBody>
               <ModalFooter>
                 <Button color="danger" variant="light" onPress={onClose}>

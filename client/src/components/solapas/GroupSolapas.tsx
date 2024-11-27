@@ -94,7 +94,7 @@ const GroupSolapas = ({
             <InviteUsersGroup group={group} />
           </div>
           <UsersGrid
-            items={(group.members as User[])}
+            items={[ ...(group.admins as User[]), ...(group.members as User[])]}
             groupGrid
             group={group}
           />

@@ -2,6 +2,7 @@
 import { getNotifications } from "@/services/userServices";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toastifyError } from "../functions/toastify";
+import { useSocket } from "@/app/socketProvider";
 
 export type NotificationType = "group";
 
@@ -11,6 +12,8 @@ const useNotifications = (isOpen: boolean) => {
   const [page, setPage] = useState(1);
   const [notifications, setNotifications] = useState<BaseNotification[]>([]);
   const [hasMore, setHasMore] = useState(false);
+  // check if new notifications have been received
+  const { newNotifications: newNotificationsReceived } = useSocket();
 
   // Track if the initial fetch is completed
   const initialLoadCompleted = useRef(false);
@@ -80,12 +83,12 @@ const useNotifications = (isOpen: boolean) => {
 
   // Fetch notifications on first render when `isOpen` is false
   useEffect(() => {
-    if (!initialLoadCompleted.current) {
+    if (!initialLoadCompleted.current || newNotificationsReceived) {
       initialLoadCompleted.current = true;
       getNotificationsFirstRender();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [newNotificationsReceived]);
 
   // Effect to call `fetchNotifications` only after `hasMore` is set to true
   useEffect(() => {

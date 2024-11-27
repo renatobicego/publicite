@@ -1,7 +1,7 @@
 import BreadcrumbsAdmin from "@/components/BreadcrumbsAdmin";
 import SolapasTabs from "@/components/solapas/SolapasTabs";
 import { GROUPS } from "@/utils/data/urls";
-export default async function UsersList() {
+export default async function GroupsList() {
   const breadcrumbsItems = [
     {
       label: "Inicio",

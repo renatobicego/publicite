@@ -63,4 +63,12 @@ const getBoardsQuery = gql`
   }
 `;
 
+export const postBoardMutation = gql`
+  mutation CreateBoard($boardRequest: BoardRequest!) {
+    createBoard(boardRequest: $boardRequest) {
+      _id
+    }
+  }
+`;
+
 export { getBoardByUsernameQuery, editBoardByUsernameMutation, getBoardsQuery };

@@ -10,12 +10,7 @@ const MasonryPostGrid = ({
   isGroupPost: boolean;
 }) => {
   const { columns } = useMasonryGrid(posts, [2, 3, 4, 5], [768, 1280, 1720]);
-  if (!posts || posts.length === 0)
-    return (
-      <p className="max-md:text-sm text-light-text mt-4">
-        No se encontraron anuncios para mostrar
-      </p>
-    );
+  if (!posts || posts.length === 0) return;
   return (
     <section className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 3xl:grid-cols-5 gap-4 items-start w-full">
       {columns.map((column, colIndex) => (

@@ -5,6 +5,7 @@ import {
   editBoardByUsernameMutation,
   getBoardByUsernameQuery,
   getBoardsQuery,
+  postBoardMutation,
 } from "@/graphql/boardQueries";
 import { auth, currentUser } from "@clerk/nextjs/server";
 
@@ -26,14 +27,25 @@ export const getBoards = async (searchTerm: string | null, page: number) => {
 };
 
 export const postBoard = async (values: any) => {
-  console.log("call service")
-  const res = await axios.post(`${process.env.API_URL}/board`, values, {
-    headers: {
-      Authorization: `Bearer ${await auth().getToken({ template: "testing" })}`,
-    },
-  });
-  console.log(res)
-  return res;
+  try {
+    await getClient().mutate({
+      mutation: postBoardMutation,
+      variables: {
+        boardRequest: values
+      },
+      context: {
+        headers: {
+          Authorization: `${await auth().getToken({ template: "testing" })}`,
+        },
+      },
+    })
+
+    return {message: "Pizarra creada exitosamente"}
+  } catch (error) {
+    return {
+      error: "Error al crear la pizarra. Por favor intenta de nuevo.",
+    }
+  }
 };
 
 export const putBoard = async (id: string, values: any) => {

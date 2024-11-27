@@ -1,6 +1,5 @@
 "use server";
 import { getClient, query } from "@/lib/client";
-import { mockedPetitions, mockedPosts } from "../utils/data/mockedData";
 import {
   acceptGroupInvitationMutation,
   acceptJoinRequestMutation,
@@ -216,12 +215,12 @@ export const groupAliasExists = async (alias: string) => {
   }
 };
 
-export const putAdminGroup = async (groupId: string, userIds: string[]) => {
+export const putAdminGroup = async (groupId: string, userId: string) => {
   const groupAdmin = auth().sessionClaims?.metadata.mongoId;
   try {
     await getClient().mutate({
       mutation: makeAdminMutation,
-      variables: { groupId, newAdmins: userIds, groupAdmin },
+      variables: { groupId, newAdmin: userId, groupAdmin },
       context: {
         headers: {
           Authorization: await auth().getToken({ template: "testing" }),

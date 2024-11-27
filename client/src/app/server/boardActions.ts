@@ -9,30 +9,14 @@ export const createBoard = async (formData: any) => {
     return { error: "Usuario no autenticado. Por favor inicie sesión." };
   }
 
-  try {
-    console.log("call action")
-    const resApi: any = await postBoard(formData);
-    if (resApi.status !== 200 && resApi.status !== 201) {
-      return {
-        error:
-          "Error al crear la pizarra. Por favor intenta de nuevo. Error: " +
-          resApi.data.message,
-      };
-    }
-    return { message: "Pizarra creada exitosamente" };
-  } catch (err) {
-    return {
-      error: "Error al crear la pizarra. Por favor intenta de nuevo.",
-    };
-  }
+  return await postBoard(formData);
 };
 
-export const editBoard = async(id: string, formData: any) => {
-
+export const editBoard = async (id: string, formData: any) => {
   try {
     const res = await putBoard(id, formData);
-    if(res.error){
-      return { error: res.error }
+    if (res.error) {
+      return { error: res.error };
     }
     return { message: "Pizarra editada exitosamente", id: "1" };
   } catch (err) {
@@ -40,4 +24,4 @@ export const editBoard = async(id: string, formData: any) => {
       error: "Error al editar la pizarra. Por favor intenta de nuevo.",
     };
   }
-}
+};
