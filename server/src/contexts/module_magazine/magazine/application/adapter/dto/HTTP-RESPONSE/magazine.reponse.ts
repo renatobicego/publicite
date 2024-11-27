@@ -114,7 +114,7 @@ export class MagazineResponse {
   sections: sections_graphql_magazine[];
 
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   visibility: string;
 
   @Field(() => String)
