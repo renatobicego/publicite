@@ -39,11 +39,12 @@ export class BoardService implements BoardServiceInterface {
   }
   async updateBoardById(
     id: string,
+    owner: string,
     board: UpdateBoardDto,
   ): Promise<BoardResponse> {
     try {
       this.logger.log('Updating board with ID: ' + id);
-      return await this.boardRepository.updateBoardById(id, board);
+      return await this.boardRepository.updateBoardById(id, owner, board);
     } catch (error: any) {
       this.logger.error(
         'An error was ocurred while trying to update board: ' + id,

@@ -32,10 +32,11 @@ export class BoardAdapter implements BoardAdapterInterface {
 
   async updateBoardById(
     id: string,
+    owner: string,
     board: UpdateBoardDto,
   ): Promise<BoardResponse> {
     try {
-      return await this.boardService.updateBoardById(id, board);
+      return await this.boardService.updateBoardById(id, owner, board);
     } catch (error: any) {
       throw error;
     }

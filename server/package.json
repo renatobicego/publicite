@@ -53,7 +53,7 @@
     "express": "^4.21.0",
     "firebase": "^10.13.0",
     "firebase-admin": "^12.3.1",
-    "firebase-functions": "^5.1.1",
+    "firebase-functions": "^6.1.1",
     "graphql": "^16.9.0",
     "mongoose": "^8.5.2",
     "reflect-metadata": "^0.2.0",

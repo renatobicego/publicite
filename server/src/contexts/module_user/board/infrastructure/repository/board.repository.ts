@@ -95,12 +95,12 @@ export class BoardRepository implements BoardRespositoryInterface {
 
   async updateBoardById(
     id: string,
+    owner: string,
     board: UpdateBoardDto,
   ): Promise<BoardResponse> {
     try {
-      const boardUpdated = await this.boardModel.findByIdAndUpdate(id, board, {
-        new: true,
-      }).lean()
+      const boardUpdated = await this.boardModel.findByIdAndUpdate(
+        { _id: id, user: owner }, board, { new: true }).lean()
       return this.boardMapper.toResponse(boardUpdated);
     } catch (error: any) {
       throw error;

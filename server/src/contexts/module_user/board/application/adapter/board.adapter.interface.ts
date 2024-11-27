@@ -9,5 +9,5 @@ export interface BoardAdapterInterface {
     limit: number,
     page: number,
   ): Promise<BoardGetAllResponse>;
-  updateBoardById(id: string, board: UpdateBoardDto): Promise<BoardResponse>;
+  updateBoardById(id: string, owner: string, board: UpdateBoardDto): Promise<BoardResponse>;
 }

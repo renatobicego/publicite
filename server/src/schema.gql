@@ -30,6 +30,7 @@ type magazine_graphql_group {
 type GroupResponse_admins {
   _id: String!
   username: String!
+  profilePhotoUrl: String
 }
 
 type notification_user_populate {
@@ -156,7 +157,7 @@ type MagazineResponse {
   _id: String!
   name: String!
   sections: [sections_graphql_magazine!]!
-  visibility: String!
+  visibility: String
   ownerType: String!
   description: String
   collaborators: [collaborators_graphql!]
@@ -535,7 +536,7 @@ type Mutation {
   updatePostById(postUpdate: PostUpdateRequest!, id: String!, author_id: String!): String
 
   """Actualiza el board del usuario"""
-  updateBoardById(id: String!, ownerId: String!, boardData: UpdateBoardDto!): Board
+  updateBoardById(id: String!, boardData: UpdateBoardDto!): Board
 
   """Crear una pizarra"""
   createBoard(boardRequest: BoardRequest!): Board
