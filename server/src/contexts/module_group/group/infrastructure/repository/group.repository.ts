@@ -18,6 +18,7 @@ import { IUser } from 'src/contexts/module_user/user/infrastructure/schemas/user
 import { GroupDocument } from '../schemas/group.schema';
 import { PostsMemberGroupResponse } from '../../application/adapter/dto/HTTP-RESPONSE/group.posts.member.response';
 import { stopWords } from 'src/contexts/module_shared/utils/functions/stopWords';
+import { checkStopWordsAndReturnSearchQuery } from 'src/contexts/module_shared/utils/functions/checkStopWordsAndReturnSearchQuery';
 
 export class GroupRepository implements GroupRepositoryInterface {
   constructor(
@@ -559,7 +560,6 @@ export class GroupRepository implements GroupRepositoryInterface {
     name: string,
     limit: number,
     page: number,
-    userRequest: string,
   ): Promise<{
     groups: any[],
     hasMore: boolean
@@ -569,23 +569,15 @@ export class GroupRepository implements GroupRepositoryInterface {
       session.startTransaction();
       let groups;
 
-      if (name && (stopWords.has(name) || name.length <= 2)) {
-        return {
-          groups: [],
-          hasMore: false,
-        }
-      }
+      if (name) {
+        const textSearchQuery = checkStopWordsAndReturnSearchQuery(name);
+        if (!textSearchQuery) {
+          return {
+            groups: [],
+            hasMore: false,
+          }
+        };
 
-      const searchTermSeparate = name
-        ?.split(' ')
-        .filter(
-          (term) =>
-            term.trim() !== '' &&
-            !stopWords.has(term.trim().toLowerCase())
-        );
-
-      if (name && searchTermSeparate) {
-        const textSearchQuery = searchTermSeparate.join(' ');
         groups = await this.groupModel
           .find({
             $or: [

@@ -31,6 +31,7 @@ import {
 import { PostDocument } from '../schemas/post.schema';
 import { PostLocationDocument } from '../schemas/postLocation.schema';
 import { stopWords } from 'src/contexts/module_shared/utils/functions/stopWords';
+import { checkStopWordsAndReturnSearchQuery } from 'src/contexts/module_shared/utils/functions/checkStopWordsAndReturnSearchQuery';
 
 export class PostRepository implements PostRepositoryInterface {
   constructor(
@@ -211,22 +212,15 @@ export class PostRepository implements PostRepositoryInterface {
     try {
       this.logger.log('Finding posts By postType: ' + postType);
 
-      if (searchTerm && (stopWords.has(searchTerm) || searchTerm.length <= 2)) {
-        return {
-          posts: [],
-          hasMore: false,
-        }
-      }
-      const searchTermSeparate = searchTerm
-        ?.split(' ')
-        .filter(
-          (term) =>
-            term.trim() !== '' &&
-            !stopWords.has(term.trim().toLowerCase())
-        );
+      if (searchTerm) {
+        const textSearchQuery = checkStopWordsAndReturnSearchQuery(searchTerm);
 
-      if (searchTerm && searchTermSeparate) {
-        const textSearchQuery = searchTermSeparate.join(' ');
+        if (!textSearchQuery) {
+          return {
+            posts: [],
+            hasMore: false,
+          }
+        };
 
         this.logger.log('Buscando posts con términos de búsqueda');
         const posts = await this.postDocument

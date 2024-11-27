@@ -1,4 +1,4 @@
-import { Inject, UseGuards } from '@nestjs/common';
+import { Inject, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Resolver, Query, Context, } from '@nestjs/graphql';
 import { ObjectId } from 'mongoose';
 
@@ -233,7 +233,7 @@ export class MagazineResolver {
       PubliciteAuth.authorize(userRequestId, owner);
       return await this.magazineAdapter.updateMagazineById(
         magazineRequest,
-        owner,
+        userRequestId,
         groupId,
       );
     } catch (error: any) {

@@ -934,6 +934,7 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
           const response = await this.userMagazine
             .findOneAndUpdate({ _id: magazine._id, user: owner }, magazine)
             .session(session)
+            .select('_id')
             .lean();
           return response?._id;
         }
@@ -944,6 +945,7 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
               $or: [{ admins: owner }, { creator: owner }],
             })
             .session(session)
+            .select('_id')
             .lean();
           if (!group) {
             throw new Error('Not allowed or group not found');
@@ -952,6 +954,7 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
           const response = await this.groupMagazine
             .findByIdAndUpdate(magazine._id, magazine)
             .session(session)
+            .select('_id')
             .lean();
           return response?._id;
         }
