@@ -59,8 +59,7 @@ export const putBoard = async (id: string, values: any) => {
       mutation: editBoardByUsernameMutation,
       variables: {
         updateBoardByIdId: id,
-        boardData: values,
-        ownerId: user.sessionClaims.metadata.mongoId,
+        boardData: values
       },
       context: {
         headers: {

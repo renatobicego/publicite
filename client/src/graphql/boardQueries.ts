@@ -26,12 +26,10 @@ const editBoardByUsernameMutation = gql`
   mutation UpdateBoardById(
     $updateBoardByIdId: String!
     $boardData: UpdateBoardDto!
-    $ownerId: String!
   ) {
     updateBoardById(
       id: $updateBoardByIdId
       boardData: $boardData
-      ownerId: $ownerId
     ) {
       _id
     }
