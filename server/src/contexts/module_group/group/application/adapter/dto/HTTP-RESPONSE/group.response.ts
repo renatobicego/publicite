@@ -57,6 +57,9 @@ export class GroupResponse_admins {
 
   @Field(() => String)
   username: string;
+
+  @Field(() => String, { nullable: true })
+  profilePhotoUrl: string;
 }
 
 @ObjectType()
