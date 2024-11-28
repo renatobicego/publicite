@@ -16,6 +16,7 @@ import { UserSchema } from 'src/contexts/module_user/user/infrastructure/schemas
 import { PostService } from '../../application/service/post.service';
 import { PostRepositoryMapper } from '../repository/mapper/post.repository.mapper';
 import { PostRepository } from '../repository/post.repository';
+import { PostFactory } from '../../application/post-factory/post.factory';
 
 @Module({
   imports: [
@@ -65,4 +66,4 @@ import { PostRepository } from '../repository/post.repository';
     },
   ],
 })
-export class PostModule {}
+export class PostModule { }

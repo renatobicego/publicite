@@ -13,7 +13,7 @@ export class PostController {
   constructor(
     @Inject('PostAdapterInterface')
     private readonly postAdapter: PostAdapterInterface,
-  ) {}
+  ) { }
 
   @Post()
   @ApiOperation({ summary: 'Create a new post' })
@@ -29,9 +29,9 @@ export class PostController {
   @ApiBody({ type: PostRequestDto })
   async createPersonalAccount(
     @Body() newPost: PostRequest,
-  ): Promise<PostResponse> {
+  ): Promise<void> {
     try {
-      return await this.postAdapter.create(newPost);
+      await this.postAdapter.create(newPost);
     } catch (error: any) {
       throw error;
     }

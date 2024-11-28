@@ -14,7 +14,7 @@ export interface PostRequest {
   location: {
     location: {
       type: 'Point';
-      coordinates: [number];
+      coordinates: [number, number];
     };
     userSetted: boolean;
     description: string;
@@ -45,7 +45,7 @@ export interface PostServiceRequest extends PostRequest {
 }
 
 export interface PostPetitionRequest extends PostRequest {
-  toPrice: string;
+  toPrice: number;
   frequencyPrice: string;
   petitionType: string;
 }

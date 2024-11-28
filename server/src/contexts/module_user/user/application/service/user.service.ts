@@ -24,7 +24,7 @@ export class UserService implements UserServiceInterface {
     private readonly contactService: ContactServiceInterface,
     private readonly logger: MyLoggerService,
     @InjectConnection() private readonly connection: Connection,
-  ) {}
+  ) { }
 
   async createUser(req: User, contactDto: any): Promise<User> {
     const session = await this.connection.startSession();
@@ -133,7 +133,7 @@ export class UserService implements UserServiceInterface {
   ): Promise<void> {
     try {
       this.logger.log('Creating post in the service: ' + UserService.name);
-      return await this.userRepository.saveNewPost(postId, authorId, options);
+      await this.userRepository.saveNewPost(postId, authorId, options);
     } catch (error: any) {
       throw error;
     }
@@ -166,7 +166,7 @@ export class UserService implements UserServiceInterface {
     } catch (error: any) {
       this.logger.error(
         'An error has occurred in user service - updateUserPreferencesByUsername: ' +
-          error,
+        error,
       );
       throw error;
     }
@@ -202,7 +202,7 @@ export class UserService implements UserServiceInterface {
     } catch (error: any) {
       this.logger.error(
         'An error has occurred in user service - UpdateUserByClerk: ' +
-          error.message,
+        error.message,
       );
       throw error;
     }

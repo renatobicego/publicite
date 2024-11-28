@@ -125,7 +125,7 @@ export class SubscriptionRepository implements SubscriptionRepositoryInterface {
 
   async updateSubscription(id: string, updateObject: any): Promise<void> {
     try {
-      this.logger.log('Update subscription with ID: ' + id);
+      this.logger.log('Update subscription with ID: ' + id + 'STATUS: authorized');
       const result = await this.subscriptionModel.findOneAndUpdate(
         { mpPreapprovalId: id },
         updateObject,

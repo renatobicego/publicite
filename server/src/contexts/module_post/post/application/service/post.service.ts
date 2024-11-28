@@ -9,6 +9,9 @@ import { PostUpdateDto } from '../../domain/entity/dto/post.update.dto';
 import { Post } from '../../domain/entity/post.entity';
 import { PostRepositoryInterface } from '../../domain/repository/post.repository.interface';
 import { PostServiceInterface } from '../../domain/service/post.service.interface';
+import { PostRequest } from '../dto/HTTP-REQUEST/post.request';
+import { PostFactory } from '../post-factory/post.factory';
+import { PostType } from '../../domain/entity/enum/post-type.enum';
 
 
 
@@ -20,7 +23,7 @@ export class PostService implements PostServiceInterface {
     private readonly logger: MyLoggerService,
     @Inject('UserServiceInterface')
     private readonly userService: UserServiceInterface,
-  ) {}
+  ) { }
   findAllPostByPostType(
     page: number,
     limit: number,
@@ -39,14 +42,21 @@ export class PostService implements PostServiceInterface {
     }
   }
 
-  async create(post: Post): Promise<Post> {
+  async create(post: PostRequest): Promise<void> {
+    const postType = post.postType.toLowerCase();
+    if (!postType) throw new Error('Post type is required');
+
+
+    const postFactory = PostFactory.getInstance(this.logger);
+    const postMapped = postFactory.createPost(postType as PostType, post);
+
     const session = await this.connection.startSession();
     let locationID: ObjectId;
     let newPost: Post;
     try {
       await session.withTransaction(async () => {
         //Location to save
-        locationID = await this.postRepository.saveLocation(post.getLocation, {
+        locationID = await this.postRepository.saveLocation(postMapped.getLocation, {
           session,
         });
         if (!locationID) {
@@ -54,7 +64,7 @@ export class PostService implements PostServiceInterface {
         }
 
         //Post to save
-        newPost = await this.postRepository.create(post, locationID, {
+        newPost = await this.postRepository.create(postMapped, locationID, {
           session,
         });
 
@@ -71,7 +81,7 @@ export class PostService implements PostServiceInterface {
 
       //Todo ok
       await session.commitTransaction();
-      return newPost!; // Si marco como ! aseguro que no sera null ya que si llega a este retorno quiere decir que la transaccion se completo
+
     } catch (error: any) {
       await session.abortTransaction();
       session.endSession();
@@ -80,6 +90,8 @@ export class PostService implements PostServiceInterface {
       session.endSession();
     }
   }
+
+
 
   async deletePostById(id: string): Promise<void> {
     try {

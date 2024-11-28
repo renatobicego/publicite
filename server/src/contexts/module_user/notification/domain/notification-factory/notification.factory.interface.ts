@@ -1,4 +1,3 @@
-
 import { typeOfNotification } from "../allowed-events/allowed.events.notifications";
 import { Notification } from "../entity/notification.entity";
 
