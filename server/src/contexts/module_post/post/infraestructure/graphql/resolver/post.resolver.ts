@@ -26,7 +26,7 @@ export class PostResolver {
   async deletePostById(
     @Args('id', { type: () => String })
     id: string,
-    @Args('id', { type: () => String })
+    @Args('author_id', { type: () => String })
     author_id: string,
     @Context() context: { req: CustomContextRequestInterface },
   ): Promise<any> {

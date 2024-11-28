@@ -524,7 +524,6 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
         ])
         .session(session)
         .lean();
-
       if (!magazine) {
         await session.abortTransaction();
         return null;

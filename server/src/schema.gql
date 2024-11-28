@@ -530,7 +530,7 @@ type Mutation {
   updateContactById(contactId: String!, updateRequest: UpdateContactRequest!): String
 
   """eliminar un post por id"""
-  deletePostById(id: String!): String
+  deletePostById(id: String!, author_id: String!): String
 
   """Actualizar un post"""
   updatePostById(postUpdate: PostUpdateRequest!, id: String!, author_id: String!): String

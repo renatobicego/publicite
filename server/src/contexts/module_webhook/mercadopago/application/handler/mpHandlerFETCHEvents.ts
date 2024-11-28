@@ -286,10 +286,10 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
 
 
 
-      if (subscription_authorized_payment && subscription_authorized_payment.retry_attempt && subscription_authorized_payment.retry_attempt > 0) {
-        this.logger.warn("This is a retry, we are updating the invoice and returning OK to Meli - The status of the subscription or payment is other than rejected or cancelled");
-        this.logger.log(paymentStatus);
-        this.logger.log(subscriptionStatus);
+      if (subscription_authorized_payment && subscription_authorized_payment.retry_attempt && subscription_authorized_payment.retry_attempt > 0 && approvedStatuses.has(paymentStatus)) {
+        this.logger.warn("This is a retry, we are updating the invoice and returning OK to Meli - The status of the subscription or payment is: " + paymentStatus);
+        this.logger.log('status of payment: ' + paymentStatus);
+        this.logger.log('Status of subscription:' + subscriptionStatus);
 
         await this.MpInvoiceService.updateInvoice(
           subscription_authorized_payment,
@@ -308,11 +308,16 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
           this.logger.warn(
             `Status of subscription: ${subscriptionStatus}`,
           );
-
+          this.logger.warn(
+            `Changing subscription status in mercadopago...`,
+          );
           await this.fetchToMpAdapter.changeSubscriptionStatusInMercadopago_fetch(
             this.URL_SUBCRIPTION_PREAPPROVAL_CHECK,
             subscription_authorized_payment.preapproval_id,
             'authorized',
+          );
+          this.logger.warn(
+            `Change subscription status in mercadopago Succesfully -- NEW STATUS PAYMENT: ${paymentStatus} -- NEW STATUS SUBSCRIPTION: ${subscriptionStatus}`,
           );
           return true
         }

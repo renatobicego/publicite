@@ -21,7 +21,7 @@ const NotificationGroupSchema = new Schema<INotificationGroup>({
         group: {
             _id: { type: String, required: true },
             name: { type: String, required: true },
-            profilePhotoUrl: { type: String, required: true },
+            profilePhotoUrl: { type: String },
             userInviting: {
                 _id: { type: String },
                 username: { type: String }
