@@ -5,6 +5,7 @@ import InvitationModal from "./InvitationModal";
 import { emitMagazineNotification } from "@/components/notifications/magazines/emitNotifications";
 import { useSocket } from "@/app/socketProvider";
 import { useUserData } from "@/app/(root)/providers/userDataProvider";
+import { Group } from "@/types/groupTypes";
 
 const InviteCollabMagazine = ({ magazine }: { magazine: Magazine }) => {
   const { updateSocketToken } = useSocket();
@@ -33,7 +34,7 @@ const InviteCollabMagazine = ({ magazine }: { magazine: Magazine }) => {
       }
       isGroupMembersInviteId={
         magazine.ownerType === "group"
-          ? (magazine as GroupMagazine).group._id
+          ? ((magazine as GroupMagazine).group as Group)._id
           : undefined
       }
       filterUsers={

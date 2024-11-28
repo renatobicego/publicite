@@ -17,7 +17,7 @@ function checkIsOwner(
   if (magazine.ownerType === "user") {
     return (owner as GetUser)._id === userId;
   }
-  const groupData: Group = (magazine as GroupMagazine).group;
+  const groupData: Group = (magazine as GroupMagazine).group as Group;
   return (
     groupData.admins.some((admin) => admin === userId) ||
     groupData.creator === userId
