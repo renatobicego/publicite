@@ -52,7 +52,6 @@ export const editMagazine = async (formData: any, groupId?: string) => {
       id: resApi.updateMagazineById,
     };
   } catch (err) {
-    console.log(err);
     return {
       error: "Error al editar la revista. Por favor intenta de nuevo.",
     };

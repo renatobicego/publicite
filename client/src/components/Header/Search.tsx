@@ -5,6 +5,7 @@ import {
   Modal,
   ModalBody,
   ModalContent,
+  ModalFooter,
   ModalHeader,
   Select,
   Selection,
@@ -12,7 +13,13 @@ import {
   Tooltip,
   useDisclosure,
 } from "@nextui-org/react";
-import React, { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
+import React, {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { FaChevronDown, FaSearch } from "react-icons/fa";
 import SecondaryButton from "../buttons/SecondaryButton";
 import {
@@ -41,9 +48,7 @@ const Search = ({
   const [selectedKeys, setSelectedKeys] = useState<Selection>(
     new Set(["recomendados"])
   );
-  const [selectedPost, setSelectedPost] = useState<Selection>(
-    new Set([])
-  );
+  const [selectedPost, setSelectedPost] = useState<Selection>(new Set([]));
   const router = useRouter(); // Next.js router for redirection
   const searchParams = useSearchParams();
 
@@ -66,7 +71,9 @@ const Search = ({
 
     const selectedKey = Array.from(selectedKeys)[0] as string;
     const postType = postTypePath[Array.from(selectedPost)[0] as string];
-    const basePath = postType ? keyToPath[selectedKey] + postType : keyToPath[selectedKey];
+    const basePath = postType
+      ? keyToPath[selectedKey] + postType
+      : keyToPath[selectedKey];
     if (getBaseUrl) {
       return basePath;
     }
@@ -183,17 +190,22 @@ const DropdownSolapas = ({
     "Mejor Puntuados",
     "Próximos a Vencer",
   ];
-  const selectedValueIsPost = useMemo(() => postSolapas.some((value) =>
-    selectedValue.includes(value)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  ), [selectedValue]);
+  const selectedValueIsPost = useMemo(
+    () =>
+      postSolapas.some(
+        (value) => selectedValue.includes(value)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [selectedValue]
+  );
 
   useEffect(() => {
-    if(!selectedValueIsPost) {
-      setSelectedPost(new Set([]))
+    if (!selectedValueIsPost) {
+      setSelectedPost(new Set([]));
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedValueIsPost])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedValueIsPost]);
   return (
     <>
       <Divider className="h-1/2" orientation="vertical" />
@@ -213,64 +225,71 @@ const DropdownSolapas = ({
       </Button>
       <Modal placement="center" isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
-          <ModalHeader className="flex flex-col gap-1">
-            Seleccionar Solapas
-          </ModalHeader>
-          <ModalBody className="pb-4">
-            <Select
-              selectionMode="single"
-              selectedKeys={selectedKeys}
-              onSelectionChange={setSelectedKeys}
-              scrollShadowProps={{
-                hideScrollBar: false,
-              }}
-              classNames={{
-                trigger:
-                  "shadow-none hover:shadow-sm border-[0.5px] group-data-[focus=true]:border-light-text py-1",
-                value: `text-[0.8125rem]`,
-                label: `font-medium text-[0.8125rem]`,
-              }}
-              radius="full"
-              variant="bordered"
-              labelPlacement="outside"
-              disallowEmptySelection
-              aria-label="opciones de búsqueda"
-            >
-              <SelectItem key="recomendados">Recomendados</SelectItem>
-              <SelectItem key="hoy">Anuncios de Hoy</SelectItem>
-              <SelectItem key="puntuados">Mejor Puntuados</SelectItem>
-              <SelectItem key="vencer">Próximos a Vencer</SelectItem>
-              <SelectItem key="pizarras">Pizarras</SelectItem>
-              <SelectItem key="perfiles">Perfiles</SelectItem>
-              <SelectItem key="grupos">Grupos</SelectItem>
-            </Select>
-            {selectedValueIsPost && (
-              <Select
-                selectionMode="single"
-                placeholder="Seleccione el tipo de anuncio"
-                selectedKeys={selectedPost}
-                onSelectionChange={setSelectedPost}
-                scrollShadowProps={{
-                  hideScrollBar: false,
-                }}
-                classNames={{
-                  trigger:
-                    "shadow-none hover:shadow-sm border-[0.5px] group-data-[focus=true]:border-light-text py-1",
-                  value: `text-[0.8125rem]`,
-                  label: `font-medium text-[0.8125rem]`,
-                }}
-                radius="full"
-                variant="bordered"
-                labelPlacement="outside"
-                disallowEmptySelection
-                aria-label="tipo de anuncio"
-              >
-                <SelectItem key="bienes">Bienes</SelectItem>
-                <SelectItem key="servicios">Servicios</SelectItem>
-                <SelectItem key="necesidades">Necesidades</SelectItem>
-              </Select>
-            )}
-          </ModalBody>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                Seleccionar Solapas
+              </ModalHeader>
+              <ModalBody className="pb-4">
+                <Select
+                  selectionMode="single"
+                  selectedKeys={selectedKeys}
+                  onSelectionChange={setSelectedKeys}
+                  scrollShadowProps={{
+                    hideScrollBar: false,
+                  }}
+                  classNames={{
+                    trigger:
+                      "shadow-none hover:shadow-sm border-[0.5px] group-data-[focus=true]:border-light-text py-1",
+                    value: `text-[0.8125rem]`,
+                    label: `font-medium text-[0.8125rem]`,
+                  }}
+                  radius="full"
+                  variant="bordered"
+                  labelPlacement="outside"
+                  disallowEmptySelection
+                  aria-label="opciones de búsqueda"
+                >
+                  <SelectItem key="recomendados">Recomendados</SelectItem>
+                  <SelectItem key="hoy">Anuncios de Hoy</SelectItem>
+                  <SelectItem key="puntuados">Mejor Puntuados</SelectItem>
+                  <SelectItem key="vencer">Próximos a Vencer</SelectItem>
+                  <SelectItem key="pizarras">Pizarras</SelectItem>
+                  <SelectItem key="perfiles">Perfiles</SelectItem>
+                  <SelectItem key="grupos">Grupos</SelectItem>
+                </Select>
+                {selectedValueIsPost && (
+                  <Select
+                    selectionMode="single"
+                    placeholder="Seleccione el tipo de anuncio"
+                    selectedKeys={selectedPost}
+                    onSelectionChange={setSelectedPost}
+                    scrollShadowProps={{
+                      hideScrollBar: false,
+                    }}
+                    classNames={{
+                      trigger:
+                        "shadow-none hover:shadow-sm border-[0.5px] group-data-[focus=true]:border-light-text py-1",
+                      value: `text-[0.8125rem]`,
+                      label: `font-medium text-[0.8125rem]`,
+                    }}
+                    radius="full"
+                    variant="bordered"
+                    labelPlacement="outside"
+                    disallowEmptySelection
+                    aria-label="tipo de anuncio"
+                  >
+                    <SelectItem key="bienes">Bienes</SelectItem>
+                    <SelectItem key="servicios">Servicios</SelectItem>
+                    <SelectItem key="necesidades">Necesidades</SelectItem>
+                  </Select>
+                )}
+              </ModalBody>
+              <ModalFooter>
+                <SecondaryButton onPress={onClose}>Aceptar</SecondaryButton>
+              </ModalFooter>
+            </>
+          )}
         </ModalContent>
       </Modal>
     </>

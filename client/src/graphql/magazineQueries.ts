@@ -100,8 +100,6 @@ export const getMagazineWithoutPostsByIdQuery = gql`
         username
         profilePhotoUrl
         _id
-        admins
-        creator
       }
       visibility
       sections {
@@ -115,6 +113,7 @@ export const editMagazineMutation = gql`
   mutation UpdateMagazineById(
     $magazineUpdateRequest: MagazineUpdateRequest!
     $owner: String!
+    $groupId: String
   ) {
     updateMagazineById(
       magazineUpdateRequest: $magazineUpdateRequest

@@ -44,7 +44,7 @@ export const getCategories = async () => {
         headers: {
           Authorization: await auth().getToken({ template: "testing" }),
         },
-      }
+      },
     });
     return data.getAllCategoryPost;
   } catch (error) {
@@ -139,7 +139,10 @@ export const deletePostService = async (post: Post) => {
   try {
     await getClient().mutate({
       mutation: deletePostMutation,
-      variables: { deletePostByIdId: post._id },
+      variables: {
+        deletePostByIdId: post._id,
+        authorId: auth().sessionClaims?.metadata.mongoId,
+      },
       context: {
         headers: {
           Authorization: await auth().getToken({ template: "testing" }),

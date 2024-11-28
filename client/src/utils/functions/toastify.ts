@@ -11,6 +11,9 @@ export const toastifyError = (message: string) => {
     progress: undefined,
     theme: "light",
     transition: Bounce,
+    style: {
+      zIndex: 20000000,
+    }
   });
 };
 
@@ -24,5 +27,8 @@ export const toastifySuccess = (message: string) => {
     progress: undefined,
     theme: "light",
     transition: Bounce,
+    style: {
+      zIndex: 20000000,
+    }
   });
 };
