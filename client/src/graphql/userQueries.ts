@@ -113,4 +113,13 @@ export const changeNotificationStatusMutation = gql`
   }
 `;
 
+export const updateContactMutation = gql`
+  mutation UpdateContactById(
+    $contactId: String!
+    $updateRequest: UpdateContactRequest!
+  ) {
+    updateContactById(contactId: $contactId, updateRequest: $updateRequest)
+  }
+`;
+
 export default getUserByUsernameQuery;

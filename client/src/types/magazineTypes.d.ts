@@ -1,3 +1,5 @@
+import { Group } from "./groupTypes";
+
 export interface Magazine {
   _id: ObjectId;
   name: string;

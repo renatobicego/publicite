@@ -90,6 +90,8 @@ export const getMagazineWithoutPostsByIdQuery = gql`
       group {
         profilePhotoUrl
         name
+        creator
+        admins
         _id
       }
       name
@@ -98,6 +100,8 @@ export const getMagazineWithoutPostsByIdQuery = gql`
         username
         profilePhotoUrl
         _id
+        admins
+        creator
       }
       visibility
       sections {
@@ -115,6 +119,7 @@ export const editMagazineMutation = gql`
     updateMagazineById(
       magazineUpdateRequest: $magazineUpdateRequest
       owner: $owner
+      groupId: $groupId
     )
   }
 `;

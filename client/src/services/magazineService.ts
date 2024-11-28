@@ -69,10 +69,10 @@ export const postMagazine = async (formData: any) => {
   return data;
 };
 
-export const putMagazine = async (formData: any, userId: string) => {
+export const putMagazine = async (formData: any, userId: string, groupId?: string) => {
   const { data } = await getClient().mutate({
     mutation: editMagazineMutation,
-    variables: { magazineUpdateRequest: formData, owner: userId },
+    variables: { magazineUpdateRequest: formData, owner: userId, groupId },
     context: {
       headers: {
         Authorization: await auth().getToken({ template: "testing" }),

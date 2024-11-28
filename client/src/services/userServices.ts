@@ -1,5 +1,6 @@
 "use server";
 import {
+  Contact,
   EditPersonProfileProps,
   UserPersonFormValues,
   UserPreferences,
@@ -10,6 +11,7 @@ import { getClient, query } from "@/lib/client";
 import getUserByUsernameQuery, {
   changeNotificationStatusMutation,
   getAllNotificationsQuery,
+  updateContactMutation,
 } from "@/graphql/userQueries";
 import { ApolloError } from "@apollo/client";
 
@@ -28,6 +30,28 @@ export const putUserProfileData = async (
       Authorization: `Bearer ${await auth().getToken({ template: "testing" })}`,
     },
   });
+};
+
+export const putContactData = async (
+  contactId: string,
+  contactData: Omit<Contact, "_id">
+) => {
+  try {
+    await getClient().mutate({
+      mutation: updateContactMutation,
+      variables: { contactId, updateRequest: contactData },
+      context: {
+        headers: {
+          Authorization: await auth().getToken({ template: "testing" }),
+        },
+      },
+    });
+    return {message: "Contacto actualizado"}
+  } catch (error) {
+    return {
+      error: "Error al actualizar el contacto. Por favor intenta de nuevo.",
+    };
+  }
 };
 
 export const getUserProfileData = async (username: string) => {
