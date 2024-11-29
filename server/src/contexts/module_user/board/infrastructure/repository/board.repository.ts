@@ -13,7 +13,8 @@ import {
   BoardResponse,
 } from '../../application/dto/HTTP-RESPONSE/board.response';
 import { IUser } from 'src/contexts/module_user/user/infrastructure/schemas/user.schema';
-import { stopWords } from 'src/contexts/module_shared/utils/functions/stopWords';
+import { stopWordsPost } from 'src/contexts/module_shared/utils/functions/stopWords';
+
 
 export class BoardRepository implements BoardRespositoryInterface {
   constructor(
@@ -37,7 +38,7 @@ export class BoardRepository implements BoardRespositoryInterface {
         .filter(
           (term) =>
             term.trim() !== '' &&
-            !stopWords.has(term.trim().toLowerCase()) &&
+            !stopWordsPost.has(term.trim().toLowerCase()) &&
             term.trim().length > 2,
         );
 
