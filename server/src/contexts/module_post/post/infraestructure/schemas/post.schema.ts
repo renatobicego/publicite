@@ -95,7 +95,7 @@ PostSchema.index({ location: '2d' });
 
 
 PostSchema.index({ searchTitle: 1, searchDescription: 1 });
-PostSchema.index({ _id: 1 });
+
 
 
 

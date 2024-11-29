@@ -29,6 +29,7 @@ const MatchPetitionPost = ({
     try {
       setLoading(true);
       const { items } = await getPosts(postTitle, 1, petitionType, 1);
+      console.log(items);
       setPostMatched(items[0]);
     } catch (error) {
       toastifyError("Error al encontrar coincidencias");

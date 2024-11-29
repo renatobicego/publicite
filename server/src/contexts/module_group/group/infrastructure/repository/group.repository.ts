@@ -457,7 +457,7 @@ export class GroupRepository implements GroupRepositoryInterface {
 
       await session.commitTransaction();
       const groupResponse = this.groupMapper.toGroupResponse(group);
-
+      console.log(groupResponse)
       return {
         group: groupResponse,
         isMember,
