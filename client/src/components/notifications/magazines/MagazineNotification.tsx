@@ -28,7 +28,6 @@ const MagazineNotificationCard = ({
   const { event, backData, viewed, date, isActionsAvailable } = notification;
   const { userIdLogged, usernameLogged } = useUserData();
   const { updateSocketToken } = useSocket();
-  console.log(isActionsAvailable)
   const getNotificationOptionsList = () => {
     const optionsList: NotificationOptionProps[] = [];
     const notificationMessage =

@@ -13,6 +13,7 @@ import GroupImage from "./GroupImage";
 import { GroupNotification, GroupNotificationType } from "@/types/groupTypes";
 import { groupNotificationMessages } from "./notificationMessages";
 import { useSocket } from "@/app/socketProvider";
+import { useUserData } from "@/app/(root)/providers/userDataProvider";
 
 const GroupNotificationCard = ({
   notification,
@@ -20,7 +21,8 @@ const GroupNotificationCard = ({
   notification: GroupNotification;
 }) => {
   const { group } = notification.frontData;
-  const { event, viewed, date, isActionsAvailable } = notification;
+  const { event, viewed, date, isActionsAvailable, backData } = notification;
+  const { userIdLogged, usernameLogged } = useUserData();
   const { updateSocketToken } = useSocket();
   const getNotificationOptionsList = () => {
     const optionsList: NotificationOptionProps[] = [];
@@ -31,7 +33,22 @@ const GroupNotificationCard = ({
     if (notificationMessage?.acceptAction && isActionsAvailable) {
       optionsList.push({
         label: "Aceptar Solicitud",
-        onPress: () => notificationMessage.acceptAction?.(group._id),
+        onPress: async () => {
+          const socket = await updateSocketToken();
+          notificationMessage.acceptAction?.(
+            socket,
+            {
+              _id: group._id,
+              name: group.name,
+              profilePhotoUrl: group.profilePhotoUrl,
+            },
+            {
+              _id: userIdLogged,
+              username: usernameLogged,
+            },
+            backData.userIdFrom
+          );
+        },
       });
     }
     if (notificationMessage?.seeNotifications) {
@@ -54,7 +71,19 @@ const GroupNotificationCard = ({
         onPress: async () => {
           const socket = await updateSocketToken();
 
-          notificationMessage.rejectAction?.(group._id, socket);
+          notificationMessage.rejectAction?.(
+            socket,
+            {
+              _id: group._id,
+              name: group.name,
+              profilePhotoUrl: group.profilePhotoUrl,
+            },
+            {
+              _id: userIdLogged,
+              username: usernameLogged,
+            },
+            backData.userIdFrom
+          );
         },
       });
     }
@@ -65,7 +94,8 @@ const GroupNotificationCard = ({
       <GroupImage group={group} />
       <NotificationBody>
         <p className="text-sm">
-          {groupNotificationMessages[event as GroupNotificationType].showUser && (
+          {groupNotificationMessages[event as GroupNotificationType]
+            .showUser && (
             <span className="font-semibold">
               {notification.frontData.group.userInviting.username}
             </span>

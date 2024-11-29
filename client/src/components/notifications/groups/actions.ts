@@ -1,18 +1,36 @@
 import { putMemberGroup } from "@/services/groupsService";
+import { Group } from "@/types/groupTypes";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { Socket } from "socket.io-client";
+import { emitGroupNotification } from "./emitNotifications";
+import { User } from "@/types/userTypes";
 
-const acceptGroupInvitation = async (groupId: string) => {
-  const res = await putMemberGroup(groupId);
+const acceptGroupInvitation = async (
+  socket: Socket | null,
+  group: Pick<Group, "_id" | "name" | "profilePhotoUrl">,
+  userSending: Pick<User, "_id" | "username">,
+  userIdTo: string
+) => {
+  const res = await putMemberGroup(group._id);
   if (res.error) {
     toastifyError(res.error as string);
     return;
   }
   toastifySuccess(res.message as string);
+  if (!socket) return;
+  emitGroupNotification(
+    socket,
+    group,
+    userSending,
+    userIdTo,
+    "notification_group_user_accepted"
+  );
 };
 const declineGroupInvitation = async (
-  groupId: string,
-  socket: Socket | null
+  socket: Socket | null,
+  group: Pick<Group, "_id" | "name" | "profilePhotoUrl">,
+  userSending: Pick<User, "_id" | "username">,
+  userIdTo: string
 ) => {
   if (!socket) {
     toastifyError(
@@ -20,10 +38,13 @@ const declineGroupInvitation = async (
     );
     return;
   }
-  console.log("declineGroupInvitation");
+  emitGroupNotification(
+    socket,
+    group,
+    userSending,
+    userIdTo,
+    "notification_group_user_rejected"
+  );
 };
 
-export {
-  acceptGroupInvitation,
-  declineGroupInvitation,
-};
+export { acceptGroupInvitation, declineGroupInvitation };
