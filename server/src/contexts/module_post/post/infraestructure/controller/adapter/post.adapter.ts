@@ -19,9 +19,9 @@ export class PostAdapter implements PostAdapterInterface {
     private readonly postMapper: PostMapperAdapterInterface,
     private readonly logger: MyLoggerService,
   ) { }
-  async create(post: PostRequest): Promise<void> {
+  async create(post: PostRequest): Promise<any> {
     try {
-     await this.postService.create(post);
+      return await this.postService.create(post);
     } catch (error: any) {
       throw error;
     }

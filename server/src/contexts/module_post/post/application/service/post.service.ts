@@ -42,11 +42,9 @@ export class PostService implements PostServiceInterface {
     }
   }
 
-  async create(post: PostRequest): Promise<void> {
+  async create(post: PostRequest): Promise<any> {
     const postType = post.postType.toLowerCase();
     if (!postType) throw new Error('Post type is required');
-
-
     const postFactory = PostFactory.getInstance(this.logger);
     const postMapped = postFactory.createPost(postType as PostType, post);
 
@@ -54,7 +52,7 @@ export class PostService implements PostServiceInterface {
     let locationID: ObjectId;
     let newPost: Post;
     try {
-      await session.withTransaction(async () => {
+      const newPostId = await session.withTransaction(async () => {
         //Location to save
         locationID = await this.postRepository.saveLocation(postMapped.getLocation, {
           session,
@@ -63,28 +61,33 @@ export class PostService implements PostServiceInterface {
           throw new Error('Error al guardar la ubicación');
         }
 
+
+
         //Post to save
         newPost = await this.postRepository.create(postMapped, locationID, {
           session,
         });
+
+
 
         if (!newPost || !newPost.getId) {
           throw new Error('Error al crear el post');
         }
 
         //Post to save in user
-        await this.userService.saveNewPost(newPost.getId, newPost.getAuthor, {
+        await this.userService.saveNewPostInUser(newPost.getId, newPost.getAuthor, {
           session,
         });
-        return newPost;
+        return newPost.getId;
       });
 
       //Todo ok
       await session.commitTransaction();
-
+      
+      return {
+        _id: newPostId,
+      };
     } catch (error: any) {
-      await session.abortTransaction();
-      session.endSession();
       throw error;
     } finally {
       session.endSession();

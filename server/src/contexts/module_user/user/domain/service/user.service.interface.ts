@@ -42,9 +42,9 @@ export interface UserServiceInterface {
     userPreference: UserPreferencesEntityDto,
   ): Promise<UserPreferencesEntityDto | null>;
 
-  saveNewPost(
+  saveNewPostInUser(
     postId: ObjectId,
     authorId: ObjectId,
     options?: { session?: ClientSession },
-  ): Promise<void>;
+  ): Promise<any>;
 }

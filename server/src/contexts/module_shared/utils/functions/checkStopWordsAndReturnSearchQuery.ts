@@ -14,14 +14,13 @@ export function checkStopWordsAndReturnSearchQuery(searchTerm: string) {
                 !stopWords.has(term.trim().toLowerCase())
         );
 
-
-
     const textSearchQuery = searchTermSeparate
-        .map(term => `${term}`)
-        .join('.*');
+        .map(term =>
+            `(${term.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()})`
+        )
+        .join('.*?'); 
 
+    console.log(textSearchQuery)
     return textSearchQuery;
-
-
 
 }

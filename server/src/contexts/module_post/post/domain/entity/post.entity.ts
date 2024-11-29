@@ -9,9 +9,11 @@ export interface Visibility {
 
 export class Post {
   private title: string;
+  private searchTitle: string
   private author: ObjectId;
   private postType: string;
   private description: string;
+  private searchDescription: string
   private visibility: Visibility;
   private recomendations: PostRecomendation[];
   private price: number;
@@ -22,11 +24,14 @@ export class Post {
   private createAt: string;
   private _id?: ObjectId;
 
+
   constructor(
     title: string,
+    searchTitle: string,
     author: ObjectId,
     postType: string,
     description: string,
+    searchDescription: string,
     visibility: Visibility,
     recomendations: PostRecomendation[],
     price: number,
@@ -38,9 +43,11 @@ export class Post {
     _id?: ObjectId,
   ) {
     this.title = title;
+    this.searchTitle = searchTitle;
     this.author = author;
     this.postType = postType;
     this.description = description ?? null;
+    this.searchDescription = searchDescription;
     this.visibility = visibility;
     this.recomendations = recomendations;
     this.price = price;
@@ -60,6 +67,10 @@ export class Post {
     return this.title;
   }
 
+  get getSearchTitle() {
+    return this.searchTitle;
+  }
+
   get getAuthor() {
     return this.author;
   }
@@ -70,6 +81,10 @@ export class Post {
 
   get getDescription() {
     return this.description;
+  }
+
+  get getSearchDescription() {
+    return this.searchDescription;
   }
 
   get getVisibility() {

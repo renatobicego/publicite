@@ -38,13 +38,16 @@ export class PostFactory implements PostFactoryInterface {
             post.location.userSetted,
             post.location.description
         );
-
+        const searchTitle = this.removeAccents(post.title.toLowerCase());
+        const searchDescription = this.removeAccents(post.description.toLowerCase());
 
         const postBase = new Post(
             post.title,
+            searchTitle,
             post.author,
             postType,
             post.description ?? null,
+            searchDescription,
             visibilityNormalizated,
             post.recomendations ?? [] as any,
             post.price,
@@ -97,5 +100,11 @@ export class PostFactory implements PostFactoryInterface {
         }
 
     }
+
+    private removeAccents(str: string) {
+        return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    }
+
+
 
 } 

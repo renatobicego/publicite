@@ -10,9 +10,11 @@ export interface attachedFiles {
 
 export interface PostDocument extends Document {
   title: string;
+  searchTitle: string;
   author: string;
   postType: string;
   description: string;
+  searchDescription: string;
   visibility: {
     post: string;
     socialMedia: string;
@@ -29,6 +31,7 @@ export interface PostDocument extends Document {
 export const PostSchema = new Schema<PostDocument>(
   {
     title: { type: String, required: true },
+    searchTitle: { type: String, required: true },
     author: {
       type: String,
       ref: 'User',
@@ -36,6 +39,7 @@ export const PostSchema = new Schema<PostDocument>(
     },
     postType: { type: String, enum: Object.values(PostType), required: true },
     description: { type: String },
+    searchDescription: { type: String },
     visibility: {
       post: { type: String, enum: Object.values(Visibility), required: true },
       socialMedia: {

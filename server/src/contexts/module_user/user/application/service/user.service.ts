@@ -126,14 +126,14 @@ export class UserService implements UserServiceInterface {
     }
   }
 
-  async saveNewPost(
+  async saveNewPostInUser(
     postId: ObjectId,
     authorId: ObjectId,
     options?: { session?: ClientSession },
-  ): Promise<void> {
+  ): Promise<any> {
     try {
       this.logger.log('Creating post in the service: ' + UserService.name);
-      await this.userRepository.saveNewPost(postId, authorId, options);
+      return await this.userRepository.saveNewPost(postId, authorId, options);
     } catch (error: any) {
       throw error;
     }

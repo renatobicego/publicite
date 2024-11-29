@@ -4,7 +4,7 @@ import { PostUpdateRequest } from '../dto/HTTP-REQUEST/post.update.request';
 
 
 export interface PostAdapterInterface {
-  create(post: PostRequest): Promise<void>;
+  create(post: PostRequest): Promise<any>;
   deletePostById(id: string): Promise<void>;
   findPostsByAuthorId(id: string): Promise<void>;
   findPostById(id: string): Promise<void>;

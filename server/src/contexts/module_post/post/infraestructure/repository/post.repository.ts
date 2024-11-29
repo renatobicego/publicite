@@ -30,7 +30,6 @@ import {
 } from 'src/contexts/module_user/user/infrastructure/schemas/user.schema';
 import { PostDocument } from '../schemas/post.schema';
 import { PostLocationDocument } from '../schemas/postLocation.schema';
-import { stopWords } from 'src/contexts/module_shared/utils/functions/stopWords';
 import { checkStopWordsAndReturnSearchQuery } from 'src/contexts/module_shared/utils/functions/checkStopWordsAndReturnSearchQuery';
 
 export class PostRepository implements PostRepositoryInterface {
@@ -227,8 +226,8 @@ export class PostRepository implements PostRepositoryInterface {
           .find({
             postType: postType,
             $or: [
-              { title: { $regex: textSearchQuery, $options: 'i' } },
-              { description: { $regex: textSearchQuery, $options: 'i' } },
+              { searchTitle: { $regex: textSearchQuery } },
+              { searchDescription: { $regex: textSearchQuery } },
             ]
           })
           .limit(limit + 1)

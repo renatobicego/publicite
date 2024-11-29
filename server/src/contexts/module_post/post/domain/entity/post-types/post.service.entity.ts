@@ -15,9 +15,11 @@ export class PostService extends Post {
   ) {
     super(
       post.getTitle,
+      post.getSearchTitle,
       post.getAuthor,
       post.getPostType,
       post.getDescription,
+      post.getSearchDescription,
       post.getVisibility,
       post.getRecomendations,
       post.getPrice,

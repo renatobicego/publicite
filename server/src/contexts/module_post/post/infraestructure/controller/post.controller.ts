@@ -29,9 +29,9 @@ export class PostController {
   @ApiBody({ type: PostRequestDto })
   async createPersonalAccount(
     @Body() newPost: PostRequest,
-  ): Promise<void> {
+  ): Promise<any> {
     try {
-      await this.postAdapter.create(newPost);
+      return await this.postAdapter.create(newPost);
     } catch (error: any) {
       throw error;
     }

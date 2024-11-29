@@ -9,9 +9,11 @@ export class PostRepositoryMapper implements PostRepositoryMapperInterface {
   documentToEntityMapped(document: any): Post {
     const post: Post = new Post(
       document.title,
+      document.searchTitle,
       document.author,
       document.postType,
       document.description,
+      document.searchDescription,
       document.visibility,
       document.recomendations,
       document.price,
