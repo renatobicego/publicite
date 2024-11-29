@@ -22,7 +22,7 @@ export const getGroupByIdQuery = gql`
         admins {
           username
           _id
-          profilePhotoUrl
+          # profilePhotoUrl
         }
         creator
         details
@@ -73,7 +73,6 @@ export const getGroupMembersByIdQuery = gql`
         admins {
           username
           _id
-          profilePhotoUrl
         }
 
         members {
@@ -97,7 +96,6 @@ export const getGroupAdminsByIdQuery = gql`
         admins {
           username
           _id
-          profilePhotoUrl
         }
         creator
         name
