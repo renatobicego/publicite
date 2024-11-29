@@ -1,8 +1,9 @@
 "use client";
-import { acceptGroupInvitation } from "@/components/notifications/groups/actions";
 import SecondaryButton from "../SecondaryButton";
 import { useRouter } from "next-nprogress-bar";
 import { useState } from "react";
+import { putMemberGroup } from "@/services/groupsService";
+import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 
 const AcceptGroupInvitation = ({ groupId }: { groupId: string }) => {
   //router to refresh
@@ -10,7 +11,12 @@ const AcceptGroupInvitation = ({ groupId }: { groupId: string }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const handleAccept = async () => {
     setIsSubmitting(true);
-    await acceptGroupInvitation(groupId);
+    const res = await putMemberGroup(groupId);
+    if (res.error) {
+      toastifyError(res.error as string);
+      return;
+    }
+    toastifySuccess(res.message as string);
     router.refresh();
     setIsSubmitting(false);
   };
