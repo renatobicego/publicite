@@ -82,16 +82,6 @@ export const editPost = async (
 export const deletePost = async (
   post: Post,
 ) => {
-  const user = await currentUser();
-
-  if (!user?.username) {
-    return { error: "Usuario no autenticado. Por favor inicie sesión." };
-  }
-
-  if (user.username !== post.author.username) {
-    return { error: "No puedes borrar este anuncio" };
-  }
-
   try {
     const resApi: any = await deletePostService(post);
     return resApi

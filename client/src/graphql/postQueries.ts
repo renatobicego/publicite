@@ -112,7 +112,7 @@ export const editPostMutation = gql`
 `;
 
 export const deletePostMutation = gql`
-  mutation DeletePostById($deletePostByIdId: String!) {
-    deletePostById(id: $deletePostByIdId)
+  mutation DeletePostById($deletePostByIdId: String!, $authorId: String!) {
+    deletePostById(id: $deletePostByIdId, author_id: $authorId)
   }
 `;

@@ -90,6 +90,8 @@ export const getMagazineWithoutPostsByIdQuery = gql`
       group {
         profilePhotoUrl
         name
+        creator
+        admins
         _id
       }
       name
@@ -111,10 +113,12 @@ export const editMagazineMutation = gql`
   mutation UpdateMagazineById(
     $magazineUpdateRequest: MagazineUpdateRequest!
     $owner: String!
+    $groupId: String
   ) {
     updateMagazineById(
       magazineUpdateRequest: $magazineUpdateRequest
       owner: $owner
+      groupId: $groupId
     )
   }
 `;

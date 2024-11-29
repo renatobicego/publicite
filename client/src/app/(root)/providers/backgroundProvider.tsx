@@ -80,10 +80,14 @@ export const BackgroundProvider = ({
     } else {
       toastifySuccess("Preferencias guardadas");
       // Save to localStorage under the specific username
+      localStorage.removeItem(
+        `backgroundColor_${username}`
+      );
       localStorage.setItem(
         `backgroundColor_${username}`,
         JSON.stringify(gradientValue)
       );
+      setGradientValue(gradientValue);
     }
   };
 

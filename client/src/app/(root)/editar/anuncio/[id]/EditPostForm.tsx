@@ -1,5 +1,5 @@
 "use client";
-import { Good, PostAttachedFile, Service } from "@/types/postTypes";
+import { Good, Service } from "@/types/postTypes";
 import { getPostInitialValues } from "./initialValues";
 import { Form, Formik, FormikErrors, FormikHelpers } from "formik";
 import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
@@ -136,8 +136,12 @@ const EditPostForm = ({ postData }: { postData: Good | Service }) => {
             </div>
             <div className="flex flex-col gap-4 flex-1 max-md:w-full">
               <TitleDescription errors={errors} setFieldValue={setFieldValue} />
-              <PriceCategory errors={errors} />
-              <Condition errors={errors} />
+              <PriceCategory
+                errors={errors}
+                isService={postType === "service"}
+              />
+              {postType === "good" && <Condition errors={errors} />}
+
               <Divider />
               <AccordionInputs
                 errors={errors}

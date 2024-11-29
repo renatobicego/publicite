@@ -79,7 +79,7 @@ const Data = async ({
             {showCondition}
             Publicado {datePublished} en {post.location.description}
           </p>
-          <OptionsDropdown post={post} />
+          {isAuthor && <OptionsDropdown post={post} />}
         </div>
         <h2>{post.title}</h2>
         {"reviews" in post && post.reviews && post.reviews.length > 0 && (

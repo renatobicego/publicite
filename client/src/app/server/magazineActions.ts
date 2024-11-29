@@ -33,7 +33,7 @@ export const createMagazine = async (formData: any) => {
   }
 };
 
-export const editMagazine = async (formData: any) => {
+export const editMagazine = async (formData: any, groupId?: string) => {
   const user = auth();
 
   if (!user.sessionId) {
@@ -43,14 +43,15 @@ export const editMagazine = async (formData: any) => {
   try {
     const resApi: any = await putMagazine(
       formData,
-      user.sessionClaims.metadata.mongoId
+      user.sessionClaims.metadata.mongoId,
+      groupId
+      
     );
     return {
       message: "Revista editada exitosamente",
       id: resApi.updateMagazineById,
     };
   } catch (err) {
-    console.log(err);
     return {
       error: "Error al editar la revista. Por favor intenta de nuevo.",
     };

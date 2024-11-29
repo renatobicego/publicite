@@ -6,6 +6,7 @@ const BackgroundStyle = () => {
   const { gradientValue } = useBackground();
 
   useEffect(() => {
+    console.log(gradientValue);
     const opacity = (gradientValue as any) / 100;
     const gradient = `radial-gradient(circle at 10% 20%, 
           rgba(255, 131, 61, ${opacity}) 0%, 

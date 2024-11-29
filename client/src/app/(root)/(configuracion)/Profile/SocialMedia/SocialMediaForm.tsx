@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import FormCard from "../../FormCard";
-import { Form, Formik } from "formik";
+import { Form, Formik, FormikHelpers } from "formik";
 import { Button } from "@nextui-org/react";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import FormInputs from "./FormInputs";
 import { Contact } from "@/types/userTypes";
 import { contactSchema } from "./socialMediaValidation";
+import { putContactData } from "@/services/userServices";
+import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 
 const LOCAL_STORAGE_KEY = "socialMediaFormValues";
 
@@ -16,13 +18,12 @@ const SocialMediaForm = ({
   setIsFormVisible: (value: boolean) => void;
   contact?: Contact;
 }) => {
-  const [initialValues, setInitialValues] = useState<Contact>({
+  const [initialValues, setInitialValues] = useState<Omit<Contact, "_id">>({
     phone: contact?.phone ?? "",
     instagram: contact?.instagram ?? "",
     facebook: contact?.facebook ?? "",
     x: contact?.x ?? "",
     website: contact?.website ?? "",
-    _id: contact?._id ?? "",
   });
 
   // Check localStorage when the component mounts
@@ -42,10 +43,21 @@ const SocialMediaForm = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleSubmit = (values: Contact) => {
+  const handleSubmit = async (
+    values: Omit<Contact, "_id">,
+    actions: FormikHelpers<Omit<Contact, "_id">>
+  ) => {
     // Clear localStorage on submit
     localStorage.removeItem(LOCAL_STORAGE_KEY);
-    console.log("Form submitted with values:", values);
+    const res = await putContactData(contact!._id, values);
+    if (res.error) {
+      actions.setSubmitting(false);
+
+      return toastifyError(res.error);
+    }
+    toastifySuccess(res.message as string);
+    actions.setSubmitting(false);
+    setIsFormVisible(false);
   };
 
   const handleCancel = () => {
@@ -54,12 +66,12 @@ const SocialMediaForm = ({
     setIsFormVisible(false);
   };
 
-  const handleChange = (
-    event: any,
-    values: Contact
-  ) => {
+  const handleChange = (event: any, values: Omit<Contact, "_id">) => {
     const { name, value } = event.target;
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify({...values, [name]: value}));
+    localStorage.setItem(
+      LOCAL_STORAGE_KEY,
+      JSON.stringify({ ...values, [name]: value })
+    );
   };
 
   return (

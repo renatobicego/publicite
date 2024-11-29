@@ -2,13 +2,19 @@
 import { magazineValidation } from "@/app/(root)/crear/revista/[[...options]]/validation";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
-import { EditMagazine, Magazine, UserMagazine } from "@/types/magazineTypes";
+import {
+  EditMagazine,
+  GroupMagazine,
+  Magazine,
+  UserMagazine,
+} from "@/types/magazineTypes";
 import { MAGAZINES } from "@/utils/data/urls";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { Form, Formik, FormikHelpers } from "formik";
 import { useRouter } from "next-nprogress-bar";
 import EditMagazineInputs from "./EditMagazineInputs";
 import { editMagazine } from "@/app/server/magazineActions";
+import { Group } from "@/types/groupTypes";
 
 const EditMagazineForm = ({
   isGroupMagazine,
@@ -32,7 +38,12 @@ const EditMagazineForm = ({
     values: EditMagazine,
     actions: FormikHelpers<EditMagazine>
   ) => {
-    const resApi = await editMagazine(values);
+    const resApi = await editMagazine(
+      values,
+      magazineData.ownerType === "group"
+        ? ((magazineData as GroupMagazine).group as Group)._id
+        : undefined
+    );
     if (resApi.error) {
       toastifyError(resApi.error);
       actions.setSubmitting(false);

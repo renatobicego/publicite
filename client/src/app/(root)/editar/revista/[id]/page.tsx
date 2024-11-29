@@ -1,8 +1,6 @@
 import BreadcrumbsAdmin from "@/components/BreadcrumbsAdmin";
 import ErrorCard from "@/components/ErrorCard";
-import {
-  getMagazineWithoutPostsById,
-} from "@/services/magazineService";
+import { getMagazineWithoutPostsById } from "@/services/magazineService";
 import { EDIT_MAGAZINE, GROUPS, MAGAZINES, PROFILE } from "@/utils/data/urls";
 import { auth } from "@clerk/nextjs/server";
 import { GetUser } from "@/types/userTypes";
@@ -28,21 +26,21 @@ export default async function EditMagazinePage(props: {
   const ownerAsGroup = owner as Group;
 
   //Check if the user is allowed to edit the magazine
-  if (
-    isOwnerTypeUser &&
-    (magazineData as UserMagazine).user._id !== userLoggedId &&
-    !(magazineData as UserMagazine).collaborators.some(
-      (collaborator: any) => collaborator._id === userLoggedId
-    )
-  ) {
-    redirect(`${MAGAZINES}/${magazineData._id}`);
-  } else if (
-    !isOwnerTypeUser &&
-    !(magazineData as GroupMagazine).allowedCollaborators.some(
-      (collaborator: any) => collaborator._id === userLoggedId
-    )
-  ) {
-    redirect(`${MAGAZINES}/${magazineData._id}`);
+  const isUserOwner = isOwnerTypeUser && (magazineData as UserMagazine).user._id === userLoggedId;
+  const isGroupAdmin = (
+    (magazineData as GroupMagazine).group as Group
+  ).admins.some((collaborator: any) => collaborator === userLoggedId);
+  const isGroupCreator =
+    ((magazineData as GroupMagazine).group as Group).creator === userLoggedId;
+
+  if (isOwnerTypeUser) {
+    if (!isUserOwner) {
+      redirect(`${MAGAZINES}/${magazineData._id}`);
+    }
+  } else {
+    if (!isGroupAdmin && !isGroupCreator) {
+      redirect(`${MAGAZINES}/${magazineData._id}`);
+    }
   }
   const breadcrumbsItems = [
     {
