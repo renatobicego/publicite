@@ -424,6 +424,10 @@ export class GroupRepository implements GroupRepositoryInterface {
             select: '_id username profilePhotoUrl name lastName',
           },
           {
+            path: 'creator',
+            select: '_id username name lastName profilePhotoUrl',
+          },
+          {
             path: 'admins',
             select: '_id username name lastName profilePhotoUrl',
           },
@@ -457,7 +461,7 @@ export class GroupRepository implements GroupRepositoryInterface {
 
       await session.commitTransaction();
       const groupResponse = this.groupMapper.toGroupResponse(group);
-      console.log(groupResponse)
+
       return {
         group: groupResponse,
         isMember,
@@ -832,11 +836,11 @@ export class GroupRepository implements GroupRepositoryInterface {
         )
         .session(session)
         .lean();
+      checkIfanyDataWasModified(result);
 
       this.logger.log(
         'Join request added to group successfully. Group ID: ' + groupId,
       );
-      return checkIfanyDataWasModified(result);
     } catch (error: any) {
       throw error;
     }
@@ -860,7 +864,7 @@ export class GroupRepository implements GroupRepositoryInterface {
         )
         .session(session)
         .lean();
-      return checkIfanyDataWasModified(result);
+      checkIfanyDataWasModified(result);
       this.logger.log(
         'Group request added to group successfully. Group ID: ' + groupId,
       );
@@ -885,7 +889,7 @@ export class GroupRepository implements GroupRepositoryInterface {
           },
         )
         .session(session)
-      return checkIfanyDataWasModified(result);
+      checkIfanyDataWasModified(result);
       this.logger.log(
         'Group request remove to group successfully. Group ID: ' + groupId,
       );
@@ -909,7 +913,7 @@ export class GroupRepository implements GroupRepositoryInterface {
           },
         )
         .session(session)
-      return checkIfanyDataWasModified(result);
+      checkIfanyDataWasModified(result);
 
       this.logger.log(
         'Join request remove to group successfully. Group ID: ' + groupId,

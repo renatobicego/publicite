@@ -36,6 +36,8 @@ type GroupResponse_admins {
 type notification_user_populate {
   _id: String
   username: String
+  name: String
+  lastName: String
   profilePhotoUrl: String
 }
 
@@ -50,7 +52,7 @@ type GroupResponse {
   admins: [GroupResponse_admins!]
   name: String!
   alias: String!
-  creator: String!
+  creator: notification_user_populate!
   rules: String
   magazines: [magazine_graphql_group!]
   details: String

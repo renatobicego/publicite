@@ -7,6 +7,8 @@ import {
 } from '@nestjs/common';
 import { GqlArgumentsHost } from '@nestjs/graphql';
 import { Response } from 'express';
+import { NotModifyException } from '../noModifyException';
+
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -21,26 +23,32 @@ export class AllExceptionsFilter implements ExceptionFilter {
     }
   }
 
-  private handleHttpException(exception: unknown, host: ArgumentsHost) {
+  private handleHttpException(exception: any, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
 
-    const status =
-      exception instanceof HttpException
-        ? exception.getStatus()
-        : HttpStatus.INTERNAL_SERVER_ERROR;
-
-    const message =
-      exception instanceof HttpException
-        ? exception.getResponse()
-        : exception instanceof Error
-          ? exception.message
-          : 'Internal server error';
-
-    const stack = exception instanceof Error ? exception.stack : '';
-
+    let status = HttpStatus.INTERNAL_SERVER_ERROR;
+    let message = 'Internal server error';
     let location = '';
+
+    // Si es una instancia de NotModifyException, manejamos este caso especial
+    if (exception instanceof NotModifyException) {
+      status = exception.statusCode as any; // Usamos el código 304 que definiste en la excepción
+      message = exception.message as any;   // Usamos el mensaje de la excepción personalizada
+    }
+    // Si es una instancia de HttpException, obtenemos el estado y el mensaje
+    else if (exception instanceof HttpException) {
+      status = exception.getStatus();
+      message = exception.getResponse() as any;
+    }
+    // Si es un error genérico
+    else if (exception instanceof Error) {
+      message = exception.message;
+    }
+
+    // Obtener el stack trace si está disponible
+    const stack = exception instanceof Error ? exception.stack : '';
     if (stack) {
       const stackLines = stack.split('\n');
       if (stackLines.length > 1) {
@@ -62,24 +70,30 @@ export class AllExceptionsFilter implements ExceptionFilter {
     });
   }
 
-  private handleGraphQLException(exception: unknown, host: ArgumentsHost) {
+  private handleGraphQLException(exception: any, host: ArgumentsHost) {
     const gqlHost = GqlArgumentsHost.create(host);
 
-    const status =
-      exception instanceof HttpException
-        ? exception.getStatus()
-        : HttpStatus.INTERNAL_SERVER_ERROR;
-
-    const message =
-      exception instanceof HttpException
-        ? exception.getResponse()
-        : exception instanceof Error
-          ? exception.message
-          : 'Internal server error';
-
-    const stack = exception instanceof Error ? exception.stack : '';
-
+    let status = HttpStatus.INTERNAL_SERVER_ERROR;
+    let message = 'Internal server error';
     let location = '';
+
+    // Si es una instancia de NotModifyException, manejamos este caso especial
+    if (exception instanceof NotModifyException) {
+      status = exception.statusCode; // Usamos el código 304 que definiste en la excepción
+      message = exception.message;   // Usamos el mensaje de la excepción personalizada
+    }
+    // Si es una instancia de HttpException, obtenemos el estado y el mensaje
+    else if (exception instanceof HttpException) {
+      status = exception.getStatus();
+      message = exception.getResponse() as any;
+    }
+    // Si es un error genérico
+    else if (exception instanceof Error) {
+      message = exception.message;
+    }
+
+    // Obtener el stack trace si está disponible
+    const stack = exception instanceof Error ? exception.stack : '';
     if (stack) {
       const stackLines = stack.split('\n');
       if (stackLines.length > 1) {

@@ -71,6 +71,12 @@ class notification_user_populate {
   username: string;
 
   @Field(() => String, { nullable: true })
+  name: string;
+
+  @Field(() => String, { nullable: true })
+  lastName: string;
+
+  @Field(() => String, { nullable: true })
   profilePhotoUrl: string;
 }
 @ObjectType()
@@ -98,8 +104,8 @@ export class GroupResponse {
   @Field(() => String)
   alias: string;
 
-  @Field(() => String)
-  creator: string;
+  @Field(() => notification_user_populate)
+  creator: notification_user_populate;
 
   @Field(() => String, { nullable: true })
   rules: string;

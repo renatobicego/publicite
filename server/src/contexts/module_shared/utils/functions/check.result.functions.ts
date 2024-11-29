@@ -1,4 +1,6 @@
 import { Logger, UnauthorizedException } from '@nestjs/common';
+import { NotModifyException } from '../../exceptionFilter/noModifyException';
+
 
 function chekResultOfOperation(result: any, message?: string) {
   if (!result || result == null) {
@@ -28,9 +30,7 @@ function chekResultOfOperation(result: any, message?: string) {
 function checkIfanyDataWasModified(result: any) {
   chekResultOfOperation(result);
   if (result.modifiedCount === 0) {
-    return false
-  } else {
-    return true
+    throw new NotModifyException('No data was modified.');
   }
 }
 
