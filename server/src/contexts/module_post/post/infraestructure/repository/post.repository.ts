@@ -67,9 +67,11 @@ export class PostRepository implements PostRepositoryInterface {
       this.logger.log('Saving post in repository');
       const documentToSave = {
         title: post.getTitle,
+        searchTitle: post.getSearchTitle,
         author: post.getAuthor,
         postType: post.getPostType,
         description: post.getDescription,
+        searchDescription: post.getSearchDescription,
         visibility: post.getVisibility,
         recomendations: post.getRecomendations,
         price: post.getPrice,
