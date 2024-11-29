@@ -3,7 +3,9 @@ import { ObjectId } from 'mongoose';
 export class PostUpdateDto {
   _id?: ObjectId;
   title?: string;
+  searchTitle?: string;
   description?: string;
+  searchDescription?: string;
   visibility?: any;
   price?: number;
   //location?: any;

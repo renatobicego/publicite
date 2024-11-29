@@ -7,6 +7,7 @@ import { PostLocation } from "../../domain/entity/postLocation.entity";
 import { PostGood } from "../../domain/entity/post-types/post.good.entity";
 import { PostService } from "../../domain/entity/post-types/post.service.entity";
 import { PostPetition } from "../../domain/entity/post-types/post.petition.entity";
+import { removeAccentsAndToLowerCase } from "../../domain/utils/normalice.data";
 
 
 export class PostFactory implements PostFactoryInterface {
@@ -38,8 +39,8 @@ export class PostFactory implements PostFactoryInterface {
             post.location.userSetted,
             post.location.description
         );
-        const searchTitle = this.removeAccents(post.title.toLowerCase());
-        const searchDescription = this.removeAccents(post.description.toLowerCase());
+        const searchTitle = removeAccentsAndToLowerCase(post.title)
+        const searchDescription = removeAccentsAndToLowerCase(post.description)
 
         const postBase = new Post(
             post.title,
@@ -101,9 +102,6 @@ export class PostFactory implements PostFactoryInterface {
 
     }
 
-    private removeAccents(str: string) {
-        return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    }
 
 
 

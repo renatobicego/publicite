@@ -17,8 +17,7 @@ import { checkIfanyDataWasModified, chekResultOfOperation } from 'src/contexts/m
 import { IUser } from 'src/contexts/module_user/user/infrastructure/schemas/user.schema';
 import { GroupDocument } from '../schemas/group.schema';
 import { PostsMemberGroupResponse } from '../../application/adapter/dto/HTTP-RESPONSE/group.posts.member.response';
-import { stopWords } from 'src/contexts/module_shared/utils/functions/stopWords';
-import { checkStopWordsAndReturnSearchQuery } from 'src/contexts/module_shared/utils/functions/checkStopWordsAndReturnSearchQuery';
+import { checkStopWordsAndReturnSearchQuery, SearchType } from 'src/contexts/module_shared/utils/functions/checkStopWordsAndReturnSearchQuery';
 
 export class GroupRepository implements GroupRepositoryInterface {
   constructor(
@@ -570,7 +569,7 @@ export class GroupRepository implements GroupRepositoryInterface {
       let groups;
 
       if (name) {
-        const textSearchQuery = checkStopWordsAndReturnSearchQuery(name);
+        const textSearchQuery = checkStopWordsAndReturnSearchQuery(name, SearchType.group);
         if (!textSearchQuery) {
           return {
             groups: [],

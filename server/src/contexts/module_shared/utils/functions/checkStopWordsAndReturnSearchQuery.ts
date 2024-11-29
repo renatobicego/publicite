@@ -1,26 +1,56 @@
-import { stopWords } from "./stopWords";
+import { stopWordsGroup, stopWordsPost } from "./stopWords";
 
-export function checkStopWordsAndReturnSearchQuery(searchTerm: string) {
 
-    if (searchTerm && (stopWords.has(searchTerm) || searchTerm.trim().length <= 2)) {
-        return null;
+enum SearchType {
+    group = 'group',
+    post = 'post'
+}
+
+
+function checkStopWordsAndReturnSearchQuery(searchTerm: string, searchType: string) {
+    let searchTermSeparate: string[];
+
+    if (SearchType.group === searchType) {
+        if (searchTerm && (stopWordsGroup.has(searchTerm) || searchTerm.trim().length <= 2)) {
+            return null;
+        }
+        searchTermSeparate = searchTerm
+            ?.split(' ')
+            .filter(
+                (term) =>
+                    term.trim() !== '' &&
+                    !stopWordsGroup.has(term.trim().toLowerCase())
+            );
+
+    } else if (SearchType.post === searchType) {
+        if (searchTerm && (stopWordsPost.has(searchTerm) || searchTerm.trim().length <= 2)) {
+            return null;
+        }
+        searchTermSeparate = searchTerm
+            ?.split(' ')
+            .filter(
+                (term) =>
+                    term.trim() !== '' &&
+                    !stopWordsPost.has(term.trim().toLowerCase())
+            );
+
+    } else {
+        return null
     }
 
-    const searchTermSeparate = searchTerm
-        ?.split(' ')
-        .filter(
-            (term) =>
-                term.trim() !== '' &&
-                !stopWords.has(term.trim().toLowerCase())
-        );
 
     const textSearchQuery = searchTermSeparate
         .map(term =>
             `(${term.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()})`
         )
-        .join('.*?'); 
+        .join('.*?');
 
-    console.log(textSearchQuery)
     return textSearchQuery;
 
+
+}
+
+
+export {
+    checkStopWordsAndReturnSearchQuery, SearchType
 }

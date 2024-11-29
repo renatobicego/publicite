@@ -30,7 +30,7 @@ import {
 } from 'src/contexts/module_user/user/infrastructure/schemas/user.schema';
 import { PostDocument } from '../schemas/post.schema';
 import { PostLocationDocument } from '../schemas/postLocation.schema';
-import { checkStopWordsAndReturnSearchQuery } from 'src/contexts/module_shared/utils/functions/checkStopWordsAndReturnSearchQuery';
+import { checkStopWordsAndReturnSearchQuery, SearchType } from 'src/contexts/module_shared/utils/functions/checkStopWordsAndReturnSearchQuery';
 
 export class PostRepository implements PostRepositoryInterface {
   constructor(
@@ -212,7 +212,7 @@ export class PostRepository implements PostRepositoryInterface {
       this.logger.log('Finding posts By postType: ' + postType);
 
       if (searchTerm) {
-        const textSearchQuery = checkStopWordsAndReturnSearchQuery(searchTerm);
+        const textSearchQuery = checkStopWordsAndReturnSearchQuery(searchTerm, SearchType.post);
 
         if (!textSearchQuery) {
           return {
