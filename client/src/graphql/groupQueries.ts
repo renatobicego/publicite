@@ -160,6 +160,9 @@ export const getMemberPosts = gql`
           postType
           title
           toPrice
+          location {
+            description
+          }
         }
         _id
         lastName

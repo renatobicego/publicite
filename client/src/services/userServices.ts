@@ -64,7 +64,8 @@ export const getUserProfileData = async (username: string) => {
             template: "testing",
           })}`,
         },
-      }
+        cache: "no-cache",
+      },
     );
 
     return await res.json();

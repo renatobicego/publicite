@@ -10,9 +10,10 @@ import { UserType } from "@/types/userTypes";
 import { Magazine } from "@/types/magazineTypes";
 import { getMagazinesOfUser } from "@/services/magazineService";
 import { ConfigData, getConfigData } from "../(configuracion)/Profile/actions";
+import { toastifyError } from "@/utils/functions/toastify";
 
 interface UserDataContextType {
-  magazines: Magazine[];
+  magazines?: Magazine[];
   usernameLogged: string | null | undefined;
   userIdLogged: string | undefined;
   clerkIdLogged: string | undefined;
@@ -50,7 +51,7 @@ export const UserDataProvider = ({
   clerkId?: string;
   userType?: UserType;
 }) => {
-  const [magazines, setMagazines] = useState<Magazine[]>([]);
+  const [magazines, setMagazines] = useState<Magazine[]>();
   const [postsInMagazine, setPostsInMagazine] = useState<
     {
       postId: string;
@@ -64,18 +65,27 @@ export const UserDataProvider = ({
   const [configData, setConfigData] = useState<ConfigData>();
 
   const fetchMagazines = async () => {
-    const magazines: Magazine[] = await getMagazinesOfUser();
-    setMagazines(magazines);
-    // Flatten post IDs from each magazine's sections
-    const postsIds = magazines.flatMap((magazine) =>
-      magazine.sections.flatMap((section) =>
-        section.posts.map((post) => ({
-          postId: post._id,
-          section: section._id,
-        }))
-      )
-    );
-    setPostsInMagazine(postsIds);
+    if (!userId) {
+      setMagazines([]);
+      return;
+    }
+    try {
+      const magazines: Magazine[] = await getMagazinesOfUser();
+      setMagazines(magazines);
+      // Flatten post IDs from each magazine's sections
+      const postsIds = magazines.flatMap((magazine) =>
+        magazine.sections.flatMap((section) =>
+          section.posts.map((post) => ({
+            postId: post._id,
+            section: section._id,
+          }))
+        )
+      );
+      setPostsInMagazine(postsIds);
+      
+    } catch (error) {
+      toastifyError("Error al obtener las revistas. Por favor recarga la página.");
+    }
   };
 
   const fetchConfigData = async () => {
@@ -89,8 +99,8 @@ export const UserDataProvider = ({
   useEffect(() => {
     fetchConfigData();
     fetchMagazines();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId]);
   return (
     <UserDataContext.Provider
       value={{

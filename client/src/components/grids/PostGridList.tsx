@@ -35,7 +35,7 @@ const PostGridList = ({
     ) => {
       switch (columnKey) {
         case "imagesUrls":
-          if (!("imagesUrls" in data)) {
+          if (!("imagesUrls" in data) || !data.imagesUrls) {
             return (
               <div className="flex gap-2 2xl:gap-4 items-center justify-between">
                 <Link href={`${POSTS}/${data._id}`}>

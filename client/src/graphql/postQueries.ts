@@ -83,6 +83,9 @@ export const getPostsQuery = gql`
         price
         reviews
         toPrice
+        location {
+          description
+        }
       }
     }
   }

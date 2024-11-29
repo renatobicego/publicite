@@ -27,10 +27,10 @@ export default async function EditMagazinePage(props: {
 
   //Check if the user is allowed to edit the magazine
   const isUserOwner = isOwnerTypeUser && (magazineData as UserMagazine).user._id === userLoggedId;
-  const isGroupAdmin = (
+  const isGroupAdmin = !isOwnerTypeUser && (
     (magazineData as GroupMagazine).group as Group
   ).admins.some((collaborator: any) => collaborator === userLoggedId);
-  const isGroupCreator =
+  const isGroupCreator = !isOwnerTypeUser &&
     ((magazineData as GroupMagazine).group as Group).creator._id === userLoggedId;
 
   if (isOwnerTypeUser) {

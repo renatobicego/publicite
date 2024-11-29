@@ -1,10 +1,10 @@
 import { addPostToMagazine } from "@/app/server/magazineActions";
 import { CREATE_MAGAZINE } from "@/utils/data/urls";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
-import { Dispatch, DOMAttributes, SetStateAction, useState } from "react";
+import { DOMAttributes, useState } from "react";
 import PrimaryButton from "../PrimaryButton";
 import MagazineCard from "./MagazineCard";
-import { Link } from "@nextui-org/react";
+import { Link, Spinner } from "@nextui-org/react";
 import { Magazine } from "@/types/magazineTypes";
 import { useUserData } from "@/app/(root)/providers/userDataProvider";
 
@@ -16,7 +16,7 @@ const SavePostLogic = ({
 }: {
   titleProps: DOMAttributes<HTMLElement>;
   postId: string;
-  magazines: Magazine[];
+  magazines?: Magazine[];
   saved: {
     postId: string;
     section: string;
@@ -39,7 +39,7 @@ const SavePostLogic = ({
       selectedMagazineSection.magazineId,
       postId,
       selectedMagazineSection.id,
-      magazines.find(
+      magazines?.find(
         (magazine) => magazine._id === selectedMagazineSection.magazineId
       )?.ownerType as "user" | "group" // get the ownerType of the magazine where the post will be added
     );
@@ -60,23 +60,27 @@ const SavePostLogic = ({
       </p>
       <div className="my-2 py-1 flex flex-col gap-2 w-full max-h-[250px] overflow-y-auto overflow-x-hidden">
         <p className="text-xs">Tus revistas</p>
-        {magazines.map((magazine) => {
-          const magazineSectionsIds = magazine.sections.map(
-            (section) => section._id
-          );
-          const getPostSavedInThisMagazine = saved?.find((post) =>
-            magazineSectionsIds.includes(post.section)
-          );
-          return (
-            <MagazineCard
-              key={magazine._id}
-              magazine={magazine}
-              selectedMagazineSection={selectedMagazineSection}
-              setSelectedMagazineSection={setSelectedMagazineSection}
-              savedPost={getPostSavedInThisMagazine}
-            />
-          );
-        })}
+        {magazines ? (
+          magazines.map((magazine) => {
+            const magazineSectionsIds = magazine.sections.map(
+              (section) => section._id
+            );
+            const getPostSavedInThisMagazine = saved?.find((post) =>
+              magazineSectionsIds.includes(post.section)
+            );
+            return (
+              <MagazineCard
+                key={magazine._id}
+                magazine={magazine}
+                selectedMagazineSection={selectedMagazineSection}
+                setSelectedMagazineSection={setSelectedMagazineSection}
+                savedPost={getPostSavedInThisMagazine}
+              />
+            );
+          })
+        ) : (
+          <Spinner color="warning" />
+        )}
       </div>
       {saved.length > 0 && (
         <p className="text-xs mb-1">

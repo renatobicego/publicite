@@ -17,7 +17,6 @@ import {
   getPostsQuery,
 } from "@/graphql/postQueries";
 import { auth } from "@clerk/nextjs/server";
-import { cookies } from "next/headers";
 import { deleteFilesService } from "@/app/server/uploadThing";
 
 export const getPostData = async (id: string) => {
@@ -25,6 +24,11 @@ export const getPostData = async (id: string) => {
     const { data } = await query({
       query: getPostByIdQuery,
       variables: { findPostByIdId: id },
+      context: {
+        fetchOptions: {
+          cache: "no-cache"
+        },
+      },
     });
 
     return data.findPostById;

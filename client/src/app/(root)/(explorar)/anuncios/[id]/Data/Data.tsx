@@ -18,6 +18,7 @@ import { SignedIn } from "@clerk/nextjs";
 import { FaChevronDown } from "react-icons/fa6";
 import OptionsDropdown from "./OptionsDropdown";
 import MatchPetitionPost from "@/components/modals/MatchPetitionPost";
+import { formatTotal } from "@/utils/functions/utils";
 
 const Data = async ({
   post,
@@ -44,16 +45,26 @@ const Data = async ({
   const priceToShow = () => {
     switch (post.postType) {
       case "good":
-        return `$${good.price}`;
+        return `$${formatTotal(good.price)}`;
       case "service":
-        return `$${service.price} ${
-          service.frequencyPrice ? `por ${service.frequencyPrice}` : ""
+        return `$${formatTotal(service.price)} ${
+          service.frequencyPrice
+            ? `por ${
+                (
+                  frequencyPriceItems.find(
+                    (item) => item.value === petition.frequencyPrice
+                  ) ?? {}
+                ).text as string
+              }`
+            : ""
         }`;
       case "petition":
         return `${
           petition.toPrice
-            ? `De $${petition.price} a $${petition.toPrice}`
-            : `$${petition.price}`
+            ? `De $${formatTotal(petition.price)} a $${formatTotal(
+                petition.toPrice
+              )}`
+            : `$${formatTotal(petition.price)}`
         } ${
           petition.frequencyPrice
             ? `por ${

@@ -53,6 +53,9 @@ export const getGroupById = async (id: string) => {
         headers: {
           Authorization: await auth().getToken({ template: "testing" }),
         },
+        fetchOptions: {
+          cache: "no-cache"
+        },
       },
     });
     const { getGroupById } = data;

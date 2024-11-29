@@ -1,5 +1,4 @@
 "use server";
-import axios from "axios";
 import { getClient, query } from "@/lib/client";
 import {
   editBoardByUsernameMutation,
@@ -7,7 +6,7 @@ import {
   getBoardsQuery,
   postBoardMutation,
 } from "@/graphql/boardQueries";
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 
 export const getBoards = async (searchTerm: string | null, page: number) => {
   try {
