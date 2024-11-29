@@ -104,12 +104,19 @@ export class NotificationService implements NotificationGroupServiceInterface, N
                 if (GROUP_NOTIFICATION_eventTypes_send_user_and_group.includes(event as any)) {
                     this.logger.log('Sending new notification to user and group');
                     await this.userService.pushNotification(notificationId, userIdToSendNotification, session);
-                    await this.groupService.pushNotificationToGroup(
+
+                    const groupModifyDataResponse = await this.groupService.pushNotificationToGroup(
                         notificationGroup.getGroupId,
                         notificationGroup.getbackData,
                         event,
                         session,
                     );
+
+                    if (!groupModifyDataResponse) {
+                        this.logger.log("No data was Modify, abort transaction");
+                        await session.abortTransaction();
+                    }
+
                 } else if (GROUP_NOTIFICATION_eventTypes_send_only_user.includes(event as any)) {
                     this.logger.log('Sending new notification to user');
                     await this.userService.pushNotification(notificationId, userIdToSendNotification, session);

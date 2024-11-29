@@ -12,7 +12,7 @@ import { GroupServiceMapperInterface } from '../../domain/service/mapper/group.s
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { GroupUpdateRequest } from '../adapter/dto/HTTP-REQUEST/group.update.request';
 import { PostsMemberGroupResponse } from '../adapter/dto/HTTP-RESPONSE/group.posts.member.response';
-import { response } from 'express';
+
 
 const eventTypes = [
   'notification_group_new_user_invited', // Te han invitado a un grupo -> 0
@@ -31,7 +31,7 @@ export class GroupService implements GroupServiceInterface {
     private readonly groupRepository: GroupRepositoryInterface,
     @Inject('GroupServiceMapperInterface')
     private readonly groupMapper: GroupServiceMapperInterface,
-    
+
   ) { }
 
 
@@ -333,45 +333,46 @@ export class GroupService implements GroupServiceInterface {
       switch (event) {
         case eventTypes[0]: // Te han invitado a un grupo -> 0
           this.logger.log('Pushing join request to group: ' + groupId);
-          await this.groupRepository.pushGroupInvitations(
+          return await this.groupRepository.pushGroupInvitations(
             groupId,
             userIdTo,
             session,
           );
-          break;
+
 
         case eventTypes[1]: // Te han agregado a un grupo -> 1
-          await this.groupRepository.pullGroupInvitations(
+        this.logger.log('Pull group request to group: ' + groupId);
+          return await this.groupRepository.pullGroupInvitations(
             groupId,
             userIdTo,
             session,
           );
-          break;
+
         case eventTypes[4]: // usuario B rechazo unirse al grupo -> 4
-          await this.groupRepository.pullGroupInvitations(
+        this.logger.log('Pull group request to group: ' + groupId);
+          return await this.groupRepository.pullGroupInvitations(
             groupId,
             userIdFrom,
             session,
           );
-          break;
+
 
         case eventTypes[2]: // te han aceptado en un grupo -> 2
         case eventTypes[3]: // te han rechazado en un grupo -> 3
-          await this.groupRepository.pullJoinRequest(
+        this.logger.log('Pull Join request to group: ' + groupId);
+          return await this.groupRepository.pullJoinRequest(
             groupId,
             userIdTo,
             session,
           );
-          break;
 
         case eventTypes[5]: // Usuario A quiere pertenecer a grupo -> 5
           this.logger.log('Pushing join request to group: ' + groupId);
-          await this.groupRepository.pushJoinRequest(
+          return await this.groupRepository.pushJoinRequest(
             groupId,
             userIdFrom,
             session,
           );
-          break;
 
         default:
           throw new Error(`Event type ${event} is not supported`);

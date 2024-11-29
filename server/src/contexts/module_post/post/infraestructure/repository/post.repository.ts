@@ -154,7 +154,11 @@ export class PostRepository implements PostRepositoryInterface {
   async findPostsByAuthorId(id: string): Promise<any> {
     try {
       this.logger.log('Finding posts by author id in repository');
-      const posts = await this.postDocument.find({ author: id }).lean();
+      const posts = await this.postDocument.find({ author: id })
+        .select(
+          '-searchTitle -searchDescription'
+        )
+        .lean();
       return posts;
     } catch (error: any) {
       this.logger.error(
@@ -173,6 +177,9 @@ export class PostRepository implements PostRepositoryInterface {
       const post = await this.postDocument
         .findById(id)
         .session(session)
+        .select(
+          '-searchTitle -searchDescription'
+        )
         .populate({
           path: 'location',
           model: 'PostLocation',

@@ -28,7 +28,9 @@ function chekResultOfOperation(result: any, message?: string) {
 function checkIfanyDataWasModified(result: any) {
   chekResultOfOperation(result);
   if (result.modifiedCount === 0) {
-    throw new Error('No data was modified in the database. Please verify you request.');
+    return false
+  } else {
+    return true
   }
 }
 

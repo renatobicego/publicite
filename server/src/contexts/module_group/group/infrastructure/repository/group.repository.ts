@@ -832,10 +832,11 @@ export class GroupRepository implements GroupRepositoryInterface {
         )
         .session(session)
         .lean();
-      checkIfanyDataWasModified(result);
+
       this.logger.log(
         'Join request added to group successfully. Group ID: ' + groupId,
       );
+      return checkIfanyDataWasModified(result);
     } catch (error: any) {
       throw error;
     }
@@ -859,7 +860,7 @@ export class GroupRepository implements GroupRepositoryInterface {
         )
         .session(session)
         .lean();
-      checkIfanyDataWasModified(result);
+      return checkIfanyDataWasModified(result);
       this.logger.log(
         'Group request added to group successfully. Group ID: ' + groupId,
       );
@@ -884,7 +885,7 @@ export class GroupRepository implements GroupRepositoryInterface {
           },
         )
         .session(session)
-      checkIfanyDataWasModified(result);
+      return checkIfanyDataWasModified(result);
       this.logger.log(
         'Group request remove to group successfully. Group ID: ' + groupId,
       );
@@ -908,7 +909,7 @@ export class GroupRepository implements GroupRepositoryInterface {
           },
         )
         .session(session)
-      checkIfanyDataWasModified(result);
+      return checkIfanyDataWasModified(result);
 
       this.logger.log(
         'Join request remove to group successfully. Group ID: ' + groupId,

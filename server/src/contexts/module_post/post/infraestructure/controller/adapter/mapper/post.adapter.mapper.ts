@@ -12,7 +12,7 @@ export class PostAdapterMapper implements PostMapperAdapterInterface {
   requestUpdateToEntity(postUpdateRequest: PostUpdateRequest): PostUpdateDto {
     let searchDescription = undefined;
     let searchTitle = undefined;
-    
+
     if (postUpdateRequest.description && postUpdateRequest.description.length > 0) {
       searchDescription = removeAccentsAndToLowerCase(postUpdateRequest.description);
     } else if (postUpdateRequest.title && postUpdateRequest.title.length > 0) {
@@ -39,8 +39,9 @@ export class PostAdapterMapper implements PostMapperAdapterInterface {
       toPrice: postUpdateRequest.toPrice,
       petitionType: postUpdateRequest.petitionType,
     };
-    const postMapped = omitBy(postUpdateDto, isUndefined);
 
+    const postMapped = omitBy(postUpdateDto, isUndefined);
+    console.log(postMapped)
     return postMapped;
   }
 }
