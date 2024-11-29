@@ -6,6 +6,7 @@ import { emitMagazineNotification } from "@/components/notifications/magazines/e
 import { useSocket } from "@/app/socketProvider";
 import { useUserData } from "@/app/(root)/providers/userDataProvider";
 import { Group } from "@/types/groupTypes";
+import { toastifySuccess } from "@/utils/functions/toastify";
 
 const InviteCollabMagazine = ({ magazine }: { magazine: Magazine }) => {
   const { updateSocketToken } = useSocket();
@@ -22,6 +23,8 @@ const InviteCollabMagazine = ({ magazine }: { magazine: Magazine }) => {
         "notification_magazine_new_user_invited"
       )
     );
+
+    toastifySuccess("Invitaciones enviadas correctamente");
   };
   return (
     <InvitationModal

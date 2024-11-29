@@ -10,11 +10,13 @@ const MemberCard = ({
   user,
   group,
   isAdmin,
+  isCreator,
   groupRequestGrid,
 }: {
   user: User;
   group: Group;
   isAdmin?: boolean;
+  isCreator?: boolean;
   groupRequestGrid?: boolean;
 }) => {
   const { userIdLogged } = useUserData();
@@ -41,6 +43,9 @@ const MemberCard = ({
 
           {isAdmin && (
             <p className="text-xs font-normal italic">Administrador</p>
+          )}
+          {isCreator && (
+            <p className="text-xs font-normal italic">Dueño</p>
           )}
           {!isMe &&
             (groupRequestGrid ? (

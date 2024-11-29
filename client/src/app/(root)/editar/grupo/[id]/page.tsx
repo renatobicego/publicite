@@ -23,7 +23,7 @@ export default async function EditGroupPage(props: {
     (!groupData.group.admins.some(
       (admin) => (admin as User)._id === loggedUserId
     ) &&
-      groupData.group.creator !== loggedUserId)
+      groupData.group.creator._id !== loggedUserId)
   ) {
     redirect(`${GROUPS}/${params.id}`);
   }

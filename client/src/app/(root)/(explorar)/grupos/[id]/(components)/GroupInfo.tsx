@@ -21,7 +21,6 @@ const GroupInfo = async ({
   const { profilePhotoUrl, name, _id, details, rules, members, alias, admins } =
     group.group;
   const { isMember, hasGroupRequest, hasJoinRequest } = group;
-  const adminsIds = admins.map((admin) => (admin as User)._id);
 
   const actionButtonToReturn = () => {
     switch (true) {
@@ -78,12 +77,9 @@ const GroupInfo = async ({
           <OptionsDropdown
             group={group.group}
             membersIds={(members as User[]).map((member) => member._id)}
-            isMember={isMember}
             isCreator={isCreator}
             image={profilePhotoUrl}
-            admins={(members as User[]).filter((member) =>
-              adminsIds.includes(member._id)
-            )}
+            admins={admins as User[]}
           />
         </div>
       </div>

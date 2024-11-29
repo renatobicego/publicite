@@ -6,18 +6,23 @@ import { Group } from '../../domain/entity/group.entity';
 import { GroupRepositoryInterface } from '../../domain/repository/group.repository.interface';
 import { GroupRepositoryMapperInterface } from '../../domain/repository/mapper/group.repository.mapper.interface';
 import {
-  GroupListResponse,
   GroupResponse,
   GroupResponseById,
 } from '../../application/adapter/dto/HTTP-RESPONSE/group.response';
 import { GroupUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/group.update.request';
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { GroupMagazineDocument } from 'src/contexts/module_magazine/magazine/infrastructure/schemas/magazine.group.schema';
-import { checkIfanyDataWasModified, chekResultOfOperation } from 'src/contexts/module_shared/utils/functions/check.result.functions';
+import {
+  checkIfanyDataWasModified,
+  chekResultOfOperation,
+} from 'src/contexts/module_shared/utils/functions/check.result.functions';
 import { IUser } from 'src/contexts/module_user/user/infrastructure/schemas/user.schema';
 import { GroupDocument } from '../schemas/group.schema';
 import { PostsMemberGroupResponse } from '../../application/adapter/dto/HTTP-RESPONSE/group.posts.member.response';
-import { checkStopWordsAndReturnSearchQuery, SearchType } from 'src/contexts/module_shared/utils/functions/checkStopWordsAndReturnSearchQuery';
+import {
+  checkStopWordsAndReturnSearchQuery,
+  SearchType,
+} from 'src/contexts/module_shared/utils/functions/checkStopWordsAndReturnSearchQuery';
 
 export class GroupRepository implements GroupRepositoryInterface {
   constructor(
@@ -31,7 +36,7 @@ export class GroupRepository implements GroupRepositoryInterface {
     private readonly groupMapper: GroupRepositoryMapperInterface,
     @InjectConnection() private readonly connection: Connection,
     private readonly logger: MyLoggerService,
-  ) { }
+  ) {}
 
   async assignNewCreatorAndExitGroupById(
     groupId: string,
@@ -564,8 +569,8 @@ export class GroupRepository implements GroupRepositoryInterface {
     limit: number,
     page: number,
   ): Promise<{
-    groups: any[],
-    hasMore: boolean
+    groups: any[];
+    hasMore: boolean;
   }> {
     try {
       const session = await this.connection.startSession();
@@ -573,20 +578,23 @@ export class GroupRepository implements GroupRepositoryInterface {
       let groups;
 
       if (name) {
-        const textSearchQuery = checkStopWordsAndReturnSearchQuery(name, SearchType.group);
+        const textSearchQuery = checkStopWordsAndReturnSearchQuery(
+          name,
+          SearchType.group,
+        );
         if (!textSearchQuery) {
           return {
             groups: [],
             hasMore: false,
-          }
-        };
+          };
+        }
 
         groups = await this.groupModel
           .find({
             $or: [
               { name: { $regex: textSearchQuery, $options: 'i' } },
               { alias: { $regex: textSearchQuery, $options: 'i' } },
-            ]
+            ],
           })
           .and([{ visibility: 'public' }])
           .limit(limit + 1)
@@ -619,7 +627,6 @@ export class GroupRepository implements GroupRepositoryInterface {
           .sort({ name: 1 })
           .session(session)
           .lean();
-
       } else {
         groups = await this.groupModel
           .find()
@@ -664,8 +671,7 @@ export class GroupRepository implements GroupRepositoryInterface {
         };
       }
 
-
-      const groupResponse = groups.slice(0, limit)
+      const groupResponse = groups.slice(0, limit);
 
       await session.commitTransaction();
       session.endSession();
@@ -678,23 +684,20 @@ export class GroupRepository implements GroupRepositoryInterface {
     }
   }
 
-
-
   async isThisGroupExist(alias: string, _id?: string): Promise<boolean> {
     try {
-
-
-      const group = await this.groupModel.findOne({
-        alias: alias,
-        _id: { $ne: _id },
-      }).lean();
+      const group = await this.groupModel
+        .findOne({
+          alias: alias,
+          _id: { $ne: _id },
+        })
+        .lean();
 
       return !!group;
     } catch (error: any) {
       throw error;
     }
   }
-
 
   async removeAdminsFromGroupByGroupId(
     admins: string[],
@@ -789,7 +792,7 @@ export class GroupRepository implements GroupRepositoryInterface {
       .map((admin: any) => admin._id.toString())
       .includes(userRequest);
 
-    const userIsCreator = group.creator.toString() === userRequest;
+    const userIsCreator = group.creator._id.toString() === userRequest;
     hasJoinRequest =
       group.groupNotificationsRequest?.joinRequests?.some(
         (user: any) => user._id.toString() === userRequest,
@@ -888,7 +891,7 @@ export class GroupRepository implements GroupRepositoryInterface {
             },
           },
         )
-        .session(session)
+        .session(session);
       checkIfanyDataWasModified(result);
       this.logger.log(
         'Group request remove to group successfully. Group ID: ' + groupId,
@@ -912,7 +915,7 @@ export class GroupRepository implements GroupRepositoryInterface {
             },
           },
         )
-        .session(session)
+        .session(session);
       checkIfanyDataWasModified(result);
 
       this.logger.log(

@@ -22,9 +22,13 @@ export const getGroupByIdQuery = gql`
         admins {
           username
           _id
-          # profilePhotoUrl
+          profilePhotoUrl
         }
-        creator
+        creator {
+          username
+          _id
+          profilePhotoUrl
+        }
         details
         magazines {
           sections {
@@ -97,7 +101,9 @@ export const getGroupAdminsByIdQuery = gql`
           username
           _id
         }
-        creator
+        creator {
+          _id
+        }
         name
         profilePhotoUrl
       }
@@ -201,12 +207,12 @@ export const deleteMemberMutation = gql`
 export const deleteAdminMutation = gql`
   mutation RemoveAdminsFromGroupByGroupId(
     $adminsToDelete: [String!]!
-    $groupAdmin: String!
+    $groupCreator: String!
     $groupId: String!
   ) {
     removeAdminsFromGroupByGroupId(
       adminsToDelete: $adminsToDelete
-      groupAdmin: $groupAdmin
+      groupCreator: $groupCreator
       groupId: $groupId
     )
   }

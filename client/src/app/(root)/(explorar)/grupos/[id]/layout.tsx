@@ -1,7 +1,7 @@
 import BreadcrumbsAdmin from "@/components/BreadcrumbsAdmin";
 import { GROUPS } from "@/utils/data/urls";
 import ErrorCard from "@/components/ErrorCard";
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { currentUser } from "@clerk/nextjs/server";
 import GroupInfo from "./(components)/GroupInfo";
 import { getGroupById } from "@/services/groupsService";
 import GroupSolapas from "@/components/solapas/GroupSolapas";
@@ -46,12 +46,12 @@ export default async function GroupLayout(props: {
       href: `${GROUPS}/${params.id}`,
     },
   ];
-  const isCreator = loggedUser.publicMetadata.mongoId === group.creator;
+  const isCreator = loggedUser.publicMetadata.mongoId === group.creator._id;
   const isAdmin =
-    group.admins.some(
-      (admin) =>
-        (admin as User)._id === (loggedUser?.publicMetadata.mongoId as string)
-    ) || isCreator;
+  group.admins.some(
+    (admin) =>
+      (admin as User)._id === (loggedUser?.publicMetadata.mongoId as string)
+  ) || isCreator;
   
 
   return (

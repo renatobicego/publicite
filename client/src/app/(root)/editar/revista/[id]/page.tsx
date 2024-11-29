@@ -31,7 +31,7 @@ export default async function EditMagazinePage(props: {
     (magazineData as GroupMagazine).group as Group
   ).admins.some((collaborator: any) => collaborator === userLoggedId);
   const isGroupCreator =
-    ((magazineData as GroupMagazine).group as Group).creator === userLoggedId;
+    ((magazineData as GroupMagazine).group as Group).creator._id === userLoggedId;
 
   if (isOwnerTypeUser) {
     if (!isUserOwner) {

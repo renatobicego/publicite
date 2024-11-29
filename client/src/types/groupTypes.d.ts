@@ -11,7 +11,7 @@ export interface Group {
   magazines: ObjectId[] | Magazine[];
   profilePhotoUrl: string;
   visibility: "private" | "public";
-  creator: ObjectId;
+  creator: User;
 }
 
 export interface GroupAdmin extends Group {

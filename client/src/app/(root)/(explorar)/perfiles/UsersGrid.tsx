@@ -19,6 +19,7 @@ const UsersGrid = ({
 }) => {
   const isAdmin = (user: User) =>
     group?.admins.some((admin) => (admin as User)._id === user._id);
+  const isCreator = (id: string) => group?.creator._id === id;
   return (
     <>
       <div className="grid grid-cols-2 lg:grid-cols-3 3xl:grid-cols-4 gap-4">
@@ -30,6 +31,7 @@ const UsersGrid = ({
                 group={group}
                 key={user._id}
                 isAdmin={isAdmin(user)}
+                isCreator={isCreator(user._id)}
                 groupRequestGrid={groupRequestGrid}
               />
             ) : (

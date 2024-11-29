@@ -41,7 +41,7 @@ const InviteUsersGroup = ({ group }: { group: Group }) => {
       }
       filterUsers={[
         ...group.members.map((user) => (user as User)._id),
-        group.creator,
+        group.creator._id,
         ...group.admins.map((user) => (user as User)._id),
       ]}
     />

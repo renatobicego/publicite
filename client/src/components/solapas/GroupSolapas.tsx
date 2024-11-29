@@ -14,7 +14,6 @@ import PrimaryButton from "../buttons/PrimaryButton";
 import { FaPlus } from "react-icons/fa6";
 import { User } from "@/types/userTypes";
 import { useRouter } from "next-nprogress-bar";
-import { useUserData } from "@/app/(root)/providers/userDataProvider";
 const GroupSolapas = ({
   group,
   isAdmin,
@@ -94,7 +93,7 @@ const GroupSolapas = ({
             <InviteUsersGroup group={group} />
           </div>
           <UsersGrid
-            items={[ ...(group.admins as User[]), ...(group.members as User[])]}
+            items={[ group.creator, ...(group.admins as User[]), ...(group.members as User[])]}
             groupGrid
             group={group}
           />

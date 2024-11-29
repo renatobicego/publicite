@@ -47,7 +47,7 @@ const EditGroup = ({ groupData }: { groupData: Group }) => {
 
     const res = await editGroup(
       values,
-      [...groupData.admins.map((admin) => (admin as User)._id), groupData.creator]
+      [...groupData.admins.map((admin) => (admin as User)._id), groupData.creator._id]
     );
     if ("error" in res) {
       actions.setSubmitting(false);

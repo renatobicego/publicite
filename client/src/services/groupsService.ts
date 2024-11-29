@@ -128,20 +128,22 @@ export const getGroupPosts = async (page: number, groupId?: string) => {
         },
       },
     });
-    const items = data.getPostsOfGroupMembers.userAndPosts.flatMap((user: any) => {
-      const { posts, username, _id, profilePhotoUrl, name, lastName, } = user;
-      // Map over posts to add the author property
-      return posts.map((post: Post) => ({
-        ...post, // Spread the existing properties of the post
-        author: {
-          _id,
-          username,
-          profilePhotoUrl,
-          name,
-          lastName,
-        },
-      }));
-    });
+    const items = data.getPostsOfGroupMembers.userAndPosts.flatMap(
+      (user: any) => {
+        const { posts, username, _id, profilePhotoUrl, name, lastName } = user;
+        // Map over posts to add the author property
+        return posts.map((post: Post) => ({
+          ...post, // Spread the existing properties of the post
+          author: {
+            _id,
+            username,
+            profilePhotoUrl,
+            name,
+            lastName,
+          },
+        }));
+      }
+    );
     // sort randomly posts
     const randomizedItems = items.sort(() => Math.random() - 0.5);
     return {
@@ -149,7 +151,7 @@ export const getGroupPosts = async (page: number, groupId?: string) => {
       hasMore: data.getPostsOfGroupMembers.hasMore,
     };
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return {
       error: "Error al traer anuncios del grupo. Por favor intenta de nuevo.",
     };
@@ -180,7 +182,7 @@ export const putGroup = async (groupToUpdate: any) => {
           headers: {
             Authorization: `${await auth().getToken({ template: "testing" })}`,
           },
-        }
+        },
       })
       .then((res) => res);
     return {
@@ -260,12 +262,12 @@ export const deleteMember = async (groupId: string, userIds: string[]) => {
 };
 
 export const deleteAdmin = async (groupId: string, userIds: string[]) => {
-  const groupAdmin = auth().sessionClaims?.metadata.mongoId;
+  const groupCreator = auth().sessionClaims?.metadata.mongoId;
   try {
     await getClient()
       .mutate({
         mutation: deleteAdminMutation,
-        variables: { groupId, adminsToDelete: userIds, groupAdmin },
+        variables: { groupId, adminsToDelete: userIds, groupCreator },
         context: {
           headers: {
             Authorization: `${await auth().getToken({ template: "testing" })}`,
@@ -276,7 +278,6 @@ export const deleteAdmin = async (groupId: string, userIds: string[]) => {
 
     return { message: "Administrador eliminado" };
   } catch (error) {
-    console.log(error);
     return {
       error: "Error al eliminar administrador. Por favor intenta de nuevo.",
     };

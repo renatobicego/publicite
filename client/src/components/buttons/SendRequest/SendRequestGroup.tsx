@@ -40,7 +40,7 @@ const SendRequestGroup = ({
         return;
       }
       const adminIds = group.admins.map((admin: any) => admin._id);
-      const creatorId = group.creator;
+      const creatorId = group.creator._id;
       const socket = await updateSocketToken();
 
       [...adminIds, creatorId].forEach((adminId) => {

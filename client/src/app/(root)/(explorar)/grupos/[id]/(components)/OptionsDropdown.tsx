@@ -25,14 +25,12 @@ import { Group } from "@/types/groupTypes";
 
 const OptionsDropdown = ({
   group,
-  isMember,
   isCreator,
   image,
   membersIds,
   admins,
 }: {
   group: Group;
-  isMember: boolean;
   isCreator: boolean;
   image?: string;
   membersIds: string[];
@@ -50,7 +48,7 @@ const OptionsDropdown = ({
       deleteGroupRef.current(); // Trigger custom open function to open the modal
     }
   };
-  
+
   const exitGroupClick = () => {
     if (isCreator && membersIds.length > 0) {
       onOpen();
@@ -121,7 +119,7 @@ const OptionsDropdown = ({
             key="salir"
             onPress={exitGroupClick}
             className={`rounded-full px-4 ${
-              (isMember || isCreator) && !isEmptyGroup ? "" : "hidden"
+              isCreator && isEmptyGroup ? "hidden" : ""
             }`}
           >
             Salir del Grupo

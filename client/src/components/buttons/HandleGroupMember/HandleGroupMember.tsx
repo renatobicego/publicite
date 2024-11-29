@@ -32,7 +32,7 @@ const HandleGroupMember = ({
   const router = useRouter();
   const { userIdLogged, usernameLogged } = useUserData();
   const { updateSocketToken } = useSocket();
-  const isCreator = group?.creator === userIdLogged;
+  const isCreator = group?.creator._id === userIdLogged;
 
   const makeAdmin = async () => {
     const res = await addAdmin(group?._id, user._id);
@@ -153,7 +153,7 @@ const HandleGroupMember = ({
         </>
       )}
 
-      {isAdmin && isCreator && (
+      {isCreator && (
         <>
           <Dropdown placement="bottom">
             <DropdownTrigger>
