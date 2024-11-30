@@ -87,8 +87,7 @@ export class PostResolver {
     @Args('id', { type: () => String }) id: string,
   ): Promise<any> {
     try {
-      let post = await this.postAdapter.findPostById(id);
-      return post;
+      return await this.postAdapter.findPostById(id);
     } catch (error: any) {
       throw error;
     }

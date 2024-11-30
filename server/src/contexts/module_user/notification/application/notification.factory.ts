@@ -26,14 +26,14 @@ export class NotificationFactory implements NotificationFactoryInterface {
 
     createNotification(notificationType: typeOfNotification, notificationData: any): Notification {
         let isActionsAvailable = true;
-        const { event, viewed, date, backData, socketJobId } = this.verifyNotificationAtributes(notificationData);
+        const { event, viewed, date, backData, socketJobId, type } = this.verifyNotificationAtributes(notificationData);
 
         const { frontData } = notificationData
         const user = backData.userIdTo
 
         if (eventsThatMakeActionsInactive.includes(event)) isActionsAvailable = false;
 
-        const baseNotification = new Notification(event, viewed, date, user, isActionsAvailable, backData, socketJobId);
+        const baseNotification = new Notification(event, viewed, date, user, isActionsAvailable, backData, socketJobId, type);
 
         switch (notificationType) {
             case typeOfNotification.group_notification:
@@ -53,11 +53,12 @@ export class NotificationFactory implements NotificationFactoryInterface {
         viewed: boolean,
         date: string,
         backData: { userIdTo: string, userIdFrom: string },
-        socketJobId: string
+        socketJobId: string,
+        type: string
     } {
 
 
-        const { event, viewed, date, backData, socketJobId } = notificationBody;
+        const { event, viewed, date, backData, socketJobId, type } = notificationBody;
 
 
         if (
@@ -67,7 +68,8 @@ export class NotificationFactory implements NotificationFactoryInterface {
             !backData ||
             !backData.userIdTo ||
             !backData.userIdFrom ||
-            !socketJobId
+            !socketJobId ||
+            !type
         ) {
             throw new Error("Notificacion no válida");
         }
@@ -77,7 +79,8 @@ export class NotificationFactory implements NotificationFactoryInterface {
             viewed: viewed,
             date: date,
             backData: backData,
-            socketJobId: socketJobId
+            socketJobId: socketJobId,
+            type: type
         };
     }
 

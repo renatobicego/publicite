@@ -11,11 +11,12 @@ export class Notification {
         userIdFrom: string
     }
     private socketJobId: string
+    private type: string
 
 
 
 
-    constructor(event: string, viewed: boolean, date: string, user: string, isActionsAvailable: boolean, backData: { userIdTo: string, userIdFrom: string }, socketJobId: string) {
+    constructor(event: string, viewed: boolean, date: string, user: string, isActionsAvailable: boolean, backData: { userIdTo: string, userIdFrom: string }, socketJobId: string, type: string) {
         this.event = event;
         this.viewed = viewed;
         this.date = date;
@@ -23,6 +24,11 @@ export class Notification {
         this.isActionsAvailable = isActionsAvailable;
         this.backData = backData
         this.socketJobId = socketJobId
+        this.type = type
+    }
+
+    get getType(): string {
+        return this.type;
     }
 
     get getSocketJobId(): string {

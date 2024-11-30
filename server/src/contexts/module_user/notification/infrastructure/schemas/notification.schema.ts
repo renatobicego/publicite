@@ -14,6 +14,7 @@ export interface NotificationDocument extends Document {
         userIdFrom: string;
     }
     socketJobId: string
+    type: string
 
 }
 
@@ -30,8 +31,10 @@ export const NotificationSchema = new Schema<NotificationDocument>({
     },
     socketJobId: {
         type: String, required: true
+    },
+    type: {
+        type: String, required: true
     }
-
 
 }, {
     discriminatorKey: 'kind',
