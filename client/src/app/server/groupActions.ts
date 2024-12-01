@@ -10,8 +10,9 @@ import {
 } from "@/services/groupsService";
 import { EditGroupInterface } from "@/types/groupTypes";
 import { auth } from "@clerk/nextjs/server";
+import { PostGroup } from "../(root)/crear/grupo/CreateGroupForm";
 
-export const createGroup = async (formData: any) => {
+export const createGroup = async (formData: PostGroup) => {
   const user = auth();
 
   if (!user.sessionId) {

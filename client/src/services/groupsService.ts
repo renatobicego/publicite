@@ -20,6 +20,7 @@ import {
 import { auth } from "@clerk/nextjs/server";
 import { ApolloError } from "@apollo/client";
 import { Post } from "@/types/postTypes";
+import { PostGroup } from "@/app/(root)/crear/grupo/CreateGroupForm";
 
 export const getGroups = async (searchTerm: string | null, page: number) => {
   try {
@@ -54,7 +55,7 @@ export const getGroupById = async (id: string) => {
           Authorization: await auth().getToken({ template: "testing" }),
         },
         fetchOptions: {
-          cache: "no-cache"
+          cache: "no-cache",
         },
       },
     });
@@ -161,11 +162,13 @@ export const getGroupPosts = async (page: number, groupId?: string) => {
   }
 };
 
-export const postGroup = async (formData: any) => {
+export const postGroup = async (formData: PostGroup) => {
   return await getClient()
     .mutate({
       mutation: createNewGroupMutation,
-      variables: { groupDto: formData },
+      variables: {
+        groupDto: formData ,
+      },
       context: {
         headers: {
           Authorization: `${await auth().getToken({ template: "testing" })}`,

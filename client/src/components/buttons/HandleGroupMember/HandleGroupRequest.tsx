@@ -8,7 +8,6 @@ import { User } from "@/types/userTypes";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { Button } from "@nextui-org/react";
 import { useRouter } from "next-nprogress-bar";
-import { emit } from "process";
 import { FaCheck, FaX } from "react-icons/fa6";
 
 const HandleGroupRequest = ({ user, group }: { user: User; group: Group }) => {
@@ -25,11 +24,7 @@ const HandleGroupRequest = ({ user, group }: { user: User; group: Group }) => {
 
     emitGroupNotification(
       socket,
-      {
-        _id: group._id,
-        name: group.name,
-        profilePhotoUrl: group.profilePhotoUrl,
-      },
+      group,
       { username: usernameLogged as string, _id: userIdLogged as string },
       user._id,
       "notification_group_user_accepted"
@@ -42,11 +37,7 @@ const HandleGroupRequest = ({ user, group }: { user: User; group: Group }) => {
 
     emitGroupNotification(
       socket,
-      {
-        _id: group._id,
-        name: group.name,
-        profilePhotoUrl: group.profilePhotoUrl,
-      },
+      group,
       { username: usernameLogged as string, _id: userIdLogged as string },
       user._id,
       "notification_group_user_rejected"

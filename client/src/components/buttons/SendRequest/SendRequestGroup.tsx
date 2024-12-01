@@ -46,11 +46,7 @@ const SendRequestGroup = ({
       [...adminIds, creatorId].forEach((adminId) => {
         emitGroupNotification(
           socket,
-          {
-            _id: groupId,
-            name: group.name,
-            profilePhotoUrl: group.profilePhotoUrl,
-          },
+          group,
           { username: usernameLogged as string, _id: userIdLogged as string },
           adminId,
           "notification_group_user_request_group_invitation"

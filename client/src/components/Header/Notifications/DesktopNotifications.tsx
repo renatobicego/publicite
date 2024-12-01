@@ -44,7 +44,7 @@ const DesktopNotifications = ({
       isOpen={isOpen}
       onOpenChange={(open) => {
         if (open) setNewNotifications(false);
-        if (newNotifications && open) {
+        if (newNotifications && !open) {
           putNotificationStatus(
             notifications.map((notification) => notification._id)
           );

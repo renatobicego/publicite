@@ -31,7 +31,7 @@ el tema de tener distintos tipos de relaciones va a costar hacer get de posts po
 boton de compartir app 
 - agregar endate a post
 - carpeta posts
-- reigstrarse en produ (parece que listo, probar)
+- reigstrarse en produ (parece que listo, PROBARRRR)
 - tabla de pagos conectarla
 - tutoriales
 - ver anuncios del grupo (listo, falta probars)
@@ -50,8 +50,8 @@ boton de compartir app
 - Deberíamos ponerle los decimales a los precios pa ser mas amigables (medio que listo, en inputs no me deja)
 - ORDEN REVISTAS
 - mensaje de grupo tipo nota
-- APP: BUSCAR
-- PIZARRA CREAR NO RESPONDE BD
+- APP mobile: BUSCAR
+- PIZARRA CREAR NO RESPONDE BD (listo)
 
 - Podriamos diferencias aca las revistas, por ejemplo la primer revista “debería traerme soy creador” 
     es una revista de grupo, por ahí con el ownerType poner en algun l
@@ -64,8 +64,7 @@ boton de compartir app
 Según vi en búsquedas realizadas, es posible hacer esto en pocos pasos.
 Averiguamos con alguien que se dedique a esto ?
 
-Tema 4.
- - En las credenciales, los usuarios deben tener mayoría de edad. Es más 18. (listo)
+- En las credenciales, los usuarios deben tener mayoría de edad. Es más 18. (listo)
 
 Tema 5.
 Anuncios.
@@ -74,5 +73,16 @@ Que dentro de los usuarios registrados de cuenta gratuita, estos tengan dentro d
 2 con un radio limitado y configurable
 2. De menor rango. Configurable.
 
-Tema 6. Anuncios.
 - Que aparezcan símbolos o iconos distintivos. Una simbología representativa a elección. (listo con emojis)
+
+- error al crear la necesidad (anduvoi en local proabr en produccion)
+- emojis filtrar en la busqueda de posts
+- no andan las notificaciones:
+NotificationGroup validation failed: frontData.group.name: 
+Path frontData.group.name is required., frontData.group._id: 
+Path frontData.group._id is required.
+- invitacion a grupo no estaba funcionando muy bien
+- error al crear el grupo (listo)
+- rendewrizado doble de notificacion
+- compartir en details de anuncio (listo)
+- mostrar en lista muestra undefined en frecuqncy price (listo)
