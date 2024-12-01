@@ -400,7 +400,7 @@ export class GroupRepository implements GroupRepositoryInterface {
 
         await this.userModel.updateOne(
           { _id: member },
-          { $pullAll: { groups: groupId } },
+          { $pull: { groups: groupId } },
           { session },
         );
       });
