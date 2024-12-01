@@ -1,4 +1,5 @@
 "use client";
+import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { SearchUsers } from "@/components/inputs/SearchUsers";
 import useSearchUsers from "@/utils/hooks/useSearchUsers";
 import {
@@ -90,11 +91,15 @@ const InvitationModal = ({
                 )}
               </ModalBody>
               <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
+                <Button
+                  radius="full"
+                  color="danger"
+                  variant="light"
+                  onPress={onClose}
+                >
                   Cerrar
                 </Button>
-                <Button
-                  color="primary"
+                <PrimaryButton
                   onPress={() => {
                     handleSubmit(selectedUsers);
                     onClose();
@@ -102,7 +107,7 @@ const InvitationModal = ({
                   isDisabled={selectedUsers.length === 0}
                 >
                   {submitLabel}
-                </Button>
+                </PrimaryButton>
               </ModalFooter>
             </>
           )}

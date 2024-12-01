@@ -21,7 +21,6 @@ export const emitGroupNotification = (
     userIdTo,
     userSending._id
   );
-  console.log(notification);
   socket?.emit(
     "group_notifications",
     notification,

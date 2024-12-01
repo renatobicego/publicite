@@ -20,7 +20,7 @@ function checkIsOwner(
   const groupData: Group = (magazine as GroupMagazine).group as Group;
   return (
     groupData.admins.some((admin) => admin === userId) ||
-    groupData.creator._id === userId
+    groupData.creator as any === userId
   );
 }
 

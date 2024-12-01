@@ -13,32 +13,46 @@ export default async function EditMagazinePage(props: {
   params: Promise<{ id: string }>;
 }) {
   const params = await props.params;
+  // get magazine data
   const magazineData: Magazine | { error: string } =
     await getMagazineWithoutPostsById(params.id);
   const userLoggedId = auth().sessionClaims?.metadata.mongoId;
+  // if there is an error, return error card
   if ("error" in magazineData) {
     return <ErrorCard message={magazineData.error} />;
   }
+  // get data of the owner (group or user)
   const owner = getOwner(magazineData);
+  // check if the user is the owner
   const isOwnerTypeUser = magazineData.ownerType === "user";
+  // get url of the profile to add to the breadcrumbs
   const urlProfile = getProfileUrl(owner, isOwnerTypeUser);
+  // cast the owner to user or group
   const ownerAsUser = owner as GetUser;
   const ownerAsGroup = owner as Group;
 
   //Check if the user is allowed to edit the magazine
-  const isUserOwner = isOwnerTypeUser && (magazineData as UserMagazine).user._id === userLoggedId;
-  const isGroupAdmin = !isOwnerTypeUser && (
-    (magazineData as GroupMagazine).group as Group
-  ).admins.some((collaborator: any) => collaborator === userLoggedId);
-  const isGroupCreator = !isOwnerTypeUser &&
-    ((magazineData as GroupMagazine).group as Group).creator._id === userLoggedId;
+  // if the owner is a user, only the owner cand edit (not collaborators)
+  // if the owner is a group, only the admin or creator can edit (not allow collaborators)
+  const isUserOwner = isOwnerTypeUser && ownerAsUser._id === userLoggedId; // user is the creator of the mag
+  const isGroupAdmin =
+    !isOwnerTypeUser &&
+    ownerAsGroup.admins.some(
+      (collaborator: any) => collaborator === userLoggedId
+    ); // user is admin of the group
+  const isGroupCreator =
+    !isOwnerTypeUser && ownerAsGroup.creator as any === userLoggedId; // user is creator of the group
 
   if (isOwnerTypeUser) {
+    // if the owner is a user
     if (!isUserOwner) {
+      // if the user is not the owner redirect back
       redirect(`${MAGAZINES}/${magazineData._id}`);
     }
   } else {
+    console.log(ownerAsGroup);
     if (!isGroupAdmin && !isGroupCreator) {
+      // if the user is not admin or creator redirect back
       redirect(`${MAGAZINES}/${magazineData._id}`);
     }
   }
