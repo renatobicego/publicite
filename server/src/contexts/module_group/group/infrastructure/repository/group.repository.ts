@@ -36,7 +36,7 @@ export class GroupRepository implements GroupRepositoryInterface {
     private readonly groupMapper: GroupRepositoryMapperInterface,
     @InjectConnection() private readonly connection: Connection,
     private readonly logger: MyLoggerService,
-  ) {}
+  ) { }
 
   async assignNewCreatorAndExitGroupById(
     groupId: string,
@@ -98,8 +98,12 @@ export class GroupRepository implements GroupRepositoryInterface {
               _id: groupId,
               'groupNotificationsRequest.groupInvitations': userRequestId,
             },
-
-            { $addToSet: { members: userRequestId } },
+            {
+              $addToSet: { members: userRequestId },
+              $pull: {
+                'groupNotificationsRequest.groupInvitations': userRequestId,
+              }
+            },
             { session },
           )
           .lean();
