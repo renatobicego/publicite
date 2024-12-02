@@ -12,8 +12,6 @@ export class NotificationResolver {
         private readonly notificationAdapter: NotificationAdapterInterface,
     ) { }
 
-
-
     @Mutation(() => String, {
         nullable: true,
         description: 'Cambia el estado de una notificacion a "vista o no vista"',

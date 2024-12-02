@@ -31,7 +31,7 @@ export class NotificationFactory implements NotificationFactoryInterface {
         const { frontData } = notificationData
         const user = backData.userIdTo
 
-        if (eventsThatMakeActionsInactive.includes(event)) isActionsAvailable = false;
+
 
         const baseNotification = new Notification(event, viewed, date, user, isActionsAvailable, backData, socketJobId, type);
 
