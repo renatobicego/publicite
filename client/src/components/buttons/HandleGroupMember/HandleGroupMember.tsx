@@ -153,7 +153,7 @@ const HandleGroupMember = ({
         </>
       )}
 
-      {isCreator && (
+      {isCreator && isAdmin && (
         <>
           <Dropdown placement="bottom">
             <DropdownTrigger>

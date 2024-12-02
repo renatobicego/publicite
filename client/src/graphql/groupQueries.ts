@@ -7,7 +7,9 @@ export const createNewGroupMutation = gql`
       members {
         _id
       }
-      creator
+      creator {
+        _id
+      }
       name
       profilePhotoUrl
     }

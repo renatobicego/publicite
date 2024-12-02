@@ -42,7 +42,7 @@ const OptionsDropdown = ({
   const { isOpen, onOpenChange, onOpen } = useDisclosure();
   const router = useRouter();
   const { deleteFile } = useUploadImage();
-  const isEmptyGroup = membersIds.length === 1;
+  const isEmptyGroup = membersIds.length + admins.length === 0;
   const handleDeleteGroupClick = () => {
     if (deleteGroupRef.current) {
       deleteGroupRef.current(); // Trigger custom open function to open the modal
@@ -83,7 +83,7 @@ const OptionsDropdown = ({
   };
 
   const exitGroup = async (newCreatorId?: string) => {
-    if (!isEmptyGroup) {
+    if (isEmptyGroup) {
       return;
     }
     const res = await exitFromGroup(group._id, isCreator, newCreatorId);

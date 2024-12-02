@@ -18,6 +18,7 @@ import SaveButton from "../buttons/SaveMagazine/SaveButton";
 import ShareButton from "../buttons/ShareButton";
 import { FILE_URL, POSTS } from "@/utils/data/urls";
 import { MdQuestionAnswer } from "react-icons/md";
+import { formatTotal } from "@/utils/functions/utils";
 
 const PostGridList = ({
   items,
@@ -94,16 +95,36 @@ const PostGridList = ({
             </div>
           );
         case "price":
+          let priceToShow = "";
+          switch (data.postType) {
+            case "good":
+              priceToShow = `$${formatTotal(data.price)}`; // add the price
+              break;
+            case "petition":
+              const dataAsPetition = data as Petition; // cast to Petition
+              if (dataAsPetition.toPrice) { // if its a range of prices
+                // if it has a toPrice, add the range
+                priceToShow = `De $${formatTotal(dataAsPetition.price)} a $${formatTotal(dataAsPetition.toPrice)}` // add the price
+              }
+              if (dataAsPetition.frequencyPrice) { // if it has a frequency
+                // add the frequency of the price (month, year, etc)
+                priceToShow += ` por ${frequencyPriceItems.find((p) => p.value === dataAsPetition.frequencyPrice)?.text}`
+              }
+              break
+            case "service":
+              const dataAsService = data as Service; // cast to Service
+              priceToShow = `$${formatTotal(dataAsService.price)}` // add the price
+              if (dataAsService.frequencyPrice) { // if it has a frequency
+                // add the frequency of the price (month, year, etc)
+                priceToShow += ` por ${frequencyPriceItems.find((p) => p.value === dataAsService.frequencyPrice)?.text}`
+              }
+              break
+          }
+
           return (
             <div className="flex gap-2 2xl:gap-4 items-center justify-between ">
               <p className="max-md:text-xs font-semibold min-w-16">
-                {"frequencyPrice" in data
-                  ? `$${data.price} por ${
-                      frequencyPriceItems.find(
-                        (p) => p.value === data.frequencyPrice
-                      )?.text
-                    }`
-                  : `$${data.price}`}
+                {priceToShow}
               </p>
               <Divider
                 orientation="vertical"
@@ -112,7 +133,7 @@ const PostGridList = ({
             </div>
           );
         case "reviews":
-          if (!("reviews" in data)) {
+          if (!("reviews" in data) || !data.reviews) {
             return (
               <div className={`flex gap-2 2xl:gap-4 items-center justify-end`}>
                 <Divider

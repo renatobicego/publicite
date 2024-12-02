@@ -19,6 +19,7 @@ import useSearchUsers from "@/utils/hooks/useSearchUsers";
 import { cloneElement, useEffect, useState } from "react";
 import { SearchUsers } from "../inputs/SearchUsers";
 import { GetUser, User } from "@/types/userTypes";
+import { SignedIn } from "@clerk/nextjs";
 
 type ShareButtonBaseProps = {
   ButtonAction?: JSX.Element;
@@ -34,7 +35,7 @@ type ShareButtonProps =
 const ShareButton = ({
   shareType,
   data,
-  ButtonAction = DefaultShareButton,
+  ButtonAction,
   customOpen,
 }: ShareButtonProps) => {
   const { onOpen, isOpen, onOpenChange } = useDisclosure();
@@ -80,7 +81,22 @@ const ShareButton = ({
   };
   return (
     <>
-      {cloneElement(ButtonAction, { onPress: onOpen })}
+      {ButtonAction ? (
+        cloneElement(ButtonAction, { onPress: onOpen })
+      ) : (
+        <Tooltip placement="bottom" content="Compartir">
+          <Button
+            isIconOnly
+            variant="flat"
+            color="secondary"
+            radius="full"
+            className="p-1"
+            onPress={onOpen}
+          >
+            <FaShareAlt />
+          </Button>
+        </Tooltip>
+      )}
 
       <Modal placement="center" isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
@@ -90,26 +106,32 @@ const ShareButton = ({
                 Compartir
               </ModalHeader>
               <ModalBody>
-                <Snippet
-                  symbol=""
-                  tooltipProps={{
-                    content: "Copiar",
-                  }}
-                  classNames={{
-                    pre: "text-ellipsis overflow-hidden",
-                  }}
-                  variant="bordered"
-                >
-                  {url}
-                </Snippet>
-                <SearchUsers
-                  items={users}
-                  label="Buscar contactos"
-                  onValueChange={(value: string | null) =>
-                    getUsersByQuery(value)
-                  }
-                  onSelectionChange={handleSelectionChange}
-                />
+                {isOpen && (
+                  <>
+                    <Snippet
+                      symbol=""
+                      tooltipProps={{
+                        content: "Copiar",
+                      }}
+                      classNames={{
+                        pre: "text-ellipsis overflow-hidden",
+                      }}
+                      variant="bordered"
+                    >
+                      {url}
+                    </Snippet>
+                    <SignedIn>
+                      <SearchUsers
+                        items={users}
+                        label="Buscar contactos"
+                        onValueChange={(value: string | null) =>
+                          getUsersByQuery(value)
+                        }
+                        onSelectionChange={handleSelectionChange}
+                      />
+                    </SignedIn>
+                  </>
+                )}
               </ModalBody>
               <ModalFooter>
                 <PrimaryButton variant="light" onPress={onClose}>
@@ -126,17 +148,3 @@ const ShareButton = ({
 };
 
 export default ShareButton;
-
-const DefaultShareButton = (
-  <Tooltip placement="bottom" content="Compartir">
-    <Button
-      isIconOnly
-      variant="flat"
-      color="secondary"
-      radius="full"
-      className="p-1"
-    >
-      <FaShareAlt />
-    </Button>
-  </Tooltip>
-);
