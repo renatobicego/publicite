@@ -20,6 +20,7 @@ export const GroupSchema = new Schema({
     joinRequests: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     groupInvitations: [{ type: Schema.Types.ObjectId, ref: 'User' }],
   },
+  userIdAndNotificationMap: { type: Map, of: String }
 });
 
 export interface GroupDocument extends Document {
@@ -37,6 +38,7 @@ export interface GroupDocument extends Document {
     joinRequests: string[];
     groupInvitations: string[];
   };
+  userIdAndNotificationMap: Map<string, string>;
 }
 
 // Middleware para eliminar secciones asociadas antes de eliminar las revistas

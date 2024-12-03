@@ -8,7 +8,7 @@ export interface NotificationRepositoryInterface {
     changeNotificationStatus(userRequestId: string, notificationId: string[], view: boolean): Promise<void>
     saveGroupNotification(notification: NotificationGroup, session?: any): Promise<Types.ObjectId>;
     saveMagazineNotification(notification: NotificationMagazine, session?: any): Promise<Types.ObjectId>;
-    setNotificationActionsToFalseById(id: string): Promise<void>
+    setNotificationActionsToFalseById(id: string, session?: any): Promise<void>
     getAllNotificationsFromUserById(
         id: string,
         limit: number,

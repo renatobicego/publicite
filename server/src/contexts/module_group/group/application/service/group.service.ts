@@ -30,7 +30,7 @@ export class GroupService implements GroupServiceInterface {
     private readonly groupRepository: GroupRepositoryInterface,
     @Inject('GroupServiceMapperInterface')
     private readonly groupMapper: GroupServiceMapperInterface,
-    
+
   ) { }
 
 
@@ -321,6 +321,7 @@ export class GroupService implements GroupServiceInterface {
   }
 
   async pushNotificationToGroup(
+    notificationId: string,
     groupId: string,
     backData: any,
     event: string,
@@ -328,11 +329,13 @@ export class GroupService implements GroupServiceInterface {
   ): Promise<any> {
     this.logger.log('Pushing notification to group - event recieved: ' + event);
     const { userIdTo, userIdFrom } = backData;
+    const userNotificationMap = new Map<string, string>([[userIdTo, notificationId]]);
     try {
       switch (event) {
         case eventTypes[0]: // Te han invitado a un grupo -> 0
           this.logger.log('Pushing join request to group: ' + groupId);
           await this.groupRepository.pushGroupInvitations(
+            userNotificationMap,
             groupId,
             userIdTo,
             session,

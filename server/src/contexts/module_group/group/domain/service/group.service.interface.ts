@@ -45,7 +45,7 @@ export interface GroupServiceInterface {
   ): Promise<any>;
 
   findGroupById(id: string, userRequest: string): Promise<GroupResponseById | null>;
-  findAllPostsOfGroupMembers(groupId: string, userRequest: string,limit:number,page:number): Promise<PostsMemberGroupResponse | null>;
+  findAllPostsOfGroupMembers(groupId: string, userRequest: string, limit: number, page: number): Promise<PostsMemberGroupResponse | null>;
 
   findGroupByNameOrAlias(
     name: string,
@@ -55,7 +55,9 @@ export interface GroupServiceInterface {
   ): Promise<GroupListResponse>;
   isThisGroupExist(alias: string): Promise<boolean>;
   saveGroup(group: GroupRequest, groupCreator: string): Promise<GroupResponse>;
+
   pushNotificationToGroup(
+    notificationId: string,
     groupId: string,
     backData: any,
     event: string,

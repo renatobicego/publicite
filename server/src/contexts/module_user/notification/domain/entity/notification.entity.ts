@@ -17,7 +17,11 @@ export class Notification {
 
 
 
-    constructor(event: string, viewed: boolean, date: string, user: string, isActionsAvailable: boolean,
+    constructor(event: string,
+        viewed: boolean,
+        date: string,
+        user: string,
+        isActionsAvailable: boolean,
         backData: { userIdTo: string, userIdFrom: string },
         socketJobId: string,
         type: string,

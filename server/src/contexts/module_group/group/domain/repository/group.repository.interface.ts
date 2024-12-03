@@ -69,6 +69,7 @@ export interface GroupRepositoryInterface {
 
   pushJoinRequest(groupId: string, userId: string, session: any): Promise<any>;
   pushGroupInvitations(
+    userIdAndNotificationMap: Map<string, string>,
     groupId: string,
     userId: string,
     session: any,

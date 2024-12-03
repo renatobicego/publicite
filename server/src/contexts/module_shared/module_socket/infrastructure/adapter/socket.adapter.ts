@@ -11,7 +11,12 @@ export class SocketAdapter implements SocketAdapterInterface {
         @Inject('NotificationMagazineServiceInterface')
         private readonly notificationMagazineService: NotificationMagazineServiceInterface
 
+
     ) { }
+    sendUserNotificationToNotificationService(notificationBody: any): Promise<void> {
+        throw new Error("Method not implemented.");
+    }
+
     async sendMagazineNotificationToNotificationService(notificationBody: any): Promise<void> {
         try {
             return await this.notificationMagazineService.handleMagazineNotificationAndCreateIt(notificationBody);
