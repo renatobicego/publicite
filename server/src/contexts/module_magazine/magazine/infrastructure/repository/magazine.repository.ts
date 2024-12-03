@@ -439,7 +439,7 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
 
 
           if (magazineDeleted.ownerType === OwnerType.user) {
-            let userMagazine = magazineDeleted as UserMagazineDocument
+            let userMagazine = magazineDeleted as unknown as UserMagazineDocument
             let collaboratorsAndCreatorIds = userMagazine.collaborators
             collaboratorsAndCreatorIds.push(userMagazine.user)
 
@@ -453,7 +453,7 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
             return 'Magazine deleted successfully';
           } else if (magazineDeleted.ownerType === OwnerType.group) {
 
-            let userMagazine = magazineDeleted as GroupMagazineDocument
+            let userMagazine = magazineDeleted as unknown as GroupMagazineDocument
             const groupOfMagazine = userMagazine.group;
             await this.groupModel.updateOne({ _id: groupOfMagazine }, { $pull: { magazines: magazineId } }, { session });
             this.logger.log('Magazine deleted successfully');

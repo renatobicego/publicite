@@ -1,5 +1,5 @@
 import { MyLoggerService } from "src/contexts/module_shared/logger/logger.service";
-import { eventsThatMakeActionsInactive, typeOfNotification } from "../domain/allowed-events/allowed.events.notifications";
+import { typeOfNotification } from "../domain/allowed-events/allowed.events.notifications";
 import { Notification } from "../domain/entity/notification.entity";
 import { NotificationFactoryInterface } from "../domain/notification-factory/notification.factory.interface";
 import { NotificationGroup } from "../domain/entity/notification.group.entity";
@@ -26,14 +26,14 @@ export class NotificationFactory implements NotificationFactoryInterface {
 
     createNotification(notificationType: typeOfNotification, notificationData: any): Notification {
         let isActionsAvailable = true;
-        const { event, viewed, date, backData, socketJobId, type } = this.verifyNotificationAtributes(notificationData);
+        const { event, viewed, date, backData, socketJobId, type, previusNotificationId } = this.verifyNotificationAtributes(notificationData);
 
         const { frontData } = notificationData
         const user = backData.userIdTo
 
-        if (eventsThatMakeActionsInactive.includes(event)) isActionsAvailable = false;
 
-        const baseNotification = new Notification(event, viewed, date, user, isActionsAvailable, backData, socketJobId, type);
+
+        const baseNotification = new Notification(event, viewed, date, user, isActionsAvailable, backData, socketJobId, type, previusNotificationId);
 
         switch (notificationType) {
             case typeOfNotification.group_notification:
@@ -54,11 +54,12 @@ export class NotificationFactory implements NotificationFactoryInterface {
         date: string,
         backData: { userIdTo: string, userIdFrom: string },
         socketJobId: string,
-        type: string
+        type: string,
+        previusNotificationId: string;
     } {
 
 
-        const { event, viewed, date, backData, socketJobId, type } = notificationBody;
+        const { event, viewed, date, backData, socketJobId, type, previusNotificationId } = notificationBody;
 
 
         if (
@@ -80,7 +81,8 @@ export class NotificationFactory implements NotificationFactoryInterface {
             date: date,
             backData: backData,
             socketJobId: socketJobId,
-            type: type
+            type: type,
+            previusNotificationId: previusNotificationId ?? null,
         };
     }
 

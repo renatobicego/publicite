@@ -100,7 +100,14 @@ export class NotificationRepository implements NotificationRepositoryInterface {
     }
 
 
+    async setNotificationActionsToFalseById(id: string): Promise<void> {
+        try {
+            await this.notificationBaseDocument.updateOne({ _id: id }, { $set: { isActionsAvailable: false } });
+        } catch (error: any) {
+            throw error;
+        }
 
+    }
 
     async saveMagazineNotification(notification: NotificationMagazine, session?: any): Promise<Types.ObjectId> {
         try {

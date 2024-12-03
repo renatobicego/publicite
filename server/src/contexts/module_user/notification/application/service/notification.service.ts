@@ -8,7 +8,7 @@ import { UserServiceInterface } from "src/contexts/module_user/user/domain/servi
 import { NotificationGroup } from "../../domain/entity/notification.group.entity";
 
 import { NotificationGroupServiceInterface } from "../../domain/service/notification.group.service.interface";
-import { GROUP_NOTIFICATION_eventTypes_send_only_user, GROUP_NOTIFICATION_eventTypes_send_user_and_group, MAGAZINE_NOTIFICATION_eventTypes, memberForDeleteData, newMemberData, ownerType, typeOfNotification, user_acept_the_invitation, user_has_been_removed_fom_magazine } from "src/contexts/module_user/notification/domain/allowed-events/allowed.events.notifications";
+import { eventsThatMakeActionsInactive, GROUP_NOTIFICATION_eventTypes_send_only_user, GROUP_NOTIFICATION_eventTypes_send_user_and_group, MAGAZINE_NOTIFICATION_eventTypes, memberForDeleteData, newMemberData, ownerType, typeOfNotification, user_acept_the_invitation, user_has_been_removed_fom_magazine } from "src/contexts/module_user/notification/domain/allowed-events/allowed.events.notifications";
 import { GroupServiceInterface } from "src/contexts/module_group/group/domain/service/group.service.interface";
 import { NotificationMagazineServiceInterface } from "../../domain/service/notification.magazine.service.interface";
 import { NotificationMagazine } from "../../domain/entity/notification.magazine.entity";
@@ -101,6 +101,14 @@ export class NotificationService implements NotificationGroupServiceInterface, N
                 notificationId = await this.notificationRepository.saveGroupNotification(notificationGroup, session);
                 this.logger.log('Notification save successfully');
 
+                if (eventsThatMakeActionsInactive.includes(event)) {
+                    this.logger.log('Setting notification actions to false');
+                    const previusNotificationId = notificationGroup.getPreviusNotificationId;
+                    if (!previusNotificationId) {
+                        throw new Error('previusNotificationId not found, please send it')
+                    }
+                    await this.notificationRepository.setNotificationActionsToFalseById(previusNotificationId)
+                }
                 if (GROUP_NOTIFICATION_eventTypes_send_user_and_group.includes(event as any)) {
                     this.logger.log('Sending new notification to user and group');
                     await this.userService.pushNotification(notificationId, userIdToSendNotification, session);
@@ -133,6 +141,7 @@ export class NotificationService implements NotificationGroupServiceInterface, N
             const magazineType = notificationMagazine.getFrontData.magazine.ownerType;
             const userIdToSendNotification = notificationMagazine.getUser
 
+
             const session = await this.connection.startSession();
 
             await session.withTransaction(async () => {
@@ -150,6 +159,9 @@ export class NotificationService implements NotificationGroupServiceInterface, N
                     await this.deleteMemberFromMagazine(memberDeleteData, session)
                 }
                 if (event === user_acept_the_invitation) {
+
+
+
                     const newMemberData: newMemberData = {
                         memberToAdd: notificationMagazine.getbackData.userIdFrom,
                         magazineAdmin: notificationMagazine.getbackData.userIdTo,
@@ -158,8 +170,16 @@ export class NotificationService implements NotificationGroupServiceInterface, N
                     }
 
                     await this.addNewMemberToMagazine(newMemberData, session)
+
                 }
 
+                if (eventsThatMakeActionsInactive.includes(event)) {
+                    const previusNotificationId = notificationMagazine.getPreviusNotificationId;
+                    if (!previusNotificationId) {
+                        throw new Error('previusNotificationId not found, please send it')
+                    }
+                    await this.notificationRepository.setNotificationActionsToFalseById(previusNotificationId)
+                }
                 await this.userService.pushNotification(notificationId, userIdToSendNotification, session);
             })
 
