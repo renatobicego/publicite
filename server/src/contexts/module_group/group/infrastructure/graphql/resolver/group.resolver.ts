@@ -32,7 +32,7 @@ export class GroupResolver {
     @Context() context: { req: CustomContextRequestInterface },
   ): Promise<any> {
     try {
-      const userRequestId = "67420686b02bdd1f9f0ef446"
+      const userRequestId = context.req.userRequestId;
       await this.groupAdapter.acceptGroupInvitation(groupId, userRequestId);
       return 'Invitation accepted';
     } catch (error: any) {

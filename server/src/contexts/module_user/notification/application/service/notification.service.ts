@@ -161,8 +161,6 @@ export class NotificationService implements NotificationGroupServiceInterface, N
                 }
                 if (event === user_acept_the_invitation) {
 
-
-
                     const newMemberData: newMemberData = {
                         memberToAdd: notificationMagazine.getbackData.userIdFrom,
                         magazineAdmin: notificationMagazine.getbackData.userIdTo,

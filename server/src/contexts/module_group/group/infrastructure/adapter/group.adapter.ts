@@ -17,15 +17,6 @@ export class GroupAdapter implements GroupAdapterInterface {
     private readonly groupService: GroupServiceInterface,
   ) { }
 
-  findAllGroupNotifications(
-    groupId: string,
-    groupAdminOrCreator: string,
-    limit: number,
-    page: number,
-  ): Promise<GroupResponse> {
-    throw new Error('Method not implemented.');
-  }
-
   async acceptGroupInvitation(
     groupId: string,
     userRequestId: string,
