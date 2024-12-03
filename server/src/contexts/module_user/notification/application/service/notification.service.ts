@@ -101,6 +101,14 @@ export class NotificationService implements NotificationGroupServiceInterface, N
                 notificationId = await this.notificationRepository.saveGroupNotification(notificationGroup, session);
                 this.logger.log('Notification save successfully');
 
+                if (eventsThatMakeActionsInactive.includes(event)) {
+                    this.logger.log('Setting notification actions to false');
+                    const previusNotificationId = notificationGroup.getPreviusNotificationId;
+                    if (!previusNotificationId) {
+                        throw new Error('previusNotificationId not found, please send it')
+                    }
+                    await this.notificationRepository.setNotificationActionsToFalseById(previusNotificationId)
+                }
                 if (GROUP_NOTIFICATION_eventTypes_send_user_and_group.includes(event as any)) {
                     this.logger.log('Sending new notification to user and group');
                     await this.userService.pushNotification(notificationId, userIdToSendNotification, session);
