@@ -15,6 +15,7 @@ export interface NotificationDocument extends Document {
     }
     socketJobId: string
     type: string
+    previusNotificationId: string
 
 }
 
@@ -34,6 +35,9 @@ export const NotificationSchema = new Schema<NotificationDocument>({
     },
     type: {
         type: String, required: true
+    },
+    previusNotificationId: {
+        type: String, default: null
     }
 
 }, {
