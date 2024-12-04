@@ -157,7 +157,7 @@ type Notification {
   viewed: Boolean!
   date: String!
   user: String!
-  isActionsAvailable: String!
+  isActionsAvailable: Boolean!
   backData: backData!
   frontData: frontData!
 }

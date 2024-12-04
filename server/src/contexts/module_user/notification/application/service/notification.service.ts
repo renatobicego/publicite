@@ -91,7 +91,6 @@ export class NotificationService implements NotificationGroupServiceInterface, N
     async saveNotificationGroupAndSentToUserAndGroup(notificationGroup: NotificationGroup): Promise<any> {
 
         const event: string = notificationGroup.getEvent;
-        const event: string = notificationGroup.getEvent;
         const userIdToSendNotification = notificationGroup.getUser;
         const session = await this.connection.startSession();
         let notificationId: Types.ObjectId;
@@ -104,10 +103,7 @@ export class NotificationService implements NotificationGroupServiceInterface, N
 
 
 
-
-
                 if (eventsThatMakeActionsInactive.includes(event)) {
-
 
                     this.logger.log('Setting notification actions to false');
                     const previousNotificationId = notificationGroup.getPreviusNotificationId;
@@ -117,12 +113,9 @@ export class NotificationService implements NotificationGroupServiceInterface, N
                     await this.notificationRepository.setNotificationActionsToFalseById(previousNotificationId, session);
                 }
                 if (GROUP_NOTIFICATION_eventTypes_send_user_and_group.includes(event)) {
-                if (GROUP_NOTIFICATION_eventTypes_send_user_and_group.includes(event)) {
                     this.logger.log('Sending new notification to user and group');
 
-
                     await this.userService.pushNotification(notificationId, userIdToSendNotification, session);
-
 
                     await this.groupService.pushNotificationToGroup(
                         notificationId as unknown as string,
@@ -131,7 +124,6 @@ export class NotificationService implements NotificationGroupServiceInterface, N
                         event,
                         session,
                     );
-                } else if (GROUP_NOTIFICATION_eventTypes_send_only_user.includes(event)) {
                 } else if (GROUP_NOTIFICATION_eventTypes_send_only_user.includes(event)) {
                     this.logger.log('Sending new notification to user');
                     await this.userService.pushNotification(notificationId, userIdToSendNotification, session);
