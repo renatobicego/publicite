@@ -49,12 +49,6 @@ export interface GroupAdapterInterface {
     page: number,
     userRequest: string,
   ): Promise<GroupListResponse>;
-  findAllGroupNotifications(
-    groupId: string,
-    groupAdminOrCreator: string,
-    limit: number,
-    page: number,
-  ): Promise<GroupResponse>;
 
   findAllPostsOfGroupMembers(groupId: string, userRequest: string,limit:number,page:number): Promise<PostsMemberGroupResponse | null>;
   isThisGroupExist(alias: string): Promise<boolean>;

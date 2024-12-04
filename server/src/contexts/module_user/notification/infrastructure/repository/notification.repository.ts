@@ -100,9 +100,10 @@ export class NotificationRepository implements NotificationRepositoryInterface {
     }
 
 
-    async setNotificationActionsToFalseById(id: string): Promise<void> {
+    async setNotificationActionsToFalseById(id: string, session: any): Promise<void> {
         try {
-            await this.notificationBaseDocument.updateOne({ _id: id }, { $set: { isActionsAvailable: false } });
+            await this.notificationBaseDocument.updateOne({ _id: id },
+                { $set: { isActionsAvailable: false } }, { session });
         } catch (error: any) {
             throw error;
         }

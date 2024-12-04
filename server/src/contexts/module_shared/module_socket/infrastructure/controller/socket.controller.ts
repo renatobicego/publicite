@@ -34,6 +34,20 @@ export class SocketController {
     }
   }
 
+
+  @Post('user')
+  @UseGuards(AuthSocket)
+  async socketUserController(
+    @Body() notificationBody: any,
+  ): Promise<any> {
+    try {
+      return await this.socketAdapter.sendUserNotificationToNotificationService(notificationBody);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
 }
 
 

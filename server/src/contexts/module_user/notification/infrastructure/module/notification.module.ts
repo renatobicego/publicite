@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+import { forwardRef, Module } from "@nestjs/common";
 import { NotificationService } from "../../application/service/notification.service";
 import { NotificationRepository } from "../repository/notification.repository";
 import { MongooseModule } from "@nestjs/mongoose";
@@ -24,9 +24,8 @@ import { NotificationResolver } from "../resolver/notification.resolver";
             },
         ]),
         UserModule,
-        GroupModule,
         MagazineModule,
-
+        forwardRef(() => GroupModule)
     ],
     providers: [
         NotificationResolver,
@@ -52,7 +51,8 @@ import { NotificationResolver } from "../resolver/notification.resolver";
     ],
     exports: [
         'NotificationGroupServiceInterface',
-        'NotificationMagazineServiceInterface'
+        'NotificationMagazineServiceInterface',
+        'NotificationRepositoryInterface'
     ]
 })
 

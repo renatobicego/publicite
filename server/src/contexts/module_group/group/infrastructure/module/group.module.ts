@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
 import { GroupRepository } from '../repository/group.repository';
@@ -10,6 +10,7 @@ import { GroupRepositoryMapper } from '../repository/mapper/group.repository.map
 import { GroupServiceMapper } from '../../application/service/mapper/group.service.mapper';
 import { SharedModule } from 'src/contexts/module_shared/sharedModule/sharedModules';
 import { UserSchema } from 'src/contexts/module_user/user/infrastructure/schemas/user.schema';
+import { NotificationModule } from 'src/contexts/module_user/notification/infrastructure/module/notification.module';
 
 @Module({
   imports: [
@@ -18,6 +19,8 @@ import { UserSchema } from 'src/contexts/module_user/user/infrastructure/schemas
       { name: 'Group', schema: GroupSchema },
       { name: 'User', schema: UserSchema },
     ]),
+    forwardRef(() => NotificationModule)
+    ,
   ],
   controllers: [],
   providers: [
@@ -45,4 +48,4 @@ import { UserSchema } from 'src/contexts/module_user/user/infrastructure/schemas
   ],
   exports: ['GroupServiceInterface'],
 })
-export class GroupModule {}
+export class GroupModule { }

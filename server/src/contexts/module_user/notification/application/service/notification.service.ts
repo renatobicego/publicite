@@ -1,5 +1,5 @@
 import { MyLoggerService } from "src/contexts/module_shared/logger/logger.service";
-import { Inject } from "@nestjs/common";
+import { forwardRef, Inject } from "@nestjs/common";
 import { InjectConnection } from "@nestjs/mongoose";
 import { Connection, Types } from "mongoose";
 
@@ -30,7 +30,7 @@ export class NotificationService implements NotificationGroupServiceInterface, N
         private readonly notificationRepository: NotificationRepositoryInterface,
         @Inject('UserServiceInterface')
         private readonly userService: UserServiceInterface,
-        @Inject('GroupServiceInterface')
+        @Inject(forwardRef(() => 'GroupServiceInterface'))
         private readonly groupService: GroupServiceInterface,
         @Inject('MagazineServiceInterface')
         private readonly magazineService: MagazineServiceInterface,
@@ -107,12 +107,13 @@ export class NotificationService implements NotificationGroupServiceInterface, N
                     if (!previusNotificationId) {
                         throw new Error('previusNotificationId not found, please send it')
                     }
-                    await this.notificationRepository.setNotificationActionsToFalseById(previusNotificationId)
+                    await this.notificationRepository.setNotificationActionsToFalseById(previusNotificationId, session);
                 }
                 if (GROUP_NOTIFICATION_eventTypes_send_user_and_group.includes(event as any)) {
                     this.logger.log('Sending new notification to user and group');
                     await this.userService.pushNotification(notificationId, userIdToSendNotification, session);
                     await this.groupService.pushNotificationToGroup(
+                        notificationId as unknown as string,
                         notificationGroup.getGroupId,
                         notificationGroup.getbackData,
                         event,
@@ -160,8 +161,6 @@ export class NotificationService implements NotificationGroupServiceInterface, N
                 }
                 if (event === user_acept_the_invitation) {
 
-
-
                     const newMemberData: newMemberData = {
                         memberToAdd: notificationMagazine.getbackData.userIdFrom,
                         magazineAdmin: notificationMagazine.getbackData.userIdTo,
@@ -178,7 +177,7 @@ export class NotificationService implements NotificationGroupServiceInterface, N
                     if (!previusNotificationId) {
                         throw new Error('previusNotificationId not found, please send it')
                     }
-                    await this.notificationRepository.setNotificationActionsToFalseById(previusNotificationId)
+                    await this.notificationRepository.setNotificationActionsToFalseById(previusNotificationId, session)
                 }
                 await this.userService.pushNotification(notificationId, userIdToSendNotification, session);
             })
