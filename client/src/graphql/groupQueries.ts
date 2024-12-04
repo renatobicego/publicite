@@ -242,7 +242,7 @@ export const acceptGroupInvitationMutation = gql`
 `;
 
 export const acceptJoinRequestMutation = gql`
-  mutation Mutation(
+  mutation AcceptJoinGroupRequest(
     $newMember: String!
     $groupAdmin: String!
     $groupId: String!
