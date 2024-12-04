@@ -59,7 +59,8 @@ const DeleteCollaborators = ({
           _id: userIdLogged as string,
         },
         collaboratorId,
-        "notification_magazine_user_has_been_removed"
+        "notification_magazine_user_has_been_removed",
+        null
       );
     });
     toastifySuccess("Colaboradores eliminados con éxito");

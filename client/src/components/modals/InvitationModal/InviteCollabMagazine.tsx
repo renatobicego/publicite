@@ -20,7 +20,8 @@ const InviteCollabMagazine = ({ magazine }: { magazine: Magazine }) => {
         magazine,
         { username: usernameLogged as string, _id: userIdLogged as string },
         userId,
-        "notification_magazine_new_user_invited"
+        "notification_magazine_new_user_invited",
+        null
       )
     );
 
