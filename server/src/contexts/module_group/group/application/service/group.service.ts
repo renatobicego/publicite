@@ -13,14 +13,6 @@ import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.servic
 import { GroupUpdateRequest } from '../adapter/dto/HTTP-REQUEST/group.update.request';
 import { PostsMemberGroupResponse } from '../adapter/dto/HTTP-RESPONSE/group.posts.member.response';
 
-const eventTypes = [
-  'notification_group_new_user_invited', // Te han invitado a un grupo -> 0
-  'notification_group_new_user_added', // Te han agregado a un grupo -> 1
-  'notification_group_user_accepted', // te han aceptado en un grupo -> 2
-  'notification_group_user_rejected', // te han rechazado en un grupo -> 3
-  'notification_group_user_rejected_group_invitation', // usuario B rechazo unirse al grupo -> 4
-  'notification_group_user_request_group_invitation', // Usuario A quiere pertenecer a grupo -> 5
-] as const;
 
 
 export class GroupService implements GroupServiceInterface {
@@ -40,7 +32,7 @@ export class GroupService implements GroupServiceInterface {
   ): Promise<void> {
     try {
       this.logger.log('Accepting group invitation: ' + groupId);
-      return await this.groupRepository.acceptGroupInvitation(
+      return await this.groupRepository.acceptGroupInvitationAndRemoveUserFromGroupInvitation(
         groupId,
         userRequestId,
       );
@@ -79,7 +71,7 @@ export class GroupService implements GroupServiceInterface {
   ): Promise<any> {
     try {
       this.logger.log('Adding user to group: ' + groupId);
-      return await this.groupRepository.acceptJoinGroupRequest(
+      return await this.groupRepository.acceptJoinGroupRequestAndRemoveUserFromJoinRequest(
         newMember,
         groupId,
         groupAdmin,
@@ -320,7 +312,7 @@ export class GroupService implements GroupServiceInterface {
     }
   }
 
-  async pushNotificationToGroup(
+  async handleNotificationGroupAndSendToGroup(
     notificationId: string,
     groupId: string,
     backData: any,
@@ -330,78 +322,83 @@ export class GroupService implements GroupServiceInterface {
     this.logger.log('Pushing notification to group - event recieved: ' + event);
     const { userIdTo, userIdFrom } = backData;
     const userNotificationMap = new Map<string, string>([[userIdTo, notificationId]]);
-    try {
-      switch (event) {
-        case eventTypes[0]: // Te han invitado a un grupo -> 0
-          this.logger.log('Pushing join request to group: ' + groupId);
-          await this.groupRepository.pushGroupInvitations(
+    const eventHandlers = new Map<string, () => Promise<any>>([
+      [
+        'notification_group_new_user_invited',
+        async () =>
+          await this.groupRepository.pushGroupInvitationsAndMakeUserMapNotification(
             userNotificationMap,
             groupId,
             userIdTo,
             session,
-          );
-          break;
-
-        case eventTypes[1]: // Te han agregado a un grupo -> 1
-          await this.groupRepository.acceptGroupInvitation(
+          ),
+      ],
+      [
+        'notification_group_new_user_added',
+        async () =>
+          await this.groupRepository.acceptGroupInvitationAndRemoveUserFromGroupInvitation(
             groupId,
             userIdTo,
-            session
-          )
-          // await this.groupRepository.pullGroupInvitations(
-          //   groupId,
-          //   userIdTo,
-          //   session,
-          // );
-          break;
-        case eventTypes[4]: // usuario B rechazo unirse al grupo -> 4
+            session,
+          ),
+      ],
+      [
+        'notification_group_user_rejected_group_invitation',
+        async () =>
           await this.groupRepository.pullGroupInvitations(
             groupId,
             userIdFrom,
             session,
-          );
-          break;
-
-        case eventTypes[2]: // te han aceptado en un grupo -> 2
-          await this.groupRepository.acceptJoinGroupRequest(
+          ),
+      ],
+      [
+        'notification_group_user_accepted',
+        async () =>
+          await this.groupRepository.acceptJoinGroupRequestAndRemoveUserFromJoinRequest(
             userIdTo,
             groupId,
             userIdFrom,
-            session
-          )
-          break;
-        case eventTypes[3]: // te han rechazado en un grupo -> 3
+            session,
+          ),
+      ],
+      [
+        'notification_group_user_rejected',
+        async () =>
           await this.groupRepository.pullJoinRequest(
             groupId,
             userIdTo,
             session,
-          );
-          break;
-
-        case eventTypes[5]: // Usuario A quiere pertenecer a grupo -> 5
-          this.logger.log('Pushing join request to group: ' + groupId);
+          ),
+      ],
+      [
+        'notification_group_user_request_group_invitation',
+        async () =>
           await this.groupRepository.pushJoinRequest(
-            // userNotificationMap,
             groupId,
             userIdFrom,
             session,
-          );
-          break;
+          ),
+      ],
+    ]);
 
-        default:
-          throw new Error(`Event type ${event} is not supported`);
+    try {
+      const handler = eventHandlers.get(event);
+      if (!handler) {
+        throw new Error(`Event type ${event} is not supported`);
       }
+      await handler();
     } catch (error: any) {
+      this.logger.error(`Error handling event ${event}:`, error);
       throw error;
     }
+
+
   }
 
 
 
   async updateGroupById(group: GroupUpdateRequest): Promise<any> {
     try {
-
-
       this.logger.log('Updating group by id: ' + group._id);
       if (group.alias != undefined && group.alias != null) {
         this.logger.log('Verify if this group exist: ' + group.alias);
@@ -420,3 +417,5 @@ export class GroupService implements GroupServiceInterface {
     }
   }
 }
+
+

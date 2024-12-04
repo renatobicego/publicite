@@ -8,14 +8,14 @@ import {
 import { Group } from '../entity/group.entity';
 
 export interface GroupRepositoryInterface {
-  acceptGroupInvitation(groupId: string, userRequestId: string, session?: any): Promise<void>;
+  acceptGroupInvitationAndRemoveUserFromGroupInvitation(groupId: string, userRequestId: string, session?: any): Promise<void>;
 
   addAdminToGroup(
     newAdmin: string,
     groupId: string,
     groupAdmin: string,
   ): Promise<any>;
-  acceptJoinGroupRequest(
+  acceptJoinGroupRequestAndRemoveUserFromJoinRequest(
     newMembers: string,
     groupId: string,
     groupAdmin: string,
@@ -70,7 +70,7 @@ export interface GroupRepositoryInterface {
 
   pushJoinRequest(
     /*userIdAndNotificationMap: Map<string, string>,*/ groupId: string, userId: string, session: any): Promise<any>;
-  pushGroupInvitations(
+  pushGroupInvitationsAndMakeUserMapNotification(
     userIdAndNotificationMap: Map<string, string>,
     groupId: string,
     userId: string,

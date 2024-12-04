@@ -29,6 +29,8 @@ function chekResultOfOperation(result: any, message?: string) {
 
 function checkIfanyDataWasModified(result: any) {
   chekResultOfOperation(result);
+
+
   if (result.modifiedCount === 0) {
     throw new NotModifyException('No data was modified.');
   }

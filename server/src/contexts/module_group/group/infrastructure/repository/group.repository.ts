@@ -89,7 +89,7 @@ export class GroupRepository implements GroupRepositoryInterface {
     }
   }
 
-  async acceptGroupInvitation(
+  async acceptGroupInvitationAndRemoveUserFromGroupInvitation(
     groupId: string,
     userRequestId: string,
     session: any,
@@ -171,7 +171,7 @@ export class GroupRepository implements GroupRepositoryInterface {
     }
   }
 
-  async acceptJoinGroupRequest(
+  async acceptJoinGroupRequestAndRemoveUserFromJoinRequest(
     newMember: string,
     groupId: string,
     groupAdmin: string,
@@ -867,7 +867,6 @@ export class GroupRepository implements GroupRepositoryInterface {
   }
 
   async pushJoinRequest(
-    //userIdAndNotificationMap: Map<string, string>,
     groupId: string,
     userId: string,
     session: any,
@@ -880,9 +879,6 @@ export class GroupRepository implements GroupRepositoryInterface {
             $addToSet: {
               'groupNotificationsRequest.joinRequests': userId,
             },
-            // $set: {
-            //   userIdAndNotificationMap: userIdAndNotificationMap,
-            // }
           },
         )
         .session(session)
@@ -897,7 +893,7 @@ export class GroupRepository implements GroupRepositoryInterface {
     }
   }
 
-  async pushGroupInvitations(
+  async pushGroupInvitationsAndMakeUserMapNotification(
     userIdAndNotificationMap: Map<string, string>,
     groupId: string,
     userId: string,
@@ -911,7 +907,7 @@ export class GroupRepository implements GroupRepositoryInterface {
             $addToSet: {
               'groupNotificationsRequest.groupInvitations': userId,
             },
-            $set: {
+            $setOnInsert: {
               userIdAndNotificationMap: userIdAndNotificationMap,
             },
           },

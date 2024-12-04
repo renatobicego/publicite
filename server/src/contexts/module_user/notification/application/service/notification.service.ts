@@ -8,7 +8,7 @@ import { UserServiceInterface } from "src/contexts/module_user/user/domain/servi
 import { NotificationGroup } from "../../domain/entity/notification.group.entity";
 
 import { NotificationGroupServiceInterface } from "../../domain/service/notification.group.service.interface";
-import { eventsThatMakeActionsInactive, GROUP_NOTIFICATION_eventTypes_send_only_user, GROUP_NOTIFICATION_eventTypes_send_user_and_group, MAGAZINE_NOTIFICATION_eventTypes, memberForDeleteData, newMemberData, ownerType, typeOfNotification, user_acept_the_invitation, user_has_been_removed_fom_magazine } from "src/contexts/module_user/notification/domain/allowed-events/allowed.events.notifications";
+import { eventsThatMakeNotificationActionsInactive_GROUP, eventsThatMakeNotificationActionsInactive_MAGAZINE, GROUP_NOTIFICATION_send_group, memberForDeleteData, newMemberData, ownerType, typeOfNotification, user_acept_the_invitation, user_has_been_removed_fom_magazine } from "src/contexts/module_user/notification/domain/allowed-events/allowed.events.notifications";
 import { GroupServiceInterface } from "src/contexts/module_group/group/domain/service/group.service.interface";
 import { NotificationMagazineServiceInterface } from "../../domain/service/notification.magazine.service.interface";
 import { NotificationMagazine } from "../../domain/entity/notification.magazine.entity";
@@ -40,6 +40,55 @@ export class NotificationService implements NotificationGroupServiceInterface, N
     ) {
 
     }
+
+
+    private async addNewMemberToMagazine(newMemberData: newMemberData, session: any) {
+        const { memberToAdd, magazineAdmin, magazineId, magazineType } = newMemberData
+
+        try {
+            if (ownerType.user === magazineType) {
+                return await this.magazineService.addCollaboratorsToUserMagazine([memberToAdd], magazineId, magazineAdmin, session)
+            } else if (ownerType.group === magazineType) {
+                return await this.magazineService.addAllowedCollaboratorsToGroupMagazine([memberToAdd], magazineId, magazineAdmin, session)
+            } else {
+                throw new Error('Owner type (add member)  not supported in socket, please check it');
+            }
+        } catch (error: any) {
+            throw error;
+        }
+    }
+
+
+
+    async changeNotificationStatus(userRequestId: string, notificationId: string[], view: boolean): Promise<void> {
+        try {
+            await this.notificationRepository.changeNotificationStatus(userRequestId, notificationId, view);
+
+        } catch (error: any) {
+            throw error;
+        }
+    }
+
+
+
+    private async deleteMemberFromMagazine(memberDta: memberForDeleteData, session: any) {
+        const { memberToDelete, magazineAdmin, magazineId, magazineType } = memberDta
+        try {
+            if (ownerType.user === magazineType) {
+                return await this.magazineService.deleteCollaboratorsFromMagazine([memberToDelete], magazineId, magazineAdmin, session)
+            } else if (ownerType.group === magazineType) {
+                return await this.magazineService.deleteAllowedCollaboratorsFromMagazineGroup([memberToDelete], magazineId, magazineAdmin, session)
+            } else {
+                throw new Error('Owner type (delete member) not supported in socket, please check it');
+            }
+        } catch (error: any) {
+            throw error;
+        }
+
+    }
+
+
+
     async getAllNotificationsFromUserById(
         id: string,
         limit: number,
@@ -55,14 +104,7 @@ export class NotificationService implements NotificationGroupServiceInterface, N
             throw error;
         }
     }
-    async changeNotificationStatus(userRequestId: string, notificationId: string[], view: boolean): Promise<void> {
-        try {
-            await this.notificationRepository.changeNotificationStatus(userRequestId, notificationId, view);
 
-        } catch (error: any) {
-            throw error;
-        }
-    }
     async handleMagazineNotificationAndCreateIt(notificationBody: any): Promise<void> {
 
         try {
@@ -88,6 +130,7 @@ export class NotificationService implements NotificationGroupServiceInterface, N
         }
     }
 
+
     async saveNotificationGroupAndSentToUserAndGroup(notificationGroup: NotificationGroup): Promise<any> {
 
         const event: string = notificationGroup.getEvent;
@@ -101,10 +144,7 @@ export class NotificationService implements NotificationGroupServiceInterface, N
                 notificationId = await this.notificationRepository.saveGroupNotification(notificationGroup, session);
                 this.logger.log('Notification save successfully');
 
-
-
-                if (eventsThatMakeActionsInactive.includes(event)) {
-
+                if (eventsThatMakeNotificationActionsInactive_GROUP.includes(event)) {
                     this.logger.log('Setting notification actions to false');
                     const previousNotificationId = notificationGroup.getPreviusNotificationId;
                     if (!previousNotificationId) {
@@ -112,25 +152,19 @@ export class NotificationService implements NotificationGroupServiceInterface, N
                     }
                     await this.notificationRepository.setNotificationActionsToFalseById(previousNotificationId, session);
                 }
-                if (GROUP_NOTIFICATION_eventTypes_send_user_and_group.includes(event)) {
-                    this.logger.log('Sending new notification to user and group');
 
-                    await this.userService.pushNotification(notificationId, userIdToSendNotification, session);
-
-                    await this.groupService.pushNotificationToGroup(
+                if (GROUP_NOTIFICATION_send_group.includes(event)) {
+                    this.logger.log('Sending new notification to group');
+                    await this.groupService.handleNotificationGroupAndSendToGroup(
                         notificationId as unknown as string,
                         notificationGroup.getGroupId,
                         notificationGroup.getbackData,
                         event,
                         session,
                     );
-                } else if (GROUP_NOTIFICATION_eventTypes_send_only_user.includes(event)) {
-                    this.logger.log('Sending new notification to user');
-                    await this.userService.pushNotification(notificationId, userIdToSendNotification, session);
                 }
-                else {
-                    throw new Error(`Event type ${event} is not supported`);
-                }
+
+                await this.userService.pushNotificationToUserArrayNotifications(notificationId, userIdToSendNotification, session);
             });
         } catch (error: any) {
             this.logger.error('An error occurred while sending notification');
@@ -146,12 +180,18 @@ export class NotificationService implements NotificationGroupServiceInterface, N
             const magazineId = notificationMagazine.getFrontData.magazine._id;
             const magazineType = notificationMagazine.getFrontData.magazine.ownerType;
             const userIdToSendNotification = notificationMagazine.getUser
-
-
             const session = await this.connection.startSession();
 
             await session.withTransaction(async () => {
                 const notificationId = await this.notificationRepository.saveMagazineNotification(notificationMagazine, session);
+
+                if (eventsThatMakeNotificationActionsInactive_MAGAZINE.includes(event)) {
+                    const previousNotificationId = notificationMagazine.getPreviusNotificationId;
+                    if (!previousNotificationId) {
+                        throw new Error('previousNotificationId not found, please send it')
+                    }
+                    await this.notificationRepository.setNotificationActionsToFalseById(previousNotificationId, session)
+                }
 
                 if (event === user_has_been_removed_fom_magazine) {
 
@@ -177,62 +217,15 @@ export class NotificationService implements NotificationGroupServiceInterface, N
 
                 }
 
-                if (eventsThatMakeActionsInactive.includes(event)) {
-                    const previousNotificationId = notificationMagazine.getPreviusNotificationId;
-                    if (!previousNotificationId) {
-                        throw new Error('previousNotificationId not found, please send it')
-                    }
-                    await this.notificationRepository.setNotificationActionsToFalseById(previousNotificationId, session)
-                }
-                await this.userService.pushNotification(notificationId, userIdToSendNotification, session);
+
+                await this.userService.pushNotificationToUserArrayNotifications(notificationId, userIdToSendNotification, session);
             })
 
 
-
         } catch (error: any) {
             throw error;
         }
     }
-
-
-
-    private async deleteMemberFromMagazine(memberDta: memberForDeleteData, session: any) {
-        const { memberToDelete, magazineAdmin, magazineId, magazineType } = memberDta
-        try {
-            if (ownerType.user === magazineType) {
-                return await this.magazineService.deleteCollaboratorsFromMagazine([memberToDelete], magazineId, magazineAdmin, session)
-            } else if (ownerType.group === magazineType) {
-                return await this.magazineService.deleteAllowedCollaboratorsFromMagazineGroup([memberToDelete], magazineId, magazineAdmin, session)
-            } else {
-                throw new Error('Owner type (delete member) not supported in socket, please check it');
-            }
-        } catch (error: any) {
-            throw error;
-        }
-
-    }
-
-    private async addNewMemberToMagazine(newMemberData: newMemberData, session: any) {
-        const { memberToAdd, magazineAdmin, magazineId, magazineType } = newMemberData
-
-        try {
-            if (ownerType.user === magazineType) {
-                return await this.magazineService.addCollaboratorsToUserMagazine([memberToAdd], magazineId, magazineAdmin, session)
-            } else if (ownerType.group === magazineType) {
-                return await this.magazineService.addAllowedCollaboratorsToGroupMagazine([memberToAdd], magazineId, magazineAdmin, session)
-            } else {
-                throw new Error('Owner type (add member)  not supported in socket, please check it');
-            }
-        } catch (error: any) {
-            throw error;
-        }
-    }
-
-
-
-
-
-
 
 
 

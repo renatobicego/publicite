@@ -139,7 +139,7 @@ export class UserService implements UserServiceInterface {
     }
   }
 
-  async pushNotification(
+  async pushNotificationToUserArrayNotifications(
     notification: Types.ObjectId,
     userId: string,
     session?: any,

@@ -29,7 +29,7 @@ export interface UserServiceInterface {
   ): Promise<UserPreferences | null>;
 
 
-  pushNotification(notificationId: Types.ObjectId, userIdTo: string, session?: any): Promise<any>;
+  pushNotificationToUserArrayNotifications(notificationId: Types.ObjectId, userIdTo: string, session?: any): Promise<any>;
   updateUser(
     username: string,
     req: UserPersonalUpdateDto | UserBusinessUpdateDto,

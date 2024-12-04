@@ -56,7 +56,7 @@ export interface GroupServiceInterface {
   isThisGroupExist(alias: string): Promise<boolean>;
   saveGroup(group: GroupRequest, groupCreator: string): Promise<GroupResponse>;
 
-  pushNotificationToGroup(
+  handleNotificationGroupAndSendToGroup(
     notificationId: string,
     groupId: string,
     backData: any,
