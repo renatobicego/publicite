@@ -92,32 +92,25 @@ export class GroupRepository implements GroupRepositoryInterface {
   async acceptGroupInvitationAndRemoveUserFromGroupInvitation(
     groupId: string,
     userRequestId: string,
-    userIdFrom: string,
     session: any,
   ): Promise<void> { 
     
 
     try {
-      let userThatAreRequested : string;
-      if(userIdFrom && userIdFrom.length > 0){
-        userThatAreRequested = userIdFrom;
-      }else{
-        userThatAreRequested = userRequestId
-      }
 
 
 
-      console.log(userRequestId)
+
       const result = await this.groupModel
         .findOneAndUpdate(
           {
             _id: groupId,
-            'groupNotificationsRequest.groupInvitations': userThatAreRequested,
+            'groupNotificationsRequest.groupInvitations': userRequestId,
           },
           {
-            $addToSet: { members: userThatAreRequested },
-            $pull: { 'groupNotificationsRequest.groupInvitations': userThatAreRequested },
-            $unset: { [`userIdAndNotificationMap.${userThatAreRequested}`]: '' },
+            $addToSet: { members: userRequestId },
+            $pull: { 'groupNotificationsRequest.groupInvitations': userRequestId },
+            $unset: { [`userIdAndNotificationMap.${userRequestId}`]: '' },
           },
           {
             projection: { userIdAndNotificationMap: 1 },
@@ -125,13 +118,13 @@ export class GroupRepository implements GroupRepositoryInterface {
           }
         )
 
-      const notificationID = result?.userIdAndNotificationMap.get(userThatAreRequested);
+      const notificationID = result?.userIdAndNotificationMap.get(userRequestId);
 
       if (notificationID) {
         await this.setNotificationActionsInFalse(notificationID, session);
       }
       await this.userModel.updateOne(
-        { _id: userThatAreRequested },
+        { _id: userRequestId },
         { $addToSet: { groups: groupId } },
         { session },
       );

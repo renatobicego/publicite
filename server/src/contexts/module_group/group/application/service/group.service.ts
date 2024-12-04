@@ -35,7 +35,6 @@ export class GroupService implements GroupServiceInterface {
       return await this.groupRepository.acceptGroupInvitationAndRemoveUserFromGroupInvitation(
         groupId,
         userRequestId,
-        '',
       );
     } catch (error: any) {
       this.logger.error(
@@ -339,7 +338,6 @@ export class GroupService implements GroupServiceInterface {
         async () =>
           await this.groupRepository.acceptGroupInvitationAndRemoveUserFromGroupInvitation(
             groupId,
-            '',
             userIdFrom,
             session,
           ),

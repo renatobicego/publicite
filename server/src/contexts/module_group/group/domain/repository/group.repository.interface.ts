@@ -8,7 +8,7 @@ import {
 import { Group } from '../entity/group.entity';
 
 export interface GroupRepositoryInterface {
-  acceptGroupInvitationAndRemoveUserFromGroupInvitation(groupId: string, userRequestId: string, userIdFrom: string, session?: any): Promise<void>;
+  acceptGroupInvitationAndRemoveUserFromGroupInvitation(groupId: string, userRequestId: string, session?: any): Promise<void>;
 
   addAdminToGroup(
     newAdmin: string,
