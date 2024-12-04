@@ -68,7 +68,7 @@ export interface GroupRepositoryInterface {
 
   save(group: Group): Promise<GroupResponse>;
 
-  pushJoinRequest(
+  pushJoinRequestAndMakeUserMapNotification(
     /*userIdAndNotificationMap: Map<string, string>,*/ groupId: string, userId: string, session: any): Promise<any>;
   pushGroupInvitationsAndMakeUserMapNotification(
     userIdAndNotificationMap: Map<string, string>,

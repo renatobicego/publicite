@@ -313,15 +313,20 @@ export class GroupService implements GroupServiceInterface {
   }
 
   async handleNotificationGroupAndSendToGroup(
-    notificationId: string,
     groupId: string,
     backData: any,
     event: string,
     session: any,
+    notificationId?: string,
   ): Promise<any> {
     this.logger.log('Pushing notification to group - event recieved: ' + event);
     const { userIdTo, userIdFrom } = backData;
-    const userNotificationMap = new Map<string, string>([[userIdTo, notificationId]]);
+    let userNotificationMap = new Map<string, string>();
+    console.log('notificationId', notificationId);
+    if (notificationId) {
+      userNotificationMap.set(userIdTo, notificationId.toString());
+    }
+
     const eventHandlers = new Map<string, () => Promise<any>>([
       [
         'notification_group_new_user_invited',
@@ -373,7 +378,7 @@ export class GroupService implements GroupServiceInterface {
       [
         'notification_group_user_request_group_invitation',
         async () =>
-          await this.groupRepository.pushJoinRequest(
+          await this.groupRepository.pushJoinRequestAndMakeUserMapNotification(
             groupId,
             userIdFrom,
             session,

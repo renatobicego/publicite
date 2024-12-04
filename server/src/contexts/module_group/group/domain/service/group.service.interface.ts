@@ -57,11 +57,11 @@ export interface GroupServiceInterface {
   saveGroup(group: GroupRequest, groupCreator: string): Promise<GroupResponse>;
 
   handleNotificationGroupAndSendToGroup(
-    notificationId: string,
     groupId: string,
     backData: any,
     event: string,
     session: any,
+    notificationId?: string,
   ): Promise<any>;
   removeAdminsFromGroupByGroupId(
     admins: string[],

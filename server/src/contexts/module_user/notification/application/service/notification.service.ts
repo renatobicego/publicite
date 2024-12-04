@@ -156,11 +156,11 @@ export class NotificationService implements NotificationGroupServiceInterface, N
                 if (GROUP_NOTIFICATION_send_group.includes(event)) {
                     this.logger.log('Sending new notification to group');
                     await this.groupService.handleNotificationGroupAndSendToGroup(
-                        notificationId as unknown as string,
                         notificationGroup.getGroupId,
                         notificationGroup.getbackData,
                         event,
                         session,
+                        notificationId as unknown as string,
                     );
                 }
 

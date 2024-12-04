@@ -866,7 +866,7 @@ export class GroupRepository implements GroupRepositoryInterface {
     };
   }
 
-  async pushJoinRequest(
+  async pushJoinRequestAndMakeUserMapNotification(
     groupId: string,
     userId: string,
     session: any,
