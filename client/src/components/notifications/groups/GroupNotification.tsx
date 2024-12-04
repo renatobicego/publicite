@@ -21,7 +21,7 @@ const GroupNotificationCard = ({
   notification: GroupNotification;
 }) => {
   const { group } = notification.frontData;
-  const { event, viewed, date, isActionsAvailable, backData } = notification;
+  const { event, viewed, date, isActionsAvailable, backData, _id } = notification;
   const { userIdLogged, usernameLogged } = useUserData();
   const { updateSocketToken } = useSocket();
   const getNotificationOptionsList = () => {
@@ -46,7 +46,8 @@ const GroupNotificationCard = ({
               _id: userIdLogged,
               username: usernameLogged,
             },
-            backData.userIdFrom
+            backData.userIdFrom,
+            _id
           );
         },
       });
@@ -82,7 +83,8 @@ const GroupNotificationCard = ({
               _id: userIdLogged,
               username: usernameLogged,
             },
-            backData.userIdFrom
+            backData.userIdFrom,
+            _id
           );
         },
       });

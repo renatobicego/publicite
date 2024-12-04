@@ -8,7 +8,8 @@ export const emitGroupNotification = (
   group: Pick<Group, "name" | "_id" | "profilePhotoUrl">,
   userSending: Pick<User, "_id" | "username">,
   userIdTo: string,
-  event: GroupNotificationType
+  event: GroupNotificationType,
+  previousNotificationId: string | null
 ) => {
   const notification = generateGroupNotification(
     event,
@@ -19,7 +20,8 @@ export const emitGroupNotification = (
     },
     { username: userSending.username },
     userIdTo,
-    userSending._id
+    userSending._id,
+    previousNotificationId
   );
   socket?.emit(
     "group_notifications",

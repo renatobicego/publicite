@@ -26,14 +26,14 @@ export class NotificationFactory implements NotificationFactoryInterface {
 
     createNotification(notificationType: typeOfNotification, notificationData: any): Notification {
         let isActionsAvailable = true;
-        const { event, viewed, date, backData, socketJobId, type, previusNotificationId } = this.verifyNotificationAtributes(notificationData);
+        const { event, viewed, date, backData, socketJobId, type, previousNotificationId } = this.verifyNotificationAtributes(notificationData);
 
         const { frontData } = notificationData
         const user = backData.userIdTo
 
 
 
-        const baseNotification = new Notification(event, viewed, date, user, isActionsAvailable, backData, socketJobId, type, previusNotificationId);
+        const baseNotification = new Notification(event, viewed, date, user, isActionsAvailable, backData, socketJobId, type, previousNotificationId);
 
         switch (notificationType) {
             case typeOfNotification.group_notification:
@@ -55,11 +55,11 @@ export class NotificationFactory implements NotificationFactoryInterface {
         backData: { userIdTo: string, userIdFrom: string },
         socketJobId: string,
         type: string,
-        previusNotificationId: string;
+        previousNotificationId: string;
     } {
 
 
-        const { event, viewed, date, backData, socketJobId, type, previusNotificationId } = notificationBody;
+        const { event, viewed, date, backData, socketJobId, type, previousNotificationId } = notificationBody;
 
 
         if (
@@ -82,7 +82,7 @@ export class NotificationFactory implements NotificationFactoryInterface {
             backData: backData,
             socketJobId: socketJobId,
             type: type,
-            previusNotificationId: previusNotificationId ?? null,
+            previousNotificationId: previousNotificationId ?? null,
         };
     }
 

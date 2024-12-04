@@ -22,7 +22,8 @@ const InviteUsersGroup = ({ group }: { group: Group }) => {
           group,
           { username: username as string, _id: userIdLogged as string },
           user,
-          "notification_group_new_user_invited"
+          "notification_group_new_user_invited",
+          null
         );
       });
       toastifySuccess("Invitaciones enviadas correctamente");

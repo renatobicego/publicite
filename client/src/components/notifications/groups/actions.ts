@@ -9,28 +9,35 @@ const acceptGroupInvitation = async (
   socket: Socket | null,
   group: Pick<Group, "_id" | "name" | "profilePhotoUrl">,
   userSending: Pick<User, "_id" | "username">,
-  userIdTo: string
+  userIdTo: string,
+  previousNotificationId: string
 ) => {
-  const res = await putMemberGroup(group._id);
-  if (res.error) {
-    toastifyError(res.error as string);
+  // const res = await putMemberGroup(group._id);
+  // if (res.error) {
+  //   return;
+  // }
+  if (!socket) {
+    toastifyError(
+      "Error al enviar la solicitud. Por favor recarga la página e intenta de nuevo."
+    );
     return;
   }
-  toastifySuccess(res.message as string);
-  if (!socket) return;
   emitGroupNotification(
     socket,
     group,
     userSending,
     userIdTo,
-    "notification_group_user_accepted"
+    "notification_group_new_user_added",
+    previousNotificationId
   );
+  toastifySuccess("Solicitud aceptada correctamente");
 };
 const declineGroupInvitation = async (
   socket: Socket | null,
   group: Pick<Group, "_id" | "name" | "profilePhotoUrl">,
   userSending: Pick<User, "_id" | "username">,
-  userIdTo: string
+  userIdTo: string,
+  previousNotificationId: string | null
 ) => {
   if (!socket) {
     toastifyError(
@@ -43,7 +50,8 @@ const declineGroupInvitation = async (
     group,
     userSending,
     userIdTo,
-    "notification_group_user_rejected"
+    "notification_group_user_rejected_group_invitation",
+    previousNotificationId
   );
 };
 

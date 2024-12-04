@@ -15,11 +15,11 @@ const HandleGroupRequest = ({ user, group }: { user: User; group: Group }) => {
   const router = useRouter();
   const { usernameLogged, userIdLogged } = useUserData();
   const handleAcceptRequest = async () => {
-    const res = await putMemberGroupByRequest(group._id, user._id);
-    if ("error" in res) {
-      toastifyError(res.error as string);
-      return;
-    }
+    // const res = await putMemberGroupByRequest(group._id, user._id);
+    // if ("error" in res) {
+    //   toastifyError(res.error as string);
+    //   return;
+    // }
     const socket = await updateSocketToken();
 
     emitGroupNotification(
@@ -27,7 +27,8 @@ const HandleGroupRequest = ({ user, group }: { user: User; group: Group }) => {
       group,
       { username: usernameLogged as string, _id: userIdLogged as string },
       user._id,
-      "notification_group_user_accepted"
+      "notification_group_user_accepted",
+      null
     );
     toastifySuccess("Solicitud aceptada correctamente");
     router.refresh();
@@ -40,7 +41,8 @@ const HandleGroupRequest = ({ user, group }: { user: User; group: Group }) => {
       group,
       { username: usernameLogged as string, _id: userIdLogged as string },
       user._id,
-      "notification_group_user_rejected"
+      "notification_group_user_rejected",
+      null
     );
     toastifySuccess("Solicitud rechazada correctamente");
     router.refresh();

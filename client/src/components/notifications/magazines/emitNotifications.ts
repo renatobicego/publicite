@@ -8,13 +8,15 @@ export const emitMagazineNotification = (
   magazine: Pick<Magazine, "_id" | "name" | "ownerType">,
   userSending: Pick<User, "_id" | "username">,
   userIdTo: string,
-  event: MagazineNotificationType
+  event: MagazineNotificationType,
+  previousNotificationId: string | null
 ) => {
   const notification = generateGroupNotification(
     event,
     { name: magazine.name, _id: magazine._id, ownerType: magazine.ownerType },
     { username: userSending.username, _id: userSending._id },
-    userIdTo
+    userIdTo,
+    previousNotificationId
   );
   console.log(notification);
   socket?.emit(

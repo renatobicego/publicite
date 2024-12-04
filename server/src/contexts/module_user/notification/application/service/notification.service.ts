@@ -103,11 +103,11 @@ export class NotificationService implements NotificationGroupServiceInterface, N
 
                 if (eventsThatMakeActionsInactive.includes(event)) {
                     this.logger.log('Setting notification actions to false');
-                    const previusNotificationId = notificationGroup.getPreviusNotificationId;
-                    if (!previusNotificationId) {
-                        throw new Error('previusNotificationId not found, please send it')
+                    const previousNotificationId = notificationGroup.getPreviusNotificationId;
+                    if (!previousNotificationId) {
+                        throw new Error('previousNotificationId not found, please send it')
                     }
-                    await this.notificationRepository.setNotificationActionsToFalseById(previusNotificationId, session);
+                    await this.notificationRepository.setNotificationActionsToFalseById(previousNotificationId, session);
                 }
                 if (GROUP_NOTIFICATION_eventTypes_send_user_and_group.includes(event as any)) {
                     this.logger.log('Sending new notification to user and group');
@@ -173,11 +173,11 @@ export class NotificationService implements NotificationGroupServiceInterface, N
                 }
 
                 if (eventsThatMakeActionsInactive.includes(event)) {
-                    const previusNotificationId = notificationMagazine.getPreviusNotificationId;
-                    if (!previusNotificationId) {
-                        throw new Error('previusNotificationId not found, please send it')
+                    const previousNotificationId = notificationMagazine.getPreviusNotificationId;
+                    if (!previousNotificationId) {
+                        throw new Error('previousNotificationId not found, please send it')
                     }
-                    await this.notificationRepository.setNotificationActionsToFalseById(previusNotificationId, session)
+                    await this.notificationRepository.setNotificationActionsToFalseById(previousNotificationId, session)
                 }
                 await this.userService.pushNotification(notificationId, userIdToSendNotification, session);
             })

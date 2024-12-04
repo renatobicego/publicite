@@ -89,7 +89,8 @@ const CreateMagazineForm = ({
           _id: userIdLogged as string,
         },
         collaborator,
-        "notification_magazine_new_user_invited"
+        "notification_magazine_new_user_invited",
+        null
       );
     });
 

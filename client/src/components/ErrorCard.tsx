@@ -13,7 +13,6 @@ import PrimaryButton from "./buttons/PrimaryButton";
 
 const ErrorCard = ({ message, error }: { message?: string; error?: string }) => {
   const router = useRouter();
-  console.log(error)
   return (
     <main className="flex min-h-[80vh] flex-col items-center justify-center main-style gap-4 md:gap-6 lg:gap-8 self-center">
       <Card className="p-4 max-w-full">
@@ -23,6 +22,7 @@ const ErrorCard = ({ message, error }: { message?: string; error?: string }) => 
         <CardBody>
           <h4>Hubo un error inesperado</h4>
           <p className="text-sm">{message}</p>
+          {error && <p className="text-sm text-danger">{error}</p>}
         </CardBody>
         <CardFooter>
           <PrimaryButton onPress={() => router.refresh()}>

@@ -10,10 +10,11 @@ const generateMagazineNotification = (
   event: MagazineNotificationType,
   magazine: Pick<Magazine, "_id" | "name" | "ownerType">,
   userSending: Pick<User, "_id" | "username">,
-  userIdTo: string
+  userIdTo: string,
+  previousNotificationId: string | null
 ) => {
   const notification: Omit<MagazineNotification, "_id"> = {
-    ...generateNotification(event, userIdTo, userSending._id),
+    ...generateNotification(event, userIdTo, userSending._id, previousNotificationId),
     frontData: {
       magazine: {
         ...magazine,

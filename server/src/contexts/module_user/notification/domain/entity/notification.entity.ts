@@ -12,7 +12,7 @@ export class Notification {
     }
     private socketJobId: string
     private type: string
-    private previusNotificationId: string
+    private previousNotificationId: string
 
 
 
@@ -25,7 +25,7 @@ export class Notification {
         backData: { userIdTo: string, userIdFrom: string },
         socketJobId: string,
         type: string,
-        previusNotificationId: string) {
+        previousNotificationId: string) {
         this.event = event;
         this.viewed = viewed;
         this.date = date;
@@ -34,12 +34,12 @@ export class Notification {
         this.backData = backData
         this.socketJobId = socketJobId
         this.type = type
-        this.previusNotificationId = previusNotificationId ?? null
+        this.previousNotificationId = previousNotificationId ?? null
     }
 
 
     get getPreviusNotificationId(): string | null {
-        return this.previusNotificationId
+        return this.previousNotificationId
     }
 
     get getType(): string {

@@ -25,7 +25,7 @@ const MagazineNotificationCard = ({
   notification: MagazineNotification;
 }) => {
   const { magazine } = notification.frontData;
-  const { event, backData, viewed, date, isActionsAvailable } = notification;
+  const { event, backData, viewed, date, isActionsAvailable, _id } = notification;
   const { userIdLogged, usernameLogged } = useUserData();
   const { updateSocketToken } = useSocket();
   const getNotificationOptionsList = () => {
@@ -50,7 +50,8 @@ const MagazineNotificationCard = ({
               _id: userIdLogged,
               username: usernameLogged,
             },
-            backData.userIdFrom
+            backData.userIdFrom,
+            _id
           );
         },
       });
@@ -79,7 +80,8 @@ const MagazineNotificationCard = ({
               _id: userIdLogged,
               username: usernameLogged,
             },
-            backData.userIdFrom
+            backData.userIdFrom,
+            _id
           );
         },
       });

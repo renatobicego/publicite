@@ -8,7 +8,8 @@ const acceptMagazineInvitation = async (
   socket: Socket | null,
   magazine: Pick<Magazine, "_id" | "name" | "ownerType">,
   userSending: Pick<User, "_id" | "username">,
-  userIdTo: string
+  userIdTo: string,
+  previousNotificationId: string | null
 ) => {
   if(!socket) return
   emitMagazineNotification(
@@ -16,7 +17,8 @@ const acceptMagazineInvitation = async (
     magazine,
     userSending,
     userIdTo,
-    "notification_magazine_acepted"
+    "notification_magazine_acepted",
+    previousNotificationId
   );
   toastifySuccess("Invitación aceptada");
 };
@@ -24,7 +26,8 @@ const declineMagazineInvitation = async (
   socket: Socket | null,
   magazine: Pick<Magazine, "_id" | "name" | "ownerType">,
   userSending: Pick<User, "_id" | "username">,
-  userIdTo: string
+  userIdTo: string,
+  previousNotificationId: string | null
 ) => {
   if(!socket) return
   emitMagazineNotification(
@@ -32,7 +35,8 @@ const declineMagazineInvitation = async (
     magazine,
     userSending,
     userIdTo,
-    "notification_magazine_rejected"
+    "notification_magazine_rejected",
+    previousNotificationId
   );
   toastifySuccess("Invitación rechazada");
 };

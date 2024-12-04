@@ -46,7 +46,8 @@ const HandleGroupMember = ({
       group,
       { username: usernameLogged as string, _id: userIdLogged as string },
       user._id,
-      "notification_group_user_new_admin"
+      "notification_group_user_new_admin",
+      null
     );
     toastifySuccess(res.message);
     router.refresh();
@@ -65,7 +66,8 @@ const HandleGroupMember = ({
       group,
       { username: usernameLogged as string, _id: userIdLogged as string },
       user._id,
-      "notification_group_user_removed_from_group"
+      "notification_group_user_removed_from_group",
+      null
     );
     toastifySuccess(res.message);
     router.refresh();
@@ -84,7 +86,8 @@ const HandleGroupMember = ({
       group,
       { username: usernameLogged as string, _id: userIdLogged as string },
       user._id,
-      "notification_group_user_removed_admin"
+      "notification_group_user_removed_admin",
+      null
     );
     toastifySuccess(res.message);
     router.refresh();

@@ -49,7 +49,8 @@ const SendRequestGroup = ({
           group,
           { username: usernameLogged as string, _id: userIdLogged as string },
           adminId,
-          "notification_group_user_request_group_invitation"
+          "notification_group_user_request_group_invitation",
+          null
         );
       });
       toastifySuccess("Solicitud enviada correctamente");

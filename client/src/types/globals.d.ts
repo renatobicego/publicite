@@ -36,5 +36,6 @@ declare global {
       userIdFrom: string;
     };
     isActionsAvailable: boolean; 
+    previousNotificationId: string | null
   }
 }

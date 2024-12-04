@@ -60,7 +60,8 @@ const CreateGroupForm = () => {
         resApi.group,
         { username: usernameLogged as string, _id: userIdLogged as string },
         member,
-        "notification_group_new_user_invited"
+        "notification_group_new_user_invited",
+        null
       );
     });
     toastifySuccess(resApi.message as string);

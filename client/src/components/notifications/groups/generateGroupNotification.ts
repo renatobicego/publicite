@@ -11,10 +11,11 @@ const generateGroupNotification = (
   group: Pick<Group, "name" | "_id" | "profilePhotoUrl">,
   userSending: Pick<User, "username">,
   userIdTo: string,
-  userIdFrom: string
+  userIdFrom: string,
+  previousNotificationId: string | null
 ) => {
   const notification: Omit<GroupNotification, "_id"> = {
-    ...generateNotification(event, userIdTo, userIdFrom),
+    ...generateNotification(event, userIdTo, userIdFrom, previousNotificationId),
     frontData: {
       group: {
         ...group,
