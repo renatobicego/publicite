@@ -879,6 +879,9 @@ export class GroupRepository implements GroupRepositoryInterface {
             $addToSet: {
               'groupNotificationsRequest.joinRequests': userId,
             },
+            $setOnInsert: {
+              userIdAndNotificationMap: userId,
+            },
           },
         )
         .session(session)
