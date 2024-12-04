@@ -343,11 +343,16 @@ export class GroupService implements GroupServiceInterface {
           break;
 
         case eventTypes[1]: // Te han agregado a un grupo -> 1
-          await this.groupRepository.pullGroupInvitations(
+          await this.groupRepository.acceptGroupInvitation(
             groupId,
             userIdTo,
-            session,
-          );
+            session
+          )
+          // await this.groupRepository.pullGroupInvitations(
+          //   groupId,
+          //   userIdTo,
+          //   session,
+          // );
           break;
         case eventTypes[4]: // usuario B rechazo unirse al grupo -> 4
           await this.groupRepository.pullGroupInvitations(
@@ -358,6 +363,13 @@ export class GroupService implements GroupServiceInterface {
           break;
 
         case eventTypes[2]: // te han aceptado en un grupo -> 2
+          await this.groupRepository.acceptJoinGroupRequest(
+            userIdTo,
+            groupId,
+            userIdFrom,
+            session
+          )
+          break;
         case eventTypes[3]: // te han rechazado en un grupo -> 3
           await this.groupRepository.pullJoinRequest(
             groupId,
@@ -369,6 +381,7 @@ export class GroupService implements GroupServiceInterface {
         case eventTypes[5]: // Usuario A quiere pertenecer a grupo -> 5
           this.logger.log('Pushing join request to group: ' + groupId);
           await this.groupRepository.pushJoinRequest(
+            userNotificationMap,
             groupId,
             userIdFrom,
             session,

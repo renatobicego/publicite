@@ -43,8 +43,8 @@ export class Notification {
     @Field(() => String)
     user: string;
 
-    @Field(() => String)
-    isActionsAvailable: string;
+    @Field(() => Boolean)
+    isActionsAvailable: boolean;
 
     @Field(() => backData)
     backData: backData;
@@ -52,7 +52,7 @@ export class Notification {
     @Field(() => frontData)
     frontData: frontData;
 
-    constructor(_id: string, event: string, viewed: boolean, date: string, user: string, isActionsAvailable: string, backData: backData, frontData: frontData) {
+    constructor(_id: string, event: string, viewed: boolean, date: string, user: string, isActionsAvailable: boolean, backData: backData, frontData: frontData) {
         this._id = _id;
         this.event = event;
         this.viewed = viewed;

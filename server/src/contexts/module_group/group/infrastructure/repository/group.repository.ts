@@ -92,8 +92,11 @@ export class GroupRepository implements GroupRepositoryInterface {
   async acceptGroupInvitation(
     groupId: string,
     userRequestId: string,
+    session: any,
   ): Promise<void> {
-    const session = await this.connection.startSession();
+    if (!session || session === undefined || session === null) {
+      session = await this.connection.startSession();
+    }
     try {
       await session.withTransaction(async () => {
         const result = await this.groupModel
@@ -118,13 +121,7 @@ export class GroupRepository implements GroupRepositoryInterface {
         );
         const notificationID = result?.userIdAndNotificationMap.get(userRequestId);
         if (notificationID) {
-          this.logger.log(
-            'Setting actions false in notification ID: ' + notificationID,
-          );
-          await this.notificationRepository.setNotificationActionsToFalseById(
-            notificationID,
-            session,
-          )
+          await this.setNotificationActionsInFalse(notificationID, session);
         }
         await this.userModel.updateOne(
           { _id: userRequestId },
@@ -178,22 +175,36 @@ export class GroupRepository implements GroupRepositoryInterface {
     newMember: string,
     groupId: string,
     groupAdmin: string,
+    session: any,
   ): Promise<any> {
-    const session = await this.connection.startSession();
+    if (!session || session === undefined || session === null) {
+      session = await this.connection.startSession();
+    }
+
     try {
       await session.withTransaction(async () => {
         const result = await this.groupModel
-          .updateOne(
+          .findOneAndUpdate(
             {
               _id: groupId,
+              'groupNotificationsRequest.joinRequests': newMember,
               $or: [{ admins: groupAdmin }, { creator: groupAdmin }],
             },
-
-            { $addToSet: { members: newMember } },
-            { session },
+            {
+              $addToSet: { members: newMember },
+              $pull: { 'groupNotificationsRequest.joinRequests': newMember },
+              $unset: { [`userIdAndNotificationMap.${newMember}`]: '' },
+            },
+            {
+              projection: { userIdAndNotificationMap: 1 },
+              session,
+            }
           )
-          .lean();
         chekResultOfOperation(result);
+        const notificationID = result?.userIdAndNotificationMap.get(newMember);
+        if (notificationID) {
+          await this.setNotificationActionsInFalse(notificationID, session);
+        }
         await this.userModel
           .updateOne(
             { _id: newMember },
@@ -791,6 +802,20 @@ export class GroupRepository implements GroupRepositoryInterface {
     }
   }
 
+  async setNotificationActionsInFalse(notificationId: string, session: any) {
+    try {
+      this.logger.log(
+        'Setting actions false in notification ID: ' + notificationId,
+      );
+      await this.notificationRepository.setNotificationActionsToFalseById(
+        notificationId,
+        session,
+      )
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
   verify_role_of_user(
     group: any,
     userRequest: string,
@@ -842,6 +867,7 @@ export class GroupRepository implements GroupRepositoryInterface {
   }
 
   async pushJoinRequest(
+    userIdAndNotificationMap: Map<string, string>,
     groupId: string,
     userId: string,
     session: any,
@@ -854,6 +880,9 @@ export class GroupRepository implements GroupRepositoryInterface {
             $addToSet: {
               'groupNotificationsRequest.joinRequests': userId,
             },
+            $set: {
+              userIdAndNotificationMap: userIdAndNotificationMap,
+            }
           },
         )
         .session(session)

@@ -8,7 +8,7 @@ import {
 import { Group } from '../entity/group.entity';
 
 export interface GroupRepositoryInterface {
-  acceptGroupInvitation(groupId: string, userRequestId: string): Promise<void>;
+  acceptGroupInvitation(groupId: string, userRequestId: string, session?: any): Promise<void>;
 
   addAdminToGroup(
     newAdmin: string,
@@ -19,6 +19,7 @@ export interface GroupRepositoryInterface {
     newMembers: string,
     groupId: string,
     groupAdmin: string,
+    session?: any
   ): Promise<any>;
   addMagazinesToGroup(
     magazineIds: string[],
@@ -67,14 +68,16 @@ export interface GroupRepositoryInterface {
 
   save(group: Group): Promise<GroupResponse>;
 
-  pushJoinRequest(groupId: string, userId: string, session: any): Promise<any>;
+  pushJoinRequest(
+    userIdAndNotificationMap: Map<string, string>, groupId: string, userId: string, session: any): Promise<any>;
   pushGroupInvitations(
     userIdAndNotificationMap: Map<string, string>,
     groupId: string,
     userId: string,
     session: any,
   ): Promise<any>;
-  pullJoinRequest(groupId: string, userId: string, session: any): Promise<any>;
+  pullJoinRequest(
+    groupId: string, userId: string, session: any): Promise<any>;
   pullGroupInvitations(
     groupId: string,
     userId: string,
