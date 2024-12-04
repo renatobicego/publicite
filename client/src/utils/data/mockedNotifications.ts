@@ -76,6 +76,7 @@ export const mockedGroupInvitation: GroupNotification = {
     },
   },
   isActionsAvailable: true,
+  previousNotificationId: null,
 };
 
 export const mockedPostShared: PostSharedNotification = {
