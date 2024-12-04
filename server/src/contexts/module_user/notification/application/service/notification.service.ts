@@ -139,6 +139,8 @@ export class NotificationService implements NotificationGroupServiceInterface, N
         let notificationId: Types.ObjectId;
 
         try {
+            console.log(event);
+            
             await session.withTransaction(async () => {
                 this.logger.log('Saving notification....');
                 notificationId = await this.notificationRepository.saveGroupNotification(notificationGroup, session);

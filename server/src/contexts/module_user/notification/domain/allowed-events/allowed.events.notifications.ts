@@ -24,6 +24,18 @@ const user_acept_the_invitation = MAGAZINE_NOTIFICATION_eventTypes[1]
 const user_has_been_removed_fom_magazine = MAGAZINE_NOTIFICATION_eventTypes[3]
 
 
+const eventsThatMakeNotificationActionsInactive_GROUP = [
+    'notification_group_user_rejected_group_invitation', // usuario B rechazo unirse al grupo
+    'notification_group_user_rejected_group_invitation',
+]
+
+const eventsThatMakeNotificationActionsInactive_MAGAZINE = [
+    'notification_magazine_acepted', //usuario acepto unirse
+    'notification_magazine_rejected', // Usuario B la rechaza
+]
+
+
+
 enum ownerType {
     user = 'user',
     group = 'group'
@@ -35,16 +47,6 @@ enum typeOfNotification {
 }
 
 
-const eventsThatMakeNotificationActionsInactive_GROUP = [
-    'notification_group_user_rejected_group_invitation', // usuario B rechazo unirse al grupo
-    'notification_group_new_user_added', // Te han agregado a un grupo
-    'notification_group_user_rejected_group_invitation',
-]
-
-const eventsThatMakeNotificationActionsInactive_MAGAZINE = [
-    'notification_magazine_acepted', //usuario acepto unirse
-    'notification_magazine_rejected', // Usuario B la rechaza
-]
 
 
 

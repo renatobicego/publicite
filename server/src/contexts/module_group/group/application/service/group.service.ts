@@ -35,6 +35,7 @@ export class GroupService implements GroupServiceInterface {
       return await this.groupRepository.acceptGroupInvitationAndRemoveUserFromGroupInvitation(
         groupId,
         userRequestId,
+        '',
       );
     } catch (error: any) {
       this.logger.error(
@@ -321,18 +322,13 @@ export class GroupService implements GroupServiceInterface {
   ): Promise<any> {
     this.logger.log('Pushing notification to group - event recieved: ' + event);
     const { userIdTo, userIdFrom } = backData;
-    let userNotificationMap = new Map<string, string>();
-    console.log('notificationId', notificationId);
-    if (notificationId) {
-      userNotificationMap.set(userIdTo, notificationId.toString());
-    }
 
     const eventHandlers = new Map<string, () => Promise<any>>([
       [
         'notification_group_new_user_invited',
         async () =>
           await this.groupRepository.pushGroupInvitationsAndMakeUserMapNotification(
-            userNotificationMap,
+            notificationId ?? 'Please check, NOTIFICATION ID IN  handleNotificationGroupAndSendToGroup NOT PROVIDED',
             groupId,
             userIdTo,
             session,
@@ -343,7 +339,8 @@ export class GroupService implements GroupServiceInterface {
         async () =>
           await this.groupRepository.acceptGroupInvitationAndRemoveUserFromGroupInvitation(
             groupId,
-            userIdTo,
+            '',
+            userIdFrom,
             session,
           ),
       ],
@@ -358,13 +355,14 @@ export class GroupService implements GroupServiceInterface {
       ],
       [
         'notification_group_user_accepted',
-        async () =>
-          await this.groupRepository.acceptJoinGroupRequestAndRemoveUserFromJoinRequest(
-            userIdTo,
-            groupId,
-            userIdFrom,
-            session,
-          ),
+        async () => { return }
+        // async () =>
+        //   await this.groupRepository.acceptJoinGroupRequestAndRemoveUserFromJoinRequest(
+        //     userIdTo,
+        //     groupId,
+        //     userIdFrom,
+        //     session,
+        //   ),
       ],
       [
         'notification_group_user_rejected',
@@ -378,7 +376,7 @@ export class GroupService implements GroupServiceInterface {
       [
         'notification_group_user_request_group_invitation',
         async () =>
-          await this.groupRepository.pushJoinRequestAndMakeUserMapNotification(
+          await this.groupRepository.pushJoinRequest(
             groupId,
             userIdFrom,
             session,
@@ -387,7 +385,10 @@ export class GroupService implements GroupServiceInterface {
     ]);
 
     try {
+      this.logger.log(`Handling event: ${event}`);
       const handler = eventHandlers.get(event);
+      console.log(handler?.toString());
+
       if (!handler) {
         throw new Error(`Event type ${event} is not supported`);
       }

@@ -4,9 +4,14 @@ import { Connection } from 'mongoose';
 
 @Injectable()
 export class DatabaseService {
-  constructor(@InjectConnection() private readonly connection: Connection) {}
+  constructor(@InjectConnection() private readonly connection: Connection) { }
 
   getDBHandle(): Connection {
-    return this.connection;
+    try {
+      return this.connection;
+    } catch (error: any) {
+      throw error;
+    }
+
   }
 }

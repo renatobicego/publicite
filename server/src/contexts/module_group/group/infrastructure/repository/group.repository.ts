@@ -92,52 +92,56 @@ export class GroupRepository implements GroupRepositoryInterface {
   async acceptGroupInvitationAndRemoveUserFromGroupInvitation(
     groupId: string,
     userRequestId: string,
+    userIdFrom: string,
     session: any,
-  ): Promise<void> {
-    if (!session || session === undefined || session === null) {
-      session = await this.connection.startSession();
-    }
+  ): Promise<void> { 
+    
+
     try {
-      await session.withTransaction(async () => {
-        const result = await this.groupModel
-          .findOneAndUpdate(
-            {
-              _id: groupId,
-              'groupNotificationsRequest.groupInvitations': userRequestId,
-            },
-            {
-              $addToSet: { members: userRequestId },
-              $pull: { 'groupNotificationsRequest.groupInvitations': userRequestId },
-              $unset: { [`userIdAndNotificationMap.${userRequestId}`]: '' },
-            },
-            {
-              projection: { userIdAndNotificationMap: 1 },
-              session,
-            }
-          )
-        chekResultOfOperation(
-          result,
-          'Member cant be added to group, member is not in group invitation or group does not exist',
-        );
-        const notificationID = result?.userIdAndNotificationMap.get(userRequestId);
-        if (notificationID) {
-          await this.setNotificationActionsInFalse(notificationID, session);
-        }
-        await this.userModel.updateOne(
-          { _id: userRequestId },
-          { $addToSet: { groups: groupId } },
-          { session },
-        );
-      });
+      let userThatAreRequested : string;
+      if(userIdFrom && userIdFrom.length > 0){
+        userThatAreRequested = userIdFrom;
+      }else{
+        userThatAreRequested = userRequestId
+      }
+
+
+
+      console.log(userRequestId)
+      const result = await this.groupModel
+        .findOneAndUpdate(
+          {
+            _id: groupId,
+            'groupNotificationsRequest.groupInvitations': userThatAreRequested,
+          },
+          {
+            $addToSet: { members: userThatAreRequested },
+            $pull: { 'groupNotificationsRequest.groupInvitations': userThatAreRequested },
+            $unset: { [`userIdAndNotificationMap.${userThatAreRequested}`]: '' },
+          },
+          {
+            projection: { userIdAndNotificationMap: 1 },
+            session,
+          }
+        )
+
+      const notificationID = result?.userIdAndNotificationMap.get(userThatAreRequested);
+
+      if (notificationID) {
+        await this.setNotificationActionsInFalse(notificationID, session);
+      }
+      await this.userModel.updateOne(
+        { _id: userThatAreRequested },
+        { $addToSet: { groups: groupId } },
+        { session },
+      );
+
 
       this.logger.log(
         'Member added to group successfully Group ID: ' + groupId,
       );
     } catch (error: any) {
-      session.endSession();
       throw error;
-    } finally {
-      await session.endSession();
     }
   }
 
@@ -180,40 +184,33 @@ export class GroupRepository implements GroupRepositoryInterface {
     if (!session || session === undefined || session === null) {
       session = await this.connection.startSession();
     }
-
     try {
-      await session.withTransaction(async () => {
-        const result = await this.groupModel
-          .findOneAndUpdate(
-            {
-              _id: groupId,
-              'groupNotificationsRequest.joinRequests': newMember,
-              $or: [{ admins: groupAdmin }, { creator: groupAdmin }],
-            },
-            {
-              $addToSet: { members: newMember },
-              $pull: { 'groupNotificationsRequest.joinRequests': newMember },
-              $unset: { [`userIdAndNotificationMap.${newMember}`]: '' },
-            },
-            {
-              projection: { userIdAndNotificationMap: 1 },
-              session,
-            }
-          )
-        chekResultOfOperation(result);
-        const notificationID = result?.userIdAndNotificationMap.get(newMember);
-        if (notificationID) {
-          await this.setNotificationActionsInFalse(notificationID, session);
-        }
-        await this.userModel
-          .updateOne(
-            { _id: newMember },
-            { $addToSet: { groups: groupId } },
-            { session },
-          )
-          .lean();
-        await session.commitTransaction();
-      });
+      const result = await this.groupModel
+        .updateOne(
+          {
+            _id: groupId,
+            'groupNotificationsRequest.joinRequests': newMember,
+            $or: [{ admins: groupAdmin }, { creator: groupAdmin }],
+          },
+          {
+            $addToSet: { members: newMember },
+            $pull: { 'groupNotificationsRequest.joinRequests': newMember },
+          },
+          {
+            session,
+          }
+        )
+      console.log(result);
+
+      chekResultOfOperation(result);
+      await this.userModel
+        .updateOne(
+          { _id: newMember },
+          { $addToSet: { groups: groupId } },
+          { session },
+        )
+
+
       this.logger.log(
         'Member added to group successfully Group ID: ' + groupId,
       );
@@ -227,7 +224,7 @@ export class GroupRepository implements GroupRepositoryInterface {
       );
       throw error;
     } finally {
-      session.endSession();
+      await session.endSession();
     }
   }
 
@@ -866,7 +863,7 @@ export class GroupRepository implements GroupRepositoryInterface {
     };
   }
 
-  async pushJoinRequestAndMakeUserMapNotification(
+  async pushJoinRequest(
     groupId: string,
     userId: string,
     session: any,
@@ -878,9 +875,6 @@ export class GroupRepository implements GroupRepositoryInterface {
           {
             $addToSet: {
               'groupNotificationsRequest.joinRequests': userId,
-            },
-            $setOnInsert: {
-              userIdAndNotificationMap: userId,
             },
           },
         )
@@ -897,12 +891,15 @@ export class GroupRepository implements GroupRepositoryInterface {
   }
 
   async pushGroupInvitationsAndMakeUserMapNotification(
-    userIdAndNotificationMap: Map<string, string>,
+    notificationId: string,
     groupId: string,
     userId: string,
     session: any,
   ): Promise<any> {
     try {
+      let userNotificationMap = new Map<string, string>();
+      userNotificationMap.set(userId, notificationId);
+      console.log(userId)
       const result = await this.groupModel
         .updateOne(
           { _id: groupId },
@@ -910,8 +907,8 @@ export class GroupRepository implements GroupRepositoryInterface {
             $addToSet: {
               'groupNotificationsRequest.groupInvitations': userId,
             },
-            $setOnInsert: {
-              userIdAndNotificationMap: userIdAndNotificationMap,
+            $set: {
+              userIdAndNotificationMap: userNotificationMap,
             },
           },
         )
