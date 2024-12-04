@@ -867,7 +867,7 @@ export class GroupRepository implements GroupRepositoryInterface {
   }
 
   async pushJoinRequest(
-    userIdAndNotificationMap: Map<string, string>,
+    //userIdAndNotificationMap: Map<string, string>,
     groupId: string,
     userId: string,
     session: any,
@@ -880,9 +880,9 @@ export class GroupRepository implements GroupRepositoryInterface {
             $addToSet: {
               'groupNotificationsRequest.joinRequests': userId,
             },
-            $set: {
-              userIdAndNotificationMap: userIdAndNotificationMap,
-            }
+            // $set: {
+            //   userIdAndNotificationMap: userIdAndNotificationMap,
+            // }
           },
         )
         .session(session)

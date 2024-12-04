@@ -381,7 +381,7 @@ export class GroupService implements GroupServiceInterface {
         case eventTypes[5]: // Usuario A quiere pertenecer a grupo -> 5
           this.logger.log('Pushing join request to group: ' + groupId);
           await this.groupRepository.pushJoinRequest(
-            userNotificationMap,
+            // userNotificationMap,
             groupId,
             userIdFrom,
             session,
