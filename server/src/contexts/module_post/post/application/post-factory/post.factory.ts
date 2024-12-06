@@ -7,7 +7,7 @@ import { PostLocation } from "../../domain/entity/postLocation.entity";
 import { PostGood } from "../../domain/entity/post-types/post.good.entity";
 import { PostService } from "../../domain/entity/post-types/post.service.entity";
 import { PostPetition } from "../../domain/entity/post-types/post.petition.entity";
-import { removeAccentsAndToLowerCase } from "../../domain/utils/normalice.data";
+import { removeAccents_removeEmojisAndToLowerCase } from "../../domain/utils/normalice.data";
 
 
 export class PostFactory implements PostFactoryInterface {
@@ -39,8 +39,8 @@ export class PostFactory implements PostFactoryInterface {
             post.location.userSetted,
             post.location.description
         );
-        const searchTitle = removeAccentsAndToLowerCase(post.title)
-        const searchDescription = removeAccentsAndToLowerCase(post.description)
+        const searchTitle = removeAccents_removeEmojisAndToLowerCase(post.title)
+        const searchDescription = removeAccents_removeEmojisAndToLowerCase(post.description)
 
         const postBase = new Post(
             post.title,

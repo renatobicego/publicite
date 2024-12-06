@@ -5,7 +5,7 @@ import { omitBy, isUndefined } from 'lodash';
 import { PostUpdateDto } from 'src/contexts/module_post/post/domain/entity/dto/post.update.dto';
 import { PostMapperAdapterInterface } from 'src/contexts/module_post/post/application/adapter/mapper/post.adapter.mapper.interface';
 import { PostUpdateRequest } from 'src/contexts/module_post/post/application/dto/HTTP-REQUEST/post.update.request';
-import { removeAccentsAndToLowerCase } from 'src/contexts/module_post/post/domain/utils/normalice.data';
+import { removeAccents_removeEmojisAndToLowerCase } from 'src/contexts/module_post/post/domain/utils/normalice.data';
 
 export class PostAdapterMapper implements PostMapperAdapterInterface {
 
@@ -14,9 +14,9 @@ export class PostAdapterMapper implements PostMapperAdapterInterface {
     let searchTitle = undefined;
 
     if (postUpdateRequest.description && postUpdateRequest.description.length > 0) {
-      searchDescription = removeAccentsAndToLowerCase(postUpdateRequest.description);
+      searchDescription = removeAccents_removeEmojisAndToLowerCase(postUpdateRequest.description);
     } else if (postUpdateRequest.title && postUpdateRequest.title.length > 0) {
-      searchTitle = removeAccentsAndToLowerCase(postUpdateRequest.title);
+      searchTitle = removeAccents_removeEmojisAndToLowerCase(postUpdateRequest.title);
     }
 
 
