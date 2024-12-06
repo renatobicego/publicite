@@ -22,7 +22,6 @@ const Notifications = () => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
-
   return (
     <NotificationsProvider isOpen={isOpen}>
       {screenSize < 1024 ? (

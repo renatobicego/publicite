@@ -42,10 +42,10 @@ const DesktopNotifications = ({
         content: "mt-2",
       }}
       isOpen={isOpen}
-      onOpenChange={(open) => {
+      onOpenChange={async (open) => {
         if (open) setNewNotifications(false);
         if (newNotifications && !open) {
-          putNotificationStatus(
+          await putNotificationStatus(
             notifications.map((notification) => notification._id)
           );
         }

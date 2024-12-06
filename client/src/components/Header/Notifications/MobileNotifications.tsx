@@ -7,11 +7,11 @@ import {
   ModalHeader,
   ModalBody,
 } from "@nextui-org/react";
-import { FaBell } from "react-icons/fa6";
+import { FaBell, FaX } from "react-icons/fa6";
 import NotificationsContent from "./NotificationContent";
-import useNotifications from "@/utils/hooks/useNotifications";
 import { useSocket } from "@/app/socketProvider";
 import { useNotificationsContext } from "@/app/(root)/providers/notificationsProvider";
+import { putNotificationStatus } from "@/services/userServices";
 
 const MobileNotifications = ({
   isOpen,
@@ -20,7 +20,7 @@ const MobileNotifications = ({
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
-  const { isOpen: modalIsOpen, onOpen, onOpenChange } = useDisclosure({ isOpen });
+  const { isOpen: modalIsOpen } = useDisclosure({ isOpen });
   const { newNotifications: newNotificationsReceived, setNewNotifications } =
     useSocket();
 
@@ -32,10 +32,11 @@ const MobileNotifications = ({
   return (
     <>
       <Button
-        onPress={onOpen}
+        onPress={() => setIsOpen(true)}
         radius="full"
         variant="light"
         isIconOnly
+        aria-label="botón para abrir centro de notificaciones"
         className="lg:hidden min-w-0"
       >
         {newNotifications || newNotificationsReceived ? (
@@ -54,26 +55,40 @@ const MobileNotifications = ({
         placement="center"
         className="max-md:px-4"
         isOpen={modalIsOpen}
-        onOpenChange={(isOpen) => {
-          if (isOpen) {
-            setNewNotifications(false)
-            setIsOpen(false);
-          };
-          onOpenChange();
+        onOpenChange={(open) => {
+          if (open) setNewNotifications(false);
+          if (newNotifications && !open) {
+            putNotificationStatus(
+              notifications.map((notification) => notification._id)
+            );
+          }
         }}
+        closeButton={
+          <Button
+            size="sm"
+            variant="light"
+            isIconOnly
+            aria-label="cerrar modal"
+            onPress={() => setIsOpen(false)}
+          >
+            <FaX />
+          </Button>
+        }
       >
         <ModalContent>
-          <ModalHeader>
-            <h5>Notificaciones</h5>
-          </ModalHeader>
-          <ModalBody id="notifications-popover">
-            {isOpen && (
-              <NotificationsContent
-                notifications={notifications}
-                isLoading={isLoading}
-              />
-            )}
-          </ModalBody>
+          {(onClose) => (
+            <>
+              <ModalHeader>
+                <h5>Notificaciones</h5>
+              </ModalHeader>
+              <ModalBody id="notifications-popover">
+                <NotificationsContent
+                  notifications={notifications}
+                  isLoading={isLoading}
+                />
+              </ModalBody>
+            </>
+          )}
         </ModalContent>
       </Modal>
     </>
