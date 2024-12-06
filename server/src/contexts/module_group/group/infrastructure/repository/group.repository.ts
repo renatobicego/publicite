@@ -93,14 +93,10 @@ export class GroupRepository implements GroupRepositoryInterface {
     groupId: string,
     userRequestId: string,
     session: any,
-  ): Promise<void> { 
-    
+  ): Promise<void> {
+
 
     try {
-
-
-
-
       const result = await this.groupModel
         .findOneAndUpdate(
           {
@@ -109,7 +105,11 @@ export class GroupRepository implements GroupRepositoryInterface {
           },
           {
             $addToSet: { members: userRequestId },
-            $pull: { 'groupNotificationsRequest.groupInvitations': userRequestId },
+            $pull: {
+              'groupNotificationsRequest.groupInvitations': userRequestId,
+              'groupNotificationsRequest.joinRequests': userRequestId,
+            },
+
             $unset: { [`userIdAndNotificationMap.${userRequestId}`]: '' },
           },
           {
@@ -187,7 +187,10 @@ export class GroupRepository implements GroupRepositoryInterface {
           },
           {
             $addToSet: { members: newMember },
-            $pull: { 'groupNotificationsRequest.joinRequests': newMember },
+            $pull: {
+              'groupNotificationsRequest.joinRequests': newMember,
+              'groupNotificationsRequest.groupInvitations': newMember,
+            },
           },
           {
             session,
