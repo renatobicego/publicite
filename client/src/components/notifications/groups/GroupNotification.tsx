@@ -14,6 +14,7 @@ import { GroupNotification, GroupNotificationType } from "@/types/groupTypes";
 import { groupNotificationMessages } from "./notificationMessages";
 import { useSocket } from "@/app/socketProvider";
 import { useUserData } from "@/app/(root)/providers/userDataProvider";
+import { useState } from "react";
 
 const GroupNotificationCard = ({
   notification,
@@ -21,16 +22,22 @@ const GroupNotificationCard = ({
   notification: GroupNotification;
 }) => {
   const { group } = notification.frontData;
-  const { event, viewed, date, isActionsAvailable, backData, _id } = notification;
+  const { event, viewed, date, isActionsAvailable, backData, _id } =
+    notification;
   const { userIdLogged, usernameLogged } = useUserData();
   const { updateSocketToken } = useSocket();
+  const [isActionSent, setIsActionSent] = useState(false);
   const getNotificationOptionsList = () => {
     const optionsList: NotificationOptionProps[] = [];
     const notificationMessage =
       groupNotificationMessages[event as GroupNotificationType];
 
     // Check if acceptAction exists before adding it to options
-    if (notificationMessage?.acceptAction && isActionsAvailable) {
+    if (
+      notificationMessage?.acceptAction &&
+      isActionsAvailable &&
+      !isActionSent
+    ) {
       optionsList.push({
         label: "Aceptar Solicitud",
         onPress: async () => {
@@ -49,6 +56,7 @@ const GroupNotificationCard = ({
             backData.userIdFrom,
             _id
           );
+          setIsActionSent(true);
         },
       });
     }
@@ -65,7 +73,11 @@ const GroupNotificationCard = ({
       className: "text-text-color",
       href: `${GROUPS}/${group._id}`,
     });
-    if (notificationMessage?.rejectAction && isActionsAvailable) {
+    if (
+      notificationMessage?.rejectAction &&
+      isActionsAvailable &&
+      !isActionSent
+    ) {
       optionsList.push({
         label: "Rechazar Solicitud",
         color: "danger",
@@ -86,6 +98,7 @@ const GroupNotificationCard = ({
             backData.userIdFrom,
             _id
           );
+          setIsActionSent(true);
         },
       });
     }

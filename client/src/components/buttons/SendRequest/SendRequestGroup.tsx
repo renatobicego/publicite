@@ -6,8 +6,8 @@ import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { emitGroupNotification } from "@/components/notifications/groups/emitNotifications";
 import { useSocket } from "@/app/socketProvider";
 import { useUserData } from "@/app/(root)/providers/userDataProvider";
-import { useRouter } from "next-nprogress-bar";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 const SendRequestGroup = ({
   variant,

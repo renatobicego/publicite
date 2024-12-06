@@ -43,7 +43,7 @@ boton de compartir app
 - cmbiar formato de notificacion (listo)
 - compartir cosas (ui lista, falta funcionaidad de compartir por notificacion)
 - notificacion de navegador (listo)
-- crear grupo invita colaborador pero no aparece notificacion o no se borra bien del array de inivtaciones
+- crear grupo invita colaborador pero no apare ce notificacion o no se borra bien del array de inivtaciones
 - ERROR BOUNDARIES (listo)
 - editar imagen 
 - Editar revista no funca 

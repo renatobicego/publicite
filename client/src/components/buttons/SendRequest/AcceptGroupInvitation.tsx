@@ -1,9 +1,9 @@
 "use client";
 import SecondaryButton from "../SecondaryButton";
-import { useRouter } from "next-nprogress-bar";
 import { useState } from "react";
 import { putMemberGroup } from "@/services/groupsService";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
+import { useRouter } from "next/navigation";
 
 const AcceptGroupInvitation = ({ groupId }: { groupId: string }) => {
   //router to refresh
