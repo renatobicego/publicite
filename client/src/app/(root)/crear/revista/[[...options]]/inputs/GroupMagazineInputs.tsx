@@ -34,11 +34,12 @@ const GroupMagazineInputs = ({
     } else {
       setGroupMembers([]);
       toastifyError(
-        "Error al traer los miembros del grupo. Por favor intenta de nuevo."
+        "Error al traer los miembros del grupo para invitarlos en la revista. Por favor intenta de nuevo."
       );
     }
   }, [id]);
   const allowAllCollaborators = () => {
+    console.log(groupMembers)
     setValues((prevValues) => ({
       ...prevValues,
       allowedCollaborators: groupMembers?.map((user) => user._id) || [],
@@ -47,7 +48,6 @@ const GroupMagazineInputs = ({
 
   const handleSelectionChange = (key: SharedSelection) => {
     const selectedKey = Array.isArray(key) ? key : [key.currentKey]; // Ensure it's always an array
-
     setValues((prevValues: PostGroupMagazine) => {
       const currentArray = prevValues.allowedCollaborators || [];
       const updatedArray = currentArray.includes(selectedKey[0])
@@ -74,14 +74,6 @@ const GroupMagazineInputs = ({
         isLoading={!groupMembers}
         onChange={() => {}}
       />
-
-      <SecondaryButton
-        size="sm"
-        className="self-end"
-        onPress={allowAllCollaborators}
-      >
-        Permitir a todos
-      </SecondaryButton>
     </>
   );
 };

@@ -31,6 +31,7 @@ export const createMagazineValues = (
   shareMagazineIds: { user: string; post: string } | null,
   userId: any
 ) => {
+  // if is group magazine, add group id
   if (isGroupMagazine) {
     return {
       ...values,
@@ -38,20 +39,22 @@ export const createMagazineValues = (
     } as PostGroupMagazine;
   }
 
+  // if is user magazine, add user id of the creator
   const baseValues = {
     ...values,
     user: userId,
   } as PostUserMagazine;
 
+  // add post id
   if (shareMagazineIds) {
     return {
       ...baseValues,
-      addedPost: shareMagazineIds.post || null,
+      addedPost: shareMagazineIds.post || null, // if is shared magazine, post id will be inside the object shareMagazineIds
     };
   } else if (id) {
     return {
       ...baseValues,
-      addedPost: id,
+      addedPost: id, // if is common magazine, id will be the id of the post to add
     };
   }
 
