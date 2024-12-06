@@ -1,3 +1,4 @@
+import { removeAccents_removeEmojisAndToLowerCase } from "src/contexts/module_post/post/domain/utils/normalice.data";
 import { stopWordsGroup, stopWordsPost } from "./stopWords";
 
 
@@ -8,30 +9,32 @@ enum SearchType {
 
 
 function checkStopWordsAndReturnSearchQuery(searchTerm: string, searchType: string) {
+    if (!searchTerm) return null
+    let searchTermNormalized = removeAccents_removeEmojisAndToLowerCase(searchTerm);
     let searchTermSeparate: string[];
 
     if (SearchType.group === searchType) {
-        if (searchTerm && (stopWordsGroup.has(searchTerm) || searchTerm.trim().length <= 2)) {
+        if (stopWordsGroup.has(searchTermNormalized) || searchTermNormalized.length <= 2) {
             return null;
         }
-        searchTermSeparate = searchTerm
+        searchTermSeparate = searchTermNormalized
             ?.split(' ')
             .filter(
                 (term) =>
                     term.trim() !== '' &&
-                    !stopWordsGroup.has(term.trim().toLowerCase())
+                    !stopWordsGroup.has(term)
             );
 
     } else if (SearchType.post === searchType) {
-        if (searchTerm && (stopWordsPost.has(searchTerm) || searchTerm.trim().length <= 2)) {
+        if (stopWordsPost.has(searchTermNormalized) || searchTermNormalized.trim().length <= 2) {
             return null;
         }
-        searchTermSeparate = searchTerm
+        searchTermSeparate = searchTermNormalized
             ?.split(' ')
             .filter(
                 (term) =>
                     term.trim() !== '' &&
-                    !stopWordsPost.has(term.trim().toLowerCase())
+                    !stopWordsPost.has(term)
             );
 
     } else {
@@ -41,7 +44,7 @@ function checkStopWordsAndReturnSearchQuery(searchTerm: string, searchType: stri
 
     const textSearchQuery = searchTermSeparate
         .map(term =>
-            `(${term.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()})`
+            `(${term})`
         )
         .join('.*?');
 

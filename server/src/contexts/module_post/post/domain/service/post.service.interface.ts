@@ -1,6 +1,6 @@
 import { PostRequest } from "../../application/dto/HTTP-REQUEST/post.request";
 import { PostUpdateDto } from "../entity/dto/post.update.dto";
-import { Post } from "../entity/post.entity";
+
 
 
 export interface PostServiceInterface {
