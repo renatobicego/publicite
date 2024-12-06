@@ -22,9 +22,9 @@ import { useUserData } from "@/app/(root)/providers/userDataProvider";
 
 const CreateMagazineForm = ({
   isGroupMagazine,
-  id,
-  shareMagazineIds,
-  userId,
+  id, // if is group magazine, this will be the id of the group. If is user magazine, this will be post id if being sent
+  shareMagazineIds, // if is shared magazine, this will be the object shareMagazineIds with user being invited and post id if being added
+  userId, // user id of the creator
 }: {
   isGroupMagazine: boolean;
   id: string | null;
@@ -33,12 +33,14 @@ const CreateMagazineForm = ({
     post: string;
   } | null;
   userId: string;
-}) => {
+  }) => {
+  // get initial values for form
   const initialValues = isGroupMagazine ? groupMagazine : userMagazine;
   const router = useRouter();
   const { updateSocketToken } = useSocket();
   const { userIdLogged, usernameLogged } = useUserData();
 
+  // if is group magazine but id of the group is not provided, throw error
   if (isGroupMagazine && !id) {
     return (
       <ErrorCard message="Hubo un error al traer los datos del grupo. Por favor intenta de nuevo." />
@@ -59,7 +61,7 @@ const CreateMagazineForm = ({
 
     const resApi = await createMagazine({
       ...finalValues,
-      [isGroupMagazine ? "allowedCollaborators" : "collaborators"]: [],
+      [isGroupMagazine ? "allowedCollaborators" : "collaborators"]: [], // sent empty collaborators, we will send a notification to each to invite them
     });
     if (resApi.error) {
       toastifyError(resApi.error);
@@ -67,14 +69,17 @@ const CreateMagazineForm = ({
       return;
     }
     const socket = await updateSocketToken();
-    const usersToSendNotifications = isGroupMagazine
+    // to who send notifications 
+    const usersToSendNotifications = isGroupMagazine // if it is group magazine, send notifications to all allowed collaborators added
       ? (finalValues as PostGroupMagazine).allowedCollaborators
+      // else if it's a shared magazine
       : shareMagazineIds?.user
       ? [
-          shareMagazineIds.user,
-          ...(finalValues as PostUserMagazine).collaborators,
+          shareMagazineIds.user, // send to the user that was added by url
+          ...(finalValues as PostUserMagazine).collaborators, // and also all the collaborators that were added after on the select
         ]
-      : (finalValues as PostUserMagazine).collaborators;
+        : (finalValues as PostUserMagazine).collaborators; // else if it's a user magazine, send notifications to all collaborators added
+    
     usersToSendNotifications.forEach((collaborator) => {
       // emit notifications user invited to collaborate in magazine
       emitMagazineNotification(

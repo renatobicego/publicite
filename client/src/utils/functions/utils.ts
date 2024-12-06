@@ -50,6 +50,8 @@ export const getId = (
   isGroupMagazine: boolean
 ) => {
   if (!options) return null;
+  // if is group magazine, return id of group
+  // if not, return id of post if is being sent
   return isGroupMagazine ? options[1] : options[0] || null;
 };
 

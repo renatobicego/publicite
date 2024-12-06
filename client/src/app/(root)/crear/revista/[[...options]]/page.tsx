@@ -27,17 +27,27 @@ export default async function CreateMagazine(
       href: CREATE_MAGAZINE,
     },
   ];
+  // get options sent by url
   const { options } = params;
+  // if url includes group, it will create a group magazine
+  // if it includes compartida, it will create a shared magazine
   const { isGroupMagazine, isSharedMagazine } = getMagazineType(options);
+  // if is group magazine, it will be the id of the group
+  // if not, it will be the id of the post that wants to be added to the magazine. 
+  // This is when you are creating a magazine from a post
   const id = getId(options, isGroupMagazine);
+  // if it's a magazine that is shared, the url will be:
+  // [compartida, user id, post id]
+  // post id is only present if the user wants to add a post to the shared magazine
   const sharedMagazineIds = getSharedMagazineIds(options, isSharedMagazine);
 
   let postData = null;
 
   // Call getPostData only if necessary:
+  // if isSharedMagazine and sharedMagazineIds?.post is present
   if (isSharedMagazine && sharedMagazineIds?.post) {
     postData = await getPostData(sharedMagazineIds.post);
-  } else if (id && !isGroupMagazine && !isSharedMagazine) {
+  } else if (id && !isGroupMagazine && !isSharedMagazine) { // if is user magazine common and is being created also with a post
     postData = await getPostData(id);
   }
 

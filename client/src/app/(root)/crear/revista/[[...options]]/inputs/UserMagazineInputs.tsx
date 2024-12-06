@@ -5,6 +5,7 @@ import { Divider } from "@nextui-org/react";
 import { Field, FormikErrors } from "formik";
 import useSearchUsers from "@/utils/hooks/useSearchUsers";
 import { PostGroupMagazine, PostUserMagazine } from "@/types/magazineTypes";
+import { useUserData } from "@/app/(root)/providers/userDataProvider";
 
 const UserMagazineInputs = ({
   errors,
@@ -19,6 +20,7 @@ const UserMagazineInputs = ({
   ) => Promise<void | FormikErrors<PostUserMagazine | PostGroupMagazine>>;
 }) => {
   const { users: userContacts, getUsersByQuery } = useSearchUsers();
+  const { userIdLogged } = useUserData();
 
   const handleSelectionChange = (key: any) => {
     setValues((prevValues: any) => {
@@ -58,7 +60,7 @@ const UserMagazineInputs = ({
         name={"collaborators"}
         aria-label="invitar colaboradores"
         onValueChange={(value: string | null) => getUsersByQuery(value)}
-        items={userContacts}
+        items={userContacts.filter((user) => user._id !== userIdLogged)}
       />
     </>
   );
