@@ -27,14 +27,12 @@ export class NotificationFactory implements NotificationFactoryInterface {
     createNotification(notificationType: typeOfNotification, notificationData: any): Notification {
         let isActionsAvailable = true;
         const { event, viewed, date, backData, socketJobId, type, previousNotificationId } = this.verifyNotificationAtributes(notificationData);
-
         const { frontData } = notificationData
         const user = backData.userIdTo
 
 
 
         const baseNotification = new Notification(event, viewed, date, user, isActionsAvailable, backData, socketJobId, type, previousNotificationId);
-
         switch (notificationType) {
             case typeOfNotification.group_notification:
                 return new NotificationGroup(baseNotification, frontData);
@@ -56,9 +54,9 @@ export class NotificationFactory implements NotificationFactoryInterface {
         socketJobId: string,
         type: string,
         previousNotificationId: string;
-    } {
+    } { 
 
-
+        console.log(notificationBody)
         const { event, viewed, date, backData, socketJobId, type, previousNotificationId } = notificationBody;
 
 

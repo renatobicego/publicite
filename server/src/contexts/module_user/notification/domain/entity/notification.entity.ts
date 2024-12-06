@@ -38,7 +38,7 @@ export class Notification {
     }
 
 
-    get getPreviusNotificationId(): string | null {
+    get getpreviousNotificationIdId(): string | null {
         return this.previousNotificationId
     }
 

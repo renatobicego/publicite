@@ -139,8 +139,8 @@ export class NotificationService implements NotificationGroupServiceInterface, N
         let notificationId: Types.ObjectId;
 
         try {
-            console.log(event);
-            
+
+
             await session.withTransaction(async () => {
                 this.logger.log('Saving notification....');
                 notificationId = await this.notificationRepository.saveGroupNotification(notificationGroup, session);
@@ -148,7 +148,7 @@ export class NotificationService implements NotificationGroupServiceInterface, N
 
                 if (eventsThatMakeNotificationActionsInactive_GROUP.includes(event)) {
                     this.logger.log('Setting notification actions to false');
-                    const previousNotificationId = notificationGroup.getPreviusNotificationId;
+                    const previousNotificationId = notificationGroup.getpreviousNotificationIdId;
                     if (!previousNotificationId) {
                         throw new Error('previousNotificationId not found, please send it')
                     }
@@ -188,7 +188,7 @@ export class NotificationService implements NotificationGroupServiceInterface, N
                 const notificationId = await this.notificationRepository.saveMagazineNotification(notificationMagazine, session);
 
                 if (eventsThatMakeNotificationActionsInactive_MAGAZINE.includes(event)) {
-                    const previousNotificationId = notificationMagazine.getPreviusNotificationId;
+                    const previousNotificationId = notificationMagazine.getpreviousNotificationIdId;
                     if (!previousNotificationId) {
                         throw new Error('previousNotificationId not found, please send it')
                     }

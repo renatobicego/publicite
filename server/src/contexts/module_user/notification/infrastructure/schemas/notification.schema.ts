@@ -48,5 +48,6 @@ export const NotificationSchema = new Schema<NotificationDocument>({
 
 
 const NotificationModel = model<NotificationDocument>('notification', NotificationSchema);
+NotificationSchema.index({ viewed: 1 });
 
 export default NotificationModel;
