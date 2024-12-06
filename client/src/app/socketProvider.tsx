@@ -64,7 +64,7 @@ export const SocketProvider = ({
 
       newSocket.on("connect_error", (error) => {
         console.error("Socket connection error:", error);
-        reject(error); // Reject the promise if there's an error
+        // reject(error); // Reject the promise if there's an error
       });
 
       newSocket.on("disconnect", () => {
