@@ -1,6 +1,5 @@
-import { IoMdPersonAdd } from "react-icons/io";
-import PrimaryButton from "../PrimaryButton";
 import SendRequestGroup from "./SendRequestGroup";
+import SendUserRequest from "./SendUserRequest";
 
 const SendRequest = ({
   isGroup,
@@ -29,21 +28,11 @@ const SendRequest = ({
           groupId={idToSendRequest}
         />
       ) : (
-        <>
-          <PrimaryButton
-            variant={variant}
-            className={`"max-md:hidden mt-auto ${removeMargin && "md:-ml-4"}`}
-          >
-            Enviar solicitud
-          </PrimaryButton>
-          <PrimaryButton
-            isIconOnly
-            className="md:hidden p-0.5 mt-auto"
-            size="sm"
-          >
-            <IoMdPersonAdd />
-          </PrimaryButton>
-        </>
+        <SendUserRequest
+          variant={variant}
+          removeMargin={removeMargin}
+          idToSendRequest={idToSendRequest}
+        />
       )}
     </>
   );

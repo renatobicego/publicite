@@ -53,6 +53,7 @@ const declineGroupInvitation = async (
     "notification_group_user_rejected_group_invitation",
     previousNotificationId
   );
+  toastifySuccess("Solicitud rechazada correctamente");
 };
 
 export { acceptGroupInvitation, declineGroupInvitation };

@@ -2,7 +2,7 @@ import { Socket } from "socket.io-client";
 import { User, UserRelationNotificationType } from "@/types/userTypes";
 import generateUserRelationNotification from "./generateUserRelationNotification";
 
-export const emitGroupNotification = (
+export const emitUserRelationNotification = (
   socket: Socket | null,
   event: UserRelationNotificationType,
   // userFrom: Pick<User, "_id" | "username" | "profilePhotoUrl">,
