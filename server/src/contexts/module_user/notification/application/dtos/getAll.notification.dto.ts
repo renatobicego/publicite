@@ -3,6 +3,7 @@ import { ObjectType, Field } from "@nestjs/graphql";
 
 import { front_data_MAGAZINE } from "./front.data.notification.magazine";
 import { front_data_GROUP } from "./front.data.notification.group.dto";
+import { front_data_USER } from "./font.data.notification.user.dto";
 
 
 
@@ -13,6 +14,10 @@ export class frontData {
 
     @Field(() => front_data_MAGAZINE, { nullable: true })
     magazine: front_data_MAGAZINE;
+
+    @Field(() => front_data_USER, { nullable: true })
+    userRelation: front_data_USER;
+
 }
 
 @ObjectType()

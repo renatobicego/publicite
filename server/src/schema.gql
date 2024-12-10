@@ -141,9 +141,21 @@ type front_data_GROUP {
   userInviting: userInviting_group
 }
 
+type UserFrom_notification {
+  _id: String!
+  username: String!
+  profilePhotoUrl: String!
+}
+
+type front_data_USER {
+  userFrom: UserFrom_notification!
+  typeRelation: String!
+}
+
 type frontData {
   group: front_data_GROUP
   magazine: front_data_MAGAZINE
+  userRelation: front_data_USER
 }
 
 type backData {
