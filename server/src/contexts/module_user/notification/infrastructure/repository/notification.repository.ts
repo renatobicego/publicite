@@ -11,7 +11,7 @@ import NotificationModel, { NotificationDocument } from "../schemas/notification
 import { GROUP_notification_graph_model_get_all, Notification } from "../../application/dtos/getAll.notification.dto";
 import { parseZonedDateTime } from "@internationalized/date";
 import { NotificationUser } from "../../domain/entity/notification.user.entity";
-import { INotificationUser } from "../schemas/notification.user.schema";
+import { INotificationUser, NotificationUserModel } from "../schemas/notification.user.schema";
 
 
 export class NotificationRepository implements NotificationRepositoryInterface {
@@ -25,7 +25,7 @@ export class NotificationRepository implements NotificationRepositoryInterface {
         private readonly notificationMagazineDocument: Model<INotificationMagazine>,
         @InjectModel(NotificationModel.modelName)
         private readonly notificationBaseDocument: Model<NotificationDocument>,
-        @InjectModel(NotificationModel.modelName)
+        @InjectModel(NotificationUserModel.modelName)
         private readonly notificationUserDocument: Model<INotificationUser>,
 
     ) { }
@@ -134,11 +134,12 @@ export class NotificationRepository implements NotificationRepositoryInterface {
 
     async saveUserNotification(notification: NotificationUser, session?: any): Promise<Types.ObjectId> {
         try {
+
             this.logger.log('Saving notification in repository...');
             const userNotification = new this.notificationUserDocument(notification);
 
             const userNotificationSave = await userNotification.save({ session });
-
+        
             return userNotificationSave._id;
         } catch (error: any) {
             this.logger.error('An error occurred while saving notification', error.message);

@@ -37,14 +37,10 @@ export class NotificationFactory implements NotificationFactoryInterface {
         switch (notificationType) {
             case typeOfNotification.group_notification:
                 return new NotificationGroup(baseNotification, frontData);
-
             case typeOfNotification.magazine_notification:
-
                 return new NotificationMagazine(baseNotification, frontData);
             case typeOfNotification.user_notification:
-
                 return new NotificationUser(baseNotification, frontData);
-
             default:
                 throw new Error("Tipo de notificación no reconocido");
         }

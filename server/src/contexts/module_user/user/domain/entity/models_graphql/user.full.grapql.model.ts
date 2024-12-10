@@ -84,6 +84,86 @@ export class Magazines_Full_Graphql_Model {
   description: string;
 }
 
+
+@ObjectType()
+class BackData_user_notification {
+  @Field(() => String)
+  userIdTo: string;
+
+  @Field(() => String)
+  userIdFrom: string;
+}
+
+@ObjectType()
+class UserFrom {
+  @Field(() => String)
+  _id: string;
+
+  @Field(() => String)
+  username: string;
+
+  @Field(() => String)
+  profilePhotoUrl: string;
+}
+
+@ObjectType()
+class UserRelation {
+  @Field(() => UserFrom)
+  userFrom: UserFrom;
+
+  @Field(() => String)
+  typeRelation: string;
+}
+
+@ObjectType()
+class FrontData_user_notification {
+  @Field(() => UserRelation)
+  userRelation: UserRelation;
+}
+
+@ObjectType()
+class friendRequests {
+  @Field(() => ID)
+  _id: ObjectId;
+
+  @Field(() => String)
+  event: string;
+
+  @Field(() => Boolean)
+  viewed: boolean;
+
+  @Field(() => String)
+  date: string;
+
+  @Field(() => String)
+  user: string;
+
+  @Field(() => BackData_user_notification)
+  backData: BackData_user_notification;
+
+  @Field(() => FrontData_user_notification)
+  frontData: FrontData_user_notification;
+
+
+}
+@ObjectType()
+class user_relation {
+  @Field(() => ID)
+  _id?: ObjectId;
+
+  @Field(() => String)
+  userA: string;
+
+  @Field(() => String)
+  userB: string;
+
+  @Field(() => String)
+  typeRelationA: string;
+
+  @Field(() => String)
+  typeRelationB: string;
+
+}
 @ObjectType()
 export class User_Full_Grapql_Model {
   @Field(() => ID, { nullable: true })
@@ -136,12 +216,15 @@ export class User_Full_Grapql_Model {
   @Field(() => [Subscriptions_Full_Graphql_Model], { nullable: 'itemsAndList' })
   subscriptions?: Subscriptions_Full_Graphql_Model[];
 
-  // @Field(() => [ID], { nullable: 'itemsAndList' })
-  // userRelations?: ObjectId[];
+  @Field(() => [user_relation],)
+  userRelations?: user_relation[];
 
   @Field(() => String, { nullable: true })
   userType?: string;
 
   @Field(() => [Groups_Full_Graphql_Model], { nullable: 'itemsAndList' })
   groups?: Groups_Full_Graphql_Model[];
+
+  @Field(() => [friendRequests], { nullable: true })
+  friendRequests?: friendRequests[];
 }

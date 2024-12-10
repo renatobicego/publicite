@@ -274,6 +274,44 @@ type Magazines_Full_Graphql_Model {
   description: String
 }
 
+type BackData_user_notification {
+  userIdTo: String!
+  userIdFrom: String!
+}
+
+type UserFrom {
+  _id: String!
+  username: String!
+  profilePhotoUrl: String!
+}
+
+type UserRelation {
+  userFrom: UserFrom!
+  typeRelation: String!
+}
+
+type FrontData_user_notification {
+  userRelation: UserRelation!
+}
+
+type friendRequests {
+  _id: ID!
+  event: String!
+  viewed: Boolean!
+  date: String!
+  user: String!
+  backData: BackData_user_notification!
+  frontData: FrontData_user_notification!
+}
+
+type user_relation {
+  _id: ID!
+  userA: String!
+  userB: String!
+  typeRelationA: String!
+  typeRelationB: String!
+}
+
 type User_Full_Grapql_Model {
   _id: ID
   clerkId: String
@@ -292,8 +330,10 @@ type User_Full_Grapql_Model {
   board: Board
   posts: [Post_Full_Graphql_Model]
   subscriptions: [Subscriptions_Full_Graphql_Model]
+  userRelations: [user_relation!]!
   userType: String
   groups: [Groups_Full_Graphql_Model]
+  friendRequests: [friendRequests!]
 }
 
 type posts_graphql_magazine {

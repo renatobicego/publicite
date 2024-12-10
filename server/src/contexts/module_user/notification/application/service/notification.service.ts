@@ -266,6 +266,7 @@ export class NotificationService implements NotificationGroupServiceInterface, N
             const userIdTo = notificationUser.getbackData.userIdTo;
 
             await session.withTransaction(async () => {
+
                 const notificationId = await this.notificationRepository.saveUserNotification(notificationUser, session);
 
                 if (eventsThatMakeNotificationActionsInactive_USER.includes(event)) {

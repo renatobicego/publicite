@@ -60,8 +60,8 @@ const UserSchema = new Schema<IUser>(
       searchPreference: [{ type: Schema.Types.ObjectId, ref: 'PostCategory' }],
       backgroundColor: { type: Number, default: undefined },
     },
-    notifications: [{ type: Schema.Types.ObjectId, ref: 'Notification' }],
-    friendRequests: [{ type: Schema.Types.ObjectId, ref: 'Notification' }],
+    notifications: [{ type: Schema.Types.ObjectId, ref: 'notification' }],
+    friendRequests: [{ type: Schema.Types.ObjectId, ref: 'notification' }],
   },
   { discriminatorKey: 'userType', collection: 'users' },
 );

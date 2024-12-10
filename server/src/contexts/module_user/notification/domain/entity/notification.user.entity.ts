@@ -14,7 +14,6 @@ export class NotificationUser extends Notification {
                 _id: string;
                 username: string;
                 profilePhotoUrl: string;
-                profileUrl: string
             };
             typeRelation: UserRelationType | null;
         }
@@ -28,7 +27,6 @@ export class NotificationUser extends Notification {
                     _id: string;
                     username: string;
                     profilePhotoUrl: string;
-                    profileUrl: string;
                 };
                 typeRelation: UserRelationType | null;
             }

@@ -61,13 +61,15 @@ export class UserRepository implements UserRepositoryInterface {
       const user = await this.user
         .findOne({ username })
         .select(
-          '_id profilePhotoUrl username contact lastName name businessName countryRegion userType board description email suscriptions groups magazines userRelations posts',
+          '_id profilePhotoUrl username contact lastName name businessName countryRegion userType board description email suscriptions groups magazines posts friendRequests userRelations',
         )
         .populate([
           { path: 'magazines' },
           { path: 'board' },
           { path: 'groups' },
           { path: 'contact' },
+          { path: 'friendRequests' },
+          { path: 'userRelations' },
           {
             path: 'posts',
             select:
@@ -85,6 +87,7 @@ export class UserRepository implements UserRepositoryInterface {
         ])
         .session(session)
         .lean();
+
       if (!user) {
         await session.abortTransaction();
         session.endSession();
@@ -199,7 +202,7 @@ export class UserRepository implements UserRepositoryInterface {
 
 
       if (!userA || !userB) return;
-      //Deberia establecer la relacion entre ambos user. crear un schema de relacion, guardarlo y pushearlo en el array de los dos usuarios
+
       const newUserRelation = new this.userRelation(userRelation)
       const userRelationSaved = await newUserRelation.save()
       const userRelationId = userRelationSaved._id
