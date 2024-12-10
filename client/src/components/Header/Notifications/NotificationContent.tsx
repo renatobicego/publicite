@@ -6,8 +6,10 @@
 // import PaymentSuccess from "@/components/notifications/suscriptions/PaymentSuccess";
 import GroupInvitation from "@/components/notifications/groups/GroupNotification";
 import MagazineNotificationCard from "@/components/notifications/magazines/MagazineNotification";
+import UserRelationNotificationCard from "@/components/notifications/users/UserRelationNotification";
 import { GroupNotification } from "@/types/groupTypes";
 import { MagazineNotification } from "@/types/magazineTypes";
+import { UserRelationNotification } from "@/types/userTypes";
 import { Spinner } from "@nextui-org/react";
 
 const NotificationsContent = ({
@@ -31,6 +33,13 @@ const NotificationsContent = ({
           <MagazineNotificationCard
             key={notification._id}
             notification={notification as MagazineNotification}
+          />
+        );
+      case notification.event.includes("user"):
+        return (
+          <UserRelationNotificationCard
+            key={notification._id}
+            notification={notification as UserRelationNotification}
           />
         );
       default:

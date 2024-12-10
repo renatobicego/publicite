@@ -21,7 +21,7 @@ declare global {
     | "contacts"
     | "friends"
     | "topfriends";
-  type UserRelation = "contact" | "friend" | "topfriend";
+  type UserRelation = "contact" | "friends" | "topfriends";
 
   type FrequencyPrice = "hour" | "day" | "week" | "month" | "year";
   type PostType = "service" | "good" | "petition";

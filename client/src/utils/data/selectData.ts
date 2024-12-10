@@ -117,11 +117,11 @@ export const relationTypes: {value: UserRelation; label: string}[] = [
   },
   {
     label: "Amigo",
-    value: "friend",
+    value: "friends",
   },
   {
     label: "Top Amigo",
-    value: "topfriend",
+    value: "topfriends",
   }
 ]
 

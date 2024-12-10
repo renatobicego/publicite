@@ -7,6 +7,12 @@ import {
 import { groupNotificationBaseMessages } from "@/components/notifications/groups/notificationMessages";
 import { notificationMagazineBaseMessages } from "@/components/notifications/magazines/notificationMessages";
 import { showBrowserNotification } from "./browserNotifications";
+import {
+  UserRelationNotification,
+  UserRelationNotificationType,
+} from "@/types/userTypes";
+import { userRelationNotificationMessages } from "@/components/notifications/users/notificationMessages";
+import { relationTypes } from "../data/selectData";
 
 // Handle group notifications
 export const handleGroupNotification = (data: GroupNotification) => {
@@ -19,7 +25,7 @@ export const handleGroupNotification = (data: GroupNotification) => {
 
   showBrowserNotification("Publicité - Nueva notificación de grupo", {
     body: message,
-    badge: '/logo.png',
+    badge: "/logo.png",
   });
 };
 
@@ -34,6 +40,29 @@ export const handleMagazineNotification = (data: MagazineNotification) => {
 
   showBrowserNotification("Publicité - Nueva notificación de revista", {
     body: message,
-    badge: '/logo.png'
+    badge: "/logo.png",
   });
+};
+
+// Handle user rwlation notifications
+export const handleUserRelationNotification = (
+  data: UserRelationNotification
+) => {
+  const event = data.event as UserRelationNotificationType;
+  const {
+    userRelation: { userFrom, typeRelation },
+  } = data.frontData;
+  const message = `${userFrom.username} ${
+    userRelationNotificationMessages[event].message
+  } ${
+    relationTypes.find((r) => r.value === typeRelation)?.label || typeRelation
+  }`;
+
+  showBrowserNotification(
+    "Publicité - Nueva notificación de relación de usuario",
+    {
+      body: message,
+      badge: "/logo.png",
+    }
+  );
 };
