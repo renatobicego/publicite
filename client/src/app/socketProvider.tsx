@@ -14,6 +14,7 @@ import { useAuth } from "@clerk/nextjs";
 import {
   handleGroupNotification,
   handleMagazineNotification,
+  handleUserRelationNotification,
 } from "@/utils/notifications/notificationHandlers";
 import { requestNotificationPermission } from "@/utils/notifications/browserNotifications";
 
@@ -80,6 +81,11 @@ export const SocketProvider = ({
       newSocket.on("magazine_notifications", (data) => {
         setNewNotifications(true);
         handleMagazineNotification(data); // Call the handler for magazine notifications
+      });
+
+      newSocket.on("user_notifications", (data) => {
+        setNewNotifications(true);
+        handleUserRelationNotification(data); // Call the handler for user relations notifications
       });
     });
   };

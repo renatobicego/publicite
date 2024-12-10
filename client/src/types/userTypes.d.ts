@@ -138,8 +138,6 @@ export type EditProfileProps =
   | EditBusinessProfileProps
   | EditPersonProfileProps;
 
-
-
 export interface UserRelations {
   _id: ObjectId;
   userA: User;
@@ -155,4 +153,18 @@ export interface NewContactRelationNotification {
   date: string;
 }
 
-
+export interface UserRelationNotification extends BaseNotification {
+  frontData: {
+    userRelation: {
+      userFrom: Pick<User, "_id" | "username" | "profilePhotoUrl">;
+      typeRelation: UserRelation;
+    }
+  };
+}
+export type UserRelationNotificationType =
+  | "notification_user_new_friend_request" // Usuario A le envia la nueva relación de contacto a Usuario B
+  | "notification_user_friend_request_accepted" //
+  | "notification_user_friend_request_rejected" //
+  | "notification_user_new_relation_change" // Nueva relacion de amistad
+  | "notification_user_new_relation_accepted" // Usuario A acepto tu relacion de amistad
+  | "notifications_user_new_relation_rejected"; // Usuario A rechazo tu relacion de amistad
