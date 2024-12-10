@@ -16,6 +16,7 @@ import { UserMapper } from '../adapters/mapper-implementations/user.mapper';
 import { UserRepositoryMapper } from '../repository/mappers/user.repository.mapper';
 import { UserAdapter } from '../adapters/user.adapter';
 import { UserResolver } from '../graphql/resolver/user.resolver';
+import { UserRelationModel } from '../schemas/user.relation.schema';
 
 @Module({
   imports: [
@@ -31,6 +32,10 @@ import { UserResolver } from '../graphql/resolver/user.resolver';
           },
         ],
       },
+      {
+        name: UserRelationModel.modelName,
+        schema: UserRelationModel.schema,
+      }
     ]),
     ContactModule,
     SectorModule,
@@ -67,4 +72,4 @@ import { UserResolver } from '../graphql/resolver/user.resolver';
   ],
   exports: ['UserServiceInterface', 'UserRepositoryInterface'],
 })
-export class UserModule {}
+export class UserModule { }

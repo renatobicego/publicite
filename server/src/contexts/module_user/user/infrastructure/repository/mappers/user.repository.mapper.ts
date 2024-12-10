@@ -4,13 +4,10 @@ import { UserClerkUpdateDto } from '../../../domain/entity/dto/user.clerk.update
 import { UserPersonalUpdateDto } from '../../../domain/entity/dto/user.personal.update.dto';
 import { UserPreferencesEntityDto } from '../../../domain/entity/dto/user.preferences.update.dto';
 import { Gender } from '../../../domain/entity/enum/user.enums';
-import { User } from '../../../domain/entity/user.entity';
 import {
-  UserBusiness,
   UB_update,
 } from '../../../domain/entity/userBusiness.entity';
 import {
-  UserPerson,
   UP_update,
 } from '../../../domain/entity/userPerson.entity';
 import { UserRepositoryMapperInterface } from '../../../domain/repository/mapper/user.repository.mapper.interface';
@@ -42,38 +39,7 @@ export class UserRepositoryMapper implements UserRepositoryMapperInterface {
       email: document.email,
     });
   }
-  documentToEntityMapped(document: any): User {
-    const post: User = new User(
-      document.clerkId,
-      document.email,
-      document.username,
-      document.description,
-      document.profilePhotoUrl,
-      document.countryRegion,
-      document.isActive,
-      document.name,
-      document.lastName,
-      document.contact,
-      document.createdTime,
-      document.subscriptions,
-      document.groups,
-      document.magazines,
-      document.board,
-      document.post,
-      document.userRelations,
-      document.userType,
-      document.userPreferences,
-      document._id,
-    );
-    switch (document.userType.toLowerCase()) {
-      case 'person':
-        return new UserPerson(post, document.gender, document.birthDate);
-      case 'business':
-        return new UserBusiness(post, document.sector, document.businessName);
-      default:
-        throw new Error('User type not recognized in repository mapper');
-    }
-  }
+
   documentToEntityMapped_update(
     document: any,
     type: number,
@@ -173,26 +139,5 @@ export class UserRepositoryMapper implements UserRepositoryMapperInterface {
     };
   }
 
-  // getBaseUserData(reqUser: User) {
-  //   return {
-  //     clerkId: reqUser.getClerkId(),
-  //     email: reqUser.getEmail(),
-  //     username: reqUser.getUsername(),
-  //     name: reqUser.getName(),
-  //     lastName: reqUser.getLastName(),
-  //     description: reqUser.getDescription(),
-  //     profilePhotoUrl: reqUser.getProfilePhotoUrl(),
-  //     countryRegion: reqUser.getCountryRegion(),
-  //     isActive: reqUser.getIsActive(),
-  //     contact: reqUser.getContact(),
-  //     createdTime: reqUser.getCreatedTime(),
-  //     subscriptions: reqUser.getSubscriptions(),
-  //     groups: reqUser.getGroups(),
-  //     magazines: reqUser.getMagazines(),
-  //     board: reqUser.getBoard(),
-  //     post: reqUser.getPost(),
-  //     userRelations: reqUser.getUserRelations(),
-  //     userType: reqUser.getUserType(),
-  //   };
-  // }
+
 }

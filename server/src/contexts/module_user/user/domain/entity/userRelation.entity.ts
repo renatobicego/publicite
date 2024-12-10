@@ -1,14 +1,14 @@
 import { ObjectId } from 'mongoose';
 
 export class UserRelation {
-  private userA: ObjectId;
-  private userB: ObjectId;
+  private userA: string;
+  private userB: string;
   private typeRelationA: string;
   private typeRelationB: string;
 
   constructor(
-    userA: ObjectId,
-    userB: ObjectId,
+    userA: string,
+    userB: string,
     typeRelationA: string,
     typeRelationB: string,
   ) {
@@ -16,5 +16,14 @@ export class UserRelation {
     this.userB = userB;
     this.typeRelationA = typeRelationA;
     this.typeRelationB = typeRelationB;
+  }
+
+
+  get getUserA() {
+    return this.userA;
+  }
+
+  get getUserB() {
+    return this.userB;
   }
 }

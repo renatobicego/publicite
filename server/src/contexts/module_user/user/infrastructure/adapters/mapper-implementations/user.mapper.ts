@@ -4,18 +4,11 @@ import { UserMapperInterface } from '../../../application/adapter/mapper/user.ma
 import { UserPreferencesRequest } from '../../../application/adapter/dto/HTTP-REQUEST/user.request.CREATE';
 import { UserPreferencesEntityDto } from '../../../domain/entity/dto/user.preferences.update.dto';
 import { UserPreferenceResponse } from '../../../application/adapter/dto/HTTP-RESPONSE/user.preferences.response';
-import { User } from '../../../domain/entity/user.entity';
-import { UserPerson } from '../../../domain/entity/userPerson.entity';
-import { UserBusiness } from '../../../domain/entity/userBusiness.entity';
 import { UserBusinessUpdateResponse } from '../../../application/adapter/dto/HTTP-RESPONSE/user.business.response.UPDATE';
 import { UserPersonalUpdateResponse } from '../../../application/adapter/dto/HTTP-RESPONSE/user.personal.response.UPDATE';
-import {
-  UserResponse,
-  UserPersonResponse,
-  UserBusinessResponse,
-} from '../../../application/adapter/dto/HTTP-RESPONSE/user.response.dto';
 import { UserBusinessUpdateDto } from '../../../domain/entity/dto/user.business.update.dto';
 import { UserPersonalUpdateDto } from '../../../domain/entity/dto/user.personal.update.dto';
+
 
 export class UserMapper implements UserMapperInterface {
   requestToEntity_userPreferences(
@@ -38,91 +31,8 @@ export class UserMapper implements UserMapperInterface {
     };
     return userPrefResponse;
   }
-  requestToEntity(request: any): User {
-    const userBase = new User(
-      request.clerkId,
-      request.email,
-      request.username,
-      request.description,
-      request.profilePhotoUrl,
-      request.countryRegion,
-      request.isActive,
-      request.name,
-      request.lastName,
-      undefined, // contact undefined
-      request.createdTime,
-      request.subscriptions,
-      request.groups,
-      request.magazines,
-      request.board,
-      request.post,
-      request.userRelations,
-      request.userType,
-      request.userPreferences,
-    );
 
-    switch (request.userType.toLocaleLowerCase()) {
-      case 'person': {
-        return new UserPerson(userBase, request.gender, request.birthDate);
-      }
-      case 'business': {
-        return new UserBusiness(userBase, request.sector, request.businessName);
-      }
-      default: {
-        throw new Error('Invalid user type');
-      }
-    }
-  }
-  entityToResponse(entity: User): UserResponse {
-    let caster: any;
-    const userBase: UserResponse = {
-      _id: entity.getId as any,
-      clerkId: entity.getClerkId,
-      email: entity.getEmail,
-      username: entity.getUsername,
-      description: entity.getDescription,
-      profilePhotoUrl: entity.getProfilePhotoUrl,
-      countryRegion: entity.getCountryRegion,
-      isActive: entity.getIsActive,
-      contact: entity.getContact as any,
-      createdTime: entity.getCreatedTime as string,
-      subscriptions: entity.getSubscriptions as [],
-      groups: entity.getGroups as [],
-      magazines: entity.getMagazines as [],
-      board: entity.getBoard as any,
-      posts: entity.getPost as [],
-      userRelations: entity.getUserRelations as [],
-      userType: entity.getUserType as any,
-      name: entity.getName,
-      lastName: entity.getLastName,
-      userPreferences: entity.getUserPreferences as any,
-    };
 
-    switch (entity.getUserType?.toLocaleLowerCase()) {
-      case 'person': {
-        caster = entity as UserPerson;
-        const userPersonResponnse: UserPersonResponse = {
-          ...userBase,
-          gender: caster.getGender,
-          birthDate: caster.getBirthDate,
-        };
-        return userPersonResponnse;
-      }
-      case 'business': {
-        caster = entity as UserBusiness;
-        const userBusinessResponse: UserBusinessResponse = {
-          ...userBase,
-          sector: caster.getSector as any,
-          businessName: caster.getBusinessName as any,
-        };
-
-        return userBusinessResponse;
-      }
-      default: {
-        throw new Error('Invalid user type');
-      }
-    }
-  }
 
   requestToEntity_update(
     request: any,

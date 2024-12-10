@@ -1,5 +1,5 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import { ClientSession, Connection, Model, ObjectId } from 'mongoose';
+import { ClientSession, Connection, Model, ObjectId, Types } from 'mongoose';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 
 import { IUserPerson, UserPersonModel } from '../schemas/userPerson.schema';
@@ -22,6 +22,9 @@ import { UserClerkUpdateDto } from '../../domain/entity/dto/user.clerk.update.dt
 import { UserFindAllResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.response.dto';
 import { fullNameNormalization } from '../../application/functions/utils';
 import { SectorRepositoryInterface } from 'src/contexts/module_user/businessSector/domain/repository/sector.repository.interface';
+import { UserType } from '../../domain/entity/enum/user.enums';
+import { UserRelationDocument, UserRelationModel } from '../schemas/user.relation.schema';
+import { UserRelation } from '../../domain/entity/userRelation.entity';
 
 @Injectable()
 export class UserRepository implements UserRepositoryInterface {
@@ -35,6 +38,10 @@ export class UserRepository implements UserRepositoryInterface {
     @InjectModel(UserModel.modelName)
     private readonly user: Model<IUser>,
 
+    @InjectModel(UserRelationModel.modelName)
+    private readonly userRelation: Model<UserRelationDocument>,
+
+
     @Inject('SectorRepositoryInterface')
     private readonly sectorRepository: SectorRepositoryInterface,
 
@@ -43,7 +50,9 @@ export class UserRepository implements UserRepositoryInterface {
 
     private readonly logger: MyLoggerService,
     @InjectConnection() private readonly connection: Connection,
-  ) {}
+  ) { }
+
+
 
   async findUserByUsername(username: string): Promise<any> {
     try {
@@ -183,7 +192,32 @@ export class UserRepository implements UserRepositoryInterface {
       throw error;
     }
   }
+  async makeFriendRelationBetweenUsers(userRelation: UserRelation, session: any): Promise<void> {
+    try {
+      const userA = userRelation.getUserA;
+      const userB = userRelation.getUserB;
 
+
+      if (!userA || !userB) return;
+      //Deberia establecer la relacion entre ambos user. crear un schema de relacion, guardarlo y pushearlo en el array de los dos usuarios
+      const newUserRelation = new this.userRelation(userRelation)
+      const userRelationSaved = await newUserRelation.save()
+      const userRelationId = userRelationSaved._id
+
+      await this.user
+        .updateMany(
+          {
+            _id: { $in: [userA, userB] }
+          },
+          { $addToSet: { userRelations: userRelationId } },
+          { session }
+        )
+
+
+    } catch (error: any) {
+      throw error;
+    }
+  }
   async pushNotification(
     notification: any,
     userId: string,
@@ -204,11 +238,27 @@ export class UserRepository implements UserRepositoryInterface {
       throw error;
     }
   }
+  async pushNewFriendRequestOrRelationRequestToUser(notificationId: Types.ObjectId, userNotificationOwner: string, session: any): Promise<any> {
+    try {
+      await this.user
+        .updateOne(
+          { _id: userNotificationOwner },
+          { $addToSet: { friendRequests: notificationId } },
+        )
+        .session(session);
+      this.logger.log(
+        "notification saved successfully in user's notification array",
+      );
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
   async update(
     username: string,
     reqUser: UserPersonalUpdateDto | UserBusinessUpdateDto,
     type: number,
-  ): Promise<UserPersonalUpdateDto | UserBusinessUpdateDto> {
+  ): Promise<any> {
     try {
       let entityToDocument;
 
@@ -217,19 +267,9 @@ export class UserRepository implements UserRepositoryInterface {
           this.logger.log('Search user(Personal) for update');
           entityToDocument =
             this.userRepositoryMapper.formatUpdateDocument(reqUser);
-          const userUpdated = await this.userPersonModel
-            .findOneAndUpdate({ username: username }, entityToDocument, {
-              new: true,
-            })
-            .lean(); // Aplicar lean() aquí si no necesitas métodos Mongoose
 
-          if (!userUpdated) {
-            throw new BadRequestException('User not found');
-          }
-          return this.userRepositoryMapper.documentToEntityMapped_update(
-            userUpdated,
-            0,
-          );
+          return await this.userPersonModel
+            .updateOne({ username: username }, entityToDocument)
 
         case 1: // Business User
           const cast = reqUser as UserBusinessUpdateDto;
@@ -244,19 +284,10 @@ export class UserRepository implements UserRepositoryInterface {
 
           entityToDocument =
             this.userRepositoryMapper.formatUpdateDocumentUB(reqUser);
-          const userUpdatedB = await this.userBusinessModel
-            .findOneAndUpdate({ username: username }, entityToDocument, {
-              new: true,
-            })
-            .lean(); // Aplicar lean() aquí si no necesitas métodos Mongoose
 
-          if (!userUpdatedB) {
-            throw new BadRequestException('User not found');
-          }
-          return this.userRepositoryMapper.documentToEntityMapped_update(
-            userUpdatedB,
-            1,
-          );
+
+          return await this.userBusinessModel
+            .updateOne({ username: username }, entityToDocument)
 
         default:
           throw new BadRequestException('Invalid user type');
@@ -270,20 +301,15 @@ export class UserRepository implements UserRepositoryInterface {
   async updateByClerkId(
     clerkId: string,
     reqUser: UP_clerkUpdateRequestDto,
-  ): Promise<UserClerkUpdateDto> {
+  ): Promise<any> {
     try {
       this.logger.log(
         'Updating clerk attributes in the repository, for the ID: ' + clerkId,
       );
-      const userUpdated = await this.user
-        .findOneAndUpdate({ clerkId: clerkId }, reqUser, { new: true })
-        .lean();
-      if (!userUpdated) {
-        throw new BadRequestException('User not found');
-      }
-      return this.userRepositoryMapper.documentToEntityMapped_clerkUpdate(
-        userUpdated,
-      );
+      return await this.user
+        .updateOne({ clerkId: clerkId }, reqUser)
+
+
     } catch (error) {
       this.logger.error('Error in updateByClerkId method(Repository)', error);
       throw error;
@@ -293,25 +319,17 @@ export class UserRepository implements UserRepositoryInterface {
   async updateUserPreferencesByUsername(
     username: string,
     userPreference: UserPreferencesEntityDto,
-  ): Promise<UserPreferencesEntityDto | null> {
+  ): Promise<any> {
     try {
       this.logger.log(
         'Start process in the repository: updateUserPreferencesByUsername',
       );
-      const userDoc = await this.user
-        .findOneAndUpdate(
+      return await this.user
+        .updateOne(
           { username: username },
           { userPreferences: userPreference },
-          { new: true },
         )
-        .lean(); // Aplicar lean() aquí si no necesitas métodos Mongoose
-      if (!userDoc) {
-        throw new BadRequestException('User not found');
-      }
-      const userPreferences = userDoc.userPreferences;
-      return this.userRepositoryMapper.documentToEntityMapped_preferences(
-        userPreferences,
-      );
+
     } catch (error: any) {
       this.logger.error(
         'Error in updateUserPreferencesByUsername method',
@@ -321,7 +339,17 @@ export class UserRepository implements UserRepositoryInterface {
     }
   }
 
-  async save(reqUser: User, session?: ClientSession): Promise<User> {
+  async removeFriendRequest(previousNotificationId: string, userNotificationOwner: string, session: any): Promise<any> {
+    try {
+      await this.user.updateOne({ _id: userNotificationOwner }, { $pull: { friendRequests: previousNotificationId } }).session(session);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
+
+  async save(reqUser: User, session?: ClientSession): Promise<any> {
     try {
       this.logger.log('Saving User in repository');
       let finder = '';
@@ -336,6 +364,7 @@ export class UserRepository implements UserRepositoryInterface {
         lastName: reqUser.getLastName,
         finder: '',
         isActive: reqUser.getIsActive,
+        userType: reqUser.getUserType,
         contact: reqUser.getContact,
         createdTime: reqUser.getCreatedTime,
         subscriptions: reqUser.getSubscriptions,
@@ -344,12 +373,14 @@ export class UserRepository implements UserRepositoryInterface {
         board: reqUser.getBoard,
         post: reqUser.getPost,
         userRelations: reqUser.getUserRelations,
-        userType: reqUser.getUserType,
         userPreferences: reqUser.getUserPreferences,
+        notifications: reqUser.getNotifications,
+        friendRequests: reqUser.getFriendRequests,
       };
 
+
       switch (reqUser.getUserType?.toLowerCase()) {
-        case 'person':
+        case UserType.Person:
           finder = fullNameNormalization(reqUser.getName, reqUser.getLastName);
           documentToSave.finder = finder;
           return await this.savePersonalAccount(
@@ -359,7 +390,7 @@ export class UserRepository implements UserRepositoryInterface {
               session: session,
             },
           );
-        case 'business':
+        case UserType.Business:
           const cast = reqUser as UserBusiness;
           this.logger.warn(
             '--VALIDATING BUSINESS SECTOR ID: ' + cast.getSector,
@@ -391,7 +422,7 @@ export class UserRepository implements UserRepositoryInterface {
     baseObj: any,
     user: UserPerson,
     options?: { session?: ClientSession },
-  ): Promise<User> {
+  ): Promise<any> {
     const newUser = {
       ...baseObj,
       gender: user.getGender,
@@ -400,17 +431,18 @@ export class UserRepository implements UserRepositoryInterface {
     const userDocument = new this.userPersonModel(newUser);
 
     const documentSaved = await userDocument.save(options);
+    this.logger.log('Personal account created successfully: ' + documentSaved._id);
 
-    const ret = this.userRepositoryMapper.documentToEntityMapped(documentSaved);
-    this.logger.log('Personal account created successfully: ' + ret.getId);
-    return ret;
+    return documentSaved._id;
+
+
   }
 
   async saveBusinessAccount(
     baseObj: any,
     user: UserBusiness,
     options?: { session?: ClientSession },
-  ): Promise<User> {
+  ): Promise<any> {
     const newUser = {
       ...baseObj,
       sector: user.getSector,
@@ -418,10 +450,9 @@ export class UserRepository implements UserRepositoryInterface {
     };
     const userDocument = new this.userBusinessModel(newUser);
     const documentSaved = await userDocument.save(options);
+    this.logger.log('Business account created successfully: ' + documentSaved._id);
+    return documentSaved._id;
 
-    const ret = this.userRepositoryMapper.documentToEntityMapped(documentSaved);
-    this.logger.log('Business account created successfully: ' + ret.getId);
-    return ret;
   }
 
   async saveNewPost(
@@ -448,7 +479,7 @@ export class UserRepository implements UserRepositoryInterface {
       }
       this.logger.log(
         'The post was successfully saved in the user profile: ' +
-          UserRepository.name,
+        UserRepository.name,
       );
 
       return obj;

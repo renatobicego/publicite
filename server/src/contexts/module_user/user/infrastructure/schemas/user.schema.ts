@@ -1,4 +1,6 @@
-import { Schema, model, Document, SchemaTypes } from 'mongoose';
+import { Schema, model, Document } from 'mongoose';
+
+
 import { UserType } from '../../domain/entity/enum/user.enums';
 
 export interface UserPreferences {
@@ -29,6 +31,7 @@ interface IUser extends Document {
   finder: string;
   userPreferences: UserPreferences | null | undefined;
   notifications: Schema.Types.ObjectId[];
+  friendRequests: Schema.Types.ObjectId[];
 }
 
 const UserSchema = new Schema<IUser>(
@@ -58,6 +61,7 @@ const UserSchema = new Schema<IUser>(
       backgroundColor: { type: Number, default: undefined },
     },
     notifications: [{ type: Schema.Types.ObjectId, ref: 'Notification' }],
+    friendRequests: [{ type: Schema.Types.ObjectId, ref: 'Notification' }],
   },
   { discriminatorKey: 'userType', collection: 'users' },
 );

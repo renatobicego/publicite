@@ -7,11 +7,20 @@ const GROUP_NOTIFICATION_send_group = [
     'notification_group_user_request_group_invitation', // Usuario A quiere pertenecer a grupo -> 5
 ]
 
-// const GROUP_NOTIFICATION_eventTypes_send_only_user = [
-//     'notification_group_user_removed_from_group', // Te han eliminado del grupo, -> 6
-//     'notification_group_user_new_admin', // Te han convertido en administrador -> 7
-//     'notification_group_user_removed_admin', // Te han quitado el rol de administrador -> 8
-// ]
+
+const user_events = [
+    'notification_user_new_friend_request', // Usuario A le envia la nueva relación de contacto a Usuario B
+    'notification_user_friend_request_accepted', // 
+    'notification_user_friend_request_rejected', // 
+    'notification_user_new_relation_change', // Nueva relacion de amistad 
+    'notification_user_new_relation_accepted', // Usuario A acepto tu relacion de amistad
+    'notifications_user_new_relation_rejected'
+]
+
+const notification_user_new_friend_request = user_events[0]
+const notification_user_friend_request_accepted = user_events[1]
+const notification_user_new_relation_change = user_events[3]
+
 
 const MAGAZINE_NOTIFICATION_eventTypes = [
     'notification_magazine_new_user_invited', // Usuario A invita a Usuario B a colaborar en una revista
@@ -24,6 +33,7 @@ const user_acept_the_invitation = MAGAZINE_NOTIFICATION_eventTypes[1]
 const user_has_been_removed_fom_magazine = MAGAZINE_NOTIFICATION_eventTypes[3]
 
 
+// MAKE ACTIONS INACTIVE 
 const eventsThatMakeNotificationActionsInactive_GROUP = [
     'notification_group_user_rejected_group_invitation', // usuario B rechazo unirse al grupo
     'notification_group_user_rejected_group_invitation',
@@ -35,6 +45,18 @@ const eventsThatMakeNotificationActionsInactive_MAGAZINE = [
 ]
 
 
+const eventsThatMakeNotificationActionsInactive_USER = [
+    'notification_user_friend_request_accepted', // 
+    'notification_user_friend_request_rejected', // 
+    'notification_user_new_relation_accepted', // Usuario A acepto tu relacion de amistad
+    'notifications_user_new_relation_rejected'
+]
+
+
+
+
+
+
 
 enum ownerType {
     user = 'user',
@@ -43,7 +65,8 @@ enum ownerType {
 
 enum typeOfNotification {
     group_notification = 'group_notification',
-    magazine_notification = 'magazine_notification'
+    magazine_notification = 'magazine_notification',
+    user_notification = 'user_notification'
 }
 
 
@@ -73,9 +96,13 @@ export {
     ownerType,
     MAGAZINE_NOTIFICATION_eventTypes,
     GROUP_NOTIFICATION_send_group,
-    //GROUP_NOTIFICATION_eventTypes_send_only_user,
     eventsThatMakeNotificationActionsInactive_GROUP,
     eventsThatMakeNotificationActionsInactive_MAGAZINE,
+    eventsThatMakeNotificationActionsInactive_USER,
     user_acept_the_invitation,
-    user_has_been_removed_fom_magazine
+    user_has_been_removed_fom_magazine,
+    user_events,
+    notification_user_new_friend_request,
+    notification_user_new_relation_change,
+    notification_user_friend_request_accepted
 };

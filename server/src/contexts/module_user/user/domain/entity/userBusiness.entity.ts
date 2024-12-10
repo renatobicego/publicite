@@ -24,6 +24,7 @@ export class UserBusiness extends User {
       user.getIsActive,
       user.getName,
       user.getLastName,
+      user.getUserType ?? UserType.Business,
       user.getContact,
       user.getCreatedTime ?? '',
       user.getSubscriptions ?? [],
@@ -32,7 +33,6 @@ export class UserBusiness extends User {
       user.getBoard ?? undefined,
       user.getPost ?? [],
       user.getUserRelations ?? [],
-      user.getUserType ?? UserType.Business,
       user.getUserPreferences ?? {
         searchPreference: [],
         backgroundColor: undefined,

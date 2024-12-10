@@ -7,7 +7,6 @@ import { UserServiceInterface } from '../../domain/service/user.service.interfac
 import { UserMapperInterface } from '../../application/adapter/mapper/user.mapper.interface';
 import {
   UserFindAllResponse,
-  UserResponse,
 } from '../../application/adapter/dto/HTTP-RESPONSE/user.response.dto';
 import {
   UserPreferencesRequest,
@@ -15,10 +14,10 @@ import {
 } from '../../application/adapter/dto/HTTP-REQUEST/user.request.CREATE';
 import { businessAccountUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/user.business.request.UPDATE';
 import { personalAccountUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/user.personal.request.UPDATE';
-import { UserPersonalUpdateResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.personal.response.UPDATE';
-import { UserBusinessUpdateResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.business.response.UPDATE';
+
 import { UserPersonalInformationResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.information.response';
 import { UserPreferenceResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.preferences.response';
+import { UserFactory } from '../../application/service/user.factory';
 
 @Injectable()
 export class UserAdapter implements UserAdapterInterface {
@@ -30,39 +29,23 @@ export class UserAdapter implements UserAdapterInterface {
     private readonly userMapper: UserMapperInterface,
   ) { }
 
-  async createUser(req: UserRequest): Promise<UserResponse> {
-    let userMapped;
-    let userCreated;
+  async createUser(newUserRequest: UserRequest): Promise<any> {
 
-    if (!req.userType) {
+    if (!newUserRequest.userType) {
       throw new Error('Invalid user type');
     }
 
     try {
-      switch (req.userType.toLowerCase()) {
-        case 'person': {
-          this.logger.log('We are creating a persona account');
-          userMapped = this.userMapper.requestToEntity(req);
+      const factory = UserFactory.getInstance(this.logger);
+      const user = factory.createUser(newUserRequest.userType.toLowerCase(), newUserRequest);
 
-          userCreated = await this.userService.createUser(
-            userMapped,
-            req?.contact,
-          );
-          return this.userMapper.entityToResponse(userCreated);
-        }
-        case 'business': {
-          this.logger.log('We are creating a persona account');
-          userMapped = this.userMapper.requestToEntity(req);
-          userCreated = await this.userService.createUser(
-            userMapped,
-            req?.contact,
-          );
-          return this.userMapper.entityToResponse(userCreated);
-        }
-        default: {
-          throw new Error('Invalid user type');
-        }
-      }
+
+      return await this.userService.createUser(
+        user,
+        newUserRequest?.contact,
+      );
+
+
     } catch (error: any) {
       throw error;
     }
@@ -125,27 +108,26 @@ export class UserAdapter implements UserAdapterInterface {
     username: string,
     req: businessAccountUpdateRequest | personalAccountUpdateRequest,
     type: number,
-  ): Promise<UserPersonalUpdateResponse | UserBusinessUpdateResponse> {
+  ): Promise<any> {
     this.logger.log('Start udpate process in the adapter: Update');
     let userMapped;
-    let userUpdated;
     // 0 -> Personal Account | 1 -> Business Account
     if (type === 0) {
       userMapped = this.userMapper.requestToEntity_update(req, 0);
-      userUpdated = await this.userService.updateUser(
+      return await this.userService.updateUser(
         username,
         userMapped,
         type,
       );
-      return this.userMapper.entityToResponse_update(userUpdated, 0);
+
     } else if (type === 1) {
       userMapped = this.userMapper.requestToEntity_update(req, 1);
-      userUpdated = await this.userService.updateUser(
+      return await this.userService.updateUser(
         username,
         userMapped,
         type,
       );
-      return this.userMapper.entityToResponse_update(userUpdated, 1);
+
     } else {
       throw new Error('Invalid user type');
     }
@@ -154,7 +136,7 @@ export class UserAdapter implements UserAdapterInterface {
   async updateUserPreferencesByUsername(
     username: string,
     userPreference: UserPreferencesRequest,
-  ): Promise<UserPreferenceResponse | null> {
+  ): Promise<any> {
     try {
       this.logger.log(
         'Start process in the adapter: Update preferences - Sending request to the service',
@@ -167,9 +149,7 @@ export class UserAdapter implements UserAdapterInterface {
           userPreferencesMapped,
         );
       if (!userPreferencesUpdated) return null;
-      return this.userMapper.entityToResponse_userPreferences(
-        userPreferencesUpdated,
-      );
+      return userPreferencesUpdated;
     } catch (error: any) {
       throw error;
     }

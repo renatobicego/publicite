@@ -14,6 +14,8 @@ import { UserBusinessUpdateDto } from '../../domain/entity/dto/user.business.upd
 import { UserPreferencesEntityDto } from '../../domain/entity/dto/user.preferences.update.dto';
 import { UP_clerkUpdateRequestDto } from 'src/contexts/module_webhook/clerk/application/dto/UP-clerk.update.request';
 import { UserFindAllResponse } from '../adapter/dto/HTTP-RESPONSE/user.response.dto';
+import { UserType } from '../../domain/entity/enum/user.enums';
+import { UserRelation } from '../../domain/entity/userRelation.entity';
 
 @Injectable()
 export class UserService implements UserServiceInterface {
@@ -25,43 +27,63 @@ export class UserService implements UserServiceInterface {
     private readonly logger: MyLoggerService,
     @InjectConnection() private readonly connection: Connection,
   ) { }
+  async makeFriendRelationBetweenUsers(backData: { userIdFrom: string; userIdTo: string; }, typeOfRelation: string, session: any): Promise<void> {
+    try {
+      const userRelation = new UserRelation(
+        backData.userIdFrom,
+        backData.userIdTo,
+        typeOfRelation,
+        typeOfRelation,
+      )
+      return await this.userRepository.makeFriendRelationBetweenUsers(userRelation, session);
+    } catch (error: any) {
+      throw error;
+    }
+  }
 
-  async createUser(req: User, contactDto: any): Promise<User> {
-    const session = await this.connection.startSession();
-    session.startTransaction();
-    let user: User;
+
+
+  async createUser(userEntity: User, contactDto: any): Promise<string> {
     this.logger.log(
       'Creating ACCOUNT -> start process in the service: ' + UserService.name,
     );
-    try {
-      const contactId = await this.createContact(contactDto, {
-        session,
-      });
-      req.setContact(contactId as unknown as ObjectId);
-      switch (req.getUserType?.toLowerCase()) {
-        case 'person':
-          this.logger.log('We are creating a persona account');
-          this.logger.log(
-            'Creating PERSONAL ACCOUNT with username: ' + req.getUsername,
-          );
+    let userId: string;
+    const session = await this.connection.startSession();
 
-          user = await this.userRepository.save(req, session);
-          await session.commitTransaction();
-          await session.endSession();
-          return user;
-        case 'business':
-          this.logger.log(
-            'Creating BUSINESS ACCOUNT with username: ' + req.getUsername,
-          );
-          user = await this.userRepository.save(req, session);
-          await session.commitTransaction();
-          await session.endSession();
-          return user;
-        default:
-          throw new BadRequestException('Invalid user type');
-      }
+
+    try {
+      userId = await session.withTransaction(async () => {
+        const contactId = await this.createContact(contactDto, session);
+        userEntity.setContact(contactId as unknown as ObjectId);
+
+        switch (userEntity.getUserType?.toLowerCase()) {
+          case UserType.Person:
+            this.logger.log(
+              'Creating PERSONAL ACCOUNT with username: ' + userEntity.getUsername,
+            );
+
+            return await this.userRepository.save(userEntity, session);
+
+          case UserType.Business:
+            this.logger.log(
+              'Creating BUSINESS ACCOUNT with username: ' + userEntity.getUsername,
+            );
+
+            return await this.userRepository.save(userEntity, session);
+
+          default:
+            throw new BadRequestException('Invalid user type');
+        }
+      });
+
+
+      return userId;
+
     } catch (error) {
-      await session.abortTransaction();
+      if (session.inTransaction()) {
+        await session.abortTransaction();
+      }
+
       this.logger.error('Error in service. The user has not been created');
       this.logger.error(error);
       throw error;
@@ -72,10 +94,10 @@ export class UserService implements UserServiceInterface {
 
   async createContact(
     contactDto: ContactRequest,
-    options?: { session?: ClientSession },
+    session: any,
   ): Promise<Types.ObjectId> {
     try {
-      return await this.contactService.createContact(contactDto, options);
+      return await this.contactService.createContact(contactDto, session);
     } catch (error: any) {
       throw error;
     }
@@ -139,6 +161,7 @@ export class UserService implements UserServiceInterface {
     }
   }
 
+
   async pushNotificationToUserArrayNotifications(
     notification: Types.ObjectId,
     userId: string,
@@ -153,6 +176,26 @@ export class UserService implements UserServiceInterface {
       throw error;
     }
   }
+  async pushNewFriendRequestOrRelationRequestToUser(notificationId: Types.ObjectId, userNotificationOwner: string, session: any): Promise<any> {
+    try {
+      this.logger.log(
+        'Notification received in the service: ' + UserService.name,
+      );
+
+      await this.userRepository.pushNewFriendRequestOrRelationRequestToUser(notificationId, userNotificationOwner, session);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  async removeFriendRequest(previousNotificationId: string, userNotificationOwner: string, session: any) {
+    try {
+      await this.userRepository.removeFriendRequest(previousNotificationId, userNotificationOwner, session);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
 
   async updateUserPreferencesByUsername(
     username: string,
@@ -207,4 +250,6 @@ export class UserService implements UserServiceInterface {
       throw error;
     }
   }
+
+
 }

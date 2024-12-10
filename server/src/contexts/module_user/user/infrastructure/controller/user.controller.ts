@@ -29,11 +29,7 @@ import {
   UserBusinessRequestDto_SWAGGER,
   UserBusinessResponseDto_SWAGGER,
 } from './swagger/user.business.dto.swagger';
-import {
-  UserBusinessResponse,
-  UserPersonResponse,
-  UserResponse,
-} from '../../application/adapter/dto/HTTP-RESPONSE/user.response.dto';
+
 import { PersonalUpdateRequest_SWAGGER } from './swagger/update/UP-publicite.update.request';
 import { personalAccountUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/user.personal.request.UPDATE';
 import { BusinessUpdateRequest_SWAGGER } from './swagger/update/UB-publicite.update.request';
@@ -46,6 +42,7 @@ import { businessAccountUpdateRequest } from '../../application/adapter/dto/HTTP
 import { UserPreferenceResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.preferences.response';
 import { UserPreferencesDto_SWAGGER } from './swagger/user.preferences.dto.swagger';
 import { UserFindAllResponseDto_SWAGGER } from './swagger/user.findAll.response.swagger';
+import { UserBusinessResponse, UserPersonResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.response.dto';
 
 @ApiTags('Accounts')
 @Controller('user')
@@ -70,7 +67,7 @@ export class UserController {
   @ApiBody({ type: UserPersonRequestDto_SWAGGER })
   async createPersonalAccount(
     @Body() requesNewtUser: UserPersonRequest,
-  ): Promise<UserResponse> {
+  ): Promise<string> {
     try {
       return await this.userAdapter.createUser(requesNewtUser);
     } catch (error: any) {
@@ -92,11 +89,11 @@ export class UserController {
   @ApiBody({ type: UserBusinessRequestDto_SWAGGER })
   async createBusinessAccount(
     @Body() requestNewUser: UserBusinessRequest,
-  ): Promise<UserResponse> {
+  ): Promise<string> {
     try {
-      return (await this.userAdapter.createUser(
+      return await this.userAdapter.createUser(
         requestNewUser,
-      )) as unknown as UserBusinessResponse;
+      )
     } catch (error: any) {
       throw error;
     }
@@ -120,7 +117,7 @@ export class UserController {
   async updatePersonalAccount(
     @Body() updateRequest: personalAccountUpdateRequest,
     @Param('username') username: string,
-  ): Promise<UserPersonResponse> {
+  ): Promise<any> {
     try {
       return (await this.userAdapter.updateUser(
         username,
@@ -147,7 +144,7 @@ export class UserController {
   async updateBusinessAccount(
     @Body() updateRequest: businessAccountUpdateRequest,
     @Param('username') username: string,
-  ): Promise<UserBusinessResponse> {
+  ): Promise<any> {
     try {
       return (await this.userAdapter.updateUser(
         username,

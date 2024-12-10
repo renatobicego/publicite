@@ -1,38 +1,36 @@
 import { Notification } from "./notification.entity";
 
+export enum UserRelationType {
+    topfriends = "topfriends",
+    friends = "friends",
+    contact = "contact"
+}
 
-export class NotificationMagazine extends Notification {
+
+export class NotificationUser extends Notification {
     private frontData: {
-        magazine: {
-            _id: string;
-            name: string;
-            ownerType: string;
-            groupInviting?: {
-                _id: string;
-                name: string;
-            };
-            userInviting?: {
+        userRelation: {
+            userFrom: {
                 _id: string;
                 username: string;
+                profilePhotoUrl: string;
+                profileUrl: string
             };
+            typeRelation: UserRelationType | null;
         }
     };
 
     constructor(
         notification: Notification,
         frontData: {
-            magazine: {
-                _id: string;
-                name: string;
-                ownerType: string;
-                groupInviting?: {
-                    _id: string;
-                    name: string;
-                };
-                userInviting?: {
+            userRelation: {
+                userFrom: {
                     _id: string;
                     username: string;
+                    profilePhotoUrl: string;
+                    profileUrl: string;
                 };
+                typeRelation: UserRelationType | null;
             }
         }
     ) {
@@ -51,6 +49,10 @@ export class NotificationMagazine extends Notification {
 
     get getFrontData() {
         return this.frontData
+    }
+
+    get getTypeOfRelation(): UserRelationType {
+        return this.frontData.userRelation.typeRelation ?? UserRelationType.contact;
     }
 
 

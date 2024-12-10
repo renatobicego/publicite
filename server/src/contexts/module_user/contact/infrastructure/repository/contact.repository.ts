@@ -16,7 +16,7 @@ export class ContactRepository implements ContactRepositoryInterface {
 
   async createContact(
     contact: Contact,
-    options?: { session?: ClientSession },
+    session: any,
   ): Promise<Types.ObjectId> {
     const createdContact = new this.contactModel({
       phone: contact.getPhone(),
@@ -25,7 +25,7 @@ export class ContactRepository implements ContactRepositoryInterface {
       x: contact.getX(),
       website: contact.getWebsite(),
     });
-    await createdContact.save({ session: options?.session });
+    await createdContact.save({ session: session });
     return createdContact._id;
   }
 

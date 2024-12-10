@@ -1,4 +1,4 @@
-import { ClientSession, ObjectId } from 'mongoose';
+import { ClientSession, ObjectId, Types } from 'mongoose';
 import { User, UserPreferences } from '../entity/user.entity';
 import { UserPerson } from '../entity/userPerson.entity';
 import { UserBusiness } from '../entity/userBusiness.entity';
@@ -8,6 +8,7 @@ import { UserPreferencesEntityDto } from '../entity/dto/user.preferences.update.
 import { UP_clerkUpdateRequestDto } from 'src/contexts/module_webhook/clerk/application/dto/UP-clerk.update.request';
 import { UserClerkUpdateDto } from '../entity/dto/user.clerk.update.dto';
 import { UserFindAllResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.response.dto';
+import { UserRelation } from '../entity/userRelation.entity';
 
 export interface UserRepositoryInterface {
 
@@ -31,8 +32,9 @@ export interface UserRepositoryInterface {
 
 
   pushNotification(notification: any, userId: string, session?: any): Promise<any>;
+  pushNewFriendRequestOrRelationRequestToUser(notificationId: Types.ObjectId, userNotificationOwner: string, session: any): Promise<any>
 
-  save(reqUser: User, session?: ClientSession): Promise<User>;
+  save(reqUser: User, session?: ClientSession): Promise<string>;
 
   saveBusinessAccount(
     baseObj: any,
@@ -46,17 +48,19 @@ export interface UserRepositoryInterface {
     options?: { session?: ClientSession },
   ): Promise<any>;
 
+  removeFriendRequest(previousNotificationId: string, userNotificationOwner: string, session: any): Promise<any>
   savePersonalAccount(
     baseObj: any,
     user: UserPerson,
     options?: { session?: ClientSession },
   ): Promise<User>;
-
+  makeFriendRelationBetweenUsers(userRelation: UserRelation, session: any): Promise<void>
   update(
     username: string,
     reqUser: UserPersonalUpdateDto | UserBusinessUpdateDto,
     type: number,
   ): Promise<UserPersonalUpdateDto | UserBusinessUpdateDto>;
+
 
   updateByClerkId(
     clerkId: string,

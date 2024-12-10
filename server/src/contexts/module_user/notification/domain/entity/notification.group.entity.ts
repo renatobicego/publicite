@@ -36,7 +36,7 @@ export class NotificationGroup extends Notification {
             notification.getbackData,
             notification.getSocketJobId,
             notification.getType,
-            notification.getpreviousNotificationIdId as string
+            notification.getpreviousNotificationId as string
         );
         this.frontData = frontData;
     }

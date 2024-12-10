@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { ClientSession, Types } from 'mongoose';
+import { Types } from 'mongoose';
 
 import { ContactServiceInterface } from '../../domain/service/contact.service.interface';
 import { ContactRepositoryInterface } from '../../domain/repository/contact.repository.interface';
@@ -27,7 +27,7 @@ export class ContactService implements ContactServiceInterface {
 
   async createContact(
     contact: ContactRequest,
-    options?: { session?: ClientSession },
+    session: any,
   ): Promise<Types.ObjectId> {
     try {
       this.logger.log('Creating contact in service: ' + ContactService.name);
@@ -38,7 +38,7 @@ export class ContactService implements ContactServiceInterface {
         contact.x ?? '',
         contact.website ?? '',
       );
-      return await this.contactRepository.createContact(contactMapped, options);
+      return await this.contactRepository.createContact(contactMapped, session);
     } catch (error) {
       throw error;
     }

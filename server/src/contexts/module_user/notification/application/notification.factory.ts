@@ -4,6 +4,7 @@ import { Notification } from "../domain/entity/notification.entity";
 import { NotificationFactoryInterface } from "../domain/notification-factory/notification.factory.interface";
 import { NotificationGroup } from "../domain/entity/notification.group.entity";
 import { NotificationMagazine } from "../domain/entity/notification.magazine.entity";
+import { NotificationUser } from "../domain/entity/notification.user.entity";
 
 export class NotificationFactory implements NotificationFactoryInterface {
 
@@ -40,6 +41,9 @@ export class NotificationFactory implements NotificationFactoryInterface {
             case typeOfNotification.magazine_notification:
 
                 return new NotificationMagazine(baseNotification, frontData);
+            case typeOfNotification.user_notification:
+
+                return new NotificationUser(baseNotification, frontData);
 
             default:
                 throw new Error("Tipo de notificación no reconocido");
@@ -54,9 +58,8 @@ export class NotificationFactory implements NotificationFactoryInterface {
         socketJobId: string,
         type: string,
         previousNotificationId: string;
-    } { 
+    } {
 
-        console.log(notificationBody)
         const { event, viewed, date, backData, socketJobId, type, previousNotificationId } = notificationBody;
 
 

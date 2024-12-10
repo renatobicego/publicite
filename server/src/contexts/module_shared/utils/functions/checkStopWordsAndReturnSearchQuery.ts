@@ -48,6 +48,7 @@ function checkStopWordsAndReturnSearchQuery(searchTerm: string, searchType: stri
         )
         .join('.*?');
 
+    console.log(textSearchQuery)
     return textSearchQuery;
 
 

@@ -28,6 +28,7 @@ export class User {
   private userType?: UserType;
   private userPreferences?: UserPreferences;
   private notifications?: any[];
+  private friendRequests?: any[];
 
   constructor(
     clerkId: string,
@@ -39,6 +40,7 @@ export class User {
     isActive: boolean,
     name: string,
     lastName: string,
+    userType: UserType,
     contact?: ObjectId,
     createdTime?: string,
     subscriptions?: ObjectId[],
@@ -47,10 +49,10 @@ export class User {
     board?: ObjectId | undefined,
     posts?: ObjectId[],
     userRelations?: ObjectId[],
-    userType?: UserType,
     userPreferences?: UserPreferences,
     _id?: ObjectId,
     notifications?: any[],
+    friendRequests?: any[],
   ) {
     this.clerkId = clerkId;
     this.email = email;
@@ -61,6 +63,7 @@ export class User {
     this.isActive = isActive;
     this.name = name;
     this.lastName = lastName;
+    this.userType = userType;
     this.contact = contact;
     this.createdTime = createdTime;
     this.subscriptions = subscriptions ?? [];
@@ -69,17 +72,24 @@ export class User {
     this.board = board ?? undefined;
     this.posts = posts ?? [];
     this.userRelations = userRelations ?? [];
-    this.userType = userType ?? UserType.Person;
     this.userPreferences = userPreferences ?? {
       searchPreference: [],
       backgroundColor: undefined,
     };
     this._id = _id;
     this.notifications = notifications ?? [];
+    this.friendRequests = friendRequests ?? [];
   }
 
   setContact(contact: ObjectId) {
     this.contact = contact;
+  }
+
+  get getNotifications() {
+    return this.notifications;
+  }
+  get getFriendRequests() {
+    return this.friendRequests;
   }
 
   get getId() {

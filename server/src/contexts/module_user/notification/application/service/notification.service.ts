@@ -8,7 +8,7 @@ import { UserServiceInterface } from "src/contexts/module_user/user/domain/servi
 import { NotificationGroup } from "../../domain/entity/notification.group.entity";
 
 import { NotificationGroupServiceInterface } from "../../domain/service/notification.group.service.interface";
-import { eventsThatMakeNotificationActionsInactive_GROUP, eventsThatMakeNotificationActionsInactive_MAGAZINE, GROUP_NOTIFICATION_send_group, memberForDeleteData, newMemberData, ownerType, typeOfNotification, user_acept_the_invitation, user_has_been_removed_fom_magazine } from "src/contexts/module_user/notification/domain/allowed-events/allowed.events.notifications";
+import { eventsThatMakeNotificationActionsInactive_GROUP, eventsThatMakeNotificationActionsInactive_MAGAZINE, eventsThatMakeNotificationActionsInactive_USER, GROUP_NOTIFICATION_send_group, memberForDeleteData, newMemberData, notification_user_friend_request_accepted, notification_user_new_friend_request, notification_user_new_relation_change, ownerType, typeOfNotification, user_acept_the_invitation, user_has_been_removed_fom_magazine } from "src/contexts/module_user/notification/domain/allowed-events/allowed.events.notifications";
 import { GroupServiceInterface } from "src/contexts/module_group/group/domain/service/group.service.interface";
 import { NotificationMagazineServiceInterface } from "../../domain/service/notification.magazine.service.interface";
 import { NotificationMagazine } from "../../domain/entity/notification.magazine.entity";
@@ -16,11 +16,13 @@ import { NotificationFactory } from "../notification.factory";
 import { MagazineServiceInterface } from "src/contexts/module_magazine/magazine/domain/service/magazine.service.interface";
 import { NotificationServiceInterface } from "../../domain/service/notification.service.interface";
 import { GROUP_notification_graph_model_get_all } from "../dtos/getAll.notification.dto";
+import { NotificationUserServiceInterface } from "../../domain/service/notification.user.service.interface";
+import { NotificationUser } from "../../domain/entity/notification.user.entity";
 
 
 
 
-export class NotificationService implements NotificationGroupServiceInterface, NotificationMagazineServiceInterface, NotificationServiceInterface {
+export class NotificationService implements NotificationGroupServiceInterface, NotificationMagazineServiceInterface, NotificationServiceInterface, NotificationUserServiceInterface {
 
     constructor(
         private readonly logger: MyLoggerService,
@@ -40,6 +42,7 @@ export class NotificationService implements NotificationGroupServiceInterface, N
     ) {
 
     }
+
 
 
     private async addNewMemberToMagazine(newMemberData: newMemberData, session: any) {
@@ -130,11 +133,24 @@ export class NotificationService implements NotificationGroupServiceInterface, N
         }
     }
 
+    async handleUserNotificationAndCreateIt(notificationBody: any): Promise<void> {
+
+        try {
+            const factory = NotificationFactory.getInstance(this.logger);
+            const notificationUser = factory.createNotification(typeOfNotification.user_notification, notificationBody);
+            await this.saveNotificationUserAndSentToUser(notificationUser as NotificationUser);
+
+        } catch (error: any) {
+            throw error;
+        }
+    }
+
+
 
     async saveNotificationGroupAndSentToUserAndGroup(notificationGroup: NotificationGroup): Promise<any> {
 
         const event: string = notificationGroup.getEvent;
-        const userIdToSendNotification = notificationGroup.getUser;
+        const userNotificationOwner = notificationGroup.getUser;
         const session = await this.connection.startSession();
         let notificationId: Types.ObjectId;
 
@@ -148,7 +164,7 @@ export class NotificationService implements NotificationGroupServiceInterface, N
 
                 if (eventsThatMakeNotificationActionsInactive_GROUP.includes(event)) {
                     this.logger.log('Setting notification actions to false');
-                    const previousNotificationId = notificationGroup.getpreviousNotificationIdId;
+                    const previousNotificationId = notificationGroup.getpreviousNotificationId;
                     if (!previousNotificationId) {
                         throw new Error('previousNotificationId not found, please send it')
                     }
@@ -166,7 +182,7 @@ export class NotificationService implements NotificationGroupServiceInterface, N
                     );
                 }
 
-                await this.userService.pushNotificationToUserArrayNotifications(notificationId, userIdToSendNotification, session);
+                await this.userService.pushNotificationToUserArrayNotifications(notificationId, userNotificationOwner, session);
             });
         } catch (error: any) {
             this.logger.error('An error occurred while sending notification');
@@ -181,14 +197,14 @@ export class NotificationService implements NotificationGroupServiceInterface, N
             const event = notificationMagazine.getEvent;
             const magazineId = notificationMagazine.getFrontData.magazine._id;
             const magazineType = notificationMagazine.getFrontData.magazine.ownerType;
-            const userIdToSendNotification = notificationMagazine.getUser
+            const userNotificationOwner = notificationMagazine.getUser
             const session = await this.connection.startSession();
 
             await session.withTransaction(async () => {
                 const notificationId = await this.notificationRepository.saveMagazineNotification(notificationMagazine, session);
 
                 if (eventsThatMakeNotificationActionsInactive_MAGAZINE.includes(event)) {
-                    const previousNotificationId = notificationMagazine.getpreviousNotificationIdId;
+                    const previousNotificationId = notificationMagazine.getpreviousNotificationId;
                     if (!previousNotificationId) {
                         throw new Error('previousNotificationId not found, please send it')
                     }
@@ -220,9 +236,62 @@ export class NotificationService implements NotificationGroupServiceInterface, N
                 }
 
 
-                await this.userService.pushNotificationToUserArrayNotifications(notificationId, userIdToSendNotification, session);
+                await this.userService.pushNotificationToUserArrayNotifications(notificationId, userNotificationOwner, session);
             })
 
+
+        } catch (error: any) {
+            throw error;
+        }
+    }
+
+    async saveNotificationUserAndSentToUser(notificationUser: NotificationUser): Promise<any> {
+        /*
+        TO DO:
+        1) crear y guardar la notificacion 
+        2) pushear la notificacion al array de notificaciones del user
+        
+        Segun el evento
+        1) Si el evento es una nueva solicitud de contacto, deberiamos pushear la solicitud al array de solicitudes de amistad del user
+        2) Si el evento es una solicitud rechazada deberiamos sacarla del array de solicitudes de amistad del user y tambien bloquear las actions en la notificacion
+        3) Si el evento es una solicitud aceptada deberiamos sacarla del array de solicitudes de amistad del user y bloquear las actions de la notificacion
+        
+        
+        */
+
+        try {
+            const session = await this.connection.startSession();
+            const event = notificationUser.getEvent;
+            const userIdFrom = notificationUser.getbackData.userIdFrom;
+            const userIdTo = notificationUser.getbackData.userIdTo;
+
+            await session.withTransaction(async () => {
+                const notificationId = await this.notificationRepository.saveUserNotification(notificationUser, session);
+
+                if (eventsThatMakeNotificationActionsInactive_USER.includes(event)) {
+                    const previousNotificationId = notificationUser.getpreviousNotificationId;
+                    if (!previousNotificationId) {
+                        throw new Error(`EVENT: ${event} require previousNotificationId, please send it and try again, `)
+                    }
+                    await this.notificationRepository.setNotificationActionsToFalseById(previousNotificationId, session)
+                    await this.userService.removeFriendRequest(previousNotificationId, userIdFrom, session)
+
+                }
+
+                if (event === notification_user_new_friend_request || event === notification_user_new_relation_change) {
+                    await this.userService.pushNewFriendRequestOrRelationRequestToUser(notificationId, userIdTo, session)
+                }
+
+                if (event === notification_user_friend_request_accepted) {
+
+                    await this.userService.makeFriendRelationBetweenUsers(notificationUser.getbackData, notificationUser.getTypeOfRelation, session)
+
+                }
+
+                await this.userService.pushNotificationToUserArrayNotifications(notificationId, userIdTo, session);
+
+
+            })
 
         } catch (error: any) {
             throw error;

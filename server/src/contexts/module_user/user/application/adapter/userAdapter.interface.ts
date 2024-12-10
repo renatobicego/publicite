@@ -7,11 +7,10 @@ import { UserPersonalInformationResponse } from './dto/HTTP-RESPONSE/user.inform
 import { UserPersonalUpdateResponse } from './dto/HTTP-RESPONSE/user.personal.response.UPDATE';
 import {
   UserFindAllResponse,
-  UserResponse,
 } from './dto/HTTP-RESPONSE/user.response.dto';
 
 export interface UserAdapterInterface {
-  createUser(req: UserRequest): Promise<UserResponse>;
+  createUser(req: UserRequest): Promise<string>;
 
   findAllUsers(
     user: string,

@@ -10,6 +10,7 @@ export interface UserResponse {
   profilePhotoUrl: string;
   countryRegion: string;
   isActive: boolean;
+  userType: string;
   contact: ObjectId;
   createdTime: string;
   subscriptions: ObjectId[];
@@ -18,13 +19,15 @@ export interface UserResponse {
   board: ObjectId | undefined;
   posts: ObjectId[];
   userRelations: ObjectId[];
-  userType: string;
   name: string;
   lastName: string;
   userPreferences: {
     searchPreference: ObjectId[];
     backgroundColor: number;
   };
+  notifications: any[];
+  friendRequests: any[];
+
 }
 
 export interface UserPersonResponse extends UserResponse {

@@ -9,7 +9,10 @@ import { UP_clerkUpdateRequestDto } from 'src/contexts/module_webhook/clerk/appl
 import { UserFindAllResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.response.dto';
 
 export interface UserServiceInterface {
-  createUser(req: User, contactDto: ContactRequest): Promise<User>;
+
+
+
+  createUser(req: User, contactDto: ContactRequest): Promise<string>;
   createContact(
     contactDto: ContactRequest,
     options?: { session?: ClientSession },
@@ -27,8 +30,9 @@ export interface UserServiceInterface {
   getUserPreferencesByUsername(
     username: string,
   ): Promise<UserPreferences | null>;
+  makeFriendRelationBetweenUsers(backData: { userIdFrom: string, userIdTo: string }, typeOfRelation: string, session: any): Promise<void>
 
-
+  pushNewFriendRequestOrRelationRequestToUser(notificationId: Types.ObjectId, userNotificationOwner: string, session: any): Promise<any>
   pushNotificationToUserArrayNotifications(notificationId: Types.ObjectId, userIdTo: string, session?: any): Promise<any>;
   updateUser(
     username: string,
@@ -47,4 +51,7 @@ export interface UserServiceInterface {
     authorId: ObjectId,
     options?: { session?: ClientSession },
   ): Promise<any>;
+
+  removeFriendRequest(previousNotificationId: string, userNotificationOwner: string, session: any): Promise<any>
+
 }

@@ -22,6 +22,7 @@ export class UserPerson extends User {
       user.getIsActive,
       user.getName,
       user.getLastName,
+      user.getUserType ?? UserType.Person,
       user.getContact,
       user.getCreatedTime ?? '',
       user.getSubscriptions ?? [],
@@ -30,12 +31,13 @@ export class UserPerson extends User {
       user.getBoard ?? undefined,
       user.getPost ?? [],
       user.getUserRelations ?? [],
-      user.getUserType ?? UserType.Person,
       user.getUserPreferences ?? {
         searchPreference: [],
         backgroundColor: undefined,
       },
       user.getId,
+      user.getNotifications,
+      user.getFriendRequests,
     );
     this.gender = gender;
     this.birthDate = birthDate;

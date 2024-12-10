@@ -5,7 +5,7 @@ import { UpdateContactRequest } from '../../application/adapter/dto/HTTP-REQUEST
 export interface ContactServiceInterface {
   createContact(
     contact: ContactRequest,
-    options?: { session?: ClientSession },
+    session: any,
   ): Promise<Types.ObjectId>;
   updateContact(contactId: string, updateRequest: UpdateContactRequest): Promise<void>;
 

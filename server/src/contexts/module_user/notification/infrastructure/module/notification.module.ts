@@ -10,6 +10,7 @@ import { NotificationMagazineModel } from "../schemas/notification.magazine.sche
 import { MagazineModule } from "src/contexts/module_magazine/magazine/infrastructure/module/magazine.module";
 import { NotificationAdapter } from "../adapter/notification.adapter";
 import { NotificationResolver } from "../resolver/notification.resolver";
+import { NotificationUserModel } from "../schemas/notification.user.schema";
 
 @Module({
     imports: [
@@ -20,6 +21,7 @@ import { NotificationResolver } from "../resolver/notification.resolver";
                 discriminators: [
                     { name: NotificationGroupModel.modelName, schema: NotificationGroupModel.schema },
                     { name: NotificationMagazineModel.modelName, schema: NotificationMagazineModel.schema },
+                    { name: NotificationUserModel.modelName, schema: NotificationUserModel.schema },
                 ],
             },
         ]),
@@ -36,14 +38,17 @@ import { NotificationResolver } from "../resolver/notification.resolver";
         {
             provide: 'NotificationMagazineServiceInterface',
             useClass: NotificationService,
+        },
+        {
+            provide: 'NotificationUserServiceInterface',
+            useClass: NotificationService,
         }, {
             provide: 'NotificationRepositoryInterface',
             useClass: NotificationRepository
         }, {
             provide: 'NotificationAdapterInterface',
             useClass: NotificationAdapter
-        }
-        , {
+        }, {
             provide: 'NotificationServiceInterface',
             useClass: NotificationService
         }
@@ -52,6 +57,7 @@ import { NotificationResolver } from "../resolver/notification.resolver";
     exports: [
         'NotificationGroupServiceInterface',
         'NotificationMagazineServiceInterface',
+        'NotificationUserServiceInterface',
         'NotificationRepositoryInterface'
     ]
 })
