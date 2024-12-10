@@ -59,9 +59,9 @@ const UserInfo = ({
             <ContactPetitionsList userId={user._id} />
           ) : (
             <SendRequest
-            variant="solid"
-            removeMargin={false}
-            idToSendRequest={user._id}
+              variant="solid"
+              removeMargin={false}
+              idToSendRequest={user._id}
             />
           )}
           {user.contact && <SocialMedia contact={user.contact} />}

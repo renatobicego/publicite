@@ -85,6 +85,14 @@ export const getAllNotificationsQuery = gql`
               username
             }
           }
+          userRelation{
+            userFrom {
+              _id
+              username
+              profilePhotoUrl
+            }
+            typeRelation
+          }
           magazine {
             _id
             groupInviting {

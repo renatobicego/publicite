@@ -49,7 +49,12 @@ const UserRelationNotificationCard = ({
         label: "Aceptar Solicitud",
         onPress: async () => {
           const socket = await updateSocketToken();
-          notificationMessage.acceptAction?.(socket, backData.userIdFrom, _id);
+          notificationMessage.acceptAction?.(
+            socket,
+            backData.userIdFrom,
+            typeRelation,
+            _id
+          );
           setIsActionSent(true);
         },
       });
@@ -77,7 +82,12 @@ const UserRelationNotificationCard = ({
         color: "danger",
         onPress: async () => {
           const socket = await updateSocketToken();
-          notificationMessage.rejectAction?.(socket, backData.userIdFrom, _id);
+          notificationMessage.rejectAction?.(
+            socket,
+            backData.userIdFrom,
+            typeRelation,
+            _id
+          );
           setIsActionSent(true);
         },
       });
