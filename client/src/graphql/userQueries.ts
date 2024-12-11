@@ -56,6 +56,27 @@ const getUserByUsernameQuery = gql`
           }
         }
       }
+      userRelations {
+        _id
+        typeRelationA
+        typeRelationB
+        userA
+        userB
+      }
+      friendRequests {
+        event
+        _id
+        frontData {
+          userRelation {
+            typeRelation
+            userFrom {
+              _id
+              profilePhotoUrl
+              username
+            }
+          }
+        }
+      }
     }
   }
 `;
@@ -85,7 +106,7 @@ export const getAllNotificationsQuery = gql`
               username
             }
           }
-          userRelation{
+          userRelation {
             userFrom {
               _id
               username
