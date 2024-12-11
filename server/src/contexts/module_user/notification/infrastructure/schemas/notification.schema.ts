@@ -13,9 +13,10 @@ export interface NotificationDocument extends Document {
         userIdTo: string;
         userIdFrom: string;
     }
-    socketJobId: string
-    type: string
-    previousNotificationId: string
+    socketJobId: string;
+    type: string;
+    notificationEntityId: string;
+    previousNotificationId: string;
 
 }
 
@@ -36,6 +37,9 @@ export const NotificationSchema = new Schema<NotificationDocument>({
     type: {
         type: String, required: true
     },
+    notificationEntityId: {
+        type: String, required: true
+    },
     previousNotificationId: {
         type: String, default: null
     }
@@ -49,5 +53,6 @@ export const NotificationSchema = new Schema<NotificationDocument>({
 
 const NotificationModel = model<NotificationDocument>('notification', NotificationSchema);
 NotificationSchema.index({ viewed: 1 });
+NotificationSchema.index({ notificationEntityId: 1 });
 
 export default NotificationModel;

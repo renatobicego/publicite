@@ -895,7 +895,6 @@ export class GroupRepository implements GroupRepositoryInterface {
     try {
       let userNotificationMap = new Map<string, string>();
       userNotificationMap.set(userId, notificationId);
-      console.log(userId)
       const result = await this.groupModel
         .updateOne(
           { _id: groupId },

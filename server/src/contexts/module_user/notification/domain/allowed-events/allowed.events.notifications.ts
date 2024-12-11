@@ -7,6 +7,8 @@ const GROUP_NOTIFICATION_send_group = [
     'notification_group_user_request_group_invitation', // Usuario A quiere pertenecer a grupo -> 5
 ]
 
+const notification_group_new_user_invited = GROUP_NOTIFICATION_send_group[0]
+
 
 const user_events = [
     'notification_user_new_friend_request', // Usuario A le envia la nueva relación de contacto a Usuario B
@@ -28,7 +30,7 @@ const MAGAZINE_NOTIFICATION_eventTypes = [
     'notification_magazine_rejected', // Usuario B la rechaza
     'notification_magazine_user_has_been_removed', // Te han eliminado de la revista
 ]
-
+const notification_magazine_new_user_invited = MAGAZINE_NOTIFICATION_eventTypes[0]
 const user_acept_the_invitation = MAGAZINE_NOTIFICATION_eventTypes[1]
 const user_has_been_removed_fom_magazine = MAGAZINE_NOTIFICATION_eventTypes[3]
 
@@ -104,5 +106,7 @@ export {
     user_events,
     notification_user_new_friend_request,
     notification_user_new_relation_change,
-    notification_user_friend_request_accepted
+    notification_user_friend_request_accepted,
+    notification_group_new_user_invited,
+    notification_magazine_new_user_invited
 };

@@ -354,13 +354,7 @@ export class GroupService implements GroupServiceInterface {
       [
         'notification_group_user_accepted',
         async () => { return }
-        // async () =>
-        //   await this.groupRepository.acceptJoinGroupRequestAndRemoveUserFromJoinRequest(
-        //     userIdTo,
-        //     groupId,
-        //     userIdFrom,
-        //     session,
-        //   ),
+
       ],
       [
         'notification_group_user_rejected',

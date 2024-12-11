@@ -104,16 +104,44 @@ export class NotificationRepository implements NotificationRepositoryInterface {
         }
     }
 
-
-    async setNotificationActionsToFalseById(id: string, session: any): Promise<void> {
+    async isThisNotificationDuplicate(notificationEntityId: string): Promise<boolean> {
         try {
-            await this.notificationBaseDocument.updateOne({ _id: id },
-                { $set: { isActionsAvailable: false } }, { session });
+            const notif_found = await this.notificationBaseDocument.exists({ notificationEntityId });
+            if (notif_found) {
+                return true
+            }
+            return false
         } catch (error: any) {
             throw error;
         }
-
     }
+
+    async setNotificationActionsToFalseById(id: string, session: any): Promise<void> {
+        try {
+            await this.notificationBaseDocument.updateOne(
+                { _id: id },
+                [
+                    {
+                        $set: {
+                            isActionsAvailable: false,
+                            notificationEntityId: {
+                                $concat: [
+                                    "$event",
+                                    "$backData.userIdTo",
+                                    "$backData.userIdFrom",
+                                    { $toString: false }
+                                ]
+                            }
+                        }
+                    }
+                ],
+                { session }
+            );
+        } catch (error: any) {
+            throw error;
+        }
+    }
+
 
 
 
@@ -139,7 +167,7 @@ export class NotificationRepository implements NotificationRepositoryInterface {
             const userNotification = new this.notificationUserDocument(notification);
 
             const userNotificationSave = await userNotification.save({ session });
-        
+
             return userNotificationSave._id;
         } catch (error: any) {
             this.logger.error('An error occurred while saving notification', error.message);

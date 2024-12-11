@@ -1,4 +1,6 @@
-import { Model, Schema, Types } from "mongoose";
+import { Types } from "mongoose";
+
+
 import { NotificationGroup } from "../entity/notification.group.entity";
 import { NotificationMagazine } from "../entity/notification.magazine.entity";
 import { GROUP_notification_graph_model_get_all } from "../../application/dtos/getAll.notification.dto";
@@ -11,7 +13,7 @@ export interface NotificationRepositoryInterface {
     saveMagazineNotification(notification: NotificationMagazine, session?: any): Promise<Types.ObjectId>;
     saveUserNotification(notification: NotificationUser, session?: any): Promise<Types.ObjectId>;
     setNotificationActionsToFalseById(id: string, session?: any): Promise<void>
-
+    isThisNotificationDuplicate(notificationEntityId: string): Promise<boolean>;
     getAllNotificationsFromUserById(
         id: string,
         limit: number,
