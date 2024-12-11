@@ -8,7 +8,7 @@ import { UserServiceInterface } from "src/contexts/module_user/user/domain/servi
 import { NotificationGroup } from "../../domain/entity/notification.group.entity";
 
 import { NotificationGroupServiceInterface } from "../../domain/service/notification.group.service.interface";
-import { eventsThatMakeNotificationActionsInactive_GROUP, eventsThatMakeNotificationActionsInactive_MAGAZINE, eventsThatMakeNotificationActionsInactive_USER, GROUP_NOTIFICATION_send_group, memberForDeleteData, newMemberData, notification_user_friend_request_accepted, notification_user_new_friend_request, notification_user_new_relation_change, ownerType, typeOfNotification, user_acept_the_invitation, user_has_been_removed_fom_magazine } from "src/contexts/module_user/notification/domain/allowed-events/allowed.events.notifications";
+import { eventsThatMakeNotificationActionsInactive_GROUP, eventsThatMakeNotificationActionsInactive_MAGAZINE, eventsThatMakeNotificationActionsInactive_USER, GROUP_NOTIFICATION_send_group, memberForDeleteData, newMemberData, notification_group_new_user_invited, notification_magazine_new_user_invited, notification_user_friend_request_accepted, notification_user_new_friend_request, notification_user_new_relation_change, ownerType, typeOfNotification, user_acept_the_invitation, user_has_been_removed_fom_magazine } from "src/contexts/module_user/notification/domain/allowed-events/allowed.events.notifications";
 import { GroupServiceInterface } from "src/contexts/module_group/group/domain/service/group.service.interface";
 import { NotificationMagazineServiceInterface } from "../../domain/service/notification.magazine.service.interface";
 import { NotificationMagazine } from "../../domain/entity/notification.magazine.entity";
@@ -18,6 +18,7 @@ import { NotificationServiceInterface } from "../../domain/service/notification.
 import { GROUP_notification_graph_model_get_all } from "../dtos/getAll.notification.dto";
 import { NotificationUserServiceInterface } from "../../domain/service/notification.user.service.interface";
 import { NotificationUser } from "../../domain/entity/notification.user.entity";
+import { NotModifyException } from "src/contexts/module_shared/exceptionFilter/noModifyException";
 
 
 
@@ -113,6 +114,7 @@ export class NotificationService implements NotificationGroupServiceInterface, N
         try {
             const factory = NotificationFactory.getInstance(this.logger);
             const notificationMagazine = factory.createNotification(typeOfNotification.magazine_notification, notificationBody);
+
             await this.saveNotificationMagazineAndSentToUser(notificationMagazine as NotificationMagazine);
 
         } catch (error: any) {
@@ -126,6 +128,7 @@ export class NotificationService implements NotificationGroupServiceInterface, N
         try {
             const factory = NotificationFactory.getInstance(this.logger);
             const notificationGroup = factory.createNotification(typeOfNotification.group_notification, notificationBody);
+
             await this.saveNotificationGroupAndSentToUserAndGroup(notificationGroup as NotificationGroup);
 
         } catch (error: any) {
@@ -133,11 +136,20 @@ export class NotificationService implements NotificationGroupServiceInterface, N
         }
     }
 
+    async isThisNotificationDuplicate(notificationEntityId: string): Promise<any> {
+        try {
+            const isDuplicate = await this.notificationRepository.isThisNotificationDuplicate(notificationEntityId);
+            if (isDuplicate) throw new NotModifyException('This notification already exist');
+        } catch (error: any) {
+            throw error;
+        }
+    }
     async handleUserNotificationAndCreateIt(notificationBody: any): Promise<void> {
 
         try {
             const factory = NotificationFactory.getInstance(this.logger);
             const notificationUser = factory.createNotification(typeOfNotification.user_notification, notificationBody);
+
             await this.saveNotificationUserAndSentToUser(notificationUser as NotificationUser);
 
         } catch (error: any) {
@@ -159,6 +171,7 @@ export class NotificationService implements NotificationGroupServiceInterface, N
 
             await session.withTransaction(async () => {
                 this.logger.log('Saving notification....');
+                if (event === notification_group_new_user_invited) await this.isThisNotificationDuplicate(notificationGroup.getNotificationEntityId);
                 notificationId = await this.notificationRepository.saveGroupNotification(notificationGroup, session);
                 this.logger.log('Notification save successfully');
 
@@ -201,6 +214,7 @@ export class NotificationService implements NotificationGroupServiceInterface, N
             const session = await this.connection.startSession();
 
             await session.withTransaction(async () => {
+                if (event === notification_magazine_new_user_invited) await this.isThisNotificationDuplicate(notificationMagazine.getNotificationEntityId);
                 const notificationId = await this.notificationRepository.saveMagazineNotification(notificationMagazine, session);
 
                 if (eventsThatMakeNotificationActionsInactive_MAGAZINE.includes(event)) {
@@ -266,9 +280,15 @@ export class NotificationService implements NotificationGroupServiceInterface, N
             const userIdTo = notificationUser.getbackData.userIdTo;
 
             await session.withTransaction(async () => {
+                if (event === notification_user_new_friend_request || event === notification_user_new_relation_change) {
 
+                    await this.isThisNotificationDuplicate(notificationUser.getNotificationEntityId);
+                }
                 const notificationId = await this.notificationRepository.saveUserNotification(notificationUser, session);
 
+                if (event === notification_user_new_friend_request || event === notification_user_new_relation_change) {
+                    await this.userService.pushNewFriendRequestOrRelationRequestToUser(notificationId, userIdTo, session)
+                }
                 if (eventsThatMakeNotificationActionsInactive_USER.includes(event)) {
                     const previousNotificationId = notificationUser.getpreviousNotificationId;
                     if (!previousNotificationId) {
@@ -279,9 +299,6 @@ export class NotificationService implements NotificationGroupServiceInterface, N
 
                 }
 
-                if (event === notification_user_new_friend_request || event === notification_user_new_relation_change) {
-                    await this.userService.pushNewFriendRequestOrRelationRequestToUser(notificationId, userIdTo, session)
-                }
 
                 if (event === notification_user_friend_request_accepted) {
 

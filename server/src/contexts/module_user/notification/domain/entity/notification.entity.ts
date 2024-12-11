@@ -12,6 +12,7 @@ export class Notification {
     }
     private socketJobId: string
     private type: string
+    private notificationEntityId: string
     private previousNotificationId: string
 
 
@@ -25,6 +26,7 @@ export class Notification {
         backData: { userIdTo: string, userIdFrom: string },
         socketJobId: string,
         type: string,
+        notificationEntityId: string,
         previousNotificationId: string) {
         this.event = event;
         this.viewed = viewed;
@@ -34,6 +36,7 @@ export class Notification {
         this.backData = backData
         this.socketJobId = socketJobId
         this.type = type
+        this.notificationEntityId = notificationEntityId
         this.previousNotificationId = previousNotificationId ?? null
     }
 
@@ -71,6 +74,10 @@ export class Notification {
     }
     get getbackData(): { userIdTo: string, userIdFrom: string } {
         return this.backData
+    }
+
+    get getNotificationEntityId(): string {
+        return this.notificationEntityId
     }
 
 

@@ -27,13 +27,13 @@ export class NotificationFactory implements NotificationFactoryInterface {
 
     createNotification(notificationType: typeOfNotification, notificationData: any): Notification {
         let isActionsAvailable = true;
-        const { event, viewed, date, backData, socketJobId, type, previousNotificationId } = this.verifyNotificationAtributes(notificationData);
+        const { event, viewed, date, backData, socketJobId, type, previousNotificationId, notificationEntityId } = this.verifyNotificationAtributes(notificationData);
         const { frontData } = notificationData
         const user = backData.userIdTo
 
 
 
-        const baseNotification = new Notification(event, viewed, date, user, isActionsAvailable, backData, socketJobId, type, previousNotificationId);
+        const baseNotification = new Notification(event, viewed, date, user, isActionsAvailable, backData, socketJobId, type, notificationEntityId, previousNotificationId);
         switch (notificationType) {
             case typeOfNotification.group_notification:
                 return new NotificationGroup(baseNotification, frontData);
@@ -53,10 +53,11 @@ export class NotificationFactory implements NotificationFactoryInterface {
         backData: { userIdTo: string, userIdFrom: string },
         socketJobId: string,
         type: string,
-        previousNotificationId: string;
+        notificationEntityId: string,
+        previousNotificationId: string
     } {
 
-        const { event, viewed, date, backData, socketJobId, type, previousNotificationId } = notificationBody;
+        const { event, viewed, date, backData, socketJobId, type, previousNotificationId, notificationEntityId } = notificationBody;
 
 
         if (
@@ -67,7 +68,9 @@ export class NotificationFactory implements NotificationFactoryInterface {
             !backData.userIdTo ||
             !backData.userIdFrom ||
             !socketJobId ||
-            !type
+            !type ||
+            !notificationEntityId
+
         ) {
             throw new Error("Notificacion no válida");
         }
@@ -79,6 +82,7 @@ export class NotificationFactory implements NotificationFactoryInterface {
             backData: backData,
             socketJobId: socketJobId,
             type: type,
+            notificationEntityId: notificationEntityId,
             previousNotificationId: previousNotificationId ?? null,
         };
     }
