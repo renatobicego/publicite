@@ -16,11 +16,13 @@ import { relationTypes } from "@/utils/data/selectData";
 import { ChangeEvent, useState } from "react";
 import { useSocket } from "@/app/socketProvider";
 import { emitUserRelationNotification } from "@/components/notifications/users/emitNotifications";
+import { UserRelations } from "@/types/userTypes";
 
 const SendUserRequest = ({
   variant,
   removeMargin,
   idToSendRequest,
+  previousUserRelation,
 }: {
   variant?:
     | "light"
@@ -32,9 +34,12 @@ const SendUserRequest = ({
     | "ghost";
   removeMargin?: boolean;
   idToSendRequest: string;
+  previousUserRelation?: UserRelations;
 }) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState(
+    previousUserRelation ? previousUserRelation.typeRelationA : ""
+  );
   const { updateSocketToken } = useSocket();
 
   const handleSelectionChange = (e: ChangeEvent<HTMLSelectElement>) => {
@@ -46,7 +51,9 @@ const SendUserRequest = ({
     const socket = await updateSocketToken();
     emitUserRelationNotification(
       socket,
-      "notification_user_new_friend_request",
+      previousUserRelation
+        ? "notification_user_new_relation_change"
+        : "notification_user_new_friend_request",
       idToSendRequest,
       value as UserRelation,
       null
@@ -59,7 +66,7 @@ const SendUserRequest = ({
         onPress={onOpen}
         className={`"max-md:hidden mt-auto ${removeMargin && "md:-ml-4"}`}
       >
-        Enviar solicitud
+        {previousUserRelation ? "Cambiar Relación" : "Enviar solicitud"}
       </PrimaryButton>
       <PrimaryButton
         onPress={onOpen}
@@ -74,7 +81,8 @@ const SendUserRequest = ({
           {(onClose) => (
             <>
               <ModalHeader className="flex flex-col gap-1">
-                Enviar Solicitud
+                Enviar Solicitud{" "}
+                {previousUserRelation && "de Nuevo Tipo de Relación"}
               </ModalHeader>
               <ModalBody>
                 <Select

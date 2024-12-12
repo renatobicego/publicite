@@ -2,8 +2,10 @@
 import {
   Contact,
   EditPersonProfileProps,
+  GetUser,
   UserPersonFormValues,
   UserPreferences,
+  UserRelationNotification,
 } from "@/types/userTypes";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import axios from "axios";
@@ -11,6 +13,7 @@ import { getClient, query } from "@/lib/client";
 import getUserByUsernameQuery, {
   changeNotificationStatusMutation,
   getAllNotificationsQuery,
+  getFriendRequestsQuery,
   updateContactMutation,
 } from "@/graphql/userQueries";
 import { ApolloError } from "@apollo/client";
@@ -46,7 +49,7 @@ export const putContactData = async (
         },
       },
     });
-    return {message: "Contacto actualizado"}
+    return { message: "Contacto actualizado" };
   } catch (error) {
     return {
       error: "Error al actualizar el contacto. Por favor intenta de nuevo.",
@@ -65,7 +68,7 @@ export const getUserProfileData = async (username: string) => {
           })}`,
         },
         cache: "no-cache",
-      },
+      }
     );
 
     return await res.json();
@@ -149,7 +152,9 @@ export const getUsers = async (searchTerm: string | null, page: number) => {
   }
 };
 
-export const getUserByUsername = async (username: string) => {
+export const getUserByUsername = async (
+  username: string
+): Promise<GetUser | { error: string }> => {
   try {
     const { data } = await query({
       query: getUserByUsernameQuery,
@@ -169,6 +174,32 @@ export const getUserByUsername = async (username: string) => {
     return {
       error:
         "Error al traer los datos del usuario. Por favor intenta de nuevo.",
+    };
+  }
+};
+
+export const getFriendRequests = async (
+  username: string
+): Promise<UserRelationNotification[] | { error: string }> => {
+  try {
+    const { data } = await query({
+      query: getFriendRequestsQuery,
+      variables: { username },
+      context: {
+        headers: {
+          Authorization: await auth().getToken({ template: "testing" }),
+        },
+        fetchOptions: {
+          next: { revalidate: 60 },
+        },
+      },
+    });
+
+    return data.findUserByUsername.friendRequests;
+  } catch (error: ApolloError | any) {
+    return {
+      error:
+        "Error al traer las solicitudes de amistad del usuario. Por favor intenta de nuevo.",
     };
   }
 };

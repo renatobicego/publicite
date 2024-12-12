@@ -5,18 +5,17 @@ import generateUserRelationNotification from "./generateUserRelationNotification
 export const emitUserRelationNotification = (
   socket: Socket | null,
   event: UserRelationNotificationType,
-  // userFrom: Pick<User, "_id" | "username" | "profilePhotoUrl">,
   userIdTo: string,
   typeRelation: UserRelation,
   previousNotificationId: string | null
 ) => {
   generateUserRelationNotification(
     event,
-    // userFrom,
     userIdTo,
     typeRelation,
     previousNotificationId
   ).then((notification) => {
+    console.log(notification);
     socket?.emit(
       "user_notifications",
       notification,

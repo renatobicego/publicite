@@ -1,5 +1,10 @@
 import SendRequest from "@/components/buttons/SendRequest/SendRequest";
-import { Contact, GetUser, UserBusiness } from "@/types/userTypes";
+import {
+  Contact,
+  GetUser,
+  UserBusiness,
+  UserRelations,
+} from "@/types/userTypes";
 import {
   Button,
   Dropdown,
@@ -19,16 +24,50 @@ import {
 import { TbWorldPin } from "react-icons/tb";
 import OptionsDropdown from "../OptionsDropdown";
 import ContactPetitionsList from "@/components/modals/ContactPetition/ContactPetitionsList";
+import { relationTypes } from "@/utils/data/selectData";
 
 const UserInfo = ({
   user,
   isMyProfile,
+  isMyContact,
 }: {
   user: GetUser;
   isMyProfile: boolean;
+  isMyContact?: UserRelations;
 }) => {
   const { userType } = user;
   const business = user as unknown as UserBusiness;
+
+  const actionToShow = () => {
+    switch (true) {
+      case isMyProfile:
+        return <ContactPetitionsList userId={user._id} />;
+      case isMyContact !== undefined:
+        return (
+          <div className="flex flex-col gap-1">
+            <SendRequest
+              variant="solid"
+              removeMargin={false}
+              idToSendRequest={user._id}
+              previousUserRelation={isMyContact}
+            />
+            <p className="text-xs md:text-small">
+              {
+                relationTypes.find(
+                  (relation) => relation.value === isMyContact.typeRelationA
+                )?.label
+              }
+            </p>
+          </div>
+        );
+      default:
+        <SendRequest
+          variant="solid"
+          removeMargin={false}
+          idToSendRequest={user._id}
+        />;
+    }
+  };
   return (
     <section className="flex gap-4 md:gap-6 xl:gap-8 md:max-w-[65%] xl:max-w-[50%]">
       <Image
@@ -55,15 +94,7 @@ const UserInfo = ({
           <p className="text-xs md:text-sm">{user.countryRegion}</p>
         </div>
         <div className="flex gap-2 items-center">
-          {isMyProfile ? (
-            <ContactPetitionsList userId={user._id} />
-          ) : (
-            <SendRequest
-              variant="solid"
-              removeMargin={false}
-              idToSendRequest={user._id}
-            />
-          )}
+          {actionToShow()}
           {user.contact && <SocialMedia contact={user.contact} />}
           <OptionsDropdown user={user} />
         </div>

@@ -1,4 +1,7 @@
-import { UserRelationNotification } from "@/types/userTypes";
+import {
+  UserRelationNotification,
+  UserRelationNotificationType,
+} from "@/types/userTypes";
 import { relationTypes } from "@/utils/data/selectData";
 import { PROFILE } from "@/utils/data/urls";
 import { Card, CardBody, Avatar, user, Link } from "@nextui-org/react";
@@ -13,7 +16,11 @@ const UserRelationCard = ({
     frontData: {
       userRelation: { userFrom, typeRelation },
     },
+    event,
   } = userRelation;
+  const isChangeOfRelation =
+    (event as UserRelationNotificationType) ===
+    "notification_user_new_relation_change";
   return (
     <Card className="bg-fondo">
       <CardBody className="sm:flex-row gap-2 md:gap-4 lg:gap-6 sm:items-center">
@@ -33,9 +40,10 @@ const UserRelationCard = ({
             <h6>{userFrom.username}</h6>
           </Link>
           <p className="text-xs font-normal italic">
+            {isChangeOfRelation && "Cambio de relación a "}
             {relationTypes.find((r) => r.value === typeRelation)?.label}
           </p>
-          <HandleUserRelationRequest />
+          <HandleUserRelationRequest userRelation={userRelation} />
         </div>
       </CardBody>
     </Card>

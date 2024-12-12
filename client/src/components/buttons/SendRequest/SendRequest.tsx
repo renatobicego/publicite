@@ -1,3 +1,4 @@
+import { UserRelations } from "@/types/userTypes";
 import SendRequestGroup from "./SendRequestGroup";
 import SendUserRequest from "./SendUserRequest";
 
@@ -6,6 +7,7 @@ const SendRequest = ({
   variant = "light",
   removeMargin = true,
   idToSendRequest,
+  previousUserRelation,
 }: {
   isGroup?: boolean;
   variant?:
@@ -18,6 +20,7 @@ const SendRequest = ({
     | "ghost";
   removeMargin?: boolean;
   idToSendRequest: string;
+  previousUserRelation?: UserRelations; // for editing previous type of relation
 }) => {
   return (
     <>
@@ -32,6 +35,7 @@ const SendRequest = ({
           variant={variant}
           removeMargin={removeMargin}
           idToSendRequest={idToSendRequest}
+          previousUserRelation={previousUserRelation}
         />
       )}
     </>

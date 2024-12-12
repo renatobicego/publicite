@@ -81,6 +81,28 @@ const getUserByUsernameQuery = gql`
   }
 `;
 
+export const getFriendRequestsQuery = gql`
+  query FindUserByUsername($username: String!) {
+    findUserByUsername(username: $username) {
+      _id
+      friendRequests {
+        event
+        _id
+        frontData {
+          userRelation {
+            typeRelation
+            userFrom {
+              _id
+              profilePhotoUrl
+              username
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
 export const getAllNotificationsQuery = gql`
   query GetAllNotificationsFromUserById($limit: Float!, $page: Float!) {
     getAllNotificationsFromUserById(limit: $limit, page: $page) {

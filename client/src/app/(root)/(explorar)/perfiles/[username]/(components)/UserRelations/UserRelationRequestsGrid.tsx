@@ -1,5 +1,4 @@
-import ProfileCard from "@/components/cards/ProfileCard";
-import { User, UserRelationNotification } from "@/types/userTypes";
+import { UserRelationNotification } from "@/types/userTypes";
 import UserRelationCard from "./UserRelationCard";
 
 const UserRelationRequestsGrid = ({
@@ -18,7 +17,7 @@ const UserRelationRequestsGrid = ({
             />
           ))}
       </div>
-      {items.length === 0 && (
+      {(!items || items.length === 0) && (
         <p className="max-md:text-sm text-light-text">
           No se encontraron solicitudes para mostrar
         </p>

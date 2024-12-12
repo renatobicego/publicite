@@ -27,9 +27,8 @@ export interface User {
 export interface GetUser
   extends Omit<
     User,
-    "userPreferences" | "clerkId" | "userRelations" | "createdTime" | "isActive"
+    "userPreferences" | "clerkId" | "createdTime" | "isActive"
   > {
-  userRelations: User[];
 }
 
 export interface UserPreferences {

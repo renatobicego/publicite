@@ -12,13 +12,16 @@ import PrimaryButton from "../buttons/PrimaryButton";
 import { FaPlus } from "react-icons/fa6";
 import UserPosts from "@/app/(root)/(explorar)/perfiles/[username]/(components)/UserPosts/UserPosts";
 import UserRelationRequestsGrid from "@/app/(root)/(explorar)/perfiles/[username]/(components)/UserRelations/UserRelationRequestsGrid";
+import UserRelationsGrid from "../grids/UserRelationsGrid";
 
 const UserSolapas = ({
   user,
   isMyProfile,
+  friendRequests = [],
 }: {
-  user: GetUser & {friendRequests: UserRelationNotification[]};
+  user: GetUser;
   isMyProfile: boolean;
+  friendRequests?: UserRelationNotification[];
 }) => {
   const pathname = usePathname();
   const tabsRef = useRef<HTMLDivElement | null>(null);
@@ -96,7 +99,7 @@ const UserSolapas = ({
               Agregar Contactos
             </PrimaryButton>
           )}
-          <UsersGrid items={user.userRelations} />
+          <UserRelationsGrid userId={user._id} items={user.userRelations} />
         </>
       ),
     },
@@ -119,7 +122,7 @@ const UserSolapas = ({
     {
       key: `${PROFILE_USERNAME}/solicitudes`,
       title: "Administrar Solicitudes",
-      component: <UserRelationRequestsGrid items={user.friendRequests}/>,
+      component: <UserRelationRequestsGrid items={friendRequests} />,
       requiredProfile: true,
     },
   ];
