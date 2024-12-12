@@ -115,9 +115,19 @@ export class UserService implements UserServiceInterface {
     }
   }
 
-  async findUserByUsername(username: string): Promise<any> {
+  async findUserByUsername(username: string, userRequestId?: string): Promise<any> {
     try {
-      return await this.userRepository.findUserByUsername(username);
+      const user = await this.userRepository.findUserByUsername(username);
+      user.isFriendRequestPending = false;
+      if (user.friendRequests && user.friendRequests.length > 0) {
+        user.friendRequests.map((friend_Request: any) => {
+          if (friend_Request.backData.userIdFrom === userRequestId) {
+            user.isFriendRequestPending = true
+          }
+        })
+      }
+      return user;
+
     } catch (error: any) {
       throw error;
     }

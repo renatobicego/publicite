@@ -18,7 +18,7 @@ export interface UserAdapterInterface {
     page: number,
   ): Promise<UserFindAllResponse>;
 
-  findUserByUsername(username: string): Promise<any>;
+  findUserByUsername(username: string, userRequestId?: string): Promise<any>;
 
   getUserPersonalInformationByUsername(
     username: string,

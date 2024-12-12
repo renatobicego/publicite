@@ -227,4 +227,9 @@ export class User_Full_Grapql_Model {
 
   @Field(() => [friendRequests], { nullable: true })
   friendRequests?: friendRequests[];
+
+
+  @Field(() => Boolean, { nullable: true })
+  isFriendRequestPending?: boolean;
+
 }

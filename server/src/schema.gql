@@ -346,6 +346,7 @@ type User_Full_Grapql_Model {
   userType: String
   groups: [Groups_Full_Graphql_Model]
   friendRequests: [friendRequests!]
+  isFriendRequestPending: Boolean
 }
 
 type posts_graphql_magazine {

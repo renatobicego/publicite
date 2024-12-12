@@ -64,9 +64,9 @@ export class UserAdapter implements UserAdapterInterface {
       throw error;
     }
   }
-  async findUserByUsername(username: string): Promise<any> {
+  async findUserByUsername(username: string, userRequestId?: string): Promise<any> {
     try {
-      return await this.userService.findUserByUsername(username);
+      return await this.userService.findUserByUsername(username, userRequestId);
     } catch (error: any) {
       throw error;
     }
