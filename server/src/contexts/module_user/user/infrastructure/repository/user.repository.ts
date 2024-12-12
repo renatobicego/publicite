@@ -25,6 +25,8 @@ import { SectorRepositoryInterface } from 'src/contexts/module_user/businessSect
 import { UserType } from '../../domain/entity/enum/user.enums';
 import { UserRelationDocument, UserRelationModel } from '../schemas/user.relation.schema';
 import { UserRelation } from '../../domain/entity/userRelation.entity';
+import { MagazineDocument, MagazineModel } from 'src/contexts/module_magazine/magazine/infrastructure/schemas/magazine.schema';
+import { Magazine } from 'src/contexts/module_magazine/magazine/domain/entity/magazine.entity';
 
 @Injectable()
 export class UserRepository implements UserRepositoryInterface {
@@ -41,6 +43,8 @@ export class UserRepository implements UserRepositoryInterface {
     @InjectModel(UserRelationModel.modelName)
     private readonly userRelation: Model<UserRelationDocument>,
 
+    @InjectModel(MagazineModel.modelName)
+    private readonly magazineModel: Model<MagazineDocument>,
 
     @Inject('SectorRepositoryInterface')
     private readonly sectorRepository: SectorRepositoryInterface,
@@ -49,52 +53,54 @@ export class UserRepository implements UserRepositoryInterface {
     private readonly userRepositoryMapper: UserRepositoryMapperInterface,
 
     private readonly logger: MyLoggerService,
-    @InjectConnection() private readonly connection: Connection,
+
   ) { }
 
 
 
   async findUserByUsername(username: string): Promise<any> {
     try {
-      const session = await this.connection.startSession();
-      session.startTransaction();
+
+
       const user = await this.user
         .findOne({ username })
         .select(
           '_id profilePhotoUrl username contact lastName name businessName countryRegion userType board description email suscriptions groups magazines posts friendRequests userRelations',
         )
         .populate([
-          { path: 'magazines' },
+          { path: 'magazines', select: '_id' },
           { path: 'board' },
           { path: 'groups' },
           { path: 'contact' },
           { path: 'friendRequests' },
-          { path: 'userRelations' },
+          {
+            path: 'userRelations',
+            populate: {
+              path: 'user',
+              select: '_id userType name lastName businessName profilePhotoUrl username',
+            },
+          },
           {
             path: 'posts',
             select:
               '_id imagesUrls title description price reviews frequencyPrice toPrice petitionType postType',
           },
-          {
-            path: 'magazines',
-            select: '_id name description sections ',
-            populate: {
-              path: 'sections',
-              select: '_id posts',
-              populate: { path: 'posts', select: '_id imagesUrls' },
-            },
-          },
         ])
-        .session(session)
         .lean();
 
       if (!user) {
-        await session.abortTransaction();
-        session.endSession();
         return null;
       }
-      await session.commitTransaction();
-      session.endSession();
+
+      if (user.magazines.length > 0) {
+        const populatedMagazines = await this.magazineModel.find({ _id: { $in: user.magazines } })
+          .select('_id name description sections')
+          .populate({ path: 'sections', select: '_id posts', populate: { path: 'posts', select: '_id imagesUrls' } })
+          .lean();
+
+        user.magazines = populatedMagazines as any[];
+      }
+
       return user;
     } catch (error: any) {
       console.log(error);

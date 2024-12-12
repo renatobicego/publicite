@@ -17,6 +17,7 @@ import { UserRepositoryMapper } from '../repository/mappers/user.repository.mapp
 import { UserAdapter } from '../adapters/user.adapter';
 import { UserResolver } from '../graphql/resolver/user.resolver';
 import { UserRelationModel } from '../schemas/user.relation.schema';
+import { MagazineModelSharedModule } from 'src/contexts/module_shared/sharedSchemas/magazine.model.schema';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { UserRelationModel } from '../schemas/user.relation.schema';
     ]),
     ContactModule,
     SectorModule,
+    MagazineModelSharedModule,
   ],
   controllers: [UserController],
   providers: [

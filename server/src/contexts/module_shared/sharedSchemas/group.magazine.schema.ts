@@ -14,4 +14,4 @@ import { GroupMagazineModel } from 'src/contexts/module_magazine/magazine/infras
     ]),
   ],
 })
-export class SharedModule {}
+export class GroupMagazineSharedSchemaModule { }

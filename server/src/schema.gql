@@ -316,10 +316,20 @@ type friendRequests {
   frontData: FrontData_user_notification!
 }
 
+type user_user_relation {
+  _id: String!
+  userType: String!
+  name: String!
+  lastName: String!
+  businessName: String
+  profilePhotoUrl: String!
+  username: String!
+}
+
 type user_relation {
   _id: ID!
-  userA: String!
-  userB: String!
+  userA: user_user_relation!
+  userB: user_user_relation!
   typeRelationA: String!
   typeRelationB: String!
 }

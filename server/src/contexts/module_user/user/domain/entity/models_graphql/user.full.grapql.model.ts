@@ -143,7 +143,30 @@ class friendRequests {
 
   @Field(() => FrontData_user_notification)
   frontData: FrontData_user_notification;
+}
+@ObjectType()
+@ObjectType()
+class user_user_relation {
+  @Field(() => String)
+  _id: string;
 
+  @Field(() => String)
+  userType: string;
+
+  @Field(() => String)
+  name: string;
+
+  @Field(() => String)
+  lastName: string;
+
+  @Field(() => String, { nullable: true })
+  businessName: string;
+
+  @Field(() => String)
+  profilePhotoUrl: string;
+
+  @Field(() => String)
+  username: string;
 
 }
 @ObjectType()
@@ -151,11 +174,11 @@ class user_relation {
   @Field(() => ID)
   _id?: ObjectId;
 
-  @Field(() => String)
-  userA: string;
+  @Field(() => user_user_relation)
+  userA: user_user_relation;
 
-  @Field(() => String)
-  userB: string;
+  @Field(() => user_user_relation)
+  userB: user_user_relation;
 
   @Field(() => String)
   typeRelationA: string;
