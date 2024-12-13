@@ -68,6 +68,10 @@ const UserInfo = ({
             </p>
           </div>
         );
+      case user.isFriendRequestPending:
+        return (
+          <p className="text-xs md:text-small ml-2.5 italic">Solicitud enviada</p>
+        )
       default:
         return (
           <SendRequest
