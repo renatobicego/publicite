@@ -7,12 +7,10 @@ import {
   CardFooter,
   CardHeader,
 } from "@nextui-org/react";
-import { useRouter } from "next-nprogress-bar";
 import BackButton from "./buttons/BackButton";
 import PrimaryButton from "./buttons/PrimaryButton";
 
 const ErrorCard = ({ message, error }: { message?: string; error?: string }) => {
-  const router = useRouter();
   return (
     <main className="flex min-h-[80vh] flex-col items-center justify-center main-style gap-4 md:gap-6 lg:gap-8 self-center">
       <Card className="p-4 max-w-full">
@@ -25,7 +23,7 @@ const ErrorCard = ({ message, error }: { message?: string; error?: string }) => 
           {error && <p className="text-sm text-danger">{error}</p>}
         </CardBody>
         <CardFooter>
-          <PrimaryButton onPress={() => router.refresh()}>
+          <PrimaryButton onPress={() => window.location.reload()}>
             Intentar nuevamente
           </PrimaryButton>
         </CardFooter>

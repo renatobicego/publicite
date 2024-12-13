@@ -8,7 +8,7 @@ import { auth } from "@clerk/nextjs/server";
 import UserSolapas from "@/components/solapas/UserSolapas";
 import CreateBoard from "@/components/Board/CreateBoard/CreateBoard";
 import { redirect } from "next/navigation";
-import { UserBusiness, UserRelationNotification } from "@/types/userTypes";
+import { UserRelationNotification } from "@/types/userTypes";
 import { toastifyError } from "@/utils/functions/toastify";
 
 export default async function ProfileLayout(props: {
@@ -56,23 +56,31 @@ export default async function ProfileLayout(props: {
   let friendRequests: UserRelationNotification[] = [];
   if (isMyProfile) {
     const friendRequestsFromDb = await getFriendRequests(params.username);
-    if ("error" in friendRequestsFromDb) {
+    if (friendRequestsFromDb &&"error" in friendRequestsFromDb) {
       toastifyError(friendRequestsFromDb.error);
     } else {
-      friendRequests = friendRequestsFromDb;
+      friendRequests = friendRequestsFromDb || [];
     }
   }
   return (
     <main className="flex min-h-screen flex-col items-start main-style gap-4 md:gap-6 xl:gap-8">
       <BreadcrumbsAdmin items={breadcrumbsItems} />
       <div className="items-start flex gap-4 justify-between w-full max-md:flex-wrap">
-        <UserInfo user={user} isMyProfile={isMyProfile} isMyContact={isMyContact}  />
+        <UserInfo
+          user={user}
+          isMyProfile={isMyProfile}
+          isMyContact={isMyContact}
+        />
         {user.board || !isMyProfile ? (
           <BoardCard
             board={user.board}
             isMyBoard={isMyProfile}
             isProfile
-            name={(user as UserBusiness).businessName || user.name}
+            name={
+              "bussinessName" in user && user.bussinessName
+                ? (user.bussinessName as string)
+                : user.name
+            }
           />
         ) : (
           <CreateBoard user={user} />

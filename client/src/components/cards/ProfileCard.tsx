@@ -29,11 +29,12 @@ const ProfileCard = ({ user }: { user: User }) => {
           >
             <h6>{nameToShow}</h6>
           </Link>
-
-          <div className="flex items-start gap-1">
-            <TbWorldPin className="size-4 min-w-4 mt-0.5" />
-            <p className="text-xs md:text-sm">{user.countryRegion}</p>
-          </div>
+          {user.countryRegion && (
+            <div className="flex items-start gap-1">
+              <TbWorldPin className="size-4 min-w-4 mt-0.5" />
+              <p className="text-xs md:text-sm">{user.countryRegion}</p>
+            </div>
+          )}
           {/* <SendRequest /> */}
         </div>
       </CardBody>

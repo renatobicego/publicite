@@ -60,8 +60,24 @@ const getUserByUsernameQuery = gql`
         _id
         typeRelationA
         typeRelationB
-        userA
-        userB
+        userA {
+          _id
+          businessName
+          lastName
+          name
+          profilePhotoUrl
+          userType
+          username
+        }
+        userB {
+          _id
+          businessName
+          username
+          userType
+          profilePhotoUrl
+          name
+          lastName
+        }
       }
       friendRequests {
         event
@@ -77,6 +93,7 @@ const getUserByUsernameQuery = gql`
           }
         }
       }
+      isFriendRequestPending
     }
   }
 `;

@@ -17,6 +17,7 @@ import getUserByUsernameQuery, {
   updateContactMutation,
 } from "@/graphql/userQueries";
 import { ApolloError } from "@apollo/client";
+import { boolean } from "yup";
 
 const baseUrl = `${process.env.API_URL}/user/personal`;
 
@@ -154,7 +155,7 @@ export const getUsers = async (searchTerm: string | null, page: number) => {
 
 export const getUserByUsername = async (
   username: string
-): Promise<GetUser | { error: string }> => {
+): Promise<GetUser & { isFriendRequestPending: boolean} | { error: string }> => {
   try {
     const { data } = await query({
       query: getUserByUsernameQuery,
@@ -171,6 +172,7 @@ export const getUserByUsername = async (
 
     return data.findUserByUsername;
   } catch (error: ApolloError | any) {
+    console.log(error)
     return {
       error:
         "Error al traer los datos del usuario. Por favor intenta de nuevo.",

@@ -1,4 +1,4 @@
-import { Field, ObjectType, ID, Float } from '@nestjs/graphql';
+import { Field, ObjectType, ID } from '@nestjs/graphql';
 import { ObjectId } from 'mongoose';
 import { Board } from 'src/contexts/module_user/board/domain/entity/board.entity';
 import { Contact } from 'src/contexts/module_user/contact/domain/entity/contact.entity';
@@ -84,7 +84,6 @@ export class Magazines_Full_Graphql_Model {
   description: string;
 }
 
-
 @ObjectType()
 class BackData_user_notification {
   @Field(() => String)
@@ -167,7 +166,6 @@ class user_user_relation {
 
   @Field(() => String)
   username: string;
-
 }
 @ObjectType()
 class user_relation {
@@ -185,7 +183,6 @@ class user_relation {
 
   @Field(() => String)
   typeRelationB: string;
-
 }
 @ObjectType()
 export class User_Full_Grapql_Model {
@@ -239,9 +236,8 @@ export class User_Full_Grapql_Model {
   @Field(() => [Subscriptions_Full_Graphql_Model], { nullable: 'itemsAndList' })
   subscriptions?: Subscriptions_Full_Graphql_Model[];
 
-  @Field(() => [user_relation],)
-  userRelations?: user_relation[];
-
+  @Field(() => [user_relation], { nullable: true })
+  userRelations: user_relation[] = [];
   @Field(() => String, { nullable: true })
   userType?: string;
 
@@ -251,8 +247,6 @@ export class User_Full_Grapql_Model {
   @Field(() => [friendRequests], { nullable: true })
   friendRequests?: friendRequests[];
 
-
   @Field(() => Boolean, { nullable: true })
   isFriendRequestPending?: boolean;
-
 }
