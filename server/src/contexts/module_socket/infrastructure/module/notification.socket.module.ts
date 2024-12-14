@@ -10,10 +10,6 @@ import { NotificationModule } from 'src/contexts/module_user/notification/infras
 @Module({
   imports: [NotificationModule],
   providers: [
-    // {
-    //   provide: 'SocketNotificationServiceInterface',
-    //   useClass: SocketNotificationService,
-    // },
     {
       provide: 'SocketAdapterInterface',
       useClass: SocketAdapter,

@@ -8,7 +8,7 @@ import { UserServiceInterface } from "src/contexts/module_user/user/domain/servi
 import { NotificationGroup } from "../../domain/entity/notification.group.entity";
 
 import { NotificationGroupServiceInterface } from "../../domain/service/notification.group.service.interface";
-import { eventsThatMakeNotificationActionsInactive_GROUP, eventsThatMakeNotificationActionsInactive_MAGAZINE, eventsThatMakeNotificationActionsInactive_USER, GROUP_NOTIFICATION_send_group, memberForDeleteData, newMemberData, notification_group_new_user_invited, notification_magazine_new_user_invited, notification_user_friend_request_accepted, notification_user_new_friend_request, notification_user_new_relation_change, ownerType, typeOfNotification, user_acept_the_invitation, user_has_been_removed_fom_magazine } from "src/contexts/module_user/notification/domain/allowed-events/allowed.events.notifications";
+import { eventsThatMakeNotificationActionsInactive_GROUP, eventsThatMakeNotificationActionsInactive_MAGAZINE, eventsThatMakeNotificationActionsInactive_USER, GROUP_NOTIFICATION_send_group, memberForDeleteData, newMemberData, notification_group_new_user_invited, notification_magazine_new_user_invited, notification_user_friend_request_accepted, notification_user_new_friend_request, notification_user_new_relation_accepted, notification_user_new_relation_change, ownerType, typeOfNotification, user_acept_the_invitation, user_has_been_removed_fom_magazine } from "src/contexts/module_user/notification/domain/allowed-events/allowed.events.notifications";
 import { GroupServiceInterface } from "src/contexts/module_group/group/domain/service/group.service.interface";
 import { NotificationMagazineServiceInterface } from "../../domain/service/notification.magazine.service.interface";
 import { NotificationMagazine } from "../../domain/entity/notification.magazine.entity";
@@ -149,7 +149,6 @@ export class NotificationService implements NotificationGroupServiceInterface, N
         try {
             const factory = NotificationFactory.getInstance(this.logger);
             const notificationUser = factory.createNotification(typeOfNotification.user_notification, notificationBody);
-
             await this.saveNotificationUserAndSentToUser(notificationUser as NotificationUser);
 
         } catch (error: any) {
@@ -260,18 +259,6 @@ export class NotificationService implements NotificationGroupServiceInterface, N
     }
 
     async saveNotificationUserAndSentToUser(notificationUser: NotificationUser): Promise<any> {
-        /*
-        TO DO:
-        1) crear y guardar la notificacion 
-        2) pushear la notificacion al array de notificaciones del user
-        
-        Segun el evento
-        1) Si el evento es una nueva solicitud de contacto, deberiamos pushear la solicitud al array de solicitudes de amistad del user
-        2) Si el evento es una solicitud rechazada deberiamos sacarla del array de solicitudes de amistad del user y tambien bloquear las actions en la notificacion
-        3) Si el evento es una solicitud aceptada deberiamos sacarla del array de solicitudes de amistad del user y bloquear las actions de la notificacion
-        
-        
-        */
 
         try {
             const session = await this.connection.startSession();
@@ -280,15 +267,14 @@ export class NotificationService implements NotificationGroupServiceInterface, N
             const userIdTo = notificationUser.getbackData.userIdTo;
 
             await session.withTransaction(async () => {
-                if (event === notification_user_new_friend_request || event === notification_user_new_relation_change) {
-
-                    await this.isThisNotificationDuplicate(notificationUser.getNotificationEntityId);
-                }
                 const notificationId = await this.notificationRepository.saveUserNotification(notificationUser, session);
 
                 if (event === notification_user_new_friend_request || event === notification_user_new_relation_change) {
+                    await this.isThisNotificationDuplicate(notificationUser.getNotificationEntityId);
                     await this.userService.pushNewFriendRequestOrRelationRequestToUser(notificationId, userIdTo, session)
                 }
+
+
                 if (eventsThatMakeNotificationActionsInactive_USER.includes(event)) {
                     const previousNotificationId = notificationUser.getpreviousNotificationId;
                     if (!previousNotificationId) {
@@ -300,7 +286,7 @@ export class NotificationService implements NotificationGroupServiceInterface, N
                 }
 
 
-                if (event === notification_user_friend_request_accepted) {
+                if (event === notification_user_friend_request_accepted || event === notification_user_new_relation_accepted) {
 
                     await this.userService.makeFriendRelationBetweenUsers(notificationUser.getbackData, notificationUser.getTypeOfRelation, session)
 

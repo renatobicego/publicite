@@ -54,6 +54,7 @@ const eventsThatMakeNotificationActionsInactive_USER = [
     'notifications_user_new_relation_rejected'
 ]
 
+const notification_user_new_relation_accepted = eventsThatMakeNotificationActionsInactive_USER[2]
 
 
 
@@ -108,5 +109,6 @@ export {
     notification_user_new_relation_change,
     notification_user_friend_request_accepted,
     notification_group_new_user_invited,
-    notification_magazine_new_user_invited
+    notification_magazine_new_user_invited,
+    notification_user_new_relation_accepted
 };
