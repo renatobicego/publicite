@@ -1,5 +1,5 @@
 import { Inject, UseGuards } from '@nestjs/common';
-import { Args, Context, Query, Resolver } from '@nestjs/graphql';
+import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 
 
 import { ClerkAuthGuard } from 'src/contexts/module_shared/auth/clerk-auth/clerk.auth.guard';
@@ -7,10 +7,10 @@ import { ClerkAuthGuard } from 'src/contexts/module_shared/auth/clerk-auth/clerk
 import { UserAdapterInterface } from '../../../application/adapter/userAdapter.interface';
 import { User_Full_Grapql_Model } from '../../../domain/entity/models_graphql/user.full.grapql.model';
 import { CustomContextRequestInterface } from 'src/contexts/module_shared/auth/custom_request/custom.context.request.interface';
+import { PubliciteAuth } from 'src/contexts/module_shared/auth/publicite_auth/publicite_auth';
 
 
-//´Provee instrucciones para transformar las insttrucciones provenientes del cliente en data que graph puede utilizar
-// Los resolvers son similareas a los controladores traicionales de un rest enpoint. SON PROVIDERS para nest
+
 
 @Resolver()
 export class UserResolver {
@@ -34,6 +34,18 @@ export class UserResolver {
     } catch (error: any) {
       throw error;
     }
+  }
+
+  @Mutation(() => String, {
+    nullable: true,
+    description: 'Obtiene un usuario por su nombre de usuario ',
+  })
+  @UseGuards(ClerkAuthGuard)
+  async removeFriend(
+    @Args('relationId', { type: () => String }) relationId: string,
+  ): Promise<any> {
+    await this.userAdapter.removeFriend(relationId);
+    return 'Relation successfully deleted';
   }
 
 

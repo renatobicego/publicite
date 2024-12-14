@@ -11,9 +11,6 @@ import { UserFindAllResponse } from '../../application/adapter/dto/HTTP-RESPONSE
 import { UserRelation } from '../entity/userRelation.entity';
 
 export interface UserRepositoryInterface {
-
-
-
   findAllUsers(
     user: string,
     limit: number,
@@ -49,6 +46,7 @@ export interface UserRepositoryInterface {
   ): Promise<any>;
 
   removeFriendRequest(previousNotificationId: string, userNotificationOwner: string, session: any): Promise<any>
+  removeFriend(relationId: string): Promise<any>;
   savePersonalAccount(
     baseObj: any,
     user: UserPerson,
@@ -61,6 +59,11 @@ export interface UserRepositoryInterface {
     type: number,
   ): Promise<UserPersonalUpdateDto | UserBusinessUpdateDto>;
 
+  updateFriendRelationOfUsers(
+    userRelationId: string,
+    typeOfRelation: string,
+    session: any,
+  ): Promise<void>;
 
   updateByClerkId(
     clerkId: string,

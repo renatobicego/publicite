@@ -286,10 +286,15 @@ export class NotificationService implements NotificationGroupServiceInterface, N
                 }
 
 
-                if (event === notification_user_friend_request_accepted || event === notification_user_new_relation_accepted) {
-
+                if (event === notification_user_friend_request_accepted) {
                     await this.userService.makeFriendRelationBetweenUsers(notificationUser.getbackData, notificationUser.getTypeOfRelation, session)
 
+                }
+
+                if (event === notification_user_new_relation_accepted) {
+                    const userRelationId = notificationUser.getUserRelationId ?? undefined
+                    if (!userRelationId) { throw new Error(`EVENT: ${event} require userRelationId, please send it and try again, `) }
+                    await this.userService.updateFriendRelationOfUsers(userRelationId, notificationUser.getTypeOfRelation, session)
                 }
 
                 await this.userService.pushNotificationToUserArrayNotifications(notificationId, userIdTo, session);

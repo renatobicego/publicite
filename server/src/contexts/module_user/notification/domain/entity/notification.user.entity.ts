@@ -10,6 +10,7 @@ export enum UserRelationType {
 export class NotificationUser extends Notification {
     private frontData: {
         userRelation: {
+            _id: string;
             userFrom: {
                 _id: string;
                 username: string;
@@ -23,6 +24,7 @@ export class NotificationUser extends Notification {
         notification: Notification,
         frontData: {
             userRelation: {
+                _id: string;
                 userFrom: {
                     _id: string;
                     username: string;
@@ -44,6 +46,10 @@ export class NotificationUser extends Notification {
             notification.getpreviousNotificationId as string
         );
         this.frontData = frontData;
+    }
+
+    get getUserRelationId() {
+        return this.frontData.userRelation._id;
     }
 
     get getFrontData() {

@@ -27,6 +27,8 @@ export class UserService implements UserServiceInterface {
     private readonly logger: MyLoggerService,
     @InjectConnection() private readonly connection: Connection,
   ) { }
+
+
   async makeFriendRelationBetweenUsers(backData: { userIdFrom: string; userIdTo: string; }, typeOfRelation: string, session: any): Promise<void> {
     try {
       const userRelation = new UserRelation(
@@ -165,19 +167,6 @@ export class UserService implements UserServiceInterface {
     }
   }
 
-  async saveNewPostInUser(
-    postId: ObjectId,
-    authorId: ObjectId,
-    options?: { session?: ClientSession },
-  ): Promise<any> {
-    try {
-      this.logger.log('Creating post in the service: ' + UserService.name);
-      return await this.userRepository.saveNewPost(postId, authorId, options);
-    } catch (error: any) {
-      throw error;
-    }
-  }
-
 
   async pushNotificationToUserArrayNotifications(
     notification: Types.ObjectId,
@@ -209,6 +198,45 @@ export class UserService implements UserServiceInterface {
     try {
       await this.userRepository.removeFriendRequest(previousNotificationId, userNotificationOwner, session);
     } catch (error: any) {
+      throw error;
+    }
+  }
+  async removeFriend(relationId: string): Promise<any> {
+    try {
+      return await this.userRepository.removeFriend(relationId);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
+
+  async saveNewPostInUser(
+    postId: ObjectId,
+    authorId: ObjectId,
+    options?: { session?: ClientSession },
+  ): Promise<any> {
+    try {
+      this.logger.log('Creating post in the service: ' + UserService.name);
+      return await this.userRepository.saveNewPost(postId, authorId, options);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
+
+  async updateFriendRelationOfUsers(userRelationId: string, typeOfRelation: string, session: any): Promise<void> {
+    try {
+      this.logger.log(
+        'Updating friend relation in the service: ' + UserService.name)
+
+      await this.userRepository.updateFriendRelationOfUsers(userRelationId, typeOfRelation, session);
+    } catch (error: any) {
+      this.logger.error(
+        'An error has occurred in user service - updateFriendRelationOfUsers: ' +
+        error,
+      )
       throw error;
     }
   }

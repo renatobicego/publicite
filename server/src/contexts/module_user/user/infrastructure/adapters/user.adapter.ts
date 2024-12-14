@@ -29,6 +29,7 @@ export class UserAdapter implements UserAdapterInterface {
     private readonly userMapper: UserMapperInterface,
   ) { }
 
+
   async createUser(newUserRequest: UserRequest): Promise<any> {
 
     if (!newUserRequest.userType) {
@@ -99,6 +100,14 @@ export class UserAdapter implements UserAdapterInterface {
       return await this.userService.getUserPersonalInformationByUsername(
         username,
       );
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  async removeFriend(relationId: string): Promise<any> {
+    try {
+      return await this.userService.removeFriend(relationId);
     } catch (error: any) {
       throw error;
     }

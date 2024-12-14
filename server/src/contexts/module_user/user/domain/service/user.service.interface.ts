@@ -9,42 +9,53 @@ import { UP_clerkUpdateRequestDto } from 'src/contexts/module_webhook/clerk/appl
 import { UserFindAllResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.response.dto';
 
 export interface UserServiceInterface {
-
-
-
-  createUser(req: User, contactDto: ContactRequest): Promise<string>;
   createContact(
     contactDto: ContactRequest,
     options?: { session?: ClientSession },
   ): Promise<Types.ObjectId>;
 
+  createUser(req: User, contactDto: ContactRequest): Promise<string>;
 
   findAllUsers(
     user: string,
     limit: number,
     page: number,
   ): Promise<UserFindAllResponse>;
+
   findUserByUsername(username: string, userRequestId?: string): Promise<any>;
 
   getUserPersonalInformationByUsername(username: string): Promise<any>;
+
   getUserPreferencesByUsername(
     username: string,
   ): Promise<UserPreferences | null>;
-  makeFriendRelationBetweenUsers(backData: { userIdFrom: string, userIdTo: string }, typeOfRelation: string, session: any): Promise<void>
 
-  pushNewFriendRequestOrRelationRequestToUser(notificationId: Types.ObjectId, userNotificationOwner: string, session: any): Promise<any>
-  pushNotificationToUserArrayNotifications(notificationId: Types.ObjectId, userIdTo: string, session?: any): Promise<any>;
-  updateUser(
-    username: string,
-    req: UserPersonalUpdateDto | UserBusinessUpdateDto,
-    type: number,
-  ): Promise<UserPersonalUpdateDto | UserBusinessUpdateDto>;
+  makeFriendRelationBetweenUsers(
+    backData: { userIdFrom: string; userIdTo: string },
+    typeOfRelation: string,
+    session: any,
+  ): Promise<void>;
 
-  updateUserByClerkId(req: UP_clerkUpdateRequestDto): Promise<any>;
-  updateUserPreferencesByUsername(
-    username: string,
-    userPreference: UserPreferencesEntityDto,
-  ): Promise<UserPreferencesEntityDto | null>;
+  pushNewFriendRequestOrRelationRequestToUser(
+    notificationId: Types.ObjectId,
+    userNotificationOwner: string,
+    session: any,
+  ): Promise<any>;
+
+  pushNotificationToUserArrayNotifications(
+    notificationId: Types.ObjectId,
+    userIdTo: string,
+    session?: any,
+  ): Promise<any>;
+
+  removeFriendRequest(
+    previousNotificationId: string,
+    userNotificationOwner: string,
+    session: any,
+  ): Promise<any>;
+
+  removeFriend(relationId: string): Promise<any>;
+
 
   saveNewPostInUser(
     postId: ObjectId,
@@ -52,6 +63,22 @@ export interface UserServiceInterface {
     options?: { session?: ClientSession },
   ): Promise<any>;
 
-  removeFriendRequest(previousNotificationId: string, userNotificationOwner: string, session: any): Promise<any>
+  updateFriendRelationOfUsers(
+    userRelationId: string,
+    typeOfRelation: string,
+    session: any,
+  ): Promise<void>;
 
+  updateUser(
+    username: string,
+    req: UserPersonalUpdateDto | UserBusinessUpdateDto,
+    type: number,
+  ): Promise<UserPersonalUpdateDto | UserBusinessUpdateDto>;
+
+  updateUserByClerkId(req: UP_clerkUpdateRequestDto): Promise<any>;
+
+  updateUserPreferencesByUsername(
+    username: string,
+    userPreference: UserPreferencesEntityDto,
+  ): Promise<UserPreferencesEntityDto | null>;
 }

@@ -1,6 +1,6 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import { ClientSession, Model, ObjectId, Types } from 'mongoose';
-import { InjectModel } from '@nestjs/mongoose';
+import { ClientSession, Connection, Model, ObjectId, Types } from 'mongoose';
+import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 
 import { IUserPerson, UserPersonModel } from '../schemas/userPerson.schema';
 import {
@@ -55,9 +55,10 @@ export class UserRepository implements UserRepositoryInterface {
 
     @Inject('UserRepositoryMapperInterface')
     private readonly userRepositoryMapper: UserRepositoryMapperInterface,
-
+    @InjectConnection() private readonly connection: Connection,
     private readonly logger: MyLoggerService,
-  ) {}
+  ) { }
+
 
   async findUserByUsername(username: string): Promise<any> {
     try {
@@ -340,6 +341,17 @@ export class UserRepository implements UserRepositoryInterface {
     }
   }
 
+  async updateFriendRelationOfUsers(userRelationId: string, typeOfRelation: string, session: any): Promise<void> {
+    try {
+      await this.userRelation.updateOne({ _id: userRelationId }, { typeRelationA: typeOfRelation, typeRelationB: typeOfRelation }).session(session);
+      this.logger.log('Friend relation updated successfully');
+    } catch (error: any) {
+      this.logger.error('Error in updateFriendRelationOfUsers repository', error);
+      throw error;
+    }
+  }
+
+
   async updateUserPreferencesByUsername(
     username: string,
     userPreference: UserPreferencesEntityDto,
@@ -377,6 +389,30 @@ export class UserRepository implements UserRepositoryInterface {
       throw error;
     }
   }
+
+  async removeFriend(relationId: string): Promise<void> {
+    const session = await this.connection.startSession();
+    try {
+      await session.withTransaction(async () => {
+
+        const deleteRelation = this.userRelation.deleteOne({ _id: relationId }, { session });
+        const updateUsers = this.user.updateMany(
+          { userRelations: relationId },
+          { $pull: { userRelations: relationId } },
+          { session }
+        );
+
+        await Promise.all([deleteRelation, updateUsers]);
+      });
+    } catch (error) {
+
+      console.error('Error removing friend relation:', error);
+      throw error;
+    } finally {
+      session.endSession();
+    }
+  }
+
 
   async save(reqUser: User, session?: ClientSession): Promise<any> {
     try {
@@ -508,7 +544,7 @@ export class UserRepository implements UserRepositoryInterface {
       }
       this.logger.log(
         'The post was successfully saved in the user profile: ' +
-          UserRepository.name,
+        UserRepository.name,
       );
 
       return obj;
