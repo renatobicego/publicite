@@ -25,13 +25,14 @@ import { TbWorldPin } from "react-icons/tb";
 import OptionsDropdown from "../OptionsDropdown";
 import ContactPetitionsList from "@/components/modals/ContactPetition/ContactPetitionsList";
 import { relationTypes } from "@/utils/data/selectData";
+import PrimaryButton from "@/components/buttons/PrimaryButton";
 
 const UserInfo = ({
   user,
   isMyProfile,
   isMyContact,
 }: {
-  user: GetUser;
+  user: GetUser & { isFriendRequestPending: boolean };
   isMyProfile: boolean;
   isMyContact?: UserRelations;
 }) => {
@@ -45,13 +46,20 @@ const UserInfo = ({
       case isMyContact !== undefined:
         return (
           <div className="flex flex-col gap-1">
-            <SendRequest
-              variant="solid"
-              removeMargin={false}
-              idToSendRequest={user._id}
-              previousUserRelation={isMyContact}
-            />
-            <p className="text-xs md:text-small">
+            {user.isFriendRequestPending ? (
+              <PrimaryButton isDisabled className="hover:bg-none" variant="bordered">
+                Cambio de Relación Enviada
+              </PrimaryButton>
+            ) : (
+              <SendRequest
+                variant="solid"
+                removeMargin={false}
+                idToSendRequest={user._id}
+                previousUserRelation={isMyContact}
+              />
+            )}
+            <p className="text-xs md:text-small ml-2.5 italic">
+              Es tu{" "}
               {
                 relationTypes.find(
                   (relation) => relation.value === isMyContact.typeRelationA
@@ -60,12 +68,18 @@ const UserInfo = ({
             </p>
           </div>
         );
+      case user.isFriendRequestPending:
+        return (
+          <p className="text-xs md:text-small ml-2.5 italic">Solicitud enviada</p>
+        )
       default:
-        <SendRequest
-          variant="solid"
-          removeMargin={false}
-          idToSendRequest={user._id}
-        />;
+        return (
+          <SendRequest
+            variant="solid"
+            removeMargin={false}
+            idToSendRequest={user._id}
+          />
+        );
     }
   };
   return (
@@ -79,12 +93,15 @@ const UserInfo = ({
           wrapper: "!min-w-24 w-24 md:!min-w-32 md:!w-32 xl:!w-52 xl:!min-w-52",
         }}
       />
-      <div className="flex gap-2 md:gap-4 items-start flex-col">
-        <h2>
-          {userType === "Business"
-            ? business.businessName
-            : `${user.name} ${user.lastName}`}
-        </h2>
+      <div className="flex gap-2 md:gap-4 items-start flex-col flex-1">
+        <div className="flex gap-1 lg:gap-12 items-start justify-between w-full">
+          <h2 className="max-lg:mt-1">
+            {userType === "Business"
+              ? business.businessName
+              : `${user.name} ${user.lastName}`}
+          </h2>
+          <OptionsDropdown user={user} />
+        </div>
         <h6>@{user.username}</h6>
         {user.description && (
           <p className="text-sm lg:text-base">{user.description}</p>
@@ -93,11 +110,8 @@ const UserInfo = ({
           <TbWorldPin className="size-4 min-w-4" />
           <p className="text-xs md:text-sm">{user.countryRegion}</p>
         </div>
-        <div className="flex gap-2 items-center">
-          {actionToShow()}
-          {user.contact && <SocialMedia contact={user.contact} />}
-          <OptionsDropdown user={user} />
-        </div>
+        {user.contact && <SocialMedia contact={user.contact} />}
+        <div className="flex gap-2 items-center">{actionToShow()}</div>
       </div>
     </section>
   );

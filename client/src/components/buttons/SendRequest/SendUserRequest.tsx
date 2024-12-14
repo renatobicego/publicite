@@ -17,6 +17,8 @@ import { ChangeEvent, useState } from "react";
 import { useSocket } from "@/app/socketProvider";
 import { emitUserRelationNotification } from "@/components/notifications/users/emitNotifications";
 import { UserRelations } from "@/types/userTypes";
+import { toastifySuccess } from "@/utils/functions/toastify";
+import { useRouter } from "next/navigation";
 
 const SendUserRequest = ({
   variant,
@@ -41,6 +43,7 @@ const SendUserRequest = ({
     previousUserRelation ? previousUserRelation.typeRelationA : ""
   );
   const { updateSocketToken } = useSocket();
+  const router = useRouter();
 
   const handleSelectionChange = (e: ChangeEvent<HTMLSelectElement>) => {
     setValue(e.target.value);
@@ -58,6 +61,8 @@ const SendUserRequest = ({
       value as UserRelation,
       null
     );
+    toastifySuccess("Solicitud enviada correctamente"); 
+    router.refresh();
   };
   return (
     <>
@@ -67,14 +72,6 @@ const SendUserRequest = ({
         className={`"max-md:hidden mt-auto ${removeMargin && "md:-ml-4"}`}
       >
         {previousUserRelation ? "Cambiar Relación" : "Enviar solicitud"}
-      </PrimaryButton>
-      <PrimaryButton
-        onPress={onOpen}
-        isIconOnly
-        className="md:hidden p-0.5 mt-auto"
-        size="sm"
-      >
-        <IoMdPersonAdd />
       </PrimaryButton>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>

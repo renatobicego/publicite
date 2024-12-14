@@ -1,6 +1,6 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import { ClientSession, Connection, Model, ObjectId, Types } from 'mongoose';
-import { InjectConnection, InjectModel } from '@nestjs/mongoose';
+import { ClientSession, Model, ObjectId, Types } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
 
 import { IUserPerson, UserPersonModel } from '../schemas/userPerson.schema';
 import {
@@ -18,15 +18,19 @@ import { UserBusinessUpdateDto } from '../../domain/entity/dto/user.business.upd
 import { UserPersonalUpdateDto } from '../../domain/entity/dto/user.personal.update.dto';
 import { UserPreferencesEntityDto } from '../../domain/entity/dto/user.preferences.update.dto';
 import { UP_clerkUpdateRequestDto } from 'src/contexts/module_webhook/clerk/application/dto/UP-clerk.update.request';
-import { UserClerkUpdateDto } from '../../domain/entity/dto/user.clerk.update.dto';
 import { UserFindAllResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.response.dto';
 import { fullNameNormalization } from '../../application/functions/utils';
 import { SectorRepositoryInterface } from 'src/contexts/module_user/businessSector/domain/repository/sector.repository.interface';
 import { UserType } from '../../domain/entity/enum/user.enums';
-import { UserRelationDocument, UserRelationModel } from '../schemas/user.relation.schema';
+import {
+  UserRelationDocument,
+  UserRelationModel,
+} from '../schemas/user.relation.schema';
 import { UserRelation } from '../../domain/entity/userRelation.entity';
-import { MagazineDocument, MagazineModel } from 'src/contexts/module_magazine/magazine/infrastructure/schemas/magazine.schema';
-import { Magazine } from 'src/contexts/module_magazine/magazine/domain/entity/magazine.entity';
+import {
+  MagazineDocument,
+  MagazineModel,
+} from 'src/contexts/module_magazine/magazine/infrastructure/schemas/magazine.schema';
 
 @Injectable()
 export class UserRepository implements UserRepositoryInterface {
@@ -53,15 +57,10 @@ export class UserRepository implements UserRepositoryInterface {
     private readonly userRepositoryMapper: UserRepositoryMapperInterface,
 
     private readonly logger: MyLoggerService,
-
-  ) { }
-
-
+  ) {}
 
   async findUserByUsername(username: string): Promise<any> {
     try {
-
-
       const user = await this.user
         .findOne({ username })
         .select(
@@ -75,10 +74,18 @@ export class UserRepository implements UserRepositoryInterface {
           { path: 'friendRequests' },
           {
             path: 'userRelations',
-            populate: {
-              path: 'user',
-              select: '_id userType name lastName businessName profilePhotoUrl username',
-            },
+            populate: [
+              {
+                path: 'userA',
+                select:
+                  '_id userType name lastName businessName profilePhotoUrl username',
+              },
+              {
+                path: 'userB',
+                select:
+                  '_id userType name lastName businessName profilePhotoUrl username',
+              },
+            ],
           },
           {
             path: 'posts',
@@ -93,9 +100,14 @@ export class UserRepository implements UserRepositoryInterface {
       }
 
       if (user.magazines.length > 0) {
-        const populatedMagazines = await this.magazineModel.find({ _id: { $in: user.magazines } })
+        const populatedMagazines = await this.magazineModel
+          .find({ _id: { $in: user.magazines } })
           .select('_id name description sections')
-          .populate({ path: 'sections', select: '_id posts', populate: { path: 'posts', select: '_id imagesUrls' } })
+          .populate({
+            path: 'sections',
+            select: '_id posts',
+            populate: { path: 'posts', select: '_id imagesUrls' },
+          })
           .lean();
 
         user.magazines = populatedMagazines as any[];
@@ -201,28 +213,27 @@ export class UserRepository implements UserRepositoryInterface {
       throw error;
     }
   }
-  async makeFriendRelationBetweenUsers(userRelation: UserRelation, session: any): Promise<void> {
+  async makeFriendRelationBetweenUsers(
+    userRelation: UserRelation,
+    session: any,
+  ): Promise<void> {
     try {
       const userA = userRelation.getUserA;
       const userB = userRelation.getUserB;
 
-
       if (!userA || !userB) return;
 
-      const newUserRelation = new this.userRelation(userRelation)
-      const userRelationSaved = await newUserRelation.save()
-      const userRelationId = userRelationSaved._id
+      const newUserRelation = new this.userRelation(userRelation);
+      const userRelationSaved = await newUserRelation.save();
+      const userRelationId = userRelationSaved._id;
 
-      await this.user
-        .updateMany(
-          {
-            _id: { $in: [userA, userB] }
-          },
-          { $addToSet: { userRelations: userRelationId } },
-          { session }
-        )
-
-
+      await this.user.updateMany(
+        {
+          _id: { $in: [userA, userB] },
+        },
+        { $addToSet: { userRelations: userRelationId } },
+        { session },
+      );
     } catch (error: any) {
       throw error;
     }
@@ -247,7 +258,11 @@ export class UserRepository implements UserRepositoryInterface {
       throw error;
     }
   }
-  async pushNewFriendRequestOrRelationRequestToUser(notificationId: Types.ObjectId, userNotificationOwner: string, session: any): Promise<any> {
+  async pushNewFriendRequestOrRelationRequestToUser(
+    notificationId: Types.ObjectId,
+    userNotificationOwner: string,
+    session: any,
+  ): Promise<any> {
     try {
       await this.user
         .updateOne(
@@ -277,8 +292,10 @@ export class UserRepository implements UserRepositoryInterface {
           entityToDocument =
             this.userRepositoryMapper.formatUpdateDocument(reqUser);
 
-          return await this.userPersonModel
-            .updateOne({ username: username }, entityToDocument)
+          return await this.userPersonModel.updateOne(
+            { username: username },
+            entityToDocument,
+          );
 
         case 1: // Business User
           const cast = reqUser as UserBusinessUpdateDto;
@@ -294,9 +311,10 @@ export class UserRepository implements UserRepositoryInterface {
           entityToDocument =
             this.userRepositoryMapper.formatUpdateDocumentUB(reqUser);
 
-
-          return await this.userBusinessModel
-            .updateOne({ username: username }, entityToDocument)
+          return await this.userBusinessModel.updateOne(
+            { username: username },
+            entityToDocument,
+          );
 
         default:
           throw new BadRequestException('Invalid user type');
@@ -315,10 +333,7 @@ export class UserRepository implements UserRepositoryInterface {
       this.logger.log(
         'Updating clerk attributes in the repository, for the ID: ' + clerkId,
       );
-      return await this.user
-        .updateOne({ clerkId: clerkId }, reqUser)
-
-
+      return await this.user.updateOne({ clerkId: clerkId }, reqUser);
     } catch (error) {
       this.logger.error('Error in updateByClerkId method(Repository)', error);
       throw error;
@@ -333,12 +348,10 @@ export class UserRepository implements UserRepositoryInterface {
       this.logger.log(
         'Start process in the repository: updateUserPreferencesByUsername',
       );
-      return await this.user
-        .updateOne(
-          { username: username },
-          { userPreferences: userPreference },
-        )
-
+      return await this.user.updateOne(
+        { username: username },
+        { userPreferences: userPreference },
+      );
     } catch (error: any) {
       this.logger.error(
         'Error in updateUserPreferencesByUsername method',
@@ -348,15 +361,22 @@ export class UserRepository implements UserRepositoryInterface {
     }
   }
 
-  async removeFriendRequest(previousNotificationId: string, userNotificationOwner: string, session: any): Promise<any> {
+  async removeFriendRequest(
+    previousNotificationId: string,
+    userNotificationOwner: string,
+    session: any,
+  ): Promise<any> {
     try {
-      await this.user.updateOne({ _id: userNotificationOwner }, { $pull: { friendRequests: previousNotificationId } }).session(session);
+      await this.user
+        .updateOne(
+          { _id: userNotificationOwner },
+          { $pull: { friendRequests: previousNotificationId } },
+        )
+        .session(session);
     } catch (error: any) {
       throw error;
     }
   }
-
-
 
   async save(reqUser: User, session?: ClientSession): Promise<any> {
     try {
@@ -386,7 +406,6 @@ export class UserRepository implements UserRepositoryInterface {
         notifications: reqUser.getNotifications,
         friendRequests: reqUser.getFriendRequests,
       };
-
 
       switch (reqUser.getUserType?.toLowerCase()) {
         case UserType.Person:
@@ -440,11 +459,11 @@ export class UserRepository implements UserRepositoryInterface {
     const userDocument = new this.userPersonModel(newUser);
 
     const documentSaved = await userDocument.save(options);
-    this.logger.log('Personal account created successfully: ' + documentSaved._id);
+    this.logger.log(
+      'Personal account created successfully: ' + documentSaved._id,
+    );
 
     return documentSaved._id;
-
-
   }
 
   async saveBusinessAccount(
@@ -459,9 +478,10 @@ export class UserRepository implements UserRepositoryInterface {
     };
     const userDocument = new this.userBusinessModel(newUser);
     const documentSaved = await userDocument.save(options);
-    this.logger.log('Business account created successfully: ' + documentSaved._id);
+    this.logger.log(
+      'Business account created successfully: ' + documentSaved._id,
+    );
     return documentSaved._id;
-
   }
 
   async saveNewPost(
@@ -488,7 +508,7 @@ export class UserRepository implements UserRepositoryInterface {
       }
       this.logger.log(
         'The post was successfully saved in the user profile: ' +
-        UserRepository.name,
+          UserRepository.name,
       );
 
       return obj;
