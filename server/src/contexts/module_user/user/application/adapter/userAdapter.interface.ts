@@ -27,7 +27,7 @@ export interface UserAdapterInterface {
     username: string,
   ): Promise<UserPreferenceResponse | null>;
 
-  removeFriend(relationId: string): Promise<any>;
+  removeFriend(relationId: string, friendRequestId?: string): Promise<any>;
   updateUserPreferencesByUsername(
     username: string,
     userPreference: UserPreferenceResponse,

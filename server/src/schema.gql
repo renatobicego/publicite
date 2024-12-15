@@ -595,7 +595,7 @@ enum PostType {
 
 type Mutation {
   """Remover una relacion de amistad entre dos usuarios"""
-  removeFriend(relationId: String!): String
+  removeFriend(relationId: String!, friendRequestId: String): String
 
   """Actualizar los metodos de contacto de un usuario"""
   updateContactById(contactId: String!, updateRequest: UpdateContactRequest!): String

@@ -54,7 +54,7 @@ export interface UserServiceInterface {
     session: any,
   ): Promise<any>;
 
-  removeFriend(relationId: string): Promise<any>;
+  removeFriend(relationId: string, friendRequestId?: string): Promise<any>;
 
 
   saveNewPostInUser(

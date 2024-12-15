@@ -46,7 +46,7 @@ export interface UserRepositoryInterface {
   ): Promise<any>;
 
   removeFriendRequest(previousNotificationId: string, userNotificationOwner: string, session: any): Promise<any>
-  removeFriend(relationId: string): Promise<any>;
+  removeFriend(relationId: string, friendRequestId?: string): Promise<any>;
   savePersonalAccount(
     baseObj: any,
     user: UserPerson,

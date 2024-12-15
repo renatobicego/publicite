@@ -43,8 +43,9 @@ export class UserResolver {
   @UseGuards(ClerkAuthGuard)
   async removeFriend(
     @Args('relationId', { type: () => String }) relationId: string,
+    @Args('friendRequestId', { type: () => String, nullable: true }) friendRequestId: string,
   ): Promise<any> {
-    await this.userAdapter.removeFriend(relationId);
+    await this.userAdapter.removeFriend(relationId, friendRequestId);
     return 'Relation successfully deleted';
   }
 

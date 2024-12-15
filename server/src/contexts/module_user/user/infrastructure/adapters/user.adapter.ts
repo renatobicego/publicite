@@ -105,9 +105,9 @@ export class UserAdapter implements UserAdapterInterface {
     }
   }
 
-  async removeFriend(relationId: string): Promise<any> {
+  async removeFriend(relationId: string, friendRequestId?: string): Promise<any> {
     try {
-      return await this.userService.removeFriend(relationId);
+      return await this.userService.removeFriend(relationId, friendRequestId);
     } catch (error: any) {
       throw error;
     }

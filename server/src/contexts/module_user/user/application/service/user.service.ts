@@ -131,13 +131,7 @@ export class UserService implements UserServiceInterface {
             }
           })
         }
-        if (user.userRelations && user.userRelations.length > 0) {
-          user.userRelations.map((userRelation: any) => { //La comparacionm no es triple porque en mongo viene como ObjectID y en js como string
-            if (userRelation.userA._id == userRequestId || userRelation.userB._id == userRequestId) {
-              user.myUserRelationId = userRelation._id
-            }
-          })
-        }
+
       } else {
         return null
       }
@@ -208,9 +202,9 @@ export class UserService implements UserServiceInterface {
       throw error;
     }
   }
-  async removeFriend(relationId: string): Promise<any> {
+  async removeFriend(relationId: string, friendRequestId?: string): Promise<any> {
     try {
-      return await this.userRepository.removeFriend(relationId);
+      return await this.userRepository.removeFriend(relationId, friendRequestId);
     } catch (error: any) {
       throw error;
     }

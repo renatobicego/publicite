@@ -390,17 +390,25 @@ export class UserRepository implements UserRepositoryInterface {
     }
   }
 
-  async removeFriend(relationId: string): Promise<void> {
+  async removeFriend(relationId: string, friendRequestId?: string): Promise<void> {
     const session = await this.connection.startSession();
     try {
       await session.withTransaction(async () => {
 
         const deleteRelation = this.userRelation.deleteOne({ _id: relationId }, { session });
+
+        const pullOperation: any = { userRelations: relationId };
+        if (friendRequestId) {
+          pullOperation.friendRequests = friendRequestId;
+        }
+
         const updateUsers = this.user.updateMany(
           { userRelations: relationId },
-          { $pull: { userRelations: relationId } },
+          { $pull: pullOperation },
           { session }
         );
+
+
 
         await Promise.all([deleteRelation, updateUsers]);
       });
