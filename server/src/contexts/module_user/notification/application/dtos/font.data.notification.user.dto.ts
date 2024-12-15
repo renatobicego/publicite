@@ -1,5 +1,6 @@
-import { Field, ObjectType } from "@nestjs/graphql";
-import { UserRelation } from "src/contexts/module_user/user/domain/entity/userRelation.entity";
+import { Field, ID, ObjectType } from "@nestjs/graphql";
+import { ObjectId } from "mongoose";
+
 
 @ObjectType()
 class UserFrom_notification {
@@ -20,6 +21,11 @@ class UserFrom_notification {
 
 @ObjectType()
 export class front_data_USER {
+
+    @Field(() => ID, { nullable: true })
+    _id: ObjectId;
+
+
     @Field(() => UserFrom_notification)
     userFrom: UserFrom_notification;
 

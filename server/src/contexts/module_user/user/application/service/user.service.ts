@@ -29,7 +29,7 @@ export class UserService implements UserServiceInterface {
   ) { }
 
 
-  async makeFriendRelationBetweenUsers(backData: { userIdFrom: string; userIdTo: string; }, typeOfRelation: string, session: any): Promise<void> {
+  async makeFriendRelationBetweenUsers(backData: { userIdFrom: string; userIdTo: string; }, typeOfRelation: string, session: any): Promise<string | null> {
     try {
       const userRelation = new UserRelation(
         backData.userIdFrom,
@@ -128,6 +128,13 @@ export class UserService implements UserServiceInterface {
           user.friendRequests.map((friend_Request: any) => {
             if (friend_Request.backData.userIdFrom === userRequestId) {
               user.isFriendRequestPending = true
+            }
+          })
+        }
+        if (user.userRelations && user.userRelations.length > 0) {
+          user.userRelations.map((userRelation: any) => { //La comparacionm no es triple porque en mongo viene como ObjectID y en js como string
+            if (userRelation.userA._id == userRequestId || userRelation.userB._id == userRequestId) {
+              user.myUserRelationId = userRelation._id
             }
           })
         }

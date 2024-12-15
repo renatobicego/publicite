@@ -1,7 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { NotificationAdapterInterface } from "../../domain/adapter/notification.adapter.interface";
 import { NotificationServiceInterface } from "../../domain/service/notification.service.interface";
-import { GROUP_notification_graph_model_get_all } from "../../application/dtos/getAll.notification.dto";
+import { notification_graph_model_get_all} from "../../application/dtos/getAll.notification.dto";
 
 @Injectable()
 export class NotificationAdapter implements NotificationAdapterInterface {
@@ -16,7 +16,7 @@ export class NotificationAdapter implements NotificationAdapterInterface {
         id: string,
         limit: number,
         page: number,
-    ): Promise<GROUP_notification_graph_model_get_all> {
+    ): Promise<notification_graph_model_get_all> {
         try {
             return await this.notificationService.getAllNotificationsFromUserById(
                 id,

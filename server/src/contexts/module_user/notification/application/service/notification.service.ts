@@ -15,7 +15,7 @@ import { NotificationMagazine } from "../../domain/entity/notification.magazine.
 import { NotificationFactory } from "../notification.factory";
 import { MagazineServiceInterface } from "src/contexts/module_magazine/magazine/domain/service/magazine.service.interface";
 import { NotificationServiceInterface } from "../../domain/service/notification.service.interface";
-import { GROUP_notification_graph_model_get_all } from "../dtos/getAll.notification.dto";
+import { notification_graph_model_get_all} from "../dtos/getAll.notification.dto";
 import { NotificationUserServiceInterface } from "../../domain/service/notification.user.service.interface";
 import { NotificationUser } from "../../domain/entity/notification.user.entity";
 import { NotModifyException } from "src/contexts/module_shared/exceptionFilter/noModifyException";
@@ -97,7 +97,7 @@ export class NotificationService implements NotificationGroupServiceInterface, N
         id: string,
         limit: number,
         page: number,
-    ): Promise<GROUP_notification_graph_model_get_all> {
+    ): Promise<notification_graph_model_get_all> {
         try {
             return await this.notificationRepository.getAllNotificationsFromUserById(
                 id,
@@ -267,6 +267,23 @@ export class NotificationService implements NotificationGroupServiceInterface, N
             const userIdTo = notificationUser.getbackData.userIdTo;
 
             await session.withTransaction(async () => {
+
+
+                if (event === notification_user_friend_request_accepted) {
+                    const userRelationId = await this.userService.makeFriendRelationBetweenUsers(notificationUser.getbackData, notificationUser.getTypeOfRelation, session)
+                    if (!userRelationId) throw new Error(`Error was ocurred when making friend relation between users, please try again`);
+                    notificationUser.setNotificationUserRelationId = userRelationId
+
+                }
+
+                if (event === notification_user_new_relation_accepted) {
+                    const userRelationId = notificationUser.getUserRelationId ?? undefined
+                    if (!userRelationId) { throw new Error(`EVENT: ${event} require userRelationId, please send it and try again, `) }
+                    await this.userService.updateFriendRelationOfUsers(userRelationId, notificationUser.getTypeOfRelation, session)
+                }
+
+
+
                 const notificationId = await this.notificationRepository.saveUserNotification(notificationUser, session);
 
                 if (event === notification_user_new_friend_request || event === notification_user_new_relation_change) {
@@ -284,18 +301,7 @@ export class NotificationService implements NotificationGroupServiceInterface, N
                     await this.userService.removeFriendRequest(previousNotificationId, userIdFrom, session)
 
                 }
-
-
-                if (event === notification_user_friend_request_accepted) {
-                    await this.userService.makeFriendRelationBetweenUsers(notificationUser.getbackData, notificationUser.getTypeOfRelation, session)
-
-                }
-
-                if (event === notification_user_new_relation_accepted) {
-                    const userRelationId = notificationUser.getUserRelationId ?? undefined
-                    if (!userRelationId) { throw new Error(`EVENT: ${event} require userRelationId, please send it and try again, `) }
-                    await this.userService.updateFriendRelationOfUsers(userRelationId, notificationUser.getTypeOfRelation, session)
-                }
+              
 
                 await this.userService.pushNotificationToUserArrayNotifications(notificationId, userIdTo, session);
 

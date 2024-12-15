@@ -69,7 +69,7 @@ export class Notification {
     }
 }
 @ObjectType()
-export class GROUP_notification_graph_model_get_all {
+export class notification_graph_model_get_all {
     @Field(() => [Notification])
     notifications: Notification[];
 

@@ -52,7 +52,7 @@ export interface UserRepositoryInterface {
     user: UserPerson,
     options?: { session?: ClientSession },
   ): Promise<User>;
-  makeFriendRelationBetweenUsers(userRelation: UserRelation, session: any): Promise<void>
+  makeFriendRelationBetweenUsers(userRelation: UserRelation, session: any): Promise<string | null>
   update(
     username: string,
     reqUser: UserPersonalUpdateDto | UserBusinessUpdateDto,

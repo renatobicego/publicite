@@ -34,7 +34,7 @@ export interface UserServiceInterface {
     backData: { userIdFrom: string; userIdTo: string },
     typeOfRelation: string,
     session: any,
-  ): Promise<void>;
+  ): Promise<string | null>;
 
   pushNewFriendRequestOrRelationRequestToUser(
     notificationId: Types.ObjectId,

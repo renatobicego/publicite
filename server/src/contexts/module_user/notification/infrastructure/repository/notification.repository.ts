@@ -8,7 +8,7 @@ import { INotificationGroup, NotificationGroupModel } from "../schemas/notificat
 import { NotificationMagazine } from "../../domain/entity/notification.magazine.entity";
 import { INotificationMagazine, NotificationMagazineModel } from "../schemas/notification.magazine.schema";
 import NotificationModel, { NotificationDocument } from "../schemas/notification.schema";
-import { GROUP_notification_graph_model_get_all, Notification } from "../../application/dtos/getAll.notification.dto";
+import { notification_graph_model_get_all, Notification } from "../../application/dtos/getAll.notification.dto";
 import { parseZonedDateTime } from "@internationalized/date";
 import { NotificationUser } from "../../domain/entity/notification.user.entity";
 import { INotificationUser, NotificationUserModel } from "../schemas/notification.user.schema";
@@ -60,7 +60,7 @@ export class NotificationRepository implements NotificationRepositoryInterface {
         id: string,
         limit: number,
         page: number,
-    ): Promise<GROUP_notification_graph_model_get_all> {
+    ): Promise<notification_graph_model_get_all> {
         try {
             const userNotificationResponse =
                 await this.notificationBaseDocument

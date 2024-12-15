@@ -3,7 +3,7 @@ import { Args, Context, Mutation, Resolver, Query } from "@nestjs/graphql";
 import { NotificationAdapterInterface } from "../../domain/adapter/notification.adapter.interface";
 import { ClerkAuthGuard } from "src/contexts/module_shared/auth/clerk-auth/clerk.auth.guard";
 import { CustomContextRequestInterface } from "src/contexts/module_shared/auth/custom_request/custom.context.request.interface";
-import { GROUP_notification_graph_model_get_all } from "../../application/dtos/getAll.notification.dto";
+import { notification_graph_model_get_all } from "../../application/dtos/getAll.notification.dto";
 
 @Resolver()
 export class NotificationResolver {
@@ -31,7 +31,7 @@ export class NotificationResolver {
         }
     }
 
-    @Query(() => GROUP_notification_graph_model_get_all, {
+    @Query(() => notification_graph_model_get_all, {
         nullable: true,
         description: 'obtener todas las notificaciones de un usuario por su Id',
     })
@@ -40,7 +40,7 @@ export class NotificationResolver {
         @Args('limit', { type: () => Number }) limit: number,
         @Args('page', { type: () => Number }) page: number,
         @Context() context: { req: CustomContextRequestInterface },
-    ): Promise<GROUP_notification_graph_model_get_all> {
+    ): Promise<notification_graph_model_get_all> {
         const userRequestId = context.req.userRequestId;
         try {
             return await this.notificationAdapter.getAllNotificationsFromUserById(

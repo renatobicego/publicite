@@ -107,6 +107,9 @@ class UserFrom {
 
 @ObjectType()
 class UserRelation {
+  @Field(() => ID, { nullable: true })
+  _id: string;
+
   @Field(() => UserFrom)
   userFrom: UserFrom;
 
@@ -170,7 +173,7 @@ class user_user_relation {
 @ObjectType()
 class user_relation {
   @Field(() => ID)
-  _id?: ObjectId;
+  _id: string;
 
   @Field(() => user_user_relation)
   userA: user_user_relation;
@@ -249,4 +252,7 @@ export class User_Full_Grapql_Model {
 
   @Field(() => Boolean, { nullable: true })
   isFriendRequestPending?: boolean;
+
+  @Field(() => String, { nullable: true })
+  myUserRelationId?: string;
 }

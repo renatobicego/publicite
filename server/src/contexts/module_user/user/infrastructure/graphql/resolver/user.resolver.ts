@@ -7,7 +7,7 @@ import { ClerkAuthGuard } from 'src/contexts/module_shared/auth/clerk-auth/clerk
 import { UserAdapterInterface } from '../../../application/adapter/userAdapter.interface';
 import { User_Full_Grapql_Model } from '../../../domain/entity/models_graphql/user.full.grapql.model';
 import { CustomContextRequestInterface } from 'src/contexts/module_shared/auth/custom_request/custom.context.request.interface';
-import { PubliciteAuth } from 'src/contexts/module_shared/auth/publicite_auth/publicite_auth';
+
 
 
 
@@ -38,7 +38,7 @@ export class UserResolver {
 
   @Mutation(() => String, {
     nullable: true,
-    description: 'Obtiene un usuario por su nombre de usuario ',
+    description: 'Remover una relacion de amistad entre dos usuarios',
   })
   @UseGuards(ClerkAuthGuard)
   async removeFriend(

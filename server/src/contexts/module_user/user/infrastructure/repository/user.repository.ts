@@ -62,6 +62,7 @@ export class UserRepository implements UserRepositoryInterface {
 
   async findUserByUsername(username: string): Promise<any> {
     try {
+      const userPopulate_userRelation = '_id userType name lastName businessName profilePhotoUrl username'
       const user = await this.user
         .findOne({ username })
         .select(
@@ -78,13 +79,11 @@ export class UserRepository implements UserRepositoryInterface {
             populate: [
               {
                 path: 'userA',
-                select:
-                  '_id userType name lastName businessName profilePhotoUrl username',
+                select: userPopulate_userRelation,
               },
               {
                 path: 'userB',
-                select:
-                  '_id userType name lastName businessName profilePhotoUrl username',
+                select: userPopulate_userRelation,
               },
             ],
           },
@@ -217,16 +216,16 @@ export class UserRepository implements UserRepositoryInterface {
   async makeFriendRelationBetweenUsers(
     userRelation: UserRelation,
     session: any,
-  ): Promise<void> {
+  ): Promise<string | null> {
     try {
       const userA = userRelation.getUserA;
       const userB = userRelation.getUserB;
 
-      if (!userA || !userB) return;
+      if (!userA || !userB) return null;
 
       const newUserRelation = new this.userRelation(userRelation);
-      const userRelationSaved = await newUserRelation.save();
-      const userRelationId = userRelationSaved._id;
+      const userRelationSaved = await newUserRelation.save() as any;
+      const userRelationId = userRelationSaved._id.toString();
 
       await this.user.updateMany(
         {
@@ -235,6 +234,7 @@ export class UserRepository implements UserRepositoryInterface {
         { $addToSet: { userRelations: userRelationId } },
         { session },
       );
+      return userRelationId;
     } catch (error: any) {
       throw error;
     }

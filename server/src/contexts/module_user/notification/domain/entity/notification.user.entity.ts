@@ -48,6 +48,9 @@ export class NotificationUser extends Notification {
         this.frontData = frontData;
     }
 
+    set setNotificationUserRelationId(notificationUserRelationId: string) {
+        this.frontData.userRelation._id = notificationUserRelationId
+    }
     get getUserRelationId() {
         return this.frontData.userRelation._id;
     }

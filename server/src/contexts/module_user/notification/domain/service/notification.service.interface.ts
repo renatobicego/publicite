@@ -1,4 +1,4 @@
-import { GROUP_notification_graph_model_get_all } from "../../application/dtos/getAll.notification.dto";
+import { notification_graph_model_get_all} from "../../application/dtos/getAll.notification.dto";
 
 export interface NotificationServiceInterface {
 
@@ -7,5 +7,5 @@ export interface NotificationServiceInterface {
         id: string,
         limit: number,
         page: number,
-    ): Promise<GROUP_notification_graph_model_get_all>;
+    ): Promise<notification_graph_model_get_all>;
 }

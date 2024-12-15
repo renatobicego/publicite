@@ -148,6 +148,7 @@ type UserFrom_notification {
 }
 
 type front_data_USER {
+  _id: ID
   userFrom: UserFrom_notification!
   typeRelation: String!
 }
@@ -174,7 +175,7 @@ type Notification {
   frontData: frontData!
 }
 
-type GROUP_notification_graph_model_get_all {
+type notification_graph_model_get_all {
   notifications: [Notification!]!
   hasMore: Boolean!
 }
@@ -298,6 +299,7 @@ type UserFrom {
 }
 
 type UserRelation {
+  _id: ID
   userFrom: UserFrom!
   typeRelation: String!
 }
@@ -357,6 +359,7 @@ type User_Full_Grapql_Model {
   groups: [Groups_Full_Graphql_Model]
   friendRequests: [friendRequests!]
   isFriendRequestPending: Boolean
+  myUserRelationId: String
 }
 
 type posts_graphql_magazine {
@@ -571,7 +574,7 @@ type Query {
   isThisGroupExist(alias: String!): Boolean
 
   """obtener todas las notificaciones de un usuario por su Id"""
-  getAllNotificationsFromUserById(limit: Float!, page: Float!): GROUP_notification_graph_model_get_all
+  getAllNotificationsFromUserById(limit: Float!, page: Float!): notification_graph_model_get_all
 
   """Obtener una revista"""
   getMagazineByMagazineId(id: String!): MagazineResponse
@@ -591,7 +594,7 @@ enum PostType {
 }
 
 type Mutation {
-  """Obtiene un usuario por su nombre de usuario """
+  """Remover una relacion de amistad entre dos usuarios"""
   removeFriend(relationId: String!): String
 
   """Actualizar los metodos de contacto de un usuario"""

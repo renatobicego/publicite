@@ -1,10 +1,11 @@
-import { Schema } from 'mongoose';
+import { Schema, Types } from 'mongoose';
 import NotificationModel, { NotificationDocument } from "./notification.schema";
 import { UserRelationType } from '../../domain/entity/notification.user.entity';
 
 interface INotificationUser extends NotificationDocument {
     frontData: {
         userRelation: {
+            _id: { type: Types.ObjectId },
             userFrom: {
                 _id: string;
                 username: string;
@@ -19,6 +20,7 @@ interface INotificationUser extends NotificationDocument {
 const NotificationUserSchema = new Schema<INotificationUser>({
     frontData: {
         userRelation: {
+            _id: { type: Types.ObjectId },
             userFrom: {
                 _id: { type: String, required: true },
                 username: { type: String, required: true },
