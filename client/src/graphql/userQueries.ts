@@ -79,20 +79,6 @@ const getUserByUsernameQuery = gql`
           lastName
         }
       }
-      friendRequests {
-        event
-        _id
-        frontData {
-          userRelation {
-            typeRelation
-            userFrom {
-              _id
-              profilePhotoUrl
-              username
-            }
-          }
-        }
-      }
       isFriendRequestPending
     }
   }
@@ -105,6 +91,9 @@ export const getFriendRequestsQuery = gql`
       friendRequests {
         event
         _id
+        backData {
+          userIdFrom
+        }
         frontData {
           userRelation {
             typeRelation
@@ -187,6 +176,12 @@ export const updateContactMutation = gql`
     $updateRequest: UpdateContactRequest!
   ) {
     updateContactById(contactId: $contactId, updateRequest: $updateRequest)
+  }
+`;
+
+export const deleteUserRelationMutation = gql`
+  mutation RemoveFriend($relationId: String!) {
+    removeFriend(relationId: $relationId)
   }
 `;
 

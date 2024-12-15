@@ -26,6 +26,7 @@ import OptionsDropdown from "../OptionsDropdown";
 import ContactPetitionsList from "@/components/modals/ContactPetition/ContactPetitionsList";
 import { relationTypes } from "@/utils/data/selectData";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
+import DeleteUserRelation from "../DeleteUserRelation";
 
 const UserInfo = ({
   user,
@@ -45,6 +46,7 @@ const UserInfo = ({
         return <ContactPetitionsList userId={user._id} />;
       case isMyContact !== undefined:
         return (
+          <>
           <div className="flex flex-col gap-1">
             {user.isFriendRequestPending ? (
               <PrimaryButton isDisabled className="hover:bg-none" variant="bordered">
@@ -67,6 +69,8 @@ const UserInfo = ({
               }
             </p>
           </div>
+          <DeleteUserRelation relationId={isMyContact._id} />
+          </>
         );
       case user.isFriendRequestPending:
         return (
@@ -106,12 +110,12 @@ const UserInfo = ({
         {user.description && (
           <p className="text-sm lg:text-base">{user.description}</p>
         )}
-        <div className="flex items-center gap-1">
+        <div className="flex items-start gap-1">
           <TbWorldPin className="size-4 min-w-4" />
-          <p className="text-xs md:text-sm">{user.countryRegion}</p>
+          <p className="text-xs md:text-sm mb-0.5">{user.countryRegion}</p>
         </div>
         {user.contact && <SocialMedia contact={user.contact} />}
-        <div className="flex gap-2 items-center">{actionToShow()}</div>
+        <div className="flex gap-2 items-start">{actionToShow()}</div>
       </div>
     </section>
   );

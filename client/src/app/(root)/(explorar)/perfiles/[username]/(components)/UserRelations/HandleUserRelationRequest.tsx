@@ -30,7 +30,8 @@ const HandleUserRelationRequest = ({
         : "notification_user_friend_request_accepted",
       userRelation.backData.userIdFrom,
       userRelation.frontData.userRelation.typeRelation,
-      userRelation._id
+      userRelation._id,
+      // userRelation.frontData.userRelation._id
     );
     if (isChangeOfRelation) {
       toastifySuccess("Cambio de relación aceptado");

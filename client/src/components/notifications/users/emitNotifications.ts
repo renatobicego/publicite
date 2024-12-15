@@ -7,7 +7,8 @@ export const emitUserRelationNotification = (
   event: UserRelationNotificationType,
   userIdTo: string,
   typeRelation: UserRelation,
-  previousNotificationId: string | null
+  previousNotificationId: string | null,
+  userRelationId?: string
 ) => {
   generateUserRelationNotification(
     event,
@@ -15,10 +16,19 @@ export const emitUserRelationNotification = (
     typeRelation,
     previousNotificationId
   ).then((notification) => {
-    console.log(notification);
+    const notificationWIthUserRelationId = {
+      ...notification,
+      frontData: {
+        ...notification.frontData,
+        userRelation: {
+          ...notification.frontData.userRelation,
+          _id: userRelationId,
+        },
+      },
+    }
     socket?.emit(
       "user_notifications",
-      notification,
+      userRelationId ? notificationWIthUserRelationId : notification,
       (response: { error?: string; success?: boolean }) => {
         console.log(response);
         if (response?.error) {

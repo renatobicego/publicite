@@ -1,7 +1,5 @@
-import { Group } from "@/types/groupTypes";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { Socket } from "socket.io-client";
-import { User } from "@/types/userTypes";
 import { emitUserRelationNotification } from "./emitNotifications";
 
 const acceptNewContactRequest = async (

@@ -12,6 +12,7 @@ import axios from "axios";
 import { getClient, query } from "@/lib/client";
 import getUserByUsernameQuery, {
   changeNotificationStatusMutation,
+  deleteUserRelationMutation,
   getAllNotificationsQuery,
   getFriendRequestsQuery,
   updateContactMutation,
@@ -265,5 +266,24 @@ export const putNotificationStatus = async (id: string[]) => {
     return data;
   } catch (error) {
     console.log(error);
+  }
+};
+
+export const deleteUserRelation = async (relationId: string) => {
+  try {
+    await getClient().mutate({
+      mutation: deleteUserRelationMutation,
+      variables: { relationId },
+      context: {
+        headers: {
+          Authorization: await auth().getToken({ template: "testing" }),
+        },
+      },
+    });
+    return {message: "Relacion eliminada"};
+  } catch (error) {
+    return {
+      error: "Error al eliminar la relacion. Por favor intenta de nuevo.",
+    }
   }
 };
