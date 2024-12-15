@@ -359,7 +359,6 @@ type User_Full_Grapql_Model {
   groups: [Groups_Full_Graphql_Model]
   friendRequests: [friendRequests!]
   isFriendRequestPending: Boolean
-  myUserRelationId: String
 }
 
 type posts_graphql_magazine {

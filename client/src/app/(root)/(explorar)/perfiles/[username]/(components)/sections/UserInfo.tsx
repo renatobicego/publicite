@@ -47,35 +47,45 @@ const UserInfo = ({
       case isMyContact !== undefined:
         return (
           <>
-          <div className="flex flex-col gap-1">
-            {user.isFriendRequestPending ? (
-              <PrimaryButton isDisabled className="hover:bg-none" variant="bordered">
-                Cambio de Relación Enviada
-              </PrimaryButton>
-            ) : (
-              <SendRequest
-                variant="solid"
-                removeMargin={false}
-                idToSendRequest={user._id}
-                previousUserRelation={isMyContact}
-              />
-            )}
-            <p className="text-xs md:text-small ml-2.5 italic">
-              Es tu{" "}
-              {
-                relationTypes.find(
-                  (relation) => relation.value === isMyContact.typeRelationA
-                )?.label
-              }
-            </p>
-          </div>
-          <DeleteUserRelation relationId={isMyContact._id} />
+            <div className="flex flex-col gap-1">
+              {user.isFriendRequestPending ? (
+                <PrimaryButton
+                  isDisabled
+                  className="hover:bg-none"
+                  variant="bordered"
+                >
+                  Cambio de Relación Enviada
+                </PrimaryButton>
+              ) : (
+                <SendRequest
+                  variant="solid"
+                  removeMargin={false}
+                  idToSendRequest={user._id}
+                  previousUserRelation={isMyContact}
+                />
+              )}
+              <p className="text-xs md:text-small ml-2.5 italic">
+                Es tu{" "}
+                {
+                  relationTypes.find(
+                    (relation) => relation.value === isMyContact.typeRelationA
+                  )?.label
+                }
+              </p>
+            </div>
+            <DeleteUserRelation relationId={isMyContact._id} />
           </>
         );
       case user.isFriendRequestPending:
         return (
-          <p className="text-xs md:text-small ml-2.5 italic">Solicitud enviada</p>
-        )
+          <PrimaryButton
+            isDisabled
+            className="hover:bg-none"
+            variant="bordered"
+          >
+            Solicitud enviada
+          </PrimaryButton>
+        );
       default:
         return (
           <SendRequest

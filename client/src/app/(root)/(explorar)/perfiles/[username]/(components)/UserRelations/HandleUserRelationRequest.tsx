@@ -31,7 +31,7 @@ const HandleUserRelationRequest = ({
       userRelation.backData.userIdFrom,
       userRelation.frontData.userRelation.typeRelation,
       userRelation._id,
-      // userRelation.frontData.userRelation._id
+      userRelation.frontData.userRelation._id
     );
     if (isChangeOfRelation) {
       toastifySuccess("Cambio de relación aceptado");

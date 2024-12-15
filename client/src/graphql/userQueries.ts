@@ -96,6 +96,7 @@ export const getFriendRequestsQuery = gql`
         }
         frontData {
           userRelation {
+            _id
             typeRelation
             userFrom {
               _id
@@ -141,6 +142,7 @@ export const getAllNotificationsQuery = gql`
               profilePhotoUrl
             }
             typeRelation
+            _id
           }
           magazine {
             _id

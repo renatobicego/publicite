@@ -59,7 +59,8 @@ const SendUserRequest = ({
         : "notification_user_new_friend_request",
       idToSendRequest,
       value as UserRelation,
-      null
+      null,
+      previousUserRelation?._id
     );
     toastifySuccess("Solicitud enviada correctamente"); 
     router.refresh();

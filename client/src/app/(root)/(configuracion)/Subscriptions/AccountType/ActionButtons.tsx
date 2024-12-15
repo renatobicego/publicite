@@ -1,6 +1,6 @@
 import SecondaryButton from "@/components/buttons/SecondaryButton";
 import { SubscriptionPlan } from "@/types/subscriptions";
-import { Button } from "@nextui-org/react";
+import { Button, Link } from "@nextui-org/react";
 
 const ActionButtons = ({
   previousPlan,
@@ -37,7 +37,7 @@ const ActionButtons = ({
             </Button>
           )}
           {!isFreePlanSelected && (
-            <SecondaryButton>
+            <SecondaryButton as={Link} href={`/suscribirse/${selectedPlan}`}>
               Continuar
             </SecondaryButton>
           )}

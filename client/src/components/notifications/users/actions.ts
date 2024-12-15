@@ -6,7 +6,7 @@ const acceptNewContactRequest = async (
   socket: Socket | null,
   userIdTo: string,
   typeRelation: UserRelation,
-  previousNotificationId: string
+  previousNotificationId: string,
 ) => {
   if (!socket) {
     toastifyError(
@@ -19,7 +19,8 @@ const acceptNewContactRequest = async (
     "notification_user_friend_request_accepted",
     userIdTo,
     typeRelation,
-    previousNotificationId
+    previousNotificationId,
+
   );
   toastifySuccess("Solicitud aceptada correctamente");
 };
@@ -49,7 +50,8 @@ const acceptChangeContactRequest = async (
   socket: Socket | null,
   userIdTo: string,
   typeRelation: UserRelation,
-  previousNotificationId: string
+  previousNotificationId: string,
+  userRelationId?: string
 ) => {
   if (!socket) {
     toastifyError(
@@ -62,7 +64,8 @@ const acceptChangeContactRequest = async (
     "notification_user_new_relation_accepted",
     userIdTo,
     typeRelation,
-    previousNotificationId
+    previousNotificationId,
+    userRelationId
   );
   toastifySuccess("Solicitud aceptada correctamente");
 };

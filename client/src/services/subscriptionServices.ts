@@ -120,7 +120,7 @@ export const getUserActivePostNumber = async (userId: string) => {
 
 export const getSubscriptionPlanById = async (id: string) => {
   try {
-    const { data } = await axios.get(
+    const { data, status } = await axios.get(
       "https://api.mercadopago.com/preapproval_plan/" + id,
       {
         headers: {
@@ -128,9 +128,18 @@ export const getSubscriptionPlanById = async (id: string) => {
         },
       }
     );
+    if(status !== 200 && status !== 201){
+      return {
+        error:
+          "Error al traer los datos del plan de suscripción. Por favor intenta de nuevo.",
+      }
+    }
     return data;
   } catch (error) {
-    console.log(error);
+    return {
+      error:
+        "Error al traer los datos del plan de suscripción. Por favor intenta de nuevo.",
+    }
   }
 };
 

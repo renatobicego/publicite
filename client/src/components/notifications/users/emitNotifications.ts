@@ -26,6 +26,7 @@ export const emitUserRelationNotification = (
         },
       },
     }
+    console.log(userRelationId)
     socket?.emit(
       "user_notifications",
       userRelationId ? notificationWIthUserRelationId : notification,

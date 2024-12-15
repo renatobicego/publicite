@@ -157,6 +157,7 @@ export interface UserRelationNotification extends BaseNotification {
     userRelation: {
       userFrom: Pick<User, "_id" | "username" | "profilePhotoUrl">;
       typeRelation: UserRelation;
+      _id?: ObjectId;
     }
   };
 }

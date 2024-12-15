@@ -18,7 +18,7 @@ import {
 } from "@/types/userTypes";
 import { userRelationNotificationMessages } from "./notificationMessages";
 import { PROFILE } from "@/utils/data/urls";
-import { Image } from "@nextui-org/react";
+import { Image, user } from "@nextui-org/react";
 import { relationTypes } from "@/utils/data/selectData";
 
 const UserRelationNotificationCard = ({
@@ -27,7 +27,7 @@ const UserRelationNotificationCard = ({
   notification: UserRelationNotification;
 }) => {
   const {
-    userRelation: { userFrom, typeRelation },
+    userRelation: { userFrom, typeRelation, _id: userRelationId },
   } = notification.frontData;
   const { event, viewed, date, isActionsAvailable, backData, _id } =
     notification;
@@ -53,7 +53,8 @@ const UserRelationNotificationCard = ({
             socket,
             backData.userIdFrom,
             typeRelation,
-            _id
+            _id,
+            userRelationId
           );
           setIsActionSent(true);
         },

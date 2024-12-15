@@ -8,7 +8,7 @@ import { auth } from "@clerk/nextjs/server";
 import UserSolapas from "@/components/solapas/UserSolapas";
 import CreateBoard from "@/components/Board/CreateBoard/CreateBoard";
 import { redirect } from "next/navigation";
-import { UserRelationNotification } from "@/types/userTypes";
+import { UserRelationNotification, UserRelations } from "@/types/userTypes";
 import { toastifyError } from "@/utils/functions/toastify";
 
 export default async function ProfileLayout(props: {
@@ -43,15 +43,19 @@ export default async function ProfileLayout(props: {
     return <ErrorCard message={user?.error ?? "Error al cargar el perfil."} />;
   }
   const isMyProfile = user._id === loggedUser?.sessionClaims?.metadata.mongoId;
-  const isMyContact =
-    user.userRelations.find(
-      (relation) =>
-        relation.userA._id === loggedUser?.sessionClaims?.metadata.mongoId
-    ) ||
-    user.userRelations.find(
-      (relation) =>
-        relation.userB._id === loggedUser?.sessionClaims?.metadata.mongoId
-    );
+
+  let isMyContact: UserRelations | undefined;
+  if (!isMyProfile) {
+    isMyContact =
+      user.userRelations?.find(
+        (relation) =>
+          relation.userA._id === loggedUser?.sessionClaims?.metadata.mongoId
+      ) ||
+      user.userRelations?.find(
+        (relation) =>
+          relation.userB._id === loggedUser?.sessionClaims?.metadata.mongoId
+      );
+  }
 
   let friendRequests: UserRelationNotification[] = [];
   if (isMyProfile) {
