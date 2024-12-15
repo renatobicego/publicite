@@ -9,7 +9,8 @@ export default function GlobalError({
 }: {
   error: Error & { digest?: string }
   reset: () => void
-}) {
+  }) {
+  console.log(error)
   return (
     // global-error must include html and body tags
     <html>

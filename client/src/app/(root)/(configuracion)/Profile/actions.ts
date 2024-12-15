@@ -83,7 +83,7 @@ export const getConfigData = async (user: { username?: string;  id: string}) => 
   const userBoard = await getBoardByUsername(user?.username as string);
   const subscriptions = await getSubscriptionsOfUser(
     user?.id as string
-  );
+  ) || [];
   const accountType = subscriptions.find(
     (subscription: Subscription) => !subscription.subscriptionPlan.isPostPack
   );
