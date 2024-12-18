@@ -219,6 +219,8 @@ export class PostRepository implements PostRepositoryInterface {
   ): Promise<any> {
     try {
       this.logger.log('Finding posts By postType: ' + postType);
+      const today = new Date();
+
 
       if (searchTerm) {
         const textSearchQuery = checkStopWordsAndReturnSearchQuery(searchTerm, SearchType.post);
@@ -230,10 +232,12 @@ export class PostRepository implements PostRepositoryInterface {
           }
         };
 
+
         this.logger.log('Buscando posts con términos de búsqueda');
         const posts = await this.postDocument
           .find({
             postType: postType,
+            endDate: { $gte: today },
             $or: [
               { searchTitle: { $regex: textSearchQuery } },
               { searchDescription: { $regex: textSearchQuery } },
@@ -261,6 +265,7 @@ export class PostRepository implements PostRepositoryInterface {
           })
           .lean();
 
+
         const hasMore = posts.length > limit;
         const postResponse = posts.slice(0, limit);
 
@@ -271,7 +276,10 @@ export class PostRepository implements PostRepositoryInterface {
       }
       this.logger.log('Buscando posts sin términos de búsqueda');
       const posts = await this.postDocument
-        .find({ postType: postType })
+        .find({
+          postType: postType,
+          endDate: { $gte: today },
+        })
         .limit(limit + 1)
         .skip((page - 1) * limit)
         .populate({

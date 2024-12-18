@@ -1,4 +1,4 @@
-import { ObjectId } from 'mongoose';
+import { ObjectId, Schema } from 'mongoose';
 import { PostLocation } from './postLocation.entity';
 import { PostRecomendation } from './postRecomendation.entity';
 
@@ -22,6 +22,7 @@ export class Post {
   private comments: ObjectId[];
   private attachedFiles: { url: string; label: string }[];
   private createAt: string;
+
   private _id?: ObjectId;
 
 
@@ -118,4 +119,6 @@ export class Post {
   get getCreateAt() {
     return this.createAt;
   }
+
+
 }
