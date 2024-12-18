@@ -31,6 +31,7 @@ import {
 import { PostDocument } from '../schemas/post.schema';
 import { PostLocationDocument } from '../schemas/postLocation.schema';
 import { checkStopWordsAndReturnSearchQuery, SearchType } from 'src/contexts/module_shared/utils/functions/checkStopWordsAndReturnSearchQuery';
+import { errorMonitor } from 'events';
 
 export class PostRepository implements PostRepositoryInterface {
   constructor(
@@ -447,4 +448,27 @@ export class PostRepository implements PostRepositoryInterface {
       throw error;
     }
   }
+
+  async updateEndDateFromPostById(postId: string, userRequestId: string): Promise<any> {
+    try {
+      await this.postDocument.updateOne(
+        { _id: postId, author: userRequestId },
+        [
+          {
+            $set: {
+              endDate: { $add: ["$endDate", 14 * 24 * 60 * 60 * 1000] } //Actualiza 14 dias
+            }
+          }
+        ]
+      );
+
+
+      this.logger.log('Updating end date from post with id: ' + postId + ' successfully updated');
+      return 'End Date from post with id: ' + postId + ' successfully updated'
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
 }

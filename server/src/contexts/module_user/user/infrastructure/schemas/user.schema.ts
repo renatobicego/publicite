@@ -49,7 +49,7 @@ const UserSchema = new Schema<IUser>(
     accountType: { type: Schema.Types.ObjectId, ref: 'AccountType' },
     groups: [{ type: Schema.Types.ObjectId, ref: 'Group' }],
     magazines: [{ type: Schema.Types.ObjectId, ref: 'Magazine' }],
-    board: { type: Schema.Types.ObjectId, ref: 'Board', default: undefined },
+    board: { type: Schema.Types.ObjectId, ref: 'Board' },
     posts: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
     userRelations: [{ type: Schema.Types.ObjectId, ref: 'UserRelation' }],
     userType: { type: String, enum: Object.values(UserType), required: true },

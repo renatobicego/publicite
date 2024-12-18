@@ -40,7 +40,6 @@ export class UserAdapter implements UserAdapterInterface {
       const factory = UserFactory.getInstance(this.logger);
       const user = factory.createUser(newUserRequest.userType.toLowerCase(), newUserRequest);
 
-
       return await this.userService.createUser(
         user,
         newUserRequest?.contact,

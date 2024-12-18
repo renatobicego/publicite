@@ -19,6 +19,7 @@ export class PostAdapter implements PostAdapterInterface {
     private readonly postMapper: PostMapperAdapterInterface,
     private readonly logger: MyLoggerService,
   ) { }
+
   async create(post: PostRequest): Promise<any> {
     try {
       return await this.postService.create(post);
@@ -83,4 +84,13 @@ export class PostAdapter implements PostAdapterInterface {
       throw error;
     }
   }
+
+  async updateEndDateFromPostById(postId: string, userRequestId: string): Promise<void> {
+    try {
+      return this.postService.updateEndDateFromPostById(postId, userRequestId);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
 }
