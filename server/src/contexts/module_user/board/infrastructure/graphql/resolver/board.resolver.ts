@@ -9,31 +9,29 @@ import { CustomContextRequestInterface } from 'src/contexts/module_shared/auth/c
 import { BoardRequest } from '../../../application/dto/HTTP-REQUEST/board.request';
 
 
-//´Provee instrucciones para transformar las insttrucciones provenientes del cliente en data que graph puede utilizar
-// Los resolvers son similareas a los controladores traicionales de un rest enpoint. SON PROVIDERS para nest
-
 @Resolver()
 export class BoardResolver {
-  //Definimos las query
+
   constructor(
     @Inject('BoardAdapterInterface')
     private readonly boardAdapter: BoardAdapterInterface,
   ) { }
 
+
   @Mutation(() => Board, {
     nullable: true,
-    description: 'Actualiza el board del usuario',
+    description: 'Crear una pizarra',
   })
   @UseGuards(ClerkAuthGuard)
-  async updateBoardById(
-    @Args('id', { type: () => String }) id: string,
-    @Args('boardData', { type: () => UpdateBoardDto })
-    boardData: UpdateBoardDto,
+  async createBoard(
+    @Args('boardRequest', { type: () => BoardRequest })
+    boardRequest: BoardRequest,
     @Context() context: { req: CustomContextRequestInterface },
   ): Promise<any> {
     try {
       const userRequestId = context.req.userRequestId;
-      return await this.boardAdapter.updateBoardById(id, userRequestId, boardData);
+      boardRequest.user = userRequestId;
+      return await this.boardAdapter.save(boardRequest);
     } catch (error: any) {
       throw error;
     }
@@ -59,24 +57,29 @@ export class BoardResolver {
     }
   }
 
+
   @Mutation(() => Board, {
     nullable: true,
-    description: 'Crear una pizarra',
+    description: 'Actualiza el board del usuario',
   })
   @UseGuards(ClerkAuthGuard)
-  async createBoard(
-    @Args('boardRequest', { type: () => BoardRequest })
-    boardRequest: BoardRequest,
+  async updateBoardById(
+    @Args('id', { type: () => String }) id: string,
+    @Args('boardData', { type: () => UpdateBoardDto })
+    boardData: UpdateBoardDto,
     @Context() context: { req: CustomContextRequestInterface },
   ): Promise<any> {
     try {
       const userRequestId = context.req.userRequestId;
-      boardRequest.user = userRequestId;
-      return await this.boardAdapter.save(boardRequest);
+      return await this.boardAdapter.updateBoardById(id, userRequestId, boardData);
     } catch (error: any) {
       throw error;
     }
   }
+
+
+
+
 
 
 
