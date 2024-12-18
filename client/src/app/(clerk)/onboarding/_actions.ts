@@ -21,7 +21,7 @@ export const completeOnboardingPerson = async (formData: UserPersonFormValues) =
       publicMetadata: {
         onboardingComplete: true,
         userType: "Person",
-        mongoId: resApi.data._id
+        mongoId: resApi.data
       },
     });
     return { message: res.publicMetadata };
@@ -46,7 +46,7 @@ export const completeOnboardingBusiness = async (formData: UserBusinessFormValue
       publicMetadata: {
         onboardingComplete: true,
         userType: "Business",
-        mongoId: resApi.data._id
+        mongoId: resApi.data
       },
     });
     return { message: res.publicMetadata };

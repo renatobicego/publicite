@@ -39,13 +39,14 @@ const SelectUsers = (props: SelectUserProps) => {
       }}
       classNames={{
         trigger:
-          "shadow-none hover:shadow-sm border-[0.5px] group-data-[focus=true]:border-light-text py-1",
+          "shadow-none hover:shadow-sm border-[0.5px] group-data-[focus=true]:border-light-text py-1 h-fit",
         value: "text-[0.8125rem]",
         label: "font-medium text-[0.8125rem]",
+        innerWrapper: "h-fit"
       }}
       renderValue={(items) => {
         return (
-          <div className="flex flex-wrap gap-2">
+          <div className="flex max-w-full gap-2 overflow-x-auto h-fit py-1">
             {items.map((item) => (
               <Chip color="default" size="sm" variant="bordered" key={item.key}>
                 {item.data?.username}
