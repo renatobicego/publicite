@@ -24,6 +24,7 @@ export class PostService implements PostServiceInterface {
     @Inject('UserServiceInterface')
     private readonly userService: UserServiceInterface,
   ) { }
+
   findAllPostByPostType(
     page: number,
     limit: number,
@@ -83,7 +84,7 @@ export class PostService implements PostServiceInterface {
 
       //Todo ok
       await session.commitTransaction();
-      
+
       return {
         _id: newPostId,
       };
@@ -140,4 +141,14 @@ export class PostService implements PostServiceInterface {
       throw error;
     }
   }
+
+  async updateEndDateFromPostById(postId: string, userRequestId: string): Promise<void> {
+    try {
+      this.logger.log('Updating end date from post with id: ' + postId);
+      return await this.postRepository.updateEndDateFromPostById(postId, userRequestId);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
 }

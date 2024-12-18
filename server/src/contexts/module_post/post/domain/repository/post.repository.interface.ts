@@ -30,4 +30,5 @@ export interface PostRepositoryInterface {
     id: string,
     postType: string,
   ): Promise<any>;
+  updateEndDateFromPostById(postId: string, userRequestId: string): Promise<void>;
 }

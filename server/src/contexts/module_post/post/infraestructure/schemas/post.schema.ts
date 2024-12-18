@@ -1,4 +1,4 @@
-import { Schema, model, Document } from 'mongoose';
+import { Schema, model, Document, Date } from 'mongoose';
 import { PostType } from '../../domain/entity/enum/post-type.enum';
 
 import { Visibility } from '../../domain/entity/enum/post-visibility.enum';
@@ -26,7 +26,16 @@ export interface PostDocument extends Document {
   comments: Schema.Types.ObjectId[];
   attachedFiles: attachedFiles[];
   createAt: string;
+  endDate: Date;
 }
+
+const addDays = (date: any, days: any) => {
+  const result = new Date(date);
+  result.setDate(result.getDate() + days);
+  return result;
+};
+
+
 
 export const PostSchema = new Schema<PostDocument>(
   {
@@ -82,6 +91,7 @@ export const PostSchema = new Schema<PostDocument>(
       },
     ],
     createAt: { type: String, required: true },
+    endDate: { type: Date, default: () => addDays(Date.now(), 365) },
   },
   {
     discriminatorKey: 'kind',
@@ -102,3 +112,4 @@ PostSchema.index({ searchTitle: 1, searchDescription: 1 });
 const PostModel = model<PostDocument>('Post', PostSchema);
 
 export default PostModel;
+

@@ -19,4 +19,5 @@ export interface PostAdapterInterface {
     id: string,
     cookie?: any,
   ): Promise<PostUpdateDto>;
+  updateEndDateFromPostById(postId: string, userRequestId: string): Promise<void>;
 }

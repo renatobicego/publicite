@@ -50,7 +50,7 @@ export class UserFactory implements UserFactoryInterface {
             userRequest.userPreferences,
         );
         switch (userType) {
-            case UserType.Person: {               
+            case UserType.Person: {
                 this.logger.log('We are creating a persona account');
                 return new UserPerson(userBase, userRequest.gender, userRequest.birthDate);
             }

@@ -152,4 +152,8 @@ export class Post_response_graphql_model {
 
   @Field(() => String, { nullable: true })
   petitionType: string;
+
+  @Field(() => Date, { nullable: true })
+  endDate: Date;
+
 }

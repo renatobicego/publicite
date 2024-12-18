@@ -8,12 +8,15 @@ import { PostGood } from "../../domain/entity/post-types/post.good.entity";
 import { PostService } from "../../domain/entity/post-types/post.service.entity";
 import { PostPetition } from "../../domain/entity/post-types/post.petition.entity";
 import { removeAccents_removeEmojisAndToLowerCase } from "../../domain/utils/normalice.data";
+import mongoose, { Schema } from "mongoose";
+
 
 
 export class PostFactory implements PostFactoryInterface {
 
     private static instance: PostFactory | null = null;
     private readonly logger: MyLoggerService;
+
 
     private constructor(logger: MyLoggerService) {
         this.logger = logger;

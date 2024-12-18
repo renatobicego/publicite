@@ -65,6 +65,26 @@ export class PostResolver {
     }
   }
 
+  @Mutation(() => String, {
+    nullable: true,
+    description: 'Incrementa el endDate de un post por su id',
+  })
+  @UseGuards(ClerkAuthGuard)
+  async updateEndDate(
+    @Args('postId', { type: () => String })
+    postId: string,
+    @Context() context: { req: CustomContextRequestInterface },
+  ): Promise<any> {
+    try {
+      const userRequestId = context.req.userRequestId;
+      return await this.postAdapter.updateEndDateFromPostById(postId, userRequestId);
+
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
   @Query(() => [Post_Full_Graphql_Model], {
     nullable: true,
     description: 'Obtener Post por autor',

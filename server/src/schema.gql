@@ -58,6 +58,7 @@ type GroupResponse {
   details: String
   profilePhotoUrl: String
   visibility: String!
+  groupNote: String
   groupNotificationsRequest: Notification_group
 }
 
@@ -484,7 +485,13 @@ type Post_response_graphql_model {
   frequencyPrice: String
   toPrice: Float
   petitionType: String
+  endDate: DateTime
 }
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
 
 type PostFindAllResponse {
   posts: [Post_response_graphql_model!]!
@@ -604,6 +611,9 @@ type Mutation {
 
   """Actualizar un post"""
   updatePostById(postUpdate: PostUpdateRequest!, id: String!, author_id: String!): String
+
+  """Incrementa el endDate de un post por su id"""
+  updateEndDate(postId: String!): String
 
   """Actualiza el board del usuario"""
   updateBoardById(id: String!, boardData: UpdateBoardDto!): Board
@@ -785,6 +795,7 @@ input GroupRequest {
   details: String!
   profilePhotoUrl: String!
   visibility: Visibility_Enum_Group!
+  groupNote: String
 }
 
 enum Visibility_Enum_Group {
@@ -802,6 +813,7 @@ input GroupUpdateRequest {
   details: String
   profilePhotoUrl: String
   visibility: String
+  groupNote: String
 }
 
 input MagazineSectionCreateRequest {

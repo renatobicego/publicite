@@ -31,6 +31,7 @@ import {
 import { PostDocument } from '../schemas/post.schema';
 import { PostLocationDocument } from '../schemas/postLocation.schema';
 import { checkStopWordsAndReturnSearchQuery, SearchType } from 'src/contexts/module_shared/utils/functions/checkStopWordsAndReturnSearchQuery';
+import { errorMonitor } from 'events';
 
 export class PostRepository implements PostRepositoryInterface {
   constructor(
@@ -219,6 +220,8 @@ export class PostRepository implements PostRepositoryInterface {
   ): Promise<any> {
     try {
       this.logger.log('Finding posts By postType: ' + postType);
+      const today = new Date();
+
 
       if (searchTerm) {
         const textSearchQuery = checkStopWordsAndReturnSearchQuery(searchTerm, SearchType.post);
@@ -230,10 +233,12 @@ export class PostRepository implements PostRepositoryInterface {
           }
         };
 
+
         this.logger.log('Buscando posts con términos de búsqueda');
         const posts = await this.postDocument
           .find({
             postType: postType,
+            endDate: { $gte: today },
             $or: [
               { searchTitle: { $regex: textSearchQuery } },
               { searchDescription: { $regex: textSearchQuery } },
@@ -261,6 +266,7 @@ export class PostRepository implements PostRepositoryInterface {
           })
           .lean();
 
+
         const hasMore = posts.length > limit;
         const postResponse = posts.slice(0, limit);
 
@@ -271,7 +277,10 @@ export class PostRepository implements PostRepositoryInterface {
       }
       this.logger.log('Buscando posts sin términos de búsqueda');
       const posts = await this.postDocument
-        .find({ postType: postType })
+        .find({
+          postType: postType,
+          endDate: { $gte: today },
+        })
         .limit(limit + 1)
         .skip((page - 1) * limit)
         .populate({
@@ -439,4 +448,27 @@ export class PostRepository implements PostRepositoryInterface {
       throw error;
     }
   }
+
+  async updateEndDateFromPostById(postId: string, userRequestId: string): Promise<any> {
+    try {
+      await this.postDocument.updateOne(
+        { _id: postId, author: userRequestId },
+        [
+          {
+            $set: {
+              endDate: { $add: ["$endDate", 14 * 24 * 60 * 60 * 1000] } //Actualiza 14 dias
+            }
+          }
+        ]
+      );
+
+
+      this.logger.log('Updating end date from post with id: ' + postId + ' successfully updated');
+      return 'End Date from post with id: ' + postId + ' successfully updated'
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
 }
