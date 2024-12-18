@@ -83,6 +83,7 @@ const Search = ({
   const handleSearch = () => {
     if (searchTerm.trim()) {
       const searchURL = getSearchURL();
+      setSearchTerm("");
       router.push(searchURL);
     }
   };
@@ -93,29 +94,11 @@ const Search = ({
     }
   };
 
-  //Reset url and search
-  const resetSearch = () => {
-    setSearchTerm("");
-    router.push(getSearchURL(true));
-  };
-
+  
   return (
     <Input
       startContent={
-        searchParams.get("busqueda") && !searchTerm ? (
-          <Tooltip content="Limpiar búsqueda">
-            <Button
-              onPress={resetSearch}
-              isIconOnly
-              size="sm"
-              variant="light"
-              radius="full"
-              color="default"
-            >
-              <FaX />
-            </Button>
-          </Tooltip>
-        ) : (
+        searchTerm && (
           <SearchButton searchTerm={searchTerm} handleSearch={handleSearch} />
         )
       }
@@ -136,7 +119,11 @@ const Search = ({
       variant="bordered"
       onFocus={() => setIsFocused(true)}
       onKeyDown={handleKeyDown}
-      onBlur={() => setIsFocused(false)}
+      onBlur={() => {
+        if (!searchTerm) {
+          setIsFocused(false);
+        }
+      }}
       className={`!transition-all duration-300 ${
         isFocused ? "!w-full flex-grow" : "w-auto"
       }`}
