@@ -122,6 +122,10 @@ export class GroupResponse {
   @Field(() => String)
   visibility: string;
 
+  @Field(() => String, { nullable: true })
+  groupNote: string;
+
+
   @Field(() => Notification_group, { nullable: true })
   groupNotificationsRequest: Notification_group;
 
@@ -138,6 +142,7 @@ export class GroupResponse {
     this.profilePhotoUrl = group.profilePhotoUrl;
     this.visibility = group.visibility;
     this.groupNotificationsRequest = group.groupNotificationsRequest;
+    this.groupNote = group.groupNote
   }
 }
 

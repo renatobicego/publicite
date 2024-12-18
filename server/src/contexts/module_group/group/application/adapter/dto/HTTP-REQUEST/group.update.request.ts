@@ -29,4 +29,9 @@ export class GroupUpdateRequest {
 
   @Field(() => String, { nullable: true })
   visibility: string;
+
+  @Field(() => String, { nullable: true })
+  groupNote: string;
+
+  
 }

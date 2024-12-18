@@ -15,6 +15,7 @@ export class Group {
     joinRequests: string[];
     groupInvitations: string[];
   };
+  private groupNote: string;
 
   constructor(
     members: ObjectId[],
@@ -31,6 +32,7 @@ export class Group {
       joinRequests: string[];
       groupInvitations: string[];
     },
+    groupNote: string,
   ) {
     this.members = members ?? [];
     this.admins = admins ?? [];
@@ -46,6 +48,7 @@ export class Group {
       joinRequests: [],
       groupInvitations: [],
     };
+    this.groupNote = groupNote;
   }
 
   get getMembers() {

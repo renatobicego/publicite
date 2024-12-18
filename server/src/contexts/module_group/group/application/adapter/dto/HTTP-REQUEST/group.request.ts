@@ -31,4 +31,10 @@ export class GroupRequest {
 
   @Field(() => Visibility)
   visibility: Visibility;
+
+  @Field(() => String, { nullable: true })
+  groupNote: string;
+
+
+
 }

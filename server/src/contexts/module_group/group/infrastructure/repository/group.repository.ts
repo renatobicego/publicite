@@ -599,7 +599,7 @@ export class GroupRepository implements GroupRepositoryInterface {
       const session = await this.connection.startSession();
       session.startTransaction();
       let groups;
-
+      const selectedFields = '_id name profilePhotoUrl members admins details name magazines rules profilePhotoUrl visibility groupNotificationsRequest alias creator groupNote'
       if (name) {
         const textSearchQuery = checkStopWordsAndReturnSearchQuery(
           name,
@@ -623,7 +623,7 @@ export class GroupRepository implements GroupRepositoryInterface {
           .limit(limit + 1)
           .skip((page - 1) * limit)
           .select(
-            '_id name profilePhotoUrl members admins details name magazines rules profilePhotoUrl visibility groupNotificationsRequest alias creator',
+            selectedFields
           )
           .populate([
             {
@@ -657,7 +657,7 @@ export class GroupRepository implements GroupRepositoryInterface {
           .limit(limit + 1)
           .skip((page - 1) * limit)
           .select(
-            '_id name profilePhotoUrl members admins details name magazines rules profilePhotoUrl visibility groupNotificationsRequest alias creator',
+            selectedFields
           )
           .populate([
             {
@@ -985,6 +985,7 @@ export class GroupRepository implements GroupRepositoryInterface {
     try {
       const response = await this.groupModel
         .findByIdAndUpdate(group._id, group)
+        .select('_id')
         .lean();
       return response?._id;
     } catch (error) {

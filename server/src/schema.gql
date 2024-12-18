@@ -58,6 +58,7 @@ type GroupResponse {
   details: String
   profilePhotoUrl: String
   visibility: String!
+  groupNote: String
   groupNotificationsRequest: Notification_group
 }
 
@@ -794,6 +795,7 @@ input GroupRequest {
   details: String!
   profilePhotoUrl: String!
   visibility: Visibility_Enum_Group!
+  groupNote: String
 }
 
 enum Visibility_Enum_Group {
@@ -811,6 +813,7 @@ input GroupUpdateRequest {
   details: String
   profilePhotoUrl: String
   visibility: String
+  groupNote: String
 }
 
 input MagazineSectionCreateRequest {
