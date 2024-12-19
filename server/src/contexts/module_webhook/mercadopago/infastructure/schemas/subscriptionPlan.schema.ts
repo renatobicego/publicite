@@ -14,6 +14,7 @@ export const SubscriptionPlanSchema = new Schema({
 	intervalTime: { type: Number, required: true },
 	price: { type: Number, required: true },
 	postLimit: { type: Number, required: true },
+	isFree: { type: Boolean },
 	_id: { type: Types.ObjectId, default: Types.ObjectId },
 })
 
@@ -26,5 +27,6 @@ export interface SubscriptionPlanDocument extends Document {
 	intervalTime: number;
 	price: number;
 	postLimit: number;
+	isFree: boolean;
 	_id: ObjectId;
 }
