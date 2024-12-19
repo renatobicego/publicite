@@ -8,6 +8,7 @@ import {
 import { GqlArgumentsHost } from '@nestjs/graphql';
 import { Response } from 'express';
 import { NotModifyException } from '../noModifyException';
+import { PreviousIdMissingException } from '../previousIdMissingException';
 
 
 @Catch()
@@ -36,6 +37,10 @@ export class AllExceptionsFilter implements ExceptionFilter {
     if (exception instanceof NotModifyException) {
       status = exception.statusCode as any; // Usamos el código 304 que definiste en la excepción
       message = exception.message as any;   // Usamos el mensaje de la excepción personalizada
+    }
+    if (exception instanceof PreviousIdMissingException) {
+      status = exception.statusCode as any;
+      message = exception.message as any;
     }
     // Si es una instancia de HttpException, obtenemos el estado y el mensaje
     else if (exception instanceof HttpException) {

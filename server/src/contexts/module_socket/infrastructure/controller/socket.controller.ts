@@ -3,6 +3,7 @@ import { Body, Controller, Inject, Post, UseGuards } from "@nestjs/common";
 
 import { SocketAdapterInterface } from "../../application/adapter/socket.adapter.interface";
 import { AuthSocket } from "../auth/socket.auth";
+import { PreviousIdMissingException } from "src/contexts/module_shared/exceptionFilter/previousIdMissingException";
 
 @Controller('socket')
 export class SocketController {
@@ -16,7 +17,6 @@ export class SocketController {
     @Body() notificationBody: any,
   ): Promise<any> {
     try {
-
       return await this.socketAdapter.sendGroupNotificationToNotificationService(notificationBody);
     } catch (error: any) {
       throw error;

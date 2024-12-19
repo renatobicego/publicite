@@ -38,7 +38,6 @@ const user_has_been_removed_fom_magazine = MAGAZINE_NOTIFICATION_eventTypes[3]
 // MAKE ACTIONS INACTIVE 
 const eventsThatMakeNotificationActionsInactive_GROUP = [
     'notification_group_user_rejected_group_invitation', // usuario B rechazo unirse al grupo
-    'notification_group_user_rejected_group_invitation',
 ]
 
 const eventsThatMakeNotificationActionsInactive_MAGAZINE = [

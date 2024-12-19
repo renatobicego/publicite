@@ -174,7 +174,6 @@ export class NotificationService implements NotificationGroupServiceInterface, N
                 if (event === notification_group_new_user_invited) await this.isThisNotificationDuplicate(notificationGroup.getNotificationEntityId);
                 notificationId = await this.notificationRepository.saveGroupNotification(notificationGroup, session);
                 this.logger.log('Notification save successfully');
-
                 if (eventsThatMakeNotificationActionsInactive_GROUP.includes(event)) {
                     this.logger.log('Setting notification actions to false');
                     const previousNotificationId = notificationGroup.getpreviousNotificationId;
