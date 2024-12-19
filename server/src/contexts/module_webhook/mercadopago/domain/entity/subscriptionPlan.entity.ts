@@ -11,6 +11,7 @@ export class SubscriptionPlan {
   private intervalTime: number;
   private price: number;
   private postLimit: number;
+  private isFree: boolean;
 
   constructor(
     mpPreapprovalPlanId: string,
@@ -22,6 +23,7 @@ export class SubscriptionPlan {
     price: number,
     postLimit: number,
     _id: ObjectId,
+    isFree: boolean,
   ) {
     this._id = _id;
     this.mpPreapprovalPlanId = mpPreapprovalPlanId;
@@ -32,6 +34,7 @@ export class SubscriptionPlan {
     this.intervalTime = intervalTime;
     this.price = price;
     this.postLimit = postLimit;
+    this.isFree = isFree;
   }
 
   public getId(): ObjectId {
@@ -61,6 +64,9 @@ export class SubscriptionPlan {
   public getReason(): string {
     return this.reason;
   }
+  public getIsFree(): boolean {
+    return this.isFree;
+  }
 
   static fromDocument(doc: any): SubscriptionPlan {
     return new SubscriptionPlan(
@@ -73,6 +79,7 @@ export class SubscriptionPlan {
       doc.price,
       doc.postLimit,
       doc._id ? doc._id : '',
+      doc.isFree,
     );
   }
 
@@ -89,6 +96,7 @@ export class SubscriptionPlan {
       intervalTime: subscriptionPlan.getIntervalTime(),
       price: subscriptionPlan.getPrice(),
       postLimit: subscriptionPlan.getPostLimit(),
+      isFree: subscriptionPlan.getIsFree(),
     };
   }
 }

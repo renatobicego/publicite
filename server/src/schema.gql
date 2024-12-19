@@ -615,11 +615,11 @@ type Mutation {
   """Incrementa el endDate de un post por su id"""
   updateEndDate(postId: String!): String
 
-  """Actualiza el board del usuario"""
-  updateBoardById(id: String!, boardData: UpdateBoardDto!): Board
-
   """Crear una pizarra"""
   createBoard(boardRequest: BoardRequest!): Board
+
+  """Actualiza el board del usuario"""
+  updateBoardById(id: String!, boardData: UpdateBoardDto!): Board
 
   """Aceptar la invitacion a un grupo"""
   acceptGroupInvitation(groupId: String!): String
@@ -761,11 +761,13 @@ enum FrequencyPrice {
   year
 }
 
-input UpdateBoardDto {
+input BoardRequest {
   annotations: [String!]
   visibility: Visibility_Enum_board
+  user: String
   color: String
   keywords: [String!]
+  searchTerm: String
 }
 
 enum Visibility_Enum_board {
@@ -776,13 +778,11 @@ enum Visibility_Enum_board {
   topfriends
 }
 
-input BoardRequest {
+input UpdateBoardDto {
   annotations: [String!]
   visibility: Visibility_Enum_board
-  user: String
   color: String
   keywords: [String!]
-  searchTerm: String
 }
 
 input GroupRequest {

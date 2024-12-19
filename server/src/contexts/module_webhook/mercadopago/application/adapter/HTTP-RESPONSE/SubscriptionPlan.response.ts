@@ -65,6 +65,13 @@ export class SubscriptionPlanResponse {
   })
   readonly postLimit: number;
 
+  @ApiProperty({
+    description: 'indicates if the plan is free',
+    type: Boolean,
+    example: true,
+  })
+  readonly isFree: boolean
+
   constructor(
     _id: ObjectId,
     mpPreapprovalPlanId: string,
@@ -75,6 +82,7 @@ export class SubscriptionPlanResponse {
     intervalTime: number,
     price: number,
     postLimit: number,
+    isFree: boolean,
   ) {
     this._id = _id;
     this.mpPreapprovalPlanId = mpPreapprovalPlanId;
@@ -85,5 +93,6 @@ export class SubscriptionPlanResponse {
     this.intervalTime = intervalTime;
     this.price = price;
     this.postLimit = postLimit;
+    this.isFree = isFree;
   }
 }
