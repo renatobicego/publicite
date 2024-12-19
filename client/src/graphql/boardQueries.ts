@@ -27,11 +27,13 @@ const editBoardByUsernameMutation = gql`
     $updateBoardByIdId: String!
     $boardData: UpdateBoardDto!
   ) {
-    updateBoardById(
-      id: $updateBoardByIdId
-      boardData: $boardData
-    ) {
+    updateBoardById(id: $updateBoardByIdId, boardData: $boardData) {
       _id
+      annotations
+      color
+      keywords
+      user
+      visibility
     }
   }
 `;
@@ -65,6 +67,11 @@ export const postBoardMutation = gql`
   mutation CreateBoard($boardRequest: BoardRequest!) {
     createBoard(boardRequest: $boardRequest) {
       _id
+      annotations
+      color
+      keywords
+      user
+      visibility
     }
   }
 `;

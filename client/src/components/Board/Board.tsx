@@ -5,9 +5,9 @@ import { handleBoardColor } from "@/utils/functions/utils";
 import MyBoard from "./MyBoard";
 
 interface BoardProps {
-  isMyBoard: boolean; // if true, the card will be a my board
+  isMyBoard: boolean; // if true, the card will be a my board card
   board?: Board;
-  isProfile?: boolean; // if true, the card will be a profile card
+  isProfile?: boolean; // if true, the card will be a profile card (show on profile of user). If not, is a board from search of boards
   name?: string;
   widthFull?: boolean; // if true, the card will take 100% of the parent width
   user?: {
@@ -24,9 +24,7 @@ const BoardCard = ({
   widthFull = false, 
   user
 }: BoardProps) => {
-  const bg = board?.color || "bg-fondo";
-  // Change style of board based in color of the board
-  const { textColor, borderColor } = handleBoardColor(bg);
+
   // if the board doesn't exist, return an empty board
   if (!board) {
     return (
@@ -38,8 +36,6 @@ const BoardCard = ({
     return (
       <MyBoard
         board={board}
-        borderColor={borderColor}
-        textColor={textColor}
         name={name}
         user={user}
         widthFull={widthFull}
@@ -52,8 +48,6 @@ const BoardCard = ({
         isProfile={isProfile}
         board={board}
         widthFull={widthFull}
-        textColor={textColor}
-        borderColor={borderColor}
         name={name}
       />
     );

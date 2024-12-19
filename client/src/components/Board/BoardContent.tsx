@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { CardHeader, CardFooter, Card, Link } from "@nextui-org/react";
 import UsernameAvatar from "../buttons/UsernameAvatar";
 import { Board } from "@/types/board";
@@ -6,23 +6,22 @@ import Annotations from "./sections/Annotations";
 import Keywords from "./sections/Keywords";
 import { PROFILE } from "@/utils/data/urls";
 import { User } from "@/types/userTypes";
+import { handleBoardColor } from "@/utils/functions/utils";
 
 const BoardContent = ({
   board,
-  textColor,
-  borderColor,
   isProfile,
   name,
   widthFull = false,
 }: {
   board: Board;
-  textColor: string;
-  borderColor: string;
   name?: string;
   isProfile: boolean;
   widthFull?: boolean;
-  }) => {
-  
+}) => {
+  const bg = board?.color || "bg-fondo";
+  // Change style of board based in color of the board
+  const { textColor, borderColor } = handleBoardColor(bg);
   return (
     <Card
       // if is a board shown in baord grid (explorar), it should be a link

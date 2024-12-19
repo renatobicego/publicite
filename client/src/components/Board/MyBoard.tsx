@@ -6,18 +6,15 @@ import Annotations from "./sections/Annotations";
 import Keywords from "./sections/Keywords";
 import { FaPencil } from "react-icons/fa6";
 import CreateBoard from "./CreateBoard/CreateBoard";
+import { handleBoardColor } from "@/utils/functions/utils";
 
 const MyBoard = ({
   board,
-  textColor,
-  borderColor,
   name,
   widthFull,
   user,
 }: {
   board: Board;
-  textColor: string;
-  borderColor: string;
   name?: string;
   widthFull?: boolean;
   user?: {
@@ -25,19 +22,24 @@ const MyBoard = ({
     username: string;
     _id: string;
   };
-}) => {
+  }) => {
   const [showEditBoard, setShowEditBoard] = useState(false);
+  const [localBoardData, setLocalBoardData] = useState(board);
+  const bg = localBoardData?.color || "bg-fondo";
+  // Change style of board based in color of the board
+  const { textColor, borderColor } = handleBoardColor(bg);
   // if the board is being edited, return the create board component
   if (showEditBoard) {
     return (
       <CreateBoard
-        prevBoard={board}
+        prevBoard={localBoardData}
         setShowEditBoard={setShowEditBoard}
+        setLocalBoardData={setLocalBoardData}
         user={
           {
             name: user?.fullName as string,
             username: user?.username as string,
-            _id: board.user as any,
+            _id: localBoardData.user as any,
           } as any
         }
       />
@@ -46,7 +48,7 @@ const MyBoard = ({
   // if the board is not being edited, return the board component
   return (
     <Card
-      className={`p-4 flex flex-col gap-2 ${board.color} ${textColor} ${
+      className={`p-4 flex flex-col gap-2 ${localBoardData.color} ${textColor} ${
         !widthFull &&
         "min-w-full md:min-w-[30%] lg:p-6 md:max-w-[34%] xl:max-w-[50%]"
       }`}
@@ -54,10 +56,10 @@ const MyBoard = ({
       <CardHeader className="p-0">
         <h6>Pizarra de {name}</h6>
       </CardHeader>
-      <Annotations annotations={board.annotations} />
+      <Annotations annotations={localBoardData.annotations} />
       <CardFooter className="flex w-full items-center justify-between p-0 pt-2">
         <Keywords
-          keywords={board.keywords}
+          keywords={localBoardData.keywords}
           textColor={textColor}
           borderColor={borderColor}
         />

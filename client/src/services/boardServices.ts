@@ -27,7 +27,7 @@ export const getBoards = async (searchTerm: string | null, page: number) => {
 
 export const postBoard = async (values: any) => {
   try {
-    await getClient().mutate({
+    const { data } = await getClient().mutate({
       mutation: postBoardMutation,
       variables: {
         boardRequest: values
@@ -39,7 +39,7 @@ export const postBoard = async (values: any) => {
       },
     })
 
-    return {message: "Pizarra creada exitosamente"}
+    return data.createBoard
   } catch (error) {
     return {
       error: "Error al crear la pizarra. Por favor intenta de nuevo.",
@@ -66,7 +66,7 @@ export const putBoard = async (id: string, values: any) => {
         },
       },
     });
-    return data;
+    return data.updateBoardById;
   } catch (error) {
     console.log(error)
     return {

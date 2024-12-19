@@ -9,7 +9,13 @@ export const createBoard = async (formData: any) => {
     return { error: "Usuario no autenticado. Por favor inicie sesión." };
   }
 
-  return await postBoard(formData);
+  const res = await postBoard(formData);
+
+  if (res.error) {
+    return { error: res.error };
+  }
+
+  return { message: "Pizarra creada exitosamente", updatedData: res };
 };
 
 export const editBoard = async (id: string, formData: any) => {
@@ -18,7 +24,7 @@ export const editBoard = async (id: string, formData: any) => {
     if (res.error) {
       return { error: res.error };
     }
-    return { message: "Pizarra editada exitosamente", id: "1" };
+    return { message: "Pizarra editada exitosamente", updatedData: res };
   } catch (err) {
     return {
       error: "Error al editar la pizarra. Por favor intenta de nuevo.",

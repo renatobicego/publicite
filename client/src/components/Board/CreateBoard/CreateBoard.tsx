@@ -14,7 +14,6 @@ import { Dispatch, SetStateAction, useState } from "react";
 import CreateBoardInputs from "./CreateBoardInputs";
 import BoardColor from "../inputs/BoardColor";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
-import { useRouter } from "next-nprogress-bar";
 import { createBoard, editBoard } from "@/app/server/boardActions";
 import { handleBoardColor } from "@/utils/functions/utils";
 
@@ -22,14 +21,15 @@ const CreateBoard = ({
   user,
   prevBoard,
   setShowEditBoard,
+  setLocalBoardData,
 }: {
   user: GetUser;
   prevBoard?: Board;
   setShowEditBoard?: Dispatch<SetStateAction<boolean>>;
+  setLocalBoardData: Dispatch<SetStateAction<Board>>;
 }) => {
   const [showForm, setShowForm] = useState(prevBoard ? true : false);
   const [bgColor, setBgColor] = useState(prevBoard?.color || "bg-fondo");
-  const router = useRouter();
   const initialValues: PostBoard = {
     annotations: prevBoard ? prevBoard.annotations : [],
     keywords: prevBoard ? prevBoard.keywords : [],
@@ -50,12 +50,11 @@ const CreateBoard = ({
         keywords: values.keywords,
         color: bgColor,
         visibility: values.visibility,
-      }
+      };
       resApi = await editBoard(prevBoard._id, editValues);
     } else {
       resApi = await createBoard({ ...values, color: bgColor });
     }
-    console.log(resApi)
     if (resApi.error) {
       toastifyError(resApi.error);
       actions.setSubmitting(false);
@@ -65,8 +64,9 @@ const CreateBoard = ({
     if (setShowEditBoard) {
       setShowEditBoard(false);
     }
-    toastifySuccess(resApi.message as string);
-    router.refresh();
+    console.log(resApi)
+    if (resApi.updatedData) setLocalBoardData(resApi.updatedData as Board);
+    toastifySuccess((resApi as any).message);
   };
   return (
     <Card
