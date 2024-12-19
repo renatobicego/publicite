@@ -1,4 +1,4 @@
-import { useUserData } from "@/app/(root)/providers/userDataProvider";
+import { useMagazinesData } from "@/app/(root)/providers/userDataProvider";
 import { removePostInMagazineSection } from "@/app/server/magazineActions";
 import { Magazine } from "@/types/magazineTypes";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
@@ -28,11 +28,11 @@ const MagazineCard = ({
     postId: string;
     section: string;
   };
-}) => {
+  }) => {
+    const {removePost} = useMagazinesData();
   const [sectionToDeletePost, setSectionToDeletePost] = useState<string | null>(
     null
   );
-  const { fetchMagazines } = useUserData();
 
   const handleSelectMagazineSection = (sectionId: string) => {
     if (selectedMagazineSection.id === sectionId) {
@@ -63,7 +63,7 @@ const MagazineCard = ({
       return;
     }
 
-    fetchMagazines();
+    removePost(savedPost?.postId as string, sectionToDeletePost);
     toastifySuccess(res.message as string);
   };
   const deletePostRef = useRef<() => void>(() => {});

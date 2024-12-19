@@ -1,42 +1,13 @@
 "use client";
+import { Provider, useDispatch, useSelector } from "react-redux";
+import { createStore, RootState } from "./store";
 import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  ReactNode,
-} from "react";
+  addPostToMagazine,
+  removePostFromMagazine,
+} from "./slices/magazineSlice";
+import { ReactNode, useEffect } from "react";
 import { UserType } from "@/types/userTypes";
-import { Magazine } from "@/types/magazineTypes";
-import { getMagazinesOfUser } from "@/services/magazineService";
-import { ConfigData, getConfigData } from "../(configuracion)/Profile/actions";
-import { toastifyError } from "@/utils/functions/toastify";
-
-interface UserDataContextType {
-  magazines?: Magazine[];
-  usernameLogged: string | null | undefined;
-  userIdLogged: string | undefined;
-  clerkIdLogged: string | undefined;
-  userTypeLogged?: UserType;
-  postsInMagazine: {
-    postId: string;
-    section: string;
-  }[];
-  fetchMagazines: () => Promise<void>;
-  configData?: ConfigData;
-}
-
-const UserDataContext = createContext<UserDataContextType | undefined>(
-  undefined
-);
-
-export const useUserData = () => {
-  const context = useContext(UserDataContext);
-  if (!context) {
-    throw new Error("useUserData must be used within a UserDataProvider");
-  }
-  return context;
-};
+import MagazineInitializer from "./MagazineInitializer";
 
 export const UserDataProvider = ({
   children,
@@ -51,70 +22,50 @@ export const UserDataProvider = ({
   clerkId?: string;
   userType?: UserType;
 }) => {
-  const [magazines, setMagazines] = useState<Magazine[]>();
-  const [postsInMagazine, setPostsInMagazine] = useState<
-    {
-      postId: string;
-      section: string;
-    }[]
-  >([]);
-  const [usernameLogged] = useState<string | null | undefined>(username);
-  const [userIdLogged] = useState<string | undefined>(userId);
-  const [clerkIdLogged] = useState<string | undefined>(clerkId);
-  const [userTypeLogged] = useState<UserType | undefined>(userType);
-  const [configData, setConfigData] = useState<ConfigData>();
+  // Create a Redux store with preloaded state
+  const store = createStore({
+    user: {
+      usernameLogged: username,
+      userIdLogged: userId,
+      clerkIdLogged: clerkId,
+      userTypeLogged: userType,
+    },
+  });
 
-  const fetchMagazines = async () => {
-    if (!userId) {
-      setMagazines([]);
-      return;
-    }
-    try {
-      const magazines: Magazine[] = await getMagazinesOfUser();
-      setMagazines(magazines);
-      // Flatten post IDs from each magazine's sections
-      const postsIds = magazines.flatMap((magazine) =>
-        magazine.sections.flatMap((section) =>
-          section.posts.map((post) => ({
-            postId: post._id,
-            section: section._id,
-          }))
-        )
-      );
-      setPostsInMagazine(postsIds);
-      
-    } catch (error) {
-      toastifyError("Error al obtener las revistas. Por favor recarga la página.");
-    }
-  };
-
-  const fetchConfigData = async () => {
-    if (!usernameLogged || !userIdLogged) return;
-    const configData = await getConfigData({
-      username: usernameLogged,
-      id: userIdLogged,
-    });
-    setConfigData(configData);
-  };
-  useEffect(() => {
-    fetchConfigData();
-    fetchMagazines();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId]);
   return (
-    <UserDataContext.Provider
-      value={{
-        magazines,
-        usernameLogged,
-        userIdLogged,
-        clerkIdLogged,
-        userTypeLogged,
-        postsInMagazine,
-        fetchMagazines,
-        configData,
-      }}
-    >
+    <Provider store={store}>
+      <MagazineInitializer userId={userId} />
       {children}
-    </UserDataContext.Provider>
+    </Provider>
   );
+};
+
+export const useUserData = () => {
+  const { usernameLogged, userIdLogged, clerkIdLogged, userTypeLogged } =
+    useSelector((state: RootState) => state.user);
+
+  return { usernameLogged, userIdLogged, clerkIdLogged, userTypeLogged };
+};
+
+export const useMagazinesData = () => {
+  const { magazines, postsInMagazine } = useSelector(
+    (state: RootState) => state.magazine
+  );
+  const dispatch = useDispatch();
+
+  const addPost = (postId: string, section: string) => {
+    dispatch(addPostToMagazine({ postId, section }));
+  };
+
+  const removePost = (postId: string, section: string) => {
+    dispatch(removePostFromMagazine({ postId, section }));
+  };
+
+  return { magazines, postsInMagazine, addPost, removePost };
+};
+
+export const useConfigData = () => {
+  const { configData } = useSelector((state: RootState) => state.config);
+
+  return { configData };
 };

@@ -6,7 +6,7 @@ import PrimaryButton from "../PrimaryButton";
 import MagazineCard from "./MagazineCard";
 import { Link, Spinner } from "@nextui-org/react";
 import { Magazine } from "@/types/magazineTypes";
-import { useUserData } from "@/app/(root)/providers/userDataProvider";
+import { useMagazinesData } from "@/app/(root)/providers/userDataProvider";
 
 const SavePostLogic = ({
   titleProps,
@@ -21,8 +21,8 @@ const SavePostLogic = ({
     postId: string;
     section: string;
   }[];
-}) => {
-  const { fetchMagazines } = useUserData();
+  }) => {
+  const {addPost} = useMagazinesData();
   // the selected magazine section and magazine id
   const [selectedMagazineSection, setSelectedMagazineSection] = useState<{
     id: string;
@@ -49,7 +49,7 @@ const SavePostLogic = ({
       return;
     }
 
-    fetchMagazines();
+    addPost(postId, selectedMagazineSection.id);
     setIsSubmitting(false);
     toastifySuccess(res.message as string);
   };

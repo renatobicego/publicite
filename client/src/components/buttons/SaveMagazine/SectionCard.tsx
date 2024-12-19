@@ -46,19 +46,25 @@ const SectionCard = ({
       }}
       className={`justify-start w-full flex-shrink-0 ${
         selectedMagazineSection.id === section._id ? "border-primary" : ""
-        } ${isPostInSection(section._id) ? "text-primary border-primary" : ""}
-      ${showOwnerType && "flex flex-col gap-0 items-start justify-center h-12"}`}
+      } ${isPostInSection(section._id) ? "text-primary border-primary" : ""}
+      `}
     >
-      {magazineName ? (
-        magazineName
-      ) : section.isFatherSection ? (
-        <span className="italic">Seccion General</span>
-      ) : (
-        section.title
-      )}
-      {showOwnerType && (
-        <span className="text-xs text-default-400">{showOwnerType}</span>
-      )}
+      <div
+        className={`${
+          showOwnerType && "flex flex-col gap-0 items-start justify-center h-12"
+        }`}
+      >
+        {magazineName ? (
+          magazineName
+        ) : section.isFatherSection ? (
+          <span className="italic">Seccion General</span>
+        ) : (
+          section.title
+        )}
+        {showOwnerType && (
+          <span className="text-xs text-default-400">{showOwnerType}</span>
+        )}
+      </div>
     </Button>
   );
 };

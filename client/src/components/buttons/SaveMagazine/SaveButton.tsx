@@ -8,7 +8,7 @@ import {
   PopoverTrigger,
 } from "@nextui-org/react";
 import { FaBookmark, FaRegBookmark } from "react-icons/fa6";
-import { useUserData } from "@/app/(root)/providers/userDataProvider";
+import { useMagazinesData } from "@/app/(root)/providers/userDataProvider";
 import { useState } from "react";
 import SavePostLogic from "./SavePostLogic";
 
@@ -18,7 +18,7 @@ interface SaveButtonProps extends ButtonProps {
 
 const SaveButton: React.FC<SaveButtonProps> = ({ post, ...props }) => {
   // get magazines and posts that are in magazines
-  const { magazines, postsInMagazine } = useUserData();
+  const { magazines, postsInMagazine } = useMagazinesData();
   const [isOpen, setIsOpen] = useState(false);
   // get posts in each magazine and section
   const saved = postsInMagazine.filter(
