@@ -902,9 +902,7 @@ export class GroupRepository implements GroupRepositoryInterface {
             $addToSet: {
               'groupNotificationsRequest.groupInvitations': userId,
             },
-            $set: {
-              userIdAndNotificationMap: userNotificationMap,
-            },
+            $set: { serIdAndNotificationMap: { $ifNull: ['$userIdAndNotificationMap', userNotificationMap] }, },
           },
         )
         .session(session)

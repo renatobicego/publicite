@@ -11,7 +11,7 @@ export class SocketController {
     private readonly socketAdapter: SocketAdapterInterface
   ) { }
   @Post('group')
-  @UseGuards(AuthSocket)
+  //@UseGuards(AuthSocket)
   async socketGroupController(
     @Body() notificationBody: any,
   ): Promise<any> {

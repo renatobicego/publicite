@@ -15,10 +15,11 @@ import { NotificationMagazine } from "../../domain/entity/notification.magazine.
 import { NotificationFactory } from "../notification.factory";
 import { MagazineServiceInterface } from "src/contexts/module_magazine/magazine/domain/service/magazine.service.interface";
 import { NotificationServiceInterface } from "../../domain/service/notification.service.interface";
-import { notification_graph_model_get_all} from "../dtos/getAll.notification.dto";
+import { notification_graph_model_get_all } from "../dtos/getAll.notification.dto";
 import { NotificationUserServiceInterface } from "../../domain/service/notification.user.service.interface";
 import { NotificationUser } from "../../domain/entity/notification.user.entity";
 import { NotModifyException } from "src/contexts/module_shared/exceptionFilter/noModifyException";
+import { PreviousIdMissingException } from "src/contexts/module_shared/exceptionFilter/previousIdMissingException";
 
 
 
@@ -139,7 +140,7 @@ export class NotificationService implements NotificationGroupServiceInterface, N
     async isThisNotificationDuplicate(notificationEntityId: string): Promise<any> {
         try {
             const isDuplicate = await this.notificationRepository.isThisNotificationDuplicate(notificationEntityId);
-            if (isDuplicate) throw new NotModifyException('This notification already exist');
+            if (isDuplicate) throw new NotModifyException();
         } catch (error: any) {
             throw error;
         }
@@ -178,7 +179,7 @@ export class NotificationService implements NotificationGroupServiceInterface, N
                     this.logger.log('Setting notification actions to false');
                     const previousNotificationId = notificationGroup.getpreviousNotificationId;
                     if (!previousNotificationId) {
-                        throw new Error('previousNotificationId not found, please send it')
+                        throw new PreviousIdMissingException()
                     }
                     await this.notificationRepository.setNotificationActionsToFalseById(previousNotificationId, session);
                 }
@@ -219,7 +220,7 @@ export class NotificationService implements NotificationGroupServiceInterface, N
                 if (eventsThatMakeNotificationActionsInactive_MAGAZINE.includes(event)) {
                     const previousNotificationId = notificationMagazine.getpreviousNotificationId;
                     if (!previousNotificationId) {
-                        throw new Error('previousNotificationId not found, please send it')
+                        throw new PreviousIdMissingException()
                     }
                     await this.notificationRepository.setNotificationActionsToFalseById(previousNotificationId, session)
                 }
@@ -295,13 +296,13 @@ export class NotificationService implements NotificationGroupServiceInterface, N
                 if (eventsThatMakeNotificationActionsInactive_USER.includes(event)) {
                     const previousNotificationId = notificationUser.getpreviousNotificationId;
                     if (!previousNotificationId) {
-                        throw new Error(`EVENT: ${event} require previousNotificationId, please send it and try again, `)
+                        throw new PreviousIdMissingException()
                     }
                     await this.notificationRepository.setNotificationActionsToFalseById(previousNotificationId, session)
                     await this.userService.removeFriendRequest(previousNotificationId, userIdFrom, session)
 
                 }
-              
+
 
                 await this.userService.pushNotificationToUserArrayNotifications(notificationId, userIdTo, session);
 

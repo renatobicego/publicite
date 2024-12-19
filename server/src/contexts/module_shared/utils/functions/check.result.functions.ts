@@ -32,7 +32,7 @@ function checkIfanyDataWasModified(result: any) {
 
 
   if (result.modifiedCount === 0) {
-    throw new NotModifyException('No data was modified.');
+    throw new NotModifyException();
   }
 }
 
