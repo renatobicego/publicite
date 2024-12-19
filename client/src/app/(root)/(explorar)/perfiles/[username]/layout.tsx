@@ -10,6 +10,7 @@ import CreateBoard from "@/components/Board/CreateBoard/CreateBoard";
 import { redirect } from "next/navigation";
 import { UserRelationNotification, UserRelations } from "@/types/userTypes";
 import { toastifyError } from "@/utils/functions/toastify";
+import BoardLocalData from "./(components)/BoardLocalData";
 
 export default async function ProfileLayout(props: {
   params: Promise<{ username: string }>;
@@ -75,20 +76,7 @@ export default async function ProfileLayout(props: {
           isMyProfile={isMyProfile}
           isMyContact={isMyContact}
         />
-        {user.board || !isMyProfile ? (
-          <BoardCard
-            board={user.board}
-            isMyBoard={isMyProfile}
-            isProfile
-            name={
-              "bussinessName" in user && user.bussinessName
-                ? (user.bussinessName as string)
-                : user.name
-            }
-          />
-        ) : (
-          <CreateBoard user={user} />
-        )}
+        <BoardLocalData board={user.board} user={user} isMyProfile={isMyProfile} />
       </div>
       <UserSolapas
         user={user}

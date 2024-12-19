@@ -1,7 +1,6 @@
 import { Board } from "@/types/board";
 import EmptyBoard from "./EmptyBoard";
 import BoardContent from "./BoardContent";
-import { handleBoardColor } from "@/utils/functions/utils";
 import MyBoard from "./MyBoard";
 
 interface BoardProps {
