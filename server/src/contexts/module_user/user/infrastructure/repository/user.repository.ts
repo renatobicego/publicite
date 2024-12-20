@@ -31,6 +31,7 @@ import {
   MagazineDocument,
   MagazineModel,
 } from 'src/contexts/module_magazine/magazine/infrastructure/schemas/magazine.schema';
+import { checkIfanyDataWasModified } from 'src/contexts/module_shared/utils/functions/check.result.functions';
 
 @Injectable()
 export class UserRepository implements UserRepositoryInterface {
@@ -227,13 +228,14 @@ export class UserRepository implements UserRepositoryInterface {
       const userRelationSaved = await newUserRelation.save() as any;
       const userRelationId = userRelationSaved._id.toString();
 
-      await this.user.updateMany(
+      const result = await this.user.updateMany(
         {
           _id: { $in: [userA, userB] },
         },
         { $addToSet: { userRelations: userRelationId } },
         { session },
       );
+      checkIfanyDataWasModified(result)
       return userRelationId;
     } catch (error: any) {
       throw error;
@@ -265,12 +267,13 @@ export class UserRepository implements UserRepositoryInterface {
     session: any,
   ): Promise<any> {
     try {
-      await this.user
+      const result = await this.user
         .updateOne(
           { _id: userNotificationOwner },
           { $addToSet: { friendRequests: notificationId } },
         )
         .session(session);
+      checkIfanyDataWasModified(result)
       this.logger.log(
         "notification saved successfully in user's notification array",
       );
@@ -343,7 +346,8 @@ export class UserRepository implements UserRepositoryInterface {
 
   async updateFriendRelationOfUsers(userRelationId: string, typeOfRelation: string, session: any): Promise<void> {
     try {
-      await this.userRelation.updateOne({ _id: userRelationId }, { typeRelationA: typeOfRelation, typeRelationB: typeOfRelation }).session(session);
+      const result = await this.userRelation.updateOne({ _id: userRelationId }, { typeRelationA: typeOfRelation, typeRelationB: typeOfRelation }).session(session);
+      checkIfanyDataWasModified(result);
       this.logger.log('Friend relation updated successfully');
     } catch (error: any) {
       this.logger.error('Error in updateFriendRelationOfUsers repository', error);
