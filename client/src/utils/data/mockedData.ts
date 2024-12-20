@@ -300,7 +300,7 @@ export const freeSubscriptionPlans: SubscriptionPlan[] = [
     description:
       "Cuenta personal gratuita de por vida, con anuncios visibles solo para tus contactos.",
     features: ["Beneficio 1", "Beneficio 2", "Beneficio 3"],
-    freePlan: true,
+    isFree: true,
     intervalTime: 1,
     isActive: true,
     postLimit: 5,

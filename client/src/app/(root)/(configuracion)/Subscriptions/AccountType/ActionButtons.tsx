@@ -15,9 +15,9 @@ const ActionButtons = ({
 }) => {
   const isSamePlan = previousPlan === selectedPlan;
   const isFreePlanSelected =
-    selectedPlan === subscriptionPlans.find((s) => s.freePlan === true)?._id; // ID of the free plan
+    selectedPlan === subscriptionPlans.find((s) => s.isFree === true)?._id; // ID of the free plan
   const isFreePlanCurrent =
-    previousPlan === subscriptionPlans.find((s) => s.freePlan === true)?._id;
+    previousPlan === subscriptionPlans.find((s) => s.isFree === true)?._id;
 
   return (
     <div className="flex gap-2 justify-end w-full items-center">
@@ -26,7 +26,7 @@ const ActionButtons = ({
       </Button>
       {!isSamePlan && (
         <>
-          {isFreePlanSelected && !isFreePlanCurrent && (
+          {isisFreeSelected && !isisFreeCurrent && (
             <Button
               color="danger"
               variant="light"
@@ -36,7 +36,7 @@ const ActionButtons = ({
               Cancelar Subscripción
             </Button>
           )}
-          {!isFreePlanSelected && (
+          {!isisFreeSelected && (
             <SecondaryButton as={Link} href={`/suscribirse/${selectedPlan}`}>
               Continuar
             </SecondaryButton>

@@ -7,7 +7,7 @@ const PlanDetails = ({
 }) => (
   <div className="flex flex-col flex-grow gap-1">
     <h3>{subscriptionPlan.reason}</h3>
-    {subscriptionPlan.freePlan ? (
+    {subscriptionPlan.isFree ? (
       <p className="text-sm">{subscriptionPlan.description}</p>
     ) : (
       <>

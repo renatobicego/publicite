@@ -35,7 +35,7 @@ const SubscriptionPlanCard = ({
       <CardHeader className="flex flex-col gap-2 items-start flex-auto justify-between">
         {isPopular && <PopularChip />}
         <PlanDetails subscriptionPlan={subscriptionPlan} />
-        {subscriptionPlan.freePlan ? (
+        {subscriptionPlan.isFree ? (
           <Button
             variant="bordered"
             color="primary"
