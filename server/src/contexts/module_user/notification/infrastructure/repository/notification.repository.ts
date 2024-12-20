@@ -107,6 +107,7 @@ export class NotificationRepository implements NotificationRepositoryInterface {
     async isThisNotificationDuplicate(notificationEntityId: string): Promise<boolean> {
         try {
             const notif_found = await this.notificationBaseDocument.exists({ notificationEntityId });
+
             if (notif_found) {
                 return true
             }
