@@ -34,17 +34,17 @@ export const CustomRadio = (props: RadioProps) => {
 
 const SubscriptionCard = ({
   subscriptionPlan,
-  freePlan,
+  isFree,
 }: {
   subscriptionPlan: SubscriptionPlan;
-  freePlan?: boolean;
+  isFree?: boolean;
 }) => {
   return (
     <CustomRadio color="secondary" value={subscriptionPlan._id}>
       <div className="flex flex-col gap-1 items-start w-full">
         <div className="w-full flex justify-between items-center gap-4">
           <h4 className="text-sm font-semibold">{subscriptionPlan.reason}</h4>
-          {freePlan ? (
+          {isFree ? (
             <p className="text-sm font-semibold">Gratis</p>
           ) : (
             <p className="text-sm font-semibold">

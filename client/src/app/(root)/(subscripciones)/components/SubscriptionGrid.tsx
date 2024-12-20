@@ -17,7 +17,6 @@ const SubscriptionGrid = ({
   subscriptionsOfUser: Subscription[];
 }) => {
   const [frequency, setFrequency] = useState(0);
-
   return (
     <>
       <FrequencyButtons
@@ -34,8 +33,14 @@ const SubscriptionGrid = ({
                 isPopular={plan.reason === "+ 20 Publicaciones Activas"}
               />
             ))
-          : [...freeSubscriptionPlans, ...subscriptions].map((plan) => {
-            const isUserSubscribed = checkIfUserIsSubscribed(subscriptionsOfUser, plan);
+          : [
+              subscriptions.find((plan) => plan.isFree) as SubscriptionPlan,
+              ...subscriptions.filter((plan) => !plan.isFree),
+          ].map((plan) => {
+              const isUserSubscribed = checkIfUserIsSubscribed(
+                subscriptionsOfUser,
+                plan
+              );
               return (
                 <SubscriptionPlanCard
                   key={plan._id}

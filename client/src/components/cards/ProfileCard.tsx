@@ -17,6 +17,8 @@ const ProfileCard = ({ user }: { user: User }) => {
         <Avatar
           className="shrink-0"
           isBordered
+          as={Link}
+          href={`${PROFILE}/${user.username}`}
           src={user.profilePhotoUrl}
           classNames={{
             base: "!w-14 md:!w-16 2xl:!w-20 !h-14 md:!h-16 2xl:!h-20",
