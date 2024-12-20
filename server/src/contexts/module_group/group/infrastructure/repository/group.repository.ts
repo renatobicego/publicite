@@ -895,19 +895,32 @@ export class GroupRepository implements GroupRepositoryInterface {
     try {
       let userNotificationMap = new Map<string, string>();
       userNotificationMap.set(userId, notificationId);
-      const result = await this.groupModel
+
+
+      const resultAddToSet = await this.groupModel
         .updateOne(
           { _id: groupId },
           {
             $addToSet: {
               'groupNotificationsRequest.groupInvitations': userId,
             },
-            $set: { serIdAndNotificationMap: { $ifNull: ['$userIdAndNotificationMap', userNotificationMap] }, },
-          },
+          }
         )
         .session(session)
         .lean();
-      checkIfanyDataWasModified(result);
+
+
+      const resultSet = await this.groupModel
+        .updateOne(
+          { _id: groupId, userIdAndNotificationMap: { $exists: false } },
+          {
+            $set: { userIdAndNotificationMap: userNotificationMap },
+          }
+        )
+        .session(session)
+        .lean();
+
+      checkIfanyDataWasModified(resultAddToSet || resultSet);
       this.logger.log(
         'Group request added to group successfully. Group ID: ' + groupId,
       );
@@ -915,6 +928,7 @@ export class GroupRepository implements GroupRepositoryInterface {
       throw error;
     }
   }
+
 
   async pullGroupInvitations(
     groupId: string,
