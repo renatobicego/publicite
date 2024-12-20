@@ -6,12 +6,13 @@ import { emitMagazineNotification } from "@/components/notifications/magazines/e
 import { useSocket } from "@/app/socketProvider";
 import { useUserData } from "@/app/(root)/providers/userDataProvider";
 import { Group } from "@/types/groupTypes";
-import { toastifySuccess } from "@/utils/functions/toastify";
+import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
+import { handleMagazineNotificationError } from "@/components/notifications/magazines/actions";
 
 const InviteCollabMagazine = ({ magazine }: { magazine: Magazine }) => {
   const { updateSocketToken } = useSocket();
   const { userIdLogged, usernameLogged } = useUserData();
-  const handleInvite = async(selectedUsers: string[]) => {
+  const handleInvite = async (selectedUsers: string[]) => {
     const socket = await updateSocketToken();
 
     selectedUsers.forEach((userId) =>
@@ -23,9 +24,10 @@ const InviteCollabMagazine = ({ magazine }: { magazine: Magazine }) => {
         "notification_magazine_new_user_invited",
         null
       )
+        .then(() => toastifySuccess("Invitación enviada con éxito"))
+        .catch(handleMagazineNotificationError)
     );
 
-    toastifySuccess("Invitaciones enviadas correctamente");
   };
   return (
     <InvitationModal
