@@ -17,6 +17,7 @@ import { Group } from "@/types/groupTypes";
 import { useSocket } from "@/app/socketProvider";
 import { emitGroupNotification } from "../../notifications/groups/emitNotifications";
 import { useUserData } from "@/app/(root)/providers/userDataProvider";
+import { handleGroupNotificationError } from "@/components/notifications/groups/actions";
 
 const HandleGroupMember = ({
   user,
@@ -48,8 +49,11 @@ const HandleGroupMember = ({
       user._id,
       "notification_group_user_new_admin",
       null
-    );
-    toastifySuccess(res.message);
+    )
+      .then(() => {
+        toastifySuccess(res.message);
+      })
+      .catch(handleGroupNotificationError);
     router.refresh();
   };
 
@@ -68,8 +72,11 @@ const HandleGroupMember = ({
       user._id,
       "notification_group_user_removed_from_group",
       null
-    );
-    toastifySuccess(res.message);
+    )
+      .then(() => {
+        toastifySuccess(res.message);
+      })
+      .catch(handleGroupNotificationError);
     router.refresh();
   };
 
@@ -88,8 +95,11 @@ const HandleGroupMember = ({
       user._id,
       "notification_group_user_removed_admin",
       null
-    );
-    toastifySuccess(res.message);
+    )
+      .then(() => {
+        toastifySuccess(res.message);
+      })
+      .catch(handleGroupNotificationError);
     router.refresh();
   };
 

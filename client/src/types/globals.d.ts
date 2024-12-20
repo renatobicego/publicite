@@ -35,7 +35,13 @@ declare global {
       userIdTo: string;
       userIdFrom: string;
     };
-    isActionsAvailable: boolean; 
-    previousNotificationId: string | null
+    isActionsAvailable: boolean;
+    previousNotificationId: string | null;
   }
+
+  type NotificationError =
+    | "NOTIFICATION_ERROR_BACKEND_INTERNAL_ERROR"
+    | "PREVIOUS_ID_MISSING"
+    | "NOTIFICATION_ALREADY_EXISTS"
+    | "USER_NOT_AUTHORIZED";
 }

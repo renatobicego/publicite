@@ -1,6 +1,7 @@
 import { useUserData } from "@/app/(root)/providers/userDataProvider";
 import { useSocket } from "@/app/socketProvider";
 import ConfirmModal from "@/components/modals/ConfirmModal";
+import { handleGroupNotificationError } from "@/components/notifications/groups/actions";
 import { emitGroupNotification } from "@/components/notifications/groups/emitNotifications";
 import { putMemberGroupByRequest } from "@/services/groupsService";
 import { Group } from "@/types/groupTypes";
@@ -29,11 +30,14 @@ const HandleGroupRequest = ({ user, group }: { user: User; group: Group }) => {
       user._id,
       "notification_group_user_accepted",
       null
-    );
-    toastifySuccess("Solicitud aceptada correctamente");
+    )
+      .then(() => {
+        toastifySuccess("Solicitud aceptada correctamente");
+      })
+      .catch(handleGroupNotificationError);
     router.refresh();
   };
-  const rejectRequest = async() => {
+  const rejectRequest = async () => {
     const socket = await updateSocketToken();
 
     emitGroupNotification(
@@ -43,8 +47,11 @@ const HandleGroupRequest = ({ user, group }: { user: User; group: Group }) => {
       user._id,
       "notification_group_user_rejected",
       null
-    );
-    toastifySuccess("Solicitud rechazada correctamente");
+    )
+      .then(() => {
+        toastifySuccess("Solicitud rechazada correctamente");
+      })
+      .catch(handleGroupNotificationError);
     router.refresh();
   };
   return (

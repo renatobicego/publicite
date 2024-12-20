@@ -10,32 +10,36 @@ export const emitGroupNotification = (
   userIdTo: string,
   event: GroupNotificationType,
   previousNotificationId: string | null
-) => {
-  const notification = generateGroupNotification(
-    event,
-    {
-      name: group.name,
-      _id: group._id,
-      profilePhotoUrl: group.profilePhotoUrl,
-    },
-    { username: userSending.username },
-    userIdTo,
-    userSending._id,
-    previousNotificationId
-  );
-  socket?.emit(
-    "group_notifications",
-    notification,
-    (response: { error?: string; success?: boolean }) => {
-      console.log(response);
-      if (response?.error) {
-        console.error("Error emitting group notification:", response.error);
-      } else if (response?.success) {
-        console.log("Magazine notification emitted successfully");
-      } else {
-        console.warn("Unexpected response from server:", response);
-      }
+): Promise<{ status?: number; message?: string }> => {
+  return new Promise((resolve, reject) => {
+    if (!socket) {
+      return reject(new Error("Socket is not initialized."));
     }
-  );
-  socket?.on("error", (error: string) => console.error(error));
+
+    const notification = generateGroupNotification(
+      event,
+      {
+        name: group.name,
+        _id: group._id,
+        profilePhotoUrl: group.profilePhotoUrl,
+      },
+      { username: userSending.username },
+      userIdTo,
+      userSending._id,
+      previousNotificationId
+    );
+
+    socket.emit(
+      "group_notifications",
+      notification,
+      (response: { status?: number; message?: string }) => {
+        console.log(response)
+        if (response?.status === 200) {
+          resolve(response);
+        } else {
+          reject(new Error(response?.message || "Error al enviar la notificación."));
+        }
+      }
+    );
+  });
 };
