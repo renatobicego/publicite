@@ -1,7 +1,7 @@
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Magazine } from '../../domain/entity/magazine.entity';
 import { Connection, Model, ObjectId } from 'mongoose';
-import { Inject } from '@nestjs/common';
+import { Inject, UnauthorizedException } from '@nestjs/common';
 
 import { MagazineRepositoryInterface } from '../../domain/repository/magazine.repository.interface';
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
@@ -311,24 +311,27 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
 
     try {
 
-      const result = await this.groupModel
+      const isAuthorized = await this.groupModel
         .findOne({
           magazines: magazineId,
           creator: magazineAdmin,
         })
         .session(session)
         .lean();
+      if (!isAuthorized) {
+        throw new UnauthorizedException();
+      }
 
-      checkIfanyDataWasModified(result);
 
-      await this.userModel
+      const result1 = await this.userModel
         .updateMany(
           { _id: { $in: allowedCollaboratorsToDelete } },
           { $pull: { magazines: magazineId } },
           { session },
         )
         .lean();
-      await this.groupMagazine
+      checkIfanyDataWasModified(result1);
+      const result2 = await this.groupMagazine
         .updateOne(
           { _id: magazineId },
           {
@@ -337,7 +340,7 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
           { session },
         )
         .lean();
-
+      checkIfanyDataWasModified(result2)
       this.logger.log(
         'Allowed Collaborators deleted from Magazine Group successfully',
       );
