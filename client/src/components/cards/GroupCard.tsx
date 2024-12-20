@@ -46,6 +46,8 @@ const GroupCard = ({
         <Avatar
           className="shrink-0 bg-white"
           isBordered
+          as={Link} 
+          href={`${GROUPS}/${groupData._id}`}
           src={
             groupData.profilePhotoUrl
               ? FILE_URL + groupData.profilePhotoUrl

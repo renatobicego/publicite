@@ -26,7 +26,7 @@ const ActionButtons = ({
       </Button>
       {!isSamePlan && (
         <>
-          {isisFreeSelected && !isisFreeCurrent && (
+          {isFreePlanSelected && !isFreePlanCurrent && (
             <Button
               color="danger"
               variant="light"
@@ -36,7 +36,7 @@ const ActionButtons = ({
               Cancelar Subscripción
             </Button>
           )}
-          {!isisFreeSelected && (
+          {!isFreePlanSelected && (
             <SecondaryButton as={Link} href={`/suscribirse/${selectedPlan}`}>
               Continuar
             </SecondaryButton>
