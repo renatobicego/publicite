@@ -7,29 +7,28 @@ import { emitGroupNotification } from "@/components/notifications/groups/emitNot
 import { useSocket } from "@/app/socketProvider";
 import { useUserData } from "@/app/(root)/providers/userDataProvider";
 import { User } from "@/types/userTypes";
+import { handleGroupNotificationError } from "@/components/notifications/groups/actions";
 
 const InviteUsersGroup = ({ group }: { group: Group }) => {
   const { usernameLogged: username, userIdLogged } = useUserData();
   const { updateSocketToken } = useSocket();
 
-  const handleInvite = async(selectedUsers: string[]) => {
+  const handleInvite = async (selectedUsers: string[]) => {
     const socket = await updateSocketToken();
-
-    try {
-      selectedUsers.forEach((user) => {
-        emitGroupNotification(
-          socket,
-          group,
-          { username: username as string, _id: userIdLogged as string },
-          user,
-          "notification_group_new_user_invited",
-          null
-        );
-      });
-      toastifySuccess("Invitaciones enviadas correctamente");
-    } catch (error) {
-      toastifyError("Error al invitar miembros. Por favor intenta de nuevo.");
-    }
+    selectedUsers.forEach((user) => {
+      emitGroupNotification(
+        socket,
+        group,
+        { username: username as string, _id: userIdLogged as string },
+        user,
+        "notification_group_new_user_invited",
+        null
+      )
+        .then(() => {
+          toastifySuccess("Invitación enviada correctamente");
+        })
+        .catch(handleGroupNotificationError);
+    });
   };
   return (
     <InvitationModal

@@ -61,9 +61,10 @@ const DeleteCollaborators = ({
         collaboratorId,
         "notification_magazine_user_has_been_removed",
         null
-      );
+      )
+        .then(() => toastifySuccess("Colaborador eliminado con éxito"))
+        .catch(() => toastifyError("Error al eliminar el colaborador"));
     });
-    toastifySuccess("Colaboradores eliminados con éxito");
   };
   return (
     <>

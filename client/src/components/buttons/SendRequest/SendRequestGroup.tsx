@@ -8,6 +8,7 @@ import { useSocket } from "@/app/socketProvider";
 import { useUserData } from "@/app/(root)/providers/userDataProvider";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { handleGroupNotificationError } from "@/components/notifications/groups/actions";
 
 const SendRequestGroup = ({
   variant,
@@ -51,9 +52,12 @@ const SendRequestGroup = ({
           adminId,
           "notification_group_user_request_group_invitation",
           null
-        );
+        )
+          .then(() => {
+            toastifySuccess("Solicitud enviada correctamente");
+          })
+          .catch(handleGroupNotificationError);
       });
-      toastifySuccess("Solicitud enviada correctamente");
       router.refresh();
     } catch (error) {
       toastifyError(

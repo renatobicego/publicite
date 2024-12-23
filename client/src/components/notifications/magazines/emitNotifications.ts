@@ -10,27 +10,29 @@ export const emitMagazineNotification = (
   userIdTo: string,
   event: MagazineNotificationType,
   previousNotificationId: string | null
-) => {
-  const notification = generateGroupNotification(
-    event,
-    { name: magazine.name, _id: magazine._id, ownerType: magazine.ownerType },
-    { username: userSending.username, _id: userSending._id },
-    userIdTo,
-    previousNotificationId
-  );
-  console.log(notification);
-  socket?.emit(
-    "magazine_notifications",
-    notification,
-    (response: { error?: string; success?: boolean }) => {
-      if (response?.error) {
-        console.error("Error emitting magazine notification:", response.error);
-      } else if (response?.success) {
-        console.log("Magazine notification emitted successfully");
-      } else {
-        console.warn("Unexpected response from server:", response);
+): Promise<{ status?: number; message?: string }> => {
+  return new Promise((resolve, reject) => {
+    const notification = generateGroupNotification(
+      event,
+      { name: magazine.name, _id: magazine._id, ownerType: magazine.ownerType },
+      { username: userSending.username, _id: userSending._id },
+      userIdTo,
+      previousNotificationId
+    );
+    console.log(notification);
+    socket?.emit(
+      "magazine_notifications",
+      notification,
+      (response: { status?: number; message?: string }) => {
+        console.log(response);
+        if (response?.status === 200) {
+          resolve(response);
+        } else {
+          reject(
+            new Error(response?.message || "Error al enviar la notificación.")
+          );
+        }
       }
-    }
-  );
-  socket?.on("error", (error: string) => console.error(error));
+    );
+  });
 };
