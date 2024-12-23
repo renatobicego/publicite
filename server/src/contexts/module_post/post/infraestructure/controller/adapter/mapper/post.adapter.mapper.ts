@@ -15,7 +15,7 @@ export class PostAdapterMapper implements PostMapperAdapterInterface {
 
     if (postUpdateRequest.description && postUpdateRequest.description.length > 0) {
       searchDescription = removeAccents_removeEmojisAndToLowerCase(postUpdateRequest.description);
-    } else if (postUpdateRequest.title && postUpdateRequest.title.length > 0) {
+    } if (postUpdateRequest.title && postUpdateRequest.title.length > 0) {
       searchTitle = removeAccents_removeEmojisAndToLowerCase(postUpdateRequest.title);
     }
 
@@ -39,9 +39,7 @@ export class PostAdapterMapper implements PostMapperAdapterInterface {
       toPrice: postUpdateRequest.toPrice,
       petitionType: postUpdateRequest.petitionType,
     };
-
-    const postMapped = omitBy(postUpdateDto, isUndefined);
-    console.log(postMapped)
-    return postMapped;
+    
+    return omitBy(postUpdateDto, isUndefined);
   }
 }
