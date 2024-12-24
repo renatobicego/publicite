@@ -33,8 +33,7 @@ export const getPostByIdQuery = gql`
       description
       frequencyPrice
       imagesUrls
-      location {
-        _id
+      geoLocation {
         description
         location {
           coordinates
@@ -54,6 +53,14 @@ export const getPostByIdQuery = gql`
         socialMedia
       }
       year
+    }
+  }
+`;
+
+export const postPostMutation = gql`
+  mutation CreatePost($postRequest: PostRequest!, $authorId: String!) {
+    createPost(postRequest: $postRequest, author_id: $authorId) {
+      _id
     }
   }
 `;
@@ -83,7 +90,7 @@ export const getPostsQuery = gql`
         price
         reviews
         toPrice
-        location {
+        geoLocation {
           description
         }
       }

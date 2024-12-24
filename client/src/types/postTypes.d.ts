@@ -11,7 +11,7 @@ export interface Post {
   };
   recommendations: PostRecommendation[];
   price: number;
-  location: PostLocation;
+  geoLocation: PostLocation;
   category: PostCategory[];
   comments: PostComment[];
   attachedFiles: PostAttachedFile[];
@@ -33,13 +33,13 @@ export interface PostRecommendation {
 }
 
 export interface PostLocation {
-  _id: ObjectId;
   location: {
     type: "Point";
     coordinates: [number, number];
   };
   description: string;
   userSetted: boolean;
+  ratio: number
 }
 
 export interface PostLocationForm {
@@ -48,6 +48,7 @@ export interface PostLocationForm {
   lng?: number;
   description?: string;
   userSetted?: boolean;
+  ratio?: number
 }
 
 export interface PostCategory {
@@ -101,12 +102,12 @@ export interface CreatePostValues
     | "price"
     | "category"
     | "recommendations"
-    | "location"
+    | "geoLocation"
   > {
   category: ObjectId;
   price?: number;
   author: string;
-  location: PostLocationForm;
+  geoLocation: PostLocationForm;
 }
 
 export interface GoodPostValues

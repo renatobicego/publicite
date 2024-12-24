@@ -88,7 +88,7 @@ const Data = async ({
         <div className="flex justify-between gap-2 md:gap-4 items-start">
           <p className="text-xs md:text-small lg:text-sm text-light-text">
             {showCondition}
-            Publicado {datePublished} en {post.location.description}
+            Publicado {datePublished} en {post.geoLocation.description}
           </p>
           {isAuthor && <OptionsDropdown post={post} />}
         </div>

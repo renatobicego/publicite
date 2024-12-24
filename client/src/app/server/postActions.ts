@@ -17,15 +17,8 @@ export const createPost = async (
   }
 
   try {
-    const resApi: any = await postPost(formData);
-    if (resApi.status !== 200 && resApi.status !== 201) {
-      return {
-        error:
-          "Error al crear el anuncio. Por favor intenta de nuevo. Error: " +
-          resApi.data.message,
-      };
-    }
-    return { message: "Anuncio creado exitosamente", id: resApi.data._id };
+    const resApi: string = await postPost(formData);
+    return { message: "Anuncio creado exitosamente", id: resApi };
   } catch (err) {
     return {
       error: "Error al crear el anuncio. Por favor intenta de nuevo.",

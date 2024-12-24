@@ -1,10 +1,5 @@
 import { Board } from "@/types/board";
-import {
-  Good,
-  Petition,
-  PostCategory,
-  Service,
-} from "@/types/postTypes";
+import { Good, Petition, PostCategory, Service } from "@/types/postTypes";
 import { SubscriptionPlan } from "@/types/subscriptions";
 import { boardColors } from "./selectData";
 import { GetUser } from "@/types/userTypes";
@@ -71,14 +66,14 @@ const mockedGood: Good = {
   ],
   condition: "new",
   price: 10000,
-  location: {
-    _id: "1",
+  geoLocation: {
     location: {
       type: "Point",
       coordinates: [-32.8998, -68.8259],
     },
     description: "Cacique Guaymallen 1065, Las Heras, Mendoza",
     userSetted: true,
+    ratio: 1,
   },
   category: [categories[0]],
   attachedFiles: [
@@ -158,14 +153,14 @@ const mockedService: Service = {
     "Te invitamos a que nos conozcas y puedas disfrutar con tus seres queridos de tu evento tal como lo soñaste. Elaboramos bocadillos totalmente caseros y con material de primera calidad.",
   title: "Lunch para eventos social y corporativos",
   price: 1000,
-  location: {
-    _id: "1",
+  geoLocation: {
     location: {
       type: "Point",
       coordinates: [-32.8998, -68.8259],
     },
     description: "Cacique Guaymallen 1065, Las Heras, Mendoza",
     userSetted: true,
+    ratio: 1,
   },
   category: [categories[1]],
   attachedFiles: [],
@@ -235,14 +230,14 @@ const mockedPetition: Petition = {
   attachedFiles: [],
   comments: [],
   price: 1000,
-  location: {
-    _id: "1",
+  geoLocation: {
     location: {
       type: "Point",
       coordinates: [-32.8998, -68.8259],
     },
     description: "Cacique Guaymallen 1065, Las Heras, Mendoza",
     userSetted: true,
+    ratio: 1,
   },
   toPrice: 2000,
   createAt: "2024-07-12",
@@ -279,14 +274,14 @@ const mockedPetition2: Petition = {
   attachedFiles: [],
   comments: [],
   price: 1000,
-  location: {
-    _id: "1",
+  geoLocation: {
     location: {
       type: "Point",
       coordinates: [-32.8998, -68.8259],
     },
     description: "Cacique Guaymallen 1065, Las Heras, Mendoza",
     userSetted: true,
+    ratio: 1,
   },
   toPrice: 2000,
   createAt: "2024-07-12",

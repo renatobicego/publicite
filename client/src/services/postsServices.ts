@@ -6,7 +6,6 @@ import {
   Post,
   ServicePostValues,
 } from "@/types/postTypes";
-import { mockedPetitions, mockedPosts } from "../utils/data/mockedData";
 import axios from "axios";
 import { getClient, query } from "@/lib/client";
 import {
@@ -15,6 +14,7 @@ import {
   getPostByIdQuery,
   getPostCategories,
   getPostsQuery,
+  postPostMutation,
 } from "@/graphql/postQueries";
 import { auth } from "@clerk/nextjs/server";
 import { deleteFilesService } from "@/app/server/uploadThing";
@@ -62,15 +62,20 @@ export const getCategories = async () => {
 export const postPost = async (
   values: GoodPostValues | PetitionPostValues | ServicePostValues
 ) => {
+  const authorId = auth().sessionClaims?.metadata.mongoId;
   try {
-    const res = await axios.post(`${process.env.API_URL}/post`, values, {
-      headers: {
-        Authorization: `${await auth().getToken({ template: "testing" })}`,
+    const { data } = await getClient().mutate({
+      mutation: postPostMutation,
+      variables: { postRequest: values, author_id: authorId },
+      context: {
+        headers: {
+          Authorization: await auth().getToken({ template: "testing" }),
+        },
       },
     });
-    return res;
+    return data.createPost._id;
   } catch (error) {
-    return error;
+    throw error;
   }
 };
 

@@ -40,7 +40,7 @@ const EditPetitionForm = ({ postData }: { postData: Petition }) => {
   );
   const initialValues: Omit<
     PetitionPostValues,
-    "createAt" | "location" | "author"
+    "createAt" | "geoLocation" | "author"
   > = {
     attachedFiles: postData.attachedFiles,
     category: postData.category[0]._id,
@@ -54,7 +54,7 @@ const EditPetitionForm = ({ postData }: { postData: Petition }) => {
     toPrice: postData.toPrice,
   };
   const handleSubmit = async (
-    values: Omit<PetitionPostValues, "createAt" | "location" | "author">,
+    values: Omit<PetitionPostValues, "createAt" | "geoLocation" | "author">,
     actions: FormikHelpers<any>
   ) => {
     // delete prev files deleted

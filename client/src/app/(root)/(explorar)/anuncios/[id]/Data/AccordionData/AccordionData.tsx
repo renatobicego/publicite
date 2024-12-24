@@ -44,7 +44,7 @@ const AccordionData = ({
   );
 
   // Add "Ubicación" if the post has location data
-  if (post.location) {
+  if (post.geoLocation) {
     accordionItems.push(
       <AccordionItem HeadingComponent={"h6"}
         indicator={<FaChevronLeft className="size-3" />}
@@ -52,8 +52,8 @@ const AccordionData = ({
         aria-label="ubicación"
         title="Ubicación"
       >
-        <LocationMap lat={post.location.location.coordinates[0]} lng={post.location.location.coordinates[1]} />
-        {post.location.userSetted && (
+        <LocationMap lat={post.geoLocation.location.coordinates[0]} lng={post.geoLocation.location.coordinates[1]} />
+        {post.geoLocation.userSetted && (
           <p className="text-sm">
             El usuario vendedor ha establecido la ubicación manualmente
           </p>

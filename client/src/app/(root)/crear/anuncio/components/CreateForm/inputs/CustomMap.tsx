@@ -1,7 +1,5 @@
 import LatLngAutocomplete from "@/components/inputs/LatLngAutocomplete";
-import { PostLocationForm } from "@/types/postTypes";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
-import { FormikErrors } from "formik";
 import { useState, useEffect, useRef } from "react";
 
 const CustomMap = ({
@@ -9,17 +7,28 @@ const CustomMap = ({
   lng,
   handleLocationChange,
   geocodeLatLng,
-  error
+  ratio,
 }: {
   lat: number;
   lng: number;
-  geocodeLatLng: (lat: number, lng: number, userSetted?: boolean) => void
-  handleLocationChange: (lat: number, lng: number, address?: string, userSetted?: boolean) => void;
-  error: FormikErrors<PostLocationForm> | undefined
+  geocodeLatLng: (lat: number, lng: number, userSetted?: boolean) => void;
+  handleLocationChange: (
+    lat: number,
+    lng: number,
+    address?: string,
+    userSetted?: boolean
+  ) => void;
+  ratio: number;
 }) => {
   const [map, setMap] = useState<google.maps.Map | null>(null);
-  const [markerCluster, setMarkerCluster] = useState<MarkerClusterer | null>(null);
-  const [marker, setMarker] = useState<{ lat: number; lng: number } | null>({ lat, lng });
+  const [markerCluster, setMarkerCluster] = useState<MarkerClusterer | null>(
+    null
+  );
+  const [marker, setMarker] = useState<{ lat: number; lng: number } | null>({
+    lat,
+    lng,
+  });
+  const [circle, setCircle] = useState<google.maps.Circle | null>(null);
   const ref = useRef<HTMLDivElement>(null);
 
   // Initialize the map
@@ -36,9 +45,21 @@ const CustomMap = ({
         draggingCursor: "pointer",
         mapId: "google-maps-" + Math.random().toString(36).slice(2, 9),
       });
+      const initializedCircle = new google.maps.Circle({
+        map: initializedMap,
+        center: { lat, lng },
+        radius: ratio * 1000, // Convert kilometers to meters
+        fillColor: "#FF0000",
+        fillOpacity: 0.2,
+        strokeColor: "#FF0000",
+        strokeOpacity: 0.7,
+        strokeWeight: 1,
+      });
+
       setMap(initializedMap);
+      setCircle(initializedCircle);
     }
-  }, [map, lat, lng]);
+  }, [map, lat, lng, ratio]);
 
   // Marker cluster setup and map click event
   useEffect(() => {
@@ -51,14 +72,13 @@ const CustomMap = ({
           const lat = e.latLng.lat();
           const lng = e.latLng.lng();
           setMarker({ lat, lng });
+          circle?.setCenter(e.latLng);
           geocodeLatLng(lat, lng, true); // Get the address based on coordinates
         }
       });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [map, markerCluster]);
-
-
 
   const createMarker = async (lat?: number, lng?: number) => {
     if (marker && markerCluster) {
@@ -75,8 +95,16 @@ const CustomMap = ({
 
   useEffect(() => {
     createMarker();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [marker, markerCluster]);
+
+  // Update the circle's radius and center when the ratio changes
+  useEffect(() => {
+    if (circle && marker) {
+      circle.setRadius(ratio * 1000); // Convert kilometers to meters
+      circle.setCenter({ lat: marker.lat, lng: marker.lng });
+    }
+  }, [circle, marker, ratio]);
 
   return (
     <>

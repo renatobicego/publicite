@@ -27,11 +27,12 @@ const CreatePetition = ({ userId } : { userId?: string}) => {
     price: undefined,
     category: "",
     author: userId || "",
-    location: {
+    geoLocation: {
       lat: undefined,
       lng: undefined,
       description: "",
       userSetted: false,
+      ratio: 5,
     },
     postType: "petition",
     visibility: {
@@ -61,10 +62,11 @@ const CreatePetition = ({ userId } : { userId?: string}) => {
     const dbLocation = {
       location: {
         type: "Point",
-        coordinates: [values.location.lat, values.location.lng],
+        coordinates: [values.geoLocation.lat, values.geoLocation.lng],
       },
-      description: values.location.description,
-      userSetted: values.location.userSetted,
+      description: values.geoLocation.description,
+      userSetted: values.geoLocation.userSetted,
+      ratio: values.geoLocation.ratio,
     };
 
     const attachedFiles = values.attachedFiles.map((file) => ({
@@ -107,9 +109,9 @@ const CreatePetition = ({ userId } : { userId?: string}) => {
                 <Divider />
                 <h6>Busque su ubicación o seleccionela en el mapa</h6>
                 <PlacePicker
-                  location={values.location}
+                  location={values.geoLocation}
                   setFieldValue={setFieldValue}
-                  error={errors.location}
+                  error={errors.geoLocation}
                 />
               </div>
               <div className="w-full md:w-1/2 flex flex-col gap-4">

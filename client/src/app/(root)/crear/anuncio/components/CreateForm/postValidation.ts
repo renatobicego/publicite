@@ -14,12 +14,13 @@ export const postValidation = object({
     .required("El precio es requerido")
     .min(1, "El precio debe ser mayor a 1")
     .max(200000000, "El precio debe ser menor a 200.000.000"),
-  location: object({
+  geolocation: object({
     lat: number().required("La ubicación es requerida"),
     lng: number().required("La ubicación es requerida"),
     description: string()
       .required("La ubicación es requerida")
       .min(1, "La ubicación es requerida"),
+    ratio: number().required("El radio de alcance es requerido"),
   }),
   attachedFiles: array(
     object({

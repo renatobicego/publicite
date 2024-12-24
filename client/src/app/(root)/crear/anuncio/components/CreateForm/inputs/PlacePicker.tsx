@@ -1,4 +1,4 @@
-import { memo, useEffect } from "react";
+import { memo, useEffect, useState } from "react";
 import CustomMap from "./CustomMap";
 import { FormikErrors } from "formik";
 import {
@@ -48,6 +48,12 @@ const PlacePickerWrapper = ({
 export default memo(PlacePickerWrapper);
 
 const PlacePicker = ({ location, setFieldValue, error }: PlacePickerProps) => {
+  const [ratio, setRatio] = useState(location.ratio || 5);
+
+  const handleRatioChange = (newRatio: number) => {
+    setRatio(newRatio);
+    setFieldValue("geoLocation", { ...location, ratio: newRatio });
+  };
   // Function to handle location and zoom updates
   const handleChangeLocation = (
     lat: number,
@@ -55,15 +61,13 @@ const PlacePicker = ({ location, setFieldValue, error }: PlacePickerProps) => {
     description?: string,
     userSetted?: boolean
   ) => {
-    if (userSetted)
-      setFieldValue("location", {
-        lat,
-        lng,
-        description,
-        userSetted: true,
-      });
-    else
-      setFieldValue("location", { lat, lng, description, userSetted: false });
+    setFieldValue("geoLocation", {
+      lat,
+      lng,
+      description,
+      userSetted: userSetted || false,
+      ratio,
+    });
   };
 
   // Use geolocation to set the default location based on the user's device location
@@ -92,20 +96,7 @@ const PlacePicker = ({ location, setFieldValue, error }: PlacePickerProps) => {
     geocoder.geocode({ location: latlng }, (results, status) => {
       if (status === "OK" && results) {
         const address = results[0]?.formatted_address;
-        if (userSetted)
-          setFieldValue("location", {
-            lat,
-            lng,
-            description: address,
-            userSetted: true,
-          });
-        else
-          setFieldValue("location", {
-            lat,
-            lng,
-            description: address,
-            userSetted: false,
-          });
+        handleChangeLocation(lat, lng, address, userSetted || false);
       } else {
         console.error("Geocode was not successful: " + status);
       }
@@ -126,8 +117,16 @@ const PlacePicker = ({ location, setFieldValue, error }: PlacePickerProps) => {
         lng={location.lng}
         handleLocationChange={handleChangeLocation}
         geocodeLatLng={geocodeLatLng}
-        error={error}
+        ratio={ratio}
       />
+      <input
+        type="range"
+        min="1"
+        max="10"
+        value={ratio}
+        onChange={(e) => handleRatioChange(Number(e.target.value))}
+      />
+      <span>Ratio: {ratio}</span>
       {error && (
         <p className="text-danger text-small">
           Por favor, busque y/o seleccione una ubicación en el mapa

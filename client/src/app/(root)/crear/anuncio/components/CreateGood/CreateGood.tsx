@@ -35,11 +35,12 @@ const CreateGood = ({
     author: userId || "",
     condition: undefined,
     imagesUrls: [],
-    location: {
+    geoLocation: {
       lat: undefined,
       lng: undefined,
       description: "",
       userSetted: false,
+      ratio: 5,
     },
     postType: "good",
     visibility: {
@@ -74,10 +75,11 @@ const CreateGood = ({
     const dbLocation = {
       location: {
         type: "Point",
-        coordinates: [values.location.lat, values.location.lng],
+        coordinates: [values.geoLocation.lat, values.geoLocation.lng],
       },
-      description: values.location.description,
-      userSetted: values.location.userSetted,
+      description: values.geoLocation.description,
+      userSetted: values.geoLocation.userSetted,
+      ratio: values.geoLocation.ratio,
     };
 
     const attachedFiles = values.attachedFiles.map((file) => ({
@@ -119,9 +121,9 @@ const CreateGood = ({
             <Divider />
             <h6>Seleccione su ubicación</h6>
             <PlacePicker
-              location={values.location}
+              location={values.geoLocation}
               setFieldValue={setFieldValue}
-              error={errors.location}
+              error={errors.geoLocation}
             />
             <AccordionInputs errors={errors} />
             <RequiredFieldsMsg />

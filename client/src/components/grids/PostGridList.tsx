@@ -164,11 +164,11 @@ const PostGridList = ({
               />
             </div>
           );
-        case "location":
+        case "geoLocation":
           return (
             <div className="flex gap-2 2xl:gap-4 items-center justify-between text-light-text">
               <p className="text-xs 2xl:text-small min-w-32 max-w-52">
-                {data.location.description}
+                {data.geoLocation.description}
               </p>
               <Divider
                 orientation="vertical"
