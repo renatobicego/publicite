@@ -1,26 +1,9 @@
 import { ObjectId } from 'mongoose';
 import { Field, ObjectType, ID, Float, Int } from '@nestjs/graphql';
 import { GoodCondition } from '../enum/post-good-condition.enum';
-@ObjectType()
-export class Location_graphQl {
-  @Field(() => String)
-  type: 'Point'; // Este valor está fijo en 'Point'
+import { PostLocation_Grapql } from './HTTP-RESPONSE/post.location.graphql';
 
-  @Field(() => [Float])
-  coordinates: [number, number]; // Arreglo de coordenadas
-}
 
-@ObjectType()
-export class PostLocation_Grapql_Model {
-  @Field(() => Location_graphQl)
-  location: Location_graphQl; // Este valor está fijo en 'Point'
-
-  @Field(() => Boolean)
-  userSetted: boolean; // Campo booleano
-
-  @Field(() => String)
-  description: string; // Campo de descripción
-}
 
 @ObjectType()
 class Visibility {
@@ -60,8 +43,8 @@ export class Post_Full_Graphql_Model {
   @Field(() => Float, { nullable: true })
   price: number;
 
-  @Field(() => PostLocation_Grapql_Model, { nullable: true })
-  location: PostLocation_Grapql_Model;
+  @Field(() => PostLocation_Grapql, { nullable: true })
+  geoLocation: PostLocation_Grapql;
 
   @Field(() => [String], { nullable: true })
   category: ObjectId[];

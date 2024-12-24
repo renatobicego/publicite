@@ -1,15 +1,12 @@
 import { ClientSession, ObjectId } from 'mongoose';
 import { Post } from '../entity/post.entity';
-import { PostLocation } from '../entity/postLocation.entity';
 import { PostUpdateDto } from '../entity/dto/post.update.dto';
 
 export interface PostRepositoryInterface {
   create(
     post: Post,
-    locationID: ObjectId,
     options?: { session?: ClientSession },
-  ): Promise<Post>;
-
+  ): Promise<String>;
   deletePostById(id: string): Promise<any>;
   findPostsByAuthorId(id: string): Promise<void>;
   findPostById(id: string): Promise<void>;
@@ -19,11 +16,6 @@ export interface PostRepositoryInterface {
     postType: string,
     searchTerm?: string,
   ): Promise<void>;
-
-  saveLocation(
-    location: PostLocation,
-    options?: { session?: ClientSession },
-  ): Promise<ObjectId>;
 
   updatePostById(
     postUpdate: PostUpdateDto,

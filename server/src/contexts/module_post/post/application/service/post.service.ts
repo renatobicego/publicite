@@ -9,7 +9,7 @@ import { PostUpdateDto } from '../../domain/entity/dto/post.update.dto';
 import { Post } from '../../domain/entity/post.entity';
 import { PostRepositoryInterface } from '../../domain/repository/post.repository.interface';
 import { PostServiceInterface } from '../../domain/service/post.service.interface';
-import { PostRequest } from '../dto/HTTP-REQUEST/post.request';
+import { PostRequest } from '../../domain/entity/models_graphql/HTTP-REQUEST/post.request';
 import { PostFactory } from '../post-factory/post.factory';
 import { PostType } from '../../domain/entity/enum/post-type.enum';
 
@@ -50,43 +50,30 @@ export class PostService implements PostServiceInterface {
     const postMapped = postFactory.createPost(postType as PostType, post);
 
     const session = await this.connection.startSession();
-    let locationID: ObjectId;
-    let newPost: Post;
+    let newPostId: String;
     try {
-      const newPostId = await session.withTransaction(async () => {
-        //Location to save
-        locationID = await this.postRepository.saveLocation(postMapped.getLocation, {
-          session,
-        });
-        if (!locationID) {
-          throw new Error('Error al guardar la ubicación');
-        }
-
-
+      const newPostIdId = await session.withTransaction(async () => {
 
         //Post to save
-        newPost = await this.postRepository.create(postMapped, locationID, {
+        newPostId = await this.postRepository.create(postMapped, {
           session,
         });
-
-
-
-        if (!newPost || !newPost.getId) {
+        if (!newPostId) {
           throw new Error('Error al crear el post');
         }
 
         //Post to save in user
-        await this.userService.saveNewPostInUser(newPost.getId, newPost.getAuthor, {
+        await this.userService.saveNewPostInUser(newPostId, post.author, {
           session,
         });
-        return newPost.getId;
+        return newPostId;
       });
 
       //Todo ok
       await session.commitTransaction();
 
       return {
-        _id: newPostId,
+        _id: newPostIdId,
       };
     } catch (error: any) {
       throw error;

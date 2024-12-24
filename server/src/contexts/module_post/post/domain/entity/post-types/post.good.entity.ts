@@ -28,7 +28,7 @@ export class PostGood extends Post {
       post.getVisibility,
       post.getRecomendations,
       post.getPrice,
-      post.getLocation,
+      post.getGeoLocation,
       post.getCategory,
       post.getComments,
       post.getAttachedFiles as any,

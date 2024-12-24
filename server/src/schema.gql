@@ -200,15 +200,15 @@ type Board {
   searchTerm: String
 }
 
-type Location_graphQl {
+type location {
   type: String!
   coordinates: [Float!]!
 }
 
-type PostLocation_Grapql_Model {
-  location: Location_graphQl!
-  userSetted: Boolean!
-  description: String!
+type PostLocation_Grapql {
+  location: location
+  userSetted: Boolean
+  description: String
 }
 
 type Visibility {
@@ -228,7 +228,7 @@ type Post_Full_Graphql_Model {
   description: String
   visibility: Visibility
   price: Float
-  location: PostLocation_Grapql_Model
+  geoLocation: PostLocation_Grapql
   category: [String!]
   comments: [String!]
   attachedFiles: [AttachedFile!]
@@ -419,11 +419,6 @@ type MagazineResponse {
   group: group_graphql_magazine
 }
 
-type location {
-  type: String!
-  coordinates: [Float!]!
-}
-
 type Contact_graph {
   _id: ID
   phone: String
@@ -439,13 +434,6 @@ type author {
   contact: Contact_graph!
   lastName: String!
   name: String!
-}
-
-type PostLocation_Grapql {
-  _id: String
-  location: location
-  userSetted: Boolean
-  description: String
 }
 
 type Visibility_post {
@@ -471,7 +459,7 @@ type Post_response_graphql_model {
   visibility: Visibility_post
   author: author
   price: Float
-  location: PostLocation_Grapql
+  geoLocation: PostLocation_Grapql
   category: [Post_Category!]
   comments: [String!]
   attachedFiles: [AttachedFile_post!]
@@ -496,6 +484,10 @@ scalar DateTime
 type PostFindAllResponse {
   posts: [Post_response_graphql_model!]!
   hasMore: Boolean!
+}
+
+type PostIdResponse {
+  _id: String!
 }
 
 type PostCategoryResponse {
@@ -606,6 +598,9 @@ type Mutation {
   """Actualizar los metodos de contacto de un usuario"""
   updateContactById(contactId: String!, updateRequest: UpdateContactRequest!): String
 
+  """Crear un post"""
+  createPost(postRequest: PostRequest!, author_id: String!): PostIdResponse
+
   """eliminar un post por id"""
   deletePostById(id: String!, author_id: String!): String
 
@@ -715,6 +710,60 @@ input UpdateContactRequest {
   x: String
 }
 
+input PostRequest {
+  title: String!
+  author: String!
+  postType: PostType!
+  description: String
+  visibility: VisibilityOfPost!
+  price: Float
+  geoLocation: LocationOfPost!
+  category: [String!]
+  comments: [String!]
+  attachedFiles: [AttachedFilesRequest!]
+  createAt: String!
+  _id: String
+  imagesUrls: [String!]
+  year: Float
+  brand: String
+  modelType: String
+  condition: String
+  frequencyPrice: String
+  toPrice: Float
+  petitionType: String
+}
+
+input VisibilityOfPost {
+  post: Visibility_of_the_post!
+  socialMedia: Visibility_of_the_post!
+}
+
+"""Visibility of the post """
+enum Visibility_of_the_post {
+  public
+  registered
+  contacts
+  friends
+  topfriends
+}
+
+input LocationOfPost {
+  location: LocationPost!
+  userSetted: Boolean!
+  description: String!
+  ratio: Float!
+}
+
+input LocationPost {
+  type: String!
+  coordinates: [Float!]!
+}
+
+input AttachedFilesRequest {
+  url: String!
+  label: String!
+}
+
 input PostUpdateRequest {
   title: String
   description: String
@@ -736,15 +785,6 @@ input PostUpdateRequest {
 input VisibilityEnum {
   post: Visibility_of_the_post!
   socialMedia: Visibility_of_the_post!
-}
-
-"""Visibility of the post """
-enum Visibility_of_the_post {
-  public
-  registered
-  contacts
-  friends
-  topfriends
 }
 
 input AttachedFiles {

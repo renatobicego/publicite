@@ -3,20 +3,46 @@ import { Args, Mutation, Resolver, Query, Context } from '@nestjs/graphql';
 import { ClerkAuthGuard } from 'src/contexts/module_shared/auth/clerk-auth/clerk.auth.guard';
 
 import { PostAdapterInterface } from 'src/contexts/module_post/post/application/adapter/post.adapter.interface';
-import { PostUpdateRequest } from 'src/contexts/module_post/post/application/dto/HTTP-REQUEST/post.update.request';
-import { Post_response_graphql_model } from 'src/contexts/module_post/post/application/dto/HTTP-RESPONSE/post.response.graphql';
-import { PostFindAllResponse } from 'src/contexts/module_post/post/application/dto/HTTP-RESPONSE/findAll-response/post.findAll.response';
+import { PostUpdateRequest } from 'src/contexts/module_post/post/domain/entity/models_graphql/HTTP-REQUEST/post.update.request';
+import { Post_response_graphql_model } from 'src/contexts/module_post/post/domain/entity/models_graphql/HTTP-RESPONSE/post.response.graphql';
+import { PostFindAllResponse } from 'src/contexts/module_post/post/domain/entity/models_graphql/HTTP-RESPONSE/findAll-response/post.findAll.response';
 import { Post_Full_Graphql_Model } from 'src/contexts/module_post/post/domain/entity/models_graphql/post.full.grapql.model';
 import { PostType } from 'src/contexts/module_post/post/domain/entity/enum/post-type.enum';
 import { PubliciteAuth } from 'src/contexts/module_shared/auth/publicite_auth/publicite_auth';
 import { CustomContextRequestInterface } from 'src/contexts/module_shared/auth/custom_request/custom.context.request.interface';
+import { PostIdResponse, PostRequest } from '../../../domain/entity/models_graphql/HTTP-REQUEST/post.request';
+import { PostRepositoryInterface } from '../../../domain/repository/post.repository.interface';
 
 @Resolver('Post')
 export class PostResolver {
   constructor(
     @Inject('PostAdapterInterface')
     private readonly postAdapter: PostAdapterInterface,
+
+
   ) { }
+
+
+  @Mutation(() => PostIdResponse, {
+    nullable: true,
+    description: 'Crear un post',
+  })
+  @UseGuards(ClerkAuthGuard)
+  async createPost(
+    @Args('postRequest', { type: () => PostRequest })
+    postRequest: PostRequest,
+    @Args('author_id', { type: () => String }) author_id: string,
+    @Context() context: { req: CustomContextRequestInterface },
+  ): Promise<any> {
+    try {
+      const userRequestId = context.req.userRequestId;
+      if (!author_id) throw new Error('author_id is required');
+      PubliciteAuth.authorize(userRequestId, author_id);
+      return await this.postAdapter.create(postRequest);
+    } catch (error: any) {
+      throw error;
+    }
+  }
 
   @Mutation(() => String, {
     nullable: true,
@@ -135,4 +161,6 @@ export class PostResolver {
       throw error;
     }
   }
+
+
 }

@@ -40,8 +40,8 @@ export interface UserRepositoryInterface {
   ): Promise<User>;
 
   saveNewPost(
-    postId: ObjectId,
-    authorId: ObjectId,
+    postId: String,
+    authorId: String,
     options?: { session?: ClientSession },
   ): Promise<any>;
 

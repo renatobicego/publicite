@@ -1,6 +1,5 @@
 import { Schema, model, Document, Date } from 'mongoose';
 import { PostType } from '../../domain/entity/enum/post-type.enum';
-
 import { Visibility } from '../../domain/entity/enum/post-visibility.enum';
 
 export interface attachedFiles {
@@ -21,7 +20,15 @@ export interface PostDocument extends Document {
   };
   recomendations: Schema.Types.ObjectId[];
   price: number;
-  location: Schema.Types.ObjectId;
+  geoLocation: {
+    location: {
+      type: string;
+      coordinates: [number, number];
+    }
+    userSetted: boolean;
+    description: string;
+    ratio: number;
+  };
   category: Schema.Types.ObjectId[];
   comments: Schema.Types.ObjectId[];
   attachedFiles: attachedFiles[];
@@ -34,8 +41,6 @@ const addDays = (date: any, days: any) => {
   result.setDate(result.getDate() + days);
   return result;
 };
-
-
 
 export const PostSchema = new Schema<PostDocument>(
   {
@@ -65,10 +70,20 @@ export const PostSchema = new Schema<PostDocument>(
       },
     ],
     price: { type: Number, required: true },
-    location: {
-      type: Schema.Types.ObjectId,
-      ref: 'PostLocation',
-      required: true,
+    geoLocation: {
+      location: {
+        type: {
+          type: String,
+          required: true,
+        },
+        coordinates: {
+          type: [Number],
+          required: true,
+        },
+      },
+      userSetted: { type: Boolean, required: true },
+      description: { type: String, required: true },
+      ratio: { type: Number, required: true },
     },
     category: [
       {
@@ -100,16 +115,9 @@ export const PostSchema = new Schema<PostDocument>(
   },
 );
 
-PostSchema.index({ location: '2d' });
-
-
-
+PostSchema.index({ location: '2dsphere' });
 PostSchema.index({ searchTitle: 1, searchDescription: 1 });
-
-
-
 
 const PostModel = model<PostDocument>('Post', PostSchema);
 
 export default PostModel;
-

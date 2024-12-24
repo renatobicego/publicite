@@ -1,45 +1,60 @@
-import { ObjectId, Schema } from 'mongoose';
-import { PostLocation } from './postLocation.entity';
+import { ObjectId } from 'mongoose';
+
 import { PostRecomendation } from './postRecomendation.entity';
 
-export interface Visibility {
+interface Visibility {
   post: string;
   socialMedia: string;
 }
 
+interface AttachedFile {
+  url: string,
+  label: string
+}
+
+interface PostLocation {
+  location: {
+    type: string;
+    coordinates: number[]
+  }
+  userSetted: boolean;
+  description: string
+  ratio: number
+}
+
+
 export class Post {
   private title: string;
   private searchTitle: string
-  private author: ObjectId;
+  private author: string;
   private postType: string;
   private description: string;
   private searchDescription: string
   private visibility: Visibility;
   private recomendations: PostRecomendation[];
   private price: number;
-  private location: PostLocation;
+  private geoLocation: PostLocation;
   private category: ObjectId[];
   private comments: ObjectId[];
-  private attachedFiles: { url: string; label: string }[];
+  private attachedFiles: AttachedFile[];
   private createAt: string;
-
   private _id?: ObjectId;
 
 
   constructor(
     title: string,
     searchTitle: string,
-    author: ObjectId,
+    author: string,
     postType: string,
     description: string,
     searchDescription: string,
     visibility: Visibility,
     recomendations: PostRecomendation[],
     price: number,
-    location: PostLocation,
+    geoLocation: PostLocation,
     category: ObjectId[],
     comments: ObjectId[],
-    attachedFiles: [],
+    attachedFiles: AttachedFile[],
     createAt: string,
     _id?: ObjectId,
   ) {
@@ -52,7 +67,7 @@ export class Post {
     this.visibility = visibility;
     this.recomendations = recomendations;
     this.price = price;
-    this.location = location;
+    this.geoLocation = geoLocation;
     this.category = category;
     this.comments = comments;
     this.attachedFiles = attachedFiles;
@@ -100,8 +115,8 @@ export class Post {
     return this.price;
   }
 
-  get getLocation() {
-    return this.location;
+  get getGeoLocation() {
+    return this.geoLocation;
   }
 
   get getCategory() {

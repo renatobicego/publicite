@@ -73,25 +73,3 @@ export class PostUpdateRequest {
   petitionType?: string;
 }
 
-// @InputType()
-// export class LocationCoordinatesInput {
-//   @Field(() => String)
-//   type: 'Point'; // Este campo debe ser requerido
-
-//   @Field(() => [Float])
-//   coordinates: number[]; // Cambia de [number] a number[]
-// }
-
-// @InputType()
-// export class LocationInput {
-//   @Field(() => LocationCoordinatesInput)
-//   location: LocationCoordinatesInput; // Este campo también es requerido
-
-//   @Field(() => Boolean)
-//   userSetted: boolean;
-
-//   @Field(() => String)
-//   description: string; // Este campo también es requerido
-// }
-// @Field(() => LocationInput, { nullable: true })
-// location?: LocationInput;
