@@ -24,11 +24,13 @@ const MobileNotifications = ({
   const { newNotifications: newNotificationsReceived, setNewNotifications } =
     useSocket();
 
-  const { notifications, isLoading } = useNotificationsContext();
+  const {
+    notifications,
+    isLoading,
+    newNotificationsFromServer,
+    setNewNotificationsFromServer,
+  } = useNotificationsContext();
 
-  const newNotifications = notifications.some(
-    (notification) => !notification.viewed
-  );
   return (
     <>
       <Button
@@ -39,7 +41,7 @@ const MobileNotifications = ({
         aria-label="botón para abrir centro de notificaciones"
         className="lg:hidden min-w-0"
       >
-        {newNotifications || newNotificationsReceived ? (
+        {newNotificationsFromServer || newNotificationsReceived ? (
           <Badge content="" size="sm" color="primary">
             <FaBell className="size-6" />
           </Badge>
@@ -56,8 +58,11 @@ const MobileNotifications = ({
         className="max-md:px-4"
         isOpen={modalIsOpen}
         onOpenChange={(open) => {
-          if (open) setNewNotifications(false);
-          if (newNotifications && !open) {
+          if (open) {
+            setNewNotifications(false)
+            setNewNotificationsFromServer(false)
+          };
+          if (newNotificationsFromServer && !open) {
             putNotificationStatus(
               notifications.map((notification) => notification._id)
             );

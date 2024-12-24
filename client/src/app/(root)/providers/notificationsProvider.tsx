@@ -1,6 +1,12 @@
 "use client";
 import useNotifications from "@/utils/hooks/useNotifications";
-import { createContext, useContext, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  ReactNode,
+  useState,
+  useEffect,
+} from "react";
 
 // Define the shape of the context
 interface NotificationsContextType {
@@ -8,6 +14,8 @@ interface NotificationsContextType {
   isLoading: boolean;
   hasMore: boolean;
   fetchNotifications: () => Promise<void>;
+  newNotificationsFromServer: boolean;
+  setNewNotificationsFromServer: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 // Create the context with an initial default value
@@ -26,9 +34,26 @@ export const NotificationsProvider = ({
   const { notifications, isLoading, hasMore, fetchNotifications } =
     useNotifications(isOpen);
 
+  const [newNotificationsFromServer, setNewNotificationsFromServer] =
+    useState(false);
+
+  useEffect(() => {
+    const newNotifications = notifications.some(
+      (notification) => !notification.viewed
+    );
+    setNewNotificationsFromServer(newNotifications);
+  }, [notifications]);
+
   return (
     <NotificationsContext.Provider
-      value={{ notifications, isLoading, hasMore, fetchNotifications }}
+      value={{
+        notifications,
+        isLoading,
+        hasMore,
+        fetchNotifications,
+        newNotificationsFromServer,
+        setNewNotificationsFromServer,
+      }}
     >
       {children}
     </NotificationsContext.Provider>

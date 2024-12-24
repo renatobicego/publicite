@@ -21,11 +21,12 @@ const DesktopNotifications = ({
   const { newNotifications: newNotificationsReceived, setNewNotifications } =
     useSocket();
 
-  const { notifications, isLoading } = useNotificationsContext();
-
-  const newNotifications = notifications.some(
-    (notification) => !notification.viewed
-  );
+  const {
+    notifications,
+    isLoading,
+    newNotificationsFromServer,
+    setNewNotificationsFromServer,
+  } = useNotificationsContext();
   return (
     <Popover
       className=" max-lg:hidden"
@@ -43,8 +44,11 @@ const DesktopNotifications = ({
       }}
       isOpen={isOpen}
       onOpenChange={async (open) => {
-        if (open) setNewNotifications(false);
-        if (newNotifications && !open) {
+        if (!open) {
+          setNewNotifications(false);
+          setNewNotificationsFromServer(false);
+        }
+        if (newNotificationsFromServer && !open) {
           await putNotificationStatus(
             notifications.map((notification) => notification._id)
           );
@@ -54,7 +58,7 @@ const DesktopNotifications = ({
     >
       <PopoverTrigger>
         <Button radius="full" variant="light" isIconOnly>
-          {newNotificationsReceived || newNotifications ? (
+          {newNotificationsReceived || newNotificationsFromServer ? (
             <Badge content="" size="sm" color="primary">
               <FaBell className="size-6" />
             </Badge>
