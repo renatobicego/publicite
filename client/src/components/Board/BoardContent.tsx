@@ -43,6 +43,7 @@ const BoardContent = ({
             author={board.user}
             showAvatar
             textColor={textColor}
+            withoutLink
           />
         )}
       </CardHeader>

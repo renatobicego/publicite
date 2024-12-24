@@ -53,6 +53,7 @@ const getBoardsQuery = gql`
           name
           lastName
           _id
+          username
         }
         visibility
         keywords
