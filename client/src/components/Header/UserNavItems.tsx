@@ -26,14 +26,16 @@ const UserNavItems = ({
           </SecondaryButton>
         </SignedOut>
       </NavbarItem>
-      <NavbarItem
-        className={`lg:hidden w-20 flex gap-1 items-center !transition-all duration-300 ${
-          isFocused ? "!w-0 flex-shrink" : ""
-        }`}
-      >
-        <Notifications />
-        <UserButtonModal />
-      </NavbarItem>
+      <SignedIn>
+        <NavbarItem
+          className={`lg:hidden w-20 flex gap-1 items-center !transition-all duration-300 ${
+            isFocused ? "!w-0 flex-shrink" : ""
+          }`}
+        >
+          <Notifications />
+          <UserButtonModal />
+        </NavbarItem>
+      </SignedIn>
       <NavbarMenuToggle
         aria-label={isMenuOpen ? "Close menu" : "Open menu"}
         className="lg:hidden min-h-12"
