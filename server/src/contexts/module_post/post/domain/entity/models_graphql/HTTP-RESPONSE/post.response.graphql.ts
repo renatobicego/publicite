@@ -126,7 +126,7 @@ export class Post_response_graphql_model {
   //-> comparte imagesUrls & reviews de post good & frequencyPrice de post petition
   @Field(() => String, { nullable: true })
   frequencyPrice: string;
-
+ 
   //Fields post Petition
   @Field(() => Float, { nullable: true })
   toPrice: number;
