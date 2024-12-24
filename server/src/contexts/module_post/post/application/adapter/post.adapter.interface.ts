@@ -1,6 +1,6 @@
 import { PostUpdateDto } from 'src/contexts/module_post/post/domain/entity/dto/post.update.dto';
-import { PostRequest } from '../dto/HTTP-REQUEST/post.request';
-import { PostUpdateRequest } from '../dto/HTTP-REQUEST/post.update.request';
+import { PostRequest } from '../../domain/entity/models_graphql/HTTP-REQUEST/post.request';
+import { PostUpdateRequest } from '../../domain/entity/models_graphql/HTTP-REQUEST/post.update.request';
 
 
 export interface PostAdapterInterface {

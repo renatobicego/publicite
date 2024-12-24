@@ -1,13 +1,8 @@
 import { ObjectId } from 'mongoose';
 import { Field, ObjectType, ID, Float, Int } from '@nestjs/graphql';
+import { PostLocation_Grapql } from './post.location.graphql';
 
-@ObjectType()
-export class location {
-  @Field(() => String)
-  type: 'Point';
-  @Field(() => [Float])
-  coordinates: [number, number];
-}
+
 
 @ObjectType()
 export class Contact_graph {
@@ -42,18 +37,7 @@ export class author {
   name: string;
 }
 
-@ObjectType()
-export class PostLocation_Grapql {
-  @Field(() => String, { nullable: true })
-  _id: ObjectId;
-  @Field(() => location, { nullable: true })
-  location: location;
 
-  @Field(() => Boolean, { nullable: true })
-  userSetted: boolean;
-  @Field(() => String, { nullable: true })
-  description: string;
-}
 
 @ObjectType()
 class Visibility_post {
@@ -101,14 +85,11 @@ export class Post_response_graphql_model {
   @Field(() => author, { nullable: true })
   author: author;
 
-  //ver que necesitamos de esto
-  //recomendations: PostRecomendation[];
-
   @Field(() => Float, { nullable: true })
   price: number;
 
   @Field(() => PostLocation_Grapql, { nullable: true })
-  location: PostLocation_Grapql;
+  geoLocation: PostLocation_Grapql;
 
   @Field(() => [Post_Category], { nullable: true })
   category: Post_Category[];

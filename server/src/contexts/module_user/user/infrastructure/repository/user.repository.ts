@@ -533,33 +533,20 @@ export class UserRepository implements UserRepositoryInterface {
   }
 
   async saveNewPost(
-    postId: ObjectId,
-    authorId: ObjectId,
+    postId: String,
+    authorId: String,
     options?: { session?: ClientSession },
   ): Promise<any> {
     try {
       this.logger.log(
         'Start process in the repository: ' + UserRepository.name,
       );
-      const obj = await this.user.findOneAndUpdate(
+      const result = await this.user.updateOne(
         { _id: authorId },
         { $addToSet: { posts: postId } },
         options,
       );
-      if (!obj) {
-        this.logger.error(
-          'An error was occurred trying to save a new post in user array',
-        );
-        throw new Error(
-          'An error was occurred trying to save a new post in user array',
-        ); // error;
-      }
-      this.logger.log(
-        'The post was successfully saved in the user profile: ' +
-        UserRepository.name,
-      );
-
-      return obj;
+      checkIfanyDataWasModified(result)
     } catch (error: any) {
       this.logger.error(
         'An error was occurred trying to save a new post in user array(catch)',

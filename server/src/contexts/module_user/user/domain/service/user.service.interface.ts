@@ -58,8 +58,8 @@ export interface UserServiceInterface {
 
 
   saveNewPostInUser(
-    postId: ObjectId,
-    authorId: ObjectId,
+    postId: String,
+    authorId: String,
     options?: { session?: ClientSession },
   ): Promise<any>;
 

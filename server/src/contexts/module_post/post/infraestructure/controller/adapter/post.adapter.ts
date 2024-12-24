@@ -4,8 +4,8 @@ import { PostMapperAdapterInterface } from 'src/contexts/module_post/post/applic
 import { PostAdapterInterface } from 'src/contexts/module_post/post/application/adapter/post.adapter.interface';
 import {
   PostRequest,
-} from 'src/contexts/module_post/post/application/dto/HTTP-REQUEST/post.request';
-import { PostUpdateRequest } from 'src/contexts/module_post/post/application/dto/HTTP-REQUEST/post.update.request';
+} from 'src/contexts/module_post/post/domain/entity/models_graphql/HTTP-REQUEST/post.request';
+import { PostUpdateRequest } from 'src/contexts/module_post/post/domain/entity/models_graphql/HTTP-REQUEST/post.update.request';
 
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { PostServiceInterface } from '../../../domain/service/post.service.interface';

@@ -1,12 +1,10 @@
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
-import { ClientSession, Connection, Model, ObjectId } from 'mongoose';
-import { Inject } from '@nestjs/common';
+import { ClientSession, Connection, Model } from 'mongoose';
+
 
 import { Post } from '../../domain/entity/post.entity';
 import { PostRepositoryInterface } from '../../domain/repository/post.repository.interface';
-import { PostRepositoryMapperInterface } from '../../domain/repository/mapper/post.repository.mapper.interface';
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
-import { PostLocation } from '../../domain/entity/postLocation.entity';
 import { PostGood } from '../../domain/entity/post-types/post.good.entity';
 import {
   IPostGood,
@@ -29,9 +27,9 @@ import {
   IUser,
 } from 'src/contexts/module_user/user/infrastructure/schemas/user.schema';
 import { PostDocument } from '../schemas/post.schema';
-import { PostLocationDocument } from '../schemas/postLocation.schema';
 import { checkStopWordsAndReturnSearchQuery, SearchType } from 'src/contexts/module_shared/utils/functions/checkStopWordsAndReturnSearchQuery';
-import { errorMonitor } from 'events';
+
+
 
 export class PostRepository implements PostRepositoryInterface {
   constructor(
@@ -47,11 +45,6 @@ export class PostRepository implements PostRepositoryInterface {
     @InjectModel(UserModel.modelName)
     private readonly userDocument: Model<IUser>,
 
-    @InjectModel('PostLocation')
-    private readonly locationDocument: Model<PostLocationDocument>,
-    @Inject('PostRepositoryMapperInterface')
-    private readonly postMapper: PostRepositoryMapperInterface,
-
     @InjectModel('Post')
     private readonly postDocument: Model<PostDocument>,
 
@@ -59,11 +52,12 @@ export class PostRepository implements PostRepositoryInterface {
     @InjectConnection() private readonly connection: Connection,
   ) { }
 
+
+
   async create(
     post: Post,
-    locationID: ObjectId,
     options?: { session?: ClientSession },
-  ): Promise<Post> {
+  ): Promise<String> {
     try {
       this.logger.log('Saving post in repository');
       const documentToSave = {
@@ -76,7 +70,7 @@ export class PostRepository implements PostRepositoryInterface {
         visibility: post.getVisibility,
         recomendations: post.getRecomendations,
         price: post.getPrice,
-        location: locationID,
+        location: post.getGeoLocation,
         category: post.getCategory,
         comments: post.getComments,
         attachedFiles: post.getAttachedFiles,
@@ -116,7 +110,7 @@ export class PostRepository implements PostRepositoryInterface {
       await session.withTransaction(async () => {
         const postDeleted = await this.postDocument.findByIdAndDelete(id, {
           session,
-        });
+        }).select('author');
         if (!postDeleted) throw new Error('Post not found');
 
         const deletePromises = [
@@ -124,10 +118,6 @@ export class PostRepository implements PostRepositoryInterface {
           - Falta reviews 
           - Falta comments
           */
-          this.locationDocument.deleteOne(
-            { _id: postDeleted.location },
-            { session },
-          ),
           this.userDocument.findOneAndUpdate(
             {
               _id: postDeleted.author,
@@ -181,11 +171,6 @@ export class PostRepository implements PostRepositoryInterface {
         .select(
           '-searchTitle -searchDescription'
         )
-        .populate({
-          path: 'location',
-          model: 'PostLocation',
-          select: 'location description userSetted coordinates',
-        })
         .populate({
           path: 'category',
           model: 'PostCategory',
@@ -247,11 +232,6 @@ export class PostRepository implements PostRepositoryInterface {
           .limit(limit + 1)
           .skip((page - 1) * limit)
           .populate({
-            path: 'location',
-            model: 'PostLocation',
-            select: 'location description userSetted coordinates',
-          })
-          .populate({
             path: 'category',
             model: 'PostCategory',
           })
@@ -284,11 +264,6 @@ export class PostRepository implements PostRepositoryInterface {
         .limit(limit + 1)
         .skip((page - 1) * limit)
         .populate({
-          path: 'location',
-          model: 'PostLocation',
-          select: 'location description userSetted coordinates',
-        })
-        .populate({
           path: 'category',
           model: 'PostCategory',
         })
@@ -318,26 +293,13 @@ export class PostRepository implements PostRepositoryInterface {
     }
   }
 
-  async saveLocation(
-    location: PostLocation,
-    options?: { session?: ClientSession },
-  ): Promise<ObjectId> {
-    try {
-      this.logger.log('Saving location in repository');
-      const postPostedDocument = new this.locationDocument(location);
-      const documentSaved = await postPostedDocument.save(options);
-      return documentSaved._id as unknown as ObjectId;
-    } catch (error: any) {
-      this.logger.error('Error creating location REPOSITORY: ' + error);
-      throw error;
-    }
-  }
+
 
   async saveGoodPost(
     baseObj: any,
     post: PostGood,
     options?: { session?: ClientSession },
-  ): Promise<Post> {
+  ): Promise<string> {
     try {
       const newPost = {
         ...baseObj,
@@ -349,11 +311,10 @@ export class PostRepository implements PostRepositoryInterface {
         condition: post.getCondition,
       };
       const postPostedDocument = new this.postGoodDocument(newPost);
-      const documentSaved = await postPostedDocument.save(options);
+      const documentSaved: any = await postPostedDocument.save(options);
+      this.logger.log('Post good created successfully');
+      return documentSaved._id.toString();
 
-      const ret = this.postMapper.documentToEntityMapped(documentSaved);
-      this.logger.log('Post good created successfully: ' + ret.getId);
-      return ret;
     } catch (error: any) {
       this.logger.error('Error creating PostGood REPOSITORY: ' + error);
       throw error;
@@ -363,7 +324,7 @@ export class PostRepository implements PostRepositoryInterface {
     baseObj: any,
     post: PostService,
     options?: { session?: ClientSession },
-  ): Promise<any> {
+  ): Promise<string> {
     try {
       const newPost = {
         ...baseObj,
@@ -373,11 +334,11 @@ export class PostRepository implements PostRepositoryInterface {
       };
 
       const postPostedDocument = new this.postServiceDocument(newPost);
-      const documentSaved = await postPostedDocument.save(options);
+      const documentSaved: any = await postPostedDocument.save(options);
 
-      const ret = this.postMapper.documentToEntityMapped(documentSaved);
-      this.logger.log('Post service created successfully: ' + ret.getId);
-      return ret;
+
+      this.logger.log('Post service created successfully');
+      return documentSaved._id.toString();
     } catch (error: any) {
       this.logger.error('Error creating PostService REPOSITORY: ' + error);
       throw error;
@@ -388,7 +349,7 @@ export class PostRepository implements PostRepositoryInterface {
     baseObj: any,
     post: PostPetition,
     options?: { session?: ClientSession },
-  ): Promise<any> {
+  ): Promise<string> {
     try {
       const newPost = {
         ...baseObj,
@@ -398,11 +359,9 @@ export class PostRepository implements PostRepositoryInterface {
       };
 
       const postPostedDocument = new this.postPetitionDocument(newPost);
-      const documentSaved = await postPostedDocument.save(options);
-
-      const ret = this.postMapper.documentToEntityMapped(documentSaved);
-      this.logger.log('Post service created successfully: ' + ret.getId);
-      return ret;
+      const documentSaved: any = await postPostedDocument.save(options);
+      this.logger.log('Post service created successfully');
+      return documentSaved._id.toString();
     } catch (error: any) {
       this.logger.error('Error creating PostService REPOSITORY: ' + error);
       throw error;

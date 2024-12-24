@@ -2,13 +2,12 @@ import { MyLoggerService } from "src/contexts/module_shared/logger/logger.servic
 import { PostType } from "../../domain/entity/enum/post-type.enum";
 import { Post } from "../../domain/entity/post.entity";
 import { PostFactoryInterface } from "../../domain/post-factory/post.factory.interface";
-import { PostGoodRequest, PostPetitionRequest, PostRequest, PostServiceRequest } from "../dto/HTTP-REQUEST/post.request";
-import { PostLocation } from "../../domain/entity/postLocation.entity";
 import { PostGood } from "../../domain/entity/post-types/post.good.entity";
 import { PostService } from "../../domain/entity/post-types/post.service.entity";
 import { PostPetition } from "../../domain/entity/post-types/post.petition.entity";
 import { removeAccents_removeEmojisAndToLowerCase } from "../../domain/utils/normalice.data";
-import mongoose, { Schema } from "mongoose";
+import { PostRequest } from "../../domain/entity/models_graphql/HTTP-REQUEST/post.request";
+
 
 
 
@@ -30,21 +29,19 @@ export class PostFactory implements PostFactoryInterface {
     }
 
     createPost(postType: PostType, post: PostRequest): Post {
-        let request;
         const visibilityNormalizated = {
             post: post.visibility.post.toLowerCase(),
             socialMedia: post.visibility.socialMedia.toLowerCase(),
         };
+        const postAttachedEmpty = {
+            url: '',
+            label: '',
+        }
 
-
-        const postLocation = new PostLocation(
-            post.location.location.coordinates,
-            post.location.userSetted,
-            post.location.description
-        );
         const searchTitle = removeAccents_removeEmojisAndToLowerCase(post.title)
         const searchDescription = removeAccents_removeEmojisAndToLowerCase(post.description)
 
+        post.geoLocation.location.type = 'Point';
         const postBase = new Post(
             post.title,
             searchTitle,
@@ -53,49 +50,46 @@ export class PostFactory implements PostFactoryInterface {
             post.description ?? null,
             searchDescription,
             visibilityNormalizated,
-            post.recomendations ?? [] as any,
+            [] as any, // recomendations
             post.price,
-            postLocation,
+            post.geoLocation,
             post.category ?? [],
             post.comments ?? [],
-            post.attachedFiles ?? [] as any,
+            post.attachedFiles ?? [postAttachedEmpty] as any,
             post.createAt,
         );
 
 
         switch (post.postType.toLowerCase()) {
             case PostType.good:
-                request = post as PostGoodRequest;
                 this.logger.log('We are creating a good post');
                 return new PostGood(
                     postBase,
-                    request.imagesUrls,
-                    request.year ?? null,
-                    request.brand ?? null,
-                    request.modelType ?? null,
-                    request.reviews ?? [],
-                    request.condition ?? null,
+                    post.imagesUrls,
+                    post.year ?? null,
+                    post.brand ?? null,
+                    post.modelType ?? null,
+                    [], // reviews
+                    post.condition ?? null,
                 );
 
             case PostType.service:
                 this.logger.log('We are creating a service post');
-                request = post as PostServiceRequest;
+
                 return new PostService(
                     postBase,
-                    request.frequencyPrice ?? null,
-                    request.imagesUrls ?? [],
-                    request.reviews ?? [],
+                    post.frequencyPrice ?? null,
+                    post.imagesUrls ?? [],
+                    [], // reviews
                 );
 
             case PostType.petition:
                 this.logger.log('We are creating a service post');
-
-                request = post as PostPetitionRequest;
                 return new PostPetition(
                     postBase,
-                    request.toPrice ?? null,
-                    request.frequencyPrice ?? null,
-                    request.petitionType,
+                    post.toPrice ?? null,
+                    post.frequencyPrice ?? null,
+                    post.petitionType,
                 );
             default:
                 this.logger.log('Error in factory method');

@@ -1,4 +1,4 @@
-import { PostRequest } from "../../application/dto/HTTP-REQUEST/post.request";
+import { PostRequest } from "../entity/models_graphql/HTTP-REQUEST/post.request";
 import { PostUpdateDto } from "../entity/dto/post.update.dto";
 
 
