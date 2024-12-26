@@ -60,6 +60,7 @@ export class PostFactory implements PostFactoryInterface {
         );
 
 
+
         switch (post.postType.toLowerCase()) {
             case PostType.good:
                 this.logger.log('We are creating a good post');

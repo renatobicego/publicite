@@ -1,5 +1,6 @@
 import { PostRequest } from "../entity/models_graphql/HTTP-REQUEST/post.request";
 import { PostUpdateDto } from "../entity/dto/post.update.dto";
+import { UserLocation } from "../entity/models_graphql/HTTP-REQUEST/post.location.request";
 
 
 
@@ -11,6 +12,7 @@ export interface PostServiceInterface {
     page: number,
     limit: number,
     postType: string,
+    userLocation: UserLocation,
     searchTerm?: string,
   ): Promise<void>;
   deletePostById(id: string): Promise<void>;

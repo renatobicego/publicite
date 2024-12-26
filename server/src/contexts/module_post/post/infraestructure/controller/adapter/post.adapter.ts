@@ -9,6 +9,7 @@ import { PostUpdateRequest } from 'src/contexts/module_post/post/domain/entity/m
 
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { PostServiceInterface } from '../../../domain/service/post.service.interface';
+import { UserLocation } from '../../../domain/entity/models_graphql/HTTP-REQUEST/post.location.request';
 
 
 export class PostAdapter implements PostAdapterInterface {
@@ -47,6 +48,7 @@ export class PostAdapter implements PostAdapterInterface {
     page: number,
     limit: number,
     postType: string,
+    userLocation: UserLocation,
     searchTerm?: string,
   ): Promise<void> {
     try {
@@ -54,6 +56,7 @@ export class PostAdapter implements PostAdapterInterface {
         page,
         limit,
         postType,
+        userLocation,
         searchTerm,
       );
     } catch (error: any) {

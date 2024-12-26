@@ -11,7 +11,7 @@ import { PostType } from 'src/contexts/module_post/post/domain/entity/enum/post-
 import { PubliciteAuth } from 'src/contexts/module_shared/auth/publicite_auth/publicite_auth';
 import { CustomContextRequestInterface } from 'src/contexts/module_shared/auth/custom_request/custom.context.request.interface';
 import { PostIdResponse, PostRequest } from '../../../domain/entity/models_graphql/HTTP-REQUEST/post.request';
-import { PostRepositoryInterface } from '../../../domain/repository/post.repository.interface';
+import { UserLocation } from '../../../domain/entity/models_graphql/HTTP-REQUEST/post.location.request';
 
 @Resolver('Post')
 export class PostResolver {
@@ -141,20 +141,22 @@ export class PostResolver {
 
   @Query(() => PostFindAllResponse, {
     nullable: true,
-    description: 'Buscar todos los post',
+    description: 'Buscar todos los post, recibe pagina, limite y tambien el postType. De ser necesario podes enviarle un searchTerm para filtrar',
   })
   async findAllPostByPostType(
     @Args('page', { type: () => Number }) page: number,
     @Args('limit', { type: () => Number }) limit: number,
     @Args('postType', { type: () => PostType }) postType: PostType,
+    @Args('userLocation', { type: () => UserLocation }) userLocation: UserLocation,
     @Args('searchTerm', { type: () => String, nullable: true })
-    searchTerm?: string,
+    searchTerm: string,
   ): Promise<any> {
     try {
       return await this.postAdapter.findAllPostByPostType(
         page,
         limit,
         postType,
+        userLocation,
         searchTerm,
       );
     } catch (error: any) {

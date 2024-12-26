@@ -28,6 +28,7 @@ import {
 } from 'src/contexts/module_user/user/infrastructure/schemas/user.schema';
 import { PostDocument } from '../schemas/post.schema';
 import { checkStopWordsAndReturnSearchQuery, SearchType } from 'src/contexts/module_shared/utils/functions/checkStopWordsAndReturnSearchQuery';
+import { UserLocation } from '../../domain/entity/models_graphql/HTTP-REQUEST/post.location.request';
 
 
 
@@ -70,7 +71,7 @@ export class PostRepository implements PostRepositoryInterface {
         visibility: post.getVisibility,
         recomendations: post.getRecomendations,
         price: post.getPrice,
-        location: post.getGeoLocation,
+        geoLocation: post.getGeoLocation,
         category: post.getCategory,
         comments: post.getComments,
         attachedFiles: post.getAttachedFiles,
@@ -201,12 +202,12 @@ export class PostRepository implements PostRepositoryInterface {
     page: number,
     limit: number,
     postType: string,
+    userLocation: UserLocation,
     searchTerm?: string,
   ): Promise<any> {
     try {
       this.logger.log('Finding posts By postType: ' + postType);
       const today = new Date();
-
 
       if (searchTerm) {
         const textSearchQuery = checkStopWordsAndReturnSearchQuery(searchTerm, SearchType.post);
@@ -217,8 +218,6 @@ export class PostRepository implements PostRepositoryInterface {
             hasMore: false,
           }
         };
-
-
         this.logger.log('Buscando posts con términos de búsqueda');
         const posts = await this.postDocument
           .find({

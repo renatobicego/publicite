@@ -1,6 +1,7 @@
 import { PostUpdateDto } from 'src/contexts/module_post/post/domain/entity/dto/post.update.dto';
 import { PostRequest } from '../../domain/entity/models_graphql/HTTP-REQUEST/post.request';
 import { PostUpdateRequest } from '../../domain/entity/models_graphql/HTTP-REQUEST/post.update.request';
+import { UserLocation } from '../../domain/entity/models_graphql/HTTP-REQUEST/post.location.request';
 
 
 export interface PostAdapterInterface {
@@ -12,6 +13,7 @@ export interface PostAdapterInterface {
     page: number,
     limit: number,
     postType: string,
+    userLocation: UserLocation,
     searchTerm?: string,
   ): Promise<void>;
   updatePostById(

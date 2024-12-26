@@ -115,7 +115,7 @@ export const PostSchema = new Schema<PostDocument>(
   },
 );
 
-PostSchema.index({ location: '2dsphere' });
+PostSchema.index({ 'geoLocation.location': '2dsphere' });
 PostSchema.index({ searchTitle: 1, searchDescription: 1 });
 
 const PostModel = model<PostDocument>('Post', PostSchema);

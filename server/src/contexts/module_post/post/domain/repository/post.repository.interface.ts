@@ -1,6 +1,7 @@
 import { ClientSession, ObjectId } from 'mongoose';
 import { Post } from '../entity/post.entity';
 import { PostUpdateDto } from '../entity/dto/post.update.dto';
+import { UserLocation } from '../entity/models_graphql/HTTP-REQUEST/post.location.request';
 
 export interface PostRepositoryInterface {
   create(
@@ -14,8 +15,9 @@ export interface PostRepositoryInterface {
     page: number,
     limit: number,
     postType: string,
+    userLocation: UserLocation,
     searchTerm?: string,
-  ): Promise<void>;
+  ): Promise<any>;
 
   updatePostById(
     postUpdate: PostUpdateDto,
