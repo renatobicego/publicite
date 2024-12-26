@@ -6,7 +6,6 @@ import {
   Post,
   ServicePostValues,
 } from "@/types/postTypes";
-import axios from "axios";
 import { getClient, query } from "@/lib/client";
 import {
   deletePostMutation,
@@ -18,6 +17,7 @@ import {
 } from "@/graphql/postQueries";
 import { auth } from "@clerk/nextjs/server";
 import { deleteFilesService } from "@/app/server/uploadThing";
+import { Coordinates } from "@/utils/hooks/useLocation";
 
 export const getPostData = async (id: string) => {
   try {
@@ -26,7 +26,7 @@ export const getPostData = async (id: string) => {
       variables: { findPostByIdId: id },
       context: {
         fetchOptions: {
-          cache: "no-cache"
+          cache: "no-cache",
         },
       },
     });
@@ -108,9 +108,13 @@ export const getPosts = async (
   searchTerm: string | null,
   page: number,
   postType: PostType,
-  limit: number | undefined = 20
+  coordinates: Coordinates | null,
+  limit: number | undefined = 20, 
 ) => {
   try {
+    if (!coordinates) {
+      throw new Error("La ubiación es requerida. Por favor, acepte los permisos de ubicación.");
+    }
     const { data } = await query({
       query: getPostsQuery,
       variables: {
@@ -118,6 +122,7 @@ export const getPosts = async (
         limit,
         page,
         searchTerm: searchTerm ? searchTerm : "",
+        userLocation: coordinates
       },
     });
     return {
@@ -125,23 +130,35 @@ export const getPosts = async (
       hasMore: data.findAllPostByPostType.hasMore,
     }; // Return the same mocked data
   } catch (error) {
-    console.log(error);
+    console.log("getPosts", error);
     return {
       error: "Error al traer los anuncios. Por favor intenta de nuevo.",
     };
   }
 };
 
-export const getGoods = async (searchTerm: string | null, page: number) => {
-  return await getPosts(searchTerm, page, "good");
+export const getGoods = async (
+  searchTerm: string | null,
+  page: number,
+  coordinates: Coordinates | null
+) => {
+  return await getPosts(searchTerm, page, "good", coordinates);
 };
 
-export const getServices = async (searchTerm: string | null, page: number) => {
-  return await getPosts(searchTerm, page, "service");
+export const getServices = async (
+  searchTerm: string | null,
+  page: number,
+  coordinates: Coordinates | null
+) => {
+  return await getPosts(searchTerm, page, "service", coordinates);
 };
 
-export const getPetitions = async (searchTerm: string | null, page: number) => {
-  return await getPosts(searchTerm, page, "petition");
+export const getPetitions = async (
+  searchTerm: string | null,
+  page: number,
+  coordinates: Coordinates | null
+) => {
+  return await getPosts(searchTerm, page, "petition", coordinates);
 };
 
 export const deletePostService = async (post: Post) => {

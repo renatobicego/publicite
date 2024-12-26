@@ -6,20 +6,22 @@ import {
   getServices,
 } from "@/services/postsServices";
 import { getUsers } from "@/services/userServices";
+import { Coordinates } from "../hooks/useLocation";
 
 export const fetchDataByType = async(
   postType: "good" | "service" | "petition" | "boards" | "users" | "groups" | "groupPosts",
   searchTerm: string | null,
   page: number,
+  coordinates: Coordinates | null,
   groupId?: string,
 ) => {
   switch (postType) {
     case "good":
-      return await getGoods(searchTerm, page);
+      return await getGoods(searchTerm, page, coordinates);
     case "service":
-      return await getServices(searchTerm, page);
+      return await getServices(searchTerm, page, coordinates);
     case "petition":
-      return await getPetitions(searchTerm, page);
+      return await getPetitions(searchTerm, page, coordinates);
     case "boards":
       return await getBoards(searchTerm, page);
     case "groups":

@@ -9,7 +9,7 @@ import {
 import { toastifyError } from "@/utils/functions/toastify";
 import { Libraries } from "@react-google-maps/api";
 import { Status, Wrapper } from "@googlemaps/react-wrapper";
-import { Spinner } from "@nextui-org/react";
+import { Slider, Spinner } from "@nextui-org/react";
 const libraries: Libraries = ["places"];
 const INITIAL_LOCATION = { lat: -34.6115643483578, lng: -58.38901999245833 };
 
@@ -50,8 +50,8 @@ export default memo(PlacePickerWrapper);
 const PlacePicker = ({ location, setFieldValue, error }: PlacePickerProps) => {
   const [ratio, setRatio] = useState(location.ratio || 5);
 
-  const handleRatioChange = (newRatio: number) => {
-    setRatio(newRatio);
+  const handleRatioChange = (newRatio: number | number[]) => {
+    setRatio(newRatio as number);
     setFieldValue("geoLocation", { ...location, ratio: newRatio });
   };
   // Function to handle location and zoom updates
@@ -119,14 +119,28 @@ const PlacePicker = ({ location, setFieldValue, error }: PlacePickerProps) => {
         geocodeLatLng={geocodeLatLng}
         ratio={ratio}
       />
-      <input
-        type="range"
-        min="1"
-        max="10"
+      <Slider
+        label="Radio de alcance"
+        marks={[
+          {
+            value: 5,
+            label: "5km",
+          },
+          {
+            value: 20,
+            label: "20km",
+          },
+          {
+            value: 40,
+            label: "40km",
+          },
+        ]}
+        minValue={1}
+        maxValue={50}
         value={ratio}
-        onChange={(e) => handleRatioChange(Number(e.target.value))}
+        formatOptions={{ style: "unit", unit: "kilometer" }}
+        onChange={handleRatioChange}
       />
-      <span>Ratio: {ratio}</span>
       {error && (
         <p className="text-danger text-small">
           Por favor, busque y/o seleccione una ubicación en el mapa

@@ -79,7 +79,7 @@ const CreateGood = ({
       },
       description: values.geoLocation.description,
       userSetted: values.geoLocation.userSetted,
-      ratio: values.geoLocation.ratio,
+      ratio: values.geoLocation.ratio ? values.geoLocation.ratio * 1000 : 5 * 1000,
     };
 
     const attachedFiles = values.attachedFiles.map((file) => ({

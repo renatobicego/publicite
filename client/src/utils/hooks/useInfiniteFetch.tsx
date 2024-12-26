@@ -1,109 +1,125 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { fetchDataByType } from "../data/fetchDataByType";
 import { toastifyError } from "../functions/toastify";
+import { isLocationAwarePostType, useLocation } from "./useLocation";
+import { useInfiniteScroll } from "./useInfiniteScroll";
 
-// Custom hook for infinite scroll and data fetching
+interface FetchState {
+  isLoading: boolean;
+  hasMoreData: boolean;
+  page: number;
+  items: any[];
+  errorOccurred: boolean;
+}
 export const useInfiniteFetch = (
-  postType:
-    | "good"
-    | "service"
-    | "petition"
-    | "groups"
-    | "users"
-    | "boards"
-    | "groupPosts",
-  groupId?: string
+  postType: PostType,
+  groupId?: string // group id is for getting posts of group members from within the group page
 ) => {
-  // is loading
-  const [isLoading, setIsLoading] = useState(false);
-  // has more data to fetch (used for infinite scroll)
-  const [hasMoreData, setHasMoreData] = useState(true);
-  const [page, setPage] = useState(1);
-  const [items, setItems] = useState<any[]>([]);
-  // Error flag to prevent repeated calls
-  const [errorOccurred, setErrorOccurred] = useState(false);
+  // data to know the states of the fetch
+  const [state, setState] = useState<FetchState>({
+    isLoading: false,
+    hasMoreData: true,
+    page: 1,
+    items: [],
+    errorOccurred: false,
+  });
 
-  // Get search params in url
+  const updateState = useCallback((newState: Partial<FetchState>) => {
+    setState((prevState) => ({ ...prevState, ...newState }));
+  }, []);
+  // get the coordinates of the user and the function to request the permission
+  const { coordinates, requestLocationPermission } = useLocation(postType);
+  // get the busqueda from the url
   const searchParams = useSearchParams();
   const busqueda = searchParams.get("busqueda");
 
-  // Function to handle initial fetch and scroll-based fetch
+  // Function to load more data
   const loadMore = useCallback(async () => {
-    // console.log("Loading more data...", busqueda, hasMoreData);
-    if (isLoading || !hasMoreData || errorOccurred) return;
-    setIsLoading(true);
+    // if isLoading, hasMoreData is false or errorOccurred, return
+    if (state.isLoading || !state.hasMoreData || state.errorOccurred) return;
+    // if postType is location aware and coordinates is null, request the permission
+    if (isLocationAwarePostType(postType) && !coordinates) {
+      try {
+        await requestLocationPermission();
+      } catch {
+        updateState({ errorOccurred: true });
+        return;
+      }
+    }
+    // set isLoading to true
+    updateState({ isLoading: true });
     try {
+      // get data
       const data: any = await fetchDataByType(
         postType,
         busqueda,
-        page,
+        state.page,
+        coordinates,
         groupId
       );
+      // update state
       if (data.error) {
         toastifyError(data.error);
-        setErrorOccurred(true);
+        updateState({ errorOccurred: true });
       } else {
-        setHasMoreData(data.hasMore);
-        if (data.hasMore) {
-          setPage((prevPage) => prevPage + 1);
-        }
-        setItems((prevItems) => [...prevItems, ...data.items]);
-        setErrorOccurred(false);
+        updateState({
+          hasMoreData: data.hasMore,
+          page: data.hasMore ? state.page + 1 : state.page,
+          items: [...state.items, ...data.items],
+          errorOccurred: false,
+        });
       }
     } catch (error: any) {
       toastifyError(error as string);
-      setErrorOccurred(true);
+      updateState({ errorOccurred: true });
     } finally {
-      setIsLoading(false);
+      updateState({ isLoading: false });
     }
   }, [
-    isLoading,
-    hasMoreData,
-    errorOccurred,
-    page,
+    state,
     postType,
     busqueda,
+    coordinates,
     groupId,
+    updateState,
+    requestLocationPermission,
   ]);
 
   // Trigger to reset state when postType or search term changes
   useEffect(() => {
-    // Reset state when postType or searchParams change
-    setItems([]); // Clear items first
-    setPage(1); // Reset page number
-    setErrorOccurred(false); // Reset error flag when postType or search params change
-
-    // Set `hasMoreData` to true first
-    setHasMoreData(true);
-  }, [postType, busqueda]);
+    updateState({
+      items: [],
+      page: 1,
+      errorOccurred: false,
+      hasMoreData: true,
+    });
+  }, [postType, busqueda, updateState]);
 
   // Effect to call `loadMore` only after `hasMoreData` is set to true
   useEffect(() => {
-    // Check if `hasMoreData` is true, and if so, call `loadMore`
-    if (hasMoreData && !isLoading && !errorOccurred && page === 1) {
+    if (
+      state.hasMoreData &&
+      !state.isLoading &&
+      !state.errorOccurred &&
+      state.page === 1
+    ) {
       loadMore();
     }
-  }, [hasMoreData, isLoading, errorOccurred, page, loadMore]);
+  }, [
+    state.hasMoreData,
+    state.isLoading,
+    state.errorOccurred,
+    state.page,
+    loadMore,
+  ]);
 
-  // Handle scroll event
+  useInfiniteScroll(
+    loadMore,
+    state.isLoading,
+    state.hasMoreData,
+    state.errorOccurred
+  );
 
-  // Handle scroll and call loadMore when reaching the bottom of the page
-  useEffect(() => {
-    const handleScroll = () => {
-      const bottomReached =
-        window.innerHeight + document.documentElement.scrollTop >=
-        document.documentElement.offsetHeight - window.innerHeight * 0.3;
-
-      if (bottomReached && !isLoading && hasMoreData && !errorOccurred) {
-        loadMore(); // Will call the updated loadMore function
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, [loadMore, isLoading, hasMoreData, errorOccurred]);
-  return { items, isLoading };
+  return { items: state.items, isLoading: state.isLoading };
 };
