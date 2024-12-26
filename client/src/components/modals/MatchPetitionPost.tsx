@@ -28,7 +28,7 @@ const MatchPetitionPost = ({
   const findMatch = async () => {
     try {
       setLoading(true);
-      const { items } = await getPosts(postTitle, 1, petitionType, 1);
+      const { items } = await getPosts(postTitle, 1, petitionType, null, 1);
       console.log(items);
       setPostMatched(items[0]);
     } catch (error) {

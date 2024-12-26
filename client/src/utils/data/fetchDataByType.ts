@@ -8,8 +8,10 @@ import {
 import { getUsers } from "@/services/userServices";
 import { Coordinates } from "../hooks/useLocation";
 
+export type PubliciteDataTypes = PostType | "boards" | "users" | "groups" | "groupPosts";
+
 export const fetchDataByType = async(
-  postType: "good" | "service" | "petition" | "boards" | "users" | "groups" | "groupPosts",
+  postType: PubliciteDataTypes,
   searchTerm: string | null,
   page: number,
   coordinates: Coordinates | null,

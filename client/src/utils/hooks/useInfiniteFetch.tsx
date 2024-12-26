@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { fetchDataByType } from "../data/fetchDataByType";
+import { fetchDataByType, PubliciteDataTypes } from "../data/fetchDataByType";
 import { toastifyError } from "../functions/toastify";
 import { isLocationAwarePostType, useLocation } from "./useLocation";
 import { useInfiniteScroll } from "./useInfiniteScroll";
@@ -13,7 +13,7 @@ interface FetchState {
   errorOccurred: boolean;
 }
 export const useInfiniteFetch = (
-  postType: PostType,
+  postType: PubliciteDataTypes,
   groupId?: string // group id is for getting posts of group members from within the group page
 ) => {
   // data to know the states of the fetch

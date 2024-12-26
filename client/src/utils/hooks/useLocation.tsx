@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { toastifyError } from "../functions/toastify";
+import { PubliciteDataTypes } from "../data/fetchDataByType";
 
 type LocationAwarePostType = "good" | "service" | "petition";
 export interface Coordinates {
@@ -7,11 +8,11 @@ export interface Coordinates {
   longitude: number;
 }
 export const isLocationAwarePostType = (
-  type: PostType
+  type: PubliciteDataTypes
 ): type is LocationAwarePostType => {
   return ["good", "service", "petition"].includes(type);
 };
-export const useLocation = (postType: PostType) => {
+export const useLocation = (postType: PubliciteDataTypes) => {
   const [coordinates, setCoordinates] = useState<Coordinates | null>(null);
   const requestLocationPermission = useCallback(async () => {
     if (!isLocationAwarePostType(postType)) return;
