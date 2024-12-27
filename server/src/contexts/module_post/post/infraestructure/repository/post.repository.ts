@@ -159,6 +159,7 @@ export class PostRepository implements PostRepositoryInterface {
       throw error;
     }
   }
+
   async findPostById(id: string): Promise<any> {
     const session = await this.connection.startSession();
     session.startTransaction();
@@ -198,6 +199,7 @@ export class PostRepository implements PostRepositoryInterface {
       throw error;
     }
   }
+
   async findAllPostByPostType(
     page: number,
     limit: number,
@@ -206,91 +208,129 @@ export class PostRepository implements PostRepositoryInterface {
     searchTerm?: string,
   ): Promise<any> {
     try {
-      this.logger.log('Finding posts By postType: ' + postType);
+      this.logger.log(`Finding posts by postType: ${postType}`);
       const today = new Date();
 
+      // Prepara el stage de filtrado
+      const matchStage: any = {
+        postType,
+        endDate: { $gte: today },
+      };
+
+      // Si se especifica un término de búsqueda, lo procesamos
       if (searchTerm) {
         const textSearchQuery = checkStopWordsAndReturnSearchQuery(searchTerm, SearchType.post);
-
         if (!textSearchQuery) {
-          return {
-            posts: [],
-            hasMore: false,
-          }
-        };
-        this.logger.log('Buscando posts con términos de búsqueda');
-        const posts = await this.postDocument
-          .find({
-            postType: postType,
-            endDate: { $gte: today },
-            $or: [
-              { searchTitle: { $regex: textSearchQuery } },
-              { searchDescription: { $regex: textSearchQuery } },
-            ]
-          })
-          .limit(limit + 1)
-          .skip((page - 1) * limit)
-          .populate({
-            path: 'category',
-            model: 'PostCategory',
-          })
-          .populate({
-            path: 'author',
-            model: 'User',
-            select: '_id profilePhotoUrl username lastName name contact',
-            populate: {
-              path: 'contact',
-              model: 'Contact',
-            },
-          })
-          .lean();
+          this.logger.log('No valid search terms provided. Returning empty result.');
+          return { posts: [], hasMore: false };
+        }
 
-
-        const hasMore = posts.length > limit;
-        const postResponse = posts.slice(0, limit);
-
-        return {
-          posts: postResponse,
-          hasMore: hasMore,
-        };
+        matchStage.$or = [
+          { searchTitle: { $regex: textSearchQuery, $options: 'i' } },
+          { searchDescription: { $regex: textSearchQuery, $options: 'i' } },
+        ];
       }
-      this.logger.log('Buscando posts sin términos de búsqueda');
-      const posts = await this.postDocument
-        .find({
-          postType: postType,
-          endDate: { $gte: today },
-        })
-        .limit(limit + 1)
-        .skip((page - 1) * limit)
-        .populate({
-          path: 'category',
-          model: 'PostCategory',
-        })
-        .populate({
-          path: 'author',
-          model: 'User',
-          select: '_id profilePhotoUrl username lastName name contact',
-          populate: {
-            path: 'contact',
-            model: 'Contact',
-          },
-        })
-        .lean();
 
+      // Agregación optimizada
+      const posts = await this.postDocument.aggregate([
+        {
+          $geoNear: {
+            near: {
+              type: 'Point',
+              coordinates: [userLocation.latitude, userLocation.longitude],
+            },
+            distanceField: 'distance',
+            spherical: true,
+            query: matchStage,
+          },
+        },
+        {
+          $match: {
+            $expr: { $lte: ['$distance', '$geoLocation.ratio'] },
+          },
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'author',
+            foreignField: '_id',
+            as: 'author',
+            pipeline: [
+              { $project: { _id: 1, profilePhotoUrl: 1, username: 1, lastName: 1, name: 1, contact: 1 } },
+            ], // Solo traemos los campos necesarios
+          },
+        },
+        { $unwind: { path: '$author', preserveNullAndEmptyArrays: true } },
+        {
+          $lookup: {
+            from: 'contacts',
+            localField: 'author.contact',
+            foreignField: '_id',
+            as: 'author.contact',
+            pipeline: [
+              { $project: { _id: 1, facebook: 1, phone: 1, instagram: 1, website: 1, x: 1 } },
+            ], // Solo traemos los campos necesarios
+          },
+        },
+        { $unwind: { path: '$author.contact', preserveNullAndEmptyArrays: true } },
+        {
+          $lookup: {
+            from: 'postcategories',
+            localField: 'category',
+            foreignField: '_id',
+            as: 'category',
+            pipeline: [
+              { $project: { _id: 1, label: 1 } },
+            ], // Solo traemos los campos necesarios
+          },
+        },
+        {
+          $addFields: {
+            author: {
+              _id: '$author._id',
+              profilePhotoUrl: '$author.profilePhotoUrl',
+              username: '$author.username',
+              lastName: '$author.lastName',
+              name: '$author.name',
+              contact: '$author.contact',
+            },
+            categories: {
+              $map: {
+                input: '$category',
+                as: 'category',
+                in: {
+                  _id: '$$category._id',
+                  label: '$$category.label',
+                },
+              },
+            },
+          },
+        },
+        // Paginación optimizada
+        { $skip: (page - 1) * limit },
+        { $limit: limit + 1 },
+      ]);
+
+      // Determinamos si hay más posts basados en el límite
       const hasMore = posts.length > limit;
-      const postResponse = posts.slice(0, limit);
+      const postResponse = posts.slice(0, limit); // Solo devolvemos hasta el límite
 
       return {
         posts: postResponse,
-        hasMore: hasMore,
+        hasMore,
       };
     } catch (error: any) {
-      this.logger.error(
-        'An error occurred finding all post by postType: ' + postType,
-      );
+      this.logger.error(`An error occurred finding all posts by postType: ${postType}`, error);
       throw error;
     }
   }
+
+
+
+
+
+
+
 
 
 

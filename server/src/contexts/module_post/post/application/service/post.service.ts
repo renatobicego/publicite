@@ -34,7 +34,7 @@ export class PostService implements PostServiceInterface {
     searchTerm?: string,
   ): Promise<any> {
     try {
-      const posts = await this.postRepository.findAllPostByPostType(
+      return await this.postRepository.findAllPostByPostType(
         page,
         limit,
         postType,
@@ -42,20 +42,21 @@ export class PostService implements PostServiceInterface {
         searchTerm,
       );
 
-      if (posts.posts && posts.posts.length > 0) {
 
-        const postWithInRadius = posts.posts.filter((post: any) => {
-          const distance = calculateDistance(userLocation, post.geoLocation.location);
-          return distance <= post.geoLocation.radius;
-        })
+      // if (posts.posts && posts.posts.length > 0) {
 
-        return {
-          posts: postWithInRadius,
-          hasMore: posts.hasMore
-        };
-      }
+      //   const postWithInRadius = posts.posts.filter((post: any) => {
+      //     const distance = calculateDistance(userLocation, post.geoLocation.location);
+      //     return distance <= post.geoLocation.radius;
+      //   })
 
-      return posts;
+      //   return {
+      //     posts: postWithInRadius,
+      //     hasMore: posts.hasMore
+      //   };
+      // }
+
+      // return posts;
     } catch (error: any) {
       throw error;
     }
