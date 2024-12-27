@@ -15,6 +15,7 @@ export interface PostServiceInterface {
     userLocation: UserLocation,
     searchTerm?: string,
   ): Promise<void>;
+  findMatchPost(postType: string, searchTerm: string): Promise<void>;
   deletePostById(id: string): Promise<void>;
   updatePostById(
     postUpdate: PostUpdateDto,

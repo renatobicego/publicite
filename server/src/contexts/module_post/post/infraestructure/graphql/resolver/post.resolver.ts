@@ -164,5 +164,22 @@ export class PostResolver {
     }
   }
 
+  @Query(() => Post_response_graphql_model, {
+    nullable: true,
+    description: 'Encuentra 1 post que cumpla con las palabras clave del array',
+  })
+  async findMatchPost(
+    @Args('postType', { type: () => PostType }) postType: PostType,
+    @Args('searchTerm', { type: () => String })
+    searchTerm: string,
+  ): Promise<any> {
+    try {
+      return await this.postAdapter.findMatchPost(postType, searchTerm);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
 
 }
