@@ -1,4 +1,4 @@
-import { ClientSession, ObjectId } from 'mongoose';
+import { ClientSession } from 'mongoose';
 import { Post } from '../entity/post.entity';
 import { PostUpdateDto } from '../entity/dto/post.update.dto';
 import { UserLocation } from '../entity/models_graphql/HTTP-REQUEST/post.location.request';
@@ -18,7 +18,7 @@ export interface PostRepositoryInterface {
     userLocation: UserLocation,
     searchTerm?: string,
   ): Promise<any>;
-
+  findMatchPost(postType: string, searchTerm: string): Promise<void>;
   updatePostById(
     postUpdate: PostUpdateDto,
     id: string,

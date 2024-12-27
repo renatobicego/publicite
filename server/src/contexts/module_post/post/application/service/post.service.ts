@@ -12,7 +12,9 @@ import { PostRequest } from '../../domain/entity/models_graphql/HTTP-REQUEST/pos
 import { PostFactory } from '../post-factory/post.factory';
 import { PostType } from '../../domain/entity/enum/post-type.enum';
 import { UserLocation } from '../../domain/entity/models_graphql/HTTP-REQUEST/post.location.request';
-import { calculateDistance } from '../../domain/utils/calculateDistance';
+import { removeAccents_removeEmojisAndToLowerCase } from '../../domain/utils/normalice.data';
+import { checkStopWordsAndReturnSearchQuery, SearchType } from 'src/contexts/module_shared/utils/functions/checkStopWordsAndReturnSearchQuery';
+
 
 
 
@@ -25,42 +27,6 @@ export class PostService implements PostServiceInterface {
     @Inject('UserServiceInterface')
     private readonly userService: UserServiceInterface,
   ) { }
-
-  async findAllPostByPostType(
-    page: number,
-    limit: number,
-    postType: string,
-    userLocation: UserLocation,
-    searchTerm?: string,
-  ): Promise<any> {
-    try {
-      return await this.postRepository.findAllPostByPostType(
-        page,
-        limit,
-        postType,
-        userLocation,
-        searchTerm,
-      );
-
-
-      // if (posts.posts && posts.posts.length > 0) {
-
-      //   const postWithInRadius = posts.posts.filter((post: any) => {
-      //     const distance = calculateDistance(userLocation, post.geoLocation.location);
-      //     return distance <= post.geoLocation.radius;
-      //   })
-
-      //   return {
-      //     posts: postWithInRadius,
-      //     hasMore: posts.hasMore
-      //   };
-      // }
-
-      // return posts;
-    } catch (error: any) {
-      throw error;
-    }
-  }
 
   async create(post: PostRequest): Promise<any> {
     const postType = post.postType.toLowerCase();
@@ -112,6 +78,39 @@ export class PostService implements PostServiceInterface {
       throw error;
     }
   }
+
+
+  async findMatchPost(postType: string, searchTerm: string): Promise<void> {
+    try {
+      const termsWithOutAccentsAndEmojis = removeAccents_removeEmojisAndToLowerCase(searchTerm);
+      const searchTermNormalized = checkStopWordsAndReturnSearchQuery(termsWithOutAccentsAndEmojis, SearchType.post)
+      if (searchTermNormalized === null) return
+      return await this.postRepository.findMatchPost(postType, searchTermNormalized);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  async findAllPostByPostType(
+    page: number,
+    limit: number,
+    postType: string,
+    userLocation: UserLocation,
+    searchTerm?: string,
+  ): Promise<any> {
+    try {
+      return await this.postRepository.findAllPostByPostType(
+        page,
+        limit,
+        postType,
+        userLocation,
+        searchTerm,
+      );
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
 
   async findPostsByAuthorId(id: string): Promise<any> {
     try {

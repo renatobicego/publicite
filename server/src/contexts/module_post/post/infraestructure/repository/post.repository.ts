@@ -29,6 +29,7 @@ import {
 import { PostDocument } from '../schemas/post.schema';
 import { checkStopWordsAndReturnSearchQuery, SearchType } from 'src/contexts/module_shared/utils/functions/checkStopWordsAndReturnSearchQuery';
 import { UserLocation } from '../../domain/entity/models_graphql/HTTP-REQUEST/post.location.request';
+import { ConsoleLogger } from '@nestjs/common';
 
 
 
@@ -199,6 +200,21 @@ export class PostRepository implements PostRepositoryInterface {
       throw error;
     }
   }
+
+  async findMatchPost(postType: string, searchTerm: string): Promise<any> {
+    try {
+      return await this.postDocument.findOne({
+        postType,
+        $or: [
+          { searchTitle: { $regex: searchTerm } },
+          { searchDescription: { $regex: searchTerm } },
+        ],
+      })
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
 
   async findAllPostByPostType(
     page: number,

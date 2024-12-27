@@ -21,6 +21,7 @@ export class PostAdapter implements PostAdapterInterface {
     private readonly logger: MyLoggerService,
   ) { }
 
+
   async create(post: PostRequest): Promise<any> {
     try {
       return await this.postService.create(post);
@@ -28,6 +29,16 @@ export class PostAdapter implements PostAdapterInterface {
       throw error;
     }
   }
+
+
+  async deletePostById(id: string): Promise<void> {
+    try {
+      await this.postService.deletePostById(id);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
 
   async findPostsByAuthorId(id: string): Promise<void> {
     try {
@@ -64,13 +75,14 @@ export class PostAdapter implements PostAdapterInterface {
     }
   }
 
-  async deletePostById(id: string): Promise<void> {
+  async findMatchPost(postType: string, searchTerm: string): Promise<void> {
     try {
-      await this.postService.deletePostById(id);
+      return await this.postService.findMatchPost(postType, searchTerm);
     } catch (error: any) {
       throw error;
     }
   }
+
 
   async updatePostById(
     postUpdate: PostUpdateRequest,
