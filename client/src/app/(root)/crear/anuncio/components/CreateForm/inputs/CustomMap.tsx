@@ -17,7 +17,7 @@ const CustomMap = ({
     lng: number,
     address?: string,
     userSetted?: boolean
-  ) => void;
+  ) => { lat: number; lng: number };
   ratio: number;
 }) => {
   const [map, setMap] = useState<google.maps.Map | null>(null);
@@ -36,7 +36,7 @@ const CustomMap = ({
     if (ref.current && !map) {
       const initializedMap = new google.maps.Map(ref.current, {
         center: { lat, lng },
-        zoom: 14,
+        zoom: 12,
         mapTypeControlOptions: {
           mapTypeIds: ["roadmap"],
         },
@@ -109,7 +109,15 @@ const CustomMap = ({
   return (
     <>
       <LatLngAutocomplete
-        handleLocationChange={handleLocationChange}
+        handleLocationChange={(lat, lng, address, userSetted) => {
+          const { lat: latReturned, lng: lngReturned } = handleLocationChange(
+            lat,
+            lng,
+            address,
+            userSetted
+          );
+          circle?.setCenter({ lat: latReturned, lng: lngReturned });
+        }}
         map={map}
         createMarker={createMarker}
       />

@@ -66,7 +66,7 @@ export const postPost = async (
   try {
     const { data } = await getClient().mutate({
       mutation: postPostMutation,
-      variables: { postRequest: values, author_id: authorId },
+      variables: { postRequest: values, authorId },
       context: {
         headers: {
           Authorization: await auth().getToken({ template: "testing" }),
@@ -75,6 +75,7 @@ export const postPost = async (
     });
     return data.createPost._id;
   } catch (error) {
+    console.log(error)
     throw error;
   }
 };
