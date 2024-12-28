@@ -49,8 +49,14 @@ const PlacePicker = ({
 
     geocoder.geocode({ location: latlng }, (results, status) => {
       if (status === "OK" && results) {
-        const address = results[0]?.formatted_address;
-        handleChangeLocation(lat, lng, address);
+        const address = results[0]?.address_components.filter((component) =>
+          component.types.includes("political")
+        );
+        handleChangeLocation(
+          lat,
+          lng,
+          address.map((component) => component.long_name).join(", ")
+        );
       } else {
         console.error("Geocode was not successful: " + status);
       }
