@@ -17,7 +17,7 @@ import {
 } from "@/graphql/postQueries";
 import { auth } from "@clerk/nextjs/server";
 import { deleteFilesService } from "@/app/server/uploadThing";
-import { Coordinates } from "@/utils/hooks/useLocation";
+import { Coordinates } from "@/app/(root)/providers/LocationProvider";
 
 export const getPostData = async (id: string) => {
   try {
@@ -114,7 +114,9 @@ export const getPosts = async (
 ) => {
   try {
     if (!coordinates) {
-      throw new Error("La ubiación es requerida. Por favor, acepte los permisos de ubicación.");
+      return {
+        error: "Error al traer los anuncios. Por favor intenta de nuevo.",
+      }
     }
     const { data } = await query({
       query: getPostsQuery,

@@ -1,20 +1,22 @@
 import HomePostSection from "@/components/grids/HomePostSection";
+import SelectManualLocationModal from "@/components/modals/SelectManualLocation/SelectManualLocationModal";
 import { POSTS } from "@/utils/data/urls";
+import { Spinner } from "@nextui-org/react";
 import { Suspense } from "react";
-
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-start main-style gap-8">
-      <Suspense fallback={<div>Cargando anuncios...</div>}>
+      <SelectManualLocationModal />
+      <Suspense fallback={<Spinner color="warning" />}>
         <HomePostSection
-          type={Math.random() > 0.5 ? "good" : "service"}
+          type={"goodService"}
           title="Últimos Anuncios"
           buttonText="Ver Más Anuncios"
           buttonHref={POSTS}
         />
       </Suspense>
 
-      <Suspense fallback={<div>Cargando necesidades...</div>}>
+      <Suspense fallback={<Spinner color="warning" />}>
         <HomePostSection
           type="petition"
           title="¿Qué están buscando los usuarios?"

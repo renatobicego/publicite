@@ -9,6 +9,7 @@ import { extractRouterConfig } from "uploadthing/server";
 import { ourFileRouter } from "../api/uploadthing/core";
 import { SocketProvider } from "../socketProvider";
 import { UserDataProvider } from "./providers/userDataProvider";
+import { LocationProvider } from "./providers/LocationProvider";
 export default async function NavigationLayout({
   children,
 }: {
@@ -17,9 +18,7 @@ export default async function NavigationLayout({
   const user = await currentUser();
 
   return (
-    <SocketProvider
-      userId={user?.publicMetadata.mongoId as string}
-    >
+    <SocketProvider userId={user?.publicMetadata.mongoId as string}>
       <UserDataProvider
         username={user?.username}
         clerkId={user?.id}
@@ -29,9 +28,11 @@ export default async function NavigationLayout({
         <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
         <Header isSignedIn={!!user} />
         <BackgroundProvider username={user?.username}>
-          <BackgroundStyle />
-          {children}
-          <HelpButton />
+          <LocationProvider>
+            <BackgroundStyle />
+            {children}
+            <HelpButton />
+          </LocationProvider>
         </BackgroundProvider>
         <Footer username={user?.username} />
       </UserDataProvider>
