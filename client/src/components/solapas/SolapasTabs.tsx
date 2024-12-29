@@ -71,6 +71,7 @@ const SolapasTabs = () => {
       key: `${POST_CONTACTS}${postTypeUrlVisited}`,
       title: "Contactos",
       component: <PostsList postTypeVisited={postTypeVisited} />,
+      requiresLogin: true,
     },
     {
       key: `${POST_RECENTS}${postTypeUrlVisited}`,
