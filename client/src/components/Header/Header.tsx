@@ -8,7 +8,7 @@ import {
   NavbarItem,
 } from "@nextui-org/react";
 import { useState } from "react";
-import Search from "./Search";
+import Search from "./Search/Search";
 import MobileMenu from "./MobileMenu";
 import NavMenuItems from "./NavMenuItems";
 import UserNavItems from "./UserNavItems";

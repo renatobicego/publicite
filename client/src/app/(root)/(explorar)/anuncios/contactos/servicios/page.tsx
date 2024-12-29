@@ -1,10 +1,13 @@
 import BreadcrumbsAdmin from "@/components/BreadcrumbsAdmin";
 import SolapasTabs from "@/components/solapas/SolapasTabs";
-import { postsBaseBreadcrumbsItems, serviceBreadcrumbsItems } from "../breadrcrumbsItems";
+import {
+  contactPostBreadcrumbsItems,
+  serviceBreadcrumbsItems,
+} from "../../breadrcrumbsItems";
 
-export default async function PostsServiceList() {
+export default async function PostsContactServiceList() {
   const breadcrumbsItems = [
-    ...postsBaseBreadcrumbsItems,
+    ...contactPostBreadcrumbsItems,
     serviceBreadcrumbsItems,
   ];
 

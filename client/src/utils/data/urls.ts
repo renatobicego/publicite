@@ -15,6 +15,7 @@ const CREATE_PETITION = "/crear/necesidad";
 const CREATE_MAGAZINE = "/crear/revista";
 const CREATE_GROUP = "/crear/grupo";
 const POST_RECENTS = `${POSTS}/recientes`;
+const POST_CONTACTS = `${POSTS}/contactos`;
 const POST_BEST = `${POSTS}/mejor-puntuados`;
 const POST_NEXT_TO_EXPIRE = `${POSTS}/proximos-a-vencer`;
 const BOARDS = "/pizarras";
@@ -37,6 +38,7 @@ export {
   CREATE_POST,
   CREATE_PETITION,
   CREATE_MAGAZINE,
+  POST_CONTACTS,
   CREATE_GROUP,
   SUSCRIBE,
   POST_RECENTS,

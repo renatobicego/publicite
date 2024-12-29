@@ -1,21 +1,14 @@
 import BreadcrumbsAdmin from "@/components/BreadcrumbsAdmin";
 import SolapasTabs from "@/components/solapas/SolapasTabs";
-import { POSTS } from "@/utils/data/urls";
+import {
+  petitionBreadcrumbsItems,
+  postsBaseBreadcrumbsItems,
+} from "../breadrcrumbsItems";
 
-export default async function PostsList() {
+export default async function PostsPetitionsList() {
   const breadcrumbsItems = [
-    {
-      label: "Inicio",
-      href: "/",
-    },
-    {
-      label: "Anuncios",
-      href: POSTS,
-    },
-    {
-      label: "Necesidades",
-      href: `${POSTS}/necesidades`,
-    },
+    ...postsBaseBreadcrumbsItems,
+    petitionBreadcrumbsItems,
   ];
 
   return (
