@@ -12,15 +12,16 @@ import {
 import { FaMapMarkerAlt } from "react-icons/fa";
 import ManualLocationPicker from "./ManualLocationPicker";
 import { useState } from "react";
+import PrimaryButton from "@/components/buttons/PrimaryButton";
 
-const SelectManualLocationModal = () => {
+const SelectManualLocationModal = ({ showAlways }: { showAlways?: boolean }) => {
   const { manualLocation } = useLocation();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [address, setAddress] = useState("");
 
   return (
     <>
-      {manualLocation && (
+      {manualLocation || showAlways && (
         <Button
           onClick={onOpen}
           color="primary"
@@ -43,12 +44,9 @@ const SelectManualLocationModal = () => {
                 {isOpen && <ManualLocationPicker setAddress={setAddress} />}
               </ModalBody>
               <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  Close
-                </Button>
-                <Button color="primary" onPress={onClose}>
-                  Action
-                </Button>
+                <PrimaryButton color="primary" onPress={onClose}>
+                  Aceptar
+                </PrimaryButton>
               </ModalFooter>
             </>
           )}

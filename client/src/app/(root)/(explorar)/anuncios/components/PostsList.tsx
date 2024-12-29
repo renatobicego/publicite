@@ -5,6 +5,7 @@ import { POSTS } from "@/utils/data/urls";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import PostListLogic from "./PostListLogic";
+import SelectManualLocationModal from "@/components/modals/SelectManualLocation/SelectManualLocationModal";
 
 const PostsList = ({postTypeVisited} : {postTypeVisited: "good" | "service" | "petition"}) => {
   const pathname = usePathname();
@@ -29,9 +30,10 @@ const PostsList = ({postTypeVisited} : {postTypeVisited: "good" | "service" | "p
     }
   };
   return (
-    <section className="w-full flex-col flex gap-4">
+    <section className="w-full flex-col flex gap-4 items-start">
       <SelectPostType postType={postTypeVisited} />
       <h2>{titleToShow()}</h2>
+      <SelectManualLocationModal showAlways/>
       <PostListLogic postType={postTypeVisited} />
     </section>
   );

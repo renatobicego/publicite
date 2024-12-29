@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useEffect } from "react";
 import { Libraries } from "@react-google-maps/api";
 import { Status, Wrapper } from "@googlemaps/react-wrapper";
 import { Spinner } from "@nextui-org/react";
