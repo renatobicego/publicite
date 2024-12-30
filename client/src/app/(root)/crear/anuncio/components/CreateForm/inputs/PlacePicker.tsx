@@ -52,7 +52,7 @@ const PlacePicker = ({ location, setFieldValue, error }: PlacePickerProps) => {
 
   const handleRatioChange = (newRatio: number | number[]) => {
     setRatio(newRatio as number);
-    setFieldValue("geoLocation", { ...location, ratio: newRatio });
+    setFieldValue("geoLocation.ratio", ratio);
   };
   // Function to handle location and zoom updates
   const handleChangeLocation = (
@@ -68,6 +68,7 @@ const PlacePicker = ({ location, setFieldValue, error }: PlacePickerProps) => {
       userSetted: userSetted || false,
       ratio,
     });
+    return { lat, lng };
   };
 
   // Use geolocation to set the default location based on the user's device location

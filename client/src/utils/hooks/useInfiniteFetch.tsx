@@ -2,14 +2,17 @@ import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { fetchDataByType, PubliciteDataTypes } from "../data/fetchDataByType";
 import { toastifyError } from "../functions/toastify";
-import { isLocationAwarePostType, useLocation } from "./useLocation";
 import { useInfiniteScroll } from "./useInfiniteScroll";
+import {
+  isLocationAwarePostType,
+  useLocation,
+} from "@/app/(root)/providers/LocationProvider";
 
 interface FetchState {
-  isLoading: boolean;
-  hasMoreData: boolean;
-  page: number;
-  items: any[];
+  isLoading: boolean; // loading state
+  hasMoreData: boolean; // more data to load available for infinite scroll
+  page: number; // current page of the infinite scroll (we use pagination under the hood)
+  items: any[]; // array of items to display
   errorOccurred: boolean;
 }
 export const useInfiniteFetch = (
@@ -29,7 +32,8 @@ export const useInfiniteFetch = (
     setState((prevState) => ({ ...prevState, ...newState }));
   }, []);
   // get the coordinates of the user and the function to request the permission
-  const { coordinates, requestLocationPermission } = useLocation(postType);
+  const { coordinates, requestLocationPermission, manualLocation } =
+    useLocation();
   // get the busqueda from the url
   const searchParams = useSearchParams();
   const busqueda = searchParams.get("busqueda");
@@ -39,13 +43,18 @@ export const useInfiniteFetch = (
     // if isLoading, hasMoreData is false or errorOccurred, return
     if (state.isLoading || !state.hasMoreData || state.errorOccurred) return;
     // if postType is location aware and coordinates is null, request the permission
-    if (isLocationAwarePostType(postType) && !coordinates) {
+    if (isLocationAwarePostType(postType) && !coordinates && !manualLocation) {
       try {
-        await requestLocationPermission();
+        await requestLocationPermission(postType);
       } catch {
-        updateState({ errorOccurred: true });
+        toastifyError(
+          "Por favor, autoriza el acceso la localización en tu dispositivo o selecciona la ubicación manualmente."
+        );
         return;
       }
+    }
+    if (!coordinates) {
+      return;
     }
     // set isLoading to true
     updateState({ isLoading: true });
@@ -84,6 +93,7 @@ export const useInfiniteFetch = (
     groupId,
     updateState,
     requestLocationPermission,
+    manualLocation,
   ]);
 
   // Trigger to reset state when postType or search term changes
@@ -94,7 +104,7 @@ export const useInfiniteFetch = (
       errorOccurred: false,
       hasMoreData: true,
     });
-  }, [postType, busqueda, updateState]);
+  }, [postType, busqueda, updateState, coordinates]);
 
   // Effect to call `loadMore` only after `hasMoreData` is set to true
   useEffect(() => {
@@ -121,5 +131,8 @@ export const useInfiniteFetch = (
     state.errorOccurred
   );
 
-  return { items: state.items, isLoading: state.isLoading };
+  return {
+    items: state.items,
+    isLoading: state.isLoading,
+  };
 };

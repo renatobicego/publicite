@@ -13,6 +13,7 @@ import {
   BOARDS,
   PROFILE,
   GROUPS,
+  POST_CONTACTS,
 } from "@/utils/data/urls";
 import { Tab, Tabs } from "@nextui-org/react";
 import { usePathname } from "next/navigation";
@@ -65,6 +66,12 @@ const SolapasTabs = () => {
       key: `${POSTS}${postTypeUrlVisited}`,
       title: "Recomendados",
       component: <PostsList postTypeVisited={postTypeVisited} />,
+    },
+    {
+      key: `${POST_CONTACTS}${postTypeUrlVisited}`,
+      title: "Contactos",
+      component: <PostsList postTypeVisited={postTypeVisited} />,
+      requiresLogin: true,
     },
     {
       key: `${POST_RECENTS}${postTypeUrlVisited}`,

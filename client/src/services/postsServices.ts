@@ -17,7 +17,7 @@ import {
 } from "@/graphql/postQueries";
 import { auth } from "@clerk/nextjs/server";
 import { deleteFilesService } from "@/app/server/uploadThing";
-import { Coordinates } from "@/utils/hooks/useLocation";
+import { Coordinates } from "@/app/(root)/providers/LocationProvider";
 
 export const getPostData = async (id: string) => {
   try {
@@ -66,7 +66,7 @@ export const postPost = async (
   try {
     const { data } = await getClient().mutate({
       mutation: postPostMutation,
-      variables: { postRequest: values, author_id: authorId },
+      variables: { postRequest: values, authorId },
       context: {
         headers: {
           Authorization: await auth().getToken({ template: "testing" }),
@@ -75,6 +75,7 @@ export const postPost = async (
     });
     return data.createPost._id;
   } catch (error) {
+    console.log(error)
     throw error;
   }
 };
@@ -113,7 +114,9 @@ export const getPosts = async (
 ) => {
   try {
     if (!coordinates) {
-      throw new Error("La ubiación es requerida. Por favor, acepte los permisos de ubicación.");
+      return {
+        error: "Error al traer los anuncios. Por favor intenta de nuevo.",
+      }
     }
     const { data } = await query({
       query: getPostsQuery,

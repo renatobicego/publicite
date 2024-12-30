@@ -90,7 +90,7 @@ const CreateGood = ({
     const resApi = await createPost(
       {
         ...values,
-        location: dbLocation,
+        geoLocation: dbLocation,
         attachedFiles,
         category: [values.category],
       },

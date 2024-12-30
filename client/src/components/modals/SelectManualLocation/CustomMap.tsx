@@ -5,20 +5,11 @@ import { useState, useEffect, useRef } from "react";
 const CustomMap = ({
   lat,
   lng,
-  handleLocationChange,
   geocodeLatLng,
-  ratio,
 }: {
   lat: number;
   lng: number;
-  geocodeLatLng: (lat: number, lng: number, userSetted?: boolean) => void;
-  handleLocationChange: (
-    lat: number,
-    lng: number,
-    address?: string,
-    userSetted?: boolean
-  ) => { lat: number; lng: number };
-  ratio: number;
+  geocodeLatLng: (lat: number, lng: number) => void;
 }) => {
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [markerCluster, setMarkerCluster] = useState<MarkerClusterer | null>(
@@ -28,7 +19,6 @@ const CustomMap = ({
     lat,
     lng,
   });
-  const [circle, setCircle] = useState<google.maps.Circle | null>(null);
   const ref = useRef<HTMLDivElement>(null);
 
   // Initialize the map
@@ -45,21 +35,10 @@ const CustomMap = ({
         draggingCursor: "pointer",
         mapId: "google-maps-" + Math.random().toString(36).slice(2, 9),
       });
-      const initializedCircle = new google.maps.Circle({
-        map: initializedMap,
-        center: { lat, lng },
-        radius: ratio * 1000, // Convert kilometers to meters
-        fillColor: "#FF0000",
-        fillOpacity: 0.2,
-        strokeColor: "#FF0000",
-        strokeOpacity: 0.7,
-        strokeWeight: 1,
-      });
 
       setMap(initializedMap);
-      setCircle(initializedCircle);
     }
-  }, [map, lat, lng, ratio]);
+  }, [map, lat, lng]);
 
   // Marker cluster setup and map click event
   useEffect(() => {
@@ -72,8 +51,7 @@ const CustomMap = ({
           const lat = e.latLng.lat();
           const lng = e.latLng.lng();
           setMarker({ lat, lng });
-          circle?.setCenter(e.latLng);
-          geocodeLatLng(lat, lng, true); // Get the address based on coordinates
+          geocodeLatLng(lat, lng); // Get the address based on coordinates
         }
       });
     }
@@ -98,29 +76,8 @@ const CustomMap = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [marker, markerCluster]);
 
-  // Update the circle's radius and center when the ratio changes
-  useEffect(() => {
-    if (circle && marker) {
-      circle.setRadius(ratio * 1000); // Convert kilometers to meters
-      circle.setCenter({ lat: marker.lat, lng: marker.lng });
-    }
-  }, [circle, marker, ratio]);
-
   return (
     <>
-      <LatLngAutocomplete
-        handleLocationChange={(lat, lng, address, userSetted) => {
-          const { lat: latReturned, lng: lngReturned } = handleLocationChange(
-            lat,
-            lng,
-            address,
-            userSetted
-          );
-          circle?.setCenter({ lat: latReturned, lng: lngReturned });
-        }}
-        map={map}
-        createMarker={createMarker}
-      />
       <div
         ref={ref}
         style={{

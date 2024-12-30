@@ -19,7 +19,7 @@ el tema de tener distintos tipos de relaciones va a costar hacer get de posts po
 - revistas get all a veces no trae (parece andar)
 - mensaje success eliminar colaboradores (listo)
 - eliminar colaboradores de revista (probar)
-- GENERADOR DE COINCIDENCIA PETE (listo, falta buscar bien porque no lo hace)
+- GENERADOR DE COINCIDENCIA (listo, falta buscar bien porque no lo hace)
 - mostrar anuncios como lista no anda (es location description)
 - BOTON EMOJIS (listo)
 - BUSCADOR POR TIPO DE anuncio (listo)
@@ -45,7 +45,6 @@ boton de compartir app
 - notificacion de navegador (listo)
 - crear grupo invita colaborador pero no apare ce notificacion o no se borra bien del array de inivtaciones
 - ERROR BOUNDARIES (listo)
-- editar imagen 
 - Editar revista no funca 
 - Deberíamos ponerle los decimales a los precios pa ser mas amigables (medio que listo, en inputs no me deja)
 - ORDEN REVISTAS

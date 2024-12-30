@@ -1,21 +1,23 @@
+import { Coordinates } from "@/app/(root)/providers/LocationProvider";
 import { getBoards } from "@/services/boardServices";
 import { getGroupPosts, getGroups } from "@/services/groupsService";
-import {
-  getGoods,
-  getPetitions,
-  getServices,
-} from "@/services/postsServices";
+import { getGoods, getPetitions, getServices } from "@/services/postsServices";
 import { getUsers } from "@/services/userServices";
-import { Coordinates } from "../hooks/useLocation";
 
-export type PubliciteDataTypes = PostType | "boards" | "users" | "groups" | "groupPosts";
+export type PubliciteDataTypes =
+  | PostType
+  | "boards"
+  | "users"
+  | "groups"
+  | "groupPosts"
+  | "goodService";
 
-export const fetchDataByType = async(
+export const fetchDataByType = async (
   postType: PubliciteDataTypes,
   searchTerm: string | null,
   page: number,
   coordinates: Coordinates | null,
-  groupId?: string,
+  groupId?: string
 ) => {
   switch (postType) {
     case "good":
@@ -32,5 +34,13 @@ export const fetchDataByType = async(
       return await getUsers(searchTerm, page);
     case "groupPosts":
       return await getGroupPosts(page, groupId);
+    case "goodService":
+      const services = await getServices(searchTerm, page, coordinates);
+      const goods = await getGoods(searchTerm, page, coordinates);
+      // return a mix of services and goods
+      return {
+        items: [...goods.items.slice(0, 5), ...services.items.slice(0, 5)],
+        hasMore: services.hasMore,
+      };
   }
 };
