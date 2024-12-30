@@ -8,6 +8,7 @@ import Subscription from 'src/contexts/module_webhook/mercadopago/domain/entity/
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { SubscriptionRepositoryInterface } from '../../domain/repository/mp-subscription.respository.interface';
 import { getTodayDateTime } from 'src/contexts/module_shared/utils/functions/getTodayDateTime';
+import { setSuscriptionInClerkMetadata } from 'src/contexts/module_webhook/clerk/domain/functions/setSuscriptionInClerkMetadata';
 
 
 export class SubscriptionRepository implements SubscriptionRepositoryInterface {
@@ -135,6 +136,7 @@ export class SubscriptionRepository implements SubscriptionRepositoryInterface {
         this.logger.error(`Subscription with id ${id} not found.`);
         throw new Error(`Subscription with id ${id} not found.`);
       }
+      await setSuscriptionInClerkMetadata(result.external_reference, result.subscriptionPlan);
       this.logger.log(`Subscription with id ${id} successfully updated.`);
     } catch (error: any) {
       throw error;

@@ -25,7 +25,7 @@ export interface UserServiceInterface {
   findUserByUsername(username: string, userRequestId?: string): Promise<any>;
 
   getUserPersonalInformationByUsername(username: string): Promise<any>;
-
+  getRelationsFromUserByUserId(userRequestId: string) :Promise<any>
   getUserPreferencesByUsername(
     username: string,
   ): Promise<UserPreferences | null>;

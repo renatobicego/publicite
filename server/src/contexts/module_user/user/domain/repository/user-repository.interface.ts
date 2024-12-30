@@ -26,7 +26,7 @@ export interface UserRepositoryInterface {
     username: string,
   ): Promise<UserPreferences | null>;
 
-
+  getRelationsFromUserByUserId(userRequestId: string): Promise<any>
 
   pushNotification(notification: any, userId: string, session?: any): Promise<any>;
   pushNewFriendRequestOrRelationRequestToUser(notificationId: Types.ObjectId, userNotificationOwner: string, session: any): Promise<any>

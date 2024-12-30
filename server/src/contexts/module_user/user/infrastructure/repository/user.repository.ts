@@ -61,6 +61,7 @@ export class UserRepository implements UserRepositoryInterface {
   ) { }
 
 
+
   async findUserByUsername(username: string): Promise<any> {
     try {
       const userPopulate_userRelation = '_id userType name lastName businessName profilePhotoUrl username'
@@ -214,6 +215,19 @@ export class UserRepository implements UserRepositoryInterface {
       throw error;
     }
   }
+
+  async getRelationsFromUserByUserId(userRequestId: string): Promise<any> {
+    try {
+      return await this.user
+        .findById(userRequestId)
+        .select('userRelations')
+        .populate('userRelations')
+        .lean();
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
   async makeFriendRelationBetweenUsers(
     userRelation: UserRelation,
     session: any,

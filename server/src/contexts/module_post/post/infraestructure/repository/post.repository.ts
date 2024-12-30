@@ -29,7 +29,7 @@ import {
 import { PostDocument } from '../schemas/post.schema';
 import { checkStopWordsAndReturnSearchQuery, SearchType } from 'src/contexts/module_shared/utils/functions/checkStopWordsAndReturnSearchQuery';
 import { UserLocation } from '../../domain/entity/models_graphql/HTTP-REQUEST/post.location.request';
-import { ConsoleLogger } from '@nestjs/common';
+
 
 
 
@@ -53,6 +53,7 @@ export class PostRepository implements PostRepositoryInterface {
     private readonly logger: MyLoggerService,
     @InjectConnection() private readonly connection: Connection,
   ) { }
+
 
 
 
@@ -342,8 +343,29 @@ export class PostRepository implements PostRepositoryInterface {
   }
 
 
+  async findContactPost(
+    postType: string,
+    userRequestId: string,
+    userRelationMap: Map<string, string>
+  ): Promise<void> {
+    try {
+
+      const conditions = Array.from(userRelationMap.entries()).map(([key, value]) => ({
+        author: key,
+        visibility: value,
+      }));
 
 
+      const results = await this.postDocument.find({
+        postType: postType,
+        $or: conditions,
+      });
+
+      console.log('Results:', results);
+    } catch (error: any) {
+      throw error;
+    }
+  }
 
 
 

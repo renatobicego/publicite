@@ -1,5 +1,5 @@
 import { BadRequestException, Inject } from '@nestjs/common';
-import { getLocalTimeZone, now } from '@internationalized/date';
+
 
 import { SubscriptionServiceInterface } from 'src/contexts/module_webhook/mercadopago/domain/service/mp-subscription.service.interface';
 import Subscription from 'src/contexts/module_webhook/mercadopago/domain/entity/subcription.entity';
@@ -7,6 +7,7 @@ import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.servic
 import { MercadoPagoSubscriptionPlanServiceInterface } from 'src/contexts/module_webhook/mercadopago/domain/service/mp-subscriptionPlan.service.interface';
 import { SubscriptionRepositoryInterface } from '../../domain/repository/mp-subscription.respository.interface';
 import { getTodayDateTime } from 'src/contexts/module_shared/utils/functions/getTodayDateTime';
+import { setSuscriptionInClerkMetadata } from 'src/contexts/module_webhook/clerk/domain/functions/setSuscriptionInClerkMetadata';
 
 export class MpSubscriptionService implements SubscriptionServiceInterface {
   constructor(
@@ -85,6 +86,7 @@ export class MpSubscriptionService implements SubscriptionServiceInterface {
         card_id // id de la tarjeta
       );
       await this.subscriptionRepository.saveSubPreapproval(newUserSuscription);
+      await setSuscriptionInClerkMetadata(external_reference, planID);
     } catch (error: any) {
       throw error;
     }
@@ -138,9 +140,11 @@ export class MpSubscriptionService implements SubscriptionServiceInterface {
       switch (status) {
         case 'cancelled':
           await this.subscriptionRepository.cancelSubscription(id);
+          await setSuscriptionInClerkMetadata(external_reference, null);
           return Promise.resolve();
         case 'paused':
           await this.subscriptionRepository.pauseSubscription(id, updateObject);
+          await setSuscriptionInClerkMetadata(external_reference, null);
           return Promise.resolve();
         case 'authorized':
           await this.subscriptionRepository.updateSubscription(id, updateObject);

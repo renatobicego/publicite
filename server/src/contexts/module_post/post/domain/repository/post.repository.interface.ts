@@ -19,6 +19,7 @@ export interface PostRepositoryInterface {
     searchTerm?: string,
   ): Promise<any>;
   findMatchPost(postType: string, searchTerm: string): Promise<void>;
+  findContactPost(postType: string, userRequestId: string, userRelationMap: Map<string, string>): Promise<void>;
   updatePostById(
     postUpdate: PostUpdateDto,
     id: string,

@@ -28,7 +28,6 @@ export class UserService implements UserServiceInterface {
     @InjectConnection() private readonly connection: Connection,
   ) { }
 
-
   async makeFriendRelationBetweenUsers(backData: { userIdFrom: string; userIdTo: string; }, typeOfRelation: string, session: any): Promise<string | null> {
     try {
       const userRelation = new UserRelation(
@@ -42,7 +41,6 @@ export class UserService implements UserServiceInterface {
       throw error;
     }
   }
-
 
 
   async createUser(userEntity: User, contactDto: any): Promise<string> {
@@ -167,6 +165,18 @@ export class UserService implements UserServiceInterface {
       throw error;
     }
   }
+
+
+  async getRelationsFromUserByUserId(userRequestId: string): Promise<any> {
+    try {
+      this.logger.log("finding relations from user with id: " + userRequestId);
+      return await this.userRepository.getRelationsFromUserByUserId(userRequestId);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
 
 
   async pushNotificationToUserArrayNotifications(

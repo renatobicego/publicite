@@ -1,4 +1,3 @@
-import { ObjectId } from 'mongoose';
 
 export class UserRelation {
   private userA: string;

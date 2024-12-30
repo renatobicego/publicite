@@ -19,7 +19,7 @@ export class SubscriptionController {
     private readonly logger: MyLoggerService,
     @Inject('SubscriptionAdapterInterface')
     private readonly subscriptionAdapter: SubscriptionAdapterInterface,
-  ) {}
+  ) { }
 
   @Get(':clerkId')
   @ApiOperation({ summary: 'Get subscriptions by clerId' })
@@ -46,4 +46,8 @@ export class SubscriptionController {
       throw error;
     }
   }
+
+
+
+
 }

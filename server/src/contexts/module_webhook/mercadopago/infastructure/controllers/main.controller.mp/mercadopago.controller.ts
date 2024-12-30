@@ -58,11 +58,22 @@ export class MercadopagoController {
   ): Promise<any> {
     try {
       //Valido el origen de la petición
+      // const body = {
+      //   action: "payment.created",
+      //   api_version: "v1",
+      //   data: {
+      //     id: "96737892838"
+      //   },
+      //   date_created: "2024-12-18T16:08:07Z",
+      //   id: 117838832053,
+      //   live_mode: true,
+      //   type: "payment",
+      //   user_id: "281287230"
+      // };
 
       const authSecretValidation =
         await this.mpWebhookAdapter.process_subscription_preapproval(
-          '2214ff77082e46d58c3a75099b411777',
-          'updated',
+          "3f9129843d2d41b6ba26076cf8210206", "created"
         );
       if (authSecretValidation) {
         //En el caso de que validemos el origen y que el pago se complete correctamente, vamos a deolver el estado OK, de lo contrario esta operacion no se hara

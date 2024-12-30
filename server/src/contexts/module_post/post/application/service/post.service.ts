@@ -16,7 +16,12 @@ import { removeAccents_removeEmojisAndToLowerCase } from '../../domain/utils/nor
 import { checkStopWordsAndReturnSearchQuery, SearchType } from 'src/contexts/module_shared/utils/functions/checkStopWordsAndReturnSearchQuery';
 
 
-
+interface UserRelation {
+  userA: string;
+  userB: string;
+  typeRelationA: string;
+  typeRelationB: string;
+}
 
 export class PostService implements PostServiceInterface {
   constructor(
@@ -27,6 +32,7 @@ export class PostService implements PostServiceInterface {
     @Inject('UserServiceInterface')
     private readonly userService: UserServiceInterface,
   ) { }
+
 
   async create(post: PostRequest): Promise<any> {
     const postType = post.postType.toLowerCase();
@@ -135,6 +141,36 @@ export class PostService implements PostServiceInterface {
     }
   }
 
+
+  async findContactPost(postType: string, userRequestId: string): Promise<void> {
+    try {
+
+      const relationMap: Map<string, string> = await this.makeUserMapRelation(userRequestId)
+      if (!relationMap) return
+
+      return await this.postRepository.findContactPost(postType, userRequestId, relationMap)
+
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
+  async makeUserMapRelation(userRequestId: string): Promise<any> {
+    const userRelation = await this.userService.getRelationsFromUserByUserId(userRequestId)
+    if (!userRelation) return
+    const relationMap = new Map<string, string>()
+    userRelation.forEach((relation: UserRelation) => {
+      if (userRelation.userA.toString() == userRequestId) {
+        relationMap.set(relation.userB.toString(), relation.typeRelationA)
+      } else {
+        relationMap.set(relation.userA.toString(), relation.typeRelationA)
+      }
+    });
+
+    return relationMap;
+
+  }
   async updatePostById(
     postUpdate: PostUpdateDto,
     id: string,
