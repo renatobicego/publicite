@@ -142,13 +142,13 @@ export class PostService implements PostServiceInterface {
   }
 
 
-  async findContactPost(postType: string, userRequestId: string): Promise<void> {
+  async findFriendPosts(postType: string, userRequestId: string, page: number, limit: number): Promise<void> {
     try {
 
       const relationMap: Map<string, string> = await this.makeUserMapRelation(userRequestId)
       if (!relationMap) return
 
-      return await this.postRepository.findContactPost(postType, userRequestId, relationMap)
+      return await this.postRepository.findFriendPosts(postType, userRequestId, relationMap, page, limit)
 
     } catch (error: any) {
       throw error;

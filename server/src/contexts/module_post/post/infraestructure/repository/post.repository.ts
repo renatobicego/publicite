@@ -345,10 +345,11 @@ export class PostRepository implements PostRepositoryInterface {
   }
 
 
-  async findContactPost(
+  async findFriendPosts(
     postType: string,
     userRequestId: string,
-    userRelationMap: Map<string, string>
+    userRelationMap: Map<string, string>,
+    page: number, limit: number
   ): Promise<any> {
     try {
 
@@ -358,13 +359,26 @@ export class PostRepository implements PostRepositoryInterface {
       }));
 
 
-      const results = await this.postDocument.find({
+      const friendPosts = await this.postDocument.find({
         postType,
         $or: conditions,
-      });
+      }).skip((page - 1) * limit).limit(limit + 1)
 
-      console.log('Results:', results);
-      return results
+      if (!friendPosts) {
+        return {
+          posts: [],
+          hasMore: false
+        }
+      }
+
+      const hasMore = friendPosts.length > limit;
+      const postResponse = friendPosts.slice(0, limit);
+
+
+      return {
+        posts: postResponse,
+        hasMore
+      }
 
     } catch (error: any) {
       throw error;
