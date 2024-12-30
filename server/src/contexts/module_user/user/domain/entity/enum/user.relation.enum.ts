@@ -1,5 +1,5 @@
 export enum UserRelationType {
-    topfriends = "topfriends",
-    friends = "friends",
-    contact = "contact"
+    topfriends = 'topfriends',
+    friends = 'friends',
+    contacts = 'contacts',
 }

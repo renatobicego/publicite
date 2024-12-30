@@ -17,6 +17,7 @@ export interface PostAdapterInterface {
     searchTerm?: string,
   ): Promise<void>;
   findMatchPost(postType: string, searchTerm: string): Promise<void>;
+  findContactPost(postType: string, userRequestId: string): Promise<void>;
   updatePostById(
     postUpdate: PostUpdateRequest,
     id: string,

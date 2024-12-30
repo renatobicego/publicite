@@ -231,8 +231,10 @@ export class PostRepository implements PostRepositoryInterface {
       // Prepara el stage de filtrado
       const matchStage: any = {
         postType,
+        "visibility.post": "public",
         endDate: { $gte: today },
       };
+
 
       // Si se especifica un término de búsqueda, lo procesamos
       if (searchTerm) {
@@ -347,21 +349,23 @@ export class PostRepository implements PostRepositoryInterface {
     postType: string,
     userRequestId: string,
     userRelationMap: Map<string, string>
-  ): Promise<void> {
+  ): Promise<any> {
     try {
 
       const conditions = Array.from(userRelationMap.entries()).map(([key, value]) => ({
         author: key,
-        visibility: value,
+        'visibility.post': value,
       }));
 
 
       const results = await this.postDocument.find({
-        postType: postType,
+        postType,
         $or: conditions,
       });
 
       console.log('Results:', results);
+      return results
+
     } catch (error: any) {
       throw error;
     }

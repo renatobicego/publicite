@@ -170,7 +170,9 @@ export class UserService implements UserServiceInterface {
   async getRelationsFromUserByUserId(userRequestId: string): Promise<any> {
     try {
       this.logger.log("finding relations from user with id: " + userRequestId);
-      return await this.userRepository.getRelationsFromUserByUserId(userRequestId);
+      const userRelationDocument = await this.userRepository.getRelationsFromUserByUserId(userRequestId);
+      const { userRelations } = userRelationDocument;
+      return userRelations;
     } catch (error: any) {
       throw error;
     }

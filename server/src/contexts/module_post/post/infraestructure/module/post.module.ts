@@ -6,8 +6,8 @@ import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.servic
 import { PostGoodModel } from '../schemas/post-types-schemas/post.good.schema';
 import { PostServiceModel } from '../schemas/post-types-schemas/post.service.schema';
 import { PostPetitionModel } from '../schemas/post-types-schemas/post.petition.schema';
-import { PostAdapterMapper } from '../controller/adapter/mapper/post.adapter.mapper';
-import { PostAdapter } from '../controller/adapter/post.adapter';
+import { PostAdapterMapper } from '../adapter/mapper/post.adapter.mapper';
+import { PostAdapter } from '../adapter/post.adapter';
 import { PostResolver } from '../graphql/resolver/post.resolver';
 import { UserModule } from 'src/contexts/module_user/user/infrastructure/module/user.module';
 import { UserSchema } from 'src/contexts/module_user/user/infrastructure/schemas/user.schema';

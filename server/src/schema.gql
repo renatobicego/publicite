@@ -554,6 +554,9 @@ type Query {
   """Encuentra 1 post que cumpla con las palabras clave del array"""
   findMatchPost(postType: PostType!, searchTerm: String!): Post_response_graphql_model
 
+  """Encuentra 1 post que cumpla con las palabras clave del array"""
+  findFriendPosts(postType: PostType!): Post_response_graphql_model
+
   """Obtener un board por anotaciones o palabras clave"""
   getBoardByAnnotationOrKeyword(board: String!, limit: Float!, page: Float!): BoardGetAllResponse
 

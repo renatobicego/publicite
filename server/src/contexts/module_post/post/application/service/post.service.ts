@@ -161,7 +161,7 @@ export class PostService implements PostServiceInterface {
     if (!userRelation) return
     const relationMap = new Map<string, string>()
     userRelation.forEach((relation: UserRelation) => {
-      if (userRelation.userA.toString() == userRequestId) {
+      if (relation.userA.toString() == userRequestId) {
         relationMap.set(relation.userB.toString(), relation.typeRelationA)
       } else {
         relationMap.set(relation.userA.toString(), relation.typeRelationA)

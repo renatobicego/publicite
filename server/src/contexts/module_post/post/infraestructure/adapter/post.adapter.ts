@@ -8,8 +8,8 @@ import {
 import { PostUpdateRequest } from 'src/contexts/module_post/post/domain/entity/models_graphql/HTTP-REQUEST/post.update.request';
 
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
-import { PostServiceInterface } from '../../../domain/service/post.service.interface';
-import { UserLocation } from '../../../domain/entity/models_graphql/HTTP-REQUEST/post.location.request';
+import { PostServiceInterface } from '../../domain/service/post.service.interface';
+import { UserLocation } from '../../domain/entity/models_graphql/HTTP-REQUEST/post.location.request';
 
 
 export class PostAdapter implements PostAdapterInterface {
@@ -82,6 +82,15 @@ export class PostAdapter implements PostAdapterInterface {
       throw error;
     }
   }
+
+  async findContactPost(postType: string, userRequestId: string): Promise<void> {
+    try {
+      return await this.postService.findContactPost(postType, userRequestId);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
 
 
   async updatePostById(

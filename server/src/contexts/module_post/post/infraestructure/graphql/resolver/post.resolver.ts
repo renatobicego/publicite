@@ -180,6 +180,22 @@ export class PostResolver {
     }
   }
 
+  @Query(() => Post_response_graphql_model, {
+    nullable: true,
+    description: 'Encuentra 1 post que cumpla con las palabras clave del array',
+  })
+  async findFriendPosts(
+    @Args('postType', { type: () => PostType }) postType: PostType,
+    @Context() context: { req: CustomContextRequestInterface },
+  ): Promise<any> {
+    try {
+      const userRequestId = context.req.userRequestId;
+      return await this.postAdapter.findContactPost(postType, userRequestId);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
 
 
 }
