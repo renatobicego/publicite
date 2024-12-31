@@ -23,9 +23,13 @@ const PostsList = ({
 
   // Function to determine the title based on path and post type
   const titleToShow = () => {
-    const typeSelected = postTypesItems.find(
-      (pType) => pType.value === (postTypeVisited.typeOfData as PostType)
-    )?.label;
+    const typeSelected =
+      postTypeVisited.typeOfData === "posts" ||
+      postTypeVisited.typeOfData === "contactPosts"
+        ? postTypesItems.find(
+            (pType) => pType.value === postTypeVisited.postType
+          )?.label
+        : "";
 
     switch (true) {
       case pathname.includes(`${POST_RECENTS}`):
@@ -44,7 +48,13 @@ const PostsList = ({
   };
   return (
     <section className="w-full flex-col flex gap-4 items-start">
-      <SelectPostType postType={postTypeVisited.typeOfData as PostType} />
+      <SelectPostType
+        postType={
+          "postType" in postTypeVisited
+            ? (postTypeVisited.postType as PostType)
+            : "good"
+        }
+      />
       <h2>{titleToShow()}</h2>
       <SelectManualLocationModal showAlways />
       <PostListLogic postType={postTypeVisited} />

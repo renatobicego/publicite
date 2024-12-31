@@ -41,6 +41,7 @@ export const useInfiniteFetch = (
   const loadMore = useCallback(async () => {
     // if isLoading, hasMoreData is false or errorOccurred, return
     if (state.isLoading || !state.hasMoreData || state.errorOccurred) return;
+    console.log(state, coordinates, manualLocation)
     // if postType is location aware and coordinates is null, request the permission
     if (isLocationAwarePostType(postType) && !coordinates && !manualLocation) {
       try {
@@ -101,7 +102,7 @@ export const useInfiniteFetch = (
       errorOccurred: false,
       hasMoreData: true,
     });
-  }, [postType, busqueda, updateState, coordinates]);
+  }, [ busqueda, updateState, coordinates]);
 
   // Effect to call `loadMore` only after `hasMoreData` is set to true
   useEffect(() => {

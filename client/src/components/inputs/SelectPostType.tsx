@@ -6,14 +6,14 @@ import { usePathname } from "next/navigation";
 const SelectPostType = ({ postType }: { postType: PostType }) => {
   const pathname = usePathname();
   const getUrlPostType = (postType: PostType) => {
+    const urlWithoutPostType = pathname.replace("/servicios", "").replace("/necesidades", "");
     switch (postType) {
       case "good":
-        const urlWithoutPostType = pathname.replace("/servicios", "").replace("/necesidades", "");
         return urlWithoutPostType;
       case "service":
-        return `servicios`;
+        return `${urlWithoutPostType}/servicios`;
       case "petition":
-        return `necesidades`;
+        return `${urlWithoutPostType}/necesidades`;
     }
   };
   return (

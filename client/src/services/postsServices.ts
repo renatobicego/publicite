@@ -126,6 +126,7 @@ export const getPosts = async (
         limit,
         page,
         searchTerm: searchTerm ? searchTerm : "",
+        userLocation: coordinates,
       },
     });
     return {
