@@ -35,7 +35,7 @@ const Inputs = ({
   const [listUsers, setListUsers] = useState([]);
   useEffect(() => {
     //debería traer contactos del admin
-    fetchDataByType("users", null, 1, null).then((data: any) => {
+    fetchDataByType({ typeOfData: "users" }, null, 1, null).then((data: any) => {
       setListUsers(data.items);
     });
   }, []);

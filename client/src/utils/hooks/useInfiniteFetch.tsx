@@ -17,7 +17,6 @@ interface FetchState {
 }
 export const useInfiniteFetch = (
   postType: PubliciteDataTypes,
-  groupId?: string // group id is for getting posts of group members from within the group page
 ) => {
   // data to know the states of the fetch
   const [state, setState] = useState<FetchState>({
@@ -65,7 +64,6 @@ export const useInfiniteFetch = (
         busqueda,
         state.page,
         coordinates,
-        groupId
       );
       // update state
       if (data.error) {
@@ -90,7 +88,6 @@ export const useInfiniteFetch = (
     postType,
     busqueda,
     coordinates,
-    groupId,
     updateState,
     requestLocationPermission,
     manualLocation,

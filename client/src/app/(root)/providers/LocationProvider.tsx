@@ -30,8 +30,10 @@ const LocationContext = createContext<LocationContextType | undefined>(
 
 export const isLocationAwarePostType = (
   type: PubliciteDataTypes
-): type is LocationAwarePostType => {
-  return ["good", "service", "petition"].includes(type);
+) => {
+  if ("postType" in type) { 
+    return ["good", "service", "petition"].includes(type.postType);
+  }
 };
 
 export const LocationProvider: React.FC<{ children: ReactNode }> = ({

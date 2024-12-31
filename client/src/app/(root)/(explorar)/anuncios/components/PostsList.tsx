@@ -12,18 +12,19 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import PostListLogic from "./PostListLogic";
 import SelectManualLocationModal from "@/components/modals/SelectManualLocation/SelectManualLocationModal";
+import { PostsDataTypes } from "@/utils/data/fetchDataByType";
 
 const PostsList = ({
   postTypeVisited,
 }: {
-  postTypeVisited: "good" | "service" | "petition";
+  postTypeVisited: PostsDataTypes;
 }) => {
   const pathname = usePathname();
 
   // Function to determine the title based on path and post type
   const titleToShow = () => {
     const typeSelected = postTypesItems.find(
-      (pType) => pType.value === postTypeVisited
+      (pType) => pType.value === (postTypeVisited.typeOfData as PostType)
     )?.label;
 
     switch (true) {
@@ -43,7 +44,7 @@ const PostsList = ({
   };
   return (
     <section className="w-full flex-col flex gap-4 items-start">
-      <SelectPostType postType={postTypeVisited} />
+      <SelectPostType postType={postTypeVisited.typeOfData as PostType} />
       <h2>{titleToShow()}</h2>
       <SelectManualLocationModal showAlways />
       <PostListLogic postType={postTypeVisited} />

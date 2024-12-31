@@ -5,6 +5,7 @@ import GroupsLogic from "@/app/(root)/(explorar)/grupos/GroupsLogic";
 import UsersLogic from "@/app/(root)/(explorar)/perfiles/UsersLogic";
 import BoardsLogic from "@/app/(root)/(explorar)/pizarras/BoardsLogic";
 import { useUserData } from "@/app/(root)/providers/userDataProvider";
+import { PostsDataTypes } from "@/utils/data/fetchDataByType";
 import {
   POSTS,
   POST_RECENTS,
@@ -21,7 +22,7 @@ import { useEffect, useRef } from "react";
 
 const SolapasTabs = () => {
   const pathname = usePathname();
-  const {userIdLogged} = useUserData();
+  const { userIdLogged } = useUserData();
   const tabsRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -42,24 +43,49 @@ const SolapasTabs = () => {
   }, [pathname]);
 
   const getPostType = () => {
+    const postTypeVisited: PostsDataTypes = {
+      postType: "good",
+      typeOfData: "posts",
+    };
+    switch (true) {
+      case pathname.includes(`${POST_RECENTS}`):
+        postTypeVisited.typeOfData = "posts";
+        break;
+      case pathname.includes(`${POST_BEST}`):
+        postTypeVisited.typeOfData = "posts";
+        break;
+      case pathname.includes(`${POST_NEXT_TO_EXPIRE}`):
+        postTypeVisited.typeOfData = "posts";
+        break;
+      case pathname.includes(`${POST_CONTACTS}`):
+        postTypeVisited.typeOfData = "contactPosts";
+        break;
+      case pathname.includes(POSTS):
+        postTypeVisited.typeOfData = "posts";
+        break;
+    }
     switch (true) {
       case pathname.includes("servicios"):
-        return "service";
+        postTypeVisited.postType = "service";
+        break;
       case pathname.includes("necesidades"):
-        return "petition";
+        postTypeVisited.postType = "petition";
+        break;
       default:
-        return "good";
+        postTypeVisited.postType = "good";
+        break;
     }
+    return postTypeVisited;
   };
   const postTypeVisited = getPostType();
 
   const postTypeUrlVisited =
-    postTypeVisited === "petition"
+    postTypeVisited.postType === "petition"
       ? "/necesidades"
-      : postTypeVisited === "service"
+      : postTypeVisited.postType === "service"
       ? "/servicios"
-        : "";
-  
+      : "";
+
   // Array of tab definitions
   const tabDefinitions = [
     {
@@ -97,9 +123,7 @@ const SolapasTabs = () => {
     {
       key: PROFILE,
       title: "Perfiles",
-      component: (
-        <UsersLogic />
-      ),
+      component: <UsersLogic />,
       requiresLogin: true,
     },
     {

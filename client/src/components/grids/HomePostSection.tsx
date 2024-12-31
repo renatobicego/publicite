@@ -19,7 +19,7 @@ function PostFetcher({
   type: "good" | "service" | "petition" | "goodService";
 }) {
   const { items, isLoading } =
-    useInfiniteFetch(type);
+    useInfiniteFetch({ typeOfData: "posts", postType: type });
 
   if (isLoading) return <Spinner color="warning" />;
 

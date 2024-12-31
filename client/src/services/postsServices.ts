@@ -12,6 +12,7 @@ import {
   editPostMutation,
   getPostByIdQuery,
   getPostCategories,
+  getPostsOfFriendsQuery,
   getPostsQuery,
   postPostMutation,
 } from "@/graphql/postQueries";
@@ -125,7 +126,6 @@ export const getPosts = async (
         limit,
         page,
         searchTerm: searchTerm ? searchTerm : "",
-        userLocation: coordinates
       },
     });
     return {
@@ -136,6 +136,34 @@ export const getPosts = async (
     console.log("getPosts", error);
     return {
       error: "Error al traer los anuncios. Por favor intenta de nuevo.",
+    };
+  }
+};
+
+export const getPostsOfContacts = async (
+  searchTerm: string | null,
+  page: number,
+  postType: PostType,
+  limit: number | undefined = 20, 
+) => {
+  try {
+    const { data } = await query({
+      query: getPostsOfFriendsQuery,
+      variables: {
+        postType,
+        limit,
+        page,
+        searchTerm: searchTerm ? searchTerm : "",
+      },
+    });
+    return {
+      items: data.findFriendPosts.posts,
+      hasMore: data.findFriendPosts.hasMore,
+    }; // Return the same mocked data
+  } catch (error) {
+    console.log("getPosts", error);
+    return {
+      error: "Error al traer los anuncios de tus contactos. Por favor intenta de nuevo.",
     };
   }
 };
