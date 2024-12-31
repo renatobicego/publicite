@@ -48,7 +48,6 @@ const LatLngAutocomplete = ({
       placeholder="Ingresa una ubicación, calle o ciudad"
       autoComplete="hidden"
       radius="full"
-      isRequired
       labelPlacement="outside"
       variant="bordered"
       inputProps={{

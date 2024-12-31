@@ -113,7 +113,7 @@ export const visibilityItems: { value: Visibility; label: string }[] = [
 export const relationTypes: {value: UserRelation; label: string}[] = [
   {
     label: "Contacto",
-    value: "contact",
+    value: "contacts",
   },
   {
     label: "Amigo",

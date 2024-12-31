@@ -53,7 +53,7 @@ export const mockedNewContactPost2: PostContactNotification = {
 export const mockedNewContactRelation: NewContactRelationNotification = {
   _id: "2",
   date: "2022-01-01",
-  typeRelation: "contact",
+  typeRelation: "contacts",
   user: {
     _id: "qeq",
     profilePhotoUrl: "avatar.png",
