@@ -168,6 +168,7 @@ export class PostResolver {
     nullable: true,
     description: 'Encuentra 1 post que cumpla con las palabras clave del array',
   })
+  @UseGuards(ClerkAuthGuard)
   async findMatchPost(
     @Args('postType', { type: () => PostType }) postType: PostType,
     @Args('searchTerm', { type: () => String })
@@ -184,6 +185,7 @@ export class PostResolver {
     nullable: true,
     description: 'Encuentra todos los posts de mis amigos, segun el tipo de post',
   })
+  @UseGuards(ClerkAuthGuard)
   async findFriendPosts(
     @Args('postType', { type: () => PostType }) postType: PostType,
     @Args('page', { type: () => Number }) page: number,
@@ -192,7 +194,7 @@ export class PostResolver {
   ): Promise<any> {
     try {
       const userRequestId = context.req.userRequestId;
-      return await this.postAdapter.findFriendPosts(postType, "67164bd032f3b18ed706efb4", page, limit);
+      return await this.postAdapter.findFriendPosts(postType, userRequestId, page, limit);
     } catch (error: any) {
       throw error;
     }
