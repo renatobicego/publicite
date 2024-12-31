@@ -1,30 +1,42 @@
 "use client";
 import SelectPostType from "@/components/inputs/SelectPostType";
 import { postTypesItems } from "@/utils/data/selectData";
-import { POSTS } from "@/utils/data/urls";
+import {
+  POST_BEST,
+  POST_CONTACTS,
+  POST_NEXT_TO_EXPIRE,
+  POST_RECENTS,
+  POSTS,
+} from "@/utils/data/urls";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import PostListLogic from "./PostListLogic";
 import SelectManualLocationModal from "@/components/modals/SelectManualLocation/SelectManualLocationModal";
 
-const PostsList = ({postTypeVisited} : {postTypeVisited: "good" | "service" | "petition"}) => {
+const PostsList = ({
+  postTypeVisited,
+}: {
+  postTypeVisited: "good" | "service" | "petition";
+}) => {
   const pathname = usePathname();
-  
+
   // Function to determine the title based on path and post type
   const titleToShow = () => {
     const typeSelected = postTypesItems.find(
       (pType) => pType.value === postTypeVisited
     )?.label;
-    
-    switch (pathname) {
-      case POSTS:
-        return "Recomendados - " + typeSelected;
-      case `${POSTS}/recientes`:
+
+    switch (true) {
+      case pathname.includes(`${POST_RECENTS}`):
         return "Anuncios de Hoy - " + typeSelected;
-      case `${POSTS}/mejor-puntuados`:
+      case pathname.includes(`${POST_BEST}`):
         return "Mejor Puntuados - " + typeSelected;
-      case `${POSTS}/proximos-a-vencer`:
+      case pathname.includes(`${POST_NEXT_TO_EXPIRE}`):
         return "Próximos a Vencer - " + typeSelected;
+      case pathname.includes(`${POST_CONTACTS}`):
+        return "Anuncios de Contactos - " + typeSelected;
+      case pathname.includes(POSTS):
+        return "Recomendados - " + typeSelected;
       default:
         return "Anuncios - " + typeSelected;
     }
@@ -33,7 +45,7 @@ const PostsList = ({postTypeVisited} : {postTypeVisited: "good" | "service" | "p
     <section className="w-full flex-col flex gap-4 items-start">
       <SelectPostType postType={postTypeVisited} />
       <h2>{titleToShow()}</h2>
-      <SelectManualLocationModal showAlways/>
+      <SelectManualLocationModal showAlways />
       <PostListLogic postType={postTypeVisited} />
     </section>
   );
