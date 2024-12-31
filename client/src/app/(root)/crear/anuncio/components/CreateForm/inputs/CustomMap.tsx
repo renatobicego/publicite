@@ -126,6 +126,7 @@ const CustomMap = ({
             userSetted
           );
           circle?.setCenter({ lat: latReturned, lng: lngReturned });
+          setMarker({ lat: latReturned, lng: lngReturned });
         }}
         map={map}
         createMarker={createMarker}
