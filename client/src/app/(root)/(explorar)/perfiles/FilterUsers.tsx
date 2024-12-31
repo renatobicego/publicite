@@ -32,6 +32,7 @@ const FilterUsers = ({
       <Button
         onPress={onOpen}
         isIconOnly
+        aria-label="Filtrar usuarios"
         color="secondary"
         variant="bordered"
         radius="full"

@@ -21,7 +21,7 @@ const DeleteUserRelation = ({relationId} : {relationId: string}) => {
   return (
     <ConfirmModal
       ButtonAction={
-        <Button isIconOnly color="danger" radius="full" variant="flat">
+        <Button isIconOnly aria-label="Eliminar Relación" color="danger" radius="full" variant="flat">
           <IoTrashOutline className="size-4" />
         </Button>
       }

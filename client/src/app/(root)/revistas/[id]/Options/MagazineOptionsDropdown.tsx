@@ -26,14 +26,13 @@ const MagazineOptionsDropdown = ({
   collaborators: User[];
   ownerType: "user" | "group";
   magazine: Magazine;
-
-  }) => {
-  const router = useRouter()
+}) => {
+  const router = useRouter();
   const handleDelete = async () => {
     const res = await removeMagazine(magazine._id, ownerType);
     if (res.error) {
       toastifyError(res.error);
-      return
+      return;
     }
     toastifySuccess(res.message as string);
     router.back();
@@ -59,7 +58,13 @@ const MagazineOptionsDropdown = ({
         placement="bottom-end"
       >
         <DropdownTrigger>
-          <Button variant="light" isIconOnly radius="full" size="sm">
+          <Button
+            variant="light"
+            isIconOnly
+            aria-label="opciones de revista"
+            radius="full"
+            size="sm"
+          >
             <FaChevronDown />
           </Button>
         </DropdownTrigger>

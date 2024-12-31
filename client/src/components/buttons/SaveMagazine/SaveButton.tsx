@@ -36,6 +36,7 @@ const SaveButton: React.FC<SaveButtonProps> = ({ post, ...props }) => {
       <PopoverTrigger>
         <Button
           isIconOnly
+          aria-label={saved.length > 0 ? "Quitar de guardados en revistas" : "Guardar en revista"}
           color="primary"
           radius="full"
           {...props}

@@ -5,7 +5,7 @@ import Legals from "./Legals";
 import Support from "./Support";
 import ShareApp from "./ShareApp";
 
-const Footer = ({ username }: { username?: string | null}) => {
+const Footer = ({ username }: { username?: string | null }) => {
   return (
     <footer
       className={`bg-text-color layout-padding py-10 text-white flex items-start 
@@ -19,12 +19,26 @@ const Footer = ({ username }: { username?: string | null}) => {
               <ShareApp />
             </li>
             <li>
-              <Button isIconOnly as={Link} href={""} size="sm" variant="light">
+              <Button
+                aria-label="Twitter"
+                isIconOnly
+                as={Link}
+                href={""}
+                size="sm"
+                variant="light"
+              >
                 <FaXTwitter className="text-white size-4" />
               </Button>
             </li>
             <li>
-              <Button isIconOnly as={Link} href={""} size="sm" variant="light">
+              <Button
+                aria-label="Instagram"
+                isIconOnly
+                as={Link}
+                href={""}
+                size="sm"
+                variant="light"
+              >
                 <FaInstagram className="text-white size-5" />
               </Button>
             </li>

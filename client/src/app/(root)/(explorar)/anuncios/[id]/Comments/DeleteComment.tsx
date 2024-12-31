@@ -14,6 +14,7 @@ const DeleteComment = ({
       radius="full"
       variant="light"
       isIconOnly
+      aria-label="Eliminar comentario"
       size="sm"
       color="danger"
       onPress={() => console.log(commentId)}

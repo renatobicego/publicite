@@ -57,6 +57,7 @@ const EditMagazineSection = ({
           variant="flat"
           onPress={onOpen}
           isIconOnly
+          aria-label={"Editar Sección de Revista " + prevSectionName}
         >
           <FaPencil />
         </Button>

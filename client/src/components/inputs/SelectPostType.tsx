@@ -1,5 +1,4 @@
 import { postTypesItems } from "@/utils/data/selectData";
-import { POSTS } from "@/utils/data/urls";
 import { Link, Select, SelectItem } from "@nextui-org/react";
 import { usePathname } from "next/navigation";
 

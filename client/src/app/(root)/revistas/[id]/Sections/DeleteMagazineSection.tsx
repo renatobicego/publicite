@@ -29,7 +29,13 @@ const DeleteMagazineSection = ({
   return (
     <ConfirmModal
       ButtonAction={
-        <Button isIconOnly color="danger" radius="full" variant="flat">
+        <Button
+          isIconOnly
+          aria-label="Eliminar sección"
+          color="danger"
+          radius="full"
+          variant="flat"
+        >
           <IoTrashOutline className="size-4" />
         </Button>
       }

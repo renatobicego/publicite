@@ -73,7 +73,7 @@ const MobileNotifications = ({
             size="sm"
             variant="light"
             isIconOnly
-            aria-label="cerrar modal"
+            aria-label="cerrar modal de notificaciones"
             onPress={() => setIsOpen(false)}
           >
             <FaX />

@@ -71,6 +71,7 @@ const Order = ({
       <DropdownTrigger>
         <Button
           isIconOnly
+          aria-label="Ordenar por"
           color="secondary"
           className="max-md:size-8 max-md:min-w-8"
           variant="bordered"

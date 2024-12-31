@@ -26,7 +26,7 @@ const ExitMagazine = ({
   return (
     <ConfirmModal
       ButtonAction={
-        <Button isIconOnly variant="flat" color="danger" radius="full">
+        <Button isIconOnly aria-label="Salir como colaborador de revista" variant="flat" color="danger" radius="full">
           <IoExitOutline className="size-4" />
         </Button>
       }

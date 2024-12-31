@@ -43,6 +43,7 @@ const FileCard = ({
                 />
                 <Button
                   isIconOnly
+                  aria-label="Eliminar archivo adjunto"
                   variant="flat"
                   radius="full"
                   color="danger"
@@ -81,6 +82,7 @@ const FileCard = ({
               </div>
               <Button
                 isIconOnly
+                aria-label={"Eliminar archivo adjunto " + attachedFile.label}
                 variant="flat"
                 radius="full"
                 color="danger"

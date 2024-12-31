@@ -41,6 +41,7 @@ const AnnotationsInputs = ({
           variant="light"
           color="primary"
           isIconOnly
+          aria-label="Agregar anotación"
         >
           <FaPlus />
         </Button>

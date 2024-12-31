@@ -26,6 +26,7 @@ const FilePreview = ({ file, removeFile }: FilePreviewProps) => {
         size="sm"
         isIconOnly
         radius="full"
+        aria-label={"Eliminar archivo " + file.name}
         color="danger"
         onClick={() => removeFile(file.name)}
         className="absolute top-1 right-1 z-10 max-md:size-6 max-md:min-w-6"

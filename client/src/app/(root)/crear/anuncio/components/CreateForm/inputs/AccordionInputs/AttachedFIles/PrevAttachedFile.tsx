@@ -55,6 +55,7 @@ const PrevAttachedFile = ({
           <div className="flex gap-2 mt-6">
             <Button
               isIconOnly
+              aria-label={editing ? "Guardar cambios" : "Editar etiqueta"}
               variant="flat"
               radius="full"
               color="secondary"
@@ -65,6 +66,7 @@ const PrevAttachedFile = ({
             </Button>
             <Button
               isIconOnly
+              aria-label={"Eliminar archivo " + attachedFile.label}
               variant="flat"
               radius="full"
               color="danger"

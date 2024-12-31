@@ -65,6 +65,7 @@ const HandleUserRelationRequest = ({
           <Button
             size="sm"
             isIconOnly
+            aria-label="Aceptar solicitud"
             color="secondary"
             variant="flat"
             radius="full"
@@ -84,6 +85,7 @@ const HandleUserRelationRequest = ({
             isIconOnly
             color="danger"
             variant="flat"
+            aria-label="Rechazar solicitud"
             radius="full"
           >
             <FaX />

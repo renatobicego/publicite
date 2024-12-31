@@ -16,6 +16,7 @@ const BoardColor = ({
           key={index}
           variant="bordered"
           isIconOnly
+          aria-label={"Seleccionar color " + color }
           size="sm"
           onPress={() => setColorSelected(color)}
           className={`${color} ${

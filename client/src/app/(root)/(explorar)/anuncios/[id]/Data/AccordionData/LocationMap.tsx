@@ -138,6 +138,7 @@ const LocationMap = ({ lat, lng }: { lat: number; lng: number }) => {
         onPress={handleMyLocation}
         className="absolute top-[10px] right-14 z-10 bg-white"
         isIconOnly 
+        aria-label="Mi ubicación"
       >
         <FaLocationArrow className="size-5 text-blue-500" />
       </Button>

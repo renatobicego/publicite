@@ -47,6 +47,7 @@ const FilterPosts = ({
       <Button
         onPress={onOpen}
         isIconOnly
+        aria-label="Filtrar anuncios"
         color="secondary"
         variant="bordered"
         radius="full"

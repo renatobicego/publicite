@@ -61,6 +61,7 @@ const HandleGroupRequest = ({ user, group }: { user: User; group: Group }) => {
           <Button
             size="sm"
             isIconOnly
+            aria-label="Aceptar Solicitud"
             color="secondary"
             variant="flat"
             radius="full"
@@ -78,6 +79,7 @@ const HandleGroupRequest = ({ user, group }: { user: User; group: Group }) => {
           <Button
             size="sm"
             isIconOnly
+            aria-label="Rechazar Solicitud"
             color="danger"
             variant="flat"
             radius="full"

@@ -60,6 +60,7 @@ const ImagePreview = ({
           <Button
             size="sm"
             isIconOnly
+            aria-label={"Restaurar imagen"}
             radius="full"
             color="secondary"
             onPress={() => addBackImage(image)}
@@ -73,6 +74,7 @@ const ImagePreview = ({
           <Button
             size="sm"
             isIconOnly
+            aria-label={"Eliminar imagen"}
             radius="full"
             color="danger"
             onPress={() => removeImage(image)}

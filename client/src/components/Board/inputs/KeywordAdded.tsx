@@ -20,6 +20,7 @@ const KeywordAdded = ({
       endContent={
         <Button
           isIconOnly
+          aria-label={"Eliminar palabra clave " + keyword}
           color="danger"
           radius="full"
           variant="light"

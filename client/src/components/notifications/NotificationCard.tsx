@@ -60,6 +60,7 @@ const NotificationOptions = ({
         <DropdownTrigger className="mt-auto">
           <Button
             isIconOnly
+            aria-label="Opciones"
             color="default"
             size="sm"
             radius="full"

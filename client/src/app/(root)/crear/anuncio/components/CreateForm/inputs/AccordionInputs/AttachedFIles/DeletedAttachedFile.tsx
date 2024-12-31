@@ -26,6 +26,7 @@ const DeletedAttachedFile = ({
             <Tooltip placement="bottom-end" content="Restaurar archivo">
               <Button
                 isIconOnly
+                aria-label="Restaurar archivo"
                 variant="flat"
                 radius="full"
                 color="secondary"

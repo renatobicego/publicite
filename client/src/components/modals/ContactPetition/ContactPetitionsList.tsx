@@ -59,6 +59,7 @@ const ContactPetitionsList = ({
       <Tooltip content="Ver Peticiones de Contacto" placement="bottom">
         <Button
           isIconOnly
+          aria-label={"Ver Peticiones de Contacto"}
           onPress={onOpen}
           variant="flat"
           color="primary"
