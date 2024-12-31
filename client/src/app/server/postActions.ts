@@ -10,11 +10,6 @@ export const createPost = async (
   if (!userCanPublishPost) {
     return { error: "Límite de anuncios activos alcanzado" };
   }
-  const user = auth();
-
-  if (!user.sessionId) {
-    return { error: "Usuario no autenticado. Por favor inicie sesión." };
-  }
 
   try {
     const resApi: string = await postPost(formData);

@@ -76,7 +76,7 @@ const CreateService = ({
       },
       description: values.geoLocation.description,
       userSetted: values.geoLocation.userSetted,
-      ratio: values.geoLocation.ratio,
+      ratio: values.geoLocation.ratio ? values.geoLocation.ratio * 1000 : 5 * 1000,
     };
 
     const attachedFiles = values.attachedFiles.map((file) => ({
@@ -87,7 +87,7 @@ const CreateService = ({
     const resApi = await createPost(
       {
         ...values,
-        location: dbLocation,
+        geoLocation: dbLocation,
         attachedFiles,
         category: [values.category],
       },

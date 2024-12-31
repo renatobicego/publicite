@@ -66,7 +66,7 @@ const CreatePetition = ({ userId } : { userId?: string}) => {
       },
       description: values.geoLocation.description,
       userSetted: values.geoLocation.userSetted,
-      ratio: values.geoLocation.ratio,
+      ratio: values.geoLocation.ratio ? values.geoLocation.ratio * 1000 : 5 * 1000,
     };
 
     const attachedFiles = values.attachedFiles.map((file) => ({
@@ -76,7 +76,7 @@ const CreatePetition = ({ userId } : { userId?: string}) => {
 
     const resApi = await createPost({
       ...values,
-      location: dbLocation,
+      geoLocation: dbLocation,
       attachedFiles,
       category: [values.category],
     }, true);

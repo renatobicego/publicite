@@ -108,6 +108,15 @@ const CustomMap = ({
 
   return (
     <>
+      <div
+        ref={ref}
+        style={{
+          height: "100%",
+          width: "100%",
+          minHeight: "300px",
+          borderRadius: "20px",
+        }}
+      />
       <LatLngAutocomplete
         handleLocationChange={(lat, lng, address, userSetted) => {
           const { lat: latReturned, lng: lngReturned } = handleLocationChange(
@@ -120,15 +129,6 @@ const CustomMap = ({
         }}
         map={map}
         createMarker={createMarker}
-      />
-      <div
-        ref={ref}
-        style={{
-          height: "100%",
-          width: "100%",
-          minHeight: "300px",
-          borderRadius: "20px",
-        }}
       />
     </>
   );
