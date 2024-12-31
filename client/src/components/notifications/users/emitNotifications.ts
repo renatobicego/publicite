@@ -9,38 +9,39 @@ export const emitUserRelationNotification = (
   typeRelation: UserRelation,
   previousNotificationId: string | null,
   userRelationId?: string
-) => {
-  generateUserRelationNotification(
-    event,
-    userIdTo,
-    typeRelation,
-    previousNotificationId
-  ).then((notification) => {
-    const notificationWIthUserRelationId = {
-      ...notification,
-      frontData: {
-        ...notification.frontData,
-        userRelation: {
-          ...notification.frontData.userRelation,
-          _id: userRelationId,
-        },
-      },
+): Promise<{ status?: number; message?: string }> => {
+  return new Promise((resolve, reject) => { 
+    if (!socket) {
+      return reject(new Error("Socket is not initialized."));
     }
-    console.log(userRelationId)
-    socket?.emit(
-      "user_notifications",
-      userRelationId ? notificationWIthUserRelationId : notification,
-      (response: { error?: string; success?: boolean }) => {
-        console.log(response);
-        if (response?.error) {
-          console.error("Error emitting user relation notification:", response.error);
-        } else if (response?.success) {
-          console.log("Magazine notification emitted successfully");
-        } else {
-          console.warn("Unexpected response from server:", response);
-        }
+    generateUserRelationNotification(
+      event,
+      userIdTo,
+      typeRelation,
+      previousNotificationId
+    ).then((notification) => {
+      const notificationWIthUserRelationId = {
+        ...notification,
+        frontData: {
+          ...notification.frontData,
+          userRelation: {
+            ...notification.frontData.userRelation,
+            _id: userRelationId,
+          },
+        },
       }
-    );
+      socket?.emit(
+        "user_notifications",
+        userRelationId ? notificationWIthUserRelationId : notification,
+        (response: { status?: number; message?: string }) => {
+          console.log(response)
+          if (response?.status === 200) {
+            resolve(response);
+          } else {
+            reject(new Error(response?.message || "Error al enviar la notificación."));
+          }
+        }
+      );
+    })
   })
-  socket?.on("error", (error: string) => console.error(error));
 };

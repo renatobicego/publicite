@@ -2,11 +2,35 @@ import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { Socket } from "socket.io-client";
 import { emitUserRelationNotification } from "./emitNotifications";
 
+const handleUserRelationNotificationError = (error: Error) => {
+  switch (error.message as NotificationError) {
+    case "NOTIFICATION_ALREADY_EXISTS":
+      toastifyError("Ya tienes una solicitud pendiente.");
+      break;
+    case "USER_NOT_AUTHORIZED":
+      toastifyError("No tienes autorización para realizar esta acción.");
+      break;
+    case "NOTIFICATION_ERROR_BACKEND_INTERNAL_ERROR":
+      toastifyError(
+        "Error al enviar la solicitud. Por favor intenta de nuevo."
+      );
+      break;
+    case "PREVIOUS_ID_MISSING":
+      toastifyError("La solicitud no existe. Por favor intenta de nuevo.");
+      break;
+    default:
+      toastifyError(
+        "Error al enviar la solicitud. Por favor intenta de nuevo."
+      );
+      break;
+  }
+};
+
 const acceptNewContactRequest = async (
   socket: Socket | null,
   userIdTo: string,
   typeRelation: UserRelation,
-  previousNotificationId: string,
+  previousNotificationId: string
 ) => {
   if (!socket) {
     toastifyError(
@@ -19,10 +43,10 @@ const acceptNewContactRequest = async (
     "notification_user_friend_request_accepted",
     userIdTo,
     typeRelation,
-    previousNotificationId,
-
-  );
-  toastifySuccess("Solicitud aceptada correctamente");
+    previousNotificationId
+  )
+    .then(() => toastifySuccess("Solicitud aceptada correctamente"))
+    .catch(handleUserRelationNotificationError);
 };
 const declineNewContactRequest = async (
   socket: Socket | null,
@@ -42,8 +66,9 @@ const declineNewContactRequest = async (
     userIdTo,
     typeRelation,
     previousNotificationId
-  );
-  toastifySuccess("Solicitud rechazada correctamente");
+  )
+    .then(() => toastifySuccess("Solicitud rechazada correctamente"))
+    .catch(handleUserRelationNotificationError);
 };
 
 const acceptChangeContactRequest = async (
@@ -66,8 +91,9 @@ const acceptChangeContactRequest = async (
     typeRelation,
     previousNotificationId,
     userRelationId
-  );
-  toastifySuccess("Solicitud aceptada correctamente");
+  )
+    .then(() => toastifySuccess("Solicitud aceptada correctamente"))
+    .catch(handleUserRelationNotificationError);
 };
 
 const rejectChangeContactRequest = async (
@@ -88,8 +114,9 @@ const rejectChangeContactRequest = async (
     userIdTo,
     typeRelation,
     previousNotificationId
-  );
-  toastifySuccess("Solicitud rechazada correctamente");
+  )
+    .then(() => toastifySuccess("Solicitud rechazada correctamente"))
+    .catch(handleUserRelationNotificationError);
 };
 
 export {
@@ -97,4 +124,5 @@ export {
   declineNewContactRequest,
   acceptChangeContactRequest,
   rejectChangeContactRequest,
+  handleUserRelationNotificationError,
 };
