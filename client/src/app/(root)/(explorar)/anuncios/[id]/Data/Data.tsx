@@ -10,15 +10,15 @@ import SaveButton from "@/components/buttons/SaveMagazine/SaveButton";
 import AccordionData from "./AccordionData/AccordionData";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { EDIT_POST } from "@/utils/data/urls";
-import { Button, Link } from "@nextui-org/react";
+import { Link } from "@nextui-org/react";
 import ContactPetitionsList from "@/components/modals/ContactPetition/ContactPetitionsList";
 import PetitionChip from "@/components/chips/PetitionChip";
 import ContactModal from "@/components/modals/ContactModal/ContactModal";
 import { SignedIn } from "@clerk/nextjs";
-import { FaChevronDown } from "react-icons/fa6";
 import OptionsDropdown from "./OptionsDropdown";
 import MatchPetitionPost from "@/components/modals/MatchPetitionPost";
 import { formatTotal } from "@/utils/functions/utils";
+import ReactToPost from "@/components/buttons/ReactToPost";
 
 const Data = async ({
   post,
@@ -119,6 +119,7 @@ const Data = async ({
             <ShareButton shareType="post" data={post} />
             <SignedIn>
               <SaveButton post={post} />
+              <ReactToPost />
             </SignedIn>
           </div>
         </div>
