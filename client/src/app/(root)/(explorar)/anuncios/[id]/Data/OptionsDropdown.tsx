@@ -46,6 +46,7 @@ const OptionsDropdown = ({ post }: { post: Post }) => {
           <Button
             variant="light"
             isIconOnly
+            aria-label="Menú opciones de anuncio"
             radius="full"
             color="default"
             size="sm"

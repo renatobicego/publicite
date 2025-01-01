@@ -120,6 +120,7 @@ const HandleGroupMember = ({
               <Button
                 size="sm"
                 isIconOnly
+                aria-label="acciones de miembro de grupo"
                 color="secondary"
                 variant="flat"
                 radius="full"
@@ -151,6 +152,7 @@ const HandleGroupMember = ({
               <Button
                 size="sm"
                 isIconOnly
+                aria-label="Eliminar miembro de grupo"
                 color="danger"
                 variant="flat"
                 radius="full"
@@ -173,6 +175,7 @@ const HandleGroupMember = ({
               <Button
                 size="sm"
                 isIconOnly
+                aria-label="acciones de administrador de grupo"
                 color="danger"
                 variant="flat"
                 radius="full"

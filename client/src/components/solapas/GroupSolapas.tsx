@@ -58,7 +58,7 @@ const GroupSolapas = ({
       component: (
         <>
           <h3>Anuncios de Miembros del Grupo</h3>
-          <PostListLogic postType="groupPosts" groupId={group._id} />
+          <PostListLogic postType={{ typeOfData: "groupPosts", groupId: group._id }} />
         </>
       ),
     },

@@ -14,7 +14,7 @@ const DropdownItems = () => {
   return (
     <Dropdown radius="lg" placement="bottom-end" className="bg-fondo">
       <DropdownTrigger>
-        <Button radius="full" variant="light" size="sm" isIconOnly>
+        <Button radius="full" variant="light" size="sm" isIconOnly aria-label="Más acciones">
           <FaChevronDown />
         </Button>
       </DropdownTrigger>

@@ -1,3 +1,5 @@
+import { useUserData } from "@/app/(root)/providers/userDataProvider";
+import { SignedIn } from "@clerk/nextjs";
 import { Select, Selection, SelectItem } from "@nextui-org/react";
 import React from "react";
 
@@ -8,6 +10,53 @@ const SelectSolapa = ({
   selectedKeys: Selection;
   setSelectedKeys: React.Dispatch<React.SetStateAction<Selection>>;
 }) => {
+  const { userIdLogged } = useUserData();
+  const solapasItems = [
+    {
+      key: "recomendados",
+      label: "Recomendados",
+      requiresLogin: false,
+    },
+    {
+      key: "contactos",
+      label: "Contactos",
+      requiresLogin: true,
+    },
+    {
+      key: "hoy",
+      label: "Anuncios de Hoy",
+      requiresLogin: false,
+    },
+    {
+      key: "puntuados",
+      label: "Mejor Puntuados",
+      requiresLogin: false,
+    },
+    {
+      key: "vencer",
+      label: "Próximos a Vencer",
+      requiresLogin: false,
+    },
+    {
+      key: "pizarras",
+      label: "Pizarras",
+      requiresLogin: true,
+    },
+    {
+      key: "perfiles",
+      label: "Perfiles",
+      requiresLogin: true,
+    },
+    {
+      key: "grupos",
+      label: "Grupos",
+      requiresLogin: true,
+    },
+  ];
+  // Filter out tabs that require login if the user is not logged in
+  const filteredSolapas = solapasItems.filter(
+    (tab) => !tab.requiresLogin || (tab.requiresLogin && userIdLogged)
+  );
   return (
     <Select
       selectionMode="single"
@@ -28,14 +77,11 @@ const SelectSolapa = ({
       disallowEmptySelection
       aria-label="opciones de búsqueda"
     >
-      <SelectItem key="recomendados">Recomendados</SelectItem>
-      <SelectItem key="contactos">Contactos</SelectItem>
-      <SelectItem key="hoy">Anuncios de Hoy</SelectItem>
-      <SelectItem key="puntuados">Mejor Puntuados</SelectItem>
-      <SelectItem key="vencer">Próximos a Vencer</SelectItem>
-      <SelectItem key="pizarras">Pizarras</SelectItem>
-      <SelectItem key="perfiles">Perfiles</SelectItem>
-      <SelectItem key="grupos">Grupos</SelectItem>
+      {filteredSolapas.map((item, index) => (
+        <SelectItem key={item.key} value={item.key} textValue={item.label}>
+          {item.label}
+        </SelectItem>
+      ))}
     </Select>
   );
 };

@@ -99,7 +99,7 @@ const OptionsDropdown = ({
     <>
       <Dropdown placement="bottom-end">
         <DropdownTrigger>
-          <Button radius="full" isIconOnly variant="light">
+          <Button radius="full" isIconOnly aria-label="Opciones de grupo" variant="light">
             <FaChevronDown />
           </Button>
         </DropdownTrigger>

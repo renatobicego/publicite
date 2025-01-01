@@ -46,6 +46,7 @@ const HelpButton = () => {
       />
       <Button
         isIconOnly
+        aria-label="Ayuda"
         color="secondary"
         size="lg"
         onPress={handleClickStart}

@@ -13,6 +13,7 @@ const AnnotationAdded = ({
       <li className="text-sm">{annotation}</li>
       <Button
         isIconOnly
+        aria-label={"Eliminar anotación " + annotation}
         color="danger"
         radius="full"
         variant="light"

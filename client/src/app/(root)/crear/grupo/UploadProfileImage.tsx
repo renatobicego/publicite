@@ -61,6 +61,7 @@ const UploadProfileImage = ({
           <Button
             size="sm"
             isIconOnly
+            aria-label="Eliminar foto de perfil"
             radius="full"
             color="danger"
             onPress={removeFile}

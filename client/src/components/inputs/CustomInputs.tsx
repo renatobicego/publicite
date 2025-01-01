@@ -50,6 +50,7 @@ export const CustomInput = ({
           <div className="relative">
             <Button
               isIconOnly
+              aria-label="agregar emoji"
               size="sm"
               radius="full"
               variant="flat"

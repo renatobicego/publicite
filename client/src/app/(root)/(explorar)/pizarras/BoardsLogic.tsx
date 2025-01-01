@@ -6,7 +6,7 @@ import { useMemo, useState } from "react";
 import { Board } from "@/types/board";
 
 const BoardsLogic = () => {
-  const { items, isLoading } = useInfiniteFetch("boards");
+  const { items, isLoading } = useInfiniteFetch({ typeOfData: "boards" });
   const [searchTerms, setSearchTerms] = useState<(string | undefined)[]>([]);
 
   // Ensure searchTerms are non-empty strings

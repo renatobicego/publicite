@@ -25,6 +25,7 @@ const ReplyForm = ({
             variant="light"
             onClick={() => setShowForm(!showForm)}
             isIconOnly
+            aria-label={showForm ? "Cerrar respuesta" : "Responder"}
             size="sm"
             radius="full"
             color={showForm ? "danger" : "secondary"}

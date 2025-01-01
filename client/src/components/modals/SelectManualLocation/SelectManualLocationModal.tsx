@@ -21,7 +21,7 @@ const SelectManualLocationModal = ({ showAlways }: { showAlways?: boolean }) => 
 
   return (
     <>
-      {manualLocation || showAlways && (
+      {(manualLocation || showAlways) && (
         <Button
           onClick={onOpen}
           color="primary"

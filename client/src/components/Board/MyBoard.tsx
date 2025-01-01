@@ -66,6 +66,7 @@ const MyBoard = ({
         <Button
           onPress={() => setShowEditBoard(true)}
           isIconOnly
+          aria-label="Editar pizarra"
           variant="flat"
           color="primary"
           radius="full"

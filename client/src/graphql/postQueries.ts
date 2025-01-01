@@ -100,6 +100,29 @@ export const getPostsQuery = gql`
   }
 `;
 
+export const getPostsOfFriendsQuery = gql`
+  query FindFriendPosts($postType: PostType!, $page: Float!, $limit: Float!) {
+    findFriendPosts(postType: $postType, page: $page, limit: $limit) {
+      hasMore
+      posts {
+        _id
+        title
+        description
+        frequencyPrice
+        imagesUrls
+        petitionType
+        postType
+        price
+        reviews
+        toPrice
+        geoLocation {
+          description
+        }
+      }
+    }
+  }
+`;
+
 export const getPostCategories = gql`
   query GetAllCategoryPost {
     getAllCategoryPost {

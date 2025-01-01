@@ -1,16 +1,18 @@
 import { postTypesItems } from "@/utils/data/selectData";
-import { POSTS } from "@/utils/data/urls";
 import { Link, Select, SelectItem } from "@nextui-org/react";
+import { usePathname } from "next/navigation";
 
-const SelectPostType = ({ postType }: { postType: string }) => {
-  const getUrlPostType = (postType: string) => {
+const SelectPostType = ({ postType }: { postType: PostType }) => {
+  const pathname = usePathname();
+  const getUrlPostType = (postType: PostType) => {
+    const urlWithoutPostType = pathname.replace("/servicios", "").replace("/necesidades", "");
     switch (postType) {
       case "good":
-        return `${POSTS}`;
+        return urlWithoutPostType;
       case "service":
-        return `${POSTS}/servicios`;
+        return `${urlWithoutPostType}/servicios`;
       case "petition":
-        return `${POSTS}/necesidades`;
+        return `${urlWithoutPostType}/necesidades`;
     }
   };
   return (

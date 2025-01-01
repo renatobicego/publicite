@@ -87,6 +87,7 @@ const ShareButton = ({
         <Tooltip placement="bottom" content="Compartir">
           <Button
             isIconOnly
+            aria-label="Compartir"
             variant="flat"
             color="secondary"
             radius="full"

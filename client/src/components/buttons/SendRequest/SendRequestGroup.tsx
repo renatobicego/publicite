@@ -80,6 +80,7 @@ const SendRequestGroup = ({
       </SecondaryButton>
       <SecondaryButton
         isIconOnly
+        aria-label="Enviar solicitud"
         isLoading={isSubmitting}
         isDisabled={isSubmitting}
         className="md:hidden p-0.5 mt-auto hover:text-secondary"

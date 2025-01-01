@@ -52,6 +52,7 @@ const CreateMagazineSection = ({
           variant="flat"
           onPress={onOpen}
           isIconOnly
+          aria-label="Crear Sección de Revista"
         >
           <FaPlus />
         </Button>

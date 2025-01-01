@@ -39,6 +39,7 @@ const KeywordsInput = ({
           isDisabled={currentKeyword.trim() === ""}
           radius="full"
           isIconOnly
+          aria-label="Agregar palabra clave"
           variant="light"
           color="primary"
         >

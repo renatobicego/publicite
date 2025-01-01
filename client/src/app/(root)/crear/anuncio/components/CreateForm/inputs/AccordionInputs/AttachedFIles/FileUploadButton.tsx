@@ -31,6 +31,7 @@ const FileUploadButton = ({
           variant="flat"
           className="p-0.5"
           isIconOnly
+          aria-label="Subir archivo"
           onPress={handleButtonClick} // Trigger the file input on button click
         >
           <FiUpload className={`size-5 ${label ? "" : "text-gray-400"}`} />

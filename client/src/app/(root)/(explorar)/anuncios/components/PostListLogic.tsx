@@ -5,16 +5,15 @@ import { useState } from "react";
 import PostListHeader from "./PostListHeader";
 import { useFilteredAndSortedPosts } from "@/utils/hooks/useFilteredOrderedPosts";
 import { useSearchParams } from "next/navigation";
+import { PostsDataTypes } from "@/utils/data/fetchDataByType";
 
 const PostListLogic = ({
   postType,
-  groupId,
 }: {
-  postType: "good" | "service" | "petition" | "groupPosts";
-  groupId?: ObjectId;
+  postType: PostsDataTypes;
 }) => {
   const [showAsList, setShowAsList] = useState(false);
-  const { items, isLoading } = useInfiniteFetch(postType, groupId);
+  const { items, isLoading } = useInfiniteFetch(postType);
   const queryParams = useSearchParams();
   const querySearch = queryParams.get("busqueda") || ""
   const {
@@ -48,7 +47,7 @@ const PostListLogic = ({
         <PostsGrid
           posts={sortedItems}
           isLoading={isLoading}
-          isGroupPosts={postType === "groupPosts"}
+          isGroupPosts={postType.typeOfData === "groupPosts"}
           isSearchDone={querySearch.length > 0}
         />
       )}
