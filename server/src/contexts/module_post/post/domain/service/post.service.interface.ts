@@ -6,6 +6,7 @@ import { UserLocation } from "../entity/models_graphql/HTTP-REQUEST/post.locatio
 
 export interface PostServiceInterface {
   create(post: PostRequest): Promise<void>;
+  deletePostById(id: string): Promise<void>;
   findPostsByAuthorId(id: string): Promise<void>;
   findPostById(id: string): Promise<any>;
   findAllPostByPostType(
@@ -17,7 +18,7 @@ export interface PostServiceInterface {
   ): Promise<void>;
   findMatchPost(postType: string, searchTerm: string): Promise<void>;
   findFriendPosts(postType: string, userRequestId: string, page: number, limit: number): Promise<void>;
-  deletePostById(id: string): Promise<void>;
+  makeReactionSchemaAndSetReactionToPost(postId: string, reaction: { user: string, reaction: string }, session: any): Promise<void>;
   updatePostById(
     postUpdate: PostUpdateDto,
     id: string,
@@ -25,4 +26,5 @@ export interface PostServiceInterface {
     cookie?: any,
   ): Promise<any>;
   updateEndDateFromPostById(postId: string, userRequestId: string): Promise<void>;
+
 }

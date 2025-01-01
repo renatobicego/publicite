@@ -29,6 +29,8 @@ import {
 import { PostDocument } from '../schemas/post.schema';
 import { checkStopWordsAndReturnSearchQuery, SearchType } from 'src/contexts/module_shared/utils/functions/checkStopWordsAndReturnSearchQuery';
 import { UserLocation } from '../../domain/entity/models_graphql/HTTP-REQUEST/post.location.request';
+import { PostReactionDocument } from '../schemas/post.reaction.schema';
+import { error } from 'console';
 
 
 
@@ -47,12 +49,16 @@ export class PostRepository implements PostRepositoryInterface {
     @InjectModel(UserModel.modelName)
     private readonly userDocument: Model<IUser>,
 
+    @InjectModel('PostReaction')
+    private readonly postReactionDocument: Model<PostReactionDocument>,
+
     @InjectModel('Post')
     private readonly postDocument: Model<PostDocument>,
 
     private readonly logger: MyLoggerService,
     @InjectConnection() private readonly connection: Connection,
   ) { }
+
 
 
 
@@ -519,6 +525,22 @@ export class PostRepository implements PostRepositoryInterface {
 
       this.logger.log('Updating end date from post with id: ' + postId + ' successfully updated');
       return 'End Date from post with id: ' + postId + ' successfully updated'
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  async makeReactionSchemaAndSetReactionToPost(postId: string, reaction: { user: string, reaction: string }, session: any): Promise<void> {
+    try {
+      const postReaction = new this.postReactionDocument(reaction);
+      const postReactionSaved = await postReaction.save(session);
+      if (!postReactionSaved._id) {
+        throw new Error('Error saving post reaction');
+      }
+      await this.postDocument.updateOne(
+        { _id: postId },
+        { $push: { postReactions: postReactionSaved._id } }
+      ).session(session);
     } catch (error: any) {
       throw error;
     }

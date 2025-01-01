@@ -38,6 +38,7 @@ export class Post {
   private comments: ObjectId[];
   private attachedFiles: AttachedFile[];
   private createAt: string;
+  private reactions: ObjectId[];
   private _id?: ObjectId;
 
 
@@ -56,6 +57,7 @@ export class Post {
     comments: ObjectId[],
     attachedFiles: AttachedFile[],
     createAt: string,
+    reactions: ObjectId[],
     _id?: ObjectId,
   ) {
     this.title = title;
@@ -72,6 +74,7 @@ export class Post {
     this.comments = comments;
     this.attachedFiles = attachedFiles;
     this.createAt = createAt;
+    this.reactions = reactions;
     this._id = _id;
   }
 
@@ -133,6 +136,10 @@ export class Post {
 
   get getCreateAt() {
     return this.createAt;
+  }
+
+  get getReactions() {
+    return this.reactions;
   }
 
 

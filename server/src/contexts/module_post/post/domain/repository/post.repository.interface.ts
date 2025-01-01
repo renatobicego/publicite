@@ -26,4 +26,5 @@ export interface PostRepositoryInterface {
     postType: string,
   ): Promise<any>;
   updateEndDateFromPostById(postId: string, userRequestId: string): Promise<void>;
+  makeReactionSchemaAndSetReactionToPost(postId: string, reaction: { user: string, reaction: string }, session: any): Promise<void>;
 }

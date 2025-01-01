@@ -5,6 +5,7 @@ import { NotificationFactoryInterface } from "../domain/notification-factory/not
 import { NotificationGroup } from "../domain/entity/notification.group.entity";
 import { NotificationMagazine } from "../domain/entity/notification.magazine.entity";
 import { NotificationUser } from "../domain/entity/notification.user.entity";
+import { NotificationPost } from "../domain/entity/notification.post.entity";
 
 export class NotificationFactory implements NotificationFactoryInterface {
 
@@ -41,6 +42,8 @@ export class NotificationFactory implements NotificationFactoryInterface {
                 return new NotificationMagazine(baseNotification, frontData);
             case typeOfNotification.user_notification:
                 return new NotificationUser(baseNotification, frontData);
+            case typeOfNotification.post_notification:
+                return new NotificationPost(baseNotification, frontData);
             default:
                 throw new Error("Tipo de notificación no reconocido");
         }

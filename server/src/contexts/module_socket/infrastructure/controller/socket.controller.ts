@@ -46,6 +46,18 @@ export class SocketController {
       throw error;
     }
   }
+  @Post('post')
+  @UseGuards(AuthSocket)
+  async socketPostController(
+    @Body() notificationBody: any,
+  ): Promise<any> {
+    try {
+      return await this.socketAdapter.sendPostNotificationToNotificationService(notificationBody);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
 
 
 }

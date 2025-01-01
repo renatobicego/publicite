@@ -34,6 +34,7 @@ export interface PostDocument extends Document {
   attachedFiles: attachedFiles[];
   createAt: string;
   endDate: Date;
+  reactions: Schema.Types.ObjectId[];
 }
 
 const addDays = (date: any, days: any) => {
@@ -107,6 +108,13 @@ export const PostSchema = new Schema<PostDocument>(
     ],
     createAt: { type: String, required: true },
     endDate: { type: Date, default: () => addDays(Date.now(), 365) },
+    reactions: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'PostReaction',
+        required: true,
+      },
+    ],
   },
   {
     discriminatorKey: 'kind',

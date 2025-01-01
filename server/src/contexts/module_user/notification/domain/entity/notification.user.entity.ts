@@ -3,7 +3,7 @@ import { Notification } from "./notification.entity";
 export enum UserRelationType {
     topfriends = "topfriends",
     friends = "friends",
-    contact = "contact"
+    contacts = "contacts"
 }
 
 
@@ -60,7 +60,7 @@ export class NotificationUser extends Notification {
     }
 
     get getTypeOfRelation(): UserRelationType {
-        return this.frontData.userRelation.typeRelation ?? UserRelationType.contact;
+        return this.frontData.userRelation.typeRelation ?? UserRelationType.contacts;
     }
 
 
