@@ -7,6 +7,7 @@ import { PostService } from "../../domain/entity/post-types/post.service.entity"
 import { PostPetition } from "../../domain/entity/post-types/post.petition.entity";
 import { removeAccents_removeEmojisAndToLowerCase } from "../../domain/utils/normalice.data";
 import { PostRequest } from "../../domain/entity/models_graphql/HTTP-REQUEST/post.request";
+import { Schema } from "mongoose";
 
 
 
@@ -37,6 +38,7 @@ export class PostFactory implements PostFactoryInterface {
             url: '',
             label: '',
         }
+        const postReactions: Schema.Types.ObjectId[] = []
 
         const searchTitle = removeAccents_removeEmojisAndToLowerCase(post.title)
         const searchDescription = removeAccents_removeEmojisAndToLowerCase(post.description)
@@ -57,6 +59,7 @@ export class PostFactory implements PostFactoryInterface {
             post.comments ?? [],
             post.attachedFiles ?? [postAttachedEmpty] as any,
             post.createAt,
+            postReactions,
         );
 
 

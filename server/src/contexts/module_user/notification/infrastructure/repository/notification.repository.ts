@@ -12,6 +12,8 @@ import { notification_graph_model_get_all, Notification } from "../../applicatio
 import { parseZonedDateTime } from "@internationalized/date";
 import { NotificationUser } from "../../domain/entity/notification.user.entity";
 import { INotificationUser, NotificationUserModel } from "../schemas/notification.user.schema";
+import { NotificationPost } from "../../domain/entity/notification.post.entity";
+import { INotificationPost, NotificationPostModel } from "../schemas/notification.post.schema";
 
 
 export class NotificationRepository implements NotificationRepositoryInterface {
@@ -27,8 +29,11 @@ export class NotificationRepository implements NotificationRepositoryInterface {
         private readonly notificationBaseDocument: Model<NotificationDocument>,
         @InjectModel(NotificationUserModel.modelName)
         private readonly notificationUserDocument: Model<INotificationUser>,
+        @InjectModel(NotificationPostModel.modelName)
+        private readonly notificationPostDocument: Model<INotificationPost>,
 
     ) { }
+
 
 
     async changeNotificationStatus(userRequestId: string, notificationId: string[], view: boolean): Promise<void> {
@@ -143,12 +148,23 @@ export class NotificationRepository implements NotificationRepositoryInterface {
         }
     }
 
-
+    async savePostNotification(notification: NotificationPost, session?: any): Promise<Types.ObjectId> {
+        try {
+            this.logger.log('Saving notification POST in repository...');
+            const postNotification = new this.notificationPostDocument(notification);
+            const postNotificationSaved = await postNotification.save({ session })
+            return postNotificationSaved._id;
+        } catch (error: any) {
+            this.logger.error('An error occurred while saving notification', error.message);
+            this.logger.error(error)
+            throw error;
+        }
+    }
 
 
     async saveMagazineNotification(notification: NotificationMagazine, session?: any): Promise<Types.ObjectId> {
         try {
-            this.logger.log('Saving notification in repository...');
+            this.logger.log('Saving notification Magazine in repository...');
             const magazineNotification = new this.notificationMagazineDocument(notification);
 
             const magazineNotificationSave = await magazineNotification.save({ session });

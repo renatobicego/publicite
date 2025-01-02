@@ -34,6 +34,7 @@ export class PostService implements PostServiceInterface {
   ) { }
 
 
+
   async create(post: PostRequest): Promise<any> {
     const postType = post.postType.toLowerCase();
     if (!postType) throw new Error('Post type is required');
@@ -171,6 +172,18 @@ export class PostService implements PostServiceInterface {
     return relationMap;
 
   }
+
+
+  async makeReactionSchemaAndSetReactionToPost(postId: string, reaction: { user: string, reaction: string }, session: any): Promise<void> {
+    try {
+      this.logger.log('Setting reactions to posts id: ' + postId);
+      return await this.postRepository.makeReactionSchemaAndSetReactionToPost(postId, reaction, session);
+    } catch (error: any) {
+      this.logger.error('An error was ocurred setting reactions to posts id: ' + postId);
+      throw error;
+    }
+  }
+
   async updatePostById(
     postUpdate: PostUpdateDto,
     id: string,
@@ -191,5 +204,7 @@ export class PostService implements PostServiceInterface {
       throw error;
     }
   }
+
+
 
 }

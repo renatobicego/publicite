@@ -3,6 +3,7 @@ import { SocketAdapterInterface } from "../../application/adapter/socket.adapter
 import { NotificationGroupServiceInterface } from "src/contexts/module_user/notification/domain/service/notification.group.service.interface";
 import { NotificationMagazineServiceInterface } from "src/contexts/module_user/notification/domain/service/notification.magazine.service.interface";
 import { NotificationUserServiceInterface } from "src/contexts/module_user/notification/domain/service/notification.user.service.interface";
+import { NotificationPostServiceInterface } from "src/contexts/module_user/notification/domain/service/notification.post.service.interface";
 
 export class SocketAdapter implements SocketAdapterInterface {
 
@@ -12,7 +13,9 @@ export class SocketAdapter implements SocketAdapterInterface {
         @Inject('NotificationMagazineServiceInterface')
         private readonly notificationMagazineService: NotificationMagazineServiceInterface,
         @Inject('NotificationUserServiceInterface')
-        private readonly notificationUserServiceInterface: NotificationUserServiceInterface
+        private readonly notificationUserService: NotificationUserServiceInterface,
+        @Inject('NotificationPostServiceInterface')
+        private readonly notificationPostService: NotificationPostServiceInterface
 
 
     ) { }
@@ -21,7 +24,7 @@ export class SocketAdapter implements SocketAdapterInterface {
 
     async sendUserNotificationToNotificationService(notificationBody: any): Promise<void> {
         try {
-            return await this.notificationUserServiceInterface.handleUserNotificationAndCreateIt(notificationBody);
+            return await this.notificationUserService.handleUserNotificationAndCreateIt(notificationBody);
         } catch (error: any) {
             throw error;
         }
@@ -41,5 +44,14 @@ export class SocketAdapter implements SocketAdapterInterface {
             throw error;
         }
     }
+
+    async sendPostNotificationToNotificationService(notificationBody: any): Promise<void> {
+        try {
+            await this.notificationPostService.handlePostNotificationAndCreateIt(notificationBody);
+        } catch (error: any) {
+            throw error;
+        }
+    }
+
 
 }

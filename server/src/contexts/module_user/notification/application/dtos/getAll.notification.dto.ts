@@ -4,6 +4,7 @@ import { ObjectType, Field } from "@nestjs/graphql";
 import { front_data_MAGAZINE } from "./front.data.notification.magazine";
 import { front_data_GROUP } from "./front.data.notification.group.dto";
 import { front_data_USER } from "./font.data.notification.user.dto";
+import { front_data_POST } from "./front.data.notification.post.dto";
 
 
 
@@ -17,6 +18,9 @@ export class frontData {
 
     @Field(() => front_data_USER, { nullable: true })
     userRelation: front_data_USER;
+
+    @Field(() => front_data_POST, { nullable: true })
+    postReaction: front_data_POST;
 
 }
 

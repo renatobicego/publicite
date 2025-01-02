@@ -29,6 +29,7 @@ export class PostPetition extends Post {
       post.getComments,
       post.getAttachedFiles as any,
       post.getCreateAt,
+      post.getReactions,
       post.getId,
     );
     this.toPrice = toPrice;

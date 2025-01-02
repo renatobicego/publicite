@@ -20,11 +20,18 @@ import { NotificationUserServiceInterface } from "../../domain/service/notificat
 import { NotificationUser } from "../../domain/entity/notification.user.entity";
 import { NotModifyException } from "src/contexts/module_shared/exceptionFilter/noModifyException";
 import { PreviousIdMissingException } from "src/contexts/module_shared/exceptionFilter/previousIdMissingException";
+import { NotificationPostServiceInterface } from "../../domain/service/notification.post.service.interface";
+import { NotificationPost } from "../../domain/entity/notification.post.entity";
+import { PostServiceInterface } from "src/contexts/module_post/post/domain/service/post.service.interface";
 
 
 
 
-export class NotificationService implements NotificationGroupServiceInterface, NotificationMagazineServiceInterface, NotificationServiceInterface, NotificationUserServiceInterface {
+export class NotificationService implements NotificationGroupServiceInterface,
+    NotificationMagazineServiceInterface,
+    NotificationServiceInterface,
+    NotificationUserServiceInterface,
+    NotificationPostServiceInterface {
 
     constructor(
         private readonly logger: MyLoggerService,
@@ -38,6 +45,8 @@ export class NotificationService implements NotificationGroupServiceInterface, N
         private readonly groupService: GroupServiceInterface,
         @Inject('MagazineServiceInterface')
         private readonly magazineService: MagazineServiceInterface,
+        @Inject('PostServiceInterface')
+        private readonly postService: PostServiceInterface,
 
 
 
@@ -136,6 +145,21 @@ export class NotificationService implements NotificationGroupServiceInterface, N
             throw error;
         }
     }
+
+
+    async handlePostNotificationAndCreateIt(notificationBody: any): Promise<void> {
+
+        try {
+            const factory = NotificationFactory.getInstance(this.logger);
+            const notificationGroup = factory.createNotification(typeOfNotification.post_notification, notificationBody);
+
+            await this.saveNotificationPostAndSentToUser(notificationGroup as NotificationPost);
+
+        } catch (error: any) {
+            throw error;
+        }
+    }
+
 
     async isThisNotificationDuplicate(notificationEntityId: string): Promise<any> {
         try {
@@ -257,7 +281,28 @@ export class NotificationService implements NotificationGroupServiceInterface, N
             throw error;
         }
     }
+    async saveNotificationPostAndSentToUser(notificationPost: NotificationPost) {
+        try {
+            // Obtenemos el post que tenemos que tenemos que setearle la reaccion 
+            const postId = notificationPost.getFrontData.postReaction.post.postId;
+            const reaction = notificationPost.getFrontData.postReaction.emoji;
+            const userIdFrom = notificationPost.getbackData.userIdFrom;
+            const userIdTo = notificationPost.getbackData.userIdTo;
+            if (!postId || !reaction || !userIdFrom || userIdTo) throw new Error(`Post id  or reaction is not setted in notification post, please check it`);
+            const session = await this.connection.startSession();
+            session.withTransaction(async () => {
+                await this.postService.makeReactionSchemaAndSetReactionToPost(postId, { user: userIdFrom, reaction: reaction }, session)
+                const notificationId = await this.notificationRepository.savePostNotification(notificationPost, session)
+                await this.userService.pushNotificationToUserArrayNotifications(notificationId, userIdTo, session);
+            })
 
+
+
+
+        } catch (error: any) {
+            throw error;
+        }
+    }
     async saveNotificationUserAndSentToUser(notificationUser: NotificationUser): Promise<any> {
 
         try {
