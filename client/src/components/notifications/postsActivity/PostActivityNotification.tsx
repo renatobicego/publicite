@@ -1,4 +1,4 @@
-import { MAGAZINES, POSTS } from "@/utils/data/urls";
+import { FILE_URL, MAGAZINES, POSTS } from "@/utils/data/urls";
 import { showDate } from "@/utils/functions/dates";
 import { parseZonedDateTime } from "@internationalized/date";
 import Link from "next/link";
@@ -23,6 +23,7 @@ import {
 } from "@/types/postTypes";
 import { postActivitiesNotificationMessages } from "./notificationMessages";
 import { Badge, Image } from "@nextui-org/react";
+import PostActivityImage from "./PostActivityImage";
 
 const MagazineNotificationCard = ({
   notification,
@@ -120,21 +121,12 @@ const MagazineNotificationCard = ({
   return (
     <NotificationCard isNew={!viewed}>
       <NotificationImage>
-        {postReaction ? (
-          <Badge content={postReaction.emoji} color="primary">
-            <Image
-              className="object-cover w-16 h-16 rounded-md"
-              src={post.imageUrl}
-              alt={"foto de anuncio " + post.title}
-            />
-          </Badge>
-        ) : (
-          <Image
-            className="object-cover w-16 h-16 rounded-md"
-            src={post.imageUrl}
-            alt={"foto de anuncio " + post.title}
-          />
-        )}
+        <PostActivityImage
+          postTitle={post.title}
+          isPetition={post.postType === "petition"}
+          image={post.imageUrl}
+          reaction={postReaction?.emoji}
+        />
       </NotificationImage>
       <NotificationBody>
         <p className="text-sm">{getMessageToShow()}</p>

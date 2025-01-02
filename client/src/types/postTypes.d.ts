@@ -186,6 +186,7 @@ export interface PostActivityNotification extends BaseNotification {
         _id: string;
         title: string;
         imageUrl: string;
+        postType: PostType;
       };
       user: Pick<User, "username">;
       postReaction?: {

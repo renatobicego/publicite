@@ -119,7 +119,7 @@ const Data = async ({
             <ShareButton shareType="post" data={post} />
             <SignedIn>
               <SaveButton post={post} />
-              <ReactToPost />
+              <ReactToPost post={post}/>
             </SignedIn>
           </div>
         </div>
