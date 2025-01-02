@@ -174,11 +174,26 @@ export interface PostSharedNotification {
   userSharing: Pick<User, "_id" | "username">;
 }
 
-
-
 export interface ReviewPostNotification {
   _id: ObjectId;
   post: Post;
   date: string;
   userAsking: Pick<User, "_id" | "username">;
 }
+
+export interface PostActivityNotification extends BaseNotification {
+  frontData: {
+    postReaction: {
+      user: Pick<User, "username">;
+      post: {
+        _id: string;
+        title: string;
+        imageUrl: string;
+      };
+      emoji: string;
+    }
+  };
+}
+
+export type PostActivtyNotificationType =
+  | "notification_post_new_reaction" // Han reaccionado al post
