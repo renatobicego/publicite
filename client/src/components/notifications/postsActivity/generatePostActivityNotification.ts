@@ -1,7 +1,5 @@
 "use server";
-import {
-  User,
-} from "@/types/userTypes";
+import { User } from "@/types/userTypes";
 import generateNotification from "../generateNotification";
 import { currentUser } from "@clerk/nextjs/server";
 import {
@@ -9,7 +7,7 @@ import {
   PostActivtyNotificationType,
 } from "@/types/postTypes";
 
-const generateUserRelationNotification = async (
+const generatePostActivityNotification = async (
   event: PostActivtyNotificationType,
   userIdTo: string,
   post: {
@@ -37,10 +35,12 @@ const generateUserRelationNotification = async (
           previousNotificationId
         ),
         frontData: {
-          postReaction: {
-            user: userFrom,
+          postActivity: {
             post,
-            ...payloadParsed,
+            user: userFrom,
+            postReaction: {
+              ...payloadParsed,
+            },
           },
         },
       };
@@ -48,4 +48,4 @@ const generateUserRelationNotification = async (
   }
 };
 
-export default generateUserRelationNotification;
+export default generatePostActivityNotification;

@@ -39,7 +39,7 @@ export interface PostLocation {
   };
   description: string;
   userSetted: boolean;
-  ratio: number
+  ratio: number;
 }
 
 export interface PostLocationForm {
@@ -48,7 +48,7 @@ export interface PostLocationForm {
   lng?: number;
   description?: string;
   userSetted?: boolean;
-  ratio?: number
+  ratio?: number;
 }
 
 export interface PostCategory {
@@ -148,8 +148,6 @@ export interface AttachedFileValues {
   _id: string;
 }
 
-
-
 export interface PetitionContact {
   userContacting?: ObjectId;
   post: ObjectId;
@@ -183,17 +181,18 @@ export interface ReviewPostNotification {
 
 export interface PostActivityNotification extends BaseNotification {
   frontData: {
-    postReaction: {
-      user: Pick<User, "username">;
+    postActivity: {
       post: {
         _id: string;
         title: string;
         imageUrl: string;
       };
-      emoji: string;
-    }
+      user: Pick<User, "username">;
+      postReaction?: {
+        emoji: string;
+      };
+    };
   };
 }
 
-export type PostActivtyNotificationType =
-  | "notification_post_new_reaction" // Han reaccionado al post
+export type PostActivtyNotificationType = "notification_post_new_reaction"; // Han reaccionado al post

@@ -13,6 +13,11 @@ import {
 } from "@/types/userTypes";
 import { userRelationNotificationMessages } from "@/components/notifications/users/notificationMessages";
 import { relationTypes } from "../data/selectData";
+import {
+  PostActivityNotification,
+  PostActivtyNotificationType,
+} from "@/types/postTypes";
+import { postActivitiesNotificationMessages } from "@/components/notifications/postsActivity/notificationMessages";
 
 // Handle group notifications
 export const handleGroupNotification = (data: GroupNotification) => {
@@ -60,6 +65,32 @@ export const handleUserRelationNotification = (
 
   showBrowserNotification(
     "Publicité - Nueva notificación de relación de usuario",
+    {
+      body: message,
+      badge: "/logo.png",
+    }
+  );
+};
+
+export const handlePostActivityNotification = (
+  data: PostActivityNotification
+) => {
+  const event = data.event as PostActivtyNotificationType;
+
+  const messageInfo = postActivitiesNotificationMessages[event];
+  let message = "";
+  switch (event) {
+    case "notification_post_new_reaction":
+      const { user, post } = data.frontData.postActivity;
+      const { emoji } = data.frontData.postActivity.postReaction!;
+      message = `${user.username} ${messageInfo.message} ${post.title} - ${emoji}`;
+      break;
+    default:
+      message = messageInfo.message;
+  }
+
+  showBrowserNotification(
+    "Publicité - Nueva notificación de actividad en anuncio",
     {
       body: message,
       badge: "/logo.png",
