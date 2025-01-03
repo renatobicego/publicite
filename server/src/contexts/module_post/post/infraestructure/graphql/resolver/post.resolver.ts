@@ -195,7 +195,8 @@ export class PostResolver {
     searchTerm: string,
   ): Promise<any> {
     try {
-      const userRequestId = context.req.userRequestId;
+      //const userRequestId = context.req.userRequestId;
+      const userRequestId = "67164bd032f3b18ed706efb4"
       return await this.postAdapter.findFriendPosts(postType, userRequestId, page, limit, searchTerm);
     } catch (error: any) {
       throw error;

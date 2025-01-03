@@ -24,7 +24,7 @@ import { NotificationPostModel } from "../schemas/notification.post.schema";
                     { name: NotificationGroupModel.modelName, schema: NotificationGroupModel.schema },
                     { name: NotificationMagazineModel.modelName, schema: NotificationMagazineModel.schema },
                     { name: NotificationUserModel.modelName, schema: NotificationUserModel.schema },
-                    { name: NotificationPostModel.modelName, schema: NotificationPostModel.schema },
+                    { name: NotificationPostModel.modelName, schema: NotificationUserModel.schema },
                 ],
             },
         ]),

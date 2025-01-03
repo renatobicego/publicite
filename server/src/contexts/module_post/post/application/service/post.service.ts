@@ -168,7 +168,6 @@ export class PostService implements PostServiceInterface {
         relationMap.set(relation.userA.toString(), relation.typeRelationA)
       }
     });
-
     return relationMap;
 
   }

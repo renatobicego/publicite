@@ -196,7 +196,7 @@ export class GroupRepository implements GroupRepositoryInterface {
             session,
           }
         )
-      console.log(result);
+      
 
       chekResultOfOperation(result);
       await this.userModel

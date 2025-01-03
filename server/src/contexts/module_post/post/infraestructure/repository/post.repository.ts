@@ -31,6 +31,7 @@ import { checkStopWordsAndReturnSearchQuery, SearchType } from 'src/contexts/mod
 import { UserLocation } from '../../domain/entity/models_graphql/HTTP-REQUEST/post.location.request';
 import { PostReactionDocument } from '../schemas/post.reaction.schema';
 import { error } from 'console';
+import { cond } from 'lodash';
 
 
 
@@ -355,15 +356,17 @@ export class PostRepository implements PostRepositoryInterface {
     postType: string,
     userRequestId: string,
     userRelationMap: Map<string, string>,
-    page: number, limit: number,
+    page: number,
+    limit: number,
     searchTerm?: string
   ): Promise<any> {
     try {
-
-      const conditions: any[] = Array.from(userRelationMap.entries()).map(([key, value]) => ({
+      const conditions = Array.from(userRelationMap.entries()).map(([key, value]) => ({
         author: key,
         'visibility.post': value,
       }));
+
+      let friendPosts: any;
 
       if (searchTerm) {
         const textSearchQuery = checkStopWordsAndReturnSearchQuery(searchTerm, SearchType.post);
@@ -371,36 +374,44 @@ export class PostRepository implements PostRepositoryInterface {
           this.logger.log('No valid search terms provided. Returning empty result.');
           return { posts: [], hasMore: false };
         }
-        conditions.push(
-          { searchTitle: { $regex: textSearchQuery, $options: 'i' } },
-          { searchDescription: { $regex: textSearchQuery, $options: 'i' } }
-        );
 
+        friendPosts = await this.postDocument.find({
+          $and: [
+            { postType },
+            { $or: conditions },
+            {
+              $or: [
+                { searchTitle: { $regex: textSearchQuery, $options: "i" } },
+                { searchDescription: { $regex: textSearchQuery, $options: "i" } }
+              ]
+            }
+          ]
+        })
+          .skip((page - 1) * limit)
+          .limit(limit + 1);
+      } else {
+        friendPosts = await this.postDocument.find({
+          postType,
+          $or: conditions,
+        })
+          .skip((page - 1) * limit)
+          .limit(limit + 1);
       }
 
-      const friendPosts = await this.postDocument.find({
-        postType,
-        $or: conditions
-      }).skip((page - 1) * limit).limit(limit + 1)
-
-      if (!friendPosts) {
-        return {
-          posts: [],
-          hasMore: false
-        }
+      if (!friendPosts || friendPosts.length === 0) {
+        return { posts: [], hasMore: false };
       }
 
       const hasMore = friendPosts.length > limit;
       const postResponse = friendPosts.slice(0, limit);
 
-
       return {
         posts: postResponse,
-        hasMore
-      }
-
+        hasMore,
+      };
     } catch (error: any) {
-      throw error;
+      this.logger.error('Error fetching friend posts:', error.message);
+      throw new Error('Unable to fetch friend posts. Please try again later.');
     }
   }
 
