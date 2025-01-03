@@ -40,6 +40,7 @@ const ReactToPost = ({ post }: { post: Post }) => {
         _id: post._id,
         title: post.title,
         imageUrl: "imagesUrls" in post ? (post as Good).imagesUrls[0] : "",
+        postType: post.postType,
       },
       null,
       {
