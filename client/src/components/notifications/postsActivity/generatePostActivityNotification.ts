@@ -14,6 +14,7 @@ const generatePostActivityNotification = async (
     _id: string;
     title: string;
     imageUrl: string;
+    postType: PostType;
   },
   previousNotificationId: string | null,
   payload: Object

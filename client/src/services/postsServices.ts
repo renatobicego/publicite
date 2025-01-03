@@ -119,6 +119,7 @@ export const getPosts = async (
         error: "Error al traer los anuncios. Por favor intenta de nuevo.",
       };
     }
+  
     const { data } = await query({
       query: getPostsQuery,
       variables: {

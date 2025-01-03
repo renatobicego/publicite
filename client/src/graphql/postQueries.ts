@@ -101,8 +101,18 @@ export const getPostsQuery = gql`
 `;
 
 export const getPostsOfFriendsQuery = gql`
-  query FindFriendPosts($postType: PostType!, $page: Float!, $limit: Float!) {
-    findFriendPosts(postType: $postType, page: $page, limit: $limit) {
+  query FindFriendPosts(
+    $postType: PostType!
+    $page: Float!
+    $limit: Float!
+    $searchTerm: String
+  ) {
+    findFriendPosts(
+      postType: $postType
+      page: $page
+      limit: $limit
+      searchTerm: $searchTerm
+    ) {
       hasMore
       posts {
         _id
