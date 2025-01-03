@@ -263,7 +263,7 @@ export class PostRepository implements PostRepositoryInterface {
           $geoNear: {
             near: {
               type: 'Point',
-              coordinates: [userLocation.latitude, userLocation.longitude],
+              coordinates: [userLocation.longitude, userLocation.latitude],
             },
             distanceField: 'distance',
             spherical: true,
@@ -336,6 +336,8 @@ export class PostRepository implements PostRepositoryInterface {
         { $skip: (page - 1) * limit },
         { $limit: limit + 1 },
       ]);
+
+      if (!posts) { return { posts: [], hasMore: false } }
 
       // Determinamos si hay más posts basados en el límite
       const hasMore = posts.length > limit;
