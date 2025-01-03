@@ -154,10 +154,32 @@ type front_data_USER {
   typeRelation: String!
 }
 
+type user_front_data_post {
+  username: String!
+}
+
+type post_front_data_post {
+  _id: String!
+  title: String!
+  imageUrl: String!
+  postType: String!
+}
+
+type post_front_data_postReaction {
+  emoji: String!
+}
+
+type front_data_POST {
+  user: user_front_data_post!
+  post: post_front_data_post!
+  postReaction: post_front_data_postReaction
+}
+
 type frontData {
   group: front_data_GROUP
   magazine: front_data_MAGAZINE
   userRelation: front_data_USER
+  postActivity: front_data_POST
 }
 
 type backData {
@@ -555,7 +577,7 @@ type Query {
   findMatchPost(postType: PostType!, searchTerm: String!): Post_response_graphql_model
 
   """Encuentra todos los posts de mis amigos, segun el tipo de post"""
-  findFriendPosts(postType: PostType!, page: Float!, limit: Float!): PostFindAllResponse
+  findFriendPosts(postType: PostType!, page: Float!, limit: Float!, searchTerm: String): PostFindAllResponse
 
   """Obtener un board por anotaciones o palabras clave"""
   getBoardByAnnotationOrKeyword(board: String!, limit: Float!, page: Float!): BoardGetAllResponse

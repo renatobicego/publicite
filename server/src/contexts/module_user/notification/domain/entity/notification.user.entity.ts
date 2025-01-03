@@ -1,10 +1,6 @@
+import { UserRelationType } from "./enum/user.relationType.enum";
 import { Notification } from "./notification.entity";
 
-export enum UserRelationType {
-    topfriends = "topfriends",
-    friends = "friends",
-    contacts = "contacts"
-}
 
 
 export class NotificationUser extends Notification {

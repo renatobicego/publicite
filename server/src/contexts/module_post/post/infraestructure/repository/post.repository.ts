@@ -355,19 +355,32 @@ export class PostRepository implements PostRepositoryInterface {
     postType: string,
     userRequestId: string,
     userRelationMap: Map<string, string>,
-    page: number, limit: number
+    page: number, limit: number,
+    searchTerm?: string
   ): Promise<any> {
     try {
 
-      const conditions = Array.from(userRelationMap.entries()).map(([key, value]) => ({
+      const conditions: any[] = Array.from(userRelationMap.entries()).map(([key, value]) => ({
         author: key,
         'visibility.post': value,
       }));
 
+      if (searchTerm) {
+        const textSearchQuery = checkStopWordsAndReturnSearchQuery(searchTerm, SearchType.post);
+        if (!textSearchQuery) {
+          this.logger.log('No valid search terms provided. Returning empty result.');
+          return { posts: [], hasMore: false };
+        }
+        conditions.push(
+          { searchTitle: { $regex: textSearchQuery, $options: 'i' } },
+          { searchDescription: { $regex: textSearchQuery, $options: 'i' } }
+        );
+
+      }
 
       const friendPosts = await this.postDocument.find({
         postType,
-        $or: conditions,
+        $or: conditions
       }).skip((page - 1) * limit).limit(limit + 1)
 
       if (!friendPosts) {

@@ -17,7 +17,7 @@ export interface PostAdapterInterface {
     searchTerm?: string,
   ): Promise<void>;
   findMatchPost(postType: string, searchTerm: string): Promise<void>;
-  findFriendPosts(postType: string, userRequestId: string, page: number, limit: number): Promise<void>;
+  findFriendPosts(postType: string, userRequestId: string, page: number, limit: number, searchTerm?: string): Promise<void>;
   updatePostById(
     postUpdate: PostUpdateRequest,
     id: string,

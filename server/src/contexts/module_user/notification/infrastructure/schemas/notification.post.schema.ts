@@ -1,18 +1,22 @@
 import { Schema } from 'mongoose';
 import NotificationModel, { NotificationDocument } from "./notification.schema";
+import { PostType } from '../../domain/entity/enum/post.type.enum';
 
 interface INotificationPost extends NotificationDocument {
     frontData: {
-        postReaction: {
+        postActivity: {
+            postReaction: {
+                emoji: string;
+            }
             user: {
                 username: string;
             },
             post: {
-                postId: string;
+                _id: string;
                 title: string;
                 imageUrl: string;
+                postType: string;
             }
-            emoji: string;
         }
     }
 }
@@ -20,7 +24,7 @@ interface INotificationPost extends NotificationDocument {
 
 const NotificationPostSchema = new Schema<INotificationPost>({
     frontData: {
-        postReaction: {
+        postActivity: {
             user: {
                 username: { type: String, required: true },
             },
@@ -28,8 +32,9 @@ const NotificationPostSchema = new Schema<INotificationPost>({
                 postId: { type: String, required: true },
                 title: { type: String, required: true },
                 imageUrl: { type: String, required: true },
+                postType: { type: String, required: true },
             },
-            emoji: { type: String, required: true }
+            postReaction: { emoji: { type: String, enum: Object.values(PostType), required: true } }
         }
     }
 })

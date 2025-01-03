@@ -1,6 +1,7 @@
 import { Schema, Types } from 'mongoose';
 import NotificationModel, { NotificationDocument } from "./notification.schema";
-import { UserRelationType } from '../../domain/entity/notification.user.entity';
+import { UserRelationType } from '../../domain/entity/enum/user.relationType.enum';
+
 
 interface INotificationUser extends NotificationDocument {
     frontData: {

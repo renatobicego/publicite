@@ -17,7 +17,7 @@ export interface PostServiceInterface {
     searchTerm?: string,
   ): Promise<void>;
   findMatchPost(postType: string, searchTerm: string): Promise<void>;
-  findFriendPosts(postType: string, userRequestId: string, page: number, limit: number): Promise<void>;
+  findFriendPosts(postType: string, userRequestId: string, page: number, limit: number, searchTerm?: string): Promise<void>;
   makeReactionSchemaAndSetReactionToPost(postId: string, reaction: { user: string, reaction: string }, session: any): Promise<void>;
   updatePostById(
     postUpdate: PostUpdateDto,

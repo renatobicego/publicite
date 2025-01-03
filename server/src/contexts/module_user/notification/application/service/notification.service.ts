@@ -284,8 +284,8 @@ export class NotificationService implements NotificationGroupServiceInterface,
     async saveNotificationPostAndSentToUser(notificationPost: NotificationPost) {
         try {
             // Obtenemos el post que tenemos que tenemos que setearle la reaccion 
-            const postId = notificationPost.getFrontData.postReaction.post.postId;
-            const reaction = notificationPost.getFrontData.postReaction.emoji;
+            const postId = notificationPost.getPostId;
+            const reaction = notificationPost.getPostReactionEmoji;
             const userIdFrom = notificationPost.getbackData.userIdFrom;
             const userIdTo = notificationPost.getbackData.userIdTo;
             if (!postId || !reaction || !userIdFrom || userIdTo) throw new Error(`Post id  or reaction is not setted in notification post, please check it`);
@@ -295,8 +295,6 @@ export class NotificationService implements NotificationGroupServiceInterface,
                 const notificationId = await this.notificationRepository.savePostNotification(notificationPost, session)
                 await this.userService.pushNotificationToUserArrayNotifications(notificationId, userIdTo, session);
             })
-
-
 
 
         } catch (error: any) {

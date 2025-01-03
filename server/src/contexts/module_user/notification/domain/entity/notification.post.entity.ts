@@ -2,33 +2,40 @@ import { Notification } from "./notification.entity";
 
 export class NotificationPost extends Notification {
     private frontData: {
-        postReaction: {
+        postActivity: {
+            postReaction: {
+                emoji: string;
+            }
             user: {
                 username: string;
             },
             post: {
-                postId: string;
+                _id: string;
                 title: string;
                 imageUrl: string;
+                postType: string;
             }
-            emoji: string;
         }
     };
 
 
     constructor(notification: Notification,
         frontData: {
-            postReaction: {
+            postActivity: {
+                postReaction: {
+                    emoji: string;
+                }
                 user: {
                     username: string;
                 },
                 post: {
-                    postId: string;
+                    _id: string;
                     title: string;
                     imageUrl: string;
+                    postType: string;
                 }
-                emoji: string;
             }
+
         }
     ) {
         super(notification.getEvent,
@@ -47,5 +54,12 @@ export class NotificationPost extends Notification {
 
     get getFrontData() {
         return this.frontData
+    }
+
+    get getPostId() {
+        return this.frontData.postActivity.post._id
+    }
+    get getPostReactionEmoji() {
+        return this.frontData.postActivity.postReaction.emoji
     }
 }

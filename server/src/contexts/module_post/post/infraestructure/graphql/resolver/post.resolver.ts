@@ -191,10 +191,12 @@ export class PostResolver {
     @Args('page', { type: () => Number }) page: number,
     @Args('limit', { type: () => Number }) limit: number,
     @Context() context: { req: CustomContextRequestInterface },
+    @Args('searchTerm', { type: () => String, nullable: true })
+    searchTerm: string,
   ): Promise<any> {
     try {
       const userRequestId = context.req.userRequestId;
-      return await this.postAdapter.findFriendPosts(postType, userRequestId, page, limit);
+      return await this.postAdapter.findFriendPosts(postType, userRequestId, page, limit, searchTerm);
     } catch (error: any) {
       throw error;
     }

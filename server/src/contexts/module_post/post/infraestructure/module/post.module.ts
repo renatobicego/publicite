@@ -13,6 +13,7 @@ import { UserModule } from 'src/contexts/module_user/user/infrastructure/module/
 import { UserSchema } from 'src/contexts/module_user/user/infrastructure/schemas/user.schema';
 import { PostService } from '../../application/service/post.service';
 import { PostRepository } from '../repository/post.repository';
+import { PostReactionSchema } from '../schemas/post.reaction.schema';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { PostRepository } from '../repository/post.repository';
         ],
       },
       { name: 'User', schema: UserSchema },
+      { name: 'PostReaction', schema: PostReactionSchema },
     ]),
 
     UserModule,
@@ -54,5 +56,6 @@ import { PostRepository } from '../repository/post.repository';
       useClass: PostAdapter,
     },
   ],
+  exports: ['PostServiceInterface'],
 })
 export class PostModule { }

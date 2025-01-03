@@ -44,9 +44,6 @@ import { MagazineModelSharedModule } from 'src/contexts/module_shared/sharedSche
       provide: 'MagazineRepositoryMapperInterface',
       useClass: MagazineRepositoryMapper,
     },
-
-
-
   ],
   exports: ['MagazineServiceInterface', /*'MagazineRepositoryInterface'*/],
 })

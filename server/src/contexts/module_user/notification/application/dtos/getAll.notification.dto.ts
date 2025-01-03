@@ -20,7 +20,7 @@ export class frontData {
     userRelation: front_data_USER;
 
     @Field(() => front_data_POST, { nullable: true })
-    postReaction: front_data_POST;
+    postActivity: front_data_POST;
 
 }
 

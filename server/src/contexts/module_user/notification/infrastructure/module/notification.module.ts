@@ -11,6 +11,8 @@ import { MagazineModule } from "src/contexts/module_magazine/magazine/infrastruc
 import { NotificationAdapter } from "../adapter/notification.adapter";
 import { NotificationResolver } from "../resolver/notification.resolver";
 import { NotificationUserModel } from "../schemas/notification.user.schema";
+import { PostModule } from "src/contexts/module_post/post/infraestructure/module/post.module";
+import { NotificationPostModel } from "../schemas/notification.post.schema";
 
 @Module({
     imports: [
@@ -22,11 +24,13 @@ import { NotificationUserModel } from "../schemas/notification.user.schema";
                     { name: NotificationGroupModel.modelName, schema: NotificationGroupModel.schema },
                     { name: NotificationMagazineModel.modelName, schema: NotificationMagazineModel.schema },
                     { name: NotificationUserModel.modelName, schema: NotificationUserModel.schema },
+                    { name: NotificationPostModel.modelName, schema: NotificationPostModel.schema },
                 ],
             },
         ]),
         UserModule,
         MagazineModule,
+        PostModule,
         forwardRef(() => GroupModule)
     ],
     providers: [
@@ -41,6 +45,9 @@ import { NotificationUserModel } from "../schemas/notification.user.schema";
         },
         {
             provide: 'NotificationUserServiceInterface',
+            useClass: NotificationService,
+        }, {
+            provide: 'NotificationPostServiceInterface',
             useClass: NotificationService,
         }, {
             provide: 'NotificationRepositoryInterface',
@@ -58,6 +65,7 @@ import { NotificationUserModel } from "../schemas/notification.user.schema";
         'NotificationGroupServiceInterface',
         'NotificationMagazineServiceInterface',
         'NotificationUserServiceInterface',
+        'NotificationPostServiceInterface',
         'NotificationRepositoryInterface'
     ]
 })

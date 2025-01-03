@@ -83,9 +83,9 @@ export class PostAdapter implements PostAdapterInterface {
     }
   }
 
-  async findFriendPosts(postType: string, userRequestId: string, page: number, limit: number): Promise<void> {
+  async findFriendPosts(postType: string, userRequestId: string, page: number, limit: number, searchTerm: string): Promise<void> {
     try {
-      return await this.postService.findFriendPosts(postType, userRequestId, page, limit);
+      return await this.postService.findFriendPosts(postType, userRequestId, page, limit, searchTerm);
     } catch (error: any) {
       throw error;
     }
