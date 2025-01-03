@@ -19,6 +19,7 @@ import { emitUserRelationNotification } from "@/components/notifications/users/e
 import { UserRelations } from "@/types/userTypes";
 import { toastifySuccess } from "@/utils/functions/toastify";
 import { useRouter } from "next/navigation";
+import { handleUserRelationNotificationError } from "@/components/notifications/users/actions";
 
 const SendUserRequest = ({
   variant,
@@ -61,9 +62,12 @@ const SendUserRequest = ({
       value as UserRelation,
       null,
       previousUserRelation?._id
-    );
-    toastifySuccess("Solicitud enviada correctamente"); 
-    router.refresh();
+    )
+      .then(() => {
+        toastifySuccess("Solicitud enviada correctamente");
+        router.refresh();
+      })
+      .catch(handleUserRelationNotificationError);
   };
   return (
     <>

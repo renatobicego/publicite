@@ -1,5 +1,6 @@
 import { useSocket } from "@/app/socketProvider";
 import ConfirmModal from "@/components/modals/ConfirmModal";
+import { handleUserRelationNotificationError } from "@/components/notifications/users/actions";
 import { emitUserRelationNotification } from "@/components/notifications/users/emitNotifications";
 import {
   UserRelationNotification,
@@ -32,13 +33,16 @@ const HandleUserRelationRequest = ({
       userRelation.frontData.userRelation.typeRelation,
       userRelation._id,
       userRelation.frontData.userRelation._id
-    );
-    if (isChangeOfRelation) {
-      toastifySuccess("Cambio de relación aceptado");
-      return;
-    }
-    toastifySuccess("Solicitud aceptada correctamente");
-    router.refresh();
+    )
+      .then(() => {
+        toastifySuccess(
+          isChangeOfRelation
+            ? "Cambio de relación aceptado"
+            : "Solicitud aceptada correctamente"
+        );
+        router.refresh();
+      })
+      .catch(handleUserRelationNotificationError);
   };
   const rejectRequest = async () => {
     const socket = await updateSocketToken();
@@ -50,13 +54,16 @@ const HandleUserRelationRequest = ({
       userRelation.backData.userIdFrom,
       userRelation.frontData.userRelation.typeRelation,
       userRelation._id
-    );
-    if (isChangeOfRelation) {
-      toastifySuccess("Cambio de relación rechazado");
-      return;
-    }
-    toastifySuccess("Solicitud rechazada");
-    router.refresh();
+    )
+      .then(() => {
+        toastifySuccess(
+          isChangeOfRelation
+            ? "Cambio de relación rechazado"
+            : "Solicitud rechazada correctamente"
+        );
+        router.refresh();
+      })
+      .catch(handleUserRelationNotificationError);
   };
   return (
     <div className="flex gap-2 items-center">

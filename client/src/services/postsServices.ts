@@ -76,7 +76,7 @@ export const postPost = async (
     });
     return data.createPost._id;
   } catch (error) {
-    console.log(error)
+    console.log(error);
     throw error;
   }
 };
@@ -111,13 +111,13 @@ export const getPosts = async (
   page: number,
   postType: PostType,
   coordinates: Coordinates | null,
-  limit: number | undefined = 20, 
+  limit: number | undefined = 20
 ) => {
   try {
     if (!coordinates) {
       return {
         error: "Error al traer los anuncios. Por favor intenta de nuevo.",
-      }
+      };
     }
     const { data } = await query({
       query: getPostsQuery,
@@ -145,7 +145,7 @@ export const getPostsOfContacts = async (
   searchTerm: string | null,
   page: number,
   postType: PostType,
-  limit: number | undefined = 20, 
+  limit: number | undefined = 20
 ) => {
   try {
     const { data } = await query({
@@ -156,6 +156,11 @@ export const getPostsOfContacts = async (
         page,
         searchTerm: searchTerm ? searchTerm : "",
       },
+      context: {
+        headers: {
+          Authorization: await auth().getToken({ template: "testing" }),
+        },
+      },
     });
     return {
       items: data.findFriendPosts.posts,
@@ -164,7 +169,8 @@ export const getPostsOfContacts = async (
   } catch (error) {
     console.log("getPosts", error);
     return {
-      error: "Error al traer los anuncios de tus contactos. Por favor intenta de nuevo.",
+      error:
+        "Error al traer los anuncios de tus contactos. Por favor intenta de nuevo.",
     };
   }
 };

@@ -16,8 +16,10 @@ import { PostsDataTypes } from "@/utils/data/fetchDataByType";
 
 const PostsList = ({
   postTypeVisited,
+  hideMap,
 }: {
   postTypeVisited: PostsDataTypes;
+  hideMap?: boolean;
 }) => {
   const pathname = usePathname();
 
@@ -56,7 +58,7 @@ const PostsList = ({
         }
       />
       <h2>{titleToShow()}</h2>
-      <SelectManualLocationModal showAlways />
+      {!hideMap && <SelectManualLocationModal showAlways />}
       <PostListLogic postType={postTypeVisited} />
     </section>
   );

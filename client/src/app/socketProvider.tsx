@@ -14,6 +14,7 @@ import { useAuth } from "@clerk/nextjs";
 import {
   handleGroupNotification,
   handleMagazineNotification,
+  handlePostActivityNotification,
   handleUserRelationNotification,
 } from "@/utils/notifications/notificationHandlers";
 import { requestNotificationPermission } from "@/utils/notifications/browserNotifications";
@@ -47,7 +48,11 @@ export const SocketProvider = ({
   const [socket, setSocket] = useState<Socket | null>(null);
 
   // Function to reinitialize the socket with a new token
-  const updateSocketToken = async (): Promise<Socket> => {
+  const updateSocketToken = async (setNewToken?: boolean): Promise<Socket> => {
+    if (!setNewToken) {
+      if (!socket) return Promise.reject("Socket not initialized");
+      return Promise.resolve(socket);
+    }
     const newToken = await getToken({ template: "testing" });
 
     if (socket) {
@@ -87,6 +92,11 @@ export const SocketProvider = ({
         setNewNotifications(true);
         handleUserRelationNotification(data); // Call the handler for user relations notifications
       });
+
+      newSocket.on("post_notifications", (data) => {
+        setNewNotifications(true);
+        handlePostActivityNotification(data); // Call the handler for post relations notifications
+      });
     });
   };
 
@@ -94,7 +104,7 @@ export const SocketProvider = ({
   useEffect(() => {
     requestNotificationPermission(); // Request permission on component mount
 
-    if (!socket) updateSocketToken();
+    if (!socket) updateSocketToken(true);
 
     // Cleanup on unmount
     return () => {
