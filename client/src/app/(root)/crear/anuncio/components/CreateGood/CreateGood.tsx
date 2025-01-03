@@ -75,7 +75,7 @@ const CreateGood = ({
     const dbLocation = {
       location: {
         type: "Point",
-        coordinates: [values.geoLocation.lat, values.geoLocation.lng],
+        coordinates: [values.geoLocation.lng, values.geoLocation.lat],
       },
       description: values.geoLocation.description,
       userSetted: values.geoLocation.userSetted,
