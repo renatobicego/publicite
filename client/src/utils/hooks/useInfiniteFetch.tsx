@@ -52,7 +52,7 @@ export const useInfiniteFetch = (
         return;
       }
     }
-    if (!coordinates) {
+    if (isLocationAwarePostType(postType) && !coordinates) {
       return;
     }
     // set isLoading to true

@@ -18,7 +18,6 @@ import getUserByUsernameQuery, {
   updateContactMutation,
 } from "@/graphql/userQueries";
 import { ApolloError } from "@apollo/client";
-import { boolean } from "yup";
 
 const baseUrl = `${process.env.API_URL}/user/personal`;
 
@@ -149,7 +148,6 @@ export const getUsers = async (searchTerm: string | null, page: number) => {
     return { items: data.user, hasMore: data.hasMore };
   } catch (error) {
     return {
-      error: "Error al traer los usuarios. Por favor intenta de nuevo.",
     };
   }
 };

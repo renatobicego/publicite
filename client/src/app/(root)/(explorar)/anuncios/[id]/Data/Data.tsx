@@ -119,7 +119,7 @@ const Data = async ({
             <ShareButton shareType="post" data={post} />
             <SignedIn>
               <SaveButton post={post} />
-              <ReactToPost post={post}/>
+              {!isAuthor && <ReactToPost post={post}/>} 
             </SignedIn>
           </div>
         </div>
