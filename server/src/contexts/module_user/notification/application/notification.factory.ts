@@ -36,13 +36,13 @@ export class NotificationFactory implements NotificationFactoryInterface {
 
         const baseNotification = new Notification(event, viewed, date, user, isActionsAvailable, backData, socketJobId, type, notificationEntityId, previousNotificationId);
         switch (notificationType) {
-            case typeOfNotification.group_notification:
+            case typeOfNotification.group_notifications:
                 return new NotificationGroup(baseNotification, frontData);
-            case typeOfNotification.magazine_notification:
+            case typeOfNotification.magazine_notifications:
                 return new NotificationMagazine(baseNotification, frontData);
-            case typeOfNotification.user_notification:
+            case typeOfNotification.user_notifications:
                 return new NotificationUser(baseNotification, frontData);
-            case typeOfNotification.post_notification:
+            case typeOfNotification.post_notifications:
                 return new NotificationPost(baseNotification, frontData);
             default:
                 throw new Error("Tipo de notificación no reconocido");

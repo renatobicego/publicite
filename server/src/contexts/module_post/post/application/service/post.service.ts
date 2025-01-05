@@ -14,6 +14,7 @@ import { PostType } from '../../domain/entity/enum/post-type.enum';
 import { UserLocation } from '../../domain/entity/models_graphql/HTTP-REQUEST/post.location.request';
 import { removeAccents_removeEmojisAndToLowerCase } from '../../domain/utils/normalice.data';
 import { checkStopWordsAndReturnSearchQuery, SearchType } from 'src/contexts/module_shared/utils/functions/checkStopWordsAndReturnSearchQuery';
+import { toPairs } from 'lodash';
 
 
 interface UserRelation {
@@ -161,11 +162,46 @@ export class PostService implements PostServiceInterface {
     const userRelation = await this.userService.getRelationsFromUserByUserId(userRequestId)
     if (!userRelation) return
     const relationMap = new Map<string, string>()
+    const TOPFRIENDS = 'topfriends';
+    const CONTACTS = 'contacts';
+    const FRIENDS = 'friends';
+    let friendId;
+
+
+    /*
+    1. Obtenemos las relaciones del usuario 
+    2. usamos el forEch que lo que hace es, setear el map ID DEL USUARIO AMIGO  por un lado y el tipo de relacion
+    3. Con la jerarquizacion de las relaciones deberiamos setear nuevos lugares en el map con el tipo de relacion que buscamos 
+
+
+
+    CONSIDERACIONES:: 
+    Podemos agregar un map para saber si funciona mas rapido que el if, ver la opcion que sea mas optima para este caso
+
+
+      public = 'public',
+      registered = 'registered',
+      contacts = 'contacts',
+      friends = 'friends',
+      topfriends = 'topfriends',
+
+
+    
+    */
+
+
     userRelation.forEach((relation: UserRelation) => {
-      if (relation.userA.toString() == userRequestId) {
-        relationMap.set(relation.userB.toString(), relation.typeRelationA)
-      } else {
-        relationMap.set(relation.userA.toString(), relation.typeRelationA)
+
+      const friendId = relation.userA.toString() === userRequestId
+        ? relation.userB.toString()
+        : relation.userA.toString();
+      relationMap.set(friendId, relation.typeRelationA);
+
+      if (relation.typeRelationA === TOPFRIENDS) {
+        relationMap.set(friendId, CONTACTS);
+        relationMap.set(friendId, FRIENDS);
+      } else if (relation.typeRelationA === FRIENDS) {
+        relationMap.set(friendId, CONTACTS);
       }
     });
     return relationMap;

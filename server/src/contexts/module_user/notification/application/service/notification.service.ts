@@ -123,7 +123,7 @@ export class NotificationService implements NotificationGroupServiceInterface,
 
         try {
             const factory = NotificationFactory.getInstance(this.logger);
-            const notificationMagazine = factory.createNotification(typeOfNotification.magazine_notification, notificationBody);
+            const notificationMagazine = factory.createNotification(typeOfNotification.magazine_notifications, notificationBody);
 
             await this.saveNotificationMagazineAndSentToUser(notificationMagazine as NotificationMagazine);
 
@@ -137,7 +137,7 @@ export class NotificationService implements NotificationGroupServiceInterface,
 
         try {
             const factory = NotificationFactory.getInstance(this.logger);
-            const notificationGroup = factory.createNotification(typeOfNotification.group_notification, notificationBody);
+            const notificationGroup = factory.createNotification(typeOfNotification.group_notifications, notificationBody);
 
             await this.saveNotificationGroupAndSentToUserAndGroup(notificationGroup as NotificationGroup);
 
@@ -151,7 +151,7 @@ export class NotificationService implements NotificationGroupServiceInterface,
 
         try {
             const factory = NotificationFactory.getInstance(this.logger);
-            const notificationGroup = factory.createNotification(typeOfNotification.post_notification, notificationBody);
+            const notificationGroup = factory.createNotification(typeOfNotification.post_notifications, notificationBody);
 
             await this.saveNotificationPostAndSentToUser(notificationGroup as NotificationPost);
 
@@ -173,7 +173,7 @@ export class NotificationService implements NotificationGroupServiceInterface,
 
         try {
             const factory = NotificationFactory.getInstance(this.logger);
-            const notificationUser = factory.createNotification(typeOfNotification.user_notification, notificationBody);
+            const notificationUser = factory.createNotification(typeOfNotification.user_notifications, notificationBody);
             await this.saveNotificationUserAndSentToUser(notificationUser as NotificationUser);
 
         } catch (error: any) {
