@@ -119,7 +119,13 @@ export const getPosts = async (
         error: "Error al traer los anuncios. Por favor intenta de nuevo.",
       };
     }
-  
+    console.log({
+      postType,
+      limit,
+      page,
+      searchTerm: searchTerm ? searchTerm : "",
+      userLocation: coordinates,
+   })
     const { data } = await query({
       query: getPostsQuery,
       variables: {
