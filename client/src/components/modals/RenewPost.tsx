@@ -1,4 +1,4 @@
-import { Post } from "@/types/postTypes";
+"use client"
 import {
   Button,
   Modal,

@@ -31,6 +31,7 @@ const mockedGood: Good = {
   year: 2022,
   brand: "brand",
   modelType: "modelType",
+  endDate: "2024-07-12",
   reviews: [
     {
       _id: "231",
@@ -149,6 +150,7 @@ const mockedGood: Good = {
 const mockedService: Service = {
   _id: "1jgdfas",
   imagesUrls: ["9c5124a7-ed98-4fd0-a5a2-0854d620e564-hs36nz.jpg"],
+  endDate: "2024-07-12",
   description:
     "Te invitamos a que nos conozcas y puedas disfrutar con tus seres queridos de tu evento tal como lo soñaste. Elaboramos bocadillos totalmente caseros y con material de primera calidad.",
   title: "Lunch para eventos social y corporativos",
@@ -201,6 +203,7 @@ const mockedService: Service = {
 const mockedPetition: Petition = {
   _id: "1452",
   title: "Busco iPhone 14 Pro Max",
+  endDate: "2024-07-12",
   description:
     "Esto en búsqueda de un iPhone 14 pro max nuevo en caja, de 128gb. Cualquier duda o consulta puede contactarme por este medio. Gracias",
   author: {
@@ -246,6 +249,7 @@ const mockedPetition: Petition = {
 const mockedPetition2: Petition = {
   _id: "14152",
   title: "Busco alquiler por Godoy Cruz",
+  endDate: "2024-07-12",
   author: {
     profilePhotoUrl: "/avatar.png",
     username: "username",
