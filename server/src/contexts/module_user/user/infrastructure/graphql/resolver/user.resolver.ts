@@ -1,23 +1,18 @@
 import { Inject, UseGuards } from '@nestjs/common';
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 
-
 import { ClerkAuthGuard } from 'src/contexts/module_shared/auth/clerk-auth/clerk.auth.guard';
 
 import { UserAdapterInterface } from '../../../application/adapter/userAdapter.interface';
 import { User_Full_Grapql_Model } from '../../../domain/entity/models_graphql/user.full.grapql.model';
 import { CustomContextRequestInterface } from 'src/contexts/module_shared/auth/custom_request/custom.context.request.interface';
 
-
-
-
-
 @Resolver()
 export class UserResolver {
   constructor(
     @Inject('UserAdapterInterface')
     private readonly userAdapter: UserAdapterInterface,
-  ) { }
+  ) {}
 
   @Query(() => User_Full_Grapql_Model, {
     nullable: true,
@@ -43,15 +38,10 @@ export class UserResolver {
   @UseGuards(ClerkAuthGuard)
   async removeFriend(
     @Args('relationId', { type: () => String }) relationId: string,
-    @Args('friendRequestId', { type: () => String, nullable: true }) friendRequestId: string,
+    @Args('friendRequestId', { type: () => String, nullable: true })
+    friendRequestId: string,
   ): Promise<any> {
     await this.userAdapter.removeFriend(relationId, friendRequestId);
     return 'Relation successfully deleted';
   }
-
-
-
-
 }
-
-

@@ -1,5 +1,5 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import { ClientSession, Connection, Model, ObjectId, Types } from 'mongoose';
+import { ClientSession, Connection, Model, Types } from 'mongoose';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 
 import { IUserPerson, UserPersonModel } from '../schemas/userPerson.schema';
@@ -58,13 +58,12 @@ export class UserRepository implements UserRepositoryInterface {
     private readonly userRepositoryMapper: UserRepositoryMapperInterface,
     @InjectConnection() private readonly connection: Connection,
     private readonly logger: MyLoggerService,
-  ) { }
-
-
+  ) {}
 
   async findUserByUsername(username: string): Promise<any> {
     try {
-      const userPopulate_userRelation = '_id userType name lastName businessName profilePhotoUrl username'
+      const userPopulate_userRelation =
+        '_id userType name lastName businessName profilePhotoUrl username';
       const user = await this.user
         .findOne({ username })
         .select(
@@ -92,7 +91,7 @@ export class UserRepository implements UserRepositoryInterface {
           {
             path: 'posts',
             select:
-              '_id imagesUrls title description price reviews frequencyPrice toPrice petitionType postType',
+              '_id imagesUrls title description price reviews frequencyPrice toPrice petitionType postType endDate',
           },
         ])
         .lean();
@@ -239,7 +238,7 @@ export class UserRepository implements UserRepositoryInterface {
       if (!userA || !userB) return null;
 
       const newUserRelation = new this.userRelation(userRelation);
-      const userRelationSaved = await newUserRelation.save() as any;
+      const userRelationSaved = (await newUserRelation.save()) as any;
       const userRelationId = userRelationSaved._id.toString();
 
       const result = await this.user.updateMany(
@@ -249,7 +248,7 @@ export class UserRepository implements UserRepositoryInterface {
         { $addToSet: { userRelations: userRelationId } },
         { session },
       );
-      checkIfanyDataWasModified(result)
+      checkIfanyDataWasModified(result);
       return userRelationId;
     } catch (error: any) {
       throw error;
@@ -287,7 +286,7 @@ export class UserRepository implements UserRepositoryInterface {
           { $addToSet: { friendRequests: notificationId } },
         )
         .session(session);
-      checkIfanyDataWasModified(result)
+      checkIfanyDataWasModified(result);
       this.logger.log(
         "notification saved successfully in user's notification array",
       );
@@ -358,17 +357,28 @@ export class UserRepository implements UserRepositoryInterface {
     }
   }
 
-  async updateFriendRelationOfUsers(userRelationId: string, typeOfRelation: string, session: any): Promise<void> {
+  async updateFriendRelationOfUsers(
+    userRelationId: string,
+    typeOfRelation: string,
+    session: any,
+  ): Promise<void> {
     try {
-      const result = await this.userRelation.updateOne({ _id: userRelationId }, { typeRelationA: typeOfRelation, typeRelationB: typeOfRelation }).session(session);
+      const result = await this.userRelation
+        .updateOne(
+          { _id: userRelationId },
+          { typeRelationA: typeOfRelation, typeRelationB: typeOfRelation },
+        )
+        .session(session);
       checkIfanyDataWasModified(result);
       this.logger.log('Friend relation updated successfully');
     } catch (error: any) {
-      this.logger.error('Error in updateFriendRelationOfUsers repository', error);
+      this.logger.error(
+        'Error in updateFriendRelationOfUsers repository',
+        error,
+      );
       throw error;
     }
   }
-
 
   async updateUserPreferencesByUsername(
     username: string,
@@ -408,12 +418,17 @@ export class UserRepository implements UserRepositoryInterface {
     }
   }
 
-  async removeFriend(relationId: string, friendRequestId?: string): Promise<void> {
+  async removeFriend(
+    relationId: string,
+    friendRequestId?: string,
+  ): Promise<void> {
     const session = await this.connection.startSession();
     try {
       await session.withTransaction(async () => {
-
-        const deleteRelation = this.userRelation.deleteOne({ _id: relationId }, { session });
+        const deleteRelation = this.userRelation.deleteOne(
+          { _id: relationId },
+          { session },
+        );
 
         const pullOperation: any = { userRelations: relationId };
         if (friendRequestId) {
@@ -423,22 +438,18 @@ export class UserRepository implements UserRepositoryInterface {
         const updateUsers = this.user.updateMany(
           { userRelations: relationId },
           { $pull: pullOperation },
-          { session }
+          { session },
         );
-
-
 
         await Promise.all([deleteRelation, updateUsers]);
       });
     } catch (error) {
-
       console.error('Error removing friend relation:', error);
       throw error;
     } finally {
       session.endSession();
     }
   }
-
 
   async save(reqUser: User, session?: ClientSession): Promise<any> {
     try {
@@ -547,8 +558,8 @@ export class UserRepository implements UserRepositoryInterface {
   }
 
   async saveNewPost(
-    postId: String,
-    authorId: String,
+    postId: string,
+    authorId: string,
     options?: { session?: ClientSession },
   ): Promise<any> {
     try {
@@ -560,7 +571,7 @@ export class UserRepository implements UserRepositoryInterface {
         { $addToSet: { posts: postId } },
         options,
       );
-      checkIfanyDataWasModified(result)
+      checkIfanyDataWasModified(result);
     } catch (error: any) {
       this.logger.error(
         'An error was occurred trying to save a new post in user array(catch)',

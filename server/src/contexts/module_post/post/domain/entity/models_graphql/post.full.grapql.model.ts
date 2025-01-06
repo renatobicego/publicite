@@ -3,8 +3,6 @@ import { Field, ObjectType, ID, Float, Int } from '@nestjs/graphql';
 import { GoodCondition } from '../enum/post-good-condition.enum';
 import { PostLocation_Grapql } from './HTTP-RESPONSE/post.location.graphql';
 
-
-
 @ObjectType()
 class Visibility {
   @Field(() => String, { nullable: true })
@@ -88,4 +86,7 @@ export class Post_Full_Graphql_Model {
 
   @Field(() => String, { nullable: true })
   petitionType: string;
+
+  @Field(() => Date, { nullable: true })
+  endDate: Date;
 }

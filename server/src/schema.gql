@@ -264,6 +264,7 @@ type Post_Full_Graphql_Model {
   frequencyPrice: String
   toPrice: Float
   petitionType: String
+  endDate: DateTime
 }
 
 """Condition of the good"""
@@ -272,6 +273,11 @@ enum GoodCondition {
   Used
   Broke
 }
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
 
 type Subscriptions_Full_Graphql_Model {
   _id: ID!
@@ -499,11 +505,6 @@ type Post_response_graphql_model {
   endDate: DateTime
 }
 
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
-
 type PostFindAllResponse {
   posts: [Post_response_graphql_model!]!
   hasMore: Boolean!
@@ -563,7 +564,7 @@ type Query {
   """Buscar los pagos por id de clerk"""
   findPaymentByClerkId(id: String!): [PaymentResponse!]
 
-  """Obtener Post por autor"""
+  """Obtener todos los posts del autor por id"""
   findPostsByAuthorId(authorId: String!): [Post_Full_Graphql_Model!]
 
   """Obtener Post por su Id"""

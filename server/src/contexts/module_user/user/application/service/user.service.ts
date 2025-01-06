@@ -26,22 +26,28 @@ export class UserService implements UserServiceInterface {
     private readonly contactService: ContactServiceInterface,
     private readonly logger: MyLoggerService,
     @InjectConnection() private readonly connection: Connection,
-  ) { }
+  ) {}
 
-  async makeFriendRelationBetweenUsers(backData: { userIdFrom: string; userIdTo: string; }, typeOfRelation: string, session: any): Promise<string | null> {
+  async makeFriendRelationBetweenUsers(
+    backData: { userIdFrom: string; userIdTo: string },
+    typeOfRelation: string,
+    session: any,
+  ): Promise<string | null> {
     try {
       const userRelation = new UserRelation(
         backData.userIdFrom,
         backData.userIdTo,
         typeOfRelation,
         typeOfRelation,
-      )
-      return await this.userRepository.makeFriendRelationBetweenUsers(userRelation, session);
+      );
+      return await this.userRepository.makeFriendRelationBetweenUsers(
+        userRelation,
+        session,
+      );
     } catch (error: any) {
       throw error;
     }
   }
-
 
   async createUser(userEntity: User, contactDto: any): Promise<string> {
     this.logger.log(
@@ -49,7 +55,6 @@ export class UserService implements UserServiceInterface {
     );
     let userId: string;
     const session = await this.connection.startSession();
-
 
     try {
       userId = await session.withTransaction(async () => {
@@ -59,14 +64,16 @@ export class UserService implements UserServiceInterface {
         switch (userEntity.getUserType?.toLowerCase()) {
           case UserType.Person:
             this.logger.log(
-              'Creating PERSONAL ACCOUNT with username: ' + userEntity.getUsername,
+              'Creating PERSONAL ACCOUNT with username: ' +
+                userEntity.getUsername,
             );
 
             return await this.userRepository.save(userEntity, session);
 
           case UserType.Business:
             this.logger.log(
-              'Creating BUSINESS ACCOUNT with username: ' + userEntity.getUsername,
+              'Creating BUSINESS ACCOUNT with username: ' +
+                userEntity.getUsername,
             );
 
             return await this.userRepository.save(userEntity, session);
@@ -76,9 +83,7 @@ export class UserService implements UserServiceInterface {
         }
       });
 
-
       return userId;
-
     } catch (error) {
       if (session.inTransaction()) {
         await session.abortTransaction();
@@ -115,7 +120,10 @@ export class UserService implements UserServiceInterface {
     }
   }
 
-  async findUserByUsername(username: string, userRequestId?: string): Promise<any> {
+  async findUserByUsername(
+    username: string,
+    userRequestId?: string,
+  ): Promise<any> {
     try {
       const user = await this.userRepository.findUserByUsername(username);
 
@@ -125,17 +133,15 @@ export class UserService implements UserServiceInterface {
         if (user.friendRequests && user.friendRequests.length > 0) {
           user.friendRequests.map((friend_Request: any) => {
             if (friend_Request.backData.userIdFrom === userRequestId) {
-              user.isFriendRequestPending = true
+              user.isFriendRequestPending = true;
             }
-          })
+          });
         }
-
       } else {
-        return null
+        return null;
       }
 
       return user;
-
     } catch (error: any) {
       throw error;
     }
@@ -166,20 +172,17 @@ export class UserService implements UserServiceInterface {
     }
   }
 
-
   async getRelationsFromUserByUserId(userRequestId: string): Promise<any> {
     try {
-      this.logger.log("finding relations from user with id: " + userRequestId);
-      const userRelationDocument = await this.userRepository.getRelationsFromUserByUserId(userRequestId);
+      this.logger.log('finding relations from user with id: ' + userRequestId);
+      const userRelationDocument =
+        await this.userRepository.getRelationsFromUserByUserId(userRequestId);
       const { userRelations } = userRelationDocument;
       return userRelations;
     } catch (error: any) {
       throw error;
     }
   }
-
-
-
 
   async pushNotificationToUserArrayNotifications(
     notification: Types.ObjectId,
@@ -195,38 +198,58 @@ export class UserService implements UserServiceInterface {
       throw error;
     }
   }
-  async pushNewFriendRequestOrRelationRequestToUser(notificationId: Types.ObjectId, userNotificationOwner: string, session: any): Promise<any> {
+  async pushNewFriendRequestOrRelationRequestToUser(
+    notificationId: Types.ObjectId,
+    userNotificationOwner: string,
+    session: any,
+  ): Promise<any> {
     try {
       this.logger.log(
         'Notification received in the service: ' + UserService.name,
       );
 
-      await this.userRepository.pushNewFriendRequestOrRelationRequestToUser(notificationId, userNotificationOwner, session);
+      await this.userRepository.pushNewFriendRequestOrRelationRequestToUser(
+        notificationId,
+        userNotificationOwner,
+        session,
+      );
     } catch (error: any) {
       throw error;
     }
   }
 
-  async removeFriendRequest(previousNotificationId: string, userNotificationOwner: string, session: any) {
+  async removeFriendRequest(
+    previousNotificationId: string,
+    userNotificationOwner: string,
+    session: any,
+  ) {
     try {
-      await this.userRepository.removeFriendRequest(previousNotificationId, userNotificationOwner, session);
+      await this.userRepository.removeFriendRequest(
+        previousNotificationId,
+        userNotificationOwner,
+        session,
+      );
     } catch (error: any) {
       throw error;
     }
   }
-  async removeFriend(relationId: string, friendRequestId?: string): Promise<any> {
+  async removeFriend(
+    relationId: string,
+    friendRequestId?: string,
+  ): Promise<any> {
     try {
-      return await this.userRepository.removeFriend(relationId, friendRequestId);
+      return await this.userRepository.removeFriend(
+        relationId,
+        friendRequestId,
+      );
     } catch (error: any) {
       throw error;
     }
   }
-
-
 
   async saveNewPostInUser(
-    postId: String,
-    authorId: String,
+    postId: string,
+    authorId: string,
     options?: { session?: ClientSession },
   ): Promise<any> {
     try {
@@ -237,23 +260,29 @@ export class UserService implements UserServiceInterface {
     }
   }
 
-
-
-  async updateFriendRelationOfUsers(userRelationId: string, typeOfRelation: string, session: any): Promise<void> {
+  async updateFriendRelationOfUsers(
+    userRelationId: string,
+    typeOfRelation: string,
+    session: any,
+  ): Promise<void> {
     try {
       this.logger.log(
-        'Updating friend relation in the service: ' + UserService.name)
+        'Updating friend relation in the service: ' + UserService.name,
+      );
 
-      await this.userRepository.updateFriendRelationOfUsers(userRelationId, typeOfRelation, session);
+      await this.userRepository.updateFriendRelationOfUsers(
+        userRelationId,
+        typeOfRelation,
+        session,
+      );
     } catch (error: any) {
       this.logger.error(
         'An error has occurred in user service - updateFriendRelationOfUsers: ' +
-        error,
-      )
+          error,
+      );
       throw error;
     }
   }
-
 
   async updateUserPreferencesByUsername(
     username: string,
@@ -267,7 +296,7 @@ export class UserService implements UserServiceInterface {
     } catch (error: any) {
       this.logger.error(
         'An error has occurred in user service - updateUserPreferencesByUsername: ' +
-        error,
+          error,
       );
       throw error;
     }
@@ -303,11 +332,9 @@ export class UserService implements UserServiceInterface {
     } catch (error: any) {
       this.logger.error(
         'An error has occurred in user service - UpdateUserByClerk: ' +
-        error.message,
+          error.message,
       );
       throw error;
     }
   }
-
-
 }

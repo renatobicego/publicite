@@ -42,7 +42,10 @@ import { businessAccountUpdateRequest } from '../../application/adapter/dto/HTTP
 import { UserPreferenceResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.preferences.response';
 import { UserPreferencesDto_SWAGGER } from './swagger/user.preferences.dto.swagger';
 import { UserFindAllResponseDto_SWAGGER } from './swagger/user.findAll.response.swagger';
-import { UserBusinessResponse, UserPersonResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.response.dto';
+import {
+  UserBusinessResponse,
+  UserPersonResponse,
+} from '../../application/adapter/dto/HTTP-RESPONSE/user.response.dto';
 
 @ApiTags('Accounts')
 @Controller('user')
@@ -50,7 +53,7 @@ export class UserController {
   constructor(
     @Inject('UserAdapterInterface')
     private readonly userAdapter: UserAdapterInterface,
-  ) { }
+  ) {}
 
   ///------------CONTROLLERS CREATE ACCOUNT-------------------
   @Post('/personal')
@@ -91,9 +94,7 @@ export class UserController {
     @Body() requestNewUser: UserBusinessRequest,
   ): Promise<string> {
     try {
-      return await this.userAdapter.createUser(
-        requestNewUser,
-      )
+      return await this.userAdapter.createUser(requestNewUser);
     } catch (error: any) {
       throw error;
     }
@@ -235,7 +236,6 @@ export class UserController {
     }
   }
 
-
   @Get()
   @ApiOperation({ summary: 'Get all users by username, lastName or Name' })
   @ApiResponse({
@@ -271,8 +271,4 @@ export class UserController {
       throw error;
     }
   }
-
-
-
-
 }
