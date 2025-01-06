@@ -552,19 +552,25 @@ export class PostRepository implements PostRepositoryInterface {
         [
           {
             $set: {
-              endDate: { $add: ["$endDate", 14 * 24 * 60 * 60 * 1000] } //Actualiza 14 dias
+              endDate: {
+                $add: [
+                  "$endDate",
+                  14 * 24 * 60 * 60 * 1000
+                ]
+              }
             }
           }
-        ]
+        ],
       );
 
-
-      this.logger.log('Updating end date from post with id: ' + postId + ' successfully updated');
-      return 'End Date from post with id: ' + postId + ' successfully updated'
+      this.logger.log(`Updating end date from post with id: ${postId} successfully updated`);
+      return `End Date from post with id: ${postId} successfully updated`;
     } catch (error: any) {
+      this.logger.error('Error updating end date:', error);
       throw error;
     }
   }
+
 
   async makeReactionSchemaAndSetReactionToPost(postId: string, reaction: { user: string, reaction: string }, session: any): Promise<void> {
     try {
