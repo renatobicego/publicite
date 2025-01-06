@@ -14,6 +14,7 @@ export const getPostByIdQuery = gql`
         label
       }
       author {
+        _id
         contact {
           _id
           facebook

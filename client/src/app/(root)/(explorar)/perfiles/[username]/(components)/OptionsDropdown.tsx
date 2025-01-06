@@ -23,7 +23,7 @@ const OptionsDropdown = ({ user }: { user: GetUser }) => {
     <>
       <Dropdown placement="bottom-end">
         <DropdownTrigger>
-          <Button radius="full" isIconOnly aria-label="opciones de perfil" variant="light">
+          <Button radius="full" size="sm" isIconOnly aria-label="opciones de perfil" variant="light">
             <FaChevronDown />
           </Button>
         </DropdownTrigger>

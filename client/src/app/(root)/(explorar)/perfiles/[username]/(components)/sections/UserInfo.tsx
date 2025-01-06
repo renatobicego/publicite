@@ -27,6 +27,11 @@ import ContactPetitionsList from "@/components/modals/ContactPetition/ContactPet
 import { relationTypes } from "@/utils/data/selectData";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import DeleteUserRelation from "../DeleteUserRelation";
+import {
+  extractDomain,
+  formatFacebookUrl,
+  formatInstagamUrl,
+} from "@/utils/functions/formatUrls";
 
 const UserInfo = ({
   user,
@@ -107,7 +112,7 @@ const UserInfo = ({
           wrapper: "!min-w-24 w-24 md:!min-w-32 md:!w-32 xl:!w-52 xl:!min-w-52",
         }}
       />
-      <div className="flex gap-2 md:gap-4 items-start flex-col flex-1">
+      <div className="flex gap-2 md:gap-3 items-start flex-col flex-1">
         <div className="flex gap-1 lg:gap-12 items-start justify-between w-full">
           <h2 className="max-lg:mt-1">
             {userType === "Business"
@@ -118,11 +123,11 @@ const UserInfo = ({
         </div>
         <h6>@{user.username}</h6>
         {user.description && (
-          <p className="text-sm lg:text-base">{user.description}</p>
+          <p className="text-small md:text-sm lg:text-base">{user.description}</p>
         )}
-        <div className="flex items-start gap-1">
+        <div className="flex items-center gap-1">
           <TbWorldPin className="size-4 min-w-4" />
-          <p className="text-xs md:text-sm mb-0.5">{user.countryRegion}</p>
+          <p className="text-xs md:text-sm">{user.countryRegion}</p>
         </div>
         {user.contact && <SocialMedia contact={user.contact} />}
         <div className="flex gap-2 items-start">{actionToShow()}</div>
@@ -135,35 +140,65 @@ export default UserInfo;
 
 const SocialMedia = ({ contact }: { contact: Contact }) => {
   const { phone, instagram, facebook, x, website } = contact;
+  function formatXTwitterUrl(x: string): import("react").ReactNode {
+    throw new Error("Function not implemented.");
+  }
+
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-2 flex-col items-start">
       {phone && (
         <Link
           href={`https://api.whatsapp.com/send?phone=${phone}`}
           target="_blank"
           color="foreground"
+          className="flex items-center gap-1"
         >
-          <FaWhatsapp className="size-5" />
+          <FaWhatsapp className="size-4" />
+          <p className="text-xs md:text-sm">{phone}</p>
         </Link>
       )}
       {instagram && (
-        <Link color="foreground" href={instagram} target="_blank">
-          <FaInstagram className="size-5" />
+        <Link
+          className="flex items-center gap-1"
+          color="foreground"
+          href={instagram}
+          target="_blank"
+        >
+          <FaInstagram className="size-4" />
+          <p className="text-xs md:text-sm">{formatInstagamUrl(instagram)}</p>
         </Link>
       )}
       {facebook && (
-        <Link color="foreground" href={facebook} target="_blank">
-          <FaFacebook className="size-5" />
+        <Link
+          className="flex items-center gap-1"
+          color="foreground"
+          href={facebook}
+          target="_blank"
+        >
+          <FaFacebook className="size-4" />
+          <p className="text-xs md:text-sm">{formatFacebookUrl(facebook)}</p>
         </Link>
       )}
       {x && (
-        <Link color="foreground" href={x} target="_blank">
-          <FaXTwitter className="size-5" />
+        <Link
+          className="flex items-center gap-1"
+          color="foreground"
+          href={x}
+          target="_blank"
+        >
+          <FaXTwitter className="size-4" />
+          <p className="text-xs md:text-sm">{formatXTwitterUrl(x)}</p>
         </Link>
       )}
       {website && (
-        <Link color="foreground" href={website} target="_blank">
-          <FaLink className="size-5" />
+        <Link
+          className="flex items-center gap-1"
+          color="foreground"
+          href={website}
+          target="_blank"
+        >
+          <FaLink className="size-4" />
+          <p className="text-xs md:text-sm">{extractDomain(website)}</p>
         </Link>
       )}
     </div>

@@ -42,15 +42,22 @@ export const editPayment = async (formData: any, subscription: any) => {
 
 export const editSubscription = async (
   subscriptionId: string,
-  formData: any
+  formData: {
+    status: "authorized" | "paused" | "cancelled" | "pending";
+  }
 ) => {
   try {
-    const { data } = await axios.put("/api/subscriptions/update", {
+    await axios.put("/api/subscriptions/update", {
       formData,
       subscriptionId,
     });
+    return {
+      message: "Suscripción actualizada exitosamente.",
+    }
   } catch (error) {
-    console.log(error);
+    return {
+      error: "Error al actualizar la suscripción. Por favor intenta de nuevo.",
+    }
   }
 };
 

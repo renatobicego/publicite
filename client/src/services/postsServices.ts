@@ -19,6 +19,8 @@ import {
 import { auth } from "@clerk/nextjs/server";
 import { deleteFilesService } from "@/app/server/uploadThing";
 import { Coordinates } from "@/app/(root)/providers/LocationProvider";
+import { ApolloError, ServerError } from "@apollo/client";
+import { handleApolloError } from "@/utils/functions/errorHandler";
 
 export const getPostData = async (id: string) => {
   try {
@@ -33,11 +35,8 @@ export const getPostData = async (id: string) => {
     });
 
     return data.findPostById;
-  } catch (error) {
-    return {
-      error:
-        "Error al traer los datos de los sectores de negocios. Por favor intenta de nuevo.",
-    };
+  } catch (error: ApolloError | any) {
+    return handleApolloError(error);
   }
 };
 
@@ -125,7 +124,7 @@ export const getPosts = async (
       page,
       searchTerm: searchTerm ? searchTerm : "",
       userLocation: coordinates,
-   })
+    });
     const { data } = await query({
       query: getPostsQuery,
       variables: {

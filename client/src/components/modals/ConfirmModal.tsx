@@ -1,7 +1,8 @@
-"use client"
+"use client";
 import {
   Button,
   Modal,
+  ModalBody,
   ModalContent,
   ModalFooter,
   ModalHeader,
@@ -17,6 +18,7 @@ const ConfirmModal = ({
   confirmText,
   onConfirm,
   customOpen,
+  sideText,
 }: {
   ButtonAction: JSX.Element;
   message: string;
@@ -24,6 +26,7 @@ const ConfirmModal = ({
   confirmText: string;
   onConfirm: () => void;
   customOpen?: (openModal: () => void) => void; // Custom open function
+  sideText?: string;
 }) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
@@ -56,6 +59,7 @@ const ConfirmModal = ({
               <ModalHeader className="flex flex-col gap-1">
                 {message}
               </ModalHeader>
+              {sideText && <ModalBody>{sideText}</ModalBody>}
               <ModalFooter>
                 <Button
                   color="secondary"

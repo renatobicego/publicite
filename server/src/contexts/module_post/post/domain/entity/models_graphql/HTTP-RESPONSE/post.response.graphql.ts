@@ -2,8 +2,6 @@ import { ObjectId } from 'mongoose';
 import { Field, ObjectType, ID, Float, Int } from '@nestjs/graphql';
 import { PostLocation_Grapql } from './post.location.graphql';
 
-
-
 @ObjectType()
 export class Contact_graph {
   @Field(() => ID, { nullable: true })
@@ -35,9 +33,10 @@ export class author {
 
   @Field(() => String)
   name: string;
+
+  @Field(() => String)
+  _id: string;
 }
-
-
 
 @ObjectType()
 class Visibility_post {
@@ -126,7 +125,7 @@ export class Post_response_graphql_model {
   //-> comparte imagesUrls & reviews de post good & frequencyPrice de post petition
   @Field(() => String, { nullable: true })
   frequencyPrice: string;
- 
+
   //Fields post Petition
   @Field(() => Float, { nullable: true })
   toPrice: number;
@@ -136,5 +135,4 @@ export class Post_response_graphql_model {
 
   @Field(() => Date, { nullable: true })
   endDate: Date;
-
 }

@@ -5,7 +5,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@nextui-org/react";
-import React from "react";
+import React, { useState } from "react";
 import { MdOutlineAddReaction } from "react-icons/md";
 import { emitPostActivityNotification } from "../notifications/postsActivity/emitNotifications";
 import { useSocket } from "@/app/socketProvider";
@@ -13,6 +13,7 @@ import { Good, Post } from "@/types/postTypes";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 
 const ReactToPost = ({ post }: { post: Post }) => {
+  const [isOpen, setIsOpen] = useState(false);
   const emojis = ["👍", "😊", "❤️", "😂", "😲"];
   const { socket } = useSocket();
 
@@ -48,11 +49,21 @@ const ReactToPost = ({ post }: { post: Post }) => {
       }
     )
       .then(() => toastifySuccess(`Reaccionaste con ${getEmojiName(emoji)}`))
-      .catch(() => toastifyError("No se pudo reaccionar. Por favor, intenta de nuevo."));
+      .catch(() =>
+        toastifyError("No se pudo reaccionar. Por favor, intenta de nuevo.")
+      )
+      .finally(() => {
+        setIsOpen(false);
+      });
   };
 
   return (
-    <Popover showArrow placement="bottom">
+    <Popover
+      isOpen={isOpen}
+      onOpenChange={(open) => setIsOpen(open)}
+      showArrow
+      placement="bottom"
+    >
       <PopoverTrigger>
         <Button
           radius="full"

@@ -12,8 +12,8 @@ const AccountTypeForm = ({
   setIsFormVisible: (value: boolean) => void;
   subscription?: Subscription;
 }) => {
-  const previousSubscriptionPlan = subscription?.subscriptionPlan._id;
-  const [selected, setSelected] = useState(previousSubscriptionPlan);
+  const previousSubscriptionPlan = subscription;
+  const [selected, setSelected] = useState(previousSubscriptionPlan?.subscriptionPlan._id);
   const [subscriptionPlans, setSubscriptionPlans] = useState([]);
 
   useEffect(() => {

@@ -10,7 +10,10 @@ import { Post_Full_Graphql_Model } from 'src/contexts/module_post/post/domain/en
 import { PostType } from 'src/contexts/module_post/post/domain/entity/enum/post-type.enum';
 import { PubliciteAuth } from 'src/contexts/module_shared/auth/publicite_auth/publicite_auth';
 import { CustomContextRequestInterface } from 'src/contexts/module_shared/auth/custom_request/custom.context.request.interface';
-import { PostIdResponse, PostRequest } from '../../../domain/entity/models_graphql/HTTP-REQUEST/post.request';
+import {
+  PostIdResponse,
+  PostRequest,
+} from '../../../domain/entity/models_graphql/HTTP-REQUEST/post.request';
 import { UserLocation } from '../../../domain/entity/models_graphql/HTTP-REQUEST/post.location.request';
 
 @Resolver('Post')
@@ -18,10 +21,7 @@ export class PostResolver {
   constructor(
     @Inject('PostAdapterInterface')
     private readonly postAdapter: PostAdapterInterface,
-
-
-  ) { }
-
+  ) {}
 
   @Mutation(() => PostIdResponse, {
     nullable: true,
@@ -103,13 +103,14 @@ export class PostResolver {
   ): Promise<any> {
     try {
       const userRequestId = context.req.userRequestId;
-      return await this.postAdapter.updateEndDateFromPostById(postId, userRequestId);
-
+      return await this.postAdapter.updateEndDateFromPostById(
+        postId,
+        userRequestId,
+      );
     } catch (error: any) {
       throw error;
     }
   }
-
 
   @Query(() => [Post_Full_Graphql_Model], {
     nullable: true,
@@ -141,13 +142,15 @@ export class PostResolver {
 
   @Query(() => PostFindAllResponse, {
     nullable: true,
-    description: 'Buscar todos los post, recibe pagina, limite y tambien el postType. De ser necesario podes enviarle un searchTerm para filtrar',
+    description:
+      'Buscar todos los post, recibe pagina, limite y tambien el postType. De ser necesario podes enviarle un searchTerm para filtrar',
   })
   async findAllPostByPostType(
     @Args('page', { type: () => Number }) page: number,
     @Args('limit', { type: () => Number }) limit: number,
     @Args('postType', { type: () => PostType }) postType: PostType,
-    @Args('userLocation', { type: () => UserLocation }) userLocation: UserLocation,
+    @Args('userLocation', { type: () => UserLocation })
+    userLocation: UserLocation,
     @Args('searchTerm', { type: () => String, nullable: true })
     searchTerm: string,
   ): Promise<any> {
@@ -183,7 +186,8 @@ export class PostResolver {
 
   @Query(() => PostFindAllResponse, {
     nullable: true,
-    description: 'Encuentra todos los posts de mis amigos, segun el tipo de post',
+    description:
+      'Encuentra todos los posts de mis amigos, segun el tipo de post',
   })
   @UseGuards(ClerkAuthGuard)
   async findFriendPosts(
@@ -196,12 +200,15 @@ export class PostResolver {
   ): Promise<any> {
     try {
       const userRequestId = context.req.userRequestId;
-      return await this.postAdapter.findFriendPosts(postType, userRequestId, page, limit, searchTerm);
+      return await this.postAdapter.findFriendPosts(
+        postType,
+        userRequestId,
+        page,
+        limit,
+        searchTerm,
+      );
     } catch (error: any) {
       throw error;
     }
   }
-
-
-
 }

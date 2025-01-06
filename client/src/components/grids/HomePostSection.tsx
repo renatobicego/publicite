@@ -33,8 +33,8 @@ export default function HomePostSection({
   buttonHref,
 }: PostSectionProps) {
   return (
-    <section className="flex flex-col gap-4 w-full">
-      <h2 className="mb-4">{title}</h2>
+    <section className="flex flex-col gap-4 lg:gap-6 3xl:gap-8 w-full">
+      <h2>{title}</h2>
       <Suspense fallback={<Spinner color="warning" />}>
         <PostFetcher
           type={type}

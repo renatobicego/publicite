@@ -456,6 +456,7 @@ type author {
   contact: Contact_graph!
   lastName: String!
   name: String!
+  _id: String!
 }
 
 type Visibility_post {
