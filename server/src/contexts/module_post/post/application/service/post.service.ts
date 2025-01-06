@@ -241,5 +241,17 @@ export class PostService implements PostServiceInterface {
   }
 
 
+  async removeReactionFromPost(userRequestId: string, _id: string): Promise<any> {
+    try {
+      this.logger.log('Removing reaction from post with id: ' + _id);
+      await this.postRepository.removeReactionFromPost(userRequestId, _id);
+    } catch (error: any) {
+      this.logger.error('An error was ocurred removing reaction from post with id: ' + _id);
+      throw error;
+    }
+  }
+
+
+
 
 }

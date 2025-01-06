@@ -480,6 +480,12 @@ type Post_Category {
   label: String
 }
 
+type postReaction {
+  _id: String!
+  user: String!
+  reaction: String!
+}
+
 type Post_response_graphql_model {
   _id: String
   title: String
@@ -503,6 +509,7 @@ type Post_response_graphql_model {
   toPrice: Float
   petitionType: String
   endDate: DateTime
+  reactions: [postReaction!]
 }
 
 type PostFindAllResponse {
@@ -646,6 +653,9 @@ type Mutation {
 
   """Incrementa el endDate de un post por su id"""
   updateEndDate(postId: String!): String
+
+  """Elimina una reaccion de un post mediante el Id de la reaccion"""
+  removeReactionFromPost(_id: String!): String
 
   """Crear una pizarra"""
   createBoard(boardRequest: BoardRequest!): Board

@@ -21,7 +21,7 @@ export class PostResolver {
   constructor(
     @Inject('PostAdapterInterface')
     private readonly postAdapter: PostAdapterInterface,
-  ) {}
+  ) { }
 
   @Mutation(() => PostIdResponse, {
     nullable: true,
@@ -211,4 +211,31 @@ export class PostResolver {
       throw error;
     }
   }
+
+
+
+
+  @Mutation(() => String, {
+    nullable: true,
+    description:
+      'Elimina una reaccion de un post mediante el Id de la reaccion',
+  })
+  @UseGuards(ClerkAuthGuard)
+  async removeReactionFromPost(
+    @Args('_id', { type: () => String }) _id: string,
+    @Context() context: { req: CustomContextRequestInterface },
+
+  ): Promise<any> {
+    try {
+      const userRequestId = context.req.userRequestId;
+      await this.postAdapter.removeReactionFromPost(
+        userRequestId,
+        _id
+      );
+      return 'Reaccion eliminada con exito'
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
 }

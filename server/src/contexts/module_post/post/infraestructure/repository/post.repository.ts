@@ -30,8 +30,7 @@ import { PostDocument } from '../schemas/post.schema';
 import { checkStopWordsAndReturnSearchQuery, SearchType } from 'src/contexts/module_shared/utils/functions/checkStopWordsAndReturnSearchQuery';
 import { UserLocation } from '../../domain/entity/models_graphql/HTTP-REQUEST/post.location.request';
 import { PostReactionDocument } from '../schemas/post.reaction.schema';
-import { error } from 'console';
-import { cond } from 'lodash';
+
 
 
 
@@ -59,6 +58,7 @@ export class PostRepository implements PostRepositoryInterface {
     private readonly logger: MyLoggerService,
     @InjectConnection() private readonly connection: Connection,
   ) { }
+
 
 
 
@@ -179,26 +179,30 @@ export class PostRepository implements PostRepositoryInterface {
       const post = await this.postDocument
         .findById(id)
         .session(session)
-        .select(
-          '-searchTitle -searchDescription'
-        )
-        .populate({
-          path: 'category',
-          model: 'PostCategory',
-        })
-        .populate({
-          path: 'author',
-          model: 'User',
-          select: '_id profilePhotoUrl username lastName name contact',
-          populate: {
-            path: 'contact',
-            model: 'Contact',
+        .select('-searchTitle -searchDescription')
+        .populate([
+          {
+            path: 'category',
+            model: 'PostCategory',
           },
-        })
+          {
+            path: 'author',
+            model: 'User',
+            select: '_id profilePhotoUrl username lastName name contact',
+            populate: {
+              path: 'contact',
+              model: 'Contact',
+            },
+          },
+          {
+            path: 'reactions',
+            model: 'PostReaction',
+            select: 'user reaction _id',
+          }
+        ])
         .lean();
 
-      await session.commitTransaction();
-      session.endSession();
+      console.log(post);
 
       return post;
     } catch (error: any) {
@@ -206,8 +210,11 @@ export class PostRepository implements PostRepositoryInterface {
       session.endSession();
       this.logger.error('An error occurred finding post by id: ' + id);
       throw error;
+    } finally {
+      session.endSession();
     }
   }
+
 
   async findMatchPost(postType: string, searchTerm: string): Promise<any> {
     try {
@@ -568,12 +575,24 @@ export class PostRepository implements PostRepositoryInterface {
       }
       await this.postDocument.updateOne(
         { _id: postId },
-        { $push: { postReactions: postReactionSaved._id } }
+        { $push: { reactions: postReactionSaved._id } }
       ).session(session);
     } catch (error: any) {
       throw error;
     }
   }
 
-
+  async removeReactionFromPost(userRequestId: string, _id: string): Promise<any> {
+    try {
+      const result = await this.postReactionDocument.deleteOne({ user: userRequestId, _id: _id });
+      if (result.deletedCount > 0) {
+        await this.postDocument.updateOne(
+          { reactions: _id },
+          { $pull: { reactions: _id } }
+        )
+      }
+    } catch (error: any) {
+      throw error;
+    }
+  }
 }

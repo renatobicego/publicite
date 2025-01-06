@@ -24,4 +24,5 @@ export interface PostAdapterInterface {
     cookie?: any,
   ): Promise<PostUpdateDto>;
   updateEndDateFromPostById(postId: string, userRequestId: string): Promise<void>;
+  removeReactionFromPost(userRequestId: string, _id: string): Promise<any>;
 }

@@ -26,5 +26,6 @@ export interface PostServiceInterface {
     cookie?: any,
   ): Promise<any>;
   updateEndDateFromPostById(postId: string, userRequestId: string): Promise<void>;
+  removeReactionFromPost(userRequestId: string, _id: string): Promise<any>;
 
 }

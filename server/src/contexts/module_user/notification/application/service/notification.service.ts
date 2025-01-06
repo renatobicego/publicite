@@ -151,9 +151,8 @@ export class NotificationService implements NotificationGroupServiceInterface,
 
         try {
             const factory = NotificationFactory.getInstance(this.logger);
-            const notificationGroup = factory.createNotification(typeOfNotification.post_notifications, notificationBody);
-
-            await this.saveNotificationPostAndSentToUser(notificationGroup as NotificationPost);
+            const notificationPost = factory.createNotification(typeOfNotification.post_notifications, notificationBody);
+            await this.saveNotificationPostAndSendToUser(notificationPost as NotificationPost);
 
         } catch (error: any) {
             throw error;
@@ -281,26 +280,44 @@ export class NotificationService implements NotificationGroupServiceInterface,
             throw error;
         }
     }
-    async saveNotificationPostAndSentToUser(notificationPost: NotificationPost) {
+    async saveNotificationPostAndSendToUser(notificationPost: NotificationPost) {
+        const postId = notificationPost.getPostId;
+        const reaction = notificationPost.getPostReactionEmoji;
+        const userIdFrom = notificationPost.getbackData.userIdFrom;
+        const userIdTo = notificationPost.getbackData.userIdTo;
+
+        if (!postId || !reaction || !userIdFrom || !userIdTo) {
+            throw new Error(
+                `Invalid notification post: Missing postId (${postId}), reaction (${reaction}), userIdFrom (${userIdFrom}), or userIdTo (${userIdTo}).`
+            );
+        }
+
+        const session = await this.connection.startSession();
         try {
-            // Obtenemos el post que tenemos que tenemos que setearle la reaccion 
-            const postId = notificationPost.getPostId;
-            const reaction = notificationPost.getPostReactionEmoji;
-            const userIdFrom = notificationPost.getbackData.userIdFrom;
-            const userIdTo = notificationPost.getbackData.userIdTo;
-            if (!postId || !reaction || !userIdFrom || userIdTo) throw new Error(`Post id  or reaction is not setted in notification post, please check it`);
-            const session = await this.connection.startSession();
-            session.withTransaction(async () => {
-                await this.postService.makeReactionSchemaAndSetReactionToPost(postId, { user: userIdFrom, reaction: reaction }, session)
-                const notificationId = await this.notificationRepository.savePostNotification(notificationPost, session)
-                await this.userService.pushNotificationToUserArrayNotifications(notificationId, userIdTo, session);
-            })
-
-
-        } catch (error: any) {
-            throw error;
+            await session.withTransaction(async () => {
+                await this.postService.makeReactionSchemaAndSetReactionToPost(
+                    postId,
+                    { user: userIdFrom, reaction: reaction },
+                    session
+                );
+                const notificationId = await this.notificationRepository.savePostNotification(
+                    notificationPost,
+                    session
+                );
+                await this.userService.pushNotificationToUserArrayNotifications(
+                    notificationId,
+                    userIdTo,
+                    session
+                );
+            });
+        } catch (error) {
+            console.error("Error in saveNotificationPostAndSendToUser:", error);
+            throw error; 
+        } finally {
+            session.endSession(); 
         }
     }
+
     async saveNotificationUserAndSentToUser(notificationUser: NotificationUser): Promise<any> {
 
         try {

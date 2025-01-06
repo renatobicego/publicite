@@ -22,6 +22,7 @@ export class PostAdapter implements PostAdapterInterface {
   ) { }
 
 
+
   async create(post: PostRequest): Promise<any> {
     try {
       return await this.postService.create(post);
@@ -116,5 +117,14 @@ export class PostAdapter implements PostAdapterInterface {
       throw error;
     }
   }
+
+  async removeReactionFromPost(userRequestId: string, _id: string): Promise<any> {
+    try {
+      await this.postService.removeReactionFromPost(userRequestId, _id);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
 
 }

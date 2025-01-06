@@ -65,6 +65,20 @@ export class Post_Category {
 }
 
 @ObjectType()
+class postReaction {
+
+  @Field(() => String)
+  _id: string
+
+  @Field(() => String)
+  user: string
+
+  @Field(() => String)
+  reaction: string
+
+}
+
+@ObjectType()
 export class Post_response_graphql_model {
   @Field(() => String, { nullable: true })
   _id: ObjectId;
@@ -135,4 +149,8 @@ export class Post_response_graphql_model {
 
   @Field(() => Date, { nullable: true })
   endDate: Date;
+
+  @Field(() => [postReaction], { nullable: true })
+  reactions: postReaction[];
+
 }
