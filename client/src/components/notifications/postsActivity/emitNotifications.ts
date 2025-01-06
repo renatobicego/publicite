@@ -28,6 +28,7 @@ export const emitPostActivityNotification = (
       previousNotificationId,
       payload
     ).then((notification) => {
+      console.log(notification)
       socket?.emit(
         "post_notifications",
         notification,

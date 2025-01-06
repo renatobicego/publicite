@@ -15,6 +15,7 @@ import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 const ReactToPost = ({ post }: { post: Post }) => {
   const [isOpen, setIsOpen] = useState(false);
   const emojis = ["👍", "😊", "❤️", "😂", "😲"];
+  const [isLoading, setIsLoading] = useState(false);
   const { socket } = useSocket();
 
   const getEmojiName = (emoji: string) => {
@@ -33,6 +34,7 @@ const ReactToPost = ({ post }: { post: Post }) => {
   };
 
   const handleSubmit = (emoji: string) => {
+    setIsLoading(true);
     emitPostActivityNotification(
       socket,
       "notification_post_new_reaction",
@@ -54,6 +56,7 @@ const ReactToPost = ({ post }: { post: Post }) => {
       )
       .finally(() => {
         setIsOpen(false);
+        setIsLoading(false);
       });
   };
 
@@ -69,6 +72,7 @@ const ReactToPost = ({ post }: { post: Post }) => {
           radius="full"
           variant="flat"
           isIconOnly
+          isLoading={isLoading}
           aria-label="Abrir menú de reacciones"
         >
           <MdOutlineAddReaction className="size-4" />
@@ -82,6 +86,7 @@ const ReactToPost = ({ post }: { post: Post }) => {
               key={index}
               variant="light"
               onPress={() => handleSubmit(emoji)}
+              isDisabled={isLoading}
               radius="full"
               className="p-0.5 w-12 h-12 min-w-12 text-xl lg:text-2xl"
               aria-label={`Reaccionar con ${getEmojiName(emoji)}`}
