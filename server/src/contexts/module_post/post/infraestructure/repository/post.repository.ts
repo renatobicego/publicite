@@ -368,6 +368,9 @@ export class PostRepository implements PostRepositoryInterface {
         'visibility.post': value,
       }));
 
+
+
+
       let friendPosts: any;
 
       if (searchTerm) {

@@ -114,7 +114,7 @@ export class PostResolver {
 
   @Query(() => [Post_Full_Graphql_Model], {
     nullable: true,
-    description: 'Obtener Post por autor',
+    description: 'Obtener todos los posts del autor por id',
   })
   async findPostsByAuthorId(
     @Args('authorId', { type: () => String }) authorId: string,

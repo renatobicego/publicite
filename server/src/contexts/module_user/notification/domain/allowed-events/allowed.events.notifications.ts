@@ -66,10 +66,10 @@ enum ownerType {
 }
 
 enum typeOfNotification {
-    group_notification = 'group_notification',
-    magazine_notification = 'magazine_notification',
-    user_notification = 'user_notification',
-    post_notification = 'post_notification'
+    group_notifications = 'group_notifications',
+    magazine_notifications = 'magazine_notifications',
+    user_notifications = 'user_notifications',
+    post_notifications = 'post_notifications'
 }
 
 
