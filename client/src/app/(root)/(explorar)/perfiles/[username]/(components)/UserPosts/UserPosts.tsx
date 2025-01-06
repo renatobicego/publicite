@@ -2,8 +2,15 @@ import PostListHeader from "@/app/(root)/(explorar)/anuncios/components/PostList
 import MasonryPostGrid from "@/components/grids/MasonryPostGrid";
 import { Post } from "@/types/postTypes";
 import { useFilteredAndSortedPosts } from "@/utils/hooks/useFilteredOrderedPosts";
+import { Tab, Tabs } from "@nextui-org/react";
 
-const UserPosts = ({ posts }: { posts: Post[] }) => {
+const UserPosts = ({
+  posts,
+  isMyProfile,
+}: {
+  posts: Post[];
+  isMyProfile: boolean;
+}) => {
   const {
     searchTerms,
     setSearchTerms,
@@ -12,6 +19,8 @@ const UserPosts = ({ posts }: { posts: Post[] }) => {
     filter,
     setFilter,
     sortedItems,
+    setSolapaSelected,
+    solapaSelected,
   } = useFilteredAndSortedPosts(posts);
   return (
     <>
@@ -24,6 +33,22 @@ const UserPosts = ({ posts }: { posts: Post[] }) => {
         setSortDescriptor={setSortDescriptor}
         showToggleList={false}
       />
+      {isMyProfile && (
+        <Tabs
+          selectedKey={solapaSelected}
+          onSelectionChange={(key) => {
+            const keyParsed = key as "active" | "nextToExpire" | "inactive" | "expired";
+            setSolapaSelected(keyParsed);
+          }}
+          aria-label="solapas de tipos anuncios"
+          variant={"underlined"}
+        >
+          <Tab key="active" title="Activos" />
+          <Tab key="nextToExpire" title="Próximos a Vencer" />
+          <Tab key="inactive" title="Inactivos" />
+          <Tab key="expired" title="Vencidos" />
+        </Tabs>
+      )}
       <MasonryPostGrid posts={sortedItems} isGroupPost={false} />
     </>
   );

@@ -17,6 +17,7 @@ export interface Post {
   attachedFiles: PostAttachedFile[];
   author: Author;
   createAt: string;
+  endDate: string;
 }
 
 interface Reviewer extends Pick<UserPerson, "username" | "profilePhotoUrl"> {}

@@ -1,3 +1,9 @@
+import { Post } from "@/types/postTypes";
+import {
+  getLocalTimeZone,
+  parseDateTime,
+  today,
+} from "@internationalized/date";
 import { useMemo, useState } from "react";
 
 export const useFilteredAndSortedPosts = (items: any[]) => {
@@ -9,6 +15,9 @@ export const useFilteredAndSortedPosts = (items: any[]) => {
     column: "",
     direction: "",
   });
+  const [solapaSelected, setSolapaSelected] = useState<
+    "active" | "nextToExpire" | "inactive" | "expired"
+  >("active");
 
   const hasSearchFilter = Boolean(searchTerms[0] || searchTerms[1]);
   // filter options
@@ -24,6 +33,28 @@ export const useFilteredAndSortedPosts = (items: any[]) => {
   const filteredItems = useMemo(() => {
     let filteredPosts = [...items];
 
+    const todayDate = today(getLocalTimeZone());
+    switch (solapaSelected) {
+      case "nextToExpire":
+        // filter posts that aare going to expire in the next 7 days
+        filteredPosts = filteredPosts.map(
+          (post: Post) =>
+            parseDateTime(post.endDate.replace("Z", "")).compare(todayDate) <= 7
+        );
+        break;
+      case "inactive":
+        // filteredPosts = filteredPosts.filter((post: Post) => !post.isActive);
+        break;
+      case "expired":
+        filteredPosts = filteredPosts.filter(
+          (post: Post) =>
+            parseDateTime(post.endDate.replace("Z", "")).compare(todayDate) < 0
+        );
+        break;
+      default:
+        break;
+    }
+
     // Check if either search term is provided and filter based on that
     if (hasSearchFilter) {
       filteredPosts = filteredPosts.filter((post) => {
@@ -36,7 +67,7 @@ export const useFilteredAndSortedPosts = (items: any[]) => {
           ? titleLowerCase.includes(searchTerms[1].toLowerCase())
           : true;
 
-        // Post should match both of the search terms or just the first one 
+        // Post should match both of the search terms or just the first one
         // in case second term is not defined
         return matchesFirstTerm && matchesSecondTerm;
       });
@@ -63,7 +94,7 @@ export const useFilteredAndSortedPosts = (items: any[]) => {
     }
 
     return filteredPosts;
-  }, [hasSearchFilter, items, searchTerms, filter]);
+  }, [hasSearchFilter, items, searchTerms, filter, solapaSelected]);
 
   // Sorting logic
   const sortedItems = useMemo(() => {
@@ -88,5 +119,7 @@ export const useFilteredAndSortedPosts = (items: any[]) => {
     filter,
     setFilter,
     sortedItems,
+    solapaSelected,
+    setSolapaSelected,
   };
 };

@@ -6,7 +6,6 @@ import { Link, Tab, Tabs } from "@nextui-org/react";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 import MagazinesGrid from "../grids/MagazinesGrid";
-import UsersGrid from "@/app/(root)/(explorar)/perfiles/UsersGrid";
 import GroupsGrid from "@/app/(root)/(explorar)/grupos/GroupsGrid";
 import PrimaryButton from "../buttons/PrimaryButton";
 import { FaPlus } from "react-icons/fa6";
@@ -53,7 +52,7 @@ const UserSolapas = ({
         <>
           {isMyProfile && (
             <PrimaryButton
-              className="mb-2 md:ml-2 md:self-end md:float-right"
+              className="mb-2 md:self-start"
               startContent={<FaPlus />}
               as={Link}
               href={CREATE}
@@ -61,7 +60,7 @@ const UserSolapas = ({
               Crear
             </PrimaryButton>
           )}
-          <UserPosts posts={user.posts || []} />
+          <UserPosts isMyProfile={isMyProfile} posts={user.posts || []} />
         </>
       ),
     },
@@ -72,7 +71,7 @@ const UserSolapas = ({
         <>
           {isMyProfile && (
             <PrimaryButton
-              className="mb-2 md:self-end md:float-right"
+              className="mb-2 md:self-start"
               startContent={<FaPlus />}
               as={Link}
               href={CREATE}
@@ -91,7 +90,7 @@ const UserSolapas = ({
         <>
           {isMyProfile && (
             <PrimaryButton
-              className="mb-2 md:self-end md:float-right"
+              className="mb-2 md:self-start"
               startContent={<FaPlus />}
               as={Link}
               href={PROFILE}

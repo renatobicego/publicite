@@ -27,6 +27,7 @@ const getUserByUsernameQuery = gql`
         title
         toPrice
         imagesUrls
+        endDate
       }
       profilePhotoUrl
       userType
