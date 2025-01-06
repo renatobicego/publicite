@@ -15,6 +15,7 @@ import {
   getPostsOfFriendsQuery,
   getPostsQuery,
   postPostMutation,
+  updateEndDtaeMutation,
 } from "@/graphql/postQueries";
 import { auth } from "@clerk/nextjs/server";
 import { deleteFilesService } from "@/app/server/uploadThing";
@@ -233,5 +234,24 @@ export const deletePostService = async (post: Post) => {
     return {
       error: "Error al eliminar el anuncio. Por favor intenta de nuevo.",
     };
+  }
+};
+
+export const putEndDate = async (postId: string) => {
+  try {
+    await getClient().mutate({
+      mutation: updateEndDtaeMutation,
+      variables: { postId },
+      context: {
+        headers: {
+          Authorization: await auth().getToken({ template: "testing" }),
+        },
+      },
+    });
+    return {
+      message: "Anuncio renovado exitosamente",
+    };
+  } catch (error) {
+    return handleApolloError(error);
   }
 };

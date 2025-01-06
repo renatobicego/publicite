@@ -14,7 +14,7 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = ({
       radius="full"
       color="primary"
       {...props}
-      className={`px-4 py-[10px] hover:bg-text-color/75 hover:!opacity-100
+      className={`px-4 py-[10px] hover:bg-text-color/75 hover:!opacity-100 hover:text-white
          max-md:text-xs text-sm font-medium ${props.className}`}
     >
       {children}

@@ -4,19 +4,24 @@ import ServiceCard from "./ServiceCard";
 import { Card, CardFooter } from "@nextui-org/react";
 import PetitionCard from "../PetitionCard";
 import UsernameAvatar from "@/components/buttons/UsernameAvatar";
+import { showDate } from "@/utils/functions/dates";
+import { parseDate, parseDateTime } from "@internationalized/date";
+import RenewPost from "@/components/modals/RenewPost";
 const PostCard = ({
   postData,
   recommendation = false,
   className,
   savePostMagazine = false,
   isGroupPost = false,
+  showChangeExpirationDate,
 }: {
   postData: Post;
   recommendation?: boolean;
   className?: string;
   savePostMagazine?: boolean;
   isGroupPost?: boolean;
-}) => {
+  showChangeExpirationDate?: boolean;
+  }) => {
   const { postType } = postData;
   const PostCardToReturn = () => {
     switch (postType) {
@@ -66,6 +71,14 @@ const PostCard = ({
       {isGroupPost && (
         <CardFooter className="-mt-4">
           <UsernameAvatar author={postData.author} showAvatar />
+        </CardFooter>
+      )}
+      {showChangeExpirationDate && (
+        <CardFooter className="flex flex-col gap-2 items-start justify-between -mt-4">
+          <RenewPost postTitle={postData.title} id={postData._id} />
+          <p className="text-light-text text-xs lg:text-sm">
+           Vencimiento: {showDate(parseDateTime(postData.endDate.replace("Z", "")))}
+          </p>
         </CardFooter>
       )}
     </Card>

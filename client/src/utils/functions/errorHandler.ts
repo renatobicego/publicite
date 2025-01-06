@@ -5,6 +5,7 @@ interface ErrorResponse {
   }
   
 export function handleApolloError(error: unknown, ): ErrorResponse {
+  console.log(error)
   
     if (error instanceof ApolloError && error.cause) {
         const { statusCode, result } = error.cause as ServerError;
@@ -31,7 +32,6 @@ export function handleApolloError(error: unknown, ): ErrorResponse {
           return { error: "Ocurrió un error inesperado. Por favor, intenta de nuevo." };
       }
     }
-  
     // For non-Apollo errors or errors without a status code
     return { error: "Error al procesar la solicitud. Por favor, intenta de nuevo." };
   }

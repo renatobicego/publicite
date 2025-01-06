@@ -162,3 +162,9 @@ export const deletePostMutation = gql`
     deletePostById(id: $deletePostByIdId, author_id: $authorId)
   }
 `;
+
+export const updateEndDtaeMutation = gql`
+  mutation UpdateEndDate($postId: String!) {
+    updateEndDate(postId: $postId)
+  }
+`;

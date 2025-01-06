@@ -37,7 +37,7 @@ export const useFilteredAndSortedPosts = (items: any[]) => {
     switch (solapaSelected) {
       case "nextToExpire":
         // filter posts that aare going to expire in the next 7 days
-        filteredPosts = filteredPosts.map(
+        filteredPosts = filteredPosts.filter(
           (post: Post) =>
             parseDateTime(post.endDate.replace("Z", "")).compare(todayDate) <= 7
         );

@@ -37,7 +37,11 @@ const UserPosts = ({
         <Tabs
           selectedKey={solapaSelected}
           onSelectionChange={(key) => {
-            const keyParsed = key as "active" | "nextToExpire" | "inactive" | "expired";
+            const keyParsed = key as
+              | "active"
+              | "nextToExpire"
+              | "inactive"
+              | "expired";
             setSolapaSelected(keyParsed);
           }}
           aria-label="solapas de tipos anuncios"
@@ -49,7 +53,13 @@ const UserPosts = ({
           <Tab key="expired" title="Vencidos" />
         </Tabs>
       )}
-      <MasonryPostGrid posts={sortedItems} isGroupPost={false} />
+      <MasonryPostGrid
+        posts={sortedItems}
+        isGroupPost={false}
+        showChangeExpirationDate={
+          solapaSelected === "nextToExpire" || solapaSelected === "expired"
+        }
+      />
     </>
   );
 };

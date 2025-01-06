@@ -5,9 +5,11 @@ import PostCard from "../cards/PostCard/PostCard";
 const MasonryPostGrid = ({
   posts,
   isGroupPost,
+  showChangeExpirationDate,
 }: {
   posts: Post[];
   isGroupPost: boolean;
+  showChangeExpirationDate?: boolean;
 }) => {
   const { columns } = useMasonryGrid(posts, [2, 3, 4, 5], [768, 1280, 1720]);
   if (!posts || posts.length === 0)
@@ -26,6 +28,7 @@ const MasonryPostGrid = ({
               postData={post}
               className={post.postType === "petition" ? "mt-3" : ""}
               isGroupPost={isGroupPost}
+              showChangeExpirationDate={showChangeExpirationDate}
             />
           ))}
         </div>

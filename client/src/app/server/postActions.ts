@@ -1,5 +1,10 @@
 "use server";
-import { deletePostService, postPost, putPost } from "@/services/postsServices";
+import {
+  deletePostService,
+  postPost,
+  putEndDate,
+  putPost,
+} from "@/services/postsServices";
 import { PetitionContact, Post } from "@/types/postTypes";
 import { auth, currentUser } from "@clerk/nextjs/server";
 
@@ -57,7 +62,7 @@ export const editPost = async (
   try {
     const resApi: any = await putPost(formData, id);
     if (resApi.error) {
-      return resApi
+      return resApi;
     }
     return { message: "Anuncio editado exitosamente", id: resApi };
   } catch (err) {
@@ -67,15 +72,18 @@ export const editPost = async (
   }
 };
 
-export const deletePost = async (
-  post: Post,
-) => {
+export const deletePost = async (post: Post) => {
   try {
     const resApi: any = await deletePostService(post);
-    return resApi
+    return resApi;
   } catch (err) {
     return {
       error: "Error al eliminar el anuncio. Por favor intenta de nuevo.",
     };
   }
+};
+
+export const updateEndDate = async (postId: string) => {
+  const resApi: any = await putEndDate(postId);
+  return resApi;
 };
