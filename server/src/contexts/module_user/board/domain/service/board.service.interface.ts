@@ -10,6 +10,8 @@ export interface BoardServiceInterface {
     board: string,
     limit: number,
     page: number,
+    userRequestId: string,
+    isUserRegister: boolean
   ): Promise<BoardGetAllResponse>;
   save(board: BoardRequest): Promise<BoardResponse>;
   updateBoardById(id: string, owner: string, board: UpdateBoardDto): Promise<BoardResponse | null>;

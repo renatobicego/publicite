@@ -38,6 +38,7 @@ function getTokenFromRequest(context: any) {
     } else if (contextType === 'graphql') {
       const gqlContext = GqlExecutionContext.create(context as any);
       request = gqlContext.getContext().req;
+
       token = request.headers['authorization'];
     } else {
       throw new ForbiddenException('Unsupported context type');

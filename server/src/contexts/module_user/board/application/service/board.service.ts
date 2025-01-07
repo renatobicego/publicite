@@ -9,9 +9,10 @@ import {
   BoardGetAllResponse,
   BoardResponse,
 } from '../dto/HTTP-RESPONSE/board.response';
-
 import { UpdateBoardDto } from '../dto/HTTP-REQUEST/board.update';
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
+import { UserServiceInterface } from 'src/contexts/module_user/user/domain/service/user.service.interface';
+import { makeUserRelationMap } from 'src/contexts/module_shared/utils/functions/makeUserRelationMap';
 
 export class BoardService implements BoardServiceInterface {
   constructor(
@@ -19,19 +20,46 @@ export class BoardService implements BoardServiceInterface {
     private readonly boardRepository: BoardRespositoryInterface,
     @Inject('BoardMapperServiceInterface')
     private readonly boardMapper: BoardMapperServiceInterface,
+    @Inject('UserServiceInterface')
+    private readonly userService: UserServiceInterface,
     private readonly logger: MyLoggerService,
   ) { }
   async getBoardByAnnotationOrKeyword(
     board: string,
     limit: number,
     page: number,
+    userRequestId: string,
+    isUserRegister: boolean
   ): Promise<BoardGetAllResponse> {
     try {
+      let relationMap: Map<string, String[]> = new Map<string, String[]>();
       this.logger.log('Getting board by annotation or keyword: ' + board);
+      let conditions;
+      userRequestId = "67164bd032f3b18ed706efb4"
+      isUserRegister = true;
+      if (userRequestId != null && isUserRegister) {
+        const userRelation = await this.userService.getRelationsFromUserByUserId(
+          userRequestId)
+        relationMap = makeUserRelationMap(userRelation, userRequestId)
+      }
+
+      if (relationMap.size === 0 && isUserRegister) {
+        conditions = [{ visibility: 'public' }, { visibility: 'registered' }]
+      }
+
+      if (relationMap.size > 0) {
+        conditions = Array.from(relationMap.entries()).map(([key, value]) => ({
+          user: key,
+          visibility: { $in: value },
+        }));
+      }
+      if (!isUserRegister) conditions = [{ visibility: 'public' }];
+
       return await this.boardRepository.getBoardByAnnotationOrKeyword(
         board,
         limit,
         page,
+        conditions,
       );
     } catch (error: any) {
       throw error;

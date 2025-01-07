@@ -41,16 +41,22 @@ export class BoardResolver {
     nullable: true,
     description: 'Obtener un board por anotaciones o palabras clave',
   })
+  @UseGuards(ClerkAuthGuard)
   async getBoardByAnnotationOrKeyword(
     @Args('board', { type: () => String }) board: string,
     @Args('limit', { type: () => Number }) limit: number,
     @Args('page', { type: () => Number }) page: number,
+    @Context() context: { req: CustomContextRequestInterface },
   ): Promise<BoardGetAllResponse> {
     try {
+      const userRequestId = context.req.userRequestId ?? null
+      const isUserRegister = context.req.isUserRegister ?? false
       return await this.boardAdapter.getBoardByAnnotationOrKeyword(
         board,
         limit,
         page,
+        userRequestId,
+        isUserRegister
       );
     } catch (error: any) {
       throw error;

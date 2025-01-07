@@ -18,12 +18,16 @@ export class BoardAdapter implements BoardAdapterInterface {
     board: string,
     limit: number,
     page: number,
+    userRequestId: string,
+    isUserRegister: boolean
   ): Promise<BoardGetAllResponse> {
     try {
       return await this.boardService.getBoardByAnnotationOrKeyword(
         board,
         limit,
         page,
+        userRequestId,
+        isUserRegister
       );
     } catch (error: any) {
       throw error;

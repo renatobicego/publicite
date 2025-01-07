@@ -26,7 +26,10 @@ export class ClerkAuthGuard implements CanActivate {
         this.logger.error('Token not found');
         throw new ForbiddenException('Unauthorized');
       }
-
+      if (token === process.env.USER_NOT_REGISTERED_KEY) {
+        this.makeBodyRequestForNotRegisteredUser(context);
+        return true;
+      }
       await verifyToken(token.toString(), {
         secretKey: process.env.CLERK_SECRET_KEY,
       });
@@ -36,11 +39,13 @@ export class ClerkAuthGuard implements CanActivate {
         this.logger.warn('Http request in process');
         request = context.switchToHttp().getRequest();
         request.userRequestId = getIdFromClerkToken(token);
+        request.isUserRegister = true;
       } else if (context.getType() === 'graphql' as any) {
         this.logger.warn('graphql request in process');
         const gqlContext = GqlExecutionContext.create(context);
         request = gqlContext.getContext().req;
         const userRequestId = getIdFromClerkToken(token);
+        request.isUserRegister = true;
         request.userRequestId = userRequestId;
 
       } else {
@@ -54,4 +59,22 @@ export class ClerkAuthGuard implements CanActivate {
       throw new ForbiddenException('Unauthorized');
     }
   }
+
+  makeBodyRequestForNotRegisteredUser(context: ExecutionContext) {
+    let request;
+    if (context.getType() === 'http') {
+      this.logger.warn('Http request in process');
+      request = context.switchToHttp().getRequest();
+      request.isUserRegister = false;
+    } else if (context.getType() === 'graphql' as any) {
+      this.logger.warn('graphql request in process');
+      const gqlContext = GqlExecutionContext.create(context);
+      request = gqlContext.getContext().req;
+      request.isUserRegister = false;
+    } else {
+      throw new ForbiddenException('Unsupported request type');
+    }
+  }
+
+
 }

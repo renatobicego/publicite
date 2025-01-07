@@ -1,5 +1,5 @@
 import { Inject } from '@nestjs/common';
-import { Connection, ObjectId } from 'mongoose';
+import { Connection } from 'mongoose';
 import { InjectConnection } from '@nestjs/mongoose';
 
 
@@ -14,15 +14,8 @@ import { PostType } from '../../domain/entity/enum/post-type.enum';
 import { UserLocation } from '../../domain/entity/models_graphql/HTTP-REQUEST/post.location.request';
 import { removeAccents_removeEmojisAndToLowerCase } from '../../domain/utils/normalice.data';
 import { checkStopWordsAndReturnSearchQuery, SearchType } from 'src/contexts/module_shared/utils/functions/checkStopWordsAndReturnSearchQuery';
-import { toPairs } from 'lodash';
+import { makeUserRelationMap } from 'src/contexts/module_shared/utils/functions/makeUserRelationMap';
 
-
-interface UserRelation {
-  userA: string;
-  userB: string;
-  typeRelationA: string;
-  typeRelationB: string;
-}
 
 export class PostService implements PostServiceInterface {
   constructor(
@@ -161,54 +154,7 @@ export class PostService implements PostServiceInterface {
   async makeUserMapRelation(userRequestId: string): Promise<any> {
     const userRelation = await this.userService.getRelationsFromUserByUserId(userRequestId)
     if (!userRelation) return
-    const relationMap = new Map<string, String[]>()
-    const TOPFRIENDS = 'topfriends';
-    const CONTACTS = 'contacts';
-    const FRIENDS = 'friends';
-
-    /*
-    1. Obtenemos las relaciones del usuario 
-    2. usamos el forEch que lo que hace es, setear el map ID DEL USUARIO AMIGO  por un lado y el tipo de relacion
-    3. Con la jerarquizacion de las relaciones deberiamos setear nuevos lugares en el map con el tipo de relacion que buscamos 
-
-
-
-    CONSIDERACIONES:: 
-    Podemos agregar un map para saber si funciona mas rapido que el if, ver la opcion que sea mas optima para este caso
-
-
-      public = 'public',
-      registered = 'registered',
-      contacts = 'contacts',
-      friends = 'friends',
-      topfriends = 'topfriends',
-
-
-    
-    */
-
-
-    userRelation.forEach((relation: UserRelation) => {
-      const relationArray: String[] = [];
-      const friendId = relation.userA.toString() === userRequestId
-        ? relation.userB.toString()
-        : relation.userA.toString();
-
-      relationArray.push(relation.typeRelationA);
-
-      if (relation.typeRelationA === TOPFRIENDS) {
-        relationArray.push(CONTACTS)
-        relationArray.push(FRIENDS)
-      } else if (relation.typeRelationA === FRIENDS) {
-        relationArray.push(CONTACTS)
-      }
-
-      relationMap.set(friendId, relationArray);
-    });
-
-
-    return relationMap;
-
+    return makeUserRelationMap(userRelation, userRequestId)
   }
 
 

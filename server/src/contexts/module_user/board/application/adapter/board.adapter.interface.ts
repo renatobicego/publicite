@@ -8,6 +8,8 @@ export interface BoardAdapterInterface {
     board: string,
     limit: number,
     page: number,
+    userRequestId: string,
+    isUserRegister: boolean
   ): Promise<BoardGetAllResponse>;
   updateBoardById(id: string, owner: string, board: UpdateBoardDto): Promise<BoardResponse | null>;
 }

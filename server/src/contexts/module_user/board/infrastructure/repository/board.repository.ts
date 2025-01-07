@@ -31,6 +31,7 @@ export class BoardRepository implements BoardRespositoryInterface {
     board: string,
     limit: number,
     page: number,
+    conditions: any
   ): Promise<BoardGetAllResponse> {
     try {
       const boardSearchTermSeparate = board
@@ -48,7 +49,10 @@ export class BoardRepository implements BoardRespositoryInterface {
         const textSearchQuery = boardSearchTermSeparate.join(' ');
 
         const boards = await this.boardModel
-          .find({ $text: { $search: textSearchQuery } })
+          .find({
+            $text: { $search: textSearchQuery },
+            $or: conditions
+          })
           .populate({
             path: 'user',
             select: '_id profilePhotoUrl name lastName businessName username',
@@ -71,7 +75,9 @@ export class BoardRepository implements BoardRespositoryInterface {
         );
 
         const boards = await this.boardModel
-          .find()
+          .find({
+            $or: conditions
+          })
           .populate({
             path: 'user',
             select: '_id profilePhotoUrl name lastName businessName username',
