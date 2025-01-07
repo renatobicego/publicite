@@ -395,7 +395,7 @@ export class GroupService implements GroupServiceInterface {
 
 
 
-  async updateGroupById(group: GroupUpdateRequest): Promise<any> {
+  async updateGroupById(group: GroupUpdateRequest, userRequestId: string): Promise<any> {
     try {
       this.logger.log('Updating group by id: ' + group._id);
       if (group.alias != undefined && group.alias != null) {
@@ -408,7 +408,7 @@ export class GroupService implements GroupServiceInterface {
           throw new BadRequestException('Alias already exist');
         }
       }
-      return await this.groupRepository.updateGroupById(group);
+      return await this.groupRepository.updateGroupById(group, userRequestId);
     } catch (error: any) {
       this.logger.error('An error was ocurred when updating group: ');
       throw error;

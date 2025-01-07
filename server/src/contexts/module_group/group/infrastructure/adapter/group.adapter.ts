@@ -160,9 +160,9 @@ export class GroupAdapter implements GroupAdapterInterface {
     }
   }
 
-  async findAllPostsOfGroupMembers(groupId: string, userRequest: string,limit:number,page:number): Promise<PostsMemberGroupResponse | null> {
+  async findAllPostsOfGroupMembers(groupId: string, userRequest: string, limit: number, page: number): Promise<PostsMemberGroupResponse | null> {
     try {
-      return await this.groupService.findAllPostsOfGroupMembers(groupId, userRequest,limit,page);
+      return await this.groupService.findAllPostsOfGroupMembers(groupId, userRequest, limit, page);
     } catch (error: any) {
       throw error;
     }
@@ -201,9 +201,9 @@ export class GroupAdapter implements GroupAdapterInterface {
     }
   }
 
-  async updateGroupById(group: GroupUpdateRequest): Promise<any> {
+  async updateGroupById(group: GroupUpdateRequest, userRequestId: string): Promise<any> {
     try {
-      return await this.groupService.updateGroupById(group);
+      return await this.groupService.updateGroupById(group, userRequestId);
     } catch (error: any) {
       throw error;
     }

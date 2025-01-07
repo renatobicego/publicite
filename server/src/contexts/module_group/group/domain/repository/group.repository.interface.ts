@@ -93,5 +93,5 @@ export interface GroupRepositoryInterface {
 
 
 
-  updateGroupById(group: GroupUpdateRequest): Promise<any>;
+  updateGroupById(group: GroupUpdateRequest, userRequestId: string): Promise<any>;
 }

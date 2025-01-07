@@ -304,9 +304,8 @@ export class GroupResolver {
   ): Promise<any> {
     try {
       const userRequestId = context.req.userRequestId;
-      if (!groupToUpdate.admin) return 'Admin is required';
-      PubliciteAuth.authorize(userRequestId, groupToUpdate.admin);
-      return await this.groupAdapter.updateGroupById(groupToUpdate);
+
+      return await this.groupAdapter.updateGroupById(groupToUpdate, userRequestId);
     } catch (error: any) {
       throw error;
     }

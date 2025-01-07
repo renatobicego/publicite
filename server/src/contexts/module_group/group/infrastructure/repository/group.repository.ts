@@ -196,7 +196,7 @@ export class GroupRepository implements GroupRepositoryInterface {
             session,
           }
         )
-      
+
 
       chekResultOfOperation(result);
       await this.userModel
@@ -993,10 +993,13 @@ export class GroupRepository implements GroupRepositoryInterface {
     }
   }
 
-  async updateGroupById(group: GroupUpdateRequest): Promise<any> {
+  async updateGroupById(group: GroupUpdateRequest, userRequestId: string): Promise<any> {
     try {
       const response = await this.groupModel
-        .findByIdAndUpdate(group._id, group)
+        .findOneAndUpdate(
+          { _id: group._id, $or: [{ creator: userRequestId }, { admins: userRequestId }] },
+          group
+        )
         .select('_id')
         .lean();
       return response?._id;

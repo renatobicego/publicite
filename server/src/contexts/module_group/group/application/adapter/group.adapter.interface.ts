@@ -50,7 +50,7 @@ export interface GroupAdapterInterface {
     userRequest: string,
   ): Promise<GroupListResponse>;
 
-  findAllPostsOfGroupMembers(groupId: string, userRequest: string,limit:number,page:number): Promise<PostsMemberGroupResponse | null>;
+  findAllPostsOfGroupMembers(groupId: string, userRequest: string, limit: number, page: number): Promise<PostsMemberGroupResponse | null>;
   isThisGroupExist(alias: string): Promise<boolean>;
   removeAdminsFromGroupByGroupId(
     admins: string[],
@@ -58,5 +58,5 @@ export interface GroupAdapterInterface {
     groupCreator: string,
   ): Promise<any>;
   saveGroup(group: GroupRequest, groupCreator: string): Promise<GroupResponse>;
-  updateGroupById(group: GroupUpdateRequest): Promise<any>;
+  updateGroupById(group: GroupUpdateRequest, userRequestId: string): Promise<any>;
 }
