@@ -35,8 +35,6 @@ export class BoardService implements BoardServiceInterface {
       let relationMap: Map<string, String[]> = new Map<string, String[]>();
       this.logger.log('Getting board by annotation or keyword: ' + board);
       let conditions;
-      userRequestId = "67164bd032f3b18ed706efb4"
-      isUserRegister = true;
       if (userRequestId != null && isUserRegister) {
         const userRelation = await this.userService.getRelationsFromUserByUserId(
           userRequestId)
