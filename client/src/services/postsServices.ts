@@ -237,7 +237,7 @@ export const deletePostService = async (post: Post) => {
   }
 };
 
-export const putEndDate = async (postId: string) => {
+export const putEndDate = async (postId: string, endDate: string) => {
   try {
     await getClient().mutate({
       mutation: updateEndDtaeMutation,

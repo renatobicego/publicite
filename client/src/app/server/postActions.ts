@@ -83,7 +83,10 @@ export const deletePost = async (post: Post) => {
   }
 };
 
-export const updateEndDate = async (postId: string) => {
-  const resApi: any = await putEndDate(postId);
+export const updateEndDate = async (postId: string, endDate: string) => {
+  const resApi: { message: string } | { error: string } = await putEndDate(
+    postId,
+    endDate
+  );
   return resApi;
 };

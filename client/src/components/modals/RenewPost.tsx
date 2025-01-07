@@ -1,6 +1,7 @@
-"use client"
+"use client";
 import {
-  Button,
+  CalendarDate,
+  DateInput,
   Modal,
   ModalBody,
   ModalContent,
@@ -12,13 +13,21 @@ import PrimaryButton from "../buttons/PrimaryButton";
 import { updateEndDate } from "@/app/server/postActions";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { I18nProvider } from "@react-aria/i18n";
+import { getLocalTimeZone, today } from "@internationalized/date";
 
 const RenewPost = ({ postTitle, id }: { postTitle: string; id: string }) => {
   const { onOpen, isOpen, onOpenChange, onClose } = useDisclosure();
+  const [endDate, setEndDate] = useState<CalendarDate | null>(null);
   const router = useRouter();
   const handleUpdateEndDate = async () => {
-    const res = await updateEndDate(id);
-    if (res.error) {
+    if (!endDate) return;
+    const res = await updateEndDate(
+      id,
+      endDate?.toDate(getLocalTimeZone()).toISOString()
+    );
+    if ("error" in res) {
       toastifyError(res.error);
       return;
     }
@@ -37,16 +46,35 @@ const RenewPost = ({ postTitle, id }: { postTitle: string; id: string }) => {
             <>
               <ModalHeader>Renovar Anuncio - {postTitle}</ModalHeader>
               <ModalBody>
-                <p className="text-light-text text-sm"> 
-                  Al renovar el anuncio, se extenderá la fecha de vencimiento
-                  por 7 días
-                </p>
+                <I18nProvider locale="es">
+                  <DateInput
+                    value={endDate}
+                    onChange={setEndDate}
+                    aria-label="input fecha para renovar"
+                    label="Fecha para renovar"
+                    minValue={today(getLocalTimeZone())}
+                    maxValue={today(getLocalTimeZone()).add({ years: 1 })}
+                    description="Selecciona la fecha hasta la que deseas renovar el anuncio"
+                    classNames={{
+                      inputWrapper:
+                        "shadow-none hover:shadow-sm border-[0.5px] group-data-[focus=true]:border-light-text",
+                      input: "text-[0.8125rem]",
+                      label: "font-medium text-[0.8125rem]",
+                    }}
+                    radius="full"
+                    variant="bordered"
+                    labelPlacement="outside"
+                  />
+                </I18nProvider>
               </ModalBody>
               <ModalFooter>
                 <PrimaryButton variant="light" onPress={onClose}>
                   Cancelar
                 </PrimaryButton>
-                <PrimaryButton onPress={handleUpdateEndDate}>
+                <PrimaryButton
+                  isDisabled={!endDate}
+                  onPress={handleUpdateEndDate}
+                >
                   Renovar
                 </PrimaryButton>
               </ModalFooter>
