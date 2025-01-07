@@ -152,7 +152,7 @@ export class NotificationService implements NotificationGroupServiceInterface,
         try {
             const factory = NotificationFactory.getInstance(this.logger);
             const notificationPost = factory.createNotification(typeOfNotification.post_notifications, notificationBody);
-            await this.saveNotificationPostAndSendToUser(notificationPost as NotificationPost);
+            return await this.saveNotificationPostAndSendToUser(notificationPost as NotificationPost);
 
         } catch (error: any) {
             throw error;
@@ -294,8 +294,8 @@ export class NotificationService implements NotificationGroupServiceInterface,
 
         const session = await this.connection.startSession();
         try {
-            await session.withTransaction(async () => {
-                await this.postService.makeReactionSchemaAndSetReactionToPost(
+            const postReactionId = await session.withTransaction(async () => {
+                const postReactionId = await this.postService.makeReactionSchemaAndSetReactionToPost(
                     postId,
                     { user: userIdFrom, reaction: reaction },
                     session
@@ -309,12 +309,15 @@ export class NotificationService implements NotificationGroupServiceInterface,
                     userIdTo,
                     session
                 );
+                return postReactionId
             });
+
+            return postReactionId
         } catch (error) {
             console.error("Error in saveNotificationPostAndSendToUser:", error);
-            throw error; 
+            throw error;
         } finally {
-            session.endSession(); 
+            session.endSession();
         }
     }
 

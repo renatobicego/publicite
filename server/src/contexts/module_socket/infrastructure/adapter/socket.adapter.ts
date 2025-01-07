@@ -47,7 +47,7 @@ export class SocketAdapter implements SocketAdapterInterface {
 
     async sendPostNotificationToNotificationService(notificationBody: any): Promise<void> {
         try {
-            await this.notificationPostService.handlePostNotificationAndCreateIt(notificationBody);
+            return await this.notificationPostService.handlePostNotificationAndCreateIt(notificationBody);
         } catch (error: any) {
             throw error;
         }

@@ -572,7 +572,7 @@ export class PostRepository implements PostRepositoryInterface {
   }
 
 
-  async makeReactionSchemaAndSetReactionToPost(postId: string, reaction: { user: string, reaction: string }, session: any): Promise<void> {
+  async makeReactionSchemaAndSetReactionToPost(postId: string, reaction: { user: string, reaction: string }, session: any): Promise<any> {
     try {
       const postReaction = new this.postReactionDocument(reaction);
       const postReactionSaved = await postReaction.save(session);
@@ -583,6 +583,8 @@ export class PostRepository implements PostRepositoryInterface {
         { _id: postId },
         { $push: { reactions: postReactionSaved._id } }
       ).session(session);
+
+      return postReactionSaved._id;
     } catch (error: any) {
       throw error;
     }
