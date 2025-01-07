@@ -202,7 +202,6 @@ export class PostRepository implements PostRepositoryInterface {
         ])
         .lean();
 
-      console.log(post);
 
       return post;
     } catch (error: any) {
@@ -364,15 +363,16 @@ export class PostRepository implements PostRepositoryInterface {
   async findFriendPosts(
     postType: string,
     userRequestId: string,
-    userRelationMap: Map<string, string>,
+    userRelationMap: Map<string, String[]>,
     page: number,
     limit: number,
     searchTerm?: string
   ): Promise<any> {
     try {
+
       const conditions = Array.from(userRelationMap.entries()).map(([key, value]) => ({
         author: key,
-        'visibility.post': value,
+        'visibility.post': { $in: value },
       }));
 
 
@@ -405,11 +405,21 @@ export class PostRepository implements PostRepositoryInterface {
         friendPosts = await this.postDocument.find({
           postType,
           $or: conditions,
-        })
+        }).populate([
+          {
+            path: 'author',
+            model: 'User',
+            select: '_id profilePhotoUrl username lastName name contact',
+            populate: {
+              path: 'contact',
+              model: 'Contact',
+            },
+            
+          }
+        ])
           .skip((page - 1) * limit)
           .limit(limit + 1);
       }
-
       if (!friendPosts || friendPosts.length === 0) {
         return { posts: [], hasMore: false };
       }

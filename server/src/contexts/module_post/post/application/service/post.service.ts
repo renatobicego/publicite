@@ -147,7 +147,7 @@ export class PostService implements PostServiceInterface {
   async findFriendPosts(postType: string, userRequestId: string, page: number, limit: number, searchTerm: string): Promise<void> {
     try {
 
-      const relationMap: Map<string, string> = await this.makeUserMapRelation(userRequestId)
+      const relationMap: Map<string, String[]> = await this.makeUserMapRelation(userRequestId)
       if (!relationMap) return
 
       return await this.postRepository.findFriendPosts(postType, userRequestId, relationMap, page, limit, searchTerm)
@@ -161,12 +161,10 @@ export class PostService implements PostServiceInterface {
   async makeUserMapRelation(userRequestId: string): Promise<any> {
     const userRelation = await this.userService.getRelationsFromUserByUserId(userRequestId)
     if (!userRelation) return
-    const relationMap = new Map<string, string>()
+    const relationMap = new Map<string, String[]>()
     const TOPFRIENDS = 'topfriends';
     const CONTACTS = 'contacts';
     const FRIENDS = 'friends';
-    let friendId;
-
 
     /*
     1. Obtenemos las relaciones del usuario 
@@ -191,19 +189,24 @@ export class PostService implements PostServiceInterface {
 
 
     userRelation.forEach((relation: UserRelation) => {
-
+      const relationArray: String[] = [];
       const friendId = relation.userA.toString() === userRequestId
         ? relation.userB.toString()
         : relation.userA.toString();
-      relationMap.set(friendId, relation.typeRelationA);
+
+      relationArray.push(relation.typeRelationA);
 
       if (relation.typeRelationA === TOPFRIENDS) {
-        relationMap.set(friendId, CONTACTS);
-        relationMap.set(friendId, FRIENDS);
+        relationArray.push(CONTACTS)
+        relationArray.push(FRIENDS)
       } else if (relation.typeRelationA === FRIENDS) {
-        relationMap.set(friendId, CONTACTS);
+        relationArray.push(CONTACTS)
       }
+
+      relationMap.set(friendId, relationArray);
     });
+
+
     return relationMap;
 
   }
@@ -231,10 +234,10 @@ export class PostService implements PostServiceInterface {
     }
   }
 
-  async updateEndDateFromPostById(postId: string, userRequestId: string,newDate:Date): Promise<void> {
+  async updateEndDateFromPostById(postId: string, userRequestId: string, newDate: Date): Promise<void> {
     try {
       this.logger.log('Updating end date from post with id: ' + postId);
-      return await this.postRepository.updateEndDateFromPostById(postId, userRequestId,newDate);
+      return await this.postRepository.updateEndDateFromPostById(postId, userRequestId, newDate);
     } catch (error: any) {
       throw error;
     }
