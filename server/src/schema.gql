@@ -652,7 +652,7 @@ type Mutation {
   updatePostById(postUpdate: PostUpdateRequest!, id: String!, author_id: String!): String
 
   """Incrementa el endDate de un post por su id"""
-  updateEndDate(postId: String!): String
+  updateEndDate(postId: String!, newDate: DateTime!): String
 
   """Elimina una reaccion de un post mediante el Id de la reaccion"""
   removeReactionFromPost(_id: String!): String

@@ -16,6 +16,7 @@ import {
 } from '../../../domain/entity/models_graphql/HTTP-REQUEST/post.request';
 import { UserLocation } from '../../../domain/entity/models_graphql/HTTP-REQUEST/post.location.request';
 
+
 @Resolver('Post')
 export class PostResolver {
   constructor(
@@ -99,6 +100,8 @@ export class PostResolver {
   async updateEndDate(
     @Args('postId', { type: () => String })
     postId: string,
+    @Args('newDate', { type: () => Date })
+    newDate: Date,
     @Context() context: { req: CustomContextRequestInterface },
   ): Promise<any> {
     try {
@@ -106,6 +109,7 @@ export class PostResolver {
       return await this.postAdapter.updateEndDateFromPostById(
         postId,
         userRequestId,
+        newDate,
       );
     } catch (error: any) {
       throw error;

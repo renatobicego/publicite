@@ -231,10 +231,10 @@ export class PostService implements PostServiceInterface {
     }
   }
 
-  async updateEndDateFromPostById(postId: string, userRequestId: string): Promise<void> {
+  async updateEndDateFromPostById(postId: string, userRequestId: string,newDate:Date): Promise<void> {
     try {
       this.logger.log('Updating end date from post with id: ' + postId);
-      return await this.postRepository.updateEndDateFromPostById(postId, userRequestId);
+      return await this.postRepository.updateEndDateFromPostById(postId, userRequestId,newDate);
     } catch (error: any) {
       throw error;
     }

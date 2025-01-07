@@ -110,9 +110,9 @@ export class PostAdapter implements PostAdapterInterface {
     }
   }
 
-  async updateEndDateFromPostById(postId: string, userRequestId: string): Promise<void> {
+  async updateEndDateFromPostById(postId: string, userRequestId: string, newDate: Date): Promise<void> {
     try {
-      return this.postService.updateEndDateFromPostById(postId, userRequestId);
+      return this.postService.updateEndDateFromPostById(postId, userRequestId, newDate);
     } catch (error: any) {
       throw error;
     }
