@@ -18,6 +18,7 @@ export interface Post {
   author: Author;
   createAt: string;
   endDate: string;
+  reactions: PostReaction[];
 }
 
 interface Reviewer extends Pick<UserPerson, "username" | "profilePhotoUrl"> {}
@@ -204,6 +205,12 @@ export interface PostActivityNotification extends BaseNotification {
       };
     };
   };
+}
+
+export interface PostReaction {
+  _id: ObjectId;
+  user: ObjectId;
+  reaction: string;
 }
 
 export type PostActivtyNotificationType = "notification_post_new_reaction"; // Han reaccionado al post

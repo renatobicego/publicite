@@ -1,5 +1,6 @@
 "use server";
 import {
+  deletePostReaction,
   deletePostService,
   postPost,
   putEndDate,
@@ -88,5 +89,11 @@ export const updateEndDate = async (postId: string, endDate: string) => {
     postId,
     endDate
   );
+  return resApi;
+};
+
+export const removePostReaction = async (postReactionId: string) => {
+  const resApi: { message: string } | { error: string } =
+    await deletePostReaction(postReactionId);
   return resApi;
 };
