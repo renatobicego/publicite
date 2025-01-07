@@ -9,6 +9,7 @@ import {
 import { getClient, query } from "@/lib/client";
 import {
   deletePostMutation,
+  deletePostReactionMutation,
   editPostMutation,
   getPostByIdQuery,
   getPostCategories,
@@ -237,7 +238,7 @@ export const deletePostService = async (post: Post) => {
   }
 };
 
-export const putEndDate = async (postId: string) => {
+export const putEndDate = async (postId: string, endDate: string) => {
   try {
     await getClient().mutate({
       mutation: updateEndDtaeMutation,
@@ -255,3 +256,22 @@ export const putEndDate = async (postId: string) => {
     return handleApolloError(error);
   }
 };
+
+export const deletePostReaction = async (reactionId: string) => { 
+  try {
+    await getClient().mutate({
+      mutation: deletePostReactionMutation,
+      variables: { reactionId },
+      context: {
+        headers: {
+          Authorization: await auth().getToken({ template: "testing" }),
+        },
+      },
+    });
+    return {
+      message: "Reacción eliminada exitosamente",
+    };
+  } catch (error) {
+    return handleApolloError(error);
+  }
+}

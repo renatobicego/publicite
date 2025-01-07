@@ -34,6 +34,11 @@ export const getPostByIdQuery = gql`
       description
       frequencyPrice
       imagesUrls
+      reactions {
+        user
+        reaction
+        _id
+      }
       geoLocation {
         description
         location {
@@ -166,5 +171,11 @@ export const deletePostMutation = gql`
 export const updateEndDtaeMutation = gql`
   mutation UpdateEndDate($postId: String!) {
     updateEndDate(postId: $postId)
+  }
+`;
+
+export const deletePostReactionMutation = gql`
+  mutation RemoveReactionFromPost($id: String!) {
+    removeReactionFromPost(_id: $id)
   }
 `;
