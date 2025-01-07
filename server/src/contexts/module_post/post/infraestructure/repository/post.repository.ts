@@ -548,7 +548,7 @@ export class PostRepository implements PostRepositoryInterface {
   async updateEndDateFromPostById(postId: string, userRequestId: string, newDate: Date): Promise<any> {
     try {
       await this.postDocument.updateOne(
-        { _id: "676e9ebc3c33c13dae0e28ee", author: "67164bd032f3b18ed706efb4" },
+        { _id: postId, author: userRequestId },
         { $set: { endDate: newDate } }
       );
 
