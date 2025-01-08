@@ -40,7 +40,7 @@ const EditPostForm = ({ postData }: { postData: Good | Service }) => {
     false,
     true
   );
-  const initialValues = getPostInitialValues(postData, postType as any);
+  const initialValues = getPostInitialValues(postData, postType as "good" | "service");
 
   const handleSubmit = async (values: any, actions: FormikHelpers<any>) => {
     // check if all images were deleted and no new images were added

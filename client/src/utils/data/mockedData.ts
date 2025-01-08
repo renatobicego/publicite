@@ -32,6 +32,13 @@ const mockedGood: Good = {
   brand: "brand",
   modelType: "modelType",
   endDate: "2024-07-12",
+  reactions: [
+    {
+      _id: "1",
+      reaction: "like",
+      user: "123",
+    },
+  ],
   reviews: [
     {
       _id: "231",
@@ -155,6 +162,13 @@ const mockedService: Service = {
     "Te invitamos a que nos conozcas y puedas disfrutar con tus seres queridos de tu evento tal como lo soñaste. Elaboramos bocadillos totalmente caseros y con material de primera calidad.",
   title: "Lunch para eventos social y corporativos",
   price: 1000,
+  reactions: [
+    {
+      _id: "1",
+      reaction: "like",
+      user: "123",
+    },
+  ],
   geoLocation: {
     location: {
       type: "Point",
@@ -204,6 +218,13 @@ const mockedPetition: Petition = {
   _id: "1452",
   title: "Busco iPhone 14 Pro Max",
   endDate: "2024-07-12",
+  reactions: [
+    {
+      _id: "1",
+      reaction: "like",
+      user: "123",
+    },
+  ],
   description:
     "Esto en búsqueda de un iPhone 14 pro max nuevo en caja, de 128gb. Cualquier duda o consulta puede contactarme por este medio. Gracias",
   author: {
@@ -261,6 +282,13 @@ const mockedPetition2: Petition = {
     name: "name",
     _id: "66fb19fd316723a55b9d0ccb",
   },
+  reactions: [
+    {
+      _id: "1",
+      reaction: "like",
+      user: "123",
+    },
+  ],
   category: [
     {
       _id: "1",

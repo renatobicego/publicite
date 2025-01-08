@@ -106,6 +106,7 @@ export interface CreatePostValues
     | "recommendations"
     | "geoLocation"
     | "endDate"
+    | "reactions"
   > {
   category: ObjectId;
   price?: number;
@@ -115,7 +116,15 @@ export interface CreatePostValues
 
 export interface GoodPostValues
   extends CreatePostValues,
-    Omit<Good, "_id" | "reviews" | "comments" | "recommendations" | "endDate"> {
+    Omit<
+      Good,
+      | "_id"
+      | "reviews"
+      | "comments"
+      | "recommendations"
+      | "endDate"
+      | "reactions"
+    > {
   condition?: "new" | "used";
 }
 
@@ -135,6 +144,7 @@ export interface ServicePostValues
       | "recommendations"
       | "_id"
       | "endDate"
+      | "reactions"
     > {
   frequencyPrice?: FrequencyPrice;
 }
@@ -148,7 +158,7 @@ export interface PetitionPostValues
   extends CreatePostValues,
     Omit<
       Petition,
-      "petitionType" | "_id" | "recommendations" | "comments" | "endDate"
+      "petitionType" | "_id" | "recommendations" | "comments" | "endDate" | "reactions"
     > {
   petitionType?: "good" | "service";
 }

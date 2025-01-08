@@ -7,7 +7,6 @@ import {
   putPost,
 } from "@/services/postsServices";
 import { PetitionContact, Post } from "@/types/postTypes";
-import { auth, currentUser } from "@clerk/nextjs/server";
 
 export const createPost = async (
   formData: any,
@@ -50,15 +49,6 @@ export const editPost = async (
   id: string,
   authorUsername: string
 ) => {
-  const user = await currentUser();
-
-  if (!user?.username) {
-    return { error: "Usuario no autenticado. Por favor inicie sesión." };
-  }
-
-  if (user.username !== authorUsername) {
-    return { error: "No puedes editar este anuncio" };
-  }
 
   try {
     const resApi: any = await putPost(formData, id);
