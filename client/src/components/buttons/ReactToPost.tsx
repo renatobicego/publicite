@@ -17,13 +17,18 @@ import { useUserData } from "@/app/(root)/providers/userDataProvider";
 import { removePostReaction } from "@/app/server/postActions";
 
 const ReactToPost = ({ post }: { post: Post }) => {
+  // handle open state of popov er
   const [isOpen, setIsOpen] = useState(false);
+  // list of emojis to react
   const emojis = ["👍", "😊", "❤️", "😂", "😲"];
+  // is loading the petititon
   const [isLoading, setIsLoading] = useState(false);
   const { socket } = useSocket();
+  // reactions of the post, stored in the state to not make a request every time
   const [reactions, setReactions] = useState(post.reactions);
   const { userIdLogged } = useUserData();
 
+  // get the reaction of the user logged if exists
   const userReaction = useMemo(() => {
     return reactions.find((reaction) => reaction.user === userIdLogged);
   }, [reactions, userIdLogged]);
@@ -45,21 +50,22 @@ const ReactToPost = ({ post }: { post: Post }) => {
 
   const handleReaction = async (emoji: string) => {
     setIsLoading(true);
+    // if user already reacted with the same emoji, remove the reaction
     if (userReaction) {
       // Remove reaction
       const res = await removePostReaction(userReaction._id);
       if ("error" in res) {
-        toastifyError("No se pudo reaccionar. Por favor, intenta de nuevo.");
+        toastifyError("No se pudo remover la reacción. Por favor, intenta de nuevo.");
         setIsLoading(false);
         return;
       }
+      setReactions((prev) =>
+        prev.filter((reaction) => reaction._id !== userReaction._id)
+      );
 
       // if user removed the reaction that he had before
       if (emoji === userReaction?.reaction) {
         toastifySuccess(`Reacción removida`);
-        setReactions((prev) =>
-          prev.filter((reaction) => reaction._id !== userReaction._id)
-        );
         setIsOpen(false);
         setIsLoading(false);
         return;
@@ -67,7 +73,7 @@ const ReactToPost = ({ post }: { post: Post }) => {
     }
 
     // Add reaction
-    emitPostActivityNotification(
+    emitPostActivityNotification<string>(
       socket,
       "notification_post_new_reaction",
       post.author._id,
@@ -82,11 +88,11 @@ const ReactToPost = ({ post }: { post: Post }) => {
         emoji,
       }
     )
-      .then(() => {
+      .then((res) => {
         toastifySuccess(`Reaccionaste con ${getEmojiName(emoji)}`);
         setReactions((prev) => [
           ...prev,
-          { reaction: emoji, user: "", _id: "" },
+          { reaction: emoji, user: userIdLogged as string, _id: res.body },
         ]);
       })
       .catch(() =>

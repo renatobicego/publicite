@@ -44,4 +44,10 @@ declare global {
     | "PREVIOUS_ID_MISSING"
     | "NOTIFICATION_ALREADY_EXISTS"
     | "USER_NOT_AUTHORIZED";
+
+  interface SocketResponse<T> {
+    status: number;
+    message: string;
+    body: T;
+  }
 }

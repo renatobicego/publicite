@@ -13,7 +13,7 @@ const UsernameAvatar = ({
   withoutLink?: boolean;
   }) => {
   if(withoutLink) return (
-    <div className="flex gap-2">
+    <div className="flex gap-2 items-center">
       {showAvatar && (
         <Avatar
           color="primary"

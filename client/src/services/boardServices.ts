@@ -6,92 +6,70 @@ import {
   getBoardsQuery,
   postBoardMutation,
 } from "@/graphql/boardQueries";
-import { auth } from "@clerk/nextjs/server";
+import { getApiContext } from "./apiContext";
+import { handleApolloError } from "@/utils/functions/errorHandler";
 
 export const getBoards = async (searchTerm: string | null, page: number) => {
   try {
+    const { context } = await getApiContext(true);
     const { data } = await query({
       query: getBoardsQuery,
       variables: { board: searchTerm ? searchTerm : "", page, limit: 20 },
+      context,
     });
     return {
       items: data.getBoardByAnnotationOrKeyword.boards,
       hasMore: data.getBoardByAnnotationOrKeyword.hasMore,
     };
   } catch (error) {
-    return {
-      error: "Error al traer las pizarras. Por favor intenta de nuevo. ",
-    };
+    return handleApolloError(error)
   }
 };
 
 export const postBoard = async (values: any) => {
   try {
+    const { context } = await getApiContext();
     const { data } = await getClient().mutate({
       mutation: postBoardMutation,
       variables: {
-        boardRequest: values
+        boardRequest: values,
       },
-      context: {
-        headers: {
-          Authorization: `${await auth().getToken({ template: "testing" })}`,
-        },
-      },
-    })
+      context,
+    });
 
-    return data.createBoard
+    return data.createBoard;
   } catch (error) {
-    return {
-      error: "Error al crear la pizarra. Por favor intenta de nuevo.",
-    }
+    return handleApolloError(error)
   }
 };
 
 export const putBoard = async (id: string, values: any) => {
-  const user = auth();
-
-  if (!user.sessionId) {
-    return { error: "Usuario no autenticado. Por favor inicie sesión." };
-  }
+  const { context } = await getApiContext();
   try {
     const { data } = await getClient().mutate({
       mutation: editBoardByUsernameMutation,
       variables: {
         updateBoardByIdId: id,
-        boardData: values
+        boardData: values,
       },
-      context: {
-        headers: {
-          Authorization: `${await auth().getToken({ template: "testing" })}`,
-        },
-      },
+      context,
     });
     return data.updateBoardById;
   } catch (error) {
-    console.log(error)
-    return {
-      error: "Error al editar la pizarra. Por favor intenta de nuevo.",
-    };
+    return handleApolloError(error)
   }
 };
 
 export const getBoardByUsername = async (username: string) => {
   try {
+    const { context } = await getApiContext();
     const { data } = await query({
       query: getBoardByUsernameQuery,
       variables: { username },
-      context: {
-        headers: {
-          Authorization: `${await auth().getToken({ template: "testing" })}`,
-        },
-      }
+      context,
     });
     return data.findUserByUsername;
   } catch (error) {
-    
-    return {
-      error:
-        "Error al traer la pizarra del usuario. Por favor intenta de nuevo.",
-    };
+    return handleApolloError(error)
   }
 };

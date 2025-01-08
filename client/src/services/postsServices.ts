@@ -100,10 +100,7 @@ export const putPost = async (
     });
     return data.updatePostById;
   } catch (error) {
-    console.log(error);
-    return {
-      error: "Error al editar el anuncios. Por favor intenta de nuevo.",
-    };
+    return handleApolloError(error)
   }
 };
 
@@ -120,13 +117,6 @@ export const getPosts = async (
         error: "Error al traer los anuncios. Por favor intenta de nuevo.",
       };
     }
-    console.log({
-      postType,
-      limit,
-      page,
-      searchTerm: searchTerm ? searchTerm : "",
-      userLocation: coordinates,
-    });
     const { data } = await query({
       query: getPostsQuery,
       variables: {
@@ -142,7 +132,6 @@ export const getPosts = async (
       hasMore: data.findAllPostByPostType.hasMore,
     }; // Return the same mocked data
   } catch (error) {
-    console.log("getPosts", error);
     return {
       error: "Error al traer los anuncios. Por favor intenta de nuevo.",
     };
@@ -175,7 +164,6 @@ export const getPostsOfContacts = async (
       hasMore: data.findFriendPosts.hasMore,
     }; // Return the same mocked data
   } catch (error) {
-    console.log("getPosts", error);
     return {
       error:
         "Error al traer los anuncios de tus contactos. Por favor intenta de nuevo.",
@@ -231,10 +219,7 @@ export const deletePostService = async (post: Post) => {
     }
     return { message: "Anuncio borrado exitosamente" };
   } catch (error) {
-    console.log(error);
-    return {
-      error: "Error al eliminar el anuncio. Por favor intenta de nuevo.",
-    };
+    return handleApolloError(error)
   }
 };
 
@@ -242,7 +227,7 @@ export const putEndDate = async (postId: string, endDate: string) => {
   try {
     await getClient().mutate({
       mutation: updateEndDtaeMutation,
-      variables: { postId },
+      variables: { postId, newDate: endDate },
       context: {
         headers: {
           Authorization: await auth().getToken({ template: "testing" }),
@@ -261,7 +246,7 @@ export const deletePostReaction = async (reactionId: string) => {
   try {
     await getClient().mutate({
       mutation: deletePostReactionMutation,
-      variables: { reactionId },
+      variables: { id: reactionId },
       context: {
         headers: {
           Authorization: await auth().getToken({ template: "testing" }),

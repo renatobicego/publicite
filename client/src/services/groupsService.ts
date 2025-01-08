@@ -21,6 +21,7 @@ import { auth } from "@clerk/nextjs/server";
 import { ApolloError } from "@apollo/client";
 import { Post } from "@/types/postTypes";
 import { PostGroup } from "@/app/(root)/crear/grupo/CreateGroupForm";
+import { handleApolloError } from "@/utils/functions/errorHandler";
 
 export const getGroups = async (searchTerm: string | null, page: number) => {
   try {
@@ -38,10 +39,7 @@ export const getGroups = async (searchTerm: string | null, page: number) => {
       hasMore: data.getGroupByNameOrAlias.hasMore,
     };
   } catch (error) {
-    console.log(error);
-    return {
-      error: "Error al traer grupos. Por favor intenta de nuevo.",
-    };
+    return handleApolloError(error);
   }
 };
 
@@ -64,7 +62,6 @@ export const getGroupById = async (id: string) => {
 
     return { group, isMember, hasJoinRequest, hasGroupRequest };
   } catch (error: ApolloError | any) {
-    console.log(error);
     return {
       error:
         "Error al traer información del grupo. Por favor intenta de nuevo.",
@@ -167,7 +164,7 @@ export const postGroup = async (formData: PostGroup) => {
     .mutate({
       mutation: createNewGroupMutation,
       variables: {
-        groupDto: formData ,
+        groupDto: formData,
       },
       context: {
         headers: {
@@ -196,10 +193,7 @@ export const putGroup = async (groupToUpdate: any) => {
       id: data.updateGroupById,
     };
   } catch (error) {
-    console.log(error);
-    return {
-      error: "Error al editar el grupo. Por favor intenta de nuevo.",
-    };
+    return handleApolloError(error)
   }
 };
 
@@ -237,10 +231,7 @@ export const putAdminGroup = async (groupId: string, userId: string) => {
     });
     return { message: "Administrador agregado" };
   } catch (error) {
-    return {
-      error:
-        "Error al agregar administrador al grupo. Por favor intenta de nuevo.",
-    };
+    return handleApolloError(error)
   }
 };
 
@@ -261,9 +252,7 @@ export const deleteMember = async (groupId: string, userIds: string[]) => {
 
     return { message: "Miembro eliminado" };
   } catch (error) {
-    return {
-      error: "Error al quitar miembro del grupo. Por favor intenta de nuevo.",
-    };
+    return handleApolloError(error)
   }
 };
 
@@ -284,9 +273,7 @@ export const deleteAdmin = async (groupId: string, userIds: string[]) => {
 
     return { message: "Administrador eliminado" };
   } catch (error) {
-    return {
-      error: "Error al eliminar administrador. Por favor intenta de nuevo.",
-    };
+    return handleApolloError(error)
   }
 };
 
@@ -308,9 +295,7 @@ export const deleteGroup = async (groupId: string) => {
       .then((res) => res);
     return { message: "Grupo eliminado exitosamente" };
   } catch (error) {
-    return {
-      error: "Error al eliminar el grupo. Por favor intenta de nuevo.",
-    };
+    return handleApolloError(error)
   }
 };
 
@@ -331,9 +316,7 @@ export const putMemberGroup = async (groupId: string) => {
       .then((res) => res);
     return { message: "Has aceptado la invitación exitosamente" };
   } catch (error) {
-    return {
-      error: "Error al aceptar la invitación. Por favor intenta de nuevo.",
-    };
+    return handleApolloError(error)
   }
 };
 
@@ -360,9 +343,7 @@ export const putMemberGroupByRequest = async (
       .then((res) => res);
     return { message: "Has aceptado la solicitud exitosamente" };
   } catch (error) {
-    return {
-      error: "Error al aceptar la solicitud. Por favor intenta de nuevo.",
-    };
+    return handleApolloError(error)
   }
 };
 
@@ -401,8 +382,6 @@ export const putExitGroup = async (
       .then((res) => res);
     return { message: "Has salido del grupo exitosamente" };
   } catch (error) {
-    return {
-      error: "Error al salir del grupo. Por favor intenta de nuevo.",
-    };
+    return handleApolloError(error)
   }
 };

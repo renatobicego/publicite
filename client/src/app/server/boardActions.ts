@@ -19,15 +19,9 @@ export const createBoard = async (formData: any) => {
 };
 
 export const editBoard = async (id: string, formData: any) => {
-  try {
-    const res = await putBoard(id, formData);
-    if (res.error) {
-      return { error: res.error };
-    }
-    return { message: "Pizarra editada exitosamente", updatedData: res };
-  } catch (err) {
-    return {
-      error: "Error al editar la pizarra. Por favor intenta de nuevo.",
-    };
+  const res = await putBoard(id, formData);
+  if (res.error) {
+    return res
   }
+  return { message: "Pizarra editada exitosamente", updatedData: res };
 };

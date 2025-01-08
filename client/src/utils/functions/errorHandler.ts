@@ -5,8 +5,8 @@ interface ErrorResponse {
   }
   
 export function handleApolloError(error: unknown, ): ErrorResponse {
-  console.log(error)
   
+  console.log(error)
     if (error instanceof ApolloError && error.cause) {
         const { statusCode, result } = error.cause as ServerError;
         console.error((result as any)?.errors)
