@@ -12,7 +12,7 @@ const AcceptGroupInvitation = ({ groupId }: { groupId: string }) => {
   const handleAccept = async () => {
     setIsSubmitting(true);
     const res = await putMemberGroup(groupId);
-    if (res.error) {
+    if ("error" in res) {
       toastifyError(res.error as string);
       return;
     }
