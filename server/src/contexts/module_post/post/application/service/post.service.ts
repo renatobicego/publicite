@@ -15,6 +15,7 @@ import { UserLocation } from '../../domain/entity/models_graphql/HTTP-REQUEST/po
 import { removeAccents_removeEmojisAndToLowerCase } from '../../domain/utils/normalice.data';
 import { checkStopWordsAndReturnSearchQuery, SearchType } from 'src/contexts/module_shared/utils/functions/checkStopWordsAndReturnSearchQuery';
 import { makeUserRelationMap } from 'src/contexts/module_shared/utils/functions/makeUserRelationMap';
+import { PostsMemberGroupResponse } from 'src/contexts/module_shared/sharedGraphql/group.posts.member.response';
 
 
 export class PostService implements PostServiceInterface {
@@ -26,6 +27,7 @@ export class PostService implements PostServiceInterface {
     @Inject('UserServiceInterface')
     private readonly userService: UserServiceInterface,
   ) { }
+
 
 
 
@@ -149,6 +151,15 @@ export class PostService implements PostServiceInterface {
       throw error;
     }
   }
+
+  async findPostOfGroupMembers(membersId: any[], conditionsOfSearch: any): Promise<PostsMemberGroupResponse | null> {
+    try {
+      return await this.postRepository.find
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
 
 
   async makeUserMapRelation(userRequestId: string): Promise<any> {

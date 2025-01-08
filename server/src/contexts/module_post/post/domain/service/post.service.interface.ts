@@ -1,6 +1,7 @@
 import { PostRequest } from "../entity/models_graphql/HTTP-REQUEST/post.request";
 import { PostUpdateDto } from "../entity/dto/post.update.dto";
 import { UserLocation } from "../entity/models_graphql/HTTP-REQUEST/post.location.request";
+import { PostsMemberGroupResponse } from "src/contexts/module_shared/sharedGraphql/group.posts.member.response";
 
 
 
@@ -18,6 +19,7 @@ export interface PostServiceInterface {
   ): Promise<void>;
   findMatchPost(postType: string, searchTerm: string): Promise<void>;
   findFriendPosts(postType: string, userRequestId: string, page: number, limit: number, searchTerm?: string): Promise<void>;
+  findPostOfGroupMembers(membersId: any[],conditionsOfSearch:any,): Promise<PostsMemberGroupResponse | null>
   makeReactionSchemaAndSetReactionToPost(postId: string, reaction: { user: string, reaction: string }, session: any): Promise<void>;
   updatePostById(
     postUpdate: PostUpdateDto,

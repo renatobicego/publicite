@@ -30,6 +30,7 @@ import { PostDocument } from '../schemas/post.schema';
 import { checkStopWordsAndReturnSearchQuery, SearchType } from 'src/contexts/module_shared/utils/functions/checkStopWordsAndReturnSearchQuery';
 import { UserLocation } from '../../domain/entity/models_graphql/HTTP-REQUEST/post.location.request';
 import { PostReactionDocument } from '../schemas/post.reaction.schema';
+import { PostsMemberGroupResponse } from 'src/contexts/module_shared/sharedGraphql/group.posts.member.response';
 
 
 
@@ -440,6 +441,13 @@ export class PostRepository implements PostRepositoryInterface {
 
 
 
+  async findPostOfGroupMembers(membersId: any[], conditionsOfSearch: any): Promise<PostsMemberGroupResponse | null> {
+    try {
+        await this.postDocument.find()
+    } catch (error: any) {
+      throw error;
+    }
+  }
 
 
   async saveGoodPost(

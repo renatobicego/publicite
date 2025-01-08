@@ -1,6 +1,8 @@
+import { PostsMemberGroupResponse } from 'src/contexts/module_shared/sharedGraphql/group.posts.member.response';
 import { GroupRequest } from './dto/HTTP-REQUEST/group.request';
 import { GroupUpdateRequest } from './dto/HTTP-REQUEST/group.update.request';
-import { PostsMemberGroupResponse } from './dto/HTTP-RESPONSE/group.posts.member.response';
+import { UserLocation_group } from './dto/HTTP-REQUEST/user.location.request';
+
 import {
   GroupListResponse,
   GroupResponse,
@@ -50,7 +52,7 @@ export interface GroupAdapterInterface {
     userRequest: string,
   ): Promise<GroupListResponse>;
 
-  findAllPostsOfGroupMembers(groupId: string, userRequest: string, limit: number, page: number): Promise<PostsMemberGroupResponse | null>;
+  findAllPostsOfGroupMembers(groupId: string, userRequest: string, userLocation: UserLocation_group, idsMembersArray: String [],limit: number, page: number): Promise<PostsMemberGroupResponse | null>;
   isThisGroupExist(alias: string): Promise<boolean>;
   removeAdminsFromGroupByGroupId(
     admins: string[],

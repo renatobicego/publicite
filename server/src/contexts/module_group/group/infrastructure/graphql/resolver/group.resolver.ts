@@ -12,7 +12,9 @@ import {
 } from '../../../application/adapter/dto/HTTP-RESPONSE/group.response';
 import { GroupAdapterInterface } from '../../../application/adapter/group.adapter.interface';
 import { CustomContextRequestInterface } from 'src/contexts/module_shared/auth/custom_request/custom.context.request.interface';
-import { PostsMemberGroupResponse } from '../../../application/adapter/dto/HTTP-RESPONSE/group.posts.member.response';
+
+import { UserLocation_group } from '../../../application/adapter/dto/HTTP-REQUEST/user.location.request';
+import { PostsMemberGroupResponse } from 'src/contexts/module_shared/sharedGraphql/group.posts.member.response';
 
 @Resolver('Group')
 export class GroupResolver {
@@ -254,10 +256,14 @@ export class GroupResolver {
     limit: number,
     @Args('page', { type: () => Number })
     page: number,
+    @Args('userLocation', { type: () => UserLocation_group })
+    userLocation: UserLocation_group,
+    @Args('idsMembersArray', { type: () => [String] })
+    idsMembersArray: String[],
   ): Promise<PostsMemberGroupResponse | null> {
     try {
       const userRequestId = context.req.userRequestId;
-      return await this.groupAdapter.findAllPostsOfGroupMembers(groupId, userRequestId, limit, page);
+      return await this.groupAdapter.findAllPostsOfGroupMembers(groupId, userRequestId, userLocation,idsMembersArray, limit, page);
     } catch (error: any) {
       throw error;
     }

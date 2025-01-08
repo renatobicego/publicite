@@ -507,6 +507,7 @@ export class GroupRepository implements GroupRepositoryInterface {
   async findAllPostsOfGroupMembers(
     groupId: string,
     userRequest: string,
+    conditions: any,
     limit: number,
     page: number,
   ): Promise<PostsMemberGroupResponse | null> {
