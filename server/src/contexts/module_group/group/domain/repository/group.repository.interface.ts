@@ -1,7 +1,5 @@
 import { GroupUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/group.update.request';
-import { PostsMemberGroupResponse } from '../../application/adapter/dto/HTTP-RESPONSE/group.posts.member.response';
 import {
-  GroupListResponse,
   GroupResponse,
   GroupResponseById,
 } from '../../application/adapter/dto/HTTP-RESPONSE/group.response';

@@ -231,6 +231,89 @@ export class PostRepository implements PostRepositoryInterface {
   }
 
 
+
+
+
+  async findFriendPosts(
+    postType: string,
+    userRequestId: string,
+    userRelationMap: Map<string, String[]>,
+    page: number,
+    limit: number,
+    searchTerm?: string
+  ): Promise<any> {
+    try {
+
+      const conditions = Array.from(userRelationMap.entries()).map(([key, value]) => ({
+        author: key,
+        'visibility.post': { $in: value },
+      }));
+
+
+
+
+      let friendPosts: any;
+
+      if (searchTerm) {
+        const textSearchQuery = checkStopWordsAndReturnSearchQuery(searchTerm, SearchType.post);
+        if (!textSearchQuery) {
+          this.logger.log('No valid search terms provided. Returning empty result.');
+          return { posts: [], hasMore: false };
+        }
+
+        friendPosts = await this.postDocument.find({
+          $and: [
+            { postType },
+            { $or: conditions },
+            {
+              $or: [
+                { searchTitle: { $regex: textSearchQuery, $options: "i" } },
+                { searchDescription: { $regex: textSearchQuery, $options: "i" } }
+              ]
+            }
+          ]
+        })
+          .skip((page - 1) * limit)
+          .limit(limit + 1);
+      } else {
+        friendPosts = await this.postDocument.find({
+          postType,
+          $or: conditions,
+        }).populate([
+          {
+            path: 'author',
+            model: 'User',
+            select: '_id profilePhotoUrl username lastName name contact',
+            populate: {
+              path: 'contact',
+              model: 'Contact',
+            },
+
+          }
+        ])
+          .skip((page - 1) * limit)
+          .limit(limit + 1);
+      }
+      if (!friendPosts || friendPosts.length === 0) {
+        return { posts: [], hasMore: false };
+      }
+
+      const hasMore = friendPosts.length > limit;
+      const postResponse = friendPosts.slice(0, limit);
+
+      return {
+        posts: postResponse,
+        hasMore,
+      };
+    } catch (error: any) {
+      this.logger.error('Error fetching friend posts:', error.message);
+      throw new Error('Unable to fetch friend posts. Please try again later.');
+    }
+  }
+
+
+
+
   async findAllPostByPostType(
     page: number,
     limit: number,
@@ -361,89 +444,6 @@ export class PostRepository implements PostRepositoryInterface {
     }
   }
 
-
-  async findFriendPosts(
-    postType: string,
-    userRequestId: string,
-    userRelationMap: Map<string, String[]>,
-    page: number,
-    limit: number,
-    searchTerm?: string
-  ): Promise<any> {
-    try {
-
-      const conditions = Array.from(userRelationMap.entries()).map(([key, value]) => ({
-        author: key,
-        'visibility.post': { $in: value },
-      }));
-
-
-
-
-      let friendPosts: any;
-
-      if (searchTerm) {
-        const textSearchQuery = checkStopWordsAndReturnSearchQuery(searchTerm, SearchType.post);
-        if (!textSearchQuery) {
-          this.logger.log('No valid search terms provided. Returning empty result.');
-          return { posts: [], hasMore: false };
-        }
-
-        friendPosts = await this.postDocument.find({
-          $and: [
-            { postType },
-            { $or: conditions },
-            {
-              $or: [
-                { searchTitle: { $regex: textSearchQuery, $options: "i" } },
-                { searchDescription: { $regex: textSearchQuery, $options: "i" } }
-              ]
-            }
-          ]
-        })
-          .skip((page - 1) * limit)
-          .limit(limit + 1);
-      } else {
-        friendPosts = await this.postDocument.find({
-          postType,
-          $or: conditions,
-        }).populate([
-          {
-            path: 'author',
-            model: 'User',
-            select: '_id profilePhotoUrl username lastName name contact',
-            populate: {
-              path: 'contact',
-              model: 'Contact',
-            },
-
-          }
-        ])
-          .skip((page - 1) * limit)
-          .limit(limit + 1);
-      }
-      if (!friendPosts || friendPosts.length === 0) {
-        return { posts: [], hasMore: false };
-      }
-
-      const hasMore = friendPosts.length > limit;
-      const postResponse = friendPosts.slice(0, limit);
-
-      return {
-        posts: postResponse,
-        hasMore,
-      };
-    } catch (error: any) {
-      this.logger.error('Error fetching friend posts:', error.message);
-      throw new Error('Unable to fetch friend posts. Please try again later.');
-    }
-  }
-
-
-
-
-
-
   async findPostOfGroupMembers(
     membersId: any[],
     conditionsOfSearch: any[],
@@ -468,9 +468,9 @@ export class PostRepository implements PostRepositoryInterface {
             $or: [
               {
                 $and: [
-                  { author: { $in: Array.from(conditionsOfSearch.keys()) } },
+                  { author: { $in: membersId } },
                   { postBehaviourType: 'libre' },
-                  { $expr: { $lte: ['$distance', '$geoLocation.ratio'] } }
+                  { $expr: { $lte: ['$distance', '$geoLocation.ratio'] } },
                 ]
               },
               {
@@ -521,6 +521,8 @@ export class PostRepository implements PostRepositoryInterface {
       throw error;
     }
   }
+
+
 
 
 

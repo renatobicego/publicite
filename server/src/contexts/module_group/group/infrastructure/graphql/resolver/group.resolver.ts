@@ -263,6 +263,7 @@ export class GroupResolver {
   ): Promise<PostsMemberGroupResponse | null> {
     try {
       const userRequestId = context.req.userRequestId;
+
       return await this.groupAdapter.findAllPostsOfGroupMembers(groupId, userRequestId, userLocation,idsMembersArray, limit, page);
     } catch (error: any) {
       throw error;

@@ -287,6 +287,7 @@ export class GroupService implements GroupServiceInterface {
 
       const idAndTypeOfRelationMap: Map<string, String[]> = makeUserRelationMap(friendRelationsOfUserRequest, userRequest)
 
+
       const userRelationMapOfGroupMembers = new Map(
         idsMembersArray
           .filter((memberOfGroupId: any) => {
@@ -299,12 +300,14 @@ export class GroupService implements GroupServiceInterface {
 
 
 
+
       if (userRelationMapOfGroupMembers && userRelationMapOfGroupMembers.size > 0) {
         conditions = Array.from(userRelationMapOfGroupMembers.entries()).map(([key, value]) => ({
           author: key,
           'visibility.post': { $in: value },
         }));
       }
+
       return await this.postService.findPostOfGroupMembers(idsMembersArray, conditions, userLocation, limit, page)
 
     } catch (error: any) {
