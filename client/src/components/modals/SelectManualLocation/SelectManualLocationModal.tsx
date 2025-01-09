@@ -27,7 +27,7 @@ const SelectManualLocationModal = ({ showAlways }: { showAlways?: boolean }) => 
           color="primary"
           radius="full"
           variant="light"
-          className="-ml-2.5"
+          className="-ml-2.5 self-start"
           startContent={<FaMapMarkerAlt />}
         >
           {address ? address : "Seleccionar ubicación"}

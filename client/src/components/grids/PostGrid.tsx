@@ -19,7 +19,7 @@ const PostsGrid = ({
   return (
     <>
       {isGroupPosts ? (
-        <MasonryPostGrid posts={posts} isGroupPost={isGroupPosts} />
+        <MasonryPostGrid posts={posts} isGroupPost={isGroupPosts} showEmptyMessage={false} />
       ) : (
         <section
           className={`grid grid-cols-2 gap-3 md:gap-4  ${

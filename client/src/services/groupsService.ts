@@ -22,6 +22,7 @@ import { ApolloError } from "@apollo/client";
 import { Post } from "@/types/postTypes";
 import { PostGroup } from "@/app/(root)/crear/grupo/CreateGroupForm";
 import { handleApolloError } from "@/utils/functions/errorHandler";
+import { Coordinates } from "@/app/(root)/providers/LocationProvider";
 
 export const getGroups = async (searchTerm: string | null, page: number) => {
   try {
@@ -114,45 +115,42 @@ export const getGroupAdminsById = async (id: string) => {
   }
 };
 
-export const getGroupPosts = async (page: number, groupId?: string) => {
-  if (!groupId)
-    return {
-      error: "Error al traer anuncios del grupo. Por favor intenta de nuevo.",
-    };
+export const getGroupPosts = async (
+  page: number,
+  groupId: string,
+  coordinates: Coordinates | null,
+  membersId: string[]
+) => {
   try {
+    if (!coordinates) {
+      return {
+        error: "Error al traer los anuncios. Por favor intenta de nuevo.",
+      };
+    }
     const { data } = await query({
       query: getMemberPosts,
-      variables: { getPostsOfGroupMembersId: groupId, limit: 30, page },
+      variables: {
+        getPostsOfGroupMembersId: groupId,
+        limit: 30,
+        page,
+        userLocation: coordinates,
+        idsMembersArray: membersId,
+      },
       context: {
         headers: {
           Authorization: await auth().getToken({ template: "testing" }),
         },
       },
     });
-    const items = data.getPostsOfGroupMembers.userAndPosts.flatMap(
-      (user: any) => {
-        const { posts, username, _id, profilePhotoUrl, name, lastName } = user;
-        // Map over posts to add the author property
-        return posts.map((post: Post) => ({
-          ...post, // Spread the existing properties of the post
-          author: {
-            _id,
-            username,
-            profilePhotoUrl,
-            name,
-            lastName,
-          },
-        }));
-      }
-    );
+
     // sort randomly posts
-    const randomizedItems = items.sort(() => Math.random() - 0.5);
+    const randomizedItems = data.getPostsOfGroupMembers.userAndPosts.sort(() => Math.random() - 0.5);
     return {
       items: randomizedItems,
       hasMore: data.getPostsOfGroupMembers.hasMore,
     };
   } catch (error) {
-    console.log(error);
+    handleApolloError(error);
     return {
       error: "Error al traer anuncios del grupo. Por favor intenta de nuevo.",
     };
@@ -193,7 +191,7 @@ export const putGroup = async (groupToUpdate: any) => {
       id: data.updateGroupById,
     };
   } catch (error) {
-    return handleApolloError(error)
+    return handleApolloError(error);
   }
 };
 
@@ -231,7 +229,7 @@ export const putAdminGroup = async (groupId: string, userId: string) => {
     });
     return { message: "Administrador agregado" };
   } catch (error) {
-    return handleApolloError(error)
+    return handleApolloError(error);
   }
 };
 
@@ -252,7 +250,7 @@ export const deleteMember = async (groupId: string, userIds: string[]) => {
 
     return { message: "Miembro eliminado" };
   } catch (error) {
-    return handleApolloError(error)
+    return handleApolloError(error);
   }
 };
 
@@ -273,7 +271,7 @@ export const deleteAdmin = async (groupId: string, userIds: string[]) => {
 
     return { message: "Administrador eliminado" };
   } catch (error) {
-    return handleApolloError(error)
+    return handleApolloError(error);
   }
 };
 
@@ -295,7 +293,7 @@ export const deleteGroup = async (groupId: string) => {
       .then((res) => res);
     return { message: "Grupo eliminado exitosamente" };
   } catch (error) {
-    return handleApolloError(error)
+    return handleApolloError(error);
   }
 };
 
@@ -316,7 +314,7 @@ export const putMemberGroup = async (groupId: string) => {
       .then((res) => res);
     return { message: "Has aceptado la invitación exitosamente" };
   } catch (error) {
-    return handleApolloError(error)
+    return handleApolloError(error);
   }
 };
 
@@ -343,7 +341,7 @@ export const putMemberGroupByRequest = async (
       .then((res) => res);
     return { message: "Has aceptado la solicitud exitosamente" };
   } catch (error) {
-    return handleApolloError(error)
+    return handleApolloError(error);
   }
 };
 
@@ -382,6 +380,6 @@ export const putExitGroup = async (
       .then((res) => res);
     return { message: "Has salido del grupo exitosamente" };
   } catch (error) {
-    return handleApolloError(error)
+    return handleApolloError(error);
   }
 };

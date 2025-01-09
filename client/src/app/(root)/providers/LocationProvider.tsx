@@ -31,6 +31,9 @@ const LocationContext = createContext<LocationContextType | undefined>(
 export const isLocationAwarePostType = (
   type: PubliciteDataTypes
 ) => {
+  if (type.typeOfData === "groupPosts") {
+    return true
+  }
   if ("postType" in type) { 
     return ["good", "service", "petition"].includes(type.postType);
   }

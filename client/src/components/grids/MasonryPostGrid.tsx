@@ -6,18 +6,20 @@ const MasonryPostGrid = ({
   posts,
   isGroupPost,
   showChangeExpirationDate,
+  showEmptyMessage,
 }: {
   posts: Post[];
   isGroupPost: boolean;
   showChangeExpirationDate?: boolean;
+  showEmptyMessage?: boolean;
 }) => {
   const { columns } = useMasonryGrid(posts, [2, 3, 4, 5], [768, 1280, 1720]);
   if (!posts || posts.length === 0)
-    return (
+    return showEmptyMessage ? (
       <p className="max-md:text-sm text-light-text ">
         El usuario no ha publicado anuncios.
       </p>
-    );
+    ) : null;
   return (
     <section className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 3xl:grid-cols-5 gap-4 items-start w-full">
       {columns.map((column, colIndex) => (

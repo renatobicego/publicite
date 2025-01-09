@@ -10,7 +10,6 @@ import {
 } from "@/services/postsServices";
 import { getUsers } from "@/services/userServices";
 
-
 export type PostsDataTypes =
   | {
       typeOfData: "posts" | "contactPosts";
@@ -19,6 +18,7 @@ export type PostsDataTypes =
   | {
       typeOfData: "groupPosts";
       groupId: string;
+      memberIds: string[]; 
     };
 
 export type PubliciteDataTypes =
@@ -52,7 +52,7 @@ export const fetchDataByType = async (
     case "users":
       return await getUsers(searchTerm, page);
     case "groupPosts":
-      return await getGroupPosts(page, postType.groupId);
+      return await getGroupPosts(page, postType.groupId, coordinates, postType.memberIds);
     case "contactPosts":
       return await getPostsOfContacts(
         searchTerm,

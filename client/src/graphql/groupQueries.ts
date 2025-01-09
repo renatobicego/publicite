@@ -143,33 +143,37 @@ export const getMemberPosts = gql`
     $getPostsOfGroupMembersId: String!
     $limit: Float!
     $page: Float!
+    $idsMembersArray: [String!]!
+    $userLocation: UserLocation_group!
   ) {
     getPostsOfGroupMembers(
       id: $getPostsOfGroupMembersId
       limit: $limit
       page: $page
+      userLocation: $userLocation
+      idsMembersArray: $idsMembersArray
     ) {
       hasMore
       userAndPosts {
-        username
-        posts {
+        author {
+          username
+          profilePhotoUrl
+          name
+          lastName
           _id
-          description
-          frequencyPrice
-          imagesUrls
-          petitionType
-          price
-          postType
-          title
-          toPrice
-          location {
-            description
-          }
         }
         _id
-        lastName
-        name
-        profilePhotoUrl
+        description
+        frequencyPrice
+        geoLocation {
+          description
+        }
+        imagesUrls
+        petitionType
+        postType
+        price
+        title
+        toPrice
       }
     }
   }

@@ -4,7 +4,7 @@ import { MAGAZINES, GROUPS, CREATE_MAGAZINE } from "@/utils/data/urls";
 import { Group, GroupAdmin } from "@/types/groupTypes";
 import { Link, Tab, Tabs } from "@nextui-org/react";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import MagazinesGrid from "../grids/MagazinesGrid";
 import PostListLogic from "@/app/(root)/(explorar)/anuncios/components/PostListLogic";
 import { Magazine } from "@/types/magazineTypes";
@@ -14,6 +14,8 @@ import PrimaryButton from "../buttons/PrimaryButton";
 import { FaPlus } from "react-icons/fa6";
 import { User } from "@/types/userTypes";
 import { useRouter } from "next-nprogress-bar";
+import SelectManualLocationModal from "../modals/SelectManualLocation/SelectManualLocationModal";
+import { useUserData } from "@/app/(root)/providers/userDataProvider";
 const GroupSolapas = ({
   group,
   isAdmin,
@@ -24,14 +26,18 @@ const GroupSolapas = ({
   const pathname = usePathname();
   const tabsRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
+  const { userIdLogged } = useUserData();
 
   useEffect(() => {
+    // block solapas of admin if not admin
     if (
       (pathname.includes("miembros") || pathname.includes("solicitudes")) &&
       !isAdmin
     ) {
       router.push(`${GROUPS}/${group._id}`);
     }
+
+    // scroll to the current solapa
     if (tabsRef.current) {
       // Find the active tab using a data attribute or class
       const activeTab = tabsRef.current.querySelector(
@@ -51,6 +57,14 @@ const GroupSolapas = ({
 
   const GROUP_URL = `${GROUPS}/${group._id}`;
 
+  const usersMembers = useMemo(() => {
+    return [
+      group.creator,
+      ...(group.admins as User[]),
+      ...(group.members as User[]),
+    ];
+  }, [group.creator, group.admins, group.members]);
+
   const tabDefinitions = [
     {
       key: `${GROUP_URL}`,
@@ -58,7 +72,16 @@ const GroupSolapas = ({
       component: (
         <>
           <h3>Anuncios de Miembros del Grupo</h3>
-          <PostListLogic postType={{ typeOfData: "groupPosts", groupId: group._id }} />
+          <SelectManualLocationModal showAlways/>
+          <PostListLogic
+            postType={{
+              typeOfData: "groupPosts",
+              groupId: group._id,
+              memberIds: usersMembers
+                .filter((user) => user._id !== userIdLogged)
+                .map((user) => user._id),
+            }}
+          />
         </>
       ),
     },
@@ -92,11 +115,7 @@ const GroupSolapas = ({
             <h3>Miembros del Grupo</h3>
             <InviteUsersGroup group={group} />
           </div>
-          <UsersGrid
-            items={[ group.creator, ...(group.admins as User[]), ...(group.members as User[])]}
-            groupGrid
-            group={group}
-          />
+          <UsersGrid items={usersMembers} groupGrid group={group} />
         </>
       ),
       requiredAdmin: true,
