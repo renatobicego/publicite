@@ -16,7 +16,8 @@ export class SocketController {
     @Body() notificationBody: any,
   ): Promise<any> {
     try {
-      return await this.socketAdapter.sendGroupNotificationToNotificationService(notificationBody);
+      await this.socketAdapter.sendGroupNotificationToNotificationService(notificationBody);
+      return { status: 'ok' };
     } catch (error: any) {
       throw error;
     }
@@ -28,7 +29,8 @@ export class SocketController {
     @Body() notificationBody: any,
   ): Promise<any> {
     try {
-      return await this.socketAdapter.sendMagazineNotificationToNotificationService(notificationBody);
+      await this.socketAdapter.sendMagazineNotificationToNotificationService(notificationBody);
+      return { status: 'ok' };
     } catch (error: any) {
       throw error;
     }
@@ -41,7 +43,8 @@ export class SocketController {
     @Body() notificationBody: any,
   ): Promise<any> {
     try {
-      return await this.socketAdapter.sendUserNotificationToNotificationService(notificationBody);
+      await this.socketAdapter.sendUserNotificationToNotificationService(notificationBody);
+      return { status: 'ok' };
     } catch (error: any) {
       throw error;
     }
@@ -52,7 +55,8 @@ export class SocketController {
     @Body() notificationBody: any,
   ): Promise<any> {
     try {
-      return await this.socketAdapter.sendPostNotificationToNotificationService(notificationBody);
+      const postReactionId = await this.socketAdapter.sendPostNotificationToNotificationService(notificationBody);
+      return postReactionId;
     } catch (error: any) {
       throw error;
     }

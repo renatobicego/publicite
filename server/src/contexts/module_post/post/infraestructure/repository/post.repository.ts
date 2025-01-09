@@ -452,6 +452,8 @@ export class PostRepository implements PostRepositoryInterface {
     page: number
   ): Promise<PostsMemberGroupResponse | null> {
     try {
+
+      if (membersId.length < 0) return { userAndPosts: [], hasMore: false };
       const posts = await this.postDocument.aggregate([
         {
           $geoNear: {
