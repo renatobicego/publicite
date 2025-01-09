@@ -52,9 +52,9 @@ const HandleGroupMember = ({
     )
       .then(() => {
         toastifySuccess(res.message);
+        router.refresh();
       })
       .catch(handleGroupNotificationError);
-    router.refresh();
   };
 
   const deleteMember = async () => {
@@ -75,9 +75,9 @@ const HandleGroupMember = ({
     )
       .then(() => {
         toastifySuccess(res.message);
+        router.refresh();
       })
       .catch(handleGroupNotificationError);
-    router.refresh();
   };
 
   const deleteAdmin = async () => {

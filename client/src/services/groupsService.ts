@@ -23,6 +23,7 @@ import { Post } from "@/types/postTypes";
 import { PostGroup } from "@/app/(root)/crear/grupo/CreateGroupForm";
 import { handleApolloError } from "@/utils/functions/errorHandler";
 import { Coordinates } from "@/app/(root)/providers/LocationProvider";
+import { Group } from "@/types/groupTypes";
 
 export const getGroups = async (searchTerm: string | null, page: number) => {
   try {
@@ -144,7 +145,7 @@ export const getGroupPosts = async (
     });
 
     // sort randomly posts
-    const randomizedItems = data.getPostsOfGroupMembers.userAndPosts.sort(() => Math.random() - 0.5);
+    const randomizedItems = [...data.getPostsOfGroupMembers.userAndPosts].sort(() => Math.random() - 0.5);
     return {
       items: randomizedItems,
       hasMore: data.getPostsOfGroupMembers.hasMore,
@@ -192,6 +193,27 @@ export const putGroup = async (groupToUpdate: any) => {
     };
   } catch (error) {
     return handleApolloError(error);
+  }
+};
+
+export const putNoteGroup = async (groupToUpdate: Pick<Group, "_id" | "groupNote">) => {
+  try {
+    const { data } = await getClient()
+      .mutate({
+        mutation: editGroupMutation,
+        variables: { groupToUpdate },
+        context: {
+          headers: {
+            Authorization: `${await auth().getToken({ template: "testing" })}`,
+          },
+        },
+      })
+      .then((res) => res);
+    return {
+      message: "Nota de grupo editada exitosamente",
+    };
+  } catch (error) {
+    throw handleApolloError(error);
   }
 };
 

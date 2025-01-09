@@ -48,18 +48,15 @@ export default async function GroupLayout(props: {
   ];
   const isCreator = loggedUser.publicMetadata.mongoId === group.creator._id;
   const isAdmin =
-  group.admins.some(
-    (admin) =>
-      (admin as User)._id === (loggedUser?.publicMetadata.mongoId as string)
-  ) || isCreator;
-  
+    group.admins.some(
+      (admin) =>
+        (admin as User)._id === (loggedUser?.publicMetadata.mongoId as string)
+    ) || isCreator;
 
   return (
     <main className="flex min-h-screen flex-col items-start main-style gap-4 md:gap-6 xl:gap-8">
       <BreadcrumbsAdmin items={breadcrumbsItems} />
-      <div className="items-start flex gap-4 justify-between w-full max-md:flex-wrap">
-        <GroupInfo group={groupData} isAdmin={isAdmin} isCreator={isCreator} />
-      </div>
+      <GroupInfo group={groupData} isAdmin={isAdmin} isCreator={isCreator} />
       {isMember ? (
         <>
           <GroupSolapas group={group} isAdmin={isAdmin} />

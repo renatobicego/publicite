@@ -7,8 +7,9 @@ import {
   putAdminGroup,
   putExitGroup,
   putGroup,
+  putNoteGroup,
 } from "@/services/groupsService";
-import { EditGroupInterface } from "@/types/groupTypes";
+import { EditGroupInterface, Group } from "@/types/groupTypes";
 import { auth } from "@clerk/nextjs/server";
 import { PostGroup } from "../(root)/crear/grupo/CreateGroupForm";
 
@@ -59,6 +60,20 @@ export const editGroup = async (
   } catch (err) {
     return {
       error: "Error al crear el grupo. Por favor intenta de nuevo.",
+    };
+  }
+};
+
+export const editNoteGroup = async (
+  formData: Pick<Group, "_id" | "groupNote">,
+) => {
+
+  try {
+    const res = await putNoteGroup(formData);
+    return res;
+  } catch (err: any) {
+    return {
+      error: "Error al editar la nota de grupo." + err.error,
     };
   }
 };

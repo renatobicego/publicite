@@ -8,6 +8,7 @@ import { EDIT_GROUP, FILE_URL } from "@/utils/data/urls";
 import { GetGroups } from "@/types/groupTypes";
 import AcceptGroupInvitation from "@/components/buttons/SendRequest/AcceptGroupInvitation";
 import { User } from "@/types/userTypes";
+import GroupNote from "@/components/GroupNote/GroupNote";
 
 const GroupInfo = async ({
   group,
@@ -46,7 +47,7 @@ const GroupInfo = async ({
     }
   };
   return (
-    <section className="flex gap-4 md:gap-6 xl:gap-8 md:max-w-[75%] xl:max-w-[65%] max-md:flex-col">
+    <section className="flex gap-4 md:gap-6 xl:gap-8 w-full max-md:flex-col md:max-lg:flex-wrap">
       <Image
         src={profilePhotoUrl ? FILE_URL + profilePhotoUrl : "/groupLogo.png"}
         alt={`foto de perfil de ${name}`}
@@ -57,13 +58,15 @@ const GroupInfo = async ({
             "min-w-32 !w-32 md:!w-40 md:!min-w-40 xl:!w-52 xl:!min-w-52 border h-fit",
         }}
       />
-      <div className="flex gap-2 md:gap-4 items-start flex-col">
+      <div className="flex gap-2 md:gap-4 items-start flex-col mr-auto">
         <h2>{name}</h2>
         <h6>@{alias}</h6>
         {details && <p className="text-sm lg:text-base">{details}</p>}
         <div className="flex items-center gap-1">
           <FaUser className="size-4 min-w-4" />
-          <p className="text-xs md:text-sm">{members.length + 1 + admins.length} miembro/s</p>
+          <p className="text-xs md:text-sm">
+            {members.length + 1 + admins.length} miembro/s
+          </p>
         </div>
         <div className="flex gap-2 items-center max-md:flex-wrap">
           {isAdmin && (
@@ -83,6 +86,11 @@ const GroupInfo = async ({
           />
         </div>
       </div>
+      <GroupNote
+        groupNote={group.group.groupNote}
+        isAdmin={isAdmin}
+        groupId={_id}
+      />
     </section>
   );
 };

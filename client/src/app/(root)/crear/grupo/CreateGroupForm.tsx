@@ -16,7 +16,7 @@ import { emitGroupNotification } from "@/components/notifications/groups/emitNot
 import { useSocket } from "@/app/socketProvider";
 import { useUserData } from "../../providers/userDataProvider";
 
-export type PostGroup = Omit<Group, "_id" | "creator">;
+export type PostGroup = Omit<Group, "_id" | "creator" | "groupNote">;
 const CreateGroupForm = () => {
   const { usernameLogged, userIdLogged } = useUserData();
   const initialValues: PostGroup = {

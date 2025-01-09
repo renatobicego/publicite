@@ -51,6 +51,7 @@ export const getGroupByIdQuery = gql`
         name
         profilePhotoUrl
         rules
+        groupNote
         visibility
         alias
         groupNotificationsRequest {

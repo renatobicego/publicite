@@ -12,6 +12,7 @@ export interface Group {
   profilePhotoUrl: string;
   visibility: "private" | "public";
   creator: User;
+  groupNote?: string;
 }
 
 export interface GroupAdmin extends Group {
@@ -29,7 +30,7 @@ export interface GetGroups {
 }
 
 export interface EditGroupInterface
-  extends Omit<Group, "admins" | "members" | "magazines" | "creator"> {}
+  extends Omit<Group, "admins" | "members" | "magazines" | "creator" | "groupNote"> {}
 export interface GroupNotification extends BaseNotification {
   frontData: {
     group: Pick<Group, "_id" | "name" | "profilePhotoUrl"> & {
