@@ -1,8 +1,7 @@
 import { CustomInputWithoutFormik } from "@/components/inputs/CustomInputs";
-import { categories } from "@/utils/data/mockedData";
+import usePostCategories from "@/utils/hooks/usePostCategories";
 import {
   Button,
-  Input,
   Modal,
   ModalBody,
   ModalContent,
@@ -11,7 +10,6 @@ import {
   Select,
   Selection,
   SelectItem,
-  Slider,
   useDisclosure,
 } from "@nextui-org/react";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
@@ -125,6 +123,7 @@ const SelectCategory = ({
   category: Selection;
   setCategory: Dispatch<SetStateAction<Selection>>;
 }) => {
+  const { categories } = usePostCategories();
   return (
     <Select
       scrollShadowProps={{
