@@ -18,7 +18,7 @@ import {
 } from 'src/contexts/module_shared/utils/functions/check.result.functions';
 import { IUser } from 'src/contexts/module_user/user/infrastructure/schemas/user.schema';
 import { GroupDocument } from '../schemas/group.schema';
-import { PostsMemberGroupResponse } from '../../application/adapter/dto/HTTP-RESPONSE/group.posts.member.response';
+
 import {
   checkStopWordsAndReturnSearchQuery,
   SearchType,
@@ -504,89 +504,6 @@ export class GroupRepository implements GroupRepositoryInterface {
     }
   }
 
-  async findAllPostsOfGroupMembers(
-    groupId: string,
-    userRequest: string,
-    conditions: any,
-    limit: number,
-    page: number,
-  ): Promise<PostsMemberGroupResponse | null> {
-    const session = await this.connection.startSession();
-    session.startTransaction();
-    const populatePostsFields = {
-      path: 'posts',
-      select:
-        '_id imagesUrls title description price frequencyPrice toPrice petitionType postType location',
-      populate: {
-        path: 'location',
-        model: 'PostLocation',
-        select: 'description',
-      },
-      options: {
-        limit: limit,
-        skip: (page - 1) * limit,
-      },
-    };
-    const userSelectFields = '_id username name lastName posts profilePhotoUrl';
-
-    try {
-      const group: any = await this.groupModel
-        .find({
-          _id: groupId,
-          $or: [
-            { members: userRequest },
-            { admins: userRequest },
-            { creator: userRequest },
-          ],
-        })
-        .select('_id members admins creator')
-        .populate([
-          {
-            path: 'members',
-            select: userSelectFields,
-            populate: populatePostsFields,
-          },
-          {
-            path: 'creator',
-            select: userSelectFields,
-            populate: populatePostsFields,
-          },
-          {
-            path: 'admins',
-            select: userSelectFields,
-            populate: populatePostsFields,
-          },
-        ])
-        .session(session)
-        .lean();
-      if (!group || group.length === 0) {
-        return null;
-      }
-
-      const memberWithPost = group[0].members.filter((member: any) => {
-        return member.posts.length > 0;
-      });
-
-      const adminWithPost = group[0].admins.filter((admin: any) => {
-        return admin.posts.length > 0;
-      });
-
-      const creatorWithPost = group[0].creator;
-
-      const adminAndMemberPosts = memberWithPost
-        .concat(adminWithPost)
-        .concat(creatorWithPost);
-
-      const hasMore = adminAndMemberPosts.length > limit;
-
-      return {
-        userAndPosts: adminAndMemberPosts,
-        hasMore: hasMore,
-      };
-    } catch (error: any) {
-      throw error;
-    }
-  }
 
   async findGroupByNameOrAlias(
     name: string,

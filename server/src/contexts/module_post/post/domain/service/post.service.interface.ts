@@ -5,6 +5,7 @@ import { PostsMemberGroupResponse } from "src/contexts/module_shared/sharedGraph
 
 
 
+
 export interface PostServiceInterface {
   create(post: PostRequest): Promise<void>;
   deletePostById(id: string): Promise<void>;
@@ -19,7 +20,7 @@ export interface PostServiceInterface {
   ): Promise<void>;
   findMatchPost(postType: string, searchTerm: string): Promise<void>;
   findFriendPosts(postType: string, userRequestId: string, page: number, limit: number, searchTerm?: string): Promise<void>;
-  findPostOfGroupMembers(membersId: any[],conditionsOfSearch:any,): Promise<PostsMemberGroupResponse | null>
+  findPostOfGroupMembers(membersId: any[], conditionsOfSearch: any, userLocation: UserLocation, limit: number, page: number): Promise<PostsMemberGroupResponse | null>
   makeReactionSchemaAndSetReactionToPost(postId: string, reaction: { user: string, reaction: string }, session: any): Promise<void>;
   updatePostById(
     postUpdate: PostUpdateDto,
@@ -27,7 +28,7 @@ export interface PostServiceInterface {
     postType: string,
     cookie?: any,
   ): Promise<any>;
-  updateEndDateFromPostById(postId: string, userRequestId: string,newDate:Date): Promise<void>;
+  updateEndDateFromPostById(postId: string, userRequestId: string, newDate: Date): Promise<void>;
   removeReactionFromPost(userRequestId: string, _id: string): Promise<any>;
 
 }

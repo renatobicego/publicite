@@ -2,7 +2,6 @@ import { registerEnumType } from '@nestjs/graphql';
 
 export enum Visibility {
   public = 'public',
-  registered = 'registered',
   contacts = 'contacts',
   friends = 'friends',
   topfriends = 'topfriends',

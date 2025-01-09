@@ -48,7 +48,8 @@ export class NotificationRepository implements NotificationRepositoryInterface {
                 {
                     $set: { viewed: view }
                 }
-            );
+            );  
+
 
             this.logger.log(`Successfully updated notification status for user ${userRequestId}`);
         } catch (error: any) {

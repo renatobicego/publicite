@@ -8,9 +8,30 @@ class location_of_group_posts {
 }
 
 @ObjectType()
+class author_post_group_member {
+    @Field(() => String)
+    _id: string;
+
+    @Field(() => String)
+    username: string;
+
+    @Field(() => String)
+    name: string;
+
+    @Field(() => String)
+    lastName: string;
+
+    @Field(() => String)
+    profilePhotoUrl: string;
+}
+
+@ObjectType()
 export class Post_of_members_group {
     @Field(() => ID, { nullable: true })
     _id?: ObjectId;
+
+    @Field(() => author_post_group_member, { nullable: true },)
+    author: author_post_group_member;
 
     @Field(() => [String], { nullable: true },)
     imagesUrls: string[];
@@ -40,7 +61,7 @@ export class Post_of_members_group {
     postType: string;
 
     @Field(() => location_of_group_posts, { nullable: true })
-    location: location_of_group_posts;
+    geoLocation: location_of_group_posts;
 
 
 
@@ -50,20 +71,7 @@ export class Post_of_members_group {
 @ObjectType()
 export class GroupPostMemberResponse {
 
-    @Field(() => String)
-    _id: string;
 
-    @Field(() => String)
-    username: string;
-
-    @Field(() => String)
-    name: string;
-
-    @Field(() => String)
-    lastName: string;
-
-    @Field(() => String)
-    profilePhotoUrl: string;
 
     @Field(() => [Post_of_members_group], { nullable: true })
     posts: Post_of_members_group[];
@@ -75,8 +83,8 @@ export class GroupPostMemberResponse {
 
 @ObjectType()
 export class PostsMemberGroupResponse {
-    @Field(() => [GroupPostMemberResponse])
-    userAndPosts: GroupPostMemberResponse[];
+    @Field(() => [Post_of_members_group])
+    userAndPosts: Post_of_members_group[];
 
     @Field(() => Boolean)
     hasMore: boolean;

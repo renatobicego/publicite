@@ -12,9 +12,13 @@ import { GroupServiceMapper } from '../../application/service/mapper/group.servi
 import { UserSchema } from 'src/contexts/module_user/user/infrastructure/schemas/user.schema';
 import { NotificationModule } from 'src/contexts/module_user/notification/infrastructure/module/notification.module';
 import { MagazineModelSharedModule } from 'src/contexts/module_shared/sharedSchemas/magazine.model.schema';
+import { UserModule } from 'src/contexts/module_user/user/infrastructure/module/user.module';
+import { PostModule } from 'src/contexts/module_post/post/infraestructure/module/post.module';
 
 @Module({
   imports: [
+    UserModule,
+    PostModule,
     MagazineModelSharedModule,
     MongooseModule.forFeature([
       { name: 'Group', schema: GroupSchema },

@@ -1,6 +1,7 @@
 import { Schema, model, Document, Date, ObjectId } from 'mongoose';
 import { PostType } from '../../domain/entity/enum/post-type.enum';
 import { Visibility } from '../../domain/entity/enum/post-visibility.enum';
+import { PostBehaviourType } from '../../domain/entity/enum/postBehaviourType.enum';
 
 export interface attachedFiles {
   url: string;
@@ -35,6 +36,7 @@ export interface PostDocument extends Document {
   createAt: string;
   endDate: Date;
   reactions: Schema.Types.ObjectId[];
+  postBehaviourType: string;
 }
 
 const addDays = (date: any, days: any) => {
@@ -115,6 +117,7 @@ export const PostSchema = new Schema<PostDocument>(
         required: true,
       },
     ],
+    postBehaviourType: { type: String, enum: Object.values(PostBehaviourType), required: true },
   },
   {
     discriminatorKey: 'kind',

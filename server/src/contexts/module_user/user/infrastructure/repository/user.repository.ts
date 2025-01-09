@@ -95,7 +95,6 @@ export class UserRepository implements UserRepositoryInterface {
           },
         ])
         .lean();
-
       if (!user) {
         return null;
       }

@@ -261,6 +261,7 @@ export class PostRepository implements PostRepositoryInterface {
         matchStage.$or = [
           { searchTitle: { $regex: textSearchQuery, $options: 'i' } },
           { searchDescription: { $regex: textSearchQuery, $options: 'i' } },
+          { 'visibility.post': 'public' },
         ];
       }
 
@@ -415,7 +416,7 @@ export class PostRepository implements PostRepositoryInterface {
               path: 'contact',
               model: 'Contact',
             },
-            
+
           }
         ])
           .skip((page - 1) * limit)
@@ -441,13 +442,93 @@ export class PostRepository implements PostRepositoryInterface {
 
 
 
-  async findPostOfGroupMembers(membersId: any[], conditionsOfSearch: any): Promise<PostsMemberGroupResponse | null> {
+
+
+  async findPostOfGroupMembers(
+    membersId: any[],
+    conditionsOfSearch: any[],
+    userLocation: UserLocation,
+    limit: number,
+    page: number
+  ): Promise<PostsMemberGroupResponse | null> {
     try {
-        await this.postDocument.find()
+      const posts = await this.postDocument.aggregate([
+        {
+          $geoNear: {
+            near: {
+              type: 'Point',
+              coordinates: [userLocation.longitude, userLocation.latitude],
+            },
+            distanceField: 'distance',
+            spherical: true,
+          },
+        },
+        {
+          $match: {
+            $or: [
+              {
+                $and: [
+                  { author: { $in: Array.from(conditionsOfSearch.keys()) } },
+                  { postBehaviourType: 'libre' },
+                  { $expr: { $lte: ['$distance', '$geoLocation.ratio'] } }
+                ]
+              },
+              {
+                $and: [
+                  { $or: conditionsOfSearch },
+                  { postBehaviourType: 'agenda' }
+                ]
+              }
+            ]
+          },
+        },
+        {
+          $addFields: {
+            authorObjectId: { $toObjectId: '$author' }, // Convierte el autor a ObjectId
+          },
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'authorObjectId',
+            foreignField: '_id',
+            as: 'author',
+            pipeline: [
+              { $project: { _id: 1, name: 1, lastName: 1, profilePhotoUrl: 1, username: 1 } },
+            ],
+          },
+        },
+        { $unwind: { path: '$author', preserveNullAndEmptyArrays: true } },
+        { $skip: (page - 1) * limit },
+        { $limit: limit + 1 },
+      ]);
+
+      console.log(posts);
+
+      if (!posts) {
+        return { userAndPosts: [], hasMore: false };
+      }
+
+      const hasMore = posts.length > limit;
+      const postResponse = posts.slice(0, limit);
+
+      return {
+        userAndPosts: postResponse,
+        hasMore,
+      };
     } catch (error: any) {
+      console.error(error);
       throw error;
     }
   }
+
+
+
+
+
+
+
+
 
 
   async saveGoodPost(

@@ -60,7 +60,7 @@ export interface GroupRepositoryInterface {
     groups: any[];
     hasMore: boolean;
   }>;
-  findAllPostsOfGroupMembers(groupId: string, userRequest: string,conditions:any, limit: number, page: number): Promise<PostsMemberGroupResponse | null>
+
 
 
   isThisGroupExist(alias: string, _id?: string): Promise<boolean>;

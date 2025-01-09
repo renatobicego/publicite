@@ -16,6 +16,7 @@ import { removeAccents_removeEmojisAndToLowerCase } from '../../domain/utils/nor
 import { checkStopWordsAndReturnSearchQuery, SearchType } from 'src/contexts/module_shared/utils/functions/checkStopWordsAndReturnSearchQuery';
 import { makeUserRelationMap } from 'src/contexts/module_shared/utils/functions/makeUserRelationMap';
 import { PostsMemberGroupResponse } from 'src/contexts/module_shared/sharedGraphql/group.posts.member.response';
+import { UserLocation_group } from 'src/contexts/module_group/group/application/adapter/dto/HTTP-REQUEST/user.location.request';
 
 
 export class PostService implements PostServiceInterface {
@@ -152,9 +153,11 @@ export class PostService implements PostServiceInterface {
     }
   }
 
-  async findPostOfGroupMembers(membersId: any[], conditionsOfSearch: any): Promise<PostsMemberGroupResponse | null> {
+
+
+  async findPostOfGroupMembers(membersId: any[], conditionsOfSearch: any, userLocation: UserLocation, limit: number, page: number): Promise<PostsMemberGroupResponse | null> {
     try {
-      return await this.postRepository.find
+      return await this.postRepository.findPostOfGroupMembers(membersId, conditionsOfSearch, userLocation, limit, page)
     } catch (error: any) {
       throw error;
     }

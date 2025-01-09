@@ -85,8 +85,17 @@ type location_of_group_posts {
   description: String
 }
 
+type author_post_group_member {
+  _id: String!
+  username: String!
+  name: String!
+  lastName: String!
+  profilePhotoUrl: String!
+}
+
 type Post_of_members_group {
   _id: ID
+  author: author_post_group_member
   imagesUrls: [String!]
   title: String
   description: String
@@ -95,20 +104,11 @@ type Post_of_members_group {
   toPrice: Float
   petitionType: String
   postType: String
-  location: location_of_group_posts
-}
-
-type GroupPostMemberResponse {
-  _id: String!
-  username: String!
-  name: String!
-  lastName: String!
-  profilePhotoUrl: String!
-  posts: [Post_of_members_group!]
+  geoLocation: location_of_group_posts
 }
 
 type PostsMemberGroupResponse {
-  userAndPosts: [GroupPostMemberResponse!]!
+  userAndPosts: [Post_of_members_group!]!
   hasMore: Boolean!
 }
 
@@ -597,7 +597,7 @@ type Query {
   """
   Obtiene los posts de los miembros de un grupo, buscando el grupo por su ID
   """
-  getPostsOfGroupMembers(id: String!, limit: Float!, page: Float!): PostsMemberGroupResponse
+  getPostsOfGroupMembers(id: String!, limit: Float!, page: Float!, userLocation: UserLocation_group!, idsMembersArray: [String!]!): PostsMemberGroupResponse
 
   """Busca un grupo por su nombre o alias"""
   getGroupByNameOrAlias(
@@ -631,6 +631,11 @@ enum PostType {
 }
 
 input UserLocation {
+  latitude: Float!
+  longitude: Float!
+}
+
+input UserLocation_group {
   latitude: Float!
   longitude: Float!
 }
@@ -859,7 +864,6 @@ input BoardRequest {
 
 enum Visibility_Enum_board {
   public
-  registered
   contacts
   friends
   topfriends

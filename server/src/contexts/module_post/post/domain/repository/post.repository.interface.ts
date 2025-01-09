@@ -21,13 +21,13 @@ export interface PostRepositoryInterface {
   ): Promise<any>;
   findMatchPost(postType: string, searchTerm: string): Promise<void>;
   findFriendPosts(postType: string, userRequestId: string, userRelationMap: Map<string, String[]>, page: number, limit: number, searchTerm?: string): Promise<void>;
-  findPostOfGroupMembers(membersId: any[], conditionsOfSearch: any): Promise<PostsMemberGroupResponse | null>
+  findPostOfGroupMembers(membersId: any[], conditionsOfSearch: any, userLocation: UserLocation, limit: number, page: number): Promise<PostsMemberGroupResponse | null>
   updatePostById(
     postUpdate: PostUpdateDto,
     id: string,
     postType: string,
   ): Promise<any>;
-  updateEndDateFromPostById(postId: string, userRequestId: string,newDate:Date): Promise<void>;
+  updateEndDateFromPostById(postId: string, userRequestId: string, newDate: Date): Promise<void>;
   makeReactionSchemaAndSetReactionToPost(postId: string, reaction: { user: string, reaction: string }, session: any): Promise<void>;
   removeReactionFromPost(userRequestId: string, _id: string): Promise<any>;
 }

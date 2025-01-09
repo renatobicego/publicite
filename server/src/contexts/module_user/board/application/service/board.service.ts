@@ -42,7 +42,7 @@ export class BoardService implements BoardServiceInterface {
       }
 
       if (relationMap.size === 0 && isUserRegister) {
-        conditions = [{ visibility: 'public' }, { visibility: 'registered' }]
+        conditions = [{ visibility: 'public' }]
       }
 
       if (relationMap.size > 0) {

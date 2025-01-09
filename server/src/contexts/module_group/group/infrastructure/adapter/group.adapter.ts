@@ -9,8 +9,9 @@ import {
 } from '../../application/adapter/dto/HTTP-RESPONSE/group.response';
 import { GroupRequest } from '../../application/adapter/dto/HTTP-REQUEST/group.request';
 import { GroupUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/group.update.request';
-import { PostsMemberGroupResponse } from '../../application/adapter/dto/HTTP-RESPONSE/group.posts.member.response';
+
 import { UserLocation_group } from '../../application/adapter/dto/HTTP-REQUEST/user.location.request';
+import { PostsMemberGroupResponse } from 'src/contexts/module_shared/sharedGraphql/group.posts.member.response';
 
 export class GroupAdapter implements GroupAdapterInterface {
   constructor(
@@ -161,9 +162,9 @@ export class GroupAdapter implements GroupAdapterInterface {
     }
   }
 
-  async findAllPostsOfGroupMembers(groupId: string, userRequest: string, userLocation:UserLocation_group, idsMembersArray:String[], limit: number, page: number): Promise<PostsMemberGroupResponse | null> {
+  async findAllPostsOfGroupMembers(groupId: string, userRequest: string, userLocation: UserLocation_group, idsMembersArray: String[], limit: number, page: number): Promise<PostsMemberGroupResponse | null> {
     try {
-      return await this.groupService.findAllPostsOfGroupMembers(groupId, userRequest,userLocation,idsMembersArray, limit, page);
+      return await this.groupService.findAllPostsOfGroupMembers(groupId, userRequest, userLocation, idsMembersArray, limit, page);
     } catch (error: any) {
       throw error;
     }

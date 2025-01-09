@@ -11,11 +11,12 @@ import { GroupRequest } from '../adapter/dto/HTTP-REQUEST/group.request';
 import { GroupServiceMapperInterface } from '../../domain/service/mapper/group.service.mapper.interface';
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { GroupUpdateRequest } from '../adapter/dto/HTTP-REQUEST/group.update.request';
-import { PostsMemberGroupResponse } from '../adapter/dto/HTTP-RESPONSE/group.posts.member.response';
+
 import { UserServiceInterface } from 'src/contexts/module_user/user/domain/service/user.service.interface';
 import { makeUserRelationMap } from 'src/contexts/module_shared/utils/functions/makeUserRelationMap';
 import { UserLocation_group } from '../adapter/dto/HTTP-REQUEST/user.location.request';
 import { PostServiceInterface } from 'src/contexts/module_post/post/domain/service/post.service.interface';
+import { PostsMemberGroupResponse } from 'src/contexts/module_shared/sharedGraphql/group.posts.member.response';
 
 interface UserRelation {
   userA: string;
@@ -277,34 +278,35 @@ export class GroupService implements GroupServiceInterface {
     }
   }
 
-  async findAllPostsOfGroupMembers(groupId: string, userRequest: string, userLocation:UserLocation_group, idsMembersArray: String [],limit: number, page: number): Promise<PostsMemberGroupResponse | null> {
+  async findAllPostsOfGroupMembers(groupId: string, userRequest: string, userLocation: UserLocation_group, idsMembersArray: String[], limit: number, page: number): Promise<PostsMemberGroupResponse | null> {
     try {
       this.logger.log('Finding posts of members of group by id: ' + groupId);
       let conditions;
 
+      const friendRelationsOfUserRequest: UserRelation[] = await this.userService.getRelationsFromUserByUserId(userRequest)
 
-      const userRelationDocument: UserRelation[] = await this.userService.getRelationsFromUserByUserId(userRequest)
-      const userRelationMap : Map<string, String[]> = makeUserRelationMap(userRelationDocument,userRequest)
-      let userRelationMapOfGroupMembers: Map<string, String[]> = new Map<string, String[]>()
-      
-      //ver si es mejor usar un filter
-      idsMembersArray.forEach((memberId: string) => {
-        if (userRelationMap.get(memberId) && (userRelationMap.get(memberId) != undefined ) ) {
-            userRelationMapOfGroupMembers.set(memberId,userRelationMap.get(memberId)!!)
-        }
-      })
+      const idAndTypeOfRelationMap: Map<string, String[]> = makeUserRelationMap(friendRelationsOfUserRequest, userRequest)
 
-      if(userRelationMapOfGroupMembers.size > 0 )
-       conditions = Array.from(userRelationMapOfGroupMembers.entries()).map(([key, value]) => ({
-        author: key,
-         'visibility.post': { $in: value }, 
-        
-      }));
+      const userRelationMapOfGroupMembers = new Map(
+        idsMembersArray
+          .filter((memberOfGroupId: any) => {
+            const typeOfRelation = idAndTypeOfRelationMap.get(memberOfGroupId);
+            return typeOfRelation && Array.isArray(typeOfRelation);
+          })
+          .map((memberId: any) => [memberId, idAndTypeOfRelationMap.get(memberId)])
+      );
 
-      
-      return await this.postService.findPostOfGroupMembers(idsMembersArray,conditions)
 
-      return await this.groupRepository.findAllPostsOfGroupMembers(groupId, userRequest,conditions, limit, page);
+
+
+      if (userRelationMapOfGroupMembers && userRelationMapOfGroupMembers.size > 0) {
+        conditions = Array.from(userRelationMapOfGroupMembers.entries()).map(([key, value]) => ({
+          author: key,
+          'visibility.post': { $in: value },
+        }));
+      }
+      return await this.postService.findPostOfGroupMembers(idsMembersArray, conditions, userLocation, limit, page)
+
     } catch (error: any) {
       throw error;
     }
