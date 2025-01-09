@@ -1,12 +1,10 @@
-import { Button, Chip } from "@nextui-org/react";
 import { Field, FormikErrors } from "formik";
 import { PostBoard } from "@/types/board";
 import { memo, SetStateAction } from "react";
 import AnnotationsInputs from "../inputs/AnnotationsInputs";
 import KeywordsInput from "../inputs/KeywordsInput";
-import { visibilityItems } from "@/utils/data/selectData";
+import { visibilityRegisteredItems } from "@/utils/data/selectData";
 import { CustomSelect } from "../../inputs/CustomInputs";
-import { FaX } from "react-icons/fa6";
 import KeywordAdded from "../inputs/KeywordAdded";
 import AnnotationAdded from "../inputs/AnnotationAdded";
 
@@ -68,7 +66,7 @@ const CreateBoardInputs = ({
       </div>
       <Field
         as={CustomSelect}
-        items={visibilityItems}
+        items={visibilityRegisteredItems}
         disallowEmptySelection
         textColor={`!${textColor}`}
         getItemValue={(item: any) => item.value}
