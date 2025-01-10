@@ -20,6 +20,11 @@ import { Form, Formik, FormikHelpers } from "formik";
 import { useRouter } from "next-nprogress-bar";
 import { useEffect } from "react";
 
+type EditPetitionFormValues = Omit<
+  PetitionPostValues,
+  "createAt" | "geoLocation" | "author" | "postBehaviourType"
+>;
+
 const EditPetitionForm = ({ postData }: { postData: Petition }) => {
   const router = useRouter();
   const {
@@ -38,10 +43,7 @@ const EditPetitionForm = ({ postData }: { postData: Petition }) => {
     true,
     true
   );
-  const initialValues: Omit<
-    PetitionPostValues,
-    "createAt" | "geoLocation" | "author"
-  > = {
+  const initialValues: EditPetitionFormValues = {
     attachedFiles: postData.attachedFiles,
     category: postData.category[0]._id,
     description: postData.description,
@@ -54,7 +56,7 @@ const EditPetitionForm = ({ postData }: { postData: Petition }) => {
     toPrice: postData.toPrice,
   };
   const handleSubmit = async (
-    values: Omit<PetitionPostValues, "createAt" | "geoLocation" | "author">,
+    values: EditPetitionFormValues,
     actions: FormikHelpers<any>
   ) => {
     // delete prev files deleted
@@ -66,7 +68,7 @@ const EditPetitionForm = ({ postData }: { postData: Petition }) => {
       // update prevAttachedFiles with new values
       values.attachedFiles = prevAttachedFiles;
     }
-    
+
     // edit post
     const resApi = await editPost(
       {
@@ -95,12 +97,15 @@ const EditPetitionForm = ({ postData }: { postData: Petition }) => {
       validationSchema={petitionEditValidation}
     >
       {({ isSubmitting, errors, setFieldValue, values }) => {
-        console.log(values)
+        console.log(values);
         return (
           <Form className="flex flex-col gap-4 w-full">
             <div className="flex gap-8 md:gap-4 w-full max-md:flex-col">
               <div className="w-full md:w-1/2 flex flex-col gap-4">
-                <TitleDescription errors={errors} setFieldValue={setFieldValue} />
+                <TitleDescription
+                  errors={errors}
+                  setFieldValue={setFieldValue}
+                />
                 <PetitionType errors={errors.petitionType} />
               </div>
               <div className="w-full md:w-1/2 flex flex-col gap-4">

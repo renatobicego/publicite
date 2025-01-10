@@ -2,10 +2,11 @@ import {
   getSubscriptionsOfUser,
   getUserActivePostNumber,
 } from "@/services/subscriptionServices";
+import { PostBehaviourType } from "@/types/postTypes";
 import { Subscription } from "@/types/subscriptions";
 import { useEffect, useState } from "react";
 
-const useUserPostLimit = (userId: string) => {
+const useUserPostLimit = (userId: string, postBehaviourType?: PostBehaviourType) => {
   const [subscriptionsUser, setSubscriptionsUser] = useState<Subscription[]>(
     []
   );

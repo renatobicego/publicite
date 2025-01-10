@@ -19,7 +19,10 @@ export interface Post {
   createAt: string;
   endDate: string;
   reactions: PostReaction[];
+  postBehaviourType: PostBehaviourType;
 }
+
+type PostBehaviourType = "libre" | "agenda";
 
 interface Reviewer extends Pick<UserPerson, "username" | "profilePhotoUrl"> {}
 interface Author

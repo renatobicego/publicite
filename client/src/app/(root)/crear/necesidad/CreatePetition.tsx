@@ -1,5 +1,5 @@
 "use client";
-import { PetitionPostValues } from "@/types/postTypes";
+import { PetitionPostValues, PostBehaviourType } from "@/types/postTypes";
 import { Form, Formik, FormikHelpers } from "formik";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { getLocalTimeZone, today } from "@internationalized/date";
@@ -19,7 +19,13 @@ import PetitionType from "./PetitionType";
 import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
 import { useAttachedFiles } from "../anuncio/components/CreateForm/inputs/AccordionInputs/AttachedFIles/AttachedFilesContext";
 
-const CreatePetition = ({ userId } : { userId?: string}) => {
+const CreatePetition = ({
+  userId,
+  postBehaviourType,
+}: {
+  userId?: string;
+  postBehaviourType: PostBehaviourType;
+}) => {
   const initialValues: PetitionPostValues = {
     attachedFiles: [],
     description: "",
@@ -43,10 +49,11 @@ const CreatePetition = ({ userId } : { userId?: string}) => {
     petitionType: undefined,
     frequencyPrice: undefined,
     toPrice: undefined,
+    postBehaviourType,
   };
 
   const router = useRouter();
-  const {attachedFiles} = useAttachedFiles();
+  const { attachedFiles } = useAttachedFiles();
   const { progress, submitFiles } = useUploadFiles([], attachedFiles, true);
 
   const handleSubmit = async (
@@ -57,7 +64,7 @@ const CreatePetition = ({ userId } : { userId?: string}) => {
     if (!newValuesWithUrlFiles) {
       actions.setSubmitting(false);
       return;
-    };
+    }
     values = newValuesWithUrlFiles;
     const dbLocation = {
       location: {
@@ -66,7 +73,9 @@ const CreatePetition = ({ userId } : { userId?: string}) => {
       },
       description: values.geoLocation.description,
       userSetted: values.geoLocation.userSetted,
-      ratio: values.geoLocation.ratio ? values.geoLocation.ratio * 1000 : 5 * 1000,
+      ratio: values.geoLocation.ratio
+        ? values.geoLocation.ratio * 1000
+        : 5 * 1000,
     };
 
     const attachedFiles = values.attachedFiles.map((file) => ({
@@ -74,12 +83,15 @@ const CreatePetition = ({ userId } : { userId?: string}) => {
       label: file.label,
     }));
 
-    const resApi = await createPost({
-      ...values,
-      geoLocation: dbLocation,
-      attachedFiles,
-      category: [values.category],
-    }, true);
+    const resApi = await createPost(
+      {
+        ...values,
+        geoLocation: dbLocation,
+        attachedFiles,
+        category: [values.category],
+      },
+      true
+    );
     if (resApi.error) {
       toastifyError(resApi.error);
       actions.setSubmitting(false);
@@ -99,12 +111,14 @@ const CreatePetition = ({ userId } : { userId?: string}) => {
       validationSchema={petitionValidation}
     >
       {({ isSubmitting, errors, setFieldValue, values }) => {
-
         return (
           <Form className="flex flex-col gap-4 w-full">
             <div className="flex gap-8 md:gap-4 w-full max-md:flex-col">
               <div className="w-full md:w-1/2 flex flex-col gap-4">
-                <TitleDescription errors={errors} setFieldValue={setFieldValue}/>
+                <TitleDescription
+                  errors={errors}
+                  setFieldValue={setFieldValue}
+                />
                 <PetitionType errors={errors.petitionType} />
                 <Divider />
                 <h6>Busque su ubicación o seleccionela en el mapa</h6>
@@ -115,7 +129,10 @@ const CreatePetition = ({ userId } : { userId?: string}) => {
                 />
               </div>
               <div className="w-full md:w-1/2 flex flex-col gap-4">
-                <PriceRangeCategory setFieldValue={setFieldValue} errors={errors} />
+                <PriceRangeCategory
+                  setFieldValue={setFieldValue}
+                  errors={errors}
+                />
                 <Visibility errors={errors} />
                 <div className="flex lg:px-4 flex-col gap-4">
                   <h6>Archivos Adjuntos (opcional)</h6>
