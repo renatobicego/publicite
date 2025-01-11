@@ -6,15 +6,24 @@ import { PostBehaviourType } from "@/types/postTypes";
 import { Subscription } from "@/types/subscriptions";
 import { useEffect, useState } from "react";
 
-const useUserPostLimit = (userId: string, postBehaviourType?: PostBehaviourType) => {
+const useUserPostLimit = (
+  userId: string,
+  postBehaviourType?: PostBehaviourType
+) => {
   const [subscriptionsUser, setSubscriptionsUser] = useState<Subscription[]>(
     []
   );
-  const [numberOfPosts, setNumberOfPosts] = useState(0);
+  const [numberOfPosts, setNumberOfPosts] = useState<
+    Record<PostBehaviourType, number>
+  >({
+    agenda: 0,
+    libre: 0,
+  });
 
   useEffect(() => {
+    const { signal, abort } = new AbortController();
     const fetchSubscriptionsUser = async () => {
-      const susbcriptionsOfUser = await getSubscriptionsOfUser(userId);
+      const susbcriptionsOfUser = await getSubscriptionsOfUser(userId, signal);
       setSubscriptionsUser(susbcriptionsOfUser);
     };
 
@@ -24,22 +33,37 @@ const useUserPostLimit = (userId: string, postBehaviourType?: PostBehaviourType)
 
     fetchSubscriptionsUser();
     fetchNumberOfPosts();
+
+    return () => abort();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Calculate the total post limit from active subscriptions
-  const postLimit = subscriptionsUser.reduce((acc, subscription) => {
+  const postAgendaLimit = subscriptionsUser.reduce((acc, subscription) => {
     if (subscription.status === "active") {
-      return acc + subscription.subscriptionPlan.postLimit;
+      return acc + subscription.subscriptionPlan.postsAgendaCount;
     }
     return acc;
-  }, 0); // Initialize accumulator to 0
-  const limit = postLimit || 5;
+  }, 0);
+
+  const postLibreLimit = subscriptionsUser.reduce((acc, subscription) => {
+    if (subscription.status === "active") {
+      return acc + subscription.subscriptionPlan.postsLibresCount;
+    }
+    return acc;
+  }, 0);
+
+  const limit = {
+    agenda: postAgendaLimit,
+    libre: postLibreLimit,
+  };
 
   return {
-    userCanPublishPost: numberOfPosts < limit,
+    userCanPublishPost: postBehaviourType
+      ? numberOfPosts[postBehaviourType] < limit[postBehaviourType]
+      : true,
     limit,
-    numberOfPosts: numberOfPosts,
+    numberOfPosts,
   };
 };
 

@@ -1,6 +1,7 @@
 "use server";
 import { getPaymentsQuery } from "@/graphql/suscriptionsQueries";
 import { query } from "@/lib/client";
+import { PostBehaviourType } from "@/types/postTypes";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import axios from "axios";
 
@@ -78,12 +79,13 @@ export const getSubscriptionsPlansMP = async () => {
   }
 };
 
-export const getSubscriptionsPlans = async () => {
+export const getSubscriptionsPlans = async (signal?: AbortSignal) => {
   const res = await fetch(process.env.API_URL + "/subscriptionplans", {
     next: { revalidate: 180 },
     headers: {
       Authorization: `${await auth().getToken({ template: "testing" })}`,
-    }
+    },
+    signal
   });
   if (!res.ok) {
     return {
@@ -95,9 +97,9 @@ export const getSubscriptionsPlans = async () => {
   return data;
 };
 
-export const getSubscriptionsOfUser = async (userId: string) => {
+export const getSubscriptionsOfUser = async (userId: string, signal?: AbortSignal) => {
   try {
-    const res = await fetch(process.env.API_URL + "/subscription/" + userId);
+    const res = await fetch(process.env.API_URL + "/subscription/" + userId, {signal});
     if (!res.ok) {
       return {
         error:
@@ -111,7 +113,7 @@ export const getSubscriptionsOfUser = async (userId: string) => {
   }
 };
 
-export const getUserActivePostNumber = async (userId: string) => {
+export const getUserActivePostNumber = async (userId: string): Promise<Record<PostBehaviourType, number>> => {
   // const res = await fetch(process.env.API_URL + "/subscription/" + userId);
   // if (!res.ok) {
   //   return {
@@ -122,7 +124,10 @@ export const getUserActivePostNumber = async (userId: string) => {
   // const data = await res.json();
   // return data;
 
-  return 3;
+  return {
+    agenda: 0,
+    libre: 0,
+  };
 };
 
 export const getSubscriptionPlanById = async (id: string) => {

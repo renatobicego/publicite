@@ -2,14 +2,11 @@
 import { useState } from "react";
 import SelectType from "../SelectType";
 import UploadImages from "../Upload/UploadImages";
-import { Divider, Link, Select } from "@nextui-org/react";
+import { Divider} from "@nextui-org/react";
 import CreateGood from "../CreateGood/CreateGood";
 import CreateService from "../CreateService/CreateService";
 import useUserPostLimit from "@/utils/hooks/useUserPostLimit";
 import { AttachedFilesProvider } from "./inputs/AccordionInputs/AttachedFIles/AttachedFilesContext";
-import PrimaryButton from "@/components/buttons/PrimaryButton";
-import { PACKS, SUBSCRIPTIONS } from "@/utils/data/urls";
-import SecondaryButton from "@/components/buttons/SecondaryButton";
 import { PostBehaviourType } from "@/types/postTypes";
 import SelectPostBehaviourType from "../SelectPostBehaviourType";
 import PostsLimitReached from "../PostsLimitReached";
@@ -38,7 +35,7 @@ const CreateForm = ({
         customClassname="max-md:mb-4"
       />
       <AttachedFilesProvider>
-        <div className="flex flex-col flex-1 gap-4 max-md:w-full">
+        <section className="flex flex-col flex-1 gap-4 max-md:w-full">
           <SelectPostBehaviourType
             type={postBehaviourType}
             setType={setPostBehaviourType}
@@ -79,13 +76,13 @@ const CreateForm = ({
               )}
             </>
           )}
-        </div>
+        </section>
       </AttachedFilesProvider>
-      {!userCanPublishPost && (
+      {!userCanPublishPost && postBehaviourType && (
         <PostsLimitReached
-          limit={limit}
-          numberOfPosts={numberOfPosts}
-          postBehaviourType={postBehaviourType!}
+          limit={limit[postBehaviourType]}
+          numberOfPosts={numberOfPosts[postBehaviourType]}
+          postBehaviourType={postBehaviourType}
         />
       )}
     </section>

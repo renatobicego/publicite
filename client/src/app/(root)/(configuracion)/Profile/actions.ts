@@ -85,10 +85,10 @@ export const getConfigData = async (user: { username?: string;  id: string}) => 
     user?.id as string
   ) || [];
   const accountType = subscriptions.find(
-    (subscription: Subscription) => !subscription.subscriptionPlan.isPostPack
+    (subscription: Subscription) => !subscription.subscriptionPlan.isPack
   );
   const postsPacks = subscriptions.filter(
-    (subscription: Subscription) => subscription.subscriptionPlan.isPostPack
+    (subscription: Subscription) => subscription.subscriptionPlan.isPack
   );
   const preferences = await getUserPreferences(user.username);
   if (!preferences || preferences.error || !userBoard || userBoard.error) {

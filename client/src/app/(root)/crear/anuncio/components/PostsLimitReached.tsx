@@ -18,7 +18,7 @@ const PostsLimitReached = ({
     libre: "Libre",
   };
   return (
-    <div
+    <section
       className="w-full flex flex-col items-center h-[110%] 
               backdrop-blur-md absolute mx-auto z-50
               box-shadow-[0px_4px_30px_rgba(0,0,0,0.1)] 
@@ -48,7 +48,7 @@ const PostsLimitReached = ({
       <p className="text-xs">
         También puedes modificar tus publicaciones activas en tu perfil.
       </p>
-    </div>
+    </section>
   );
 };
 

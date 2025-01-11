@@ -35,8 +35,8 @@ const CreatePetitionClient = ({
           />
         ) : (
           <PostsLimitReached
-            limit={limit}
-            numberOfPosts={numberOfPosts}
+            limit={limit[postBehaviourType]}
+            numberOfPosts={numberOfPosts[postBehaviourType]}
             postBehaviourType={postBehaviourType}
           />
         ))}
