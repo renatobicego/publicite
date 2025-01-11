@@ -21,7 +21,9 @@ const useUserPostLimit = (
   });
 
   useEffect(() => {
-    const { signal, abort } = new AbortController();
+    const abortController = new AbortController();
+    const signal = abortController.signal;
+
     const fetchSubscriptionsUser = async () => {
       const susbcriptionsOfUser = await getSubscriptionsOfUser(userId, signal);
       setSubscriptionsUser(susbcriptionsOfUser);
@@ -34,7 +36,7 @@ const useUserPostLimit = (
     fetchSubscriptionsUser();
     fetchNumberOfPosts();
 
-    return () => abort();
+    return () => abortController.abort(); 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
