@@ -21,11 +21,8 @@ const useUserPostLimit = (
   });
 
   useEffect(() => {
-    const abortController = new AbortController();
-    const signal = abortController.signal;
-
     const fetchSubscriptionsUser = async () => {
-      const susbcriptionsOfUser = await getSubscriptionsOfUser(userId, signal);
+      const susbcriptionsOfUser = await getSubscriptionsOfUser(userId);
       setSubscriptionsUser(susbcriptionsOfUser);
     };
 
@@ -36,9 +33,7 @@ const useUserPostLimit = (
     fetchSubscriptionsUser();
     fetchNumberOfPosts();
 
-    return () => abortController.abort(); 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [userId]);
 
   // Calculate the total post limit from active subscriptions
   const postAgendaLimit = subscriptionsUser.reduce((acc, subscription) => {
@@ -46,14 +41,14 @@ const useUserPostLimit = (
       return acc + subscription.subscriptionPlan.postsAgendaCount;
     }
     return acc;
-  }, 0);
+  }, 5);  // CAMBIAR A 0
 
   const postLibreLimit = subscriptionsUser.reduce((acc, subscription) => {
     if (subscription.status === "active") {
       return acc + subscription.subscriptionPlan.postsLibresCount;
     }
     return acc;
-  }, 0);
+  }, 5); // CAMBIAR A 0
 
   const limit = {
     agenda: postAgendaLimit,

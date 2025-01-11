@@ -19,17 +19,16 @@ export const processPayment = async (
         userId,
       }
     );
-  
+
     // if(status !== 200 && status !== 201){
     //   console.log(data);
     // }
-  
+
     // console.log(data)
-  
+
     return data;
-    
   } catch (error) {
-    console.log("error", error)
+    console.log("error", error);
   }
 };
 
@@ -54,11 +53,11 @@ export const editSubscription = async (
     });
     return {
       message: "Suscripción actualizada exitosamente.",
-    }
+    };
   } catch (error) {
     return {
       error: "Error al actualizar la suscripción. Por favor intenta de nuevo.",
-    }
+    };
   }
 };
 
@@ -79,13 +78,12 @@ export const getSubscriptionsPlansMP = async () => {
   }
 };
 
-export const getSubscriptionsPlans = async (signal?: AbortSignal) => {
+export const getSubscriptionsPlans = async () => {
   const res = await fetch(process.env.API_URL + "/subscriptionplans", {
     next: { revalidate: 180 },
     headers: {
       Authorization: `${await auth().getToken({ template: "testing" })}`,
     },
-    signal
   });
   if (!res.ok) {
     return {
@@ -97,9 +95,9 @@ export const getSubscriptionsPlans = async (signal?: AbortSignal) => {
   return data;
 };
 
-export const getSubscriptionsOfUser = async (userId: string, signal?: AbortSignal) => {
+export const getSubscriptionsOfUser = async (userId: string) => {
   try {
-    const res = await fetch(process.env.API_URL + "/subscription/" + userId, {signal});
+    const res = await fetch(process.env.API_URL + "/subscription/" + userId);
     if (!res.ok) {
       return {
         error:
@@ -113,7 +111,9 @@ export const getSubscriptionsOfUser = async (userId: string, signal?: AbortSigna
   }
 };
 
-export const getUserActivePostNumber = async (userId: string): Promise<Record<PostBehaviourType, number>> => {
+export const getUserActivePostNumber = async (
+  userId: string
+): Promise<Record<PostBehaviourType, number>> => {
   // const res = await fetch(process.env.API_URL + "/subscription/" + userId);
   // if (!res.ok) {
   //   return {
@@ -140,18 +140,18 @@ export const getSubscriptionPlanById = async (id: string) => {
         },
       }
     );
-    if(status !== 200 && status !== 201){
+    if (status !== 200 && status !== 201) {
       return {
         error:
           "Error al traer los datos del plan de suscripción. Por favor intenta de nuevo.",
-      }
+      };
     }
     return data;
   } catch (error) {
     return {
       error:
         "Error al traer los datos del plan de suscripción. Por favor intenta de nuevo.",
-    }
+    };
   }
 };
 
@@ -239,6 +239,6 @@ export const getPayments = async () => {
   } catch (error) {
     return {
       error: "Error al traer los pagos. Por favor intenta de nuevo.",
-    }
+    };
   }
 };

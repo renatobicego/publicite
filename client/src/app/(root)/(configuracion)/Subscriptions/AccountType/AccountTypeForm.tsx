@@ -17,14 +17,9 @@ const AccountTypeForm = ({
   const [subscriptionPlans, setSubscriptionPlans] = useState([]);
 
   useEffect(() => {
-    const abortController = new AbortController();
-    const signal = abortController.signal;
-
-    getSubscriptionsPlans(signal).then((data) => {
+    getSubscriptionsPlans().then((data) => {
       setSubscriptionPlans(data);
     });
-
-    return () => abortController.abort();
   }, []);
 
   return (
