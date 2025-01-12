@@ -94,7 +94,7 @@ export const CustomPriceInput = ({
       target: {
         ...e.target,
         name: propsAsAny.name,
-        value: parsedValue,
+        value: parseFloat(parsedValue),
       },
     };
     propsAsAny.onChange(customEvent); // Call the original onChange with the modified value
