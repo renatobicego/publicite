@@ -46,6 +46,7 @@ const Visibility = ({
           getItemTextValue={(item: any) => item.label}
           getItemLabel={(item: any) => item.label}
           name="visibility.socialMedia"
+          description="Seleccione la visibilidad de sus redes sociales dentro del anuncio."
           label="Visibilidad de sus Redes Sociales"
           placeholder="¿Quién puede ver sus redes?"
           aria-label="visibilidad de sus redes"

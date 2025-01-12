@@ -66,16 +66,14 @@ export class Post_Category {
 
 @ObjectType()
 class postReaction {
+  @Field(() => String)
+  _id: string;
 
   @Field(() => String)
-  _id: string
+  user: string;
 
   @Field(() => String)
-  user: string
-
-  @Field(() => String)
-  reaction: string
-
+  reaction: string;
 }
 
 @ObjectType()
@@ -153,4 +151,6 @@ export class Post_response_graphql_model {
   @Field(() => [postReaction], { nullable: true })
   reactions: postReaction[];
 
+  @Field(() => String)
+  postBehaviourType: 'libre' | 'agenda';
 }

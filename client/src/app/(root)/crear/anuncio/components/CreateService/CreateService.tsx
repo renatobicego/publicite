@@ -116,6 +116,7 @@ const CreateService = ({
       validateOnChange={false}
       initialValues={initialValues}
       onSubmit={handleSubmit}
+      enableReinitialize
       validationSchema={serviceValidation}
     >
       {({ isSubmitting, errors, setFieldValue, values }) => {

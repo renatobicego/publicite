@@ -18,3 +18,16 @@ export const getPaymentsQuery = gql`
     }
   }
 `;
+
+export const getPostNumbersOfUserQuery = gql`
+  query GetLimitPostOfUser {
+    getLimitPostOfUser {
+      agendaAvailable
+      agendaPostCount
+      libreAvailable
+      librePostCount
+      totalAgendaPostLimit
+      totalLibrePostLimit
+    }
+  }
+`;

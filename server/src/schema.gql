@@ -510,6 +510,7 @@ type Post_response_graphql_model {
   petitionType: String
   endDate: DateTime
   reactions: [postReaction!]
+  postBehaviourType: String!
 }
 
 type PostFindAllResponse {

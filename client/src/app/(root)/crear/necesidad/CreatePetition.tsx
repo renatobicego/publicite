@@ -108,6 +108,7 @@ const CreatePetition = ({
       validateOnChange={false}
       initialValues={initialValues}
       onSubmit={handleSubmit}
+      enableReinitialize
       validationSchema={petitionValidation}
     >
       {({ isSubmitting, errors, setFieldValue, values }) => {

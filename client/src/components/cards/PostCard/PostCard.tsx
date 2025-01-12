@@ -11,14 +11,14 @@ const PostCard = ({
   postData,
   recommendation = false,
   className,
-  savePostMagazine = false,
+  interactable = false,
   isGroupPost = false,
   showChangeExpirationDate,
 }: {
   postData: Post;
   recommendation?: boolean;
   className?: string;
-  savePostMagazine?: boolean;
+  interactable?: boolean;
   isGroupPost?: boolean;
   showChangeExpirationDate?: boolean;
   }) => {
@@ -31,7 +31,7 @@ const PostCard = ({
             post={postData as Good}
             isGroupPost={isGroupPost}
             recommendation={recommendation}
-            savePostMagazine={savePostMagazine}
+            savePostMagazine={!interactable}
           />
         );
       case "service":
@@ -40,7 +40,7 @@ const PostCard = ({
             post={postData as Service}
             isGroupPost={isGroupPost}
             recommendation={recommendation}
-            savePostMagazine={savePostMagazine}
+            savePostMagazine={!interactable}
           />
         );
       case "petition":

@@ -116,6 +116,7 @@ const CreateGood = ({
       initialValues={initialValues}
       onSubmit={handleSubmit}
       validationSchema={goodValidation}
+      enableReinitialize
     >
       {({ isSubmitting, errors, setFieldValue, values }) => {
         return (
