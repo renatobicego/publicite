@@ -147,6 +147,7 @@ const EditPostForm = ({ postData }: { postData: Good | Service }) => {
                 errors={errors}
                 isEditing
                 isService={postType === "service"}
+                postBehaviourType={postData.postBehaviourType}
               />
               <RequiredFieldsMsg />
               <div className="flex items-center gap-2 ">

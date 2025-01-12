@@ -46,7 +46,7 @@ const CreateGood = ({
     },
     postType: "good",
     visibility: {
-      post: "public",
+      post: postBehaviourType === "agenda" ? "contacts" : "public",
       socialMedia: "public",
     },
     brand: undefined,
@@ -130,7 +130,7 @@ const CreateGood = ({
               setFieldValue={setFieldValue}
               error={errors.geoLocation}
             />
-            <AccordionInputs errors={errors} />
+            <AccordionInputs errors={errors} postBehaviourType={postBehaviourType} />
             <RequiredFieldsMsg />
             <PrimaryButton
               isDisabled={isSubmitting || !userCanPublishPost}

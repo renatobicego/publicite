@@ -1,45 +1,58 @@
 import { CustomSelect } from "@/components/inputs/CustomInputs";
-import { GoodPostValues, ServicePostValues } from "@/types/postTypes";
-import { visibilityItems } from "@/utils/data/selectData";
+import {
+  GoodPostValues,
+  PostBehaviourType,
+  ServicePostValues,
+} from "@/types/postTypes";
+import {
+  relationTypes,
+  visibilityItems,
+  visibilityRegisteredOrNot,
+} from "@/utils/data/selectData";
 import { Field, FormikErrors } from "formik";
 import React, { memo } from "react";
 
 const Visibility = ({
   errors,
+  postBehaviourType,
 }: {
   errors: FormikErrors<GoodPostValues> | FormikErrors<ServicePostValues>;
+  postBehaviourType: PostBehaviourType;
 }) => {
-
   return (
     <div className="flex gap-2 max-xl:flex-wrap">
-      <Field
-        as={CustomSelect}
-        items={visibilityItems}
-        disallowEmptySelection
-        getItemValue={(item: any) => item.value}
-        getItemTextValue={(item: any) => item.label}
-        getItemLabel={(item: any) => item.label}
-        name="visibility.post"
-        label="Visibilidad del Anuncio"
-        placeholder="¿Quién puede ver el anuncio?"
-        aria-label="visibilidad del anuncio"
-        isInvalid={!!errors.visibility?.post}
-        errorMessage={errors.visibility?.post}
-      />
-      <Field
-        as={CustomSelect}
-        items={visibilityItems}
-        disallowEmptySelection
-        getItemValue={(item: any) => item.value}
-        getItemTextValue={(item: any) => item.label}
-        getItemLabel={(item: any) => item.label}
-        name="visibility.socialMedia"
-        label="Visibilidad de sus Redes Sociales"
-        placeholder="¿Quién puede ver sus redes?"
-        aria-label="visibilidad de sus redes"
-        isInvalid={!!errors.visibility?.socialMedia}
-        errorMessage={errors.visibility?.socialMedia}
-      />
+      {postBehaviourType === "agenda" && (
+        <Field
+          as={CustomSelect}
+          items={relationTypes}
+          disallowEmptySelection
+          getItemValue={(item: any) => item.value}
+          getItemTextValue={(item: any) => item.plural}
+          getItemLabel={(item: any) => item.plural}
+          name="visibility.post"
+          label="Visibilidad del Anuncio"
+          placeholder="¿Quién puede ver el anuncio?"
+          aria-label="visibilidad del anuncio"
+          isInvalid={!!errors.visibility?.post}
+          errorMessage={errors.visibility?.post}
+        />
+      )}
+      {postBehaviourType === "libre" && (
+        <Field
+          as={CustomSelect}
+          items={visibilityRegisteredOrNot}
+          disallowEmptySelection
+          getItemValue={(item: any) => item.value}
+          getItemTextValue={(item: any) => item.label}
+          getItemLabel={(item: any) => item.label}
+          name="visibility.socialMedia"
+          label="Visibilidad de sus Redes Sociales"
+          placeholder="¿Quién puede ver sus redes?"
+          aria-label="visibilidad de sus redes"
+          isInvalid={!!errors.visibility?.socialMedia}
+          errorMessage={errors.visibility?.socialMedia}
+        />
+      )}
     </div>
   );
 };
