@@ -59,13 +59,6 @@ export class SubscriptionPlanResponse {
   readonly price: number;
 
   @ApiProperty({
-    description: 'Limit of posts of the plan',
-    type: Number,
-    example: 50,
-  })
-  readonly postLimit: number;
-
-  @ApiProperty({
     description: 'indicates if the plan is free',
     type: Boolean,
     example: true,
@@ -85,7 +78,6 @@ export class SubscriptionPlanResponse {
     features: string[],
     intervalTime: number,
     price: number,
-    postLimit: number,
     isFree: boolean,
     postsLibresCount: number,
     postsAgendaCount: number
@@ -99,7 +91,6 @@ export class SubscriptionPlanResponse {
     this.features = features;
     this.intervalTime = intervalTime;
     this.price = price;
-    this.postLimit = postLimit;
     this.isFree = isFree;
     this.postsLibresCount = postsLibresCount;
     this.postsAgendaCount = postsAgendaCount

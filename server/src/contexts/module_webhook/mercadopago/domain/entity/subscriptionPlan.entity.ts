@@ -10,7 +10,6 @@ export class SubscriptionPlan {
   private features: string[];
   private intervalTime: number;
   private price: number;
-  private postLimit: number;
   private isFree: boolean;
   private postsLibresCount: number;
   private postsAgendaCount: number;
@@ -24,7 +23,6 @@ export class SubscriptionPlan {
     features: string[],
     intervalTime: number,
     price: number,
-    postLimit: number,
     isFree: boolean,
     postsLibresCount: number,
     postsAgendaCount: number
@@ -37,7 +35,6 @@ export class SubscriptionPlan {
     this.features = features;
     this.intervalTime = intervalTime;
     this.price = price;
-    this.postLimit = postLimit;
     this.isFree = isFree;
     this.postsLibresCount = postsLibresCount;
     this.postsAgendaCount = postsAgendaCount;
@@ -60,9 +57,6 @@ export class SubscriptionPlan {
   }
   public getPrice(): number {
     return this.price;
-  }
-  public getPostLimit(): number {
-    return this.postLimit;
   }
   public getIsActive(): boolean {
     return this.isActive;
@@ -92,7 +86,6 @@ export class SubscriptionPlan {
       doc.features,
       doc.intervalTime,
       doc.price,
-      doc.postLimit,
       doc.isFree,
       doc.postsLibresCount,
       doc.postsAgendaCount
@@ -111,7 +104,6 @@ export class SubscriptionPlan {
       features: subscriptionPlan.getFeatures(),
       intervalTime: subscriptionPlan.getIntervalTime(),
       price: subscriptionPlan.getPrice(),
-      postLimit: subscriptionPlan.getPostLimit(),
       isFree: subscriptionPlan.getIsFree(),
       postsLibresCount: subscriptionPlan.getPostsLibresCount(),
       postsAgendaCount: subscriptionPlan.getPostsAgendaCount()

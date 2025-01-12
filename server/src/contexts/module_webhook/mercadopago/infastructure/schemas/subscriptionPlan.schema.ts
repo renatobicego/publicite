@@ -13,7 +13,6 @@ export const SubscriptionPlanSchema = new Schema({
 	features: { type: [String], required: true },
 	intervalTime: { type: Number, required: true },
 	price: { type: Number, required: true },
-	postLimit: { type: Number, required: true },
 	isFree: { type: Boolean },
 	postsLibresCount: { type: Number },
 	postsAgendaCount: { type: Number },
@@ -28,7 +27,6 @@ export interface SubscriptionPlanDocument extends Document {
 	features: string[];
 	intervalTime: number;
 	price: number;
-	postLimit: number;
 	isFree: boolean;
 	postsLibresCount: number;
 	postsAgendaCount: number;
