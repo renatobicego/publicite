@@ -1,4 +1,4 @@
-import { GoodPostValues, ServicePostValues } from "@/types/postTypes";
+import { GoodPostValues, PostBehaviourType, ServicePostValues } from "@/types/postTypes";
 import { Form, Formik, FormikHelpers } from "formik";
 import TitleDescription from "../CreateForm/inputs/TitleDescription";
 import PriceCategory from "../CreateForm/inputs/PriceCategory";
@@ -20,10 +20,12 @@ const CreateService = ({
   files,
   userCanPublishPost,
   userId,
+  postBehaviourType,
 }: {
   files: File[];
   userCanPublishPost: boolean;
   userId?: string;
+  postBehaviourType: PostBehaviourType;
 }) => {
   const initialValues: ServicePostValues = {
     attachedFiles: [],
@@ -47,6 +49,7 @@ const CreateService = ({
       socialMedia: "public",
     },
     createAt: today(getLocalTimeZone()).toString(),
+    postBehaviourType
   };
 
   const { attachedFiles } = useAttachedFiles();
@@ -76,7 +79,9 @@ const CreateService = ({
       },
       description: values.geoLocation.description,
       userSetted: values.geoLocation.userSetted,
-      ratio: values.geoLocation.ratio ? values.geoLocation.ratio * 1000 : 5 * 1000,
+      ratio: values.geoLocation.ratio
+        ? values.geoLocation.ratio * 1000
+        : 5 * 1000,
     };
 
     const attachedFiles = values.attachedFiles.map((file) => ({
@@ -112,7 +117,7 @@ const CreateService = ({
       {({ isSubmitting, errors, setFieldValue, values }) => {
         return (
           <Form className="flex flex-col gap-4">
-            <TitleDescription errors={errors} setFieldValue={setFieldValue}/>
+            <TitleDescription errors={errors} setFieldValue={setFieldValue} />
             <PriceCategory errors={errors} isService={true} />
             <Divider />
             <h6>Busque su ubicación o seleccionela en el mapa</h6>

@@ -1,6 +1,7 @@
 "use server";
 import { getPaymentsQuery } from "@/graphql/suscriptionsQueries";
 import { query } from "@/lib/client";
+import { PostBehaviourType } from "@/types/postTypes";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import axios from "axios";
 
@@ -18,17 +19,16 @@ export const processPayment = async (
         userId,
       }
     );
-  
+
     // if(status !== 200 && status !== 201){
     //   console.log(data);
     // }
-  
+
     // console.log(data)
-  
+
     return data;
-    
   } catch (error) {
-    console.log("error", error)
+    console.log("error", error);
   }
 };
 
@@ -53,11 +53,11 @@ export const editSubscription = async (
     });
     return {
       message: "Suscripción actualizada exitosamente.",
-    }
+    };
   } catch (error) {
     return {
       error: "Error al actualizar la suscripción. Por favor intenta de nuevo.",
-    }
+    };
   }
 };
 
@@ -83,7 +83,7 @@ export const getSubscriptionsPlans = async () => {
     next: { revalidate: 180 },
     headers: {
       Authorization: `${await auth().getToken({ template: "testing" })}`,
-    }
+    },
   });
   if (!res.ok) {
     return {
@@ -111,7 +111,9 @@ export const getSubscriptionsOfUser = async (userId: string) => {
   }
 };
 
-export const getUserActivePostNumber = async (userId: string) => {
+export const getUserActivePostNumber = async (
+  userId: string
+): Promise<Record<PostBehaviourType, number>> => {
   // const res = await fetch(process.env.API_URL + "/subscription/" + userId);
   // if (!res.ok) {
   //   return {
@@ -122,7 +124,10 @@ export const getUserActivePostNumber = async (userId: string) => {
   // const data = await res.json();
   // return data;
 
-  return 3;
+  return {
+    agenda: 0,
+    libre: 0,
+  };
 };
 
 export const getSubscriptionPlanById = async (id: string) => {
@@ -135,18 +140,18 @@ export const getSubscriptionPlanById = async (id: string) => {
         },
       }
     );
-    if(status !== 200 && status !== 201){
+    if (status !== 200 && status !== 201) {
       return {
         error:
           "Error al traer los datos del plan de suscripción. Por favor intenta de nuevo.",
-      }
+      };
     }
     return data;
   } catch (error) {
     return {
       error:
         "Error al traer los datos del plan de suscripción. Por favor intenta de nuevo.",
-    }
+    };
   }
 };
 
@@ -234,6 +239,6 @@ export const getPayments = async () => {
   } catch (error) {
     return {
       error: "Error al traer los pagos. Por favor intenta de nuevo.",
-    }
+    };
   }
 };

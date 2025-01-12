@@ -1,4 +1,4 @@
-import { CustomInput, CustomSelect } from "@/components/inputs/CustomInputs";
+import { CustomInput, CustomPriceInput, CustomSelect } from "@/components/inputs/CustomInputs";
 import { frequencyPriceItems } from "@/utils/data/selectData";
 import {
   GoodPostValues,
@@ -21,9 +21,8 @@ const PriceCategory = ({
     <>
       <div className="flex gap-4 max-xl:flex-wrap">
         <Field
-          as={CustomInput}
+          as={CustomPriceInput}
           name="price"
-          type="number"
           startContent={<FaDollarSign />}
           label="Precio"
           placeholder="Agregue el precio"

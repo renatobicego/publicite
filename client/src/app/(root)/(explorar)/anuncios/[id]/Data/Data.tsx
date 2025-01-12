@@ -1,7 +1,7 @@
 import { getTimeBetweenToday } from "@/utils/functions/dates";
 import { conditionItems, frequencyPriceItems } from "@/utils/data/selectData";
 import { Good, Petition, Service } from "@/types/postTypes";
-import { parseDate, parseDateTime } from "@internationalized/date";
+import { parseDateTime } from "@internationalized/date";
 import ReviewsStars from "./ReviewsStars";
 import CategoryChip from "@/components/chips/CategoryChip";
 import ServiceChip from "@/components/chips/ServiceChip";

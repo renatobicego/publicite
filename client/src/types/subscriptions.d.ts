@@ -5,11 +5,12 @@ export interface SubscriptionPlan {
   price: number;
   features: string[];
   isFree?: boolean;
-  postLimit: number;
   intervalTime: number;
   isActive: boolean;
   mpPreapprovalPlanId: string;
-  isPostPack?: boolean;
+  isPack: boolean;
+  postsLibresCount: number;
+  postsAgendaCount: number;
 }
 
 export interface Subscription {

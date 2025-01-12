@@ -1,4 +1,4 @@
-import { CustomInput, CustomSelect } from "@/components/inputs/CustomInputs";
+import { CustomInput, CustomPriceInput, CustomSelect } from "@/components/inputs/CustomInputs";
 import { frequencyPriceItems } from "@/utils/data/selectData";
 import { PetitionPostValues, PostCategory } from "@/types/postTypes";
 import { Checkbox } from "@nextui-org/react";
@@ -36,9 +36,8 @@ const PriceRangeCategory = ({
     <div className="flex flex-col gap-4">
       <div className="flex gap-4">
         <Field
-          as={CustomInput}
+          as={CustomPriceInput}
           name="price"
-          type="number"
           startContent={<FaDollarSign />}
           label={isChecked ? "Precio Desde" : "Precio"}
           placeholder="Agregue el precio"
@@ -49,9 +48,8 @@ const PriceRangeCategory = ({
         />
         {isChecked && (
           <Field
-            as={CustomInput}
+            as={CustomPriceInput}
             name="toPrice"
-            type="number"
             startContent={<FaDollarSign />}
             label="Precio Hasta"
             placeholder="Agregue el precio"

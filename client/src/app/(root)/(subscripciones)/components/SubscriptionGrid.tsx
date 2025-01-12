@@ -1,5 +1,5 @@
 "use client";
-import { freeSubscriptionPlans, mockedPacks } from "@/utils/data/mockedData";
+import { mockedPacks } from "@/utils/data/mockedData";
 import SubscriptionPlanCard from "./SuscriptionPlanCard/SubscriptionPlanCard";
 import { useState } from "react";
 import PackCard from "./PackCard";

@@ -1,4 +1,4 @@
-import { GoodPostValues } from "@/types/postTypes";
+import { GoodPostValues, PostBehaviourType } from "@/types/postTypes";
 import { Form, Formik, FormikHelpers } from "formik";
 import { goodValidation } from "./goodValidation";
 import TitleDescription from "../CreateForm/inputs/TitleDescription";
@@ -21,10 +21,12 @@ const CreateGood = ({
   files,
   userCanPublishPost,
   userId,
+  postBehaviourType,
 }: {
   files: File[];
   userCanPublishPost: boolean;
   userId?: string;
+  postBehaviourType: PostBehaviourType;
 }) => {
   const initialValues: GoodPostValues = {
     attachedFiles: [],
@@ -51,6 +53,7 @@ const CreateGood = ({
     modelType: undefined,
     year: undefined,
     createAt: today(getLocalTimeZone()).toString(),
+    postBehaviourType
   };
   const router = useRouter();
   const { attachedFiles } = useAttachedFiles();
@@ -79,7 +82,9 @@ const CreateGood = ({
       },
       description: values.geoLocation.description,
       userSetted: values.geoLocation.userSetted,
-      ratio: values.geoLocation.ratio ? values.geoLocation.ratio * 1000 : 5 * 1000,
+      ratio: values.geoLocation.ratio
+        ? values.geoLocation.ratio * 1000
+        : 5 * 1000,
     };
 
     const attachedFiles = values.attachedFiles.map((file) => ({

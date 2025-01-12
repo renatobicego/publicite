@@ -2,19 +2,30 @@
 import { useState } from "react";
 import SelectType from "../SelectType";
 import UploadImages from "../Upload/UploadImages";
-import { Divider, Link } from "@nextui-org/react";
+import { Divider} from "@nextui-org/react";
 import CreateGood from "../CreateGood/CreateGood";
 import CreateService from "../CreateService/CreateService";
 import useUserPostLimit from "@/utils/hooks/useUserPostLimit";
 import { AttachedFilesProvider } from "./inputs/AccordionInputs/AttachedFIles/AttachedFilesContext";
-import PrimaryButton from "@/components/buttons/PrimaryButton";
-import { PACKS, SUBSCRIPTIONS } from "@/utils/data/urls";
-import SecondaryButton from "@/components/buttons/SecondaryButton";
+import { PostBehaviourType } from "@/types/postTypes";
+import SelectPostBehaviourType from "../SelectPostBehaviourType";
+import PostsLimitReached from "../PostsLimitReached";
 
-const CreateForm = ({ userId, userClerkId }: { userId?: string; userClerkId: string}) => {
+const CreateForm = ({
+  userId,
+  userClerkId,
+}: {
+  userId?: string;
+  userClerkId: string;
+}) => {
   const [type, setType] = useState<"good" | "service">();
   const [files, setFiles] = useState<File[]>([]);
-  const { userCanPublishPost, limit, numberOfPosts } = useUserPostLimit(userClerkId);
+  const [postBehaviourType, setPostBehaviourType] =
+    useState<PostBehaviourType>();
+  const { userCanPublishPost, limit, numberOfPosts } = useUserPostLimit(
+    userClerkId,
+    postBehaviourType
+  );
   return (
     <section className="w-full flex gap-4 items-start max-md:flex-col relative">
       <UploadImages
@@ -24,52 +35,55 @@ const CreateForm = ({ userId, userClerkId }: { userId?: string; userClerkId: str
         customClassname="max-md:mb-4"
       />
       <AttachedFilesProvider>
-        <div className="flex flex-col flex-1 gap-4 max-md:w-full">
-          <SelectType type={type} setType={setType} />
+        <section className="flex flex-col flex-1 gap-4 max-md:w-full">
+          <SelectPostBehaviourType
+            type={postBehaviourType}
+            setType={setPostBehaviourType}
+          />
           <Divider />
-          {!type && (
+
+          {!postBehaviourType && (
             <p className="text-red-500 text-center max-lg:text-sm">
-              Por favor, seleccione si es un bien o un servicio.
+              Por favor, seleccione si el comportamiento del anuncio es libre o
+              agenda.
             </p>
           )}
-          {type === "good" ? (
-            <CreateGood files={files} userCanPublishPost={userCanPublishPost} userId={userId}/>
-          ) : (
-            type === "service" && <CreateService files={files} userCanPublishPost={userCanPublishPost} userId={userId}/>
+          {postBehaviourType && userCanPublishPost && (
+            <>
+              <SelectType type={type} setType={setType} />
+              <Divider />
+              {!type && (
+                <p className="text-red-500 text-center max-lg:text-sm">
+                  Por favor, seleccione si es un bien o un servicio.
+                </p>
+              )}
+              {type === "good" ? (
+                <CreateGood
+                  files={files}
+                  userCanPublishPost={userCanPublishPost}
+                  userId={userId}
+                  postBehaviourType={postBehaviourType}
+                />
+              ) : (
+                type === "service" && (
+                  <CreateService
+                    files={files}
+                    userCanPublishPost={userCanPublishPost}
+                    userId={userId}
+                    postBehaviourType={postBehaviourType}
+                  />
+                )
+              )}
+            </>
           )}
-        </div>
+        </section>
       </AttachedFilesProvider>
-      {!userCanPublishPost && (
-        <div
-          className="w-full flex flex-col items-center h-[110%] 
-              backdrop-blur-md absolute mx-auto z-50
-              box-shadow-[0px_4px_30px_rgba(0,0,0,0.1)] 
-              rounded-lg -top-8
-              border border-transparent gap-4
-            "
-        >
-          <h5 className="mt-28">
-            ¡Ups! Has alcanzado el límite de publicaciones activas.
-          </h5>
-          <h6>
-            {numberOfPosts} / {limit} publicaciones activas
-          </h6>
-          <p className="lg:max-w-[60%] 2xl:max-w-[50%] 3xl:max-w-[30%] text-center">
-            Para crear un nuevo anuncio, puedes cambiar de tipo de suscripción o
-            comprar packs de publicaciones.
-          </p>
-          <div className="flex gap-2 items-center">
-            <PrimaryButton as={Link} href={SUBSCRIPTIONS}>
-              Cambiar Plan de Suscripción
-            </PrimaryButton>
-            <SecondaryButton as={Link} href={PACKS}>
-              Comprar Packs
-            </SecondaryButton>
-          </div>
-          <p className="text-xs">
-            También puedes modificar tus publicaciones activas en tu perfil.
-          </p>
-        </div>
+      {!userCanPublishPost && postBehaviourType && (
+        <PostsLimitReached
+          limit={limit[postBehaviourType]}
+          numberOfPosts={numberOfPosts[postBehaviourType]}
+          postBehaviourType={postBehaviourType}
+        />
       )}
     </section>
   );

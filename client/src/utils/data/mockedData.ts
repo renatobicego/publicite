@@ -22,6 +22,7 @@ export const categories: PostCategory[] = [
 
 const mockedGood: Good = {
   _id: "670580694c81639f199a5387",
+  postBehaviourType: "libre",
   imagesUrls: [
     "cc3ab11f-7abf-453d-95f1-5b85465f22a2-aybrx2.jpg",
     "21283bb3-8d33-4800-b109-969d15076745-hs36nz.jpg",
@@ -158,6 +159,7 @@ const mockedService: Service = {
   _id: "1jgdfas",
   imagesUrls: ["9c5124a7-ed98-4fd0-a5a2-0854d620e564-hs36nz.jpg"],
   endDate: "2024-07-12",
+  postBehaviourType: "agenda",
   description:
     "Te invitamos a que nos conozcas y puedas disfrutar con tus seres queridos de tu evento tal como lo soñaste. Elaboramos bocadillos totalmente caseros y con material de primera calidad.",
   title: "Lunch para eventos social y corporativos",
@@ -218,6 +220,7 @@ const mockedPetition: Petition = {
   _id: "1452",
   title: "Busco iPhone 14 Pro Max",
   endDate: "2024-07-12",
+  postBehaviourType: "libre",
   reactions: [
     {
       _id: "1",
@@ -282,6 +285,7 @@ const mockedPetition2: Petition = {
     name: "name",
     _id: "66fb19fd316723a55b9d0ccb",
   },
+  postBehaviourType: "agenda",
   reactions: [
     {
       _id: "1",
@@ -330,8 +334,9 @@ export const freeSubscriptionPlans: SubscriptionPlan[] = [
     isFree: true,
     intervalTime: 1,
     isActive: true,
-    postLimit: 5,
-    isPostPack: false,
+    postsAgendaCount: 5,
+    postsLibresCount: 5,
+    isPack: false,
     mpPreapprovalPlanId: "",
   },
 ];
@@ -346,9 +351,10 @@ export const mockedPacks: SubscriptionPlan[] = [
     features: [],
     intervalTime: 1,
     isActive: true,
-    postLimit: 10,
+    postsAgendaCount: 10,
+    postsLibresCount: 10,
     mpPreapprovalPlanId: "",
-    isPostPack: true,
+    isPack: true,
   },
   {
     _id: "2c9368849146ff3d01914739031d0028",
@@ -359,9 +365,10 @@ export const mockedPacks: SubscriptionPlan[] = [
     features: [],
     intervalTime: 1,
     isActive: true,
-    postLimit: 20,
+    postsAgendaCount: 20,
+    postsLibresCount: 20,
     mpPreapprovalPlanId: "",
-    isPostPack: true,
+    isPack: true,
   },
   {
     _id: "2c9368849146ff3d01914739038",
@@ -372,9 +379,10 @@ export const mockedPacks: SubscriptionPlan[] = [
     features: [],
     intervalTime: 1,
     isActive: true,
-    postLimit: 50,
+    postsAgendaCount: 50,
+    postsLibresCount: 50,
     mpPreapprovalPlanId: "",
-    isPostPack: true,
+    isPack: true,
   },
 ];
 
