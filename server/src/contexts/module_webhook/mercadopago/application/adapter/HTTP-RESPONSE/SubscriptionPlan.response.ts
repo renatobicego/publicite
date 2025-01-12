@@ -72,6 +72,10 @@ export class SubscriptionPlanResponse {
   })
   readonly isFree: boolean
 
+  readonly postsLibresCount: number
+  readonly postsAgendaCount: number
+
+
   constructor(
     _id: ObjectId,
     mpPreapprovalPlanId: string,
@@ -83,6 +87,9 @@ export class SubscriptionPlanResponse {
     price: number,
     postLimit: number,
     isFree: boolean,
+    postsLibresCount: number,
+    postsAgendaCount: number
+
   ) {
     this._id = _id;
     this.mpPreapprovalPlanId = mpPreapprovalPlanId;
@@ -94,5 +101,7 @@ export class SubscriptionPlanResponse {
     this.price = price;
     this.postLimit = postLimit;
     this.isFree = isFree;
+    this.postsLibresCount = postsLibresCount;
+    this.postsAgendaCount = postsAgendaCount
   }
 }

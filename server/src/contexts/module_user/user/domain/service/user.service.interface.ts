@@ -25,11 +25,13 @@ export interface UserServiceInterface {
   findUserByUsername(username: string, userRequestId?: string): Promise<any>;
 
   getUserPersonalInformationByUsername(username: string): Promise<any>;
-  getRelationsFromUserByUserId(userRequestId: string) :Promise<any>
+  getRelationsFromUserByUserId(userRequestId: string): Promise<any>;
+  isThisUserAllowedToPost(author: string, postBehaviourType: string): Promise<boolean>;
   getUserPreferencesByUsername(
     username: string,
   ): Promise<UserPreferences | null>;
 
+  getPostAndLimitsFromUserByUserId(author: string): Promise<any>
   makeFriendRelationBetweenUsers(
     backData: { userIdFrom: string; userIdTo: string },
     typeOfRelation: string,

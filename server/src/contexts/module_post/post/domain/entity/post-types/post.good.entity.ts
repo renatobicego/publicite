@@ -34,7 +34,10 @@ export class PostGood extends Post {
       post.getAttachedFiles as any,
       post.getCreateAt,
       post.getReactions,
+      post.getPostBehaviourType,
+      post.getIsActive,
       post.getId,
+      
     );
 
     this.imagesUrls = imagesUrls || [];

@@ -28,6 +28,8 @@ export interface UserRepositoryInterface {
 
   getRelationsFromUserByUserId(userRequestId: string): Promise<any>
 
+  getPostAndLimitsFromUserByUserId(author: string): Promise<any>
+
   pushNotification(notification: any, userId: string, session?: any): Promise<any>;
   pushNewFriendRequestOrRelationRequestToUser(notificationId: Types.ObjectId, userNotificationOwner: string, session: any): Promise<any>
 

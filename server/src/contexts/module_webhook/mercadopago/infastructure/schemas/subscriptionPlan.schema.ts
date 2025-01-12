@@ -15,6 +15,8 @@ export const SubscriptionPlanSchema = new Schema({
 	price: { type: Number, required: true },
 	postLimit: { type: Number, required: true },
 	isFree: { type: Boolean },
+	postsLibresCount: { type: Number },
+	postsAgendaCount: { type: Number },
 	_id: { type: Types.ObjectId, default: Types.ObjectId },
 })
 
@@ -28,5 +30,7 @@ export interface SubscriptionPlanDocument extends Document {
 	price: number;
 	postLimit: number;
 	isFree: boolean;
+	postsLibresCount: number;
+	postsAgendaCount: number;
 	_id: ObjectId;
 }

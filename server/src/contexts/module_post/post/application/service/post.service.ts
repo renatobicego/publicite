@@ -1,4 +1,4 @@
-import { Inject } from '@nestjs/common';
+import { BadRequestException, Inject } from '@nestjs/common';
 import { Connection } from 'mongoose';
 import { InjectConnection } from '@nestjs/mongoose';
 
@@ -16,7 +16,10 @@ import { removeAccents_removeEmojisAndToLowerCase } from '../../domain/utils/nor
 import { checkStopWordsAndReturnSearchQuery, SearchType } from 'src/contexts/module_shared/utils/functions/checkStopWordsAndReturnSearchQuery';
 import { makeUserRelationMap } from 'src/contexts/module_shared/utils/functions/makeUserRelationMap';
 import { PostsMemberGroupResponse } from 'src/contexts/module_shared/sharedGraphql/group.posts.member.response';
-import { UserLocation_group } from 'src/contexts/module_group/group/application/adapter/dto/HTTP-REQUEST/user.location.request';
+import { PostLimitResponseGraphql } from '../../domain/entity/models_graphql/HTTP-RESPONSE/post.limit.response.graphql';
+import { PostBehaviourType } from '../../domain/entity/enum/postBehaviourType.enum';
+import { Visibility } from '../../domain/entity/enum/post-visibility.enum';
+
 
 
 export class PostService implements PostServiceInterface {
@@ -32,16 +35,29 @@ export class PostService implements PostServiceInterface {
 
 
 
+
+
   async create(post: PostRequest): Promise<any> {
     const postType = post.postType.toLowerCase();
     if (!postType) throw new Error('Post type is required');
     const postFactory = PostFactory.getInstance(this.logger);
     const postMapped = postFactory.createPost(postType as PostType, post);
 
+    const author = postMapped.getAuthor ?? undefined;
+    const postBehaviourType = postMapped.getPostBehaviourType ?? undefined;
+    if (!author || !postBehaviourType) throw new Error('Author or postBehaviourType is required');
+
     const session = await this.connection.startSession();
     let newPostId: String;
     try {
       const newPostIdId = await session.withTransaction(async () => {
+
+        const isThisUserAllowedToPost = await this.userService.isThisUserAllowedToPost(
+          author,
+          postBehaviourType,
+        )
+
+        if (!isThisUserAllowedToPost) throw new Error('No es posible crear el post, agostaste el limite de posts según tu plan');
 
         //Post to save
         newPostId = await this.postRepository.create(postMapped, {
@@ -163,6 +179,14 @@ export class PostService implements PostServiceInterface {
     }
   }
 
+  async getLimitPostOfUser(userRequestId: string): Promise<PostLimitResponseGraphql> {
+    try {
+      return await this.userService.getPostAndLimitsFromUserByUserId(userRequestId)
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
 
 
   async makeUserMapRelation(userRequestId: string): Promise<any> {
@@ -202,6 +226,29 @@ export class PostService implements PostServiceInterface {
       throw error;
     }
   }
+
+  async updateBehaviourType(_id: string, postBehaviourType: PostBehaviourType, userRequestId: string, visibility: Visibility): Promise<any> {
+    try {
+
+      this.logger.log('Updating behaviour_type from post with id: ' + _id);
+      const isAllawedToChange = await this.userService.isThisUserAllowedToPost(userRequestId, postBehaviourType);
+
+      if (isAllawedToChange) {
+        const makeObjectUpdate = {
+          postBehaviourType: postBehaviourType,
+          "visibility.post": visibility,
+          "visibility.socialMedia": visibility
+        }
+
+        return await this.postRepository.updateBehaviourType(_id, makeObjectUpdate);
+      } else {
+        throw new BadRequestException('You are not allowed to change behaviour_type, please upgrade your plan');
+      }
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
 
 
   async removeReactionFromPost(userRequestId: string, _id: string): Promise<any> {

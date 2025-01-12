@@ -2,15 +2,13 @@ import { Field, InputType, ObjectType } from '@nestjs/graphql';
 import { ObjectId } from 'mongoose';
 import { PostType } from '../../enum/post-type.enum';
 import { Visibility } from '../../enum/post-visibility.enum';
+import { PostBehaviourType } from '../../enum/postBehaviourType.enum';
 
 
 @InputType()
 class VisibilityOfPost {
   @Field(() => Visibility)
   post: Visibility;
-
-  @Field(() => Visibility)
-  socialMedia: Visibility;
 }
 
 @InputType()
@@ -83,8 +81,9 @@ export class PostRequest {
   @Field(() => String)
   createAt: string;
 
-  @Field(() => String, { nullable: true })
-  _id: ObjectId;
+  @Field(() => PostBehaviourType)
+  postBehaviourType: PostBehaviourType;
+
 
 
   // attributes of good
@@ -115,6 +114,7 @@ export class PostRequest {
 
   @Field(() => String, { nullable: true })
   petitionType: string;
+
 
 
 }

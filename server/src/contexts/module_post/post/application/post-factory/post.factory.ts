@@ -32,7 +32,7 @@ export class PostFactory implements PostFactoryInterface {
     createPost(postType: PostType, post: PostRequest): Post {
         const visibilityNormalizated = {
             post: post.visibility.post.toLowerCase(),
-            socialMedia: post.visibility.socialMedia.toLowerCase(),
+            socialMedia: post.visibility.post.toLowerCase(),
         };
         const postAttachedEmpty = {
             url: '',
@@ -42,8 +42,10 @@ export class PostFactory implements PostFactoryInterface {
 
         const searchTitle = removeAccents_removeEmojisAndToLowerCase(post.title)
         const searchDescription = removeAccents_removeEmojisAndToLowerCase(post.description)
-
+        const isActive = true
         post.geoLocation.location.type = 'Point';
+
+
         const postBase = new Post(
             post.title,
             searchTitle,
@@ -60,6 +62,8 @@ export class PostFactory implements PostFactoryInterface {
             post.attachedFiles ?? [postAttachedEmpty] as any,
             post.createAt,
             postReactions,
+            post.postBehaviourType,
+            isActive,
         );
 
 

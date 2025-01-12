@@ -3,7 +3,7 @@ import { Args, Mutation, Resolver, Query, Context } from '@nestjs/graphql';
 import { ClerkAuthGuard } from 'src/contexts/module_shared/auth/clerk-auth/clerk.auth.guard';
 
 import { PostAdapterInterface } from 'src/contexts/module_post/post/application/adapter/post.adapter.interface';
-import { PostUpdateRequest } from 'src/contexts/module_post/post/domain/entity/models_graphql/HTTP-REQUEST/post.update.request';
+import { PostUpdateRequest, VisibilityEnum } from 'src/contexts/module_post/post/domain/entity/models_graphql/HTTP-REQUEST/post.update.request';
 import { Post_response_graphql_model } from 'src/contexts/module_post/post/domain/entity/models_graphql/HTTP-RESPONSE/post.response.graphql';
 import { PostFindAllResponse } from 'src/contexts/module_post/post/domain/entity/models_graphql/HTTP-RESPONSE/findAll-response/post.findAll.response';
 import { Post_Full_Graphql_Model } from 'src/contexts/module_post/post/domain/entity/models_graphql/post.full.grapql.model';
@@ -15,6 +15,9 @@ import {
   PostRequest,
 } from '../../../domain/entity/models_graphql/HTTP-REQUEST/post.request';
 import { UserLocation } from '../../../domain/entity/models_graphql/HTTP-REQUEST/post.location.request';
+import { PostLimitResponseGraphql } from '../../../domain/entity/models_graphql/HTTP-RESPONSE/post.limit.response.graphql';
+import { PostBehaviourType } from '../../../domain/entity/enum/postBehaviourType.enum';
+import { Visibility } from '../../../domain/entity/enum/post-visibility.enum';
 
 
 @Resolver('Post')
@@ -44,6 +47,51 @@ export class PostResolver {
       throw error;
     }
   }
+
+  @Mutation(() => String, {
+    nullable: true,
+    description: 'Actualizar comportamiento del post',
+  })
+  @UseGuards(ClerkAuthGuard)
+  async updateBehaviourType(
+    @Args('_id', { type: () => String, description: 'id del post' }) _id: string,
+    @Args('postBehaviourType', { type: () => PostBehaviourType, description: 'Comportamiento del post' }) postBehaviourType: PostBehaviourType,
+    @Args('author_id', { type: () => String }) author_id: string,
+    @Args('visibility', { type: () => Visibility, description: 'Visibilidad del post' }) visibility: Visibility,
+    @Context() context: { req: CustomContextRequestInterface },
+  ): Promise<any> {
+    try {
+      const userRequestId = context.req.userRequestId;
+      if (!author_id) throw new Error('author_id is required');
+      PubliciteAuth.authorize(userRequestId, author_id);
+      await this.postAdapter.updateBehaviourType(_id, postBehaviourType, author_id, visibility);
+      return 'Post updated successfully';
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
+
+
+  @Query(() => PostLimitResponseGraphql, {
+    nullable: true,
+    description: 'Obtiene los posts totales del usuario y los limites segun su plan',
+  })
+  @UseGuards(ClerkAuthGuard)
+  async getLimitPostOfUser(
+    @Context() context: { req: CustomContextRequestInterface },
+  ): Promise<any> {
+    try {
+      const userRequestId = context.req.userRequestId;
+      return await this.postAdapter.getLimitPostOfUser(userRequestId);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
+
 
   @Mutation(() => String, {
     nullable: true,

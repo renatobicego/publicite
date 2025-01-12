@@ -12,8 +12,11 @@ export class SubscriptionPlan {
   private price: number;
   private postLimit: number;
   private isFree: boolean;
+  private postsLibresCount: number;
+  private postsAgendaCount: number;
 
   constructor(
+    _id: ObjectId,
     mpPreapprovalPlanId: string,
     isActive: boolean,
     reason: string,
@@ -22,8 +25,9 @@ export class SubscriptionPlan {
     intervalTime: number,
     price: number,
     postLimit: number,
-    _id: ObjectId,
     isFree: boolean,
+    postsLibresCount: number,
+    postsAgendaCount: number
   ) {
     this._id = _id;
     this.mpPreapprovalPlanId = mpPreapprovalPlanId;
@@ -35,6 +39,8 @@ export class SubscriptionPlan {
     this.price = price;
     this.postLimit = postLimit;
     this.isFree = isFree;
+    this.postsLibresCount = postsLibresCount;
+    this.postsAgendaCount = postsAgendaCount;
   }
 
   public getId(): ObjectId {
@@ -68,8 +74,17 @@ export class SubscriptionPlan {
     return this.isFree;
   }
 
+  public getPostsLibresCount(): number {
+    return this.postsLibresCount;
+  }
+
+  public getPostsAgendaCount(): number {
+    return this.postsAgendaCount;
+  }
+
   static fromDocument(doc: any): SubscriptionPlan {
     return new SubscriptionPlan(
+      doc._id ? doc._id : '',
       doc.mpPreapprovalPlanId,
       doc.isActive,
       doc.reason,
@@ -78,8 +93,9 @@ export class SubscriptionPlan {
       doc.intervalTime,
       doc.price,
       doc.postLimit,
-      doc._id ? doc._id : '',
       doc.isFree,
+      doc.postsLibresCount,
+      doc.postsAgendaCount
     );
   }
 
@@ -97,6 +113,8 @@ export class SubscriptionPlan {
       price: subscriptionPlan.getPrice(),
       postLimit: subscriptionPlan.getPostLimit(),
       isFree: subscriptionPlan.getIsFree(),
+      postsLibresCount: subscriptionPlan.getPostsLibresCount(),
+      postsAgendaCount: subscriptionPlan.getPostsAgendaCount()
     };
   }
 }

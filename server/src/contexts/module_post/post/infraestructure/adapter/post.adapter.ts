@@ -1,4 +1,4 @@
-import { Inject } from '@nestjs/common';
+import { BadRequestException, Inject } from '@nestjs/common';
 
 import { PostMapperAdapterInterface } from 'src/contexts/module_post/post/application/adapter/mapper/post.adapter.mapper.interface';
 import { PostAdapterInterface } from 'src/contexts/module_post/post/application/adapter/post.adapter.interface';
@@ -10,6 +10,9 @@ import { PostUpdateRequest } from 'src/contexts/module_post/post/domain/entity/m
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { PostServiceInterface } from '../../domain/service/post.service.interface';
 import { UserLocation } from '../../domain/entity/models_graphql/HTTP-REQUEST/post.location.request';
+import { PostLimitResponseGraphql } from '../../domain/entity/models_graphql/HTTP-RESPONSE/post.limit.response.graphql';
+import { PostBehaviourType } from '../../domain/entity/enum/postBehaviourType.enum';
+import { Visibility } from '../../domain/entity/enum/post-visibility.enum';
 
 
 export class PostAdapter implements PostAdapterInterface {
@@ -94,6 +97,14 @@ export class PostAdapter implements PostAdapterInterface {
 
 
 
+  async getLimitPostOfUser(userRequestId: string): Promise<PostLimitResponseGraphql> {
+    try {
+      return await this.postService.getLimitPostOfUser(userRequestId);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
   async updatePostById(
     postUpdate: PostUpdateRequest,
     id: string,
@@ -117,6 +128,25 @@ export class PostAdapter implements PostAdapterInterface {
       throw error;
     }
   }
+
+  async updateBehaviourType(_id: string, postBehaviourType: PostBehaviourType, userRequestId: string, visibility: Visibility): Promise<any> {
+    try {
+      if (postBehaviourType === PostBehaviourType.agenda) {
+        if (visibility === undefined || visibility === null) {
+          throw new BadRequestException("visibility is required when postBehaviourType is agenda");
+        }
+        if (visibility === Visibility.public) {
+          throw new BadRequestException("visibility can't be public when postBehaviourType is agenda");
+        }
+      } else {
+        visibility != Visibility.public ? visibility = Visibility.public : visibility = Visibility.public;
+      }
+      return await this.postService.updateBehaviourType(_id, postBehaviourType, userRequestId, visibility);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
 
   async removeReactionFromPost(userRequestId: string, _id: string): Promise<any> {
     try {

@@ -521,6 +521,15 @@ type PostIdResponse {
   _id: String!
 }
 
+type PostLimitResponseGraphql {
+  agendaPostCount: Float!
+  librePostCount: Float!
+  totalAgendaPostLimit: Float!
+  totalLibrePostLimit: Float!
+  agendaAvailable: Float!
+  libreAvailable: Float!
+}
+
 type PostCategoryResponse {
   label: String!
   _id: String!
@@ -570,6 +579,9 @@ type Query {
 
   """Buscar los pagos por id de clerk"""
   findPaymentByClerkId(id: String!): [PaymentResponse!]
+
+  """Obtiene los posts totales del usuario y los limites segun su plan"""
+  getLimitPostOfUser: PostLimitResponseGraphql
 
   """Obtener todos los posts del autor por id"""
   findPostsByAuthorId(authorId: String!): [Post_Full_Graphql_Model!]
@@ -649,6 +661,19 @@ type Mutation {
 
   """Crear un post"""
   createPost(postRequest: PostRequest!, author_id: String!): PostIdResponse
+
+  """Actualizar comportamiento del post"""
+  updateBehaviourType(
+    """id del post"""
+    _id: String!
+
+    """Comportamiento del post"""
+    postBehaviourType: PostBehaviourType!
+    author_id: String!
+
+    """Visibilidad del post"""
+    visibility: Visibility_of_the_post!
+  ): String
 
   """eliminar un post por id"""
   deletePostById(id: String!, author_id: String!): String
@@ -774,7 +799,7 @@ input PostRequest {
   comments: [String!]
   attachedFiles: [AttachedFilesRequest!]
   createAt: String!
-  _id: String
+  postBehaviourType: PostBehaviourType!
   imagesUrls: [String!]
   year: Float
   brand: String
@@ -787,7 +812,6 @@ input PostRequest {
 
 input VisibilityOfPost {
   post: Visibility_of_the_post!
-  socialMedia: Visibility_of_the_post!
 }
 
 """Visibility of the post """
@@ -814,6 +838,12 @@ input LocationPost {
 input AttachedFilesRequest {
   url: String!
   label: String!
+}
+
+"""Type of the post """
+enum PostBehaviourType {
+  libre
+  agenda
 }
 
 input PostUpdateRequest {

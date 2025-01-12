@@ -31,6 +31,9 @@ import { checkStopWordsAndReturnSearchQuery, SearchType } from 'src/contexts/mod
 import { UserLocation } from '../../domain/entity/models_graphql/HTTP-REQUEST/post.location.request';
 import { PostReactionDocument } from '../schemas/post.reaction.schema';
 import { PostsMemberGroupResponse } from 'src/contexts/module_shared/sharedGraphql/group.posts.member.response';
+import { Visibility } from '../../domain/entity/enum/post-visibility.enum';
+import { PostBehaviourType } from '../../domain/entity/enum/postBehaviourType.enum';
+import { Dictionary } from 'lodash';
 
 
 
@@ -59,8 +62,6 @@ export class PostRepository implements PostRepositoryInterface {
     private readonly logger: MyLoggerService,
     @InjectConnection() private readonly connection: Connection,
   ) { }
-
-
 
 
 
@@ -115,6 +116,8 @@ export class PostRepository implements PostRepositoryInterface {
     }
   }
 
+
+
   async deletePostById(id: string): Promise<void> {
     const session = await this.connection.startSession();
     try {
@@ -152,6 +155,8 @@ export class PostRepository implements PostRepositoryInterface {
       session.endSession();
     }
   }
+
+
 
   async findPostsByAuthorId(id: string): Promise<any> {
     try {
@@ -231,9 +236,6 @@ export class PostRepository implements PostRepositoryInterface {
   }
 
 
-
-
-
   async findFriendPosts(
     postType: string,
     userRequestId: string,
@@ -310,9 +312,6 @@ export class PostRepository implements PostRepositoryInterface {
       throw new Error('Unable to fetch friend posts. Please try again later.');
     }
   }
-
-
-
 
   async findAllPostByPostType(
     page: number,
@@ -452,7 +451,7 @@ export class PostRepository implements PostRepositoryInterface {
     page: number
   ): Promise<PostsMemberGroupResponse | null> {
     try {
-
+      this.postDocument.updateMany({ author: { $in: membersId } }, { $set: { postBehaviourType: 'libre' } });
       if (membersId.length < 0) return { userAndPosts: [], hasMore: false };
       const posts = await this.postDocument.aggregate([
         {
@@ -523,16 +522,6 @@ export class PostRepository implements PostRepositoryInterface {
       throw error;
     }
   }
-
-
-
-
-
-
-
-
-
-
 
 
   async saveGoodPost(
@@ -608,6 +597,9 @@ export class PostRepository implements PostRepositoryInterface {
     }
   }
 
+
+
+
   async updatePostById(
     postUpdate: PostUpdateDto,
     id: string,
@@ -664,6 +656,18 @@ export class PostRepository implements PostRepositoryInterface {
   }
 
 
+  async updateBehaviourType(_id: string, objectUpdate: { postBehaviourType: PostBehaviourType; 'visibility.post': Visibility, 'visibility.socialMedia': Visibility }): Promise<any> {
+    try {
+      await this.postDocument.updateOne({ _id }, objectUpdate);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
+
+
+
   async makeReactionSchemaAndSetReactionToPost(postId: string, reaction: { user: string, reaction: string }, session: any): Promise<any> {
     try {
       const postReaction = new this.postReactionDocument(reaction);
@@ -681,6 +685,8 @@ export class PostRepository implements PostRepositoryInterface {
       throw error;
     }
   }
+
+
 
   async removeReactionFromPost(userRequestId: string, _id: string): Promise<any> {
     try {

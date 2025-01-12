@@ -1,4 +1,5 @@
 
+import { ObjectId } from "mongoose";
 import { UserType } from "../../domain/entity/enum/user.enums";
 import { User } from "../../domain/entity/user.entity";
 import { UserBusiness } from "../../domain/entity/userBusiness.entity";
@@ -26,7 +27,7 @@ export class UserFactory implements UserFactoryInterface {
 
 
     createUser(userType: string, userRequest: any): User {
-
+        const subscriptionFree = ["675f2b75b0a367029a0d35a6" as unknown as ObjectId]
 
         const userBase = new User(
             userRequest.clerkId,
@@ -41,7 +42,7 @@ export class UserFactory implements UserFactoryInterface {
             userRequest.userType,
             undefined, // contact undefined
             userRequest.createdTime,
-            userRequest.subscriptions,
+            subscriptionFree,
             userRequest.groups,
             userRequest.magazines,
             userRequest.board,

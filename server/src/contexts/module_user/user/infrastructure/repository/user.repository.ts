@@ -226,6 +226,35 @@ export class UserRepository implements UserRepositoryInterface {
     }
   }
 
+
+  async getPostAndLimitsFromUserByUserId(author: string): Promise<any> {
+    const user = await this.user.findById(author)
+      .select("posts subscriptions -_id")
+      .populate([
+        {
+          path: "posts isActive",
+          match: { isActive: true },
+          select: "postBehaviourType",
+        },
+        {
+          path: "subscriptions",
+          select: "subscriptionPlan status",
+          match: { status: 'authorized' },
+          populate: {
+            path: "subscriptionPlan",
+            select: "postsLibresCount postsAgendaCount",
+          }
+        },
+      ]);
+    if (!user) {
+      console.error("No se encontró el usuario.");
+      return null;
+    }
+    return user;
+  }
+
+
+
   async makeFriendRelationBetweenUsers(
     userRelation: UserRelation,
     session: any,

@@ -2,6 +2,9 @@ import { PostUpdateDto } from 'src/contexts/module_post/post/domain/entity/dto/p
 import { PostRequest } from '../../domain/entity/models_graphql/HTTP-REQUEST/post.request';
 import { PostUpdateRequest } from '../../domain/entity/models_graphql/HTTP-REQUEST/post.update.request';
 import { UserLocation } from '../../domain/entity/models_graphql/HTTP-REQUEST/post.location.request';
+import { PostLimitResponseGraphql } from '../../domain/entity/models_graphql/HTTP-RESPONSE/post.limit.response.graphql';
+import { PostBehaviourType } from '../../domain/entity/enum/postBehaviourType.enum';
+import { Visibility } from '../../domain/entity/enum/post-visibility.enum';
 
 
 export interface PostAdapterInterface {
@@ -18,11 +21,13 @@ export interface PostAdapterInterface {
   ): Promise<void>;
   findMatchPost(postType: string, searchTerm: string): Promise<void>;
   findFriendPosts(postType: string, userRequestId: string, page: number, limit: number, searchTerm?: string): Promise<void>;
+  getLimitPostOfUser(userRequestId: string): Promise<PostLimitResponseGraphql>;
   updatePostById(
     postUpdate: PostUpdateRequest,
     id: string,
     cookie?: any,
   ): Promise<PostUpdateDto>;
+  updateBehaviourType(_id: string, postBehaviourType: PostBehaviourType, userRequestId: string, visibility: Visibility): Promise<any>;
   updateEndDateFromPostById(postId: string, userRequestId: string, newDate: Date): Promise<void>;
   removeReactionFromPost(userRequestId: string, _id: string): Promise<any>;
 }

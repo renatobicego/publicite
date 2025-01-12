@@ -17,6 +17,20 @@ import { UserFindAllResponse } from '../adapter/dto/HTTP-RESPONSE/user.response.
 import { UserType } from '../../domain/entity/enum/user.enums';
 import { UserRelation } from '../../domain/entity/userRelation.entity';
 
+interface userWithPostsAndSubscriptions {
+  posts: [{
+    postBehaviourType: string // libre o agenda
+  }]
+  subscriptions: [
+    {
+      subscriptionPlan: {
+        postsLibresCount: number
+        postsAgendaCount: number
+      }
+    }
+  ]
+}
+
 @Injectable()
 export class UserService implements UserServiceInterface {
   constructor(
@@ -26,7 +40,8 @@ export class UserService implements UserServiceInterface {
     private readonly contactService: ContactServiceInterface,
     private readonly logger: MyLoggerService,
     @InjectConnection() private readonly connection: Connection,
-  ) {}
+  ) { }
+
 
   async makeFriendRelationBetweenUsers(
     backData: { userIdFrom: string; userIdTo: string },
@@ -65,7 +80,7 @@ export class UserService implements UserServiceInterface {
           case UserType.Person:
             this.logger.log(
               'Creating PERSONAL ACCOUNT with username: ' +
-                userEntity.getUsername,
+              userEntity.getUsername,
             );
 
             return await this.userRepository.save(userEntity, session);
@@ -73,7 +88,7 @@ export class UserService implements UserServiceInterface {
           case UserType.Business:
             this.logger.log(
               'Creating BUSINESS ACCOUNT with username: ' +
-                userEntity.getUsername,
+              userEntity.getUsername,
             );
 
             return await this.userRepository.save(userEntity, session);
@@ -184,6 +199,77 @@ export class UserService implements UserServiceInterface {
     }
   }
 
+  async getPostAndLimitsFromUserByUserId(author: string): Promise<any> {
+    try {
+      const userWithSubscriptionsAndPosts: userWithPostsAndSubscriptions =
+        await this.userRepository.getPostAndLimitsFromUserByUserId(author);
+      if (!userWithSubscriptionsAndPosts) {
+        this.logger.log('User not found');
+        return false;
+      }
+      const { totalAgendaPostLimit, totalLibrePostLimit } = userWithSubscriptionsAndPosts.subscriptions.reduce(
+        (limits, subscription) => {
+          limits.totalAgendaPostLimit += subscription.subscriptionPlan.postsAgendaCount; 
+          limits.totalLibrePostLimit += subscription.subscriptionPlan.postsLibresCount;
+          return limits;
+        },
+        { totalAgendaPostLimit: 0, totalLibrePostLimit: 0 }
+      );
+
+
+      const { agendaPostCount, librePostCount } = userWithSubscriptionsAndPosts.posts.reduce(
+        (counts, post) => {
+          if (post.postBehaviourType === 'agenda') counts.agendaPostCount++;
+          if (post.postBehaviourType === 'libre') counts.librePostCount++;
+          return counts;
+        },
+        { agendaPostCount: 0, librePostCount: 0 }
+      );
+      this.logger.log("Agenda post count: " + agendaPostCount + " Libre post count: " + librePostCount);
+      this.logger.log("Total agenda limit: " + totalAgendaPostLimit + " - Total libre limit: " + totalLibrePostLimit);
+
+      const agendaAvailable = totalAgendaPostLimit - agendaPostCount;
+      const libreAvailable = totalLibrePostLimit - librePostCount;
+      this.logger.log('Agenda available: ' + agendaAvailable);
+      this.logger.log('Libre available: ' + libreAvailable);
+
+      return { agendaPostCount, librePostCount, totalAgendaPostLimit, totalLibrePostLimit, agendaAvailable, libreAvailable };
+    } catch (error: any) {
+      throw error;
+    }
+  }
+  async isThisUserAllowedToPost(authorId: string, postBehaviourType: string): Promise<boolean> {
+    try {
+
+
+      const { agendaPostCount, librePostCount, totalAgendaPostLimit, totalLibrePostLimit } = await this.getPostAndLimitsFromUserByUserId(authorId);
+
+      switch (postBehaviourType) {
+        case 'agenda':
+          if (agendaPostCount >= totalAgendaPostLimit) {
+            this.logger.log('Agenda post limit reached');
+            return false;
+          }
+          return true;
+        case 'libre':
+          if (librePostCount >= totalLibrePostLimit) {
+            this.logger.log('Libre post limit reached');
+            return false;
+          }
+          return true;
+        default:
+          this.logger.log('Invalid post type specified');
+          return false;
+      }
+    } catch (error: any) {
+      this.logger.error('Error while verifying user posting permissions', error);
+      throw error;
+    }
+  }
+
+
+
+
   async pushNotificationToUserArrayNotifications(
     notification: Types.ObjectId,
     userId: string,
@@ -278,7 +364,7 @@ export class UserService implements UserServiceInterface {
     } catch (error: any) {
       this.logger.error(
         'An error has occurred in user service - updateFriendRelationOfUsers: ' +
-          error,
+        error,
       );
       throw error;
     }
@@ -296,7 +382,7 @@ export class UserService implements UserServiceInterface {
     } catch (error: any) {
       this.logger.error(
         'An error has occurred in user service - updateUserPreferencesByUsername: ' +
-          error,
+        error,
       );
       throw error;
     }
@@ -332,7 +418,7 @@ export class UserService implements UserServiceInterface {
     } catch (error: any) {
       this.logger.error(
         'An error has occurred in user service - UpdateUserByClerk: ' +
-          error.message,
+        error.message,
       );
       throw error;
     }

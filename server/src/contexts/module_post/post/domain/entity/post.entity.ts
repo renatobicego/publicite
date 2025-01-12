@@ -39,6 +39,8 @@ export class Post {
   private attachedFiles: AttachedFile[];
   private createAt: string;
   private reactions: ObjectId[];
+  private postBehaviourType: string;
+  private isActive: boolean;
   private _id?: ObjectId;
 
 
@@ -58,6 +60,8 @@ export class Post {
     attachedFiles: AttachedFile[],
     createAt: string,
     reactions: ObjectId[],
+    postBehaviourType: string,
+    isActive: boolean,
     _id?: ObjectId,
   ) {
     this.title = title;
@@ -75,6 +79,8 @@ export class Post {
     this.attachedFiles = attachedFiles;
     this.createAt = createAt;
     this.reactions = reactions;
+    this.postBehaviourType = postBehaviourType;
+    this.isActive = isActive;
     this._id = _id;
   }
 
@@ -142,5 +148,12 @@ export class Post {
     return this.reactions;
   }
 
+  get getPostBehaviourType() {
+    return this.postBehaviourType;
+  }
+
+  get getIsActive() {
+    return this.isActive;
+  }
 
 }

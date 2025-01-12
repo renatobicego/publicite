@@ -37,6 +37,7 @@ export interface PostDocument extends Document {
   endDate: Date;
   reactions: Schema.Types.ObjectId[];
   postBehaviourType: string;
+  isActive: boolean;
 }
 
 const addDays = (date: any, days: any) => {
@@ -118,6 +119,7 @@ export const PostSchema = new Schema<PostDocument>(
       },
     ],
     postBehaviourType: { type: String, enum: Object.values(PostBehaviourType), required: true },
+    isActive: { type: Boolean, required: true },
   },
   {
     discriminatorKey: 'kind',
