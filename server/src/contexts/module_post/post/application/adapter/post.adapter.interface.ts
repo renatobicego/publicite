@@ -8,6 +8,7 @@ import { Visibility } from '../../domain/entity/enum/post-visibility.enum';
 
 
 export interface PostAdapterInterface {
+  activateOrDeactivatePost(_id: string, activate: boolean, postBehaviourType: PostBehaviourType, userRequestId: string): Promise<any>;
   create(post: PostRequest): Promise<any>;
   deletePostById(id: string): Promise<void>;
   findPostsByAuthorId(id: string): Promise<void>;

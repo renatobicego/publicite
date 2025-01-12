@@ -23,6 +23,13 @@ export class PostAdapter implements PostAdapterInterface {
     private readonly postMapper: PostMapperAdapterInterface,
     private readonly logger: MyLoggerService,
   ) { }
+  async activateOrDeactivatePost(_id: string, activate: boolean, postBehaviourType: PostBehaviourType, userRequestId: string): Promise<any> {
+    try {
+      return await this.postService.activateOrDeactivatePost(_id, activate, postBehaviourType, userRequestId);
+    } catch (error: any) {
+      throw error;
+    }
+  }
 
 
 

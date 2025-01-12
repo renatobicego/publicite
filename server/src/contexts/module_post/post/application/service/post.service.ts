@@ -33,7 +33,22 @@ export class PostService implements PostServiceInterface {
   ) { }
 
 
+  async activateOrDeactivatePost(_id: string, activate: boolean, postBehaviourType: PostBehaviourType, userRequestId: string): Promise<any> {
+    try {
+      if (activate) {
+        const isAllowedToActivate = await this.userService.isThisUserAllowedToPost(userRequestId, postBehaviourType);
 
+        if (!isAllowedToActivate) {
+          throw new BadRequestException('No es posible activar el post, agostaste el limite de posts según tu plan');
+        }
+        await this.postRepository.activateOrDeactivatePost(_id, true);
+      } else {
+        await this.postRepository.activateOrDeactivatePost(_id, false);
+      }
+    } catch (error: any) {
+      throw error;
+    }
+  }
 
 
 

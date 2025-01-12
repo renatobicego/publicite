@@ -659,6 +659,9 @@ type Mutation {
   """Actualizar los metodos de contacto de un usuario"""
   updateContactById(contactId: String!, updateRequest: UpdateContactRequest!): String
 
+  """Activar o desactivar un post"""
+  activateOrDeactivatePost(_id: String!, author_id: String!, postBehaviourType: PostBehaviourType!, activate: Boolean!): String
+
   """Crear un post"""
   createPost(postRequest: PostRequest!, author_id: String!): PostIdResponse
 
@@ -787,6 +790,12 @@ input UpdateContactRequest {
   x: String
 }
 
+"""Type of the post """
+enum PostBehaviourType {
+  libre
+  agenda
+}
+
 input PostRequest {
   title: String!
   author: String!
@@ -838,12 +847,6 @@ input LocationPost {
 input AttachedFilesRequest {
   url: String!
   label: String!
-}
-
-"""Type of the post """
-enum PostBehaviourType {
-  libre
-  agenda
 }
 
 input PostUpdateRequest {

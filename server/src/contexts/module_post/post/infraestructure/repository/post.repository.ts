@@ -65,6 +65,16 @@ export class PostRepository implements PostRepositoryInterface {
 
 
 
+  async activateOrDeactivatePost(_id: string, activate: boolean): Promise<any> {
+    try {
+      await this.postDocument.updateOne({ _id }, { $set: { isActive: activate } });
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
+
 
   async create(
     post: Post,

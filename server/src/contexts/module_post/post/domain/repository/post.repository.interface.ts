@@ -5,9 +5,10 @@ import { UserLocation } from '../entity/models_graphql/HTTP-REQUEST/post.locatio
 import { PostsMemberGroupResponse } from 'src/contexts/module_shared/sharedGraphql/group.posts.member.response';
 import { PostBehaviourType } from '../entity/enum/postBehaviourType.enum';
 import { Visibility } from '../entity/enum/post-visibility.enum';
-import { Dictionary } from 'lodash';
+
 
 export interface PostRepositoryInterface {
+  activateOrDeactivatePost(_id: string, activate: boolean): Promise<any>;
   create(
     post: Post,
     options?: { session?: ClientSession },

@@ -27,6 +27,35 @@ export class PostResolver {
     private readonly postAdapter: PostAdapterInterface,
   ) { }
 
+  @Mutation(() => String, {
+    nullable: true,
+    description: 'Activar o desactivar un post',
+  })
+  @UseGuards(ClerkAuthGuard)
+  async activateOrDeactivatePost(
+    @Args('_id', { type: () => String })
+    _id: string,
+    @Args('author_id', { type: () => String })
+    admin_id: string,
+    @Args('postBehaviourType', { type: () => PostBehaviourType })
+    postBehaviourType: PostBehaviourType,
+    @Args('activate', { type: () => Boolean })
+    activate: boolean,
+    @Context() context: { req: CustomContextRequestInterface },
+  ): Promise<any> {
+    try {
+      const userRequestId = context.req.userRequestId;
+      if (!admin_id) throw new Error('admin_id is required');
+      PubliciteAuth.authorize(userRequestId, admin_id);
+      await this.postAdapter.activateOrDeactivatePost(_id, activate, postBehaviourType, userRequestId);
+      return 'Post successfully updated';
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
+
   @Mutation(() => PostIdResponse, {
     nullable: true,
     description: 'Crear un post',
@@ -139,6 +168,8 @@ export class PostResolver {
       throw error;
     }
   }
+
+
 
   @Mutation(() => String, {
     nullable: true,

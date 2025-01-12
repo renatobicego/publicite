@@ -225,14 +225,15 @@ export class UserService implements UserServiceInterface {
         },
         { agendaPostCount: 0, librePostCount: 0 }
       );
-      this.logger.log("Agenda post count: " + agendaPostCount + " Libre post count: " + librePostCount);
-      this.logger.log("Total agenda limit: " + totalAgendaPostLimit + " - Total libre limit: " + totalLibrePostLimit);
+      this.logger.warn("STATUS ACTUAL, ANTES DE ACTUALIZAR")
+      this.logger.log("User has agenda post: " + agendaPostCount + " User has Libre post: " + librePostCount);
+      this.logger.log("Total agenda limit of user plan: " + totalAgendaPostLimit + " - Total libre limit of user plan : " + totalLibrePostLimit);
 
       const agendaAvailable = totalAgendaPostLimit - agendaPostCount;
       const libreAvailable = totalLibrePostLimit - librePostCount;
-      this.logger.log('Agenda available: ' + agendaAvailable);
-      this.logger.log('Libre available: ' + libreAvailable);
-
+      this.logger.log('Agenda available of user: ' + agendaAvailable);
+      this.logger.log('Libre available of user: ' + libreAvailable);
+      this.logger.warn("PROCEDIENDO A ACTUALIZAR STATUS DE POSTS ")
       return { agendaPostCount, librePostCount, totalAgendaPostLimit, totalLibrePostLimit, agendaAvailable, libreAvailable };
     } catch (error: any) {
       throw error;
@@ -247,18 +248,18 @@ export class UserService implements UserServiceInterface {
       switch (postBehaviourType) {
         case 'agenda':
           if (agendaPostCount >= totalAgendaPostLimit) {
-            this.logger.log('Agenda post limit reached');
+            this.logger.warn('Agenda post limit reached');
             return false;
           }
           return true;
         case 'libre':
           if (librePostCount >= totalLibrePostLimit) {
-            this.logger.log('Libre post limit reached');
+            this.logger.warn('Libre post limit reached');
             return false;
           }
           return true;
         default:
-          this.logger.log('Invalid post type specified');
+          this.logger.warn('Invalid post type specified');
           return false;
       }
     } catch (error: any) {
