@@ -42,7 +42,7 @@ const CreatePetition = ({
     },
     postType: "petition",
     visibility: {
-      post: "public",
+      post: postBehaviourType === "agenda" ? "contacts" : "public",
       socialMedia: "public",
     },
     createAt: today(getLocalTimeZone()).toString(),
@@ -108,6 +108,7 @@ const CreatePetition = ({
       validateOnChange={false}
       initialValues={initialValues}
       onSubmit={handleSubmit}
+      enableReinitialize
       validationSchema={petitionValidation}
     >
       {({ isSubmitting, errors, setFieldValue, values }) => {
@@ -133,7 +134,10 @@ const CreatePetition = ({
                   setFieldValue={setFieldValue}
                   errors={errors}
                 />
-                <Visibility errors={errors} />
+                <Visibility
+                  errors={errors}
+                  postBehaviourType={postBehaviourType}
+                />
                 <div className="flex lg:px-4 flex-col gap-4">
                   <h6>Archivos Adjuntos (opcional)</h6>
                   <AttachedFiles

@@ -5,14 +5,12 @@ import {
 import { PostBehaviourType } from "@/types/postTypes";
 import { Subscription } from "@/types/subscriptions";
 import { useEffect, useState } from "react";
+import { toastifyError } from "../functions/toastify";
 
 const useUserPostLimit = (
   userId: string,
   postBehaviourType?: PostBehaviourType
 ) => {
-  const [subscriptionsUser, setSubscriptionsUser] = useState<Subscription[]>(
-    []
-  );
   const [numberOfPosts, setNumberOfPosts] = useState<
     Record<PostBehaviourType, number>
   >({
@@ -20,47 +18,43 @@ const useUserPostLimit = (
     libre: 0,
   });
 
+  const [limits, setLimits] = useState({
+    agenda: 0,
+    libre: 0,
+  });
+
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    const fetchSubscriptionsUser = async () => {
-      const susbcriptionsOfUser = await getSubscriptionsOfUser(userId);
-      setSubscriptionsUser(susbcriptionsOfUser);
-    };
-
     const fetchNumberOfPosts = async () => {
-      setNumberOfPosts(await getUserActivePostNumber(userId));
+      const res = await getUserActivePostNumber();
+      if ("error" in res) {
+        toastifyError(
+          "Error al traer el número de anuncios activos. Por favor intenta de nuevo."
+        );
+        return;
+      }
+      setLimits({
+        agenda: res.totalAgendaPostLimit,
+        libre: res.totalLibrePostLimit,
+      });
+      setNumberOfPosts({
+        agenda: res.agendaPostCount,
+        libre: res.librePostCount,
+      });
+      setLoading(false);
     };
 
-    fetchSubscriptionsUser();
     fetchNumberOfPosts();
-
-  }, [userId]);
-
-  // Calculate the total post limit from active subscriptions
-  const postAgendaLimit = subscriptionsUser.reduce((acc, subscription) => {
-    if (subscription.status === "active") {
-      return acc + subscription.subscriptionPlan.postsAgendaCount;
-    }
-    return acc;
-  }, 5);  // CAMBIAR A 0
-
-  const postLibreLimit = subscriptionsUser.reduce((acc, subscription) => {
-    if (subscription.status === "active") {
-      return acc + subscription.subscriptionPlan.postsLibresCount;
-    }
-    return acc;
-  }, 5); // CAMBIAR A 0
-
-  const limit = {
-    agenda: postAgendaLimit,
-    libre: postLibreLimit,
-  };
+  }, []);
 
   return {
     userCanPublishPost: postBehaviourType
-      ? numberOfPosts[postBehaviourType] < limit[postBehaviourType]
+      ? numberOfPosts[postBehaviourType] < limits[postBehaviourType]
       : true,
-    limit,
+    limit: limits,
     numberOfPosts,
+    loading,
   };
 };
 

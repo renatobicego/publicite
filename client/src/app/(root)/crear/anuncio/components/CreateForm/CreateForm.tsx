@@ -83,6 +83,7 @@ const CreateForm = ({
           limit={limit[postBehaviourType]}
           numberOfPosts={numberOfPosts[postBehaviourType]}
           postBehaviourType={postBehaviourType}
+          setPostBehaviourTypeToPrevious={() => setPostBehaviourType(undefined)}
         />
       )}
     </section>

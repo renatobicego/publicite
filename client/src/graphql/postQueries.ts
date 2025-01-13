@@ -49,6 +49,7 @@ export const getPostByIdQuery = gql`
       }
       modelType
       petitionType
+      postBehaviourType
       postType
       price
       reviews

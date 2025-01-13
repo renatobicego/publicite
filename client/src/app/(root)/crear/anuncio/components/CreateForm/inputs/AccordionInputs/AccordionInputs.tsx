@@ -3,6 +3,7 @@ import Visibility from "./Visibility";
 import { FormikErrors } from "formik";
 import {
   GoodPostValues,
+  PostBehaviourType,
   ServicePostValues,
 } from "@/types/postTypes";
 import AdditionalGoodData from "./AdditionalGoodData";
@@ -13,11 +14,13 @@ import { FaChevronLeft } from "react-icons/fa6";
 const AccordionInputs = ({
   errors,
   isService = false,
-  isEditing = false
+  isEditing = false,
+  postBehaviourType,
 }: {
   errors: FormikErrors<GoodPostValues> | FormikErrors<ServicePostValues>;
   isService?: boolean;
-  isEditing?: boolean
+  isEditing?: boolean;
+  postBehaviourType: PostBehaviourType;
 }) => {
   const goodErrors = errors as FormikErrors<GoodPostValues>;
 
@@ -41,7 +44,7 @@ const AccordionInputs = ({
         subtitle={errors.visibility ? "Corrija los errores" : ""}
         classNames={generateClassname(errors.visibility)}
       >
-        <Visibility errors={errors} />
+        <Visibility errors={errors} postBehaviourType={postBehaviourType} />
       </AccordionItem>
       <AccordionItem
         HeadingComponent={"h6"}
@@ -70,10 +73,7 @@ const AccordionInputs = ({
         subtitle={errors.attachedFiles ? "Corrija los errores" : ""}
         classNames={generateClassname(errors.attachedFiles)}
       >
-        <AttachedFiles
-          errors={errors.attachedFiles}
-          isEditing={isEditing}
-        />
+        <AttachedFiles errors={errors.attachedFiles} isEditing={isEditing} />
       </AccordionItem>
     </Accordion>
   );

@@ -110,6 +110,17 @@ export const visibilityItems: { value: Visibility; label: string }[] = [
   },
 ];
 
+export const visibilityRegisteredOrNot = [
+  {
+    value: "public",
+    label: "Público",
+  },
+  {
+    value: "registered",
+    label: "Usuarios Registrados",
+  },
+]
+
 export const visibilityRegisteredItems: { value: Visibility; label: string }[] = [
   {
     value: "public",
@@ -129,18 +140,21 @@ export const visibilityRegisteredItems: { value: Visibility; label: string }[] =
   },
 ];
 
-export const relationTypes: {value: UserRelation; label: string}[] = [
+export const relationTypes: {value: UserRelation; label: string, plural: string}[] = [
   {
     label: "Contacto",
     value: "contacts",
+    plural: "Contactos",
   },
   {
     label: "Amigo",
     value: "friends",
+    plural: "Amigos",
   },
   {
     label: "Top Amigo",
     value: "topfriends",
+    plural: "Top Amigos",
   }
 ]
 

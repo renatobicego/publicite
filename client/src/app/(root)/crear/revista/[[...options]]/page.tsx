@@ -65,7 +65,7 @@ export default async function CreateMagazine(
           <PostCard
             postData={postData as any}
             recommendation={false}
-            savePostMagazine
+            interactable={false}
             className="max-w-[50vw] md:max-w-[30vw] lg:max-w-[25vw] 3xl:max-w-[20vw]"
           />
         )}

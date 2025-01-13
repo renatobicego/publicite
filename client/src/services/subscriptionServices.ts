@@ -1,9 +1,13 @@
 "use server";
-import { getPaymentsQuery } from "@/graphql/suscriptionsQueries";
+import {
+  getPaymentsQuery,
+  getPostNumbersOfUserQuery,
+} from "@/graphql/suscriptionsQueries";
 import { query } from "@/lib/client";
 import { PostBehaviourType } from "@/types/postTypes";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import axios from "axios";
+import { getApiContext } from "./apiContext";
 
 export const processPayment = async (
   formData: any,
@@ -111,23 +115,30 @@ export const getSubscriptionsOfUser = async (userId: string) => {
   }
 };
 
-export const getUserActivePostNumber = async (
-  userId: string
-): Promise<Record<PostBehaviourType, number>> => {
-  // const res = await fetch(process.env.API_URL + "/subscription/" + userId);
-  // if (!res.ok) {
-  //   return {
-  //     error:
-  //       "Error al traer los datos de suscripciones. Por favor intenta de nuevo.",
-  //   };
-  // }
-  // const data = await res.json();
-  // return data;
+export const getUserActivePostNumber = async (): Promise<
+  | {
+      agendaAvailable: number;
+      agendaPostCount: number;
+      libreAvailable: number;
+      librePostCount: number;
+      totalAgendaPostLimit: number;
+      totalLibrePostLimit: number;
+    }
+  | { error: string }
+> => {
+  try {
+    const { context } = await getApiContext();
+    const { data } = await query({
+      query: getPostNumbersOfUserQuery,
+      context,
+    });
 
-  return {
-    agenda: 0,
-    libre: 0,
-  };
+    return data.getLimitPostOfUser;
+  } catch (error) {
+    return {
+      error: "Error al traer los anuncios. Por favor intenta de nuevo.",
+    };
+  }
 };
 
 export const getSubscriptionPlanById = async (id: string) => {

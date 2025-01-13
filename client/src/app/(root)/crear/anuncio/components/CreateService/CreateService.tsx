@@ -1,4 +1,8 @@
-import { GoodPostValues, PostBehaviourType, ServicePostValues } from "@/types/postTypes";
+import {
+  GoodPostValues,
+  PostBehaviourType,
+  ServicePostValues,
+} from "@/types/postTypes";
 import { Form, Formik, FormikHelpers } from "formik";
 import TitleDescription from "../CreateForm/inputs/TitleDescription";
 import PriceCategory from "../CreateForm/inputs/PriceCategory";
@@ -45,11 +49,11 @@ const CreateService = ({
     },
     postType: "service",
     visibility: {
-      post: "public",
+      post: postBehaviourType === "agenda" ? "contacts" : "public",
       socialMedia: "public",
     },
     createAt: today(getLocalTimeZone()).toString(),
-    postBehaviourType
+    postBehaviourType,
   };
 
   const { attachedFiles } = useAttachedFiles();
@@ -112,6 +116,7 @@ const CreateService = ({
       validateOnChange={false}
       initialValues={initialValues}
       onSubmit={handleSubmit}
+      enableReinitialize
       validationSchema={serviceValidation}
     >
       {({ isSubmitting, errors, setFieldValue, values }) => {
@@ -126,7 +131,11 @@ const CreateService = ({
               setFieldValue={setFieldValue}
               error={errors.geoLocation}
             />
-            <AccordionInputs errors={errors} isService={true} />
+            <AccordionInputs
+              errors={errors}
+              isService={true}
+              postBehaviourType={postBehaviourType}
+            />
             <RequiredFieldsMsg />
             <PrimaryButton
               isDisabled={isSubmitting || !userCanPublishPost}
