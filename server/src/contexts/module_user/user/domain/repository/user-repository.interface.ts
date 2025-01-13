@@ -46,14 +46,16 @@ export interface UserRepositoryInterface {
     authorId: String,
     options?: { session?: ClientSession },
   ): Promise<any>;
-
-  removeFriendRequest(previousNotificationId: string, userNotificationOwner: string, session: any): Promise<any>
-  removeFriend(relationId: string, friendRequestId?: string): Promise<any>;
+  setSubscriptionToUser(external_reference: string, sub_id: any, session: any): Promise<any>
   savePersonalAccount(
     baseObj: any,
     user: UserPerson,
     options?: { session?: ClientSession },
   ): Promise<User>;
+
+  removeFriendRequest(previousNotificationId: string, userNotificationOwner: string, session: any): Promise<any>
+  removeFriend(relationId: string, friendRequestId?: string): Promise<any>;
+
   makeFriendRelationBetweenUsers(userRelation: UserRelation, session: any): Promise<string | null>
   update(
     username: string,

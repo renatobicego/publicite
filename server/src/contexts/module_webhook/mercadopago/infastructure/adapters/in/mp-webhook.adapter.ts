@@ -41,7 +41,6 @@ export class MpWebhookAdapter {
       try {
         this.logger.log('Webhook origin is valid, processing webhook data');
 
-
         this.handleTypeOfOperationMercadopago(body);
 
         return Promise.resolve(true);
@@ -170,7 +169,6 @@ export class MpWebhookAdapter {
     try {
       switch (action) {
         case 'created':
-
           this.logger.log('We recive an subcription - ACTION: CREATED');
           this.logger.log('We are creating a new subscription: ' + dataID);
           const result =

@@ -16,27 +16,10 @@ export class SubscriptionRepository implements SubscriptionRepositoryInterface {
     private readonly logger: MyLoggerService,
     @InjectModel('Subscription')
     private readonly subscriptionModel: Model<SubscriptionDocument>,
+
   ) { }
 
 
-  async verifyIfSubscriptionWasPused(preapproval_id: string): Promise<boolean> {
-    try {
-      this.logger.log('Verify if subscription was pused in repository: ' + preapproval_id);
-      this.logger.log(
-        'If you need more information about this action, please check the ID ' +
-        preapproval_id,
-      );
-      const result = await this.subscriptionModel.findOne({ mpPreapprovalId: preapproval_id, status: "paused" });
-
-      if (result) {
-        return true;
-      } else {
-        return false;
-      }
-    } catch (error: any) {
-      throw error;
-    }
-  }
 
   async cancelSubscription(id: string): Promise<void> {
     try {
@@ -64,6 +47,8 @@ export class SubscriptionRepository implements SubscriptionRepositoryInterface {
     }
 
   }
+
+
 
   async findSubscriptionByPreapprovalId(
     id: string,
@@ -115,14 +100,35 @@ export class SubscriptionRepository implements SubscriptionRepositoryInterface {
 
   }
 
-  async saveSubPreapproval(sub: Subscription): Promise<void> {
+  async pendingSubscription(id: string, updateObject: any): Promise<void> {
+    try {
+      this.logger.log('Update subscription with ID: ' + id + 'STATUS: PENDING');
+      const result = await this.subscriptionModel.findOneAndUpdate(
+        { mpPreapprovalId: id },
+        updateObject,
+        { new: true },
+      ).lean()
+      console.log('subscription Pending: ');
+      console.log(result);
+      if (!result) {
+        this.logger.error(`Subscription with id ${id} not found.`);
+        throw new Error(`Subscription with id ${id} not found.`);
+      }
+      this.logger.log(`Subscription with id ${id} successfully updated.`);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
+  async saveSubPreapproval(sub: Subscription, session: any): Promise<any> {
     this.logger.log(
       'saving new subscription in database SUB_ID: ' + sub.getMpPreapprovalId(),
     );
     const newSubscription = new this.subscriptionModel(sub);
-    await newSubscription.save();
+    const subSaved = await newSubscription.save({ session });
+    if (subSaved && subSaved._id) return subSaved._id
   }
-
 
   async updateSubscription(id: string, updateObject: any): Promise<void> {
     try {
@@ -142,6 +148,28 @@ export class SubscriptionRepository implements SubscriptionRepositoryInterface {
       throw error;
     }
   }
+
+  async verifyIfSubscriptionWasPused(preapproval_id: string): Promise<boolean> {
+    try {
+      this.logger.log('Verify if subscription was pused in repository: ' + preapproval_id);
+      this.logger.log(
+        'If you need more information about this action, please check the ID ' +
+        preapproval_id,
+      );
+      const result = await this.subscriptionModel.findOne({ mpPreapprovalId: preapproval_id, status: "paused" });
+
+      if (result) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
+
 
 
 

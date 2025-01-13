@@ -8,6 +8,9 @@ import { MercadoPagoSubscriptionPlanServiceInterface } from 'src/contexts/module
 import { SubscriptionRepositoryInterface } from '../../domain/repository/mp-subscription.respository.interface';
 import { getTodayDateTime } from 'src/contexts/module_shared/utils/functions/getTodayDateTime';
 import { setSuscriptionInClerkMetadata } from 'src/contexts/module_webhook/clerk/domain/functions/setSuscriptionInClerkMetadata';
+import { UserServiceInterface } from 'src/contexts/module_user/user/domain/service/user.service.interface';
+import { InjectConnection } from '@nestjs/mongoose';
+import { Connection } from 'mongoose';
 
 export class MpSubscriptionService implements SubscriptionServiceInterface {
   constructor(
@@ -16,12 +19,16 @@ export class MpSubscriptionService implements SubscriptionServiceInterface {
     private readonly logger: MyLoggerService,
     @Inject('MercadoPagoSubscriptionPlanServiceInterface')
     private readonly mpSubscriptionPlanService: MercadoPagoSubscriptionPlanServiceInterface,
+    @Inject('UserServiceInterface')
+    private readonly userService: UserServiceInterface,
+    @InjectConnection() private readonly connection: Connection,
   ) { }
 
   async createSubscription_preapproval(
     subscription_preapproval: any,
   ): Promise<void> {
     this.logger.log('---------------SUBSCRIPTION SERVICE------------------');
+    const session = await this.connection.startSession();
     // Crear el nuevo objeto de suscripción
     const {
       id,
@@ -85,10 +92,16 @@ export class MpSubscriptionService implements SubscriptionServiceInterface {
         payment_method_id, // metodo de pago
         card_id // id de la tarjeta
       );
-      await this.subscriptionRepository.saveSubPreapproval(newUserSuscription);
-      await setSuscriptionInClerkMetadata(external_reference, planID);
+      await session.withTransaction(async () => {
+        const subscriptionId = await this.subscriptionRepository.saveSubPreapproval(newUserSuscription, session);
+        await this.userService.setSubscriptionToUser(external_reference, subscriptionId, session);
+
+      })
+      setSuscriptionInClerkMetadata(external_reference, planID);
     } catch (error: any) {
       throw error;
+    } finally {
+      await session.endSession();
     }
   }
   async findSubscriptionByPreapprovalId(
@@ -144,6 +157,10 @@ export class MpSubscriptionService implements SubscriptionServiceInterface {
           return Promise.resolve();
         case 'paused':
           await this.subscriptionRepository.pauseSubscription(id, updateObject);
+          await setSuscriptionInClerkMetadata(external_reference, null);
+          return Promise.resolve();
+        case 'pending':
+          await this.subscriptionRepository.pendingSubscription(id, updateObject);
           await setSuscriptionInClerkMetadata(external_reference, null);
           return Promise.resolve();
         case 'authorized':

@@ -43,6 +43,7 @@ export class UserService implements UserServiceInterface {
   ) { }
 
 
+
   async makeFriendRelationBetweenUsers(
     backData: { userIdFrom: string; userIdTo: string },
     typeOfRelation: string,
@@ -209,7 +210,7 @@ export class UserService implements UserServiceInterface {
       }
       const { totalAgendaPostLimit, totalLibrePostLimit } = userWithSubscriptionsAndPosts.subscriptions.reduce(
         (limits, subscription) => {
-          limits.totalAgendaPostLimit += subscription.subscriptionPlan.postsAgendaCount; 
+          limits.totalAgendaPostLimit += subscription.subscriptionPlan.postsAgendaCount;
           limits.totalLibrePostLimit += subscription.subscriptionPlan.postsLibresCount;
           return limits;
         },
@@ -334,6 +335,8 @@ export class UserService implements UserServiceInterface {
     }
   }
 
+
+
   async saveNewPostInUser(
     postId: string,
     authorId: string,
@@ -346,6 +349,16 @@ export class UserService implements UserServiceInterface {
       throw error;
     }
   }
+  async setSubscriptionToUser(external_reference: string, sub_id: any, session: any): Promise<any> {
+    try {
+      await this.userRepository.setSubscriptionToUser(external_reference, sub_id, session);
+    } catch (error: any) {
+      throw error;
+    }
+
+  }
+
+
 
   async updateFriendRelationOfUsers(
     userRelationId: string,

@@ -65,6 +65,11 @@ export interface UserServiceInterface {
     options?: { session?: ClientSession },
   ): Promise<any>;
 
+  setSubscriptionToUser(
+    external_reference: string,
+    sub_id: any,
+    sesion: any
+  ): Promise<any>;
   updateFriendRelationOfUsers(
     userRelationId: string,
     typeOfRelation: string,

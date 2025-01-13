@@ -37,7 +37,6 @@ export class MercadopagoController {
     @Req() req: Request,
   ): Promise<Response> {
     try {
-      //Valido el origen de la petición
       this.mpWebhookAdapter.handleMercadoPagoWebhookRequest(headers, req);
       this.logger.log(
         'Webhook MP OK - Credentials are valid - WEBHOOK_PROCESS: COMPLETE ---> sending response to Meli - Class:WebhookController 🚀',

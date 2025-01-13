@@ -135,7 +135,7 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
     try {
       /*----------------------------------- FETCH TO MERCADOPAGO SUBSCRIPTION_PREAPPROVAL (CREACION DE SUSCRIPCION)------------------------------ */
       const subscription_preapproval = await this.fetchToMpAdapter.getDataFromMp_fetch(
-        `${this.URL_SUBCRIPTION_PREAPPROVAL_CHECK}${dataID}`, // ACA TENGO QUE PASAR EL ID DESDE CONTROLLER
+        `${this.URL_SUBCRIPTION_PREAPPROVAL_CHECK}${dataID}`, 
 
       );
       console.log('subscription_preapproval RESPONSE:');

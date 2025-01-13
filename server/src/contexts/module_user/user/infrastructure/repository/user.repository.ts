@@ -608,4 +608,23 @@ export class UserRepository implements UserRepositoryInterface {
       throw error;
     }
   }
+
+  async setSubscriptionToUser(external_reference: string, sub_id: any, session: any): Promise<void> {
+    try {
+      const result = await this.user.updateOne(
+        { clerkId: external_reference },
+        { $addToSet: { subscriptions: sub_id } },
+        { session }
+      );
+
+      if (result.modifiedCount === 0) {
+        throw new Error(`No se encontró un usuario con cler_id: ${external_reference}`);
+      }
+    } catch (error) {
+      console.error(`Error actualizando suscripción para el usuario ${external_reference}:`, error);
+      throw error;
+    }
+  }
+
+
 }
