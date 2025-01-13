@@ -1,7 +1,7 @@
 import { BadRequestException, Inject } from '@nestjs/common';
 
 
-import { SubscriptionServiceInterface } from 'src/contexts/module_webhook/mercadopago/domain/service/mp-subscription.service.interface';
+import { statusOfSubscription, SubscriptionServiceInterface } from 'src/contexts/module_webhook/mercadopago/domain/service/mp-subscription.service.interface';
 import Subscription from 'src/contexts/module_webhook/mercadopago/domain/entity/subcription.entity';
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { MercadoPagoSubscriptionPlanServiceInterface } from 'src/contexts/module_webhook/mercadopago/domain/service/mp-subscriptionPlan.service.interface';
@@ -23,6 +23,7 @@ export class MpSubscriptionService implements SubscriptionServiceInterface {
     private readonly userService: UserServiceInterface,
     @InjectConnection() private readonly connection: Connection,
   ) { }
+
 
   async createSubscription_preapproval(
     subscription_preapproval: any,
@@ -104,6 +105,23 @@ export class MpSubscriptionService implements SubscriptionServiceInterface {
       await session.endSession();
     }
   }
+
+
+  async changeStatusOfSubscription(preapproval_id: string, status: statusOfSubscription): Promise<void> {
+    try {
+      this.logger.log("Changin status of subscription NEW STATUS: " + status);
+      const statusObj = {
+        status: status,
+        timeOfUpdate: getTodayDateTime(),
+      }
+      await this.subscriptionRepository.updateSubscriptionStatus(preapproval_id, statusObj);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
+
   async findSubscriptionByPreapprovalId(
     id: string,
   ): Promise<Subscription | null> {

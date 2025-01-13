@@ -5,7 +5,7 @@ import { MpHandlerEventsInterface } from 'src/contexts/module_webhook/mercadopag
 import { FetchToMpInterface } from '../adapter/out/fech.to.mp.interface';
 import { MpServiceInvoiceInterface } from '../../domain/service/mp-invoice.service.interface';
 import { MpPaymentServiceInterface } from '../../domain/service/mp-payments.service.interface';
-import { SubscriptionServiceInterface } from '../../domain/service/mp-subscription.service.interface';
+import { statusOfSubscription, SubscriptionServiceInterface } from '../../domain/service/mp-subscription.service.interface';
 
 /*
 HandlerEvents de mercadopago: 
@@ -258,12 +258,15 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
 
 
 
-        if (rejectedStatuses.has(subscriptionStatus) || rejectedStatuses.has(paymentStatus)) {
+      if (rejectedStatuses.has(subscriptionStatus) || rejectedStatuses.has(paymentStatus)) {
         this.logger.warn(
           `Status is rejected, returning OK to Meli and pausing the subscription. Preapproval_id: ${response_mp_subscription_authorized_payment.preapproval_id}`,
         );
 
-        const isThisSubscriptionWasPaused = await this.subscriptionService.verifyIfSubscriptionWasPused(response_mp_subscription_authorized_payment.preapproval_id)
+        //const isThisSubscriptionWasPaused = await this.subscriptionService.verifyIfSubscriptionWasPused(response_mp_subscription_authorized_payment.preapproval_id)
+
+        //Aca tengo que pausar la suscription
+        await this.subscriptionService.changeStatusOfSubscription(response_mp_subscription_authorized_payment.preapproval_id, statusOfSubscription.PAUSED)
 
         await this.MpInvoiceService.updateInvoice(
           response_mp_subscription_authorized_payment,
@@ -296,6 +299,8 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
           response_mp_subscription_authorized_payment.id
         )
 
+
+        //Aca tengo que poner la suscripcion como authorized
         const isThisSubscriptionWasPaused = await this.subscriptionService.verifyIfSubscriptionWasPused(response_mp_subscription_authorized_payment.preapproval_id)
 
         if (isThisSubscriptionWasPaused && (approvedStatuses.has(subscriptionStatus) || approvedStatuses.has(paymentStatus))) {
@@ -311,11 +316,16 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
           this.logger.warn(
             `Changing subscription status in mercadopago...`,
           );
-          await this.fetchToMpAdapter.changeSubscriptionStatusInMercadopago_fetch(
-            this.URL_SUBCRIPTION_PREAPPROVAL_CHECK,
-            response_mp_subscription_authorized_payment.preapproval_id,
-            'authorized',
-          );
+
+          await this.subscriptionService.changeStatusOfSubscription(response_mp_subscription_authorized_payment.preapproval_id, statusOfSubscription.AUTHORIZED)
+          // await this.fetchToMpAdapter.changeSubscriptionStatusInMercadopago_fetch(
+          //   this.URL_SUBCRIPTION_PREAPPROVAL_CHECK,
+          //   response_mp_subscription_authorized_payment.preapproval_id,
+          //   'authorized',
+          // );
+
+
+
           this.logger.warn(
             `Change subscription status in mercadopago Succesfully -- NEW STATUS PAYMENT: ${paymentStatus} -- NEW STATUS SUBSCRIPTION: ${subscriptionStatus}`,
           );
@@ -323,6 +333,8 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
         }
         return true
       }
+
+
       this.logger.log('Updating subscription_authorized_payment...');
       await this.MpInvoiceService.updateInvoice(
         response_mp_subscription_authorized_payment,
@@ -337,6 +349,9 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
       throw error;
     }
   }
+
+
+
 
 
 

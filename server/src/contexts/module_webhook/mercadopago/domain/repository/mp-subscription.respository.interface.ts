@@ -5,6 +5,7 @@ export interface SubscriptionRepositoryInterface {
   findSubscriptionByPreapprovalId(id: string): Promise<Subscription | null>;
   saveSubPreapproval(sub: Subscription, session: any): Promise<void>;
   updateSubscription(id: string, updateObject: any): Promise<void>;
+  updateSubscriptionStatus(id: string, statusObj: any): Promise<void>
   cancelSubscription(id: string): Promise<void>;
   pauseSubscription(id: string, updateObject: any): Promise<void>;
   pendingSubscription(id: string, updateObject: any): Promise<void>;

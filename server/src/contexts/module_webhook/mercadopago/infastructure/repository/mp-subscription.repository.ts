@@ -149,6 +149,26 @@ export class SubscriptionRepository implements SubscriptionRepositoryInterface {
     }
   }
 
+
+  async updateSubscriptionStatus(id: string, statusObj: any): Promise<void> {
+    try {
+      this.logger.log('Update subscription with ID: ' + id + 'STATUS: ' +  statusObj.status);
+      const result = await this.subscriptionModel.findOneAndUpdate(
+        { mpPreapprovalId: id },
+        statusObj,
+        { new: true },
+      ).lean()
+      if (!result) {
+        this.logger.error(`Subscription with id ${id} not found.`);
+        throw new Error(`Subscription with id ${id} not found.`);
+      }
+      await setSuscriptionInClerkMetadata(result.external_reference, result.subscriptionPlan);
+      this.logger.log(`Subscription with id ${id} successfully updated.`);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
   async verifyIfSubscriptionWasPused(preapproval_id: string): Promise<boolean> {
     try {
       this.logger.log('Verify if subscription was pused in repository: ' + preapproval_id);
