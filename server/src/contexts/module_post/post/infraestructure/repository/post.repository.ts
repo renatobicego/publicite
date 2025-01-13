@@ -311,7 +311,7 @@ export class PostRepository implements PostRepositoryInterface {
         friendPosts = await this.postDocument
           .find({
             $and: [
-              { postType },
+              { postType, isActive: true },
               { $or: conditions },
               {
                 $or: [
@@ -331,7 +331,7 @@ export class PostRepository implements PostRepositoryInterface {
       } else {
         friendPosts = await this.postDocument
           .find({
-            postType,
+            postType, isActive: true,
             $or: conditions,
           })
           .populate([
@@ -553,12 +553,14 @@ export class PostRepository implements PostRepositoryInterface {
                 $and: [
                   { author: { $in: membersId } },
                   { postBehaviourType: 'libre' },
+                  { isActive: true },
                   { $expr: { $lte: ['$distance', '$geoLocation.ratio'] } },
                 ],
               },
               {
                 $and: [
                   { $or: conditionsOfSearch },
+                  { isActive: true },
                   { postBehaviourType: 'agenda' },
                 ],
               },
