@@ -182,6 +182,7 @@ export class MagazineResolver {
     nullable: true,
     description: 'Obtener una revista',
   })
+  @UseGuards(ClerkAuthGuard)
   async getMagazineByMagazineId(
     @Args('id', { type: () => String })
     id: ObjectId,

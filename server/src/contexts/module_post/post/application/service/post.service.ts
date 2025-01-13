@@ -203,7 +203,7 @@ export class PostService implements PostServiceInterface {
       const relationMap: Map<string, String[]> = await this.makeUserMapRelation(userRequestId)
       if (!relationMap) return
 
-      return await this.postRepository.findFriendPosts(postType, userRequestId, relationMap, page, limit, searchTerm)
+      return await this.postRepository.findFriendPosts(postType, relationMap, page, limit, searchTerm)
 
     } catch (error: any) {
       throw error;

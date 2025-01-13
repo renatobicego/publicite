@@ -199,6 +199,7 @@ export class PostResolver {
     nullable: true,
     description: 'Obtener todos los posts del autor por id',
   })
+  @UseGuards(ClerkAuthGuard)
   async findPostsByAuthorId(
     @Args('authorId', { type: () => String }) authorId: string,
   ): Promise<any> {
@@ -302,7 +303,7 @@ export class PostResolver {
       const userRequestId = context.req.userRequestId;
       return await this.postAdapter.findFriendPosts(
         postType,
-        "67420686b02bdd1f9f0ef446",
+        userRequestId,
         page,
         limit,
         searchTerm,

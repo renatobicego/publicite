@@ -26,7 +26,7 @@ export interface PostRepositoryInterface {
     searchTerm?: string,
   ): Promise<any>;
   findMatchPost(postType: string, searchTerm: string): Promise<void>;
-  findFriendPosts(postType: string, userRequestId: string, userRelationMap: Map<string, String[]>, page: number, limit: number, searchTerm?: string): Promise<void>;
+  findFriendPosts(postType: string, userRelationMap: Map<string, String[]>, page: number, limit: number, searchTerm?: string): Promise<void>;
   findPostOfGroupMembers(membersId: any[], conditionsOfSearch: any, userLocation: UserLocation, limit: number, page: number): Promise<PostsMemberGroupResponse | null>
   updatePostById(
     postUpdate: PostUpdateDto,

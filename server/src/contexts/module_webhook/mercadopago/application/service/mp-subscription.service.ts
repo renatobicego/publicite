@@ -7,7 +7,6 @@ import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.servic
 import { MercadoPagoSubscriptionPlanServiceInterface } from 'src/contexts/module_webhook/mercadopago/domain/service/mp-subscriptionPlan.service.interface';
 import { SubscriptionRepositoryInterface } from '../../domain/repository/mp-subscription.respository.interface';
 import { getTodayDateTime } from 'src/contexts/module_shared/utils/functions/getTodayDateTime';
-import { setSuscriptionInClerkMetadata } from 'src/contexts/module_webhook/clerk/domain/functions/setSuscriptionInClerkMetadata';
 import { UserServiceInterface } from 'src/contexts/module_user/user/domain/service/user.service.interface';
 import { InjectConnection } from '@nestjs/mongoose';
 import { Connection } from 'mongoose';
@@ -98,7 +97,6 @@ export class MpSubscriptionService implements SubscriptionServiceInterface {
         await this.userService.setSubscriptionToUser(external_reference, subscriptionId, session);
 
       })
-      setSuscriptionInClerkMetadata(external_reference, planID);
     } catch (error: any) {
       throw error;
     } finally {
@@ -171,15 +169,12 @@ export class MpSubscriptionService implements SubscriptionServiceInterface {
       switch (status) {
         case 'cancelled':
           await this.subscriptionRepository.cancelSubscription(id);
-          await setSuscriptionInClerkMetadata(external_reference, null);
           return Promise.resolve();
         case 'paused':
           await this.subscriptionRepository.pauseSubscription(id, updateObject);
-          await setSuscriptionInClerkMetadata(external_reference, null);
           return Promise.resolve();
         case 'pending':
           await this.subscriptionRepository.pendingSubscription(id, updateObject);
-          await setSuscriptionInClerkMetadata(external_reference, null);
           return Promise.resolve();
         case 'authorized':
           await this.subscriptionRepository.updateSubscription(id, updateObject);

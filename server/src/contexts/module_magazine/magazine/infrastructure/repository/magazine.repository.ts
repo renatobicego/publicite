@@ -514,6 +514,7 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
             model: 'MagazineSection',
             populate: {
               path: 'posts',
+              match: { isActive: true },
               select:
                 '_id imagesUrls title description price frequencyPrice petitionType postType',
               model: 'Post',

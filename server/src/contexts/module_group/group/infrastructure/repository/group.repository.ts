@@ -473,7 +473,7 @@ export class GroupRepository implements GroupRepositoryInterface {
             populate: {
               path: 'sections',
               select: '_id posts',
-              populate: { path: 'posts', select: '_id imagesUrls' },
+              populate: { path: 'posts', match: { isActive: true }, select: '_id imagesUrls' },
             },
           },
         ])
