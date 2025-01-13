@@ -135,7 +135,7 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
     try {
       /*----------------------------------- FETCH TO MERCADOPAGO SUBSCRIPTION_PREAPPROVAL (CREACION DE SUSCRIPCION)------------------------------ */
       const subscription_preapproval = await this.fetchToMpAdapter.getDataFromMp_fetch(
-        `${this.URL_SUBCRIPTION_PREAPPROVAL_CHECK}${dataID}`, 
+        `${this.URL_SUBCRIPTION_PREAPPROVAL_CHECK}${dataID}`,
 
       );
       console.log('subscription_preapproval RESPONSE:');
@@ -228,15 +228,15 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
 
       const rejectedStatuses = new Set(['rejected', 'cancelled']);
       const approvedStatuses = new Set(['approved', 'accredited']);
-      const subscription_authorized_payment =
+      const response_mp_subscription_authorized_payment =
         await this.fetchToMpAdapter.getDataFromMp_fetch(
           `${this.URL_SUBCRIPTION_AUTHORIZED_CHECK}${dataID}`,
         );
 
 
       console.log('subscription_authorized_payment UPDATE RESPONSE:');
-      console.log(subscription_authorized_payment);
-      if (!subscription_authorized_payment) {
+      console.log(response_mp_subscription_authorized_payment);
+      if (!response_mp_subscription_authorized_payment) {
         this.logger.warn(
           'subscription_authorized_payment is null, returning OK to Meli, please check suscription_authorized_payment ID:' +
           dataID,
@@ -245,63 +245,62 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
       }
 
 
-      if (subscription_authorized_payment.transaction_amount < 30) {
+      if (response_mp_subscription_authorized_payment.transaction_amount < 30) {
         this.logger.warn(
           'Payment amount is less than $30, returning OK to Meli',
         );
         return true;
       }
-
-
       const paymentStatus =
-        subscription_authorized_payment.payment?.status.toLowerCase();
-
+        response_mp_subscription_authorized_payment.payment?.status.toLowerCase();
       const subscriptionStatus =
-        subscription_authorized_payment.status.toLowerCase();
+        response_mp_subscription_authorized_payment.status.toLowerCase();
 
-      if (rejectedStatuses.has(subscriptionStatus) || rejectedStatuses.has(paymentStatus)) {
+
+
+        if (rejectedStatuses.has(subscriptionStatus) || rejectedStatuses.has(paymentStatus)) {
         this.logger.warn(
-          `Status is rejected, returning OK to Meli and pausing the subscription. Preapproval_id: ${subscription_authorized_payment.preapproval_id}`,
+          `Status is rejected, returning OK to Meli and pausing the subscription. Preapproval_id: ${response_mp_subscription_authorized_payment.preapproval_id}`,
         );
 
-        const isThisSubscriptionWasPaused = await this.subscriptionService.verifyIfSubscriptionWasPused(subscription_authorized_payment.preapproval_id)
+        const isThisSubscriptionWasPaused = await this.subscriptionService.verifyIfSubscriptionWasPused(response_mp_subscription_authorized_payment.preapproval_id)
 
         await this.MpInvoiceService.updateInvoice(
-          subscription_authorized_payment,
-          subscription_authorized_payment.id
+          response_mp_subscription_authorized_payment,
+          response_mp_subscription_authorized_payment.id
         );
 
 
-        if (isThisSubscriptionWasPaused) {
-          return true;
-        } else {
-          await this.fetchToMpAdapter.changeSubscriptionStatusInMercadopago_fetch(
-            this.URL_SUBCRIPTION_PREAPPROVAL_CHECK,
-            subscription_authorized_payment.preapproval_id,
-            'paused',
-          );
-          return true;
-        }
-
+        // if (isThisSubscriptionWasPaused) {
+        //   return true;
+        // } else {
+        //   await this.fetchToMpAdapter.changeSubscriptionStatusInMercadopago_fetch(
+        //     this.URL_SUBCRIPTION_PREAPPROVAL_CHECK,
+        //     response_mp_subscription_authorized_payment.preapproval_id,
+        //     'paused',
+        //   );
+        //   return true;
+        // }
+        return true
       }
 
 
 
-      if (subscription_authorized_payment && subscription_authorized_payment.retry_attempt && subscription_authorized_payment.retry_attempt > 0 && approvedStatuses.has(paymentStatus)) {
+      if (response_mp_subscription_authorized_payment && response_mp_subscription_authorized_payment.retry_attempt && response_mp_subscription_authorized_payment.retry_attempt > 0 && approvedStatuses.has(paymentStatus)) {
         this.logger.warn("This is a retry, we are updating the invoice and returning OK to Meli - The status of the subscription or payment is: " + paymentStatus);
         this.logger.log('status of payment: ' + paymentStatus);
         this.logger.log('Status of subscription:' + subscriptionStatus);
 
         await this.MpInvoiceService.updateInvoice(
-          subscription_authorized_payment,
-          subscription_authorized_payment.id
+          response_mp_subscription_authorized_payment,
+          response_mp_subscription_authorized_payment.id
         )
 
-        const isThisSubscriptionWasPaused = await this.subscriptionService.verifyIfSubscriptionWasPused(subscription_authorized_payment.preapproval_id)
+        const isThisSubscriptionWasPaused = await this.subscriptionService.verifyIfSubscriptionWasPused(response_mp_subscription_authorized_payment.preapproval_id)
 
         if (isThisSubscriptionWasPaused && (approvedStatuses.has(subscriptionStatus) || approvedStatuses.has(paymentStatus))) {
           this.logger.warn(
-            `Status was paused, changing to new status. Preapproval_id: ${subscription_authorized_payment.preapproval_id}`,
+            `Status was paused, changing to new status. Preapproval_id: ${response_mp_subscription_authorized_payment.preapproval_id}`,
           );
           this.logger.warn(
             `Status of payment: ${paymentStatus}`,
@@ -314,7 +313,7 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
           );
           await this.fetchToMpAdapter.changeSubscriptionStatusInMercadopago_fetch(
             this.URL_SUBCRIPTION_PREAPPROVAL_CHECK,
-            subscription_authorized_payment.preapproval_id,
+            response_mp_subscription_authorized_payment.preapproval_id,
             'authorized',
           );
           this.logger.warn(
@@ -326,8 +325,8 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
       }
       this.logger.log('Updating subscription_authorized_payment...');
       await this.MpInvoiceService.updateInvoice(
-        subscription_authorized_payment,
-        subscription_authorized_payment.id
+        response_mp_subscription_authorized_payment,
+        response_mp_subscription_authorized_payment.id
       );
       return true;
     } catch (error: any) {
