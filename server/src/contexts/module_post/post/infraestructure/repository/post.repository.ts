@@ -534,10 +534,6 @@ export class PostRepository implements PostRepositoryInterface {
     page: number,
   ): Promise<PostsMemberGroupResponse | null> {
     try {
-      // this.postDocument.updateMany(
-      //   { author: { $in: membersId } },
-      //   { $set: { postBehaviourType: 'libre' } },
-      // );
       if (membersId.length < 0) return { userAndPosts: [], hasMore: false };
       const posts = await this.postDocument.aggregate([
         {
