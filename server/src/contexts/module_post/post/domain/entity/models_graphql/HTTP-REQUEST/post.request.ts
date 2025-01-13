@@ -1,7 +1,7 @@
 import { Field, InputType, ObjectType } from '@nestjs/graphql';
 import { ObjectId } from 'mongoose';
 import { PostType } from '../../enum/post-type.enum';
-import { Visibility } from '../../enum/post-visibility.enum';
+import { Visibility, Visibility_Of_Social_Media } from '../../enum/post-visibility.enum';
 import { PostBehaviourType } from '../../enum/postBehaviourType.enum';
 
 
@@ -9,6 +9,9 @@ import { PostBehaviourType } from '../../enum/postBehaviourType.enum';
 class VisibilityOfPost {
   @Field(() => Visibility)
   post: Visibility;
+
+  @Field(() => Visibility_Of_Social_Media)
+  socialMedia: Visibility_Of_Social_Media;
 }
 
 @InputType()

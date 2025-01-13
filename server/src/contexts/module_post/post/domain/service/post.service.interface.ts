@@ -5,6 +5,7 @@ import { PostsMemberGroupResponse } from "src/contexts/module_shared/sharedGraph
 import { PostLimitResponseGraphql } from "../entity/models_graphql/HTTP-RESPONSE/post.limit.response.graphql";
 import { PostBehaviourType } from "../entity/enum/postBehaviourType.enum";
 import { Visibility } from "../entity/enum/post-visibility.enum";
+import { VisibilityEnum } from "../entity/models_graphql/HTTP-REQUEST/post.update.request";
 
 
 
@@ -27,6 +28,7 @@ export interface PostServiceInterface {
   findPostOfGroupMembers(membersId: any[], conditionsOfSearch: any, userLocation: UserLocation, limit: number, page: number): Promise<PostsMemberGroupResponse | null>
   getLimitPostOfUser(userRequestId: string): Promise<PostLimitResponseGraphql>
   makeReactionSchemaAndSetReactionToPost(postId: string, reaction: { user: string, reaction: string }, session: any): Promise<void>;
+  desactivateAllPost(userId: string): Promise<void>;
   updatePostById(
     postUpdate: PostUpdateDto,
     id: string,
@@ -34,7 +36,7 @@ export interface PostServiceInterface {
     cookie?: any,
   ): Promise<any>;
   updateEndDateFromPostById(postId: string, userRequestId: string, newDate: Date): Promise<void>;
-  updateBehaviourType(_id: string, postBehaviourType: PostBehaviourType, userRequestId: string, visibility: Visibility): Promise<any>
+  updateBehaviourType(_id: string, postBehaviourType: PostBehaviourType, userRequestId: string, visibility: VisibilityEnum): Promise<any>
   removeReactionFromPost(userRequestId: string, _id: string): Promise<any>;
 
 }

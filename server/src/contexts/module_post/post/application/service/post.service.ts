@@ -19,6 +19,7 @@ import { PostsMemberGroupResponse } from 'src/contexts/module_shared/sharedGraph
 import { PostLimitResponseGraphql } from '../../domain/entity/models_graphql/HTTP-RESPONSE/post.limit.response.graphql';
 import { PostBehaviourType } from '../../domain/entity/enum/postBehaviourType.enum';
 import { Visibility } from '../../domain/entity/enum/post-visibility.enum';
+import { VisibilityEnum } from '../../domain/entity/models_graphql/HTTP-REQUEST/post.update.request';
 
 
 
@@ -31,6 +32,31 @@ export class PostService implements PostServiceInterface {
     @Inject('UserServiceInterface')
     private readonly userService: UserServiceInterface,
   ) { }
+
+
+  async desactivateAllPost(userId: string): Promise<void> {
+    try {
+      //Enviar notificarion
+      let totalLibresExceded = 0;
+      let totalAgendaExceded = 0;
+      const { agendaPostCount, librePostCount, totalAgendaPostLimit, totalLibrePostLimit } = await this.userService.getPostAndLimitsFromUserByUserId(userId);
+      if (totalLibrePostLimit - librePostCount < 0) {
+        totalLibresExceded = Math.abs(totalLibrePostLimit - librePostCount);
+      }
+      if (totalAgendaPostLimit - agendaPostCount < 0) {
+        totalAgendaExceded = Math.abs(totalAgendaPostLimit - agendaPostCount);
+      }
+      const criteria = {
+        agenda: totalAgendaExceded,
+        libre: totalLibresExceded
+      }
+      this.logger.log(`totalLibresExceded: ${totalLibresExceded}, totalAgendaExceded: ${totalAgendaExceded}`);
+      if (totalAgendaExceded === 0 && totalLibresExceded === 0) return;
+      await this.postRepository.desactivateAllPost(userId, criteria);
+    } catch (error: any) {
+      throw error;
+    }
+  }
 
 
   async activateOrDeactivatePost(_id: string, activate: boolean, postBehaviourType: PostBehaviourType, userRequestId: string): Promise<any> {
@@ -242,7 +268,7 @@ export class PostService implements PostServiceInterface {
     }
   }
 
-  async updateBehaviourType(_id: string, postBehaviourType: PostBehaviourType, userRequestId: string, visibility: Visibility): Promise<any> {
+  async updateBehaviourType(_id: string, postBehaviourType: PostBehaviourType, userRequestId: string, visibility: VisibilityEnum): Promise<any> {
     try {
 
       this.logger.log('Updating behaviour_type from post with id: ' + _id);
@@ -251,8 +277,7 @@ export class PostService implements PostServiceInterface {
       if (isAllawedToChange) {
         const makeObjectUpdate = {
           postBehaviourType: postBehaviourType,
-          "visibility.post": visibility,
-          "visibility.socialMedia": visibility
+          visibility: visibility,
         }
 
         return await this.postRepository.updateBehaviourType(_id, makeObjectUpdate);

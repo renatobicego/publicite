@@ -17,7 +17,7 @@ import {
 import { UserLocation } from '../../../domain/entity/models_graphql/HTTP-REQUEST/post.location.request';
 import { PostLimitResponseGraphql } from '../../../domain/entity/models_graphql/HTTP-RESPONSE/post.limit.response.graphql';
 import { PostBehaviourType } from '../../../domain/entity/enum/postBehaviourType.enum';
-import { Visibility } from '../../../domain/entity/enum/post-visibility.enum';
+
 
 
 @Resolver('Post')
@@ -86,7 +86,7 @@ export class PostResolver {
     @Args('_id', { type: () => String, description: 'id del post' }) _id: string,
     @Args('postBehaviourType', { type: () => PostBehaviourType, description: 'Comportamiento del post' }) postBehaviourType: PostBehaviourType,
     @Args('author_id', { type: () => String }) author_id: string,
-    @Args('visibility', { type: () => Visibility, description: 'Visibilidad del post' }) visibility: Visibility,
+    @Args('visibility', { type: () => VisibilityEnum, description: 'Visibilidad del post y la red social' }) visibility: VisibilityEnum,
     @Context() context: { req: CustomContextRequestInterface },
   ): Promise<any> {
     try {
@@ -249,6 +249,23 @@ export class PostResolver {
       throw error;
     }
   }
+
+
+  // @Mutation(() => String, {
+  //   nullable: true,
+  // })
+  // async desactivatePost(
+  //   @Args('authorId', { type: () => String })
+  //   authorId: string,
+  // ): Promise<any> {
+  //   try {
+  //     return await this.postAdapter.desactivatePostById(
+  //       authorId,
+  //     );
+  //   } catch (error: any) {
+  //     throw error;
+  //   }
+  // }
 
   @Query(() => Post_response_graphql_model, {
     nullable: true,

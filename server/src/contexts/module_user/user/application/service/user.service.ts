@@ -226,7 +226,7 @@ export class UserService implements UserServiceInterface {
         { agendaPostCount: 0, librePostCount: 0 }
       );
       this.logger.warn("STATUS ACTUAL, ANTES DE ACTUALIZAR")
-      this.logger.log("User has agenda post: " + agendaPostCount + " User has Libre post: " + librePostCount);
+      this.logger.log("User has agenda post: " + agendaPostCount + " |--|  User has Libre post: " + librePostCount);
       this.logger.log("Total agenda limit of user plan: " + totalAgendaPostLimit + " - Total libre limit of user plan : " + totalLibrePostLimit);
 
       const agendaAvailable = totalAgendaPostLimit - agendaPostCount;

@@ -34,6 +34,7 @@ import { PostsMemberGroupResponse } from 'src/contexts/module_shared/sharedGraph
 import { Visibility } from '../../domain/entity/enum/post-visibility.enum';
 import { PostBehaviourType } from '../../domain/entity/enum/postBehaviourType.enum';
 import { Dictionary } from 'lodash';
+import { VisibilityEnum } from '../../domain/entity/models_graphql/HTTP-REQUEST/post.update.request';
 
 
 
@@ -62,6 +63,7 @@ export class PostRepository implements PostRepositoryInterface {
     private readonly logger: MyLoggerService,
     @InjectConnection() private readonly connection: Connection,
   ) { }
+
 
 
 
@@ -165,6 +167,41 @@ export class PostRepository implements PostRepositoryInterface {
       session.endSession();
     }
   }
+
+  async desactivateAllPost(userId: string, criteria: { [key: string]: number }): Promise<void> {
+    try {
+      const randomIds: string[] = [];
+
+      for (const [postBehaviourType, count] of Object.entries(criteria)) {
+        if (count > 0) {
+          const aggregationPipeline = [
+            { $match: { author: userId, postBehaviourType, isActive: true } },
+            { $sample: { size: count } },
+            { $project: { _id: 1 } }
+          ];
+
+          const randomDocuments = await this.postDocument.aggregate(aggregationPipeline).exec();
+          randomDocuments.forEach(doc => randomIds.push(doc._id));
+        }
+      }
+
+      if (randomIds.length === 0) {
+        console.log("No se encontraron documentos para desactivar.");
+        return;
+      }
+
+      const result = await this.postDocument.updateMany(
+        { _id: { $in: randomIds } },
+        { $set: { isActive: false } }
+      );
+
+      console.log(`${result.modifiedCount} posts desactivados.`);
+    } catch (error) {
+      console.error("Error al desactivar posts:", error);
+      throw error;
+    }
+  }
+
 
 
 
@@ -666,7 +703,7 @@ export class PostRepository implements PostRepositoryInterface {
   }
 
 
-  async updateBehaviourType(_id: string, objectUpdate: { postBehaviourType: PostBehaviourType; 'visibility.post': Visibility, 'visibility.socialMedia': Visibility }): Promise<any> {
+  async updateBehaviourType(_id: string, objectUpdate: { postBehaviourType: PostBehaviourType; visibility: VisibilityEnum }): Promise<any> {
     try {
       await this.postDocument.updateOne({ _id }, objectUpdate);
     } catch (error: any) {

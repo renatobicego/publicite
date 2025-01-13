@@ -89,4 +89,11 @@ export class Post_Full_Graphql_Model {
 
   @Field(() => Date, { nullable: true })
   endDate: Date;
+
+  @Field(() => Boolean)
+  isActive: boolean;
+
+  @Field(() => String)
+  postBehaviourType: string;
+  
 }

@@ -5,6 +5,7 @@ import { UserLocation } from '../entity/models_graphql/HTTP-REQUEST/post.locatio
 import { PostsMemberGroupResponse } from 'src/contexts/module_shared/sharedGraphql/group.posts.member.response';
 import { PostBehaviourType } from '../entity/enum/postBehaviourType.enum';
 import { Visibility } from '../entity/enum/post-visibility.enum';
+import { VisibilityEnum } from '../entity/models_graphql/HTTP-REQUEST/post.update.request';
 
 
 export interface PostRepositoryInterface {
@@ -14,6 +15,7 @@ export interface PostRepositoryInterface {
     options?: { session?: ClientSession },
   ): Promise<String>;
   deletePostById(id: string): Promise<any>;
+  desactivateAllPost(userId: string, criteria: { [key: string]: number }): Promise<void>;
   findPostsByAuthorId(id: string): Promise<void>;
   findPostById(id: string): Promise<void>;
   findAllPostByPostType(
@@ -32,7 +34,7 @@ export interface PostRepositoryInterface {
     postType: string,
   ): Promise<any>;
   updateEndDateFromPostById(postId: string, userRequestId: string, newDate: Date): Promise<void>;
-  updateBehaviourType(_id: string, objectUpdate: { postBehaviourType: PostBehaviourType, "visibility.post": Visibility, "visibility.socialMedia": Visibility }): Promise<any>
+  updateBehaviourType(_id: string, objectUpdate: { postBehaviourType: PostBehaviourType, visibility: VisibilityEnum }): Promise<any>
   makeReactionSchemaAndSetReactionToPost(postId: string, reaction: { user: string, reaction: string }, session: any): Promise<void>;
   removeReactionFromPost(userRequestId: string, _id: string): Promise<any>;
 }

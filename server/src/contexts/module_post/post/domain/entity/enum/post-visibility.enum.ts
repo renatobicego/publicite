@@ -12,3 +12,15 @@ registerEnumType(Visibility, {
   name: 'Visibility_of_the_post',
   description: 'Visibility of the post ',
 });
+
+
+export enum Visibility_Of_Social_Media {
+  public = 'public',
+  registered = 'registered',
+}
+
+registerEnumType(Visibility_Of_Social_Media, {
+  name: 'Visibility_Of_Social_Media',
+  description: 'Visibility_Of_Social_Media ',
+});
+

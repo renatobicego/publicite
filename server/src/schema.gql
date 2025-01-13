@@ -265,6 +265,8 @@ type Post_Full_Graphql_Model {
   toPrice: Float
   petitionType: String
   endDate: DateTime
+  isActive: Boolean!
+  postBehaviourType: String!
 }
 
 """Condition of the good"""
@@ -674,8 +676,8 @@ type Mutation {
     postBehaviourType: PostBehaviourType!
     author_id: String!
 
-    """Visibilidad del post"""
-    visibility: Visibility_of_the_post!
+    """Visibilidad del post y la red social"""
+    visibility: VisibilityEnum!
   ): String
 
   """eliminar un post por id"""
@@ -821,6 +823,7 @@ input PostRequest {
 
 input VisibilityOfPost {
   post: Visibility_of_the_post!
+  socialMedia: Visibility_Of_Social_Media!
 }
 
 """Visibility of the post """
@@ -830,6 +833,12 @@ enum Visibility_of_the_post {
   contacts
   friends
   topfriends
+}
+
+"""Visibility_Of_Social_Media """
+enum Visibility_Of_Social_Media {
+  public
+  registered
 }
 
 input LocationOfPost {
@@ -849,6 +858,11 @@ input AttachedFilesRequest {
   label: String!
 }
 
+input VisibilityEnum {
+  post: Visibility_of_the_post!
+  socialMedia: Visibility_Of_Social_Media!
+}
+
 input PostUpdateRequest {
   title: String
   description: String
@@ -865,11 +879,6 @@ input PostUpdateRequest {
   toPrice: Float
   frequencyPrice: FrequencyPrice
   petitionType: String
-}
-
-input VisibilityEnum {
-  post: Visibility_of_the_post!
-  socialMedia: Visibility_of_the_post!
 }
 
 input AttachedFiles {

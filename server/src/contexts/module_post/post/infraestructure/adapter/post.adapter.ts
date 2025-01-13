@@ -5,7 +5,7 @@ import { PostAdapterInterface } from 'src/contexts/module_post/post/application/
 import {
   PostRequest,
 } from 'src/contexts/module_post/post/domain/entity/models_graphql/HTTP-REQUEST/post.request';
-import { PostUpdateRequest } from 'src/contexts/module_post/post/domain/entity/models_graphql/HTTP-REQUEST/post.update.request';
+import { PostUpdateRequest, VisibilityEnum } from 'src/contexts/module_post/post/domain/entity/models_graphql/HTTP-REQUEST/post.update.request';
 
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { PostServiceInterface } from '../../domain/service/post.service.interface';
@@ -23,6 +23,13 @@ export class PostAdapter implements PostAdapterInterface {
     private readonly postMapper: PostMapperAdapterInterface,
     private readonly logger: MyLoggerService,
   ) { }
+  async desactivatePostById(id: string): Promise<void> {
+    try {
+      return await this.postService.desactivateAllPost(id);
+    } catch (error: any) {
+      throw error;
+    }
+  }
   async activateOrDeactivatePost(_id: string, activate: boolean, postBehaviourType: PostBehaviourType, userRequestId: string): Promise<any> {
     try {
       return await this.postService.activateOrDeactivatePost(_id, activate, postBehaviourType, userRequestId);
@@ -136,17 +143,17 @@ export class PostAdapter implements PostAdapterInterface {
     }
   }
 
-  async updateBehaviourType(_id: string, postBehaviourType: PostBehaviourType, userRequestId: string, visibility: Visibility): Promise<any> {
+  async updateBehaviourType(_id: string, postBehaviourType: PostBehaviourType, userRequestId: string, visibility: VisibilityEnum): Promise<any> {
     try {
       if (postBehaviourType === PostBehaviourType.agenda) {
         if (visibility === undefined || visibility === null) {
           throw new BadRequestException("visibility is required when postBehaviourType is agenda");
         }
-        if (visibility === Visibility.public) {
+        if (visibility.post === Visibility.public) {
           throw new BadRequestException("visibility can't be public when postBehaviourType is agenda");
         }
       } else {
-        visibility != Visibility.public ? visibility = Visibility.public : visibility = Visibility.public;
+        visibility.post != Visibility.public ? visibility.post = Visibility.public : visibility.post = Visibility.public;
       }
       return await this.postService.updateBehaviourType(_id, postBehaviourType, userRequestId, visibility);
     } catch (error: any) {

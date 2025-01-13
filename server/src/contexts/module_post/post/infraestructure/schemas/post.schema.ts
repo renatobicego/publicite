@@ -1,6 +1,6 @@
 import { Schema, model, Document, Date, ObjectId } from 'mongoose';
 import { PostType } from '../../domain/entity/enum/post-type.enum';
-import { Visibility } from '../../domain/entity/enum/post-visibility.enum';
+import { Visibility, Visibility_Of_Social_Media } from '../../domain/entity/enum/post-visibility.enum';
 import { PostBehaviourType } from '../../domain/entity/enum/postBehaviourType.enum';
 
 export interface attachedFiles {
@@ -62,7 +62,7 @@ export const PostSchema = new Schema<PostDocument>(
       post: { type: String, enum: Object.values(Visibility), required: true },
       socialMedia: {
         type: String,
-        enum: Object.values(Visibility),
+        enum: Object.values(Visibility_Of_Social_Media),
         required: true,
       },
     },

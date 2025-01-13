@@ -30,9 +30,11 @@ export class PostFactory implements PostFactoryInterface {
     }
 
     createPost(postType: PostType, post: PostRequest): Post {
+
+
         const visibilityNormalizated = {
             post: post.visibility.post.toLowerCase(),
-            socialMedia: post.visibility.post.toLowerCase(),
+            socialMedia: post.visibility.socialMedia.toLowerCase(),
         };
         const postAttachedEmpty = {
             url: '',
