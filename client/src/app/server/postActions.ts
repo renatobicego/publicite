@@ -5,8 +5,9 @@ import {
   postPost,
   putEndDate,
   putPost,
+  putPostBehavior,
 } from "@/services/postsServices";
-import { PetitionContact, Post } from "@/types/postTypes";
+import { PetitionContact, Post, PostBehaviourType } from "@/types/postTypes";
 
 export const createPost = async (
   formData: any,
@@ -49,7 +50,6 @@ export const editPost = async (
   id: string,
   authorUsername: string
 ) => {
-
   try {
     const resApi: any = await putPost(formData, id);
     if (resApi.error) {
@@ -85,5 +85,23 @@ export const updateEndDate = async (postId: string, endDate: string) => {
 export const removePostReaction = async (postReactionId: string) => {
   const resApi: { message: string } | { error: string } =
     await deletePostReaction(postReactionId);
+  return resApi;
+};
+
+export const updatePostBehaviour = async (
+  postId: string,
+  behaviourType: PostBehaviourType,
+  authorId: ObjectId,
+  visibility: {
+    post: Visibility;
+    socialMedia: Visibility;
+  }
+) => {
+  const resApi: { message: string } | { error: string } = await putPostBehavior(
+    postId,
+    behaviourType,
+    authorId,
+    visibility
+  );
   return resApi;
 };

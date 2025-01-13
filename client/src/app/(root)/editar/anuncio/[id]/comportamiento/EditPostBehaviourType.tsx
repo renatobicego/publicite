@@ -2,12 +2,16 @@
 import Visibility from "@/app/(root)/crear/anuncio/components/CreateForm/inputs/AccordionInputs/Visibility";
 import PostsLimitReached from "@/app/(root)/crear/anuncio/components/PostsLimitReached";
 import SelectPostBehaviourType from "@/app/(root)/crear/anuncio/components/SelectPostBehaviourType";
+import { updatePostBehaviour } from "@/app/server/postActions";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
 import { PostBehaviourType } from "@/types/postTypes";
+import { NEEDS, POSTS } from "@/utils/data/urls";
+import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import useUserPostLimit from "@/utils/hooks/useUserPostLimit";
 import { Spinner } from "@nextui-org/react";
 import { Form, Formik, FormikHelpers } from "formik";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 interface EditPostBehaviourTypeProps {
@@ -18,6 +22,7 @@ interface EditPostBehaviourTypeProps {
     post: Visibility;
     socialMedia: Visibility;
   };
+  postType: PostType;
 }
 
 interface EditPostBehaviourTypeFormValues {
@@ -34,13 +39,14 @@ const EditPostBehaviourType = ({
   postBehaviourType,
   authorId,
   visibility,
+  postType,
 }: EditPostBehaviourTypeProps) => {
   const initialValues: EditPostBehaviourTypeFormValues = {
     postBehaviourType,
     authorId,
     visibility,
   };
-
+  const router = useRouter();
   const [currentPostBehaviourType, setCurrentPostBehaviourType] =
     useState(postBehaviourType);
   const { userCanPublishPost, limit, numberOfPosts, loading } =
@@ -49,7 +55,32 @@ const EditPostBehaviourType = ({
   const handleSubmit = async (
     values: EditPostBehaviourTypeFormValues,
     actions: FormikHelpers<EditPostBehaviourTypeFormValues>
-  ) => {};
+  ) => {
+    if (!userCanPublishPost) return toastifyError("Has superado el limite de anuncios");
+    if (!values.postBehaviourType) {
+      actions.setSubmitting(false);
+      actions.setFieldError("postBehaviourType", "Selecciona un comportamiento");
+      return;
+    }
+    const res = await updatePostBehaviour(
+      id,
+      values.postBehaviourType,
+      values.authorId || "",
+      values.visibility
+    );
+
+    if ("error" in res) {
+      actions.setSubmitting(false);
+      toastifyError(res.error);
+      return;
+    }
+
+    actions.setSubmitting(false);
+    toastifySuccess(res.message);
+    router.replace(
+      postType === "petition" ? `${NEEDS}/${id}` : `${POSTS}/${id}`
+    );
+  };
 
   if (loading) return <Spinner color="warning" />;
   return (
@@ -84,6 +115,7 @@ const EditPostBehaviourType = ({
                     setFieldValue("visibility.post", "contacts");
                   }
                 }}
+                errorMessage={errors.postBehaviourType}
               />
               <Visibility
                 errors={errors}

@@ -11,7 +11,7 @@ const PostCard = ({
   postData,
   recommendation = false,
   className,
-  interactable = false,
+  interactable = true,
   isGroupPost = false,
   showChangeExpirationDate,
 }: {

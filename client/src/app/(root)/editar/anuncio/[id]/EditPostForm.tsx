@@ -6,7 +6,7 @@ import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { useEffect, useState } from "react";
 import useUploadFiles from "@/utils/hooks/useUploadFiles";
-import { Button, Divider } from "@nextui-org/react";
+import { Button, Divider, Link } from "@nextui-org/react";
 import { useRouter } from "next-nprogress-bar";
 import TitleDescription from "@/app/(root)/crear/anuncio/components/CreateForm/inputs/TitleDescription";
 import PriceCategory from "@/app/(root)/crear/anuncio/components/CreateForm/inputs/PriceCategory";
@@ -22,6 +22,7 @@ import { POSTS } from "@/utils/data/urls";
 import { goodEditValidation } from "@/app/(root)/crear/anuncio/components/CreateGood/goodValidation";
 import { serviceEditValidation } from "@/app/(root)/crear/anuncio/components/CreateService/serviceValidation";
 import { handleFileSubmission } from "./handleFileSubmission";
+import ChangeBehaviourLink from "./ChangeBehaviourLink";
 
 const EditPostForm = ({ postData }: { postData: Good | Service }) => {
   const { postType } = postData;
@@ -40,7 +41,10 @@ const EditPostForm = ({ postData }: { postData: Good | Service }) => {
     false,
     true
   );
-  const initialValues = getPostInitialValues(postData, postType as "good" | "service");
+  const initialValues = getPostInitialValues(
+    postData,
+    postType as "good" | "service"
+  );
 
   const handleSubmit = async (values: any, actions: FormikHelpers<any>) => {
     // check if all images were deleted and no new images were added
@@ -135,6 +139,10 @@ const EditPostForm = ({ postData }: { postData: Good | Service }) => {
               </div>
             </div>
             <div className="flex flex-col gap-4 flex-1 max-md:w-full">
+              <ChangeBehaviourLink
+                id={postData._id}
+                postBehaviourType={postData.postBehaviourType}
+              />
               <TitleDescription errors={errors} setFieldValue={setFieldValue} />
               <PriceCategory
                 errors={errors}

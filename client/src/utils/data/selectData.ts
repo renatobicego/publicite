@@ -1,3 +1,5 @@
+import { Post, PostBehaviourType } from "@/types/postTypes";
+
 export const genderItems = [
   { name: "Masculino", value: "M" },
   { name: "Femenino", value: "F" },
@@ -168,3 +170,8 @@ export const groupVisibilityItems: { value: "public" | "private"; label: string 
     label: "Privado",
   }
 ];
+
+export const postsBehavioursTypes: Record<PostBehaviourType, string> = {
+  agenda: "Agenda",
+  libre: "Libre",
+}

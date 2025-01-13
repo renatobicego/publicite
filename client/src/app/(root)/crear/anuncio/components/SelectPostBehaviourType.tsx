@@ -4,9 +4,11 @@ import { Select, SelectItem } from "@nextui-org/react";
 const SelectPostBehaviourType = ({
   type,
   setType,
+  errorMessage,
 }: {
   type?: PostBehaviourType;
   setType: (type: PostBehaviourType) => void;
+  errorMessage?: string;
 }) => {
   return (
     <>
@@ -26,6 +28,8 @@ const SelectPostBehaviourType = ({
         onChange={(e) => setType(e.target.value as PostBehaviourType)}
         radius="full"
         isRequired
+        errorMessage={errorMessage}
+        isInvalid={!!errorMessage}
         labelPlacement="outside"
         variant="bordered"
       >

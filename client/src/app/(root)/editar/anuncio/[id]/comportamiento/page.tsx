@@ -56,6 +56,7 @@ export default async function ModifyPostBehaviour(props: {
         />
         <EditPostBehaviourType
           id={postData._id}
+          postType={postData.postType}
           postBehaviourType={postData.postBehaviourType}
           authorId={userLogged?.publicMetadata.mongoId}
           visibility={postData.visibility}

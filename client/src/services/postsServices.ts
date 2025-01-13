@@ -4,10 +4,12 @@ import {
   GoodPostValues,
   PetitionPostValues,
   Post,
+  PostBehaviourType,
   ServicePostValues,
 } from "@/types/postTypes";
 import { getClient, query } from "@/lib/client";
 import {
+  changePostBehaviourTypeMutation,
   deletePostMutation,
   deletePostReactionMutation,
   editPostMutation,
@@ -100,7 +102,7 @@ export const putPost = async (
     });
     return data.updatePostById;
   } catch (error) {
-    return handleApolloError(error)
+    return handleApolloError(error);
   }
 };
 
@@ -219,7 +221,7 @@ export const deletePostService = async (post: Post) => {
     }
     return { message: "Anuncio borrado exitosamente" };
   } catch (error) {
-    return handleApolloError(error)
+    return handleApolloError(error);
   }
 };
 
@@ -242,7 +244,7 @@ export const putEndDate = async (postId: string, endDate: string) => {
   }
 };
 
-export const deletePostReaction = async (reactionId: string) => { 
+export const deletePostReaction = async (reactionId: string) => {
   try {
     await getClient().mutate({
       mutation: deletePostReactionMutation,
@@ -259,4 +261,31 @@ export const deletePostReaction = async (reactionId: string) => {
   } catch (error) {
     return handleApolloError(error);
   }
-}
+};
+
+export const putPostBehavior = async (
+  postId: string,
+  postBehaviourType: PostBehaviourType,
+  authorId: ObjectId,
+  visibility: {
+    post: Visibility;
+    socialMedia: Visibility;
+  }
+) => {
+  try {
+    await getClient().mutate({
+      mutation: changePostBehaviourTypeMutation,
+      variables: { id: postId, postBehaviourType, authorId, visibility },
+      context: {
+        headers: {
+          Authorization: await auth().getToken({ template: "testing" }),
+        },
+      },
+    });
+    return {
+      message: "Anuncio modificado exitosamente",
+    };
+  } catch (error) {
+    return handleApolloError(error);
+  }
+};

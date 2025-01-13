@@ -180,3 +180,19 @@ export const deletePostReactionMutation = gql`
     removeReactionFromPost(_id: $id)
   }
 `;
+
+export const changePostBehaviourTypeMutation = gql`
+  mutation Mutation(
+    $id: String!
+    $postBehaviourType: PostBehaviourType!
+    $authorId: String!
+    $visibility: VisibilityEnum!
+  ) {
+    updateBehaviourType(
+      _id: $id
+      postBehaviourType: $postBehaviourType
+      author_id: $authorId
+      visibility: $visibility
+    )
+  }
+`;
