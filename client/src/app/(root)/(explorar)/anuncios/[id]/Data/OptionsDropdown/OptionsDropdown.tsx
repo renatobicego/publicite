@@ -62,6 +62,7 @@ const OptionsDropdown = ({ post }: { post: Post }) => {
       return;
     }
     setIsChangingActiveStatus(false);
+    setIsActive(!isActive);
     toastifySuccess(res.message as string);
   };
   const handleItemClick = () => {

@@ -261,12 +261,12 @@ type Post_Full_Graphql_Model {
   modelType: String
   reviews: [String!]
   condition: GoodCondition
-  frequencyPrice: String
-  toPrice: Float
-  petitionType: String
   endDate: DateTime
   isActive: Boolean!
   postBehaviourType: String!
+  frequencyPrice: String
+  toPrice: Float
+  petitionType: String
 }
 
 """Condition of the good"""

@@ -75,6 +75,14 @@ export class Post_Full_Graphql_Model {
   @Field(() => GoodCondition, { nullable: true })
   condition: GoodCondition;
 
+  @Field(() => Date, { nullable: true })
+  endDate: Date;
+
+  @Field(() => Boolean)
+  isActive: boolean;
+
+  @Field(() => String)
+  postBehaviourType: string;
   //Fields post Service
   //-> comparte imagesUrls & reviews de post good & frequencyPrice de post petition
   @Field(() => String, { nullable: true })
@@ -86,14 +94,4 @@ export class Post_Full_Graphql_Model {
 
   @Field(() => String, { nullable: true })
   petitionType: string;
-
-  @Field(() => Date, { nullable: true })
-  endDate: Date;
-
-  @Field(() => Boolean)
-  isActive: boolean;
-
-  @Field(() => String)
-  postBehaviourType: string;
-  
 }

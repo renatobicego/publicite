@@ -43,7 +43,7 @@ export const useFilteredAndSortedPosts = (items: any[]) => {
         );
         break;
       case "inactive":
-        // filteredPosts = filteredPosts.filter((post: Post) => !post.isActive);
+        filteredPosts = filteredPosts.filter((post: Post) => !post.isActive);
         break;
       case "expired":
         filteredPosts = filteredPosts.filter(
@@ -51,6 +51,10 @@ export const useFilteredAndSortedPosts = (items: any[]) => {
             parseDateTime(post.endDate.replace("Z", "")).compare(todayDate) < 0
         );
         break;
+      case "active":
+        filteredPosts = filteredPosts.filter((post: Post) => post.isActive);
+        break;
+
       default:
         break;
     }

@@ -58,7 +58,7 @@ export class UserRepository implements UserRepositoryInterface {
     private readonly userRepositoryMapper: UserRepositoryMapperInterface,
     @InjectConnection() private readonly connection: Connection,
     private readonly logger: MyLoggerService,
-  ) { }
+  ) {}
 
   async findUserByUsername(username: string): Promise<any> {
     try {
@@ -91,7 +91,7 @@ export class UserRepository implements UserRepositoryInterface {
           {
             path: 'posts',
             select:
-              '_id imagesUrls title description price reviews frequencyPrice toPrice petitionType postType endDate',
+              '_id imagesUrls title description price reviews frequencyPrice toPrice petitionType postType endDate isActive',
           },
         ])
         .lean();
@@ -226,34 +226,32 @@ export class UserRepository implements UserRepositoryInterface {
     }
   }
 
-
   async getPostAndLimitsFromUserByUserId(author: string): Promise<any> {
-    const user = await this.user.findById(author)
-      .select("posts subscriptions -_id")
+    const user = await this.user
+      .findById(author)
+      .select('posts subscriptions -_id')
       .populate([
         {
-          path: "posts isActive",
+          path: 'posts isActive',
           match: { isActive: true },
-          select: "postBehaviourType",
+          select: 'postBehaviourType',
         },
         {
-          path: "subscriptions",
-          select: "subscriptionPlan status",
+          path: 'subscriptions',
+          select: 'subscriptionPlan status',
           match: { status: 'authorized' },
           populate: {
-            path: "subscriptionPlan",
-            select: "postsLibresCount postsAgendaCount",
-          }
+            path: 'subscriptionPlan',
+            select: 'postsLibresCount postsAgendaCount',
+          },
         },
       ]);
     if (!user) {
-      console.error("No se encontró el usuario.");
+      console.error('No se encontró el usuario.');
       return null;
     }
     return user;
   }
-
-
 
   async makeFriendRelationBetweenUsers(
     userRelation: UserRelation,
@@ -609,22 +607,29 @@ export class UserRepository implements UserRepositoryInterface {
     }
   }
 
-  async setSubscriptionToUser(external_reference: string, sub_id: any, session: any): Promise<void> {
+  async setSubscriptionToUser(
+    external_reference: string,
+    sub_id: any,
+    session: any,
+  ): Promise<void> {
     try {
       const result = await this.user.updateOne(
         { clerkId: external_reference },
         { $addToSet: { subscriptions: sub_id } },
-        { session }
+        { session },
       );
 
       if (result.modifiedCount === 0) {
-        throw new Error(`No se encontró un usuario con cler_id: ${external_reference}`);
+        throw new Error(
+          `No se encontró un usuario con cler_id: ${external_reference}`,
+        );
       }
     } catch (error) {
-      console.error(`Error actualizando suscripción para el usuario ${external_reference}:`, error);
+      console.error(
+        `Error actualizando suscripción para el usuario ${external_reference}:`,
+        error,
+      );
       throw error;
     }
   }
-
-
 }

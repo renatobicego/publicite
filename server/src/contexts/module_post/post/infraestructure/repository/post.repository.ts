@@ -38,10 +38,6 @@ import { PostBehaviourType } from '../../domain/entity/enum/postBehaviourType.en
 
 import { VisibilityEnum } from '../../domain/entity/models_graphql/HTTP-REQUEST/post.update.request';
 
-
-
-
-
 export class PostRepository implements PostRepositoryInterface {
   constructor(
     @InjectModel(PostGoodModel.modelName)
@@ -64,8 +60,7 @@ export class PostRepository implements PostRepositoryInterface {
 
     private readonly logger: MyLoggerService,
     @InjectConnection() private readonly connection: Connection,
-  ) { }
-
+  ) {}
 
   async activateOrDeactivatePost(_id: string, activate: boolean): Promise<any> {
     try {
@@ -168,7 +163,10 @@ export class PostRepository implements PostRepositoryInterface {
     }
   }
 
-  async desactivateAllPost(userId: string, criteria: { [key: string]: number }): Promise<void> {
+  async desactivateAllPost(
+    userId: string,
+    criteria: { [key: string]: number },
+  ): Promise<void> {
     try {
       const randomIds: string[] = [];
 
@@ -177,33 +175,32 @@ export class PostRepository implements PostRepositoryInterface {
           const aggregationPipeline = [
             { $match: { author: userId, postBehaviourType, isActive: true } },
             { $sample: { size: count } },
-            { $project: { _id: 1 } }
+            { $project: { _id: 1 } },
           ];
 
-          const randomDocuments = await this.postDocument.aggregate(aggregationPipeline).exec();
-          randomDocuments.forEach(doc => randomIds.push(doc._id));
+          const randomDocuments = await this.postDocument
+            .aggregate(aggregationPipeline)
+            .exec();
+          randomDocuments.forEach((doc) => randomIds.push(doc._id));
         }
       }
 
       if (randomIds.length === 0) {
-        console.log("No se encontraron documentos para desactivar.");
+        console.log('No se encontraron documentos para desactivar.');
         return;
       }
 
       const result = await this.postDocument.updateMany(
         { _id: { $in: randomIds } },
-        { $set: { isActive: false } }
+        { $set: { isActive: false } },
       );
 
       console.log(`${result.modifiedCount} posts desactivados.`);
     } catch (error) {
-      console.error("Error al desactivar posts:", error);
+      console.error('Error al desactivar posts:', error);
       throw error;
     }
   }
-
-
-
 
   async findPostsByAuthorId(id: string): Promise<any> {
     try {
@@ -331,7 +328,8 @@ export class PostRepository implements PostRepositoryInterface {
       } else {
         friendPosts = await this.postDocument
           .find({
-            postType, isActive: true,
+            postType,
+            isActive: true,
             $or: conditions,
           })
           .populate([
@@ -596,8 +594,6 @@ export class PostRepository implements PostRepositoryInterface {
         { $limit: limit + 1 },
       ]);
 
-
-
       if (!posts) {
         return { userAndPosts: [], hasMore: false };
       }
@@ -747,8 +743,13 @@ export class PostRepository implements PostRepositoryInterface {
     }
   }
 
-
-  async updateBehaviourType(_id: string, objectUpdate: { postBehaviourType: PostBehaviourType; visibility: VisibilityEnum }): Promise<any> {
+  async updateBehaviourType(
+    _id: string,
+    objectUpdate: {
+      postBehaviourType: PostBehaviourType;
+      visibility: VisibilityEnum;
+    },
+  ): Promise<any> {
     try {
       await this.postDocument.updateOne({ _id }, objectUpdate);
     } catch (error: any) {
