@@ -4,7 +4,7 @@ import { PostUpdateRequest, VisibilityEnum } from '../../domain/entity/models_gr
 import { UserLocation } from '../../domain/entity/models_graphql/HTTP-REQUEST/post.location.request';
 import { PostLimitResponseGraphql } from '../../domain/entity/models_graphql/HTTP-RESPONSE/post.limit.response.graphql';
 import { PostBehaviourType } from '../../domain/entity/enum/postBehaviourType.enum';
-import { Visibility } from '../../domain/entity/enum/post-visibility.enum';
+import { Visibility_Of_Find } from '../../domain/entity/enum/post-visibility.enum';
 
 
 export interface PostAdapterInterface {
@@ -22,7 +22,7 @@ export interface PostAdapterInterface {
     searchTerm?: string,
   ): Promise<void>;
   findMatchPost(postType: string, searchTerm: string): Promise<void>;
-  findFriendPosts(postType: string, userRequestId: string, page: number, limit: number, searchTerm?: string): Promise<void>;
+  findFriendPosts(postType: string, userRequestId: string, page: number, limit: number, visibility: Visibility_Of_Find, searchTerm?: string): Promise<void>;
   getLimitPostOfUser(userRequestId: string): Promise<PostLimitResponseGraphql>;
   updatePostById(
     postUpdate: PostUpdateRequest,

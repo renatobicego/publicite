@@ -12,7 +12,7 @@ import { PostServiceInterface } from '../../domain/service/post.service.interfac
 import { UserLocation } from '../../domain/entity/models_graphql/HTTP-REQUEST/post.location.request';
 import { PostLimitResponseGraphql } from '../../domain/entity/models_graphql/HTTP-RESPONSE/post.limit.response.graphql';
 import { PostBehaviourType } from '../../domain/entity/enum/postBehaviourType.enum';
-import { Visibility } from '../../domain/entity/enum/post-visibility.enum';
+import { Visibility, Visibility_Of_Find } from '../../domain/entity/enum/post-visibility.enum';
 
 
 export class PostAdapter implements PostAdapterInterface {
@@ -101,9 +101,9 @@ export class PostAdapter implements PostAdapterInterface {
     }
   }
 
-  async findFriendPosts(postType: string, userRequestId: string, page: number, limit: number, searchTerm: string): Promise<void> {
+  async findFriendPosts(postType: string, userRequestId: string, page: number, limit: number, visibility: Visibility_Of_Find, searchTerm?: string): Promise<void> {
     try {
-      return await this.postService.findFriendPosts(postType, userRequestId, page, limit, searchTerm);
+      return await this.postService.findFriendPosts(postType, userRequestId, page, limit, visibility, searchTerm);
     } catch (error: any) {
       throw error;
     }

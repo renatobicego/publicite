@@ -4,7 +4,7 @@ import { UserLocation } from "../entity/models_graphql/HTTP-REQUEST/post.locatio
 import { PostsMemberGroupResponse } from "src/contexts/module_shared/sharedGraphql/group.posts.member.response";
 import { PostLimitResponseGraphql } from "../entity/models_graphql/HTTP-RESPONSE/post.limit.response.graphql";
 import { PostBehaviourType } from "../entity/enum/postBehaviourType.enum";
-import { Visibility } from "../entity/enum/post-visibility.enum";
+import { Visibility_Of_Find } from "../entity/enum/post-visibility.enum";
 import { VisibilityEnum } from "../entity/models_graphql/HTTP-REQUEST/post.update.request";
 
 
@@ -24,7 +24,7 @@ export interface PostServiceInterface {
     searchTerm?: string,
   ): Promise<void>;
   findMatchPost(postType: string, searchTerm: string): Promise<void>;
-  findFriendPosts(postType: string, userRequestId: string, page: number, limit: number, searchTerm?: string): Promise<void>;
+  findFriendPosts(postType: string, userRequestId: string, page: number, limit: number, visibility: Visibility_Of_Find, searchTerm?: string): Promise<void>;
   findPostOfGroupMembers(membersId: any[], conditionsOfSearch: any, userLocation: UserLocation, limit: number, page: number): Promise<PostsMemberGroupResponse | null>
   getLimitPostOfUser(userRequestId: string): Promise<PostLimitResponseGraphql>
   makeReactionSchemaAndSetReactionToPost(postId: string, reaction: { user: string, reaction: string }, session: any): Promise<void>;

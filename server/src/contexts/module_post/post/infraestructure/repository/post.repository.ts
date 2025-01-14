@@ -596,7 +596,7 @@ export class PostRepository implements PostRepositoryInterface {
         { $limit: limit + 1 },
       ]);
 
-      console.log(posts);
+
 
       if (!posts) {
         return { userAndPosts: [], hasMore: false };

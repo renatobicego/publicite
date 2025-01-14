@@ -601,7 +601,7 @@ type Query {
   findMatchPost(postType: PostType!, searchTerm: String!): Post_response_graphql_model
 
   """Encuentra todos los posts de mis amigos, segun el tipo de post"""
-  findFriendPosts(postType: PostType!, page: Float!, limit: Float!, searchTerm: String): PostFindAllResponse
+  findFriendPosts(postType: PostType!, page: Float!, limit: Float!, visibility: Visibility_Of_Find!, searchTerm: String): PostFindAllResponse
 
   """Obtener un board por anotaciones o palabras clave"""
   getBoardByAnnotationOrKeyword(board: String!, limit: Float!, page: Float!): BoardGetAllResponse
@@ -648,6 +648,15 @@ enum PostType {
 input UserLocation {
   latitude: Float!
   longitude: Float!
+}
+
+"""Visibility_Of_Find """
+enum Visibility_Of_Find {
+  public
+  contacts
+  friends
+  topfriends
+  hierarchy
 }
 
 input UserLocation_group {

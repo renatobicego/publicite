@@ -13,7 +13,23 @@ registerEnumType(Visibility, {
   description: 'Visibility of the post ',
 });
 
+//---------------------------
 
+export enum Visibility_Of_Find {
+  public = 'public',
+  contacts = 'contacts',
+  friends = 'friends',
+  topfriends = 'topfriends',
+  hierarchy = 'hierarchy',
+}
+
+registerEnumType(Visibility_Of_Find, {
+  name: 'Visibility_Of_Find',
+  description: 'Visibility_Of_Find ',
+});
+
+
+//---------------------------
 export enum Visibility_Of_Social_Media {
   public = 'public',
   registered = 'registered',

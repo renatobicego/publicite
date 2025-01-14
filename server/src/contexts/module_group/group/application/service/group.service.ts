@@ -13,7 +13,7 @@ import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.servic
 import { GroupUpdateRequest } from '../adapter/dto/HTTP-REQUEST/group.update.request';
 
 import { UserServiceInterface } from 'src/contexts/module_user/user/domain/service/user.service.interface';
-import { makeUserRelationMap } from 'src/contexts/module_shared/utils/functions/makeUserRelationMap';
+import { makeUserRelationHierarchyMap } from 'src/contexts/module_shared/utils/functions/makeUserRelationHierarchyMap';
 import { UserLocation_group } from '../adapter/dto/HTTP-REQUEST/user.location.request';
 import { PostServiceInterface } from 'src/contexts/module_post/post/domain/service/post.service.interface';
 import { PostsMemberGroupResponse } from 'src/contexts/module_shared/sharedGraphql/group.posts.member.response';
@@ -286,7 +286,7 @@ export class GroupService implements GroupServiceInterface {
 
       const friendRelationsOfUserRequest: UserRelation[] = await this.userService.getRelationsFromUserByUserId(userRequest)
 
-      const idAndTypeOfRelationMap: Map<string, String[]> = makeUserRelationMap(friendRelationsOfUserRequest, userRequest)
+      const idAndTypeOfRelationMap: Map<string, String[]> = makeUserRelationHierarchyMap(friendRelationsOfUserRequest, userRequest)
 
 
       const userRelationMapOfGroupMembers = new Map(

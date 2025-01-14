@@ -12,7 +12,7 @@ import {
 import { UpdateBoardDto } from '../dto/HTTP-REQUEST/board.update';
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { UserServiceInterface } from 'src/contexts/module_user/user/domain/service/user.service.interface';
-import { makeUserRelationMap } from 'src/contexts/module_shared/utils/functions/makeUserRelationMap';
+import { makeUserRelationHierarchyMap } from 'src/contexts/module_shared/utils/functions/makeUserRelationHierarchyMap';
 
 export class BoardService implements BoardServiceInterface {
   constructor(
@@ -38,7 +38,7 @@ export class BoardService implements BoardServiceInterface {
       if (userRequestId != null && isUserRegister) {
         const userRelation = await this.userService.getRelationsFromUserByUserId(
           userRequestId)
-        relationMap = makeUserRelationMap(userRelation, userRequestId)
+        relationMap = makeUserRelationHierarchyMap(userRelation, userRequestId)
       }
 
       if (relationMap.size === 0 && isUserRegister) {

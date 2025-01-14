@@ -17,6 +17,7 @@ import {
 import { UserLocation } from '../../../domain/entity/models_graphql/HTTP-REQUEST/post.location.request';
 import { PostLimitResponseGraphql } from '../../../domain/entity/models_graphql/HTTP-RESPONSE/post.limit.response.graphql';
 import { PostBehaviourType } from '../../../domain/entity/enum/postBehaviourType.enum';
+import { Visibility, Visibility_Of_Find } from '../../../domain/entity/enum/post-visibility.enum';
 
 
 
@@ -296,6 +297,8 @@ export class PostResolver {
     @Args('page', { type: () => Number }) page: number,
     @Args('limit', { type: () => Number }) limit: number,
     @Context() context: { req: CustomContextRequestInterface },
+    @Args('visibility', { type: () => Visibility_Of_Find })
+    visibility: Visibility_Of_Find,
     @Args('searchTerm', { type: () => String, nullable: true })
     searchTerm: string,
   ): Promise<any> {
@@ -306,7 +309,8 @@ export class PostResolver {
         userRequestId,
         page,
         limit,
-        searchTerm,
+        visibility,
+        searchTerm
       );
     } catch (error: any) {
       throw error;

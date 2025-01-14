@@ -14,11 +14,11 @@ import { PostType } from '../../domain/entity/enum/post-type.enum';
 import { UserLocation } from '../../domain/entity/models_graphql/HTTP-REQUEST/post.location.request';
 import { removeAccents_removeEmojisAndToLowerCase } from '../../domain/utils/normalice.data';
 import { checkStopWordsAndReturnSearchQuery, SearchType } from 'src/contexts/module_shared/utils/functions/checkStopWordsAndReturnSearchQuery';
-import { makeUserRelationMap } from 'src/contexts/module_shared/utils/functions/makeUserRelationMap';
+import { makeUserDirectRelationMap, makeUserRelationHierarchyMap } from 'src/contexts/module_shared/utils/functions/makeUserRelationHierarchyMap';
 import { PostsMemberGroupResponse } from 'src/contexts/module_shared/sharedGraphql/group.posts.member.response';
 import { PostLimitResponseGraphql } from '../../domain/entity/models_graphql/HTTP-RESPONSE/post.limit.response.graphql';
 import { PostBehaviourType } from '../../domain/entity/enum/postBehaviourType.enum';
-import { Visibility } from '../../domain/entity/enum/post-visibility.enum';
+import { Visibility_Of_Find } from '../../domain/entity/enum/post-visibility.enum';
 import { VisibilityEnum } from '../../domain/entity/models_graphql/HTTP-REQUEST/post.update.request';
 
 
@@ -197,12 +197,10 @@ export class PostService implements PostServiceInterface {
   }
 
 
-  async findFriendPosts(postType: string, userRequestId: string, page: number, limit: number, searchTerm: string): Promise<void> {
+  async findFriendPosts(postType: string, userRequestId: string, page: number, limit: number, visibility: Visibility_Of_Find, searchTerm?: string): Promise<any> {
     try {
-
-      const relationMap: Map<string, String[]> = await this.makeUserMapRelation(userRequestId)
-      if (!relationMap) return
-
+      let relationMap: Map<string, String[]> = await this.makeUserRelation(userRequestId, visibility)
+      if (relationMap.size === 0 || relationMap === null || !relationMap) return { posts: [], hasMore: false };
       return await this.postRepository.findFriendPosts(postType, relationMap, page, limit, searchTerm)
 
     } catch (error: any) {
@@ -230,10 +228,17 @@ export class PostService implements PostServiceInterface {
 
 
 
-  async makeUserMapRelation(userRequestId: string): Promise<any> {
+  async makeUserRelation(userRequestId: string, visibility: Visibility_Of_Find): Promise<any> {
     const userRelation = await this.userService.getRelationsFromUserByUserId(userRequestId)
     if (!userRelation) return
-    return makeUserRelationMap(userRelation, userRequestId)
+
+    if (visibility === Visibility_Of_Find.hierarchy) {
+      return makeUserRelationHierarchyMap(userRelation, userRequestId)
+    } else {
+      return makeUserDirectRelationMap(userRelation, userRequestId, visibility)
+    }
+
+
   }
 
 
