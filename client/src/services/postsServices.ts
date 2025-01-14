@@ -18,6 +18,7 @@ import {
   getPostsOfFriendsQuery,
   getPostsQuery,
   postPostMutation,
+  putActiveStatusMutation,
   updateEndDtaeMutation,
 } from "@/graphql/postQueries";
 import { auth } from "@clerk/nextjs/server";
@@ -284,6 +285,30 @@ export const putPostBehavior = async (
     });
     return {
       message: "Anuncio modificado exitosamente",
+    };
+  } catch (error) {
+    return handleApolloError(error);
+  }
+};
+
+export const putActiveStatus = async (
+  postId: ObjectId,
+  authorId: ObjectId,
+  postBehaviourType: PostBehaviourType,
+  activate: boolean
+) => {
+  try {
+    await getClient().mutate({
+      mutation: putActiveStatusMutation,
+      variables: { id: postId, authorId, postBehaviourType, activate },
+      context: {
+        headers: {
+          Authorization: await auth().getToken({ template: "testing" }),
+        },
+      },
+    });
+    return {
+      message: "Estado de visibilidad del anuncio actualizado exitosamente",
     };
   } catch (error) {
     return handleApolloError(error);

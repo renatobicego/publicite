@@ -54,6 +54,7 @@ export const getPostByIdQuery = gql`
       price
       reviews
       title
+      isActive
       toPrice
       visibility {
         post
@@ -193,6 +194,22 @@ export const changePostBehaviourTypeMutation = gql`
       postBehaviourType: $postBehaviourType
       author_id: $authorId
       visibility: $visibility
+    )
+  }
+`;
+
+export const putActiveStatusMutation = gql`
+  mutation ActivateOrDeactivatePost(
+    $id: String!
+    $authorId: String!
+    $postBehaviourType: PostBehaviourType!
+    $activate: Boolean!
+  ) {
+    activateOrDeactivatePost(
+      _id: $id
+      author_id: $authorId
+      postBehaviourType: $postBehaviourType
+      activate: $activate
     )
   }
 `;

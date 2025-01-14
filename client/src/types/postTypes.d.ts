@@ -20,6 +20,7 @@ export interface Post {
   endDate: string;
   reactions: PostReaction[];
   postBehaviourType: PostBehaviourType;
+  isActive: boolean
 }
 
 type PostBehaviourType = "libre" | "agenda";
@@ -110,6 +111,7 @@ export interface CreatePostValues
     | "geoLocation"
     | "endDate"
     | "reactions"
+    | "isActive"
   > {
   category: ObjectId;
   price?: number;
@@ -127,6 +129,7 @@ export interface GoodPostValues
       | "recommendations"
       | "endDate"
       | "reactions"
+      | "isActive"
     > {
   condition?: "new" | "used";
 }
@@ -148,6 +151,7 @@ export interface ServicePostValues
       | "_id"
       | "endDate"
       | "reactions"
+      | "isActive"
     > {
   frequencyPrice?: FrequencyPrice;
 }
@@ -161,7 +165,7 @@ export interface PetitionPostValues
   extends CreatePostValues,
     Omit<
       Petition,
-      "petitionType" | "_id" | "recommendations" | "comments" | "endDate" | "reactions"
+      "petitionType" | "_id" | "recommendations" | "comments" | "endDate" | "reactions" | "isActive"
     > {
   petitionType?: "good" | "service";
 }

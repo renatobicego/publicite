@@ -1,6 +1,6 @@
 "use client";
 
-import ConfirmModal from "@/components/modals/ConfirmModal";
+const ConfirmModal = lazy(() => import("@/components/modals/ConfirmModal"));
 import {
   Dropdown,
   DropdownTrigger,
@@ -8,7 +8,7 @@ import {
   DropdownMenu,
   DropdownItem,
 } from "@nextui-org/react";
-import { useRef } from "react";
+import { lazy, useRef } from "react";
 import { FaChevronDown, FaRegUser } from "react-icons/fa6";
 import { IoTrashOutline } from "react-icons/io5";
 import DeleteCollaborators from "./DeleteCollaborators";

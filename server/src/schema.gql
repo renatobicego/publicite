@@ -507,12 +507,13 @@ type Post_response_graphql_model {
   modelType: String
   reviews: [String!]
   condition: String
+  reactions: [postReaction!]
+  postBehaviourType: String!
+  isActive: Boolean!
   frequencyPrice: String
   toPrice: Float
   petitionType: String
   endDate: DateTime
-  reactions: [postReaction!]
-  postBehaviourType: String!
 }
 
 type PostFindAllResponse {

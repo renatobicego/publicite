@@ -1,5 +1,5 @@
-import ConfirmModal from "@/components/modals/ConfirmModal";
-import React, { MutableRefObject, useRef } from "react";
+const ConfirmModal = lazy(() => import("@/components/modals/ConfirmModal"));
+import React, { lazy, MutableRefObject, useRef } from "react";
 
 const ConfirmDelete = ({
   deletePost,

@@ -1,9 +1,10 @@
 "use client";
 import { exitMagazine } from "@/app/server/magazineActions";
-import ConfirmModal from "@/components/modals/ConfirmModal";
+const ConfirmModal = lazy(() => import("@/components/modals/ConfirmModal"));
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { Button } from "@nextui-org/react";
 import { useRouter } from "next-nprogress-bar";
+import { lazy } from "react";
 import { IoExitOutline } from "react-icons/io5";
 
 const ExitMagazine = ({

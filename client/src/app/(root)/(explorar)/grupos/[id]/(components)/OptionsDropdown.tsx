@@ -1,6 +1,6 @@
 "use client";
 import { exitFromGroup, removeGroup } from "@/app/server/groupActions";
-import ConfirmModal from "@/components/modals/ConfirmModal";
+const ConfirmModal = lazy(() => import("@/components/modals/ConfirmModal"));
 import { GROUPS } from "@/utils/data/urls";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import useUploadImage from "@/utils/hooks/useUploadImage";
@@ -13,7 +13,7 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import { useRouter } from "next-nprogress-bar";
-import { useRef } from "react";
+import { lazy, useRef } from "react";
 import { FaShareAlt } from "react-icons/fa";
 import { FaChevronDown } from "react-icons/fa6";
 import { IoIosExit } from "react-icons/io";

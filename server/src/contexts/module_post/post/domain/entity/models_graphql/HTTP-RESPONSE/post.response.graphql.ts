@@ -133,6 +133,15 @@ export class Post_response_graphql_model {
   @Field(() => String, { nullable: true })
   condition: string;
 
+  @Field(() => [postReaction], { nullable: true })
+  reactions: postReaction[];
+
+  @Field(() => String)
+  postBehaviourType: 'libre' | 'agenda';
+
+  @Field(() => Boolean)
+  isActive: boolean;
+
   //Fields post Service
   //-> comparte imagesUrls & reviews de post good & frequencyPrice de post petition
   @Field(() => String, { nullable: true })
@@ -147,10 +156,4 @@ export class Post_response_graphql_model {
 
   @Field(() => Date, { nullable: true })
   endDate: Date;
-
-  @Field(() => [postReaction], { nullable: true })
-  reactions: postReaction[];
-
-  @Field(() => String)
-  postBehaviourType: 'libre' | 'agenda';
 }

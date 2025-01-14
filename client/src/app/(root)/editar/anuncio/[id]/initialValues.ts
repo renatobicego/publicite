@@ -9,7 +9,7 @@ export const getPostInitialValues = (
   postData: Good | Service,
   postType: "good" | "service"
 ) => {
-  const postValues: Omit<CreatePostValues, "createAt" | "geoLocation" | "author" | "postBehaviourType"> = {
+  const postValues: Omit<CreatePostValues, "createAt" | "geoLocation" | "author" | "postBehaviourType" | "isActive"> = {
     attachedFiles: postData.attachedFiles,
     // author: postData.author._id,
     category: postData.category[0]._id,

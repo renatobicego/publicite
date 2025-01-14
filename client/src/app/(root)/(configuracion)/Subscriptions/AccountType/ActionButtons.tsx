@@ -1,9 +1,10 @@
 import SecondaryButton from "@/components/buttons/SecondaryButton";
-import ConfirmModal from "@/components/modals/ConfirmModal";
+const ConfirmModal = lazy(() => import("@/components/modals/ConfirmModal"));
 import { editSubscription } from "@/services/subscriptionServices";
 import { Subscription, SubscriptionPlan } from "@/types/subscriptions";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { Button, Link } from "@nextui-org/react";
+import { lazy } from "react";
 
 const ActionButtons = ({
   previousPlan,

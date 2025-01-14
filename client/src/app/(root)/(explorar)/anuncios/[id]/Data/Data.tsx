@@ -15,7 +15,7 @@ import ContactPetitionsList from "@/components/modals/ContactPetition/ContactPet
 import PetitionChip from "@/components/chips/PetitionChip";
 import ContactModal from "@/components/modals/ContactModal/ContactModal";
 import { SignedIn } from "@clerk/nextjs";
-import OptionsDropdown from "./OptionsDropdown";
+import OptionsDropdown from "./OptionsDropdown/OptionsDropdown";
 import MatchPetitionPost from "@/components/modals/MatchPetitionPost";
 import { formatTotal } from "@/utils/functions/utils";
 import ReactToPost from "@/components/buttons/ReactToPost";

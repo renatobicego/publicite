@@ -22,7 +22,7 @@ import { useEffect } from "react";
 
 type EditPetitionFormValues = Omit<
   PetitionPostValues,
-  "createAt" | "geoLocation" | "author" | "postBehaviourType"
+  "createAt" | "geoLocation" | "author" | "postBehaviourType" | "isActive"
 >;
 
 const EditPetitionForm = ({ postData }: { postData: Petition }) => {

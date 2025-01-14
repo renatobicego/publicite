@@ -3,6 +3,7 @@ import {
   deletePostReaction,
   deletePostService,
   postPost,
+  putActiveStatus,
   putEndDate,
   putPost,
   putPostBehavior,
@@ -102,6 +103,21 @@ export const updatePostBehaviour = async (
     behaviourType,
     authorId,
     visibility
+  );
+  return resApi;
+};
+
+export const updatePostActiveStatus = async (
+  postId: ObjectId,
+  authorId: ObjectId,
+  postBehaviourType: PostBehaviourType,
+  activate: boolean
+) => {
+  const resApi: { message: string } | { error: string } = await putActiveStatus(
+    postId,
+    authorId,
+    postBehaviourType,
+    activate
   );
   return resApi;
 };
