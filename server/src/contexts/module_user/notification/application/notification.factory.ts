@@ -6,6 +6,8 @@ import { NotificationGroup } from "../domain/entity/notification.group.entity";
 import { NotificationMagazine } from "../domain/entity/notification.magazine.entity";
 import { NotificationUser } from "../domain/entity/notification.user.entity";
 import { NotificationPost } from "../domain/entity/notification.post.entity";
+import { NotificationPostType } from "../domain/entity/enum/notification.post.type.enum";
+import { NotificationPostComment } from "../domain/entity/notification.post.comment.entity";
 
 export class NotificationFactory implements NotificationFactoryInterface {
 
@@ -26,7 +28,7 @@ export class NotificationFactory implements NotificationFactoryInterface {
     }
 
 
-    createNotification(notificationType: typeOfNotification, notificationData: any): Notification {
+    createNotification(notificationType: typeOfNotification, notificationData: any, notificationPostType?: NotificationPostType): Notification {
         let isActionsAvailable = true;
         const { event, viewed, date, backData, socketJobId, type, previousNotificationId, notificationEntityId } = this.verifyNotificationAtributes(notificationData);
         const { frontData } = notificationData
@@ -43,7 +45,11 @@ export class NotificationFactory implements NotificationFactoryInterface {
             case typeOfNotification.user_notifications:
                 return new NotificationUser(baseNotification, frontData);
             case typeOfNotification.post_notifications:
-                return new NotificationPost(baseNotification, frontData);
+                if(notificationPostType === NotificationPostType.reaction){
+                    return new NotificationPost(baseNotification, frontData);
+                }else{
+                    return new NotificationPostComment(baseNotification,frontData)
+                }
             default:
                 throw new Error("Tipo de notificación no reconocido");
         }

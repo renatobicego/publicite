@@ -1,10 +1,12 @@
 import { Schema } from 'mongoose';
 import NotificationModel, { NotificationDocument } from "./notification.schema";
 import { PostType } from '../../domain/entity/enum/post.type.enum';
+import { NotificationPostType } from '../../domain/entity/enum/notification.post.type.enum';
 
 interface INotificationPost extends NotificationDocument {
     frontData: {
         postActivity: {
+            notificationPostType: NotificationPostType,
             postReaction: {
                 emoji: string;
             }
@@ -25,6 +27,7 @@ interface INotificationPost extends NotificationDocument {
 const NotificationPostSchema = new Schema<INotificationPost>({
     frontData: {
         postActivity: {
+            notificationPostType:{ type: String, enum: Object.values(NotificationPostType), required: true },
             user: {
                 username: { type: String, required: true },
             },

@@ -20,6 +20,7 @@ import { PostLimitResponseGraphql } from '../../domain/entity/models_graphql/HTT
 import { PostBehaviourType } from '../../domain/entity/enum/postBehaviourType.enum';
 import { Visibility_Of_Find } from '../../domain/entity/enum/post-visibility.enum';
 import { VisibilityEnum } from '../../domain/entity/models_graphql/HTTP-REQUEST/post.update.request';
+import { PostComment } from '../../domain/entity/postComment.entity';
 
 
 
@@ -32,6 +33,7 @@ export class PostService implements PostServiceInterface {
     @Inject('UserServiceInterface')
     private readonly userService: UserServiceInterface,
   ) { }
+
 
 
   async desactivateAllPost(userId: string): Promise<void> {
@@ -252,6 +254,13 @@ export class PostService implements PostServiceInterface {
     }
   }
 
+  async makePostCommentAndSaveSchema(postComment:PostComment){
+    try{
+      return await this.postRepository.savePostComment(postComment)
+    }catch(error:any){
+      throw error;
+    }
+  }
   async updatePostById(
     postUpdate: PostUpdateDto,
     id: string,
@@ -306,6 +315,22 @@ export class PostService implements PostServiceInterface {
     }
   }
 
+
+  // Falta agregar la session
+  async setPostComment(postId: string, userCommentId: string, comment: string): Promise<any> {
+   try{
+      const newComment = new PostComment(userCommentId,comment)
+      const postCommentCreatedId = await this.makePostCommentAndSaveSchema(newComment)
+
+      await this.postRepository.setCommenOnPost(postId, postCommentCreatedId)
+
+
+   }catch(error:any){
+     throw error;
+  }
+    
+   
+  }
 
 
 

@@ -37,6 +37,8 @@ import { PostsMemberGroupResponse } from 'src/contexts/module_shared/sharedGraph
 import { PostBehaviourType } from '../../domain/entity/enum/postBehaviourType.enum';
 
 import { VisibilityEnum } from '../../domain/entity/models_graphql/HTTP-REQUEST/post.update.request';
+import { PostComment } from '../../domain/entity/postComment.entity';
+import { PostCommentDocument } from '../schemas/post.comment.schema';
 
 export class PostRepository implements PostRepositoryInterface {
   constructor(
@@ -55,12 +57,17 @@ export class PostRepository implements PostRepositoryInterface {
     @InjectModel('PostReaction')
     private readonly postReactionDocument: Model<PostReactionDocument>,
 
+    @InjectModel('PostComment')
+    private readonly postCommentDocument: Model<PostCommentDocument>,
+
+
     @InjectModel('Post')
     private readonly postDocument: Model<PostDocument>,
 
     private readonly logger: MyLoggerService,
     @InjectConnection() private readonly connection: Connection,
   ) {}
+
 
   async activateOrDeactivatePost(_id: string, activate: boolean): Promise<any> {
     try {
@@ -611,6 +618,15 @@ export class PostRepository implements PostRepositoryInterface {
     }
   }
 
+  async savePostComment(postComment: PostComment): Promise<any> {
+    try{
+      const postCommentDocument = await this.postCommentDocument(postComment)
+      const postCommentSaved = await postCommentDocument.save()
+      return postCommentSaved._id;
+    }catch(error:any){
+      throw error;
+    }
+  }
   async saveGoodPost(
     baseObj: any,
     post: PostGood,
@@ -682,6 +698,16 @@ export class PostRepository implements PostRepositoryInterface {
     }
   }
 
+  async setCommenOnPost(postId: string, commentId: string): Promise<any> {
+    try{
+      await this.postDocument.updateOne(
+        { _id: postId },
+        { $push: { comments: commentId } },
+      )
+    }catch(error:any){
+      throw error;
+    }
+  }
   async updatePostById(
     postUpdate: PostUpdateDto,
     id: string,

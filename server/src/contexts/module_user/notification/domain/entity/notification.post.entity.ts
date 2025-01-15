@@ -1,8 +1,10 @@
+import { NotificationPostType } from "./enum/notification.post.type.enum";
 import { Notification } from "./notification.entity";
 
 export class NotificationPost extends Notification {
     private frontData: {
         postActivity: {
+            notificationPostType: NotificationPostType,
             postReaction: {
                 emoji: string;
             }
@@ -22,6 +24,7 @@ export class NotificationPost extends Notification {
     constructor(notification: Notification,
         frontData: {
             postActivity: {
+                notificationPostType: NotificationPostType,
                 postReaction: {
                     emoji: string;
                 }
@@ -62,4 +65,8 @@ export class NotificationPost extends Notification {
     get getPostReactionEmoji() {
         return this.frontData.postActivity.postReaction.emoji
     }
+
+    get getPostNotificationType(){
+        return this.frontData.postActivity.notificationPostType
+    } 
 }

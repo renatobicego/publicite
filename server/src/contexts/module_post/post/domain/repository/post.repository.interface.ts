@@ -6,6 +6,7 @@ import { PostsMemberGroupResponse } from 'src/contexts/module_shared/sharedGraph
 import { PostBehaviourType } from '../entity/enum/postBehaviourType.enum';
 import { Visibility } from '../entity/enum/post-visibility.enum';
 import { VisibilityEnum } from '../entity/models_graphql/HTTP-REQUEST/post.update.request';
+import { PostComment } from '../entity/postComment.entity';
 
 
 export interface PostRepositoryInterface {
@@ -28,6 +29,8 @@ export interface PostRepositoryInterface {
   findMatchPost(postType: string, searchTerm: string): Promise<void>;
   findFriendPosts(postType: string, userRelationMap: Map<string, String[]>, page: number, limit: number, searchTerm?: string): Promise<void>;
   findPostOfGroupMembers(membersId: any[], conditionsOfSearch: any, userLocation: UserLocation, limit: number, page: number): Promise<PostsMemberGroupResponse | null>
+  savePostComment(postComment:PostComment): Promise<any>;
+  setCommenOnPost(postId:string,commentId:string):Promise<any>
   updatePostById(
     postUpdate: PostUpdateDto,
     id: string,

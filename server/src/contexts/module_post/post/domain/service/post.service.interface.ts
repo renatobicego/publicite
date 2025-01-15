@@ -6,6 +6,7 @@ import { PostLimitResponseGraphql } from "../entity/models_graphql/HTTP-RESPONSE
 import { PostBehaviourType } from "../entity/enum/postBehaviourType.enum";
 import { Visibility_Of_Find } from "../entity/enum/post-visibility.enum";
 import { VisibilityEnum } from "../entity/models_graphql/HTTP-REQUEST/post.update.request";
+import { PostComment } from "../entity/postComment.entity";
 
 
 
@@ -38,5 +39,6 @@ export interface PostServiceInterface {
   updateEndDateFromPostById(postId: string, userRequestId: string, newDate: Date): Promise<void>;
   updateBehaviourType(_id: string, postBehaviourType: PostBehaviourType, userRequestId: string, visibility: VisibilityEnum): Promise<any>
   removeReactionFromPost(userRequestId: string, _id: string): Promise<any>;
+  setPostComment(postId:string,userCommentId:string,comment:string): Promise<any>;
 
 }
