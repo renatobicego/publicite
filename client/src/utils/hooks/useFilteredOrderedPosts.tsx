@@ -16,8 +16,8 @@ export const useFilteredAndSortedPosts = (items: any[]) => {
     direction: "",
   });
   const [solapaSelected, setSolapaSelected] = useState<
-    "active" | "nextToExpire" | "inactive" | "expired"
-  >("active");
+    "active" | "nextToExpire" | "inactive" | "expired" | "all"
+  >();
 
   const hasSearchFilter = Boolean(searchTerms[0] || searchTerms[1]);
   // filter options
@@ -54,7 +54,6 @@ export const useFilteredAndSortedPosts = (items: any[]) => {
       case "active":
         filteredPosts = filteredPosts.filter((post: Post) => post.isActive);
         break;
-
       default:
         break;
     }

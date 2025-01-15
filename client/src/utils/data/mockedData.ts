@@ -23,6 +23,7 @@ export const categories: PostCategory[] = [
 const mockedGood: Good = {
   _id: "670580694c81639f199a5387",
   postBehaviourType: "libre",
+  isActive: true,
   imagesUrls: [
     "cc3ab11f-7abf-453d-95f1-5b85465f22a2-aybrx2.jpg",
     "21283bb3-8d33-4800-b109-969d15076745-hs36nz.jpg",
@@ -157,6 +158,8 @@ const mockedGood: Good = {
 
 const mockedService: Service = {
   _id: "1jgdfas",
+  isActive: true,
+
   imagesUrls: ["9c5124a7-ed98-4fd0-a5a2-0854d620e564-hs36nz.jpg"],
   endDate: "2024-07-12",
   postBehaviourType: "agenda",
@@ -220,6 +223,8 @@ const mockedPetition: Petition = {
   _id: "1452",
   title: "Busco iPhone 14 Pro Max",
   endDate: "2024-07-12",
+  isActive: true,
+
   postBehaviourType: "libre",
   reactions: [
     {
@@ -274,6 +279,7 @@ const mockedPetition2: Petition = {
   _id: "14152",
   title: "Busco alquiler por Godoy Cruz",
   endDate: "2024-07-12",
+  isActive: true,
   author: {
     profilePhotoUrl: "/avatar.png",
     username: "username",
