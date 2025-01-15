@@ -1,14 +1,11 @@
-// import MagazineInvitation from "@/components/notifications/MagazineInvitation";
-// import NewContactRequest from "@/components/notifications/NewContactRequest";
-// import NewContactPost from "@/components/notifications/posts/NewContactPost";
-// import PostShared from "@/components/notifications/posts/PostShared";
-// import ReviewRequest from "@/components/notifications/posts/ReviewRequest";
-// import PaymentSuccess from "@/components/notifications/suscriptions/PaymentSuccess";
+
 import GroupInvitation from "@/components/notifications/groups/GroupNotification";
 import MagazineNotificationCard from "@/components/notifications/magazines/MagazineNotification";
+import PostActivityNotificationCard from "@/components/notifications/postsActivity/PostActivityNotification";
 import UserRelationNotificationCard from "@/components/notifications/users/UserRelationNotification";
 import { GroupNotification } from "@/types/groupTypes";
 import { MagazineNotification } from "@/types/magazineTypes";
+import { PostActivityNotification } from "@/types/postTypes";
 import { UserRelationNotification } from "@/types/userTypes";
 import { Spinner } from "@nextui-org/react";
 
@@ -40,6 +37,13 @@ const NotificationsContent = ({
           <UserRelationNotificationCard
             key={notification._id}
             notification={notification as UserRelationNotification}
+          />
+        );
+      case notification.event.includes("post"):
+        return (
+          <PostActivityNotificationCard
+            key={notification._id}
+            notification={notification as PostActivityNotification}
           />
         );
       default:

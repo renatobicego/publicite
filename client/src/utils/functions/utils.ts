@@ -99,3 +99,20 @@ export const formatTotal = (total: number | undefined) => {
     maximumFractionDigits: 2,
   }).format(total);
 };
+
+export const getEmojiName = (emoji: string) => {
+  switch (emoji) {
+    case "👍":
+      return "Me Gusta";
+    case "❤️":
+      return "Me Encanta";
+    case "😊":
+      return "Me Alegra";
+    case "😂":
+      return "Me Divierte";
+    case "😲":
+      return "Me Sorprende";
+    default:
+      return "";
+  }
+};

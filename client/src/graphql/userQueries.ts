@@ -159,6 +159,20 @@ export const getAllNotificationsQuery = gql`
               username
             }
           }
+          postActivity {
+            post {
+              _id
+              title
+              imageUrl
+              postType
+            }
+            user {
+              username
+            }
+            postReaction {
+              emoji
+            }
+          }
         }
       }
     }

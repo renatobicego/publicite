@@ -1,4 +1,4 @@
-import { FILE_URL, MAGAZINES, POSTS } from "@/utils/data/urls";
+import { POSTS } from "@/utils/data/urls";
 import { showDate } from "@/utils/functions/dates";
 import { parseZonedDateTime } from "@internationalized/date";
 import Link from "next/link";
@@ -11,26 +11,20 @@ import {
 } from "../NotificationCard";
 
 import { useSocket } from "@/app/socketProvider";
-import {
-  MagazineNotification,
-  MagazineNotificationType,
-} from "@/types/magazineTypes";
-import { IoBook } from "react-icons/io5";
 import { useUserData } from "@/app/(root)/providers/userDataProvider";
 import {
   PostActivityNotification,
   PostActivtyNotificationType,
 } from "@/types/postTypes";
 import { postActivitiesNotificationMessages } from "./notificationMessages";
-import { Badge, Image } from "@nextui-org/react";
 import PostActivityImage from "./PostActivityImage";
 
-const MagazineNotificationCard = ({
+const PostActivityNotificationCard = ({
   notification,
 }: {
   notification: PostActivityNotification;
 }) => {
-  const { event, backData, viewed, date, isActionsAvailable, _id } =
+  const { event, viewed, date } =
     notification;
   const {
     frontData: {
@@ -38,12 +32,12 @@ const MagazineNotificationCard = ({
     },
   } = notification;
 
-  const { userIdLogged, usernameLogged } = useUserData();
-  const { updateSocketToken } = useSocket();
+  // const { userIdLogged, usernameLogged } = useUserData();
+  // const { updateSocketToken } = useSocket();
   const getNotificationOptionsList = () => {
     const optionsList: NotificationOptionProps[] = [];
-    const notificationMessage =
-      postActivitiesNotificationMessages[event as PostActivtyNotificationType];
+    // const notificationMessage =
+    //   postActivitiesNotificationMessages[event as PostActivtyNotificationType];
 
     // // Check if acceptAction exists before adding it to options
     // if (notificationMessage?.acceptAction && isActionsAvailable) {
@@ -139,4 +133,4 @@ const MagazineNotificationCard = ({
   );
 };
 
-export default MagazineNotificationCard;
+export default PostActivityNotificationCard;

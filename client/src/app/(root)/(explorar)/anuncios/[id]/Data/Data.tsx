@@ -18,7 +18,8 @@ import { SignedIn } from "@clerk/nextjs";
 import OptionsDropdown from "./OptionsDropdown/OptionsDropdown";
 import MatchPetitionPost from "@/components/modals/MatchPetitionPost";
 import { formatTotal } from "@/utils/functions/utils";
-import ReactToPost from "@/components/buttons/ReactToPost";
+import ReactToPost from "@/components/buttons/PostReactions/ReactToPost";
+import PostReactionsContainer from "@/components/buttons/PostReactions/PostReactionsContainer";
 
 const Data = async ({
   post,
@@ -119,7 +120,7 @@ const Data = async ({
             <ShareButton shareType="post" data={post} />
             <SignedIn>
               <SaveButton post={post} />
-              {!isAuthor && <ReactToPost post={post}/>} 
+              <PostReactionsContainer post={post} isAuthor={isAuthor} />
             </SignedIn>
           </div>
         </div>

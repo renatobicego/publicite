@@ -1,3 +1,4 @@
+import { FILE_URL } from "@/utils/data/urls";
 import { Badge, Image } from "@nextui-org/react";
 import React from "react";
 import { MdQuestionAnswer } from "react-icons/md";
@@ -14,13 +15,21 @@ const PostActivityImage = ({
   postTitle: string;
 }) => {
   if (reaction) {
-    <Badge content={reaction} color="primary">
-      <Image
-        className="object-cover w-16 h-16 rounded-md"
-        src={image}
-        alt={"foto de anuncio " + postTitle}
-      />
-    </Badge>;
+    return (
+      <Badge
+        content={reaction}
+        color="default"
+        size="lg"
+        className="z-50"
+        aria-label={"reaccion a " + postTitle + " con " + reaction + " emoji"}
+      >
+        <Image
+          className="object-cover w-20 h-16 rounded-md"
+          src={FILE_URL + image}
+          alt={"foto de anuncio " + postTitle}
+        />
+      </Badge>
+    );
   }
   if (isPetition) {
     return <MdQuestionAnswer className="text-petition size-14" />;
@@ -28,8 +37,8 @@ const PostActivityImage = ({
 
   return (
     <Image
-      className="object-cover w-16 h-16 rounded-md"
-      src={image}
+      className="object-cover w-20 h-16 rounded-md"
+      src={FILE_URL + image}
       alt={"foto de anuncio " + postTitle}
     />
   );
