@@ -394,10 +394,13 @@ export class PostRepository implements PostRepositoryInterface {
     postType: string,
     userLocation: UserLocation,
     searchTerm?: string,
+    userRequestId?: string,
   ): Promise<any> {
     try {
       this.logger.log(`Finding posts by postType: ${postType}`);
       const today = new Date();
+
+
 
       // Prepara el stage de filtrado
       const matchStage: any = {
@@ -406,6 +409,10 @@ export class PostRepository implements PostRepositoryInterface {
         isActive: true,
         endDate: { $gte: today },
       };
+
+      if (userRequestId) {
+        matchStage.author = { $ne: userRequestId };
+      }
 
       // Si se especifica un término de búsqueda, lo procesamos
       if (searchTerm) {

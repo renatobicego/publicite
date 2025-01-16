@@ -16,7 +16,6 @@ registerEnumType(Visibility, {
 //---------------------------
 
 export enum Visibility_Of_Find {
-  public = 'public',
   contacts = 'contacts',
   friends = 'friends',
   topfriends = 'topfriends',

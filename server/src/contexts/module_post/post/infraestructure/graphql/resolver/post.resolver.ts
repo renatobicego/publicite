@@ -285,14 +285,17 @@ export class PostResolver {
     userLocation: UserLocation,
     @Args('searchTerm', { type: () => String, nullable: true })
     searchTerm: string,
+    @Context() context: { req: CustomContextRequestInterface },
   ): Promise<any> {
     try {
+      const userRequestId = context.req.userRequestId ?? undefined
       return await this.postAdapter.findAllPostByPostType(
         page,
         limit,
         postType,
         userLocation,
         searchTerm,
+        userRequestId
       );
     } catch (error: any) {
       throw error;
@@ -376,7 +379,6 @@ export class PostResolver {
   async removeReactionFromPost(
     @Args('_id', { type: () => String }) _id: string,
     @Context() context: { req: CustomContextRequestInterface },
-
   ): Promise<any> {
     try {
       const userRequestId = context.req.userRequestId;

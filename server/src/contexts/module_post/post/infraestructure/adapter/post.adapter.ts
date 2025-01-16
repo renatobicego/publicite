@@ -90,6 +90,7 @@ export class PostAdapter implements PostAdapterInterface {
     postType: string,
     userLocation: UserLocation,
     searchTerm?: string,
+    userRequestId?: string,
   ): Promise<void> {
     try {
       return await this.postService.findAllPostByPostType(
@@ -98,6 +99,7 @@ export class PostAdapter implements PostAdapterInterface {
         postType,
         userLocation,
         searchTerm,
+        userRequestId
       );
     } catch (error: any) {
       throw error;

@@ -26,6 +26,7 @@ export interface PostRepositoryInterface {
     postType: string,
     userLocation: UserLocation,
     searchTerm?: string,
+    userRequestId?: string,
   ): Promise<any>;
   findMatchPost(postType: string, searchTerm: string): Promise<void>;
   findFriendPosts(postType: string, userRelationMap: Map<string, String[]>, page: number, limit: number, searchTerm?: string): Promise<void>;

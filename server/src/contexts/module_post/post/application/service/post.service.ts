@@ -175,6 +175,7 @@ export class PostService implements PostServiceInterface {
     postType: string,
     userLocation: UserLocation,
     searchTerm?: string,
+    userRequestId?: string,
   ): Promise<any> {
     try {
       return await this.postRepository.findAllPostByPostType(
@@ -183,6 +184,7 @@ export class PostService implements PostServiceInterface {
         postType,
         userLocation,
         searchTerm,
+        userRequestId
       );
     } catch (error: any) {
       throw error;
