@@ -42,7 +42,7 @@ const SolapasTabs = () => {
     }
   }, [pathname]);
 
-  const getPostType = () => {
+  const getPostType = (): PostsDataTypes => {
     const postTypeVisited: PostsDataTypes = {
       postType: "good",
       typeOfData: "posts",
@@ -58,7 +58,7 @@ const SolapasTabs = () => {
         postTypeVisited.typeOfData = "posts";
         break;
       case pathname.includes(`${POST_CONTACTS}`):
-        postTypeVisited.typeOfData = "contactPosts";
+        (postTypeVisited as PostsDataTypes).typeOfData = "contactPosts";
         break;
       case pathname.includes(POSTS):
         postTypeVisited.typeOfData = "posts";
@@ -80,10 +80,12 @@ const SolapasTabs = () => {
   const postTypeVisited = getPostType();
 
   const postTypeUrlVisited =
-    postTypeVisited.postType === "petition"
-      ? "/necesidades"
-      : postTypeVisited.postType === "service"
-      ? "/servicios"
+    "postType" in postTypeVisited
+      ? postTypeVisited.postType === "petition"
+        ? "/necesidades"
+        : postTypeVisited.postType === "service"
+        ? "/servicios"
+        : ""
       : "";
 
   // Array of tab definitions
@@ -95,8 +97,8 @@ const SolapasTabs = () => {
     },
     {
       key: `${POST_CONTACTS}${postTypeUrlVisited}`,
-      title: "Contactos",
-      component: <PostsList postTypeVisited={postTypeVisited} hideMap/>,
+      title: "Agenda de Contactos",
+      component: <PostsList postTypeVisited={postTypeVisited} hideMap />,
       requiresLogin: true,
     },
     {

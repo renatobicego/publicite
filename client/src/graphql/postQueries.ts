@@ -114,12 +114,14 @@ export const getPostsOfFriendsQuery = gql`
     $page: Float!
     $limit: Float!
     $searchTerm: String
+    $visibility: Visibility_Of_Find!
   ) {
     findFriendPosts(
       postType: $postType
       page: $page
       limit: $limit
       searchTerm: $searchTerm
+      visibility: $visibility
     ) {
       hasMore
       posts {

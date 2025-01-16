@@ -3,24 +3,28 @@ import { getBoards } from "@/services/boardServices";
 import { getGroupPosts, getGroups } from "@/services/groupsService";
 import {
   getGoods,
-  getPetitions,
   getPosts,
   getPostsOfContacts,
   getServices,
 } from "@/services/postsServices";
 import { getUsers } from "@/services/userServices";
 
+export type ContactPostsVisibility = UserRelation | "hierarchy"
 export type PostsDataTypes =
   | {
-      typeOfData: "posts" | "contactPosts";
+      typeOfData: "posts";
       postType: "good" | "service" | "petition" | "goodService";
+    }
+  | {
+      typeOfData: "contactPosts";
+      postType: "good" | "service" | "petition" | "goodService";
+      visibility: ContactPostsVisibility;
     }
   | {
       typeOfData: "groupPosts";
       groupId: string;
-      memberIds: string[]; 
+      memberIds: string[];
     };
-
 export type PubliciteDataTypes =
   | {
       typeOfData: "boards" | "users" | "groups";
@@ -52,13 +56,19 @@ export const fetchDataByType = async (
     case "users":
       return await getUsers(searchTerm, page);
     case "groupPosts":
-      return await getGroupPosts(page, postType.groupId, coordinates, postType.memberIds);
+      return await getGroupPosts(
+        page,
+        postType.groupId,
+        coordinates,
+        postType.memberIds
+      );
     case "contactPosts":
       return await getPostsOfContacts(
         searchTerm,
         page,
         postType.postType as PostType,
-        20
+        20,
+        postType.visibility
       );
   }
 };

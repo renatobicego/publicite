@@ -9,7 +9,6 @@ import {
   POSTS,
 } from "@/utils/data/urls";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
 import PostListLogic from "./PostListLogic";
 import SelectManualLocationModal from "@/components/modals/SelectManualLocation/SelectManualLocationModal";
 import { PostsDataTypes } from "@/utils/data/fetchDataByType";
