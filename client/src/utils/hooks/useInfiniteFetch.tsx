@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { fetchDataByType, PubliciteDataTypes } from "../data/fetchDataByType";
+import {
+  ContactPostsVisibility,
+  fetchDataByType,
+  PubliciteDataTypes,
+} from "../data/fetchDataByType";
 import { toastifyError } from "../functions/toastify";
 import { useInfiniteScroll } from "./useInfiniteScroll";
 import {
@@ -17,6 +21,7 @@ interface FetchState {
 }
 export const useInfiniteFetch = (
   postType: PubliciteDataTypes,
+  visibility?: ContactPostsVisibility
 ) => {
   // data to know the states of the fetch
   const [state, setState] = useState<FetchState>({
@@ -60,10 +65,12 @@ export const useInfiniteFetch = (
     try {
       // get data
       const data: any = await fetchDataByType(
-        postType,
+        visibility
+          ? ({ ...postType, visibility } as PubliciteDataTypes)
+          : postType,
         busqueda,
         state.page,
-        coordinates,
+        coordinates
       );
       // update state
       if (data.error) {
@@ -91,6 +98,7 @@ export const useInfiniteFetch = (
     updateState,
     requestLocationPermission,
     manualLocation,
+    visibility,
   ]);
 
   // Trigger to reset state when postType or search term changes
@@ -101,7 +109,7 @@ export const useInfiniteFetch = (
       errorOccurred: false,
       hasMoreData: true,
     });
-  }, [ busqueda, updateState, coordinates]);
+  }, [busqueda, updateState, coordinates, visibility]);
 
   // Effect to call `loadMore` only after `hasMoreData` is set to true
   useEffect(() => {

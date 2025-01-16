@@ -26,6 +26,7 @@ import { deleteFilesService } from "@/app/server/uploadThing";
 import { Coordinates } from "@/app/(root)/providers/LocationProvider";
 import { ApolloError, ServerError } from "@apollo/client";
 import { handleApolloError } from "@/utils/functions/errorHandler";
+import { ContactPostsVisibility } from "@/utils/data/fetchDataByType";
 
 export const getPostData = async (id: string) => {
   try {
@@ -145,7 +146,8 @@ export const getPostsOfContacts = async (
   searchTerm: string | null,
   page: number,
   postType: PostType,
-  limit: number | undefined = 20
+  limit: number | undefined = 20,
+  visibility: ContactPostsVisibility
 ) => {
   try {
     const { data } = await query({
@@ -155,6 +157,7 @@ export const getPostsOfContacts = async (
         limit,
         page,
         searchTerm: searchTerm ? searchTerm : "",
+        visibility
       },
       context: {
         headers: {
