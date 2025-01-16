@@ -8,7 +8,7 @@ export const PostCommentSchema = new Schema({
     },
     comment: { type: String, required: true },
     isEdited: { type: Boolean, required: true, default: false },
-    createdAt: { type: Date, required: true, default: Date.now },
+    createdAt: { type: Date, default: () => new Date(Date.now()) },
 });
 
 

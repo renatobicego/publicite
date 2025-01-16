@@ -170,7 +170,6 @@ type post_front_data_postReaction {
 }
 
 type post_front_data_postComment {
-  user: String!
   comment: String!
 }
 
@@ -179,6 +178,13 @@ type front_data_POST {
   post: post_front_data_post!
   postReaction: post_front_data_postReaction
   postComment: post_front_data_postComment
+  notificationPostType: NotificationPostType!
+}
+
+"""NotificationPostType"""
+enum NotificationPostType {
+  reaction
+  comment
 }
 
 type frontData {
@@ -494,9 +500,17 @@ type postReaction {
   reaction: String!
 }
 
+type post_comments_user {
+  _id: String!
+  username: String!
+  profilePhotoUrl: String!
+}
+
 type post_comments {
-  user: String!
+  user: post_comments_user!
   comment: String!
+  isEdited: Boolean!
+  createdAt: DateTime!
 }
 
 type Post_response_graphql_model {
@@ -713,7 +727,7 @@ type Mutation {
   """
   Elimina el comentario en un post, para eliminarlo si o si tenes que ser el creador del comentario
   """
-  deleteCommentById(_id: String!): String
+  deleteCommentById(_id: String!, isAuthorOfPost: Boolean!): String
 
   """
   Edita el comentario de un post. Tenes que ser el dueño del comentario para editarlo

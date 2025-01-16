@@ -249,53 +249,45 @@ export class PostRepository implements PostRepositoryInterface {
     }
   }
 
-  async findPostById(id: string): Promise<any> {
-    const session = await this.connection.startSession();
-    session.startTransaction();
+async findPostById(id: string): Promise<any> {
+  this.logger.log('Finding post by id in repository');
 
-    try {
-      this.logger.log('Finding post by id in repository');
-
-      const post = await this.postDocument
-        .findById(id)
-        .session(session)
-        .select('-searchTitle -searchDescription')
-        .populate([
-          {
-            path: 'category',
-            model: 'PostCategory',
-          },
-          {
-            path: 'author',
+  try {
+    const post = await this.postDocument
+      .findById(id)
+      .select('-searchTitle -searchDescription')
+      .populate([
+        { path: 'category', model: 'PostCategory' },
+        {
+          path: 'author',
+          model: 'User',
+          select: '_id profilePhotoUrl username lastName name contact',
+          populate: { path: 'contact', model: 'Contact' },
+        },
+        {
+          path: 'reactions',
+          model: 'PostReaction',
+          select: 'user reaction _id',
+        },
+        {
+          path: 'comments',
+          model: 'PostComment',
+          populate: {
+            path: 'user',
             model: 'User',
-            select: '_id profilePhotoUrl username lastName name contact',
-            populate: {
-              path: 'contact',
-              model: 'Contact',
-            },
+            select: '_id profilePhotoUrl username',
           },
-          {
-            path: 'reactions',
-            model: 'PostReaction',
-            select: 'user reaction _id',
-          },
-          {
-            path: 'comments',
-            model: 'PostComment',
-          },
-        ])
-        .lean();
+        },
+      ])
+      .lean();
 
-      return post;
-    } catch (error: any) {
-      await session.abortTransaction();
-      session.endSession();
-      this.logger.error('An error occurred finding post by id: ' + id);
-      throw error;
-    } finally {
-      session.endSession();
-    }
+    return post;
+  } catch (error: any) {
+    this.logger.error('An error occurred finding post by id: ' + id);
+    throw error;
   }
+}
+
 
   async findMatchPost(postType: string, searchTerm: string): Promise<any> {
     try {

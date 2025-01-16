@@ -207,6 +207,7 @@ export class PostService implements PostServiceInterface {
     try {
       this.logger.log('Finding posts by  id: ' + id);
       return await this.postRepository.findPostById(id);
+
     } catch (error: any) {
       this.logger.error(
         'An error was ocurred finding posts by author id: ' + id,

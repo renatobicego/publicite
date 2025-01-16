@@ -77,9 +77,25 @@ class postReaction {
 }
 
 @ObjectType()
-class post_comments {
+class post_comments_user {
+
   @Field(() => String)
-  user: string;
+  _id: string;
+
+  @Field(() => String)
+  username: string;
+
+  @Field(() => String)
+  profilePhotoUrl: string;
+
+
+}
+
+
+@ObjectType()
+class post_comments {
+  @Field(() => post_comments_user)
+  user: post_comments_user;
 
   @Field(() => String)
   comment: string;
