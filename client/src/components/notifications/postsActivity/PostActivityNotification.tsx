@@ -10,8 +10,6 @@ import {
   NotificationImage,
 } from "../NotificationCard";
 
-import { useSocket } from "@/app/socketProvider";
-import { useUserData } from "@/app/(root)/providers/userDataProvider";
 import {
   PostActivityNotification,
   PostActivtyNotificationType,
@@ -24,13 +22,11 @@ const PostActivityNotificationCard = ({
 }: {
   notification: PostActivityNotification;
 }) => {
-  const { event, viewed, date } =
-    notification;
+  const { event, viewed, date } = notification;
   const {
-    frontData: {
-      postActivity: { post, user, postReaction },
-    },
+    frontData: { postActivity },
   } = notification;
+  const { post, user, notificationPostType } = postActivity;
 
   // const { userIdLogged, usernameLogged } = useUserData();
   // const { updateSocketToken } = useSocket();
@@ -98,7 +94,7 @@ const PostActivityNotificationCard = ({
   const getMessageToShow = () => {
     const notificationMessage =
       postActivitiesNotificationMessages[event as PostActivtyNotificationType];
-    switch (event) {
+    switch (event as PostActivtyNotificationType) {
       case "notification_post_new_reaction":
         return (
           <>
@@ -107,6 +103,21 @@ const PostActivityNotificationCard = ({
             <em className="font-semibold">{post.title}</em>
           </>
         );
+      case "notification_post_new_comment":
+        const comment =
+          notificationPostType === "comment"
+            ? postActivity.postComment?.comment!
+            : "";
+        return (
+          <>
+            <em className="font-semibold">{user.username}</em>{" "}
+            {notificationMessage.message}{" "}
+            <em>{`"${
+              comment.length > 40 ? comment.slice(0, 40) + "..." : comment
+            }"`}</em>
+          </>
+        );
+
       default:
         return <>{notificationMessage.message}</>;
     }
@@ -119,7 +130,11 @@ const PostActivityNotificationCard = ({
           postTitle={post.title}
           isPetition={post.postType === "petition"}
           image={post.imageUrl}
-          reaction={postReaction?.emoji}
+          reaction={
+            notificationPostType === "reaction"
+              ? postActivity.postReaction?.emoji
+              : undefined
+          }
         />
       </NotificationImage>
       <NotificationBody>

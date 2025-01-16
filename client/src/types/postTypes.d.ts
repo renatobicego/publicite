@@ -20,7 +20,7 @@ export interface Post {
   endDate: string;
   reactions: PostReaction[];
   postBehaviourType: PostBehaviourType;
-  isActive: boolean
+  isActive: boolean;
 }
 
 type PostBehaviourType = "libre" | "agenda";
@@ -165,7 +165,13 @@ export interface PetitionPostValues
   extends CreatePostValues,
     Omit<
       Petition,
-      "petitionType" | "_id" | "recommendations" | "comments" | "endDate" | "reactions" | "isActive"
+      | "petitionType"
+      | "_id"
+      | "recommendations"
+      | "comments"
+      | "endDate"
+      | "reactions"
+      | "isActive"
     > {
   petitionType?: "good" | "service";
 }
@@ -207,20 +213,31 @@ export interface ReviewPostNotification {
   userAsking: Pick<User, "_id" | "username">;
 }
 
+export type BasePostActivityProps = {
+  post: {
+    _id: string;
+    title: string;
+    imageUrl: string;
+    postType: PostType;
+  };
+  user: Pick<User, "username">;
+};
+
 export interface PostActivityNotification extends BaseNotification {
   frontData: {
-    postActivity: {
-      post: {
-        _id: string;
-        title: string;
-        imageUrl: string;
-        postType: PostType;
-      };
-      user: Pick<User, "username">;
-      postReaction?: {
-        emoji: string;
-      };
-    };
+    postActivity:
+      | (BasePostActivityProps & {
+          notificationPostType: "reaction";
+          postReaction?: {
+            emoji: string;
+          };
+        })
+      | BasePostActivityProps & {
+          notificationPostType: "comment";
+          postComment?: {
+            comment: string;
+          };
+        };
   };
 }
 
@@ -230,4 +247,6 @@ export interface PostReaction {
   reaction: string;
 }
 
-export type PostActivtyNotificationType = "notification_post_new_reaction"; // Han reaccionado al post
+export type PostActivtyNotificationType =
+  | "notification_post_new_reaction" // Han reaccionado al post
+  | "notification_post_new_comment"; // Han comentado en el post

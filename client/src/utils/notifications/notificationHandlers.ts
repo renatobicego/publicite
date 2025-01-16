@@ -79,11 +79,15 @@ export const handlePostActivityNotification = (
 
   const messageInfo = postActivitiesNotificationMessages[event];
   let message = "";
-  switch (event) {
-    case "notification_post_new_reaction":
-      const { user, post } = data.frontData.postActivity;
+  const { user, post, notificationPostType } = data.frontData.postActivity;
+  switch (notificationPostType) {
+    case "reaction":
       const { emoji } = data.frontData.postActivity.postReaction!;
       message = `${user.username} ${messageInfo.message} ${post.title} - ${emoji}`;
+      break;
+    case "comment":
+      const { comment } = data.frontData.postActivity.postComment!;
+      message = `${user.username} ${messageInfo.message} ${post.title} - "${comment.length > 40 ? comment.slice(0, 40) + "..." : comment}"`;
       break;
     default:
       message = messageInfo.message;

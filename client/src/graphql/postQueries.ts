@@ -28,7 +28,14 @@ export const getPostByIdQuery = gql`
         profilePhotoUrl
         username
       }
-      comments
+      comments {
+        comment
+        user {
+          _id
+          username 
+          profilePhotoUrl
+        }
+      }
       condition
       createAt
       description

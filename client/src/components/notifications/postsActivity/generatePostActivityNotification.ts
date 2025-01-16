@@ -37,6 +37,7 @@ const generatePostActivityNotification = async (
         ),
         frontData: {
           postActivity: {
+            notificationPostType: "reaction",
             post,
             user: userFrom,
             postReaction: {
@@ -46,6 +47,29 @@ const generatePostActivityNotification = async (
         },
       };
       return notification;
+    case "notification_post_new_comment":
+      const payloadParsedComment = payload as {
+        comment: string;
+      };
+      const notificationComment: Omit<PostActivityNotification, "_id"> = {
+        ...generateNotification(
+          event,
+          userIdTo,
+          user?.publicMetadata.mongoId as string,
+          previousNotificationId
+        ),
+        frontData: {
+          postActivity: {
+            notificationPostType: "comment",
+            post,
+            user: userFrom,
+            postComment: {
+              ...payloadParsedComment,
+            },
+          },
+        },
+      };
+      return notificationComment;
   }
 };
 

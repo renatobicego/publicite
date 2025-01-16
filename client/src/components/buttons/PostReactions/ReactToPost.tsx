@@ -36,6 +36,7 @@ const ReactToPost = ({
 
   // get the reaction of the user logged if exists
   const userReaction = useMemo(() => {
+    if(!reactions) return null
     return reactions.find((reaction) => reaction.user === userIdLogged);
   }, [reactions, userIdLogged]);
 
