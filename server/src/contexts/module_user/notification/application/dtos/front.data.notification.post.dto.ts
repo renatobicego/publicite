@@ -1,4 +1,5 @@
 import { Field, ObjectType } from "@nestjs/graphql";
+import { NotificationPostType } from "../../domain/entity/enum/notification.post.type.enum";
 
 
 @ObjectType()
@@ -33,9 +34,6 @@ class post_front_data_postReaction {
 @ObjectType()
 class post_front_data_postComment {
     @Field(() => String)
-    user: string
-
-    @Field(() => String)
     comment: string
 
 }
@@ -55,7 +53,8 @@ export class front_data_POST {
     @Field(() => post_front_data_postComment, { nullable: true })
     postComment: post_front_data_postComment;
 
-
+    @Field(() => NotificationPostType)
+    notificationPostType: NotificationPostType;
 
 
 }
