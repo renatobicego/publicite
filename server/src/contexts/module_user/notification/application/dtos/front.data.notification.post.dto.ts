@@ -31,6 +31,16 @@ class post_front_data_postReaction {
 
 
 @ObjectType()
+class post_front_data_postComment {
+    @Field(() => String)
+    user: string
+
+    @Field(() => String)
+    comment: string
+
+}
+
+@ObjectType()
 export class front_data_POST {
 
     @Field(() => user_front_data_post)
@@ -41,6 +51,9 @@ export class front_data_POST {
 
     @Field(() => post_front_data_postReaction, { nullable: true })
     postReaction: post_front_data_postReaction;
+
+    @Field(() => post_front_data_postComment, { nullable: true })
+    postComment: post_front_data_postComment;
 
 
 
