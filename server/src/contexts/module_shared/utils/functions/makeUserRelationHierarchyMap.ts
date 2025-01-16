@@ -25,6 +25,7 @@ export function makeUserRelationHierarchyMap(userRelation: any, userRequestId: s
 
         typeOfRelationArray.push(relation.typeRelationA);
 
+
         if (relation.typeRelationA === TOPFRIENDS) {
             typeOfRelationArray.push(CONTACTS)
             typeOfRelationArray.push(FRIENDS)
@@ -36,6 +37,8 @@ export function makeUserRelationHierarchyMap(userRelation: any, userRequestId: s
     });
 
 
+
+
     return friendID_and_typeOfRelation_map;
 
 
@@ -44,8 +47,9 @@ export function makeUserRelationHierarchyMap(userRelation: any, userRequestId: s
 
 export function makeUserDirectRelationMap(userRelation: any, userRequestId: string, visibility: Visibility_Of_Find) {
     const friendID_and_typeOfRelation_map = new Map<string, String[]>()
-
-
+    const TOPFRIENDS = 'topfriends';
+    const CONTACTS = 'contacts';
+    const FRIENDS = 'friends';
     userRelation.forEach((relation: UserRelation) => {
         const typeOfRelationArray: String[] = [];
         const friendId = relation.userA.toString() === userRequestId
@@ -53,11 +57,20 @@ export function makeUserDirectRelationMap(userRelation: any, userRequestId: stri
             : relation.userA.toString();
 
         if (visibility === relation.typeRelationA) {
+
+            if (relation.typeRelationA === TOPFRIENDS) {
+                typeOfRelationArray.push(CONTACTS)
+                typeOfRelationArray.push(FRIENDS)
+            } else if (relation.typeRelationA === FRIENDS) {
+                typeOfRelationArray.push(CONTACTS)
+            }
+
             typeOfRelationArray.push(relation.typeRelationB);
             friendID_and_typeOfRelation_map.set(friendId, typeOfRelationArray);
         }
 
     });
+
     return friendID_and_typeOfRelation_map;
 
 

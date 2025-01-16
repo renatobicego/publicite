@@ -217,7 +217,6 @@ export class PostService implements PostServiceInterface {
   async findFriendPosts(postType: string, userRequestId: string, page: number, limit: number, visibility: Visibility_Of_Find, searchTerm?: string): Promise<any> {
     try {
       let relationMap: Map<string, String[]> = await this.makeUserRelation(userRequestId, visibility)
-      console.log(relationMap)
       if (relationMap.size === 0 || relationMap === null || !relationMap) return { posts: [], hasMore: false };
       return await this.postRepository.findFriendPosts(postType, relationMap, page, limit, searchTerm)
 

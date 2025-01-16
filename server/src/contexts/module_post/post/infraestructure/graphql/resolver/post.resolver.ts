@@ -353,7 +353,7 @@ export class PostResolver {
       const userRequestId = context.req.userRequestId;
       return await this.postAdapter.findFriendPosts(
         postType,
-        "67164bd032f3b18ed706efb4",
+        userRequestId,
         page,
         limit,
         visibility,
