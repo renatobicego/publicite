@@ -23,11 +23,8 @@ import { PreviousIdMissingException } from "src/contexts/module_shared/exception
 import { NotificationPostServiceInterface } from "../../domain/service/notification.post.service.interface";
 import { NotificationPost } from "../../domain/entity/notification.post.entity";
 import { PostServiceInterface } from "src/contexts/module_post/post/domain/service/post.service.interface";
-import { Notification } from "../../domain/entity/notification.entity";
 import { NotificationPostType } from "../../domain/entity/enum/notification.post.type.enum";
-import { BoardRequest } from "src/contexts/module_user/board/application/dto/HTTP-REQUEST/board.request";
-import { NotificationPostComment } from "../../domain/entity/notification.post.comment.entity";
-import { PostComment } from "src/contexts/module_post/post/domain/entity/postComment.entity";
+
 
 
 
@@ -152,23 +149,27 @@ export class NotificationService implements NotificationGroupServiceInterface,
     }
 
 
-    async handlePostNotificationAndCreateIt(notificationBody: any): Promise<void> {
+    async handlePostNotificationAndCreateIt(notificationBody: any): Promise<any> {
 
         try {
+            console.log(notificationBody)
             const notificationPostType = notificationBody.frontData.postActivity.notificationPostType;
             if (!notificationPostType) {
                 throw new Error("NotificationPostType is required")
             }
+
             const factory = NotificationFactory.getInstance(this.logger);
             const notificationPost: any = factory.createNotification(
                 typeOfNotification.post_notifications,
-                notificationBody,
-                notificationBody.frontData.postActivity.notificationPostType);
+                notificationBody
+            );
 
             if (notificationPost.getPostNotificationType === NotificationPostType.comment) {
                 return await this.saveNotificationPostCommentAndSendToUser(notificationPost)
             } else if (notificationPost.getNotificationEntityId === NotificationPostType.reaction) {
                 return await this.saveNotificationPostAndSendToUser(notificationPost);
+            } else {
+                throw new Error("NotificationPostType is not supported")
             }
         } catch (error: any) {
             throw error;
@@ -336,31 +337,54 @@ export class NotificationService implements NotificationGroupServiceInterface,
             session.endSession();
         }
     }
-    async saveNotificationPostCommentAndSendToUser(notificationPostComment: NotificationPostComment) {
-        try {
-            this.logger.log("Setting comment on post id: " + notificationPostComment.getPostId)
-            const comment = notificationPostComment.getComment;
-            const userCommentId = notificationPostComment.getbackData.userIdFrom
-            const postId = notificationPostComment.getPostId;
+    async saveNotificationPostCommentAndSendToUser(notificationPostComment: NotificationPost): Promise<string> {
+        const { getComment: comment, getPostId: postId, getbackData } = notificationPostComment;
+        const { userIdFrom: userCommentId, userIdTo } = getbackData;
 
-            if (!comment || !userCommentId || !postId) {
-                throw new Error("Please complete post comment, userCommentId or postId")
-            }
 
-            const session = await this.connection.startSession();
-            try {
-
-            } catch (error: any) {
-
-            }
-
-            await this.postService.setPostComment(postId, userCommentId, comment)
-
-        } catch (error: any) {
-            throw error;
+        if (!comment || !userCommentId || !postId || !userIdTo) {
+            throw new Error(
+                "Faltan datos necesarios: asegúrese de proporcionar comment, userCommentId, postId y userIdTo."
+            );
         }
 
+        const session = await this.connection.startSession();
+        try {
+            this.logger.log(`Iniciando transacción para el comentario en el post ID: ${postId}`);
+
+            await session.withTransaction(async () => {
+
+                const notificationId = await this.notificationRepository.savePostNotification(
+                    notificationPostComment,
+                    session
+                );
+
+                await this.userService.pushNotificationToUserArrayNotifications(
+                    notificationId,
+                    userIdTo,
+                    session
+                );
+
+
+                await this.postService.makeCommentSchemaAndPutCommentInPost(
+                    postId,
+                    userCommentId,
+                    comment,
+                    session
+                );
+            });
+
+            this.logger.log(`Transacción completada con éxito para el post ID: ${postId}`);
+            return "Done";
+        } catch (error) {
+            this.logger.error(`Error al procesar el comentario en el post ID: ${postId}`, error.stack);
+            throw new Error(`Error al guardar la notificación y comentario: ${error.message}`);
+        } finally {
+
+            session.endSession();
+        }
     }
+
 
     async saveNotificationUserAndSentToUser(notificationUser: NotificationUser): Promise<any> {
 

@@ -17,7 +17,7 @@ import {
 import { UserLocation } from '../../../domain/entity/models_graphql/HTTP-REQUEST/post.location.request';
 import { PostLimitResponseGraphql } from '../../../domain/entity/models_graphql/HTTP-RESPONSE/post.limit.response.graphql';
 import { PostBehaviourType } from '../../../domain/entity/enum/postBehaviourType.enum';
-import { Visibility, Visibility_Of_Find } from '../../../domain/entity/enum/post-visibility.enum';
+import { Visibility_Of_Find } from '../../../domain/entity/enum/post-visibility.enum';
 
 
 
@@ -196,6 +196,53 @@ export class PostResolver {
     }
   }
 
+  @Mutation(() => String, {
+    nullable: true,
+    description: 'Elimina el comentario en un post, para eliminarlo si o si tenes que ser el creador del comentario',
+  })
+  @UseGuards(ClerkAuthGuard)
+  async deleteCommentById(
+    @Args('_id', { type: () => String })
+    _id: string,
+    @Context() context: { req: CustomContextRequestInterface },
+  ): Promise<any> {
+    try {
+      const userRequestId = context.req.userRequestId;
+      return await this.postAdapter.deleteCommentById(
+        _id,
+        userRequestId
+      );
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  @Mutation(() => String, {
+    nullable: true,
+    description: 'Edita el comentario de un post. Tenes que ser el dueño del comentario para editarlo',
+  })
+  @UseGuards(ClerkAuthGuard)
+  async updateCommentById(
+    @Args('_id', { type: () => String })
+    _id: string,
+    @Args('newComment', { type: () => String })
+    newComment: string,
+    @Context() context: { req: CustomContextRequestInterface },
+  ): Promise<any> {
+    try {
+      const userRequestId = context.req.userRequestId;
+      return await this.postAdapter.updateCommentById(
+        _id,
+        newComment,
+        userRequestId
+      );
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
+
   @Query(() => [Post_Full_Graphql_Model], {
     nullable: true,
     description: 'Obtener todos los posts del autor por id',
@@ -306,7 +353,7 @@ export class PostResolver {
       const userRequestId = context.req.userRequestId;
       return await this.postAdapter.findFriendPosts(
         postType,
-        userRequestId,
+        "67164bd032f3b18ed706efb4",
         page,
         limit,
         visibility,

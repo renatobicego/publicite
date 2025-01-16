@@ -7,9 +7,6 @@ interface INotificationPost extends NotificationDocument {
     frontData: {
         postActivity: {
             notificationPostType: NotificationPostType,
-            postReaction: {
-                emoji: string;
-            }
             user: {
                 username: string;
             },
@@ -18,6 +15,12 @@ interface INotificationPost extends NotificationDocument {
                 title: string;
                 imageUrl: string;
                 postType: string;
+            },
+            postReaction?: {
+                emoji: string;
+            },
+            postComment?: {
+                comment: string
             }
         }
     }
@@ -27,7 +30,7 @@ interface INotificationPost extends NotificationDocument {
 const NotificationPostSchema = new Schema<INotificationPost>({
     frontData: {
         postActivity: {
-            notificationPostType:{ type: String, enum: Object.values(NotificationPostType), required: true },
+            notificationPostType: { type: String, enum: Object.values(NotificationPostType), required: true },
             user: {
                 username: { type: String, required: true },
             },
@@ -37,7 +40,8 @@ const NotificationPostSchema = new Schema<INotificationPost>({
                 imageUrl: { type: String, required: true },
                 postType: { type: String, enum: Object.values(PostType), required: true },
             },
-            postReaction: { emoji: { type: String, required: true } }
+            postReaction: { emoji: { type: String } },
+            postComment: { comment: { type: String } }
         }
     }
 })

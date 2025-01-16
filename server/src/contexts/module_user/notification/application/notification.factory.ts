@@ -7,7 +7,6 @@ import { NotificationMagazine } from "../domain/entity/notification.magazine.ent
 import { NotificationUser } from "../domain/entity/notification.user.entity";
 import { NotificationPost } from "../domain/entity/notification.post.entity";
 import { NotificationPostType } from "../domain/entity/enum/notification.post.type.enum";
-import { NotificationPostComment } from "../domain/entity/notification.post.comment.entity";
 import { validatePostNotification } from "../domain/notification-factory/validatePostNotification";
 
 export class NotificationFactory implements NotificationFactoryInterface {
@@ -29,7 +28,7 @@ export class NotificationFactory implements NotificationFactoryInterface {
     }
 
 
-    createNotification(notificationType: typeOfNotification, notificationData: any, notificationPostType?: NotificationPostType): Notification {
+    createNotification(notificationType: typeOfNotification, notificationData: any): Notification {
         let isActionsAvailable = true;
         const { event, viewed, date, backData, socketJobId, type, previousNotificationId, notificationEntityId } = this.verifyNotificationAtributes(notificationData);
         const { frontData } = notificationData
@@ -45,7 +44,7 @@ export class NotificationFactory implements NotificationFactoryInterface {
                 return new NotificationMagazine(baseNotification, frontData);
             case typeOfNotification.user_notifications:
                 return new NotificationUser(baseNotification, frontData);
-            case typeOfNotification.post_notifications: // me quede aca. recibe la notificaion y la crea
+            case typeOfNotification.post_notifications:
                 validatePostNotification(notificationData);
                 return new NotificationPost(baseNotification, frontData);
             default:

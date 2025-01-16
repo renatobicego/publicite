@@ -4,12 +4,12 @@ import { PostUpdateDto } from '../entity/dto/post.update.dto';
 import { UserLocation } from '../entity/models_graphql/HTTP-REQUEST/post.location.request';
 import { PostsMemberGroupResponse } from 'src/contexts/module_shared/sharedGraphql/group.posts.member.response';
 import { PostBehaviourType } from '../entity/enum/postBehaviourType.enum';
-import { Visibility } from '../entity/enum/post-visibility.enum';
 import { VisibilityEnum } from '../entity/models_graphql/HTTP-REQUEST/post.update.request';
 import { PostComment } from '../entity/postComment.entity';
 
 
 export interface PostRepositoryInterface {
+
   activateOrDeactivatePost(_id: string, activate: boolean): Promise<any>;
   create(
     post: Post,
@@ -17,6 +17,7 @@ export interface PostRepositoryInterface {
   ): Promise<String>;
   deletePostById(id: string): Promise<any>;
   desactivateAllPost(userId: string, criteria: { [key: string]: number }): Promise<void>;
+  deleteCommentById(id: string, userRequestId: string): Promise<void>;
   findPostsByAuthorId(id: string): Promise<void>;
   findPostById(id: string): Promise<void>;
   findAllPostByPostType(
@@ -29,8 +30,8 @@ export interface PostRepositoryInterface {
   findMatchPost(postType: string, searchTerm: string): Promise<void>;
   findFriendPosts(postType: string, userRelationMap: Map<string, String[]>, page: number, limit: number, searchTerm?: string): Promise<void>;
   findPostOfGroupMembers(membersId: any[], conditionsOfSearch: any, userLocation: UserLocation, limit: number, page: number): Promise<PostsMemberGroupResponse | null>
-  savePostComment(postComment:PostComment): Promise<any>;
-  setCommenOnPost(postId:string,commentId:string):Promise<any>
+  savePostComment(postComment: PostComment, session: any): Promise<any>;
+  setCommenOnPost(postId: string, postCommentId: string, session: any): Promise<any>
   updatePostById(
     postUpdate: PostUpdateDto,
     id: string,
@@ -38,6 +39,7 @@ export interface PostRepositoryInterface {
   ): Promise<any>;
   updateEndDateFromPostById(postId: string, userRequestId: string, newDate: Date): Promise<void>;
   updateBehaviourType(_id: string, objectUpdate: { postBehaviourType: PostBehaviourType, visibility: VisibilityEnum }): Promise<any>
+  updateCommentById(id: string, comment: string, userRequestId: string): Promise<void>;
   makeReactionSchemaAndSetReactionToPost(postId: string, reaction: { user: string, reaction: string }, session: any): Promise<void>;
   removeReactionFromPost(userRequestId: string, _id: string): Promise<any>;
 }

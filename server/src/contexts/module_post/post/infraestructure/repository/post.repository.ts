@@ -69,6 +69,7 @@ export class PostRepository implements PostRepositoryInterface {
   ) { }
 
 
+
   async activateOrDeactivatePost(_id: string, activate: boolean): Promise<any> {
     try {
       await this.postDocument.updateOne(
@@ -210,6 +211,18 @@ export class PostRepository implements PostRepositoryInterface {
     }
   }
 
+  async deleteCommentById(id: string, userRequestId: string): Promise<void> {
+    try {
+      await this.postCommentDocument.deleteOne({ _id: id, user: userRequestId });
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
+
+
+
   async findPostsByAuthorId(id: string): Promise<any> {
     try {
       this.logger.log('Finding posts by author id in repository');
@@ -255,6 +268,10 @@ export class PostRepository implements PostRepositoryInterface {
             path: 'reactions',
             model: 'PostReaction',
             select: 'user reaction _id',
+          },
+          {
+            path: 'comments',
+            model: 'PostComment',
           },
         ])
         .lean();
@@ -619,10 +636,10 @@ export class PostRepository implements PostRepositoryInterface {
     }
   }
 
-  async savePostComment(postComment: PostComment): Promise<any> {
+  async savePostComment(postComment: PostComment, session: any): Promise<any> {
     try {
       const postCommentDocument = new this.postCommentDocument(postComment)
-      const postCommentSaved = await postCommentDocument.save()
+      const postCommentSaved = await postCommentDocument.save({ session })
       return postCommentSaved._id;
     } catch (error: any) {
       throw error;
@@ -699,11 +716,12 @@ export class PostRepository implements PostRepositoryInterface {
     }
   }
 
-  async setCommenOnPost(postId: string, commentId: string): Promise<any> {
+  async setCommenOnPost(postId: string, postCommentId: string, session: any): Promise<any> {
     try {
       await this.postDocument.updateOne(
         { _id: postId },
-        { $push: { comments: commentId } },
+        { $push: { comments: postCommentId } },
+        { session }
       )
     } catch (error: any) {
       throw error;
@@ -748,6 +766,16 @@ export class PostRepository implements PostRepositoryInterface {
       throw error;
     }
   }
+
+  async updateCommentById(id: string, comment: string, userRequestId: string): Promise<void> {
+    try {
+      await this.postCommentDocument.updateOne({ _id: id, user: userRequestId }, { $set: { comment } });
+    } catch (error: any) {
+      throw error;
+    }
+
+  }
+
 
   async updateEndDateFromPostById(
     postId: string,

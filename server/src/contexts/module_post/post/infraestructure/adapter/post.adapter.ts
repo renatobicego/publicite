@@ -23,6 +23,8 @@ export class PostAdapter implements PostAdapterInterface {
     private readonly postMapper: PostMapperAdapterInterface,
     private readonly logger: MyLoggerService,
   ) { }
+
+
   async desactivatePostById(id: string): Promise<void> {
     try {
       return await this.postService.desactivateAllPost(id);
@@ -52,6 +54,15 @@ export class PostAdapter implements PostAdapterInterface {
   async deletePostById(id: string): Promise<void> {
     try {
       await this.postService.deletePostById(id);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
+  async deleteCommentById(id: string, userRequestId: string): Promise<void> {
+    try {
+      await this.postService.deleteCommentById(id, userRequestId);
     } catch (error: any) {
       throw error;
     }
@@ -161,6 +172,14 @@ export class PostAdapter implements PostAdapterInterface {
     }
   }
 
+
+  async updateCommentById(id: string, comment: string, userRequestId: string): Promise<void> {
+    try {
+      await this.postService.updateCommentById(id, comment, userRequestId);
+    } catch (error: any) {
+      throw error;
+    }
+  }
 
   async removeReactionFromPost(userRequestId: string, _id: string): Promise<any> {
     try {

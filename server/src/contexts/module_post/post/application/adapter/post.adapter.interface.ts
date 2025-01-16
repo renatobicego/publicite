@@ -12,6 +12,7 @@ export interface PostAdapterInterface {
   create(post: PostRequest): Promise<any>;
   deletePostById(id: string): Promise<void>;
   desactivatePostById(id: string): Promise<void>;
+  deleteCommentById(id: string, userRequestId: string): Promise<void>;
   findPostsByAuthorId(id: string): Promise<void>;
   findPostById(id: string): Promise<void>;
   findAllPostByPostType(
@@ -31,5 +32,6 @@ export interface PostAdapterInterface {
   ): Promise<PostUpdateDto>;
   updateBehaviourType(_id: string, postBehaviourType: PostBehaviourType, userRequestId: string, visibility: VisibilityEnum): Promise<any>;
   updateEndDateFromPostById(postId: string, userRequestId: string, newDate: Date): Promise<void>;
+  updateCommentById(id: string, comment: string, userRequestId: string): Promise<void>;
   removeReactionFromPost(userRequestId: string, _id: string): Promise<any>;
 }

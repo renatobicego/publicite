@@ -77,6 +77,18 @@ class postReaction {
 }
 
 @ObjectType()
+class post_comments {
+  @Field(() => String)
+  user: string;
+
+  @Field(() => String)
+  comment: string;
+
+}
+
+
+
+@ObjectType()
 export class Post_response_graphql_model {
   @Field(() => String, { nullable: true })
   _id: ObjectId;
@@ -105,8 +117,8 @@ export class Post_response_graphql_model {
   @Field(() => [Post_Category], { nullable: true })
   category: Post_Category[];
 
-  @Field(() => [String], { nullable: true })
-  comments: ObjectId[];
+  @Field(() => [post_comments], { nullable: true })
+  comments: post_comments[];
 
   @Field(() => [AttachedFile_post], { nullable: true })
   attachedFiles?: AttachedFile_post[];

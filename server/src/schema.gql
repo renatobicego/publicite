@@ -488,6 +488,11 @@ type postReaction {
   reaction: String!
 }
 
+type post_comments {
+  user: String!
+  comment: String!
+}
+
 type Post_response_graphql_model {
   _id: String
   title: String
@@ -498,7 +503,7 @@ type Post_response_graphql_model {
   price: Float
   geoLocation: PostLocation_Grapql
   category: [Post_Category!]
-  comments: [String!]
+  comments: [post_comments!]
   attachedFiles: [AttachedFile_post!]
   createAt: String
   imagesUrls: [String!]
@@ -699,6 +704,16 @@ type Mutation {
 
   """Incrementa el endDate de un post por su id"""
   updateEndDate(postId: String!, newDate: DateTime!): String
+
+  """
+  Elimina el comentario en un post, para eliminarlo si o si tenes que ser el creador del comentario
+  """
+  deleteCommentById(_id: String!): String
+
+  """
+  Edita el comentario de un post. Tenes que ser el dueño del comentario para editarlo
+  """
+  updateCommentById(_id: String!, newComment: String!): String
 
   """Elimina una reaccion de un post mediante el Id de la reaccion"""
   removeReactionFromPost(_id: String!): String

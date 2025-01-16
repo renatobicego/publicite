@@ -5,9 +5,6 @@ export class NotificationPost extends Notification {
     private frontData: {
         postActivity: {
             notificationPostType: NotificationPostType,
-            postReaction: {
-                emoji: string;
-            }
             user: {
                 username: string;
             },
@@ -16,6 +13,12 @@ export class NotificationPost extends Notification {
                 title: string;
                 imageUrl: string;
                 postType: string;
+            },
+            postReaction?: {
+                emoji: string;
+            }
+            postComment?: {
+                comment: string
             }
         }
     };
@@ -25,9 +28,6 @@ export class NotificationPost extends Notification {
         frontData: {
             postActivity: {
                 notificationPostType: NotificationPostType,
-                postReaction: {
-                    emoji: string;
-                }
                 user: {
                     username: string;
                 },
@@ -36,6 +36,12 @@ export class NotificationPost extends Notification {
                     title: string;
                     imageUrl: string;
                     postType: string;
+                }
+                postReaction?: {
+                    emoji: string;
+                },
+                postComment?: {
+                    comment: string
                 }
             }
 
@@ -63,10 +69,14 @@ export class NotificationPost extends Notification {
         return this.frontData.postActivity.post._id
     }
     get getPostReactionEmoji() {
-        return this.frontData.postActivity.postReaction.emoji
+        return this.frontData.postActivity.postReaction?.emoji
     }
 
-    get getPostNotificationType(){
+    get getPostNotificationType() {
         return this.frontData.postActivity.notificationPostType
-    } 
+    }
+
+    get getComment() {
+        return this.frontData.postActivity.postComment?.comment
+    }
 }

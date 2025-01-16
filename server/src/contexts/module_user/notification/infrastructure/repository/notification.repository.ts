@@ -152,6 +152,7 @@ export class NotificationRepository implements NotificationRepositoryInterface {
     async savePostNotification(notification: NotificationPost, session?: any): Promise<Types.ObjectId> {
         try {
             this.logger.log('Saving notification POST in repository...');
+            this.logger.log('Notification Type: ' + notification.getPostNotificationType);
             const postNotification = new this.notificationPostDocument(notification);
             const postNotificationSaved = await postNotification.save({ session })
             return postNotificationSaved._id;

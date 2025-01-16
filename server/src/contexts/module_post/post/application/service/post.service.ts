@@ -36,29 +36,7 @@ export class PostService implements PostServiceInterface {
 
 
 
-  async desactivateAllPost(userId: string): Promise<void> {
-    try {
-      //Enviar notificarion
-      let totalLibresExceded = 0;
-      let totalAgendaExceded = 0;
-      const { agendaPostCount, librePostCount, totalAgendaPostLimit, totalLibrePostLimit } = await this.userService.getPostAndLimitsFromUserByUserId(userId);
-      if (totalLibrePostLimit - librePostCount < 0) {
-        totalLibresExceded = Math.abs(totalLibrePostLimit - librePostCount);
-      }
-      if (totalAgendaPostLimit - agendaPostCount < 0) {
-        totalAgendaExceded = Math.abs(totalAgendaPostLimit - agendaPostCount);
-      }
-      const criteria = {
-        agenda: totalAgendaExceded,
-        libre: totalLibresExceded
-      }
-      this.logger.log(`totalLibresExceded: ${totalLibresExceded}, totalAgendaExceded: ${totalAgendaExceded}`);
-      if (totalAgendaExceded === 0 && totalLibresExceded === 0) return;
-      await this.postRepository.desactivateAllPost(userId, criteria);
-    } catch (error: any) {
-      throw error;
-    }
-  }
+
 
 
   async activateOrDeactivatePost(_id: string, activate: boolean, postBehaviourType: PostBehaviourType, userRequestId: string): Promise<any> {
@@ -142,6 +120,43 @@ export class PostService implements PostServiceInterface {
     }
   }
 
+  async desactivateAllPost(userId: string): Promise<void> {
+    try {
+      //Enviar notificarion
+      let totalLibresExceded = 0;
+      let totalAgendaExceded = 0;
+      const { agendaPostCount, librePostCount, totalAgendaPostLimit, totalLibrePostLimit } = await this.userService.getPostAndLimitsFromUserByUserId(userId);
+      if (totalLibrePostLimit - librePostCount < 0) {
+        totalLibresExceded = Math.abs(totalLibrePostLimit - librePostCount);
+      }
+      if (totalAgendaPostLimit - agendaPostCount < 0) {
+        totalAgendaExceded = Math.abs(totalAgendaPostLimit - agendaPostCount);
+      }
+      const criteria = {
+        agenda: totalAgendaExceded,
+        libre: totalLibresExceded
+      }
+      this.logger.log(`totalLibresExceded: ${totalLibresExceded}, totalAgendaExceded: ${totalAgendaExceded}`);
+      if (totalAgendaExceded === 0 && totalLibresExceded === 0) return;
+      await this.postRepository.desactivateAllPost(userId, criteria);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
+
+  async deleteCommentById(id: string, userRequestId: string): Promise<void> {
+    try {
+      await this.postRepository.deleteCommentById(id, userRequestId);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
+
+
 
   async findMatchPost(postType: string, searchTerm: string): Promise<void> {
     try {
@@ -202,6 +217,7 @@ export class PostService implements PostServiceInterface {
   async findFriendPosts(postType: string, userRequestId: string, page: number, limit: number, visibility: Visibility_Of_Find, searchTerm?: string): Promise<any> {
     try {
       let relationMap: Map<string, String[]> = await this.makeUserRelation(userRequestId, visibility)
+      console.log(relationMap)
       if (relationMap.size === 0 || relationMap === null || !relationMap) return { posts: [], hasMore: false };
       return await this.postRepository.findFriendPosts(postType, relationMap, page, limit, searchTerm)
 
@@ -254,13 +270,6 @@ export class PostService implements PostServiceInterface {
     }
   }
 
-  async makePostCommentAndSaveSchema(postComment:PostComment){
-    try{
-      return await this.postRepository.savePostComment(postComment)
-    }catch(error:any){
-      throw error;
-    }
-  }
   async updatePostById(
     postUpdate: PostUpdateDto,
     id: string,
@@ -303,7 +312,14 @@ export class PostService implements PostServiceInterface {
     }
   }
 
-
+  async updateCommentById(id: string, comment: string, userRequestId: string): Promise<void> {
+    try {
+      this.logger.log('Updating comment from post with id: ' + id);
+      return await this.postRepository.updateCommentById(id, comment, userRequestId);
+    } catch (error: any) {
+      throw error;
+    }
+  }
 
   async removeReactionFromPost(userRequestId: string, _id: string): Promise<any> {
     try {
@@ -316,20 +332,17 @@ export class PostService implements PostServiceInterface {
   }
 
 
-  // Falta agregar la session
-  async setPostComment(postId: string, userCommentId: string, comment: string): Promise<any> {
-   try{
-      const newComment = new PostComment(userCommentId,comment)
-      const postCommentCreatedId = await this.makePostCommentAndSaveSchema(newComment)
 
-      await this.postRepository.setCommenOnPost(postId, postCommentCreatedId)
+  async makeCommentSchemaAndPutCommentInPost(postId: string, userCommentId: string, comment: string, session: any): Promise<any> {
+    try {
+      const newComment = new PostComment(userCommentId, comment)
+      const postCommentId = await this.postRepository.savePostComment(newComment, session)
+      await this.postRepository.setCommenOnPost(postId, postCommentId, session)
+    } catch (error: any) {
+      throw error;
+    }
 
 
-   }catch(error:any){
-     throw error;
-  }
-    
-   
   }
 
 
