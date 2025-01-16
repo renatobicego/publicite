@@ -66,7 +66,7 @@ export class PostRepository implements PostRepositoryInterface {
 
     private readonly logger: MyLoggerService,
     @InjectConnection() private readonly connection: Connection,
-  ) {}
+  ) { }
 
 
   async activateOrDeactivatePost(_id: string, activate: boolean): Promise<any> {
@@ -146,6 +146,7 @@ export class PostRepository implements PostRepositoryInterface {
           - Falta reviews 
           - Falta comments
           */
+
           this.userDocument.findOneAndUpdate(
             {
               _id: postDeleted.author,
@@ -619,11 +620,11 @@ export class PostRepository implements PostRepositoryInterface {
   }
 
   async savePostComment(postComment: PostComment): Promise<any> {
-    try{
-      const postCommentDocument = await this.postCommentDocument(postComment)
+    try {
+      const postCommentDocument = new this.postCommentDocument(postComment)
       const postCommentSaved = await postCommentDocument.save()
       return postCommentSaved._id;
-    }catch(error:any){
+    } catch (error: any) {
       throw error;
     }
   }
@@ -699,12 +700,12 @@ export class PostRepository implements PostRepositoryInterface {
   }
 
   async setCommenOnPost(postId: string, commentId: string): Promise<any> {
-    try{
+    try {
       await this.postDocument.updateOne(
         { _id: postId },
         { $push: { comments: commentId } },
       )
-    }catch(error:any){
+    } catch (error: any) {
       throw error;
     }
   }

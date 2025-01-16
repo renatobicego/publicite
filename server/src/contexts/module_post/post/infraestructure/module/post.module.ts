@@ -14,6 +14,7 @@ import { UserSchema } from 'src/contexts/module_user/user/infrastructure/schemas
 import { PostService } from '../../application/service/post.service';
 import { PostRepository } from '../repository/post.repository';
 import { PostReactionSchema } from '../schemas/post.reaction.schema';
+import { PostCommentSchema } from '../schemas/post.comment.schema';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { PostReactionSchema } from '../schemas/post.reaction.schema';
       },
       { name: 'User', schema: UserSchema },
       { name: 'PostReaction', schema: PostReactionSchema },
+      { name: 'PostComment', schema: PostCommentSchema },
     ]),
 
     UserModule,

@@ -153,21 +153,21 @@ export class NotificationService implements NotificationGroupServiceInterface,
 
 
     async handlePostNotificationAndCreateIt(notificationBody: any): Promise<void> {
-        
+
         try {
             const notificationPostType = notificationBody.frontData.postActivity.notificationPostType;
-            if(!notificationPostType){
+            if (!notificationPostType) {
                 throw new Error("NotificationPostType is required")
             }
             const factory = NotificationFactory.getInstance(this.logger);
-            const notificationPost: any= factory.createNotification(
-                typeOfNotification.post_notifications, 
+            const notificationPost: any = factory.createNotification(
+                typeOfNotification.post_notifications,
                 notificationBody,
                 notificationBody.frontData.postActivity.notificationPostType);
 
-            if(notificationPost.getPostNotificationType === NotificationPostType.comment){ 
+            if (notificationPost.getPostNotificationType === NotificationPostType.comment) {
                 return await this.saveNotificationPostCommentAndSendToUser(notificationPost)
-            }else if(notificationPost.getNotificationEntityId === NotificationPostType.reaction){
+            } else if (notificationPost.getNotificationEntityId === NotificationPostType.reaction) {
                 return await this.saveNotificationPostAndSendToUser(notificationPost);
             }
         } catch (error: any) {
@@ -336,25 +336,31 @@ export class NotificationService implements NotificationGroupServiceInterface,
             session.endSession();
         }
     }
-
-    async saveNotificationPostCommentAndSendToUser(notificationPostComment: NotificationPostComment){
-        try{
-            this.logger.log("Setting comment on post id: "  + notificationPostComment.getPostId)
+    async saveNotificationPostCommentAndSendToUser(notificationPostComment: NotificationPostComment) {
+        try {
+            this.logger.log("Setting comment on post id: " + notificationPostComment.getPostId)
             const comment = notificationPostComment.getComment;
             const userCommentId = notificationPostComment.getbackData.userIdFrom
             const postId = notificationPostComment.getPostId;
 
-            if(!comment|| !userCommentId || !postId ){
+            if (!comment || !userCommentId || !postId) {
                 throw new Error("Please complete post comment, userCommentId or postId")
             }
-            
-            await this.postService.setPostComment(postId,userCommentId,comment)
 
-        }catch(error:any){
+            const session = await this.connection.startSession();
+            try {
+
+            } catch (error: any) {
+
+            }
+
+            await this.postService.setPostComment(postId, userCommentId, comment)
+
+        } catch (error: any) {
             throw error;
         }
-        
-    }   
+
+    }
 
     async saveNotificationUserAndSentToUser(notificationUser: NotificationUser): Promise<any> {
 

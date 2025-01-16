@@ -8,6 +8,7 @@ import { NotificationUser } from "../domain/entity/notification.user.entity";
 import { NotificationPost } from "../domain/entity/notification.post.entity";
 import { NotificationPostType } from "../domain/entity/enum/notification.post.type.enum";
 import { NotificationPostComment } from "../domain/entity/notification.post.comment.entity";
+import { validatePostNotification } from "../domain/notification-factory/validatePostNotification";
 
 export class NotificationFactory implements NotificationFactoryInterface {
 
@@ -44,12 +45,9 @@ export class NotificationFactory implements NotificationFactoryInterface {
                 return new NotificationMagazine(baseNotification, frontData);
             case typeOfNotification.user_notifications:
                 return new NotificationUser(baseNotification, frontData);
-            case typeOfNotification.post_notifications:
-                if(notificationPostType === NotificationPostType.reaction){
-                    return new NotificationPost(baseNotification, frontData);
-                }else{
-                    return new NotificationPostComment(baseNotification,frontData)
-                }
+            case typeOfNotification.post_notifications: // me quede aca. recibe la notificaion y la crea
+                validatePostNotification(notificationData);
+                return new NotificationPost(baseNotification, frontData);
             default:
                 throw new Error("Tipo de notificación no reconocido");
         }
