@@ -5,6 +5,7 @@ import { UserLocation } from '../../domain/entity/models_graphql/HTTP-REQUEST/po
 import { PostLimitResponseGraphql } from '../../domain/entity/models_graphql/HTTP-RESPONSE/post.limit.response.graphql';
 import { PostBehaviourType } from '../../domain/entity/enum/postBehaviourType.enum';
 import { Visibility_Of_Find } from '../../domain/entity/enum/post-visibility.enum';
+import { Date } from 'mongoose';
 
 
 export interface PostAdapterInterface {
@@ -12,7 +13,7 @@ export interface PostAdapterInterface {
   create(post: PostRequest): Promise<any>;
   deletePostById(id: string): Promise<void>;
   desactivatePostById(id: string): Promise<void>;
-  deleteCommentById(id: string, userRequestId: string): Promise<void>;
+  deleteCommentById(id: string, userRequestId: string, isAuthorOfPost: boolean): Promise<void>;
   findPostsByAuthorId(id: string): Promise<void>;
   findPostById(id: string): Promise<void>;
   findAllPostByPostType(

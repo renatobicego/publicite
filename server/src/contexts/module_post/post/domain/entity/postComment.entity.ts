@@ -1,19 +1,16 @@
-export class PostComment{
+export class PostComment {
     private user: string;
     private comment: string;
+    private isEdited: boolean;
 
-    constructor(userId:string,comment:string){
+
+    constructor(userId: string, comment: string, isEdited: boolean) {
         this.user = userId;
         this.comment = comment;
+        this.isEdited = isEdited;
+
     }
 
-    get getUserId(){
-        return this.user
-    }
-
-    get getComment(){
-        return this.comment;
-    }
 
 
 

@@ -84,6 +84,12 @@ class post_comments {
   @Field(() => String)
   comment: string;
 
+  @Field(() => Boolean)
+  isEdited: boolean;
+
+  @Field(() => Date)
+  createdAt: Date;
+
 }
 
 

@@ -169,10 +169,16 @@ type post_front_data_postReaction {
   emoji: String!
 }
 
+type post_front_data_postComment {
+  user: String!
+  comment: String!
+}
+
 type front_data_POST {
   user: user_front_data_post!
   post: post_front_data_post!
   postReaction: post_front_data_postReaction
+  postComment: post_front_data_postComment
 }
 
 type frontData {
@@ -658,7 +664,6 @@ input UserLocation {
 
 """Visibility_Of_Find """
 enum Visibility_Of_Find {
-  public
   contacts
   friends
   topfriends

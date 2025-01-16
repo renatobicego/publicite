@@ -21,7 +21,7 @@ import { PostBehaviourType } from '../../domain/entity/enum/postBehaviourType.en
 import { Visibility_Of_Find } from '../../domain/entity/enum/post-visibility.enum';
 import { VisibilityEnum } from '../../domain/entity/models_graphql/HTTP-REQUEST/post.update.request';
 import { PostComment } from '../../domain/entity/postComment.entity';
-
+import { Date } from 'mongoose';
 
 
 export class PostService implements PostServiceInterface {
@@ -146,9 +146,9 @@ export class PostService implements PostServiceInterface {
 
 
 
-  async deleteCommentById(id: string, userRequestId: string): Promise<void> {
+  async deleteCommentById(id: string, userRequestId: string, isAuthorOfPost: boolean): Promise<void> {
     try {
-      await this.postRepository.deleteCommentById(id, userRequestId);
+      await this.postRepository.deleteCommentById(id, userRequestId, isAuthorOfPost);
     } catch (error: any) {
       throw error;
     }
@@ -336,7 +336,8 @@ export class PostService implements PostServiceInterface {
 
   async makeCommentSchemaAndPutCommentInPost(postId: string, userCommentId: string, comment: string, session: any): Promise<any> {
     try {
-      const newComment = new PostComment(userCommentId, comment)
+
+      const newComment = new PostComment(userCommentId, comment, false)
       const postCommentId = await this.postRepository.savePostComment(newComment, session)
       await this.postRepository.setCommenOnPost(postId, postCommentId, session)
     } catch (error: any) {

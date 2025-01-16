@@ -1,6 +1,8 @@
 import { Inject, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Resolver, Query, Context } from '@nestjs/graphql';
 import { ClerkAuthGuard } from 'src/contexts/module_shared/auth/clerk-auth/clerk.auth.guard';
+import { Date } from 'mongoose';
+
 
 import { PostAdapterInterface } from 'src/contexts/module_post/post/application/adapter/post.adapter.interface';
 import { PostUpdateRequest, VisibilityEnum } from 'src/contexts/module_post/post/domain/entity/models_graphql/HTTP-REQUEST/post.update.request';
@@ -204,18 +206,22 @@ export class PostResolver {
   async deleteCommentById(
     @Args('_id', { type: () => String })
     _id: string,
+    @Args('isAuthorOfPost', { type: () => Boolean })
+    isAuthorOfPost: boolean,
     @Context() context: { req: CustomContextRequestInterface },
   ): Promise<any> {
     try {
       const userRequestId = context.req.userRequestId;
       return await this.postAdapter.deleteCommentById(
         _id,
-        userRequestId
+        userRequestId,
+        isAuthorOfPost
       );
     } catch (error: any) {
       throw error;
     }
   }
+
 
   @Mutation(() => String, {
     nullable: true,

@@ -1,4 +1,4 @@
-import { Schema, model, Document, Date, ObjectId } from 'mongoose';
+import { Schema, model, Document, Date } from 'mongoose';
 import { PostType } from '../../domain/entity/enum/post-type.enum';
 import { Visibility, Visibility_Of_Social_Media } from '../../domain/entity/enum/post-visibility.enum';
 import { PostBehaviourType } from '../../domain/entity/enum/postBehaviourType.enum';

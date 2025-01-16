@@ -6,6 +6,8 @@ import { PostLimitResponseGraphql } from "../entity/models_graphql/HTTP-RESPONSE
 import { PostBehaviourType } from "../entity/enum/postBehaviourType.enum";
 import { Visibility_Of_Find } from "../entity/enum/post-visibility.enum";
 import { VisibilityEnum } from "../entity/models_graphql/HTTP-REQUEST/post.update.request";
+import { Date } from 'mongoose';
+
 
 
 
@@ -14,7 +16,7 @@ export interface PostServiceInterface {
   activateOrDeactivatePost(_id: string, activate: boolean, postBehaviourType: PostBehaviourType, userRequestId: string): Promise<any>;
   create(post: PostRequest): Promise<void>;
   deletePostById(id: string): Promise<void>;
-  deleteCommentById(id: string, userRequestId: string): Promise<void>;
+  deleteCommentById(id: string, userRequestId: string, isAuthorOfPost: boolean): Promise<void>;
   findPostsByAuthorId(id: string): Promise<void>;
   findPostById(id: string): Promise<any>;
   findAllPostByPostType(

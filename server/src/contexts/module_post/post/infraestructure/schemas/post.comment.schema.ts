@@ -7,11 +7,16 @@ export const PostCommentSchema = new Schema({
         required: true,
     },
     comment: { type: String, required: true },
+    isEdited: { type: Boolean, required: true, default: false },
+    createdAt: { type: Date, required: true, default: Date.now },
 });
+
 
 export interface PostCommentDocument extends Document {
     user: ObjectId;
     comment: string;
+    isEdited: boolean;
+    createdAt: Date;
 }
 
 // Creación del modelo

@@ -1,4 +1,4 @@
-import { ClientSession } from 'mongoose';
+import { ClientSession, Date } from 'mongoose';
 import { Post } from '../entity/post.entity';
 import { PostUpdateDto } from '../entity/dto/post.update.dto';
 import { UserLocation } from '../entity/models_graphql/HTTP-REQUEST/post.location.request';
@@ -6,6 +6,7 @@ import { PostsMemberGroupResponse } from 'src/contexts/module_shared/sharedGraph
 import { PostBehaviourType } from '../entity/enum/postBehaviourType.enum';
 import { VisibilityEnum } from '../entity/models_graphql/HTTP-REQUEST/post.update.request';
 import { PostComment } from '../entity/postComment.entity';
+
 
 
 export interface PostRepositoryInterface {
@@ -17,7 +18,7 @@ export interface PostRepositoryInterface {
   ): Promise<String>;
   deletePostById(id: string): Promise<any>;
   desactivateAllPost(userId: string, criteria: { [key: string]: number }): Promise<void>;
-  deleteCommentById(id: string, userRequestId: string): Promise<void>;
+  deleteCommentById(id: string, userRequestId: string, isAuthorOfPost: boolean): Promise<void>;
   findPostsByAuthorId(id: string): Promise<void>;
   findPostById(id: string): Promise<void>;
   findAllPostByPostType(

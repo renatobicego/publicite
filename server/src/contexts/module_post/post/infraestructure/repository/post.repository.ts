@@ -39,6 +39,7 @@ import { PostBehaviourType } from '../../domain/entity/enum/postBehaviourType.en
 import { VisibilityEnum } from '../../domain/entity/models_graphql/HTTP-REQUEST/post.update.request';
 import { PostComment } from '../../domain/entity/postComment.entity';
 import { PostCommentDocument } from '../schemas/post.comment.schema';
+import { Date } from 'mongoose';
 
 export class PostRepository implements PostRepositoryInterface {
   constructor(
@@ -59,7 +60,6 @@ export class PostRepository implements PostRepositoryInterface {
 
     @InjectModel('PostComment')
     private readonly postCommentDocument: Model<PostCommentDocument>,
-
 
     @InjectModel('Post')
     private readonly postDocument: Model<PostDocument>,
@@ -211,9 +211,19 @@ export class PostRepository implements PostRepositoryInterface {
     }
   }
 
-  async deleteCommentById(id: string, userRequestId: string): Promise<void> {
+  async deleteCommentById(id: string, userRequestId: string, isAuthorOfPost: boolean): Promise<void> {
     try {
-      await this.postCommentDocument.deleteOne({ _id: id, user: userRequestId });
+      if (isAuthorOfPost) {
+        const result = await this.postDocument.updateOne({ author: userRequestId }, { $pull: { comments: id } });
+        if (result.modifiedCount > 0) {
+          await this.postCommentDocument.deleteOne({ _id: id });
+        }
+      } else {
+        const result = await this.postCommentDocument.deleteOne({ _id: id, user: userRequestId });
+        if (result.deletedCount > 0) {
+          await this.postDocument.updateOne({ comments: id }, { $pull: { comments: id } });
+        }
+      }
     } catch (error: any) {
       throw error;
     }
@@ -776,7 +786,7 @@ export class PostRepository implements PostRepositoryInterface {
 
   async updateCommentById(id: string, comment: string, userRequestId: string): Promise<void> {
     try {
-      await this.postCommentDocument.updateOne({ _id: id, user: userRequestId }, { $set: { comment } });
+      await this.postCommentDocument.updateOne({ _id: id, user: userRequestId }, { $set: { comment, isEdited: true } });
     } catch (error: any) {
       throw error;
     }

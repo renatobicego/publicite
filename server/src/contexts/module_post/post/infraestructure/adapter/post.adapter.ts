@@ -1,4 +1,5 @@
 import { BadRequestException, Inject } from '@nestjs/common';
+import { Date } from 'mongoose';
 
 import { PostMapperAdapterInterface } from 'src/contexts/module_post/post/application/adapter/mapper/post.adapter.mapper.interface';
 import { PostAdapterInterface } from 'src/contexts/module_post/post/application/adapter/post.adapter.interface';
@@ -60,9 +61,9 @@ export class PostAdapter implements PostAdapterInterface {
   }
 
 
-  async deleteCommentById(id: string, userRequestId: string): Promise<void> {
+  async deleteCommentById(id: string, userRequestId: string, isAuthorOfPost: boolean): Promise<void> {
     try {
-      await this.postService.deleteCommentById(id, userRequestId);
+      await this.postService.deleteCommentById(id, userRequestId, isAuthorOfPost);
     } catch (error: any) {
       throw error;
     }
