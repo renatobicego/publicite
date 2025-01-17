@@ -3,13 +3,10 @@ import SearchTerms from "./SearchTerms";
 import Background from "./Background";
 import BoardPersonalization from "./BoardPersonalization";
 import { memo } from "react";
-import { ConfigData } from "../Profile/actions";
+import { useConfigData } from "../../providers/userDataProvider";
 
-const Preferences = ({
-  configData
-}: {
-  configData?: ConfigData;
-  }) => {
+const Preferences = () => {
+  const {configData} = useConfigData();
   if(!configData) return <Spinner color="warning"/>
   return (
     <section className="flex flex-col gap-4 items-start w-full">

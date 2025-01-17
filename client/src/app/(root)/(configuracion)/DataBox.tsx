@@ -1,6 +1,12 @@
 import SecondaryButton from "@/components/buttons/SecondaryButton";
-import { Button, Card, CardBody, CardHeader } from "@nextui-org/react";
-import { HTMLAttributes } from "react";
+import {
+  Button,
+  ButtonProps,
+  Card,
+  CardBody,
+  CardHeader,
+} from "@nextui-org/react";
+import { FC, HTMLAttributes } from "react";
 
 export const DataItem = ({
   children,
@@ -13,14 +19,18 @@ export const DataItem = ({
 }) => {
   if (Icon) {
     return (
-      <div className={`flex gap-2 items-center flex-1 max-md:min-w-full ${className}`}>
+      <div
+        className={`flex gap-2 items-center flex-1 max-md:min-w-full ${className}`}
+      >
         {Icon}
         <p className="profile-paragraph">{children}</p>
       </div>
     );
   } else {
     return (
-      <p className={`profile-paragraph flex-1 max-md:min-w-full ${className}`}>{children}</p>
+      <p className={`profile-paragraph flex-1 max-md:min-w-full ${className}`}>
+        {children}
+      </p>
     );
   }
 };
@@ -28,8 +38,8 @@ export const DataItem = ({
 export const CardDataItem = ({
   title,
   subtitle,
-  boldLabel
-} : {
+  boldLabel,
+}: {
   title: string;
   subtitle: string;
   boldLabel?: string;
@@ -44,23 +54,27 @@ export const CardDataItem = ({
         <p className="text-xs">{subtitle}</p>
       </CardBody>
     </Card>
-  )
-}
+  );
+};
 
 export const EditButton = ({
   text,
   onPress,
-  className
+  className,
+  isLoading,
 }: {
   text: string | React.ReactNode;
   onPress: () => void;
   className?: HTMLAttributes<HTMLButtonElement>["className"];
+  isLoading?: boolean;
 }) => {
   return (
     <SecondaryButton
       variant="light"
       className={`font-normal max-md:absolute max-md:right-0 max-md:-top-2.5 hover:text-secondary ${className}`}
       onPress={onPress}
+      isLoading={isLoading}
+      isDisabled={isLoading}
     >
       {text}
     </SecondaryButton>
@@ -71,7 +85,7 @@ const DataBox = ({
   children,
   labelText,
   className,
-  labelClassname
+  labelClassname,
 }: {
   children: React.ReactNode;
   labelText: string;
@@ -82,7 +96,9 @@ const DataBox = ({
     <div
       className={`flex w-full items-center gap-2 md:gap-4 max-md:flex-wrap max-md:flex-col max-md:items-start relative ${className}`}
     >
-      <DataItem className={`flex-none max-md:min-w-[50%] max-md:flex-1 md:w-1/3 order-first max-md:font-semibold ${labelClassname}`}>
+      <DataItem
+        className={`flex-none max-md:min-w-[50%] max-md:flex-1 md:w-1/3 order-first max-md:font-semibold ${labelClassname}`}
+      >
         {labelText}
       </DataItem>
       {children}

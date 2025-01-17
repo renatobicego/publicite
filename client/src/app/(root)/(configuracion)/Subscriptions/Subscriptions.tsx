@@ -1,5 +1,5 @@
 import { Button, Divider } from "@nextui-org/react";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import AccountType from "./AccountType/AccountType";
 import PaymentMethod from "./PaymentMethod/PaymentMethod";
 import LimitPosts from "./LimitPosts/LimitPosts";
@@ -7,15 +7,11 @@ import { AnimatePresence, motion } from "framer-motion";
 import PaymentsTable from "./Payments/PaymentsTable";
 import { FaChevronLeft } from "react-icons/fa6";
 import SecondaryButton from "@/components/buttons/SecondaryButton";
-import { Subscription } from "@/types/subscriptions";
+import { useConfigData } from "../../providers/userDataProvider";
 
-const Subscriptions = ({
-  accountType,
-  postsPacks,
-}: {
-  accountType?: Subscription;
-  postsPacks?: Subscription[];
-}) => {
+const Subscriptions = () => {
+  const { configData } = useConfigData();
+  const { accountType, postsPacks } = configData || {};
   const [arePaymentsShown, setArePaymentsShown] = useState(false);
   const [showActivePosts, setShowActivePosts] = useState(false);
   return (

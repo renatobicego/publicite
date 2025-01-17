@@ -5,9 +5,9 @@ import {
   addPostToMagazine,
   removePostFromMagazine,
 } from "./slices/magazineSlice";
-import { ReactNode, useEffect } from "react";
+import { ReactNode } from "react";
 import { UserType } from "@/types/userTypes";
-import MagazineInitializer from "./MagazineInitializer";
+import DataInitializer from "./DataInitializer";
 
 export const UserDataProvider = ({
   children,
@@ -34,7 +34,7 @@ export const UserDataProvider = ({
 
   return (
     <Provider store={store}>
-      <MagazineInitializer userId={userId} />
+      <DataInitializer userId={userId} username={username}/>
       {children}
     </Provider>
   );

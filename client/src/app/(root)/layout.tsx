@@ -3,7 +3,6 @@ import HelpButton from "../../components/buttons/HelpButton/HelpButton";
 import Footer from "../../components/Footer/Footer";
 import Header from "../../components/Header/Header";
 import { BackgroundProvider } from "./providers/backgroundProvider";
-import BackgroundStyle from "./providers/BackgroundStyle.";
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { extractRouterConfig } from "uploadthing/server";
 import { ourFileRouter } from "../api/uploadthing/core";
@@ -29,7 +28,6 @@ export default async function NavigationLayout({
         <Header isSignedIn={!!user} />
         <BackgroundProvider username={user?.username}>
           <LocationProvider>
-            <BackgroundStyle />
             {children}
             <HelpButton />
           </LocationProvider>

@@ -76,7 +76,7 @@ export interface ConfigData {
   board: Board;
   userPreferences: UserPreferences;
 }
-export const getConfigData = async (user: { username?: string;  id: string}) => {
+export const getConfigData = async (user: { username?: string; id: string }) => {
   if (!user?.username) {
     return;
   }

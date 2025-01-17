@@ -12,11 +12,10 @@ import { PROFILE } from "@/utils/data/urls";
 import Business from "./Business/Business";
 import { IoBusiness } from "react-icons/io5";
 import { BackgroundProvider } from "../providers/backgroundProvider";
-import { useConfigData, useUserData } from "../providers/userDataProvider";
+import { useUserData } from "../providers/userDataProvider";
 
 const UserButtonModal = () => {
   const { userTypeLogged, usernameLogged } = useUserData();
-  const {configData} = useConfigData();
   const pageToReturn = useMemo(() => {
     switch (userTypeLogged) {
       case "Person":
@@ -53,7 +52,6 @@ const UserButtonModal = () => {
         elements: {
           rootBox: "size-8",
           avatarBox: "h-full w-full border-[0.8px]",
-          
         },
       }}
     >
@@ -71,10 +69,7 @@ const UserButtonModal = () => {
         labelIcon={<MdPayments className="size-4" />}
         url="suscripcion"
       >
-        <Subscriptions
-          accountType={configData?.accountType}
-          postsPacks={configData?.postsPacks}
-        />
+        <Subscriptions />
       </UserButton.UserProfilePage>
       <UserButton.UserProfilePage label="security" />
       <UserButton.UserProfilePage
@@ -97,7 +92,7 @@ const UserButtonModal = () => {
         url="preferencias"
       >
         <BackgroundProvider>
-          <Preferences configData={configData} />
+          <Preferences />
         </BackgroundProvider>
       </UserButton.UserProfilePage>
     </UserButton>

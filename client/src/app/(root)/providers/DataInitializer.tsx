@@ -3,17 +3,19 @@
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { fetchMagazines } from "./slices/magazineSlice";
+import { fetchConfigData } from "./slices/configSlice";
 
-const MagazineInitializer = ({ userId }: { userId?: string }) => {
+const DataInitializer = ({ userId, username }: { userId?: string, username?: string | null }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (userId) {
+    if (userId && username) {
       dispatch(fetchMagazines(userId) as any);
+      dispatch(fetchConfigData({ username, userId }) as any);
     }
-  }, [dispatch, userId]);
+  }, [dispatch, userId, username]);
 
   return null; // This component doesn't render anything visible
 };
 
-export default MagazineInitializer;
+export default DataInitializer;

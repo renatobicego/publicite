@@ -11,12 +11,16 @@ import {
   getUserPreferences,
 } from "../../../services/userServices";
 import { UserPreferences } from "@/types/userTypes";
-import { toastifyError, toastifySuccess } from "../../../utils/functions/toastify";
+import {
+  toastifyError,
+  toastifySuccess,
+} from "../../../utils/functions/toastify";
 
 interface BackgroundContextType {
   gradientValue: number | number[];
   setGradientValue: (value: number | number[]) => void;
   postGradientValue: (userPreferences: UserPreferences) => Promise<void>;
+  resetValue: () => void;
 }
 
 const BackgroundContext = createContext<BackgroundContextType | undefined>(
@@ -43,20 +47,20 @@ export const BackgroundProvider = ({
   // Load background color from localStorage for the current user
   useEffect(() => {
     if (!username) return;
-    const storedGradientValue = localStorage.getItem(
+    const storedGradientValue = sessionStorage.getItem(
       `backgroundColor_${username}`
     );
     if (storedGradientValue) {
       setGradientValue(JSON.parse(storedGradientValue));
     } else {
-      // Fetch user preferences from the server if not found in localStorage
+      // Fetch user preferences from the server if not found in sessionStorage
       const fetchPreferences = async () => {
         const preferences = await getUserPreferences(username);
         if (preferences) {
           setGradientValue(
             preferences.backgroundColor ? preferences.backgroundColor : 0
           );
-          localStorage.setItem(
+          sessionStorage.setItem(
             `backgroundColor_${username}`,
             JSON.stringify(
               preferences.backgroundColor ? preferences.backgroundColor : 0
@@ -68,7 +72,27 @@ export const BackgroundProvider = ({
     }
   }, [username]);
 
-  // Update user preferences on the server and in localStorage
+  useEffect(() => {
+    const opacity = (gradientValue as number) / 100;
+    const gradient = `radial-gradient(circle at 10% 20%, 
+          rgba(255, 131, 61, ${opacity}) 0%, 
+          rgba(249, 183, 23, ${opacity}) 90%)`;
+
+    document.body.style.background = gradient;
+  }, [gradientValue]);
+
+  const resetValue = () => {
+    const storedGradientValue = sessionStorage.getItem(
+      `backgroundColor_${username}`
+    );
+    if (storedGradientValue) {
+      setGradientValue(JSON.parse(storedGradientValue));
+      return;
+    }
+    setGradientValue(0);
+  };
+
+  // Update user preferences on the server and in sessionStorage
   const postGradientValue = async (userPreferences: UserPreferences) => {
     const res = await changeUserPreferences({
       ...userPreferences,
@@ -79,11 +103,9 @@ export const BackgroundProvider = ({
       toastifyError(res.error);
     } else {
       toastifySuccess("Preferencias guardadas");
-      // Save to localStorage under the specific username
-      localStorage.removeItem(
-        `backgroundColor_${username}`
-      );
-      localStorage.setItem(
+      // Save to sessionStorage under the specific username
+      sessionStorage.removeItem(`backgroundColor_${username}`);
+      sessionStorage.setItem(
         `backgroundColor_${username}`,
         JSON.stringify(gradientValue)
       );
@@ -93,7 +115,12 @@ export const BackgroundProvider = ({
 
   return (
     <BackgroundContext.Provider
-      value={{ gradientValue, setGradientValue, postGradientValue }}
+      value={{
+        gradientValue,
+        setGradientValue,
+        postGradientValue,
+        resetValue,
+      }}
     >
       {children}
     </BackgroundContext.Provider>
