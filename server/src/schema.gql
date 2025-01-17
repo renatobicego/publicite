@@ -507,10 +507,10 @@ type post_comments_user {
 }
 
 type post_comments {
-  user: post_comments_user!
-  comment: String!
-  isEdited: Boolean!
-  createdAt: DateTime!
+  user: post_comments_user
+  comment: String
+  isEdited: Boolean
+  createdAt: DateTime
 }
 
 type Post_response_graphql_model {

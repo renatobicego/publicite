@@ -94,16 +94,16 @@ class post_comments_user {
 
 @ObjectType()
 class post_comments {
-  @Field(() => post_comments_user)
+  @Field(() => post_comments_user, { nullable: true })
   user: post_comments_user;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   comment: string;
 
-  @Field(() => Boolean)
+  @Field(() => Boolean, { nullable: true })
   isEdited: boolean;
 
-  @Field(() => Date)
+  @Field(() => Date, { nullable: true })
   createdAt: Date;
 
 }

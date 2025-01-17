@@ -152,21 +152,23 @@ export class NotificationService implements NotificationGroupServiceInterface,
     async handlePostNotificationAndCreateIt(notificationBody: any): Promise<any> {
 
         try {
-            console.log(notificationBody)
+
             const notificationPostType = notificationBody.frontData.postActivity.notificationPostType;
             if (!notificationPostType) {
                 throw new Error("NotificationPostType is required")
             }
 
             const factory = NotificationFactory.getInstance(this.logger);
-            const notificationPost: any = factory.createNotification(
+            let notificationPost: any = factory.createNotification(
                 typeOfNotification.post_notifications,
                 notificationBody
             );
 
-            if (notificationPost.getPostNotificationType === NotificationPostType.comment) {
+
+
+            if (notificationPost.getPostNotificationType == NotificationPostType.comment) {
                 return await this.saveNotificationPostCommentAndSendToUser(notificationPost)
-            } else if (notificationPost.getNotificationEntityId === NotificationPostType.reaction) {
+            } else if (notificationPost.getPostNotificationType == NotificationPostType.reaction) {
                 return await this.saveNotificationPostAndSendToUser(notificationPost);
             } else {
                 throw new Error("NotificationPostType is not supported")
@@ -337,7 +339,7 @@ export class NotificationService implements NotificationGroupServiceInterface,
             session.endSession();
         }
     }
-    async saveNotificationPostCommentAndSendToUser(notificationPostComment: NotificationPost): Promise<string> {
+    async saveNotificationPostCommentAndSendToUser(notificationPostComment: NotificationPost): Promise<any> {
         const { getComment: comment, getPostId: postId, getbackData } = notificationPostComment;
         const { userIdFrom: userCommentId, userIdTo } = getbackData;
 
@@ -375,7 +377,7 @@ export class NotificationService implements NotificationGroupServiceInterface,
             });
 
             this.logger.log(`Transacción completada con éxito para el post ID: ${postId}`);
-            return "Done";
+            return { status: 'ok' };
         } catch (error) {
             this.logger.error(`Error al procesar el comentario en el post ID: ${postId}`, error.stack);
             throw new Error(`Error al guardar la notificación y comentario: ${error.message}`);
