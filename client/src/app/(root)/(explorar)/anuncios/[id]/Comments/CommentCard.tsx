@@ -1,5 +1,5 @@
 import { showDate } from "@/utils/functions/dates";
-import { PostComment } from "@/types/postTypes";
+import { PostComment, PostDataNotification } from "@/types/postTypes";
 import { parseDate } from "@internationalized/date";
 import { Card, CardBody } from "@nextui-org/react";
 import ReplyCard from "./ReplyCard";
@@ -8,9 +8,11 @@ import ReplyForm from "./ReplyForm";
 const CommentCard = ({
   comment,
   isAuthor,
+  post
 }: {
   comment: PostComment;
-  isAuthor: boolean;
+    isAuthor: boolean;
+    post: PostDataNotification;
 }) => {
   return (
     <div className="flex flex-col gap-2 items-end w-full">
@@ -21,7 +23,7 @@ const CommentCard = ({
             {showDate(parseDate(comment.date))}
           </p>
         </CardBody>
-        <ReplyForm comment={comment} isAuthor={isAuthor} />
+        <ReplyForm comment={comment} isAuthor={isAuthor} post={post}/>
       </Card>
       {comment.replies.map((reply) => (
         <ReplyCard key={reply._id} reply={reply} isAuthor={isAuthor} />

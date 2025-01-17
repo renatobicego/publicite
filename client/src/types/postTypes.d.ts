@@ -25,7 +25,8 @@ export interface Post {
 
 type PostBehaviourType = "libre" | "agenda";
 
-interface Reviewer extends Pick<UserPerson, "username" | "profilePhotoUrl"> {}
+interface Reviewer
+  extends Pick<UserPerson, "_id" | "username" | "profilePhotoUrl"> {}
 interface Author
   extends Pick<
     UserPerson,
@@ -71,9 +72,7 @@ export interface PostComment {
 }
 
 export interface PostCommentForm {
-  author: ObjectId;
   comment: string;
-  date: string;
 }
 
 export interface PostAttachedFile {
@@ -213,13 +212,15 @@ export interface ReviewPostNotification {
   userAsking: Pick<User, "_id" | "username">;
 }
 
+export type PostDataNotification = {
+  _id: string;
+  title: string;
+  imageUrl: string;
+  postType: PostType;
+};
+
 export type BasePostActivityProps = {
-  post: {
-    _id: string;
-    title: string;
-    imageUrl: string;
-    postType: PostType;
-  };
+  post: PostDataNotification;
   user: Pick<User, "username">;
 };
 
@@ -232,12 +233,12 @@ export interface PostActivityNotification extends BaseNotification {
             emoji: string;
           };
         })
-      | BasePostActivityProps & {
+      | (BasePostActivityProps & {
           notificationPostType: "comment";
           postComment?: {
             comment: string;
           };
-        };
+        });
   };
 }
 

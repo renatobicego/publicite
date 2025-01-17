@@ -52,8 +52,14 @@ export default async function PostPage(props: { params: Promise<{ id: string }> 
       <section className="w-full flex max-lg:flex-col gap-4 lg:gap-6 3xl:gap-8 md:mt-6 xl:mt-8">
         <Comments
           comments={[]}
-          postId={postData._id}
+          post={{
+            _id: postData._id,
+            title: postData.title,
+            postType: postData.postType,
+            imageUrl: "imagesUrls" in postData ? postData.imagesUrls[0] : "",
+          }}
           isAuthor={isAuthor}
+          authorId={postData.author._id}
         />
         <RecommendedPosts recommendedPosts={mockedPosts} />
       </section>

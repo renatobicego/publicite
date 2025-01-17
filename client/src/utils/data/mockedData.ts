@@ -49,6 +49,7 @@ const mockedGood: Good = {
       author: {
         profilePhotoUrl: "/avatar.png",
         username: "username",
+        _id: "123",
       },
       date: "2024-07-12",
     },
@@ -59,6 +60,7 @@ const mockedGood: Good = {
       author: {
         profilePhotoUrl: "/avatar.png",
         username: "username",
+        _id: "123",
       },
       date: "2024-07-12",
     },
@@ -70,6 +72,8 @@ const mockedGood: Good = {
       author: {
         profilePhotoUrl: "/avatar.png",
         username: "username",
+        _id: "123",
+
       },
       date: "2024-07-12",
     },
@@ -99,6 +103,7 @@ const mockedGood: Good = {
       author: {
         profilePhotoUrl: "/avatar.png",
         username: "username",
+        _id: "12asd123",
       },
       comment:
         "Quería consultar si existe la posibilidad de sacar un plan de pago para pagarla. Soy de Buenos Aires, por lo que también quería consultar sobre envios.",
@@ -110,6 +115,8 @@ const mockedGood: Good = {
       author: {
         profilePhotoUrl: "/avatar.png",
         username: "username",
+        _id: "12123",
+
       },
       comment:
         "Quería consultar si existe la posibilidad de sacar un plan de pago para pagarla. Soy de Buenos Aires, por lo que también quería consultar sobre envios.",
@@ -120,6 +127,7 @@ const mockedGood: Good = {
           author: {
             profilePhotoUrl: "/avatar.png",
             username: "username",
+            _id: "12123qw",
           },
           comment:
             "Si, te puedo armar un plan de pago. Respecto al envío, podemos manejarlo por la empresa Andreani. Saludos",
@@ -191,6 +199,7 @@ const mockedService: Service = {
       author: {
         profilePhotoUrl: "/avatar.png",
         username: "username",
+        _id: "12as3",
       },
       comment: "comment",
       date: "2024-07-12",

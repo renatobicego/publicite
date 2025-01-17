@@ -17,6 +17,8 @@ export const emitPostActivityNotification = <T>(
   previousNotificationId: string | null, // if the notification is a follow up of another notification
   payload: {
     emoji: string;
+  } | {
+    comment: string;
   }
 ): Promise<SocketResponse<T>> => {
   return new Promise((resolve, reject) => {

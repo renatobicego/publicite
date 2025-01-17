@@ -160,17 +160,21 @@ export const getAllNotificationsQuery = gql`
             }
           }
           postActivity {
-            post {
-              _id
-              title
-              imageUrl
-              postType
-            }
+            notificationPostType
             user {
               username
             }
             postReaction {
               emoji
+            }
+            postComment {
+              comment
+            }
+            post {
+              _id
+              title
+              imageUrl
+              postType
             }
           }
         }

@@ -1,18 +1,20 @@
 "use client";
 import UsernameAvatar from "@/components/buttons/UsernameAvatar";
-import { PostComment } from "@/types/postTypes";
+import { PostComment, PostDataNotification, Reviewer } from "@/types/postTypes";
 import { Button, CardFooter } from "@nextui-org/react";
-import { useState } from "react";
+import { lazy, useState } from "react";
 import { FaComment, FaX } from "react-icons/fa6";
-import CommentForm from "./CommentForm";
+const CommentForm = lazy(() => import("./CommentForm"));
 import DeleteComment from "./DeleteComment";
 
 const ReplyForm = ({
   comment,
   isAuthor,
+  post,
 }: {
   comment: PostComment;
   isAuthor: boolean;
+  post: PostDataNotification;
 }) => {
   const [showForm, setShowForm] = useState(false);
 
@@ -41,9 +43,10 @@ const ReplyForm = ({
       </div>
       {showForm && (
         <CommentForm
-          postId={comment._id}
+          post={post}
           isReply
           closeForm={() => setShowForm(false)}
+          userIdTo={(comment.author as Reviewer)._id}
         />
       )}
     </CardFooter>
