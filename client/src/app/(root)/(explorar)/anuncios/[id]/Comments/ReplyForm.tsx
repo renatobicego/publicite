@@ -21,7 +21,7 @@ const ReplyForm = ({
   return (
     <CardFooter className="flex flex-col gap-2">
       <div className="flex flex-row justify-between items-center w-full">
-        <UsernameAvatar author={comment.author} />
+        <UsernameAvatar author={comment.user} />
         <div className="flex gap-1 items-center">
           <Button
             variant="light"
@@ -46,7 +46,7 @@ const ReplyForm = ({
           post={post}
           isReply
           closeForm={() => setShowForm(false)}
-          userIdTo={(comment.author as Reviewer)._id}
+          userIdTo={(comment.user as Reviewer)._id}
         />
       )}
     </CardFooter>

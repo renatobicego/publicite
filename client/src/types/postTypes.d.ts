@@ -65,10 +65,11 @@ export interface PostCategory {
 
 export interface PostComment {
   _id: ObjectId;
-  author: Reviewer | ObjectId;
+  user: Reviewer | ObjectId;
   comment: string;
-  date: string;
+  createdAt: string;
   replies: PostComment[];
+  isEdited: boolean;
 }
 
 export interface PostCommentForm {

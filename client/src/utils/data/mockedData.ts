@@ -100,19 +100,20 @@ const mockedGood: Good = {
   comments: [
     {
       _id: "1232df",
-      author: {
+      user: {
         profilePhotoUrl: "/avatar.png",
         username: "username",
         _id: "12asd123",
       },
       comment:
         "Quería consultar si existe la posibilidad de sacar un plan de pago para pagarla. Soy de Buenos Aires, por lo que también quería consultar sobre envios.",
-      date: "2024-07-12",
+      createdAt: "2024-07-12",
       replies: [],
+      isEdited: false,
     },
     {
       _id: "1232df",
-      author: {
+      user: {
         profilePhotoUrl: "/avatar.png",
         username: "username",
         _id: "12123",
@@ -120,19 +121,21 @@ const mockedGood: Good = {
       },
       comment:
         "Quería consultar si existe la posibilidad de sacar un plan de pago para pagarla. Soy de Buenos Aires, por lo que también quería consultar sobre envios.",
-      date: "2024-09-12",
+      createdAt: "2024-09-12",
+      isEdited: true,
       replies: [
         {
           _id: "1232df",
-          author: {
+          user: {
             profilePhotoUrl: "/avatar.png",
             username: "username",
             _id: "12123qw",
           },
           comment:
             "Si, te puedo armar un plan de pago. Respecto al envío, podemos manejarlo por la empresa Andreani. Saludos",
-          date: "2024-09-13",
+          createdAt: "2024-09-13",
           replies: [],
+          isEdited: false,
         },
       ],
     },
@@ -196,14 +199,15 @@ const mockedService: Service = {
   comments: [
     {
       _id: "2312",
-      author: {
+      user: {
         profilePhotoUrl: "/avatar.png",
         username: "username",
         _id: "12as3",
       },
       comment: "comment",
-      date: "2024-07-12",
+      createdAt: "2024-07-12",
       replies: [],
+      isEdited: false,
     },
   ],
   postType: "service",
