@@ -47,11 +47,12 @@ export const BackgroundProvider = ({
   // Load background color from localStorage for the current user
   useEffect(() => {
     if (!username) return;
+
     const storedGradientValue = sessionStorage.getItem(
       `backgroundColor_${username}`
     );
     if (storedGradientValue) {
-      setGradientValue(JSON.parse(storedGradientValue));
+      setGradientValue(parseInt(JSON.parse(storedGradientValue)));
     } else {
       // Fetch user preferences from the server if not found in sessionStorage
       const fetchPreferences = async () => {
@@ -86,7 +87,7 @@ export const BackgroundProvider = ({
       `backgroundColor_${username}`
     );
     if (storedGradientValue) {
-      setGradientValue(JSON.parse(storedGradientValue));
+      setGradientValue(parseInt(JSON.parse(storedGradientValue)));
       return;
     }
     setGradientValue(0);

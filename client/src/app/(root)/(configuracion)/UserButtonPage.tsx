@@ -91,9 +91,7 @@ const UserButtonModal = () => {
         labelIcon={<FaSliders className="size-4" />}
         url="preferencias"
       >
-        <BackgroundProvider>
-          <Preferences />
-        </BackgroundProvider>
+        <Preferences />
       </UserButton.UserProfilePage>
     </UserButton>
   );

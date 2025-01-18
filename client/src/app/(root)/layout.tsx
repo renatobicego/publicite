@@ -25,14 +25,14 @@ export default async function NavigationLayout({
         userId={user?.publicMetadata.mongoId}
       >
         <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
-        <Header isSignedIn={!!user} />
         <BackgroundProvider username={user?.username}>
+          <Header isSignedIn={!!user} />
           <LocationProvider>
             {children}
             <HelpButton />
           </LocationProvider>
+          <Footer username={user?.username} />
         </BackgroundProvider>
-        <Footer username={user?.username} />
       </UserDataProvider>
     </SocketProvider>
   );
