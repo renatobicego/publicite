@@ -205,9 +205,10 @@ export class NotificationService implements NotificationGroupServiceInterface,
 
         const event: string = notificationGroup.getEvent;
         const userNotificationOwner = notificationGroup.getUser;
+        const userIdFrom = notificationGroup.getbackData.userIdFrom;
         const session = await this.connection.startSession();
         let notificationId: Types.ObjectId;
-
+        if (!event || !userNotificationOwner || !userIdFrom) throw new Error('Missing event, userNotificationOwner or userIdFrom');
         try {
 
 
@@ -236,7 +237,7 @@ export class NotificationService implements NotificationGroupServiceInterface,
                     );
                 }
 
-                await this.userService.pushNotificationToUserArrayNotifications(notificationId, userNotificationOwner, session);
+                await this.userService.pushNotificationToUserArrayNotifications(notificationId, userNotificationOwner, userIdFrom, session);
             });
         } catch (error: any) {
             this.logger.error('An error occurred while sending notification');
@@ -252,6 +253,8 @@ export class NotificationService implements NotificationGroupServiceInterface,
             const magazineId = notificationMagazine.getFrontData.magazine._id;
             const magazineType = notificationMagazine.getFrontData.magazine.ownerType;
             const userNotificationOwner = notificationMagazine.getUser
+            const userIdFrom = notificationMagazine.getbackData.userIdFrom
+            if (!event || !userNotificationOwner || !userIdFrom || !magazineId || !magazineType) throw new Error('Missing event, userNotificationOwner, userIdFrom, magazineId or magazineType');
             const session = await this.connection.startSession();
 
             await session.withTransaction(async () => {
@@ -291,7 +294,7 @@ export class NotificationService implements NotificationGroupServiceInterface,
                 }
 
 
-                await this.userService.pushNotificationToUserArrayNotifications(notificationId, userNotificationOwner, session);
+                await this.userService.pushNotificationToUserArrayNotifications(notificationId, userNotificationOwner, userIdFrom, session);
             })
 
 
@@ -307,7 +310,7 @@ export class NotificationService implements NotificationGroupServiceInterface,
 
         if (!postId || !reaction || !userIdFrom || !userIdTo) {
             throw new Error(
-                `Invalid notification post: Missing postId (${postId}), reaction (${reaction}), userIdFrom (${userIdFrom}), or userIdTo (${userIdTo}).`
+                `Mission postId, reaction, userIdFrom or userIdTo are undefined`
             );
         }
 
@@ -326,6 +329,7 @@ export class NotificationService implements NotificationGroupServiceInterface,
                 await this.userService.pushNotificationToUserArrayNotifications(
                     notificationId,
                     userIdTo,
+                    userIdFrom,
                     session
                 );
                 return postReactionId
@@ -341,12 +345,12 @@ export class NotificationService implements NotificationGroupServiceInterface,
     }
     async saveNotificationPostCommentAndSendToUser(notificationPostComment: NotificationPost): Promise<any> {
         const { getComment: comment, getPostId: postId, getbackData } = notificationPostComment;
-        const { userIdFrom: userCommentId, userIdTo } = getbackData;
+        const { userIdFrom: userIdFrom, userIdTo } = getbackData;
 
 
-        if (!comment || !userCommentId || !postId || !userIdTo) {
+        if (!comment || !userIdFrom || !postId || !userIdTo) {
             throw new Error(
-                "Faltan datos necesarios: asegúrese de proporcionar comment, userCommentId, postId y userIdTo."
+                "Missing comment, userIdFrom, postId, or userIdTo."
             );
         }
 
@@ -364,13 +368,14 @@ export class NotificationService implements NotificationGroupServiceInterface,
                 await this.userService.pushNotificationToUserArrayNotifications(
                     notificationId,
                     userIdTo,
+                    userIdFrom,
                     session
                 );
 
 
                 await this.postService.makeCommentSchemaAndPutCommentInPost(
                     postId,
-                    userCommentId,
+                    userIdFrom,
                     comment,
                     session
                 );
@@ -396,6 +401,7 @@ export class NotificationService implements NotificationGroupServiceInterface,
             const userIdFrom = notificationUser.getbackData.userIdFrom;
             const userIdTo = notificationUser.getbackData.userIdTo;
 
+            if (!event || !userIdFrom || !userIdTo) throw new Error("Missing event, userIdFrom, userIdTo");
             await session.withTransaction(async () => {
 
 
@@ -433,7 +439,7 @@ export class NotificationService implements NotificationGroupServiceInterface,
                 }
 
 
-                await this.userService.pushNotificationToUserArrayNotifications(notificationId, userIdTo, session);
+                await this.userService.pushNotificationToUserArrayNotifications(notificationId, userIdTo, userIdFrom, session);
 
 
             })

@@ -275,12 +275,17 @@ export class UserService implements UserServiceInterface {
   async pushNotificationToUserArrayNotifications(
     notification: Types.ObjectId,
     userId: string,
+    userIdFrom: string,
     session?: any,
   ): Promise<any> {
     try {
       this.logger.log(
         'Notification received in the service: ' + UserService.name,
       );
+      if (userId === userIdFrom) {
+        this.logger.log('User id and user id from are the same');
+        return
+      }
       await this.userRepository.pushNotification(notification, userId, session);
     } catch (error: any) {
       throw error;

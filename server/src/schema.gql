@@ -166,11 +166,11 @@ type post_front_data_post {
 }
 
 type post_front_data_postReaction {
-  emoji: String!
+  emoji: String
 }
 
 type post_front_data_postComment {
-  comment: String!
+  comment: String
 }
 
 type front_data_POST {

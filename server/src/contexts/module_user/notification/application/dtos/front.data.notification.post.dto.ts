@@ -26,14 +26,14 @@ class post_front_data_post {
 
 @ObjectType()
 class post_front_data_postReaction {
-    @Field(() => String)
+    @Field(() => String, { nullable: true })
     emoji: string
 }
 
 
 @ObjectType()
 class post_front_data_postComment {
-    @Field(() => String)
+    @Field(() => String, { nullable: true })
     comment: string
 
 }

@@ -47,6 +47,7 @@ export interface UserServiceInterface {
   pushNotificationToUserArrayNotifications(
     notificationId: Types.ObjectId,
     userIdTo: string,
+    userIdFrom: string,
     session?: any,
   ): Promise<any>;
 
