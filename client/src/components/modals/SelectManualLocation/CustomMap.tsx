@@ -6,10 +6,16 @@ const CustomMap = ({
   lat,
   lng,
   geocodeLatLng,
+  handleLocationChange,
 }: {
   lat: number;
   lng: number;
   geocodeLatLng: (lat: number, lng: number) => void;
+  handleLocationChange: (
+    lat: number,
+    lng: number,
+    description?: string
+  ) => void;
 }) => {
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [markerCluster, setMarkerCluster] = useState<MarkerClusterer | null>(
@@ -78,6 +84,11 @@ const CustomMap = ({
 
   return (
     <>
+      <LatLngAutocomplete
+        handleLocationChange={handleLocationChange}
+        map={map}
+        createMarker={createMarker}
+      />
       <div
         ref={ref}
         style={{
