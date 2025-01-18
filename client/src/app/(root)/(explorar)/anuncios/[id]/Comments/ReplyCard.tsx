@@ -1,7 +1,7 @@
 import UsernameAvatar from "@/components/buttons/UsernameAvatar";
 import { showDate } from "@/utils/functions/dates";
 import { PostComment } from "@/types/postTypes";
-import { parseDate } from "@internationalized/date";
+import { parseDateTime } from "@internationalized/date";
 import { Card, CardBody, CardHeader } from "@nextui-org/react";
 import { FaReply } from "react-icons/fa6";
 import DeleteComment from "./DeleteComment";
@@ -18,10 +18,10 @@ const ReplyCard = ({
       <CardHeader className="flex w-full justify-between pb-0">
         <div className="flex gap-2 items-center">
           <FaReply className="size-4 text-light-text" />
-          <UsernameAvatar author={reply.author} showAvatar={false} />
+          <UsernameAvatar author={reply.user} showAvatar={false} />
         </div>
         <p className="text-light-text text-xs xl:text-sm">
-          {showDate(parseDate(reply.date))}
+          {showDate(parseDateTime(reply.createdAt))}
         </p>
       </CardHeader>
       <CardBody className="flex justify-between gap-1 flex-row">
