@@ -1,6 +1,8 @@
+import { NotificationPost } from "../entity/notification.post.entity"
 
 export interface NotificationPostServiceInterface {
-    handlePostNotificationAndCreateIt(notificationBody: any): Promise<void>
-
+    saveNotificationPostReactionAndSendToUser(notificationPost: NotificationPost): Promise<void>
+    saveNotificationPostCommentAndSendToUser(notificationPostComment: NotificationPost): Promise<any>
+    saveNotificationPostResponseAndSendToUser(notificationPostResponse: NotificationPost): Promise<void>
 
 }

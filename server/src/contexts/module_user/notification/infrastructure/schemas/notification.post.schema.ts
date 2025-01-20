@@ -21,6 +21,11 @@ interface INotificationPost extends NotificationDocument {
             },
             postComment?: {
                 comment: string
+            },
+            postResponse?: {
+                author: string,
+                commentId: string,
+                response: string
             }
         }
     }
@@ -41,7 +46,12 @@ const NotificationPostSchema = new Schema<INotificationPost>({
                 postType: { type: String, enum: Object.values(PostType), required: true },
             },
             postReaction: { emoji: { type: String } },
-            postComment: { comment: { type: String } }
+            postComment: { comment: { type: String } },
+            postResponse: {
+                author: { type: String },
+                commentId: { type: String },
+                response: { type: String }
+            }
         }
     }
 })

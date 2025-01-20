@@ -36,9 +36,6 @@ export class PostService implements PostServiceInterface {
 
 
 
-
-
-
   async activateOrDeactivatePost(_id: string, activate: boolean, postBehaviourType: PostBehaviourType, userRequestId: string): Promise<any> {
     try {
       if (activate) {
@@ -107,6 +104,10 @@ export class PostService implements PostServiceInterface {
       session.endSession();
     }
   }
+
+
+
+
 
 
 
@@ -272,6 +273,38 @@ export class PostService implements PostServiceInterface {
     }
   }
 
+
+  async makeResponseAndPutResponseInComment(author: string, commentId: string, response: string, session: any): Promise<any> {
+    try {
+
+      const newResponse = new PostComment(author, response, false)
+      const commentResponse = await this.postRepository.savePostComment(newResponse, session)
+      const commentResponseId = commentResponse._id
+      if (!commentResponseId) throw new Error('Error al crear la respuesta in makeCommentSchemaAndPutCommentInPost')
+      await this.postRepository.setResponseOnComment(commentId, commentResponseId, session)
+      return commentResponse;
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
+  async makeCommentSchemaAndPutCommentInPost(postId: string, userCommentId: string, comment: string, session: any): Promise<any> {
+    try {
+
+      const newComment = new PostComment(userCommentId, comment, false)
+      const postComment = await this.postRepository.savePostComment(newComment, session)
+      const postCommentId = postComment._id
+      if (!postCommentId) throw new Error('Error al crear el comentario in makeCommentSchemaAndPutCommentInPost')
+      await this.postRepository.setCommenOnPost(postId, postCommentId, session)
+      return postComment
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
+
   async updatePostById(
     postUpdate: PostUpdateDto,
     id: string,
@@ -334,19 +367,6 @@ export class PostService implements PostServiceInterface {
   }
 
 
-
-  async makeCommentSchemaAndPutCommentInPost(postId: string, userCommentId: string, comment: string, session: any): Promise<any> {
-    try {
-
-      const newComment = new PostComment(userCommentId, comment, false)
-      const postCommentId = await this.postRepository.savePostComment(newComment, session)
-      await this.postRepository.setCommenOnPost(postId, postCommentId, session)
-    } catch (error: any) {
-      throw error;
-    }
-
-
-  }
 
 
 

@@ -19,6 +19,11 @@ export class NotificationPost extends Notification {
             }
             postComment?: {
                 comment: string
+            },
+            postResponse?: {
+                author: string,
+                commentId: string,
+                response: string
             }
         }
     };
@@ -42,6 +47,11 @@ export class NotificationPost extends Notification {
                 },
                 postComment?: {
                     comment: string
+                },
+                postResponse?: {
+                    author: string,
+                    commentId: string,
+                    response: string
                 }
             }
 
@@ -78,5 +88,13 @@ export class NotificationPost extends Notification {
 
     get getComment() {
         return this.frontData.postActivity.postComment?.comment
+    }
+
+    get getCommentResponse() {
+        return this.frontData.postActivity.postResponse ?? {
+            author: undefined,
+            commentId: undefined,
+            response: undefined
+        }
     }
 }

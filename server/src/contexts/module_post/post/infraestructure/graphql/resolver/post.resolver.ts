@@ -281,8 +281,9 @@ export class PostResolver {
   @Query(() => PostFindAllResponse, {
     nullable: true,
     description:
-      'Buscar todos los post, recibe pagina, limite y tambien el postType. De ser necesario podes enviarle un searchTerm para filtrar',
+      'Buscar todos los post, recibe pagina, limite y tambien el postType. De ser necesario podes enviarle un searchTerm para filtrar. (Post libres)',
   })
+  @UseGuards(ClerkAuthGuard)
   async findAllPostByPostType(
     @Args('page', { type: () => Number }) page: number,
     @Args('limit', { type: () => Number }) limit: number,

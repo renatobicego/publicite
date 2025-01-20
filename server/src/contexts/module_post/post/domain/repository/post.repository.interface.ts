@@ -34,6 +34,7 @@ export interface PostRepositoryInterface {
   findPostOfGroupMembers(membersId: any[], conditionsOfSearch: any, userLocation: UserLocation, limit: number, page: number): Promise<PostsMemberGroupResponse | null>
   savePostComment(postComment: PostComment, session: any): Promise<any>;
   setCommenOnPost(postId: string, postCommentId: string, session: any): Promise<any>
+  setResponseOnComment(commentId: string, responseId: string, session: any): Promise<any>
   updatePostById(
     postUpdate: PostUpdateDto,
     id: string,

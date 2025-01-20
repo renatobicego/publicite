@@ -176,9 +176,9 @@ export class PostAdapter implements PostAdapterInterface {
   }
 
 
-  async updateCommentById(id: string, comment: string, userRequestId: string): Promise<void> {
+  async updateCommentById(id: string, comment: string, userRequestId: string): Promise<any> {
     try {
-      await this.postService.updateCommentById(id, comment, userRequestId);
+      return await this.postService.updateCommentById(id, comment, userRequestId);
     } catch (error: any) {
       throw error;
     }

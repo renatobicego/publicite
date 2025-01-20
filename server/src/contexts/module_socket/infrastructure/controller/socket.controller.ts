@@ -55,8 +55,7 @@ export class SocketController {
     @Body() notificationBody: any,
   ): Promise<any> {
     try {
-      const postReactionId = await this.socketAdapter.sendPostNotificationToNotificationService(notificationBody);
-      return postReactionId;
+      return await this.socketAdapter.sendPostNotificationToNotificationService(notificationBody);
     } catch (error: any) {
       throw error;
     }

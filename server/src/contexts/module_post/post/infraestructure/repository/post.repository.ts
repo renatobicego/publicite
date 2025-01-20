@@ -131,6 +131,9 @@ export class PostRepository implements PostRepositoryInterface {
     }
   }
 
+
+
+
   async deletePostById(id: string): Promise<void> {
     const session = await this.connection.startSession();
     try {
@@ -139,16 +142,26 @@ export class PostRepository implements PostRepositoryInterface {
           .findByIdAndDelete(id, {
             session,
           })
-          .select('author');
+          .select('author comments reactions');
         if (!postDeleted) throw new Error('Post not found');
 
         const deletePromises = [
-          /*
-          - Falta reviews 
-          - Falta comments
-          */
+          //- Falta reviews 
 
-          this.userDocument.findOneAndUpdate(
+
+          //Reactions
+          this.postReactionDocument.deleteMany(
+            { _id: { $in: postDeleted.reactions } },
+            { session },
+          ),
+
+          //Comments
+          this.postCommentDocument.deleteMany(
+            { _id: { $in: postDeleted.comments } },
+            { session },
+          ),
+          //User
+          this.userDocument.updateOne(
             {
               _id: postDeleted.author,
             },
@@ -249,44 +262,44 @@ export class PostRepository implements PostRepositoryInterface {
     }
   }
 
-async findPostById(id: string): Promise<any> {
-  this.logger.log('Finding post by id in repository');
+  async findPostById(id: string): Promise<any> {
+    this.logger.log('Finding post by id in repository');
 
-  try {
-    const post = await this.postDocument
-      .findById(id)
-      .select('-searchTitle -searchDescription')
-      .populate([
-        { path: 'category', model: 'PostCategory' },
-        {
-          path: 'author',
-          model: 'User',
-          select: '_id profilePhotoUrl username lastName name contact',
-          populate: { path: 'contact', model: 'Contact' },
-        },
-        {
-          path: 'reactions',
-          model: 'PostReaction',
-          select: 'user reaction _id',
-        },
-        {
-          path: 'comments',
-          model: 'PostComment',
-          populate: {
-            path: 'user',
+    try {
+      const post = await this.postDocument
+        .findById(id)
+        .select('-searchTitle -searchDescription')
+        .populate([
+          { path: 'category', model: 'PostCategory' },
+          {
+            path: 'author',
             model: 'User',
-            select: '_id profilePhotoUrl username',
+            select: '_id profilePhotoUrl username lastName name contact',
+            populate: { path: 'contact', model: 'Contact' },
           },
-        },
-      ])
-      .lean();
+          {
+            path: 'reactions',
+            model: 'PostReaction',
+            select: 'user reaction _id',
+          },
+          {
+            path: 'comments',
+            model: 'PostComment',
+            populate: {
+              path: 'user',
+              model: 'User',
+              select: '_id profilePhotoUrl username',
+            },
+          },
+        ])
+        .lean();
 
-    return post;
-  } catch (error: any) {
-    this.logger.error('An error occurred finding post by id: ' + id);
-    throw error;
+      return post;
+    } catch (error: any) {
+      this.logger.error('An error occurred finding post by id: ' + id);
+      throw error;
+    }
   }
-}
 
 
   async findMatchPost(postType: string, searchTerm: string): Promise<any> {
@@ -416,6 +429,7 @@ async findPostById(id: string): Promise<any> {
         matchStage.author = { $ne: userRequestId };
       }
 
+
       // Si se especifica un término de búsqueda, lo procesamos
       if (searchTerm) {
         const textSearchQuery = checkStopWordsAndReturnSearchQuery(
@@ -536,7 +550,6 @@ async findPostById(id: string): Promise<any> {
         { $skip: (page - 1) * limit },
         { $limit: limit + 1 },
       ]);
-
       if (!posts) {
         return { posts: [], hasMore: false };
       }
@@ -645,11 +658,22 @@ async findPostById(id: string): Promise<any> {
     }
   }
 
+
+
+  async setResponseOnComment(commentId: string, responseId: string, session: any): Promise<any> {
+    try {
+      return await this.postCommentDocument.updateOne({ _id: commentId }, { $set: { response: responseId } }, { session });
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
   async savePostComment(postComment: PostComment, session: any): Promise<any> {
     try {
       const postCommentDocument = new this.postCommentDocument(postComment)
       const postCommentSaved = await postCommentDocument.save({ session })
-      return postCommentSaved._id;
+      return postCommentSaved;
     } catch (error: any) {
       throw error;
     }
@@ -736,6 +760,10 @@ async findPostById(id: string): Promise<any> {
       throw error;
     }
   }
+
+
+
+
   async updatePostById(
     postUpdate: PostUpdateDto,
     id: string,
@@ -776,9 +804,9 @@ async findPostById(id: string): Promise<any> {
     }
   }
 
-  async updateCommentById(id: string, comment: string, userRequestId: string): Promise<void> {
+  async updateCommentById(id: string, comment: string, userRequestId: string): Promise<any> {
     try {
-      await this.postCommentDocument.updateOne({ _id: id, user: userRequestId }, { $set: { comment, isEdited: true } });
+      return await this.postCommentDocument.updateOne({ _id: id, user: userRequestId }, { $set: { comment, isEdited: true } }, { new: true });
     } catch (error: any) {
       throw error;
     }
@@ -865,3 +893,66 @@ async findPostById(id: string): Promise<any> {
     }
   }
 }
+
+
+/*
+
+const posts = await this.postDocument.aggregate([
+  {
+    $geoNear: {
+      near: {
+        type: 'Point',
+        coordinates: [userLocation.longitude, userLocation.latitude],
+      },
+      distanceField: 'distance',
+      spherical: true,
+      query: matchStage,
+    },
+  },
+  {
+    $match: {
+      $expr: { $lte: ['$distance', '$geoLocation.ratio'] },
+    },
+  },
+  {
+    $lookup: {
+      from: 'postcategories',
+      localField: 'category',
+      foreignField: '_id',
+      as: 'category',
+      pipeline: [{ $project: { _id: 1, label: 1 } }],
+    },
+  },
+  {
+    $addFields: {
+      categories: {
+        $map: {
+          input: '$category',
+          as: 'category',
+          in: {
+            _id: '$$category._id',
+            label: '$$category.label',
+          },
+        },
+      },
+    },
+  },
+  {
+    $project: {
+      _id: 1,
+      title: 1,
+      description: 1,
+      frequencyPrice: 1,
+      imagesUrls: 1,
+      petitionType: 1,
+      postType: 1,
+      price: 1,
+      reviews: 1,
+      toPrice: 1,
+      'geoLocation.description': 1,
+    },
+  },
+  { $skip: (page - 1) * limit },
+  { $limit: limit + 1 },
+]);
+*/

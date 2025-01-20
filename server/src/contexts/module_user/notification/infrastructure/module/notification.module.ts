@@ -13,6 +13,10 @@ import { NotificationResolver } from "../resolver/notification.resolver";
 import { NotificationUserModel } from "../schemas/notification.user.schema";
 import { PostModule } from "src/contexts/module_post/post/infraestructure/module/post.module";
 import { NotificationPostModel } from "../schemas/notification.post.schema";
+import { NotificationGroupService } from "../../application/service/notification.group.service";
+import { NotificationMagazineService } from "../../application/service/notification.magazine.service";
+import { NotificationUserService } from "../../application/service/notification.user.service";
+import { NotificationPostService } from "../../application/service/notification.post.service";
 
 @Module({
     imports: [
@@ -40,15 +44,31 @@ import { NotificationPostModel } from "../schemas/notification.post.schema";
             useClass: NotificationService
         },
         {
+            provide: 'NotificationGroupServiceInterface',
+            useClass: NotificationGroupService
+        },
+        {
             provide: 'NotificationMagazineServiceInterface',
             useClass: NotificationService,
         },
         {
+            provide: 'NotificationMagazineServiceInterface',
+            useClass: NotificationMagazineService,
+        },
+        {
             provide: 'NotificationUserServiceInterface',
             useClass: NotificationService,
+        },
+        {
+            provide: 'NotificationUserServiceInterface',
+            useClass: NotificationUserService,
         }, {
             provide: 'NotificationPostServiceInterface',
             useClass: NotificationService,
+        },
+        {
+            provide: 'NotificationPostServiceInterface',
+            useClass: NotificationPostService,
         }, {
             provide: 'NotificationRepositoryInterface',
             useClass: NotificationRepository
@@ -59,6 +79,11 @@ import { NotificationPostModel } from "../schemas/notification.post.schema";
             provide: 'NotificationServiceInterface',
             useClass: NotificationService
         }
+        , {
+            provide: 'NotificationHandlerServiceInterface',
+            useClass: NotificationService
+        }
+
 
     ],
     exports: [

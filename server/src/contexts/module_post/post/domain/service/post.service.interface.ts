@@ -33,6 +33,7 @@ export interface PostServiceInterface {
   getLimitPostOfUser(userRequestId: string): Promise<PostLimitResponseGraphql>
   makeReactionSchemaAndSetReactionToPost(postId: string, reaction: { user: string, reaction: string }, session: any): Promise<void>;
   makeCommentSchemaAndPutCommentInPost(postId: string, userCommentId: string, comment: string, session: any): Promise<any>;
+  makeResponseAndPutResponseInComment(author: string, commentId: string, response: string, session: any): Promise<any>;
   desactivateAllPost(userId: string): Promise<void>;
   updatePostById(
     postUpdate: PostUpdateDto,

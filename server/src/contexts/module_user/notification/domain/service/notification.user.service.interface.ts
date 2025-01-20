@@ -1,6 +1,6 @@
 
 export interface NotificationUserServiceInterface {
-    handleUserNotificationAndCreateIt(notificationBody: any): Promise<void>
+    saveNotificationUserAndSentToUser(notificationBody: any): Promise<void>
 
 
 }

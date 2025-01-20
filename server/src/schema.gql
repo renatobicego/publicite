@@ -185,6 +185,7 @@ type front_data_POST {
 enum NotificationPostType {
   reaction
   comment
+  response
 }
 
 type frontData {
@@ -619,7 +620,7 @@ type Query {
   findPostById(id: String!): Post_response_graphql_model
 
   """
-  Buscar todos los post, recibe pagina, limite y tambien el postType. De ser necesario podes enviarle un searchTerm para filtrar
+  Buscar todos los post, recibe pagina, limite y tambien el postType. De ser necesario podes enviarle un searchTerm para filtrar. (Post libres)
   """
   findAllPostByPostType(page: Float!, limit: Float!, postType: PostType!, userLocation: UserLocation!, searchTerm: String): PostFindAllResponse
 

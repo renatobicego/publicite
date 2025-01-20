@@ -9,6 +9,11 @@ export const PostCommentSchema = new Schema({
     comment: { type: String, required: true },
     isEdited: { type: Boolean, required: true, default: false },
     createdAt: { type: Date, default: () => new Date(Date.now()) },
+    response: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'PostComment',
+        required: false,
+    }
 });
 
 
@@ -17,6 +22,7 @@ export interface PostCommentDocument extends Document {
     comment: string;
     isEdited: boolean;
     createdAt: Date;
+    response: ObjectId;
 }
 
 // Creación del modelo
