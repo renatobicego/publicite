@@ -22,9 +22,11 @@ import { DatabaseService } from './contexts/module_shared/database/infrastructur
 import { MercadoPagoModule } from './contexts/module_webhook/mercadopago/infastructure/module/mercadopago.module';
 import { ClerkModule } from './contexts/module_webhook/clerk/infrastructure/module/clerk.module';
 import { NotificationModule } from './contexts/module_user/notification/infrastructure/module/notification.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
+    EventEmitterModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',

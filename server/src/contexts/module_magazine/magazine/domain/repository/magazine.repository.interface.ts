@@ -72,6 +72,10 @@ export interface MagazineRepositoryInterface {
     postIdToRemove: string,
     sectionId: string): Promise<any>;
 
+  deletePostInMagazine(
+    _id: string,
+  ): Promise<any>;
+
   deleteMagazineByMagazineId(magazineId: string): Promise<any>;
 
 

@@ -12,7 +12,7 @@ const MagazineSchem = new Schema({
   },
   posts: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
   isFatherSection: {
-    type: Boolean,
+    type: Boolean, 
     required: true,
   },
 });

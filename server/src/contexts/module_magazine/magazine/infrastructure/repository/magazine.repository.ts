@@ -477,6 +477,18 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
   }
 
 
+  async deletePostInMagazine(_id: string): Promise<any> {
+    try {
+      await this.magazineSection.updateMany(
+        { posts: _id },
+        { $pull: { posts: _id } },
+      )
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
 
 
 

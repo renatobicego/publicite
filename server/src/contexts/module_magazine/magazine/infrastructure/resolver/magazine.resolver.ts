@@ -1,4 +1,4 @@
-import { Inject, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { Inject, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Resolver, Query, Context, } from '@nestjs/graphql';
 import { ObjectId } from 'mongoose';
 
@@ -11,6 +11,8 @@ import { ClerkAuthGuard } from 'src/contexts/module_shared/auth/clerk-auth/clerk
 import { MagazineSectionCreateRequest } from '../../application/adapter/dto/HTTP-REQUEST/magazineSection.create.request';
 import { OwnerType } from '../../domain/entity/enum/magazine.ownerType.enum';
 import { CustomContextRequestInterface } from 'src/contexts/module_shared/auth/custom_request/custom.context.request.interface';
+import { OnEvent } from '@nestjs/event-emitter';
+
 
 
 
@@ -21,6 +23,10 @@ export class MagazineResolver {
     private readonly magazineAdapter: MagazineAdapterInterface,
   ) { }
 
+
+
+
+  
   @Mutation(() => String, {
     nullable: true,
     description: 'Agregar nueva seccion en la revista',

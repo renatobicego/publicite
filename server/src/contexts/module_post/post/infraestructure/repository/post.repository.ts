@@ -41,8 +41,10 @@ import { PostComment } from '../../domain/entity/postComment.entity';
 import { PostCommentDocument } from '../schemas/post.comment.schema';
 import { Date } from 'mongoose';
 
+
 export class PostRepository implements PostRepositoryInterface {
   constructor(
+
     @InjectModel(PostGoodModel.modelName)
     private readonly postGoodDocument: Model<IPostGood>,
 
@@ -174,6 +176,7 @@ export class PostRepository implements PostRepositoryInterface {
 
         await Promise.all(deletePromises);
       });
+
       await session.commitTransaction();
     } catch (error) {
       this.logger.error('Error deleting post REPOSITORY: ' + error);

@@ -14,7 +14,7 @@ import { UserLocation } from '../../domain/entity/models_graphql/HTTP-REQUEST/po
 import { PostLimitResponseGraphql } from '../../domain/entity/models_graphql/HTTP-RESPONSE/post.limit.response.graphql';
 import { PostBehaviourType } from '../../domain/entity/enum/postBehaviourType.enum';
 import { Visibility, Visibility_Of_Find } from '../../domain/entity/enum/post-visibility.enum';
-
+import { EventEmitter2 } from '@nestjs/event-emitter';   
 
 export class PostAdapter implements PostAdapterInterface {
   constructor(
@@ -23,8 +23,9 @@ export class PostAdapter implements PostAdapterInterface {
     @Inject('PostMapperAdapterInterface')
     private readonly postMapper: PostMapperAdapterInterface,
     private readonly logger: MyLoggerService,
+    private eventEmitter: EventEmitter2,
   ) { }
-
+ 
 
   async desactivatePostById(id: string): Promise<void> {
     try {
@@ -54,6 +55,10 @@ export class PostAdapter implements PostAdapterInterface {
 
   async deletePostById(id: string): Promise<void> {
     try {
+      this.eventEmitter.emit(
+        'post.deleted',
+        id
+      );
       await this.postService.deletePostById(id);
     } catch (error: any) {
       throw error;

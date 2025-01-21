@@ -1,5 +1,6 @@
 import { Inject } from '@nestjs/common';
 import { ObjectId } from 'mongoose';
+import { OnEvent } from '@nestjs/event-emitter';
 
 import { MagazineCreateRequest } from 'src/contexts/module_magazine/magazine/application/adapter/dto/HTTP-REQUEST/magazine.create.request';
 import { MagazineUpdateRequest } from 'src/contexts/module_magazine/magazine/application/adapter/dto/HTTP-REQUEST/magazine.update.request';
@@ -8,11 +9,22 @@ import { MagazineResponse } from 'src/contexts/module_magazine/magazine/applicat
 import { MagazineAdapterInterface } from 'src/contexts/module_magazine/magazine/application/adapter/magazine.adapter.interface';
 import { MagazineServiceInterface } from 'src/contexts/module_magazine/magazine/domain/service/magazine.service.interface';
 
+
 export class MagazineAdapter implements MagazineAdapterInterface {
   constructor(
     @Inject('MagazineServiceInterface')
     private readonly magazineService: MagazineServiceInterface,
   ) { }
+
+
+  @OnEvent('post.deleted')
+  async deletePostInMagazineWithEmitter(postId: string): Promise<any> {
+    try {
+      await this.magazineService.deletePostInMagazineWithEmitter(postId);
+    } catch (error: any) {
+      throw error;
+    }
+  }
 
   async addNewMagazineSection(
     magazineAdmin: string,

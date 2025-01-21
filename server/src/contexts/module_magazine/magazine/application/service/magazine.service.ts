@@ -27,7 +27,13 @@ export class MagazineService implements MagazineServiceInterface {
 
   ) { }
 
-
+  async deletePostInMagazineWithEmitter(postId: string) {
+    try {
+      await this.magazineRepository.deletePostInMagazine(postId);
+    } catch (error: any) {
+      throw error;
+    }
+  }
   async addNewMagazineSection(
     magazineAdmin: string,
     magazineId: string,

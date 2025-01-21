@@ -68,7 +68,7 @@ export interface MagazineServiceInterface {
     magazineAdmin: string,
     session: any
   ): Promise<any>;
-
+  deletePostInMagazineWithEmitter(postId: string):Promise<void>
   deletePostInMagazineSection(postIdToRemove: string, sectionId: string, ownerType: string, userRequestId: string, magazineId?: string): Promise<any>;
   exitMagazineByMagazineId(magazineId: string, userRequestId: string, ownerType: string): Promise<any>;
   findMagazineByMagazineId(

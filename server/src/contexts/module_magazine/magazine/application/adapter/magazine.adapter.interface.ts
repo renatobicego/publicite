@@ -38,7 +38,7 @@ export interface MagazineAdapterInterface {
 
   deleteMagazineByMagazineId(magazineId: string, userRequestId: string, ownerType: string): Promise<any>;
   deletePostInMagazineSection(postIdToRemove: string, sectionId: string, ownerType: string, userRequestId: string, magazineId?: string): Promise<any>;
-
+  deletePostInMagazineWithEmitter(postId: string): Promise<any>;
   exitMagazineByMagazineId(magazineId: string, userRequestId: string, ownerType: string): Promise<any>;
 
   findMagazineByMagazineId(

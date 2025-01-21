@@ -23,12 +23,15 @@ import { Visibility_Of_Find } from '../../../domain/entity/enum/post-visibility.
 
 
 
+
 @Resolver('Post')
 export class PostResolver {
   constructor(
     @Inject('PostAdapterInterface')
     private readonly postAdapter: PostAdapterInterface,
+
   ) { }
+
 
   @Mutation(() => String, {
     nullable: true,
