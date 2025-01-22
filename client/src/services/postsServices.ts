@@ -27,6 +27,7 @@ import { Coordinates } from "@/app/(root)/providers/LocationProvider";
 import { ApolloError, ServerError } from "@apollo/client";
 import { handleApolloError } from "@/utils/functions/errorHandler";
 import { ContactPostsVisibility } from "@/utils/data/fetchDataByType";
+import { getApiContext } from "./apiContext";
 
 export const getPostData = async (id: string) => {
   try {
@@ -121,6 +122,7 @@ export const getPosts = async (
         error: "Error al traer los anuncios. Por favor intenta de nuevo.",
       };
     }
+    const { context } = await getApiContext(true);
     const { data } = await query({
       query: getPostsQuery,
       variables: {
@@ -130,6 +132,7 @@ export const getPosts = async (
         searchTerm: searchTerm ? searchTerm : "",
         userLocation: coordinates,
       },
+      context,
     });
     return {
       items: data.findAllPostByPostType.posts,
@@ -150,6 +153,7 @@ export const getPostsOfContacts = async (
   visibility: ContactPostsVisibility
 ) => {
   try {
+    const { context } = await getApiContext(true);
     const { data } = await query({
       query: getPostsOfFriendsQuery,
       variables: {
@@ -157,13 +161,9 @@ export const getPostsOfContacts = async (
         limit,
         page,
         searchTerm: searchTerm ? searchTerm : "",
-        visibility
+        visibility,
       },
-      context: {
-        headers: {
-          Authorization: await auth().getToken({ template: "testing" }),
-        },
-      },
+      context,
     });
     return {
       items: data.findFriendPosts.posts,

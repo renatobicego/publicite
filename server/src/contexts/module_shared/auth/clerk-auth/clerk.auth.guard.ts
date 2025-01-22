@@ -7,14 +7,15 @@ import {
 } from '@nestjs/common';
 import { verifyToken } from '@clerk/express';
 
-import { getIdFromClerkToken, getTokenFromRequest } from '../../utils/functions/getTokenFromRequest';
+import {
+  getIdFromClerkToken,
+  getTokenFromRequest,
+} from '../../utils/functions/getTokenFromRequest';
 import { GqlExecutionContext } from '@nestjs/graphql';
 
 @Injectable()
 export class ClerkAuthGuard implements CanActivate {
   private readonly logger = new Logger(ClerkAuthGuard.name);
-
-
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     let token;
@@ -34,24 +35,21 @@ export class ClerkAuthGuard implements CanActivate {
         secretKey: process.env.CLERK_SECRET_KEY,
       });
 
-
       if (context.getType() === 'http') {
         this.logger.warn('Http request in process');
         request = context.switchToHttp().getRequest();
         request.userRequestId = getIdFromClerkToken(token);
         request.isUserRegister = true;
-      } else if (context.getType() === 'graphql' as any) {
+      } else if (context.getType() === ('graphql' as any)) {
         this.logger.warn('graphql request in process');
         const gqlContext = GqlExecutionContext.create(context);
         request = gqlContext.getContext().req;
         const userRequestId = getIdFromClerkToken(token);
         request.isUserRegister = true;
         request.userRequestId = userRequestId;
-
       } else {
         throw new ForbiddenException('Unsupported request type');
       }
-
 
       return true;
     } catch (error) {
@@ -66,7 +64,7 @@ export class ClerkAuthGuard implements CanActivate {
       this.logger.warn('Http request in process');
       request = context.switchToHttp().getRequest();
       request.isUserRegister = false;
-    } else if (context.getType() === 'graphql' as any) {
+    } else if (context.getType() === ('graphql' as any)) {
       this.logger.warn('graphql request in process');
       const gqlContext = GqlExecutionContext.create(context);
       request = gqlContext.getContext().req;
@@ -75,6 +73,4 @@ export class ClerkAuthGuard implements CanActivate {
       throw new ForbiddenException('Unsupported request type');
     }
   }
-
-
 }
