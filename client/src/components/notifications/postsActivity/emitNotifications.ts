@@ -1,5 +1,5 @@
 import { Socket } from "socket.io-client";
-import generatePostActivityNotification from "./generatePostActivityNotification";
+import generatePostActivityNotification, { PostActivityNotificationPayload } from "./generatePostActivityNotification";
 import { PostActivtyNotificationType } from "@/types/postTypes";
 
 interface PostPayload {
@@ -11,15 +11,10 @@ interface PostPayload {
 
 export const emitPostActivityNotification = <T>(
   socket: Socket | null,
-  event: PostActivtyNotificationType,
   userIdTo: string, // user to send the notification
   post: PostPayload,
   previousNotificationId: string | null, // if the notification is a follow up of another notification
-  payload: {
-    emoji: string;
-  } | {
-    comment: string;
-  }
+  payload: PostActivityNotificationPayload
 ): Promise<SocketResponse<T>> => {
   return new Promise((resolve, reject) => {
     if (!socket) {
@@ -27,7 +22,6 @@ export const emitPostActivityNotification = <T>(
     }
 
     generatePostActivityNotification(
-      event,
       userIdTo,
       post,
       previousNotificationId,

@@ -42,11 +42,13 @@ const CommentForm = ({
   ) => {
     emitPostActivityNotification(
       socket,
-      "notification_post_new_comment",
       userIdTo,
       post,
       null,
-      values
+      {
+        event: "notification_post_new_comment",
+        payload: values
+      }
     )
       .then(() => {
         router.refresh();

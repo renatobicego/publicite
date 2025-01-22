@@ -17,13 +17,7 @@ import { useUserData } from "@/app/(root)/providers/userDataProvider";
 import { removePostReaction } from "@/app/server/postActions";
 import { getEmojiName } from "@/utils/functions/utils";
 
-const ReactToPost = ({
-  post,
-  emojis,
-}: {
-  post: Post;
-  emojis: string[];
-}) => {
+const ReactToPost = ({ post, emojis }: { post: Post; emojis: string[] }) => {
   // handle open state of popov er
   const [isOpen, setIsOpen] = useState(false);
 
@@ -36,7 +30,7 @@ const ReactToPost = ({
 
   // get the reaction of the user logged if exists
   const userReaction = useMemo(() => {
-    if(!reactions) return null
+    if (!reactions) return null;
     return reactions.find((reaction) => reaction.user === userIdLogged);
   }, [reactions, userIdLogged]);
 
@@ -69,7 +63,6 @@ const ReactToPost = ({
     // Add reaction
     emitPostActivityNotification<string>(
       socket,
-      "notification_post_new_reaction",
       post.author._id,
       {
         _id: post._id,
@@ -79,7 +72,8 @@ const ReactToPost = ({
       },
       null,
       {
-        emoji,
+        payload: { emoji },
+        event: "notification_post_new_reaction",
       }
     )
       .then((res) => {

@@ -239,6 +239,14 @@ export interface PostActivityNotification extends BaseNotification {
           postComment?: {
             comment: string;
           };
+        })
+      | (BasePostActivityProps & {
+          notificationPostType: "response";
+          postResponse?: {
+            author: string;
+            commentId: string;
+            response: string;
+          };
         });
   };
 }
@@ -251,4 +259,5 @@ export interface PostReaction {
 
 export type PostActivtyNotificationType =
   | "notification_post_new_reaction" // Han reaccionado al post
-  | "notification_post_new_comment"; // Han comentado en el post
+  | "notification_post_new_comment" // Han comentado en el post
+  | "notification_post_new_comment_response"; // Han respondido a un comentario

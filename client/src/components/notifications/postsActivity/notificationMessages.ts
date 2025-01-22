@@ -16,6 +16,10 @@ export const postActivitiesNotificationBaseMessages: Record<
     message: "ha comentado en tu post",
     showUser: true,
   },
+  notification_post_new_comment_response: {
+    message: "ha respondido a tu comentario",
+    showUser: true,
+  },
 };
 
 // Actions object extending base messages

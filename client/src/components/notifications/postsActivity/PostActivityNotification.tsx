@@ -117,6 +117,15 @@ const PostActivityNotificationCard = ({
             }"`}</em>
           </>
         );
+      
+      case "notification_post_new_comment_response":
+        return (
+          <>
+            <em className="font-semibold">{user.username}</em>{" "}
+            {notificationMessage.message}{" "}
+            <em className="font-semibold">{post.title}</em>
+          </>
+        );
 
       default:
         return <>{notificationMessage.message}</>;
