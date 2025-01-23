@@ -170,6 +170,11 @@ export const getAllNotificationsQuery = gql`
             postComment {
               comment
             }
+            postResponse {
+              author
+              commentId
+              response
+            }
             post {
               _id
               title

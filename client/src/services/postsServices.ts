@@ -24,7 +24,7 @@ import {
 import { auth } from "@clerk/nextjs/server";
 import { deleteFilesService } from "@/app/server/uploadThing";
 import { Coordinates } from "@/app/(root)/providers/LocationProvider";
-import { ApolloError, ServerError } from "@apollo/client";
+import { ApolloError } from "@apollo/client";
 import { handleApolloError } from "@/utils/functions/errorHandler";
 import { ContactPostsVisibility } from "@/utils/data/fetchDataByType";
 import { getApiContext } from "./apiContext";
