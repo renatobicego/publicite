@@ -1,6 +1,6 @@
 import { showDate } from "@/utils/functions/dates";
 import { PostComment, PostDataNotification } from "@/types/postTypes";
-import { parseDateTime } from "@internationalized/date";
+import { parseAbsoluteToLocal, parseDateTime } from "@internationalized/date";
 import { Card, CardBody } from "@nextui-org/react";
 import ReplyForm from "./ReplyForm";
 import ReplyCard from "./ReplyCard";
@@ -24,7 +24,7 @@ const CommentCard = ({
           <p className="text-xs md:text-sm xl:text-base">{comment.comment}</p>
           <p className="font-medium text-light-text text-xs xl:text-sm min-w-fit">
             {comment.createdAt
-              ? showDate(parseDateTime(comment.createdAt.replace("Z", "")))
+              ? showDate(parseAbsoluteToLocal(comment.createdAt.replace(/\.\d{1,3}Z$/, 'Z').replace(/\.\d{1,3}([+-]\d{2}:\d{2})$/, '$1')))
               : ""}
           </p>
         </CardBody>

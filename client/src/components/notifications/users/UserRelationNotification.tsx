@@ -1,5 +1,5 @@
 import { showDate } from "@/utils/functions/dates";
-import { parseZonedDateTime } from "@internationalized/date";
+import { parseAbsoluteToLocal, parseZonedDateTime } from "@internationalized/date";
 import Link from "next/link";
 import {
   NotificationCard,
@@ -120,7 +120,7 @@ const UserRelationNotificationCard = ({
         </p>
       </NotificationBody>
       <NotificationOptions
-        date={showDate(parseZonedDateTime(date))}
+        date={showDate(parseAbsoluteToLocal(date.replace(/\.\d{1,3}Z$/, 'Z').replace(/\.\d{1,3}([+-]\d{2}:\d{2})$/, '$1')))}
         items={getNotificationOptionsList()}
       />
     </NotificationCard>
