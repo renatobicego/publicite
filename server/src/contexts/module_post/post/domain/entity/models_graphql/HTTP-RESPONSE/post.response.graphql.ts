@@ -91,9 +91,30 @@ class post_comments_user {
 
 }
 
+@ObjectType()
+class post_response {
+  @Field(() => String, { nullable: true })
+  _id: string;
+
+  // @Field(() => String, { nullable: true })
+  // comment: string;
+
+  // @Field(() => Boolean, { nullable: true })
+  // isEdited: boolean;
+
+  // @Field(() => Date, { nullable: true })
+  // createdAt: Date;
+
+}
+
+
 
 @ObjectType()
 class post_comments {
+
+  @Field(() => String, { nullable: true })
+  _id: string;
+
   @Field(() => post_comments_user, { nullable: true })
   user: post_comments_user;
 
@@ -105,6 +126,9 @@ class post_comments {
 
   @Field(() => Date, { nullable: true })
   createdAt: Date;
+
+  @Field(() => post_response, { nullable: true })
+  response: post_response;
 
 }
 

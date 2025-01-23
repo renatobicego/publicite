@@ -46,6 +46,7 @@ import {
   UserBusinessResponse,
   UserPersonResponse,
 } from '../../application/adapter/dto/HTTP-RESPONSE/user.response.dto';
+import { UserServiceInterface } from '../../domain/service/user.service.interface';
 
 @ApiTags('Accounts')
 @Controller('user')
@@ -53,7 +54,9 @@ export class UserController {
   constructor(
     @Inject('UserAdapterInterface')
     private readonly userAdapter: UserAdapterInterface,
-  ) {}
+    @Inject('UserServiceInterface')
+    private readonly UserServiceInterface: UserServiceInterface,
+  ) { }
 
   ///------------CONTROLLERS CREATE ACCOUNT-------------------
   @Post('/personal')
@@ -271,4 +274,17 @@ export class UserController {
       throw error;
     }
   }
+
+
+
+  // @Get("/test")
+  // async test(
+  // ): Promise<string> {
+  //   try {
+  //     return await this.UserServiceInterface.getLimitContactsFromUserByUserId("66fac933316723a55b9d0c90");
+  //   } catch (error: any) {
+  //     throw error;
+  //   }
+  // }
+
 }

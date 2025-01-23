@@ -39,7 +39,20 @@ class post_front_data_postComment {
 }
 
 @ObjectType()
+class post_front_data_postResponse {
+    @Field(() => String, { nullable: true })
+    author: string
+    @Field(() => String, { nullable: true })
+    commentId: string
+    @Field(() => String, { nullable: true })
+    response: string
+
+}
+
+@ObjectType()
 export class front_data_POST {
+    @Field(() => NotificationPostType)
+    notificationPostType: NotificationPostType;
 
     @Field(() => user_front_data_post)
     user: user_front_data_post
@@ -53,8 +66,7 @@ export class front_data_POST {
     @Field(() => post_front_data_postComment, { nullable: true })
     postComment: post_front_data_postComment;
 
-    @Field(() => NotificationPostType)
-    notificationPostType: NotificationPostType;
-
+    @Field(() => post_front_data_postResponse, { nullable: true })
+    postResponse: post_front_data_postResponse;
 
 }

@@ -29,10 +29,12 @@ export interface UserRepositoryInterface {
   getRelationsFromUserByUserId(userRequestId: string): Promise<any>
 
   getPostAndLimitsFromUserByUserId(author: string): Promise<any>
+  getLimitContactsFromUserByUserId(userRequestId: string, session?: any): Promise<any>
+  getActiveRelationsOfUser(userRequestId: string, session: any): Promise<any>
 
   pushNotification(notification: any, userId: string, session?: any): Promise<any>;
   pushNewFriendRequestOrRelationRequestToUser(notificationId: Types.ObjectId, userNotificationOwner: string, session: any): Promise<any>
-
+  pushActiveRelationToUser(userRequestId: any, userRelationId: any, session: any): Promise<void>
   save(reqUser: User, session?: ClientSession): Promise<string>;
 
   saveBusinessAccount(
@@ -52,7 +54,7 @@ export interface UserRepositoryInterface {
     user: UserPerson,
     options?: { session?: ClientSession },
   ): Promise<User>;
-  setNewActiveUserRelations(activeRelations: string[],userRequestId:string ):Promise<any>;
+  setNewActiveUserRelations(activeRelations: string[], userRequestId: string): Promise<any>;
   removeFriendRequest(previousNotificationId: string, userNotificationOwner: string, session: any): Promise<any>
   removeFriend(relationId: string, friendRequestId?: string): Promise<any>;
 

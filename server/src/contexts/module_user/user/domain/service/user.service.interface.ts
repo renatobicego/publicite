@@ -1,4 +1,4 @@
-import { ClientSession, ObjectId, Types } from 'mongoose';
+import { ClientSession, Types } from 'mongoose';
 
 import { User, UserPreferences } from '../entity/user.entity';
 import { ContactRequest } from '../../application/adapter/dto/HTTP-REQUEST/user.request.CREATE';
@@ -32,6 +32,7 @@ export interface UserServiceInterface {
   ): Promise<UserPreferences | null>;
 
   getPostAndLimitsFromUserByUserId(author: string): Promise<any>
+  getLimitContactsFromUserByUserId(userRequestId: string, session?: any): Promise<any>
   makeFriendRelationBetweenUsers(
     backData: { userIdFrom: string; userIdTo: string },
     typeOfRelation: string,
@@ -65,7 +66,7 @@ export interface UserServiceInterface {
     authorId: String,
     options?: { session?: ClientSession },
   ): Promise<any>;
-  setNewActiveUserRelations(activeRelations: string[],userRequestId:string ):Promise<any>;
+  setNewActiveUserRelations(activeRelations: string[], userRequestId: string): Promise<any>;
   setSubscriptionToUser(
     external_reference: string,
     sub_id: any,

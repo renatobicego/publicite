@@ -41,6 +41,10 @@ import { NotificationSubscriptionService } from "../../application/service/notif
     providers: [
         NotificationResolver,
         {
+            provide: 'NotificationServiceInterface',
+            useClass: NotificationService
+        },
+        {
             provide: 'NotificationGroupServiceInterface',
             useClass: NotificationService
         },
@@ -83,20 +87,23 @@ import { NotificationSubscriptionService } from "../../application/service/notif
         , {
             provide: 'NotificationHandlerServiceInterface',
             useClass: NotificationService
+        },
+        {
+            provide: 'NotificationSubscriptionServiceInterface',
+            useClass: NotificationService
         }, {
             provide: 'NotificationSubscriptionServiceInterface',
             useClass: NotificationSubscriptionService
         }
-
-
-
     ],
     exports: [
         'NotificationGroupServiceInterface',
         'NotificationMagazineServiceInterface',
         'NotificationUserServiceInterface',
         'NotificationPostServiceInterface',
-        'NotificationRepositoryInterface'
+        'NotificationRepositoryInterface',
+        'NotificationSubscriptionServiceInterface',
+        
     ]
 })
 

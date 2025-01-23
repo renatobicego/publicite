@@ -173,12 +173,19 @@ type post_front_data_postComment {
   comment: String
 }
 
+type post_front_data_postResponse {
+  author: String
+  commentId: String
+  response: String
+}
+
 type front_data_POST {
+  notificationPostType: NotificationPostType!
   user: user_front_data_post!
   post: post_front_data_post!
   postReaction: post_front_data_postReaction
   postComment: post_front_data_postComment
-  notificationPostType: NotificationPostType!
+  postResponse: post_front_data_postResponse
 }
 
 """NotificationPostType"""
@@ -507,11 +514,17 @@ type post_comments_user {
   profilePhotoUrl: String!
 }
 
+type post_response {
+  _id: String
+}
+
 type post_comments {
+  _id: String
   user: post_comments_user
   comment: String
   isEdited: Boolean
   createdAt: DateTime
+  response: post_response
 }
 
 type Post_response_graphql_model {
@@ -693,6 +706,9 @@ input UserLocation_group {
 type Mutation {
   """Remover una relacion de amistad entre dos usuarios"""
   removeFriend(relationId: String!, friendRequestId: String): String
+
+  """Actualiza las relaciones activas del usuario"""
+  setNewActiveUserRelations(activeRelations: [String!]!): String
 
   """Actualizar los metodos de contacto de un usuario"""
   updateContactById(contactId: String!, updateRequest: UpdateContactRequest!): String

@@ -58,7 +58,9 @@ export class UserRepository implements UserRepositoryInterface {
     private readonly userRepositoryMapper: UserRepositoryMapperInterface,
     @InjectConnection() private readonly connection: Connection,
     private readonly logger: MyLoggerService,
-  ) {}
+  ) { }
+
+
 
   async findUserByUsername(username: string): Promise<any> {
     try {
@@ -159,6 +161,7 @@ export class UserRepository implements UserRepositoryInterface {
     }
   }
 
+
   async getUserPreferencesByUsername(
     username: string,
   ): Promise<UserPreferences | null> {
@@ -227,31 +230,82 @@ export class UserRepository implements UserRepositoryInterface {
   }
 
   async getPostAndLimitsFromUserByUserId(author: string): Promise<any> {
-    const user = await this.user
-      .findById(author)
-      .select('posts subscriptions -_id')
-      .populate([
-        {
-          path: 'posts isActive',
-          match: { isActive: true },
-          select: 'postBehaviourType',
-        },
-        {
-          path: 'subscriptions',
-          select: 'subscriptionPlan status',
-          match: { status: 'authorized' },
-          populate: {
-            path: 'subscriptionPlan',
-            select: 'postsLibresCount postsAgendaCount',
+    try {
+      const user = await this.user
+        .findById(author)
+        .select('posts subscriptions -_id')
+        .populate([
+          {
+            path: 'posts isActive',
+            match: { isActive: true },
+            select: 'postBehaviourType',
           },
-        },
-      ]);
-    if (!user) {
-      console.error('No se encontró el usuario.');
-      return null;
+          {
+            path: 'subscriptions',
+            select: 'subscriptionPlan status',
+            match: { status: 'authorized' },
+            populate: {
+              path: 'subscriptionPlan',
+              select: 'postsLibresCount postsAgendaCount',
+            },
+          },
+        ]);
+      if (!user) {
+        console.error('No se encontró el usuario.');
+        return null;
+      }
+      return user;
+    } catch (error: any) {
+      throw error;
     }
-    return user;
   }
+
+  async getLimitContactsFromUserByUserId(userRequestId: string, session?: any): Promise<any> {
+    try {
+      const user = await this.user
+        .findById(userRequestId)
+        .select('subscriptions -_id')
+        .populate([
+          {
+            path: 'subscriptions',
+            select: 'subscriptionPlan status',
+            match: { status: 'authorized' },
+            populate: {
+              path: 'subscriptionPlan',
+              select: 'maxContacts',
+            },
+          },
+        ]).session(session);
+      if (!user) {
+        console.error('No se encontró el usuario.');
+        return null;
+      }
+      return user;
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
+  async getActiveRelationsOfUser(userRequestId: string, session: any): Promise<any> {
+    try {
+      const userActiveRelation: any = await this.user
+        .findById(userRequestId)
+        .select('activeRelations -_id')
+        .session(session)
+        .lean()
+      if (!userActiveRelation) {
+        console.error('No se encontró el usuario.');
+        return null;
+      }
+      return userActiveRelation
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
+
 
   async makeFriendRelationBetweenUsers(
     userRelation: UserRelation,
@@ -280,6 +334,8 @@ export class UserRepository implements UserRepositoryInterface {
       throw error;
     }
   }
+
+
   async pushNotification(
     notification: any,
     userId: string,
@@ -320,6 +376,17 @@ export class UserRepository implements UserRepositoryInterface {
       throw error;
     }
   }
+
+  async pushActiveRelationToUser(userRequestId: any, userRelationId: any, session: any): Promise<void> {
+    try {
+      await this.user.updateOne({ _id: userRequestId }, { $addToSet: { activeRelations: userRelationId } }).session(session);
+      this.logger.log("Relation active saved successfully in user's activeRelations array");
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
 
   async update(
     username: string,
@@ -460,7 +527,7 @@ export class UserRepository implements UserRepositoryInterface {
         if (friendRequestId) {
           pullOperation.friendRequests = friendRequestId;
         }
-
+        pullOperation.activeRelations = relationId;
         const updateUsers = this.user.updateMany(
           { userRelations: relationId },
           { $pull: pullOperation },
@@ -636,12 +703,12 @@ export class UserRepository implements UserRepositoryInterface {
 
   // MUST RETURN THE NEW DOCUMENT
   async setNewActiveUserRelations(activeRelations: string[], userRequestId: string): Promise<any> {
-    try{
+    try {
       return this.user.updateOne(
         { _id: userRequestId },
         { $set: { activeRelations: activeRelations } },
       )
-    }catch(error:any){
+    } catch (error: any) {
       throw error;
     }
   }

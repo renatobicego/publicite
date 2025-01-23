@@ -17,12 +17,13 @@ import { NotificationPostServiceInterface } from "../../domain/service/notificat
 import { NotificationUserServiceInterface } from "../../domain/service/notification.user.service.interface";
 import { notification_group_new_user_invited, notification_magazine_new_user_invited, notification_user_new_friend_request, notification_user_new_relation_change, typeOfNotification } from "../../domain/allowed-events/allowed.events.notifications";
 import { NotificationSubscriptionServiceInterface } from "../../domain/service/Notification.subscription.service.interface";
+import { NotificationServiceInterface } from "../../domain/service/notification.service.interface";
 
 
 
 
 
-export class NotificationService implements NotificationHandlerServiceInterface {
+export class NotificationService implements NotificationHandlerServiceInterface, NotificationServiceInterface {
 
     constructor(
         private readonly logger: MyLoggerService,
@@ -69,7 +70,7 @@ export class NotificationService implements NotificationHandlerServiceInterface 
     }
 
 
-    
+
     async isThisNotificationDuplicate(notificationEntityId: string): Promise<any> {
         try {
             const isDuplicate = await this.notificationRepository.isThisNotificationDuplicate(notificationEntityId);

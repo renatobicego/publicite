@@ -57,10 +57,28 @@ export class UserService implements UserServiceInterface {
         typeOfRelation,
         typeOfRelation,
       );
-      return await this.userRepository.makeFriendRelationBetweenUsers(
+      const userRelationId = await this.userRepository.makeFriendRelationBetweenUsers(
         userRelation,
         session,
       );
+
+      const maxRelation = await this.getLimitContactsFromUserByUserId(backData.userIdTo, session)
+
+      const activeRelationOfUser = await this.userRepository.getActiveRelationsOfUser(
+        backData.userIdTo,
+        session
+      )
+
+      const { activeRelations } = activeRelationOfUser
+
+
+
+      if (activeRelations && (activeRelations.length < maxRelation)) {
+        console.log("asd")
+        await this.userRepository.pushActiveRelationToUser(backData.userIdTo, userRelationId, session)
+      }
+
+      return userRelationId;
     } catch (error: any) {
       throw error;
     }
@@ -241,6 +259,29 @@ export class UserService implements UserServiceInterface {
       throw error;
     }
   }
+
+  async getLimitContactsFromUserByUserId(userRequestId: string, session?: any): Promise<any> {
+    try {
+
+      this.logger.log('finding relations from user with id: ' + userRequestId);
+      let maxContacts = 0;
+      const userSubscriptionPlans = await this.userRepository.getLimitContactsFromUserByUserId(userRequestId, session);
+      if (!userSubscriptionPlans || userSubscriptionPlans.length === 0) return maxContacts;
+
+      const { subscriptions } = userSubscriptionPlans
+      subscriptions.map((plan: any) => {
+        return maxContacts += plan.subscriptionPlan.maxContacts
+      })
+
+
+      return maxContacts
+
+
+    } catch (error: any) {
+      throw error;
+    }
+
+  }
   async isThisUserAllowedToPost(authorId: string, postBehaviourType: string): Promise<boolean> {
     try {
 
@@ -366,12 +407,12 @@ export class UserService implements UserServiceInterface {
 
 
   async setNewActiveUserRelations(activeRelations: string[], userRequestId: string): Promise<any> {
-    try{
-      return await this.userRepository.setNewActiveUserRelations(activeRelations,userRequestId);
-    }catch(error:any){
+    try {
+      return await this.userRepository.setNewActiveUserRelations(activeRelations, userRequestId);
+    } catch (error: any) {
       throw error;
     }
-  } 
+  }
 
 
   async updateFriendRelationOfUsers(
