@@ -6,7 +6,7 @@ import { model, Schema } from "mongoose";
 export interface NotificationDocument extends Document {
     event: string;
     viewed: boolean;
-    date: string;
+    date: Date;
     user: string;
     isActionsAvailable: boolean;
     backData: {
@@ -24,7 +24,7 @@ export const NotificationSchema = new Schema<NotificationDocument>({
 
     event: { type: String, required: true },
     viewed: { type: Boolean, required: true, default: false },
-    date: { type: String, required: true },
+    date: { type: Date, required: true, default: Date.now() },
     user: { type: String, required: true },
     isActionsAvailable: { type: Boolean, required: true },
     backData: {

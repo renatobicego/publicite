@@ -288,11 +288,25 @@ export class PostRepository implements PostRepositoryInterface {
           {
             path: 'comments',
             model: 'PostComment',
-            populate: {
-              path: 'user',
-              model: 'User',
-              select: '_id profilePhotoUrl username',
-            },
+            populate: [
+              {
+                path: 'user',
+                model: 'User',
+                select: '_id profilePhotoUrl username',
+              },
+              {
+                path: 'response',
+                model: 'PostComment', 
+                populate:
+                {
+                  path: 'user',
+                  model: 'User',
+                  select: '_id profilePhotoUrl username',
+
+                }
+
+              },
+            ],
           },
         ])
         .lean();
@@ -674,13 +688,22 @@ export class PostRepository implements PostRepositoryInterface {
 
   async savePostComment(postComment: PostComment, session: any): Promise<any> {
     try {
-      const postCommentDocument = new this.postCommentDocument(postComment)
-      const postCommentSaved = await postCommentDocument.save({ session })
-      return postCommentSaved;
+      const postCommentDocument = new this.postCommentDocument(postComment);
+      const postCommentSaved = await postCommentDocument.save({ session });
+
+
+      const populatedPostComment = await postCommentSaved
+        .populate({
+          path: 'user',
+          select: 'username profilePhotoUrl',
+        });
+
+      return populatedPostComment;
     } catch (error: any) {
       throw error;
     }
   }
+
   async saveGoodPost(
     baseObj: any,
     post: PostGood,

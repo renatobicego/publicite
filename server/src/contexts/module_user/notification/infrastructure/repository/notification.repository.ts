@@ -48,7 +48,7 @@ export class NotificationRepository implements NotificationRepositoryInterface {
                 {
                     $set: { viewed: view }
                 }
-            );  
+            );
 
 
             this.logger.log(`Successfully updated notification status for user ${userRequestId}`);
@@ -66,41 +66,43 @@ export class NotificationRepository implements NotificationRepositoryInterface {
         id: string,
         limit: number,
         page: number,
-    ): Promise<notification_graph_model_get_all> {
+    ): Promise<any> {
         try {
             const userNotificationResponse =
                 await this.notificationBaseDocument
                     .find({ user: id })
                     .limit(limit + 1)
+                    .sort({ date: -1 })
                     .skip((page - 1) * limit)
 
             if (!userNotificationResponse)
                 return { notifications: [], hasMore: false };
 
 
-            const notificationsSorted = userNotificationResponse
-                .map((notif: any) => {
-                    return new Notification(
-                        notif._id,
-                        notif.event,
-                        notif.viewed,
-                        notif.date,
-                        notif.user,
-                        notif.isActionsAvailable,
-                        notif.backData,
-                        notif.frontData
-                    );
-                })
-                .sort((notificationA: any, notificationB: any) => {
+            // const notificationsSorted = userNotificationResponse
+            //     .map((notif: any) => {
+            //         return new Notification(
+            //             notif._id,
+            //             notif.event,
+            //             notif.viewed,
+            //             notif.date,
+            //             notif.user,
+            //             notif.isActionsAvailable,
+            //             notif.backData,
+            //             notif.frontData
+            //         );
+            //     })
+            //     .sort((notificationA: any, notificationB: any) => {
 
-                    const dateA = parseZonedDateTime(notificationA.date).toDate();
-                    const dateB = parseZonedDateTime(notificationB.date).toDate();
+            //         const dateA = parseZonedDateTime(notificationA.date).toDate();
+            //         const dateB = parseZonedDateTime(notificationB.date).toDate();
 
-                    return dateB.getTime() - dateA.getTime();
-                });
+            //         return dateB.getTime() - dateA.getTime();
+            //     });
 
-            const hasMore = notificationsSorted.length > page * limit;
-            const notificationResponse = notificationsSorted.slice(0, limit);
+            const hasMore = userNotificationResponse.length > page * limit;
+            const notificationResponse: any = userNotificationResponse.slice(0, limit);
+
             return {
                 notifications: notificationResponse,
                 hasMore: hasMore,

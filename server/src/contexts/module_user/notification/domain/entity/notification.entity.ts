@@ -3,7 +3,7 @@ export class Notification {
 
     private event: string;
     private viewed: boolean;
-    private date: string;
+    private date: any;
     private user: string;
     private isActionsAvailable: boolean;
     private backData: {
@@ -20,7 +20,7 @@ export class Notification {
 
     constructor(event: string,
         viewed: boolean,
-        date: string,
+        date: any,
         user: string,
         isActionsAvailable: boolean,
         backData: { userIdTo: string, userIdFrom: string },
@@ -56,7 +56,7 @@ export class Notification {
         return this.viewed;
     }
 
-    get getDate(): string {
+    get getDate(): any {
         return this.date;
     }
 

@@ -96,15 +96,16 @@ class post_response {
   @Field(() => String, { nullable: true })
   _id: string;
 
-  // @Field(() => String, { nullable: true })
-  // comment: string;
+  @Field(() => post_comments_user, { nullable: true })
+  user: post_comments_user;
 
-  // @Field(() => Boolean, { nullable: true })
-  // isEdited: boolean;
+  @Field(() => Boolean, { nullable: true })
+  isEdited: boolean;
 
-  // @Field(() => Date, { nullable: true })
-  // createdAt: Date;
-
+  @Field(() => Date, { nullable: true })
+  createdAt: Date;
+  @Field(() => String, { nullable: true })
+  comment: string;
 }
 
 

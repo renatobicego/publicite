@@ -18,7 +18,13 @@ interface notificationPostData {
             }
             postComment?: {
                 comment: string
+            },
+            postResponse?: {
+                author: string,
+                commentId: string,
+                response: string
             }
+
         }
     };
 
@@ -27,7 +33,7 @@ interface notificationPostData {
 export function validatePostNotification(notificationData: notificationPostData) {
     const postActivity = notificationData.frontData.postActivity;
     const notificationType = postActivity.notificationPostType;
-
+    console.log(notificationData)
     if (!notificationType) {
         throw new Error("Notificación no válida, se requiere el 'notificationPostType' del tipo post.");
     }
@@ -38,6 +44,10 @@ export function validatePostNotification(notificationData: notificationPostData)
         }
     } else if (notificationType === NotificationPostType.reaction) {
         if (!postActivity.postReaction) {
+            throw new Error("Notificación no válida, se requiere 'postReaction' para el tipo post de reacción.");
+        }
+    } else if (notificationType === NotificationPostType.response) {
+        if (!postActivity.postResponse) {
             throw new Error("Notificación no válida, se requiere 'postReaction' para el tipo post de reacción.");
         }
     } else {

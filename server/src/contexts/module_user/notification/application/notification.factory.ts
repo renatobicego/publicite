@@ -30,9 +30,10 @@ export class NotificationFactory implements NotificationFactoryInterface {
 
     createNotification(notificationType: typeOfNotification, notificationData: any): Notification {
         let isActionsAvailable = true;
-        const { event, viewed, date, backData, socketJobId, type, previousNotificationId, notificationEntityId } = this.verifyNotificationAtributes(notificationData);
+        const { event, viewed, backData, socketJobId, type, previousNotificationId, notificationEntityId } = this.verifyNotificationAtributes(notificationData);
         const { frontData } = notificationData
         const user = backData.userIdTo
+        const date = Date.now()
 
 
 

@@ -112,117 +112,6 @@ type PostsMemberGroupResponse {
   hasMore: Boolean!
 }
 
-type userInviting_magazine {
-  _id: String
-  username: String
-}
-
-type groupInviting_magazine {
-  _id: String
-  name: String
-}
-
-type front_data_MAGAZINE {
-  _id: String!
-  name: String!
-  ownerType: String!
-  userInviting: userInviting_magazine
-  groupInviting: groupInviting_magazine
-}
-
-type userInviting_group {
-  _id: String
-  username: String
-}
-
-type front_data_GROUP {
-  _id: String!
-  name: String!
-  profilePhotoUrl: String!
-  userInviting: userInviting_group
-}
-
-type UserFrom_notification {
-  _id: String!
-  username: String!
-  profilePhotoUrl: String!
-}
-
-type front_data_USER {
-  _id: ID
-  userFrom: UserFrom_notification!
-  typeRelation: String!
-}
-
-type user_front_data_post {
-  username: String!
-}
-
-type post_front_data_post {
-  _id: String!
-  title: String!
-  imageUrl: String!
-  postType: String!
-}
-
-type post_front_data_postReaction {
-  emoji: String
-}
-
-type post_front_data_postComment {
-  comment: String
-}
-
-type post_front_data_postResponse {
-  author: String
-  commentId: String
-  response: String
-}
-
-type front_data_POST {
-  notificationPostType: NotificationPostType!
-  user: user_front_data_post!
-  post: post_front_data_post!
-  postReaction: post_front_data_postReaction
-  postComment: post_front_data_postComment
-  postResponse: post_front_data_postResponse
-}
-
-"""NotificationPostType"""
-enum NotificationPostType {
-  reaction
-  comment
-  response
-}
-
-type frontData {
-  group: front_data_GROUP
-  magazine: front_data_MAGAZINE
-  userRelation: front_data_USER
-  postActivity: front_data_POST
-}
-
-type backData {
-  userIdTo: String
-  userIdFrom: String
-}
-
-type Notification {
-  _id: String!
-  event: String!
-  viewed: Boolean!
-  date: String!
-  user: String!
-  isActionsAvailable: Boolean!
-  backData: backData!
-  frontData: frontData!
-}
-
-type notification_graph_model_get_all {
-  notifications: [Notification!]!
-  hasMore: Boolean!
-}
-
 type Contact {
   _id: ID
   phone: String
@@ -469,6 +358,117 @@ type MagazineResponse {
   group: group_graphql_magazine
 }
 
+type userInviting_magazine {
+  _id: String
+  username: String
+}
+
+type groupInviting_magazine {
+  _id: String
+  name: String
+}
+
+type front_data_MAGAZINE {
+  _id: String!
+  name: String!
+  ownerType: String!
+  userInviting: userInviting_magazine
+  groupInviting: groupInviting_magazine
+}
+
+type userInviting_group {
+  _id: String
+  username: String
+}
+
+type front_data_GROUP {
+  _id: String!
+  name: String!
+  profilePhotoUrl: String!
+  userInviting: userInviting_group
+}
+
+type UserFrom_notification {
+  _id: String!
+  username: String!
+  profilePhotoUrl: String!
+}
+
+type front_data_USER {
+  _id: ID
+  userFrom: UserFrom_notification!
+  typeRelation: String!
+}
+
+type user_front_data_post {
+  username: String!
+}
+
+type post_front_data_post {
+  _id: String!
+  title: String!
+  imageUrl: String!
+  postType: String!
+}
+
+type post_front_data_postReaction {
+  emoji: String
+}
+
+type post_front_data_postComment {
+  comment: String
+}
+
+type post_front_data_postResponse {
+  author: String
+  commentId: String
+  response: String
+}
+
+type front_data_POST {
+  notificationPostType: NotificationPostType!
+  user: user_front_data_post!
+  post: post_front_data_post!
+  postReaction: post_front_data_postReaction
+  postComment: post_front_data_postComment
+  postResponse: post_front_data_postResponse
+}
+
+"""NotificationPostType"""
+enum NotificationPostType {
+  reaction
+  comment
+  response
+}
+
+type frontData {
+  group: front_data_GROUP
+  magazine: front_data_MAGAZINE
+  userRelation: front_data_USER
+  postActivity: front_data_POST
+}
+
+type backData {
+  userIdTo: String
+  userIdFrom: String
+}
+
+type Notification {
+  _id: String!
+  event: String!
+  viewed: Boolean!
+  date: DateTime!
+  user: String!
+  isActionsAvailable: Boolean!
+  backData: backData!
+  frontData: frontData!
+}
+
+type notification_graph_model_get_all {
+  notifications: [Notification!]!
+  hasMore: Boolean!
+}
+
 type Contact_graph {
   _id: ID
   phone: String
@@ -516,6 +516,10 @@ type post_comments_user {
 
 type post_response {
   _id: String
+  user: post_comments_user
+  isEdited: Boolean
+  createdAt: DateTime
+  comment: String
 }
 
 type post_comments {

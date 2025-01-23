@@ -46,8 +46,8 @@ export class Notification {
     @Field(() => Boolean)
     viewed: boolean;
 
-    @Field(() => String)
-    date: string;
+    @Field(() => Date)
+    date: Date;
 
     @Field(() => String)
     user: string;
@@ -61,16 +61,7 @@ export class Notification {
     @Field(() => frontData)
     frontData: frontData;
 
-    constructor(_id: string, event: string, viewed: boolean, date: string, user: string, isActionsAvailable: boolean, backData: backData, frontData: frontData) {
-        this._id = _id;
-        this.event = event;
-        this.viewed = viewed;
-        this.date = date;
-        this.user = user;
-        this.isActionsAvailable = isActionsAvailable;
-        this.backData = backData;
-        this.frontData = frontData
-    }
+
 }
 @ObjectType()
 export class notification_graph_model_get_all {
