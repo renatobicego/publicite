@@ -16,6 +16,7 @@ export const SubscriptionPlanSchema = new Schema({
 	isFree: { type: Boolean },
 	postsLibresCount: { type: Number },
 	postsAgendaCount: { type: Number },
+	maxContacts:{ type: Number },
 	_id: { type: Types.ObjectId, default: Types.ObjectId },
 })
 
@@ -30,5 +31,6 @@ export interface SubscriptionPlanDocument extends Document {
 	isFree: boolean;
 	postsLibresCount: number;
 	postsAgendaCount: number;
+	maxContacts:number;
 	_id: ObjectId;
 }

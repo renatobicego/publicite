@@ -44,4 +44,22 @@ export class UserResolver {
     await this.userAdapter.removeFriend(relationId, friendRequestId);
     return 'Relation successfully deleted';
   }
+
+  @Mutation(() => String, {
+    nullable: true,
+    description: 'Actualiza las relaciones activas del usuario',
+  })
+  @UseGuards(ClerkAuthGuard)
+  async setNewActiveUserRelations(
+    @Args('activeRelations', { type: () => [String] }) activeRelations: string[],
+    @Context() context: { req: CustomContextRequestInterface },
+  ): Promise<User_Full_Grapql_Model | null> {
+    try {
+      const userRequestId = context.req.userRequestId;
+      return await this.userAdapter.setNewActiveUserRelations(activeRelations,userRequestId);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
 }

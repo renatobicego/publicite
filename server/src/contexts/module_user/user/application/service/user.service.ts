@@ -44,6 +44,7 @@ export class UserService implements UserServiceInterface {
 
 
 
+
   async makeFriendRelationBetweenUsers(
     backData: { userIdFrom: string; userIdTo: string },
     typeOfRelation: string,
@@ -363,6 +364,14 @@ export class UserService implements UserServiceInterface {
 
   }
 
+
+  async setNewActiveUserRelations(activeRelations: string[], userRequestId: string): Promise<any> {
+    try{
+      return await this.userRepository.setNewActiveUserRelations(activeRelations,userRequestId);
+    }catch(error:any){
+      throw error;
+    }
+  } 
 
 
   async updateFriendRelationOfUsers(

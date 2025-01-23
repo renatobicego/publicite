@@ -13,6 +13,7 @@ export class SocketAdapter implements SocketAdapterInterface {
 
 
 
+
     async sendUserNotificationToNotificationService(notificationBody: any): Promise<void> {
         try {
             return await this.notificationHandler.handleUserNotification(notificationBody);
@@ -40,6 +41,15 @@ export class SocketAdapter implements SocketAdapterInterface {
         try {
             return await this.notificationHandler.handlePostNotification(notificationBody);
         } catch (error: any) {
+            throw error;
+        }
+    }
+
+
+    async sendSubscriptionNotificationToNotificationService(notificationBody: any): Promise<void> {
+        try{
+            return await this.notificationHandler.handleSubscriptionNotification(notificationBody);
+        }catch(error:any){
             throw error;
         }
     }

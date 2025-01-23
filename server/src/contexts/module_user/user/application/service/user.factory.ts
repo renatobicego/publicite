@@ -28,6 +28,7 @@ export class UserFactory implements UserFactoryInterface {
 
     createUser(userType: string, userRequest: any): User {
         const subscriptionFree = ["675f2b75b0a367029a0d35a6" as unknown as ObjectId]
+        const activeRelations = [] as unknown as ObjectId[]
 
         const userBase = new User(
             userRequest.clerkId,
@@ -49,6 +50,7 @@ export class UserFactory implements UserFactoryInterface {
             userRequest.post,
             userRequest.userRelations,
             userRequest.userPreferences,
+            userRequest.activeRelations ?? activeRelations 
         );
         switch (userType) {
             case UserType.Person: {

@@ -112,6 +112,16 @@ export class UserAdapter implements UserAdapterInterface {
     }
   }
 
+
+  async setNewActiveUserRelations(activeRelations: string[],userRequestId:string): Promise<any> {
+    try{
+      return await this.userService.setNewActiveUserRelations(activeRelations,userRequestId);
+    }catch(error:any){
+      throw error;
+    }
+  }
+
+
   async updateUser(
     username: string,
     req: businessAccountUpdateRequest | personalAccountUpdateRequest,

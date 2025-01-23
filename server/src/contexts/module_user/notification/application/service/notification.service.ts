@@ -16,6 +16,7 @@ import { NotificationHandlerServiceInterface } from "../../domain/service/notifi
 import { NotificationPostServiceInterface } from "../../domain/service/notification.post.service.interface";
 import { NotificationUserServiceInterface } from "../../domain/service/notification.user.service.interface";
 import { notification_group_new_user_invited, notification_magazine_new_user_invited, notification_user_new_friend_request, notification_user_new_relation_change, typeOfNotification } from "../../domain/allowed-events/allowed.events.notifications";
+import { NotificationSubscriptionServiceInterface } from "../../domain/service/Notification.subscription.service.interface";
 
 
 
@@ -35,6 +36,8 @@ export class NotificationService implements NotificationHandlerServiceInterface 
         private readonly notificationRepository: NotificationRepositoryInterface,
         @Inject('NotificationPostServiceInterface')
         private readonly notificationPostService: NotificationPostServiceInterface,
+        @Inject('NotificationSubscriptionServiceInterface')
+        private readonly notificationSubscriptionService: NotificationSubscriptionServiceInterface,
 
     ) {
 
@@ -65,6 +68,16 @@ export class NotificationService implements NotificationHandlerServiceInterface 
         }
     }
 
+
+    
+    async isThisNotificationDuplicate(notificationEntityId: string): Promise<any> {
+        try {
+            const isDuplicate = await this.notificationRepository.isThisNotificationDuplicate(notificationEntityId);
+            if (isDuplicate) throw new NotModifyException();
+        } catch (error: any) {
+            throw error;
+        }
+    }
 
     async handleMagazineNotification(notification: any): Promise<any> {
         try {
@@ -138,15 +151,17 @@ export class NotificationService implements NotificationHandlerServiceInterface 
     }
 
 
-    async isThisNotificationDuplicate(notificationEntityId: string): Promise<any> {
+
+
+
+
+    async handleSubscriptionNotification(notification: any): Promise<void> {
         try {
-            const isDuplicate = await this.notificationRepository.isThisNotificationDuplicate(notificationEntityId);
-            if (isDuplicate) throw new NotModifyException();
+            return await this.notificationSubscriptionService.createNotificationAndSendToUser(notification)
         } catch (error: any) {
             throw error;
         }
     }
-
 
 
 

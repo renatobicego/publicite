@@ -32,6 +32,7 @@ interface IUser extends Document {
   userPreferences: UserPreferences | null | undefined;
   notifications: Schema.Types.ObjectId[];
   friendRequests: Schema.Types.ObjectId[];
+  activeRelations: Schema.Types.ObjectId[];
 }
 
 const UserSchema = new Schema<IUser>(
@@ -62,6 +63,7 @@ const UserSchema = new Schema<IUser>(
     },
     notifications: [{ type: Schema.Types.ObjectId, ref: 'notification' }],
     friendRequests: [{ type: Schema.Types.ObjectId, ref: 'notification' }],
+    activeRelations: [{ type: Schema.Types.ObjectId, ref: 'UserRelation' }],
   },
   { discriminatorKey: 'userType', collection: 'users' },
 );

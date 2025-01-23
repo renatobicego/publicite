@@ -38,6 +38,7 @@ export class UserPerson extends User {
       user.getId,
       user.getNotifications,
       user.getFriendRequests,
+      user.getActiveRelations,
     );
     this.gender = gender;
     this.birthDate = birthDate;

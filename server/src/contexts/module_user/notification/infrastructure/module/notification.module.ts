@@ -17,6 +17,7 @@ import { NotificationGroupService } from "../../application/service/notification
 import { NotificationMagazineService } from "../../application/service/notification.magazine.service";
 import { NotificationUserService } from "../../application/service/notification.user.service";
 import { NotificationPostService } from "../../application/service/notification.post.service";
+import { NotificationSubscriptionService } from "../../application/service/notification.subscription.service";
 
 @Module({
     imports: [
@@ -82,7 +83,11 @@ import { NotificationPostService } from "../../application/service/notification.
         , {
             provide: 'NotificationHandlerServiceInterface',
             useClass: NotificationService
+        }, {
+            provide: 'NotificationSubscriptionServiceInterface',
+            useClass: NotificationSubscriptionService
         }
+
 
 
     ],

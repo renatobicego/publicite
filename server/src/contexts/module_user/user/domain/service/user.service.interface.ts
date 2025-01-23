@@ -65,7 +65,7 @@ export interface UserServiceInterface {
     authorId: String,
     options?: { session?: ClientSession },
   ): Promise<any>;
-
+  setNewActiveUserRelations(activeRelations: string[],userRequestId:string ):Promise<any>;
   setSubscriptionToUser(
     external_reference: string,
     sub_id: any,

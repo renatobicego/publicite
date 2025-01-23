@@ -52,7 +52,7 @@ export interface UserRepositoryInterface {
     user: UserPerson,
     options?: { session?: ClientSession },
   ): Promise<User>;
-
+  setNewActiveUserRelations(activeRelations: string[],userRequestId:string ):Promise<any>;
   removeFriendRequest(previousNotificationId: string, userNotificationOwner: string, session: any): Promise<any>
   removeFriend(relationId: string, friendRequestId?: string): Promise<any>;
 
