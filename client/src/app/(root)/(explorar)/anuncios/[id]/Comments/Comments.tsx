@@ -9,7 +9,7 @@ const Comments = async ({
   authorId,
 }: {
   comments: PostComment[];
-  post: PostDataNotification;
+  post: PostDataNotification & { author: string };
   isAuthor: boolean;
   authorId: ObjectId;
 }) => {

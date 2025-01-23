@@ -68,7 +68,7 @@ export interface PostComment {
   user: Reviewer | ObjectId;
   comment: string;
   createdAt: string;
-  replies: PostComment[];
+  response: PostComment;
   isEdited: boolean;
 }
 

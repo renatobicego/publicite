@@ -89,6 +89,9 @@ export const handlePostActivityNotification = (
       const { comment } = data.frontData.postActivity.postComment!;
       message = `${user.username} ${messageInfo.message} ${post.title} - "${comment.length > 40 ? comment.slice(0, 40) + "..." : comment}"`;
       break;
+    case "response":
+      const { response } = data.frontData.postActivity.postResponse!;
+      message = `${user.username} ${messageInfo.message} ${post.title} - "${response.length > 40 ? response.slice(0, 40) + "..." : response}"`;
     default:
       message = messageInfo.message;
   }

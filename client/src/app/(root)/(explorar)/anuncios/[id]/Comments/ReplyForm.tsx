@@ -14,7 +14,7 @@ const ReplyForm = ({
 }: {
   comment: PostComment;
   isAuthor: boolean;
-  post: PostDataNotification;
+  post: PostDataNotification & {author: string};
 }) => {
   const [showForm, setShowForm] = useState(false);
 
@@ -22,29 +22,31 @@ const ReplyForm = ({
     <CardFooter className="flex flex-col gap-2">
       <div className="flex flex-row justify-between items-center w-full">
         <UsernameAvatar author={comment.user} />
-        <div className="flex gap-1 items-center">
-          <Button
-            variant="light"
-            onClick={() => setShowForm(!showForm)}
-            isIconOnly
-            aria-label={showForm ? "Cerrar respuesta" : "Responder"}
-            size="sm"
-            radius="full"
-            color={showForm ? "danger" : "secondary"}
-          >
-            {showForm ? (
-              <FaX className="size-3" />
-            ) : (
-              <FaComment className="size-4" />
-            )}
-          </Button>
-          {isAuthor && <DeleteComment commentId={comment._id} />}
-        </div>
+        {isAuthor && (
+          <div className="flex gap-1 items-center">
+            <Button
+              variant="light"
+              onClick={() => setShowForm(!showForm)}
+              isIconOnly
+              aria-label={showForm ? "Cerrar respuesta" : "Responder"}
+              size="sm"
+              radius="full"
+              color={showForm ? "danger" : "secondary"}
+            >
+              {showForm ? (
+                <FaX className="size-3" />
+              ) : (
+                <FaComment className="size-4" />
+              )}
+            </Button>
+            <DeleteComment commentId={comment._id} />
+          </div>
+        )}
       </div>
-      {showForm && (
+      {showForm && isAuthor && (
         <CommentForm
           post={post}
-          isReply
+          commentToReplyId={comment._id}
           closeForm={() => setShowForm(false)}
           userIdTo={(comment.user as Reviewer)._id}
         />

@@ -1,5 +1,4 @@
 "use client";
-import { useUserData } from "@/app/(root)/providers/userDataProvider";
 import { useSocket } from "@/app/socketProvider";
 import SecondaryButton from "@/components/buttons/SecondaryButton";
 import { CustomTextarea } from "@/components/inputs/CustomInputs";
@@ -7,7 +6,6 @@ import { handlePostActivityNotificationError } from "@/components/notifications/
 import { emitPostActivityNotification } from "@/components/notifications/postsActivity/emitNotifications";
 import { PostCommentForm, PostDataNotification } from "@/types/postTypes";
 import { toastifySuccess } from "@/utils/functions/toastify";
-import { getLocalTimeZone, today } from "@internationalized/date";
 import { Field, Form, Formik, FormikHelpers } from "formik";
 import { useRouter } from "next/navigation";
 import { object, string } from "yup";
@@ -21,12 +19,12 @@ const commentSchema = object({
 
 const CommentForm = ({
   post,
-  isReply,
+  commentToReplyId,
   closeForm,
   userIdTo,
 }: {
-  post: PostDataNotification;
-  isReply?: boolean;
+  post: PostDataNotification & { author: string };
+  commentToReplyId?: string;
   closeForm?: () => void;
   userIdTo: ObjectId;
 }) => {
@@ -45,10 +43,19 @@ const CommentForm = ({
       userIdTo,
       post,
       null,
-      {
-        event: "notification_post_new_comment",
-        payload: values
-      }
+      commentToReplyId
+        ? {
+            event: "notification_post_new_comment_response",
+            payload: {
+              author: post.author,
+              commentId: commentToReplyId,
+              response: values.comment,
+            },
+          }
+        : {
+            event: "notification_post_new_comment",
+            payload: values,
+          }
     )
       .then(() => {
         router.refresh();
