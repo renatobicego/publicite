@@ -2,7 +2,7 @@
 import UsernameAvatar from "@/components/buttons/UsernameAvatar";
 import { PostComment, PostDataNotification, Reviewer } from "@/types/postTypes";
 import { Button, CardFooter } from "@nextui-org/react";
-import { lazy, useState } from "react";
+import { Dispatch, lazy, SetStateAction, useState } from "react";
 import { FaComment, FaX } from "react-icons/fa6";
 const CommentForm = lazy(() => import("./CommentForm"));
 import DeleteComment from "./DeleteComment";
@@ -11,10 +11,12 @@ const ReplyForm = ({
   comment,
   isAuthor,
   post,
+  setComments,
 }: {
   comment: PostComment;
   isAuthor: boolean;
-  post: PostDataNotification & {author: string};
+  post: PostDataNotification & { author: string };
+  setComments: Dispatch<SetStateAction<PostComment[]>>;
 }) => {
   const [showForm, setShowForm] = useState(false);
 
@@ -46,9 +48,11 @@ const ReplyForm = ({
       {showForm && isAuthor && (
         <CommentForm
           post={post}
+          key={"replyform" + comment._id}
           commentToReplyId={comment._id}
           closeForm={() => setShowForm(false)}
           userIdTo={(comment.user as Reviewer)._id}
+          setComments={setComments}
         />
       )}
     </CardFooter>

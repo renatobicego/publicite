@@ -29,6 +29,7 @@ export const getPostByIdQuery = gql`
         username
       }
       comments {
+        _id
         user {
           username
           profilePhotoUrl
@@ -37,6 +38,7 @@ export const getPostByIdQuery = gql`
         isEdited
         createdAt
         comment
+        response
       }
       condition
       createAt

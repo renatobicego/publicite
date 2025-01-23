@@ -4,15 +4,18 @@ import { parseDateTime } from "@internationalized/date";
 import { Card, CardBody } from "@nextui-org/react";
 import ReplyForm from "./ReplyForm";
 import ReplyCard from "./ReplyCard";
+import { Dispatch, SetStateAction } from "react";
 
 const CommentCard = ({
   comment,
   isAuthor,
   post,
+  setComments,
 }: {
   comment: PostComment;
   isAuthor: boolean;
   post: PostDataNotification & { author: string };
+  setComments: Dispatch<SetStateAction<PostComment[]>>;
 }) => {
   return (
     <div className="flex flex-col gap-2 items-end w-full">
@@ -25,11 +28,15 @@ const CommentCard = ({
               : ""}
           </p>
         </CardBody>
-        <ReplyForm comment={comment} isAuthor={isAuthor} post={post} />
+        <ReplyForm
+          comment={comment}
+          isAuthor={isAuthor}
+          post={post}
+          setComments={setComments}
+        />
       </Card>
       {comment.response && (
         <ReplyCard
-          key={comment.response._id}
           reply={comment.response}
           isAuthor={isAuthor}
         />

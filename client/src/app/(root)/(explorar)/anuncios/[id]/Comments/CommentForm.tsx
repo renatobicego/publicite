@@ -4,10 +4,15 @@ import SecondaryButton from "@/components/buttons/SecondaryButton";
 import { CustomTextarea } from "@/components/inputs/CustomInputs";
 import { handlePostActivityNotificationError } from "@/components/notifications/postsActivity/actions";
 import { emitPostActivityNotification } from "@/components/notifications/postsActivity/emitNotifications";
-import { PostCommentForm, PostDataNotification } from "@/types/postTypes";
+import {
+  PostComment,
+  PostCommentForm,
+  PostDataNotification,
+} from "@/types/postTypes";
 import { toastifySuccess } from "@/utils/functions/toastify";
 import { Field, Form, Formik, FormikHelpers } from "formik";
 import { useRouter } from "next/navigation";
+import { Dispatch, SetStateAction } from "react";
 import { object, string } from "yup";
 
 const commentSchema = object({
@@ -22,14 +27,15 @@ const CommentForm = ({
   commentToReplyId,
   closeForm,
   userIdTo,
+  setComments,
 }: {
   post: PostDataNotification & { author: string };
   commentToReplyId?: string;
   closeForm?: () => void;
   userIdTo: ObjectId;
+  setComments: Dispatch<SetStateAction<PostComment[]>>;
 }) => {
   const { socket } = useSocket();
-  const router = useRouter();
   const initialValues: PostCommentForm = {
     comment: "",
   };
@@ -38,12 +44,15 @@ const CommentForm = ({
     values: PostCommentForm,
     actions: FormikHelpers<PostCommentForm>
   ) => {
-    emitPostActivityNotification(
+    // send comment to server
+    emitPostActivityNotification<{
+      body: PostComment;
+    }>(
       socket,
       userIdTo,
       post,
       null,
-      commentToReplyId
+      commentToReplyId // if its a reply
         ? {
             event: "notification_post_new_comment_response",
             payload: {
@@ -57,8 +66,25 @@ const CommentForm = ({
             payload: values,
           }
     )
-      .then(() => {
-        router.refresh();
+      .then((res) => {
+        const {
+          body: { body },
+        } = res; // get comment data
+        if (commentToReplyId) { // if its a reply, update comment
+          setComments((prev) =>
+            prev.map((comment) => {
+              if (comment._id === commentToReplyId) {
+                return {
+                  ...comment,
+                  responses: body,
+                };
+              }
+              return comment;
+            })
+          );
+        } else { // if its not a reply, add comment
+          setComments((prev) => [...prev, body]);
+        }
         toastifySuccess("Comentario enviado");
         actions.resetForm();
         if (closeForm) closeForm();
