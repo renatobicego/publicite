@@ -108,7 +108,6 @@ const mockedGood: Good = {
       comment:
         "Quería consultar si existe la posibilidad de sacar un plan de pago para pagarla. Soy de Buenos Aires, por lo que también quería consultar sobre envios.",
       createdAt: "2024-07-12",
-      replies: [],
       isEdited: false,
     },
     {
@@ -123,7 +122,7 @@ const mockedGood: Good = {
         "Quería consultar si existe la posibilidad de sacar un plan de pago para pagarla. Soy de Buenos Aires, por lo que también quería consultar sobre envios.",
       createdAt: "2024-09-12",
       isEdited: true,
-      replies: [
+      response: 
         {
           _id: "1232df",
           user: {
@@ -134,10 +133,9 @@ const mockedGood: Good = {
           comment:
             "Si, te puedo armar un plan de pago. Respecto al envío, podemos manejarlo por la empresa Andreani. Saludos",
           createdAt: "2024-09-13",
-          replies: [],
           isEdited: false,
         },
-      ],
+      
     },
   ],
   postType: "good",
@@ -206,7 +204,6 @@ const mockedService: Service = {
       },
       comment: "comment",
       createdAt: "2024-07-12",
-      replies: [],
       isEdited: false,
     },
   ],
