@@ -15,7 +15,7 @@ const ReplyForm = ({
 }: {
   comment: PostComment;
   isAuthor: boolean;
-  post: PostDataNotification & { author: string };
+  post: PostDataNotification & { authorId: string };
   setComments: Dispatch<SetStateAction<PostComment[]>>;
 }) => {
   const [showForm, setShowForm] = useState(false);

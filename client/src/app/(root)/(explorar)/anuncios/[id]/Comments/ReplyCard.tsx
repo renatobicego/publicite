@@ -1,7 +1,6 @@
 import UsernameAvatar from "@/components/buttons/UsernameAvatar";
-import { showDate } from "@/utils/functions/dates";
+import { parseIsoDate, showDate } from "@/utils/functions/dates";
 import { PostComment } from "@/types/postTypes";
-import { parseAbsoluteToLocal, parseDateTime } from "@internationalized/date";
 import { Card, CardBody, CardHeader } from "@nextui-org/react";
 import { FaReply } from "react-icons/fa6";
 import DeleteComment from "./DeleteComment";
@@ -12,7 +11,7 @@ const ReplyCard = ({
 }: {
   reply: PostComment;
   isAuthor: boolean;
-}) => {
+  }) => {
   return (
     <Card shadow="sm" className="w-11/12 md:w-5/6 xl:w-3/4 px-2.5 py-2">
       <CardHeader className="flex w-full justify-between pb-0">
@@ -21,7 +20,7 @@ const ReplyCard = ({
           <UsernameAvatar author={reply.user} showAvatar={false} />
         </div>
         <p className="text-light-text text-xs xl:text-sm">
-          {showDate(parseAbsoluteToLocal(reply.createdAt.replace(/\.\d{1,3}Z$/, 'Z').replace(/\.\d{1,3}([+-]\d{2}:\d{2})$/, '$1')))}
+          {reply.createdAt && showDate(parseIsoDate(reply.createdAt))}
         </p>
       </CardHeader>
       <CardBody className="flex justify-between gap-1 flex-row">

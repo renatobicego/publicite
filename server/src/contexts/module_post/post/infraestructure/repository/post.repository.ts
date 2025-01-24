@@ -41,10 +41,8 @@ import { PostComment } from '../../domain/entity/postComment.entity';
 import { PostCommentDocument } from '../schemas/post.comment.schema';
 import { Date } from 'mongoose';
 
-
 export class PostRepository implements PostRepositoryInterface {
   constructor(
-
     @InjectModel(PostGoodModel.modelName)
     private readonly postGoodDocument: Model<IPostGood>,
 
@@ -68,9 +66,7 @@ export class PostRepository implements PostRepositoryInterface {
 
     private readonly logger: MyLoggerService,
     @InjectConnection() private readonly connection: Connection,
-  ) { }
-
-
+  ) {}
 
   async activateOrDeactivatePost(_id: string, activate: boolean): Promise<any> {
     try {
@@ -133,9 +129,6 @@ export class PostRepository implements PostRepositoryInterface {
     }
   }
 
-
-
-
   async deletePostById(id: string): Promise<void> {
     const session = await this.connection.startSession();
     try {
@@ -148,8 +141,7 @@ export class PostRepository implements PostRepositoryInterface {
         if (!postDeleted) throw new Error('Post not found');
 
         const deletePromises = [
-          //- Falta reviews 
-
+          //- Falta reviews
 
           //Reactions
           this.postReactionDocument.deleteMany(
@@ -227,27 +219,36 @@ export class PostRepository implements PostRepositoryInterface {
     }
   }
 
-  async deleteCommentById(id: string, userRequestId: string, isAuthorOfPost: boolean): Promise<void> {
+  async deleteCommentById(
+    id: string,
+    userRequestId: string,
+    isAuthorOfPost: boolean,
+  ): Promise<void> {
     try {
       if (isAuthorOfPost) {
-        const result = await this.postDocument.updateOne({ author: userRequestId }, { $pull: { comments: id } });
+        const result = await this.postDocument.updateOne(
+          { author: userRequestId },
+          { $pull: { comments: id } },
+        );
         if (result.modifiedCount > 0) {
           await this.postCommentDocument.deleteOne({ _id: id });
         }
       } else {
-        const result = await this.postCommentDocument.deleteOne({ _id: id, user: userRequestId });
+        const result = await this.postCommentDocument.deleteOne({
+          _id: id,
+          user: userRequestId,
+        });
         if (result.deletedCount > 0) {
-          await this.postDocument.updateOne({ comments: id }, { $pull: { comments: id } });
+          await this.postDocument.updateOne(
+            { comments: id },
+            { $pull: { comments: id } },
+          );
         }
       }
     } catch (error: any) {
       throw error;
     }
   }
-
-
-
-
 
   async findPostsByAuthorId(id: string): Promise<any> {
     try {
@@ -296,15 +297,12 @@ export class PostRepository implements PostRepositoryInterface {
               },
               {
                 path: 'response',
-                model: 'PostComment', 
-                populate:
-                {
+                model: 'PostComment',
+                populate: {
                   path: 'user',
                   model: 'User',
                   select: '_id profilePhotoUrl username',
-
-                }
-
+                },
               },
             ],
           },
@@ -317,7 +315,6 @@ export class PostRepository implements PostRepositoryInterface {
       throw error;
     }
   }
-
 
   async findMatchPost(postType: string, searchTerm: string): Promise<any> {
     try {
@@ -432,8 +429,6 @@ export class PostRepository implements PostRepositoryInterface {
       this.logger.log(`Finding posts by postType: ${postType}`);
       const today = new Date();
 
-
-
       // Prepara el stage de filtrado
       const matchStage: any = {
         postType,
@@ -445,7 +440,6 @@ export class PostRepository implements PostRepositoryInterface {
       if (userRequestId) {
         matchStage.author = { $ne: userRequestId };
       }
-
 
       // Si se especifica un término de búsqueda, lo procesamos
       if (searchTerm) {
@@ -675,28 +669,31 @@ export class PostRepository implements PostRepositoryInterface {
     }
   }
 
-
-
-  async setResponseOnComment(commentId: string, responseId: string, session: any): Promise<any> {
+  async setResponseOnComment(
+    commentId: string,
+    responseId: string,
+    session: any,
+  ): Promise<any> {
     try {
-      return await this.postCommentDocument.updateOne({ _id: commentId }, { $set: { response: responseId } }, { session });
+      return await this.postCommentDocument.updateOne(
+        { _id: commentId },
+        { $set: { response: responseId } },
+        { session },
+      );
     } catch (error: any) {
       throw error;
     }
   }
-
 
   async savePostComment(postComment: PostComment, session: any): Promise<any> {
     try {
       const postCommentDocument = new this.postCommentDocument(postComment);
       const postCommentSaved = await postCommentDocument.save({ session });
 
-
-      const populatedPostComment = await postCommentSaved
-        .populate({
-          path: 'user',
-          select: 'username profilePhotoUrl',
-        });
+      const populatedPostComment = await postCommentSaved.populate({
+        path: 'user',
+        select: 'username profilePhotoUrl',
+      });
 
       return populatedPostComment;
     } catch (error: any) {
@@ -775,20 +772,21 @@ export class PostRepository implements PostRepositoryInterface {
     }
   }
 
-  async setCommenOnPost(postId: string, postCommentId: string, session: any): Promise<any> {
+  async setCommenOnPost(
+    postId: string,
+    postCommentId: string,
+    session: any,
+  ): Promise<any> {
     try {
       await this.postDocument.updateOne(
         { _id: postId },
         { $push: { comments: postCommentId } },
-        { session }
-      )
+        { session },
+      );
     } catch (error: any) {
       throw error;
     }
   }
-
-
-
 
   async updatePostById(
     postUpdate: PostUpdateDto,
@@ -830,15 +828,21 @@ export class PostRepository implements PostRepositoryInterface {
     }
   }
 
-  async updateCommentById(id: string, comment: string, userRequestId: string): Promise<any> {
+  async updateCommentById(
+    id: string,
+    comment: string,
+    userRequestId: string,
+  ): Promise<any> {
     try {
-      return await this.postCommentDocument.updateOne({ _id: id, user: userRequestId }, { $set: { comment, isEdited: true } }, { new: true });
+      return await this.postCommentDocument.updateOne(
+        { _id: id, user: userRequestId },
+        { $set: { comment, isEdited: true } },
+        { new: true },
+      );
     } catch (error: any) {
       throw error;
     }
-
   }
-
 
   async updateEndDateFromPostById(
     postId: string,
@@ -919,7 +923,6 @@ export class PostRepository implements PostRepositoryInterface {
     }
   }
 }
-
 
 /*
 

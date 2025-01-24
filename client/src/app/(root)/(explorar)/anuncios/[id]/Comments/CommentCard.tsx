@@ -14,9 +14,9 @@ const CommentCard = ({
 }: {
   comment: PostComment;
   isAuthor: boolean;
-  post: PostDataNotification & { author: string };
+  post: PostDataNotification & { authorId: string };
   setComments: Dispatch<SetStateAction<PostComment[]>>;
-}) => {
+  }) => {
   return (
     <div className="flex flex-col gap-2 items-end w-full">
       <Card shadow="sm" className="px-2.5 py-2 w-full">

@@ -2,6 +2,7 @@ import {
   CalendarDate,
   DateValue,
   getLocalTimeZone,
+  parseAbsoluteToLocal,
   today,
 } from "@internationalized/date";
 
@@ -76,4 +77,8 @@ const shortMonths = [
 
 export const showDate = (date: DateValue) => {
   return `${date.day} ${shortMonths[date.month - 1]}. ${date.year}`;
+};
+
+export const parseIsoDate = (date: string): DateValue => {
+  return parseAbsoluteToLocal(date.replace(/\.\d{1,3}Z$/, 'Z').replace(/\.\d{1,3}([+-]\d{2}:\d{2})$/, '$1'))
 };
