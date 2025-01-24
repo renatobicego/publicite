@@ -75,6 +75,7 @@ export const handleUserRelationNotification = (
 export const handlePostActivityNotification = (
   data: PostActivityNotification
 ) => {
+  console.log(data)
   const event = data.event as PostActivtyNotificationType;
 
   const messageInfo = postActivitiesNotificationMessages[event];
@@ -92,6 +93,7 @@ export const handlePostActivityNotification = (
     case "response":
       const { response } = data.frontData.postActivity.postResponse!;
       message = `${user.username} ${messageInfo.message} ${post.title} - "${response.length > 40 ? response.slice(0, 40) + "..." : response}"`;
+      break;
     default:
       message = messageInfo.message;
   }

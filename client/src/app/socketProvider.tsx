@@ -95,7 +95,7 @@ export const SocketProvider = ({
 
       newSocket.on("post_notifications", (data) => {
         setNewNotifications(true);
-        handlePostActivityNotification(data); // Call the handler for post relations notifications
+        handlePostActivityNotification(data); // Call the handler for post activiyy notifications
       });
     });
   };
