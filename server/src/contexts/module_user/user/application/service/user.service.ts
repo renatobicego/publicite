@@ -219,6 +219,8 @@ export class UserService implements UserServiceInterface {
     }
   }
 
+
+
   async getPostAndLimitsFromUserByUserId(author: string): Promise<any> {
     try {
       const userWithSubscriptionsAndPosts: userWithPostsAndSubscriptions =
@@ -282,6 +284,17 @@ export class UserService implements UserServiceInterface {
     }
 
   }
+
+  async getActiveRelationOfUser(userRequestId: string, session?: any): Promise<any> {
+    try {
+      return await this.userRepository.getActiveRelationsOfUser(userRequestId)
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
+
   async isThisUserAllowedToPost(authorId: string, postBehaviourType: string): Promise<boolean> {
     try {
 

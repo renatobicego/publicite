@@ -26,6 +26,8 @@ export interface UserServiceInterface {
 
   getUserPersonalInformationByUsername(username: string): Promise<any>;
   getRelationsFromUserByUserId(userRequestId: string): Promise<any>;
+  getActiveRelationOfUser(userRequestId: string, session?: any): Promise<any>;
+
   isThisUserAllowedToPost(author: string, postBehaviourType: string): Promise<boolean>;
   getUserPreferencesByUsername(
     username: string,

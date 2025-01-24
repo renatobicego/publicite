@@ -229,6 +229,7 @@ export class UserRepository implements UserRepositoryInterface {
     }
   }
 
+
   async getPostAndLimitsFromUserByUserId(author: string): Promise<any> {
     try {
       const user = await this.user
@@ -292,13 +293,15 @@ export class UserRepository implements UserRepositoryInterface {
       const userActiveRelation: any = await this.user
         .findById(userRequestId)
         .select('activeRelations -_id')
+        .populate('activeRelations')
         .session(session)
         .lean()
       if (!userActiveRelation) {
         console.error('No se encontró el usuario.');
         return null;
       }
-      return userActiveRelation
+      const { activeRelations } = userActiveRelation
+      return activeRelations ?? []
     } catch (error: any) {
       throw error;
     }

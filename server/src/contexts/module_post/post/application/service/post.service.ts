@@ -220,7 +220,7 @@ export class PostService implements PostServiceInterface {
 
   async findFriendPosts(postType: string, userRequestId: string, page: number, limit: number, visibility: Visibility_Of_Find, searchTerm?: string): Promise<any> {
     try {
-      let relationMap: Map<string, String[]> = await this.makeUserRelation(userRequestId, visibility)
+      let relationMap: Map<string, String[]> = await this.makeUserRelationMap(userRequestId, visibility)
       if (relationMap.size === 0 || relationMap === null || !relationMap) return { posts: [], hasMore: false };
       return await this.postRepository.findFriendPosts(postType, relationMap, page, limit, searchTerm)
 
@@ -249,14 +249,15 @@ export class PostService implements PostServiceInterface {
 
 
 
-  async makeUserRelation(userRequestId: string, visibility: Visibility_Of_Find): Promise<any> {
-    const userRelation = await this.userService.getRelationsFromUserByUserId(userRequestId)
-    if (!userRelation) return
+  async makeUserRelationMap(userRequestId: string, visibility: Visibility_Of_Find): Promise<any> {
+    const userActiveRelation = await this.userService.getActiveRelationOfUser(userRequestId)
+
+    if (!userActiveRelation || userActiveRelation === null) return
 
     if (visibility === Visibility_Of_Find.hierarchy) {
-      return makeUserRelationHierarchyMap(userRelation, userRequestId)
+      return makeUserRelationHierarchyMap(userActiveRelation, userRequestId)
     } else {
-      return makeUserDirectRelationMap(userRelation, userRequestId, visibility)
+      return makeUserDirectRelationMap(userActiveRelation, userRequestId, visibility)
     }
 
 
