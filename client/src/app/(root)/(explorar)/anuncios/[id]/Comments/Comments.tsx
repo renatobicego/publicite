@@ -11,7 +11,7 @@ const Comments = ({
   authorId,
 }: {
   comments: PostComment[];
-  post: PostDataNotification & { author: string };
+  post: PostDataNotification;
   isAuthor: boolean;
   authorId: ObjectId;
 }) => {
@@ -21,7 +21,10 @@ const Comments = ({
       <h4>Comentarios</h4>
       <CommentForm
         key={"commentform" + post._id}
-        post={post}
+        post={{
+          ...post,
+          authorId,
+        }}
         userIdTo={authorId}
         setComments={setCommentsLocal}
       />
@@ -30,7 +33,10 @@ const Comments = ({
           key={comment._id}
           comment={comment}
           isAuthor={isAuthor}
-          post={post}
+          post={{
+            ...post,
+            authorId,
+          }}
           setComments={setCommentsLocal}
         />
       ))}

@@ -57,7 +57,6 @@ export default async function PostPage(props: { params: Promise<{ id: string }> 
             title: postData.title,
             postType: postData.postType,
             imageUrl: "imagesUrls" in postData ? postData.imagesUrls[0] : "",
-            author: postData.author._id,
           }}
           isAuthor={isAuthor}
           authorId={postData.author._id}

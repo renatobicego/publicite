@@ -29,7 +29,7 @@ const CommentForm = ({
   userIdTo,
   setComments,
 }: {
-  post: PostDataNotification & { author: string };
+  post: PostDataNotification & { authorId: string };
   commentToReplyId?: string;
   closeForm?: () => void;
   userIdTo: ObjectId;
@@ -56,7 +56,7 @@ const CommentForm = ({
         ? {
             event: "notification_post_new_comment_response",
             payload: {
-              author: post.author,
+              author: post.authorId,
               commentId: commentToReplyId,
               response: values.comment,
             },
@@ -76,7 +76,7 @@ const CommentForm = ({
               if (comment._id === commentToReplyId) {
                 return {
                   ...comment,
-                  responses: body,
+                  response: body,
                 };
               }
               return comment;

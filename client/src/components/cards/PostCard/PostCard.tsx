@@ -4,8 +4,7 @@ import ServiceCard from "./ServiceCard";
 import { Card, CardFooter } from "@nextui-org/react";
 import PetitionCard from "../PetitionCard";
 import UsernameAvatar from "@/components/buttons/UsernameAvatar";
-import { showDate } from "@/utils/functions/dates";
-import { parseDate, parseDateTime } from "@internationalized/date";
+import { parseIsoDate, showDate } from "@/utils/functions/dates";
 import RenewPost from "@/components/modals/RenewPost";
 const PostCard = ({
   postData,
@@ -77,7 +76,7 @@ const PostCard = ({
         <CardFooter className="flex flex-col gap-2 items-start justify-between -mt-4">
           <RenewPost postTitle={postData.title} id={postData._id} />
           <p className="text-light-text text-xs lg:text-sm">
-           Vencimiento: {showDate(parseDateTime(postData.endDate.replace("Z", "")))}
+           Vencimiento: {showDate(parseIsoDate(postData.endDate))}
           </p>
         </CardFooter>
       )}
