@@ -7,8 +7,11 @@ import {
   ModalHeader,
   ModalBody,
 } from "@nextui-org/react";
+import { lazy } from "react";
 import { FaUserCheck } from "react-icons/fa";
-import ManageActiveUserRelations from "./ManageActiveUserRelations";
+const ManageActiveUserRelations = lazy(
+  () => import("./ManageActiveUserRelations")
+);
 
 const ManageActiveUserRelationsModal = ({
   relations,

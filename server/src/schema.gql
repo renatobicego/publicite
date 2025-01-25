@@ -441,11 +441,34 @@ enum NotificationPostType {
   response
 }
 
+type PostContactSeller {
+  _id: String!
+  title: String!
+  imagesUrls: String!
+  price: Int!
+}
+
+type ClientContactSeller {
+  _id: String
+  name: String!
+  email: String!
+  lastName: String!
+  username: String
+  phone: String
+  message: String!
+}
+
+type front_data_CONTACTSELLER {
+  post: PostContactSeller!
+  client: ClientContactSeller!
+}
+
 type frontData {
   group: front_data_GROUP
   magazine: front_data_MAGAZINE
   userRelation: front_data_USER
   postActivity: front_data_POST
+  contactSeller: front_data_CONTACTSELLER
 }
 
 type backData {

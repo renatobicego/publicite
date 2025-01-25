@@ -15,9 +15,12 @@ import getUserByUsernameQuery, {
   deleteUserRelationMutation,
   getAllNotificationsQuery,
   getFriendRequestsQuery,
+  putActiveRelationsMutation,
   updateContactMutation,
 } from "@/graphql/userQueries";
 import { ApolloError } from "@apollo/client";
+import { getApiContext } from "./apiContext";
+import { handleApolloError } from "@/utils/functions/errorHandler";
 
 const baseUrl = `${process.env.API_URL}/user/personal`;
 
@@ -147,14 +150,15 @@ export const getUsers = async (searchTerm: string | null, page: number) => {
     const data = await res.json();
     return { items: data.user, hasMore: data.hasMore };
   } catch (error) {
-    return {
-    };
+    return {};
   }
 };
 
 export const getUserByUsername = async (
   username: string
-): Promise<GetUser & { isFriendRequestPending: boolean} | { error: string }> => {
+): Promise<
+  (GetUser & { isFriendRequestPending: boolean }) | { error: string }
+> => {
   try {
     const { data } = await query({
       query: getUserByUsernameQuery,
@@ -171,7 +175,7 @@ export const getUserByUsername = async (
 
     return data.findUserByUsername;
   } catch (error: ApolloError | any) {
-    console.log(error)
+    console.log(error);
     return {
       error:
         "Error al traer los datos del usuario. Por favor intenta de nuevo.",
@@ -278,10 +282,25 @@ export const deleteUserRelation = async (relationId: string) => {
         },
       },
     });
-    return {message: "Relacion eliminada"};
+    return { message: "Relacion eliminada" };
   } catch (error) {
     return {
       error: "Error al eliminar la relacion. Por favor intenta de nuevo.",
-    }
+    };
+  }
+};
+
+export const putActiveRelations = async (activeRelations: string[]) => {
+  try {
+    const { context } = await getApiContext();
+    const { data } = await getClient().mutate({
+      mutation: putActiveRelationsMutation,
+      variables: { activeRelations },
+      context,
+    });
+    console.log(data);
+    return data;
+  } catch (error) {
+    return handleApolloError(error);
   }
 };

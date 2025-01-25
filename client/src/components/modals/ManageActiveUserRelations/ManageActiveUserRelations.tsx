@@ -4,6 +4,8 @@ import { useMemo, useState } from "react";
 import CheckboxUser from "./CheckboxUser";
 import { CustomInputWithoutFormik } from "@/components/inputs/CustomInputs";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
+import { putActiveRelations } from "@/services/userServices";
+import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 
 const ManageActiveUserRelations = ({
   relations,
@@ -18,6 +20,7 @@ const ManageActiveUserRelations = ({
 }) => {
   const [groupSelected, setGroupSelected] = useState(activeRelationsIds);
   const [searchValue, setSearchValue] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const filteredRelations = useMemo(() => {
     return relations.filter((relation) => {
@@ -32,6 +35,18 @@ const ManageActiveUserRelations = ({
       );
     });
   }, [relations, searchValue, userId]);
+
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    const res = await putActiveRelations(groupSelected);
+    setIsSubmitting(false);
+    if ("error" in res) {
+      toastifyError(res.error as string);
+      return;
+    }
+    toastifySuccess("Relaciones activas guardadas");
+    closeModal();
+  };
 
   return (
     <>
@@ -69,7 +84,13 @@ const ManageActiveUserRelations = ({
         <PrimaryButton variant="light" onPress={closeModal}>
           Cancelar
         </PrimaryButton>
-        <PrimaryButton onPress={() => {}}>Guardar</PrimaryButton>
+        <PrimaryButton
+          isDisabled={isSubmitting}
+          isLoading={isSubmitting}
+          onPress={handleSubmit}
+        >
+          Guardar
+        </PrimaryButton>
       </menu>
     </>
   );
