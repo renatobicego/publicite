@@ -12,6 +12,10 @@ import { FaPlus } from "react-icons/fa6";
 import UserPosts from "@/app/(root)/(explorar)/perfiles/[username]/(components)/UserPosts/UserPosts";
 import UserRelationRequestsGrid from "@/app/(root)/(explorar)/perfiles/[username]/(components)/UserRelations/UserRelationRequestsGrid";
 import UserRelations from "@/app/(root)/(explorar)/perfiles/[username]/(components)/UserRelations/UserRelations";
+import {
+  useConfigData,
+  useUserData,
+} from "@/app/(root)/providers/userDataProvider";
 
 const UserSolapas = ({
   user,
@@ -24,6 +28,15 @@ const UserSolapas = ({
 }) => {
   const pathname = usePathname();
   const tabsRef = useRef<HTMLDivElement | null>(null);
+  const { configData } = useConfigData();
+  const { usernameLogged } = useUserData();
+
+  const isActiveRelation =
+    isMyProfile ||
+    configData?.activeRelations.find(
+      (relation) =>
+        relation.userA._id === user._id || relation.userB._id === user._id
+    );
 
   useEffect(() => {
     if (tabsRef.current) {
@@ -41,6 +54,21 @@ const UserSolapas = ({
       }
     }
   }, [pathname]);
+
+  if (!isActiveRelation) {
+    return (
+      <p>
+        No puedes ver las publicaciones de este perfil porque no es una relación
+        activa. Para gestionar tus relaciones activas, ve a tu{" "}
+        <Link
+          className="text-primary"
+          href={`${PROFILE}/${usernameLogged}/contactos`}
+        >
+          perfil
+        </Link>
+      </p>
+    );
+  }
 
   const PROFILE_USERNAME = `${PROFILE}/${user.username}`;
 
