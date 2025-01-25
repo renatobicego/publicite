@@ -11,7 +11,7 @@ import PrimaryButton from "../buttons/PrimaryButton";
 import { FaPlus } from "react-icons/fa6";
 import UserPosts from "@/app/(root)/(explorar)/perfiles/[username]/(components)/UserPosts/UserPosts";
 import UserRelationRequestsGrid from "@/app/(root)/(explorar)/perfiles/[username]/(components)/UserRelations/UserRelationRequestsGrid";
-import UserRelationsGrid from "../grids/UserRelationsGrid";
+import UserRelations from "@/app/(root)/(explorar)/perfiles/[username]/(components)/UserRelations/UserRelations";
 
 const UserSolapas = ({
   user,
@@ -87,19 +87,10 @@ const UserSolapas = ({
       key: `${PROFILE_USERNAME}/contactos`,
       title: "Contactos",
       component: (
-        <>
-          {isMyProfile && (
-            <PrimaryButton
-              className="mb-2 md:self-start"
-              startContent={<FaPlus />}
-              as={Link}
-              href={PROFILE}
-            >
-              Agregar Contactos
-            </PrimaryButton>
-          )}
-          <UserRelationsGrid userId={user._id} items={user.userRelations} />
-        </>
+        <UserRelations
+          user={{ _id: user._id, userRelations: user.userRelations }}
+          isMyProfile={isMyProfile}
+        />
       ),
     },
     {
