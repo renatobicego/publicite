@@ -8,12 +8,12 @@ import { INotificationGroup, NotificationGroupModel } from "../schemas/notificat
 import { NotificationMagazine } from "../../domain/entity/notification.magazine.entity";
 import { INotificationMagazine, NotificationMagazineModel } from "../schemas/notification.magazine.schema";
 import NotificationModel, { NotificationDocument } from "../schemas/notification.schema";
-import { notification_graph_model_get_all, Notification } from "../../application/dtos/getAll.notification.dto";
-import { parseZonedDateTime } from "@internationalized/date";
 import { NotificationUser } from "../../domain/entity/notification.user.entity";
 import { INotificationUser, NotificationUserModel } from "../schemas/notification.user.schema";
 import { NotificationPost } from "../../domain/entity/notification.post.entity";
 import { INotificationPost, NotificationPostModel } from "../schemas/notification.post.schema";
+import { NotificationContactSeller } from "../../domain/entity/notification.contactSeller.entity";
+import { INotificationContactSeller, NotificationContactSellerModel } from "../schemas/notification.contactSeller.schema";
 
 
 export class NotificationRepository implements NotificationRepositoryInterface {
@@ -31,7 +31,8 @@ export class NotificationRepository implements NotificationRepositoryInterface {
         private readonly notificationUserDocument: Model<INotificationUser>,
         @InjectModel(NotificationPostModel.modelName)
         private readonly notificationPostDocument: Model<INotificationPost>,
-
+        @InjectModel(NotificationContactSellerModel.modelName)
+        private readonly notificationContactSellerModel: Model<INotificationContactSeller>,
     ) { }
 
 
@@ -196,6 +197,24 @@ export class NotificationRepository implements NotificationRepositoryInterface {
             throw error;
         }
     }
+
+    async saveNotificationContactSeller(notification: NotificationContactSeller, session?: any): Promise<any> {
+        try {
+
+            this.logger.log('Saving notification in repository...');
+            const contactSellerNotification = new this.notificationContactSellerModel(notification);
+
+            const contactSellerNotificationSave = await contactSellerNotification.save({ session });
+
+            return contactSellerNotificationSave._id;
+        } catch (error: any) {
+            this.logger.error('An error occurred while saving notification', error.message);
+            this.logger.error(error)
+            throw error;
+        }
+    }
+
+
 
 
 

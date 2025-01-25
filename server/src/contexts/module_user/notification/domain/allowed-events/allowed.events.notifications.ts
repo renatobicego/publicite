@@ -55,7 +55,10 @@ const eventsThatMakeNotificationActionsInactive_USER = [
 
 const notification_user_new_relation_accepted = eventsThatMakeNotificationActionsInactive_USER[2]
 
-
+const contact_seller_events = [
+    'notification_new_contact', // Te han contactado por un post
+]
+const notification_new_contact = contact_seller_events[0]
 
 
 
@@ -69,7 +72,9 @@ enum typeOfNotification {
     group_notifications = 'group_notifications',
     magazine_notifications = 'magazine_notifications',
     user_notifications = 'user_notifications',
-    post_notifications = 'post_notifications'
+    post_notifications = 'post_notifications',
+    contact_seller_notifications = 'contact_seller_notifications'
+
 }
 
 
@@ -110,5 +115,6 @@ export {
     notification_user_friend_request_accepted,
     notification_group_new_user_invited,
     notification_magazine_new_user_invited,
-    notification_user_new_relation_accepted
+    notification_user_new_relation_accepted,
+    notification_new_contact
 };

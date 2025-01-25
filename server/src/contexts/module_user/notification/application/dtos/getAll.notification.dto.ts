@@ -5,6 +5,7 @@ import { front_data_MAGAZINE } from "./front.data.notification.magazine";
 import { front_data_GROUP } from "./front.data.notification.group.dto";
 import { front_data_USER } from "./font.data.notification.user.dto";
 import { front_data_POST } from "./front.data.notification.post.dto";
+import { front_data_CONTACTSELLER } from "./front.data.notification.contactSeller";
 
 
 
@@ -21,6 +22,10 @@ export class frontData {
 
     @Field(() => front_data_POST, { nullable: true })
     postActivity: front_data_POST;
+
+    @Field(() => front_data_CONTACTSELLER, { nullable: true })
+    contactSeller: front_data_CONTACTSELLER;
+
 
 }
 

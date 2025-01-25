@@ -76,6 +76,18 @@ export class SocketController {
   }
 
 
+  @Post('contact-seller')
+  //@UseGuards(AuthSocket)
+  async socketContactSellerController(
+    @Body() notificationBody: any,
+  ): Promise<any> {
+    try {
+      return await this.socketAdapter.sendContactSellerNotificationToNotificationService(notificationBody);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
 
 }
 

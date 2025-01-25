@@ -8,6 +8,7 @@ import { MagazineSectionCreateRequest } from 'src/contexts/module_magazine/magaz
 import { MagazineResponse } from 'src/contexts/module_magazine/magazine/application/adapter/dto/HTTP-RESPONSE/magazine.reponse';
 import { MagazineAdapterInterface } from 'src/contexts/module_magazine/magazine/application/adapter/magazine.adapter.interface';
 import { MagazineServiceInterface } from 'src/contexts/module_magazine/magazine/domain/service/magazine.service.interface';
+import { post_deleted } from 'src/contexts/module_shared/event-emmiter/events';
 
 
 export class MagazineAdapter implements MagazineAdapterInterface {
@@ -17,7 +18,7 @@ export class MagazineAdapter implements MagazineAdapterInterface {
   ) { }
 
 
-  @OnEvent('post.deleted')
+  @OnEvent(post_deleted)
   async deletePostInMagazineWithEmitter(postId: string): Promise<any> {
     try {
       await this.magazineService.deletePostInMagazineWithEmitter(postId);
