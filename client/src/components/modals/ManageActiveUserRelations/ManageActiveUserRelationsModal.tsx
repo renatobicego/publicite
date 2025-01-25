@@ -1,0 +1,65 @@
+import PrimaryButton from "@/components/buttons/PrimaryButton";
+import { UserRelations } from "@/types/userTypes";
+import {
+  useDisclosure,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+} from "@nextui-org/react";
+import { FaUserCheck } from "react-icons/fa";
+import ManageActiveUserRelations from "./ManageActiveUserRelations";
+
+const ManageActiveUserRelationsModal = ({
+  relations,
+  activeRelationsIds,
+  userId,
+}: {
+  relations: UserRelations[];
+  activeRelationsIds: ObjectId[];
+  userId: ObjectId;
+}) => {
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
+  return (
+    <>
+      <PrimaryButton
+        startContent={<FaUserCheck />}
+        variant="flat"
+        onPress={onOpen}
+        className="self-start"
+      >
+        Administrar Activas
+      </PrimaryButton>
+      <Modal
+        radius="lg"
+        className="p-2"
+        placement="center"
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                Seleccionar Relaciones Activas
+              </ModalHeader>
+              <ModalBody className="pt-0 ">
+                {isOpen && (
+                  <ManageActiveUserRelations
+                    relations={relations}
+                    activeRelationsIds={activeRelationsIds}
+                    userId={userId}
+                    closeModal={onClose}
+                  />
+                )}
+              </ModalBody>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+    </>
+  );
+};
+
+export default ManageActiveUserRelationsModal;

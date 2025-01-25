@@ -1,5 +1,6 @@
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import UserRelationsGrid from "@/components/grids/UserRelationsGrid";
+import ManageActiveUserRelationsModal from "@/components/modals/ManageActiveUserRelations/ManageActiveUserRelationsModal";
 import { User } from "@/types/userTypes";
 import { PROFILE } from "@/utils/data/urls";
 import { Link, Tab, Tabs, user } from "@nextui-org/react";
@@ -84,7 +85,13 @@ const UserRelations = ({
           <Tab key={tab.key} title={tab.label} />
         ))}
       </Tabs>
-
+      {isMyProfile && solapaSelected === "active" && (
+        <ManageActiveUserRelationsModal
+          relations={user.userRelations}
+          activeRelationsIds={filteredRelations.map((relation) => relation._id)}
+          userId={user._id}
+        />
+      )}
       <UserRelationsGrid userId={user._id} items={filteredRelations} />
     </>
   );
