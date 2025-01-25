@@ -15,9 +15,10 @@ import { NotificationPostType } from "../../domain/entity/enum/notification.post
 import { NotificationHandlerServiceInterface } from "../../domain/service/notification.handler.service.interface";
 import { NotificationPostServiceInterface } from "../../domain/service/notification.post.service.interface";
 import { NotificationUserServiceInterface } from "../../domain/service/notification.user.service.interface";
-import { notification_group_new_user_invited, notification_magazine_new_user_invited, notification_user_new_friend_request, notification_user_new_relation_change, typeOfNotification } from "../../domain/allowed-events/allowed.events.notifications";
+import { notification_group_new_user_invited, notification_magazine_new_user_invited, notification_new_contact, notification_user_new_friend_request, notification_user_new_relation_change, typeOfNotification } from "../../domain/allowed-events/allowed.events.notifications";
 import { NotificationSubscriptionServiceInterface } from "../../domain/service/Notification.subscription.service.interface";
 import { NotificationServiceInterface } from "../../domain/service/notification.service.interface";
+import { NotificationContactSellerServiceInterface } from "../../domain/service/notification.contactSeller.service.interface";
 
 
 
@@ -39,10 +40,12 @@ export class NotificationService implements NotificationHandlerServiceInterface,
         private readonly notificationPostService: NotificationPostServiceInterface,
         @Inject('NotificationSubscriptionServiceInterface')
         private readonly notificationSubscriptionService: NotificationSubscriptionServiceInterface,
-
+        @Inject('NotificationContactSellerServiceInterface')
+        private readonly notificationContactSellerService: NotificationContactSellerServiceInterface,
     ) {
 
     }
+
 
     async changeNotificationStatus(userRequestId: string, notificationId: string[], view: boolean): Promise<void> {
         try {
@@ -152,10 +155,6 @@ export class NotificationService implements NotificationHandlerServiceInterface,
     }
 
 
-
-
-
-
     async handleSubscriptionNotification(notification: any): Promise<void> {
         try {
             return await this.notificationSubscriptionService.createNotificationAndSendToUser(notification)
@@ -167,7 +166,19 @@ export class NotificationService implements NotificationHandlerServiceInterface,
 
 
 
-
+    async handleContactSellerNotification(notification: any): Promise<void> {
+        try {
+            const factory = NotificationFactory.getInstance(this.logger);
+            const notificationContactSeller = factory.createNotification(typeOfNotification.contact_seller_notifications, notification);
+            const event = notificationContactSeller.getEvent
+            if (event === notification_new_contact) {
+                await this.isThisNotificationDuplicate(notificationContactSeller.getNotificationEntityId);
+            }
+            return await this.notificationContactSellerService.createNotificationContactSellerAndSendToUser(notificationContactSeller)
+        } catch (error: any) {
+            throw error;
+        }
+    }
 
 
 

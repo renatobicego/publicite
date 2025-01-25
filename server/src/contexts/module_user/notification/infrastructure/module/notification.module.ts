@@ -18,6 +18,8 @@ import { NotificationMagazineService } from "../../application/service/notificat
 import { NotificationUserService } from "../../application/service/notification.user.service";
 import { NotificationPostService } from "../../application/service/notification.post.service";
 import { NotificationSubscriptionService } from "../../application/service/notification.subscription.service";
+import { NotificationContactSellerService } from "../../application/service/notification.contactSeller.service";
+import { NotificationContactSellerModel } from "../schemas/notification.contactSeller.schema";
 
 @Module({
     imports: [
@@ -30,6 +32,8 @@ import { NotificationSubscriptionService } from "../../application/service/notif
                     { name: NotificationMagazineModel.modelName, schema: NotificationMagazineModel.schema },
                     { name: NotificationUserModel.modelName, schema: NotificationUserModel.schema },
                     { name: NotificationPostModel.modelName, schema: NotificationPostModel.schema },
+                    { name: NotificationContactSellerModel.modelName, schema: NotificationContactSellerModel.schema },
+
                 ],
             },
         ]),
@@ -46,15 +50,7 @@ import { NotificationSubscriptionService } from "../../application/service/notif
         },
         {
             provide: 'NotificationGroupServiceInterface',
-            useClass: NotificationService
-        },
-        {
-            provide: 'NotificationGroupServiceInterface',
             useClass: NotificationGroupService
-        },
-        {
-            provide: 'NotificationMagazineServiceInterface',
-            useClass: NotificationService,
         },
         {
             provide: 'NotificationMagazineServiceInterface',
@@ -62,14 +58,7 @@ import { NotificationSubscriptionService } from "../../application/service/notif
         },
         {
             provide: 'NotificationUserServiceInterface',
-            useClass: NotificationService,
-        },
-        {
-            provide: 'NotificationUserServiceInterface',
             useClass: NotificationUserService,
-        }, {
-            provide: 'NotificationPostServiceInterface',
-            useClass: NotificationService,
         },
         {
             provide: 'NotificationPostServiceInterface',
@@ -80,21 +69,16 @@ import { NotificationSubscriptionService } from "../../application/service/notif
         }, {
             provide: 'NotificationAdapterInterface',
             useClass: NotificationAdapter
-        }, {
-            provide: 'NotificationServiceInterface',
-            useClass: NotificationService
-        }
-        , {
-            provide: 'NotificationHandlerServiceInterface',
-            useClass: NotificationService
         },
         {
             provide: 'NotificationSubscriptionServiceInterface',
-            useClass: NotificationService
-        }, {
-            provide: 'NotificationSubscriptionServiceInterface',
             useClass: NotificationSubscriptionService
+        }, {
+            provide: 'NotificationContactSellerServiceInterface',
+            useClass: NotificationContactSellerService
         }
+
+
     ],
     exports: [
         'NotificationGroupServiceInterface',
@@ -103,7 +87,8 @@ import { NotificationSubscriptionService } from "../../application/service/notif
         'NotificationPostServiceInterface',
         'NotificationRepositoryInterface',
         'NotificationSubscriptionServiceInterface',
-        
+        'NotificationContactSellerServiceInterface',
+
     ]
 })
 

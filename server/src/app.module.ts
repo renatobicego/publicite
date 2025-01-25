@@ -23,6 +23,7 @@ import { MercadoPagoModule } from './contexts/module_webhook/mercadopago/infastr
 import { ClerkModule } from './contexts/module_webhook/clerk/infrastructure/module/clerk.module';
 import { NotificationModule } from './contexts/module_user/notification/infrastructure/module/notification.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { ContactSellerModule } from './contexts/module_user/contactSeller/infrastructure/module/contactSeller.module';
 
 @Module({
   imports: [
@@ -52,6 +53,9 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     PostCategoryModule,
     NotificationSocketModule,
     NotificationModule,
+    ContactSellerModule,
+
+
   ],
   providers: [
     {
