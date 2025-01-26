@@ -77,7 +77,7 @@ export class SocketController {
 
 
   @Post('contact-seller')
-  //@UseGuards(AuthSocket)
+  @UseGuards(AuthSocket)
   async socketContactSellerController(
     @Body() notificationBody: any,
   ): Promise<any> {

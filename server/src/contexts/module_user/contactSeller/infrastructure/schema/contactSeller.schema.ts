@@ -11,10 +11,7 @@ interface ContactSellerDocument extends Document {
         message: string
     }
     post: {
-        _id: string,
-        title: string,
-        imagesUrls: string,
-        price: number
+        _id: Schema.Types.ObjectId,
     }
 }
 
@@ -29,10 +26,7 @@ const ContactSellerSchema = new Schema<ContactSellerDocument>({
         message: { type: String, required: true },
     },
     post: {
-        _id: { type: String, required: true },
-        title: { type: String, required: true },
-        imagesUrls: { type: String, required: true },
-        price: { type: Number, required: true },
+        _id: { type: Schema.Types.ObjectId, ref: 'Post' },
     }
 
 

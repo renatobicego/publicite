@@ -1,8 +1,5 @@
 interface contact_seller_post {
     _id: string;
-    title: string;
-    imagesUrls: string;
-    price: number;
 }
 
 interface contact_seller_client {

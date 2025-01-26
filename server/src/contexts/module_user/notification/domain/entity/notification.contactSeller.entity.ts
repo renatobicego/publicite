@@ -6,9 +6,6 @@ export class NotificationContactSeller extends Notification {
         contactSeller: {
             post: {
                 _id: string,
-                title: string,
-                imagesUrls: string,
-                price: number
             }
             client: {
                 _id: string,
@@ -28,9 +25,6 @@ export class NotificationContactSeller extends Notification {
             contactSeller: {
                 post: {
                     _id: string,
-                    title: string,
-                    imagesUrls: string,
-                    price: number
                 }
                 client: {
                     _id: string,
