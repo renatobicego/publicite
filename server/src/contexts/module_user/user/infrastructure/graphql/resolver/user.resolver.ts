@@ -6,13 +6,14 @@ import { ClerkAuthGuard } from 'src/contexts/module_shared/auth/clerk-auth/clerk
 import { UserAdapterInterface } from '../../../application/adapter/userAdapter.interface';
 import { User_Full_Grapql_Model } from '../../../domain/entity/models_graphql/user.full.grapql.model';
 import { CustomContextRequestInterface } from 'src/contexts/module_shared/auth/custom_request/custom.context.request.interface';
+import { user_active_relation } from '../../../domain/entity/models_graphql/user.activeRelation.graphql';
 
 @Resolver()
 export class UserResolver {
   constructor(
     @Inject('UserAdapterInterface')
     private readonly userAdapter: UserAdapterInterface,
-  ) {}
+  ) { }
 
   @Query(() => User_Full_Grapql_Model, {
     nullable: true,
@@ -53,13 +54,32 @@ export class UserResolver {
   async setNewActiveUserRelations(
     @Args('activeRelations', { type: () => [String] }) activeRelations: string[],
     @Context() context: { req: CustomContextRequestInterface },
-  ): Promise<User_Full_Grapql_Model | null> {
+  ): Promise<String> {
     try {
       const userRequestId = context.req.userRequestId;
-      return await this.userAdapter.setNewActiveUserRelations(activeRelations,userRequestId);
+      await this.userAdapter.setNewActiveUserRelations(activeRelations, userRequestId);
+      return 'Active relation  successfully updated';
     } catch (error: any) {
       throw error;
     }
   }
+
+  @Query(() => [user_active_relation], {
+    nullable: true,
+    description: 'Obtiene las relaciones activas del usuario',
+  })
+  @UseGuards(ClerkAuthGuard)
+  async getActiveRelationsOfUser(
+    @Context() context: { req: CustomContextRequestInterface },
+  ): Promise<user_active_relation[] | null> {
+    try {
+      const userRequestId = context.req.userRequestId;
+      const activeRelations = await this.userAdapter.getActiveRelationsOfUser(userRequestId) ?? []
+      return activeRelations
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
 
 }

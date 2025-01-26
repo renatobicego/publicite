@@ -146,7 +146,8 @@ class friendRequests {
   @Field(() => FrontData_user_notification)
   frontData: FrontData_user_notification;
 }
-@ObjectType()
+
+
 @ObjectType()
 class user_user_relation {
   @Field(() => String)
@@ -171,7 +172,7 @@ class user_user_relation {
   username: string;
 }
 @ObjectType()
-class user_relation {
+export class user_relation {
   @Field(() => ID)
   _id: string;
 

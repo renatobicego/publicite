@@ -301,6 +301,14 @@ type User_Full_Grapql_Model {
   isFriendRequestPending: Boolean
 }
 
+type user_active_relation {
+  _id: ID
+  userA: String!
+  userB: String!
+  typeRelationA: String!
+  typeRelationB: String!
+}
+
 type posts_graphql_magazine {
   _id: String
   imagesUrls: [String!]
@@ -646,6 +654,9 @@ type PaymentResponse {
 type Query {
   """Obtiene un usuario por su nombre de usuario """
   findUserByUsername(username: String!): User_Full_Grapql_Model
+
+  """Obtiene las relaciones activas del usuario"""
+  getActiveRelationsOfUser: [user_active_relation!]
 
   """Buscar los pagos por id de clerk"""
   findPaymentByClerkId(id: String!): [PaymentResponse!]

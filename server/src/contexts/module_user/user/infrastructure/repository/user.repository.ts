@@ -704,13 +704,13 @@ export class UserRepository implements UserRepositoryInterface {
   }
 
 
-  // MUST RETURN THE NEW DOCUMENT
   async setNewActiveUserRelations(activeRelations: string[], userRequestId: string): Promise<any> {
     try {
-      return this.user.updateOne(
+      return await this.user.updateOne(
         { _id: userRequestId },
         { $set: { activeRelations: activeRelations } },
-      )
+        { new: true }
+      );
     } catch (error: any) {
       throw error;
     }

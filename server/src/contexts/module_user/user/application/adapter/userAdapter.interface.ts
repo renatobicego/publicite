@@ -26,9 +26,10 @@ export interface UserAdapterInterface {
   getUserPreferencesByUsername(
     username: string,
   ): Promise<UserPreferenceResponse | null>;
+  getActiveRelationsOfUser(userRequestId: string): Promise<any>;
 
   removeFriend(relationId: string, friendRequestId?: string): Promise<any>;
-  setNewActiveUserRelations(activeRelations: string[],userRequestId:string ):Promise<any>;
+  setNewActiveUserRelations(activeRelations: string[], userRequestId: string): Promise<any>;
   updateUserPreferencesByUsername(
     username: string,
     userPreference: UserPreferenceResponse,

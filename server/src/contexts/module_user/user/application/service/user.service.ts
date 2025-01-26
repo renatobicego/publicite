@@ -421,6 +421,15 @@ export class UserService implements UserServiceInterface {
 
   async setNewActiveUserRelations(activeRelations: string[], userRequestId: string): Promise<any> {
     try {
+      
+      if (activeRelations.length <= 0) return null
+      const newActiveRelationLength = activeRelations.length
+      const limitAvailableOfUser = await this.getLimitContactsFromUserByUserId(userRequestId)
+
+      if (newActiveRelationLength > limitAvailableOfUser) {
+        throw new BadRequestException("El usuario no puede tener mas de " + limitAvailableOfUser + " contactos activos")
+      }
+      
       return await this.userRepository.setNewActiveUserRelations(activeRelations, userRequestId);
     } catch (error: any) {
       throw error;

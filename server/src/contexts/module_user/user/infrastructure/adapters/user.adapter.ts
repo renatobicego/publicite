@@ -30,6 +30,7 @@ export class UserAdapter implements UserAdapterInterface {
   ) { }
 
 
+
   async createUser(newUserRequest: UserRequest): Promise<any> {
 
     if (!newUserRequest.userType) {
@@ -104,6 +105,14 @@ export class UserAdapter implements UserAdapterInterface {
     }
   }
 
+  async getActiveRelationsOfUser(userRequestId: string): Promise<any> {
+    try {
+      return await this.userService.getActiveRelationOfUser(userRequestId);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
   async removeFriend(relationId: string, friendRequestId?: string): Promise<any> {
     try {
       return await this.userService.removeFriend(relationId, friendRequestId);
@@ -113,10 +122,10 @@ export class UserAdapter implements UserAdapterInterface {
   }
 
 
-  async setNewActiveUserRelations(activeRelations: string[],userRequestId:string): Promise<any> {
-    try{
-      return await this.userService.setNewActiveUserRelations(activeRelations,userRequestId);
-    }catch(error:any){
+  async setNewActiveUserRelations(activeRelations: string[], userRequestId: string): Promise<any> {
+    try {
+      return await this.userService.setNewActiveUserRelations(activeRelations, userRequestId);
+    } catch (error: any) {
       throw error;
     }
   }
