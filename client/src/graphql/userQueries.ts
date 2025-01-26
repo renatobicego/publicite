@@ -212,4 +212,10 @@ export const deleteUserRelationMutation = gql`
   }
 `;
 
+export const putActiveRelationsMutation = gql`
+  mutation SetNewActiveUserRelations($activeRelations: [String!]!) {
+    setNewActiveUserRelations(activeRelations: $activeRelations)
+  }
+`;
+
 export default getUserByUsernameQuery;

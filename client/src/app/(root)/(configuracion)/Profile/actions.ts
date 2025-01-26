@@ -14,6 +14,7 @@ import {
   EditPersonProfileProps,
   EditProfileProps,
   UserPreferences,
+  UserRelations,
   UserType,
 } from "@/types/userTypes";
 import { currentUser, User } from "@clerk/nextjs/server";
@@ -75,15 +76,18 @@ export interface ConfigData {
   postsPacks: Subscription[];
   board: Board;
   userPreferences: UserPreferences;
+  activeRelations: UserRelations[];
 }
-export const getConfigData = async (user: { username?: string; id: string }) => {
+export const getConfigData = async (user: {
+  username?: string;
+  id: string;
+}) => {
   if (!user?.username) {
     return;
   }
   const userBoard = await getBoardByUsername(user?.username as string);
-  const subscriptions = await getSubscriptionsOfUser(
-    user?.id as string
-  ) || [];
+  const subscriptions =
+    (await getSubscriptionsOfUser(user?.id as string)) || [];
   const accountType = subscriptions.find(
     (subscription: Subscription) => !subscription.subscriptionPlan.isPack
   );
@@ -94,7 +98,7 @@ export const getConfigData = async (user: { username?: string; id: string }) => 
   if (!preferences || preferences.error || !userBoard || userBoard.error) {
     return;
   }
-  const configData: ConfigData  = {
+  const configData: ConfigData = {
     accountType,
     postsPacks,
     board: userBoard.board
@@ -108,6 +112,7 @@ export const getConfigData = async (user: { username?: string; id: string }) => 
         }
       : null,
     userPreferences: preferences,
+    activeRelations: [],
   };
   return configData;
 };

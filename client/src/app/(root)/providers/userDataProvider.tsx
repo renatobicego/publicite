@@ -8,6 +8,7 @@ import {
 import { ReactNode } from "react";
 import { UserType } from "@/types/userTypes";
 import DataInitializer from "./DataInitializer";
+import { setActiveRelations } from "./slices/configSlice";
 
 export const UserDataProvider = ({
   children,
@@ -34,7 +35,7 @@ export const UserDataProvider = ({
 
   return (
     <Provider store={store}>
-      <DataInitializer userId={userId} username={username}/>
+      <DataInitializer userId={userId} username={username} />
       {children}
     </Provider>
   );
@@ -66,6 +67,11 @@ export const useMagazinesData = () => {
 
 export const useConfigData = () => {
   const { configData } = useSelector((state: RootState) => state.config);
+  const dispatch = useDispatch();
 
-  return { configData };
+  const updateActiveRelations = (activeRelations: string[]) => {
+    dispatch(setActiveRelations(activeRelations));
+  };
+
+  return { configData, updateActiveRelations };
 };

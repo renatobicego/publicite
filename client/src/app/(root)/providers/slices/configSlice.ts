@@ -34,7 +34,15 @@ export const fetchConfigData = createAsyncThunk(
 const configSlice = createSlice({
   name: "config",
   initialState,
-  reducers: {},
+  reducers: {
+    setActiveRelations(state, action) {
+      if (!state.configData) return;
+      state.configData = {
+        ...state.configData,
+        activeRelations: action.payload,
+      };
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchConfigData.pending, (state) => {
@@ -50,5 +58,7 @@ const configSlice = createSlice({
       });
   },
 });
+
+export const { setActiveRelations } = configSlice.actions;
 
 export default configSlice.reducer;

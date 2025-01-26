@@ -8,7 +8,8 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import PrimaryButton from "../../buttons/PrimaryButton";
-import ContactForm from "./ContactForm";
+import { lazy } from "react";
+const ContactForm = lazy(() => import("./ContactForm"));
 
 const ContactModal = ({ postId }: { postId: string }) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
