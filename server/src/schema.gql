@@ -451,9 +451,6 @@ enum NotificationPostType {
 
 type PostContactSeller {
   _id: String!
-  title: String!
-  imagesUrls: String!
-  price: Int!
 }
 
 type ClientContactSeller {

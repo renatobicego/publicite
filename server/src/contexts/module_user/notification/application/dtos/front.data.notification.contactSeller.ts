@@ -4,15 +4,6 @@ import { ObjectType, Field, Int } from "@nestjs/graphql";
 export class PostContactSeller {
     @Field(() => String)
     _id: string;
-
-    @Field(() => String)
-    title: string;
-
-    @Field(() => String)
-    imagesUrls: string;
-
-    @Field(() => Int)
-    price: number;
 }
 
 @ObjectType()

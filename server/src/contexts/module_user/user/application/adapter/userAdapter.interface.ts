@@ -11,7 +11,7 @@ import {
 
 export interface UserAdapterInterface {
   createUser(req: UserRequest): Promise<string>;
-
+  downgradeplan(userId: string): Promise<any>;
   findAllUsers(
     user: string,
     limit: number,

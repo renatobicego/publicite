@@ -14,8 +14,8 @@ import { UserLocation } from '../../domain/entity/models_graphql/HTTP-REQUEST/po
 import { PostLimitResponseGraphql } from '../../domain/entity/models_graphql/HTTP-RESPONSE/post.limit.response.graphql';
 import { PostBehaviourType } from '../../domain/entity/enum/postBehaviourType.enum';
 import { Visibility, Visibility_Of_Find } from '../../domain/entity/enum/post-visibility.enum';
-import { EventEmitter2 } from '@nestjs/event-emitter';
-import { post_deleted } from 'src/contexts/module_shared/event-emmiter/events';
+import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
+import { downgrade_plan_post, post_deleted } from 'src/contexts/module_shared/event-emmiter/events';
 
 export class PostAdapter implements PostAdapterInterface {
   constructor(
@@ -27,14 +27,18 @@ export class PostAdapter implements PostAdapterInterface {
     private eventEmitter: EventEmitter2,
   ) { }
 
-
-  async desactivatePostById(id: string): Promise<void> {
+  @OnEvent(downgrade_plan_post)
+  async desactivatePostByUserId(id: string): Promise<any> {
     try {
-      return await this.postService.desactivateAllPost(id);
+      await this.postService.desactivatePostByUserId(id);
+      return true;
     } catch (error: any) {
       throw error;
     }
   }
+
+
+
   async activateOrDeactivatePost(_id: string, activate: boolean, postBehaviourType: PostBehaviourType, userRequestId: string): Promise<any> {
     try {
       return await this.postService.activateOrDeactivatePost(_id, activate, postBehaviourType, userRequestId);

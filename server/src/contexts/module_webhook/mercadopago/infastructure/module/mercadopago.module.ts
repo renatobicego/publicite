@@ -7,7 +7,7 @@ import { LoggerModule } from 'src/contexts/module_shared/logger/logger.module';
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { UserModule } from 'src/contexts/module_user/user/infrastructure/module/user.module';
 import { WebhookService } from 'src/contexts/module_webhook/clerk/application/clerkWebhook.service';
-import { MpHandlerValidations } from 'src/contexts/module_webhook/mercadopago/application/handler/mp.handler.validations';
+import { MpHandlerValidations } from 'src/contexts/module_webhook/mercadopago/infastructure/adapters/handler/mp.handler.validations';
 
 import { MpInvoiceService } from 'src/contexts/module_webhook/mercadopago/application/service/mp-invoice.service';
 import { MpPaymentService } from 'src/contexts/module_webhook/mercadopago/application/service/mp-payment.service';
@@ -31,8 +31,11 @@ import { PaymentSchema } from '../schemas/payment.schema';
 import { SubscriptionSchema } from '../schemas/subscription.schema';
 import { SubscriptionPlanSchema } from '../schemas/subscriptionPlan.schema';
 import { MercadopagoController } from '../controllers/main.controller.mp/mercadopago.controller';
-import { MpHandlerEvents } from '../../application/handler/mpHandlerFETCHEvents';
+import { MpHandlerEvents } from '../adapters/handler/mpHandlerFETCHEvents';
 import { FetchToMercadoPagoAdapter } from '../adapters/out/fetch.to.mp';
+import { ErrorService } from '../../application/service/error/error.service.interface';
+import { ErrorRepository } from '../repository/error/error.repository';
+import { ErrorSchema } from '../schemas/error.schema';
 
 @Module({
     imports: [
@@ -42,6 +45,7 @@ import { FetchToMercadoPagoAdapter } from '../adapters/out/fetch.to.mp';
             { name: 'Invoice', schema: InvoiceSchema },
             { name: 'Payment', schema: PaymentSchema },
             { name: 'SubscriptionPlan', schema: SubscriptionPlanSchema },
+            { name: 'Error', schema: ErrorSchema },
         ]),
         UserModule,
         LoggerModule,
@@ -112,6 +116,16 @@ import { FetchToMercadoPagoAdapter } from '../adapters/out/fetch.to.mp';
             provide: 'MercadopagoSubscriptionPlanAdapterInterface',
             useClass: MercadoPagoSubscriptionPlanAdapter,
         },
+
+        {
+            provide: 'ErrorServiceInterface',
+            useClass: ErrorService,
+        },
+        {
+            provide: 'ErrorRepositoryInterface',
+            useClass: ErrorRepository,
+        },
+
         // {
         //     provide: 'FetchToMpInterface',
         //     useClass: FetchToMercadoPagoAdapter,

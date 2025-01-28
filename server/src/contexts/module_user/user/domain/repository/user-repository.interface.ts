@@ -27,7 +27,7 @@ export interface UserRepositoryInterface {
   ): Promise<UserPreferences | null>;
 
   getRelationsFromUserByUserId(userRequestId: string): Promise<any>
-
+  getMongoIdByClerkId(clerk_id: string): Promise<void>
   getPostAndLimitsFromUserByUserId(author: string): Promise<any>
   getLimitContactsFromUserByUserId(userRequestId: string, session?: any): Promise<any>
   getActiveRelationsOfUser(userRequestId: string, session?: any): Promise<any>
@@ -55,8 +55,10 @@ export interface UserRepositoryInterface {
     options?: { session?: ClientSession },
   ): Promise<User>;
   setNewActiveUserRelations(activeRelations: string[], userRequestId: string): Promise<any>;
+
   removeFriendRequest(previousNotificationId: string, userNotificationOwner: string, session: any): Promise<any>
   removeFriend(relationId: string, friendRequestId?: string): Promise<any>;
+  removeActiveRelationOfUser(userRequestId: string, contactsToDelete: any[], session?: any): Promise<any>
 
   makeFriendRelationBetweenUsers(userRelation: UserRelation, session: any): Promise<string | null>
   update(

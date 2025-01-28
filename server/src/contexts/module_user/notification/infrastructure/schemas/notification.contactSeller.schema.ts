@@ -5,10 +5,7 @@ interface INotificationContactSeller extends NotificationDocument {
     frontData: {
         contactSeller: {
             post: {
-                _id: string,
-                title: string,
-                imagesUrls: string,
-                price: number
+                _id: Schema.Types.ObjectId,
             }
             client: {
                 _id: string,
@@ -28,10 +25,7 @@ const NotificationContactSellerSchema = new Schema<INotificationContactSeller>({
     frontData: {
         contactSeller: {
             post: {
-                _id: { type: String, required: true },
-                title: { type: String, required: true },
-                imagesUrls: { type: String, required: true },
-                price: { type: Number, required: true },
+                _id: { type: Schema.Types.ObjectId, ref: 'Post' },
             },
             client: {
                 _id: { type: String, default: null },

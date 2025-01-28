@@ -2,10 +2,17 @@ import { Inject, Injectable } from '@nestjs/common';
 
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { MpHandlerEventsInterface } from 'src/contexts/module_webhook/mercadopago/domain/handler/mp.handler.events.interface';
-import { FetchToMpInterface } from '../adapter/out/fech.to.mp.interface';
-import { MpServiceInvoiceInterface } from '../../domain/service/mp-invoice.service.interface';
-import { MpPaymentServiceInterface } from '../../domain/service/mp-payments.service.interface';
-import { statusOfSubscription, SubscriptionServiceInterface } from '../../domain/service/mp-subscription.service.interface';
+import { FetchToMpInterface } from '../../../application/adapter/out/fech.to.mp.interface';
+import { MpServiceInvoiceInterface } from '../../../domain/service/mp-invoice.service.interface';
+import { MpPaymentServiceInterface } from '../../../domain/service/mp-payments.service.interface';
+import { statusOfSubscription, SubscriptionServiceInterface } from '../../../domain/service/mp-subscription.service.interface';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { downgrade_plan_contact, downgrade_plan_post, get_mongo_id } from 'src/contexts/module_shared/event-emmiter/events';
+import { authorized_payments, } from '../../../domain/entity_mp/authorized_payments';
+import { Subscription_preapproval } from '../../../domain/entity_mp/subscription_preapproval';
+import { Payment } from '../../../domain/entity_mp/payment';
+import { ErrorServiceInterface } from '../../../domain/service/error/error.service.interface';
+
 
 /*
 HandlerEvents de mercadopago: 
@@ -35,10 +42,11 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
     private readonly mpPaymentService: MpPaymentServiceInterface,
     @Inject('SubscriptionServiceInterface')
     private readonly subscriptionService: SubscriptionServiceInterface,
-
-
+    @Inject('ErrorServiceInterface')
+    private readonly errorService: ErrorServiceInterface,
     @Inject('FetchToMpInterface')
-    private readonly fetchToMpAdapter: FetchToMpInterface
+    private readonly fetchToMpAdapter: FetchToMpInterface,
+    private eventEmitter: EventEmitter2,
 
   ) { }
 
@@ -99,7 +107,7 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
       );
 
       this.logger.log(`Fetching to Mercadopago....`);
-      const mercadoPago_paymentResponse: any = await this.fetchToMpAdapter.getDataFromMp_fetch(
+      const mercadoPago_paymentResponse: Payment = await this.fetchToMpAdapter.getDataFromMp_fetch(
         `${this.URL_PAYMENT_CHECK}${dataID}`,
       );
 
@@ -134,7 +142,7 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
   ): Promise<boolean> {
     try {
       /*----------------------------------- FETCH TO MERCADOPAGO SUBSCRIPTION_PREAPPROVAL (CREACION DE SUSCRIPCION)------------------------------ */
-      const subscription_preapproval = await this.fetchToMpAdapter.getDataFromMp_fetch(
+      const subscription_preapproval: Subscription_preapproval = await this.fetchToMpAdapter.getDataFromMp_fetch(
         `${this.URL_SUBCRIPTION_PREAPPROVAL_CHECK}${dataID}`,
 
       );
@@ -189,7 +197,7 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
         'The proccess of subscription_authorized_payment (CREATED) are starting - Class:mpHandlerEvents',
       );
 
-      const subscription_authorized_payment =
+      const subscription_authorized_payment: authorized_payments =
         await this.fetchToMpAdapter.getDataFromMp_fetch(
           `${this.URL_SUBCRIPTION_AUTHORIZED_CHECK}${dataID}`,
         );
@@ -221,6 +229,11 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
     dataID: string,
   ): Promise<boolean> {
     try {
+      const userId = await this.get_mongo_id("user_2mnTnausBc9NkbcZa3GTaCGMxDX")
+      const result = await this.update_plan_user(userId, downgrade_plan_contact);
+      if (result) await this.update_plan_user(userId, downgrade_plan_post);
+
+      return true
       this.logger.log(
         'The proccess of subscription_authorized_payment (UPDATED) are starting - Class:mpHandlerEvents',
       );
@@ -228,7 +241,7 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
 
       const rejectedStatuses = new Set(['rejected', 'cancelled']);
       const approvedStatuses = new Set(['approved', 'accredited']);
-      const response_mp_subscription_authorized_payment =
+      const response_mp_subscription_authorized_payment: authorized_payments =
         await this.fetchToMpAdapter.getDataFromMp_fetch(
           `${this.URL_SUBCRIPTION_AUTHORIZED_CHECK}${dataID}`,
         );
@@ -251,6 +264,8 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
         );
         return true;
       }
+
+
       const paymentStatus =
         response_mp_subscription_authorized_payment.payment?.status.toLowerCase();
       const subscriptionStatus =
@@ -273,6 +288,7 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
           response_mp_subscription_authorized_payment.id
         );
 
+        // await this.update_plan_user(response_mp_subscription_authorized_payment.external_reference)
 
         // if (isThisSubscriptionWasPaused) {
         //   return true;
@@ -349,6 +365,109 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
       throw error;
     }
   }
+
+
+
+
+  async get_mongo_id(clerk_id: string): Promise<any> {
+    const MAX_RETRIES = 3;
+    const RETRY_DELAY = 8000;
+
+    for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+      try {
+        const result = await this.eventEmitter.emitAsync(get_mongo_id, clerk_id);
+        if (result && result[0]) {
+          return result[0]._id;
+        } else {
+          console.log(`Intento ${attempt} fallido para actualizar el plan del usuario.`);
+          return null;
+        }
+      } catch (error: any) {
+        console.error(`Error en intento ${attempt}:`, error);
+
+        if (attempt === MAX_RETRIES) {
+          const body = {
+            code: "4545",
+            message: "No se pudo actualizar el plan del usuario luego de multiples intentos",
+            result: error.message,
+            event: "get_mongo_id"
+          };
+
+          await this.create_error_schema(clerk_id, body);
+          this.logger.error('CODIGO DE ERROR: 4545 PARA EL USUARIO: ' + clerk_id);
+          throw new Error('No se pudo actualizar el plan del usuario después de múltiples intentos.');
+        }
+      }
+
+      if (attempt < MAX_RETRIES) {
+        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+      }
+    }
+  }
+
+
+
+  async update_plan_user(user_id: any, event: string): Promise<boolean> {
+    const MAX_RETRIES = 3;
+    const RETRY_DELAY = 2000;
+
+    for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+        try {
+            const result = await this.eventEmitter.emitAsync(event, user_id);
+
+            if (result && result[0] === true) {
+                return true; 
+            } else {
+                console.warn(`Intento ${attempt} fallido para actualizar el plan del usuario.`);
+            }
+        } catch (error: any) {
+            console.error(`Error en intento ${attempt}:`, error);
+
+            if (attempt === MAX_RETRIES) {
+                const errorBody = {
+                    code: "4545",
+                    message: "No se pudo actualizar el plan del usuario luego de múltiples intentos",
+                    result: error,
+                    event: event
+                };
+
+                await this.create_error_schema(user_id, errorBody);
+                this.logger.error(`CODIGO DE ERROR: 4545 PARA EL USUARIO: ${user_id}`);
+                throw new Error('No se pudo actualizar el plan del usuario después de múltiples intentos.');
+            }
+        }
+
+        if (attempt < MAX_RETRIES) {
+            await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+        }
+    }
+
+    // Si llegamos aquí, significa que todos los intentos fallaron
+    const errorBody = {
+        code: "4545",
+        message: "No se pudo actualizar el plan del usuario luego de múltiples intentos",
+        result: 'No se pudo actualizar el plan del usuario luego de múltiples intentos',
+        event: event
+    };
+
+    await this.create_error_schema(user_id, errorBody);
+    this.logger.error(`CODIGO DE ERROR: 4545 PARA EL USUARIO: ${user_id}`);
+    throw new Error('No se pudo actualizar el plan del usuario después de múltiples intentos.');
+}
+
+
+
+
+  async create_error_schema(user: string, body: any) {
+    try {
+      console.log(body)
+
+      await this.errorService.createNewError(user, body);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
 
 
 

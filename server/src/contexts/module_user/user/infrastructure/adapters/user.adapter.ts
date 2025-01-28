@@ -18,6 +18,8 @@ import { personalAccountUpdateRequest } from '../../application/adapter/dto/HTTP
 import { UserPersonalInformationResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.information.response';
 import { UserPreferenceResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.preferences.response';
 import { UserFactory } from '../../application/service/user.factory';
+import { OnEvent } from '@nestjs/event-emitter';
+import { downgrade_plan_contact, get_mongo_id } from 'src/contexts/module_shared/event-emmiter/events';
 
 @Injectable()
 export class UserAdapter implements UserAdapterInterface {
@@ -28,6 +30,7 @@ export class UserAdapter implements UserAdapterInterface {
     @Inject('UserMapperInterface')
     private readonly userMapper: UserMapperInterface,
   ) { }
+
 
 
 
@@ -47,6 +50,15 @@ export class UserAdapter implements UserAdapterInterface {
       );
 
 
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  @OnEvent(downgrade_plan_contact)
+  async downgradeplan(userId: string): Promise<any> {
+    try {
+      return await this.userService.removeActiveRelationOfUser(userId);
     } catch (error: any) {
       throw error;
     }
@@ -108,6 +120,19 @@ export class UserAdapter implements UserAdapterInterface {
   async getActiveRelationsOfUser(userRequestId: string): Promise<any> {
     try {
       return await this.userService.getActiveRelationOfUser(userRequestId);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
+  @OnEvent(get_mongo_id)
+  async getMongoIdByClerkId(clerk_id: string): Promise<any> {
+    try {
+      console.log(clerk_id)
+      return await this.userService.getMongoIdByClerkId(clerk_id)
+
+
     } catch (error: any) {
       throw error;
     }

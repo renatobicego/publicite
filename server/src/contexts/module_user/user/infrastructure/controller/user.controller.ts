@@ -281,7 +281,7 @@ export class UserController {
   // async test(
   // ): Promise<string> {
   //   try {
-  //     return await this.UserServiceInterface.getLimitContactsFromUserByUserId("66fac933316723a55b9d0c90");
+  //     return await this.userAdapter.downgradeplan("66fac933316723a55b9d0c90");
   //   } catch (error: any) {
   //     throw error;
   //   }

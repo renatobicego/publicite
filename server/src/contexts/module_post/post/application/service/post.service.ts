@@ -35,7 +35,6 @@ export class PostService implements PostServiceInterface {
   ) { }
 
 
-
   async activateOrDeactivatePost(_id: string, activate: boolean, postBehaviourType: PostBehaviourType, userRequestId: string): Promise<any> {
     try {
       if (activate) {
@@ -121,7 +120,7 @@ export class PostService implements PostServiceInterface {
     }
   }
 
-  async desactivateAllPost(userId: string): Promise<void> {
+  async desactivatePostByUserId(userId: string): Promise<void> {
     try {
       //Enviar notificarion
       let totalLibresExceded = 0;
@@ -246,6 +245,7 @@ export class PostService implements PostServiceInterface {
       throw error;
     }
   }
+
 
 
 

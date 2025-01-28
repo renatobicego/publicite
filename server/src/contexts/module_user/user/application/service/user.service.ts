@@ -16,6 +16,7 @@ import { UP_clerkUpdateRequestDto } from 'src/contexts/module_webhook/clerk/appl
 import { UserFindAllResponse } from '../adapter/dto/HTTP-RESPONSE/user.response.dto';
 import { UserType } from '../../domain/entity/enum/user.enums';
 import { UserRelation } from '../../domain/entity/userRelation.entity';
+import { OnEvent } from '@nestjs/event-emitter';
 
 interface userWithPostsAndSubscriptions {
   posts: [{
@@ -41,6 +42,7 @@ export class UserService implements UserServiceInterface {
     private readonly logger: MyLoggerService,
     @InjectConnection() private readonly connection: Connection,
   ) { }
+
 
 
 
@@ -293,6 +295,16 @@ export class UserService implements UserServiceInterface {
     }
   }
 
+  async getMongoIdByClerkId(clerk_id: string): Promise<void> {
+    try {
+      return await this.userRepository.getMongoIdByClerkId(clerk_id);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
+
 
 
   async isThisUserAllowedToPost(authorId: string, postBehaviourType: string): Promise<boolean> {
@@ -397,6 +409,29 @@ export class UserService implements UserServiceInterface {
 
 
 
+  async removeActiveRelationOfUser(userId: string, session?: any): Promise<any> {
+    try {
+      const limitContact: number = await this.getLimitContactsFromUserByUserId(userId)
+      let activeRelations: [] = await this.getActiveRelationOfUser(userId)
+      let contactExceded: number = 0;
+      const activeRelationsLenght: number = activeRelations.length ?? 0;
+
+      if (limitContact < activeRelationsLenght) {
+        contactExceded = activeRelationsLenght - limitContact;
+        this.logger.warn("Limite de contactos: " + limitContact + " Contactos actuales: " + activeRelationsLenght + " Contactos a eliminar: " + contactExceded)
+        const contactsToDelete: any[] = activeRelations.slice(limitContact, (limitContact + contactExceded));
+        return await this.userRepository.removeActiveRelationOfUser(userId, contactsToDelete, session);
+
+      } else {
+        this.logger.warn("Limite de contactos: " + limitContact + " Contactos actuales: " + activeRelationsLenght + " Contactos a eliminar: " + contactExceded)
+        return true
+      }
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
   async saveNewPostInUser(
     postId: string,
     authorId: string,
@@ -421,15 +456,15 @@ export class UserService implements UserServiceInterface {
 
   async setNewActiveUserRelations(activeRelations: string[], userRequestId: string): Promise<any> {
     try {
-      
+
       if (activeRelations.length <= 0) return null
       const newActiveRelationLength = activeRelations.length
-      const limitAvailableOfUser = await this.getLimitContactsFromUserByUserId(userRequestId)
+      const limitAvailableOfUser: number = await this.getLimitContactsFromUserByUserId(userRequestId)
 
       if (newActiveRelationLength > limitAvailableOfUser) {
         throw new BadRequestException("El usuario no puede tener mas de " + limitAvailableOfUser + " contactos activos")
       }
-      
+
       return await this.userRepository.setNewActiveUserRelations(activeRelations, userRequestId);
     } catch (error: any) {
       throw error;
