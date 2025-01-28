@@ -73,6 +73,7 @@ export class NotificationRepository implements NotificationRepositoryInterface {
                 await this.notificationBaseDocument
                     .find({ user: id })
                     .limit(limit + 1)
+                    .populate('post', '_id title description frequencyPrice imagesUrls petitionType postType price toPrice') 
                     .sort({ date: -1 })
                     .skip((page - 1) * limit)
 
