@@ -1,33 +1,40 @@
-import { DropdownItem, Image, Link, useDisclosure } from "@nextui-org/react";
+import { Image, Link, useDisclosure } from "@nextui-org/react";
 import {
   NotificationBody,
   NotificationCard,
   NotificationImage,
   NotificationOptions,
 } from "../NotificationCard";
-import { Good, PostContactNotification } from "@/types/postTypes";
+import { ContactSellerNotification } from "@/types/postTypes";
 import { FILE_URL, POSTS } from "@/utils/data/urls";
 import { showDate } from "@/utils/functions/dates";
-import { parseDate, parseZonedDateTime } from "@internationalized/date";
-import ContactPetition from "@/components/modals/ContactPetition/ContactPetition";
+import { parseZonedDateTime } from "@internationalized/date";
+import { lazy } from "react";
+const ContactPetition = lazy(
+  () => import("@/components/modals/ContactPetition/ContactPetition")
+);
 
 const NewContactPost = ({
   notification,
 }: {
-  notification: PostContactNotification;
+  notification: ContactSellerNotification;
 }) => {
-  const { post } = notification;
-  const { imagesUrls } = post as Good;
+  const {
+    frontData: {
+      contactSeller: { post, client },
+    },
+  } = notification;
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const messageToDisplay = `${client.name} ${client.lastName} te ha contactado por el anuncio de "${post.title}".`;
   return (
     <NotificationCard isNew>
       <NotificationImage>
         <Image
           radius="sm"
           src={
-            post.postType === "petition"
-              ? "/logo.png"
-              : FILE_URL + imagesUrls[0]
+            "imagesUrls" in post && post.imagesUrls
+              ? FILE_URL + post.imagesUrls[0]
+              : "/logo.png"
           }
           alt="foto"
           className="object-cover"
@@ -36,7 +43,7 @@ const NewContactPost = ({
           }}
         />
       </NotificationImage>
-      <NotificationBody>{notification.message}</NotificationBody>
+      <NotificationBody>{messageToDisplay}</NotificationBody>
       <NotificationOptions
         date={showDate(parseZonedDateTime(notification.date))}
         items={[
@@ -50,15 +57,10 @@ const NewContactPost = ({
             href: `${POSTS}/${post._id}`,
             className: "text-text-color",
           },
-          {
-            label: "Rechazar Solicitud",
-            color: "danger",
-          },
         ]}
       />
       {isOpen && (
         <ContactPetition
-          post={post}
           isOpen={true}
           onOpenChange={onOpenChange}
           notification={notification}

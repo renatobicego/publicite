@@ -1,11 +1,14 @@
-
+import NewContactPost from "@/components/notifications/contactSeller/NewContactPost";
 import GroupInvitation from "@/components/notifications/groups/GroupNotification";
 import MagazineNotificationCard from "@/components/notifications/magazines/MagazineNotification";
 import PostActivityNotificationCard from "@/components/notifications/postsActivity/PostActivityNotification";
 import UserRelationNotificationCard from "@/components/notifications/users/UserRelationNotification";
 import { GroupNotification } from "@/types/groupTypes";
 import { MagazineNotification } from "@/types/magazineTypes";
-import { PostActivityNotification } from "@/types/postTypes";
+import {
+  ContactSellerNotification,
+  PostActivityNotification,
+} from "@/types/postTypes";
 import { UserRelationNotification } from "@/types/userTypes";
 import { Spinner } from "@nextui-org/react";
 
@@ -44,6 +47,13 @@ const NotificationsContent = ({
           <PostActivityNotificationCard
             key={notification._id}
             notification={notification as PostActivityNotification}
+          />
+        );
+      case notification.event.includes("contact"):
+        return (
+          <NewContactPost
+            key={notification._id}
+            notification={notification as ContactSellerNotification}
           />
         );
       default:

@@ -1,3 +1,4 @@
+import { useConfigData } from "@/app/(root)/providers/userDataProvider";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import UserRelationsGrid from "@/components/grids/UserRelationsGrid";
 import ManageActiveUserRelationsModal from "@/components/modals/ManageActiveUserRelations/ManageActiveUserRelationsModal";
@@ -18,6 +19,7 @@ const UserRelations = ({
 }) => {
   const [solapaSelected, setSolapaSelected] =
     useState<UserRelationsType>("all");
+  const { configData } = useConfigData();
 
   const tabs: { key: UserRelationsType; label: string }[] = [
     {
@@ -48,8 +50,15 @@ const UserRelations = ({
       case "all":
         return items;
       case "active":
-        // TODO: implementar
-        return items;
+        const activeRelations = configData?.activeRelations ?? [];
+
+        // Create a Set of active relation IDs for faster lookups
+        const activeRelationIds = new Set(
+          activeRelations.map((relation) => relation._id)
+        );
+
+        // Filter items by checking if their IDs exist in the Set
+        return items.filter((relation) => activeRelationIds.has(relation._id));
       case "contacts":
         return items.filter((item) => item.typeRelationA === "contacts");
       case "friends":
@@ -59,7 +68,7 @@ const UserRelations = ({
       default:
         return items;
     }
-  }, [solapaSelected, user.userRelations]);
+  }, [configData?.activeRelations, solapaSelected, user.userRelations]);
   return (
     <>
       {isMyProfile && (

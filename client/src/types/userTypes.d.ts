@@ -28,8 +28,7 @@ export interface GetUser
   extends Omit<
     User,
     "userPreferences" | "clerkId" | "createdTime" | "isActive"
-  > {
-}
+  > {}
 
 export interface UserPreferences {
   searchPreference: ObjectId[] | PostCategory[];
@@ -145,6 +144,12 @@ export interface UserRelations {
   typeRelationB: UserRelation;
 }
 
+export interface ActiveUserRelation
+  extends Omit<UserRelations, "userA" | "userB"> {
+  userA: ObjectId;
+  userB: ObjectId;
+}
+
 export interface NewContactRelationNotification {
   _id: ObjectId;
   user: Pick<User, "_id" | "username" | "profilePhotoUrl">;
@@ -158,7 +163,7 @@ export interface UserRelationNotification extends BaseNotification {
       userFrom: Pick<User, "_id" | "username" | "profilePhotoUrl">;
       typeRelation: UserRelation;
       _id?: ObjectId;
-    }
+    };
   };
 }
 export type UserRelationNotificationType =

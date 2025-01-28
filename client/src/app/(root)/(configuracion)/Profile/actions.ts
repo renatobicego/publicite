@@ -10,6 +10,7 @@ import {
 import { Board } from "@/types/board";
 import { Subscription } from "@/types/subscriptions";
 import {
+  ActiveUserRelation,
   EditBusinessProfileProps,
   EditPersonProfileProps,
   EditProfileProps,
@@ -17,7 +18,7 @@ import {
   UserRelations,
   UserType,
 } from "@/types/userTypes";
-import { currentUser, User } from "@clerk/nextjs/server";
+import { auth, currentUser, User } from "@clerk/nextjs/server";
 
 export const editProfile = async (
   formData: EditProfileProps,
@@ -76,7 +77,7 @@ export interface ConfigData {
   postsPacks: Subscription[];
   board: Board;
   userPreferences: UserPreferences;
-  activeRelations: UserRelations[];
+  activeRelations: ActiveUserRelation[];
 }
 export const getConfigData = async (user: {
   username?: string;
@@ -85,34 +86,47 @@ export const getConfigData = async (user: {
   if (!user?.username) {
     return;
   }
-  const userBoard = await getBoardByUsername(user?.username as string);
-  const subscriptions =
-    (await getSubscriptionsOfUser(user?.id as string)) || [];
-  const accountType = subscriptions.find(
-    (subscription: Subscription) => !subscription.subscriptionPlan.isPack
-  );
-  const postsPacks = subscriptions.filter(
-    (subscription: Subscription) => subscription.subscriptionPlan.isPack
-  );
-  const preferences = await getUserPreferences(user.username);
-  if (!preferences || preferences.error || !userBoard || userBoard.error) {
-    return;
+  try {
+    const token = await auth().getToken({ template: "testing" });
+    // Use Promise.all to fetch data concurrently
+    const [userBoard, subscriptions, preferences] = await Promise.all([
+      getBoardByUsername(user.username, token),
+      getSubscriptionsOfUser(user.id),
+      getUserPreferences(user.username, token),
+    ]);
+
+    // Handle cases where the required data is missing or errored
+    if (!preferences || preferences.error || !userBoard || userBoard.error) {
+      return;
+    }
+
+    const accountType = subscriptions?.find(
+      (subscription: Subscription) => !subscription.subscriptionPlan.isPack
+    );
+    const postsPacks =
+      subscriptions?.filter(
+        (subscription: Subscription) => subscription.subscriptionPlan.isPack
+      ) || [];
+
+    const configData: ConfigData = {
+      accountType,
+      postsPacks,
+      board: userBoard.board
+        ? {
+            ...userBoard.board,
+            user: {
+              name: userBoard.name,
+              username: userBoard.username,
+              profilePhotoUrl: userBoard.profilePhotoUrl,
+            },
+          }
+        : null,
+      userPreferences: preferences,
+      activeRelations: [], // You can populate this based on your needs
+    };
+
+    return configData;
+  } catch (error) {
+    throw error;
   }
-  const configData: ConfigData = {
-    accountType,
-    postsPacks,
-    board: userBoard.board
-      ? {
-          ...userBoard.board,
-          user: {
-            name: userBoard.name,
-            username: userBoard.username,
-            profilePhotoUrl: userBoard.profilePhotoUrl,
-          },
-        }
-      : null,
-    userPreferences: preferences,
-    activeRelations: [],
-  };
-  return configData;
 };

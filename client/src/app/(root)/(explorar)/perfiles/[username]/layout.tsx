@@ -11,6 +11,8 @@ import { redirect } from "next/navigation";
 import { UserRelationNotification, UserRelations } from "@/types/userTypes";
 import { toastifyError } from "@/utils/functions/toastify";
 import BoardLocalData from "./(components)/BoardLocalData";
+import Loading from "./loading";
+import { Suspense } from "react";
 
 export default async function ProfileLayout(props: {
   params: Promise<{ username: string }>;
@@ -61,29 +63,53 @@ export default async function ProfileLayout(props: {
   let friendRequests: UserRelationNotification[] = [];
   if (isMyProfile) {
     const friendRequestsFromDb = await getFriendRequests(params.username);
-    if (friendRequestsFromDb &&"error" in friendRequestsFromDb) {
+    if (friendRequestsFromDb && "error" in friendRequestsFromDb) {
       toastifyError(friendRequestsFromDb.error);
     } else {
       friendRequests = friendRequestsFromDb || [];
     }
   }
   return (
-    <main className="flex min-h-screen flex-col items-start main-style gap-4 md:gap-6 xl:gap-8">
-      <BreadcrumbsAdmin items={breadcrumbsItems} />
-      <div className="items-start flex gap-4 justify-between w-full max-md:flex-wrap">
-        <UserInfo
-          user={user}
-          isMyProfile={isMyProfile}
-          isMyContact={isMyContact}
-        />
-        <BoardLocalData board={user.board} user={user} isMyProfile={isMyProfile} />
-      </div>
-      <UserSolapas
-        user={user}
-        isMyProfile={isMyProfile}
-        friendRequests={friendRequests}
-      />
-      {children}
-    </main>
+    <Suspense fallback={<Loading />}>
+      <main className="flex min-h-screen flex-col items-start main-style gap-4 md:gap-6 xl:gap-8">
+        <BreadcrumbsAdmin items={breadcrumbsItems} />
+        <div className="items-start flex gap-4 justify-between w-full max-md:flex-wrap">
+          <Suspense
+            fallback={
+              <div className="h-40 w-full max-w-md bg-gray-200 animate-pulse rounded-lg"></div>
+            }
+          >
+            <UserInfo
+              user={user}
+              isMyProfile={isMyProfile}
+              isMyContact={isMyContact}
+            />
+          </Suspense>
+          <Suspense
+            fallback={
+              <div className="h-40 w-full max-w-md bg-gray-200 animate-pulse rounded-lg"></div>
+            }
+          >
+            <BoardLocalData
+              board={user.board}
+              user={user}
+              isMyProfile={isMyProfile}
+            />
+          </Suspense>
+        </div>
+        <Suspense
+          fallback={
+            <div className="h-20 w-full bg-gray-200 animate-pulse rounded-lg"></div>
+          }
+        >
+          <UserSolapas
+            user={user}
+            isMyProfile={isMyProfile}
+            friendRequests={friendRequests}
+          />
+        </Suspense>
+        {children}
+      </main>
+    </Suspense>
   );
 }

@@ -22,7 +22,7 @@ export const getBoards = async (searchTerm: string | null, page: number) => {
       hasMore: data.getBoardByAnnotationOrKeyword.hasMore,
     };
   } catch (error) {
-    return handleApolloError(error)
+    return handleApolloError(error);
   }
 };
 
@@ -39,7 +39,7 @@ export const postBoard = async (values: any) => {
 
     return data.createBoard;
   } catch (error) {
-    return handleApolloError(error)
+    return handleApolloError(error);
   }
 };
 
@@ -56,13 +56,16 @@ export const putBoard = async (id: string, values: any) => {
     });
     return data.updateBoardById;
   } catch (error) {
-    return handleApolloError(error)
+    return handleApolloError(error);
   }
 };
 
-export const getBoardByUsername = async (username: string) => {
+export const getBoardByUsername = async (
+  username: string,
+  token?: string | null
+) => {
   try {
-    const { context } = await getApiContext();
+    const { context } = await getApiContext(false, token);
     const { data } = await query({
       query: getBoardByUsernameQuery,
       variables: { username },
@@ -70,6 +73,6 @@ export const getBoardByUsername = async (username: string) => {
     });
     return data.findUserByUsername;
   } catch (error) {
-    return handleApolloError(error)
+    return handleApolloError(error);
   }
 };

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import DataBox, { DataItem, EditButton } from "../DataBox";
+import DataBox, { EditButton } from "../DataBox";
 import { Button, Slider } from "@nextui-org/react";
 import { useBackground } from "@/app/(root)/providers/backgroundProvider";
 import { UserPreferences } from "@/types/userTypes";

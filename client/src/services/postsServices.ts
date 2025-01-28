@@ -13,6 +13,7 @@ import {
   deletePostMutation,
   deletePostReactionMutation,
   editPostMutation,
+  getActiveRelationsQuery,
   getPostByIdQuery,
   getPostCategories,
   getPostsOfFriendsQuery,
@@ -28,6 +29,7 @@ import { ApolloError } from "@apollo/client";
 import { handleApolloError } from "@/utils/functions/errorHandler";
 import { ContactPostsVisibility } from "@/utils/data/fetchDataByType";
 import { getApiContext } from "./apiContext";
+import { ActiveUserRelation, UserRelations } from "@/types/userTypes";
 
 export const getPostData = async (id: string) => {
   try {
@@ -313,6 +315,21 @@ export const putActiveStatus = async (
     return {
       message: "Estado de visibilidad del anuncio actualizado exitosamente",
     };
+  } catch (error) {
+    return handleApolloError(error);
+  }
+};
+
+export const getActiveRelations = async (): Promise<
+  ActiveUserRelation[] | { error: string }
+> => {
+  try {
+    const { context } = await getApiContext(true);
+    const { data } = await getClient().query({
+      query: getActiveRelationsQuery,
+      context,
+    });
+    return data.getActiveRelationsOfUser;
   } catch (error) {
     return handleApolloError(error);
   }

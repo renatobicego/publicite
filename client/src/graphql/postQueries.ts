@@ -236,3 +236,15 @@ export const putActiveStatusMutation = gql`
     )
   }
 `;
+
+export const getActiveRelationsQuery = gql`
+  query GetActiveRelationsOfUser {
+    getActiveRelationsOfUser {
+      _id
+      typeRelationA
+      typeRelationB
+      userA
+      userB
+    }
+  }
+`;

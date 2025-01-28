@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import FormCard from "../FormCard";
 import { Button, Select, Selection, SelectItem } from "@nextui-org/react";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
@@ -6,6 +6,8 @@ import { PostCategory } from "@/types/postTypes";
 import { getCategories } from "@/services/postsServices";
 import { changeUserPreferences } from "@/services/userServices";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
+import { useDispatch } from "react-redux";
+import { useConfigData } from "../../providers/userDataProvider";
 
 const SearchTermsForm = ({
   setIsFormVisible,
@@ -19,7 +21,7 @@ const SearchTermsForm = ({
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [categories, setCategories] = useState<PostCategory[]>();
-
+  const { updateSearchTerms } = useConfigData();
   useEffect(() => {
     getCategories().then((data) => {
       setCategories(data);
@@ -28,14 +30,20 @@ const SearchTermsForm = ({
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
+    const newValues = Array.from(values) as string[];
     const res = await changeUserPreferences({
-      searchPreference: Array.from(values) as string[],
+      searchPreference: newValues,
     });
     if (res.error) {
       setIsSubmitting(false);
       toastifyError(res.error);
       return;
     }
+    updateSearchTerms(
+      categories?.filter((category) =>
+        newValues.includes(category._id) ? category : null
+      ) as PostCategory[]
+    );
     setIsSubmitting(false);
     toastifySuccess("Preferencias guardadas");
     setIsFormVisible(false);

@@ -159,6 +159,28 @@ export const getAllNotificationsQuery = gql`
               username
             }
           }
+          contactSeller {
+            client {
+              _id
+              email
+              lastName
+              message
+              name
+              phone
+              username
+            }
+            post {
+              _id
+              title
+              description
+              frequencyPrice
+              imagesUrls
+              petitionType
+              postType
+              price
+              toPrice
+            }
+          }
           postActivity {
             notificationPostType
             user {

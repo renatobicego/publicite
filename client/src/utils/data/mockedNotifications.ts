@@ -1,5 +1,5 @@
 import {
-  PostContactNotification,
+  ContactSellerNotification,
   PostSharedNotification,
   ReviewPostNotification,
 } from "@/types/postTypes";
@@ -9,45 +9,78 @@ import { PaymentSuccesNotification } from "@/types/subscriptions";
 import { MagazineInvitationNotification } from "@/types/magazineTypes";
 import { GroupNotification } from "@/types/groupTypes";
 
-export const mockedNewContactPost: PostContactNotification = {
+export const mockedNewContactPost: ContactSellerNotification = {
   _id: "1",
   date: "2022-01-01",
-  message: "¡Has recibido una petición de contacto!",
-  post: mockedPosts[0],
-  contactPetition: {
-    email: "email@example.com",
-    message: "Este es el mensaje enviado por el usuario renatobicego",
-    phone: "1234567890",
-    post: mockedPosts[0]._id,
-    fullName: "Renato Bicego",
+  backData: { userIdTo: "1", userIdFrom: "2" },
+  event: "contact_seller_new_request",
+  frontData: {
+    contactSeller: {
+      client: {
+        email: "email@example.com",
+        message: "Este es el mensaje enviado por el usuario maxi",
+        phone: "1234567890",
+        lastName: "Cattaneo",
+        name: "Maxi",
+        post: mockedPosts[0]._id,
+        _id: "1",
+        username: "maxi",
+      },
+      post: mockedPosts[0],
+    },
   },
+  isActionsAvailable: true,
+  previousNotificationId: null,
+  viewed: false,
 };
-export const mockedNewContactPostSamePost: PostContactNotification = {
-  _id: "1a",
-  date: "2024-01-01",
-  message: "¡Has recibido una petición de contacto!",
-  post: mockedPosts[0],
-  contactPetition: {
-    email: "email@example.com",
-    message: "Este es el mensaje enviado por el usuario maxi",
-    phone: "1234567890",
-    post: mockedPosts[0]._id,
-    fullName: "Maxi Cattaneo",
+export const mockedNewContactPostSamePost: ContactSellerNotification = {
+  _id: "1qs",
+  date: "2022-01-01",
+  backData: { userIdTo: "1", userIdFrom: "2" },
+  event: "contact_seller_new_request",
+  frontData: {
+    contactSeller: {
+      client: {
+        email: "email@example.com",
+        message: "Este es el mensaje enviado por el usuario maxi",
+        phone: "1234567890",
+        lastName: "Cattaneo",
+        name: "Maxi",
+        post: mockedPosts[0]._id,
+        _id: "1a",
+        username: "maxi",
+      },
+      post: mockedPosts[0],
+    },
   },
+  isActionsAvailable: true,
+  previousNotificationId: null,
+  viewed: false,
 };
 
-export const mockedNewContactPost2: PostContactNotification = {
-  _id: "12",
-  date: "2024-01-01",
-  message: "¡Has recibido una petición de contacto!",
-  post: mockedPosts[1],
-  contactPetition: {
-    email: "email@example.com",
-    message: "Este es el mensaje enviado por el usuario maxi",
-    phone: "1234567890",
-    post: mockedPosts[1]._id,
-    fullName: "Maxi Cattaneo",
+export const mockedNewContactPost2: ContactSellerNotification = {
+  _id: "1sA",
+  date: "2022-01-01",
+  backData: { userIdTo: "1", userIdFrom: "2" },
+  event: "contact_seller_new_request",
+  frontData: {
+    contactSeller: {
+      client: {
+        email: "email@example.com",
+        message: "Este es el mensaje enviado por el usuario maxi",
+        phone: "1234567890",
+        lastName: "Cattaneo",
+        name: "Maxi",
+        post: mockedPosts[1]._id,
+        _id: "1",
+        username: "maxi",
+      },
+      post: mockedPosts[1],
+    },
   },
+  isActionsAvailable: true,
+  previousNotificationId: null,
+  viewed: false,
 };
 
 export const mockedNewContactRelation: NewContactRelationNotification = {

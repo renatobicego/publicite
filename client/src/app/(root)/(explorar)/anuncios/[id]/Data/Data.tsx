@@ -4,22 +4,28 @@ import { Good, Petition, Service } from "@/types/postTypes";
 import { parseDateTime } from "@internationalized/date";
 import ReviewsStars from "./ReviewsStars";
 import CategoryChip from "@/components/chips/CategoryChip";
-import ServiceChip from "@/components/chips/ServiceChip";
 import ShareButton from "@/components/buttons/ShareButton";
 import SaveButton from "@/components/buttons/SaveMagazine/SaveButton";
 import AccordionData from "./AccordionData/AccordionData";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { EDIT_POST } from "@/utils/data/urls";
 import { Link } from "@nextui-org/react";
-import ContactPetitionsList from "@/components/modals/ContactPetition/ContactPetitionsList";
-import PetitionChip from "@/components/chips/PetitionChip";
-import ContactModal from "@/components/modals/ContactModal/ContactModal";
 import { SignedIn } from "@clerk/nextjs";
-import OptionsDropdown from "./OptionsDropdown/OptionsDropdown";
-import MatchPetitionPost from "@/components/modals/MatchPetitionPost";
 import { formatTotal } from "@/utils/functions/utils";
-import ReactToPost from "@/components/buttons/PostReactions/ReactToPost";
 import PostReactionsContainer from "@/components/buttons/PostReactions/PostReactionsContainer";
+import { lazy } from "react";
+const ContactPetitionsList = lazy(
+  () => import("@/components/modals/ContactPetition/ContactPetitionsList")
+);
+const MatchPetitionPost = lazy(
+  () => import("@/components/modals/MatchPetitionPost")
+);
+const ContactModal = lazy(
+  () => import("@/components/modals/ContactModal/ContactModal")
+);
+const ServiceChip = lazy(() => import("@/components/chips/ServiceChip"));
+const PetitionChip = lazy(() => import("@/components/chips/PetitionChip"));
+const OptionsDropdown = lazy(() => import("./OptionsDropdown/OptionsDropdown"));
 
 const Data = async ({
   post,
@@ -113,7 +119,7 @@ const Data = async ({
               Editar Anuncio
             </PrimaryButton>
           ) : (
-            <ContactModal postId={post._id} />
+            <ContactModal postId={post._id} authorId={post.author._id} />
           )}
           <div className="flex gap-2">
             {isAuthor && <ContactPetitionsList post={post} />}

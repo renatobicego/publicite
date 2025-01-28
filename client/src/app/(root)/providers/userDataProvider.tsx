@@ -5,10 +5,17 @@ import {
   addPostToMagazine,
   removePostFromMagazine,
 } from "./slices/magazineSlice";
-import { ReactNode } from "react";
-import { UserType } from "@/types/userTypes";
+import { ReactNode, use } from "react";
+import {
+  ActiveUserRelation,
+  UserPreferences,
+  UserRelations,
+  UserType,
+} from "@/types/userTypes";
 import DataInitializer from "./DataInitializer";
-import { setActiveRelations } from "./slices/configSlice";
+import { setActiveRelations, setSearchPreferences } from "./slices/configSlice";
+import { PersistGate } from "redux-persist/integration/react";
+import { PostCategory } from "@/types/postTypes";
 
 export const UserDataProvider = ({
   children,
@@ -24,7 +31,7 @@ export const UserDataProvider = ({
   userType?: UserType;
 }) => {
   // Create a Redux store with preloaded state
-  const store = createStore({
+  const { store, persistor } = createStore({
     user: {
       usernameLogged: username,
       userIdLogged: userId,
@@ -35,8 +42,10 @@ export const UserDataProvider = ({
 
   return (
     <Provider store={store}>
-      <DataInitializer userId={userId} username={username} />
-      {children}
+      <PersistGate loading={null} persistor={persistor}>
+        <DataInitializer userId={userId} username={username} />
+        {children}
+      </PersistGate>
     </Provider>
   );
 };
@@ -69,9 +78,13 @@ export const useConfigData = () => {
   const { configData } = useSelector((state: RootState) => state.config);
   const dispatch = useDispatch();
 
-  const updateActiveRelations = (activeRelations: string[]) => {
+  const updateActiveRelations = (activeRelations: ActiveUserRelation[]) => {
     dispatch(setActiveRelations(activeRelations));
   };
 
-  return { configData, updateActiveRelations };
+  const updateSearchTerms = (searchTerms: PostCategory[]) => {
+    dispatch(setSearchPreferences(searchTerms));
+  };
+
+  return { configData, updateActiveRelations, updateSearchTerms };
 };
