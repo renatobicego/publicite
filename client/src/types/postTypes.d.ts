@@ -185,6 +185,7 @@ export interface AttachedFileValues {
 export interface PetitionContactSeller {
   _id?: string;
   name: string;
+  post: ObjectId;
   email: string;
   lastName: string;
   username?: string;

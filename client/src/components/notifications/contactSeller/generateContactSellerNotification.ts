@@ -8,12 +8,17 @@ import {
 
 const generateContactSellerNotification = (
   post: ObjectId,
-  userSending: Pick<User, "_id" | "username">,
   userIdTo: string,
-  client: PetitionContactSeller
+  client: PetitionContactSeller,
+  userSending: Pick<User, "_id" | "username"> | null
 ) => {
   const notification: Omit<GenerateContactSellerNotification, "_id"> = {
-    ...generateNotification("", userIdTo, userSending._id, null),
+    ...generateNotification(
+      "notification_new_contact",
+      userIdTo,
+      userSending ? userSending._id : "",
+      null
+    ),
     frontData: {
       contactSeller: {
         post,

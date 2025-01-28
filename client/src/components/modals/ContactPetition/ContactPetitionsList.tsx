@@ -11,9 +11,9 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import {
+  ContactSellerNotification,
   Good,
   Petition,
-  PostContactNotification,
   Service,
 } from "@/types/postTypes";
 import { MdContacts } from "react-icons/md";
@@ -32,7 +32,7 @@ const ContactPetitionsList = ({
   userId?: string;
 }) => {
   const [contactPetitions, setContactPetitions] = useState<
-    PostContactNotification[]
+    ContactSellerNotification[]
   >([]);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 

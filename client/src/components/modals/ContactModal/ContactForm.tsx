@@ -1,41 +1,61 @@
-import { createContactPetition } from "@/app/server/postActions";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
 import { CustomInput, CustomTextarea } from "@/components/inputs/CustomInputs";
-import { PetitionContact } from "@/types/postTypes";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { SignedOut, useUser } from "@clerk/nextjs";
 import { Button } from "@nextui-org/react";
 import { Field, Form, Formik, FormikHelpers } from "formik";
 import { contactFormValidation } from "./validation";
+import { PetitionContactSeller } from "@/types/postTypes";
+import { useSocket } from "@/app/socketProvider";
+import { emitContactSellerNotification } from "@/components/notifications/contactSeller/emitNotifications";
 
 const ContactForm = ({
   postId,
   onClose,
+  authorId,
 }: {
   postId: string;
   onClose: () => void;
+  authorId: ObjectId;
 }) => {
   const { user } = useUser();
-  const initialValues: PetitionContact = {
-    userContacting: user?.publicMetadata?.mongoId,
+  const { socket } = useSocket();
+  const initialValues: PetitionContactSeller = {
+    _id: user?.publicMetadata?.mongoId,
     email: user?.emailAddresses[0].emailAddress || "",
     post: postId,
-    fullName: user?.fullName || "",
+    name: user?.firstName || "",
+    lastName: user?.lastName || "",
     phone: undefined,
     message: "",
   };
-  const handleSubmit = async(
-    values: PetitionContact,
-    actions: FormikHelpers<PetitionContact>
+  const handleSubmit = async (
+    values: PetitionContactSeller,
+    actions: FormikHelpers<PetitionContactSeller>
   ) => {
-    const resApi = await createContactPetition(values);
-    if (resApi.error) {
-      toastifyError(resApi.error);
-      actions.setSubmitting(false);
-      return;
-    }
-    toastifySuccess(resApi.message as string);
+    actions.setSubmitting(true);
+
+    emitContactSellerNotification(
+      socket,
+      postId,
+      authorId,
+      values,
+      user
+        ? {
+            _id: user.publicMetadata?.mongoId,
+            username: user.username ? user.username : "",
+          }
+        : null
+    )
+      .then(() => {
+        toastifySuccess("Se ha enviado la solicitud correctamente");
+        onClose();
+      })
+      .catch(() => toastifyError("Error al enviar la solicitud"))
+      .finally(() => {
+        actions.setSubmitting(false);
+      });
   };
   return (
     <Formik
@@ -51,13 +71,23 @@ const ContactForm = ({
             <SignedOut>
               <Field
                 as={CustomInput}
-                name="fullName"
-                label="Nombre Completo"
-                placeholder="Agregue su nombre completo"
+                name="name"
+                label="Nombre"
+                placeholder="Agregue su nombre"
                 isRequired
-                aria-label="nombre completo"
-                isInvalid={!!errors.fullName}
-                errorMessage={errors.fullName}
+                aria-label="nombre"
+                isInvalid={!!errors.name}
+                errorMessage={errors.name}
+              />
+              <Field
+                as={CustomInput}
+                name="lastName"
+                label="Apellido"
+                placeholder="Agregue su apellido"
+                isRequired
+                aria-label="apellido"
+                isInvalid={!!errors.lastName}
+                errorMessage={errors.lastName}
               />
               <Field
                 as={CustomInput}

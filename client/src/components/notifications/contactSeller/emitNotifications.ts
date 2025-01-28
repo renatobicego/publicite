@@ -6,16 +6,16 @@ import generateContactSellerNotification from "./generateContactSellerNotificati
 export const emitContactSellerNotification = (
   socket: Socket | null,
   post: ObjectId,
-  userSending: Pick<User, "_id" | "username">,
   userIdTo: string,
-  client: PetitionContactSeller
+  client: PetitionContactSeller,
+  userSending: Pick<User, "_id" | "username"> | null
 ): Promise<{ status?: number; message?: string }> => {
   return new Promise((resolve, reject) => {
     const notification = generateContactSellerNotification(
       post,
-      userSending,
       userIdTo,
-      client
+      client,
+      userSending
     );
     console.log(notification);
     socket?.emit(

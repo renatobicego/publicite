@@ -11,7 +11,13 @@ import PrimaryButton from "../../buttons/PrimaryButton";
 import { lazy } from "react";
 const ContactForm = lazy(() => import("./ContactForm"));
 
-const ContactModal = ({ postId }: { postId: string }) => {
+const ContactModal = ({
+  postId,
+  authorId,
+}: {
+  postId: string;
+  authorId: ObjectId;
+}) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   return (
@@ -32,7 +38,13 @@ const ContactModal = ({ postId }: { postId: string }) => {
                 Solicitud de Contacto
               </ModalHeader>
               <ModalBody className="pt-0">
-                {isOpen && <ContactForm postId={postId} onClose={onClose} />}
+                {isOpen && (
+                  <ContactForm
+                    postId={postId}
+                    onClose={onClose}
+                    authorId={authorId}
+                  />
+                )}
               </ModalBody>
             </>
           )}

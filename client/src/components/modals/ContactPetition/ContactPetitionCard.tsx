@@ -1,4 +1,4 @@
-import { Good, PostContactNotification } from "@/types/postTypes";
+import { Good, ContactSellerNotification } from "@/types/postTypes";
 import { FILE_URL } from "@/utils/data/urls";
 import {
   Card,
@@ -12,10 +12,13 @@ import ContactPetition from "./ContactPetition";
 const ContactPetitionCard = ({
   contactPetition,
 }: {
-  contactPetition: PostContactNotification;
+  contactPetition: ContactSellerNotification;
 }) => {
-  const { post } = contactPetition;
-  const { contactPetition: info } = contactPetition;
+  const {
+    frontData: {
+      contactSeller: { post, client },
+    },
+  } = contactPetition;
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   return (
     <>
@@ -31,8 +34,7 @@ const ContactPetitionCard = ({
             radius="sm"
             src={FILE_URL + (post as Good).imagesUrls[0]}
             alt="foto"
-                      className="object-cover"
-            
+            className="object-cover"
             classNames={{
               wrapper: "w-full !max-w-full",
             }}
@@ -42,12 +44,14 @@ const ContactPetitionCard = ({
           <h6>{post.title}</h6>
           <p>
             Nombre y Apellido:{" "}
-            <span className="font-semibold">{info.fullName}</span>
+            <span className="font-semibold">
+              {client.name + " " + client.lastName}
+            </span>
           </p>
           <p>
-            Email: <span className="font-semibold">{info.email}</span>
+            Email: <span className="font-semibold">{client.email}</span>
           </p>
-          <p className="line-clamp-2">&quot;{info.message}&quot;</p>
+          <p className="line-clamp-2">&quot;{client.message}&quot;</p>
         </CardBody>
       </Card>
 
@@ -55,7 +59,6 @@ const ContactPetitionCard = ({
         isOpen={isOpen}
         onOpenChange={onOpenChange}
         notification={contactPetition}
-        post={post}
       />
     </>
   );
