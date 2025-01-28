@@ -10,6 +10,7 @@ import {
 import { Board } from "@/types/board";
 import { Subscription } from "@/types/subscriptions";
 import {
+  ActiveUserRelation,
   EditBusinessProfileProps,
   EditPersonProfileProps,
   EditProfileProps,
@@ -76,7 +77,7 @@ export interface ConfigData {
   postsPacks: Subscription[];
   board: Board;
   userPreferences: UserPreferences;
-  activeRelations: UserRelations[];
+  activeRelations: ActiveUserRelation[];
 }
 export const getConfigData = async (user: {
   username?: string;

@@ -34,8 +34,7 @@ const UserSolapas = ({
   const isActiveRelation =
     isMyProfile ||
     configData?.activeRelations.find(
-      (relation) =>
-        relation.userA._id === user._id || relation.userB._id === user._id
+      (relation) => relation.userA === user._id || relation.userB === user._id
     );
 
   useEffect(() => {

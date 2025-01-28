@@ -5,8 +5,13 @@ import {
   addPostToMagazine,
   removePostFromMagazine,
 } from "./slices/magazineSlice";
-import { ReactNode } from "react";
-import { UserPreferences, UserRelations, UserType } from "@/types/userTypes";
+import { ReactNode, use } from "react";
+import {
+  ActiveUserRelation,
+  UserPreferences,
+  UserRelations,
+  UserType,
+} from "@/types/userTypes";
 import DataInitializer from "./DataInitializer";
 import { setActiveRelations, setSearchPreferences } from "./slices/configSlice";
 import { PersistGate } from "redux-persist/integration/react";
@@ -48,6 +53,8 @@ export const UserDataProvider = ({
 export const useUserData = () => {
   const { usernameLogged, userIdLogged, clerkIdLogged, userTypeLogged } =
     useSelector((state: RootState) => state.user);
+  const user = useSelector((state: RootState) => state.user);
+  console.log(user);
 
   return { usernameLogged, userIdLogged, clerkIdLogged, userTypeLogged };
 };
@@ -73,7 +80,7 @@ export const useConfigData = () => {
   const { configData } = useSelector((state: RootState) => state.config);
   const dispatch = useDispatch();
 
-  const updateActiveRelations = (activeRelations: UserRelations[]) => {
+  const updateActiveRelations = (activeRelations: ActiveUserRelation[]) => {
     dispatch(setActiveRelations(activeRelations));
   };
 

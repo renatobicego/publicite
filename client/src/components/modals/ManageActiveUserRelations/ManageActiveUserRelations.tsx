@@ -1,4 +1,4 @@
-import { UserRelations } from "@/types/userTypes";
+import { ActiveUserRelation, UserRelations } from "@/types/userTypes";
 import { CheckboxGroup } from "@nextui-org/react";
 import { useMemo, useState } from "react";
 import CheckboxUser from "./CheckboxUser";
@@ -6,6 +6,7 @@ import { CustomInputWithoutFormik } from "@/components/inputs/CustomInputs";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { putActiveRelations } from "@/services/userServices";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
+import { useConfigData } from "@/app/(root)/providers/userDataProvider";
 
 const ManageActiveUserRelations = ({
   relations,
@@ -21,6 +22,7 @@ const ManageActiveUserRelations = ({
   const [groupSelected, setGroupSelected] = useState(activeRelationsIds);
   const [searchValue, setSearchValue] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { updateActiveRelations } = useConfigData();
 
   const filteredRelations = useMemo(() => {
     return relations.filter((relation) => {
@@ -44,6 +46,15 @@ const ManageActiveUserRelations = ({
       toastifyError(res.error as string);
       return;
     }
+    const newActiveRelations: ActiveUserRelation[] = relations
+      .filter((relation) => groupSelected.includes(relation._id))
+      .map((relation) => ({
+        ...relation,
+        userA: relation.userA._id,
+        userB: relation.userB._id,
+      }));
+
+    updateActiveRelations(newActiveRelations);
     toastifySuccess("Relaciones activas guardadas");
     closeModal();
   };

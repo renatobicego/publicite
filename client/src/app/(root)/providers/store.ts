@@ -37,7 +37,8 @@ const rootReducer = combineReducers({
 const persistConfig = {
   key: "root",
   storage: storageSession,
-  // No whitelist means all reducers will be persisted
+  whitelist: ["magazine", "config"],
+  blacklist: ["user"],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

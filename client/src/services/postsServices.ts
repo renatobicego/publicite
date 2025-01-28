@@ -29,7 +29,7 @@ import { ApolloError } from "@apollo/client";
 import { handleApolloError } from "@/utils/functions/errorHandler";
 import { ContactPostsVisibility } from "@/utils/data/fetchDataByType";
 import { getApiContext } from "./apiContext";
-import { UserRelations } from "@/types/userTypes";
+import { ActiveUserRelation, UserRelations } from "@/types/userTypes";
 
 export const getPostData = async (id: string) => {
   try {
@@ -321,7 +321,7 @@ export const putActiveStatus = async (
 };
 
 export const getActiveRelations = async (): Promise<
-  UserRelations[] | { error: string }
+  ActiveUserRelation[] | { error: string }
 > => {
   try {
     const { context } = await getApiContext(true);

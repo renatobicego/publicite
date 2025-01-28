@@ -4,7 +4,7 @@ import {
   getConfigData,
 } from "../../(configuracion)/Profile/actions";
 import { getActiveRelations } from "@/services/postsServices";
-import { UserRelations } from "@/types/userTypes";
+import { ActiveUserRelation, UserRelations } from "@/types/userTypes";
 
 export interface ConfigState {
   configData?: ConfigData;
@@ -30,7 +30,7 @@ export const fetchConfigData = createAsyncThunk(
       if ("error" in userRelations && userRelations.error) {
         return rejectWithValue(userRelations.error);
       }
-      if (data) data.activeRelations = userRelations as UserRelations[];
+      if (data) data.activeRelations = userRelations as ActiveUserRelation[];
       return data;
     } catch (error) {
       return rejectWithValue(error);
