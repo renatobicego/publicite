@@ -1,27 +1,25 @@
 import { Socket } from "socket.io-client";
-import generateMagazineNotification from "./generateMagazineNotification";
 import { User } from "@/types/userTypes";
-import { Magazine, MagazineNotificationType } from "@/types/magazineTypes";
+import { PetitionContactSeller } from "@/types/postTypes";
+import generateContactSellerNotification from "./generateContactSellerNotification";
 
-export const emitMagazineNotification = (
+export const emitContactSellerNotification = (
   socket: Socket | null,
-  magazine: Pick<Magazine, "_id" | "name" | "ownerType">,
+  post: ObjectId,
   userSending: Pick<User, "_id" | "username">,
   userIdTo: string,
-  event: MagazineNotificationType,
-  previousNotificationId: string | null
+  client: PetitionContactSeller
 ): Promise<{ status?: number; message?: string }> => {
   return new Promise((resolve, reject) => {
-    const notification = generateMagazineNotification(
-      event,
-      { name: magazine.name, _id: magazine._id, ownerType: magazine.ownerType },
-      { username: userSending.username, _id: userSending._id },
+    const notification = generateContactSellerNotification(
+      post,
+      userSending,
       userIdTo,
-      previousNotificationId
+      client
     );
     console.log(notification);
     socket?.emit(
-      "magazine_notifications",
+      "contact_seller_notifications",
       notification,
       (response: { status?: number; message?: string }) => {
         console.log(response);

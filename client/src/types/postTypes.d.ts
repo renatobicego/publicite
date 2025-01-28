@@ -182,21 +182,14 @@ export interface AttachedFileValues {
   _id: string;
 }
 
-export interface PetitionContact {
-  userContacting?: ObjectId;
-  post: ObjectId;
-  fullName: string; // for users not registered
+export interface PetitionContactSeller {
+  _id?: string;
+  name: string;
   email: string;
-  phone?: string; // for users not registered
+  lastName: string;
+  username?: string;
+  phone?: string;
   message: string;
-}
-
-export interface PostContactNotification {
-  _id: ObjectId;
-  message: string;
-  post: Post;
-  date: string;
-  contactPetition: PetitionContact;
 }
 
 export interface PostSharedNotification {
@@ -261,3 +254,21 @@ export type PostActivtyNotificationType =
   | "notification_post_new_reaction" // Han reaccionado al post
   | "notification_post_new_comment" // Han comentado en el post
   | "notification_post_new_comment_response"; // Han respondido a un comentario
+
+export interface ContactSellerNotification extends BaseNotification {
+  frontData: {
+    contactSeller: {
+      post: Good | Service | Petition;
+      client: PetitionContactSeller;
+    };
+  };
+}
+
+export interface GenerateContactSellerNotification extends BaseNotification {
+  frontData: {
+    contactSeller: {
+      post: ObjectId;
+      client: PetitionContactSeller;
+    };
+  };
+}
