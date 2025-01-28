@@ -9,14 +9,20 @@ import Comments from "./Comments/Comments";
 import { mockedPosts } from "@/utils/data/mockedData";
 import RecommendedPosts from "./RecommendedPosts";
 import { currentUser } from "@clerk/nextjs/server";
+import { Suspense } from "react";
+import Loading from "./loading";
 
-export default async function PostPage(props: { params: Promise<{ id: string }> }) {
+export default async function PostPage(props: {
+  params: Promise<{ id: string }>;
+}) {
   const params = await props.params;
   const postData: Good | Service | Petition | { error: string } =
     await getPostData(params.id);
 
-  if(!postData) {
-    return <ErrorCard message="Error al traer los datos. El anuncio no existe."/>
+  if (!postData) {
+    return (
+      <ErrorCard message="Error al traer los datos. El anuncio no existe." />
+    );
   }
 
   if ("error" in postData) {
@@ -43,26 +49,28 @@ export default async function PostPage(props: { params: Promise<{ id: string }> 
   const isPetition = postData.postType === "petition";
 
   return (
-    <main className="flex min-h-screen flex-col items-start main-style gap-6 md:gap-8">
-      <BreadcrumbsAdmin items={breadcrumbsItems} />
-      <section className="w-full flex max-lg:flex-col gap-4 lg:gap-6 3xl:gap-8 relative">
-        {!isPetition && <Images images={(postData as any).imagesUrls} />}
-        <Data post={postData} isAuthor={isAuthor} isPetition={isPetition} />
-      </section>
-      <section className="w-full flex max-lg:flex-col gap-4 lg:gap-6 3xl:gap-8 md:mt-6 xl:mt-8">
-        <Comments
-          comments={postData.comments}
-          post={{
-            _id: postData._id,
-            title: postData.title,
-            postType: postData.postType,
-            imageUrl: "imagesUrls" in postData ? postData.imagesUrls[0] : "",
-          }}
-          isAuthor={isAuthor}
-          authorId={postData.author._id}
-        />
-        <RecommendedPosts recommendedPosts={mockedPosts} />
-      </section>
-    </main>
+    <Suspense fallback={<Loading />}>
+      <main className="flex min-h-screen flex-col items-start main-style gap-6 md:gap-8">
+        <BreadcrumbsAdmin items={breadcrumbsItems} />
+        <section className="w-full flex max-lg:flex-col gap-4 lg:gap-6 3xl:gap-8 relative">
+          {!isPetition && <Images images={(postData as any).imagesUrls} />}
+          <Data post={postData} isAuthor={isAuthor} isPetition={isPetition} />
+        </section>
+        <section className="w-full flex max-lg:flex-col gap-4 lg:gap-6 3xl:gap-8 md:mt-6 xl:mt-8">
+          <Comments
+            comments={postData.comments}
+            post={{
+              _id: postData._id,
+              title: postData.title,
+              postType: postData.postType,
+              imageUrl: "imagesUrls" in postData ? postData.imagesUrls[0] : "",
+            }}
+            isAuthor={isAuthor}
+            authorId={postData.author._id}
+          />
+          <RecommendedPosts recommendedPosts={mockedPosts} />
+        </section>
+      </main>
+    </Suspense>
   );
 }
