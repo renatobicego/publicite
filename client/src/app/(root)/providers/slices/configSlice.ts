@@ -3,8 +3,10 @@ import {
   ConfigData,
   getConfigData,
 } from "../../(configuracion)/Profile/actions";
+import { getActiveRelations } from "@/services/postsServices";
+import { UserRelations } from "@/types/userTypes";
 
-interface ConfigState {
+export interface ConfigState {
   configData?: ConfigData;
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
@@ -24,6 +26,11 @@ export const fetchConfigData = createAsyncThunk(
   ) => {
     try {
       const data = await getConfigData({ username, id: userId });
+      const userRelations = await getActiveRelations();
+      if ("error" in userRelations && userRelations.error) {
+        return rejectWithValue(userRelations.error);
+      }
+      if (data) data.activeRelations = userRelations as UserRelations[];
       return data;
     } catch (error) {
       return rejectWithValue(error);
@@ -36,10 +43,23 @@ const configSlice = createSlice({
   initialState,
   reducers: {
     setActiveRelations(state, action) {
+      console.log(state.configData);
       if (!state.configData) return;
       state.configData = {
         ...state.configData,
         activeRelations: action.payload,
+      };
+    },
+    setSearchPreferences(state, action) {
+      console.log(state.configData);
+
+      if (!state.configData) return;
+      state.configData = {
+        ...state.configData,
+        userPreferences: {
+          ...state.configData?.userPreferences,
+          searchPreference: action.payload,
+        },
       };
     },
   },
@@ -59,6 +79,6 @@ const configSlice = createSlice({
   },
 });
 
-export const { setActiveRelations } = configSlice.actions;
+export const { setActiveRelations, setSearchPreferences } = configSlice.actions;
 
 export default configSlice.reducer;

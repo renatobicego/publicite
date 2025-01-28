@@ -13,7 +13,8 @@ const SearchTerms = ({
   const [isFormVisible, setIsFormVisible] = useState(false);
   const { searchPreference } = userPreferences;
   const length = searchPreference ? searchPreference.length : 0;
-  const lastItem = searchPreference && searchPreference[length - 1] as PostCategory;
+  const lastItem =
+    searchPreference && (searchPreference[length - 1] as PostCategory);
   return (
     <AnimatedBox
       isVisible={isFormVisible}

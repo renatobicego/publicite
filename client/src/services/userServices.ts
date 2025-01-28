@@ -114,15 +114,21 @@ export const changeUserPreferences = async (
   }
 };
 
-export const getUserPreferences = async (username: string) => {
+export const getUserPreferences = async (
+  username: string,
+  token?: string | null
+) => {
   try {
     const res = await fetch(
       `${process.env.API_URL}/user/preferences/${username}`,
       {
         headers: {
-          Authorization: `Bearer ${await auth().getToken({
-            template: "testing",
-          })}`,
+          Authorization: `Bearer ${
+            token ||
+            (await auth().getToken({
+              template: "testing",
+            }))
+          }`,
         },
       }
     );

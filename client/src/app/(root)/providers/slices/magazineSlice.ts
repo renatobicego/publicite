@@ -8,7 +8,7 @@ interface PostInMagazine {
   section: string;
 }
 
-interface MagazineState {
+export interface MagazineState {
   magazines?: Magazine[];
   postsInMagazine: PostInMagazine[];
 }
@@ -66,5 +66,6 @@ const magazineSlice = createSlice({
   },
 });
 
-export const { addPostToMagazine, removePostFromMagazine } = magazineSlice.actions;
+export const { addPostToMagazine, removePostFromMagazine } =
+  magazineSlice.actions;
 export default magazineSlice.reducer;
