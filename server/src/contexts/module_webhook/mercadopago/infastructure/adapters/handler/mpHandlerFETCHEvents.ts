@@ -229,11 +229,6 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
     dataID: string,
   ): Promise<boolean> {
     try {
-      const userId = await this.get_mongo_id("user_2mnTnausBc9NkbcZa3GTaCGMxDX")
-      const result = await this.update_plan_user(userId, downgrade_plan_contact);
-      if (result) await this.update_plan_user(userId, downgrade_plan_post);
-
-      return true
       this.logger.log(
         'The proccess of subscription_authorized_payment (UPDATED) are starting - Class:mpHandlerEvents',
       );
@@ -287,8 +282,11 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
           response_mp_subscription_authorized_payment,
           response_mp_subscription_authorized_payment.id
         );
+        const userId = await this.get_mongo_id(response_mp_subscription_authorized_payment.external_reference)
+        const result = await this.update_plan_user(userId, downgrade_plan_contact);
+        if (result) await this.update_plan_user(userId, downgrade_plan_post);
 
-        // await this.update_plan_user(response_mp_subscription_authorized_payment.external_reference)
+  
 
         // if (isThisSubscriptionWasPaused) {
         //   return true;
