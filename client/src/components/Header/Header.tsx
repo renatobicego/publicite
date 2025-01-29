@@ -57,7 +57,7 @@ const Header = ({ isSignedIn }: { isSignedIn: boolean }) => {
           <Search isFocused={isFocused} setIsFocused={setIsFocused} />
         </NavbarItem>
         <NavbarItem
-          className={`max-w-fit max-lg:hidden transition-all duration-300 ${
+          className={`max-w-fit flex items-center gap-3 max-lg:hidden transition-all duration-300 ${
             isFocused ? "flex-shrink" : ""
           }`}
         >

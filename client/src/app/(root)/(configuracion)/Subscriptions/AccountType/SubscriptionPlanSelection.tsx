@@ -20,7 +20,7 @@ const SubscriptionPlanSelection = ({
       {subscriptionPlans.map((plan) => (
         <SubscriptionCard
           isFree={plan.isFree}
-          key={plan._id}
+          key={plan.isFree ? plan._id : plan.mpPreapprovalPlanId}
           subscriptionPlan={plan}
         />
       ))}

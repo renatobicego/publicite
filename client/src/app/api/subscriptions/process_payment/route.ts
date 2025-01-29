@@ -15,25 +15,26 @@ export async function POST(request: NextRequest) {
     paymentSubscription
       .create({
         body: {
-          auto_recurring: {
-            ...subscriptionPlan.auto_recurring,
-            end_date: getEndDateISO(subscriptionPlan.auto_recurring.frequency, "days"),
-          },
+          // auto_recurring: {
+          //   ...subscriptionPlan.auto_recurring,
+          //   end_date: getEndDateISO(subscriptionPlan.auto_recurring.frequency, "days"),
+          // },
+          auto_recurring: subscriptionPlan.auto_recurring,
           back_url: "http://localhost:3000/",
           card_token_id: formData.token,
           payer_email: formData.payer.email,
           // payer_email: "test_user_1345316664@testuser.com",
           preapproval_plan_id: subscriptionPlan.id,
           reason: subscriptionPlan.reason,
-          external_reference: userId
+          external_reference: userId,
         },
       })
       .then(console.log)
       .catch(console.log);
     return new Response("OK", { status: 200 });
   } catch (error) {
-    console.log(error)
-    return new Response("Error", { status: 500, statusText: error as string  });
+    console.log(error);
+    return new Response("Error", { status: 500, statusText: error as string });
   }
 }
 
@@ -48,7 +49,7 @@ export async function PUT(request: NextRequest) {
     const { formData, subscription } = await request.json();
     paymentSubscription
       .update({
-        id: subscription.id, 
+        id: subscription.id,
         body: {
           card_token_id: formData.token,
         },
@@ -60,4 +61,3 @@ export async function PUT(request: NextRequest) {
     return new Response("Error", { status: 500 });
   }
 }
-

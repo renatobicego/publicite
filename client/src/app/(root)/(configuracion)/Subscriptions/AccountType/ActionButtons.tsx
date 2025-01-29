@@ -17,7 +17,9 @@ const ActionButtons = ({
   onClose: () => void;
   subscriptionPlans: SubscriptionPlan[];
 }) => {
-  const isSamePlan = previousPlan?.subscriptionPlan._id === selectedPlan;
+  const isSamePlanSelected = previousPlan?.subscriptionPlan.isFree // if its free, compare db id
+    ? previousPlan?.subscriptionPlan._id === selectedPlan
+    : previousPlan?.subscriptionPlan.mpPreapprovalPlanId === selectedPlan; // if not compare mp id
   const isFreePlanSelected =
     selectedPlan === subscriptionPlans.find((s) => s.isFree === true)?._id; // ID of the free plan
   const isFreePlanCurrent =
@@ -41,7 +43,7 @@ const ActionButtons = ({
       <Button color="default" variant="light" radius="full" onPress={onClose}>
         Cerrar
       </Button>
-      {!isSamePlan && (
+      {!isSamePlanSelected && (
         <>
           {isFreePlanSelected && !isFreePlanCurrent && (
             <ConfirmModal
@@ -63,7 +65,15 @@ const ActionButtons = ({
             />
           )}
           {!isFreePlanSelected && (
-            <SecondaryButton as={Link} href={`/suscribirse/${selectedPlan}`}>
+            <SecondaryButton
+              as={Link}
+              target="_blank"
+              href={
+                !isFreePlanCurrent && previousPlan
+                  ? `/suscribirse/${selectedPlan}/cambiarPlan/${previousPlan.mpPreapprovalId}`
+                  : `/suscribirse/${selectedPlan}`
+              }
+            >
               Continuar
             </SecondaryButton>
           )}

@@ -40,7 +40,12 @@ const SubscriptionCard = ({
   isFree?: boolean;
 }) => {
   return (
-    <CustomRadio color="secondary" value={subscriptionPlan._id}>
+    <CustomRadio
+      color="secondary"
+      value={
+        isFree ? subscriptionPlan._id : subscriptionPlan.mpPreapprovalPlanId
+      }
+    >
       <div className="flex flex-col gap-1 items-start w-full">
         <div className="w-full flex justify-between items-center gap-4">
           <h4 className="text-sm font-semibold">{subscriptionPlan.reason}</h4>

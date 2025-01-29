@@ -6,19 +6,15 @@ import { CREATE, POSTS } from "@/utils/data/urls";
 const NavMenuItems = () => {
   return (
     <>
-      <NavbarItem>
-        <Link size="sm" className="text-text-color font-medium" href="/">
-          Inicio
-        </Link>
-      </NavbarItem>
-      <NavbarItem>
-        <Link size="sm" className="text-text-color font-medium" href={POSTS}>
-          Explorar
-        </Link>
-      </NavbarItem>
-      <NavbarItem>
-        <PrimaryButton as={Link} href={CREATE}>Publicar</PrimaryButton>
-      </NavbarItem>
+      <Link size="sm" className="text-text-color font-medium" href="/">
+        Inicio
+      </Link>
+      <Link size="sm" className="text-text-color font-medium" href={POSTS}>
+        Explorar
+      </Link>
+      <PrimaryButton as={Link} href={CREATE}>
+        Publicar
+      </PrimaryButton>
     </>
   );
 };

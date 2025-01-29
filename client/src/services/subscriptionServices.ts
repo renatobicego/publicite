@@ -8,6 +8,7 @@ import { PostBehaviourType } from "@/types/postTypes";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import axios from "axios";
 import { getApiContext } from "./apiContext";
+import { Subscription } from "@/types/subscriptions";
 
 export const processPayment = async (
   formData: any,
@@ -24,15 +25,17 @@ export const processPayment = async (
       }
     );
 
-    // if(status !== 200 && status !== 201){
-    //   console.log(data);
-    // }
-
-    // console.log(data)
+    if (status !== 200 && status !== 201) {
+      return {
+        error: "Error al procesar el pago. Por favor intenta de nuevo.",
+      };
+    }
 
     return data;
   } catch (error) {
-    console.log("error", error);
+    return {
+      error: "Error al procesar el pago. Por favor intenta de nuevo.",
+    };
   }
 };
 
@@ -99,7 +102,9 @@ export const getSubscriptionsPlans = async () => {
   return data;
 };
 
-export const getSubscriptionsOfUser = async (userId: string) => {
+export const getSubscriptionsOfUser = async (
+  userId: string
+): Promise<Subscription[] | { error: string }> => {
   try {
     const res = await fetch(process.env.API_URL + "/subscription/" + userId);
     if (!res.ok) {
@@ -111,7 +116,10 @@ export const getSubscriptionsOfUser = async (userId: string) => {
     const data = await res.json();
     return data;
   } catch (error) {
-    console.log(error);
+    return {
+      error:
+        "Error al traer los datos de suscripciones. Por favor intenta de nuevo.",
+    };
   }
 };
 

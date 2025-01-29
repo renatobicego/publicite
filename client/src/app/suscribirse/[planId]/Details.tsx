@@ -1,11 +1,19 @@
 import BackButton from "@/components/buttons/BackButton";
-import { Button, Divider, Image, Link } from "@nextui-org/react";
+import { Divider, Image, Link } from "@nextui-org/react";
 
-const Details = ({ subscriptionPlan }: { subscriptionPlan: any }) => {
+const Details = ({
+  subscriptionPlan,
+  isChangingPlan,
+}: {
+  subscriptionPlan: any;
+  isChangingPlan?: boolean;
+}) => {
   return (
-    <div className="flex-1 flex flex-col justify-start items-start gap-4
-    max-md:px-8 md:max-lg:px-12 mt-12 lg:ml-[10%] 2xl:ml-[20%] lg:mt-24 2xl:mt-36 ">
-      <BackButton/>
+    <div
+      className="flex-1 flex flex-col justify-start items-start gap-4
+    max-md:px-8 md:max-lg:px-12 mt-12 lg:ml-[10%] 2xl:ml-[12%] lg:mt-16 2xl:mt-24 "
+    >
+      <BackButton />
       <div className="flex items-center">
         <Image
           src="/logo.png"
@@ -19,8 +27,16 @@ const Details = ({ subscriptionPlan }: { subscriptionPlan: any }) => {
         <p className="text-sm">Publicité</p>
       </div>
       <h1 className="text-xl md:text-2xl xl:text-3xl font-medium text-light-text">
-        Suscribirte a {subscriptionPlan.reason}
+        Suscribirte a {subscriptionPlan.reason}{" "}
+        {isChangingPlan && "- Cambio de Plan"}
       </h1>
+      {isChangingPlan && (
+        <p>
+          Cambia el plan de suscripción a <em>{subscriptionPlan.reason}</em>. Se
+          cancelará la suscripción actual. En caso de haber un error en la
+          cancelación de la suscripción, <strong>contactar a soporte</strong>.
+        </p>
+      )}
       <div className="flex gap-1 items-center">
         <span className="text-4xl font-semibold text-text-color">
           ${subscriptionPlan.auto_recurring.transaction_amount}
