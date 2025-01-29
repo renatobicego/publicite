@@ -12,7 +12,7 @@ export class MpInvoiceAdapter implements InvoiceAdapterInterface {
   ): Promise<any[]> {
     try {
       const invoice =
-        await this.getInvoicesByExternalReference(external_reference);
+        await this.mpServiceInvoice.getInvoicesByExternalReference(external_reference);
       return invoice;
     } catch (error: any) {
       throw error;

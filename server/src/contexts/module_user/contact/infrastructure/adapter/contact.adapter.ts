@@ -8,6 +8,7 @@ export class ContactAdapter implements ContactAdapterInterface {
     @Inject('ContactServiceInterface')
     private readonly contactService: ContactServiceInterface
   ) { }
+
   async updateContact(contactId: string, updateRequest: UpdateContactRequest): Promise<void> {
     try {
       return await this.contactService.updateContact(contactId, updateRequest);

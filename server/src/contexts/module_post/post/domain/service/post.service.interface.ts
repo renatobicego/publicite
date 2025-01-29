@@ -17,6 +17,8 @@ export interface PostServiceInterface {
   create(post: PostRequest): Promise<void>;
   deletePostById(id: string): Promise<void>;
   deleteCommentById(id: string, userRequestId: string, isAuthorOfPost: boolean): Promise<void>;
+  desactivatePostByUserId(userId: string): Promise<void>;
+
   findPostsByAuthorId(id: string): Promise<void>;
   findPostById(id: string): Promise<any>;
   findAllPostByPostType(
@@ -34,7 +36,6 @@ export interface PostServiceInterface {
   makeReactionSchemaAndSetReactionToPost(postId: string, reaction: { user: string, reaction: string }, session: any): Promise<void>;
   makeCommentSchemaAndPutCommentInPost(postId: string, userCommentId: string, comment: string, session: any): Promise<any>;
   makeResponseAndPutResponseInComment(author: string, commentId: string, response: string, session: any): Promise<any>;
-  desactivateAllPost(userId: string): Promise<void>;
   updatePostById(
     postUpdate: PostUpdateDto,
     id: string,

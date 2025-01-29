@@ -63,7 +63,7 @@ export class UserResolver {
       throw error;
     }
   }
-
+  
   @Query(() => [user_active_relation], {
     nullable: true,
     description: 'Obtiene las relaciones activas del usuario',

@@ -27,7 +27,8 @@ import { ContactSellerModule } from './contexts/module_user/contactSeller/infras
 
 @Module({
   imports: [
-    EventEmitterModule.forRoot(),
+    EventEmitterModule.forRoot(
+    ),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',

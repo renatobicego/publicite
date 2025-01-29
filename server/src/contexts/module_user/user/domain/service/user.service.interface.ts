@@ -13,8 +13,11 @@ export interface UserServiceInterface {
     contactDto: ContactRequest,
     options?: { session?: ClientSession },
   ): Promise<Types.ObjectId>;
-
   createUser(req: User, contactDto: ContactRequest): Promise<string>;
+
+
+  removeActiveRelationOfUser(userId: string, session?: any): Promise<any>;
+
 
   findAllUsers(
     user: string,
@@ -27,6 +30,7 @@ export interface UserServiceInterface {
   getUserPersonalInformationByUsername(username: string): Promise<any>;
   getRelationsFromUserByUserId(userRequestId: string): Promise<any>;
   getActiveRelationOfUser(userRequestId: string, session?: any): Promise<any>;
+  getMongoIdByClerkId(clerk_id: string): Promise<void>
 
   isThisUserAllowedToPost(author: string, postBehaviourType: string): Promise<boolean>;
   getUserPreferencesByUsername(

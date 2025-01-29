@@ -58,7 +58,7 @@ export class FetchToMercadoPagoAdapter implements FetchToMpInterface {
                 method: 'PUT',
                 headers: {
                     Authorization: `Bearer ${MP_ACCESS_TOKEN}`,
-                    'Content-Type': 'application/json', // Asegúrate de incluir Content-Type
+                    'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
                     status: subscription_action,

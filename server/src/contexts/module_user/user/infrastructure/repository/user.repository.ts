@@ -62,6 +62,8 @@ export class UserRepository implements UserRepositoryInterface {
 
 
 
+
+
   async findUserByUsername(username: string): Promise<any> {
     try {
       const userPopulate_userRelation =
@@ -307,6 +309,13 @@ export class UserRepository implements UserRepositoryInterface {
     }
   }
 
+  async getMongoIdByClerkId(clerk_id: string): Promise<any> {
+    try {
+      return await this.user.findOne({ clerkId: clerk_id }).select("_id").lean() ?? null
+    } catch (error: any) {
+      throw error;
+    }
+  }
 
 
 
@@ -546,6 +555,24 @@ export class UserRepository implements UserRepositoryInterface {
       session.endSession();
     }
   }
+
+  async removeActiveRelationOfUser(userRequestId: string, contactsToDelete: any[], session?: any): Promise<any> {
+    try {
+      await this.user.updateOne(
+        { _id: userRequestId },
+        {
+          $pull: {
+            activeRelations: { $in: contactsToDelete },
+          },
+        },
+        { session }
+      );
+      return true
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
 
   async save(reqUser: User, session?: ClientSession): Promise<any> {
     try {

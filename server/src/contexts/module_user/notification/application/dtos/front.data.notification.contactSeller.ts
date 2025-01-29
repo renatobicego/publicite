@@ -9,10 +9,30 @@ export class PostContactSeller {
     title: string;
 
     @Field(() => String)
+    description: string;
+
+
+    @Field(() => String)
+    postType: string;
+
+    @Field(() => String)
+    price: string;
+
+    @Field(() => String)
     imagesUrls: string;
 
-    @Field(() => Int)
-    price: number;
+    @Field(() => String, { nullable: true })
+    petitionType: string;
+
+
+    @Field(() => String, { nullable: true })
+    toPrice: string;
+
+
+    @Field(() => String, { nullable: true })
+    frequencyPrice: string;
+
+
 }
 
 @ObjectType()
