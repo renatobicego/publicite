@@ -253,7 +253,7 @@ export const getNotifications = async (
       hasMore: data.getAllNotificationsFromUserById.hasMore,
     };
   } catch (error: ApolloError | any) {
-    // console.log(error.result.errors);
+    console.log(error);
     return {
       error: "Error al traer las notificaciones.",
     };

@@ -7,7 +7,7 @@ import {
 } from "../NotificationCard";
 import { ContactSellerNotification } from "@/types/postTypes";
 import { FILE_URL, POSTS } from "@/utils/data/urls";
-import { showDate } from "@/utils/functions/dates";
+import { parseIsoDate, showDate } from "@/utils/functions/dates";
 import { parseZonedDateTime } from "@internationalized/date";
 import { lazy } from "react";
 const ContactPetition = lazy(
@@ -45,7 +45,7 @@ const NewContactPost = ({
       </NotificationImage>
       <NotificationBody>{messageToDisplay}</NotificationBody>
       <NotificationOptions
-        date={showDate(parseZonedDateTime(notification.date))}
+        date={showDate(parseIsoDate(notification.date))}
         items={[
           {
             label: "Ver Solicitud",
