@@ -16,8 +16,10 @@ export default async function CheckoutPage(props: {
   params: Promise<{ planId: string }>;
 }) {
   const params = await props.params;
-  const { userId } = auth();
-  const subscriptionsOfUser = await getSubscriptionsOfUser(userId as string);
+  const { sessionClaims } = auth();
+  const subscriptionsOfUser = await getSubscriptionsOfUser(
+    sessionClaims?.metadata.mongoId as string
+  );
   if ("error" in subscriptionsOfUser)
     return <ErrorCard message={subscriptionsOfUser.error} />;
   if (checkIfUserIsSubscribed(subscriptionsOfUser, params.planId, true)) {

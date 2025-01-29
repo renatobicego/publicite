@@ -34,7 +34,7 @@ const Checkout = ({
     const res = await processPayment(
       formData,
       subscriptionPlan,
-      user?.id as string
+      user?.publicMetadata?.mongoId as string
     );
     if ("error" in res) {
       toastifyError(res.error);
