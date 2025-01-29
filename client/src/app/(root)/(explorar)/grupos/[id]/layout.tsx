@@ -1,5 +1,4 @@
 import { Suspense, lazy } from "react";
-import { useRouter } from "next/navigation";
 import BreadcrumbsAdmin from "@/components/BreadcrumbsAdmin";
 import { GROUPS } from "@/utils/data/urls";
 import ErrorCard from "@/components/ErrorCard";
@@ -9,6 +8,7 @@ import type { User } from "@/types/userTypes";
 import type { GroupAdmin } from "@/types/groupTypes";
 import Loading from "./loading";
 import { Skeleton } from "@nextui-org/react";
+import { redirect } from "next/navigation";
 
 const GroupInfo = lazy(() => import("./(components)/GroupInfo"));
 const GroupSolapas = lazy(() => import("@/components/solapas/GroupSolapas"));
@@ -20,7 +20,6 @@ export default async function GroupLayout(props: {
 }) {
   const params = await props.params;
   const { children } = props;
-  const router = useRouter();
 
   const groupData:
     | {
@@ -38,7 +37,7 @@ export default async function GroupLayout(props: {
   const { group, isMember } = groupData;
   const loggedUser = await currentUser();
   if (!loggedUser) {
-    router.push("/iniciar-sesion");
+    redirect("/iniciar-sesion");
     return null;
   }
 
