@@ -26,8 +26,10 @@ export default async function SubscriptionPlans() {
   const subscriptions = await getSubscriptionsPlans();
   const susbcriptionsOfUser = await getSubscriptionsOfUser(userId as string);
 
-  if(subscriptions.error || susbcriptionsOfUser.error){
-    return <ErrorCard message={subscriptions.error || susbcriptionsOfUser.error}/>
+  if (subscriptions.error || "error" in susbcriptionsOfUser) {
+    return (
+      <ErrorCard message={subscriptions.error || "Error obteniendo planes"} />
+    );
   }
 
   return (

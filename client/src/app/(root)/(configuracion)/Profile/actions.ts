@@ -96,7 +96,13 @@ export const getConfigData = async (user: {
     ]);
 
     // Handle cases where the required data is missing or errored
-    if (!preferences || preferences.error || !userBoard || userBoard.error) {
+    if (
+      !preferences ||
+      preferences.error ||
+      !userBoard ||
+      userBoard.error ||
+      "error" in subscriptions
+    ) {
       return;
     }
 
@@ -109,7 +115,7 @@ export const getConfigData = async (user: {
       ) || [];
 
     const configData: ConfigData = {
-      accountType,
+      accountType: accountType as any,
       postsPacks,
       board: userBoard.board
         ? {
