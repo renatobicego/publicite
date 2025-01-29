@@ -1,5 +1,5 @@
 interface contact_seller_post {
-    _id: string;
+    _id: any;
 }
 
 interface contact_seller_client {

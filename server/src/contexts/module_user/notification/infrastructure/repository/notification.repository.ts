@@ -69,13 +69,18 @@ export class NotificationRepository implements NotificationRepositoryInterface {
         page: number,
     ): Promise<any> {
         try {
-            const userNotificationResponse =
-                await this.notificationBaseDocument
-                    .find({ user: id })
-                    .limit(limit + 1)
-                    .populate('post', '_id title description frequencyPrice imagesUrls petitionType postType price toPrice') 
-                    .sort({ date: -1 })
-                    .skip((page - 1) * limit)
+            const userNotificationResponse = await this.notificationBaseDocument
+                .find({ user: id })
+                .limit(limit + 1)
+                .populate({
+                    path: 'frontData.contactSeller.post',
+                    model: 'Post',
+                    select: '_id title description frequencyPrice imagesUrls petitionType postType price toPrice'
+                })
+                .sort({ date: -1 })
+                .skip((page - 1) * limit);
+
+            console.log(userNotificationResponse);
 
             if (!userNotificationResponse)
                 return { notifications: [], hasMore: false };
@@ -202,9 +207,9 @@ export class NotificationRepository implements NotificationRepositoryInterface {
     async saveNotificationContactSeller(notification: NotificationContactSeller, session?: any): Promise<any> {
         try {
 
+
             this.logger.log('Saving notification in repository...');
             const contactSellerNotification = new this.notificationContactSellerModel(notification);
-
             const contactSellerNotificationSave = await contactSellerNotification.save({ session });
 
             return contactSellerNotificationSave._id;

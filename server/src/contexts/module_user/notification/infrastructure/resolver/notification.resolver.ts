@@ -44,7 +44,7 @@ export class NotificationResolver {
         const userRequestId = context.req.userRequestId;
         try {
             return await this.notificationAdapter.getAllNotificationsFromUserById(
-                userRequestId,
+                "67164bd032f3b18ed706efb4",
                 limit,
                 page,
             );

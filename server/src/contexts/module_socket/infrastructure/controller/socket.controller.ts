@@ -82,7 +82,8 @@ export class SocketController {
     @Body() notificationBody: any,
   ): Promise<any> {
     try {
-      return await this.socketAdapter.sendContactSellerNotificationToNotificationService(notificationBody);
+      await this.socketAdapter.sendContactSellerNotificationToNotificationService(notificationBody);
+      return { body: "Success" };
     } catch (error: any) {
       throw error;
     }

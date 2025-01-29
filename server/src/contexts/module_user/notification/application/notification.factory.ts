@@ -9,6 +9,7 @@ import { NotificationPost } from "../domain/entity/notification.post.entity";
 import { NotificationPostType } from "../domain/entity/enum/notification.post.type.enum";
 import { validatePostNotification } from "../domain/notification-factory/validatePostNotification";
 import { NotificationContactSeller } from "../domain/entity/notification.contactSeller.entity";
+import { Types } from "mongoose";
 
 export class NotificationFactory implements NotificationFactoryInterface {
 
@@ -56,7 +57,9 @@ export class NotificationFactory implements NotificationFactoryInterface {
                 this.logger.log("Validating post notification.....");
                 validatePostNotification(notificationData);
             }
-
+            if (notificationType === typeOfNotification.contact_seller_notifications) {
+                frontData.contactSeller.post = new Types.ObjectId(frontData.contactSeller.post);
+            }
             const baseNotification = new Notification(event, viewed, date, user, isActionsAvailable, backData, socketJobId, type, notificationEntityId, previousNotificationId);
             return new NotificationClass(baseNotification, frontData);
         } catch (error: any) {

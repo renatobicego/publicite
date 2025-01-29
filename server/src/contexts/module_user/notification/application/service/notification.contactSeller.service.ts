@@ -34,19 +34,27 @@ export class NotificationContactSellerService implements NotificationContactSell
             const userIdFrom = notificationContactSeller.getbackData.userIdFrom;
             const userIdTo = notificationContactSeller.getbackData.userIdTo;
 
+
             await session.withTransaction(async () => {
 
                 //Crear schema notificacion
                 const notificationId = await this.notificationRepository.saveNotificationContactSeller(notificationContactSeller, session);
                 //Pushear la notificacion al array de notificaciones de usuario.
+                if (!notificationId) throw new InternalServerErrorException("Error was ocurred, notificationId is null - saveNotificationContactSeller")
                 await this.userService.pushNotificationToUserArrayNotifications(notificationId, userIdTo, userIdFrom, session);
-
-
+                const post = {
+                    _id: notificationContactSeller.getPostContactSeller,
+                }
+                const client = notificationContactSeller.getClientContactSeller
+                if (!client || !post) {
+                    throw new InternalServerErrorException("Error was occured CLIENT OR POST in ContactSeller are null")
+                }
                 const contactSellerEntity = new ContactSeller(
-                    notificationContactSeller.getPostContactSeller,
-                    notificationContactSeller.getClientContactSeller,
+                    post,
+                    client,
                     "notificationId",
                 )
+
                 const contactSeller = await this.eventEmitter.emitAsync(
                     contact_seller_new_request,
                     contactSellerEntity

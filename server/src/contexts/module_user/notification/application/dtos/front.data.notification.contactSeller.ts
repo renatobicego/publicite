@@ -18,8 +18,8 @@ export class PostContactSeller {
     @Field(() => String)
     price: string;
 
-    @Field(() => String)
-    imagesUrls: string;
+    @Field(() => [String])
+    imagesUrls: string[];
 
     @Field(() => String, { nullable: true })
     petitionType: string;

@@ -5,7 +5,7 @@ export class NotificationContactSeller extends Notification {
     private frontData: {
         contactSeller: {
             post: {
-                _id: string,
+                _id: any,
             }
             client: {
                 _id: string,
@@ -24,7 +24,7 @@ export class NotificationContactSeller extends Notification {
         frontData: {
             contactSeller: {
                 post: {
-                    _id: string,
+                    _id: any,
                 }
                 client: {
                     _id: string,

@@ -17,7 +17,6 @@ export class ContactSellerRepository implements ContactSellerRepositoryInterface
         try {
             const newContactSeller = new this.contactSellerModel(contactSeller);
             const result = await newContactSeller.save();
-            console.log(result)
             if (result) {
                 this.logger.log('Saving contactSeller in repository success');
                 return true
