@@ -29,6 +29,7 @@ const ContactModal = ({
         size="2xl"
         placement="center"
         isOpen={isOpen}
+        isDismissable={false}
         onOpenChange={onOpenChange}
       >
         <ModalContent>

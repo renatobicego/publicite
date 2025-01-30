@@ -9,6 +9,7 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = ({
   children,
   ...props
 }) => {
+  console.log(props.isLoading);
   return (
     <Button
       radius="full"

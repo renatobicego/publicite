@@ -39,7 +39,13 @@ const ManageMagazineSections = ({
           <FaPencil />
         </Button>
       </Tooltip>
-      <Modal isOpen={isOpen} placement="center" onOpenChange={onOpenChange}>
+
+      <Modal
+        isDismissable={false}
+        isOpen={isOpen}
+        placement="center"
+        onOpenChange={onOpenChange}
+      >
         <ModalContent>
           {(onClose) => (
             <>
@@ -48,7 +54,10 @@ const ManageMagazineSections = ({
               </ModalHeader>
               <ModalBody>
                 {sections.map((section) => (
-                  <div key={section._id} className="flex items-center gap-2 px-6 py-4 rounded-xl shadow-md">
+                  <div
+                    key={section._id}
+                    className="flex items-center gap-2 px-6 py-4 rounded-xl shadow-md"
+                  >
                     <EditMagazineSection
                       prevSectionName={section.title}
                       ownerType={ownerType}
