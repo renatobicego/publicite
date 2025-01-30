@@ -1,5 +1,5 @@
 import { MyLoggerService } from "src/contexts/module_shared/logger/logger.service";
-import { Inject } from "@nestjs/common";
+import { BadRequestException, Inject } from "@nestjs/common";
 
 
 import { NotificationRepositoryInterface } from "../../domain/repository/notification.repository.interface";
@@ -19,6 +19,10 @@ import { notification_group_new_user_invited, notification_magazine_new_user_inv
 import { NotificationSubscriptionServiceInterface } from "../../domain/service/Notification.subscription.service.interface";
 import { NotificationServiceInterface } from "../../domain/service/notification.service.interface";
 import { NotificationContactSellerServiceInterface } from "../../domain/service/notification.contactSeller.service.interface";
+import { PaymentDataFromMeli } from "../dtos/payment.data.meli";
+import { Notification } from "../../domain/entity/notification.entity";
+import { NotificationPayment } from "../../domain/entity/notification.payment";
+import checkIfNotificationIsValidToDelete from "../../domain/functions/checkIfNotificationIsValidToDelete";
 
 
 
@@ -56,6 +60,19 @@ export class NotificationService implements NotificationHandlerServiceInterface,
         }
     }
 
+    async deleteNotificationById(event: string, userRequestId: string, _id: string): Promise<void> {
+        try {
+            const isTheNotificationValidToDelete = checkIfNotificationIsValidToDelete(event);
+            if (!isTheNotificationValidToDelete) throw new BadRequestException('Notification not valid to delete');
+            await this.notificationRepository.deleteNotificationById(event, userRequestId, _id);
+        } catch (error: any) {
+            throw error;
+        }
+    }
+
+
+
+
     async getAllNotificationsFromUserById(
         id: string,
         limit: number,
@@ -74,10 +91,33 @@ export class NotificationService implements NotificationHandlerServiceInterface,
 
 
 
-    async isThisNotificationDuplicate(notificationEntityId: string): Promise<any> {
+
+    async handlePushSubscriptionNotification(paymentDataFromMeli: PaymentDataFromMeli): Promise<void> {
         try {
-            const isDuplicate = await this.notificationRepository.isThisNotificationDuplicate(notificationEntityId);
-            if (isDuplicate) throw new NotModifyException();
+            const factory = NotificationFactory.getInstance(this.logger);
+            const notification: any = {
+                event: paymentDataFromMeli.event,
+                viewed: false,
+                user: paymentDataFromMeli.userId,
+                backData: {
+                    userIdTo: paymentDataFromMeli.userId,
+                    userIdFrom: "Publicite Subscription information"
+                },
+                socketJobId: "This notification does not have a socketJobId",
+                type: typeOfNotification.payment_notifications,
+                notificationEntityId: typeOfNotification.payment_notifications,
+                frontData: {
+                    subscriptionPlan: {
+                        _id: paymentDataFromMeli.subscriptionPlanId,
+                        reason: paymentDataFromMeli.reason,
+                        status: paymentDataFromMeli.status,
+                        retryAttemp: paymentDataFromMeli.retryAttemp
+                    }
+                }
+            }
+            const notificationPayment = factory.createNotification(typeOfNotification.payment_notifications, notification);
+
+            return await this.notificationSubscriptionService.createNotificationAndSendToUser(notificationPayment as NotificationPayment)
         } catch (error: any) {
             throw error;
         }
@@ -95,6 +135,7 @@ export class NotificationService implements NotificationHandlerServiceInterface,
             throw error;
         }
     }
+
 
 
     async handleGroupNotification(notification: any): Promise<void> {
@@ -155,16 +196,6 @@ export class NotificationService implements NotificationHandlerServiceInterface,
     }
 
 
-    async handleSubscriptionNotification(notification: any): Promise<void> {
-        try {
-            return await this.notificationSubscriptionService.createNotificationAndSendToUser(notification)
-        } catch (error: any) {
-            throw error;
-        }
-    }
-
-
-
 
     async handleContactSellerNotification(notification: any): Promise<void> {
         try {
@@ -181,11 +212,14 @@ export class NotificationService implements NotificationHandlerServiceInterface,
     }
 
 
-
-
-
-
-
+    async isThisNotificationDuplicate(notificationEntityId: string): Promise<any> {
+        try {
+            const isDuplicate = await this.notificationRepository.isThisNotificationDuplicate(notificationEntityId);
+            if (isDuplicate) throw new NotModifyException();
+        } catch (error: any) {
+            throw error;
+        }
+    }
 
 
 

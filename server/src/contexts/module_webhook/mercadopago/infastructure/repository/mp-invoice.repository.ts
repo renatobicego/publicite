@@ -8,13 +8,12 @@ import { MercadoPagoInvoiceRepositoryInterface } from '../../domain/repository/m
 
 
 export class MpInvoiceRepository
-  implements MercadoPagoInvoiceRepositoryInterface
-{
+  implements MercadoPagoInvoiceRepositoryInterface {
   constructor(
     @InjectModel('Invoice')
     private readonly invoiceModel: Model<InvoiceDocument>,
     private readonly logger: MyLoggerService,
-  ) {}
+  ) { }
   async updateInvoice(
     subscription_authorized_payment_to_update: any,
     id: string,
@@ -37,23 +36,32 @@ export class MpInvoiceRepository
   }
 
   async saveInvoice(invoice: Invoice): Promise<void> {
-    this.logger.log(
-      'saving new Invoice in database Invoice ID: ' + invoice.getPaymentId(),
-    );
-    const newInvoice = new this.invoiceModel(invoice);
-    console.log(newInvoice);
+    try {
+      this.logger.log(
+        'saving new Invoice in database Invoice ID: ' + invoice.getPaymentId(),
+      );
+      const newInvoice = new this.invoiceModel(invoice);
+      console.log(newInvoice);
 
-    await newInvoice.save();
-    this.logger.log(
-      'the invoice payment ID: ' +
+      await newInvoice.save();
+      this.logger.log(
+        'the invoice payment ID: ' +
         newInvoice.paymentId +
         ' has been related to subscription ID: ' +
         newInvoice.subscriptionId,
-    );
+      );
+    } catch (error: any) {
+      throw error;
+    }
+
   }
   async getInvoicesByExternalReference(
     external_reference: string,
   ): Promise<any[]> {
-    return await this.invoiceModel.find({ external_reference });
+    try {
+      return await this.invoiceModel.find({ external_reference });
+    } catch (error: any) {
+      throw error;
+    }
   }
 }

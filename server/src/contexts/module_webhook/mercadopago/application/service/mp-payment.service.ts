@@ -59,9 +59,9 @@ export class MpPaymentService implements MpPaymentServiceInterface {
     }
   }
 
-  async findPaymentByClerkId(id: string): Promise<any> {
+  async getPaymentByMongoId(id: string): Promise<any> {
     try {
-      return await this.mpPaymentRepository.findPaymentByClerkId(id);
+      return await this.mpPaymentRepository.getPaymentByMongoId(id);
     } catch (error: any) {
       throw error;
     }

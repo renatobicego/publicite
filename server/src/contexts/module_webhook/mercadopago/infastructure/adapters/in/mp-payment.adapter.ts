@@ -7,9 +7,9 @@ export class MpPaymentAdapter implements MpPaymentAdapterInterface {
     @Inject('MpPaymentServiceInterface')
     private readonly paymentService: MpPaymentServiceInterface,
   ) {}
-  async getPaymentByClerkId(external_reference: string): Promise<any> {
+  async getPaymentByMongoId(external_reference: string): Promise<any> {
     try {
-      return await this.paymentService.findPaymentByClerkId(external_reference);
+      return await this.paymentService.getPaymentByMongoId(external_reference);
     } catch (error: any) {
       throw error;
     }

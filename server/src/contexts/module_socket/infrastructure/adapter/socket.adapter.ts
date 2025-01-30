@@ -46,13 +46,7 @@ export class SocketAdapter implements SocketAdapterInterface {
     }
 
 
-    async sendSubscriptionNotificationToNotificationService(notificationBody: any): Promise<void> {
-        try {
-            return await this.notificationHandler.handleSubscriptionNotification(notificationBody);
-        } catch (error: any) {
-            throw error;
-        }
-    }
+
 
 
     async sendContactSellerNotificationToNotificationService(notificationBody: any): Promise<void> {

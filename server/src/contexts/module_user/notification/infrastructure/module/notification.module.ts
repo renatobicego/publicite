@@ -20,6 +20,7 @@ import { NotificationPostService } from "../../application/service/notification.
 import { NotificationSubscriptionService } from "../../application/service/notification.subscription.service";
 import { NotificationContactSellerService } from "../../application/service/notification.contactSeller.service";
 import { NotificationContactSellerModel } from "../schemas/notification.contactSeller.schema";
+import { NotificationPaymentModel } from "../schemas/notification.payment.schema";
 
 @Module({
     imports: [
@@ -33,7 +34,7 @@ import { NotificationContactSellerModel } from "../schemas/notification.contactS
                     { name: NotificationUserModel.modelName, schema: NotificationUserModel.schema },
                     { name: NotificationPostModel.modelName, schema: NotificationPostModel.schema },
                     { name: NotificationContactSellerModel.modelName, schema: NotificationContactSellerModel.schema },
-
+                    { name: NotificationPaymentModel.modelName, schema: NotificationPaymentModel.schema },
                 ],
             },
         ]),

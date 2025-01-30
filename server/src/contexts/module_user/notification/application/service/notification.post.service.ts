@@ -7,7 +7,7 @@ import { NotificationRepositoryInterface } from "../../domain/repository/notific
 import { Inject, UnauthorizedException } from "@nestjs/common";
 import { PostServiceInterface } from "src/contexts/module_post/post/domain/service/post.service.interface";
 import { UserServiceInterface } from "src/contexts/module_user/user/domain/service/user.service.interface";
-import { auth } from "firebase-admin";
+
 
 export class NotificationPostService implements NotificationPostServiceInterface {
     constructor(

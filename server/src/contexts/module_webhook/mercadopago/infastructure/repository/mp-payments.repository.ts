@@ -28,7 +28,7 @@ export class MercadoPagoPaymentsRepository
     }
   }
 
-  async findPaymentByClerkId(id: any): Promise<PaymentResponse[]> {
+  async getPaymentByMongoId(id: any): Promise<PaymentResponse[]> {
     try {
       const payments = await this.paymentModel
         .find({ external_reference: id })

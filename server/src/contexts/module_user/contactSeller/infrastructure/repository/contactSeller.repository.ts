@@ -7,12 +7,34 @@ import { ContactSellerDocument, ContactSellerModel } from "../schema/contactSell
 import { MyLoggerService } from "src/contexts/module_shared/logger/logger.service";
 import { ContactSellerRepositoryInterface } from "../../domain/repository/contactSeller.repository.interface";
 
+
 export class ContactSellerRepository implements ContactSellerRepositoryInterface {
     constructor(
         private readonly logger: MyLoggerService,
         @InjectModel(ContactSellerModel.modelName)
         private readonly contactSellerModel: Model<ContactSellerDocument>,
     ) { }
+
+
+    async getContactSellerById(condition: {}): Promise<any> {
+        try {
+            return await this.contactSellerModel.find(condition)
+                .populate(
+                    {
+                        path: 'post',
+                        model: 'Post',
+                        select: "_id title description postType price imagesUrls petitionType toPrice frequencyPrice"
+                    }).lean();
+        } catch (error: any) {
+            throw error
+        }
+    }
+
+
+
+
+
+
     async save(contactSeller: any): Promise<Boolean> {
         try {
             const newContactSeller = new this.contactSellerModel(contactSeller);

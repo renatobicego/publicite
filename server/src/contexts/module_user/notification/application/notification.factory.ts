@@ -6,10 +6,11 @@ import { NotificationGroup } from "../domain/entity/notification.group.entity";
 import { NotificationMagazine } from "../domain/entity/notification.magazine.entity";
 import { NotificationUser } from "../domain/entity/notification.user.entity";
 import { NotificationPost } from "../domain/entity/notification.post.entity";
-import { NotificationPostType } from "../domain/entity/enum/notification.post.type.enum";
 import { validatePostNotification } from "../domain/notification-factory/validatePostNotification";
 import { NotificationContactSeller } from "../domain/entity/notification.contactSeller.entity";
 import { Types } from "mongoose";
+import { NotificationPayment } from "../domain/entity/notification.payment";
+
 
 export class NotificationFactory implements NotificationFactoryInterface {
 
@@ -30,6 +31,7 @@ export class NotificationFactory implements NotificationFactoryInterface {
     }
 
 
+
     createNotification(notificationType: typeOfNotification, notificationData: any): Notification {
         try {
             let isActionsAvailable = true;
@@ -45,6 +47,7 @@ export class NotificationFactory implements NotificationFactoryInterface {
                 [typeOfNotification.user_notifications]: NotificationUser,
                 [typeOfNotification.post_notifications]: NotificationPost,
                 [typeOfNotification.contact_seller_notifications]: NotificationContactSeller,
+                [typeOfNotification.payment_notifications]: NotificationPayment,
             };
 
             const NotificationClass = notificationClassMap[notificationType];
@@ -72,7 +75,6 @@ export class NotificationFactory implements NotificationFactoryInterface {
     private verifyNotificationAtributes(notificationBody: any): {
         event: string,
         viewed: boolean,
-        date: string,
         backData: { userIdTo: string, userIdFrom: string },
         socketJobId: string,
         type: string,
@@ -80,13 +82,12 @@ export class NotificationFactory implements NotificationFactoryInterface {
         previousNotificationId: string
     } {
 
-        const { event, viewed, date, backData, socketJobId, type, previousNotificationId, notificationEntityId } = notificationBody;
+        const { event, viewed, backData, socketJobId, type, previousNotificationId, notificationEntityId } = notificationBody;
 
 
         if (
             !event ||
             viewed === undefined ||
-            !date ||
             !backData ||
             !backData.userIdTo ||
             !backData.userIdFrom ||
@@ -101,7 +102,6 @@ export class NotificationFactory implements NotificationFactoryInterface {
         return {
             event: event,
             viewed: viewed,
-            date: date,
             backData: backData,
             socketJobId: socketJobId,
             type: type,

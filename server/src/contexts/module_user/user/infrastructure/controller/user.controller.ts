@@ -47,6 +47,8 @@ import {
   UserPersonResponse,
 } from '../../application/adapter/dto/HTTP-RESPONSE/user.response.dto';
 import { UserServiceInterface } from '../../domain/service/user.service.interface';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { subscription_event } from 'src/contexts/module_shared/event-emmiter/events';
 
 @ApiTags('Accounts')
 @Controller('user')
@@ -56,6 +58,7 @@ export class UserController {
     private readonly userAdapter: UserAdapterInterface,
     @Inject('UserServiceInterface')
     private readonly UserServiceInterface: UserServiceInterface,
+    private readonly emmiter: EventEmitter2
   ) { }
 
   ///------------CONTROLLERS CREATE ACCOUNT-------------------
@@ -277,14 +280,23 @@ export class UserController {
 
 
 
-  // @Get("/test")
-  // async test(
-  // ): Promise<string> {
-  //   try {
-  //     return await this.userAdapter.downgradeplan("66fac933316723a55b9d0c90");
-  //   } catch (error: any) {
-  //     throw error;
-  //   }
-  // }
+  @Get("/test")
+  async test(
+  ): Promise<string> {
+    try {
+      const paymentDataFromMeli = {
+        event: "payment_approved",
+        subscriptionPlanId: "test_plan_id",
+        reason: "test_reason",
+        status: "test_status",
+        retryAttemp: "test_retryAttemp",
+        userId: "66fac933316723a55b9d0c90",
+      }
+      this.emmiter.emit(subscription_event, paymentDataFromMeli);
+      return "asd"
+    } catch (error: any) {
+      throw error;
+    }
+  }
 
 }

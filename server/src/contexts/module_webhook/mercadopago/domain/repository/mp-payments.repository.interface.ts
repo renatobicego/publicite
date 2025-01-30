@@ -4,6 +4,6 @@ import Payment from '../../../mercadopago/domain/entity/payment.entity';
 export interface MercadoPagoPaymentsRepositoryInterface {
   createPayment(payment: Payment): Promise<void>;
   findPaymentByPaymentID(id: any): Promise<Payment | null>;
-  findPaymentByClerkId(id: any): Promise<PaymentResponse[]>;
+  getPaymentByMongoId(id: any): Promise<PaymentResponse[]>;
   updatePayment(paymentToUpdate: any, id: any): Promise<void>;
 }

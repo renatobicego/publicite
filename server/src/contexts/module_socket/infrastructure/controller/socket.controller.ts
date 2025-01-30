@@ -63,18 +63,6 @@ export class SocketController {
     }
   }
 
-  @Post('subscription')
-  @UseGuards(AuthSocket)
-  async socketSubscriptionController(
-    @Body() notificationBody: any,
-  ): Promise<any> {
-    try {
-      return await this.socketAdapter.sendSubscriptionNotificationToNotificationService(notificationBody);
-    } catch (error: any) {
-      throw error;
-    }
-  }
-
 
   @Post('contact-seller')
   @UseGuards(AuthSocket)
@@ -88,6 +76,23 @@ export class SocketController {
       throw error;
     }
   }
+
+
+
+
+  // @Post('subscription')
+  // @UseGuards(AuthSocket)
+  // async socketSubscriptionController(
+  //   @Body() notificationBody: any,
+  // ): Promise<any> {
+  //   try {
+  //     return await this.socketAdapter.sendSubscriptionNotificationToNotificationService(notificationBody);
+  //   } catch (error: any) {
+  //     throw error;
+  //   }
+  // }
+
+
 
 
 }

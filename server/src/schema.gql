@@ -659,6 +659,33 @@ type PaymentResponse {
   status: String!
 }
 
+type PostContactSeller_graphql {
+  _id: String!
+  title: String!
+  description: String!
+  postType: String!
+  price: String!
+  imagesUrls: [String!]!
+  petitionType: String
+  toPrice: String
+  frequencyPrice: String
+}
+
+type ClientContactSeller_graphql {
+  _id: String
+  name: String!
+  email: String!
+  lastName: String!
+  username: String
+  phone: String
+  message: String!
+}
+
+type ContactSeller_Graphql {
+  post: PostContactSeller_graphql!
+  client: ClientContactSeller_graphql!
+}
+
 type Query {
   """Obtiene un usuario por su nombre de usuario """
   findUserByUsername(username: String!): User_Full_Grapql_Model
@@ -667,7 +694,7 @@ type Query {
   getActiveRelationsOfUser: [user_active_relation!]
 
   """Buscar los pagos por id de clerk"""
-  findPaymentByClerkId(id: String!): [PaymentResponse!]
+  findPaymentByMongoId(id: String!): [PaymentResponse!]
 
   """Obtiene los posts totales del usuario y los limites segun su plan"""
   getPostAndContactLimit: PostLimitResponseGraphql
@@ -722,6 +749,9 @@ type Query {
 
   """Devuelve todas las categorias creadas"""
   getAllCategoryPost: [PostCategoryResponse!]
+
+  """Obtiene un usuario por su nombre de usuario """
+  getContactSellerById(contactSellerGetType: contactSellerGetType!, _id: String!): [ContactSeller_Graphql!]
 }
 
 """Type of the post """
@@ -747,6 +777,12 @@ enum Visibility_Of_Find {
 input UserLocation_group {
   latitude: Float!
   longitude: Float!
+}
+
+"""Define el tipo de get"""
+enum contactSellerGetType {
+  post
+  profile
 }
 
 type Mutation {
@@ -847,6 +883,9 @@ type Mutation {
   Cambia el estado de una notificacion a "vista o no vista"
   """
   changeNotificationStatus(notificationIds: [String!]!, view: Boolean!): String
+
+  """Elimina una notificacion por su Id"""
+  deleteNotificationById(event: String!, _id: String!): String
 
   """Agregar nueva seccion en la revista"""
   addNewMagazineSection(magazineAdmin: String!, magazineId: String!, section: MagazineSectionCreateRequest!, groupId: String): String

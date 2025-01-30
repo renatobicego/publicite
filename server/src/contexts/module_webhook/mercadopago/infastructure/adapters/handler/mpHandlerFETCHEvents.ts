@@ -282,11 +282,11 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
           response_mp_subscription_authorized_payment,
           response_mp_subscription_authorized_payment.id
         );
-        const userId = await this.get_mongo_id(response_mp_subscription_authorized_payment.external_reference)
+        const userId = response_mp_subscription_authorized_payment.external_reference
         const result = await this.update_plan_user(userId, downgrade_plan_contact);
         if (result) await this.update_plan_user(userId, downgrade_plan_post);
 
-  
+
 
         // if (isThisSubscriptionWasPaused) {
         //   return true;
@@ -367,41 +367,41 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
 
 
 
-  async get_mongo_id(clerk_id: string): Promise<any> {
-    const MAX_RETRIES = 3;
-    const RETRY_DELAY = 8000;
+  // async get_mongo_id(clerk_id: string): Promise<any> {
+  //   const MAX_RETRIES = 3;
+  //   const RETRY_DELAY = 8000;
 
-    for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
-      try {
-        const result = await this.eventEmitter.emitAsync(get_mongo_id, clerk_id);
-        if (result && result[0]) {
-          return result[0]._id;
-        } else {
-          console.log(`Intento ${attempt} fallido para actualizar el plan del usuario.`);
-          return null;
-        }
-      } catch (error: any) {
-        console.error(`Error en intento ${attempt}:`, error);
+  //   for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+  //     try {
+  //       const result = await this.eventEmitter.emitAsync(get_mongo_id, clerk_id);
+  //       if (result && result[0]) {
+  //         return result[0]._id;
+  //       } else {
+  //         console.log(`Intento ${attempt} fallido para actualizar el plan del usuario.`);
+  //         return null;
+  //       }
+  //     } catch (error: any) {
+  //       console.error(`Error en intento ${attempt}:`, error);
 
-        if (attempt === MAX_RETRIES) {
-          const body = {
-            code: "4545",
-            message: "No se pudo actualizar el plan del usuario luego de multiples intentos",
-            result: error.message,
-            event: "get_mongo_id"
-          };
+  //       if (attempt === MAX_RETRIES) {
+  //         const body = {
+  //           code: "4545",
+  //           message: "No se pudo actualizar el plan del usuario luego de multiples intentos",
+  //           result: error.message,
+  //           event: "get_mongo_id"
+  //         };
 
-          await this.create_error_schema(clerk_id, body);
-          this.logger.error('CODIGO DE ERROR: 4545 PARA EL USUARIO: ' + clerk_id);
-          throw new Error('No se pudo actualizar el plan del usuario después de múltiples intentos.');
-        }
-      }
+  //         await this.create_error_schema(clerk_id, body);
+  //         this.logger.error('CODIGO DE ERROR: 4545 PARA EL USUARIO: ' + clerk_id);
+  //         throw new Error('No se pudo actualizar el plan del usuario después de múltiples intentos.');
+  //       }
+  //     }
 
-      if (attempt < MAX_RETRIES) {
-        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
-      }
-    }
-  }
+  //     if (attempt < MAX_RETRIES) {
+  //       await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+  //     }
+  //   }
+  // }
 
 
 
@@ -410,48 +410,48 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
     const RETRY_DELAY = 2000;
 
     for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
-        try {
-            const result = await this.eventEmitter.emitAsync(event, user_id);
+      try {
+        const result = await this.eventEmitter.emitAsync(event, user_id);
 
-            if (result && result[0] === true) {
-                return true; 
-            } else {
-                console.warn(`Intento ${attempt} fallido para actualizar el plan del usuario.`);
-            }
-        } catch (error: any) {
-            console.error(`Error en intento ${attempt}:`, error);
-
-            if (attempt === MAX_RETRIES) {
-                const errorBody = {
-                    code: "4545",
-                    message: "No se pudo actualizar el plan del usuario luego de múltiples intentos",
-                    result: error,
-                    event: event
-                };
-
-                await this.create_error_schema(user_id, errorBody);
-                this.logger.error(`CODIGO DE ERROR: 4545 PARA EL USUARIO: ${user_id}`);
-                throw new Error('No se pudo actualizar el plan del usuario después de múltiples intentos.');
-            }
+        if (result && result[0] === true) {
+          return true;
+        } else {
+          console.warn(`Intento ${attempt} fallido para actualizar el plan del usuario.`);
         }
+      } catch (error: any) {
+        console.error(`Error en intento ${attempt}:`, error);
 
-        if (attempt < MAX_RETRIES) {
-            await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+        if (attempt === MAX_RETRIES) {
+          const errorBody = {
+            code: "4545",
+            message: "No se pudo actualizar el plan del usuario luego de múltiples intentos",
+            result: error,
+            event: event
+          };
+
+          await this.create_error_schema(user_id, errorBody);
+          this.logger.error(`CODIGO DE ERROR: 4545 PARA EL USUARIO: ${user_id}`);
+          throw new Error('No se pudo actualizar el plan del usuario después de múltiples intentos.');
         }
+      }
+
+      if (attempt < MAX_RETRIES) {
+        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+      }
     }
 
     // Si llegamos aquí, significa que todos los intentos fallaron
     const errorBody = {
-        code: "4545",
-        message: "No se pudo actualizar el plan del usuario luego de múltiples intentos",
-        result: 'No se pudo actualizar el plan del usuario luego de múltiples intentos',
-        event: event
+      code: "4545",
+      message: "No se pudo actualizar el plan del usuario luego de múltiples intentos",
+      result: 'No se pudo actualizar el plan del usuario luego de múltiples intentos',
+      event: event
     };
 
     await this.create_error_schema(user_id, errorBody);
     this.logger.error(`CODIGO DE ERROR: 4545 PARA EL USUARIO: ${user_id}`);
     throw new Error('No se pudo actualizar el plan del usuario después de múltiples intentos.');
-}
+  }
 
 
 

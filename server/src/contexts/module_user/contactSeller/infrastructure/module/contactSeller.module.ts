@@ -5,6 +5,7 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { ContactSellerModel } from "../schema/contactSeller.schema";
 import { ContactSellerService } from "../../application/service/contactSeller.service";
 import { ContactSellerRepository } from "../repository/contactSeller.repository";
+import { ContactSellerResolver } from "../resolver/contact.seller.resolver";
 
 @Module({
     imports: [
@@ -29,6 +30,8 @@ import { ContactSellerRepository } from "../repository/contactSeller.repository"
             provide: "ContactSellerRepositoryInterface",
             useClass: ContactSellerRepository,
         },
+        ContactSellerResolver,
+
     ],
 })
 export class ContactSellerModule { }

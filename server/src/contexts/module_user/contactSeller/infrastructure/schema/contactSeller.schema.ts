@@ -10,9 +10,9 @@ interface ContactSellerDocument extends Document {
         phone: string,
         message: string
     }
-    post: {
-        _id: Schema.Types.ObjectId,
-    }
+    post: Schema.Types.ObjectId,
+    notification_id: Schema.Types.ObjectId
+    owner: Schema.Types.ObjectId
 }
 
 const ContactSellerSchema = new Schema<ContactSellerDocument>({
@@ -25,9 +25,11 @@ const ContactSellerSchema = new Schema<ContactSellerDocument>({
         phone: { type: String, default: null },
         message: { type: String, required: true },
     },
-    post: {
-        _id: { type: Schema.Types.ObjectId, ref: 'Post' },
-    }
+    post: { type: Schema.Types.ObjectId, ref: 'Post' },
+
+    notification_id: { type: Schema.Types.ObjectId, ref: 'Notification' },
+    owner: { type: Schema.Types.ObjectId, ref: 'User' }
+
 
 
 

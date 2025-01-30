@@ -1,6 +1,4 @@
-interface contact_seller_post {
-    _id: any;
-}
+
 
 interface contact_seller_client {
     _id: string,
@@ -13,18 +11,21 @@ interface contact_seller_client {
 }
 
 export class ContactSeller {
-    private readonly post: contact_seller_post;
+    private readonly post: any;
     private readonly client: contact_seller_client;
     private readonly notification_id: any;
+    private readonly owner: any;
 
-    constructor(post: contact_seller_post, client: contact_seller_client, notification_id: any) {
+
+    constructor(post: any, client: contact_seller_client, notification_id: any, owner: any) {
         this.post = post;
         this.client = client;
         this.notification_id = notification_id;
+        this.owner = owner;
     }
 
 
-    getPost(): contact_seller_post {
+    getPost(): any {
         return this.post;
     }
 

@@ -86,7 +86,7 @@ export class MpSubscriptionService implements SubscriptionServiceInterface {
         planID, // id del plan en nuestro sistema
         start_date, // fecha de inicio
         end_date, // fecha de fin
-        external_reference, // identificador de usuario (Es el ID de clerk)
+        external_reference, // identificador de usuario (Es el ID de mongo db)
         timeOfUpdate, // dia de actualización
         next_payment_date, // fecha de siguiente pago
         payment_method_id, // metodo de pago

@@ -21,7 +21,7 @@ export class SubscriptionController {
     private readonly subscriptionAdapter: SubscriptionAdapterInterface,
   ) { }
 
-  @Get(':clerkId')
+  @Get(':_id')
   @ApiOperation({ summary: 'Get subscriptions by clerId' })
   @ApiResponse({
     status: 200,
@@ -33,14 +33,14 @@ export class SubscriptionController {
     description: 'Internal server error.',
   })
   @HttpCode(HttpStatus.OK)
-  @ApiParam({ name: 'clerkId', description: 'The user clerkId' })
+  @ApiParam({ name: '_id', description: 'The user mongo id' })
   async getActiveSubscriptionController(
-    @Param('clerkId') clerkId: string,
+    @Param('_id') _id: string,
   ): Promise<SubscriptionResponse[] | []> {
     try {
-      this.logger.log(`Searching active subscriptions by clerkId: ${clerkId}`);
+      this.logger.log(`Searching active subscriptions by clerkId: ${_id}`);
       const subscription =
-        await this.subscriptionAdapter.getSubscriptionHistory(clerkId);
+        await this.subscriptionAdapter.getSubscriptionHistory(_id);
       return subscription;
     } catch (error: any) {
       throw error;

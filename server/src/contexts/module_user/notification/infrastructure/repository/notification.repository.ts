@@ -14,6 +14,8 @@ import { NotificationPost } from "../../domain/entity/notification.post.entity";
 import { INotificationPost, NotificationPostModel } from "../schemas/notification.post.schema";
 import { NotificationContactSeller } from "../../domain/entity/notification.contactSeller.entity";
 import { INotificationContactSeller, NotificationContactSellerModel } from "../schemas/notification.contactSeller.schema";
+import { NotificationPayment } from "../../domain/entity/notification.payment";
+import { INotificationPayment, NotificationPaymentModel } from "../schemas/notification.payment.schema";
 
 
 export class NotificationRepository implements NotificationRepositoryInterface {
@@ -33,7 +35,10 @@ export class NotificationRepository implements NotificationRepositoryInterface {
         private readonly notificationPostDocument: Model<INotificationPost>,
         @InjectModel(NotificationContactSellerModel.modelName)
         private readonly notificationContactSellerModel: Model<INotificationContactSeller>,
+        @InjectModel(NotificationPaymentModel.modelName)
+        private readonly notificationPaymentModel: Model<INotificationPayment>,
     ) { }
+
 
 
 
@@ -60,6 +65,16 @@ export class NotificationRepository implements NotificationRepositoryInterface {
         }
     }
 
+
+
+    async deleteNotificationById(event: string, userRequestId: string, _id: string): Promise<void> {
+        try {
+            await this.notificationBaseDocument.deleteOne({ _id, user: userRequestId, event });
+        } catch (error: any) {
+            throw error;
+        }
+
+    }
 
 
 
@@ -220,8 +235,21 @@ export class NotificationRepository implements NotificationRepositoryInterface {
         }
     }
 
+    async savePaymentNotification(notification: NotificationPayment, session?: any): Promise<any> {
+        try {
 
 
+            this.logger.log('Saving notification in repository...');
+            console.log(notification)
+            const paymentNotification = new this.notificationPaymentModel(notification);
+            const paymentNotificationSave = await paymentNotification.save({ session });
+            return paymentNotificationSave._id;
+        } catch (error: any) {
+            this.logger.error('An error occurred while saving notification', error.message);
+            this.logger.error(error)
+            throw error;
+        }
+    }
 
 
     async saveGroupNotification(notification: NotificationGroup, session?: any): Promise<Types.ObjectId> {

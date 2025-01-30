@@ -1,3 +1,3 @@
 export interface MpPaymentAdapterInterface {
-  getPaymentByClerkId(external_reference: string): Promise<any>;
+  getPaymentByMongoId(external_reference: string): Promise<any>;
 }

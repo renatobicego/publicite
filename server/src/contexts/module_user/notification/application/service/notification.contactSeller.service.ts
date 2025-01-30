@@ -42,9 +42,7 @@ export class NotificationContactSellerService implements NotificationContactSell
                 //Pushear la notificacion al array de notificaciones de usuario.
                 if (!notificationId) throw new InternalServerErrorException("Error was ocurred, notificationId is null - saveNotificationContactSeller")
                 await this.userService.pushNotificationToUserArrayNotifications(notificationId, userIdTo, userIdFrom, session);
-                const post = {
-                    _id: notificationContactSeller.getPostContactSeller,
-                }
+                const post = notificationContactSeller.getPostContactSeller
                 const client = notificationContactSeller.getClientContactSeller
                 if (!client || !post) {
                     throw new InternalServerErrorException("Error was occured CLIENT OR POST in ContactSeller are null")
@@ -52,7 +50,8 @@ export class NotificationContactSellerService implements NotificationContactSell
                 const contactSellerEntity = new ContactSeller(
                     post,
                     client,
-                    "notificationId",
+                    notificationId,
+                    userIdTo
                 )
 
                 const contactSeller = await this.eventEmitter.emitAsync(

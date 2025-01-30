@@ -53,6 +53,26 @@ export class NotificationResolver {
         }
     }
 
+    @Mutation(() => String, {
+        nullable: true,
+        description: 'Elimina una notificacion por su Id',
+    })
+    @UseGuards(ClerkAuthGuard)
+    async deleteNotificationById(
+        @Args('event', { type: () => String }) event: string,
+        @Args('_id', { type: () => String }) _id: string,
+        @Context() context: { req: CustomContextRequestInterface },
+    ): Promise<string> {
+        const userRequestId = context.req.userRequestId;
+        try {
+            await this.notificationAdapter.deleteNotificationById(event, userRequestId, _id);
+            return 'Notification deleted'
+        } catch (error: any) {
+            throw error;
+        }
+    }
+
+
 
 
 }

@@ -1,5 +1,6 @@
 import { Notification } from "./notification.entity";
 
+
 export class NotificationPayment extends Notification{
         private frontData: {
             subscriptionPlan:{

@@ -1,3 +1,6 @@
+import { NotificationPayment } from "../entity/notification.payment";
+
+
 export interface NotificationSubscriptionServiceInterface {
-    createNotificationAndSendToUser(notification:any):Promise<void>;
+    createNotificationAndSendToUser(notificationPayment: NotificationPayment): Promise<void>;
 }
