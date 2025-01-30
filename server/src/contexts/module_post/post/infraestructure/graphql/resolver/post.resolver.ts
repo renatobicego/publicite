@@ -114,12 +114,12 @@ export class PostResolver {
     description: 'Obtiene los posts totales del usuario y los limites segun su plan',
   })
   @UseGuards(ClerkAuthGuard)
-  async getLimitPostOfUser(
+  async getPostAndContactLimit(
     @Context() context: { req: CustomContextRequestInterface },
   ): Promise<any> {
     try {
       const userRequestId = context.req.userRequestId;
-      return await this.postAdapter.getLimitPostOfUser(userRequestId);
+      return await this.postAdapter.getPostAndContactLimit(userRequestId);
     } catch (error: any) {
       throw error;
     }

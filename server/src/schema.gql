@@ -611,6 +611,9 @@ type PostLimitResponseGraphql {
   totalLibrePostLimit: Float!
   agendaAvailable: Float!
   libreAvailable: Float!
+  contactLimit: Float!
+  contactCount: Float!
+  contactAvailable: Float!
 }
 
 type PostCategoryResponse {
@@ -667,7 +670,7 @@ type Query {
   findPaymentByClerkId(id: String!): [PaymentResponse!]
 
   """Obtiene los posts totales del usuario y los limites segun su plan"""
-  getLimitPostOfUser: PostLimitResponseGraphql
+  getPostAndContactLimit: PostLimitResponseGraphql
 
   """Obtener todos los posts del autor por id"""
   findPostsByAuthorId(authorId: String!): [Post_Full_Graphql_Model!]

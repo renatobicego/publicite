@@ -19,7 +19,7 @@ import { UserPersonalUpdateDto } from '../../domain/entity/dto/user.personal.upd
 import { UserPreferencesEntityDto } from '../../domain/entity/dto/user.preferences.update.dto';
 import { UP_clerkUpdateRequestDto } from 'src/contexts/module_webhook/clerk/application/dto/UP-clerk.update.request';
 import { UserFindAllResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.response.dto';
-import { fullNameNormalization } from '../../application/functions/utils';
+import { fullNameNormalization } from '../../application/functions/fullNameNormalization';
 import { SectorRepositoryInterface } from 'src/contexts/module_user/businessSector/domain/repository/sector.repository.interface';
 import { UserType } from '../../domain/entity/enum/user.enums';
 import {
@@ -250,6 +250,37 @@ export class UserRepository implements UserRepositoryInterface {
             populate: {
               path: 'subscriptionPlan',
               select: 'postsLibresCount postsAgendaCount',
+            },
+          },
+        ]);
+      if (!user) {
+        console.error('No se encontró el usuario.');
+        return null;
+      }
+      return user;
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  async getPostAndContactLimitsFromUserByUserId(author: string): Promise<any> {
+    try {
+      const user = await this.user
+        .findById(author)
+        .select('posts subscriptions activeRelations -_id')
+        .populate([
+          {
+            path: 'posts isActive',
+            match: { isActive: true },
+            select: 'postBehaviourType',
+          },
+          {
+            path: 'subscriptions',
+            select: 'subscriptionPlan status',
+            match: { status: 'authorized' },
+            populate: {
+              path: 'subscriptionPlan',
+              select: 'postsLibresCount postsAgendaCount maxContacts',
             },
           },
         ]);

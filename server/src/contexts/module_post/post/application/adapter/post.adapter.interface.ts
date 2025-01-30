@@ -26,7 +26,7 @@ export interface PostAdapterInterface {
   ): Promise<void>;
   findMatchPost(postType: string, searchTerm: string): Promise<void>;
   findFriendPosts(postType: string, userRequestId: string, page: number, limit: number, visibility: Visibility_Of_Find, searchTerm?: string): Promise<void>;
-  getLimitPostOfUser(userRequestId: string): Promise<PostLimitResponseGraphql>;
+  getPostAndContactLimit(userRequestId: string): Promise<PostLimitResponseGraphql>;
   updatePostById(
     postUpdate: PostUpdateRequest,
     id: string,

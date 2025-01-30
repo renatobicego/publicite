@@ -16,21 +16,8 @@ import { UP_clerkUpdateRequestDto } from 'src/contexts/module_webhook/clerk/appl
 import { UserFindAllResponse } from '../adapter/dto/HTTP-RESPONSE/user.response.dto';
 import { UserType } from '../../domain/entity/enum/user.enums';
 import { UserRelation } from '../../domain/entity/userRelation.entity';
-import { OnEvent } from '@nestjs/event-emitter';
+import { calculateContactLimitFromUser, calculatePostLimitFromUser, userWithPostsAndSubscriptions } from '../functions/calculatePostLimitAndContactLimit';
 
-interface userWithPostsAndSubscriptions {
-  posts: [{
-    postBehaviourType: string // libre o agenda
-  }]
-  subscriptions: [
-    {
-      subscriptionPlan: {
-        postsLibresCount: number
-        postsAgendaCount: number
-      }
-    }
-  ]
-}
 
 @Injectable()
 export class UserService implements UserServiceInterface {
@@ -231,38 +218,40 @@ export class UserService implements UserServiceInterface {
         this.logger.log('User not found');
         return false;
       }
-      const { totalAgendaPostLimit, totalLibrePostLimit } = userWithSubscriptionsAndPosts.subscriptions.reduce(
-        (limits, subscription) => {
-          limits.totalAgendaPostLimit += subscription.subscriptionPlan.postsAgendaCount;
-          limits.totalLibrePostLimit += subscription.subscriptionPlan.postsLibresCount;
-          return limits;
-        },
-        { totalAgendaPostLimit: 0, totalLibrePostLimit: 0 }
-      );
 
-
-      const { agendaPostCount, librePostCount } = userWithSubscriptionsAndPosts.posts.reduce(
-        (counts, post) => {
-          if (post.postBehaviourType === 'agenda') counts.agendaPostCount++;
-          if (post.postBehaviourType === 'libre') counts.librePostCount++;
-          return counts;
-        },
-        { agendaPostCount: 0, librePostCount: 0 }
-      );
-      this.logger.warn("STATUS ACTUAL, ANTES DE ACTUALIZAR")
-      this.logger.log("User has agenda post: " + agendaPostCount + " |--|  User has Libre post: " + librePostCount);
-      this.logger.log("Total agenda limit of user plan: " + totalAgendaPostLimit + " - Total libre limit of user plan : " + totalLibrePostLimit);
-
-      const agendaAvailable = totalAgendaPostLimit - agendaPostCount;
-      const libreAvailable = totalLibrePostLimit - librePostCount;
-      this.logger.log('Agenda available of user: ' + agendaAvailable);
-      this.logger.log('Libre available of user: ' + libreAvailable);
-      this.logger.warn("PROCEDIENDO A ACTUALIZAR STATUS DE POSTS ")
-      return { agendaPostCount, librePostCount, totalAgendaPostLimit, totalLibrePostLimit, agendaAvailable, libreAvailable };
+      return calculatePostLimitFromUser(userWithSubscriptionsAndPosts, this.logger);
     } catch (error: any) {
       throw error;
     }
   }
+
+
+
+  async getPostAndContactLimit(author: string): Promise<{ agendaPostCount: number; librePostCount: number; totalAgendaPostLimit: number; totalLibrePostLimit: number; agendaAvailable: number; libreAvailable: number; contactLimit: number; contactCount: number; contactAvailable: number; }> {
+    try {
+      const userWithSubscriptionsAndPosts: userWithPostsAndSubscriptions = await this.userRepository.getPostAndContactLimitsFromUserByUserId(author);
+      const { agendaPostCount, librePostCount, totalAgendaPostLimit, totalLibrePostLimit, agendaAvailable, libreAvailable } = calculatePostLimitFromUser(userWithSubscriptionsAndPosts, this.logger)
+      const { contactLimit, contactCount, contactAvailable } = calculateContactLimitFromUser(userWithSubscriptionsAndPosts,this.logger)
+
+      return {
+        agendaPostCount,
+        librePostCount,
+        totalAgendaPostLimit,
+        totalLibrePostLimit,
+        agendaAvailable,
+        libreAvailable,
+        contactLimit,
+        contactCount,
+        contactAvailable
+      }
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
+
+
 
   async getLimitContactsFromUserByUserId(userRequestId: string, session?: any): Promise<any> {
     try {
@@ -270,6 +259,7 @@ export class UserService implements UserServiceInterface {
       this.logger.log('finding relations from user with id: ' + userRequestId);
       let maxContacts = 0;
       const userSubscriptionPlans = await this.userRepository.getLimitContactsFromUserByUserId(userRequestId, session);
+
       if (!userSubscriptionPlans || userSubscriptionPlans.length === 0) return maxContacts;
 
       const { subscriptions } = userSubscriptionPlans

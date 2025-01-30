@@ -135,9 +135,9 @@ export class PostAdapter implements PostAdapterInterface {
 
 
 
-  async getLimitPostOfUser(userRequestId: string): Promise<PostLimitResponseGraphql> {
+  async getPostAndContactLimit(userRequestId: string): Promise<PostLimitResponseGraphql> {
     try {
-      return await this.postService.getLimitPostOfUser(userRequestId);
+      return await this.postService.getPostAndContactLimit(userRequestId);
     } catch (error: any) {
       throw error;
     }

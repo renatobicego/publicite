@@ -238,9 +238,9 @@ export class PostService implements PostServiceInterface {
     }
   }
 
-  async getLimitPostOfUser(userRequestId: string): Promise<PostLimitResponseGraphql> {
+  async getPostAndContactLimit(userRequestId: string): Promise<PostLimitResponseGraphql> {
     try {
-      return await this.userService.getPostAndLimitsFromUserByUserId(userRequestId)
+      return await this.userService.getPostAndContactLimit(userRequestId)
     } catch (error: any) {
       throw error;
     }

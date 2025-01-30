@@ -37,8 +37,20 @@ export interface UserServiceInterface {
     username: string,
   ): Promise<UserPreferences | null>;
 
+  getPostAndContactLimit(author: string): Promise<{
+    agendaPostCount: number;
+    librePostCount: number;
+    totalAgendaPostLimit: number;
+    totalLibrePostLimit: number;
+    agendaAvailable: number;
+    libreAvailable: number;
+    contactLimit: number;
+    contactCount: number;
+    contactAvailable: number;
+  }>
   getPostAndLimitsFromUserByUserId(author: string): Promise<any>
   getLimitContactsFromUserByUserId(userRequestId: string, session?: any): Promise<any>
+
   makeFriendRelationBetweenUsers(
     backData: { userIdFrom: string; userIdTo: string },
     typeOfRelation: string,

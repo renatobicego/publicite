@@ -3,7 +3,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { WebhookEventInterface } from '../domain/webhook-event.interface';
 import { UP_clerkUpdateRequestDto } from './dto/UP-clerk.update.request';
 import { UserServiceInterface } from 'src/contexts/module_user/user/domain/service/user.service.interface';
-import { fullNameNormalization } from 'src/contexts/module_user/user/application/functions/utils';
+import { fullNameNormalization } from 'src/contexts/module_user/user/application/functions/fullNameNormalization';
 import { WebhookServiceInterface } from '../domain/webhook-service.interface';
 
 //import { User } from 'src/contexts/module_user/domain/entity/user.entity';
