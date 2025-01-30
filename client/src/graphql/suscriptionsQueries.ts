@@ -20,14 +20,17 @@ export const getPaymentsQuery = gql`
 `;
 
 export const getPostNumbersOfUserQuery = gql`
-  query GetLimitPostOfUser {
-    getLimitPostOfUser {
-      agendaAvailable
-      agendaPostCount
-      libreAvailable
-      librePostCount
-      totalAgendaPostLimit
+  query GetPostAndContactLimit {
+    getPostAndContactLimit {
       totalLibrePostLimit
+      totalAgendaPostLimit
+      librePostCount
+      libreAvailable
+      contactLimit
+      contactCount
+      agendaPostCount
+      contactAvailable
+      agendaAvailable
     }
   }
 `;

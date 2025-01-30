@@ -9,6 +9,7 @@ import { contactFormValidation } from "./validation";
 import { PetitionContactSeller } from "@/types/postTypes";
 import { useSocket } from "@/app/socketProvider";
 import { emitContactSellerNotification } from "@/components/notifications/contactSeller/emitNotifications";
+import { handlePostActivityNotificationError } from "@/components/notifications/postsActivity/actions";
 
 const ContactForm = ({
   postId,
@@ -30,12 +31,10 @@ const ContactForm = ({
     phone: undefined,
     message: "",
   };
-  const handleSubmit = async (
+  const handleSubmit = (
     values: PetitionContactSeller,
     actions: FormikHelpers<PetitionContactSeller>
   ) => {
-    actions.setSubmitting(true);
-
     emitContactSellerNotification(
       socket,
       postId,
@@ -51,8 +50,9 @@ const ContactForm = ({
       .then(() => {
         toastifySuccess("Se ha enviado la solicitud correctamente");
         onClose();
+        actions.setSubmitting(false);
       })
-      .catch(() => toastifyError("Error al enviar la solicitud"))
+      .catch(handlePostActivityNotificationError)
       .finally(() => {
         actions.setSubmitting(false);
       });
@@ -135,7 +135,6 @@ const ContactForm = ({
                 isDisabled={isSubmitting}
                 isLoading={isSubmitting}
                 type="submit"
-                className="self-start"
               >
                 {isSubmitting ? "Enviando" : "Enviar Solicitud"}
               </PrimaryButton>

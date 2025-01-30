@@ -39,6 +39,7 @@ const ManageActiveUserRelationsModal = ({
         className="p-2"
         placement="center"
         isOpen={isOpen}
+        isDismissable={false}
         onOpenChange={onOpenChange}
       >
         <ModalContent>

@@ -2,7 +2,7 @@
 import { useState } from "react";
 import SelectType from "../SelectType";
 import UploadImages from "../Upload/UploadImages";
-import { Divider} from "@nextui-org/react";
+import { Divider } from "@nextui-org/react";
 import CreateGood from "../CreateGood/CreateGood";
 import CreateService from "../CreateService/CreateService";
 import useUserPostLimit from "@/utils/hooks/useUserPostLimit";
@@ -11,21 +11,13 @@ import { PostBehaviourType } from "@/types/postTypes";
 import SelectPostBehaviourType from "../SelectPostBehaviourType";
 import PostsLimitReached from "../PostsLimitReached";
 
-const CreateForm = ({
-  userId,
-  userClerkId,
-}: {
-  userId?: string;
-  userClerkId: string;
-}) => {
+const CreateForm = ({ userId }: { userId?: string }) => {
   const [type, setType] = useState<"good" | "service">();
   const [files, setFiles] = useState<File[]>([]);
   const [postBehaviourType, setPostBehaviourType] =
     useState<PostBehaviourType>();
-  const { userCanPublishPost, limit, numberOfPosts } = useUserPostLimit(
-    userClerkId,
-    postBehaviourType
-  );
+  const { userCanPublishPost, limit, numberOfPosts } =
+    useUserPostLimit(postBehaviourType);
   return (
     <section className="w-full flex gap-4 items-start max-md:flex-col relative">
       <UploadImages

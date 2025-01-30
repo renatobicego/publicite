@@ -123,7 +123,7 @@ export const getSubscriptionsOfUser = async (
   }
 };
 
-export const getUserActivePostNumber = async (): Promise<
+export const getUserActivePostandActiveRelationsNumber = async (): Promise<
   | {
       agendaAvailable: number;
       agendaPostCount: number;
@@ -131,6 +131,9 @@ export const getUserActivePostNumber = async (): Promise<
       librePostCount: number;
       totalAgendaPostLimit: number;
       totalLibrePostLimit: number;
+      contactAvailable: number;
+      contactCount: number;
+      contactLimit: number;
     }
   | { error: string }
 > => {
@@ -141,7 +144,7 @@ export const getUserActivePostNumber = async (): Promise<
       context,
     });
 
-    return data.getLimitPostOfUser;
+    return data.getPostAndContactLimit;
   } catch (error) {
     return {
       error: "Error al traer los anuncios. Por favor intenta de nuevo.",
