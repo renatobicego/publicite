@@ -1,5 +1,5 @@
 import { ActiveUserRelation, UserRelations } from "@/types/userTypes";
-import { CheckboxGroup } from "@nextui-org/react";
+import { CheckboxGroup, Skeleton, Slider, Spinner } from "@nextui-org/react";
 import { useMemo, useState } from "react";
 import CheckboxUser from "./CheckboxUser";
 import { CustomInputWithoutFormik } from "@/components/inputs/CustomInputs";
@@ -7,6 +7,7 @@ import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { putActiveRelations } from "@/services/userServices";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { useConfigData } from "@/app/(root)/providers/userDataProvider";
+import useUserPostLimit from "@/utils/hooks/useUserPostLimit";
 
 const ManageActiveUserRelations = ({
   relations,
@@ -23,6 +24,9 @@ const ManageActiveUserRelations = ({
   const [searchValue, setSearchValue] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { updateActiveRelations } = useConfigData();
+  const {
+    activeRelations: { limit },
+  } = useUserPostLimit();
 
   const filteredRelations = useMemo(() => {
     return relations.filter((relation) => {
@@ -59,6 +63,16 @@ const ManageActiveUserRelations = ({
     closeModal();
   };
 
+  if (!limit) {
+    return (
+      <>
+        <Skeleton className="w-full h-16 rounded-lg" />
+        <Skeleton className="w-full h-16 rounded-lg" />
+        <Skeleton className="w-full h-40 rounded-lg" />
+      </>
+    );
+  }
+
   return (
     <>
       <CustomInputWithoutFormik
@@ -67,6 +81,18 @@ const ManageActiveUserRelations = ({
         label="Buscar por nombre o apellido"
         placeholder="Buscar"
         className="mb-2"
+      />
+      <Slider
+        className="max-w-md"
+        value={groupSelected.length}
+        getValue={(relations) => `${relations} activas de ${limit} disponibles`}
+        label="Relaciones Activas"
+        isDisabled
+        hideThumb
+        size="sm"
+        classNames={{
+          base: "opacity-100",
+        }}
       />
       <div className="flex flex-col gap-1 w-full ">
         <CheckboxGroup
@@ -77,7 +103,16 @@ const ManageActiveUserRelations = ({
           description="Los anuncios de Agenda de Contactos que aparezcan serán unicamente de las relaciones que selecciones como activas"
           aria-label="lista de relaciones con checkbox para seleccionar las activas"
           value={groupSelected}
-          onChange={setGroupSelected}
+          onChange={(groupSelected) => {
+            if (groupSelected.length > limit) {
+              toastifyError(
+                `No puedes seleccionar mas de ${limit} relaciones activas`
+              );
+              return;
+            }
+
+            setGroupSelected(groupSelected);
+          }}
         >
           {filteredRelations.map((relation) => (
             <CheckboxUser

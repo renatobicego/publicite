@@ -8,19 +8,11 @@ import { PostBehaviourType } from "@/types/postTypes";
 import useUserPostLimit from "@/utils/hooks/useUserPostLimit";
 import PostsLimitReached from "../anuncio/components/PostsLimitReached";
 
-const CreatePetitionClient = ({
-  userId,
-  userClerkId,
-}: {
-  userId?: string;
-  userClerkId: string;
-}) => {
+const CreatePetitionClient = ({ userId }: { userId?: string }) => {
   const [postBehaviourType, setPostBehaviourType] =
     useState<PostBehaviourType>();
-  const { userCanPublishPost, limit, numberOfPosts } = useUserPostLimit(
-    userClerkId,
-    postBehaviourType
-  );
+  const { userCanPublishPost, limit, numberOfPosts } =
+    useUserPostLimit(postBehaviourType);
   return (
     <AttachedFilesProvider>
       <SelectPostBehaviourType

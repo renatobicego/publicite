@@ -2,7 +2,6 @@ import { Subscription } from "@/types/subscriptions";
 import DataBox, { CardDataItem, DataItem } from "../../DataBox";
 import { Button } from "@nextui-org/react";
 import useUserPostLimit from "@/utils/hooks/useUserPostLimit";
-import { useUserData } from "@/app/(root)/providers/userDataProvider";
 
 const LimitPosts = ({
   userSubscriptions,
@@ -12,8 +11,7 @@ const LimitPosts = ({
     postsPacks: Subscription[];
   };
 }) => {
-  const { clerkIdLogged } = useUserData();
-  const { numberOfPosts } = useUserPostLimit(clerkIdLogged as string);
+  const { numberOfPosts } = useUserPostLimit();
   return (
     <DataBox
       key={"dataLimitPosts"}

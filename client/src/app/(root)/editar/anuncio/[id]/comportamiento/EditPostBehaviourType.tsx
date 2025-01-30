@@ -50,16 +50,20 @@ const EditPostBehaviourType = ({
   const [currentPostBehaviourType, setCurrentPostBehaviourType] =
     useState(postBehaviourType);
   const { userCanPublishPost, limit, numberOfPosts, loading } =
-    useUserPostLimit(authorId || "", currentPostBehaviourType);
+    useUserPostLimit(currentPostBehaviourType);
 
   const handleSubmit = async (
     values: EditPostBehaviourTypeFormValues,
     actions: FormikHelpers<EditPostBehaviourTypeFormValues>
   ) => {
-    if (!userCanPublishPost) return toastifyError("Has superado el limite de anuncios");
+    if (!userCanPublishPost)
+      return toastifyError("Has superado el limite de anuncios");
     if (!values.postBehaviourType) {
       actions.setSubmitting(false);
-      actions.setFieldError("postBehaviourType", "Selecciona un comportamiento");
+      actions.setFieldError(
+        "postBehaviourType",
+        "Selecciona un comportamiento"
+      );
       return;
     }
     const res = await updatePostBehaviour(

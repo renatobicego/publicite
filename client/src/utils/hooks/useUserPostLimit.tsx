@@ -1,16 +1,9 @@
-import {
-  getSubscriptionsOfUser,
-  getUserActivePostNumber,
-} from "@/services/subscriptionServices";
+import { getUserActivePostandActiveRelationsNumber } from "@/services/subscriptionServices";
 import { PostBehaviourType } from "@/types/postTypes";
-import { Subscription } from "@/types/subscriptions";
 import { useEffect, useState } from "react";
 import { toastifyError } from "../functions/toastify";
 
-const useUserPostLimit = (
-  userId: string,
-  postBehaviourType?: PostBehaviourType
-) => {
+const useUserPostLimit = (postBehaviourType?: PostBehaviourType) => {
   const [numberOfPosts, setNumberOfPosts] = useState<
     Record<PostBehaviourType, number>
   >({
@@ -18,19 +11,26 @@ const useUserPostLimit = (
     libre: 0,
   });
 
-  const [limits, setLimits] = useState({
+  const [limits, setLimits] = useState<Record<PostBehaviourType, number>>({
     agenda: 0,
     libre: 0,
+  });
+
+  const [activeRelations, setActiveRelations] = useState<
+    Record<"count" | "limit", number>
+  >({
+    count: 0,
+    limit: 0,
   });
 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchNumberOfPosts = async () => {
-      const res = await getUserActivePostNumber();
+      const res = await getUserActivePostandActiveRelationsNumber();
       if ("error" in res) {
         toastifyError(
-          "Error al traer el número de anuncios activos. Por favor intenta de nuevo."
+          "Error al traer el número de anuncios activos y relaciones activas. Por favor intenta de nuevo."
         );
         return;
       }
@@ -41,6 +41,10 @@ const useUserPostLimit = (
       setNumberOfPosts({
         agenda: res.agendaPostCount,
         libre: res.librePostCount,
+      });
+      setActiveRelations({
+        count: res.contactCount,
+        limit: res.contactLimit,
       });
       setLoading(false);
     };
@@ -55,6 +59,7 @@ const useUserPostLimit = (
     limit: limits,
     numberOfPosts,
     loading,
+    activeRelations,
   };
 };
 
