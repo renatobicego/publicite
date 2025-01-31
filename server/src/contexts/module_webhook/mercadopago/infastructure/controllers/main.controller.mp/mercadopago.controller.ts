@@ -74,8 +74,8 @@ export class MercadopagoController {
       // };
 
       const authSecretValidation =
-        await this.mpWebhookAdapter.process_subscription_authorized_payment(
-          "7015532872", "updated"
+        await this.mpWebhookAdapter.process_subscription_preapproval(
+          "0a88fdc4b1644e0ea60f0cd35de82694", "updated"
         );
       if (authSecretValidation) {
         //En el caso de que validemos el origen y que el pago se complete correctamente, vamos a deolver el estado OK, de lo contrario esta operacion no se hara

@@ -45,15 +45,14 @@ export class MpSubscriptionService implements SubscriptionServiceInterface {
     if (
       !auto_recurring ||
       !auto_recurring.start_date ||
-      !auto_recurring.end_date ||
       !external_reference
     ) {
       this.logger.error('Invalid subscription data - missing dates');
       throw new BadRequestException('Invalid subscription data');
     }
-    let { start_date, end_date } = auto_recurring;
+    let { start_date, /** end_date */ } = auto_recurring;
     start_date = this.parseTimeX(start_date);
-    end_date = this.parseTimeX(end_date);
+    let end_date = this.parseTimeX(start_date);
 
     //Buscamos el plan al que pertenece la suscripción
     const plan =
@@ -148,10 +147,13 @@ export class MpSubscriptionService implements SubscriptionServiceInterface {
 
       const { id, payer_id, status, auto_recurring, external_reference, next_payment_date, payment_method_id, card_id } =
         subscription_preapproval_update;
-      let { start_date, end_date } = auto_recurring;
+      let end_date;
+      let { start_date, /*end_date*/ } = auto_recurring;
       start_date = this.parseTimeX(start_date);
-      end_date = this.parseTimeX(end_date);
+      end_date = this.parseTimeX(start_date);
       const timeOfUpdate = getTodayDateTime();
+
+
 
       const updateObject = {
         mpPreapprovalId: id,

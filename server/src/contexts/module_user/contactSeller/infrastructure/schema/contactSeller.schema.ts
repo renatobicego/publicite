@@ -11,8 +11,10 @@ interface ContactSellerDocument extends Document {
         message: string
     }
     post: Schema.Types.ObjectId,
-    notification_id: Schema.Types.ObjectId
-    owner: Schema.Types.ObjectId
+    notification_id: Schema.Types.ObjectId,
+    owner: Schema.Types.ObjectId,
+    date: Date,
+    isOpinionRequested: boolean
 }
 
 const ContactSellerSchema = new Schema<ContactSellerDocument>({
@@ -26,9 +28,10 @@ const ContactSellerSchema = new Schema<ContactSellerDocument>({
         message: { type: String, required: true },
     },
     post: { type: Schema.Types.ObjectId, ref: 'Post' },
-
     notification_id: { type: Schema.Types.ObjectId, ref: 'Notification' },
-    owner: { type: Schema.Types.ObjectId, ref: 'User' }
+    owner: { type: Schema.Types.ObjectId, ref: 'User' },
+    date: { type: Date, required: true },
+    isOpinionRequested: { type: Boolean, required: true }
 
 
 

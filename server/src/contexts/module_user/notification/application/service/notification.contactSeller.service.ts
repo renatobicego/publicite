@@ -2,12 +2,28 @@ import { InjectConnection } from "@nestjs/mongoose";
 import { NotificationContactSeller } from "../../domain/entity/notification.contactSeller.entity";
 import { NotificationContactSellerServiceInterface } from "../../domain/service/notification.contactSeller.service.interface";
 import { Connection } from "mongoose";
+import { EventEmitter2 } from "@nestjs/event-emitter";
 import { Inject, InternalServerErrorException } from "@nestjs/common";
+
+
 import { NotificationRepositoryInterface } from "../../domain/repository/notification.repository.interface";
 import { UserServiceInterface } from "src/contexts/module_user/user/domain/service/user.service.interface";
-import { ContactSeller } from "src/contexts/module_user/contactSeller/domain/contactSeller.entity";
 import { contact_seller_new_request } from "src/contexts/module_shared/event-emmiter/events";
-import { EventEmitter2 } from "@nestjs/event-emitter";
+
+interface ContactSeller {
+    post: any,
+    client: {
+        _id: string,
+        name: string,
+        email: string,
+        lastName: string,
+        username: string,
+        phone: string,
+        message: string
+    },
+    notification_id: any,
+    owner: any
+}
 
 export class NotificationContactSellerService implements NotificationContactSellerServiceInterface {
 
@@ -47,12 +63,14 @@ export class NotificationContactSellerService implements NotificationContactSell
                 if (!client || !post) {
                     throw new InternalServerErrorException("Error was occured CLIENT OR POST in ContactSeller are null")
                 }
-                const contactSellerEntity = new ContactSeller(
-                    post,
-                    client,
-                    notificationId,
-                    userIdTo
-                )
+                const contactSellerEntity: ContactSeller =
+                {
+                    post: post,
+                    client: client,
+                    notification_id: notificationId,
+                    owner: userIdTo
+                }
+
 
                 const contactSeller = await this.eventEmitter.emitAsync(
                     contact_seller_new_request,
