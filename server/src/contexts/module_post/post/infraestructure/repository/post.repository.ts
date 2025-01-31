@@ -1,5 +1,5 @@
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
-import { ClientSession, Connection, Model } from 'mongoose';
+import mongoose, { ClientSession, Connection, Model } from 'mongoose';
 
 import { Post } from '../../domain/entity/post.entity';
 import { PostRepositoryInterface } from '../../domain/repository/post.repository.interface';
@@ -66,7 +66,9 @@ export class PostRepository implements PostRepositoryInterface {
 
     private readonly logger: MyLoggerService,
     @InjectConnection() private readonly connection: Connection,
-  ) {}
+  ) { }
+
+
 
   async activateOrDeactivatePost(_id: string, activate: boolean): Promise<any> {
     try {
@@ -668,6 +670,47 @@ export class PostRepository implements PostRepositoryInterface {
       throw error;
     }
   }
+  async findPostByIdAndCategoryPostsRecomended(id: string, category: string, userLocation: UserLocation): Promise<any> {
+    try {
+      const today = new Date();
+      const postById = await this.findPostById(id);
+      const posts = await this.postDocument.aggregate([
+        {
+          $geoNear: {
+            near: {
+              type: 'Point',
+              coordinates: [userLocation.longitude, userLocation.latitude],
+            },
+            distanceField: 'distance',
+            spherical: true,
+            query: {
+              'visibility.post': 'public',
+              isActive: true,
+              endDate: { $gte: today },
+              category: new mongoose.Types.ObjectId(category),
+            },
+          },
+        },
+        {
+          $match: {
+            $expr: { $lte: ['$distance', '$geoLocation.ratio'] },
+          },
+        },
+        { $limit: 4 },
+      ]);
+
+      return {
+        post: postById,
+        recomended: posts,
+      };
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
+
+
 
   async setResponseOnComment(
     commentId: string,

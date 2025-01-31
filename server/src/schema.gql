@@ -616,6 +616,19 @@ type PostLimitResponseGraphql {
   contactAvailable: Float!
 }
 
+type post_response_recomended {
+  _id: String
+  title: String
+  description: String
+  postType: String
+  price: String
+}
+
+type Post_and_recomended_response_graphql_model {
+  post: Post_response_graphql_model!
+  recomended: [post_response_recomended!]
+}
+
 type PostCategoryResponse {
   label: String!
   _id: String!
@@ -705,6 +718,15 @@ type Query {
   """Obtener Post por su Id"""
   findPostById(id: String!): Post_response_graphql_model
 
+  """Obtener Post por su Id + 4 post recomendos de la misma categoria"""
+  findPostByIdAndCategoryPostsRecomended(
+    id: String!
+
+    """category ID"""
+    category: String!
+    userLocation: UserLocation!
+  ): Post_and_recomended_response_graphql_model
+
   """
   Buscar todos los post, recibe pagina, limite y tambien el postType. De ser necesario podes enviarle un searchTerm para filtrar. (Post libres)
   """
@@ -754,16 +776,16 @@ type Query {
   getContactSellerById(contactSellerGetType: contactSellerGetType!, _id: String!): [ContactSeller_Graphql!]
 }
 
+input UserLocation {
+  latitude: Float!
+  longitude: Float!
+}
+
 """Type of the post """
 enum PostType {
   good
   service
   petition
-}
-
-input UserLocation {
-  latitude: Float!
-  longitude: Float!
 }
 
 """Visibility_Of_Find """

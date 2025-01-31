@@ -27,6 +27,7 @@ export class PostAdapter implements PostAdapterInterface {
     private eventEmitter: EventEmitter2,
   ) { }
 
+
   @OnEvent(downgrade_plan_post)
   async desactivatePostByUserId(id: string): Promise<any> {
     try {
@@ -128,6 +129,14 @@ export class PostAdapter implements PostAdapterInterface {
   async findFriendPosts(postType: string, userRequestId: string, page: number, limit: number, visibility: Visibility_Of_Find, searchTerm?: string): Promise<void> {
     try {
       return await this.postService.findFriendPosts(postType, userRequestId, page, limit, visibility, searchTerm);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  async findPostByIdAndCategoryPostsRecomended(id: string, category: string, userLocation: UserLocation): Promise<any> {
+    try {
+      return await this.postService.findPostByIdAndCategoryPostsRecomended(id, category, userLocation)
     } catch (error: any) {
       throw error;
     }

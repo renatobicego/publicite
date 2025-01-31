@@ -20,6 +20,7 @@ import { UserLocation } from '../../../domain/entity/models_graphql/HTTP-REQUEST
 import { PostLimitResponseGraphql } from '../../../domain/entity/models_graphql/HTTP-RESPONSE/post.limit.response.graphql';
 import { PostBehaviourType } from '../../../domain/entity/enum/postBehaviourType.enum';
 import { Visibility_Of_Find } from '../../../domain/entity/enum/post-visibility.enum';
+import { Post_and_recomended_response_graphql_model } from '../../../domain/entity/models_graphql/HTTP-RESPONSE/post.and.recomended.response';
 
 
 
@@ -280,6 +281,28 @@ export class PostResolver {
       throw error;
     }
   }
+
+  @Query(() => Post_and_recomended_response_graphql_model, {
+    nullable: true,
+    description: 'Obtener Post por su Id + 4 post recomendos de la misma categoria',
+  })
+  @UseGuards(ClerkAuthGuard)
+  async findPostByIdAndCategoryPostsRecomended(
+    @Args('id', { type: () => String }) id: string,
+    @Args('category', { type: () => String, description: 'category ID' }) category: string,
+    @Args('userLocation', { type: () => UserLocation }) userLocation: UserLocation,
+  ): Promise<any> {
+    try {
+      return await this.postAdapter.findPostByIdAndCategoryPostsRecomended(id, category, userLocation);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
+
+
+
 
   @Query(() => PostFindAllResponse, {
     nullable: true,

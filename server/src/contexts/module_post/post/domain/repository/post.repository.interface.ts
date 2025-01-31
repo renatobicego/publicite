@@ -32,6 +32,8 @@ export interface PostRepositoryInterface {
   findMatchPost(postType: string, searchTerm: string): Promise<void>;
   findFriendPosts(postType: string, userRelationMap: Map<string, String[]>, page: number, limit: number, searchTerm?: string): Promise<void>;
   findPostOfGroupMembers(membersId: any[], conditionsOfSearch: any, userLocation: UserLocation, limit: number, page: number): Promise<PostsMemberGroupResponse | null>
+  findPostByIdAndCategoryPostsRecomended(id: string, category: string, userLocation: UserLocation): Promise<any>
+
   savePostComment(postComment: PostComment, session: any): Promise<any>;
   setCommenOnPost(postId: string, postCommentId: string, session: any): Promise<any>
   setResponseOnComment(commentId: string, responseId: string, session: any): Promise<any>

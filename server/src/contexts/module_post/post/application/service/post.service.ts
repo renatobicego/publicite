@@ -35,6 +35,7 @@ export class PostService implements PostServiceInterface {
   ) { }
 
 
+
   async activateOrDeactivatePost(_id: string, activate: boolean, postBehaviourType: PostBehaviourType, userRequestId: string): Promise<any> {
     try {
       if (activate) {
@@ -237,6 +238,16 @@ export class PostService implements PostServiceInterface {
       throw error;
     }
   }
+
+
+  async findPostByIdAndCategoryPostsRecomended(id: string, category: string, userLocation: UserLocation): Promise<any> {
+    try {
+      return await this.postRepository.findPostByIdAndCategoryPostsRecomended(id, category, userLocation)
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
 
   async getPostAndContactLimit(userRequestId: string): Promise<PostLimitResponseGraphql> {
     try {
