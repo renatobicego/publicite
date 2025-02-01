@@ -41,6 +41,7 @@ export class PostFactory implements PostFactoryInterface {
             label: '',
         }
         const postReactions: Schema.Types.ObjectId[] = []
+        const postComments: Schema.Types.ObjectId[] = []
 
         const searchTitle = removeAccents_removeEmojisAndToLowerCase(post.title)
         const searchDescription = removeAccents_removeEmojisAndToLowerCase(post.description)
@@ -53,14 +54,14 @@ export class PostFactory implements PostFactoryInterface {
             searchTitle,
             post.author,
             postType,
-            post.description ?? null,
+            post.description ?? 'El vendedor no ha proporcionado una descripción',
             searchDescription,
             visibilityNormalizated,
             [] as any, // recomendations
             post.price,
             post.geoLocation,
             post.category ?? [],
-            post.comments ?? [],
+            postComments,
             post.attachedFiles ?? [postAttachedEmpty] as any,
             post.createAt,
             postReactions,
@@ -69,7 +70,7 @@ export class PostFactory implements PostFactoryInterface {
         );
 
 
-
+        console.log(postBase)
         switch (post.postType.toLowerCase()) {
             case PostType.good:
                 this.logger.log('We are creating a good post');

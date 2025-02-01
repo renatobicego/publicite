@@ -697,6 +697,8 @@ type ClientContactSeller_graphql {
 type ContactSeller_Graphql {
   post: PostContactSeller_graphql!
   client: ClientContactSeller_graphql!
+  date: DateTime!
+  isOpinionRequested: Boolean!
 }
 
 type Query {
@@ -719,13 +721,7 @@ type Query {
   findPostById(id: String!): Post_response_graphql_model
 
   """Obtener Post por su Id + 4 post recomendos de la misma categoria"""
-  findPostByIdAndCategoryPostsRecomended(
-    id: String!
-
-    """category ID"""
-    category: String!
-    userLocation: UserLocation!
-  ): Post_and_recomended_response_graphql_model
+  findPostByIdAndCategoryPostsRecomended(id: String!, userLocation: UserLocation!): Post_and_recomended_response_graphql_model
 
   """
   Buscar todos los post, recibe pagina, limite y tambien el postType. De ser necesario podes enviarle un searchTerm para filtrar. (Post libres)
@@ -976,7 +972,6 @@ input PostRequest {
   price: Float
   geoLocation: LocationOfPost!
   category: [String!]
-  comments: [String!]
   attachedFiles: [AttachedFilesRequest!]
   createAt: String!
   postBehaviourType: PostBehaviourType!

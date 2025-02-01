@@ -75,8 +75,6 @@ export class PostRequest {
   @Field(() => [String], { nullable: true })
   category: ObjectId[];
 
-  @Field(() => [String], { nullable: true })
-  comments: ObjectId[];
 
   @Field(() => [AttachedFilesRequest], { nullable: true })
   attachedFiles: AttachedFilesRequest[]

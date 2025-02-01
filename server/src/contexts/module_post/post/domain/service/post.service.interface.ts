@@ -32,7 +32,7 @@ export interface PostServiceInterface {
   findMatchPost(postType: string, searchTerm: string): Promise<void>;
   findFriendPosts(postType: string, userRequestId: string, page: number, limit: number, visibility: Visibility_Of_Find, searchTerm?: string): Promise<void>;
   findPostOfGroupMembers(membersId: any[], conditionsOfSearch: any, userLocation: UserLocation, limit: number, page: number): Promise<PostsMemberGroupResponse | null>
-  findPostByIdAndCategoryPostsRecomended(id: string, category: string, userLocation: UserLocation): Promise<any>;
+  findPostByIdAndCategoryPostsRecomended(id: string, userLocation: UserLocation): Promise<any>;
 
   getPostAndContactLimit(userRequestId: string): Promise<PostLimitResponseGraphql>
   makeReactionSchemaAndSetReactionToPost(postId: string, reaction: { user: string, reaction: string }, session: any): Promise<void>;

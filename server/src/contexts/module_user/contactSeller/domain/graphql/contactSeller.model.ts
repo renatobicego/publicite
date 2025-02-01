@@ -81,6 +81,12 @@ export class ContactSeller_Graphql {
     @Field(() => ClientContactSeller_graphql)
     client: ClientContactSeller_graphql;
 
+    @Field(() => Date)
+    date: Date;
+
+    @Field(() => Boolean)
+    isOpinionRequested: boolean
+
 }
 
 
