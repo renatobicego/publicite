@@ -273,4 +273,10 @@ export const getContactSellersQuery = gql`
   }
 `;
 
+export const deleteNotificationMutation = gql`
+  mutation DeleteNotificationById($event: String!, $id: String!) {
+    deleteNotificationById(event: $event, _id: $id)
+  }
+`;
+
 export default getUserByUsernameQuery;

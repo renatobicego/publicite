@@ -57,9 +57,19 @@ const DesktopNotifications = ({
       }}
     >
       <PopoverTrigger>
-        <Button radius="full" variant="light" isIconOnly aria-label="Notificaciones">
+        <Button
+          radius="full"
+          variant="light"
+          isIconOnly
+          aria-label="Notificaciones"
+        >
           {newNotificationsReceived || newNotificationsFromServer ? (
-            <Badge aria-label="nuevas notificaciones" content="" size="sm" color="primary">
+            <Badge
+              aria-label="nuevas notificaciones"
+              content=""
+              size="sm"
+              color="primary"
+            >
               <FaBell className="size-6" />
             </Badge>
           ) : (

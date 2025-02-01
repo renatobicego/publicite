@@ -1,5 +1,8 @@
 import { parseIsoDate, showDate } from "@/utils/functions/dates";
-import { parseAbsoluteToLocal, parseZonedDateTime } from "@internationalized/date";
+import {
+  parseAbsoluteToLocal,
+  parseZonedDateTime,
+} from "@internationalized/date";
 import Link from "next/link";
 import {
   NotificationCard,
@@ -20,6 +23,7 @@ import { userRelationNotificationMessages } from "./notificationMessages";
 import { PROFILE } from "@/utils/data/urls";
 import { Image, user } from "@nextui-org/react";
 import { relationTypes } from "@/utils/data/selectData";
+import { checkAndAddDeleteNotification } from "../deleteNotification";
 
 const UserRelationNotificationCard = ({
   notification,
@@ -93,6 +97,7 @@ const UserRelationNotificationCard = ({
         },
       });
     }
+    checkAndAddDeleteNotification(optionsList, event, _id);
     return optionsList;
   };
   return (

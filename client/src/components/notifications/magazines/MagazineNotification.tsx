@@ -17,6 +17,8 @@ import {
 } from "@/types/magazineTypes";
 import { IoBook } from "react-icons/io5";
 import { useUserData } from "@/app/(root)/providers/userDataProvider";
+import { checkAndAddDeleteNotification } from "../deleteNotification";
+import { useNotificationsContext } from "@/app/(root)/providers/notificationsProvider";
 
 const MagazineNotificationCard = ({
   notification,
@@ -24,9 +26,11 @@ const MagazineNotificationCard = ({
   notification: MagazineNotification;
 }) => {
   const { magazine } = notification.frontData;
-  const { event, backData, viewed, date, isActionsAvailable, _id } = notification;
+  const { event, backData, viewed, date, isActionsAvailable, _id } =
+    notification;
   const { userIdLogged, usernameLogged } = useUserData();
   const { updateSocketToken } = useSocket();
+  const { deleteNotification } = useNotificationsContext();
   const getNotificationOptionsList = () => {
     const optionsList: NotificationOptionProps[] = [];
     const notificationMessage =
@@ -85,6 +89,8 @@ const MagazineNotificationCard = ({
         },
       });
     }
+    checkAndAddDeleteNotification(optionsList, event, _id, deleteNotification);
+
     return optionsList;
   };
   return (

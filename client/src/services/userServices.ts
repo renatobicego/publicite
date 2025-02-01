@@ -12,6 +12,7 @@ import axios from "axios";
 import { getClient, query } from "@/lib/client";
 import getUserByUsernameQuery, {
   changeNotificationStatusMutation,
+  deleteNotificationMutation,
   deleteUserRelationMutation,
   getAllNotificationsQuery,
   getContactSellersQuery,
@@ -302,6 +303,25 @@ export const putNotificationStatus = async (id: string[]) => {
     return data;
   } catch (error) {
     console.log(error);
+  }
+};
+
+export const deleteNotificationById = async (event: string, id: string) => {
+  try {
+    await getClient().mutate({
+      mutation: deleteNotificationMutation,
+      variables: { event, id },
+      context: {
+        headers: {
+          Authorization: await auth().getToken({ template: "testing" }),
+        },
+      },
+    });
+    return {
+      message: "Notificacion eliminada",
+    };
+  } catch (error) {
+    return handleApolloError(error);
   }
 };
 

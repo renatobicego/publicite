@@ -3,12 +3,15 @@ import {
   NotificationBody,
   NotificationCard,
   NotificationImage,
+  NotificationOptionProps,
   NotificationOptions,
 } from "../NotificationCard";
 import { ContactSellerNotification } from "@/types/postTypes";
 import { FILE_URL, POSTS } from "@/utils/data/urls";
 import { parseIsoDate, showDate } from "@/utils/functions/dates";
 import { lazy } from "react";
+import { checkAndAddDeleteNotification } from "../deleteNotification";
+import { useNotificationsContext } from "@/app/(root)/providers/notificationsProvider";
 const ContactPetition = lazy(
   () => import("@/components/modals/ContactPetition/ContactPetition")
 );
@@ -22,9 +25,29 @@ const NewContactPost = ({
     frontData: {
       contactSeller: { post, client },
     },
+    _id,
+    event,
   } = notification;
+  const { deleteNotification } = useNotificationsContext();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const messageToDisplay = `${client.name} ${client.lastName} te ha contactado por el anuncio de "${post.title}".`;
+
+  const getNotificationOptionsList = () => {
+    const optionsList: NotificationOptionProps[] = [
+      {
+        label: "Ver Solicitud",
+        onPress: onOpen,
+      },
+      {
+        label: "Ver Post",
+        as: Link,
+        href: `${POSTS}/${post._id}`,
+        className: "text-text-color",
+      },
+    ];
+    checkAndAddDeleteNotification(optionsList, event, _id, deleteNotification);
+    return optionsList;
+  };
   return (
     <NotificationCard isNew>
       <NotificationImage>
@@ -36,27 +59,14 @@ const NewContactPost = ({
               : "/logo.png"
           }
           alt="foto"
-          className="object-cover"
-          classNames={{
-            wrapper: "w-full !max-w-full object-cover",
-          }}
+          className="object-cover w-full h-full"
+          removeWrapper
         />
       </NotificationImage>
       <NotificationBody>{messageToDisplay}</NotificationBody>
       <NotificationOptions
         date={showDate(parseIsoDate(notification.date))}
-        items={[
-          {
-            label: "Ver Solicitud",
-            onPress: onOpen,
-          },
-          {
-            label: "Ver Post",
-            as: Link,
-            href: `${POSTS}/${post._id}`,
-            className: "text-text-color",
-          },
-        ]}
+        items={getNotificationOptionsList()}
       />
       {isOpen && (
         <ContactPetition

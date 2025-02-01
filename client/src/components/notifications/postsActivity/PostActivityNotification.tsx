@@ -19,17 +19,20 @@ import {
 } from "@/types/postTypes";
 import { postActivitiesNotificationMessages } from "./notificationMessages";
 import PostActivityImage from "./PostActivityImage";
+import { checkAndAddDeleteNotification } from "../deleteNotification";
+import { useNotificationsContext } from "@/app/(root)/providers/notificationsProvider";
 
 const PostActivityNotificationCard = ({
   notification,
 }: {
   notification: PostActivityNotification;
 }) => {
-  const { event, viewed, date } = notification;
+  const { event, viewed, date, _id } = notification;
   const {
     frontData: { postActivity },
   } = notification;
   const { post, user, notificationPostType } = postActivity;
+  const { deleteNotification } = useNotificationsContext();
 
   // const { userIdLogged, usernameLogged } = useUserData();
   // const { updateSocketToken } = useSocket();
@@ -99,6 +102,8 @@ const PostActivityNotificationCard = ({
     //     },
     //   });
     // }
+    checkAndAddDeleteNotification(optionsList, event, _id, deleteNotification);
+
     return optionsList;
   };
 
