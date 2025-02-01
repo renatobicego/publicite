@@ -8,7 +8,6 @@ import {
 import { ContactSellerNotification } from "@/types/postTypes";
 import { FILE_URL, POSTS } from "@/utils/data/urls";
 import { parseIsoDate, showDate } from "@/utils/functions/dates";
-import { parseZonedDateTime } from "@internationalized/date";
 import { lazy } from "react";
 const ContactPetition = lazy(
   () => import("@/components/modals/ContactPetition/ContactPetition")
@@ -63,7 +62,7 @@ const NewContactPost = ({
         <ContactPetition
           isOpen={true}
           onOpenChange={onOpenChange}
-          notification={notification}
+          contactPetitionData={{ post, client }}
         />
       )}
     </NotificationCard>

@@ -14,6 +14,7 @@ import getUserByUsernameQuery, {
   changeNotificationStatusMutation,
   deleteUserRelationMutation,
   getAllNotificationsQuery,
+  getContactSellersQuery,
   getFriendRequestsQuery,
   putActiveRelationsMutation,
   updateContactMutation,
@@ -21,6 +22,7 @@ import getUserByUsernameQuery, {
 import { ApolloError } from "@apollo/client";
 import { getApiContext } from "./apiContext";
 import { handleApolloError } from "@/utils/functions/errorHandler";
+import { PetitionContactSeller, Post } from "@/types/postTypes";
 
 const baseUrl = `${process.env.API_URL}/user/personal`;
 
@@ -212,6 +214,32 @@ export const getFriendRequests = async (
       error:
         "Error al traer las solicitudes de amistad del usuario. Por favor intenta de nuevo.",
     };
+  }
+};
+
+export const getContactSellers = async (
+  type: "post" | "profile",
+  id: string
+): Promise<
+  | { client: Omit<PetitionContactSeller, "post">; post: Post }[]
+  | { error: string }
+> => {
+  try {
+    const { data } = await query({
+      query: getContactSellersQuery,
+      variables: { contactSellerGetType: type, id },
+      context: {
+        headers: {
+          Authorization: await auth().getToken({ template: "testing" }),
+        },
+        fetchOptions: {
+          next: { revalidate: 60 },
+        },
+      },
+    });
+    return data.getContactSellerById;
+  } catch (error: ApolloError | any) {
+    return handleApolloError(error);
   }
 };
 

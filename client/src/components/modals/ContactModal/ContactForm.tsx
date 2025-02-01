@@ -1,7 +1,7 @@
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
 import { CustomInput, CustomTextarea } from "@/components/inputs/CustomInputs";
-import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
+import { toastifySuccess } from "@/utils/functions/toastify";
 import { SignedOut, useUser } from "@clerk/nextjs";
 import { Button } from "@nextui-org/react";
 import { Field, Form, Formik, FormikHelpers } from "formik";
@@ -30,6 +30,7 @@ const ContactForm = ({
     lastName: user?.lastName || "",
     phone: undefined,
     message: "",
+    username: user?.username || "",
   };
   const handleSubmit = (
     values: PetitionContactSeller,
@@ -100,15 +101,6 @@ const ContactForm = ({
                 isInvalid={!!errors.email}
                 errorMessage={errors.email}
               />
-              <Field
-                as={CustomInput}
-                name="phone"
-                label="Whatsapp / Teléfono"
-                isInvalid={!!errors.phone}
-                errorMessage={errors.phone}
-                aria-label="contacto"
-                placeholder="Ingrese teléfono de contacto"
-              />
             </SignedOut>
             <Field
               as={CustomTextarea}
@@ -120,6 +112,15 @@ const ContactForm = ({
               aria-label="mensaje"
               isInvalid={!!errors.message}
               errorMessage={errors.message}
+            />
+            <Field
+              as={CustomInput}
+              name="phone"
+              label="Whatsapp / Teléfono"
+              isInvalid={!!errors.phone}
+              errorMessage={errors.phone}
+              aria-label="contacto"
+              placeholder="Ingrese teléfono de contacto"
             />
             <RequiredFieldsMsg />
             <div className="flex gap-2 items-center justify-end">

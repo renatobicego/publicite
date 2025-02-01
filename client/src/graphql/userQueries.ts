@@ -240,4 +240,37 @@ export const putActiveRelationsMutation = gql`
   }
 `;
 
+export const getContactSellersQuery = gql`
+  query GetContactSellerById(
+    $contactSellerGetType: contactSellerGetType!
+    $id: String!
+  ) {
+    getContactSellerById(
+      contactSellerGetType: $contactSellerGetType
+      _id: $id
+    ) {
+      client {
+        _id
+        email
+        lastName
+        message
+        name
+        phone
+        username
+      }
+      post {
+        _id
+        description
+        frequencyPrice
+        imagesUrls
+        postType
+        petitionType
+        price
+        title
+        toPrice
+      }
+    }
+  }
+`;
+
 export default getUserByUsernameQuery;
