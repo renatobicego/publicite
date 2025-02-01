@@ -289,11 +289,10 @@ export class PostResolver {
   @UseGuards(ClerkAuthGuard)
   async findPostByIdAndCategoryPostsRecomended(
     @Args('id', { type: () => String }) id: string,
-    @Args('category', { type: () => String, description: 'category ID' }) category: string,
     @Args('userLocation', { type: () => UserLocation }) userLocation: UserLocation,
   ): Promise<any> {
     try {
-      return await this.postAdapter.findPostByIdAndCategoryPostsRecomended(id, category, userLocation);
+      return await this.postAdapter.findPostByIdAndCategoryPostsRecomended(id, userLocation);
     } catch (error: any) {
       throw error;
     }

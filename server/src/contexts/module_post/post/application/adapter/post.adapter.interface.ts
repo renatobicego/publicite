@@ -16,7 +16,7 @@ export interface PostAdapterInterface {
   deleteCommentById(id: string, userRequestId: string, isAuthorOfPost: boolean): Promise<void>;
   findPostsByAuthorId(id: string): Promise<void>;
   findPostById(id: string): Promise<void>;
-  findPostByIdAndCategoryPostsRecomended(id: string, category: string, userLocation: UserLocation): Promise<any>;
+  findPostByIdAndCategoryPostsRecomended(id: string, userLocation: UserLocation): Promise<any>;
   findAllPostByPostType(
     page: number,
     limit: number,

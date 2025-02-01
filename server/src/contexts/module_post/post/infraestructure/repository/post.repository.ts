@@ -102,6 +102,8 @@ export class PostRepository implements PostRepositoryInterface {
         comments: post.getComments,
         attachedFiles: post.getAttachedFiles,
         createAt: post.getCreateAt,
+        postBehaviourType: post.getPostBehaviourType,
+        isActive: post.getIsActive,
       };
       switch (post.getPostType.toLowerCase()) {
         case 'good':
@@ -670,10 +672,11 @@ export class PostRepository implements PostRepositoryInterface {
       throw error;
     }
   }
-  async findPostByIdAndCategoryPostsRecomended(id: string, category: string, userLocation: UserLocation): Promise<any> {
+  async findPostByIdAndCategoryPostsRecomended(id: string, userLocation: UserLocation): Promise<any> {
     try {
       const today = new Date();
       const postById = await this.findPostById(id);
+      const category = postById.category._id ?? null
       const posts = await this.postDocument.aggregate([
         {
           $geoNear: {
