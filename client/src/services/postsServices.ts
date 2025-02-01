@@ -98,6 +98,7 @@ export const postPost = async (
   values: GoodPostValues | PetitionPostValues | ServicePostValues
 ) => {
   const authorId = auth().sessionClaims?.metadata.mongoId;
+  console.log(values);
   try {
     const { data } = await getClient().mutate({
       mutation: postPostMutation,

@@ -24,6 +24,7 @@ import { PROFILE } from "@/utils/data/urls";
 import { Image, user } from "@nextui-org/react";
 import { relationTypes } from "@/utils/data/selectData";
 import { checkAndAddDeleteNotification } from "../deleteNotification";
+import { useNotificationsContext } from "@/app/(root)/providers/notificationsProvider";
 
 const UserRelationNotificationCard = ({
   notification,
@@ -37,6 +38,7 @@ const UserRelationNotificationCard = ({
     notification;
   const { usernameLogged } = useUserData();
   const { updateSocketToken } = useSocket();
+  const { deleteNotification } = useNotificationsContext();
   const [isActionSent, setIsActionSent] = useState(false);
   const getNotificationOptionsList = () => {
     const optionsList: NotificationOptionProps[] = [];
@@ -97,7 +99,7 @@ const UserRelationNotificationCard = ({
         },
       });
     }
-    checkAndAddDeleteNotification(optionsList, event, _id);
+    checkAndAddDeleteNotification(optionsList, event, _id, deleteNotification);
     return optionsList;
   };
   return (

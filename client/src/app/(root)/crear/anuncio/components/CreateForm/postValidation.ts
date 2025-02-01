@@ -10,7 +10,7 @@ export const postValidation = object({
   category: string()
     .required("La categoria es requerida")
     .min(3, "La categoria es requerida"),
-  price: string()
+  price: number()
     .required("El precio es requerido")
     .min(1, "El precio debe ser mayor a 1")
     .max(200000000, "El precio debe ser menor a 200.000.000"),

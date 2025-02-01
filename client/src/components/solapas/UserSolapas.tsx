@@ -112,7 +112,7 @@ const UserSolapas = ({
     },
     {
       key: `${PROFILE_USERNAME}/contactos`,
-      title: "Contactos",
+      title: "Agenda de Contactos",
       component: (
         <UserRelations
           user={{ _id: user._id, userRelations: user.userRelations }}
