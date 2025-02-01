@@ -116,9 +116,9 @@ export const CustomPriceInput = ({
       lang="es"
       {...field}
       {...props}
-      type="text"
+      type="number"
       pattern="^[0-9]*$"
-      inputMode="decimal"
+      inputMode="numeric"
       description={`$${formatTotal(propsAsAny.value)}`}
     />
   );
