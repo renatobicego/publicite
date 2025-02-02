@@ -721,7 +721,7 @@ type Query {
   findPostById(id: String!): Post_response_graphql_model
 
   """Obtener Post por su Id + 4 post recomendos de la misma categoria"""
-  findPostByIdAndCategoryPostsRecomended(id: String!, userLocation: UserLocation!): Post_and_recomended_response_graphql_model
+  findPostByIdAndCategoryPostsRecomended(id: String!): Post_and_recomended_response_graphql_model
 
   """
   Buscar todos los post, recibe pagina, limite y tambien el postType. De ser necesario podes enviarle un searchTerm para filtrar. (Post libres)
@@ -772,16 +772,16 @@ type Query {
   getContactSellerById(contactSellerGetType: contactSellerGetType!, _id: String!): [ContactSeller_Graphql!]
 }
 
-input UserLocation {
-  latitude: Float!
-  longitude: Float!
-}
-
 """Type of the post """
 enum PostType {
   good
   service
   petition
+}
+
+input UserLocation {
+  latitude: Float!
+  longitude: Float!
 }
 
 """Visibility_Of_Find """

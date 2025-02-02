@@ -36,6 +36,7 @@ import { FetchToMercadoPagoAdapter } from '../adapters/out/fetch.to.mp';
 import { ErrorService } from '../../application/service/error/error.service.interface';
 import { ErrorRepository } from '../repository/error/error.repository';
 import { ErrorSchema } from '../schemas/error.schema';
+import { InvoiceController } from '../controllers/invoice.controller';
 
 @Module({
     imports: [
@@ -54,6 +55,7 @@ import { ErrorSchema } from '../schemas/error.schema';
         MercadopagoController,
         SubscriptionController,
         MercadopagoSubscriptionPlanController,
+        InvoiceController,
     ],
     providers: [
         WebhookService,

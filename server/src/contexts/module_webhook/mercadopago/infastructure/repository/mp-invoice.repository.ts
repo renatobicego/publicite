@@ -59,7 +59,11 @@ export class MpInvoiceRepository
     external_reference: string,
   ): Promise<any[]> {
     try {
-      return await this.invoiceModel.find({ external_reference });
+      return await this.invoiceModel.find({ external_reference })
+        .populate([
+          { path: 'subscriptionId', model: 'Subscription' },
+          { path: 'paymentId', model: 'Payment' },
+        ]);
     } catch (error: any) {
       throw error;
     }
