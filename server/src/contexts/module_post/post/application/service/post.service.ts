@@ -240,9 +240,9 @@ export class PostService implements PostServiceInterface {
   }
 
 
-  async findPostByIdAndCategoryPostsRecomended(id: string, userLocation: UserLocation): Promise<any> {
+  async findPostByIdAndCategoryPostsRecomended(id: string): Promise<any> {
     try {
-      return await this.postRepository.findPostByIdAndCategoryPostsRecomended(id, userLocation)
+      return await this.postRepository.findPostByIdAndCategoryPostsRecomended(id)
     } catch (error: any) {
       throw error;
     }

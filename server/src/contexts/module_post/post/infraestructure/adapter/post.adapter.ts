@@ -134,9 +134,9 @@ export class PostAdapter implements PostAdapterInterface {
     }
   }
 
-  async findPostByIdAndCategoryPostsRecomended(id: string, userLocation: UserLocation): Promise<any> {
+  async findPostByIdAndCategoryPostsRecomended(id: string): Promise<any> {
     try {
-      return await this.postService.findPostByIdAndCategoryPostsRecomended(id, userLocation)
+      return await this.postService.findPostByIdAndCategoryPostsRecomended(id)
     } catch (error: any) {
       throw error;
     }

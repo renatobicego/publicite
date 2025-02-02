@@ -672,11 +672,12 @@ export class PostRepository implements PostRepositoryInterface {
       throw error;
     }
   }
-  async findPostByIdAndCategoryPostsRecomended(id: string, userLocation: UserLocation): Promise<any> {
+  async findPostByIdAndCategoryPostsRecomended(id: string): Promise<any> {
     try {
       const today = new Date();
       const postById = await this.findPostById(id);
       const category = postById.category._id ?? null
+      const userLocation = postById.geoLocation.location.coordinates
       const posts = await this.postDocument.aggregate([
         {
           $geoNear: {
