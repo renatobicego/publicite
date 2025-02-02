@@ -286,7 +286,7 @@ export class PostResolver {
     nullable: true,
     description: 'Obtener Post por su Id + 4 post recomendos de la misma categoria',
   })
-  @UseGuards(ClerkAuthGuard)
+  //@UseGuards(ClerkAuthGuard)
   async findPostByIdAndCategoryPostsRecomended(
     @Args('id', { type: () => String }) id: string,
   ): Promise<any> {
