@@ -15,6 +15,8 @@ import { groupNotificationMessages } from "./notificationMessages";
 import { useSocket } from "@/app/socketProvider";
 import { useUserData } from "@/app/(root)/providers/userDataProvider";
 import { useState } from "react";
+import { checkAndAddDeleteNotification } from "../deleteNotification";
+import { useNotificationsContext } from "@/app/(root)/providers/notificationsProvider";
 
 const GroupNotificationCard = ({
   notification,
@@ -27,6 +29,7 @@ const GroupNotificationCard = ({
   const { userIdLogged, usernameLogged } = useUserData();
   const { updateSocketToken } = useSocket();
   const [isActionSent, setIsActionSent] = useState(false);
+  const { deleteNotification } = useNotificationsContext();
   const getNotificationOptionsList = () => {
     const optionsList: NotificationOptionProps[] = [];
     const notificationMessage =
@@ -102,6 +105,8 @@ const GroupNotificationCard = ({
         },
       });
     }
+    checkAndAddDeleteNotification(optionsList, event, _id, deleteNotification);
+
     return optionsList;
   };
   return (

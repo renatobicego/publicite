@@ -19,6 +19,7 @@ import { POSTS } from "@/utils/data/urls";
 import { useRouter } from "next-nprogress-bar";
 import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
 import { useAttachedFiles } from "../CreateForm/inputs/AccordionInputs/AttachedFIles/AttachedFilesContext";
+import { deleteFilesService } from "@/app/server/uploadThing";
 
 const CreateService = ({
   files,
@@ -104,6 +105,8 @@ const CreateService = ({
     );
     if (resApi.error) {
       toastifyError(resApi.error);
+      deleteFilesService(values.attachedFiles.map((file) => file.url));
+      deleteFilesService(values.imagesUrls.map((file) => file));
       return;
     }
 

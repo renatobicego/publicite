@@ -87,18 +87,18 @@ export const CustomPriceInput = ({
   form: FormikProps<any>;
 }) => {
   const propsAsAny = props as any;
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const parsedValue = e.target.value.replaceAll(/[^0-9]/g, ""); // Remove any character except digits and commas
-    const customEvent = {
-      ...e,
-      target: {
-        ...e.target,
-        name: propsAsAny.name,
-        value: parseFloat(parsedValue),
-      },
-    };
-    propsAsAny.onChange(customEvent); // Call the original onChange with the modified value
-  };
+  // const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const parsedValue = e.target.value.replaceAll(/[^0-9]/g, ""); // Remove any character except digits and commas
+  //   const customEvent = {
+  //     ...e,
+  //     target: {
+  //       ...e.target,
+  //       name: propsAsAny.name,
+  //       value: parseFloat(parsedValue),
+  //     },
+  //   };
+  //   propsAsAny.onChange(customEvent); // Call the original onChange with the modified value
+  // };
 
   return (
     <Input
@@ -109,17 +109,17 @@ export const CustomPriceInput = ({
           "shadow-none hover:shadow-sm border-[0.5px] group-data-[focus=true]:border-light-text py-1",
         input: "text-[0.8125rem]",
         label: "font-medium text-[0.8125rem]",
+        description: "font-medium text-[0.9125rem]",
       }}
       radius="full"
       labelPlacement="outside"
       lang="es"
       {...field}
       {...props}
-      type="text"
-      pattern="^[0-9]*$" 
-      inputMode="decimal" 
-      value={formatTotal(propsAsAny.value)} // Format the value
-      onChange={handleChange} // Use the custom handler
+      type="number"
+      pattern="^[0-9]*$"
+      inputMode="numeric"
+      description={`$${formatTotal(propsAsAny.value)}`}
     />
   );
 };

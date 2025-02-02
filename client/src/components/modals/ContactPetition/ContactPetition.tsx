@@ -3,23 +3,33 @@ import {
   CustomInputWithoutFormik,
   CustomTextareaWithoutFormik,
 } from "@/components/inputs/CustomInputs";
-import { ContactSellerNotification, Post } from "@/types/postTypes";
-import { Modal, ModalBody, ModalContent, ModalHeader } from "@nextui-org/react";
+import {
+  ContactSellerNotification,
+  PetitionContactSeller,
+  Post,
+} from "@/types/postTypes";
+import {
+  Button,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+} from "@nextui-org/react";
 
 const ContactPetition = ({
   isOpen,
   onOpenChange,
-  notification,
+  contactPetitionData,
 }: {
   isOpen: boolean;
   onOpenChange: () => void;
-  notification: ContactSellerNotification;
+  contactPetitionData: {
+    client: Omit<PetitionContactSeller, "post">;
+    post: Post;
+  };
 }) => {
-  const {
-    frontData: {
-      contactSeller: { post, client },
-    },
-  } = notification;
+  const { post, client } = contactPetitionData;
   return (
     <Modal
       size="3xl"
@@ -39,6 +49,7 @@ const ContactPetition = ({
             </ModalHeader>
             <ModalBody className="flex gap-4 md:flex-row pb-8 max-h-[80vh] overflow-y-auto">
               <PostCard
+                interactable={false}
                 className="w-4/5 h-fit flex-shrink-0 md:w-2/5"
                 postData={post}
               />
@@ -67,6 +78,16 @@ const ContactPetition = ({
                 />
               </div>
             </ModalBody>
+            <ModalFooter>
+              <Button
+                color="danger"
+                variant="light"
+                radius="full"
+                onPress={onClose}
+              >
+                Cerrar
+              </Button>
+            </ModalFooter>
           </>
         )}
       </ModalContent>

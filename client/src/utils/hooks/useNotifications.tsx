@@ -63,7 +63,7 @@ const useNotifications = (isOpen: boolean) => {
         setErrorOccurred(false);
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
       toastifyError(error as string);
       setErrorOccurred(true);
     } finally {
@@ -128,11 +128,16 @@ const useNotifications = (isOpen: boolean) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, isLoading, hasMore, fetchNotifications]);
 
+  const deleteNotification = async (id: string) => {
+    setNotifications((prev) => prev.filter((n) => n._id !== id));
+  };
+
   return {
     notifications,
     isLoading,
     hasMore,
     fetchNotifications,
+    deleteNotification,
   };
 };
 

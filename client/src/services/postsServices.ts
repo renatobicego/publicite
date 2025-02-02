@@ -16,6 +16,7 @@ import {
   getActiveRelationsQuery,
   getPostByIdQuery,
   getPostCategories,
+  getPostsByIdAndRecommendationsQuery,
   getPostsOfFriendsQuery,
   getPostsQuery,
   postPostMutation,
@@ -29,7 +30,7 @@ import { ApolloError } from "@apollo/client";
 import { handleApolloError } from "@/utils/functions/errorHandler";
 import { ContactPostsVisibility } from "@/utils/data/fetchDataByType";
 import { getApiContext } from "./apiContext";
-import { ActiveUserRelation, UserRelations } from "@/types/userTypes";
+import { ActiveUserRelation } from "@/types/userTypes";
 
 export const getPostData = async (id: string) => {
   try {
@@ -44,6 +45,31 @@ export const getPostData = async (id: string) => {
     });
 
     return data.findPostById;
+  } catch (error: ApolloError | any) {
+    return handleApolloError(error);
+  }
+};
+
+export const getPostDataAndRecommended = async (
+  id: string,
+  category: string,
+  userLocation: Coordinates
+): Promise<{ post: Post; recomended: Post[] } | { error: string }> => {
+  try {
+    const { data } = await query({
+      query: getPostsByIdAndRecommendationsQuery,
+      variables: {
+        findPostByIdAndCategoryPostsRecomendedId: id,
+        category,
+        userLocation,
+      },
+      context: {
+        fetchOptions: {
+          cache: "no-cache",
+        },
+      },
+    });
+    return data.findPostByIdAndCategoryPostsRecomended;
   } catch (error: ApolloError | any) {
     return handleApolloError(error);
   }
@@ -72,6 +98,7 @@ export const postPost = async (
   values: GoodPostValues | PetitionPostValues | ServicePostValues
 ) => {
   const authorId = auth().sessionClaims?.metadata.mongoId;
+  console.log(values);
   try {
     const { data } = await getClient().mutate({
       mutation: postPostMutation,

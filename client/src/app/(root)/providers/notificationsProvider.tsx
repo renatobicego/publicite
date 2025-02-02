@@ -16,6 +16,7 @@ interface NotificationsContextType {
   fetchNotifications: () => Promise<void>;
   newNotificationsFromServer: boolean;
   setNewNotificationsFromServer: React.Dispatch<React.SetStateAction<boolean>>;
+  deleteNotification: (id: string) => void;
 }
 
 // Create the context with an initial default value
@@ -31,8 +32,13 @@ export const NotificationsProvider = ({
   children: ReactNode;
   isOpen: boolean;
 }) => {
-  const { notifications, isLoading, hasMore, fetchNotifications } =
-    useNotifications(isOpen);
+  const {
+    notifications,
+    isLoading,
+    hasMore,
+    fetchNotifications,
+    deleteNotification,
+  } = useNotifications(isOpen);
 
   const [newNotificationsFromServer, setNewNotificationsFromServer] =
     useState(false);
@@ -53,6 +59,7 @@ export const NotificationsProvider = ({
         fetchNotifications,
         newNotificationsFromServer,
         setNewNotificationsFromServer,
+        deleteNotification,
       }}
     >
       {children}

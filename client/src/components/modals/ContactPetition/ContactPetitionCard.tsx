@@ -1,4 +1,4 @@
-import { Good, ContactSellerNotification } from "@/types/postTypes";
+import { Good, PetitionContactSeller, Post } from "@/types/postTypes";
 import { FILE_URL } from "@/utils/data/urls";
 import {
   Card,
@@ -12,13 +12,9 @@ import ContactPetition from "./ContactPetition";
 const ContactPetitionCard = ({
   contactPetition,
 }: {
-  contactPetition: ContactSellerNotification;
+  contactPetition: { client: Omit<PetitionContactSeller, "post">; post: Post };
 }) => {
-  const {
-    frontData: {
-      contactSeller: { post, client },
-    },
-  } = contactPetition;
+  const { client, post } = contactPetition;
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   return (
     <>
@@ -29,15 +25,13 @@ const ContactPetitionCard = ({
         isPressable
         isHoverable
       >
-        <CardHeader className="max-w-24 max-h-24 lg:max-w-28 lg:max-h-28 2xl:max-w-32  2xl:max-h-32 p-2 justify-center">
+        <CardHeader className="w-28 h-24 shrink lg:w-32 lg:h-28 2xl:w-36  2xl:h-32 p-2 justify-center">
           <Image
             radius="sm"
             src={FILE_URL + (post as Good).imagesUrls[0]}
-            alt="foto"
-            className="object-cover"
-            classNames={{
-              wrapper: "w-full !max-w-full",
-            }}
+            alt={"foto de anuncio " + post.title}
+            removeWrapper
+            className=" w-full object-cover max-h-full"
           />
         </CardHeader>
         <CardBody className=" max-md:pt-0 text-xs md:text-sm">
@@ -58,7 +52,7 @@ const ContactPetitionCard = ({
       <ContactPetition
         isOpen={isOpen}
         onOpenChange={onOpenChange}
-        notification={contactPetition}
+        contactPetitionData={contactPetition}
       />
     </>
   );

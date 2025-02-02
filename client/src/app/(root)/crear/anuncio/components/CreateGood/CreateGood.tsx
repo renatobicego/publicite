@@ -53,7 +53,7 @@ const CreateGood = ({
     modelType: undefined,
     year: undefined,
     createAt: today(getLocalTimeZone()).toString(),
-    postBehaviourType
+    postBehaviourType,
   };
   const router = useRouter();
   const { attachedFiles } = useAttachedFiles();
@@ -64,6 +64,7 @@ const CreateGood = ({
     values: GoodPostValues,
     actions: FormikHelpers<GoodPostValues>
   ) => {
+    console.log("hola");
     if (!userCanPublishPost) {
       actions.setSubmitting(false);
       return;
@@ -119,6 +120,7 @@ const CreateGood = ({
       enableReinitialize
     >
       {({ isSubmitting, errors, setFieldValue, values }) => {
+        console.log(values);
         return (
           <Form className="flex flex-col gap-4">
             <TitleDescription errors={errors} setFieldValue={setFieldValue} />
@@ -131,7 +133,10 @@ const CreateGood = ({
               setFieldValue={setFieldValue}
               error={errors.geoLocation}
             />
-            <AccordionInputs errors={errors} postBehaviourType={postBehaviourType} />
+            <AccordionInputs
+              errors={errors}
+              postBehaviourType={postBehaviourType}
+            />
             <RequiredFieldsMsg />
             <PrimaryButton
               isDisabled={isSubmitting || !userCanPublishPost}

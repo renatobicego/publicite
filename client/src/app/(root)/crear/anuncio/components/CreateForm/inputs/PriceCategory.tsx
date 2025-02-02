@@ -1,9 +1,10 @@
-import { CustomInput, CustomPriceInput, CustomSelect } from "@/components/inputs/CustomInputs";
-import { frequencyPriceItems } from "@/utils/data/selectData";
 import {
-  GoodPostValues,
-  ServicePostValues,
-} from "@/types/postTypes";
+  CustomInput,
+  CustomPriceInput,
+  CustomSelect,
+} from "@/components/inputs/CustomInputs";
+import { frequencyPriceItems } from "@/utils/data/selectData";
+import { GoodPostValues, ServicePostValues } from "@/types/postTypes";
 import { Field, FormikErrors } from "formik";
 import React, { useEffect, useState } from "react";
 import { FaDollarSign } from "react-icons/fa6";
@@ -17,6 +18,7 @@ const PriceCategory = ({
   isService?: boolean;
 }) => {
   const { categories } = usePostCategories();
+  console.log(errors);
   return (
     <>
       <div className="flex gap-4 max-xl:flex-wrap">

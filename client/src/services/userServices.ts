@@ -12,8 +12,10 @@ import axios from "axios";
 import { getClient, query } from "@/lib/client";
 import getUserByUsernameQuery, {
   changeNotificationStatusMutation,
+  deleteNotificationMutation,
   deleteUserRelationMutation,
   getAllNotificationsQuery,
+  getContactSellersQuery,
   getFriendRequestsQuery,
   putActiveRelationsMutation,
   updateContactMutation,
@@ -21,6 +23,7 @@ import getUserByUsernameQuery, {
 import { ApolloError } from "@apollo/client";
 import { getApiContext } from "./apiContext";
 import { handleApolloError } from "@/utils/functions/errorHandler";
+import { PetitionContactSeller, Post } from "@/types/postTypes";
 
 const baseUrl = `${process.env.API_URL}/user/personal`;
 
@@ -215,6 +218,32 @@ export const getFriendRequests = async (
   }
 };
 
+export const getContactSellers = async (
+  type: "post" | "profile",
+  id: string
+): Promise<
+  | { client: Omit<PetitionContactSeller, "post">; post: Post }[]
+  | { error: string }
+> => {
+  try {
+    const { data } = await query({
+      query: getContactSellersQuery,
+      variables: { contactSellerGetType: type, id },
+      context: {
+        headers: {
+          Authorization: await auth().getToken({ template: "testing" }),
+        },
+        fetchOptions: {
+          next: { revalidate: 60 },
+        },
+      },
+    });
+    return data.getContactSellerById;
+  } catch (error: ApolloError | any) {
+    return handleApolloError(error);
+  }
+};
+
 type GetNotificationsResponse = {
   items: BaseNotification[];
   hasMore: boolean;
@@ -274,6 +303,25 @@ export const putNotificationStatus = async (id: string[]) => {
     return data;
   } catch (error) {
     console.log(error);
+  }
+};
+
+export const deleteNotificationById = async (event: string, id: string) => {
+  try {
+    await getClient().mutate({
+      mutation: deleteNotificationMutation,
+      variables: { event, id },
+      context: {
+        headers: {
+          Authorization: await auth().getToken({ template: "testing" }),
+        },
+      },
+    });
+    return {
+      message: "Notificacion eliminada",
+    };
+  } catch (error) {
+    return handleApolloError(error);
   }
 };
 

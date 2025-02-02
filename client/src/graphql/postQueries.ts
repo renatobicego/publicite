@@ -86,6 +86,109 @@ export const getPostByIdQuery = gql`
   }
 `;
 
+export const getPostsByIdAndRecommendationsQuery = gql`
+  query FindPostByIdAndCategoryPostsRecomended(
+    $findPostByIdAndCategoryPostsRecomendedId: String!
+    $category: String!
+    $userLocation: UserLocation!
+  ) {
+    findPostByIdAndCategoryPostsRecomended(
+      id: $findPostByIdAndCategoryPostsRecomendedId
+      category: $category
+      userLocation: $userLocation
+    ) {
+      post {
+        _id
+        attachedFiles {
+          label
+          url
+        }
+        brand
+        category {
+          _id
+          label
+        }
+        author {
+          _id
+          contact {
+            _id
+            facebook
+            instagram
+            phone
+            website
+            x
+          }
+          lastName
+          name
+          profilePhotoUrl
+          username
+        }
+        comments {
+          _id
+          user {
+            username
+            profilePhotoUrl
+            _id
+          }
+          isEdited
+          createdAt
+          comment
+          response {
+            _id
+            user {
+              username
+              profilePhotoUrl
+              _id
+            }
+            isEdited
+            createdAt
+            comment
+          }
+        }
+        condition
+        createAt
+        description
+        frequencyPrice
+        imagesUrls
+        reactions {
+          user
+          reaction
+          _id
+        }
+        geoLocation {
+          description
+          location {
+            coordinates
+            type
+          }
+          userSetted
+        }
+        modelType
+        petitionType
+        postBehaviourType
+        postType
+        price
+        reviews
+        title
+        isActive
+        toPrice
+        visibility {
+          post
+          socialMedia
+        }
+        year
+      }
+      recomended {
+        title
+        price
+        postType
+        description
+        _id
+      }
+    }
+  }
+`;
+
 export const postPostMutation = gql`
   mutation CreatePost($postRequest: PostRequest!, $authorId: String!) {
     createPost(postRequest: $postRequest, author_id: $authorId) {

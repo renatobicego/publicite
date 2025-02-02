@@ -18,6 +18,9 @@ export default async function PostPage(props: {
   const params = await props.params;
   const postData: Good | Service | Petition | { error: string } =
     await getPostData(params.id);
+  // const postData:
+  // | { post: Good | Service | Petition; recomended: Post[] }
+  // | { error: string } = await getPostDataAndRecommended(params.id);
 
   if (!postData) {
     return (

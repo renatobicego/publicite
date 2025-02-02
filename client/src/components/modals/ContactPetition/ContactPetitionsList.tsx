@@ -7,6 +7,7 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
+  Spinner,
   Tooltip,
   useDisclosure,
 } from "@nextui-org/react";
@@ -14,15 +15,15 @@ import {
   ContactSellerNotification,
   Good,
   Petition,
+  PetitionContactSeller,
+  Post,
   Service,
 } from "@/types/postTypes";
 import { MdContacts } from "react-icons/md";
 import { useEffect, useState } from "react";
-import {
-  getContactPetitionsOfPost,
-  getContactPetitionsOfUser,
-} from "@/services/contactPetitionServices";
 import ContactPetitionCard from "./ContactPetitionCard";
+import { getContactSellers } from "@/services/userServices";
+import { toastifyError } from "@/utils/functions/toastify";
 
 const ContactPetitionsList = ({
   post,
@@ -32,27 +33,31 @@ const ContactPetitionsList = ({
   userId?: string;
 }) => {
   const [contactPetitions, setContactPetitions] = useState<
-    ContactSellerNotification[]
+    { client: Omit<PetitionContactSeller, "post">; post: Post }[]
   >([]);
+  const [isLoading, setIsLoading] = useState(false);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   useEffect(() => {
     const fetchContactPetitions = async () => {
-      if (post) {
-        const contactPetitionsOfUser = await getContactPetitionsOfPost(
-          post._id
-        );
-        setContactPetitions(contactPetitionsOfUser);
-        return;
-      } else if (userId) {
-        const contactPetitionsOfUser = await getContactPetitionsOfUser(userId);
-        setContactPetitions(contactPetitionsOfUser);
+      setIsLoading(true);
+      const contactPetitions = await getContactSellers(
+        post ? "post" : "profile",
+        post ? post._id : (userId as string)
+      );
+      if ("error" in contactPetitions) {
+        toastifyError(contactPetitions.error as string);
+        setIsLoading(false);
         return;
       }
+      setContactPetitions(contactPetitions);
+      setIsLoading(false);
     };
 
-    fetchContactPetitions();
-  }, [post, userId]);
+    if (isOpen) {
+      fetchContactPetitions();
+    }
+  }, [post, userId, isOpen]);
 
   return (
     <>
@@ -87,10 +92,16 @@ const ContactPetitionsList = ({
                 {isOpen &&
                   contactPetitions.map((petition) => (
                     <ContactPetitionCard
-                      key={petition._id}
+                      key={petition.client._id}
                       contactPetition={petition}
                     />
                   ))}
+                {isLoading ? (
+                  <Spinner color="warning" />
+                ) : (
+                  contactPetitions.length === 0 &&
+                  "No hay peticiones de contacto"
+                )}
               </ModalBody>
               <ModalFooter>
                 <Button
