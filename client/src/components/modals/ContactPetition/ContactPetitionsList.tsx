@@ -13,6 +13,7 @@ import {
 } from "@nextui-org/react";
 import {
   ContactSellerNotification,
+  GetContactSellersPetitionDTO,
   Good,
   Petition,
   PetitionContactSeller,
@@ -33,7 +34,7 @@ const ContactPetitionsList = ({
   userId?: string;
 }) => {
   const [contactPetitions, setContactPetitions] = useState<
-    { client: Omit<PetitionContactSeller, "post">; post: Post }[]
+    GetContactSellersPetitionDTO[]
   >([]);
   const [isLoading, setIsLoading] = useState(false);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();

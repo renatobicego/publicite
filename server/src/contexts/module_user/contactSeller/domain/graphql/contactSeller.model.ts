@@ -1,93 +1,79 @@
 import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
 
 export enum ContactSellerGetType {
-    post = 'post',
-    profile = 'profile',
-
+  post = 'post',
+  profile = 'profile',
 }
 
 registerEnumType(ContactSellerGetType, {
-    name: 'contactSellerGetType',
-    description: 'Define el tipo de get',
+  name: 'contactSellerGetType',
+  description: 'Define el tipo de get',
 });
 
 @ObjectType()
 export class PostContactSeller_graphql {
-    @Field(() => String)
-    _id: string;
+  @Field(() => String)
+  _id: string;
 
-    @Field(() => String)
-    title: string;
+  @Field(() => String)
+  title: string;
 
-    @Field(() => String)
-    description: string;
+  @Field(() => String)
+  description: string;
 
+  @Field(() => String)
+  postType: string;
 
-    @Field(() => String)
-    postType: string;
+  @Field(() => String)
+  price: string;
 
-    @Field(() => String)
-    price: string;
+  @Field(() => [String])
+  imagesUrls: string[];
 
-    @Field(() => [String])
-    imagesUrls: string[];
+  @Field(() => String, { nullable: true })
+  petitionType: string;
 
-    @Field(() => String, { nullable: true })
-    petitionType: string;
+  @Field(() => String, { nullable: true })
+  toPrice: string;
 
-
-    @Field(() => String, { nullable: true })
-    toPrice: string;
-
-
-    @Field(() => String, { nullable: true })
-    frequencyPrice: string;
+  @Field(() => String, { nullable: true })
+  frequencyPrice: string;
 }
 @ObjectType()
 export class ClientContactSeller_graphql {
-    @Field(() => String, { nullable: true })
-    _id: string;
+  @Field(() => String, { nullable: true })
+  _id: string;
 
-    @Field(() => String)
-    name: string;
+  @Field(() => String)
+  name: string;
 
-    @Field(() => String)
-    email: string;
+  @Field(() => String)
+  email: string;
 
-    @Field(() => String)
-    lastName: string;
+  @Field(() => String)
+  lastName: string;
 
-    @Field(() => String, { nullable: true })
-    username: string;
+  @Field(() => String, { nullable: true })
+  username: string;
 
-    @Field(() => String, { nullable: true })
-    phone: string;
+  @Field(() => String, { nullable: true })
+  phone: string;
 
-    @Field(() => String)
-    message: string;
-
-
-
-
-
+  @Field(() => String)
+  message: string;
 }
-
 
 @ObjectType()
 export class ContactSeller_Graphql {
-    @Field(() => PostContactSeller_graphql)
-    post: PostContactSeller_graphql;
+  @Field(() => PostContactSeller_graphql)
+  post: PostContactSeller_graphql;
 
-    @Field(() => ClientContactSeller_graphql)
-    client: ClientContactSeller_graphql;
+  @Field(() => ClientContactSeller_graphql)
+  client: ClientContactSeller_graphql;
 
-    @Field(() => Date)
-    date: Date;
+  @Field(() => Date)
+  date: Date;
 
-    @Field(() => Boolean)
-    isOpinionRequested: boolean
-
+  @Field(() => Boolean)
+  isOpinionRequested: boolean;
 }
-
-
-

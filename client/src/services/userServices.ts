@@ -23,7 +23,11 @@ import getUserByUsernameQuery, {
 import { ApolloError } from "@apollo/client";
 import { getApiContext } from "./apiContext";
 import { handleApolloError } from "@/utils/functions/errorHandler";
-import { PetitionContactSeller, Post } from "@/types/postTypes";
+import {
+  GetContactSellersPetitionDTO,
+  PetitionContactSeller,
+  Post,
+} from "@/types/postTypes";
 
 const baseUrl = `${process.env.API_URL}/user/personal`;
 
@@ -221,10 +225,7 @@ export const getFriendRequests = async (
 export const getContactSellers = async (
   type: "post" | "profile",
   id: string
-): Promise<
-  | { client: Omit<PetitionContactSeller, "post">; post: Post }[]
-  | { error: string }
-> => {
+): Promise<GetContactSellersPetitionDTO[] | { error: string }> => {
   try {
     const { data } = await query({
       query: getContactSellersQuery,

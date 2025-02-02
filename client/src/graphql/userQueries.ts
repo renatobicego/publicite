@@ -258,6 +258,8 @@ export const getContactSellersQuery = gql`
         phone
         username
       }
+      isOpinionRequested
+      date
       post {
         _id
         description

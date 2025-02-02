@@ -193,6 +193,12 @@ export interface PetitionContactSeller {
   message: string;
 }
 
+export interface GetContactSellersPetitionDTO {
+  client: Omit<PetitionContactSeller, "post">;
+  post: Post;
+  isOpinionRequested: boolean;
+  date: string;
+}
 export interface PostSharedNotification {
   _id: ObjectId;
   post: Post;
