@@ -92,7 +92,7 @@ const EditPostForm = ({ postData }: { postData: Good | Service }) => {
       toastifyError(resApi.error);
       return;
     }
-
+    actions.resetForm();
     toastifySuccess("Anuncio editado exitosamente");
     router.refresh();
     router.push(`${POSTS}/${resApi.id}`);

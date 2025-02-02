@@ -622,6 +622,10 @@ type post_response_recomended {
   description: String
   postType: String
   price: String
+  imagesUrls: [String!]
+  frequencyPrice: String
+  toPrice: Float
+  petitionType: String
 }
 
 type Post_and_recomended_response_graphql_model {

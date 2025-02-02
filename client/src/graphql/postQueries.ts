@@ -89,13 +89,9 @@ export const getPostByIdQuery = gql`
 export const getPostsByIdAndRecommendationsQuery = gql`
   query FindPostByIdAndCategoryPostsRecomended(
     $findPostByIdAndCategoryPostsRecomendedId: String!
-    $category: String!
-    $userLocation: UserLocation!
   ) {
     findPostByIdAndCategoryPostsRecomended(
       id: $findPostByIdAndCategoryPostsRecomendedId
-      category: $category
-      userLocation: $userLocation
     ) {
       post {
         _id
@@ -184,6 +180,10 @@ export const getPostsByIdAndRecommendationsQuery = gql`
         postType
         description
         _id
+        imagesUrls
+        frequencyPrice
+        toPrice
+        petitionType
       }
     }
   }

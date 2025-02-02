@@ -33,7 +33,7 @@ const CreateMagazineForm = ({
     post: string;
   } | null;
   userId: string;
-  }) => {
+}) => {
   // get initial values for form
   const initialValues = isGroupMagazine ? groupMagazine : userMagazine;
   const router = useRouter();
@@ -69,17 +69,17 @@ const CreateMagazineForm = ({
       return;
     }
     const socket = await updateSocketToken();
-    // to who send notifications 
+    // to who send notifications
     const usersToSendNotifications = isGroupMagazine // if it is group magazine, send notifications to all allowed collaborators added
       ? (finalValues as PostGroupMagazine).allowedCollaborators
-      // else if it's a shared magazine
-      : shareMagazineIds?.user
+      : // else if it's a shared magazine
+      shareMagazineIds?.user
       ? [
           shareMagazineIds.user, // send to the user that was added by url
           ...(finalValues as PostUserMagazine).collaborators, // and also all the collaborators that were added after on the select
         ]
-        : (finalValues as PostUserMagazine).collaborators; // else if it's a user magazine, send notifications to all collaborators added
-    
+      : (finalValues as PostUserMagazine).collaborators; // else if it's a user magazine, send notifications to all collaborators added
+
     usersToSendNotifications.forEach((collaborator) => {
       // emit notifications user invited to collaborate in magazine
       emitMagazineNotification(
@@ -98,7 +98,7 @@ const CreateMagazineForm = ({
         null
       );
     });
-
+    actions.resetForm();
     toastifySuccess(resApi.message as string);
     router.push(`${MAGAZINES}/${resApi.id}`);
   };

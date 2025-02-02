@@ -1,12 +1,11 @@
 import BreadcrumbsAdmin from "@/components/BreadcrumbsAdmin";
 import ErrorCard from "@/components/ErrorCard";
-import { getPostData } from "@/services/postsServices";
+import { getPostDataAndRecommended } from "@/services/postsServices";
 import { POSTS } from "@/utils/data/urls";
 import Images from "./Images";
 import Data from "./Data/Data";
-import { Good, Petition, Service } from "@/types/postTypes";
+import { Good, Petition, Post, Service } from "@/types/postTypes";
 import Comments from "./Comments/Comments";
-import { mockedPosts } from "@/utils/data/mockedData";
 import RecommendedPosts from "./RecommendedPosts";
 import { currentUser } from "@clerk/nextjs/server";
 import { Suspense } from "react";
@@ -16,11 +15,9 @@ export default async function PostPage(props: {
   params: Promise<{ id: string }>;
 }) {
   const params = await props.params;
-  const postData: Good | Service | Petition | { error: string } =
-    await getPostData(params.id);
-  // const postData:
-  // | { post: Good | Service | Petition; recomended: Post[] }
-  // | { error: string } = await getPostDataAndRecommended(params.id);
+  const postData:
+    | { post: Good | Service | Petition; recomended: Post[] }
+    | { error: string } = await getPostDataAndRecommended(params.id);
 
   if (!postData) {
     return (
@@ -47,31 +44,32 @@ export default async function PostPage(props: {
     },
   ];
 
+  const { post, recomended } = postData;
   const user = await currentUser();
-  const isAuthor = postData.author.username === user?.username;
-  const isPetition = postData.postType === "petition";
+  const isAuthor = post.author.username === user?.username;
+  const isPetition = post.postType === "petition";
 
   return (
     <Suspense fallback={<Loading />}>
       <main className="flex min-h-screen flex-col items-start main-style gap-6 md:gap-8">
         <BreadcrumbsAdmin items={breadcrumbsItems} />
         <section className="w-full flex max-lg:flex-col gap-4 lg:gap-6 3xl:gap-8 relative">
-          {!isPetition && <Images images={(postData as any).imagesUrls} />}
-          <Data post={postData} isAuthor={isAuthor} isPetition={isPetition} />
+          {!isPetition && <Images images={(post as any).imagesUrls} />}
+          <Data post={post} isAuthor={isAuthor} isPetition={isPetition} />
         </section>
         <section className="w-full flex max-lg:flex-col gap-4 lg:gap-6 3xl:gap-8 md:mt-6 xl:mt-8">
           <Comments
-            comments={postData.comments}
+            comments={post.comments}
             post={{
-              _id: postData._id,
-              title: postData.title,
-              postType: postData.postType,
-              imageUrl: "imagesUrls" in postData ? postData.imagesUrls[0] : "",
+              _id: post._id,
+              title: post.title,
+              postType: post.postType,
+              imageUrl: "imagesUrls" in post ? post.imagesUrls[0] : "",
             }}
             isAuthor={isAuthor}
-            authorId={postData.author._id}
+            authorId={post.author._id}
           />
-          <RecommendedPosts recommendedPosts={mockedPosts} />
+          <RecommendedPosts recommendedPosts={recomended} />
         </section>
       </main>
     </Suspense>

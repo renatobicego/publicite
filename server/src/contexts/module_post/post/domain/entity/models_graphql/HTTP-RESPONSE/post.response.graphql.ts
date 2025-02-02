@@ -78,7 +78,6 @@ class postReaction {
 
 @ObjectType()
 class post_comments_user {
-
   @Field(() => String)
   _id: string;
 
@@ -87,8 +86,6 @@ class post_comments_user {
 
   @Field(() => String)
   profilePhotoUrl: string;
-
-
 }
 
 @ObjectType()
@@ -108,11 +105,8 @@ class post_response {
   comment: string;
 }
 
-
-
 @ObjectType()
 class post_comments {
-
   @Field(() => String, { nullable: true })
   _id: string;
 
@@ -130,10 +124,7 @@ class post_comments {
 
   @Field(() => post_response, { nullable: true })
   response: post_response;
-
 }
-
-
 
 @ObjectType()
 export class Post_response_graphql_model {

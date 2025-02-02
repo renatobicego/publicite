@@ -21,7 +21,7 @@ const PriceCategory = ({
   console.log(errors);
   return (
     <>
-      <div className="flex gap-4 max-xl:flex-wrap">
+      <div className="flex gap-4 max-xl:flex-wrap items-start">
         <Field
           as={CustomPriceInput}
           name="price"

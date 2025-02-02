@@ -2,9 +2,11 @@
 import {
   Good,
   GoodPostValues,
+  Petition,
   PetitionPostValues,
   Post,
   PostBehaviourType,
+  Service,
   ServicePostValues,
 } from "@/types/postTypes";
 import { getClient, query } from "@/lib/client";
@@ -51,17 +53,15 @@ export const getPostData = async (id: string) => {
 };
 
 export const getPostDataAndRecommended = async (
-  id: string,
-  category: string,
-  userLocation: Coordinates
-): Promise<{ post: Post; recomended: Post[] } | { error: string }> => {
+  id: string
+): Promise<
+  { post: Good | Service | Petition; recomended: Post[] } | { error: string }
+> => {
   try {
     const { data } = await query({
       query: getPostsByIdAndRecommendationsQuery,
       variables: {
         findPostByIdAndCategoryPostsRecomendedId: id,
-        category,
-        userLocation,
       },
       context: {
         fetchOptions: {

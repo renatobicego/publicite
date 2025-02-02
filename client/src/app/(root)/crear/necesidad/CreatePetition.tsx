@@ -98,6 +98,7 @@ const CreatePetition = ({
       return;
     }
 
+    actions.resetForm();
     toastifySuccess(resApi.message as string);
     router.refresh();
     router.push(`${POSTS}/${resApi.id}`);

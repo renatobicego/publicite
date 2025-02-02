@@ -1,5 +1,5 @@
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
-import mongoose, { ClientSession, Connection, Model } from 'mongoose';
+import { ClientSession, Connection, Model } from 'mongoose';
 
 import { Post } from '../../domain/entity/post.entity';
 import { PostRepositoryInterface } from '../../domain/repository/post.repository.interface';
@@ -66,9 +66,7 @@ export class PostRepository implements PostRepositoryInterface {
 
     private readonly logger: MyLoggerService,
     @InjectConnection() private readonly connection: Connection,
-  ) { }
-
-
+  ) {}
 
   async activateOrDeactivatePost(_id: string, activate: boolean): Promise<any> {
     try {
@@ -676,14 +674,14 @@ export class PostRepository implements PostRepositoryInterface {
     try {
       const today = new Date();
       const postById = await this.findPostById(id);
-      const category = postById.category._id ?? null
-      const userLocation = postById.geoLocation.location.coordinates
+      const category = postById.category[0]._id ?? null;
+      const userLocation = postById.geoLocation.location.coordinates;
       const posts = await this.postDocument.aggregate([
         {
           $geoNear: {
             near: {
               type: 'Point',
-              coordinates: [userLocation.longitude, userLocation.latitude],
+              coordinates: userLocation,
             },
             distanceField: 'distance',
             spherical: true,
@@ -691,7 +689,7 @@ export class PostRepository implements PostRepositoryInterface {
               'visibility.post': 'public',
               isActive: true,
               endDate: { $gte: today },
-              category: new mongoose.Types.ObjectId(category),
+              category,
             },
           },
         },
@@ -711,10 +709,6 @@ export class PostRepository implements PostRepositoryInterface {
       throw error;
     }
   }
-
-
-
-
 
   async setResponseOnComment(
     commentId: string,

@@ -107,6 +107,7 @@ const CreateGood = ({
       return;
     }
 
+    actions.resetForm();
     toastifySuccess("Anuncio creado exitosamente");
     router.push(`${POSTS}/${resApi.id}`);
   };

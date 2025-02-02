@@ -109,7 +109,7 @@ const CreateService = ({
       deleteFilesService(values.imagesUrls.map((file) => file));
       return;
     }
-
+    actions.resetForm();
     toastifySuccess("Anuncio creado exitosamente");
     router.push(`${POSTS}/${resApi.id}`);
   };

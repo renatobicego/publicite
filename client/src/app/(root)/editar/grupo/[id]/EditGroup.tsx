@@ -45,16 +45,16 @@ const EditGroup = ({ groupData }: { groupData: Group }) => {
       await deleteFile(groupData.profilePhotoUrl);
     }
 
-    const res = await editGroup(
-      values,
-      [...groupData.admins.map((admin) => (admin as User)._id), groupData.creator._id]
-    );
+    const res = await editGroup(values, [
+      ...groupData.admins.map((admin) => (admin as User)._id),
+      groupData.creator._id,
+    ]);
     if ("error" in res) {
       actions.setSubmitting(false);
       toastifyError(res.error as string);
       return;
     }
-
+    actions.resetForm();
     actions.setSubmitting(false);
     toastifySuccess(res.message);
     router.push(`${GROUPS}/${res.id}`);

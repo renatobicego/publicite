@@ -3,9 +3,11 @@ import { Args, Mutation, Resolver, Query, Context } from '@nestjs/graphql';
 import { ClerkAuthGuard } from 'src/contexts/module_shared/auth/clerk-auth/clerk.auth.guard';
 import { Date } from 'mongoose';
 
-
 import { PostAdapterInterface } from 'src/contexts/module_post/post/application/adapter/post.adapter.interface';
-import { PostUpdateRequest, VisibilityEnum } from 'src/contexts/module_post/post/domain/entity/models_graphql/HTTP-REQUEST/post.update.request';
+import {
+  PostUpdateRequest,
+  VisibilityEnum,
+} from 'src/contexts/module_post/post/domain/entity/models_graphql/HTTP-REQUEST/post.update.request';
 import { Post_response_graphql_model } from 'src/contexts/module_post/post/domain/entity/models_graphql/HTTP-RESPONSE/post.response.graphql';
 import { PostFindAllResponse } from 'src/contexts/module_post/post/domain/entity/models_graphql/HTTP-RESPONSE/findAll-response/post.findAll.response';
 import { Post_Full_Graphql_Model } from 'src/contexts/module_post/post/domain/entity/models_graphql/post.full.grapql.model';
@@ -22,17 +24,12 @@ import { PostBehaviourType } from '../../../domain/entity/enum/postBehaviourType
 import { Visibility_Of_Find } from '../../../domain/entity/enum/post-visibility.enum';
 import { Post_and_recomended_response_graphql_model } from '../../../domain/entity/models_graphql/HTTP-RESPONSE/post.and.recomended.response';
 
-
-
-
 @Resolver('Post')
 export class PostResolver {
   constructor(
     @Inject('PostAdapterInterface')
     private readonly postAdapter: PostAdapterInterface,
-
-  ) { }
-
+  ) {}
 
   @Mutation(() => String, {
     nullable: true,
@@ -54,14 +51,17 @@ export class PostResolver {
       const userRequestId = context.req.userRequestId;
       if (!admin_id) throw new Error('admin_id is required');
       PubliciteAuth.authorize(userRequestId, admin_id);
-      await this.postAdapter.activateOrDeactivatePost(_id, activate, postBehaviourType, userRequestId);
+      await this.postAdapter.activateOrDeactivatePost(
+        _id,
+        activate,
+        postBehaviourType,
+        userRequestId,
+      );
       return 'Post successfully updated';
     } catch (error: any) {
       throw error;
     }
   }
-
-
 
   @Mutation(() => PostIdResponse, {
     nullable: true,
@@ -90,29 +90,41 @@ export class PostResolver {
   })
   @UseGuards(ClerkAuthGuard)
   async updateBehaviourType(
-    @Args('_id', { type: () => String, description: 'id del post' }) _id: string,
-    @Args('postBehaviourType', { type: () => PostBehaviourType, description: 'Comportamiento del post' }) postBehaviourType: PostBehaviourType,
+    @Args('_id', { type: () => String, description: 'id del post' })
+    _id: string,
+    @Args('postBehaviourType', {
+      type: () => PostBehaviourType,
+      description: 'Comportamiento del post',
+    })
+    postBehaviourType: PostBehaviourType,
     @Args('author_id', { type: () => String }) author_id: string,
-    @Args('visibility', { type: () => VisibilityEnum, description: 'Visibilidad del post y la red social' }) visibility: VisibilityEnum,
+    @Args('visibility', {
+      type: () => VisibilityEnum,
+      description: 'Visibilidad del post y la red social',
+    })
+    visibility: VisibilityEnum,
     @Context() context: { req: CustomContextRequestInterface },
   ): Promise<any> {
     try {
       const userRequestId = context.req.userRequestId;
       if (!author_id) throw new Error('author_id is required');
       PubliciteAuth.authorize(userRequestId, author_id);
-      await this.postAdapter.updateBehaviourType(_id, postBehaviourType, author_id, visibility);
+      await this.postAdapter.updateBehaviourType(
+        _id,
+        postBehaviourType,
+        author_id,
+        visibility,
+      );
       return 'Post updated successfully';
     } catch (error: any) {
       throw error;
     }
   }
 
-
-
-
   @Query(() => PostLimitResponseGraphql, {
     nullable: true,
-    description: 'Obtiene los posts totales del usuario y los limites segun su plan',
+    description:
+      'Obtiene los posts totales del usuario y los limites segun su plan',
   })
   @UseGuards(ClerkAuthGuard)
   async getPostAndContactLimit(
@@ -125,9 +137,6 @@ export class PostResolver {
       throw error;
     }
   }
-
-
-
 
   @Mutation(() => String, {
     nullable: true,
@@ -176,8 +185,6 @@ export class PostResolver {
     }
   }
 
-
-
   @Mutation(() => String, {
     nullable: true,
     description: 'Incrementa el endDate de un post por su id',
@@ -204,7 +211,8 @@ export class PostResolver {
 
   @Mutation(() => String, {
     nullable: true,
-    description: 'Elimina el comentario en un post, para eliminarlo si o si tenes que ser el creador del comentario',
+    description:
+      'Elimina el comentario en un post, para eliminarlo si o si tenes que ser el creador del comentario',
   })
   @UseGuards(ClerkAuthGuard)
   async deleteCommentById(
@@ -219,17 +227,17 @@ export class PostResolver {
       return await this.postAdapter.deleteCommentById(
         _id,
         userRequestId,
-        isAuthorOfPost
+        isAuthorOfPost,
       );
     } catch (error: any) {
       throw error;
     }
   }
 
-
   @Mutation(() => String, {
     nullable: true,
-    description: 'Edita el comentario de un post. Tenes que ser el dueño del comentario para editarlo',
+    description:
+      'Edita el comentario de un post. Tenes que ser el dueño del comentario para editarlo',
   })
   @UseGuards(ClerkAuthGuard)
   async updateCommentById(
@@ -244,14 +252,12 @@ export class PostResolver {
       return await this.postAdapter.updateCommentById(
         _id,
         newComment,
-        userRequestId
+        userRequestId,
       );
     } catch (error: any) {
       throw error;
     }
   }
-
-
 
   @Query(() => [Post_Full_Graphql_Model], {
     nullable: true,
@@ -284,7 +290,8 @@ export class PostResolver {
 
   @Query(() => Post_and_recomended_response_graphql_model, {
     nullable: true,
-    description: 'Obtener Post por su Id + 4 post recomendos de la misma categoria',
+    description:
+      'Obtener Post por su Id + 4 post recomendos de la misma categoria',
   })
   //@UseGuards(ClerkAuthGuard)
   async findPostByIdAndCategoryPostsRecomended(
@@ -296,11 +303,6 @@ export class PostResolver {
       throw error;
     }
   }
-
-
-
-
-
 
   @Query(() => PostFindAllResponse, {
     nullable: true,
@@ -319,20 +321,19 @@ export class PostResolver {
     @Context() context: { req: CustomContextRequestInterface },
   ): Promise<any> {
     try {
-      const userRequestId = context.req.userRequestId ?? undefined
+      const userRequestId = context.req.userRequestId ?? undefined;
       return await this.postAdapter.findAllPostByPostType(
         page,
         limit,
         postType,
         userLocation,
         searchTerm,
-        userRequestId
+        userRequestId,
       );
     } catch (error: any) {
       throw error;
     }
   }
-
 
   // @Mutation(() => String, {
   //   nullable: true,
@@ -391,15 +392,12 @@ export class PostResolver {
         page,
         limit,
         visibility,
-        searchTerm
+        searchTerm,
       );
     } catch (error: any) {
       throw error;
     }
   }
-
-
-
 
   @Mutation(() => String, {
     nullable: true,
@@ -413,14 +411,10 @@ export class PostResolver {
   ): Promise<any> {
     try {
       const userRequestId = context.req.userRequestId;
-      await this.postAdapter.removeReactionFromPost(
-        userRequestId,
-        _id
-      );
-      return 'Reaccion eliminada con exito'
+      await this.postAdapter.removeReactionFromPost(userRequestId, _id);
+      return 'Reaccion eliminada con exito';
     } catch (error: any) {
       throw error;
     }
   }
-
 }

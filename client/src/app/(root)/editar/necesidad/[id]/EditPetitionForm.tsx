@@ -83,7 +83,7 @@ const EditPetitionForm = ({ postData }: { postData: Petition }) => {
       toastifyError(resApi.error);
       return;
     }
-
+    actions.resetForm();
     toastifySuccess("Anuncio editado exitosamente");
     router.refresh();
     router.push(`${POSTS}/${resApi.id}`);
@@ -114,7 +114,10 @@ const EditPetitionForm = ({ postData }: { postData: Petition }) => {
                   errors={errors}
                   defaultChecked={values.toPrice ? true : false}
                 />
-                <Visibility errors={errors} postBehaviourType={postData.postBehaviourType} />
+                <Visibility
+                  errors={errors}
+                  postBehaviourType={postData.postBehaviourType}
+                />
                 <div className="flex lg:px-4 flex-col gap-4">
                   <h6>Archivos Adjuntos (opcional)</h6>
                   <AttachedFiles

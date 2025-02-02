@@ -49,6 +49,8 @@ const EditMagazineForm = ({
       actions.setSubmitting(false);
       return;
     }
+    actions.resetForm();
+    actions.resetForm();
     toastifySuccess(resApi.message as string);
     router.push(`${MAGAZINES}/${resApi.id}`);
   };
