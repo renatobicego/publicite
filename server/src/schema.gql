@@ -476,12 +476,20 @@ type front_data_CONTACTSELLER {
   client: ClientContactSeller!
 }
 
+type front_data_SUBSCRIPTIONPLAN {
+  _id: String!
+  reason: String!
+  status: String!
+  retryAttemp: String!
+}
+
 type frontData {
   group: front_data_GROUP
   magazine: front_data_MAGAZINE
   userRelation: front_data_USER
   postActivity: front_data_POST
   contactSeller: front_data_CONTACTSELLER
+  subscriptionPlan: front_data_SUBSCRIPTIONPLAN
 }
 
 type backData {

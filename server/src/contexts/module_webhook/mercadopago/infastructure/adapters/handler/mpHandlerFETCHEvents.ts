@@ -268,6 +268,17 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
       }
     }
 
+    if (testType === 'pending') {
+      paymentDataFromMeli = {
+        event: payment_notification_events_enum.payment_pending,
+        subscriptionPlanId: subscription.subscriptionPlan,
+        reason: "Publicite premium",
+        status: 'pending',
+        retryAttemp: "0",
+        userId: userId,
+      }
+    }
+
     await this.emmiter.emitAsync(subscription_event, paymentDataFromMeli);
 
 
@@ -275,10 +286,17 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
 
   private async make_payment_notification_and_send(payment: Payment, subscription: Subscription, subscription_authorized_payment: authorized_payments) {
     try {
+      const paymenStatusMap = new Map<string, payment_notification_events_enum>([
+        ['approved', payment_notification_events_enum.payment_approved],
+        ['pending', payment_notification_events_enum.payment_pending],
+        ['rejected', payment_notification_events_enum.payment_rejected],
+      ])
+
       const paymentStatus = payment.getStatus();
-      let event = paymentStatus == "approved" ? payment_notification_events_enum.payment_approved : payment_notification_events_enum.payment_rejected;
+      const event = paymenStatusMap.get(paymentStatus) ?? payment_notification_events_enum.payment_pending;
+
       const paymentDataFromMeli: PaymentDataFromMeli = {
-        event: event ?? payment_notification_events_enum.payment_pending,
+        event: event,
         subscriptionPlanId: subscription.getSubscriptionPlan(),
         reason: payment.getDescriptionOfPayment(),
         status: paymentStatus,

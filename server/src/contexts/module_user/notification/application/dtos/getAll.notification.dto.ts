@@ -6,6 +6,7 @@ import { front_data_GROUP } from "./front.data.notification.group.dto";
 import { front_data_USER } from "./font.data.notification.user.dto";
 import { front_data_POST } from "./front.data.notification.post.dto";
 import { front_data_CONTACTSELLER } from "./front.data.notification.contactSeller";
+import { front_data_SUBSCRIPTIONPLAN } from "./fron.data.notification.subscriptionPlan";
 
 
 
@@ -26,6 +27,8 @@ export class frontData {
     @Field(() => front_data_CONTACTSELLER, { nullable: true })
     contactSeller: front_data_CONTACTSELLER;
 
+    @Field(() => front_data_SUBSCRIPTIONPLAN, { nullable: true })
+    subscriptionPlan: front_data_SUBSCRIPTIONPLAN;
 
 }
 
