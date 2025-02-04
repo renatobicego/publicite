@@ -242,5 +242,11 @@ export class MpWebhookAdapter {
     }
   }
 
+  async test_payment_notif(testType: string, userId: string): Promise<any> {
+    await this.mpHandlerEvent.test_payment_notif(testType, userId);
+  }
+
+
+
 }
 

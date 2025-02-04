@@ -8,6 +8,10 @@ import { MpPaymentServiceInterface } from 'src/contexts/module_webhook/mercadopa
 import { SubscriptionServiceInterface } from 'src/contexts/module_webhook/mercadopago/domain/service/mp-subscription.service.interface';
 import { MercadoPagoInvoiceRepositoryInterface } from '../../domain/repository/mp-invoice.respository.interface';
 import { getTodayDateTime } from 'src/contexts/module_shared/utils/functions/getTodayDateTime';
+import { payment_notification_events_enum, PaymentDataFromMeli } from 'src/contexts/module_user/notification/application/dtos/payment.data.meli';
+import Payment from '../../domain/entity/payment.entity';
+import Subscription from '../../domain/entity/subcription.entity';
+import { authorized_payments } from '../../domain/entity_mp/authorized_payments';
 
 export class MpInvoiceService implements MpServiceInvoiceInterface {
   constructor(
@@ -33,9 +37,9 @@ export class MpInvoiceService implements MpServiceInvoiceInterface {
         status: subscription_authorized_payment_to_update.status ?? '',
         paymentStatus: subscription_authorized_payment_to_update.payment.status ?? '',
         timeOfUpdate: timeOfUpdate,
-        retryAttempts:subscription_authorized_payment_to_update.retry_attempt ?? undefined,
+        retryAttempts: subscription_authorized_payment_to_update.retry_attempt ?? undefined,
         nextRetryDay: subscription_authorized_payment_to_update.next_retry_date ?? undefined,
-        rejectionCode:subscription_authorized_payment_to_update.rejection_code ?? undefined,
+        rejectionCode: subscription_authorized_payment_to_update.rejection_code ?? undefined,
       };
 
       // Solo agregar paymentId si existe en el objeto
@@ -57,7 +61,8 @@ export class MpInvoiceService implements MpServiceInvoiceInterface {
     }
   }
 
-  async saveInvoice(subscription_authorized_payment: any): Promise<void> {
+
+  async saveInvoice(subscription_authorized_payment: authorized_payments): Promise<{ payment: Payment, subscription: Subscription, paymentReady: boolean } | null> {
     this.logger.log('---INVOICE SERVICE CREATE ---');
     let paymetnId;
 
@@ -65,15 +70,6 @@ export class MpInvoiceService implements MpServiceInvoiceInterface {
       await this.subscriptionService.findSubscriptionByPreapprovalId(
         subscription_authorized_payment.preapproval_id,
       );
-    const payment = await this.paymentService.findPaymentByPaymentID(
-      subscription_authorized_payment.payment.id,
-    );
-    if (!payment) {
-      paymetnId = this.generateCustomObjectId('0001abcd');
-    } else {
-      paymetnId = payment.getId();
-    }
-
     if (!subscripcion || subscripcion === null) {
       this.logger.error(
         'Subscription not found. An error has ocurred with subscription_authorized_payment ID: ' +
@@ -82,6 +78,16 @@ export class MpInvoiceService implements MpServiceInvoiceInterface {
       );
       throw new BadRequestException();
     }
+    const payment = await this.paymentService.findPaymentByPaymentID(
+      subscription_authorized_payment.payment.id,
+    );
+
+    if (!payment) {
+      paymetnId = this.generateCustomObjectId('0001abcd');
+    } else {
+      paymetnId = payment.getId();
+    }
+
 
     if (
       subscription_authorized_payment != null ||
@@ -112,8 +118,19 @@ export class MpInvoiceService implements MpServiceInvoiceInterface {
       );
       await this.mpInvoiceRepository.saveInvoice(newInvoice);
     }
-    return Promise.resolve();
+
+    if (payment && subscripcion) {
+      return Promise.resolve({
+        payment: payment,
+        subscription: subscripcion,
+        paymentReady: !!payment,
+      });
+    } else {
+      return Promise.resolve(null)
+    }
+
   }
+
 
   generateCustomObjectId(customValue: string): mongoose.Types.ObjectId {
     // Asegúrate de que el customValue tenga solo caracteres hexadecimales y longitud de 8

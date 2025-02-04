@@ -68,7 +68,7 @@ export class NotificationResolver {
             await this.notificationAdapter.deleteNotificationById(event, userRequestId, _id);
             return 'Notification deleted'
         } catch (error: any) {
-            throw error;
+            throw error;    
         }
     }
 

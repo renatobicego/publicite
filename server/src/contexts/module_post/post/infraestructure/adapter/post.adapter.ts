@@ -16,6 +16,7 @@ import { PostBehaviourType } from '../../domain/entity/enum/postBehaviourType.en
 import { Visibility, Visibility_Of_Find } from '../../domain/entity/enum/post-visibility.enum';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { downgrade_plan_post, post_deleted } from 'src/contexts/module_shared/event-emmiter/events';
+import { EmitterService } from 'src/contexts/module_shared/event-emmiter/emmiter';
 
 export class PostAdapter implements PostAdapterInterface {
   constructor(
@@ -24,7 +25,7 @@ export class PostAdapter implements PostAdapterInterface {
     @Inject('PostMapperAdapterInterface')
     private readonly postMapper: PostMapperAdapterInterface,
     private readonly logger: MyLoggerService,
-    private eventEmitter: EventEmitter2,
+    private readonly emmiter: EmitterService
   ) { }
 
 
@@ -61,7 +62,7 @@ export class PostAdapter implements PostAdapterInterface {
 
   async deletePostById(id: string): Promise<void> {
     try {
-      this.eventEmitter.emit(
+      await this.emmiter.emitAsync(
         post_deleted,
         id
       );

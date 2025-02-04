@@ -1,4 +1,3 @@
-import { MyLoggerService } from "src/contexts/module_shared/logger/logger.service";
 import { ContactSellerAdapterInterface } from "../application/adapter/contactSeller.adapter.interface";
 import { OnEvent } from "@nestjs/event-emitter";
 

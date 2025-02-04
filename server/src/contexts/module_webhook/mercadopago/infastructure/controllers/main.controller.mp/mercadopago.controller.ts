@@ -2,13 +2,13 @@
 import {
   Controller,
   Post,
-  Body,
   Headers,
   HttpCode,
   HttpStatus,
   Get,
   Res,
   Req,
+  Body,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { ApiExcludeEndpoint } from '@nestjs/swagger';
@@ -74,8 +74,8 @@ export class MercadopagoController {
       // };
 
       const authSecretValidation =
-        await this.mpWebhookAdapter.process_subscription_preapproval(
-          "0a88fdc4b1644e0ea60f0cd35de82694", "updated"
+        await this.mpWebhookAdapter.process_subscription_authorized_payment(
+          "7015881908", "created"
         );
       if (authSecretValidation) {
         //En el caso de que validemos el origen y que el pago se complete correctamente, vamos a deolver el estado OK, de lo contrario esta operacion no se hara
@@ -106,4 +106,29 @@ export class MercadopagoController {
     this.logger.log('Service ON - Class:WebhookController');
     return { status: 'Service ON' };
   }
+
+
+  @Post('/payment_test')
+  @ApiExcludeEndpoint()
+  @HttpCode(HttpStatus.OK)
+  async HandleNotifTest(
+    @Res() res: Response,
+    @Body() body: { testType: string; userId: string }
+  ): Promise<any> {
+    try {
+      const { testType, userId } = body;
+
+      await this.mpWebhookAdapter.test_payment_notif(testType, userId);
+
+      return res.status(HttpStatus.OK).send({ message: 'Test notification sent successfully' });
+    } catch (error) {
+      this.logger.error(error, 'Class:WebhookController');
+      return res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .send({ message: 'Internal Server Error' });
+    }
+  }
+
+
+
 }

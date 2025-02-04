@@ -21,6 +21,7 @@ export interface authorized_payments {
     next_retry_date: string;
     debit_date: string;
     payment_method_id: string;
+    rejection_code: string;
 }
 
 

@@ -2,13 +2,13 @@ import { InjectConnection } from "@nestjs/mongoose";
 import { NotificationContactSeller } from "../../domain/entity/notification.contactSeller.entity";
 import { NotificationContactSellerServiceInterface } from "../../domain/service/notification.contactSeller.service.interface";
 import { Connection } from "mongoose";
-import { EventEmitter2 } from "@nestjs/event-emitter";
 import { Inject, InternalServerErrorException } from "@nestjs/common";
 
 
 import { NotificationRepositoryInterface } from "../../domain/repository/notification.repository.interface";
 import { UserServiceInterface } from "src/contexts/module_user/user/domain/service/user.service.interface";
 import { contact_seller_new_request } from "src/contexts/module_shared/event-emmiter/events";
+import { EmitterService } from "src/contexts/module_shared/event-emmiter/emmiter";
 
 interface ContactSeller {
     post: any,
@@ -36,7 +36,7 @@ export class NotificationContactSellerService implements NotificationContactSell
         private readonly notificationRepository: NotificationRepositoryInterface,
         @Inject('UserServiceInterface')
         private readonly userService: UserServiceInterface,
-        private eventEmitter: EventEmitter2,
+        private readonly emmiter: EmitterService
 
     ) {
 
@@ -72,7 +72,7 @@ export class NotificationContactSellerService implements NotificationContactSell
                 }
 
 
-                const contactSeller = await this.eventEmitter.emitAsync(
+                const contactSeller = await this.emmiter.emitAsync(
                     contact_seller_new_request,
                     contactSellerEntity
                 );

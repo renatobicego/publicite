@@ -24,6 +24,7 @@ import { ClerkModule } from './contexts/module_webhook/clerk/infrastructure/modu
 import { NotificationModule } from './contexts/module_user/notification/infrastructure/module/notification.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ContactSellerModule } from './contexts/module_user/contactSeller/infrastructure/module/contactSeller.module';
+import { EmmiterModule } from './contexts/module_shared/event-emmiter/emiter.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { ContactSellerModule } from './contexts/module_user/contactSeller/infras
     }),
     DatabaseModule,
     LoggerModule,
+    EmmiterModule,
     ClerkModule,
     MercadoPagoModule,
     UserModule,
@@ -55,8 +57,6 @@ import { ContactSellerModule } from './contexts/module_user/contactSeller/infras
     NotificationSocketModule,
     NotificationModule,
     ContactSellerModule,
-
-
   ],
   providers: [
     {
