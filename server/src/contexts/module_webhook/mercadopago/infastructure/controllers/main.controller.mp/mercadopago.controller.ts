@@ -13,20 +13,15 @@ import {
 import { Response } from 'express';
 import { ApiExcludeEndpoint } from '@nestjs/swagger';
 
-
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { MpWebhookAdapter } from '../../adapters/in/mp-webhook.adapter';
-
-
 
 @Controller('webhook')
 export class MercadopagoController {
   constructor(
     private readonly mpWebhookAdapter: MpWebhookAdapter,
     private readonly logger: MyLoggerService,
-  ) { }
-
-
+  ) {}
 
   @Post('/mp')
   @ApiExcludeEndpoint()
@@ -49,15 +44,12 @@ export class MercadopagoController {
     }
   }
 
-
   /* DONT ACTIVE THIS METHOD IN PRODUCTION*/
 
   @Get('/mp-test')
   @ApiExcludeEndpoint()
   @HttpCode(HttpStatus.OK)
-  async handleMpTest(
-    @Res() res: Response,
-  ): Promise<any> {
+  async handleMpTest(@Res() res: Response): Promise<any> {
     try {
       //Valido el origen de la petición
       // const body = {
@@ -75,7 +67,8 @@ export class MercadopagoController {
 
       const authSecretValidation =
         await this.mpWebhookAdapter.process_subscription_authorized_payment(
-          "7015881908", "created"
+          '7015881908',
+          'created',
         );
       if (authSecretValidation) {
         //En el caso de que validemos el origen y que el pago se complete correctamente, vamos a deolver el estado OK, de lo contrario esta operacion no se hara
@@ -107,20 +100,21 @@ export class MercadopagoController {
     return { status: 'Service ON' };
   }
 
-
   @Post('/payment_test')
   @ApiExcludeEndpoint()
   @HttpCode(HttpStatus.OK)
   async HandleNotifTest(
     @Res() res: Response,
-    @Body() body: { testType: string; userId: string }
+    @Body() body: { testType: string; userId: string },
   ): Promise<any> {
     try {
       const { testType, userId } = body;
 
       await this.mpWebhookAdapter.test_payment_notif(testType, userId);
 
-      return res.status(HttpStatus.OK).send({ message: 'Test notification sent successfully' });
+      return res
+        .status(HttpStatus.OK)
+        .send({ message: 'Test notification sent successfully' });
     } catch (error) {
       this.logger.error(error, 'Class:WebhookController');
       return res
@@ -128,7 +122,4 @@ export class MercadopagoController {
         .send({ message: 'Internal Server Error' });
     }
   }
-
-
-
 }

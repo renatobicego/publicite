@@ -34,8 +34,18 @@ export interface PaymentMethod {
   status: string;
 }
 
-export interface PaymentSuccesNotification {
-  _id: ObjectId;
-  date: string;
-  subscriptionPlan: Pick<SubscriptionPlan, "reason">;
+export interface PaymentNotificationType extends BaseNotification {
+  frontData: {
+    subscriptionPlan: {
+      _id: ObjectId;
+      reason: string;
+      status: "pending" | "approved" | "rejected";
+      retryAttemp: number;
+    };
+  };
 }
+
+export type PaymentStatusNotificationType =
+  | "payment_pending"
+  | "payment_approved"
+  | "payment_rejected";
