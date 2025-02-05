@@ -233,16 +233,35 @@ export const getPaymentMethod = async () => {
     const { data } = await axios.get(
       "https://api.mercadopago.com/v1/payments/search?sort=date_created&criteria=desc&external_reference=" +
         // user?.id,
-        "user_2mqEcO17ANFiFguUEwmrfPtU6wa",
+        "user_2pG6slSee3PCecIF46Rnr6fwfHM", // TODO make it with mongo id
       {
         headers: {
           Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}`,
         },
       }
     );
-    return data;
+    const { results } = data;
+    if (!results || results.length === 0) return;
+    const {
+      payment_method: {
+        data: {
+          routing_data: { merchant_account_id },
+        },
+        id,
+      },
+      payment_type_id,
+    } = data.results.find(
+      (payment: { status: string }) => payment.status === "approved"
+    );
+    return {
+      lastDigits: merchant_account_id,
+      cardId: id,
+      payment_type_id,
+    };
   } catch (error) {
-    console.log(error);
+    return {
+      error: "Error al traer el método de pago. Por favor intenta de nuevo.",
+    };
   }
 };
 
@@ -255,9 +274,11 @@ export const getPayments = async () => {
   try {
     const { data } = await query({
       query: getPaymentsQuery,
-      variables: { findPaymentByClerkIdId: user.userId },
+      variables: {
+        findPaymentByMongoIdId: "67420686b02bdd1f9f0ef446",
+      },
     });
-    return data.findPaymentByClerkId;
+    return data.findPaymentByMongoId;
   } catch (error) {
     return {
       error: "Error al traer los pagos. Por favor intenta de nuevo.",

@@ -6,16 +6,26 @@ import SecondaryButton from "@/components/buttons/SecondaryButton";
 
 const PaymentMethodForm = ({
   setIsFormVisible,
+  paymentMethod,
+  paymentIcon,
 }: {
   setIsFormVisible: (value: boolean) => void;
+  paymentMethod: {
+    lastDigits: string;
+    cardId: string;
+    payment_type_id: "credit_card" | "debit_card";
+  };
+  paymentIcon: React.ReactNode;
 }) => {
   return (
     <FormCard
       title="Actualizar método de pago"
       cardBodyClassname="flex flex-col gap-2 items-start"
     >
-      <DataItem className="font-semibold" Icon={<FaCcVisa className="size-6 text-[#1565C0]" />}>
-        Tarjeta de crédito terminada en *****1234
+      <DataItem className="font-semibold" Icon={paymentIcon}>
+        Tarjeta de{" "}
+        {paymentMethod.payment_type_id === "credit_card" ? "crédito" : "débito"}{" "}
+        terminada en *****{paymentMethod.lastDigits}
       </DataItem>
       <p className="text-sm">
         Este es el mêtodo de pago que se utilizará para realizar los pagos
@@ -30,9 +40,7 @@ const PaymentMethodForm = ({
         >
           Cancelar
         </Button>
-        <SecondaryButton>
-          Cambiar Método
-        </SecondaryButton>
+        <SecondaryButton>Cambiar Método</SecondaryButton>
       </div>
     </FormCard>
   );

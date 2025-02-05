@@ -64,7 +64,10 @@ export default async function PostPage(props: {
               _id: post._id,
               title: post.title,
               postType: post.postType,
-              imageUrl: "imagesUrls" in post ? post.imagesUrls[0] : "",
+              imageUrl:
+                "imagesUrls" in post && post.imagesUrls
+                  ? post.imagesUrls[0]
+                  : "",
             }}
             isAuthor={isAuthor}
             authorId={post.author._id}

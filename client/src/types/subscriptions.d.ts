@@ -24,6 +24,16 @@ export interface Subscription {
   external_reference: string;
 }
 
+export interface PaymentMethod {
+  _id: ObjectId;
+  paymentMethodId: string;
+  paymentTypeId: string;
+  transactionAmount: number;
+  timeOfUpdate: string;
+  status_detail: string;
+  status: string;
+}
+
 export interface PaymentSuccesNotification {
   _id: ObjectId;
   date: string;
