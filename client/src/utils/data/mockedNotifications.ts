@@ -129,9 +129,19 @@ export const mockedMagazineInvitation: MagazineInvitationNotification = {
 export const mockedPaymentSuccess: PaymentNotificationType = {
   _id: "6",
   date: "2024-01-01",
-  subscriptionPlan: {
-    reason: "Suscripción mensual",
+  frontData: {
+    subscriptionPlan: {
+      _id: "1",
+      reason: "reason",
+      status: "approved",
+      retryAttemp: 0,
+    },
   },
+  backData: { userIdTo: "1", userIdFrom: "2" },
+  event: "payment_success",
+  isActionsAvailable: true,
+  previousNotificationId: null,
+  viewed: false,
 };
 
 export const mockedReviewPost: ReviewPostNotification = {
