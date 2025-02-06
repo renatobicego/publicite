@@ -9,6 +9,8 @@ export class SocketAdapter implements SocketAdapterInterface {
         @Inject('NotificationHandlerServiceInterface')
         private readonly notificationHandler: NotificationHandlerServiceInterface,
     ) { }
+
+
     async sendPostCalificationNotificationToNotificationService(notificationBody: any): Promise<void> {
         try {
             return await this.notificationHandler.handlePostCalificationNotification(notificationBody);
@@ -18,7 +20,13 @@ export class SocketAdapter implements SocketAdapterInterface {
     }
 
 
-
+    async sendShareNotificationToNotificationService(notificationBody: any): Promise<void> {
+        try {
+            return await this.notificationHandler.handleShareNotification(notificationBody);
+        } catch (error: any) {
+            throw error;
+        }
+    }
 
 
     async sendUserNotificationToNotificationService(notificationBody: any): Promise<void> {

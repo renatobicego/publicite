@@ -17,7 +17,7 @@ export class MpInvoiceRepository
   async updateInvoice(
     subscription_authorized_payment_to_update: any,
     id: string,
-  ): Promise<void> {
+  ): Promise<any> {
     try {
       const invoiceUpdated = await this.invoiceModel.findOneAndUpdate(
         { invoice_id: id },
@@ -28,6 +28,7 @@ export class MpInvoiceRepository
       if (!invoiceUpdated) {
         throw new Error(`No invoice found with preapprovalId: ${id}`);
       }
+      return invoiceUpdated;
     } catch (error: any) {
       throw new Error(
         `Error updating invoice with preapprovalId: ${id}: ${error.message}`,

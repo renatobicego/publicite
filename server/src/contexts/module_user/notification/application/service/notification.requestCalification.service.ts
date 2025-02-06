@@ -95,7 +95,6 @@ export class NotificationRequestCalificationService implements NotificationReque
                 }
                 this.logger.log("Emmiting review")
                 const reviewResponse = await this.emmiter.emitAsync(new_review, review);
-                console.log(reviewResponse)
                 if (!reviewResponse[0]) {
                     this.logger.log("Error was occured, reviewResponse is null, check postReview constructor")
                     throw new InternalServerErrorException("Error was occured, reviewResponse is null, check postReview constructor")

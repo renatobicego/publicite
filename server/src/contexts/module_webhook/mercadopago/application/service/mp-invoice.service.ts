@@ -26,7 +26,7 @@ export class MpInvoiceService implements MpServiceInvoiceInterface {
   async updateInvoice(
     subscription_authorized_payment_to_update: any,
     id: string,
-  ): Promise<void> {
+  ): Promise<any> {
     this.logger.log('---INVOICE SERVICE UPDATE ---');
 
     const timeOfUpdate = getTodayDateTime();

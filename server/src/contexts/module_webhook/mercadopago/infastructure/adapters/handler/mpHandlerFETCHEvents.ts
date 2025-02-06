@@ -230,7 +230,14 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
       if (resultOfInvoice != null && resultOfInvoice.paymentReady) {
         const { payment, subscription, paymentReady } = resultOfInvoice;
         if (paymentReady) {
-          await this.make_payment_notification_and_send(payment, subscription, subscription_authorized_payment);
+          const data = {
+            subscriptionPlanId: subscription.getSubscriptionPlan(),
+            reason: subscription_authorized_payment.reason,
+            status: payment.getStatus(),
+            retryAttemp: subscription_authorized_payment.retry_attempt,
+            userId: subscription_authorized_payment.external_reference,
+          }
+          await this.make_payment_notification_and_send(data);
         }
       }
 
@@ -284,24 +291,42 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
 
   }
 
-  private async make_payment_notification_and_send(payment: Payment, subscription: Subscription, subscription_authorized_payment: authorized_payments) {
+  private async make_payment_notification_and_send(data: {
+    subscriptionPlanId: any,
+    reason: string,
+    status: string,
+    retryAttemp: any,
+    userId: string,
+  }) {
     try {
+      const {
+        subscriptionPlanId,
+        reason,
+        status,
+        retryAttemp,
+        userId,
+      } = data;
+
+      if (!subscriptionPlanId || !reason || !status || !retryAttemp || !userId) {
+        this.logger.error('One of the values is missing in the payment notification data. Payment notification not sent.')
+        return true
+      }
       const paymenStatusMap = new Map<string, payment_notification_events_enum>([
         ['approved', payment_notification_events_enum.payment_approved],
         ['pending', payment_notification_events_enum.payment_pending],
         ['rejected', payment_notification_events_enum.payment_rejected],
       ])
 
-      const paymentStatus = payment.getStatus();
+      const paymentStatus = data.status;
       const event = paymenStatusMap.get(paymentStatus) ?? payment_notification_events_enum.payment_pending;
 
       const paymentDataFromMeli: PaymentDataFromMeli = {
         event: event,
-        subscriptionPlanId: subscription.getSubscriptionPlan(),
-        reason: payment.getDescriptionOfPayment(),
+        subscriptionPlanId: subscriptionPlanId,
+        reason: reason,
         status: paymentStatus,
-        retryAttemp: subscription_authorized_payment.retry_attempt ?? 0,
-        userId: payment.getExternalReference(),
+        retryAttemp: retryAttemp ?? 1,
+        userId: userId
       }
 
       await this.emmiter.emitAsync(subscription_event, paymentDataFromMeli);
@@ -360,12 +385,10 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
           `Status is rejected, returning OK to Meli and pausing the subscription. Preapproval_id: ${response_mp_subscription_authorized_payment.preapproval_id}`,
         );
 
-        //const isThisSubscriptionWasPaused = await this.subscriptionService.verifyIfSubscriptionWasPused(response_mp_subscription_authorized_payment.preapproval_id)
-
         //Aca tengo que pausar la suscription
         await this.subscriptionService.changeStatusOfSubscription(response_mp_subscription_authorized_payment.preapproval_id, statusOfSubscription.PAUSED)
 
-        await this.MpInvoiceService.updateInvoice(
+        const invoiceUpdated: any = await this.MpInvoiceService.updateInvoice(
           response_mp_subscription_authorized_payment,
           response_mp_subscription_authorized_payment.id
         );
@@ -373,18 +396,19 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
         const result = await this.update_plan_user(userId, downgrade_plan_contact);
         if (result) await this.update_plan_user(userId, downgrade_plan_post);
 
+        if (invoiceUpdated) {
+          const data = {
+            subscriptionPlanId: invoiceUpdated.subscriptionId,
+            reason: invoiceUpdated.reason,
+            status: paymentStatus,
+            retryAttemp: invoiceUpdated.retryAttempts,
+            userId: invoiceUpdated.external_reference
+          }
+          this.make_payment_notification_and_send(data)
+        }
 
 
-        // if (isThisSubscriptionWasPaused) {
-        //   return true;
-        // } else {
-        //   await this.fetchToMpAdapter.changeSubscriptionStatusInMercadopago_fetch(
-        //     this.URL_SUBCRIPTION_PREAPPROVAL_CHECK,
-        //     response_mp_subscription_authorized_payment.preapproval_id,
-        //     'paused',
-        //   );
-        //   return true;
-        // }
+
         return true
       }
 
@@ -395,12 +419,22 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
         this.logger.log('status of payment: ' + paymentStatus);
         this.logger.log('Status of subscription:' + subscriptionStatus);
 
-        await this.MpInvoiceService.updateInvoice(
+        const invoiceUpdated: any = await this.MpInvoiceService.updateInvoice(
           response_mp_subscription_authorized_payment,
           response_mp_subscription_authorized_payment.id
         )
 
 
+        if (invoiceUpdated) {
+          const data = {
+            subscriptionPlanId: invoiceUpdated.subscriptionId,
+            reason: invoiceUpdated.reason,
+            status: paymentStatus,
+            retryAttemp: invoiceUpdated.retryAttempts,
+            userId: invoiceUpdated.external_reference
+          }
+          this.make_payment_notification_and_send(data)
+        }
         //Aca tengo que poner la suscripcion como authorized
         const isThisSubscriptionWasPaused = await this.subscriptionService.verifyIfSubscriptionWasPused(response_mp_subscription_authorized_payment.preapproval_id)
 
@@ -414,9 +448,7 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
           this.logger.warn(
             `Status of subscription: ${subscriptionStatus}`,
           );
-          this.logger.warn(
-            `Changing subscription status in mercadopago...`,
-          );
+
 
           await this.subscriptionService.changeStatusOfSubscription(response_mp_subscription_authorized_payment.preapproval_id, statusOfSubscription.AUTHORIZED)
           // await this.fetchToMpAdapter.changeSubscriptionStatusInMercadopago_fetch(
@@ -437,10 +469,21 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
 
 
       this.logger.log('Updating subscription_authorized_payment...');
-      await this.MpInvoiceService.updateInvoice(
+
+      const invoiceUpdated: any = await this.MpInvoiceService.updateInvoice(
         response_mp_subscription_authorized_payment,
         response_mp_subscription_authorized_payment.id
       );
+      if (invoiceUpdated) {
+        const data = {
+          subscriptionPlanId: invoiceUpdated.subscriptionId,
+          reason: invoiceUpdated.reason,
+          status: paymentStatus,
+          retryAttemp: invoiceUpdated.retryAttempts,
+          userId: invoiceUpdated.external_reference
+        }
+        this.make_payment_notification_and_send(data)
+      }
       return true;
     } catch (error: any) {
       this.logger.error(

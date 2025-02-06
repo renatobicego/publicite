@@ -39,6 +39,8 @@ import {
 import { NotificationPostCalification } from '../../domain/entity/notification.requestCalification.entity';
 import { INotificationPostCalification, NotificationPostCalificationModel } from '../schemas/notification.postCalification.schema';
 import { InternalServerErrorException } from '@nestjs/common';
+import { INotificationShare, NotificationShareModel } from '../schemas/notification.share.schema';
+import { NotificationShare } from '../../domain/entity/notification.share';
 
 export class NotificationRepository implements NotificationRepositoryInterface {
   constructor(
@@ -65,8 +67,12 @@ export class NotificationRepository implements NotificationRepositoryInterface {
     private readonly notificationPaymentModel: Model<INotificationPayment>,
 
     @InjectModel(NotificationPostCalificationModel.modelName)
-    private readonly notificationPostCalification: Model<INotificationPostCalification>,
+    private readonly notificationPostCalificationDocument: Model<INotificationPostCalification>,
+
+    @InjectModel(NotificationShareModel.modelName)
+    private readonly notificationShareDocument: Model<INotificationShare>,
   ) { }
+
 
 
   async changeNotificationStatus(
@@ -289,6 +295,19 @@ export class NotificationRepository implements NotificationRepositoryInterface {
     }
   }
 
+  async saveShareNotification(notification: NotificationShare, session?: any): Promise<Types.ObjectId> {
+    try {
+      this.logger.log('Saving notification shared in repository...');
+      const notificationShare = new this.notificationShareDocument(notification);
+      const notificationShareSave = await notificationShare.save({ session });
+      return notificationShareSave._id;
+
+    } catch (error: any) {
+      this.logger.error(
+        'An error occurred while saving share notification',)
+      throw error;
+    }
+  }
   async saveNotificationContactSeller(
     notification: NotificationContactSeller,
     session?: any,
@@ -359,7 +378,7 @@ export class NotificationRepository implements NotificationRepositoryInterface {
 
   async saveRequestCalificationNotification(notification: NotificationPostCalification, session?: any): Promise<Types.ObjectId> {
     try {
-      const notificationDocument = new this.notificationPostCalification(notification)
+      const notificationDocument = new this.notificationPostCalificationDocument(notification)
       const notifSaved = await notificationDocument.save({ session })
       if (!notifSaved || !notifSaved._id) throw new InternalServerErrorException("Error occurred, notifSaved is null");
       return notifSaved._id

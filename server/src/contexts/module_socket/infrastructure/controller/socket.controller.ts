@@ -92,6 +92,19 @@ export class SocketController {
   }
 
 
+  @Post('share')
+  @UseGuards(AuthSocket)
+  async socketShareNotificationController(
+    @Body() notificationBody: any,
+  ): Promise<any> {
+    try {
+      await this.socketAdapter.sendShareNotificationToNotificationService(notificationBody);
+      return { body: "Success" };
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
 
 
 

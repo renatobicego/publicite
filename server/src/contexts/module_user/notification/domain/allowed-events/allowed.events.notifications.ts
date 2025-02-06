@@ -83,7 +83,8 @@ enum typeOfNotification {
     post_notifications = 'post_notifications',
     contact_seller_notifications = 'contact_seller_notifications',
     payment_notifications = 'payment_notifications',
-    post_calification_notifications = 'post_calification_notifications'
+    post_calification_notifications = 'post_calification_notifications',
+    share_notifications = 'share_notifications'
 
 }
 

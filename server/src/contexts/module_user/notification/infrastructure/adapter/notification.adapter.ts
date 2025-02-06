@@ -39,7 +39,7 @@ export class NotificationAdapter implements NotificationAdapterInterface {
     @OnEvent(subscription_event)
     async pushPaymentSubscriptionNotification(paymentDataFromMeli: PaymentDataFromMeli): Promise<void> {
         try {
-            console.log(paymentDataFromMeli);
+
             await this.notificationService.handlePushSubscriptionNotification(paymentDataFromMeli);
         } catch (error: any) {
             throw error;

@@ -9,6 +9,7 @@ import { NotificationPost } from "../entity/notification.post.entity";
 import { NotificationContactSeller } from "../entity/notification.contactSeller.entity";
 import { NotificationPayment } from "../entity/notification.payment";
 import { NotificationPostCalification } from "../entity/notification.requestCalification.entity";
+import { NotificationShare } from "../entity/notification.share";
 
 
 export interface NotificationRepositoryInterface {
@@ -21,6 +22,7 @@ export interface NotificationRepositoryInterface {
     savePostNotification(notification: NotificationPost, session?: any): Promise<Types.ObjectId>;
     saveNotificationContactSeller(notification: NotificationContactSeller, session?: any): Promise<Types.ObjectId>
     saveRequestCalificationNotification(notification: NotificationPostCalification, session?: any): Promise<Types.ObjectId>
+    saveShareNotification(notification: NotificationShare, session?: any): Promise<Types.ObjectId>
     savePaymentNotification(notification: NotificationPayment, session?: any): Promise<any>
     setNotificationActionsToFalseById(id: string, session?: any): Promise<void>
 

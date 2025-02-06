@@ -25,6 +25,8 @@ import { NotificationContactSellerModel } from "../schemas/notification.contactS
 import { NotificationPaymentModel } from "../schemas/notification.payment.schema";
 import { NotificationRequestCalificationService } from "../../application/service/notification.requestCalification.service";
 import { NotificationPostCalificationModel } from "../schemas/notification.postCalification.schema";
+import { NotificationShareService } from "../../application/service/notification.share.service";
+import { NotificationShareModel } from "../schemas/notification.share.schema";
 
 @Module({
     imports: [
@@ -40,6 +42,7 @@ import { NotificationPostCalificationModel } from "../schemas/notification.postC
                     { name: NotificationContactSellerModel.modelName, schema: NotificationContactSellerModel.schema },
                     { name: NotificationPaymentModel.modelName, schema: NotificationPaymentModel.schema },
                     { name: NotificationPostCalificationModel.modelName, schema: NotificationPostCalificationModel.schema },
+                    { name: NotificationShareModel.modelName, schema: NotificationShareModel.schema },
                 ],
             },
         ]),
@@ -87,8 +90,10 @@ import { NotificationPostCalificationModel } from "../schemas/notification.postC
             provide: 'NotificationRequestCalificationServiceInterface',
             useClass: NotificationRequestCalificationService
         }
-
-
+        , {
+            provide: 'NotificationShareServiceInterface',
+            useClass: NotificationShareService
+        }
 
 
     ],
@@ -100,7 +105,8 @@ import { NotificationPostCalificationModel } from "../schemas/notification.postC
         'NotificationRepositoryInterface',
         'NotificationSubscriptionServiceInterface',
         'NotificationContactSellerServiceInterface',
-        'NotificationRequestCalificationServiceInterface'
+        'NotificationRequestCalificationServiceInterface',
+        'NotificationShareServiceInterface'
 
     ]
 })

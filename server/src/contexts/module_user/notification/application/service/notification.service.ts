@@ -24,7 +24,8 @@ import { NotificationPayment } from "../../domain/entity/notification.payment";
 import checkIfNotificationIsValidToDelete from "../../domain/functions/checkIfNotificationIsValidToDelete";
 import { NotificationRequestCalificationServiceInterface } from "../../domain/service/notification.requestCalification.service.interface";
 import { NotificationPostCalification } from "../../domain/entity/notification.requestCalification.entity";
-import { NotificationPost } from "../../domain/entity/notification.post.entity";
+import { NotificationShareServiceInterface } from "../../domain/service/notification.share.service.interface";
+import { NotificationShare } from "../../domain/entity/notification.share";
 
 
 
@@ -50,9 +51,12 @@ export class NotificationService implements NotificationHandlerServiceInterface,
         private readonly notificationContactSellerService: NotificationContactSellerServiceInterface,
         @Inject('NotificationRequestCalificationServiceInterface')
         private readonly notificationRequestCalificationService: NotificationRequestCalificationServiceInterface,
+        @Inject('NotificationShareServiceInterface')
+        private readonly notificationShareService: NotificationShareServiceInterface,
     ) {
 
     }
+
 
 
     async changeNotificationStatus(userRequestId: string, notificationId: string[], view: boolean): Promise<void> {
@@ -142,6 +146,17 @@ export class NotificationService implements NotificationHandlerServiceInterface,
 
 
 
+    async handleShareNotification(notification: any): Promise<void> {
+        try {
+            const factory = NotificationFactory.getInstance(this.logger);
+            const notificationGroup = factory.createNotification(typeOfNotification.share_notifications, notification);
+            await this.isThisNotificationDuplicate(notificationGroup.getNotificationEntityId);
+            await this.notificationShareService.createNotificationShareAndSendToUser(notificationGroup as NotificationShare);
+
+        } catch (error: any) {
+            throw error;
+        }
+    }
     async handleGroupNotification(notification: any): Promise<void> {
         try {
             const factory = NotificationFactory.getInstance(this.logger);
