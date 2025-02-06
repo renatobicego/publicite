@@ -15,6 +15,10 @@ import { PostService } from '../../application/service/post.service';
 import { PostRepository } from '../repository/post.repository';
 import { PostReactionSchema } from '../schemas/post.reaction.schema';
 import { PostCommentSchema } from '../schemas/post.comment.schema';
+import { PostReviewService } from 'src/contexts/module_post/PostReview/application/service/postReview.service';
+import { PostReviewRepository } from 'src/contexts/module_post/PostReview/infrastructure/repository/review.repository';
+import { PostReviewSchema } from 'src/contexts/module_post/PostReview/infrastructure/schemas/review.schema';
+import { PostReviewAdapter } from 'src/contexts/module_post/PostReview/infrastructure/adapter/postReview.adapter';
 
 @Module({
   imports: [
@@ -34,6 +38,7 @@ import { PostCommentSchema } from '../schemas/post.comment.schema';
       { name: 'User', schema: UserSchema },
       { name: 'PostReaction', schema: PostReactionSchema },
       { name: 'PostComment', schema: PostCommentSchema },
+      { name: 'PostReview', schema: PostReviewSchema },
     ]),
 
     UserModule,
@@ -56,6 +61,18 @@ import { PostCommentSchema } from '../schemas/post.comment.schema';
     {
       provide: 'PostAdapterInterface',
       useClass: PostAdapter,
+    },
+    {
+      provide: 'PostReviewServiceInterface',
+      useClass: PostReviewService,
+    },
+    {
+      provide: 'PostReviewRepositoryInterface',
+      useClass: PostReviewRepository,
+    },
+    {
+      provide: 'PostReviewAdapterInterface',
+      useClass: PostReviewAdapter,
     },
   ],
   exports: ['PostServiceInterface'],

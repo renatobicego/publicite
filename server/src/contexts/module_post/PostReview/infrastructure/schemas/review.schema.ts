@@ -7,7 +7,7 @@ export interface IPostReviewDocument extends Document {
   rating: number;
 }
 
-const PostReviewSchema = new Schema<IPostReviewDocument>({
+export const PostReviewSchema = new Schema<IPostReviewDocument>({
   author: { type: String, required: true },
   review: { type: String, required: true },
   date: { type: Date, required: true },

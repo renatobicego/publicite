@@ -1,7 +1,9 @@
-import { throwDeprecation } from "process"; import { forwardRef, Module } from "@nestjs/common";
+import { forwardRef, Module } from "@nestjs/common";
+
+import { MongooseModule } from "@nestjs/mongoose";
+
 import { NotificationService } from "../../application/service/notification.service";
 import { NotificationRepository } from "../repository/notification.repository";
-import { MongooseModule } from "@nestjs/mongoose";
 import NotificationModel from "../schemas/notification.schema";
 import { NotificationGroupModel } from "../schemas/notification.group.schema";
 import { UserModule } from "src/contexts/module_user/user/infrastructure/module/user.module";
@@ -22,6 +24,7 @@ import { NotificationContactSellerService } from "../../application/service/noti
 import { NotificationContactSellerModel } from "../schemas/notification.contactSeller.schema";
 import { NotificationPaymentModel } from "../schemas/notification.payment.schema";
 import { NotificationRequestCalificationService } from "../../application/service/notification.requestCalification.service";
+import { NotificationPostCalificationModel } from "../schemas/notification.postCalification.schema";
 
 @Module({
     imports: [
@@ -36,6 +39,7 @@ import { NotificationRequestCalificationService } from "../../application/servic
                     { name: NotificationPostModel.modelName, schema: NotificationPostModel.schema },
                     { name: NotificationContactSellerModel.modelName, schema: NotificationContactSellerModel.schema },
                     { name: NotificationPaymentModel.modelName, schema: NotificationPaymentModel.schema },
+                    { name: NotificationPostCalificationModel.modelName, schema: NotificationPostCalificationModel.schema },
                 ],
             },
         ]),

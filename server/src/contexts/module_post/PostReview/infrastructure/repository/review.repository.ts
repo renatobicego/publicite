@@ -23,41 +23,51 @@ export class PostReviewRepository implements PostReviewRepositoryInterface {
 
   ) { }
 
-  async saveReview(review: PostReview): Promise<any> {
+  async saveReview(review: PostReview): Promise<boolean> {
     const session = await this.connection.startSession();
-    this.logger.log("Saving review and push it to post in repoository...");
-    try {
+    this.logger.log("Saving review and pushing it to post in repository...");
 
-      const reviewDocument = new this.reviewModel(review)
-      await session.withTransaction(async (session) => {
+    try {
+      const reviewDocument = new this.reviewModel(review);
+
+      const result = await session.withTransaction(async (session) => {
         const reviewSaved = await reviewDocument.save({ session });
 
-        if (reviewSaved && reviewSaved._id) {
-          this.logger.log("Review saved successfully...");
-          if (review.getPostType == 'good') {
-            this.logger.log("Push review to good post...");
-            await this.postGoodDocument.updateOne({ _id: review.getPostId }, { $addToSet: { reviews: reviewSaved._id } }).session(session)
-
-          } else if (review.getPostType == 'service') {
-            this.logger.log("Push review to service post...");
-            await this.postServiceDocument.updateOne({ _id: review.getPostId }, { $addToSet: { reviews: reviewSaved._id } }).session(session)
-
-          } else {
-            this.logger.error("Post type not valid, plase check create review repository");
-            throw new Error('Post type not valid, plase check create review repository');
-          }
-
-          return true
-        } else {
-          this.logger.log("Error was occured saving review and push it to post in repoository...");
-          return false
+        if (!reviewSaved?._id) {
+          this.logger.error("Error occurred while saving review.");
+          return false;
         }
+
+        this.logger.log("Review saved successfully...");
+
+        const postType = review.getPostType;
+        const postId = review.getPostId;
+        const postModel = postType === "good" ? this.postGoodDocument
+          : postType === "service" ? this.postServiceDocument
+            : null;
+
+        if (!postModel) {
+          this.logger.error("Invalid post type. Please check the create review repository.");
+          throw new Error("Invalid post type.");
+        }
+
+        this.logger.log(`Pushing review to ${postType} post...`);
+
+        const updateResult = await postModel.updateOne(
+          { _id: postId },
+          { $addToSet: { reviews: reviewSaved._id } }
+        ).session(session);
+
+        return updateResult.modifiedCount > 0;
       });
-    } catch (error: any) {
+
+      return result;
+    } catch (error) {
+      this.logger.error("Error in saveReview:", error);
       throw error;
-    }
-    finally {
+    } finally {
       session.endSession();
     }
   }
+
 }

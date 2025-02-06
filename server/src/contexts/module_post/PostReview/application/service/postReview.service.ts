@@ -18,7 +18,7 @@ export class PostReviewService implements PostReviewServiceInterface {
 
     }
     async createReview(postReview: PostReview_interface): Promise<void> {
-
+        console.log(postReview)
         this.logger.log('creating new review... ');
         try {
             const reviewEntity = new PostReview(postReview.author, postReview.review, postReview.date, postReview.rating, postReview.post_id, postReview.postType);

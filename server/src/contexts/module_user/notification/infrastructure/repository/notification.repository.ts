@@ -37,28 +37,37 @@ import {
   NotificationPaymentModel,
 } from '../schemas/notification.payment.schema';
 import { NotificationPostCalification } from '../../domain/entity/notification.requestCalification.entity';
+import { INotificationPostCalification, NotificationPostCalificationModel } from '../schemas/notification.postCalification.schema';
+import { InternalServerErrorException } from '@nestjs/common';
 
 export class NotificationRepository implements NotificationRepositoryInterface {
   constructor(
     private readonly logger: MyLoggerService,
     @InjectModel(NotificationGroupModel.modelName)
     private readonly notificationGroupDocument: Model<INotificationGroup>,
+
     @InjectModel(NotificationMagazineModel.modelName)
     private readonly notificationMagazineDocument: Model<INotificationMagazine>,
+
     @InjectModel(NotificationModel.modelName)
     private readonly notificationBaseDocument: Model<NotificationDocument>,
+
     @InjectModel(NotificationUserModel.modelName)
     private readonly notificationUserDocument: Model<INotificationUser>,
+
     @InjectModel(NotificationPostModel.modelName)
     private readonly notificationPostDocument: Model<INotificationPost>,
+
     @InjectModel(NotificationContactSellerModel.modelName)
     private readonly notificationContactSellerModel: Model<INotificationContactSeller>,
+
     @InjectModel(NotificationPaymentModel.modelName)
     private readonly notificationPaymentModel: Model<INotificationPayment>,
-  ) {}
-  saveRequestCalificationNotification(notification: NotificationPostCalification, session?: any): Promise<Types.ObjectId> {
-    throw new Error('Method not implemented.');
-  }
+
+    @InjectModel(NotificationPostCalificationModel.modelName)
+    private readonly notificationPostCalification: Model<INotificationPostCalification>,
+  ) { }
+
 
   async changeNotificationStatus(
     userRequestId: string,
@@ -344,6 +353,17 @@ export class NotificationRepository implements NotificationRepositoryInterface {
         error.message,
       );
       this.logger.error(error);
+      throw error;
+    }
+  }
+
+  async saveRequestCalificationNotification(notification: NotificationPostCalification, session?: any): Promise<Types.ObjectId> {
+    try {
+      const notificationDocument = new this.notificationPostCalification(notification)
+      const notifSaved = await notificationDocument.save({ session })
+      if (!notifSaved || !notifSaved._id) throw new InternalServerErrorException("Error occurred, notifSaved is null");
+      return notifSaved._id
+    } catch (error: any) {
       throw error;
     }
   }
