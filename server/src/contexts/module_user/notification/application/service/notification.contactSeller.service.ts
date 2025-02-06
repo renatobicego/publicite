@@ -29,7 +29,6 @@ export class NotificationContactSellerService implements NotificationContactSell
 
 
     constructor(
-
         @InjectConnection()
         private readonly connection: Connection,
         @Inject('NotificationRepositoryInterface')
@@ -40,12 +39,11 @@ export class NotificationContactSellerService implements NotificationContactSell
 
     ) {
 
-
     }
 
     async createNotificationContactSellerAndSendToUser(notificationContactSeller: NotificationContactSeller): Promise<any> {
+        const session = await this.connection.startSession();
         try {
-            const session = await this.connection.startSession();
 
             const userIdFrom = notificationContactSeller.getbackData.userIdFrom;
             const userIdTo = notificationContactSeller.getbackData.userIdTo;
@@ -86,7 +84,10 @@ export class NotificationContactSellerService implements NotificationContactSell
 
         } catch (error: any) {
             throw error;
+        } finally {
+            session.endSession();
         }
+
     }
 
 }

@@ -78,19 +78,21 @@ export class SocketController {
   }
 
 
+  @Post('post-calification')
+  @UseGuards(AuthSocket)
+  async socketPostCalificationController(
+    @Body() notificationBody: any,
+  ): Promise<any> {
+    try {
+      await this.socketAdapter.sendPostCalificationNotificationToNotificationService(notificationBody);
+      return { body: "Success" };
+    } catch (error: any) {
+      throw error;
+    }
+  }
 
 
-  // @Post('subscription')
-  // @UseGuards(AuthSocket)
-  // async socketSubscriptionController(
-  //   @Body() notificationBody: any,
-  // ): Promise<any> {
-  //   try {
-  //     return await this.socketAdapter.sendSubscriptionNotificationToNotificationService(notificationBody);
-  //   } catch (error: any) {
-  //     throw error;
-  //   }
-  // }
+
 
 
 

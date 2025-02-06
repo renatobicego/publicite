@@ -9,6 +9,13 @@ export class SocketAdapter implements SocketAdapterInterface {
         @Inject('NotificationHandlerServiceInterface')
         private readonly notificationHandler: NotificationHandlerServiceInterface,
     ) { }
+    async sendPostCalificationNotificationToNotificationService(notificationBody: any): Promise<void> {
+        try {
+            return await this.notificationHandler.handlePostCalificationNotification(notificationBody);
+        } catch (error: any) {
+            throw error;
+        }
+    }
 
 
 
@@ -56,6 +63,7 @@ export class SocketAdapter implements SocketAdapterInterface {
             throw error;
         }
     }
+
 
 
 }

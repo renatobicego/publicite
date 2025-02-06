@@ -36,6 +36,7 @@ import {
   INotificationPayment,
   NotificationPaymentModel,
 } from '../schemas/notification.payment.schema';
+import { NotificationPostCalification } from '../../domain/entity/notification.requestCalification.entity';
 
 export class NotificationRepository implements NotificationRepositoryInterface {
   constructor(
@@ -55,6 +56,9 @@ export class NotificationRepository implements NotificationRepositoryInterface {
     @InjectModel(NotificationPaymentModel.modelName)
     private readonly notificationPaymentModel: Model<INotificationPayment>,
   ) {}
+  saveRequestCalificationNotification(notification: NotificationPostCalification, session?: any): Promise<Types.ObjectId> {
+    throw new Error('Method not implemented.');
+  }
 
   async changeNotificationStatus(
     userRequestId: string,

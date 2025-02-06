@@ -14,7 +14,7 @@ const PostServiceSchema = new Schema<IPostService>({
     enum: Object.values(FrequencyPrice),
     required: true,
   },
-  reviews: [{ type: Schema.Types.ObjectId, ref: 'Review' }],
+  reviews: [{ type: Schema.Types.ObjectId, ref: 'PostReview' }],
   imagesUrls: [{ type: String, required: true }],
 });
 

@@ -4,4 +4,5 @@ export interface NotificationHandlerServiceInterface {
     handlePostNotification(notification: any): Promise<void>
     handleUserNotification(notification: any): Promise<void>
     handleContactSellerNotification(notification: any): Promise<void>
+    handlePostCalificationNotification(notification: any): Promise<void>
 }

@@ -1,7 +1,7 @@
 import { ContactSellerAdapterInterface } from "../application/adapter/contactSeller.adapter.interface";
 import { OnEvent } from "@nestjs/event-emitter";
 
-import { contact_seller_new_request } from "src/contexts/module_shared/event-emmiter/events";
+import { contact_seller_new_request, set_OpinionRequested_TRUE } from "src/contexts/module_shared/event-emmiter/events";
 import { ContactSeller } from "../domain/contactSeller.entity";
 import { Inject } from "@nestjs/common";
 import { ContactSellerServiceInterface } from "../domain/service/contactSeller.service.interface";
@@ -29,6 +29,15 @@ export class ContactSellerAdapter implements ContactSellerAdapterInterface {
 
     ) {
 
+    }
+
+    @OnEvent(set_OpinionRequested_TRUE)
+    async setToOpinionRequestInTrue(_id: any): Promise<any> {
+        try {
+            return await this.contactSellerService.setOpinionRequestInTrue(_id)
+        } catch (error: any) {
+            throw error
+        }
     }
 
 

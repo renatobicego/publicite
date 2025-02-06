@@ -1,9 +1,11 @@
-const contact_seller_new_request = "contact_seller_new_request";
-const post_deleted = 'post.deleted'
-const downgrade_plan_contact = 'downgrade_plan_contact'
-const downgrade_plan_post = 'downgrade_plan_post'
-const get_mongo_id = 'get_mongo_id'
-const subscription_event = 'subscription_event'
+const contact_seller_new_request = "contact_seller_new_request";;
+const post_deleted = 'post.deleted';
+const downgrade_plan_contact = 'downgrade_plan_contact';
+const downgrade_plan_post = 'downgrade_plan_post';
+const get_mongo_id = 'get_mongo_id';
+const subscription_event = 'subscription_event';
+const set_OpinionRequested_TRUE = 'set_isOpinionRequested_TRUE';
+const new_review = 'new_review';
 
 export {
     contact_seller_new_request,
@@ -11,5 +13,7 @@ export {
     downgrade_plan_contact,
     downgrade_plan_post,
     get_mongo_id,
-    subscription_event
+    subscription_event,
+    set_OpinionRequested_TRUE,
+    new_review
 }

@@ -16,6 +16,7 @@ export class ContactSellerRepository implements ContactSellerRepositoryInterface
     ) { }
 
 
+
     async getContactSellerById(condition: {}): Promise<any> {
         try {
             return await this.contactSellerModel.find(condition)
@@ -53,5 +54,14 @@ export class ContactSellerRepository implements ContactSellerRepositoryInterface
 
 
 
+    async setOpinionRequestInTrue(_id: any): Promise<any> {
+        try {
+            this.logger.log('Setting opinion request in true');
+            await this.contactSellerModel.updateOne({ _id }, { $set: { isOpinionRequested: true } })
+        } catch (error: any) {
+            this.logger.log('ERROR setting opinion request in true');
+            throw error;
+        }
+    }
 
 }

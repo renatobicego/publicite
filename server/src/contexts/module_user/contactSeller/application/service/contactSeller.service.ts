@@ -18,6 +18,7 @@ export class ContactSellerService implements ContactSellerServiceInterface {
 
     }
 
+
     async createContactSeller(contactSeller: ContactSeller): Promise<Boolean> {
         try {
             this.logger.log('Creating contactSeller in adapter: ' + ContactSellerService.name);
@@ -47,6 +48,15 @@ export class ContactSellerService implements ContactSellerServiceInterface {
             return this.contactSellerRepository.getContactSellerById(conditon);
         } catch (error: any) {
             throw error
+        }
+    }
+
+
+    async setOpinionRequestInTrue(_id: any): Promise<any> {
+        try {
+            await this.contactSellerRepository.setOpinionRequestInTrue(_id);
+        } catch (error: any) {
+            throw error;
         }
     }
 

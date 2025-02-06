@@ -1,3 +1,7 @@
+import { Types } from "mongoose";
+
+
+
 import { MyLoggerService } from "src/contexts/module_shared/logger/logger.service";
 import { typeOfNotification } from "../domain/allowed-events/allowed.events.notifications";
 import { Notification } from "../domain/entity/notification.entity";
@@ -8,8 +12,8 @@ import { NotificationUser } from "../domain/entity/notification.user.entity";
 import { NotificationPost } from "../domain/entity/notification.post.entity";
 import { validatePostNotification } from "../domain/notification-factory/validatePostNotification";
 import { NotificationContactSeller } from "../domain/entity/notification.contactSeller.entity";
-import { Types } from "mongoose";
 import { NotificationPayment } from "../domain/entity/notification.payment";
+import { NotificationPostCalification } from "../domain/entity/notification.requestCalification.entity";
 
 
 export class NotificationFactory implements NotificationFactoryInterface {
@@ -48,6 +52,7 @@ export class NotificationFactory implements NotificationFactoryInterface {
                 [typeOfNotification.post_notifications]: NotificationPost,
                 [typeOfNotification.contact_seller_notifications]: NotificationContactSeller,
                 [typeOfNotification.payment_notifications]: NotificationPayment,
+                [typeOfNotification.post_calification_notifications]: NotificationPostCalification
             };
 
             const NotificationClass = notificationClassMap[notificationType];

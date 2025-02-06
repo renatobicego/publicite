@@ -15,14 +15,16 @@ import { NotificationPostType } from "../../domain/entity/enum/notification.post
 import { NotificationHandlerServiceInterface } from "../../domain/service/notification.handler.service.interface";
 import { NotificationPostServiceInterface } from "../../domain/service/notification.post.service.interface";
 import { NotificationUserServiceInterface } from "../../domain/service/notification.user.service.interface";
-import { notification_group_new_user_invited, notification_magazine_new_user_invited, notification_new_contact, notification_user_new_friend_request, notification_user_new_relation_change, typeOfNotification } from "../../domain/allowed-events/allowed.events.notifications";
+import { notification_group_new_user_invited, notification_magazine_new_user_invited, notification_new_calification_request, notification_new_calification_response, notification_new_contact, notification_user_new_friend_request, notification_user_new_relation_change, typeOfNotification } from "../../domain/allowed-events/allowed.events.notifications";
 import { NotificationSubscriptionServiceInterface } from "../../domain/service/Notification.subscription.service.interface";
 import { NotificationServiceInterface } from "../../domain/service/notification.service.interface";
 import { NotificationContactSellerServiceInterface } from "../../domain/service/notification.contactSeller.service.interface";
 import { PaymentDataFromMeli } from "../dtos/payment.data.meli";
-import { Notification } from "../../domain/entity/notification.entity";
 import { NotificationPayment } from "../../domain/entity/notification.payment";
 import checkIfNotificationIsValidToDelete from "../../domain/functions/checkIfNotificationIsValidToDelete";
+import { NotificationRequestCalificationServiceInterface } from "../../domain/service/notification.requestCalification.service.interface";
+import { NotificationPostCalification } from "../../domain/entity/notification.requestCalification.entity";
+import { NotificationPost } from "../../domain/entity/notification.post.entity";
 
 
 
@@ -46,6 +48,8 @@ export class NotificationService implements NotificationHandlerServiceInterface,
         private readonly notificationSubscriptionService: NotificationSubscriptionServiceInterface,
         @Inject('NotificationContactSellerServiceInterface')
         private readonly notificationContactSellerService: NotificationContactSellerServiceInterface,
+        @Inject('NotificationRequestCalificationServiceInterface')
+        private readonly notificationRequestCalificationService: NotificationRequestCalificationServiceInterface,
     ) {
 
     }
@@ -210,6 +214,32 @@ export class NotificationService implements NotificationHandlerServiceInterface,
             throw error;
         }
     }
+
+
+    async handlePostCalificationNotification(notification: any): Promise<void> {
+        try {
+            const factory = NotificationFactory.getInstance(this.logger);
+            const notificationRequestCalification = factory.createNotification(typeOfNotification.post_calification_notifications, notification);
+            const event = notificationRequestCalification.getEvent
+
+            if (event === notification_new_calification_request) {
+                await this.isThisNotificationDuplicate(notificationRequestCalification.getNotificationEntityId);
+                return await this.notificationRequestCalificationService.createNotificatioRequestCalificationAndSendToUser(notificationRequestCalification as NotificationPostCalification)
+
+            } else if (event === notification_new_calification_response) {
+
+                await this.isThisNotificationDuplicate(notificationRequestCalification.getNotificationEntityId);
+                return await this.notificationRequestCalificationService.createNotificationResponseCalificationAndSendToUser(notificationRequestCalification as NotificationPostCalification)
+
+            } else {
+                throw new Error("Event is not supported in handleRequestCalificationNotification")
+            }
+
+        } catch (error: any) {
+            throw error;
+        }
+    }
+
 
 
     async isThisNotificationDuplicate(notificationEntityId: string): Promise<any> {

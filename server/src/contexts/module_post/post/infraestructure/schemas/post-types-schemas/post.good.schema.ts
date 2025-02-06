@@ -15,7 +15,7 @@ const PostGoodSchema = new Schema<IPostGood>({
   year: { type: Number },
   brand: { type: String },
   modelType: { type: String },
-  reviews: [{ type: Schema.Types.ObjectId, ref: 'Review' }],
+  reviews: [{ type: Schema.Types.ObjectId, ref: 'PostReview' }],
   condition: { type: String, default: 'new' },
 });
 

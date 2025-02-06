@@ -5,4 +5,5 @@ export interface SocketAdapterInterface {
     sendPostNotificationToNotificationService(notificationBody: any): Promise<void>
     //sendSubscriptionNotificationToNotificationService(notificationBody:any): Promise<void>
     sendContactSellerNotificationToNotificationService(notificationBody:any): Promise<void>
+    sendPostCalificationNotificationToNotificationService(notificationBody:any): Promise<void>
 }

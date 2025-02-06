@@ -60,6 +60,14 @@ const contact_seller_events = [
 ]
 const notification_new_contact = contact_seller_events[0]
 
+const request_calification_events = [
+    'notification_new_calification_request', // Te han solicitado una calificacion de un bien o servicio
+    'notification_new_calification_response', // te han hecho una review de tu post
+
+]
+const notification_new_calification_request = request_calification_events[0]
+const notification_new_calification_response = request_calification_events[1]
+
 
 
 
@@ -74,7 +82,8 @@ enum typeOfNotification {
     user_notifications = 'user_notifications',
     post_notifications = 'post_notifications',
     contact_seller_notifications = 'contact_seller_notifications',
-    payment_notifications = 'payment_notifications'
+    payment_notifications = 'payment_notifications',
+    post_calification_notifications = 'post_calification_notifications'
 
 }
 
@@ -117,5 +126,7 @@ export {
     notification_group_new_user_invited,
     notification_magazine_new_user_invited,
     notification_user_new_relation_accepted,
-    notification_new_contact
+    notification_new_contact,
+    notification_new_calification_request,
+    notification_new_calification_response
 };

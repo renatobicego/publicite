@@ -1,8 +1,21 @@
-import { Schema } from 'mongoose';
+import { model, Schema } from 'mongoose';
 
-const PostReviewSchema = new Schema({
-  name: { type: String, required: true },
-  email: { type: String, required: true },
+export interface IPostReviewDocument extends Document {
+  author: string;
+  review: string;
+  date: Date;
+  rating: number;
+}
+
+const PostReviewSchema = new Schema<IPostReviewDocument>({
+  author: { type: String, required: true },
+  review: { type: String, required: true },
+  date: { type: Date, required: true },
   rating: { type: Number, required: true },
-  comment: { type: String, required: true },
-});
+}
+)
+
+
+const PostReviewModel = model<IPostReviewDocument>('PostReview', PostReviewSchema);
+
+export default PostReviewModel;

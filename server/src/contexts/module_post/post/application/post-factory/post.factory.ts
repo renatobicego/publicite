@@ -40,8 +40,10 @@ export class PostFactory implements PostFactoryInterface {
             url: '',
             label: '',
         }
-        const postReactions: Schema.Types.ObjectId[] = []
-        const postComments: Schema.Types.ObjectId[] = []
+        const emptyArray: Schema.Types.ObjectId[] = []
+        const postReactions = emptyArray
+        const postComments = emptyArray
+        const postReviews = emptyArray
 
         const searchTitle = removeAccents_removeEmojisAndToLowerCase(post.title)
         const searchDescription = removeAccents_removeEmojisAndToLowerCase(post.description)
@@ -67,6 +69,7 @@ export class PostFactory implements PostFactoryInterface {
             postReactions,
             post.postBehaviourType,
             isActive,
+
         );
 
 
@@ -80,7 +83,7 @@ export class PostFactory implements PostFactoryInterface {
                     post.year ?? null,
                     post.brand ?? null,
                     post.modelType ?? null,
-                    [], // reviews
+                    postReviews, // reviews
                     post.condition ?? null,
                 );
 
@@ -91,7 +94,7 @@ export class PostFactory implements PostFactoryInterface {
                     postBase,
                     post.frequencyPrice ?? null,
                     post.imagesUrls ?? [],
-                    [], // reviews
+                    postReviews, // reviews
                 );
 
             case PostType.petition:
