@@ -5,7 +5,7 @@ import {
 } from "@/types/postTypes";
 import { mockedPosts, mockedUsers } from "./mockedData";
 import { NewContactRelationNotification } from "@/types/userTypes";
-import { PaymentSuccesNotification } from "@/types/subscriptions";
+import { PaymentNotificationType } from "@/types/subscriptions";
 import { MagazineInvitationNotification } from "@/types/magazineTypes";
 import { GroupNotification } from "@/types/groupTypes";
 
@@ -126,12 +126,22 @@ export const mockedMagazineInvitation: MagazineInvitationNotification = {
   userInviting: { username: "username" },
 };
 
-export const mockedPaymentSuccess: PaymentSuccesNotification = {
+export const mockedPaymentSuccess: PaymentNotificationType = {
   _id: "6",
   date: "2024-01-01",
-  subscriptionPlan: {
-    reason: "Suscripción mensual",
+  frontData: {
+    subscriptionPlan: {
+      _id: "1",
+      reason: "reason",
+      status: "approved",
+      retryAttemp: 0,
+    },
   },
+  backData: { userIdTo: "1", userIdFrom: "2" },
+  event: "payment_success",
+  isActionsAvailable: true,
+  previousNotificationId: null,
+  viewed: false,
 };
 
 export const mockedReviewPost: ReviewPostNotification = {

@@ -12,10 +12,12 @@ export const DataItem = ({
   children,
   Icon,
   className,
+  asDiv,
 }: {
   children: React.ReactNode;
   Icon?: React.ReactNode;
   className?: HTMLAttributes<HTMLDivElement>["className"];
+  asDiv?: boolean;
 }) => {
   if (Icon) {
     return (
@@ -24,6 +26,14 @@ export const DataItem = ({
       >
         {Icon}
         <p className="profile-paragraph">{children}</p>
+      </div>
+    );
+  } else if (asDiv) {
+    return (
+      <div
+        className={`flex gap-2 items-center flex-1 max-md:min-w-full profile-paragraph ${className}`}
+      >
+        {children}
       </div>
     );
   } else {

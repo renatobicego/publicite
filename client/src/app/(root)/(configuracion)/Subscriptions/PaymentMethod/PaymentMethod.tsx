@@ -1,24 +1,54 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import AnimatedBox from "../../AnimatedBox";
 import DataBox, { DataItem, EditButton } from "../../DataBox";
 import PaymentMethodForm from "./PaymentMethodForm";
-import { FaCcVisa } from "react-icons/fa6";
 import { getPaymentMethod } from "@/services/subscriptionServices";
+import { toastifyError } from "@/utils/functions/toastify";
+import { Spinner } from "@nextui-org/react";
+import { getPaymentIcon } from "@/utils/functions/payments";
 
 const PaymentMethod = () => {
   const [isFormVisible, setIsFormVisible] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [paymentMethod, setPaymentMethod] = useState<{
+    lastDigits: string;
+    cardId: string;
+    payment_type_id: "credit_card" | "debit_card";
+  }>();
   useEffect(() => {
     const fetchPaymentMethod = async () => {
       const res = await getPaymentMethod();
-    }
-    fetchPaymentMethod()
-  }, [])
+      setIsLoading(false);
+      if (!res) {
+        return;
+      }
+      if ("error" in res) {
+        setIsError(true);
+        toastifyError(res.error as string);
+        return;
+      }
+      setPaymentMethod(res);
+    };
+    fetchPaymentMethod();
+  }, []);
+
+  const paymentIcon = useMemo(() => {
+    if (isError || isLoading) return;
+    return getPaymentIcon(paymentMethod?.cardId as string);
+  }, [isError, isLoading, paymentMethod?.cardId]);
   return (
-    <AnimatedBox isVisible={isFormVisible} className="flex-1" keyValue="payment-method">
-      {isFormVisible ? (
+    <AnimatedBox
+      isVisible={isFormVisible}
+      className="flex-1"
+      keyValue="payment-method"
+    >
+      {isFormVisible && paymentMethod ? (
         <PaymentMethodForm
           key={"formPaymentMethodForm"}
           setIsFormVisible={setIsFormVisible}
+          paymentMethod={paymentMethod}
+          paymentIcon={paymentIcon}
         />
       ) : (
         <DataBox
@@ -27,13 +57,21 @@ const PaymentMethod = () => {
           labelText="Método de Pago"
           labelClassname="md:w-1/4 md:my-2.5"
         >
-          <DataItem
-            Icon={<FaCcVisa className="size-6 text-[#1565C0]" />}
-          >
-            *****1234
+          <DataItem Icon={paymentIcon} asDiv>
+            {paymentMethod?.lastDigits ? (
+              `****${paymentMethod?.lastDigits}`
+            ) : isError ? (
+              "Error"
+            ) : isLoading ? (
+              <Spinner color="warning" />
+            ) : (
+              "Sin método de pago"
+            )}
           </DataItem>
 
-          <EditButton text="Cambiar" onPress={() => setIsFormVisible(true)} />
+          {paymentMethod && (
+            <EditButton text="Cambiar" onPress={() => setIsFormVisible(true)} />
+          )}
         </DataBox>
       )}
     </AnimatedBox>

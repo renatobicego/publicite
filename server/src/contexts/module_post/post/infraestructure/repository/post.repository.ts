@@ -690,6 +690,7 @@ export class PostRepository implements PostRepositoryInterface {
               isActive: true,
               endDate: { $gte: today },
               category,
+              _id: { $ne: id },
             },
           },
         },

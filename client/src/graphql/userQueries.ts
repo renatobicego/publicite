@@ -128,6 +128,12 @@ export const getAllNotificationsQuery = gql`
         isActionsAvailable
         viewed
         frontData {
+          subscriptionPlan {
+            status
+            retryAttemp
+            reason
+            _id
+          }
           group {
             _id
             name
