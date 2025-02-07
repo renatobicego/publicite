@@ -21,7 +21,7 @@ const UserPosts = ({
     sortedItems,
     setSolapaSelected,
     solapaSelected,
-  } = useFilteredAndSortedPosts(posts);
+  } = useFilteredAndSortedPosts(posts, "active");
   return (
     <>
       <PostListHeader

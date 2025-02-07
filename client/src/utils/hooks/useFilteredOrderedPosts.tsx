@@ -6,7 +6,10 @@ import {
 } from "@internationalized/date";
 import { useMemo, useState } from "react";
 
-export const useFilteredAndSortedPosts = (items: any[]) => {
+export const useFilteredAndSortedPosts = (
+  items: any[],
+  defaultSolapa?: "active" | "nextToExpire" | "inactive" | "expired"
+) => {
   // Modify searchTerm to hold two terms for a search
   // search phases
   const [searchTerms, setSearchTerms] = useState<(string | undefined)[]>([]);
@@ -16,8 +19,8 @@ export const useFilteredAndSortedPosts = (items: any[]) => {
     direction: "",
   });
   const [solapaSelected, setSolapaSelected] = useState<
-    "active" | "nextToExpire" | "inactive" | "expired" | "all"
-  >();
+    "active" | "nextToExpire" | "inactive" | "expired" | undefined
+  >(defaultSolapa);
 
   const hasSearchFilter = Boolean(searchTerms[0] || searchTerms[1]);
   // filter options
@@ -37,10 +40,12 @@ export const useFilteredAndSortedPosts = (items: any[]) => {
     switch (solapaSelected) {
       case "nextToExpire":
         // filter posts that aare going to expire in the next 7 days
-        filteredPosts = filteredPosts.filter(
-          (post: Post) =>
-            parseDateTime(post.endDate.replace("Z", "")).compare(todayDate) <= 7
-        );
+        filteredPosts = filteredPosts.filter((post: Post) => {
+          const diff = parseDateTime(post.endDate.replace("Z", "")).compare(
+            todayDate
+          );
+          return diff >= 0 && diff <= 7;
+        });
         break;
       case "inactive":
         filteredPosts = filteredPosts.filter((post: Post) => !post.isActive);
@@ -52,7 +57,11 @@ export const useFilteredAndSortedPosts = (items: any[]) => {
         );
         break;
       case "active":
-        filteredPosts = filteredPosts.filter((post: Post) => post.isActive);
+        filteredPosts = filteredPosts.filter(
+          (post: Post) =>
+            post.isActive &&
+            parseDateTime(post.endDate.replace("Z", "")).compare(todayDate) >= 0
+        );
         break;
       default:
         break;
