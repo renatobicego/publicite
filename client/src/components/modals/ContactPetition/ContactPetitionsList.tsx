@@ -12,12 +12,9 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import {
-  ContactSellerNotification,
   GetContactSellersPetitionDTO,
   Good,
   Petition,
-  PetitionContactSeller,
-  Post,
   Service,
 } from "@/types/postTypes";
 import { MdContacts } from "react-icons/md";

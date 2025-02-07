@@ -3,6 +3,9 @@ import { PostComment, PostDataNotification } from "@/types/postTypes";
 import CommentForm from "./CommentForm";
 import CommentCard from "./CommentCard";
 import { useState } from "react";
+import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
+import SecondaryButton from "@/components/buttons/SecondaryButton";
+import { Link } from "@nextui-org/react";
 
 const Comments = ({
   comments,
@@ -19,15 +22,24 @@ const Comments = ({
   return (
     <div className="flex flex-col flex-1 w-full lg:max-w-[50%] gap-4">
       <h4>Comentarios</h4>
-      <CommentForm
-        key={"commentform" + post._id}
-        post={{
-          ...post,
-          authorId,
-        }}
-        userIdTo={authorId}
-        setComments={setCommentsLocal}
-      />
+      <SignedIn>
+        <CommentForm
+          key={"commentform" + post._id}
+          post={{
+            ...post,
+            authorId,
+          }}
+          userIdTo={authorId}
+          setComments={setCommentsLocal}
+        />
+      </SignedIn>
+      <SignedOut>
+        <SignInButton fallbackRedirectUrl={`/anuncios/${post._id}`}>
+          <SecondaryButton className="self-start">
+            Inicia Sesión para Comentar
+          </SecondaryButton>
+        </SignInButton>
+      </SignedOut>
       {commentsLocal.map((comment) => (
         <CommentCard
           key={comment._id}

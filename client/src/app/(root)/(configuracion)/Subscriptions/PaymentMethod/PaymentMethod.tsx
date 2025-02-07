@@ -34,8 +34,8 @@ const PaymentMethod = () => {
   }, []);
 
   const paymentIcon = useMemo(() => {
-    if (isError || isLoading) return;
-    return getPaymentIcon(paymentMethod?.cardId as string);
+    if (isError || isLoading || !paymentMethod?.cardId) return;
+    return getPaymentIcon(paymentMethod.cardId as string);
   }, [isError, isLoading, paymentMethod?.cardId]);
   return (
     <AnimatedBox
