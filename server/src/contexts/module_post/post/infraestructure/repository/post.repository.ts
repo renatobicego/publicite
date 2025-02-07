@@ -66,7 +66,7 @@ export class PostRepository implements PostRepositoryInterface {
 
     private readonly logger: MyLoggerService,
     @InjectConnection() private readonly connection: Connection,
-  ) {}
+  ) { }
 
   async activateOrDeactivatePost(_id: string, activate: boolean): Promise<any> {
     try {
@@ -674,8 +674,16 @@ export class PostRepository implements PostRepositoryInterface {
     try {
       const today = new Date();
       const postById = await this.findPostById(id);
+      if (!postById) return { post: null, recomended: [] };
       const category = postById.category[0]._id ?? null;
       const userLocation = postById.geoLocation.location.coordinates;
+      const query = {
+        isActive: true,
+        endDate: { $gte: today },
+        category: category,
+        _id: { $ne: postById._id },
+        postType: postById.postType,
+      };
       const posts = await this.postDocument.aggregate([
         {
           $geoNear: {
@@ -685,13 +693,7 @@ export class PostRepository implements PostRepositoryInterface {
             },
             distanceField: 'distance',
             spherical: true,
-            query: {
-              'visibility.post': 'public',
-              isActive: true,
-              endDate: { $gte: today },
-              category,
-              _id: { $ne: id },
-            },
+            query: query,
           },
         },
         {
