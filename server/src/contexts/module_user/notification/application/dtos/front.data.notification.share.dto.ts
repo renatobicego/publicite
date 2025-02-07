@@ -10,6 +10,7 @@ registerEnumType(ShareType, {
     name: 'ShareType',
     description: 'Type of share',
 })
+
 @ObjectType()
 export class front_data_SHARE {
     @Field(() => ShareType)
