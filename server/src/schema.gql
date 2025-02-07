@@ -483,6 +483,24 @@ type front_data_SUBSCRIPTIONPLAN {
   retryAttemp: String!
 }
 
+type front_data_SHARE {
+  type: ShareType!
+  _id: String!
+  description: String!
+}
+
+"""Type of share"""
+enum ShareType {
+  post
+  group
+  magazine
+  user
+}
+
+type front_data_SUBSCRIPTION {
+  event: String!
+}
+
 type frontData {
   group: front_data_GROUP
   magazine: front_data_MAGAZINE
@@ -490,6 +508,8 @@ type frontData {
   postActivity: front_data_POST
   contactSeller: front_data_CONTACTSELLER
   subscriptionPlan: front_data_SUBSCRIPTIONPLAN
+  share: front_data_SHARE
+  subscription: front_data_SUBSCRIPTION
 }
 
 type backData {
