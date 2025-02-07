@@ -4,6 +4,7 @@ import { UserServiceInterface } from "src/contexts/module_user/user/domain/servi
 import { NotificationRepositoryInterface } from "../../domain/repository/notification.repository.interface";
 import { NotificationSubscriptionServiceInterface } from "../../domain/service/Notification.subscription.service.interface";
 import { NotificationPayment } from "../../domain/entity/notification.payment";
+import { NotificationSubscription } from "../../domain/entity/notification.subscription.entity";
 
 export class NotificationSubscriptionService implements NotificationSubscriptionServiceInterface {
 
@@ -17,10 +18,21 @@ export class NotificationSubscriptionService implements NotificationSubscription
     ) {
 
     }
+    async createNotificationSubscriptionAndSendToUser(notificationSubscription: NotificationSubscription): Promise<void> {
+        try {
+            const notificationId = await this.notificationRepository.saveSubscriptionNotification(notificationSubscription);
+            const userIdFrom = notificationSubscription.getbackData.userIdFrom;
+            const userIdTo = notificationSubscription.getbackData.userIdTo;
+
+            return await this.userService.pushNotificationToUserArrayNotifications(notificationId, userIdTo, userIdFrom);
+        } catch (error: any) {
+            throw error;
+        }
+    }
 
 
 
-    async createNotificationAndSendToUser(notificationPayment: NotificationPayment): Promise<void> {
+    async createNotificationPaymentAndSendToUser(notificationPayment: NotificationPayment): Promise<void> {
         try {
             const notificationId = await this.notificationRepository.savePaymentNotification(notificationPayment);
             const userIdFrom = notificationPayment.getbackData.userIdFrom;

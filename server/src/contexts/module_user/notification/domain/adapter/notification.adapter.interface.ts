@@ -12,4 +12,11 @@ export interface NotificationAdapterInterface {
     pushPaymentSubscriptionNotification(paymentDataFromMeli: PaymentDataFromMeli): Promise<void>;
 
 
+    downgrade_plan_contact(userId: string): Promise<void>
+    downgrade_plan_post(userId: string): Promise<void>
+
+
+
+
+
 }

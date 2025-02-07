@@ -41,6 +41,8 @@ import { INotificationPostCalification, NotificationPostCalificationModel } from
 import { InternalServerErrorException } from '@nestjs/common';
 import { INotificationShare, NotificationShareModel } from '../schemas/notification.share.schema';
 import { NotificationShare } from '../../domain/entity/notification.share';
+import { NotificationSubscription } from '../../domain/entity/notification.subscription.entity';
+import { INotificationSubscription, NotificationSubscriptionModel } from '../schemas/notification.subscription.schema';
 
 export class NotificationRepository implements NotificationRepositoryInterface {
   constructor(
@@ -71,7 +73,11 @@ export class NotificationRepository implements NotificationRepositoryInterface {
 
     @InjectModel(NotificationShareModel.modelName)
     private readonly notificationShareDocument: Model<INotificationShare>,
+
+    @InjectModel(NotificationSubscriptionModel.modelName)
+    private readonly notificationSubscriptionDocument: Model<INotificationSubscription>,
   ) { }
+
 
 
 
@@ -140,31 +146,8 @@ export class NotificationRepository implements NotificationRepositoryInterface {
         .sort({ date: -1 })
         .skip((page - 1) * limit);
 
-      // console.log(userNotificationResponse);
-
       if (!userNotificationResponse)
         return { notifications: [], hasMore: false };
-
-      // const notificationsSorted = userNotificationResponse
-      //     .map((notif: any) => {
-      //         return new Notification(
-      //             notif._id,
-      //             notif.event,
-      //             notif.viewed,
-      //             notif.date,
-      //             notif.user,
-      //             notif.isActionsAvailable,
-      //             notif.backData,
-      //             notif.frontData
-      //         );
-      //     })
-      //     .sort((notificationA: any, notificationB: any) => {
-
-      //         const dateA = parseZonedDateTime(notificationA.date).toDate();
-      //         const dateB = parseZonedDateTime(notificationB.date).toDate();
-
-      //         return dateB.getTime() - dateA.getTime();
-      //     });
 
       const hasMore = userNotificationResponse.length > page * limit;
       const notificationResponse: any = userNotificationResponse.slice(
@@ -337,7 +320,6 @@ export class NotificationRepository implements NotificationRepositoryInterface {
   ): Promise<any> {
     try {
       this.logger.log('Saving notification in repository...');
-      console.log(notification);
       const paymentNotification = new this.notificationPaymentModel(
         notification,
       );
@@ -354,6 +336,29 @@ export class NotificationRepository implements NotificationRepositoryInterface {
       throw error;
     }
   }
+
+
+  async saveSubscriptionNotification(notification: NotificationSubscription, session?: any): Promise<Types.ObjectId> {
+    try {
+      this.logger.log('Saving notification  subscription in repository...');
+
+      const subNotification = new this.notificationSubscriptionDocument(
+        notification,
+      );
+      const subNotificationSaved = await subNotification.save({
+        session,
+      });
+      return subNotificationSaved._id;
+    } catch (error: any) {
+      this.logger.error(
+        'An error occurred while saving notification',
+        error.message,
+      );
+      this.logger.error(error);
+      throw error;
+    }
+  }
+
 
   async saveGroupNotification(
     notification: NotificationGroup,

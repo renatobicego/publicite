@@ -26,12 +26,14 @@ import { NotificationRequestCalificationServiceInterface } from "../../domain/se
 import { NotificationPostCalification } from "../../domain/entity/notification.requestCalification.entity";
 import { NotificationShareServiceInterface } from "../../domain/service/notification.share.service.interface";
 import { NotificationShare } from "../../domain/entity/notification.share";
+import { NotificationSubscription } from "../../domain/entity/notification.subscription.entity";
 
 
 
 
 
 export class NotificationService implements NotificationHandlerServiceInterface, NotificationServiceInterface {
+
 
     constructor(
         private readonly logger: MyLoggerService,
@@ -53,9 +55,12 @@ export class NotificationService implements NotificationHandlerServiceInterface,
         private readonly notificationRequestCalificationService: NotificationRequestCalificationServiceInterface,
         @Inject('NotificationShareServiceInterface')
         private readonly notificationShareService: NotificationShareServiceInterface,
+
     ) {
 
     }
+
+
 
 
 
@@ -102,7 +107,6 @@ export class NotificationService implements NotificationHandlerServiceInterface,
 
     async handlePushSubscriptionNotification(paymentDataFromMeli: PaymentDataFromMeli): Promise<void> {
         try {
-            const factory = NotificationFactory.getInstance(this.logger);
             const notification: any = {
                 event: paymentDataFromMeli.event,
                 viewed: false,
@@ -123,13 +127,44 @@ export class NotificationService implements NotificationHandlerServiceInterface,
                     }
                 }
             }
+            const factory = NotificationFactory.getInstance(this.logger);
             const notificationPayment = factory.createNotification(typeOfNotification.payment_notifications, notification);
 
-            return await this.notificationSubscriptionService.createNotificationAndSendToUser(notificationPayment as NotificationPayment)
+            return await this.notificationSubscriptionService.createNotificationPaymentAndSendToUser(notificationPayment as NotificationPayment)
         } catch (error: any) {
             throw error;
         }
     }
+
+    async handleSubscriptionNotification(userId: string, event: string): Promise<void> {
+        try {
+            const notification: any = {
+                event: event,
+                viewed: false,
+                user: userId,
+                backData: {
+                    userIdTo: userId,
+                    userIdFrom: "Publicite Subscription information"
+                },
+                socketJobId: "This notification does not have a socketJobId",
+                type: typeOfNotification.subscription_notifications,
+                notificationEntityId: typeOfNotification.subscription_notifications,
+                frontData: {
+                    subscription: {
+                        event: event
+                    }
+                }
+            }
+            const factory = NotificationFactory.getInstance(this.logger);
+            const notificationSubscription = factory.createNotification(typeOfNotification.subscription_notifications, notification);
+            return await this.notificationSubscriptionService.createNotificationSubscriptionAndSendToUser(notificationSubscription as NotificationSubscription)
+        } catch (error: any) {
+            throw error;
+        }
+
+
+    }
+
 
     async handleMagazineNotification(notification: any): Promise<any> {
         try {

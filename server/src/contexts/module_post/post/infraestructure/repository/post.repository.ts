@@ -40,9 +40,16 @@ import { VisibilityEnum } from '../../domain/entity/models_graphql/HTTP-REQUEST/
 import { PostComment } from '../../domain/entity/postComment.entity';
 import { PostCommentDocument } from '../schemas/post.comment.schema';
 import { Date } from 'mongoose';
+import { EmitterService } from 'src/contexts/module_shared/event-emmiter/emmiter';
+import { downgrade_plan_post_notification } from 'src/contexts/module_shared/event-emmiter/events';
 
 export class PostRepository implements PostRepositoryInterface {
   constructor(
+    private readonly logger: MyLoggerService,
+    private readonly emmiter: EmitterService,
+    @InjectConnection()
+    private readonly connection: Connection,
+
     @InjectModel(PostGoodModel.modelName)
     private readonly postGoodDocument: Model<IPostGood>,
 
@@ -64,8 +71,8 @@ export class PostRepository implements PostRepositoryInterface {
     @InjectModel('Post')
     private readonly postDocument: Model<PostDocument>,
 
-    private readonly logger: MyLoggerService,
-    @InjectConnection() private readonly connection: Connection,
+
+
   ) { }
 
   async activateOrDeactivatePost(_id: string, activate: boolean): Promise<any> {
@@ -215,6 +222,7 @@ export class PostRepository implements PostRepositoryInterface {
       );
 
       console.log(`${result.modifiedCount} posts desactivados.`);
+      this.emmiter.emit(downgrade_plan_post_notification, userId);
     } catch (error) {
       console.error('Error al desactivar posts:', error);
       throw error;

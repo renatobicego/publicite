@@ -11,5 +11,7 @@ export interface NotificationServiceInterface {
         page: number,
     ): Promise<notification_graph_model_get_all>;
     handlePushSubscriptionNotification(paymentDataFromMeli: PaymentDataFromMeli): Promise<void>;
+    handleSubscriptionNotification(userId: string, event: string): Promise<void>
+
 
 }

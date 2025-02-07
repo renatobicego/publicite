@@ -15,6 +15,7 @@ import { NotificationContactSeller } from "../domain/entity/notification.contact
 import { NotificationPayment } from "../domain/entity/notification.payment";
 import { NotificationPostCalification } from "../domain/entity/notification.requestCalification.entity";
 import { NotificationShare } from "../domain/entity/notification.share";
+import { NotificationSubscription } from "../domain/entity/notification.subscription.entity";
 
 
 export class NotificationFactory implements NotificationFactoryInterface {
@@ -54,7 +55,8 @@ export class NotificationFactory implements NotificationFactoryInterface {
                 [typeOfNotification.contact_seller_notifications]: NotificationContactSeller,
                 [typeOfNotification.payment_notifications]: NotificationPayment,
                 [typeOfNotification.post_calification_notifications]: NotificationPostCalification,
-                [typeOfNotification.share_notifications]: NotificationShare
+                [typeOfNotification.share_notifications]: NotificationShare,
+                [typeOfNotification.subscription_notifications]: NotificationSubscription
             };
 
             const NotificationClass = notificationClassMap[notificationType];

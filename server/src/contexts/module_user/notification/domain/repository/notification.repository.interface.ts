@@ -10,6 +10,7 @@ import { NotificationContactSeller } from "../entity/notification.contactSeller.
 import { NotificationPayment } from "../entity/notification.payment";
 import { NotificationPostCalification } from "../entity/notification.requestCalification.entity";
 import { NotificationShare } from "../entity/notification.share";
+import { NotificationSubscription } from "../entity/notification.subscription.entity";
 
 
 export interface NotificationRepositoryInterface {
@@ -24,6 +25,7 @@ export interface NotificationRepositoryInterface {
     saveRequestCalificationNotification(notification: NotificationPostCalification, session?: any): Promise<Types.ObjectId>
     saveShareNotification(notification: NotificationShare, session?: any): Promise<Types.ObjectId>
     savePaymentNotification(notification: NotificationPayment, session?: any): Promise<any>
+    saveSubscriptionNotification(notification: NotificationSubscription, session?: any): Promise<Types.ObjectId>
     setNotificationActionsToFalseById(id: string, session?: any): Promise<void>
 
     isThisNotificationDuplicate(notificationEntityId: string): Promise<boolean>;

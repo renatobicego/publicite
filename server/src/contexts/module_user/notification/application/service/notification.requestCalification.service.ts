@@ -11,6 +11,7 @@ import { EmitterService } from "src/contexts/module_shared/event-emmiter/emmiter
 import { new_review, set_OpinionRequested_TRUE } from "src/contexts/module_shared/event-emmiter/events";
 import { PostCalificationEnum } from "../../domain/entity/enum/postCalification.eum";
 import { MyLoggerService } from "src/contexts/module_shared/logger/logger.service";
+import { PreviousIdMissingException } from "src/contexts/module_shared/exceptionFilter/previousIdMissingException";
 
 interface PostReview {
     post_id: string;
@@ -74,6 +75,12 @@ export class NotificationRequestCalificationService implements NotificationReque
             const message = notificationPostCalification.getMessageOfReview;
             const postId = notificationPostCalification.getPostId
             const postType = notificationPostCalification.getPostType;
+            const previousNotificationId = notificationPostCalification.getpreviousNotificationId;
+            if (!previousNotificationId) {
+                throw new PreviousIdMissingException()
+            }
+
+
 
             if (!userIdFrom || !rating || !message || !postId || !postType) {
                 this.logger.log("Error was occured, userIdFrom or rating or message or postType is null")
@@ -82,6 +89,7 @@ export class NotificationRequestCalificationService implements NotificationReque
 
 
             await session.withTransaction(async () => {
+                await this.notificationRepository.setNotificationActionsToFalseById(previousNotificationId, session);
                 await this.createNotificationAndPushToUser(notificationPostCalification, session);
 
                 //Creamos la review

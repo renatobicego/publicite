@@ -8,6 +8,7 @@ import { front_data_POST } from "./front.data.notification.post.dto";
 import { front_data_CONTACTSELLER } from "./front.data.notification.contactSeller";
 import { front_data_SUBSCRIPTIONPLAN } from "./fron.data.notification.subscriptionPlan";
 import { front_data_SHARE } from "./front.data.notification.share.dto";
+import { front_data_SUBSCRIPTION } from "./front.data.notification.subscription.dto";
 
 
 
@@ -33,6 +34,10 @@ export class frontData {
 
     @Field(() => front_data_SHARE, { nullable: true })
     share: front_data_SHARE;
+
+    @Field(() => front_data_SUBSCRIPTION, { nullable: true })
+    subscription: front_data_SUBSCRIPTION;
+
 
 }
 

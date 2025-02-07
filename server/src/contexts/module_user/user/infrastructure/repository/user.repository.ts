@@ -32,10 +32,17 @@ import {
   MagazineModel,
 } from 'src/contexts/module_magazine/magazine/infrastructure/schemas/magazine.schema';
 import { checkIfanyDataWasModified } from 'src/contexts/module_shared/utils/functions/check.result.functions';
+import { EmitterService } from 'src/contexts/module_shared/event-emmiter/emmiter';
+import { downgrade_plan_contact_notification } from 'src/contexts/module_shared/event-emmiter/events';
 
 @Injectable()
 export class UserRepository implements UserRepositoryInterface {
   constructor(
+    private readonly logger: MyLoggerService,
+    private readonly emmiter: EmitterService,
+    @InjectConnection()
+    private readonly connection: Connection,
+
     @InjectModel(UserPersonModel.modelName)
     private readonly userPersonModel: Model<IUserPerson>,
 
@@ -56,8 +63,8 @@ export class UserRepository implements UserRepositoryInterface {
 
     @Inject('UserRepositoryMapperInterface')
     private readonly userRepositoryMapper: UserRepositoryMapperInterface,
-    @InjectConnection() private readonly connection: Connection,
-    private readonly logger: MyLoggerService,
+
+
   ) { }
 
 
@@ -460,7 +467,6 @@ export class UserRepository implements UserRepositoryInterface {
           }
 
           this.logger.log('Search user(Business) for update');
-
           entityToDocument =
             this.userRepositoryMapper.formatUpdateDocumentUB(reqUser);
 
@@ -598,6 +604,7 @@ export class UserRepository implements UserRepositoryInterface {
         },
         { session }
       );
+      this.emmiter.emit(downgrade_plan_contact_notification, userRequestId);
       return true
     } catch (error: any) {
       throw error;

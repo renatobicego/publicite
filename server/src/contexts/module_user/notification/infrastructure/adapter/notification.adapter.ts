@@ -3,8 +3,9 @@ import { NotificationAdapterInterface } from "../../domain/adapter/notification.
 import { NotificationServiceInterface } from "../../domain/service/notification.service.interface";
 import { notification_graph_model_get_all } from "../../application/dtos/getAll.notification.dto";
 import { OnEvent } from "@nestjs/event-emitter";
-import { subscription_event } from "src/contexts/module_shared/event-emmiter/events";
+import { downgrade_plan_contact_notification, downgrade_plan_post_notification, subscription_event } from "src/contexts/module_shared/event-emmiter/events";
 import { PaymentDataFromMeli } from "../../application/dtos/payment.data.meli";
+import { DOWNGRADE_PLAN_CONTACT_EVENT, DOWNGRADE_PLAN_POST_EVENT } from "../../domain/entity/downgrade.plan.events";
 
 @Injectable()
 export class NotificationAdapter implements NotificationAdapterInterface {
@@ -14,6 +15,7 @@ export class NotificationAdapter implements NotificationAdapterInterface {
         private readonly notificationService: NotificationServiceInterface
 
     ) { }
+
 
 
 
@@ -45,6 +47,26 @@ export class NotificationAdapter implements NotificationAdapterInterface {
             throw error;
         }
     }
+
+    @OnEvent(downgrade_plan_contact_notification)
+    async downgrade_plan_contact(userId: string): Promise<void> {
+        try {
+            await this.notificationService.handleSubscriptionNotification(userId, DOWNGRADE_PLAN_CONTACT_EVENT)
+        } catch (error: any) {
+            throw error;
+        }
+    }
+
+
+    @OnEvent(downgrade_plan_post_notification)
+    async downgrade_plan_post(userId: string): Promise<void> {
+        try {
+            await this.notificationService.handleSubscriptionNotification(userId, DOWNGRADE_PLAN_POST_EVENT)
+        } catch (error: any) {
+            throw error;
+        }
+    }
+
 
     async getAllNotificationsFromUserById(
         id: string,
