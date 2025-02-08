@@ -246,7 +246,7 @@ export const putActiveRelationsMutation = gql`
   }
 `;
 
-export const getContactSellersQuery = gql`
+export const getContactSellersByTypeQuery = gql`
   query GetContactSellerById(
     $contactSellerGetType: contactSellerGetType!
     $id: String!
@@ -256,16 +256,18 @@ export const getContactSellersQuery = gql`
       _id: $id
     ) {
       client {
-        message
+        _id
         username
         phone
         name
         lastName
         email
+        message
       }
       date
       isOpinionRequested
       post {
+        _id
         toPrice
         title
         price
@@ -274,12 +276,45 @@ export const getContactSellersQuery = gql`
         imagesUrls
         frequencyPrice
         description
-        _id
       }
     }
   }
 `;
 
+export const getPorongasNuclearesQuery = gql`
+  query GetContactSellerById(
+    $contactSellerGetType: contactSellerGetType!
+    $id: String!
+  ) {
+    getContactSellerById(
+      contactSellerGetType: $contactSellerGetType
+      _id: $id
+    ) {
+      client {
+        clientId
+        username
+        phone
+        name
+        lastName
+        email
+        message
+      }
+      date
+      isOpinionRequested
+      post {
+        _id
+        toPrice
+        title
+        price
+        postType
+        petitionType
+        imagesUrls
+        frequencyPrice
+        description
+      }
+    }
+  }
+`;
 export const deleteNotificationMutation = gql`
   mutation DeleteNotificationById($event: String!, $id: String!) {
     deleteNotificationById(event: $event, _id: $id)

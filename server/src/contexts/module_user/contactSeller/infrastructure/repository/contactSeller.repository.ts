@@ -17,7 +17,7 @@ export class ContactSellerRepository
     private readonly contactSellerModel: Model<ContactSellerDocument>,
   ) {}
 
-  async getContactSellerById(condition: {}): Promise<any> {
+  async getContactSellerById(condition: object): Promise<any> {
     try {
       return await this.contactSellerModel
         .find(condition)
@@ -33,7 +33,7 @@ export class ContactSellerRepository
     }
   }
 
-  async save(contactSeller: any): Promise<Boolean> {
+  async save(contactSeller: any): Promise<boolean> {
     try {
       const newContactSeller = new this.contactSellerModel(contactSeller);
       const result = await newContactSeller.save();

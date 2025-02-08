@@ -42,7 +42,7 @@ export class PostContactSeller_graphql {
 @ObjectType()
 export class ClientContactSeller_graphql {
   @Field(() => String, { nullable: true })
-  _id: string;
+  clientId: string;
 
   @Field(() => String)
   name: string;

@@ -1,7 +1,10 @@
-import { ContactSellerGetType } from "../../domain/graphql/contactSeller.model"
+import { ContactSellerGetType } from '../../domain/graphql/contactSeller.model';
 
 export interface ContactSellerAdapterInterface {
-    createContactSeller(contactSeller: any): Promise<any>
-    getContactSellerById(contactSellerGetType: ContactSellerGetType, _id: string): Promise<any>
-    setToOpinionRequestInTrue(_id: any): Promise<any>
+  createContactSeller(contactSeller: any): Promise<any>;
+  getContactSellerById(
+    contactSellerGetType: ContactSellerGetType,
+    _id: string,
+  ): Promise<any>;
+  setToOpinionRequestInTrue(_id: any): Promise<any>;
 }

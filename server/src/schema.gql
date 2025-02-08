@@ -772,7 +772,7 @@ type PostContactSeller_graphql {
 }
 
 type ClientContactSeller_graphql {
-  _id: String
+  clientId: String
   name: String!
   email: String!
   lastName: String!

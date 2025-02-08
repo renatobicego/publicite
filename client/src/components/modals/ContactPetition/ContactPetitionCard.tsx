@@ -42,7 +42,7 @@ const ContactPetitionCard = ({
             className=" w-full object-cover max-h-full"
           />
         </CardHeader>
-        <CardBody className="realtive max-md:pt-0 text-xs md:text-sm">
+        <CardBody className="relative max-md:pt-0 text-xs md:text-sm">
           <h6>{post.title}</h6>
           <p>
             Nombre y Apellido:{" "}

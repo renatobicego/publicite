@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject } from '@nestjs/common';
 import { ContactSellerServiceInterface } from '../../domain/service/contactSeller.service.interface';
 import { ContactSeller } from '../../domain/contactSeller.entity';
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
@@ -12,7 +12,7 @@ export class ContactSellerService implements ContactSellerServiceInterface {
     private readonly contactSellerRepository: ContactSellerRepositoryInterface,
   ) {}
 
-  async createContactSeller(contactSeller: ContactSeller): Promise<Boolean> {
+  async createContactSeller(contactSeller: ContactSeller): Promise<boolean> {
     try {
       this.logger.log(
         'Creating contactSeller in adapter: ' + ContactSellerService.name,
