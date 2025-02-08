@@ -45,7 +45,7 @@ export class ContactSellerService implements ContactSellerServiceInterface {
                     throw new Error('Invalid contactSellerGetType: ' + contactSellerGetType);
             }
 
-            return this.contactSellerRepository.getContactSellerById(conditon);
+            return await this.contactSellerRepository.getContactSellerById(conditon);
         } catch (error: any) {
             throw error
         }

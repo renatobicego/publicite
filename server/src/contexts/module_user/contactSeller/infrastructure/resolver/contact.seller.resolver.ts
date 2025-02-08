@@ -17,7 +17,7 @@ export class ContactSellerResolver {
 
   @Query(() => [ContactSeller_Graphql], {
     nullable: true,
-    description: 'Obtiene un usuario por su nombre de usuario ',
+    description: 'Obtiene las peticiones de contacto por post o por usuario',
   })
   @UseGuards(ClerkAuthGuard)
   async getContactSellerById(

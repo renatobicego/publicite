@@ -8,12 +8,12 @@ import { MpPaymentServiceInterface } from 'src/contexts/module_webhook/mercadopa
 import { SubscriptionServiceInterface } from 'src/contexts/module_webhook/mercadopago/domain/service/mp-subscription.service.interface';
 import { MercadoPagoInvoiceRepositoryInterface } from '../../domain/repository/mp-invoice.respository.interface';
 import { getTodayDateTime } from 'src/contexts/module_shared/utils/functions/getTodayDateTime';
-import { payment_notification_events_enum, PaymentDataFromMeli } from 'src/contexts/module_user/notification/application/dtos/payment.data.meli';
 import Payment from '../../domain/entity/payment.entity';
 import Subscription from '../../domain/entity/subcription.entity';
 import { authorized_payments } from '../../domain/entity_mp/authorized_payments';
 
 export class MpInvoiceService implements MpServiceInvoiceInterface {
+
   constructor(
     private readonly logger: MyLoggerService,
     @Inject('MercadoPagoInvoiceRepositoryInterface')
@@ -23,6 +23,7 @@ export class MpInvoiceService implements MpServiceInvoiceInterface {
     @Inject('MpPaymentServiceInterface')
     private readonly paymentService: MpPaymentServiceInterface,
   ) { }
+
   async updateInvoice(
     subscription_authorized_payment_to_update: any,
     id: string,
@@ -150,13 +151,14 @@ export class MpInvoiceService implements MpServiceInvoiceInterface {
     return new mongoose.Types.ObjectId(customObjectIdHex);
   }
 
-  async getInvoicesByExternalReference(
-    external_reference: string,
-  ): Promise<any[]> {
+
+  async getInvoicesByExternalReferenceId(id: string, page: number, limit: number): Promise<any> {
     try {
+      page = page <= 0 ? 1 : page;
+      limit = limit <= 0 ? 10 : limit;
       const invoice =
-        await this.mpInvoiceRepository.getInvoicesByExternalReference(
-          external_reference,
+        await this.mpInvoiceRepository.getInvoicesByExternalReferenceId(
+          id, page, limit
         );
       return invoice;
     } catch (error: any) {

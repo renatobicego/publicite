@@ -14,6 +14,8 @@ export class MpInvoiceRepository
     private readonly invoiceModel: Model<InvoiceDocument>,
     private readonly logger: MyLoggerService,
   ) { }
+
+
   async updateInvoice(
     subscription_authorized_payment_to_update: any,
     id: string,
@@ -69,4 +71,32 @@ export class MpInvoiceRepository
       throw error;
     }
   }
+
+  async getInvoicesByExternalReferenceId(id: string, page: number, limit: number): Promise<any> {
+    try {
+      const invoices = await this.invoiceModel.find({ external_reference: id })
+        .populate([
+          { path: 'subscriptionId', model: 'Subscription' },
+          { path: 'paymentId', model: 'Payment' },
+        ]).limit(limit + 1).skip((page - 1) * limit)
+
+      if (invoices.length <= 0) {
+        return {
+          invoices: [],
+          hasMore: false
+        }
+      }
+      const hasMore = invoices.length > limit;
+      return {
+        invoices: invoices.slice(0, limit),
+        hasMore: hasMore
+      }
+    } catch (error: any) {
+      throw error;
+    }
+
+  }
+
+
+
 }

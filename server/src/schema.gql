@@ -704,6 +704,61 @@ type PaymentResponse {
   status: String!
 }
 
+type Payment {
+  _id: ID!
+  mpPaymentId: String!
+  descriptionOfPayment: String!
+  mpPreapprovalId: String!
+  payerId: String!
+  payerEmail: String
+  paymentTypeId: String!
+  paymentMethodId: String!
+  transactionAmount: Float!
+  dateApproved: String
+  external_reference: String!
+  status_detail: String
+  timeOfUpdate: String!
+  status: String!
+}
+
+type Subscription {
+  _id: ID!
+  mpPreapprovalId: String!
+  payerId: String!
+  status: String!
+  subscriptionPlan: String!
+  startDate: String!
+  endDate: String!
+  external_reference: String!
+  timeOfUpdate: String!
+  nextPaymentDate: String!
+  paymentMethodId: String!
+  cardId: String!
+}
+
+type Invoice {
+  _id: ID!
+  paymentId: Payment
+  subscriptionId: Subscription!
+  status: String!
+  paymentStatus: String!
+  preapprovalId: String!
+  external_reference: String!
+  timeOfUpdate: String!
+  invoice_id: String!
+  transactionAmount: Float!
+  currencyId: String
+  reason: String!
+  nextRetryDay: String!
+  retryAttempts: Int!
+  rejectionCode: String
+}
+
+type InvoiceGetAllResponse {
+  invoices: [Invoice!]
+  hasMore: Boolean!
+}
+
 type PostContactSeller_graphql {
   _id: String!
   title: String!
@@ -742,6 +797,9 @@ type Query {
 
   """Buscar los pagos por id de clerk"""
   findPaymentByMongoId(id: String!): [PaymentResponse!]
+
+  """Buscar los pagos por id de mongo"""
+  getAllInvoicesByExternalReferenceId(limit: Float!, page: Float!): InvoiceGetAllResponse
 
   """Obtiene los posts totales del usuario y los limites segun su plan"""
   getPostAndContactLimit: PostLimitResponseGraphql
@@ -800,7 +858,7 @@ type Query {
   """Devuelve todas las categorias creadas"""
   getAllCategoryPost: [PostCategoryResponse!]
 
-  """Obtiene un usuario por su nombre de usuario """
+  """Obtiene las peticiones de contacto por post o por usuario"""
   getContactSellerById(contactSellerGetType: contactSellerGetType!, _id: String!): [ContactSeller_Graphql!]
 }
 
