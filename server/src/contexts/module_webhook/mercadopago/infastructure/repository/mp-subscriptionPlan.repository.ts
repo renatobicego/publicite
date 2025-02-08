@@ -8,13 +8,12 @@ import { MercadoPagoSubscriptionPlanRepositoryInterface } from '../../domain/rep
 
 
 export class MercadoPagoSubscriptionPlanRepository
-  implements MercadoPagoSubscriptionPlanRepositoryInterface
-{
+  implements MercadoPagoSubscriptionPlanRepositoryInterface {
   constructor(
     private readonly logger: MyLoggerService,
     @InjectModel('SubscriptionPlan')
     private readonly subscriptionPlanModel: Model<SubscriptionPlanDocument>,
-  ) {}
+  ) { }
 
   async findSubscriptionPlanByMeliID(
     id: string,
@@ -30,7 +29,7 @@ export class MercadoPagoSubscriptionPlanRepository
   async findAllSubscriptionPlans(): Promise<SubscriptionPlan[]> {
     try {
       this.logger.log('Find all subscription plans in repository');
-      return this.subscriptionPlanModel.find().then((subscriptionPlans) => {
+      return this.subscriptionPlanModel.find({ isActive: true }).then((subscriptionPlans) => {
         this.logger.log('Transforming subscription plans in repository');
         return subscriptionPlans.map((subscriptionPlan) =>
           SubscriptionPlan.fromDocument(subscriptionPlan),

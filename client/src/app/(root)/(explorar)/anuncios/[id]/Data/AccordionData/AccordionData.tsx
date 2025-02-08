@@ -20,7 +20,8 @@ const AccordionData = ({
   // Conditionally add "Datos Adicionales" for Good type posts
   if (post.postType === "good") {
     accordionItems.push(
-      <AccordionItem HeadingComponent={"h6"}
+      <AccordionItem
+        HeadingComponent={"h6"}
         indicator={<FaChevronLeft className="size-3" />}
         key="dataAdicional"
         aria-label="datos adicionales"
@@ -33,7 +34,8 @@ const AccordionData = ({
 
   // Add "Información del Vendedor" for all post types
   accordionItems.push(
-    <AccordionItem HeadingComponent={"h6"}
+    <AccordionItem
+      HeadingComponent={"h6"}
       indicator={<FaChevronLeft className="size-3" />}
       key="userData"
       aria-label="datos del vendedor"
@@ -46,13 +48,17 @@ const AccordionData = ({
   // Add "Ubicación" if the post has location data
   if (post.geoLocation) {
     accordionItems.push(
-      <AccordionItem HeadingComponent={"h6"}
+      <AccordionItem
+        HeadingComponent={"h6"}
         indicator={<FaChevronLeft className="size-3" />}
         key="location"
         aria-label="ubicación"
         title="Ubicación"
       >
-        <LocationMap lat={post.geoLocation.location.coordinates[1]} lng={post.geoLocation.location.coordinates[0]} />
+        <LocationMap
+          lat={post.geoLocation.location.coordinates[1]}
+          lng={post.geoLocation.location.coordinates[0]}
+        />
         {post.geoLocation.userSetted && (
           <p className="text-sm">
             El usuario vendedor ha establecido la ubicación manualmente
@@ -65,10 +71,12 @@ const AccordionData = ({
   // Conditionally add "Opiniones" for non-petition posts with reviews
   if (!isPetition) {
     accordionItems.push(
-      <AccordionItem HeadingComponent={"h6"}
+      <AccordionItem
+        HeadingComponent={"h6"}
         indicator={<FaChevronLeft className="size-3" />}
         key="reviews"
         aria-label="opiniones"
+        id="opiniones"
         title="Opiniones"
       >
         {"reviews" in post && post.reviews.length > 0 ? (
@@ -88,7 +96,8 @@ const AccordionData = ({
   // Conditionally add "Archivos Adjuntos" if there are attached files
   if (post.attachedFiles.length > 0) {
     accordionItems.push(
-      <AccordionItem HeadingComponent={"h6"}
+      <AccordionItem
+        HeadingComponent={"h6"}
         indicator={<FaChevronLeft className="size-3" />}
         key="attachedFiles"
         aria-label="archivos adjuntos"

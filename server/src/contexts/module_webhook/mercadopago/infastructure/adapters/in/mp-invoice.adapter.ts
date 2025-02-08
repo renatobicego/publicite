@@ -6,13 +6,15 @@ export class MpInvoiceAdapter implements InvoiceAdapterInterface {
   constructor(
     @Inject('MpServiceInvoiceInterface')
     private readonly mpServiceInvoice: MpServiceInvoiceInterface,
-  ) {}
-  async getInvoicesByExternalReference(
-    external_reference: string,
-  ): Promise<any[]> {
+  ) { }
+
+
+
+
+  async getInvoicesByExternalReferenceId(id: string, page: number, limit: number): Promise<any[]> {
     try {
       const invoice =
-        await this.mpServiceInvoice.getInvoicesByExternalReference(external_reference);
+        await this.mpServiceInvoice.getInvoicesByExternalReferenceId(id, page, limit);
       return invoice;
     } catch (error: any) {
       throw error;

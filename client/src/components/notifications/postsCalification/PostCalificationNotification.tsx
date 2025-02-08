@@ -6,16 +6,17 @@ import {
   NotificationOptions,
 } from "../NotificationCard";
 import {
-  Good,
   PostCalificationNotification,
   PostCalificationNotificationType,
-  ReviewPostNotification,
 } from "@/types/postTypes";
 import { FILE_URL, POSTS } from "@/utils/data/urls";
 import { showDate } from "@/utils/functions/dates";
-import { parseDate, parseZonedDateTime } from "@internationalized/date";
-import ReviewPost from "@/components/modals/ReviewModal/ReviewPost";
+import { parseZonedDateTime } from "@internationalized/date";
+import { lazy } from "react";
 import { postCalificationNotificationMessages } from "./notificationMessages";
+const ReviewPost = lazy(
+  () => import("@/components/modals/ReviewModal/ReviewPost")
+);
 
 const ReviewRequest = ({
   notification,
@@ -29,13 +30,11 @@ const ReviewRequest = ({
     event,
   } = notification;
   const { imagesUrls } = post;
+  const eventType = event as PostCalificationNotificationType;
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const getMessageToShow = () => {
-    const notificationMessage =
-      postCalificationNotificationMessages[
-        event as PostCalificationNotificationType
-      ];
-    switch (event as PostCalificationNotificationType) {
+    const notificationMessage = postCalificationNotificationMessages[eventType];
+    switch (eventType) {
       case "notification_new_calification_request":
         return (
           <p className="text-sm text-text-color">
@@ -57,36 +56,59 @@ const ReviewRequest = ({
     }
   };
 
+  const getOptionsList = () => {
+    const optionsList = [];
+
+    if (eventType === "notification_new_calification_request") {
+      optionsList.push({
+        label: "Calificar Anuncio",
+        onPress: onOpen,
+      });
+    } else if (eventType === "notification_new_calification_response") {
+      optionsList.push({
+        label: "Ver Calificación",
+        as: Link,
+        href: `${POSTS}/${post._id}#opiniones`,
+        className: "text-text-color",
+      });
+    }
+    optionsList.push({
+      label: "Ver Post",
+      as: Link,
+      href: `${POSTS}/${post._id}`,
+      className: "text-text-color",
+    });
+    return optionsList;
+  };
+
   return (
-    <NotificationCard isNew>
-      <NotificationImage>
-        <Image
-          radius="sm"
-          src={FILE_URL + imagesUrls[0]}
-          alt="foto"
-          className="object-cover"
-          classNames={{
-            wrapper: "w-full !max-w-full object-cover",
-          }}
+    <>
+      <NotificationCard isNew>
+        <NotificationImage>
+          <Image
+            radius="sm"
+            src={FILE_URL + imagesUrls[0]}
+            alt="foto"
+            className="object-cover"
+            classNames={{
+              wrapper: "w-full !max-w-full object-cover",
+            }}
+          />
+        </NotificationImage>
+        <NotificationBody>{getMessageToShow()}</NotificationBody>
+        <NotificationOptions
+          date={showDate(parseZonedDateTime(notification.date))}
+          items={getOptionsList()}
         />
-      </NotificationImage>
-      <NotificationBody>{getMessageToShow()}</NotificationBody>
-      <NotificationOptions
-        date={showDate(parseZonedDateTime(notification.date))}
-        items={[
-          {
-            label: "Calificar Anuncio",
-            onPress: onOpen,
-          },
-          {
-            label: "Ver Post",
-            as: Link,
-            href: `${POSTS}/${post._id}`,
-            className: "text-text-color",
-          },
-        ]}
-      />
-    </NotificationCard>
+      </NotificationCard>
+      {eventType === "notification_new_calification_request" && (
+        <ReviewPost
+          isOpen={isOpen}
+          onOpenChange={onOpenChange}
+          notification={notification}
+        />
+      )}
+    </>
   );
 };
 

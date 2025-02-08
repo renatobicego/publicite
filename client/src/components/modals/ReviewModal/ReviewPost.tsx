@@ -1,5 +1,9 @@
 import PostCard from "@/components/cards/PostCard/PostCard";
-import { Good, ReviewPostNotification } from "@/types/postTypes";
+import {
+  Good,
+  PostCalificationNotification,
+  ReviewPostNotification,
+} from "@/types/postTypes";
 import {
   Image,
   Modal,
@@ -17,9 +21,13 @@ const ReviewPost = ({
 }: {
   isOpen: boolean;
   onOpenChange: () => void;
-  notification: ReviewPostNotification;
+  notification: PostCalificationNotification;
 }) => {
-  const { post } = notification;
+  const {
+    frontData: {
+      postCalification: { post },
+    },
+  } = notification;
   return (
     <Modal
       size="4xl"
@@ -37,7 +45,7 @@ const ReviewPost = ({
             <>
               <ModalBody className="flex gap-4 md:flex-row py-6 max-h-[80vh] overflow-y-auto">
                 <Image
-                  src={FILE_URL + (post as Good).imagesUrls[0]}
+                  src={FILE_URL + post.imagesUrls[0]}
                   classNames={{
                     wrapper: "w-4/5 h-fit flex-shrink-0 md:w-2/5",
                   }}

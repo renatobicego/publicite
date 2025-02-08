@@ -44,7 +44,7 @@ export class ContactSellerService implements ContactSellerServiceInterface {
           );
       }
 
-      return this.contactSellerRepository.getContactSellerById(conditon);
+      return await this.contactSellerRepository.getContactSellerById(conditon);
     } catch (error: any) {
       throw error;
     }

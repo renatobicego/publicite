@@ -20,7 +20,7 @@ import { MercadoPagoSubscriptionPlanAdapter } from 'src/contexts/module_webhook/
 import { MpWebhookAdapter } from 'src/contexts/module_webhook/mercadopago/infastructure/adapters/in/mp-webhook.adapter';
 import { SubscriptionController } from 'src/contexts/module_webhook/mercadopago/infastructure/controllers/mp-subscription.controller';
 import { MercadopagoSubscriptionPlanController } from 'src/contexts/module_webhook/mercadopago/infastructure/controllers/mp-subscriptionPlan.controller';
-import { MpPaymentResolver } from 'src/contexts/module_webhook/mercadopago/infastructure/controllers/resolver/mp-payment.resolver';
+import { MpPaymentResolver } from 'src/contexts/module_webhook/mercadopago/infastructure/resolver/mp-payment.resolver';
 import MercadoPagoEventsRepository from '../repository/mp-events.repository';
 import { MpInvoiceRepository } from '../repository/mp-invoice.repository';
 import { MercadoPagoPaymentsRepository } from '../repository/mp-payments.repository';
@@ -36,7 +36,8 @@ import { FetchToMercadoPagoAdapter } from '../adapters/out/fetch.to.mp';
 import { ErrorService } from '../../application/service/error/error.service.interface';
 import { ErrorRepository } from '../repository/error/error.repository';
 import { ErrorSchema } from '../schemas/error.schema';
-import { InvoiceController } from '../controllers/invoice.controller';
+import { MpInvoiceResolver } from '../resolver/mp-invoice.resolver';
+
 
 @Module({
     imports: [
@@ -55,12 +56,12 @@ import { InvoiceController } from '../controllers/invoice.controller';
         MercadopagoController,
         SubscriptionController,
         MercadopagoSubscriptionPlanController,
-        InvoiceController,
     ],
     providers: [
         WebhookService,
         MpWebhookAdapter,
         MpPaymentResolver,
+        MpInvoiceResolver,
         {
             provide: 'MpHandlerEventsInterface',
             useClass: MpHandlerEvents,

@@ -2,6 +2,7 @@ import NewContactPost from "@/components/notifications/contactSeller/NewContactP
 import GroupInvitation from "@/components/notifications/groups/GroupNotification";
 import MagazineNotificationCard from "@/components/notifications/magazines/MagazineNotification";
 import PostActivityNotificationCard from "@/components/notifications/postsActivity/PostActivityNotification";
+import ReviewRequest from "@/components/notifications/postsCalification/PostCalificationNotification";
 import PaymentNotification from "@/components/notifications/suscriptions/PaymentNotification";
 import UserRelationNotificationCard from "@/components/notifications/users/UserRelationNotification";
 import { GroupNotification } from "@/types/groupTypes";
@@ -9,6 +10,7 @@ import { MagazineNotification } from "@/types/magazineTypes";
 import {
   ContactSellerNotification,
   PostActivityNotification,
+  PostCalificationNotification,
 } from "@/types/postTypes";
 import { PaymentNotificationType } from "@/types/subscriptions";
 import { UserRelationNotification } from "@/types/userTypes";
@@ -66,8 +68,12 @@ const NotificationsContent = ({
           />
         );
       case notification.event.includes("calification"):
-        // TODO add notification
-        return null;
+        return (
+          <ReviewRequest
+            key={notification._id}
+            notification={notification as PostCalificationNotification}
+          />
+        );
       default:
         return null;
     }

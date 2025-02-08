@@ -6,5 +6,6 @@ export interface MercadoPagoInvoiceRepositoryInterface {
     subscription_authorized_payment_to_update: any,
     id: string,
   ): Promise<void>;
-  getInvoicesByExternalReference(external_reference: string): Promise<any[]>;
+
+  getInvoicesByExternalReferenceId(id: string, page: number, limit: number): Promise<any>;
 }

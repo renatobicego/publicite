@@ -7,7 +7,7 @@ import { useRouter } from "next-nprogress-bar";
 import StarRating from "./StarRating";
 import { useUserData } from "@/app/(root)/providers/userDataProvider";
 
-export interface PostReviewValues extends Omit<PostReview, "_id"> {}
+export interface PostReviewValues extends Omit<PostReview, "_id" | "date"> {}
 
 const ReviewPostForm = ({
   id,
@@ -17,16 +17,9 @@ const ReviewPostForm = ({
   onClose: () => void;
 }) => {
   const { userIdLogged } = useUserData();
-  const router = useRouter();
-
-  if (!userIdLogged) {
-    router.replace("/iniciar-sesion");
-    return null;
-  }
 
   const initialValues: PostReviewValues = {
-    author: userIdLogged,
-    date: new Date().toISOString(),
+    author: userIdLogged || "",
     rating: 0,
     review: "",
   };

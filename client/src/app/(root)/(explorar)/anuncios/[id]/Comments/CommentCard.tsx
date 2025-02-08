@@ -16,16 +16,18 @@ const CommentCard = ({
   isAuthor: boolean;
   post: PostDataNotification & { authorId: string };
   setComments: Dispatch<SetStateAction<PostComment[]>>;
-  }) => {
+}) => {
   return (
     <div className="flex flex-col gap-2 items-end w-full">
-      <Card shadow="sm" className="px-2.5 py-2 w-full">
+      <Card
+        id={`comentario-${comment._id}`}
+        shadow="sm"
+        className="px-2.5 py-2 w-full"
+      >
         <CardBody className="flex flex-row justify-between w-full gap-2 items-start">
           <p className="text-xs md:text-sm xl:text-base">{comment.comment}</p>
           <p className="font-medium text-light-text text-xs xl:text-sm min-w-fit">
-            {comment.createdAt
-              ? showDate(parseIsoDate(comment.createdAt))
-              : ""}
+            {comment.createdAt ? showDate(parseIsoDate(comment.createdAt)) : ""}
           </p>
         </CardBody>
         <ReplyForm
@@ -36,10 +38,7 @@ const CommentCard = ({
         />
       </Card>
       {comment.response && (
-        <ReplyCard
-          reply={comment.response}
-          isAuthor={isAuthor}
-        />
+        <ReplyCard reply={comment.response} isAuthor={isAuthor} />
       )}
     </div>
   );

@@ -1,3 +1,3 @@
 export interface InvoiceAdapterInterface {
-  getInvoicesByExternalReference(reference: string): Promise<any[]>;
+  getInvoicesByExternalReferenceId(id: string, page: number, limit: number): Promise<any>;
 }
