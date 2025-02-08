@@ -1,9 +1,5 @@
 import { POSTS } from "@/utils/data/urls";
 import { parseIsoDate, showDate } from "@/utils/functions/dates";
-import {
-  parseAbsoluteToLocal,
-  parseZonedDateTime,
-} from "@internationalized/date";
 import Link from "next/link";
 import {
   NotificationCard,
@@ -15,7 +11,7 @@ import {
 
 import {
   PostActivityNotification,
-  PostActivtyNotificationType,
+  PostActivityNotificationType,
 } from "@/types/postTypes";
 import { postActivitiesNotificationMessages } from "./notificationMessages";
 import PostActivityImage from "./PostActivityImage";
@@ -39,7 +35,7 @@ const PostActivityNotificationCard = ({
   const getNotificationOptionsList = () => {
     const optionsList: NotificationOptionProps[] = [];
     // const notificationMessage =
-    //   postActivitiesNotificationMessages[event as PostActivtyNotificationType];
+    //   postActivitiesNotificationMessages[event as PostActivityNotificationType];
 
     // // Check if acceptAction exists before adding it to options
     // if (notificationMessage?.acceptAction && isActionsAvailable) {
@@ -109,8 +105,8 @@ const PostActivityNotificationCard = ({
 
   const getMessageToShow = () => {
     const notificationMessage =
-      postActivitiesNotificationMessages[event as PostActivtyNotificationType];
-    switch (event as PostActivtyNotificationType) {
+      postActivitiesNotificationMessages[event as PostActivityNotificationType];
+    switch (event as PostActivityNotificationType) {
       case "notification_post_new_reaction":
         return (
           <>

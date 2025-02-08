@@ -227,15 +227,16 @@ export const getContactSellers = async (
   id: string
 ): Promise<GetContactSellersPetitionDTO[] | { error: string }> => {
   try {
+    const token = await auth().getToken({ template: "testing" });
     const { data } = await query({
       query: getContactSellersQuery,
       variables: { contactSellerGetType: type, id },
       context: {
         headers: {
-          Authorization: await auth().getToken({ template: "testing" }),
+          Authorization: token,
         },
         fetchOptions: {
-          next: { revalidate: 60 },
+          cache: "no-cache",
         },
       },
     });

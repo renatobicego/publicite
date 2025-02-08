@@ -4,7 +4,7 @@ import generateNotification from "../generateNotification";
 import { currentUser } from "@clerk/nextjs/server";
 import {
   PostActivityNotification,
-  PostActivtyNotificationType,
+  PostActivityNotificationType,
 } from "@/types/postTypes";
 
 type NewReactionPayload = {
@@ -30,14 +30,14 @@ type PayloadMap = {
 
 // Create the PostActivityNotificationPayload type
 export type PostActivityNotificationPayload = {
-  [K in PostActivtyNotificationType]: {
+  [K in PostActivityNotificationType]: {
     event: K;
     payload: PayloadMap[K];
-  }
-}[PostActivtyNotificationType];
+  };
+}[PostActivityNotificationType];
 
 // Update the function signature
-const generatePostActivityNotification = async(
+const generatePostActivityNotification = async (
   userIdTo: string,
   post: {
     _id: string;

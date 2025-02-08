@@ -256,26 +256,25 @@ export const getContactSellersQuery = gql`
       _id: $id
     ) {
       client {
-        _id
-        email
-        lastName
         message
-        name
-        phone
         username
+        phone
+        name
+        lastName
+        email
       }
-      isOpinionRequested
       date
+      isOpinionRequested
       post {
-        _id
-        description
-        frequencyPrice
-        imagesUrls
+        toPrice
+        title
+        price
         postType
         petitionType
-        price
-        title
-        toPrice
+        imagesUrls
+        frequencyPrice
+        description
+        _id
       }
     }
   }

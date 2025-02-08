@@ -88,9 +88,9 @@ const ContactPetitionsList = ({
               </ModalHeader>
               <ModalBody className="max-md:px-3 max-md:pt-0 max-h-[80vh] overflow-y-auto">
                 {isOpen &&
-                  contactPetitions.map((petition) => (
+                  contactPetitions.map((petition, index) => (
                     <ContactPetitionCard
-                      key={petition.client._id}
+                      key={index}
                       contactPetition={petition}
                     />
                   ))}

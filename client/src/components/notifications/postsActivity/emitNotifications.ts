@@ -1,6 +1,8 @@
 import { Socket } from "socket.io-client";
-import generatePostActivityNotification, { PostActivityNotificationPayload } from "./generatePostActivityNotification";
-import { PostActivtyNotificationType } from "@/types/postTypes";
+import generatePostActivityNotification, {
+  PostActivityNotificationPayload,
+} from "./generatePostActivityNotification";
+import { PostActivityNotificationType } from "@/types/postTypes";
 
 interface PostPayload {
   _id: string;

@@ -26,10 +26,11 @@ export class ContactSellerResolver {
     @Args('_id', { type: () => String }) _id: string,
   ): Promise<ContactSeller_Graphql[] | null> {
     try {
-      return await this.contactSellerAdapter.getContactSellerById(
+      const result = await this.contactSellerAdapter.getContactSellerById(
         contactSellerGetType,
         _id,
       );
+      return result;
     } catch (error: any) {
       throw error;
     }

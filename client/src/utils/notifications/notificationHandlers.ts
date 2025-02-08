@@ -15,7 +15,7 @@ import { userRelationNotificationMessages } from "@/components/notifications/use
 import { relationTypes } from "../data/selectData";
 import {
   PostActivityNotification,
-  PostActivtyNotificationType,
+  PostActivityNotificationType,
 } from "@/types/postTypes";
 import { postActivitiesNotificationMessages } from "@/components/notifications/postsActivity/notificationMessages";
 
@@ -75,8 +75,8 @@ export const handleUserRelationNotification = (
 export const handlePostActivityNotification = (
   data: PostActivityNotification
 ) => {
-  console.log(data)
-  const event = data.event as PostActivtyNotificationType;
+  console.log(data);
+  const event = data.event as PostActivityNotificationType;
 
   const messageInfo = postActivitiesNotificationMessages[event];
   let message = "";
@@ -88,11 +88,15 @@ export const handlePostActivityNotification = (
       break;
     case "comment":
       const { comment } = data.frontData.postActivity.postComment!;
-      message = `${user.username} ${messageInfo.message} ${post.title} - "${comment.length > 40 ? comment.slice(0, 40) + "..." : comment}"`;
+      message = `${user.username} ${messageInfo.message} ${post.title} - "${
+        comment.length > 40 ? comment.slice(0, 40) + "..." : comment
+      }"`;
       break;
     case "response":
       const { response } = data.frontData.postActivity.postResponse!;
-      message = `${user.username} ${messageInfo.message} ${post.title} - "${response.length > 40 ? response.slice(0, 40) + "..." : response}"`;
+      message = `${user.username} ${messageInfo.message} ${post.title} - "${
+        response.length > 40 ? response.slice(0, 40) + "..." : response
+      }"`;
       break;
     default:
       message = messageInfo.message;

@@ -5,20 +5,58 @@ import {
   NotificationImage,
   NotificationOptions,
 } from "../NotificationCard";
-import { Good, ReviewPostNotification } from "@/types/postTypes";
+import {
+  Good,
+  PostCalificationNotification,
+  PostCalificationNotificationType,
+  ReviewPostNotification,
+} from "@/types/postTypes";
 import { FILE_URL, POSTS } from "@/utils/data/urls";
 import { showDate } from "@/utils/functions/dates";
 import { parseDate, parseZonedDateTime } from "@internationalized/date";
 import ReviewPost from "@/components/modals/ReviewModal/ReviewPost";
+import { postCalificationNotificationMessages } from "./notificationMessages";
 
 const ReviewRequest = ({
   notification,
 }: {
-  notification: ReviewPostNotification;
+  notification: PostCalificationNotification;
 }) => {
-  const { post } = notification;
-  const { imagesUrls } = post as Good;
+  const {
+    frontData: {
+      postCalification: { post },
+    },
+    event,
+  } = notification;
+  const { imagesUrls } = post;
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const getMessageToShow = () => {
+    const notificationMessage =
+      postCalificationNotificationMessages[
+        event as PostCalificationNotificationType
+      ];
+    switch (event as PostCalificationNotificationType) {
+      case "notification_new_calification_request":
+        return (
+          <p className="text-sm text-text-color">
+            Compartí tu opinión sobre
+            <span className="font-semibold"> {post.title}</span>.
+          </p>
+        );
+
+      case "notification_new_calification_response":
+        return (
+          <p className="text-sm text-text-color">
+            Has recibido una nueva calificación sobre
+            <span className="font-semibold"> {post.title}</span>.
+          </p>
+        );
+
+      default:
+        return <>{notificationMessage.message}</>;
+    }
+  };
+
   return (
     <NotificationCard isNew>
       <NotificationImage>
@@ -32,15 +70,7 @@ const ReviewRequest = ({
           }}
         />
       </NotificationImage>
-      <NotificationBody>
-        <p className="text-sm text-text-color">
-          <span className="font-semibold">
-            {notification.userAsking.username}
-          </span>{" "}
-          te ha solicitado una calificación de
-          <span className="font-semibold"> {post.title}</span>.
-        </p>
-      </NotificationBody>
+      <NotificationBody>{getMessageToShow()}</NotificationBody>
       <NotificationOptions
         date={showDate(parseZonedDateTime(notification.date))}
         items={[
@@ -55,11 +85,6 @@ const ReviewRequest = ({
             className: "text-text-color",
           },
         ]}
-      />
-      <ReviewPost
-        isOpen={isOpen}
-        onOpenChange={onOpenChange}
-        notification={notification}
       />
     </NotificationCard>
   );

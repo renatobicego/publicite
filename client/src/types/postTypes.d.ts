@@ -257,7 +257,7 @@ export interface PostReaction {
   reaction: string;
 }
 
-export type PostActivtyNotificationType =
+export type PostActivityNotificationType =
   | "notification_post_new_reaction" // Han reaccionado al post
   | "notification_post_new_comment" // Han comentado en el post
   | "notification_post_new_comment_response"; // Han respondido a un comentario
@@ -277,5 +277,42 @@ export interface GenerateContactSellerNotification extends BaseNotification {
       post: ObjectId;
       client: PetitionContactSeller;
     };
+  };
+}
+
+export type PostCalificationNotificationType =
+  | "notification_new_calification_request"
+  | "notification_new_calification_response";
+
+export interface PostCalificationData {
+  _id: ObjectId;
+  title: string;
+  author: string;
+  description: string;
+  imagesUrls: string[];
+  postType: PostType;
+}
+
+export interface PostCalificationRequest {
+  postCalificationType: "request";
+  post: PostCalificationData;
+  contactSeller_id: ObjectId;
+}
+
+export interface PostCalificationResponse {
+  postCalificationType: "response";
+  post: PostCalificationData;
+  contactSeller_id: any;
+  review: {
+    author: ObjectId;
+    review: string;
+    date: Date;
+    rating: number;
+  };
+}
+
+export interface PostCalificationNotification extends BaseNotification {
+  frontData: {
+    postCalification: PostCalificationRequest | PostCalificationResponse;
   };
 }

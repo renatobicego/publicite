@@ -232,8 +232,7 @@ export const getPaymentMethod = async () => {
   try {
     const { data } = await axios.get(
       "https://api.mercadopago.com/v1/payments/search?sort=date_created&criteria=desc&external_reference=" +
-        // user?.id,
-        "user_2pG6slSee3PCecIF46Rnr6fwfHM", // TODO make it with mongo id
+        user?.publicMetadata.mongoId,
       {
         headers: {
           Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}`,

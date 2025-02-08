@@ -1,8 +1,8 @@
-import { PostActivtyNotificationType } from "@/types/postTypes";
+import { PostActivityNotificationType } from "@/types/postTypes";
 
 // Base messages object
 export const postActivitiesNotificationBaseMessages: Record<
-  PostActivtyNotificationType,
+  PostActivityNotificationType,
   {
     message: string;
     showUser?: boolean;
@@ -24,7 +24,7 @@ export const postActivitiesNotificationBaseMessages: Record<
 
 // Actions object extending base messages
 export const postActivitiesNotificationMessages: Record<
-  PostActivtyNotificationType,
+  PostActivityNotificationType,
   {
     message: string;
     showUser?: boolean;

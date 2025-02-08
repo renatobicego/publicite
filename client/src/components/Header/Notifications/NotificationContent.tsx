@@ -65,6 +65,9 @@ const NotificationsContent = ({
             notification={notification as PaymentNotificationType}
           />
         );
+      case notification.event.includes("calification"):
+        // TODO add notification
+        return null;
       default:
         return null;
     }
