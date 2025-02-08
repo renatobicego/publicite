@@ -183,7 +183,7 @@ export interface AttachedFileValues {
 }
 
 export interface PetitionContactSeller {
-  _id?: string;
+  clientId?: string;
   name: string;
   post: ObjectId;
   email: string;
@@ -194,6 +194,7 @@ export interface PetitionContactSeller {
 }
 
 export interface GetContactSellersPetitionDTO {
+  _id: string;
   client: Omit<PetitionContactSeller, "post">;
   post: Post;
   isOpinionRequested: boolean;
@@ -306,7 +307,7 @@ export interface PostCalificationResponse {
   review: {
     author: ObjectId;
     review: string;
-    date: Date;
+    date?: Date;
     rating: number;
   };
 }

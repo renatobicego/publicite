@@ -8,18 +8,10 @@ const httpLink = new HttpLink({
   uri: process.env.GRAPQL_URL as string,
 });
 
-const cache = new InMemoryCache({
-  typePolicies: {
-    GetContactSellerById: {
-      keyFields: ["id", "contactSellerGetType"], // Ensure Apollo caches different requests separately
-    },
-  },
-});
-
 const link = from([removeTypenameLink, httpLink]);
 export const { getClient, query } = registerApolloClient(() => {
   return new ApolloClient({
-    cache,
+    cache: new InMemoryCache(),
     link,
   });
 });

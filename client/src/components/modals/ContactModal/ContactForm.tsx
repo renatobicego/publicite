@@ -23,7 +23,7 @@ const ContactForm = ({
   const { user } = useUser();
   const { socket } = useSocket();
   const initialValues: PetitionContactSeller = {
-    _id: user?.publicMetadata?.mongoId,
+    clientId: user?.publicMetadata?.mongoId,
     email: user?.emailAddresses[0].emailAddress || "",
     post: postId,
     name: user?.firstName || "",

@@ -1,16 +1,5 @@
-import PostCard from "@/components/cards/PostCard/PostCard";
-import {
-  Good,
-  PostCalificationNotification,
-  ReviewPostNotification,
-} from "@/types/postTypes";
-import {
-  Image,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalHeader,
-} from "@nextui-org/react";
+import { PostCalificationNotification } from "@/types/postTypes";
+import { Image, Modal, ModalBody, ModalContent } from "@nextui-org/react";
 import ReviewPostForm from "./ReviewPostForm";
 import { FILE_URL } from "@/utils/data/urls";
 
@@ -59,7 +48,12 @@ const ReviewPost = ({
                     Opiná sobre tu compra:
                     <span className="font-normal"> {post.title}</span>
                   </h5>
-                  <ReviewPostForm id={post._id} onClose={onClose} />
+                  <ReviewPostForm
+                    post={post}
+                    notificationId={notification._id}
+                    onClose={onClose}
+                    contactSellerId={post.author}
+                  />
                 </div>
               </ModalBody>
             </>

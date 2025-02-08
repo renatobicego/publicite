@@ -65,6 +65,9 @@ export class ClientContactSeller_graphql {
 
 @ObjectType()
 export class ContactSeller_Graphql {
+  @Field(() => String)
+  _id: string;
+
   @Field(() => PostContactSeller_graphql)
   post: PostContactSeller_graphql;
 

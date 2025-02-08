@@ -256,41 +256,6 @@ export const getContactSellersByTypeQuery = gql`
       _id: $id
     ) {
       client {
-        _id
-        username
-        phone
-        name
-        lastName
-        email
-        message
-      }
-      date
-      isOpinionRequested
-      post {
-        _id
-        toPrice
-        title
-        price
-        postType
-        petitionType
-        imagesUrls
-        frequencyPrice
-        description
-      }
-    }
-  }
-`;
-
-export const getPorongasNuclearesQuery = gql`
-  query GetContactSellerById(
-    $contactSellerGetType: contactSellerGetType!
-    $id: String!
-  ) {
-    getContactSellerById(
-      contactSellerGetType: $contactSellerGetType
-      _id: $id
-    ) {
-      client {
         clientId
         username
         phone
@@ -312,9 +277,11 @@ export const getPorongasNuclearesQuery = gql`
         frequencyPrice
         description
       }
+      _id
     }
   }
 `;
+
 export const deleteNotificationMutation = gql`
   mutation DeleteNotificationById($event: String!, $id: String!) {
     deleteNotificationById(event: $event, _id: $id)

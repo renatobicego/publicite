@@ -20,10 +20,7 @@ import {
 import { MdContacts } from "react-icons/md";
 import { useEffect, useState } from "react";
 import ContactPetitionCard from "./ContactPetitionCard";
-import {
-  getContactSellers,
-  getPorongasNucleares,
-} from "@/services/userServices";
+import { getContactSellers } from "@/services/userServices";
 import { toastifyError } from "@/utils/functions/toastify";
 
 const ContactPetitionsList = ({
@@ -42,7 +39,7 @@ const ContactPetitionsList = ({
   useEffect(() => {
     const fetchContactPetitions = async () => {
       setIsLoading(true);
-      const contactPetitions = await getPorongasNucleares(
+      const contactPetitions = await getContactSellers(
         post ? "post" : "profile",
         post ? post._id : (userId as string)
       );

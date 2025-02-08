@@ -17,7 +17,6 @@ import getUserByUsernameQuery, {
   getAllNotificationsQuery,
   getContactSellersByTypeQuery,
   getFriendRequestsQuery,
-  getPorongasNuclearesQuery,
   putActiveRelationsMutation,
   updateContactMutation,
 } from "@/graphql/userQueries";
@@ -231,27 +230,6 @@ export const getContactSellers = async (
     const token = await auth().getToken({ template: "testing" });
     const { data } = await query({
       query: getContactSellersByTypeQuery,
-      variables: { contactSellerGetType: type, id },
-      context: {
-        headers: {
-          Authorization: token,
-        },
-      },
-    });
-    return data.getContactSellerById;
-  } catch (error: ApolloError | any) {
-    return handleApolloError(error);
-  }
-};
-
-export const getPorongasNucleares = async (
-  type: "post" | "profile",
-  id: string
-): Promise<GetContactSellersPetitionDTO[] | { error: string }> => {
-  try {
-    const token = await auth().getToken({ template: "testing" });
-    const { data } = await query({
-      query: getPorongasNuclearesQuery,
       variables: { contactSellerGetType: type, id },
       context: {
         headers: {

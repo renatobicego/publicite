@@ -782,6 +782,7 @@ type ClientContactSeller_graphql {
 }
 
 type ContactSeller_Graphql {
+  _id: String!
   post: PostContactSeller_graphql!
   client: ClientContactSeller_graphql!
   date: DateTime!

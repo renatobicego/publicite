@@ -1,7 +1,6 @@
 import { User } from "@/types/userTypes";
 import generateNotification from "../generateNotification";
 import {
-  ContactSellerNotification,
   GenerateContactSellerNotification,
   PetitionContactSeller,
 } from "@/types/postTypes";

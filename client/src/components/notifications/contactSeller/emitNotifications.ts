@@ -20,7 +20,18 @@ export const emitContactSellerNotification = (
     console.log(notification);
     socket?.emit(
       "contact_seller_notifications",
-      notification,
+      {
+        ...notification,
+        frontData: {
+          contactSeller: {
+            ...notification.frontData.contactSeller,
+            client: {
+              ...notification.frontData.contactSeller.client,
+              _id: client.clientId,
+            },
+          },
+        },
+      },
       (response: { status?: number; message?: string }) => {
         console.log(response);
         if (response?.status === 200) {
