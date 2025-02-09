@@ -6,7 +6,7 @@ interface INotificationContactSeller extends NotificationDocument {
         contactSeller: {
             post: Types.ObjectId;
             client: {
-                _id: string;
+                clientId: string;
                 name: string;
                 email: string;
                 lastName: string;
@@ -23,7 +23,7 @@ const NotificationContactSellerSchema = new Schema<INotificationContactSeller>({
         contactSeller: {
             post: { type: Schema.Types.ObjectId, ref: 'Post' },
             client: {
-                _id: { type: String, default: null },
+                clientId: { type: Schema.Types.ObjectId, ref: 'User', default: null },
                 name: { type: String, required: true },
                 email: { type: String, required: true },
                 lastName: { type: String, required: true },

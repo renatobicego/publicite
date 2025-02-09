@@ -8,7 +8,7 @@ export class NotificationContactSeller extends Notification {
                 _id: any,
             }
             client: {
-                _id: string,
+                clientId: any,
                 name: string,
                 email: string,
                 lastName: string,
@@ -27,7 +27,7 @@ export class NotificationContactSeller extends Notification {
                     _id: any,
                 }
                 client: {
-                    _id: string,
+                    clientId: any,
                     name: string,
                     email: string,
                     lastName: string,

@@ -1,7 +1,7 @@
 
 
 interface contact_seller_client {
-    _id: string,
+    clientId: any,
     name: string,
     email: string,
     lastName: string,

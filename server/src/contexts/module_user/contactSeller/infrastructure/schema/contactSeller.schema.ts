@@ -2,7 +2,7 @@ import { model, Schema } from "mongoose"
 
 interface ContactSellerDocument extends Document {
     client: {
-        _id: string,
+        clientId: any,
         name: string,
         email: string,
         lastName: string,
@@ -19,7 +19,7 @@ interface ContactSellerDocument extends Document {
 
 const ContactSellerSchema = new Schema<ContactSellerDocument>({
     client: {
-        _id: { type: String, required: true },
+        clientId: { type: Schema.Types.ObjectId, ref: 'User' },
         name: { type: String, required: true },
         email: { type: String, required: true },
         lastName: { type: String, required: true },

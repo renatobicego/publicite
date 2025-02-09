@@ -13,7 +13,7 @@ import { EmitterService } from "src/contexts/module_shared/event-emmiter/emmiter
 interface ContactSeller {
     post: any,
     client: {
-        _id: string,
+        clientId: any,
         name: string,
         email: string,
         lastName: string,
