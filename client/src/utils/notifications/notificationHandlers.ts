@@ -110,3 +110,5 @@ export const handlePostActivityNotification = (
     }
   );
 };
+
+// TODO add calification and contact seller notifications

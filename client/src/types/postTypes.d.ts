@@ -196,7 +196,7 @@ export interface PetitionContactSeller {
 export interface GetContactSellersPetitionDTO {
   _id: string;
   client: Omit<PetitionContactSeller, "post">;
-  post: Post;
+  post: PostCalificationData;
   isOpinionRequested: boolean;
   date: string;
 }

@@ -1,4 +1,4 @@
-import { GetContactSellersPetitionDTO, Good } from "@/types/postTypes";
+import { GetContactSellersPetitionDTO } from "@/types/postTypes";
 import { FILE_URL } from "@/utils/data/urls";
 import {
   Card,
@@ -46,7 +46,10 @@ const ContactPetitionCard = ({
         event: "notification_new_calification_request",
         payload: {
           contactSeller_id: _id,
-          post: post as any,
+          post: {
+            ...post,
+            author: userIdLogged as string,
+          },
           postCalificationType: "request",
         },
       },
@@ -70,7 +73,7 @@ const ContactPetitionCard = ({
         <CardHeader className="w-28 h-24 shrink lg:w-32 lg:h-28 2xl:w-36  2xl:h-32 p-2 justify-center">
           <Image
             radius="sm"
-            src={FILE_URL + (post as Good).imagesUrls[0]}
+            src={FILE_URL + post.imagesUrls[0]}
             alt={"foto de anuncio " + post.title}
             removeWrapper
             className=" w-full object-cover max-h-full"
@@ -88,7 +91,7 @@ const ContactPetitionCard = ({
             Email: <span className="font-semibold">{client.email}</span>
           </p>
           <p className="line-clamp-2 mb-2">&quot;{client.message}&quot;</p>
-          {true &&
+          {showAskForOpinion &&
             (!isOpinionRequestedLocal ? (
               <>
                 <PrimaryButton

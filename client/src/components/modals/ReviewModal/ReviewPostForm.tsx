@@ -41,6 +41,7 @@ const ReviewPostForm = ({
     values: PostReviewValues,
     actions: FormikHelpers<PostReviewValues>
   ) => {
+    console.log(values);
     if (values.review.length < 5) {
       actions.setFieldError(
         "review",

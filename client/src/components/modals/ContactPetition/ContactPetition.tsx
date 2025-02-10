@@ -5,6 +5,7 @@ import {
 } from "@/components/inputs/CustomInputs";
 import {
   ContactSellerNotification,
+  GetContactSellersPetitionDTO,
   PetitionContactSeller,
   Post,
 } from "@/types/postTypes";
@@ -24,10 +25,7 @@ const ContactPetition = ({
 }: {
   isOpen: boolean;
   onOpenChange: () => void;
-  contactPetitionData: {
-    client: Omit<PetitionContactSeller, "post">;
-    post: Post;
-  };
+  contactPetitionData: GetContactSellersPetitionDTO;
 }) => {
   const { post, client } = contactPetitionData;
   return (

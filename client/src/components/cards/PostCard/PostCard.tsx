@@ -1,4 +1,10 @@
-import { Good, Petition, Post, Service } from "@/types/postTypes";
+import {
+  Good,
+  Petition,
+  Post,
+  PostCalificationData,
+  Service,
+} from "@/types/postTypes";
 import GoodCard from "./GoodCard";
 import ServiceCard from "./ServiceCard";
 import { Card, CardFooter } from "@nextui-org/react";
@@ -14,13 +20,13 @@ const PostCard = ({
   isGroupPost = false,
   showChangeExpirationDate,
 }: {
-  postData: Post;
+  postData: Post | PostCalificationData;
   recommendation?: boolean;
   className?: string;
   interactable?: boolean;
   isGroupPost?: boolean;
   showChangeExpirationDate?: boolean;
-  }) => {
+}) => {
   const { postType } = postData;
   const PostCardToReturn = () => {
     switch (postType) {
@@ -76,7 +82,7 @@ const PostCard = ({
         <CardFooter className="flex flex-col gap-2 items-start justify-between -mt-4">
           <RenewPost postTitle={postData.title} id={postData._id} />
           <p className="text-light-text text-xs lg:text-sm">
-           Vencimiento: {showDate(parseIsoDate(postData.endDate))}
+            Vencimiento: {showDate(parseIsoDate((postData as Post).endDate))}
           </p>
         </CardFooter>
       )}

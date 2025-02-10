@@ -97,6 +97,8 @@ export const SocketProvider = ({
         setNewNotifications(true);
         handlePostActivityNotification(data); // Call the handler for post activiyy notifications
       });
+
+      // TODO add contact seller and calification
     });
   };
 

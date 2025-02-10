@@ -39,7 +39,7 @@ export default async function PostPage(props: {
       href: POSTS,
     },
     {
-      label: (postData as any).title,
+      label: postData.post.title,
       href: `${POSTS}/${params.id}`,
     },
   ];
