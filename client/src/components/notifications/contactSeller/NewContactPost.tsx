@@ -27,6 +27,7 @@ const NewContactPost = ({
     },
     _id,
     event,
+    viewed,
   } = notification;
   const { deleteNotification } = useNotificationsContext();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -49,7 +50,7 @@ const NewContactPost = ({
     return optionsList;
   };
   return (
-    <NotificationCard isNew>
+    <NotificationCard isNew={!viewed}>
       <NotificationImage>
         <Image
           radius="sm"

@@ -813,6 +813,11 @@ type ContactSeller_Graphql {
   isOpinionRequested: Boolean!
 }
 
+type ContactSeller_getAll {
+  contactSeller: [ContactSeller_Graphql!]
+  hasMore: Boolean!
+}
+
 type Query {
   """Obtiene un usuario por su nombre de usuario """
   findUserByUsername(username: String!): User_Full_Grapql_Model
@@ -884,7 +889,7 @@ type Query {
   getAllCategoryPost: [PostCategoryResponse!]
 
   """Obtiene las peticiones de contacto por post o por usuario"""
-  getContactSellerById(contactSellerGetType: contactSellerGetType!, _id: String!): [ContactSeller_Graphql!]
+  getContactSellerById(contactSellerGetType: contactSellerGetType!, _id: String!, limit: Float!, page: Float!): ContactSeller_getAll
 }
 
 """Type of the post """

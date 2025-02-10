@@ -10,7 +10,7 @@ import {
   PostCalificationNotificationType,
 } from "@/types/postTypes";
 import { FILE_URL, POSTS } from "@/utils/data/urls";
-import { showDate } from "@/utils/functions/dates";
+import { parseIsoDate, showDate } from "@/utils/functions/dates";
 import { parseZonedDateTime } from "@internationalized/date";
 import { lazy } from "react";
 import { postCalificationNotificationMessages } from "./notificationMessages";
@@ -28,6 +28,9 @@ const ReviewRequest = ({
       postCalification: { post },
     },
     event,
+    date,
+    isActionsAvailable,
+    viewed,
   } = notification;
   const { imagesUrls } = post;
   const eventType = event as PostCalificationNotificationType;
@@ -59,7 +62,10 @@ const ReviewRequest = ({
   const getOptionsList = () => {
     const optionsList = [];
 
-    if (eventType === "notification_new_calification_request") {
+    if (
+      eventType === "notification_new_calification_request" &&
+      isActionsAvailable
+    ) {
       optionsList.push({
         label: "Calificar Anuncio",
         onPress: onOpen,
@@ -83,7 +89,7 @@ const ReviewRequest = ({
 
   return (
     <>
-      <NotificationCard isNew>
+      <NotificationCard isNew={!viewed}>
         <NotificationImage>
           <Image
             radius="sm"
@@ -97,7 +103,7 @@ const ReviewRequest = ({
         </NotificationImage>
         <NotificationBody>{getMessageToShow()}</NotificationBody>
         <NotificationOptions
-          date={showDate(parseZonedDateTime(notification.date))}
+          date={showDate(parseIsoDate(date))}
           items={getOptionsList()}
         />
       </NotificationCard>

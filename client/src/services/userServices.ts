@@ -290,6 +290,7 @@ export const getNotifications = async (
 
 export const putNotificationStatus = async (id: string[]) => {
   try {
+    if (id.length === 0) return;
     const { data } = await getClient().mutate({
       mutation: changeNotificationStatusMutation,
       variables: { notificationIds: id, view: true },

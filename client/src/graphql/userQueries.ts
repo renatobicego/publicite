@@ -210,6 +210,24 @@ export const getAllNotificationsQuery = gql`
               postType
             }
           }
+          postCalification {
+            contactSeller_id
+            postCalificationType
+            post {
+              _id
+              author
+              description
+              imagesUrls
+              postType
+              title
+            }
+            review {
+              author
+              date
+              rating
+              review
+            }
+          }
         }
       }
     }

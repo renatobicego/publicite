@@ -20,13 +20,14 @@ const PaymentNotification = ({
       subscriptionPlan: { reason, retryAttemp },
     },
     event,
+    viewed,
   } = notification;
 
   const messageToShow =
     paymentNotificationMessages[event as PaymentStatusNotificationType];
 
   return (
-    <NotificationCard isNew>
+    <NotificationCard isNew={!viewed}>
       <NotificationImage>
         <FaFileInvoiceDollar className="text-success size-10" />
       </NotificationImage>

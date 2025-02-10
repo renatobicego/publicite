@@ -50,7 +50,9 @@ const DesktopNotifications = ({
         }
         if (newNotificationsFromServer && !open) {
           await putNotificationStatus(
-            notifications.map((notification) => notification._id)
+            notifications
+              .filter((notification) => !notification.viewed)
+              .map((notification) => notification._id)
           );
         }
         setIsOpen(open);
