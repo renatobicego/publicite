@@ -33,7 +33,6 @@ export class frontData {
     @Field(() => front_data_POSTCALIFICATION, { nullable: true })
     postCalification: front_data_POSTCALIFICATION;
 
-
     @Field(() => front_data_SUBSCRIPTIONPLAN, { nullable: true })
     subscriptionPlan: front_data_SUBSCRIPTIONPLAN;
 
