@@ -24,6 +24,19 @@ export interface Subscription {
   external_reference: string;
 }
 
+export interface Invoice {
+  _id: string;
+  transactionAmount: Number;
+  paymentStatus: string;
+  nextRetryDay: string;
+  timeOfUpdate: string;
+  status: string;
+  reason: string;
+  retryAttempts: string;
+  rejectionCode: string;
+  paymentId: PaymentMethod;
+}
+
 export interface PaymentMethod {
   _id: ObjectId;
   paymentMethodId: string;

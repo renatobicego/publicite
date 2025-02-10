@@ -1,15 +1,25 @@
 import gql from "graphql-tag";
 
 export const getPaymentsQuery = gql`
-  query FindPaymentByMongoId($findPaymentByMongoIdId: String!) {
-    findPaymentByMongoId(id: $findPaymentByMongoIdId) {
-      transactionAmount
-      timeOfUpdate
-      status_detail
-      status
-      _id
-      paymentTypeId
-      paymentMethodId
+  query GetAllInvoicesByExternalReferenceId($limit: Float!, $page: Float!) {
+    getAllInvoicesByExternalReferenceId(limit: $limit, page: $page) {
+      hasMore
+      invoices {
+        _id
+        transactionAmount
+        paymentStatus
+        nextRetryDay
+        timeOfUpdate
+        status
+        reason
+        retryAttempts
+        rejectionCode
+        paymentId {
+          paymentTypeId
+          paymentMethodId
+          status
+        }
+      }
     }
   }
 `;

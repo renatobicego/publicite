@@ -8,7 +8,7 @@ import { PostBehaviourType } from "@/types/postTypes";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import axios from "axios";
 import { getApiContext } from "./apiContext";
-import { Subscription } from "@/types/subscriptions";
+import { Invoice, PaymentMethod, Subscription } from "@/types/subscriptions";
 
 export const processPayment = async (
   formData: any,
@@ -264,20 +264,29 @@ export const getPaymentMethod = async () => {
   }
 };
 
-export const getPayments = async () => {
-  const user = auth();
-
-  if (!user.sessionId) {
-    return { error: "Usuario no autenticado. Por favor inicie sesión." };
-  }
+export const getPayments = async (
+  page: number
+): Promise<
+  | {
+      hasMore: boolean;
+      invoices: Invoice[];
+    }
+  | { error: string }
+> => {
   try {
+    const { context } = await getApiContext();
     const { data } = await query({
       query: getPaymentsQuery,
       variables: {
-        findPaymentByMongoIdId: "67420686b02bdd1f9f0ef446",
+        page,
+        limit: 20,
       },
+      context,
     });
-    return data.findPaymentByMongoId;
+    return {
+      hasMore: data.getAllInvoicesByExternalReferenceId.hasMore,
+      invoices: data.getAllInvoicesByExternalReferenceId.invoices,
+    };
   } catch (error) {
     return {
       error: "Error al traer los pagos. Por favor intenta de nuevo.",
