@@ -1,5 +1,6 @@
 import {
   ContactSellerNotification,
+  PostCalificationData,
   PostSharedNotification,
   ReviewPostNotification,
 } from "@/types/postTypes";
@@ -8,6 +9,15 @@ import { NewContactRelationNotification } from "@/types/userTypes";
 import { PaymentNotificationType } from "@/types/subscriptions";
 import { MagazineInvitationNotification } from "@/types/magazineTypes";
 import { GroupNotification } from "@/types/groupTypes";
+
+const mockedContactSellerPostData: PostCalificationData = {
+  _id: "1",
+  title: "title",
+  author: "author",
+  description: "description",
+  imagesUrls: ["url1", "url2"],
+  postType: "good",
+};
 
 export const mockedNewContactPost: ContactSellerNotification = {
   _id: "1",
@@ -26,7 +36,7 @@ export const mockedNewContactPost: ContactSellerNotification = {
         clientId: "1",
         username: "maxi",
       },
-      post: mockedPosts[0],
+      post: mockedContactSellerPostData,
     },
   },
   isActionsAvailable: true,
@@ -46,11 +56,11 @@ export const mockedNewContactPostSamePost: ContactSellerNotification = {
         phone: "1234567890",
         lastName: "Cattaneo",
         name: "Maxi",
-        post: mockedPosts[0]._id,
+        post: mockedContactSellerPostData._id,
         clientId: "1a",
         username: "maxi",
       },
-      post: mockedPosts[0],
+      post: mockedContactSellerPostData,
     },
   },
   isActionsAvailable: true,
@@ -71,11 +81,11 @@ export const mockedNewContactPost2: ContactSellerNotification = {
         phone: "1234567890",
         lastName: "Cattaneo",
         name: "Maxi",
-        post: mockedPosts[1]._id,
+        post: mockedContactSellerPostData._id,
         clientId: "1",
         username: "maxi",
       },
-      post: mockedPosts[1],
+      post: mockedContactSellerPostData,
     },
   },
   isActionsAvailable: true,

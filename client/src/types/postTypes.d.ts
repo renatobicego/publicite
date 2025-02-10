@@ -266,7 +266,7 @@ export type PostActivityNotificationType =
 export interface ContactSellerNotification extends BaseNotification {
   frontData: {
     contactSeller: {
-      post: Good | Service | Petition;
+      post: PostCalificationData;
       client: PetitionContactSeller;
     };
   };
