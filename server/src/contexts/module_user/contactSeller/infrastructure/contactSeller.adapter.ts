@@ -28,7 +28,7 @@ export class ContactSellerAdapter implements ContactSellerAdapterInterface {
   constructor(
     @Inject('ContactSellerServiceInterface')
     private readonly contactSellerService: ContactSellerServiceInterface,
-  ) {}
+  ) { }
 
   @OnEvent(set_OpinionRequested_TRUE)
   async setToOpinionRequestInTrue(_id: any): Promise<any> {
@@ -66,11 +66,15 @@ export class ContactSellerAdapter implements ContactSellerAdapterInterface {
   async getContactSellerById(
     contactSellerGetType: ContactSellerGetType,
     _id: string,
+    limit: number,
+    page: number,
   ): Promise<any> {
     try {
       return await this.contactSellerService.getContactSellerById(
         contactSellerGetType,
         _id,
+        limit,
+        page
       );
     } catch (error: any) {
       throw error;

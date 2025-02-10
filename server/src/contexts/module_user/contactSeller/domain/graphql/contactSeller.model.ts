@@ -11,7 +11,7 @@ registerEnumType(ContactSellerGetType, {
 });
 
 @ObjectType()
-export class PostContactSeller_graphql {
+class PostContactSeller_graphql {
   @Field(() => String)
   _id: string;
 
@@ -40,7 +40,7 @@ export class PostContactSeller_graphql {
   frequencyPrice: string;
 }
 @ObjectType()
-export class ClientContactSeller_graphql {
+class ClientContactSeller_graphql {
   @Field(() => String, { nullable: true })
   clientId: string;
 
@@ -64,7 +64,7 @@ export class ClientContactSeller_graphql {
 }
 
 @ObjectType()
-export class ContactSeller_Graphql {
+class ContactSeller_Graphql {
   @Field(() => String)
   _id: string;
 
@@ -79,4 +79,13 @@ export class ContactSeller_Graphql {
 
   @Field(() => Boolean)
   isOpinionRequested: boolean;
+}
+
+
+export class ContactSeller_getAll {
+  @Field(() => [ContactSeller_Graphql], { nullable: true })
+  contactSeller: ContactSeller_Graphql[]
+
+  @Field(() => Boolean)
+  hasMore: boolean
 }

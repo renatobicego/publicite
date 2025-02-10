@@ -9,17 +9,16 @@ import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.servic
 import { ContactSellerRepositoryInterface } from '../../domain/repository/contactSeller.repository.interface';
 
 export class ContactSellerRepository
-  implements ContactSellerRepositoryInterface
-{
+  implements ContactSellerRepositoryInterface {
   constructor(
     private readonly logger: MyLoggerService,
     @InjectModel(ContactSellerModel.modelName)
     private readonly contactSellerModel: Model<ContactSellerDocument>,
-  ) {}
+  ) { }
 
-  async getContactSellerById(condition: object): Promise<any> {
+  async getContactSellerById(condition: object, limit: number, page: number): Promise<any> {
     try {
-      return await this.contactSellerModel
+      const contactSeller = await this.contactSellerModel
         .find(condition)
         .populate({
           path: 'post',
@@ -27,7 +26,25 @@ export class ContactSellerRepository
           select:
             '_id title description postType price imagesUrls petitionType toPrice frequencyPrice',
         })
-        .lean();
+        .limit(limit + 1)
+        .skip((page - 1) * limit)
+        .lean()
+
+      if (contactSeller.length <= 0) {
+        return {
+          contactSeller: [],
+          hasMore: false
+        }
+      }
+      const hasMore = contactSeller.length > limit
+
+
+      return {
+        contactSeller: contactSeller.slice(0, limit),
+        hasMore: hasMore
+      }
+
+
     } catch (error: any) {
       throw error;
     }

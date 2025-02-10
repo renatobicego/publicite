@@ -10,7 +10,7 @@ export class ContactSellerService implements ContactSellerServiceInterface {
     private readonly logger: MyLoggerService,
     @Inject('ContactSellerRepositoryInterface')
     private readonly contactSellerRepository: ContactSellerRepositoryInterface,
-  ) {}
+  ) { }
 
   async createContactSeller(contactSeller: ContactSeller): Promise<boolean> {
     try {
@@ -26,11 +26,14 @@ export class ContactSellerService implements ContactSellerServiceInterface {
   async getContactSellerById(
     contactSellerGetType: ContactSellerGetType,
     _id: string,
+    limit: number,
+    page: number,
   ): Promise<any> {
     try {
       this.logger.log('Finding contactSeller: ' + contactSellerGetType);
       let conditon: {};
-
+      if (limit <= 0) limit = 10
+      if (page <= 0) page = 1
       switch (contactSellerGetType) {
         case ContactSellerGetType.post:
           conditon = { post: _id };
@@ -44,7 +47,7 @@ export class ContactSellerService implements ContactSellerServiceInterface {
           );
       }
 
-      return await this.contactSellerRepository.getContactSellerById(conditon);
+      return await this.contactSellerRepository.getContactSellerById(conditon, limit, page);
     } catch (error: any) {
       throw error;
     }
