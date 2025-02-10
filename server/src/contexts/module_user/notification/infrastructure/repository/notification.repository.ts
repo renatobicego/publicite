@@ -36,7 +36,7 @@ import {
   INotificationPayment,
   NotificationPaymentModel,
 } from '../schemas/notification.payment.schema';
-import { NotificationPostCalification } from '../../domain/entity/notification.requestCalification.entity';
+import { NotificationPostCalification } from '../../domain/entity/notification.postCalification.entity';
 import { INotificationPostCalification, NotificationPostCalificationModel } from '../schemas/notification.postCalification.schema';
 import { InternalServerErrorException } from '@nestjs/common';
 import { INotificationShare, NotificationShareModel } from '../schemas/notification.share.schema';

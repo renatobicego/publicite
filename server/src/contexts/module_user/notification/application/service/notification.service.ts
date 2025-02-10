@@ -23,7 +23,7 @@ import { PaymentDataFromMeli } from "../dtos/payment.data.meli";
 import { NotificationPayment } from "../../domain/entity/notification.payment";
 import checkIfNotificationIsValidToDelete from "../../domain/functions/checkIfNotificationIsValidToDelete";
 import { NotificationRequestCalificationServiceInterface } from "../../domain/service/notification.requestCalification.service.interface";
-import { NotificationPostCalification } from "../../domain/entity/notification.requestCalification.entity";
+import { NotificationPostCalification } from "../../domain/entity/notification.postCalification.entity";
 import { NotificationShareServiceInterface } from "../../domain/service/notification.share.service.interface";
 import { NotificationShare } from "../../domain/entity/notification.share";
 import { NotificationSubscription } from "../../domain/entity/notification.subscription.entity";

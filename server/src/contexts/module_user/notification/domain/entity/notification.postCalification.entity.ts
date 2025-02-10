@@ -24,7 +24,6 @@ export class NotificationPostCalification extends Notification {
                 review: string,
                 date: Date,
                 rating: number
-
             }
         }
     };

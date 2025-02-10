@@ -13,7 +13,7 @@ import { NotificationPost } from "../domain/entity/notification.post.entity";
 import { validatePostNotification } from "../domain/notification-factory/validatePostNotification";
 import { NotificationContactSeller } from "../domain/entity/notification.contactSeller.entity";
 import { NotificationPayment } from "../domain/entity/notification.payment";
-import { NotificationPostCalification } from "../domain/entity/notification.requestCalification.entity";
+import { NotificationPostCalification } from "../domain/entity/notification.postCalification.entity";
 import { NotificationShare } from "../domain/entity/notification.share";
 import { NotificationSubscription } from "../domain/entity/notification.subscription.entity";
 

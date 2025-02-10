@@ -8,7 +8,7 @@ import { NotificationUser } from "../entity/notification.user.entity";
 import { NotificationPost } from "../entity/notification.post.entity";
 import { NotificationContactSeller } from "../entity/notification.contactSeller.entity";
 import { NotificationPayment } from "../entity/notification.payment";
-import { NotificationPostCalification } from "../entity/notification.requestCalification.entity";
+import { NotificationPostCalification } from "../entity/notification.postCalification.entity";
 import { NotificationShare } from "../entity/notification.share";
 import { NotificationSubscription } from "../entity/notification.subscription.entity";
 

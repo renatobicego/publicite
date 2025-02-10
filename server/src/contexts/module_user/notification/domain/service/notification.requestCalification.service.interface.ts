@@ -1,4 +1,4 @@
-import { NotificationPostCalification } from "../entity/notification.requestCalification.entity";
+import { NotificationPostCalification } from "../entity/notification.postCalification.entity";
 
 
 export interface NotificationRequestCalificationServiceInterface {

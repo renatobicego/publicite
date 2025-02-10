@@ -9,6 +9,7 @@ import { front_data_CONTACTSELLER } from "./front.data.notification.contactSelle
 import { front_data_SUBSCRIPTIONPLAN } from "./fron.data.notification.subscriptionPlan";
 import { front_data_SHARE } from "./front.data.notification.share.dto";
 import { front_data_SUBSCRIPTION } from "./front.data.notification.subscription.dto";
+import { front_data_POSTCALIFICATION } from "./front.data.notification.postNotification.dto";
 
 
 
@@ -28,6 +29,10 @@ export class frontData {
 
     @Field(() => front_data_CONTACTSELLER, { nullable: true })
     contactSeller: front_data_CONTACTSELLER;
+
+    @Field(() => front_data_POSTCALIFICATION, { nullable: true })
+    postCalification: front_data_POSTCALIFICATION;
+
 
     @Field(() => front_data_SUBSCRIPTIONPLAN, { nullable: true })
     subscriptionPlan: front_data_SUBSCRIPTIONPLAN;

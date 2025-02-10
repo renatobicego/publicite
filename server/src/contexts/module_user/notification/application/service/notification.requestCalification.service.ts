@@ -5,7 +5,7 @@ import { Connection } from "mongoose";
 
 import { NotificationRequestCalificationServiceInterface } from "../../domain/service/notification.requestCalification.service.interface";
 import { NotificationRepositoryInterface } from "../../domain/repository/notification.repository.interface";
-import { NotificationPostCalification } from "../../domain/entity/notification.requestCalification.entity";
+import { NotificationPostCalification } from "../../domain/entity/notification.postCalification.entity";
 import { UserServiceInterface } from "src/contexts/module_user/user/domain/service/user.service.interface";
 import { EmitterService } from "src/contexts/module_shared/event-emmiter/emmiter";
 import { new_review, set_OpinionRequested_TRUE } from "src/contexts/module_shared/event-emmiter/events";
