@@ -15,6 +15,7 @@ import {
   handleGroupNotification,
   handleMagazineNotification,
   handlePostActivityNotification,
+  handlePostCalificationNotification,
   handleUserRelationNotification,
 } from "@/utils/notifications/notificationHandlers";
 import { requestNotificationPermission } from "@/utils/notifications/browserNotifications";
@@ -98,7 +99,14 @@ export const SocketProvider = ({
         handlePostActivityNotification(data); // Call the handler for post activiyy notifications
       });
 
-      // TODO add contact seller and calification
+      newSocket.on("post_calification_notifications", (data) => {
+        setNewNotifications(true);
+        handlePostCalificationNotification(data);
+      });
+
+      newSocket.on("contact_seller_notifications", (data) => {
+        setNewNotifications(true);
+      });
     });
   };
 

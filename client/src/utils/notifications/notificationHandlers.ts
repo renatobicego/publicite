@@ -14,10 +14,14 @@ import {
 import { userRelationNotificationMessages } from "@/components/notifications/users/notificationMessages";
 import { relationTypes } from "../data/selectData";
 import {
+  ContactSellerNotification,
   PostActivityNotification,
   PostActivityNotificationType,
+  PostCalificationNotification,
+  PostCalificationNotificationType,
 } from "@/types/postTypes";
 import { postActivitiesNotificationMessages } from "@/components/notifications/postsActivity/notificationMessages";
+import { postCalificationNotificationMessages } from "@/components/notifications/postsCalification/notificationMessages";
 
 // Handle group notifications
 export const handleGroupNotification = (data: GroupNotification) => {
@@ -75,7 +79,6 @@ export const handleUserRelationNotification = (
 export const handlePostActivityNotification = (
   data: PostActivityNotification
 ) => {
-  console.log(data);
   const event = data.event as PostActivityNotificationType;
 
   const messageInfo = postActivitiesNotificationMessages[event];
@@ -111,4 +114,31 @@ export const handlePostActivityNotification = (
   );
 };
 
-// TODO add calification and contact seller notifications
+export const handlePostCalificationNotification = (
+  data: PostCalificationNotification
+) => {
+  const event = data.event as PostCalificationNotificationType;
+
+  const messageInfo = postCalificationNotificationMessages[event];
+  const { post } = data.frontData.postCalification;
+  let message = `${messageInfo.message} ${post.title}`;
+
+  showBrowserNotification(
+    "Publicité - Nueva notificación de actividad en anuncio",
+    {
+      body: message,
+      badge: "/logo.png",
+    }
+  );
+};
+
+export const handlePostContactSellerNotification = (
+  data: ContactSellerNotification
+) => {
+  const { post, client } = data.frontData.contactSeller;
+  const message = `${client.name} ${client.lastName} te ha contactado por el anuncio de "${post.title}".`;
+  showBrowserNotification("Publicité - Nueva petición de contacto", {
+    body: message,
+    badge: "/logo.png",
+  });
+};

@@ -38,7 +38,7 @@ const ReviewRequest = ({
       case "notification_new_calification_request":
         return (
           <p className="text-sm text-text-color">
-            Compartí tu opinión sobre
+            {notificationMessage.message}
             <span className="font-semibold"> {post.title}</span>.
           </p>
         );
@@ -46,7 +46,7 @@ const ReviewRequest = ({
       case "notification_new_calification_response":
         return (
           <p className="text-sm text-text-color">
-            Has recibido una nueva calificación sobre
+            {notificationMessage.message}
             <span className="font-semibold"> {post.title}</span>.
           </p>
         );
