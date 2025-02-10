@@ -29,7 +29,6 @@ export class ContactSellerRepository
         .limit(limit + 1)
         .skip((page - 1) * limit)
         .lean()
-
       if (contactSeller.length <= 0) {
         return {
           contactSeller: [],

@@ -75,10 +75,13 @@ export class NotificationService implements NotificationHandlerServiceInterface,
 
     async deleteNotificationById(event: string, userRequestId: string, _id: string): Promise<void> {
         try {
+            this.logger.log(`Deleting notification with id: ${_id}`);
             const isTheNotificationValidToDelete = checkIfNotificationIsValidToDelete(event);
             if (!isTheNotificationValidToDelete) throw new BadRequestException('Notification not valid to delete');
             await this.notificationRepository.deleteNotificationById(event, userRequestId, _id);
+            this.logger.log(`Successfully deleted notification with id: ${_id}`);
         } catch (error: any) {
+            this.logger.error(`Error while deleting notification with id: ${_id}`);
             throw error;
         }
     }

@@ -28,17 +28,19 @@ export class ContactSellerResolver {
     limit: number,
     @Args('page', { type: () => Number })
     page: number,
-  ): Promise<ContactSeller_getAll> {
+  ): Promise<ContactSeller_getAll[]> {
     try {
-      const result = await this.contactSellerAdapter.getContactSellerById(
+      return await this.contactSellerAdapter.getContactSellerById(
         contactSellerGetType,
         _id,
         limit,
         page
       );
-      return result;
+
     } catch (error: any) {
       throw error;
     }
   }
+
+
 }

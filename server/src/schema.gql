@@ -501,12 +501,36 @@ type front_data_SUBSCRIPTION {
   event: String!
 }
 
+type postCalificationPost {
+  _id: String
+  title: String
+  author: String
+  description: String
+  imagesUrls: [String!]
+  postType: String
+}
+
+type postCalificationReview {
+  author: String
+  review: String
+  date: DateTime
+  rating: Float
+}
+
+type front_data_POSTCALIFICATION {
+  postCalificationType: String
+  post: postCalificationPost
+  contactSeller_id: String
+  review: postCalificationReview
+}
+
 type frontData {
   group: front_data_GROUP
   magazine: front_data_MAGAZINE
   userRelation: front_data_USER
   postActivity: front_data_POST
   contactSeller: front_data_CONTACTSELLER
+  postCalification: front_data_POSTCALIFICATION
   subscriptionPlan: front_data_SUBSCRIPTIONPLAN
   share: front_data_SHARE
   subscription: front_data_SUBSCRIPTION

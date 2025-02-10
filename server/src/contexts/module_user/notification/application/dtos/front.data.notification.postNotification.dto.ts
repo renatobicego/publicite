@@ -38,6 +38,7 @@ class postCalificationReview {
     rating: number
 
 }
+@ObjectType()
 export class front_data_POSTCALIFICATION {
     @Field(() => String, { nullable: true })
     postCalificationType: string

@@ -64,7 +64,7 @@ class ClientContactSeller_graphql {
 }
 
 @ObjectType()
-class ContactSeller_Graphql {
+export class ContactSeller_Graphql {
   @Field(() => String)
   _id: string;
 
@@ -81,7 +81,7 @@ class ContactSeller_Graphql {
   isOpinionRequested: boolean;
 }
 
-
+@ObjectType()
 export class ContactSeller_getAll {
   @Field(() => [ContactSeller_Graphql], { nullable: true })
   contactSeller: ContactSeller_Graphql[]
