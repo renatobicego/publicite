@@ -224,13 +224,17 @@ export const getFriendRequests = async (
 
 export const getContactSellers = async (
   type: "post" | "profile",
-  id: string
-): Promise<GetContactSellersPetitionDTO[] | { error: string }> => {
+  id: string,
+  page: number
+): Promise<
+  | { contactSeller: GetContactSellersPetitionDTO[]; hasMore: boolean }
+  | { error: string }
+> => {
   try {
     const token = await auth().getToken({ template: "testing" });
     const { data } = await query({
       query: getContactSellersByTypeQuery,
-      variables: { contactSellerGetType: type, id },
+      variables: { contactSellerGetType: type, id, page, limit: 20 },
       context: {
         headers: {
           Authorization: token,
@@ -290,6 +294,7 @@ export const getNotifications = async (
 
 export const putNotificationStatus = async (id: string[]) => {
   try {
+    if (id.length === 0) return;
     const { data } = await getClient().mutate({
       mutation: changeNotificationStatusMutation,
       variables: { notificationIds: id, view: true },

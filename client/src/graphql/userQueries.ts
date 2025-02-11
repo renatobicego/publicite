@@ -210,6 +210,24 @@ export const getAllNotificationsQuery = gql`
               postType
             }
           }
+          postCalification {
+            contactSeller_id
+            postCalificationType
+            post {
+              _id
+              author
+              description
+              imagesUrls
+              postType
+              title
+            }
+            review {
+              author
+              date
+              rating
+              review
+            }
+          }
         }
       }
     }
@@ -250,34 +268,41 @@ export const getContactSellersByTypeQuery = gql`
   query GetContactSellerById(
     $contactSellerGetType: contactSellerGetType!
     $id: String!
+    $limit: Float!
+    $page: Float!
   ) {
     getContactSellerById(
       contactSellerGetType: $contactSellerGetType
       _id: $id
+      limit: $limit
+      page: $page
     ) {
-      client {
-        clientId
-        username
-        phone
-        name
-        lastName
-        email
-        message
-      }
-      date
-      isOpinionRequested
-      post {
+      hasMore
+      contactSeller {
+        client {
+          clientId
+          username
+          phone
+          name
+          lastName
+          email
+          message
+        }
+        date
+        isOpinionRequested
+        post {
+          _id
+          toPrice
+          title
+          price
+          postType
+          petitionType
+          imagesUrls
+          frequencyPrice
+          description
+        }
         _id
-        toPrice
-        title
-        price
-        postType
-        petitionType
-        imagesUrls
-        frequencyPrice
-        description
       }
-      _id
     }
   }
 `;

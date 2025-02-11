@@ -52,7 +52,8 @@ export default function PaymentsTable() {
     if (hasMore) {
       fetchData();
     }
-  }, [page, hasMore]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page]);
 
   const renderCell = useCallback((data: Invoice, columnKey: keyof Invoice) => {
     switch (columnKey) {
@@ -61,6 +62,8 @@ export default function PaymentsTable() {
         return (
           <p className="max-w-16">{`${date.hour}:${date.minute} ${date.day}/${date.month}/${date.year}`}</p>
         );
+      case "reason":
+        return data?.reason;
       case "paymentId":
         const { paymentMethodId, paymentTypeId } = data?.paymentId;
         const icon = getPaymentIcon(paymentMethodId);
@@ -123,9 +126,10 @@ export default function PaymentsTable() {
     >
       <TableHeader>
         <TableColumn key="timeOfUpdate">Fecha</TableColumn>
+        <TableColumn key="reason">Detalle</TableColumn>
         <TableColumn key="paymentId">Método de Pago</TableColumn>
         <TableColumn key="paymentStatus">Estado</TableColumn>
-        <TableColumn key="rejectionCode">Detalle</TableColumn>
+        <TableColumn key="rejectionCode">Detalle de Pago</TableColumn>
         <TableColumn key="transactionAmount">Monto</TableColumn>
         <TableColumn key="retryAttempts">Intento de Cobro</TableColumn>
         <TableColumn key="nextRetryDay">Próximo Pago</TableColumn>

@@ -37,11 +37,10 @@ const ReviewPostForm = ({
     review: "",
   };
 
-  const handleSubmit = (
+  const handleSubmit = async (
     values: PostReviewValues,
     actions: FormikHelpers<PostReviewValues>
   ) => {
-    console.log(values);
     if (values.review.length < 5) {
       actions.setFieldError(
         "review",

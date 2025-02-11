@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
           //   end_date: getEndDateISO(subscriptionPlan.auto_recurring.frequency, "days"),
           // },
           auto_recurring: subscriptionPlan.auto_recurring,
-          back_url: "http://localhost:3000/",
+          back_url: process.env.CLIENT_URL + "/suscribirse/suscripcion-exitosa",
           card_token_id: formData.token,
           payer_email: formData.payer.email,
           // payer_email: "test_user_1345316664@testuser.com",

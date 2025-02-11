@@ -51,22 +51,25 @@ const MobileNotifications = ({
       </Button>
       <Modal
         classNames={{
-          body: "max-h-[80vh] overflow-y-auto px-0",
-          header: "px-0",
+          body: "max-h-[80vh] overflow-y-auto px-2 items-center",
+          header: "px-4",
         }}
         placement="center"
         className="max-md:px-4"
         isOpen={modalIsOpen}
         onOpenChange={(open) => {
           if (open) {
-            setNewNotifications(false)
-            setNewNotificationsFromServer(false)
-          };
-          if (newNotificationsFromServer && !open) {
+            setNewNotifications(false);
+            setNewNotificationsFromServer(false);
+          }
+          if (!open) {
             putNotificationStatus(
-              notifications.map((notification) => notification._id)
+              notifications
+                .filter((notification) => !notification.viewed)
+                .map((notification) => notification._id)
             );
           }
+          setIsOpen(open);
         }}
         closeButton={
           <Button
