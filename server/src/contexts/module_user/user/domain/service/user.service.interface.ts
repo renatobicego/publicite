@@ -7,6 +7,7 @@ import { UserBusinessUpdateDto } from '../entity/dto/user.business.update.dto';
 import { UserPreferencesEntityDto } from '../entity/dto/user.preferences.update.dto';
 import { UP_clerkUpdateRequestDto } from 'src/contexts/module_webhook/clerk/application/dto/UP-clerk.update.request';
 import { UserFindAllResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.response.dto';
+import { UserType } from '../entity/enum/user.enums';
 
 export interface UserServiceInterface {
   createContact(
@@ -99,7 +100,7 @@ export interface UserServiceInterface {
   updateUser(
     username: string,
     req: UserPersonalUpdateDto | UserBusinessUpdateDto,
-    type: number,
+    type: UserType,
   ): Promise<UserPersonalUpdateDto | UserBusinessUpdateDto>;
 
   updateUserByClerkId(req: UP_clerkUpdateRequestDto): Promise<any>;

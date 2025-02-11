@@ -8,6 +8,7 @@ import { UserPersonalUpdateResponse } from './dto/HTTP-RESPONSE/user.personal.re
 import {
   UserFindAllResponse,
 } from './dto/HTTP-RESPONSE/user.response.dto';
+import { UserType } from '../../domain/entity/enum/user.enums';
 
 export interface UserAdapterInterface {
   createUser(req: UserRequest): Promise<string>;
@@ -38,7 +39,7 @@ export interface UserAdapterInterface {
   updateUser(
     username: string,
     req: businessAccountUpdateRequest | personalAccountUpdateRequest,
-    type: number,
+    type: UserType,
   ): Promise<UserPersonalUpdateResponse | UserBusinessUpdateResponse>;
 }
 

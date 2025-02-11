@@ -17,6 +17,8 @@ import { UserFindAllResponse } from '../adapter/dto/HTTP-RESPONSE/user.response.
 import { UserType } from '../../domain/entity/enum/user.enums';
 import { UserRelation } from '../../domain/entity/userRelation.entity';
 import { calculateContactLimitFromUser, calculatePostLimitFromUser, userWithPostsAndSubscriptions } from '../functions/calculatePostLimitAndContactLimit';
+import { omitBy } from 'lodash';
+import { ommitUndefinedValues } from './ommit-function';
 
 
 @Injectable()
@@ -92,7 +94,7 @@ export class UserService implements UserServiceInterface {
               userEntity.getUsername,
             );
 
-         
+
             return await this.userRepository.save(userEntity, session);
 
           case UserType.Business:
@@ -232,7 +234,7 @@ export class UserService implements UserServiceInterface {
     try {
       const userWithSubscriptionsAndPosts: userWithPostsAndSubscriptions = await this.userRepository.getPostAndContactLimitsFromUserByUserId(author);
       const { agendaPostCount, librePostCount, totalAgendaPostLimit, totalLibrePostLimit, agendaAvailable, libreAvailable } = calculatePostLimitFromUser(userWithSubscriptionsAndPosts, this.logger)
-      const { contactLimit, contactCount, contactAvailable } = calculateContactLimitFromUser(userWithSubscriptionsAndPosts,this.logger)
+      const { contactLimit, contactCount, contactAvailable } = calculateContactLimitFromUser(userWithSubscriptionsAndPosts, this.logger)
 
       return {
         agendaPostCount,
@@ -490,11 +492,12 @@ export class UserService implements UserServiceInterface {
   async updateUserPreferencesByUsername(
     username: string,
     userPreference: UserPreferencesEntityDto,
-  ): Promise<UserPreferencesEntityDto | null> {
+  ): Promise<any> {
     try {
+      const updated = ommitUndefinedValues(userPreference);
       return await this.userRepository.updateUserPreferencesByUsername(
         username,
-        userPreference,
+        updated as UserPreferencesEntityDto,
       );
     } catch (error: any) {
       this.logger.error(
@@ -508,15 +511,17 @@ export class UserService implements UserServiceInterface {
   async updateUser(
     username: string,
     req: UserPersonalUpdateDto | UserBusinessUpdateDto,
-    type: number,
+    type: UserType,
   ): Promise<UserPersonalUpdateDto | UserBusinessUpdateDto> {
-    // 0 -> Personal Account | 1 -> Business Account
+
     this.logger.log('Updating user in the service: ' + UserService.name);
     try {
-      if (type === 0) {
-        return await this.userRepository.update(username, req, type);
-      } else if (type === 1) {
-        return await this.userRepository.update(username, req, type);
+      const updated = ommitUndefinedValues(req);
+      if (type === UserType.Person) {
+        return await this.userRepository.update(username, updated, type);
+
+      } else if (type === UserType.Business) {
+        return await this.userRepository.update(username, updated, type);
       } else {
         throw new Error('Invalid user type');
       }

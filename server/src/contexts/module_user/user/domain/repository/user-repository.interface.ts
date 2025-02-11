@@ -9,6 +9,7 @@ import { UP_clerkUpdateRequestDto } from 'src/contexts/module_webhook/clerk/appl
 import { UserClerkUpdateDto } from '../entity/dto/user.clerk.update.dto';
 import { UserFindAllResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.response.dto';
 import { UserRelation } from '../entity/userRelation.entity';
+import { UserType } from '../entity/enum/user.enums';
 
 export interface UserRepositoryInterface {
   findAllUsers(
@@ -32,7 +33,7 @@ export interface UserRepositoryInterface {
   getLimitContactsFromUserByUserId(userRequestId: string, session?: any): Promise<any>
   getActiveRelationsOfUser(userRequestId: string, session?: any): Promise<any>
   getPostAndContactLimitsFromUserByUserId(author: string): Promise<any>
-  
+
   pushNotification(notification: any, userId: string, session?: any): Promise<any>;
   pushNewFriendRequestOrRelationRequestToUser(notificationId: Types.ObjectId, userNotificationOwner: string, session: any): Promise<any>
   pushActiveRelationToUser(userRequestId: any, userRelationId: any, session: any): Promise<void>
@@ -63,9 +64,9 @@ export interface UserRepositoryInterface {
 
   makeFriendRelationBetweenUsers(userRelation: UserRelation, session: any): Promise<string | null>
   update(
-    username: string,
+    _id: string,
     reqUser: UserPersonalUpdateDto | UserBusinessUpdateDto,
-    type: number,
+    type: UserType,
   ): Promise<UserPersonalUpdateDto | UserBusinessUpdateDto>;
 
   updateFriendRelationOfUsers(

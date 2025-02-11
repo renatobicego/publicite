@@ -11,7 +11,6 @@ import { UserRepositoryInterface } from '../../domain/repository/user-repository
 import { UserPerson } from '../../domain/entity/userPerson.entity';
 import { UserBusiness } from '../../domain/entity/userBusiness.entity';
 import { User, UserPreferences } from '../../domain/entity/user.entity';
-import { UserRepositoryMapperInterface } from '../../domain/repository/mapper/user.repository.mapper.interface';
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { IUser, UserModel } from '../schemas/user.schema';
 import { UserBusinessUpdateDto } from '../../domain/entity/dto/user.business.update.dto';
@@ -61,8 +60,7 @@ export class UserRepository implements UserRepositoryInterface {
     @Inject('SectorRepositoryInterface')
     private readonly sectorRepository: SectorRepositoryInterface,
 
-    @Inject('UserRepositoryMapperInterface')
-    private readonly userRepositoryMapper: UserRepositoryMapperInterface,
+
 
 
   ) { }
@@ -136,7 +134,7 @@ export class UserRepository implements UserRepositoryInterface {
     user: string,
     limit: number,
     page: number,
-  ): Promise<UserFindAllResponse> {
+  ): Promise<any> {
     try {
       const users = await this.user
         .find({
@@ -156,11 +154,8 @@ export class UserRepository implements UserRepositoryInterface {
 
       const hasMore = users.length > limit;
 
-      const userResponse = users
-        .slice(0, limit)
-        .map((user) =>
-          this.userRepositoryMapper.documentToResponseAllUsers(user),
-        );
+      const userResponse = users.slice(0, limit)
+
 
       return {
         user: userResponse,
@@ -442,38 +437,30 @@ export class UserRepository implements UserRepositoryInterface {
   async update(
     username: string,
     reqUser: UserPersonalUpdateDto | UserBusinessUpdateDto,
-    type: number,
+    type: UserType,
   ): Promise<any> {
     try {
-      let entityToDocument;
 
       switch (type) {
-        case 0: // Personal User
+        case UserType.Person: // Personal User
           this.logger.log('Search user(Personal) for update');
-          entityToDocument =
-            this.userRepositoryMapper.formatUpdateDocument(reqUser);
-
           return await this.userPersonModel.updateOne(
             { username: username },
-            entityToDocument,
+            reqUser,
           );
 
-        case 1: // Business User
+        case UserType.Business: // Business User
           const cast = reqUser as UserBusinessUpdateDto;
-          if (cast.getSector) {
+          if (cast.sector) {
             this.logger.log(
-              'Validate sector for business user ID: ' + cast.getSector,
+              'Validate sector for business user ID: ' + cast.sector,
             );
-            await this.sectorRepository.validateSector(cast.getSector);
+            await this.sectorRepository.validateSector(cast.sector);
           }
-
           this.logger.log('Search user(Business) for update');
-          entityToDocument =
-            this.userRepositoryMapper.formatUpdateDocumentUB(reqUser);
-
           return await this.userBusinessModel.updateOne(
             { username: username },
-            entityToDocument,
+            reqUser,
           );
 
         default:

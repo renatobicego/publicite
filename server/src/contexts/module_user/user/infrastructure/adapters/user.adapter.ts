@@ -3,8 +3,6 @@ import { Inject, Injectable } from '@nestjs/common';
 import { UserAdapterInterface } from '../../application/adapter/userAdapter.interface';
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { UserServiceInterface } from '../../domain/service/user.service.interface';
-
-import { UserMapperInterface } from '../../application/adapter/mapper/user.mapper.interface';
 import {
   UserFindAllResponse,
 } from '../../application/adapter/dto/HTTP-RESPONSE/user.response.dto';
@@ -14,12 +12,12 @@ import {
 } from '../../application/adapter/dto/HTTP-REQUEST/user.request.CREATE';
 import { businessAccountUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/user.business.request.UPDATE';
 import { personalAccountUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/user.personal.request.UPDATE';
-
 import { UserPersonalInformationResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.information.response';
 import { UserPreferenceResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.preferences.response';
 import { UserFactory } from '../../application/service/user.factory';
 import { OnEvent } from '@nestjs/event-emitter';
 import { downgrade_plan_contact } from 'src/contexts/module_shared/event-emmiter/events';
+import { UserType } from '../../domain/entity/enum/user.enums';
 
 @Injectable()
 export class UserAdapter implements UserAdapterInterface {
@@ -27,8 +25,6 @@ export class UserAdapter implements UserAdapterInterface {
     private readonly logger: MyLoggerService,
     @Inject('UserServiceInterface')
     private readonly userService: UserServiceInterface,
-    @Inject('UserMapperInterface')
-    private readonly userMapper: UserMapperInterface,
   ) { }
 
 
@@ -149,24 +145,21 @@ export class UserAdapter implements UserAdapterInterface {
   async updateUser(
     username: string,
     req: businessAccountUpdateRequest | personalAccountUpdateRequest,
-    type: number,
+    type: UserType,
   ): Promise<any> {
     this.logger.log('Start udpate process in the adapter: Update');
-    let userMapped;
-    // 0 -> Personal Account | 1 -> Business Account
-    if (type === 0) {
-      userMapped = this.userMapper.requestToEntity_update(req, 0);
+
+
+    if (type === UserType.Person) {
       return await this.userService.updateUser(
         username,
-        userMapped,
+        req,
         type,
       );
-
-    } else if (type === 1) {
-      userMapped = this.userMapper.requestToEntity_update(req, 1);
+    } else if (UserType.Business) {
       return await this.userService.updateUser(
         username,
-        userMapped,
+        req,
         type,
       );
 
@@ -183,12 +176,10 @@ export class UserAdapter implements UserAdapterInterface {
       this.logger.log(
         'Start process in the adapter: Update preferences - Sending request to the service',
       );
-      const userPreferencesMapped =
-        this.userMapper.requestToEntity_userPreferences(userPreference);
       const userPreferencesUpdated =
         await this.userService.updateUserPreferencesByUsername(
           username,
-          userPreferencesMapped,
+          userPreference,
         );
       if (!userPreferencesUpdated) return null;
       return userPreferencesUpdated;

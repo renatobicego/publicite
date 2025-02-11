@@ -24,7 +24,7 @@ Pendiente: Ver como arrojar disintos codigos de error para los casos.
 
 */
 
-describe('Create a Personal account', () => {
+describe('Create  account', () => {
   beforeEach(async () => {
     // Limpiar la base de datos si es necesario
     await dbConnection.collection('users').deleteMany({});
@@ -158,7 +158,7 @@ describe('Create a Personal account', () => {
     console.log("--------- RESPONSE BODY:", response.body.message);
     console.log("--------- RESPONSE TEXT:", response.text);
     console.log("--------- RESPONSE STATUS:", response.status);
-    
+
     expect(response.body.message).toContain(
       'E11000 duplicate key error collection',
     );
@@ -200,7 +200,7 @@ describe('Create a Personal account', () => {
     console.log("--------- RESPONSE BODY:", response.body.message);
     console.log("--------- RESPONSE TEXT:", response.text);
     console.log("--------- RESPONSE STATUS:", response.status);
-    
+
     expect(response.body.message).toContain(
       'E11000 duplicate key error collection',
     );

@@ -46,6 +46,7 @@ import {
   UserBusinessResponse,
   UserPersonResponse,
 } from '../../application/adapter/dto/HTTP-RESPONSE/user.response.dto';
+import { UserType } from '../../domain/entity/enum/user.enums';
 
 
 @ApiTags('Accounts')
@@ -125,7 +126,7 @@ export class UserController {
       return (await this.userAdapter.updateUser(
         username,
         updateRequest,
-        0,
+        UserType.Person,
       )) as UserPersonResponse;
     } catch (error: any) {
       throw error;
@@ -152,7 +153,7 @@ export class UserController {
       return (await this.userAdapter.updateUser(
         username,
         updateRequest,
-        1,
+        UserType.Business,
       )) as UserBusinessResponse;
     } catch (error: any) {
       throw error;

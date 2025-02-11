@@ -42,11 +42,10 @@ export interface UserBusinessResponse extends UserResponse {
 
 export interface UserFindAllResponse {
   user: {
-    // Cambié aquí a un arreglo
     _id: ObjectId;
     profilePhotoUrl: string;
     username: string;
-    contact: ContactRespose; // Asegúrate de que la interfaz ContactResponse esté definida
+    contact: ContactRespose; 
     countryRegion: string;
     userType: string;
     businessName?: string;

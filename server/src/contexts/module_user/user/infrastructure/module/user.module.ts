@@ -12,8 +12,6 @@ import { UserModel } from '../schemas/user.schema';
 import { ContactModule } from 'src/contexts/module_user/contact/infrastructure/module/contact.module';
 import { SectorRepository } from 'src/contexts/module_user/businessSector/infrastructure/repository/sector.repository';
 import { SectorModule } from 'src/contexts/module_user/businessSector/infrastructure/module/sector.module';
-import { UserMapper } from '../adapters/mapper-implementations/user.mapper';
-import { UserRepositoryMapper } from '../repository/mappers/user.repository.mapper';
 import { UserAdapter } from '../adapters/user.adapter';
 import { UserResolver } from '../graphql/resolver/user.resolver';
 import { UserRelationModel } from '../schemas/user.relation.schema';
@@ -61,14 +59,6 @@ import { MagazineModelSharedModule } from 'src/contexts/module_shared/sharedSche
     {
       provide: 'SectorRepositoryInterface',
       useClass: SectorRepository,
-    },
-    {
-      provide: 'UserMapperInterface',
-      useClass: UserMapper,
-    },
-    {
-      provide: 'UserRepositoryMapperInterface',
-      useClass: UserRepositoryMapper,
     },
     UserService,
   ],
