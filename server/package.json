@@ -24,11 +24,11 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/index",
     "lint": "",
-    "test": "jest",
+    "test": "cross-env NODE_ENV=test jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "cross-env NODE_ENV=test ENV_PATH=.env.test jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
     "@apollo/server": "^4.11.0",
@@ -70,6 +70,7 @@
     "@types/supertest": "^6.0.0",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
+    "cross-env": "^7.0.3",
     "eslint": "^8.42.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",

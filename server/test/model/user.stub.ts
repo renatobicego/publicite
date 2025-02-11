@@ -1,12 +1,7 @@
 import { ObjectId, Types } from 'mongoose';
-import {
-  UserPersonRequest,
-  UserBusinessRequest,
-} from 'src/contexts/user/application/adapter/dto/HTTP-REQUEST/user.request.CREATE';
-import {
-  Gender,
-  UserType,
-} from 'src/contexts/user/domain/entity/enum/user.enums';
+import { UserPersonRequest, UserBusinessRequest } from 'src/contexts/module_user/user/application/adapter/dto/HTTP-REQUEST/user.request.CREATE';
+import { UserType, Gender } from 'src/contexts/module_user/user/domain/entity/enum/user.enums';
+
 
 export const userSub = (): UserPersonRequest => {
   return {
@@ -34,6 +29,13 @@ export const userSub = (): UserPersonRequest => {
     },
     gender: Gender.Male,
     birthDate: '2024-10-10',
+    groups: [],
+    magazines: [],
+    board: undefined,
+    posts: [],
+    subscriptions: [],
+    activeRelations: [],
+    userRelations: [],
   };
 };
 
@@ -63,6 +65,14 @@ export const userSubBusiness = (): UserBusinessRequest => {
     },
     sector: '66d2177dda11f93d8647cf3a' as unknown as ObjectId,
     businessName: 'Dutsiland',
+    groups: [],
+    magazines: [],
+    board: undefined,
+    posts: [],
+    subscriptions: [],
+    activeRelations: [],
+    userRelations: [],
+
   };
 };
 

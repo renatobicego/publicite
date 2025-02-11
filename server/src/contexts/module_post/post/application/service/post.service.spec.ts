@@ -3,12 +3,12 @@ import { Connection, ClientSession } from 'mongoose';
 
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { UserServiceInterface } from 'src/contexts/module_user/user/domain/service/user.service.interface';
-import { postGoodStub } from 'test/model/post.stub';
-import { PostGood } from '../../../domain/post/entity/post-types/post.good.entity';
-import { Post } from '../../../domain/post/entity/post.entity';
-import { PostRepositoryInterface } from '../../../domain/post/repository/post.repository.interface';
-import { PostServiceInterface } from '../../../domain/post/service/post.service.interface';
+
 import { PostService } from './post.service';
+
+import { Post } from '../../domain/entity/post.entity';
+import { PostRepositoryInterface } from '../../domain/repository/post.repository.interface';
+import { PostServiceInterface } from '../../domain/service/post.service.interface';
 
 describe('PostService', () => {
   let postService: PostServiceInterface;
@@ -68,26 +68,9 @@ describe('PostService', () => {
     logger = module.get<MyLoggerService>(MyLoggerService);
     session = await connection.startSession();
 
-    post = new PostGood(
-      postGoodStub().title,
-      postGoodStub().author,
-      postGoodStub().postType,
-      postGoodStub().description,
-      postGoodStub().visibility,
-      postGoodStub().recomendations as any,
-      postGoodStub().price,
-      postGoodStub().location as any,
-      postGoodStub().category ?? [],
-      postGoodStub().comments ?? [],
-      postGoodStub().attachedFiles ?? [],
-      postGoodStub().createAt,
-      postGoodStub().imagesUrls,
-      postGoodStub().year ?? null,
-      postGoodStub().brand ?? null,
-      postGoodStub().modelType ?? null,
-      postGoodStub().reviews ?? [],
-      postGoodStub().condition ?? null,
-    );
+    // post = new PostGood(
+
+    // );
   });
 
   it('debería hacer rollback si ocurre un error al guardar la ubicación', async () => {

@@ -92,6 +92,7 @@ export class UserService implements UserServiceInterface {
               userEntity.getUsername,
             );
 
+         
             return await this.userRepository.save(userEntity, session);
 
           case UserType.Business:

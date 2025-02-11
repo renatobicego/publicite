@@ -25,6 +25,8 @@ class author_post_group_member {
     profilePhotoUrl: string;
 }
 
+
+
 @ObjectType()
 export class Post_of_members_group {
     @Field(() => ID, { nullable: true })
@@ -45,8 +47,8 @@ export class Post_of_members_group {
     @Field(() => Float, { nullable: true })
     price: number;
 
-    // @Field(() => String, { nullable: true })
-    // reviews: string[];
+    @Field(() => [review_post_group_member], { nullable: true })
+    reviews: review_post_group_member[];
 
     @Field(() => String, { nullable: true })
     frequencyPrice: string;
@@ -65,6 +67,25 @@ export class Post_of_members_group {
 
 
 
+}
+
+
+@ObjectType()
+export class review_post_group_member {
+  @Field(() => String, { nullable: true })
+  _id: string;
+
+  @Field(() => String, { nullable: true })
+  author: string;
+
+  @Field(() => String, { nullable: true })
+  review: string;
+
+  @Field(() => Date, { nullable: true })
+  date: Date;
+
+  @Field(() => Float, { nullable: true })
+  rating: number;
 }
 
 

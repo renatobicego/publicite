@@ -42,6 +42,7 @@ import { PostCommentDocument } from '../schemas/post.comment.schema';
 import { Date } from 'mongoose';
 import { EmitterService } from 'src/contexts/module_shared/event-emmiter/emmiter';
 import { downgrade_plan_post_notification } from 'src/contexts/module_shared/event-emmiter/events';
+import { pipe } from 'rxjs';
 
 export class PostRepository implements PostRepositoryInterface {
   constructor(
@@ -297,6 +298,10 @@ export class PostRepository implements PostRepositoryInterface {
             select: 'user reaction _id',
           },
           {
+            path: 'reviews',
+            model: 'PostReview',
+          },
+          {
             path: 'comments',
             model: 'PostComment',
             populate: [
@@ -334,7 +339,13 @@ export class PostRepository implements PostRepositoryInterface {
           { searchTitle: { $regex: searchTerm } },
           { searchDescription: { $regex: searchTerm } },
         ],
-      });
+      }
+      ).populate([
+        {
+          path: 'reviews',
+          model: 'PostReview',
+        },
+      ]).lean()
     } catch (error: any) {
       throw error;
     }
@@ -387,6 +398,12 @@ export class PostRepository implements PostRepositoryInterface {
               },
             ],
           })
+          .populate([
+            {
+              path: 'reviews',
+              model: 'PostReview',
+            },
+          ])
           .skip((page - 1) * limit)
           .limit(limit + 1);
       } else {
@@ -401,10 +418,15 @@ export class PostRepository implements PostRepositoryInterface {
               path: 'author',
               model: 'User',
               select: '_id profilePhotoUrl username lastName name contact',
-              populate: {
+              populate: [{
                 path: 'contact',
                 model: 'Contact',
               },
+              ]
+            },
+            {
+              path: 'reviews',
+              model: 'PostReview',
             },
           ])
           .skip((page - 1) * limit)
@@ -600,8 +622,9 @@ export class PostRepository implements PostRepositoryInterface {
     page: number,
   ): Promise<PostsMemberGroupResponse | null> {
     try {
-      if (membersId.length < 0) return { userAndPosts: [], hasMore: false };
-      const posts = await this.postDocument.aggregate([
+      if (membersId.length === 0) return { userAndPosts: [], hasMore: false };
+  
+      const pipeline: any[] = [
         {
           $geoNear: {
             near: {
@@ -626,8 +649,8 @@ export class PostRepository implements PostRepositoryInterface {
               {
                 $and: [
                   { $or: conditionsOfSearch },
-                  { isActive: true },
                   { postBehaviourType: 'agenda' },
+                  { isActive: true },
                 ],
               },
             ],
@@ -658,17 +681,27 @@ export class PostRepository implements PostRepositoryInterface {
           },
         },
         { $unwind: { path: '$author', preserveNullAndEmptyArrays: true } },
+        {
+          $lookup: {
+            from: 'postreviews', // NOMBRE SCHEMA
+            localField: 'reviews', // El campo en 'posts' que contiene los ObjectId de 'PostReview'
+            foreignField: '_id', // El campo que se compara en la colección 'PostReview'
+            as: 'reviews', // El nombre del campo donde se guardarán las reseñas pobladas
+          },
+        },
         { $skip: (page - 1) * limit },
-        { $limit: limit + 1 },
-      ]);
-
-      if (!posts) {
+        { $limit: limit + 1 }, // Se toma 1 extra para verificar si hay más páginas
+      ];
+  
+      const posts = await this.postDocument.aggregate(pipeline);
+  
+      if (!posts || posts.length === 0) {
         return { userAndPosts: [], hasMore: false };
       }
-
+  
       const hasMore = posts.length > limit;
-      const postResponse = posts.slice(0, limit);
-
+      const postResponse = posts.slice(0, limit); 
+  
       return {
         userAndPosts: postResponse,
         hasMore,
@@ -678,6 +711,8 @@ export class PostRepository implements PostRepositoryInterface {
       throw error;
     }
   }
+  
+
   async findPostByIdAndCategoryPostsRecomended(id: string): Promise<any> {
     try {
       const today = new Date();
@@ -692,7 +727,8 @@ export class PostRepository implements PostRepositoryInterface {
         _id: { $ne: postById._id },
         postType: postById.postType,
       };
-      const posts = await this.postDocument.aggregate([
+
+      const pipeline: any = [
         {
           $geoNear: {
             near: {
@@ -709,8 +745,25 @@ export class PostRepository implements PostRepositoryInterface {
             $expr: { $lte: ['$distance', '$geoLocation.ratio'] },
           },
         },
-        { $limit: 4 },
-      ]);
+        { $limit: 4 }, // Limitar los resultados a 4
+      ];
+
+      if (postById.postType !== PostType.petition) {
+        pipeline.push(
+          {
+            $lookup: {
+              from: 'postreviews', // NOMBRE SCHEMA
+              localField: 'reviews', // El campo en 'posts' que contiene los ObjectId de 'PostReview'
+              foreignField: '_id', // El campo que se compara en la colección 'PostReview'
+              as: 'reviews', // El nombre del campo donde se guardarán las reseñas pobladas
+            },
+          },
+
+        );
+      }
+
+
+      const posts = await this.postDocument.aggregate(pipeline);
 
       return {
         post: postById,
@@ -720,6 +773,8 @@ export class PostRepository implements PostRepositoryInterface {
       throw error;
     }
   }
+
+
 
   async setResponseOnComment(
     commentId: string,

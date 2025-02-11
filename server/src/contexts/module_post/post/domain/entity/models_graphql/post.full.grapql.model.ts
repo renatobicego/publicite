@@ -21,6 +21,24 @@ export class AttachedFile {
 }
 
 @ObjectType()
+class review_get_user {
+  @Field(() => String, { nullable: true })
+  _id: string;
+
+  @Field(() => String, { nullable: true })
+  author: string;
+
+  @Field(() => String, { nullable: true })
+  review: string;
+
+  @Field(() => Date, { nullable: true })
+  date: Date;
+
+  @Field(() => Float, { nullable: true })
+  rating: number;
+}
+
+@ObjectType()
 export class Post_Full_Graphql_Model {
   @Field(() => ID, { nullable: true }) // _id puede ser nulo
   _id?: ObjectId;
@@ -69,8 +87,8 @@ export class Post_Full_Graphql_Model {
   @Field(() => String, { nullable: true })
   modelType: string;
 
-  @Field(() => [String], { nullable: true })
-  reviews: ObjectId[];
+  @Field(() => [review_get_user], { nullable: true })
+  reviews: review_get_user[];
 
   @Field(() => GoodCondition, { nullable: true })
   condition: GoodCondition;

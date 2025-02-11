@@ -26,10 +26,9 @@ export class UserFactory implements UserFactoryInterface {
 
 
 
-    createUser(userType: string, userRequest: any): User {
+    createUser(userType: UserType, userRequest: any): User {
         const subscriptionFree = ["675f2b75b0a367029a0d35a6" as unknown as ObjectId]
         const activeRelations = [] as unknown as ObjectId[]
-
         const userBase = new User(
             userRequest.clerkId,
             userRequest.email,
@@ -40,7 +39,7 @@ export class UserFactory implements UserFactoryInterface {
             userRequest.isActive,
             userRequest.name,
             userRequest.lastName,
-            userRequest.userType,
+            userType,
             undefined, // contact undefined
             userRequest.createdTime,
             subscriptionFree,

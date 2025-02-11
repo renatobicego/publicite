@@ -19,7 +19,7 @@ import { UserPersonalInformationResponse } from '../../application/adapter/dto/H
 import { UserPreferenceResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.preferences.response';
 import { UserFactory } from '../../application/service/user.factory';
 import { OnEvent } from '@nestjs/event-emitter';
-import { downgrade_plan_contact, get_mongo_id } from 'src/contexts/module_shared/event-emmiter/events';
+import { downgrade_plan_contact } from 'src/contexts/module_shared/event-emmiter/events';
 
 @Injectable()
 export class UserAdapter implements UserAdapterInterface {
@@ -37,12 +37,12 @@ export class UserAdapter implements UserAdapterInterface {
   async createUser(newUserRequest: UserRequest): Promise<any> {
 
     if (!newUserRequest.userType) {
-      throw new Error('Invalid user type');
+      throw new Error('UserType missing');
     }
 
     try {
       const factory = UserFactory.getInstance(this.logger);
-      const user = factory.createUser(newUserRequest.userType.toLowerCase(), newUserRequest);
+      const user = factory.createUser(newUserRequest.userType, newUserRequest);
 
       return await this.userService.createUser(
         user,
@@ -126,17 +126,7 @@ export class UserAdapter implements UserAdapterInterface {
   }
 
 
-  @OnEvent(get_mongo_id)
-  async getMongoIdByClerkId(clerk_id: string): Promise<any> {
-    try {
-      console.log(clerk_id)
-      return await this.userService.getMongoIdByClerkId(clerk_id)
 
-
-    } catch (error: any) {
-      throw error;
-    }
-  }
 
   async removeFriend(relationId: string, friendRequestId?: string): Promise<any> {
     try {

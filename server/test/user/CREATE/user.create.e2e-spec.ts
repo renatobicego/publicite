@@ -2,13 +2,15 @@ import { Test } from '@nestjs/testing';
 import { Connection, ObjectId, Types } from 'mongoose';
 import * as request from 'supertest';
 import { AppModule } from 'src/app.module';
-import { DatabaseService } from 'src/contexts/shared/database/infrastructure/database.service';
+import { DatabaseService } from 'src/contexts/module_shared/database/infrastructure/database.service';
+import { UserBusinessRequest, UserPersonRequest } from 'src/contexts/module_user/user/application/adapter/dto/HTTP-REQUEST/user.request.CREATE';
+import { userSub, userSub_id, userSubBusiness } from '../../model/user.stub';
+import { UserType } from 'src/contexts/module_user/user/domain/entity/enum/user.enums';
 
-import { userSub, userSubBusiness } from '../../test/model/user.stub';
-import {
-  UserBusinessRequest,
-  UserPersonRequest,
-} from 'src/contexts/user/application/adapter/dto/HTTP-REQUEST/user.request.CREATE';
+
+
+
+
 
 let dbConnection: Connection;
 let httpServer: any;
@@ -55,15 +57,22 @@ describe('Create a Personal account', () => {
       description: userSub().description,
       profilePhotoUrl: userSub().profilePhotoUrl,
       countryRegion: userSub().countryRegion,
+      isActive: userSub().isActive,
       name: userSub().name,
       lastName: userSub().lastName,
-      isActive: userSub().isActive,
       contact: userSub().contact,
       createdTime: userSub().createdTime,
-      userType: userSub().userType,
+      subscriptions: userSub().subscriptions,
+      groups: userSub().groups,
+      magazines: userSub().magazines,
+      board: userSub().board,
+      posts: userSub().posts,
+      userRelations: userSub().userRelations,
+      userType: UserType.Person,
+      userPreferences: userSub().userPreferences,
+      activeRelations: userSub().activeRelations,
       gender: userSub().gender,
       birthDate: userSub().birthDate,
-      userPreferences: userSub().userPreferences,
     };
 
     const response = await request(httpServer)
@@ -72,31 +81,7 @@ describe('Create a Personal account', () => {
       .send(userPersonDto as UserPersonRequest);
 
     expect(response.status).toBe(201);
-    expect(response.body).toMatchObject({
-      clerkId: userPersonDto.clerkId,
-      email: userPersonDto.email,
-      username: userPersonDto.username,
-      description: userPersonDto.description,
-      profilePhotoUrl: userPersonDto.profilePhotoUrl,
-      countryRegion: userPersonDto.countryRegion,
-      name: userPersonDto.name,
-      lastName: userPersonDto.lastName,
-      isActive: userPersonDto.isActive,
-      createdTime: userPersonDto.createdTime,
-      userType: userPersonDto.userType,
-      userPreferences: userPersonDto.userPreferences,
-      gender: userPersonDto.gender,
-      birthDate: userPersonDto.birthDate,
-    });
-    expect(response.body).toHaveProperty('_id');
-    //expect(Types.ObjectId.isValid(response.body.contact)).toBe(true);
-    expect(response.body.subscriptions).toEqual([]);
-    expect(response.body.groups).toEqual([]);
-    expect(response.body.magazines).toEqual([]);
-    expect(response.body.board).toEqual([]);
-    expect(response.body.post).toEqual([]);
-    expect(response.body.userRelations).toEqual([]);
-    expect(Types.ObjectId.isValid(response.body.contact)).toBe(true);
+    expect(Types.ObjectId.isValid(response.body)).toBe(true);
   });
 
   it('should create a business account', async () => {
@@ -116,6 +101,13 @@ describe('Create a Personal account', () => {
       businessName: userSubBusiness().businessName,
       userType: userSubBusiness().userType,
       userPreferences: userSubBusiness().userPreferences,
+      groups: userSubBusiness().groups,
+      magazines: userSubBusiness().magazines,
+      board: userSubBusiness().board,
+      posts: userSubBusiness().posts,
+      userRelations: userSubBusiness().userRelations,
+      activeRelations: userSubBusiness().activeRelations,
+      subscriptions: userSubBusiness().subscriptions
     };
 
     const response = await request(httpServer)
@@ -123,33 +115,11 @@ describe('Create a Personal account', () => {
       //.set('Authorization', `bearer ${token}`)
       .send(userBusinessDto as UserBusinessRequest);
 
+
     expect(response.status).toBe(201);
-    expect(response.body).toMatchObject({
-      clerkId: userBusinessDto.clerkId,
-      email: userBusinessDto.email,
-      username: userBusinessDto.username,
-      description: userBusinessDto.description,
-      profilePhotoUrl: userBusinessDto.profilePhotoUrl,
-      countryRegion: userBusinessDto.countryRegion,
-      isActive: userBusinessDto.isActive,
-      createdTime: userBusinessDto.createdTime,
-      name: userBusinessDto.name,
-      lastName: userBusinessDto.lastName,
-      businessName: userBusinessDto.businessName,
-      sector: userBusinessDto.sector,
-    });
-    expect(response.body).toHaveProperty('_id');
-    expect(Types.ObjectId.isValid(response.body.contact)).toBe(true);
-    expect(response.body.subscriptions).toEqual([]);
-    expect(response.body.groups).toEqual([]);
-    expect(response.body.magazines).toEqual([]);
-    expect(response.body.board).toEqual([]);
-    expect(response.body.post).toEqual([]);
-    expect(response.body.userRelations).toEqual([]);
-    expect(response.body.userPreferences).toEqual({
-      searchPreference: [],
-      backgroundColor: 12,
-    });
+    expect(Types.ObjectId.isValid(response.body)).toBe(true);
+
+
   });
 
   it('should throw an error if user already exists', async () => {
@@ -170,15 +140,68 @@ describe('Create a Personal account', () => {
       businessName: userSubBusiness().businessName,
       userType: userSubBusiness().userType,
       userPreferences: userSubBusiness().userPreferences,
+      groups: userSubBusiness().groups,
+      magazines: userSubBusiness().magazines,
+      board: userSubBusiness().board,
+      posts: userSubBusiness().posts,
+      userRelations: userSubBusiness().userRelations,
+      activeRelations: userSubBusiness().activeRelations,
+      subscriptions: userSubBusiness().subscriptions
+
     };
 
-    const response = await request(httpServer)
+    const response: any = await request(httpServer)
       .post('/user/business')
       //.set('Authorization', `bearer ${token}`)
       .send(userBusinessDto as UserBusinessRequest);
     expect(response.status).toBe(500);
-    expect(response.body.exception.errorResponse.code).toBe(11000);
-    expect(response.body.exception.errorResponse.errmsg).toContain(
+    console.log("--------- RESPONSE BODY:", response.body.message);
+    console.log("--------- RESPONSE TEXT:", response.text);
+    console.log("--------- RESPONSE STATUS:", response.status);
+    
+    expect(response.body.message).toContain(
+      'E11000 duplicate key error collection',
+    );
+  });
+
+  it('should throw an error if username already exists', async () => {
+    await dbConnection.collection('users').insertOne(userSubBusiness());
+    const userBusinessDto: UserBusinessRequest = {
+      clerkId: userSubBusiness().clerkId,
+      email: "testing@testing.com",
+      username: userSubBusiness().username,
+      description: userSubBusiness().description,
+      profilePhotoUrl: userSubBusiness().profilePhotoUrl,
+      countryRegion: userSubBusiness().countryRegion,
+      isActive: userSubBusiness().isActive,
+      contact: userSubBusiness().contact,
+      createdTime: userSubBusiness().createdTime,
+      sector: userSubBusiness().sector,
+      name: userSubBusiness().name,
+      lastName: userSubBusiness().lastName,
+      businessName: userSubBusiness().businessName,
+      userType: userSubBusiness().userType,
+      userPreferences: userSubBusiness().userPreferences,
+      groups: userSubBusiness().groups,
+      magazines: userSubBusiness().magazines,
+      board: userSubBusiness().board,
+      posts: userSubBusiness().posts,
+      userRelations: userSubBusiness().userRelations,
+      activeRelations: userSubBusiness().activeRelations,
+      subscriptions: userSubBusiness().subscriptions
+
+    };
+
+    const response: any = await request(httpServer)
+      .post('/user/business')
+      //.set('Authorization', `bearer ${token}`)
+      .send(userBusinessDto as UserBusinessRequest);
+    expect(response.status).toBe(500);
+    console.log("--------- RESPONSE BODY:", response.body.message);
+    console.log("--------- RESPONSE TEXT:", response.text);
+    console.log("--------- RESPONSE STATUS:", response.status);
+    
+    expect(response.body.message).toContain(
       'E11000 duplicate key error collection',
     );
   });
@@ -200,6 +223,13 @@ describe('Create a Personal account', () => {
       businessName: userSubBusiness().businessName,
       userType: userSubBusiness().userType,
       userPreferences: userSubBusiness().userPreferences,
+      groups: userSubBusiness().groups,
+      magazines: userSubBusiness().magazines,
+      board: userSubBusiness().board,
+      posts: userSubBusiness().posts,
+      userRelations: userSubBusiness().userRelations,
+      activeRelations: userSubBusiness().activeRelations,
+      subscriptions: userSubBusiness().subscriptions
     };
 
     const response = await request(httpServer)

@@ -1,5 +1,5 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import { ClientSession, Connection, Model, Types } from 'mongoose';
+import { ClientSession, Connection, model, Model, Types } from 'mongoose';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 
 import { IUserPerson, UserPersonModel } from '../schemas/userPerson.schema';
@@ -102,7 +102,8 @@ export class UserRepository implements UserRepositoryInterface {
           {
             path: 'posts',
             select:
-              '_id imagesUrls title description price reviews frequencyPrice toPrice petitionType postType endDate isActive',
+              '_id imagesUrls title description price reviews frequencyPrice toPrice petitionType postType endDate isActive reviews',
+            populate: { path: 'reviews', model: 'PostReview' },
           },
         ])
         .lean();
@@ -616,6 +617,7 @@ export class UserRepository implements UserRepositoryInterface {
     try {
       this.logger.log('Saving User in repository');
       let finder = '';
+
       const documentToSave = {
         clerkId: reqUser.getClerkId,
         email: reqUser.getEmail,
@@ -627,7 +629,6 @@ export class UserRepository implements UserRepositoryInterface {
         lastName: reqUser.getLastName,
         finder: '',
         isActive: reqUser.getIsActive,
-        userType: reqUser.getUserType,
         contact: reqUser.getContact,
         createdTime: reqUser.getCreatedTime,
         subscriptions: reqUser.getSubscriptions,
@@ -687,6 +688,7 @@ export class UserRepository implements UserRepositoryInterface {
   ): Promise<any> {
     const newUser = {
       ...baseObj,
+      userType: 'Person',
       gender: user.getGender,
       birthDate: user.getBirthDate,
     };
@@ -705,8 +707,10 @@ export class UserRepository implements UserRepositoryInterface {
     user: UserBusiness,
     options?: { session?: ClientSession },
   ): Promise<any> {
+
     const newUser = {
       ...baseObj,
+      userType: 'Business',
       sector: user.getSector,
       businessName: user.getBusinessName,
     };

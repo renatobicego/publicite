@@ -127,6 +127,25 @@ class post_comments {
 }
 
 @ObjectType()
+export class review {
+  @Field(() => String, { nullable: true })
+  _id: string;
+
+  @Field(() => String, { nullable: true })
+  author: string;
+
+  @Field(() => String, { nullable: true })
+  review: string;
+
+  @Field(() => Date, { nullable: true })
+  date: Date;
+
+  @Field(() => Float, { nullable: true })
+  rating: number;
+}
+
+
+@ObjectType()
 export class Post_response_graphql_model {
   @Field(() => String, { nullable: true })
   _id: ObjectId;
@@ -177,8 +196,8 @@ export class Post_response_graphql_model {
   @Field(() => String, { nullable: true })
   modelType: string;
 
-  @Field(() => [String], { nullable: true })
-  reviews: ObjectId[];
+  @Field(() => [review], { nullable: true })
+  reviews: review[];
 
   @Field(() => String, { nullable: true })
   condition: string;

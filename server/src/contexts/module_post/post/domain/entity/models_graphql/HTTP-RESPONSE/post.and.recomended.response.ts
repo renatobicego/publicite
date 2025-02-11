@@ -1,5 +1,5 @@
 import { Field, Float, ObjectType } from '@nestjs/graphql';
-import { Post_response_graphql_model } from './post.response.graphql';
+import { Post_response_graphql_model, review } from './post.response.graphql';
 
 @ObjectType()
 class post_response_recomended {
@@ -30,6 +30,9 @@ class post_response_recomended {
 
   @Field(() => String, { nullable: true })
   petitionType: string;
+
+  @Field(() => [review], { nullable: true })
+  reviews: review[];
 }
 
 @ObjectType()

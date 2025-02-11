@@ -24,13 +24,20 @@ export interface UserRequest {
   description: string;
   profilePhotoUrl: string;
   countryRegion: string;
+  isActive: boolean;
   name: string;
   lastName: string;
-  isActive: boolean;
   contact: ContactRequest;
   createdTime: string;
+  subscriptions: ObjectId[];
+  groups: ObjectId[];
+  magazines: ObjectId[];
+  board: ObjectId | undefined;
+  posts: ObjectId[];
+  userRelations: ObjectId[];
   userType: UserType;
   userPreferences: UserPreferencesRequest;
+  activeRelations: ObjectId[];
 }
 
 export interface UserPersonRequest extends UserRequest {

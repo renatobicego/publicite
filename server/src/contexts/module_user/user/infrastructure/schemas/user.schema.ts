@@ -1,7 +1,8 @@
 import { Schema, model, Document } from 'mongoose';
-
-
 import { UserType } from '../../domain/entity/enum/user.enums';
+
+
+
 
 export interface UserPreferences {
   searchPreference: Schema.Types.ObjectId[];

@@ -100,12 +100,26 @@ type Post_of_members_group {
   title: String
   description: String
   price: Float
+  reviews: [review_post_group_member!]
   frequencyPrice: String
   toPrice: Float
   petitionType: String
   postType: String
   geoLocation: location_of_group_posts
 }
+
+type review_post_group_member {
+  _id: String
+  author: String
+  review: String
+  date: DateTime
+  rating: Float
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
 
 type PostsMemberGroupResponse {
   userAndPosts: [Post_of_members_group!]!
@@ -152,6 +166,14 @@ type AttachedFile {
   label: String!
 }
 
+type review_get_user {
+  _id: String
+  author: String
+  review: String
+  date: DateTime
+  rating: Float
+}
+
 type Post_Full_Graphql_Model {
   _id: ID
   title: String
@@ -168,7 +190,7 @@ type Post_Full_Graphql_Model {
   year: Int
   brand: String
   modelType: String
-  reviews: [String!]
+  reviews: [review_get_user!]
   condition: GoodCondition
   endDate: DateTime
   isActive: Boolean!
@@ -184,11 +206,6 @@ enum GoodCondition {
   Used
   Broke
 }
-
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
 
 type Subscriptions_Full_Graphql_Model {
   _id: ID!
@@ -619,6 +636,14 @@ type post_comments {
   response: post_response
 }
 
+type review {
+  _id: String
+  author: String
+  review: String
+  date: DateTime
+  rating: Float
+}
+
 type Post_response_graphql_model {
   _id: String
   title: String
@@ -636,7 +661,7 @@ type Post_response_graphql_model {
   year: Int
   brand: String
   modelType: String
-  reviews: [String!]
+  reviews: [review!]
   condition: String
   reactions: [postReaction!]
   postBehaviourType: String!
@@ -678,6 +703,7 @@ type post_response_recomended {
   frequencyPrice: String
   toPrice: Float
   petitionType: String
+  reviews: [review!]
 }
 
 type Post_and_recomended_response_graphql_model {
@@ -813,6 +839,11 @@ type ContactSeller_Graphql {
   isOpinionRequested: Boolean!
 }
 
+type ContactSeller_getAll {
+  contactSeller: [ContactSeller_Graphql!]
+  hasMore: Boolean!
+}
+
 type Query {
   """Obtiene un usuario por su nombre de usuario """
   findUserByUsername(username: String!): User_Full_Grapql_Model
@@ -884,7 +915,7 @@ type Query {
   getAllCategoryPost: [PostCategoryResponse!]
 
   """Obtiene las peticiones de contacto por post o por usuario"""
-  getContactSellerById(contactSellerGetType: contactSellerGetType!, _id: String!): [ContactSeller_Graphql!]
+  getContactSellerById(contactSellerGetType: contactSellerGetType!, _id: String!, limit: Float!, page: Float!): ContactSeller_getAll
 }
 
 """Type of the post """

@@ -282,7 +282,7 @@ export class GroupService implements GroupServiceInterface {
     try {
       this.logger.log('Finding posts of members of group by id: ' + groupId);
       let conditions;
-      if(idsMembersArray.length === 0) return { userAndPosts: [], hasMore: false };
+      if (idsMembersArray.length === 0) return { userAndPosts: [], hasMore: false };
 
       const friendRelationsOfUserRequest: UserRelation[] = await this.userService.getRelationsFromUserByUserId(userRequest)
 
@@ -308,7 +308,6 @@ export class GroupService implements GroupServiceInterface {
           'visibility.post': { $in: value },
         }));
       }
-
       return await this.postService.findPostOfGroupMembers(idsMembersArray, conditions, userLocation, limit, page)
 
     } catch (error: any) {
