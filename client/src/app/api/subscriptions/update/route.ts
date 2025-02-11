@@ -14,7 +14,8 @@ export async function PUT(request: Request) {
         id: subscriptionId,
         body: {
           ...formData,
-          external_reference: formData.payer.email
+          external_reference: formData.payer.email,
+          back_url: process.env.CLIENT_URL + "/suscribirse/suscripcion-exitosa",
         },
       })
       .then(console.log)

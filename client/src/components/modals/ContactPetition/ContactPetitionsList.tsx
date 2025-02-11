@@ -7,6 +7,7 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
+  Pagination,
   Spinner,
   Tooltip,
   useDisclosure,
@@ -18,7 +19,7 @@ import {
   Service,
 } from "@/types/postTypes";
 import { MdContacts } from "react-icons/md";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ContactPetitionCard from "./ContactPetitionCard";
 import { getContactSellers } from "@/services/userServices";
 import { toastifyError } from "@/utils/functions/toastify";
@@ -33,6 +34,8 @@ const ContactPetitionsList = ({
   const [contactPetitions, setContactPetitions] = useState<
     GetContactSellersPetitionDTO[]
   >([]);
+  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
@@ -41,21 +44,28 @@ const ContactPetitionsList = ({
       setIsLoading(true);
       const contactPetitions = await getContactSellers(
         post ? "post" : "profile",
-        post ? post._id : (userId as string)
+        post ? post._id : (userId as string),
+        page
       );
       if ("error" in contactPetitions) {
         toastifyError(contactPetitions.error as string);
         setIsLoading(false);
         return;
       }
-      setContactPetitions(contactPetitions);
+      setContactPetitions(contactPetitions.contactSeller);
+      setHasMore(contactPetitions.hasMore);
       setIsLoading(false);
     };
 
-    if (isOpen) {
+    if (isOpen && hasMore) {
       fetchContactPetitions();
     }
-  }, [post, userId, isOpen]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [post, userId, isOpen, page]);
+
+  const rowsPerPage = 20;
+
+  const pages = Math.ceil(contactPetitions.length / rowsPerPage);
 
   return (
     <>
@@ -99,6 +109,17 @@ const ContactPetitionsList = ({
                 ) : (
                   contactPetitions.length === 0 &&
                   "No hay peticiones de contacto"
+                )}
+                {pages > 1 && (
+                  <Pagination
+                    total={pages}
+                    initialPage={page}
+                    onChange={setPage}
+                    color="primary"
+                    isCompact
+                    showControls
+                    showShadow
+                  />
                 )}
               </ModalBody>
               <ModalFooter>

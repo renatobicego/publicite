@@ -52,7 +52,8 @@ export default function PaymentsTable() {
     if (hasMore) {
       fetchData();
     }
-  }, [page, hasMore]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page]);
 
   const renderCell = useCallback((data: Invoice, columnKey: keyof Invoice) => {
     switch (columnKey) {
