@@ -74,6 +74,15 @@ const PostActivityNotificationCard = ({
         href: `${POSTS}/${post._id}#${postActivity.postResponse?.commentId}`,
       });
     }
+
+    if (notificationPostType === "comment") {
+      optionsList.push({
+        label: "Ver Comentario",
+        as: Link,
+        className: "text-text-color",
+        href: `${POSTS}/${post._id}#comentarios`,
+      });
+    }
     // if (notificationMessage?.rejectAction && isActionsAvailable) {
     //   optionsList.push({
     //     label: "Rechazar Solicitud",

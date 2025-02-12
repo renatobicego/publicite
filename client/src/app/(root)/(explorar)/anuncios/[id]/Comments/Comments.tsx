@@ -20,7 +20,10 @@ const Comments = ({
 }) => {
   const [commentsLocal, setCommentsLocal] = useState(comments);
   return (
-    <div className="flex flex-col flex-1 w-full lg:max-w-[50%] gap-4">
+    <div
+      id="comentarios"
+      className="flex flex-col flex-1 w-full lg:max-w-[50%] gap-4"
+    >
       <h4>Comentarios</h4>
       <SignedIn>
         <CommentForm
