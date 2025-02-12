@@ -45,7 +45,10 @@ const AccordionData = ({
       title="Información del Vendedor"
     >
       <Suspense fallback={<Spinner color="warning" />}>
-        <UserData author={post.author} showContact={true} />
+        <UserData
+          author={post.author}
+          showContact={post.visibility.socialMedia}
+        />
       </Suspense>
     </AccordionItem>
   );

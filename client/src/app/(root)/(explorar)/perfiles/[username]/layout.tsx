@@ -3,10 +3,8 @@ import { PROFILE } from "@/utils/data/urls";
 import UserInfo from "./(components)/sections/UserInfo";
 import { getFriendRequests, getUserByUsername } from "@/services/userServices";
 import ErrorCard from "@/components/ErrorCard";
-import BoardCard from "@/components/Board/Board";
 import { auth } from "@clerk/nextjs/server";
 import UserSolapas from "@/components/solapas/UserSolapas";
-import CreateBoard from "@/components/Board/CreateBoard/CreateBoard";
 import { redirect } from "next/navigation";
 import { UserRelationNotification, UserRelations } from "@/types/userTypes";
 import { toastifyError } from "@/utils/functions/toastify";
@@ -99,7 +97,7 @@ export default async function ProfileLayout(props: {
         </div>
         <Suspense
           fallback={
-            <div className="h-72 w-full bg-gray-200 animate-pulse rounded-lg"></div>
+            <div className="h-20 w-full bg-gray-200 animate-pulse rounded-lg"></div>
           }
         >
           <UserSolapas

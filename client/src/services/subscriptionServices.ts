@@ -4,7 +4,6 @@ import {
   getPostNumbersOfUserQuery,
 } from "@/graphql/suscriptionsQueries";
 import { query } from "@/lib/client";
-import { PostBehaviourType } from "@/types/postTypes";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import axios from "axios";
 import { getApiContext } from "./apiContext";
@@ -114,6 +113,7 @@ export const getSubscriptionsOfUser = async (
       };
     }
     const data = await res.json();
+    console.log(data);
     return data;
   } catch (error) {
     return {

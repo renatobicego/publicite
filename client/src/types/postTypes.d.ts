@@ -6,8 +6,8 @@ export interface Post {
   postType: PostType;
   description?: string;
   visibility: {
-    post: Visibility;
-    socialMedia: Visibility;
+    post: UserRelation;
+    socialMedia: "public" | "registered";
   };
   recommendations: PostRecommendation[];
   price: number;
