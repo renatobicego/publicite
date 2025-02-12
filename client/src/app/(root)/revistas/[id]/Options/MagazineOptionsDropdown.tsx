@@ -7,8 +7,9 @@ import {
   Button,
   DropdownMenu,
   DropdownItem,
+  Spinner,
 } from "@nextui-org/react";
-import { lazy, useRef } from "react";
+import { lazy, Suspense, useRef } from "react";
 import { FaChevronDown, FaRegUser } from "react-icons/fa6";
 import { IoTrashOutline } from "react-icons/io5";
 import DeleteCollaborators from "./DeleteCollaborators";
@@ -89,14 +90,16 @@ const MagazineOptionsDropdown = ({
           </DropdownItem>
         </DropdownMenu>
       </Dropdown>
-      <ConfirmModal
-        ButtonAction={<></>}
-        message="¿Desea eliminar la revista?"
-        tooltipMessage="Eliminar revista"
-        confirmText="Eliminar"
-        onConfirm={handleDelete}
-        customOpen={(openModal) => (confirmDeleteRef.current = openModal)}
-      />
+      <Suspense fallback={<Spinner color="warning" />}>
+        <ConfirmModal
+          ButtonAction={<></>}
+          message="¿Desea eliminar la revista?"
+          tooltipMessage="Eliminar revista"
+          confirmText="Eliminar"
+          onConfirm={handleDelete}
+          customOpen={(openModal) => (confirmDeleteRef.current = openModal)}
+        />
+      </Suspense>
       <DeleteCollaborators
         ButtonAction={<></>}
         magazine={magazine}

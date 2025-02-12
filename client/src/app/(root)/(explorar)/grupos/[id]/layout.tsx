@@ -58,7 +58,7 @@ export default async function GroupLayout(props: {
     <Suspense fallback={<Loading />}>
       <main className="flex min-h-screen flex-col items-start main-style gap-4 md:gap-6 xl:gap-8">
         <BreadcrumbsAdmin items={breadcrumbsItems} />
-        <Suspense fallback={<Skeleton className="w-full h-40 rounded-lg" />}>
+        <Suspense fallback={<Skeleton className="rounded-lg w-full h-40" />}>
           <GroupInfo
             group={groupData}
             isAdmin={isAdmin}

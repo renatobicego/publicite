@@ -1,4 +1,4 @@
-import { Image, Link, useDisclosure } from "@nextui-org/react";
+import { Image, Link, Spinner, useDisclosure } from "@nextui-org/react";
 import {
   NotificationBody,
   NotificationCard,
@@ -11,8 +11,7 @@ import {
 } from "@/types/postTypes";
 import { FILE_URL, POSTS } from "@/utils/data/urls";
 import { parseIsoDate, showDate } from "@/utils/functions/dates";
-import { parseZonedDateTime } from "@internationalized/date";
-import { lazy } from "react";
+import { lazy, Suspense } from "react";
 import { postCalificationNotificationMessages } from "./notificationMessages";
 const ReviewPost = lazy(
   () => import("@/components/modals/ReviewModal/ReviewPost")
@@ -108,11 +107,13 @@ const ReviewRequest = ({
         />
       </NotificationCard>
       {eventType === "notification_new_calification_request" && (
-        <ReviewPost
-          isOpen={isOpen}
-          onOpenChange={onOpenChange}
-          notification={notification}
-        />
+        <Suspense fallback={<Spinner color="warning" size="sm" />}>
+          <ReviewPost
+            isOpen={isOpen}
+            onOpenChange={onOpenChange}
+            notification={notification}
+          />
+        </Suspense>
       )}
     </>
   );

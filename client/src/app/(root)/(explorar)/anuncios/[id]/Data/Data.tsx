@@ -9,11 +9,11 @@ import SaveButton from "@/components/buttons/SaveMagazine/SaveButton";
 import AccordionData from "./AccordionData/AccordionData";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { EDIT_POST } from "@/utils/data/urls";
-import { Link } from "@nextui-org/react";
+import { Link, Spinner } from "@nextui-org/react";
 import { SignedIn } from "@clerk/nextjs";
 import { formatTotal } from "@/utils/functions/utils";
 import PostReactionsContainer from "@/components/buttons/PostReactions/PostReactionsContainer";
-import { lazy } from "react";
+import { lazy, Suspense } from "react";
 const ContactPetitionsList = lazy(
   () => import("@/components/modals/ContactPetition/ContactPetitionsList")
 );
@@ -97,7 +97,11 @@ const Data = async ({
             {showCondition}
             Publicado {datePublished} en {post.geoLocation.description}
           </p>
-          {isAuthor && <OptionsDropdown post={post} />}
+          {isAuthor && (
+            <Suspense fallback={<Spinner color="warning" />}>
+              <OptionsDropdown post={post} />
+            </Suspense>
+          )}
         </div>
         <h2>{post.title}</h2>
         {"reviews" in post && post.reviews && post.reviews.length > 0 && (
@@ -119,10 +123,16 @@ const Data = async ({
               Editar Anuncio
             </PrimaryButton>
           ) : (
-            <ContactModal postId={post._id} authorId={post.author._id} />
+            <Suspense fallback={<Spinner color="warning" />}>
+              <ContactModal postId={post._id} authorId={post.author._id} />
+            </Suspense>
           )}
           <div className="flex gap-2">
-            {isAuthor && <ContactPetitionsList post={post} />}
+            {isAuthor && (
+              <Suspense fallback={<Spinner color="warning" />}>
+                <ContactPetitionsList post={post} />
+              </Suspense>
+            )}
             <ShareButton shareType="post" data={post} />
             <SignedIn>
               <SaveButton post={post} />
@@ -131,10 +141,12 @@ const Data = async ({
           </div>
         </div>
         {isPetition && (
-          <MatchPetitionPost
-            postTitle={post.title}
-            petitionType={petition.petitionType}
-          />
+          <Suspense fallback={<Spinner color="warning" />}>
+            <MatchPetitionPost
+              postTitle={post.title}
+              petitionType={petition.petitionType}
+            />
+          </Suspense>
         )}
       </div>
       <AccordionData post={post} isPetition={isPetition} />

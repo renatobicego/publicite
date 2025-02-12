@@ -2,7 +2,7 @@
 import { deletePost, updatePostActiveStatus } from "@/app/server/postActions";
 const ConfirmModal = lazy(() => import("@/components/modals/ConfirmModal"));
 import { Post } from "@/types/postTypes";
-import { NEEDS, POSTS, PROFILE } from "@/utils/data/urls";
+import { PROFILE } from "@/utils/data/urls";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import {
   Button,
@@ -13,7 +13,7 @@ import {
   Spinner,
 } from "@nextui-org/react";
 import { useRouter } from "next-nprogress-bar";
-import { lazy, useRef, useState } from "react";
+import { lazy, Suspense, useRef, useState } from "react";
 import { FaChevronDown } from "react-icons/fa6";
 import useUserPostLimit from "@/utils/hooks/useUserPostLimit";
 import { postsBehavioursTypes } from "@/utils/data/selectData";
@@ -120,25 +120,28 @@ const OptionsDropdown = ({ post }: { post: Post }) => {
           </DropdownItem>
         </DropdownMenu>
       </Dropdown>
-      <ConfirmModal
-        ButtonAction={<></>}
-        message={`¿Está seguro de eliminar el anuncio ${post.title}?`}
-        tooltipMessage="Eliminar"
-        confirmText="Eliminar"
-        onConfirm={handleDelete}
-        customOpen={(openModal) => (activeDropdownItem.current = openModal)} // Set the reference for customOpen
-      />
-
-      <ConfirmModal
-        ButtonAction={<></>}
-        message={`¿Está seguro de ${
-          isActive ? "ocultar" : "mostrar"
-        } el anuncio ${post.title}?`}
-        tooltipMessage={isActive ? "Ocultar" : "Mostrar"}
-        confirmText={isActive ? "Ocultar" : "Mostrar"}
-        onConfirm={handleChangeIsActiveStatus}
-        customOpen={(openModal) => (activeDropdownItem.current = openModal)} // Set the reference for customOpen
-      />
+      <Suspense fallback={<Spinner color="warning" />}>
+        <ConfirmModal
+          ButtonAction={<></>}
+          message={`¿Está seguro de eliminar el anuncio ${post.title}?`}
+          tooltipMessage="Eliminar"
+          confirmText="Eliminar"
+          onConfirm={handleDelete}
+          customOpen={(openModal) => (activeDropdownItem.current = openModal)} // Set the reference for customOpen
+        />
+      </Suspense>
+      <Suspense fallback={<Spinner color="warning" />}>
+        <ConfirmModal
+          ButtonAction={<></>}
+          message={`¿Está seguro de ${
+            isActive ? "ocultar" : "mostrar"
+          } el anuncio ${post.title}?`}
+          tooltipMessage={isActive ? "Ocultar" : "Mostrar"}
+          confirmText={isActive ? "Ocultar" : "Mostrar"}
+          onConfirm={handleChangeIsActiveStatus}
+          customOpen={(openModal) => (activeDropdownItem.current = openModal)} // Set the reference for customOpen
+        />
+      </Suspense>
     </>
   );
 };

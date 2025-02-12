@@ -3,8 +3,8 @@ const ConfirmModal = lazy(() => import("@/components/modals/ConfirmModal"));
 import { editSubscription } from "@/services/subscriptionServices";
 import { Subscription, SubscriptionPlan } from "@/types/subscriptions";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
-import { Button, Link } from "@nextui-org/react";
-import { lazy } from "react";
+import { Button, Link, Spinner } from "@nextui-org/react";
+import { lazy, Suspense } from "react";
 
 const ActionButtons = ({
   previousPlan,
@@ -46,23 +46,25 @@ const ActionButtons = ({
       {!isSamePlanSelected && (
         <>
           {isFreePlanSelected && !isFreePlanCurrent && (
-            <ConfirmModal
-              ButtonAction={
-                <Button
-                  color="danger"
-                  variant="light"
-                  radius="full"
-                  onPress={onClose}
-                >
-                  Cancelar Subscripción
-                </Button>
-              }
-              confirmText="Cancelar Subscripción"
-              message="Estas seguro que quieres cancelar tu subscripción?"
-              tooltipMessage="Cambiar a Plan Gratuito"
-              onConfirm={handleCancelSubscription}
-              sideText="Los anuncios de tu cuenta que sobrepasen el límite de tu plan actual serán ocultados. Puedes ver los anuncios ocultos en tu perfil."
-            />
+            <Suspense fallback={<Spinner color="warning" />}>
+              <ConfirmModal
+                ButtonAction={
+                  <Button
+                    color="danger"
+                    variant="light"
+                    radius="full"
+                    onPress={onClose}
+                  >
+                    Cancelar Subscripción
+                  </Button>
+                }
+                confirmText="Cancelar Subscripción"
+                message="Estas seguro que quieres cancelar tu subscripción?"
+                tooltipMessage="Cambiar a Plan Gratuito"
+                onConfirm={handleCancelSubscription}
+                sideText="Los anuncios de tu cuenta que sobrepasen el límite de tu plan actual serán ocultados. Puedes ver los anuncios ocultos en tu perfil."
+              />
+            </Suspense>
           )}
           {!isFreePlanSelected && (
             <SecondaryButton

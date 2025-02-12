@@ -1,5 +1,6 @@
 const ConfirmModal = lazy(() => import("@/components/modals/ConfirmModal"));
-import React, { lazy, MutableRefObject, useRef } from "react";
+import { Spinner } from "@nextui-org/react";
+import React, { lazy, MutableRefObject, Suspense, useRef } from "react";
 
 const ConfirmDelete = ({
   deletePost,
@@ -9,14 +10,16 @@ const ConfirmDelete = ({
   deletePostRef: MutableRefObject<() => void>;
 }) => {
   return (
-    <ConfirmModal
-      ButtonAction={<></>}
-      message={`¿Está seguro de eliminar el anuncio de la revista/sección?`}
-      tooltipMessage="Eliminar"
-      confirmText="Eliminar"
-      onConfirm={deletePost}
-      customOpen={(openModal) => (deletePostRef.current = openModal)}
-    />
+    <Suspense fallback={<Spinner color="warning" />}>
+      <ConfirmModal
+        ButtonAction={<></>}
+        message={`¿Está seguro de eliminar el anuncio de la revista/sección?`}
+        tooltipMessage="Eliminar"
+        confirmText="Eliminar"
+        onConfirm={deletePost}
+        customOpen={(openModal) => (deletePostRef.current = openModal)}
+      />
+    </Suspense>
   );
 };
 

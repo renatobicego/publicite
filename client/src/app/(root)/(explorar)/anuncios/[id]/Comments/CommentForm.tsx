@@ -70,7 +70,8 @@ const CommentForm = ({
         const {
           body: { body },
         } = res; // get comment data
-        if (commentToReplyId) { // if its a reply, update comment
+        if (commentToReplyId) {
+          // if its a reply, update comment
           setComments((prev) =>
             prev.map((comment) => {
               if (comment._id === commentToReplyId) {
@@ -82,7 +83,8 @@ const CommentForm = ({
               return comment;
             })
           );
-        } else { // if its not a reply, add comment
+        } else {
+          // if its not a reply, add comment
           setComments((prev) => [...prev, body]);
         }
         toastifySuccess("Comentario enviado");

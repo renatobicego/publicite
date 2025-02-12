@@ -1,8 +1,8 @@
 "use client";
 import UsernameAvatar from "@/components/buttons/UsernameAvatar";
 import { PostComment, PostDataNotification, Reviewer } from "@/types/postTypes";
-import { Button, CardFooter } from "@nextui-org/react";
-import { Dispatch, lazy, SetStateAction, useState } from "react";
+import { Button, CardFooter, Skeleton } from "@nextui-org/react";
+import { Dispatch, lazy, SetStateAction, Suspense, useState } from "react";
 import { FaComment, FaX } from "react-icons/fa6";
 const CommentForm = lazy(() => import("./CommentForm"));
 import DeleteComment from "./DeleteComment";
@@ -21,8 +21,8 @@ const ReplyForm = ({
   const [showForm, setShowForm] = useState(false);
 
   return (
-    <CardFooter className="flex flex-col gap-2">
-      <div className="flex flex-row justify-between items-center w-full">
+    <CardFooter className="flex flex-col gap-2 mt-2">
+      <div className="flex flex-row justify-between items-center w-full mb-2">
         <UsernameAvatar author={comment.user} />
         {isAuthor && (
           <div className="flex gap-1 items-center">
@@ -41,19 +41,21 @@ const ReplyForm = ({
                 <FaComment className="size-4" />
               )}
             </Button>
-            <DeleteComment commentId={comment._id} />
+            {!showForm && <DeleteComment commentId={comment._id} />}
           </div>
         )}
       </div>
       {showForm && isAuthor && (
-        <CommentForm
-          post={post}
-          key={"replyform" + comment._id}
-          commentToReplyId={comment._id}
-          closeForm={() => setShowForm(false)}
-          userIdTo={(comment.user as Reviewer)._id}
-          setComments={setComments}
-        />
+        <Suspense fallback={<Skeleton className="w-full h-40" />}>
+          <CommentForm
+            post={post}
+            key={"replyform" + comment._id}
+            commentToReplyId={comment._id}
+            closeForm={() => setShowForm(false)}
+            userIdTo={(comment.user as Reviewer)._id}
+            setComments={setComments}
+          />
+        </Suspense>
       )}
     </CardFooter>
   );

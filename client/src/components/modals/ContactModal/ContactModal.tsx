@@ -5,10 +5,11 @@ import {
   ModalBody,
   ModalContent,
   ModalHeader,
+  Skeleton,
   useDisclosure,
 } from "@nextui-org/react";
 import PrimaryButton from "../../buttons/PrimaryButton";
-import { lazy } from "react";
+import { lazy, Suspense } from "react";
 const ContactForm = lazy(() => import("./ContactForm"));
 
 const ContactModal = ({
@@ -40,11 +41,21 @@ const ContactModal = ({
               </ModalHeader>
               <ModalBody className="pt-0">
                 {isOpen && (
-                  <ContactForm
-                    postId={postId}
-                    onClose={onClose}
-                    authorId={authorId}
-                  />
+                  <Suspense
+                    fallback={
+                      <>
+                        <Skeleton className="rounded-lg w-full h-28" />
+                        <Skeleton className="rounded-lg w-full h-16" />
+                        <Skeleton className="rounded-lg w-full h-16" />
+                      </>
+                    }
+                  >
+                    <ContactForm
+                      postId={postId}
+                      onClose={onClose}
+                      authorId={authorId}
+                    />
+                  </Suspense>
                 )}
               </ModalBody>
             </>

@@ -2,9 +2,9 @@
 import { exitMagazine } from "@/app/server/magazineActions";
 const ConfirmModal = lazy(() => import("@/components/modals/ConfirmModal"));
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
-import { Button } from "@nextui-org/react";
+import { Button, Spinner } from "@nextui-org/react";
 import { useRouter } from "next-nprogress-bar";
-import { lazy } from "react";
+import { lazy, Suspense } from "react";
 import { IoExitOutline } from "react-icons/io5";
 
 const ExitMagazine = ({
@@ -25,17 +25,25 @@ const ExitMagazine = ({
     router.refresh();
   };
   return (
-    <ConfirmModal
-      ButtonAction={
-        <Button isIconOnly aria-label="Salir como colaborador de revista" variant="flat" color="danger" radius="full">
-          <IoExitOutline className="size-4" />
-        </Button>
-      }
-      confirmText="Salir de Revista"
-      message="¿Desea salir como colaborador de la revista?"
-      tooltipMessage="Salir de la revista"
-      onConfirm={handleExit}
-    />
+    <Suspense fallback={<Spinner color="warning" />}>
+      <ConfirmModal
+        ButtonAction={
+          <Button
+            isIconOnly
+            aria-label="Salir como colaborador de revista"
+            variant="flat"
+            color="danger"
+            radius="full"
+          >
+            <IoExitOutline className="size-4" />
+          </Button>
+        }
+        confirmText="Salir de Revista"
+        message="¿Desea salir como colaborador de la revista?"
+        tooltipMessage="Salir de la revista"
+        onConfirm={handleExit}
+      />
+    </Suspense>
   );
 };
 

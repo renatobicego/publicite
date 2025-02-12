@@ -10,10 +10,11 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
+  Spinner,
   useDisclosure,
 } from "@nextui-org/react";
 import { useRouter } from "next-nprogress-bar";
-import { lazy, useRef } from "react";
+import { lazy, Suspense, useRef } from "react";
 import { FaShareAlt } from "react-icons/fa";
 import { FaChevronDown } from "react-icons/fa6";
 import { IoIosExit } from "react-icons/io";
@@ -99,7 +100,12 @@ const OptionsDropdown = ({
     <>
       <Dropdown placement="bottom-end">
         <DropdownTrigger>
-          <Button radius="full" isIconOnly aria-label="Opciones de grupo" variant="light">
+          <Button
+            radius="full"
+            isIconOnly
+            aria-label="Opciones de grupo"
+            variant="light"
+          >
             <FaChevronDown />
           </Button>
         </DropdownTrigger>
@@ -135,22 +141,26 @@ const OptionsDropdown = ({
           </DropdownItem>
         </DropdownMenu>
       </Dropdown>
-      <ConfirmModal
-        ButtonAction={<></>}
-        message={`¿Está seguro que desea eliminar el grupo?`}
-        tooltipMessage="Eliminar"
-        confirmText="Eliminar"
-        onConfirm={deleteGroup}
-        customOpen={(openModal) => (deleteGroupRef.current = openModal)} // Set the reference for customOpen
-      />
-      <ConfirmModal
-        ButtonAction={<></>}
-        message={`¿Está seguro que desea salir del grupo?`}
-        tooltipMessage="Salir"
-        confirmText="Salir del Grupo"
-        onConfirm={exitGroup}
-        customOpen={(openModal) => (exitGroupRef.current = openModal)} // Set the reference for customOpen
-      />
+      <Suspense fallback={<Spinner color="warning" />}>
+        <ConfirmModal
+          ButtonAction={<></>}
+          message={`¿Está seguro que desea eliminar el grupo?`}
+          tooltipMessage="Eliminar"
+          confirmText="Eliminar"
+          onConfirm={deleteGroup}
+          customOpen={(openModal) => (deleteGroupRef.current = openModal)} // Set the reference for customOpen
+        />
+      </Suspense>
+      <Suspense fallback={<Spinner color="warning" />}>
+        <ConfirmModal
+          ButtonAction={<></>}
+          message={`¿Está seguro que desea salir del grupo?`}
+          tooltipMessage="Salir"
+          confirmText="Salir del Grupo"
+          onConfirm={exitGroup}
+          customOpen={(openModal) => (exitGroupRef.current = openModal)} // Set the reference for customOpen
+        />
+      </Suspense>
       <ExitGroupAsCreator
         isOpen={isOpen}
         onOpenChange={onOpenChange}

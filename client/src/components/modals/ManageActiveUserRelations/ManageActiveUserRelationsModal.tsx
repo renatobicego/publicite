@@ -6,8 +6,9 @@ import {
   ModalContent,
   ModalHeader,
   ModalBody,
+  Skeleton,
 } from "@nextui-org/react";
-import { lazy } from "react";
+import { lazy, Suspense } from "react";
 import { FaUserCheck } from "react-icons/fa";
 const ManageActiveUserRelations = lazy(
   () => import("./ManageActiveUserRelations")
@@ -50,12 +51,23 @@ const ManageActiveUserRelationsModal = ({
               </ModalHeader>
               <ModalBody className="pt-0 ">
                 {isOpen && (
-                  <ManageActiveUserRelations
-                    relations={relations}
-                    activeRelationsIds={activeRelationsIds}
-                    userId={userId}
-                    closeModal={onClose}
-                  />
+                  <Suspense
+                    fallback={
+                      <>
+                        <Skeleton className="rounded-lg w-full h-20" />
+                        <Skeleton className="rounded-lg w-full h-16" />
+                        <Skeleton className="rounded-lg w-full h-32" />
+                        <Skeleton className="rounded-lg w-full h-16" />
+                      </>
+                    }
+                  >
+                    <ManageActiveUserRelations
+                      relations={relations}
+                      activeRelationsIds={activeRelationsIds}
+                      userId={userId}
+                      closeModal={onClose}
+                    />
+                  </Suspense>
                 )}
               </ModalBody>
             </>

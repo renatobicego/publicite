@@ -99,7 +99,7 @@ export default async function ProfileLayout(props: {
         </div>
         <Suspense
           fallback={
-            <div className="h-20 w-full bg-gray-200 animate-pulse rounded-lg"></div>
+            <div className="h-72 w-full bg-gray-200 animate-pulse rounded-lg"></div>
           }
         >
           <UserSolapas

@@ -1,4 +1,4 @@
-import { Image, Link, useDisclosure } from "@nextui-org/react";
+import { Image, Link, Spinner, useDisclosure } from "@nextui-org/react";
 import {
   NotificationBody,
   NotificationCard,
@@ -9,7 +9,7 @@ import {
 import { ContactSellerNotification } from "@/types/postTypes";
 import { FILE_URL, POSTS } from "@/utils/data/urls";
 import { parseIsoDate, showDate } from "@/utils/functions/dates";
-import { lazy } from "react";
+import { lazy, Suspense } from "react";
 import { checkAndAddDeleteNotification } from "../deleteNotification";
 import { useNotificationsContext } from "@/app/(root)/providers/notificationsProvider";
 const ContactPetition = lazy(
@@ -70,11 +70,13 @@ const NewContactPost = ({
         items={getNotificationOptionsList()}
       />
       {isOpen && (
-        <ContactPetition
-          isOpen={true}
-          onOpenChange={onOpenChange}
-          contactPetitionData={{ post, client }}
-        />
+        <Suspense fallback={<Spinner color="warning" size="sm" />}>
+          <ContactPetition
+            isOpen={true}
+            onOpenChange={onOpenChange}
+            contactPetitionData={{ post, client }}
+          />
+        </Suspense>
       )}
     </NotificationCard>
   );

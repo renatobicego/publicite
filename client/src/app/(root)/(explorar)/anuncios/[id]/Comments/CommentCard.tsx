@@ -1,6 +1,5 @@
 import { parseIsoDate, showDate } from "@/utils/functions/dates";
 import { PostComment, PostDataNotification } from "@/types/postTypes";
-import { parseAbsoluteToLocal, parseDateTime } from "@internationalized/date";
 import { Card, CardBody } from "@nextui-org/react";
 import ReplyForm from "./ReplyForm";
 import ReplyCard from "./ReplyCard";
