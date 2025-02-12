@@ -175,6 +175,10 @@ export const getMemberPosts = gql`
         price
         title
         toPrice
+        reviews {
+          rating
+          _id
+        }
       }
     }
   }

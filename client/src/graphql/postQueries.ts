@@ -73,7 +73,13 @@ export const getPostByIdQuery = gql`
       postBehaviourType
       postType
       price
-      reviews
+      reviews {
+        review
+        rating
+        date
+        author
+        _id
+      }
       title
       isActive
       toPrice
@@ -164,7 +170,13 @@ export const getPostsByIdAndRecommendationsQuery = gql`
         postBehaviourType
         postType
         price
-        reviews
+        reviews {
+          review
+          rating
+          date
+          author
+          _id
+        }
         title
         isActive
         toPrice
@@ -183,6 +195,10 @@ export const getPostsByIdAndRecommendationsQuery = gql`
         imagesUrls
         frequencyPrice
         toPrice
+        reviews {
+          rating
+          _id
+        }
         petitionType
       }
     }
@@ -222,7 +238,10 @@ export const getPostsQuery = gql`
         petitionType
         postType
         price
-        reviews
+        reviews {
+          rating
+          _id
+        }
         toPrice
         geoLocation {
           description
@@ -257,7 +276,10 @@ export const getPostsOfFriendsQuery = gql`
         petitionType
         postType
         price
-        reviews
+        reviews {
+          rating
+          _id
+        }
         toPrice
         geoLocation {
           description

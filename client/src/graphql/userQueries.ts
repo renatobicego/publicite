@@ -28,6 +28,10 @@ const getUserByUsernameQuery = gql`
         toPrice
         imagesUrls
         endDate
+        reviews {
+          _id
+          rating
+        }
         isActive
       }
       profilePhotoUrl

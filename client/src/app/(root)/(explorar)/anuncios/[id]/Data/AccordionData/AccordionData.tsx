@@ -1,12 +1,13 @@
 "use client";
 import { Good, Petition, Service } from "@/types/postTypes";
-import { Accordion, AccordionItem } from "@nextui-org/react";
+import { Accordion, AccordionItem, Spinner } from "@nextui-org/react";
 import { FaChevronLeft } from "react-icons/fa6";
-import AdditionalGoodData from "./AdditionalGoodData";
-import UserData from "./UserData";
-import LocationMap from "./LocationMap";
-import Reviews from "./Reviews";
-import AttachedFiles from "./AttachedFiles";
+import { lazy, Suspense } from "react";
+const AdditionalGoodData = lazy(() => import("./AdditionalGoodData"));
+const UserData = lazy(() => import("./UserData"));
+const LocationMap = lazy(() => import("./LocationMap"));
+const Reviews = lazy(() => import("./Reviews"));
+const AttachedFiles = lazy(() => import("./AttachedFiles"));
 
 const AccordionData = ({
   post,
@@ -27,7 +28,9 @@ const AccordionData = ({
         aria-label="datos adicionales"
         title="Datos Adicionales"
       >
-        <AdditionalGoodData post={post as Good} />
+        <Suspense fallback={<Spinner color="warning" />}>
+          <AdditionalGoodData post={post as Good} />
+        </Suspense>
       </AccordionItem>
     );
   }
@@ -41,7 +44,9 @@ const AccordionData = ({
       aria-label="datos del vendedor"
       title="Información del Vendedor"
     >
-      <UserData author={post.author} showContact={true} />
+      <Suspense fallback={<Spinner color="warning" />}>
+        <UserData author={post.author} showContact={true} />
+      </Suspense>
     </AccordionItem>
   );
 
@@ -55,10 +60,12 @@ const AccordionData = ({
         aria-label="ubicación"
         title="Ubicación"
       >
-        <LocationMap
-          lat={post.geoLocation.location.coordinates[1]}
-          lng={post.geoLocation.location.coordinates[0]}
-        />
+        <Suspense fallback={<Spinner color="warning" />}>
+          <LocationMap
+            lat={post.geoLocation.location.coordinates[1]}
+            lng={post.geoLocation.location.coordinates[0]}
+          />
+        </Suspense>
         {post.geoLocation.userSetted && (
           <p className="text-sm">
             El usuario vendedor ha establecido la ubicación manualmente
@@ -80,10 +87,9 @@ const AccordionData = ({
         title="Opiniones"
       >
         {"reviews" in post && post.reviews.length > 0 ? (
-          <Reviews
-            // reviews={post.reviews}
-            reviews={[]}
-          />
+          <Suspense fallback={<Spinner color="warning" />}>
+            <Reviews reviews={post.reviews} />
+          </Suspense>
         ) : (
           <p className="text-light-text text-sm">
             Nadie ha calificado este anuncio ¡Sé el primero!
@@ -103,7 +109,9 @@ const AccordionData = ({
         aria-label="archivos adjuntos"
         title="Archivos Adjuntos"
       >
-        <AttachedFiles attachedFiles={post.attachedFiles} />
+        <Suspense fallback={<Spinner color="warning" />}>
+          <AttachedFiles attachedFiles={post.attachedFiles} />
+        </Suspense>
       </AccordionItem>
     );
   }
