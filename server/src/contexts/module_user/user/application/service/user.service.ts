@@ -17,7 +17,6 @@ import { UserFindAllResponse } from '../adapter/dto/HTTP-RESPONSE/user.response.
 import { UserType } from '../../domain/entity/enum/user.enums';
 import { UserRelation } from '../../domain/entity/userRelation.entity';
 import { calculateContactLimitFromUser, calculatePostLimitFromUser, userWithPostsAndSubscriptions } from '../functions/calculatePostLimitAndContactLimit';
-import { omitBy } from 'lodash';
 import { ommitUndefinedValues } from './ommit-function';
 
 

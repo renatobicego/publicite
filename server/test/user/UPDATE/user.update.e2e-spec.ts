@@ -7,13 +7,15 @@ import { DatabaseService } from 'src/contexts/module_shared/database/infrastruct
 import { UserType } from 'src/contexts/module_user/user/domain/entity/enum/user.enums';
 import { userSub, userSubBusiness } from '../../model/user.stub';
 import { UserBusinessRequest, UserPersonRequest } from 'src/contexts/module_user/user/application/adapter/dto/HTTP-REQUEST/user.request.CREATE';
-import { UserBusiness } from 'src/contexts/module_user/user/domain/entity/userBusiness.entity';
+
 
 let dbConnection: Connection;
 let httpServer: any;
 let app: any;
 const token = process.env.TEST_TOKEN as string;
 
+
+// TO DO: FALTA TEST, chnequear que el user cuando se crea tiene que tener la suscripcion free 67ad4c4bdb9283528cea83b9
 
 const createPersonalUser = async () => {
   const userPersonDto: UserPersonRequest = {
@@ -170,9 +172,19 @@ describe('Update a Personal Account', () => {
   });
 
 
+  it('updates a personal account - description and birthDate, gender,countryRegion is not updated', async () => {
+    const { response, userUpdated } = await updateUser({
+      description: "Esto esta modificado"
+    });
 
+    expect(response.status).toBe(200);
+    expect(userUpdated).toBeTruthy();
+    expect(userUpdated?.birthDate).toBe('2000-01-01');
+    expect(userUpdated?.gender).toBe("F");
+    expect(userUpdated?.countryRegion).toBe("Peru");
+    expect(userUpdated?.description).toBe("Esto esta modificado");
 
-
+  });
 
 
 
@@ -293,3 +305,118 @@ describe('Update an Business Account', () => {
 
 
 });
+
+
+describe('Update user-preferences (Business & Personal Account)', () => {
+  beforeAll(async () => {
+    const moduleRef = await Test.createTestingModule({
+      imports: [AppModule],
+    }).compile();
+
+    app = moduleRef.createNestApplication();
+    await app.init();
+
+    dbConnection = moduleRef.get<DatabaseService>(DatabaseService).getDBHandle();
+    httpServer = app.getHttpServer();
+    await dbConnection.collection('postcategories').deleteMany({})
+    await dbConnection.collection('users').deleteMany({});
+    await dbConnection.collection('postcategories').insertOne({
+      _id: new Types.ObjectId("66d2177dda11f93d8647cf3b"),
+      label: "Agricultura",
+    })
+    await dbConnection.collection('postcategories').insertOne({
+      _id: new Types.ObjectId("66d2177dda11f93d8647cf3c"),
+      label: "Tecnologia",
+    })
+
+    await createBusinessUser()
+    await createPersonalUser()
+
+  });
+
+  afterAll(async () => {
+    await dbConnection.close();
+    await app.close();
+  });
+
+
+  const updateUserBusiness_userPreferences = async (updateData: Record<string, any>, username: string) => {
+    const response = await request(httpServer)
+      .put(`/user/user-preferences/${username}`)
+      .set('Authorization', `bearer ${token}`)
+      .send(updateData);
+
+    const userUpdated = await dbConnection.collection('users').findOne({ username: username });
+    return { response, userUpdated };
+  };
+
+
+
+
+
+  it('updates a business account - user preferences ( backgroundColor ) ', async () => {
+    const bkColor = 4545;
+    const searchPreference = "66d2177dda11f93d8647cf3b"
+    const { response, userUpdated } = await updateUserBusiness_userPreferences({
+      backgroundColor: bkColor,
+      searchPreference: searchPreference
+    }, userSubBusiness().username);
+
+    expect(response.status).toBe(200);
+    expect(userUpdated).toBeTruthy();
+    expect(userUpdated?.userPreferences?.backgroundColor).toBe(bkColor);
+    expect(userUpdated?.userPreferences?.searchPreference.toString()).toEqual(searchPreference);
+  });
+
+
+  it('updates a business account - user preferences ( searchPreference ) ', async () => {
+    const searchPreference = "66d2177dda11f93d8647cf3c"
+    const bkColor = 4545;
+    const { response, userUpdated } = await updateUserBusiness_userPreferences({
+      backgroundColor: bkColor,
+      searchPreference: searchPreference,
+    }, userSubBusiness().username);
+
+    expect(response.status).toBe(200);
+    expect(userUpdated).toBeTruthy();
+    expect(userUpdated?.userPreferences?.searchPreference.toString()).toEqual(searchPreference);
+    expect(userUpdated?.userPreferences?.backgroundColor).toEqual(bkColor);
+  });
+
+
+
+
+
+  it('updates a Personal account - user preferences ( backgroundColor ) ', async () => {
+    const bkColor = 15234;
+    const searchPreference = "66d2177dda11f93d8647cf3b"
+    const { response, userUpdated } = await updateUserBusiness_userPreferences({
+      backgroundColor: bkColor,
+      searchPreference: searchPreference,
+    }, userSub().username);
+
+    expect(response.status).toBe(200);
+    expect(userUpdated).toBeTruthy();
+    expect(userUpdated?.userPreferences?.backgroundColor).toBe(bkColor);
+    expect(userUpdated?.userPreferences?.searchPreference.toString()).toEqual(searchPreference);
+
+  });
+
+
+  it('updates a Personal account - user preferences ( searchPreference ) ', async () => {
+    const bkColor = 15234
+    const searchPreference = "66d2177dda11f93d8647cf3c"
+    const { response, userUpdated } = await updateUserBusiness_userPreferences({
+      backgroundColor: bkColor,
+      searchPreference: searchPreference,
+    }, userSub().username);
+
+    expect(response.status).toBe(200);
+    expect(userUpdated).toBeTruthy();
+    expect(userUpdated?.userPreferences?.backgroundColor).toBe(bkColor);
+    expect(userUpdated?.userPreferences?.searchPreference.toString()).toEqual(searchPreference);
+  });
+
+
+});
+

@@ -65,9 +65,15 @@ export class SubscriptionRepository implements SubscriptionRepositoryInterface {
     try {
       const subscriptions = await this.subscriptionModel
         .find({
-          external_reference: external_reference,
+          $or: [{ external_reference: external_reference }, { external_reference: 'FREE' }],
         })
-        .populate('subscriptionPlan');
+        .populate([
+          {
+            path: 'subscriptionPlan',
+            model: 'SubscriptionPlan',
+
+          }
+        ]);
       if (!subscriptions) return [];
       return subscriptions.map((subscription) => {
         return Subscription.fromDocument(subscription);
@@ -150,7 +156,7 @@ export class SubscriptionRepository implements SubscriptionRepositoryInterface {
 
   async updateSubscriptionStatus(id: string, statusObj: any): Promise<void> {
     try {
-      this.logger.log('Update subscription with ID: ' + id + 'STATUS: ' +  statusObj.status);
+      this.logger.log('Update subscription with ID: ' + id + 'STATUS: ' + statusObj.status);
       const result = await this.subscriptionModel.findOneAndUpdate(
         { mpPreapprovalId: id },
         statusObj,

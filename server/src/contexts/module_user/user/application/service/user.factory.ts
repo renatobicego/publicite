@@ -25,9 +25,10 @@ export class UserFactory implements UserFactoryInterface {
 
 
 
-
     createUser(userType: UserType, userRequest: any): User {
-        const subscriptionFree = ["675f2b75b0a367029a0d35a6" as unknown as ObjectId]
+
+        console.log(userType, userRequest)
+        const subscriptionFree = ["67ad4c4bdb9283528cea83b9" as unknown as ObjectId]
         const activeRelations = [] as unknown as ObjectId[]
         const userBase = new User(
             userRequest.clerkId,
@@ -49,9 +50,9 @@ export class UserFactory implements UserFactoryInterface {
             userRequest.post,
             userRequest.userRelations,
             userRequest.userPreferences,
-            userRequest.activeRelations ?? activeRelations 
+            userRequest.activeRelations ?? activeRelations
         );
-        switch (userType) {
+        switch (userType.toLowerCase()) {
             case UserType.Person: {
                 this.logger.log('We are creating a persona account');
                 return new UserPerson(userBase, userRequest.gender, userRequest.birthDate);

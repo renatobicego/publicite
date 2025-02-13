@@ -5,12 +5,14 @@ import {
   HttpStatus,
   Inject,
   Param,
+  UseGuards,
 } from '@nestjs/common';
 
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { SubscriptionAdapterInterface } from '../../application/adapter/in/mp-subscription.adapter.interface';
 import { SubscriptionResponse } from '../../application/adapter/HTTP-RESPONSE/subscription.response';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ClerkAuthGuard } from 'src/contexts/module_shared/auth/clerk-auth/clerk.auth.guard';
 
 @ApiTags('My Subscriptions')
 @Controller('subscription')
@@ -34,6 +36,7 @@ export class SubscriptionController {
   })
   @HttpCode(HttpStatus.OK)
   @ApiParam({ name: '_id', description: 'The user mongo id' })
+  //@UseGuards(ClerkAuthGuard)
   async getActiveSubscriptionController(
     @Param('_id') _id: string,
   ): Promise<SubscriptionResponse[] | []> {
