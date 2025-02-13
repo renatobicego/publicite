@@ -1,4 +1,4 @@
-import mongoose, { Schema, Types } from 'mongoose';
+import mongoose, { model, Schema, Types } from 'mongoose';
 
 //subscription_preapproval
 
@@ -36,3 +36,8 @@ export interface SubscriptionDocument extends Document {
 
 
 SubscriptionSchema.index({ mpPreapprovalId: 1 }, { unique: true });
+
+
+
+const SubscriptionModel = model<SubscriptionDocument>('Subscription', SubscriptionSchema);
+export default SubscriptionModel

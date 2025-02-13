@@ -425,12 +425,13 @@ export class UserRepository implements UserRepositoryInterface {
 
   async pushActiveRelationToUser(userRequestId: any, userRelationId: any, session: any): Promise<void> {
     try {
-      await this.user.updateOne({ _id: userRequestId }, { $addToSet: { activeRelations: userRelationId } }).session(session);
+      await this.user.updateOne({ _id: userRequestId }, { $push: { activeRelations: userRelationId } }).session(session);
       this.logger.log("Relation active saved successfully in user's activeRelations array");
     } catch (error: any) {
       throw error;
     }
   }
+
 
 
 

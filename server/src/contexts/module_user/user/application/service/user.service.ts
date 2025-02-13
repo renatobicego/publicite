@@ -59,12 +59,8 @@ export class UserService implements UserServiceInterface {
         session
       )
 
-      const { activeRelations } = activeRelationOfUser
 
-
-
-      if (activeRelations && (activeRelations.length < maxRelation)) {
-        console.log("asd")
+      if (activeRelationOfUser && (activeRelationOfUser.length < maxRelation)) {
         await this.userRepository.pushActiveRelationToUser(backData.userIdTo, userRelationId, session)
       }
 

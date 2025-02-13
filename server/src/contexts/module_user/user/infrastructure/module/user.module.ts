@@ -16,6 +16,7 @@ import { UserAdapter } from '../adapters/user.adapter';
 import { UserResolver } from '../graphql/resolver/user.resolver';
 import { UserRelationModel } from '../schemas/user.relation.schema';
 import { MagazineModelSharedModule } from 'src/contexts/module_shared/sharedSchemas/magazine.model.schema';
+import { SubscriptionSchema } from 'src/contexts/module_webhook/mercadopago/infastructure/schemas/subscription.schema';
 
 @Module({
   imports: [
@@ -34,7 +35,7 @@ import { MagazineModelSharedModule } from 'src/contexts/module_shared/sharedSche
       {
         name: UserRelationModel.modelName,
         schema: UserRelationModel.schema,
-      }
+      },
     ]),
     ContactModule,
     SectorModule,

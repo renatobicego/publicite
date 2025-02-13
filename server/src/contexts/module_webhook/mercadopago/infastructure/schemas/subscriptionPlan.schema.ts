@@ -3,7 +3,7 @@
 El tipo de dato de status es ENUM, por ahjora lo dejo como string
 */
 
-import { ObjectId, Schema, Types } from "mongoose";
+import { model, ObjectId, Schema, Types } from "mongoose";
 
 export const SubscriptionPlanSchema = new Schema({
 	mpPreapprovalPlanId: { type: String, required: true },
@@ -34,3 +34,8 @@ export interface SubscriptionPlanDocument extends Document {
 	maxContacts:number;
 	_id: ObjectId;
 }
+
+
+
+const SubscriptionPlanModel = model<SubscriptionPlanDocument>('SubscriptionPlan', SubscriptionPlanSchema);
+export default SubscriptionPlanModel
