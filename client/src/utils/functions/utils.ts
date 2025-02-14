@@ -1,5 +1,4 @@
 import { Subscription, SubscriptionPlan } from "@/types/subscriptions";
-import { getLocalTimeZone, parseDate, today } from "@internationalized/date";
 
 export const checkIfUserIsSubscribed = (
   subscriptionsOfUser: Subscription[],
@@ -15,15 +14,15 @@ export const checkIfUserIsSubscribed = (
 
     // Check if subscription is active
     if (isSameId) {
-      const todayDate = today(getLocalTimeZone());
+      // const todayDate = today(getLocalTimeZone());
       switch (true) {
         case subscription.status === "active":
           return true;
-        // if the subscription has been cancelled but it's still within 3 days of its end date
-        case subscription.status === "cancelled" &&
-          todayDate.add({ days: 3 }).compare(parseDate(subscription.endDate)) >
-            0:
-          return true;
+        // // if the subscription has been cancelled but it's still within 3 days of its end date
+        // case subscription.status === "cancelled" &&
+        //   todayDate.add({ days: 3 }).compare(parseDate(subscription.endDate)) >
+        //     0:
+        //   return true;
         default:
           return false;
       }

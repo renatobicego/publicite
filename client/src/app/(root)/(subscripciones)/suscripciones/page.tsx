@@ -9,6 +9,7 @@ import {
 } from "@/services/subscriptionServices";
 import { auth } from "@clerk/nextjs/server";
 import ErrorCard from "@/components/ErrorCard";
+import { SubscriptionPlan } from "@/types/subscriptions";
 
 export default async function SubscriptionPlans() {
   const breadcrumbsItems = [
@@ -23,13 +24,12 @@ export default async function SubscriptionPlans() {
   ];
   const { userId } = auth();
 
-  const subscriptions = await getSubscriptionsPlans();
+  const subscriptions: SubscriptionPlan[] | { error: string } =
+    await getSubscriptionsPlans();
   const susbcriptionsOfUser = await getSubscriptionsOfUser(userId as string);
 
-  if (subscriptions.error || "error" in susbcriptionsOfUser) {
-    return (
-      <ErrorCard message={subscriptions.error || "Error obteniendo planes"} />
-    );
+  if ("error" in susbcriptionsOfUser || "error" in subscriptions) {
+    return <ErrorCard message={"Error obteniendo planes de suscripción"} />;
   }
 
   return (
@@ -44,11 +44,11 @@ export default async function SubscriptionPlans() {
             Nuestros planes de subscripción están pensados para ser accesibles y
             enfocados en tus necesidades.{" "}
           </p>
-          <Users />
+          {/* <Users /> */}
         </div>
         <SubscriptionGrid
           type="suscripciones"
-          subscriptions={subscriptions}
+          subscriptions={subscriptions.filter((plan) => !plan.isPack)}
           subscriptionsOfUser={susbcriptionsOfUser}
         />
       </section>
