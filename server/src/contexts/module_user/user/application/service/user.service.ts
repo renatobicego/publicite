@@ -200,7 +200,7 @@ export class UserService implements UserServiceInterface {
       const userRelationDocument =
         await this.userRepository.getRelationsFromUserByUserId(userRequestId);
       const { userRelations } = userRelationDocument;
-      return userRelations;
+      return userRelations ?? []
     } catch (error: any) {
       throw error;
     }
