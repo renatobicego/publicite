@@ -373,3 +373,23 @@ export const getActiveRelationsQuery = gql`
     }
   }
 `;
+
+export const getMatchPostQuery = gql`
+  query FindMatchPost($postType: PostType!, $searchTerm: String!) {
+    findMatchPost(postType: $postType, searchTerm: $searchTerm) {
+      _id
+      title
+      description
+      frequencyPrice
+      imagesUrls
+      petitionType
+      postType
+      price
+      reviews {
+        rating
+        _id
+      }
+      toPrice
+    }
+  }
+`;

@@ -16,6 +16,7 @@ import {
   deletePostReactionMutation,
   editPostMutation,
   getActiveRelationsQuery,
+  getMatchPostQuery,
   getPostByIdQuery,
   getPostCategories,
   getPostsByIdAndRecommendationsQuery,
@@ -98,7 +99,6 @@ export const postPost = async (
   values: GoodPostValues | PetitionPostValues | ServicePostValues
 ) => {
   const authorId = auth().sessionClaims?.metadata.mongoId;
-  console.log(values);
   try {
     const { data } = await getClient().mutate({
       mutation: postPostMutation,
@@ -171,6 +171,26 @@ export const getPosts = async (
     return {
       error: "Error al traer los anuncios. Por favor intenta de nuevo.",
     };
+  }
+};
+
+export const getMatchPostPetition = async (
+  postPetitionType: "good" | "service",
+  searchTerm: string
+): Promise<Post | null | { error: string }> => {
+  try {
+    const { context } = await getApiContext(true);
+    const { data } = await query({
+      query: getMatchPostQuery,
+      variables: {
+        postType: postPetitionType,
+        searchTerm,
+      },
+      context,
+    });
+    return data.findMatchPost;
+  } catch (error) {
+    return handleApolloError(error);
   }
 };
 

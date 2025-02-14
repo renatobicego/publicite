@@ -11,7 +11,7 @@ import {
 } from "@nextui-org/react";
 import { useState } from "react";
 import PostCard from "../cards/PostCard/PostCard";
-import { getPosts } from "@/services/postsServices";
+import { getMatchPostPetition } from "@/services/postsServices";
 import { toastifyError } from "@/utils/functions/toastify";
 
 const MatchPetitionPost = ({
@@ -23,19 +23,18 @@ const MatchPetitionPost = ({
 }) => {
   const { isOpen, onOpenChange } = useDisclosure();
   const [loading, setLoading] = useState(false);
-  const [postMatched, setPostMatched] = useState<Post>();
+  const [postMatched, setPostMatched] = useState<Post | null>();
 
   const findMatch = async () => {
-    try {
-      setLoading(true);
-      const { items } = await getPosts(postTitle, 1, petitionType, null, 1);
-      console.log(items);
-      setPostMatched(items[0]);
-    } catch (error) {
+    setLoading(true);
+    const data = await getMatchPostPetition(petitionType, postTitle);
+    setLoading(false);
+    if (!data) return;
+    if ("error" in data) {
       toastifyError("Error al encontrar coincidencias");
-    } finally {
-      setLoading(false);
+      return;
     }
+    setPostMatched(data);
   };
   return (
     <>
@@ -55,7 +54,8 @@ const MatchPetitionPost = ({
           {(onClose) => (
             <>
               <ModalHeader className="flex flex-col gap-1">
-                Coincidencia encontrada para {postTitle}
+                Coincidencia encontrada para{" "}
+                <em className="font-semibold">{postTitle}</em>
               </ModalHeader>
               <ModalBody className="pb-4">
                 {loading ? (

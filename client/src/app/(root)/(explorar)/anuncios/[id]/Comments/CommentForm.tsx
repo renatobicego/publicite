@@ -45,9 +45,7 @@ const CommentForm = ({
     actions: FormikHelpers<PostCommentForm>
   ) => {
     // send comment to server
-    emitPostActivityNotification<{
-      body: PostComment;
-    }>(
+    emitPostActivityNotification<PostComment>(
       socket,
       userIdTo,
       post,
@@ -67,9 +65,7 @@ const CommentForm = ({
           }
     )
       .then((res) => {
-        const {
-          body: { body },
-        } = res; // get comment data
+        const { body } = res; // get comment data
         if (commentToReplyId) {
           // if its a reply, update comment
           setComments((prev) =>

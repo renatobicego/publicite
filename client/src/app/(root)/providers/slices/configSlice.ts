@@ -43,7 +43,6 @@ const configSlice = createSlice({
   initialState,
   reducers: {
     setActiveRelations(state, action) {
-      console.log(state.configData);
       if (!state.configData) return;
       state.configData = {
         ...state.configData,
@@ -51,8 +50,6 @@ const configSlice = createSlice({
       };
     },
     setSearchPreferences(state, action) {
-      console.log(state.configData);
-
       if (!state.configData) return;
       state.configData = {
         ...state.configData,
