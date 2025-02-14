@@ -37,7 +37,7 @@ const ReviewPostForm = ({
     review: "",
   };
 
-  const handleSubmit = async (
+  const handleSubmit = (
     values: PostReviewValues,
     actions: FormikHelpers<PostReviewValues>
   ) => {
@@ -69,8 +69,10 @@ const ReviewPostForm = ({
         actions.resetForm();
         toastifySuccess("Se ha enviado la opinión correctamente");
       })
-      .catch(handlePostCalificationNotificationError);
-    actions.setSubmitting(false);
+      .catch(handlePostCalificationNotificationError)
+      .finally(() => {
+        actions.setSubmitting(false);
+      });
   };
 
   return (
