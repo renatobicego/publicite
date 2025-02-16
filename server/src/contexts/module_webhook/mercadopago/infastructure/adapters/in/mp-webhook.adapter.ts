@@ -242,9 +242,46 @@ export class MpWebhookAdapter {
     }
   }
 
-  async test_payment_notif(testType: string, userId: string): Promise<any> {
-    await this.mpHandlerEvent.test_payment_notif(testType, userId);
-  }
+  // async test_payment_notif(testType: string, userId: string) {
+  //   const subscription = {
+  //     subscriptionPlan: "66c49508e80296e90ec637d8"
+  //   }
+
+  //   let paymentDataFromMeli: PaymentDataFromMeli = {
+  //     event: payment_notification_events_enum.payment_approved,
+  //     subscriptionPlanId: subscription.subscriptionPlan,
+  //     reason: "Publicite premium",
+  //     status: 'approved',
+  //     retryAttemp: "0",
+  //     userId: userId,
+  //   }
+
+  //   if (testType === 'rejected') {
+  //     paymentDataFromMeli = {
+  //       event: payment_notification_events_enum.payment_rejected,
+  //       subscriptionPlanId: subscription.subscriptionPlan,
+  //       reason: "Publicite premium",
+  //       status: 'rejected',
+  //       retryAttemp: "2",
+  //       userId: userId,
+  //     }
+  //   }
+
+  //   if (testType === 'pending') {
+  //     paymentDataFromMeli = {
+  //       event: payment_notification_events_enum.payment_pending,
+  //       subscriptionPlanId: subscription.subscriptionPlan,
+  //       reason: "Publicite premium",
+  //       status: 'pending',
+  //       retryAttemp: "0",
+  //       userId: userId,
+  //     }
+  //   }
+
+  //   await this.emmiter.emitAsync(subscription_event, paymentDataFromMeli);
+
+
+  // }
 
 
 

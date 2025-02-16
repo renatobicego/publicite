@@ -1,6 +1,5 @@
 import { ObjectId } from 'mongoose';
 
-import { SubscriptionResponse } from 'src/contexts/module_webhook/mercadopago/application/adapter/HTTP-RESPONSE/subscription.response';
 
 //subscription_preapproval
 export default class Subscription {
@@ -89,39 +88,5 @@ export default class Subscription {
     return this.timeOfUpdate;
   }
 
-  static fromDocument(doc: any): Subscription {
-    console.log('convirtiendo sub schema a entity');
-    return new Subscription(
-      doc.mpPreapprovalId,
-      doc.payerId,
-      doc.status,
-      doc.subscriptionPlan,
-      doc.startDate,
-      doc.endDate,
-      doc.external_reference,
-      doc.timeOfUpdate,
-      doc.nextPaymentDate,
-      doc.paymentMethodId,
-      doc.cardId,
-      doc._id ? doc._id : ' ',
-    );
-  }
-  static formatEntityToResponse(
-    subscription: Subscription,
-  ): SubscriptionResponse {
-    return {
-      _id: subscription.getId() ? subscription.getId() : null,
-      mpPreapprovalId: subscription.getMpPreapprovalId(),
-      payerId: subscription.getPayerId(),
-      status: subscription.getStatus(),
-      subscriptionPlan: subscription.getSubscriptionPlanObject(),
-      startDate: subscription.getStartDate(),
-      endDate: subscription.getEndDate(),
-      external_reference: subscription.external_reference,
-      timeOfUpdate: subscription.getDayOfUpdate(),
-      nextPaymentDate: subscription.getNextPaymentDate(),
-      paymentMethodId: subscription.getPaymentMethodId(),
-      cardId: subscription.getCardId(),
-    };
-  }
+
 }

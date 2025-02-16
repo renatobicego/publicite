@@ -67,6 +67,7 @@ export class SubscriptionPlanResponse {
 
   readonly postsLibresCount: number
   readonly postsAgendaCount: number
+  readonly isPack: boolean
 
 
   constructor(
@@ -80,7 +81,8 @@ export class SubscriptionPlanResponse {
     price: number,
     isFree: boolean,
     postsLibresCount: number,
-    postsAgendaCount: number
+    postsAgendaCount: number,
+    isPack: boolean
 
   ) {
     this._id = _id;
@@ -93,6 +95,7 @@ export class SubscriptionPlanResponse {
     this.price = price;
     this.isFree = isFree;
     this.postsLibresCount = postsLibresCount;
-    this.postsAgendaCount = postsAgendaCount
+    this.postsAgendaCount = postsAgendaCount;
+    this.isPack = isPack
   }
 }

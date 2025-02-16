@@ -33,6 +33,7 @@ export interface Subscription_preapproval {
       last_charged_date: string; // ISO date string
       last_charged_amount: number;
     };
+    next_payment_date: string;
     payment_method_id: string;
     card_id: string;
     payment_method_id_secondary: null | string;

@@ -51,33 +51,34 @@ export class SubscriptionRepository implements SubscriptionRepositoryInterface {
 
   async findSubscriptionByPreapprovalId(
     id: string,
-  ): Promise<Subscription | null> {
+  ): Promise<any> {
     this.logger.log('Find subscription by preapproval ID: ' + id);
     const subscription = await this.subscriptionModel.findOne({
       mpPreapprovalId: id,
-    }); // mpPreapprovalId es el campo de ID de SUSCRIPCION de MELI
-    return subscription ? Subscription.fromDocument(subscription) : null;
+    });
+    return subscription
   }
 
   async getSubscriptionHistory(
     external_reference: string,
-  ): Promise<Subscription[]> {
+  ): Promise<any[]> {
     try {
       const subscriptions = await this.subscriptionModel
         .find({
-          $or: [{ external_reference: external_reference }, { external_reference: 'FREE' }],
+          status: { $ne: 'cancelled', },
+          $or: [
+            { external_reference: external_reference },
+            { external_reference: 'FREE' }
+          ]
         })
         .populate([
           {
             path: 'subscriptionPlan',
             model: 'SubscriptionPlan',
-
           }
         ]);
       if (!subscriptions) return [];
-      return subscriptions.map((subscription) => {
-        return Subscription.fromDocument(subscription);
-      });
+      return subscriptions
     } catch (error: any) {
       throw error;
     }

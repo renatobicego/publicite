@@ -12,10 +12,8 @@ import { Subscription_preapproval } from '../../../domain/entity_mp/subscription
 
 import { ErrorServiceInterface } from '../../../domain/service/error/error.service.interface';
 import { EmitterService } from 'src/contexts/module_shared/event-emmiter/emmiter';
-import Subscription from '../../../domain/entity/subcription.entity';
 import { payment_notification_events_enum, PaymentDataFromMeli } from '../../../domain/entity/payment.data.meli';
 import { Payment as Payment_meli } from '../../../domain/entity_mp/payment';
-import Payment from '../../../domain/entity/payment.entity';
 
 
 
@@ -180,13 +178,24 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
     this.logger.log('handleEvent_subscription_preapproval_updated');
     try {
       /*----------------------------------- FETCH TO MERCADOPAGO SUBSCRIPTION_PREAPPROVAL (ACTUALIZACION DE SUSCRIPCION)------------------------------ */
-      const subscription_preapproval_update =
+      const subscription_preapproval_update: Subscription_preapproval =
         await this.fetchToMpAdapter.getDataFromMp_fetch(
           `${this.URL_SUBCRIPTION_PREAPPROVAL_CHECK}${dataID}`,
         );
       console.log('subscription_preapproval_update RESPONSE:');
       console.log(subscription_preapproval_update);
+      const { preapproval_plan_id, reason, status, external_reference } =
+        subscription_preapproval_update;
 
+      const data = {
+        subscriptionPlanId: preapproval_plan_id,
+        reason: reason,
+        status: status,
+        retryAttemp: 1,
+        userId: external_reference,
+      }
+
+      await this.make_payment_notification_and_send(data);
 
       await this.subscriptionService.updateSubscription_preapproval(
         subscription_preapproval_update,
@@ -250,46 +259,7 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
       throw new Error(error);
     }
   }
-  async test_payment_notif(testType: string, userId: string) {
-    const subscription = {
-      subscriptionPlan: "66c49508e80296e90ec637d8"
-    }
 
-    let paymentDataFromMeli: PaymentDataFromMeli = {
-      event: payment_notification_events_enum.payment_approved,
-      subscriptionPlanId: subscription.subscriptionPlan,
-      reason: "Publicite premium",
-      status: 'approved',
-      retryAttemp: "0",
-      userId: userId,
-    }
-
-    if (testType === 'rejected') {
-      paymentDataFromMeli = {
-        event: payment_notification_events_enum.payment_rejected,
-        subscriptionPlanId: subscription.subscriptionPlan,
-        reason: "Publicite premium",
-        status: 'rejected',
-        retryAttemp: "2",
-        userId: userId,
-      }
-    }
-
-    if (testType === 'pending') {
-      paymentDataFromMeli = {
-        event: payment_notification_events_enum.payment_pending,
-        subscriptionPlanId: subscription.subscriptionPlan,
-        reason: "Publicite premium",
-        status: 'pending',
-        retryAttemp: "0",
-        userId: userId,
-      }
-    }
-
-    await this.emmiter.emitAsync(subscription_event, paymentDataFromMeli);
-
-
-  }
 
   private async make_payment_notification_and_send(data: {
     subscriptionPlanId: any,
@@ -315,6 +285,7 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
         ['approved', payment_notification_events_enum.payment_approved],
         ['pending', payment_notification_events_enum.payment_pending],
         ['rejected', payment_notification_events_enum.payment_rejected],
+        ['cancelled', payment_notification_events_enum.subscription_cancelled],
       ])
 
       const paymentStatus = data.status;
@@ -582,415 +553,46 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
 
 }
 
-
-
-
-/* CRONOLOGIA DE EVENTOS EJEMPLOS*/
-//PAYMENT CARD_VALIDATION
+//Test payment notif
 /*
-{
-    "accounts_info": null,
-    "acquirer_reconciliation": [],
-    "additional_info": {
-        "authentication_code": null,
-        "available_balance": null,
-        "nsu_processadora": null
-    },
-    "authorization_code": "301299",
-    "binary_mode": true,
-    "brand_id": null,
-    "build_version": "3.66.0-rc-2",
-    "call_for_authorize_id": null,
-    "captured": true,
-    "card": {
-        "bin": "50317557",
-        "cardholder": {
-            "identification": {
-                "number": "12345678",
-                "type": "DNI"
-            },
-            "name": "Test Test"
-        },
-        "country": null,
-        "date_created": "2024-08-23T17:16:56.000-04:00",
-        "date_last_updated": "2024-08-23T17:16:56.000-04:00",
-        "expiration_month": 11,
-        "expiration_year": 2025,
-        "first_six_digits": "503175",
-        "id": null,
-        "last_four_digits": "0604",
-        "tags": null
-    },
-    "charges_details": [],
-    "collector_id": 1956533506,
-    "corporation_id": null,
-    "counter_currency": null,
-    "coupon_amount": 0,
-    "currency_id": "ARS",
-    "date_approved": "2024-08-23T17:16:56.000-04:00",
-    "date_created": "2024-08-23T17:16:56.000-04:00",
-    "date_last_updated": "2024-08-23T17:16:56.000-04:00",
-    "date_of_expiration": null,
-    "deduction_schema": null,
-    "description": "Recurring payment validation",
-    "differential_pricing_id": null,
-    "external_reference": null,
-    "fee_details": [],
-    "financing_group": null,
-    "id": 86031926816,
-    "installments": 1,
-    "integrator_id": null,
-    "issuer_id": "3",
-    "live_mode": true,
-    "marketplace_owner": null,
-    "merchant_account_id": null,
-    "merchant_number": null,
-    "metadata": {},
-    "money_release_date": null,
-    "money_release_schema": null,
-    "money_release_status": null,
-    "notification_url": null,
-    "operation_type": "card_validation",
-    "order": {},
-    "payer": {
-        "email": "test_user_1345316664@testuser.com",
-        "entity_type": null,
-        "first_name": null,
-        "id": "1948475212",
-        "identification": {
-            "number": "1111111",
-            "type": "DNI"
-        },
-        "last_name": null,
-        "operator_id": null,
-        "phone": {
-            "number": null,
-            "extension": null,
-            "area_code": null
-        },
-        "type": null
-    },
-    "payment_method": {
-        "id": "master",
-        "issuer_id": "3",
-        "type": "credit_card"
-    },
-    "payment_method_id": "master",
-    "payment_type_id": "credit_card",
-    "platform_id": null,
-    "point_of_interaction": {
-        "business_info": {
-            "branch": "Merchant Services",
-            "sub_unit": "recurring",
-            "unit": "online_payments"
-        },
-        "transaction_data": {},
-        "type": "UNSPECIFIED"
-    },
-    "pos_id": null,
-    "processing_mode": "aggregator",
-    "refunds": [],
-    "release_info": null,
-    "shipping_amount": 0,
-    "sponsor_id": null,
-    "statement_descriptor": "Mercadopago*fake",
-    "status": "approved",
-    "status_detail": "accredited",
-    "store_id": null,
-    "tags": null,
-    "taxes_amount": 0,
-    "transaction_amount": 0,
-    "transaction_amount_refunded": 0,
-    "transaction_details": {
-        "acquirer_reference": null,
-        "external_resource_url": null,
-        "financial_institution": null,
-        "installment_amount": 0,
-        "net_received_amount": 0,
-        "overpaid_amount": 0,
-        "payable_deferral_period": null,
-        "payment_method_reference_id": null,
-        "total_paid_amount": 0
+async test_payment_notif(testType: string, userId: string) {
+  const subscription = {
+    subscriptionPlan: "66c49508e80296e90ec637d8"
+  }
+
+  let paymentDataFromMeli: PaymentDataFromMeli = {
+    event: payment_notification_events_enum.payment_approved,
+    subscriptionPlanId: subscription.subscriptionPlan,
+    reason: "Publicite premium",
+    status: 'approved',
+    retryAttemp: "0",
+    userId: userId,
+  }
+
+  if (testType === 'rejected') {
+    paymentDataFromMeli = {
+      event: payment_notification_events_enum.payment_rejected,
+      subscriptionPlanId: subscription.subscriptionPlan,
+      reason: "Publicite premium",
+      status: 'rejected',
+      retryAttemp: "2",
+      userId: userId,
     }
-}
-*/
+  }
 
-//PRE APPROVAL (SUBSCRIPTION)
-/*
-{
-    "id": "290d32f932264d41b38074269a136bc9",
-    "payer_id": 1948475212,
-    "payer_email": "",
-    "back_url": "https://www.mercadopago.com.ar/subscriptions",
-    "collector_id": 1956533506,
-    "application_id": 7935091958371220,
-    "status": "authorized",
-    "reason": "tu wacha",
-    "date_created": "2024-08-23T17:16:56.540-04:00",
-    "last_modified": "2024-08-23T19:16:14.571-04:00",
-    "init_point": "https://www.mercadopago.com.ar/subscriptions/checkout?preapproval_id=290d32f932264d41b38074269a136bc9",
-    "preapproval_plan_id": "2c9380849174c2cf01917c0d6f3902bb",
-    "auto_recurring": {
-        "frequency": 1,
-        "frequency_type": "months",
-        "transaction_amount": 60000.00,
-        "currency_id": "ARS",
-        "start_date": "2024-08-23T17:16:56.540-04:00",
-        "end_date": "2024-09-22T23:00:00.000-04:00",
-        "billing_day_proportional": false,
-        "has_billing_day": false,
-        "free_trial": null
-    },
-    "summarized": {
-        "quotas": 1,
-        "charged_quantity": 1,
-        "pending_charge_quantity": 0,
-        "charged_amount": 60000.00,
-        "pending_charge_amount": 0.00,
-        "semaphore": "green",
-        "last_charged_date": "2024-08-23T18:01:48.231-04:00",
-        "last_charged_amount": 60000.00
-    },
-    "next_payment_date": "2024-09-23T17:16:56.000-04:00",
-    "payment_method_id": "master",
-    "card_id": "9475683836",
-    "payment_method_id_secondary": null,
-    "first_invoice_offset": null,
-    "subscription_id": "290d32f932264d41b38074269a136bc9"
-}
-*/
-
-//PAYMENT SCHEDULED
-/*
-{
-    "preapproval_id": "c6c2978a41e2406ab32b529bc8bf510d",
-    "id": 7012805572,
-    "type": "recurring",
-    "status": "scheduled",
-    "date_created": "2024-09-12T09:01:52.993-04:00",
-    "last_modified": "2024-09-12T10:07:20.671-04:00",
-    "transaction_amount": 15.00,
-    "currency_id": "ARS",
-    "reason": "publicite_Maxi",
-    "external_reference": "TEST_PAGO_SIN_FONDOS_2",
-    "payment": {
-        "id": 87681460322,
-        "status": "in_process",
-        "status_detail": "offline_process"
-    },
-    "rejection_code": "offline_process",
-    "retry_attempt": 1,
-    "next_retry_date": "2024-09-13T08:43:21.000-04:00",
-    "debit_date": "2024-09-12T09:00:11.000-04:00",
-    "payment_method_id": "card"
-}
-*/
-
-// PAYMENT COMPLETE
-/*
-{
-    "accounts_info": null,
-    "acquirer_reconciliation": [],
-    "additional_info": {
-        "authentication_code": null,
-        "available_balance": null,
-        "nsu_processadora": null
-    },
-    "authorization_code": "301299",
-    "binary_mode": false,
-    "brand_id": null,
-    "build_version": "3.66.0-rc-2",
-    "call_for_authorize_id": null,
-    "captured": true,
-    "card": {
-        "bin": "50317557",
-        "cardholder": {
-            "identification": {
-                "number": "12345678",
-                "type": "DNI"
-            },
-            "name": "Test Test"
-        },
-        "country": null,
-        "date_created": "2024-08-23T19:11:32.000-04:00",
-        "date_last_updated": "2024-08-23T19:11:32.000-04:00",
-        "expiration_month": 11,
-        "expiration_year": 2025,
-        "first_six_digits": "503175",
-        "id": "9475683836",
-        "last_four_digits": "0604",
-        "tags": null
-    },
-    "charges_details": [
-        {
-            "accounts": {
-                "from": "collector",
-                "to": "mp"
-            },
-            "amounts": {
-                "original": 2460,
-                "refunded": 0
-            },
-            "client_id": 0,
-            "date_created": "2024-08-23T19:11:32.000-04:00",
-            "id": "85755158103-001",
-            "last_updated": "2024-08-23T19:11:32.000-04:00",
-            "metadata": {
-                "source": "rule-engine"
-            },
-            "name": "mercadopago_fee",
-            "refund_charges": [],
-            "reserve_id": null,
-            "type": "fee"
-        }
-    ],
-    "collector_id": 1956533506,
-    "corporation_id": null,
-    "counter_currency": null,
-    "coupon_amount": 0,
-    "currency_id": "ARS",
-    "date_approved": "2024-08-23T19:11:32.000-04:00",
-    "date_created": "2024-08-23T19:11:32.000-04:00",
-    "date_last_updated": "2024-08-23T19:11:36.000-04:00",
-    "date_of_expiration": null,
-    "deduction_schema": null,
-    "description": "tu wacha",
-    "differential_pricing_id": null,
-    "external_reference": null,
-    "fee_details": [
-        {
-            "amount": 2460,
-            "fee_payer": "collector",
-            "type": "mercadopago_fee"
-        }
-    ],
-    "financing_group": null,
-    "id": 85755158103,
-    "installments": 1,
-    "integrator_id": null,
-    "issuer_id": "3",
-    "live_mode": true,
-    "marketplace_owner": null,
-    "merchant_account_id": null,
-    "merchant_number": null,
-    "metadata": {
-        "preapproval_id": "290d32f932264d41b38074269a136bc9"
-    },
-    "money_release_date": "2024-09-10T19:11:32.000-04:00",
-    "money_release_schema": null,
-    "money_release_status": "pending",
-    "notification_url": null,
-    "operation_type": "recurring_payment",
-    "order": {},
-    "payer": {
-        "email": "test_user_1345316664@testuser.com",
-        "entity_type": null,
-        "first_name": null,
-        "id": "1948475212",
-        "identification": {
-            "number": "1111111",
-            "type": "DNI"
-        },
-        "last_name": null,
-        "operator_id": null,
-        "phone": {
-            "number": null,
-            "extension": null,
-            "area_code": null
-        },
-        "type": null
-    },
-    "payment_method": {
-        "data": {
-            "routing_data": {
-                "merchant_account_id": "5924780738444"
-            }
-        },
-        "id": "master",
-        "issuer_id": "3",
-        "type": "credit_card"
-    },
-    "payment_method_id": "master",
-    "payment_type_id": "credit_card",
-    "platform_id": null,
-    "point_of_interaction": {
-        "application_data": {
-            "name": "recurring",
-            "version": "3.23.0-rc-1"
-        },
-        "business_info": {
-            "branch": "Merchant Services",
-            "sub_unit": "recurring",
-            "unit": "online_payments"
-        },
-        "transaction_data": {
-            "billing_date": "2024-08-23",
-            "first_time_use": true,
-            "invoice_id": "a77cd92bee614f85938dfc3cab59f087",
-            "invoice_period": {
-                "period": 1,
-                "type": "monthly"
-            },
-            "payment_reference": null,
-            "plan_id": "7f58a1db5eba4144998be3eb855d11b2",
-            "processor": null,
-            "subscription_id": "290d32f932264d41b38074269a136bc9",
-            "subscription_sequence": {
-                "number": 1,
-                "total": null
-            },
-            "user_present": null
-        },
-        "type": "SUBSCRIPTIONS"
-    },
-    "pos_id": null,
-    "processing_mode": "aggregator",
-    "refunds": [],
-    "release_info": null,
-    "shipping_amount": 0,
-    "sponsor_id": null,
-    "statement_descriptor": "Mercadopago*fake",
-    "status": "approved",
-    "status_detail": "accredited",
-    "store_id": null,
-    "tags": null,
-    "taxes_amount": 0,
-    "transaction_amount": 60000,
-    "transaction_amount_refunded": 0,
-    "transaction_details": {
-        "acquirer_reference": null,
-        "external_resource_url": null,
-        "financial_institution": null,
-        "installment_amount": 60000,
-        "net_received_amount": 57540,
-        "overpaid_amount": 0,
-        "payable_deferral_period": null,
-        "payment_method_reference_id": null,
-        "total_paid_amount": 60000
+  if (testType === 'pending') {
+    paymentDataFromMeli = {
+      event: payment_notification_events_enum.payment_pending,
+      subscriptionPlanId: subscription.subscriptionPlan,
+      reason: "Publicite premium",
+      status: 'pending',
+      retryAttemp: "0",
+      userId: userId,
     }
-}
-*/
+  }
 
-// AUTHORIZED PAYMENT (INVOICE)
-/*
-{
-    "preapproval_id": "290d32f932264d41b38074269a136bc9",
-    "id": 7012376527,
-    "type": "recurring",
-    "status": "processed",
-    "date_created": "2024-08-23T18:01:48.231-04:00",
-    "last_modified": "2024-08-23T19:16:14.531-04:00",
-    "transaction_amount": 60000.00,
-    "currency_id": "ARS",
-    "reason": "tu wacha",
-    "payment": {
-        "id": 85755158103,
-        "status": "approved",
-        "status_detail": "accredited"
-    },
-    "retry_attempt": 1,
-    "next_retry_date": "2024-09-23T17:16:56.000-04:00",
-    "debit_date": "2024-08-23T18:00:15.000-04:00",
-    "payment_method_id": "card"
+  await this.emmiter.emitAsync(subscription_event, paymentDataFromMeli);
+
+
 }
-*/
+  */

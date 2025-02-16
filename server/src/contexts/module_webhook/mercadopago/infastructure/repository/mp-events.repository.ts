@@ -9,39 +9,33 @@ import MercadoPagoEventsRepositoryInterface from '../../domain/repository/mp-eve
 
 
 export default class MercadoPagoEventsRepository
-  implements MercadoPagoEventsRepositoryInterface
-{
+  implements MercadoPagoEventsRepositoryInterface {
   constructor(
     private readonly logger: MyLoggerService,
     @InjectModel('Subscription')
     private readonly subscriptionModel: Model<SubscriptionDocument>,
-  ) {}
+  ) { }
 
-  async findAllSubscriptions(): Promise<Subscription[]> {
+  async findAllSubscriptions(): Promise<any[]> {
     this.logger.log('Find all subscriptions');
-    const subscriptions = await this.subscriptionModel.find().exec(); // Recupera todos los documentos
-    console.log(subscriptions);
-    return subscriptions.map((subscription) =>
-      Subscription.fromDocument(subscription),
-    );
+    return await this.subscriptionModel.find().lean()
+
   }
 
   async findStatusOfUserSubscription(
     payerId: string,
     subscriptionPlan: ObjectId,
     external_reference: string,
-  ): Promise<Subscription | null> {
+  ): Promise<any | null> {
     this.logger.log(
       `Finding subscription status of  payerId: ${payerId} and subscriptionPlanid: ${subscriptionPlan} and external_reference: ${external_reference}`,
     );
-    const userSubscription = await this.subscriptionModel.findOne({
+    return await this.subscriptionModel.findOne({
       payerId,
       subscriptionPlan: subscriptionPlan,
       external_reference: external_reference,
     });
-    return userSubscription
-      ? Subscription.fromDocument(userSubscription)
-      : null;
+
   }
 
   // async updateUserSubscription(

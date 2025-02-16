@@ -10,6 +10,7 @@ import { getTodayDateTime } from 'src/contexts/module_shared/utils/functions/get
 import { UserServiceInterface } from 'src/contexts/module_user/user/domain/service/user.service.interface';
 import { InjectConnection } from '@nestjs/mongoose';
 import { Connection } from 'mongoose';
+import makeReponsePlanFunction from './makeResponsePlan';
 
 export class MpSubscriptionService implements SubscriptionServiceInterface {
   constructor(
@@ -133,12 +134,19 @@ export class MpSubscriptionService implements SubscriptionServiceInterface {
   ): Promise<Subscription[]> {
     try {
       const subscriptions =
-        this.subscriptionRepository.getSubscriptionHistory(external_reference);
-      return subscriptions;
+        await this.subscriptionRepository.getSubscriptionHistory(external_reference);
+      return makeReponsePlanFunction(subscriptions);
+
     } catch (error: any) {
       throw error;
     }
   }
+
+
+
+
+
+
 
   async updateSubscription_preapproval(
     subscription_preapproval_update: any,
@@ -168,22 +176,20 @@ export class MpSubscriptionService implements SubscriptionServiceInterface {
         cardId: card_id,
       };
 
-      switch (status) {
-        case 'cancelled':
-          await this.subscriptionRepository.cancelSubscription(id);
-          return Promise.resolve();
-        case 'paused':
-          await this.subscriptionRepository.pauseSubscription(id, updateObject);
-          return Promise.resolve();
-        case 'pending':
-          await this.subscriptionRepository.pendingSubscription(id, updateObject);
-          return Promise.resolve();
-        case 'authorized':
-          await this.subscriptionRepository.updateSubscription(id, updateObject);
-          return Promise.resolve();
-        default:
-          break;
+      const statusSubscriptionMap = new Map<string, (id: string, updateObj?: any) => Promise<void>>([
+        ['cancelled', (id) => this.subscriptionRepository.cancelSubscription(id)],
+        ['paused', (id, updateObj) => this.subscriptionRepository.pauseSubscription(id, updateObj)],
+        ['pending', (id, updateObj) => this.subscriptionRepository.pendingSubscription(id, updateObj)],
+        ['authorized', (id, updateObj) => this.subscriptionRepository.updateSubscription(id, updateObj)],
+      ]);
+
+      const action = statusSubscriptionMap.get(status);
+
+      if (action) {
+        await action(id, updateObject);
+        return Promise.resolve();
       }
+
     } catch (error: any) {
       throw error;
     }

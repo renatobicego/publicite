@@ -17,7 +17,7 @@ export interface MpHandlerEventsInterface {
   ): Promise<boolean>;
 
 
-  test_payment_notif(testType: string, userId: string): Promise<any>;
+  //test_payment_notif(testType: string, userId: string): Promise<any>;
 
 
 

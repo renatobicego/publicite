@@ -31,7 +31,7 @@ describe('ContactSeller - Constructor', () => {
 
     afterAll(async () => {
         await connection.close();
-        //await contactSellerModel.deleteMany({});
+        await contactSellerModel.deleteMany({});
     })
     beforeAll(async () => {
         const moduleRef: TestingModule = await mapContactSellerModuleTesting.get("contactSeller")();

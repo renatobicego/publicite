@@ -10,7 +10,7 @@ import {
 
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { SubscriptionAdapterInterface } from '../../application/adapter/in/mp-subscription.adapter.interface';
-import { SubscriptionResponse } from '../../application/adapter/HTTP-RESPONSE/subscription.response';
+
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ClerkAuthGuard } from 'src/contexts/module_shared/auth/clerk-auth/clerk.auth.guard';
 
@@ -28,7 +28,7 @@ export class SubscriptionController {
   @ApiResponse({
     status: 200,
     description: 'Return subscriptions of user.',
-    type: [SubscriptionResponse],
+
   })
   @ApiResponse({
     status: 500,
@@ -39,7 +39,7 @@ export class SubscriptionController {
   //@UseGuards(ClerkAuthGuard)
   async getActiveSubscriptionController(
     @Param('_id') _id: string,
-  ): Promise<SubscriptionResponse[] | []> {
+  ): Promise<any[] | []> {
     try {
       this.logger.log(`Searching active subscriptions by clerkId: ${_id}`);
       const subscription =

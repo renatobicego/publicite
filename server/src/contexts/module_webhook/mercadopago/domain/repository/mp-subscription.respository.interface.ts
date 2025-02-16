@@ -1,7 +1,7 @@
 import Subscription from '../../../mercadopago/domain/entity/subcription.entity';
 
 export interface SubscriptionRepositoryInterface {
-  getSubscriptionHistory(external_reference: string): Promise<Subscription[]>;
+  getSubscriptionHistory(external_reference: string): Promise<any[]>;
   findSubscriptionByPreapprovalId(id: string): Promise<Subscription | null>;
   saveSubPreapproval(sub: Subscription, session: any): Promise<void>;
   updateSubscription(id: string, updateObject: any): Promise<void>;
