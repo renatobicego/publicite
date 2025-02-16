@@ -36,7 +36,7 @@ export class SubscriptionController {
   })
   @HttpCode(HttpStatus.OK)
   @ApiParam({ name: '_id', description: 'The user mongo id' })
-  //@UseGuards(ClerkAuthGuard)
+  @UseGuards(ClerkAuthGuard)
   async getActiveSubscriptionController(
     @Param('_id') _id: string,
   ): Promise<any[] | []> {
