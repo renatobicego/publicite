@@ -74,6 +74,7 @@ export class NotificationFactory implements NotificationFactoryInterface {
             }
             const baseNotification = new Notification(event, viewed, date, user, isActionsAvailable, backData, socketJobId, type, notificationEntityId, previousNotificationId);
             return new NotificationClass(baseNotification, frontData);
+            
         } catch (error: any) {
             this.logger.error("Error creating notification: " + error.message);
             this.logger.error("Notification Type: " + notificationType);

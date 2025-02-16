@@ -55,9 +55,7 @@ export class SocketController {
     @Body() notificationBody: any,
   ): Promise<any> {
     try {
-      const asd = await this.socketAdapter.sendPostNotificationToNotificationService(notificationBody);
-      console.log(asd)
-      return asd;
+      return await this.socketAdapter.sendPostNotificationToNotificationService(notificationBody);
     } catch (error: any) {
       throw error;
     }

@@ -15,6 +15,7 @@ interface ContactSellerDocument extends Document {
     owner: Schema.Types.ObjectId,
     date: Date,
     isOpinionRequested: boolean
+    isOpinionRequestAvailable: boolean
 }
 
 const ContactSellerSchema = new Schema<ContactSellerDocument>({
@@ -31,7 +32,8 @@ const ContactSellerSchema = new Schema<ContactSellerDocument>({
     notification_id: { type: Schema.Types.ObjectId, ref: 'Notification' },
     owner: { type: Schema.Types.ObjectId, ref: 'User' },
     date: { type: Date, required: true },
-    isOpinionRequested: { type: Boolean, required: true }
+    isOpinionRequested: { type: Boolean, required: true },
+    isOpinionRequestAvailable: { type: Boolean, required: true }
 
 
 

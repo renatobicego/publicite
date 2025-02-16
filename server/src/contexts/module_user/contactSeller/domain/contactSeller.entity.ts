@@ -17,6 +17,7 @@ export class ContactSeller {
     private readonly owner: any;
     private readonly date: Date;
     private readonly isOpinionRequested: boolean;
+    private readonly isOpinionRequestAvailable: boolean;
 
 
     constructor(post: any, client: contact_seller_client, notification_id: any, owner: any, date: Date, isOpinionRequested: boolean) {
@@ -25,7 +26,8 @@ export class ContactSeller {
         this.notification_id = notification_id;
         this.owner = owner;
         this.date = date;
-        this.isOpinionRequested = isOpinionRequested
+        this.isOpinionRequested = client.clientId ? isOpinionRequested : true
+        this.isOpinionRequestAvailable = client.clientId ? true : false
     }
 
 

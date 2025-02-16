@@ -12,7 +12,7 @@ import { ContactSellerGetType } from '../domain/graphql/contactSeller.model';
 interface ContactSeller_model {
   post: any;
   client: {
-    clientId: string;
+    clientId: string | undefined;
     name: string;
     email: string;
     lastName: string;
