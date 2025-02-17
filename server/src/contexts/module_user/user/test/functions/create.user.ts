@@ -1,6 +1,7 @@
 import { Types } from "mongoose";
 
-async function createPersonalUser(user_id: Types.ObjectId, userModel: any, attributes: Map<any, any>) {
+
+async function createPersonalUser(user_id: Types.ObjectId, userModel: any, attributes: Map<any, any> | undefined) {
     const USER = await userModel.create({
         _id: user_id,
         clerkId: 'TEST_B',
@@ -10,9 +11,13 @@ async function createPersonalUser(user_id: Types.ObjectId, userModel: any, attri
         lastName: 'TEST_B',
         finder: 'TEST_B',
         profilePhotoUrl: 'TEST_B.jpg',
-        userType: 'business',
+        userType: 'Person',
         userRelations: [],
-        subscriptions: attributes.get("subscriptions")
+        kind: "Person",
+        birthDate: "2000-01-01",
+        gender: "M",
+        subscriptions: attributes?.get("subscriptions") ?? []
+
 
     });
 

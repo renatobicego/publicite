@@ -42,7 +42,6 @@ import { PostCommentDocument } from '../schemas/post.comment.schema';
 import { Date } from 'mongoose';
 import { EmitterService } from 'src/contexts/module_shared/event-emmiter/emmiter';
 import { downgrade_plan_post_notification } from 'src/contexts/module_shared/event-emmiter/events';
-import { pipe } from 'rxjs';
 
 export class PostRepository implements PostRepositoryInterface {
   constructor(
@@ -489,8 +488,11 @@ export class PostRepository implements PostRepositoryInterface {
         matchStage.$or = [
           { searchTitle: { $regex: textSearchQuery, $options: 'i' } },
           { searchDescription: { $regex: textSearchQuery, $options: 'i' } },
-          { 'visibility.post': 'public' },
+
         ];
+        matchStage.postBehaviourType = "libre";
+
+
       }
 
       // Agregación optimizada
@@ -623,7 +625,7 @@ export class PostRepository implements PostRepositoryInterface {
   ): Promise<PostsMemberGroupResponse | null> {
     try {
       if (membersId.length === 0) return { userAndPosts: [], hasMore: false };
-  
+
       const pipeline: any[] = [
         {
           $geoNear: {
@@ -692,16 +694,16 @@ export class PostRepository implements PostRepositoryInterface {
         { $skip: (page - 1) * limit },
         { $limit: limit + 1 }, // Se toma 1 extra para verificar si hay más páginas
       ];
-  
+
       const posts = await this.postDocument.aggregate(pipeline);
-  
+
       if (!posts || posts.length === 0) {
         return { userAndPosts: [], hasMore: false };
       }
-  
+
       const hasMore = posts.length > limit;
-      const postResponse = posts.slice(0, limit); 
-  
+      const postResponse = posts.slice(0, limit);
+
       return {
         userAndPosts: postResponse,
         hasMore,
@@ -711,7 +713,7 @@ export class PostRepository implements PostRepositoryInterface {
       throw error;
     }
   }
-  
+
 
   async findPostByIdAndCategoryPostsRecomended(id: string): Promise<any> {
     try {

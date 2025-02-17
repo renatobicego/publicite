@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 
 
@@ -128,11 +128,6 @@ import { MpInvoiceResolver } from '../resolver/mp-invoice.resolver';
             provide: 'ErrorRepositoryInterface',
             useClass: ErrorRepository,
         },
-
-        // {
-        //     provide: 'FetchToMpInterface',
-        //     useClass: FetchToMercadoPagoAdapter,
-        // },
         {
             provide: 'MpHandlerValidationsInterface',
             useClass: MpHandlerValidations,

@@ -26,7 +26,7 @@ export class MpWebhookAdapter {
     private readonly logger: MyLoggerService,
   ) { }
 
-  async handleMercadoPagoWebhookRequest(
+  async validateRequestAndHandleTypeOfEvent(
     header: Record<string, string>,
     req: Request,
   ): Promise<boolean> {
@@ -40,9 +40,7 @@ export class MpWebhookAdapter {
     if (isHashValid) {
       try {
         this.logger.log('Webhook origin is valid, processing webhook data');
-
-        this.handleTypeOfOperationMercadopago(body);
-
+        this.processOperationType(body);
         return Promise.resolve(true);
       } catch (error: any) {
         throw error;
@@ -52,18 +50,18 @@ export class MpWebhookAdapter {
     }
   }
 
-  async handleTypeOfOperationMercadopago(body: any): Promise<boolean> {
-    try {
 
+  async processOperationType(body: any): Promise<boolean> {
+    try {
       this.logger.log('----------------Getting data from MP--------------------');
 
-      const { idOfOperation, type, action } = this.bodyValidationAndExtractData(body);
+      const { id, type, action } = this.validateBodyAndReturnData(body);
+      this.logger.log(`Processing ${type} Case - Action: ${action} Type: ${type}`);
+
 
       switch (type) {
         case 'payment':
-          this.logger.log(`Processing ${type} Case - Action: ${action} Type: ${type}`);
-
-          const payment = await this.process_payment(idOfOperation, action);
+          const payment = await this.process_payment(id, action);
 
           if (payment) {
             return Promise.resolve(true);
@@ -71,11 +69,9 @@ export class MpWebhookAdapter {
             return Promise.resolve(false);
           }
 
-        case 'subscription_preapproval': // PLAN DE SUSCRIPCION
-          this.logger.log(`Processing ${type} Case - Action: ${action} Type: ${type}`);
-
+        case 'subscription_preapproval':
           const subscription_preapproval_response =
-            await this.process_subscription_preapproval(idOfOperation, action);
+            await this.process_subscription_preapproval(id, action);
 
           if (subscription_preapproval_response) {
             return Promise.resolve(true);
@@ -84,11 +80,9 @@ export class MpWebhookAdapter {
           }
 
         case 'subscription_authorized_payment':
-          this.logger.log(`Processing ${type} Case - Action: ${action} Type: ${type}`);
-
 
           const subscription_authorized_payment_response =
-            await this.process_subscription_authorized_payment(idOfOperation, action);
+            await this.process_subscription_authorized_payment(id, action);
 
           if (subscription_authorized_payment_response) {
             return Promise.resolve(true);
@@ -107,20 +101,20 @@ export class MpWebhookAdapter {
     }
   }
 
-  bodyValidationAndExtractData(body: any): {
-    idOfOperation: string;
+  validateBodyAndReturnData(body: any): {
+    id: string;
     type: string;
     action: string;
   } {
     this.logger.log('----------------Validationg Body of mercadopago webhook--------------------');
     try {
-      let idOfOperation;
+      let id;
       let type;
       let action;
 
       if (body && body.data && body.type && body.action) {
 
-        idOfOperation = body.data.id;
+        id = body.data.id;
         type = body.type;
         action = body.action;
 
@@ -132,7 +126,7 @@ export class MpWebhookAdapter {
       }
 
       return {
-        idOfOperation,
+        id,
         type,
         action
       }
@@ -167,9 +161,9 @@ export class MpWebhookAdapter {
     action: string,
   ): Promise<boolean> {
     try {
+      this.logger.log('We recive an subcription - ACTION:' + action);
       switch (action) {
         case 'created':
-          this.logger.log('We recive an subcription - ACTION: CREATED');
           this.logger.log('We are creating a new subscription: ' + dataID);
           const result =
             await this.mpHandlerEvent.create_subscription_preapproval(
@@ -178,7 +172,6 @@ export class MpWebhookAdapter {
           return this.isThisResponseDataCompleted(result);
 
         case 'updated':
-          this.logger.log('We recive an subcription - ACTION: UPDATE');
           this.logger.log('We are updating a subscription: ' + dataID);
 
           const subscription_preapproval_response =
@@ -206,6 +199,7 @@ export class MpWebhookAdapter {
     action: string,
   ): Promise<boolean> {
     let result;
+    this.logger.log('We recive an subcription authorized payment - ACTION:' + action);
     switch (action) {
       case 'created':
         result =

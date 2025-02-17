@@ -10,7 +10,7 @@ import { getTodayDateTime } from 'src/contexts/module_shared/utils/functions/get
 import { UserServiceInterface } from 'src/contexts/module_user/user/domain/service/user.service.interface';
 import { InjectConnection } from '@nestjs/mongoose';
 import { Connection } from 'mongoose';
-import makeReponsePlanFunction from './makeResponsePlan';
+import makeReponsePlanFunction from './function/makeResponsePlan';
 
 export class MpSubscriptionService implements SubscriptionServiceInterface {
   constructor(
