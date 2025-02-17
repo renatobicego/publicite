@@ -97,11 +97,7 @@ const Data = async ({
             {showCondition}
             Publicado {datePublished} en {post.geoLocation.description}
           </p>
-          {isAuthor && (
-            <Suspense fallback={<Spinner color="warning" />}>
-              <OptionsDropdown post={post} />
-            </Suspense>
-          )}
+          {isAuthor && <OptionsDropdown post={post} />}
         </div>
         <h2>{post.title}</h2>
         {"reviews" in post && post.reviews && post.reviews.length > 0 && (
