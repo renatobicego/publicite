@@ -20,6 +20,9 @@ import { EmmiterModule } from "src/contexts/module_shared/event-emmiter/emiter.m
 import { LoggerModule } from "src/contexts/module_shared/logger/logger.module";
 import { UserBusinessModel } from "src/contexts/module_user/user/infrastructure/schemas/userBussiness.schema";
 import { UserPersonModel } from "src/contexts/module_user/user/infrastructure/schemas/userPerson.schema";
+import { MpHandlerEvents } from "../../../infastructure/adapters/handler/mpHandlerFETCHEvents";
+import { MpPaymentService } from "../mp-payment.service";
+import { MpInvoiceService } from "../mp-invoice.service";
 
 
 
@@ -70,7 +73,30 @@ const mercadopago_testing_module = async (): Promise<TestingModule> => {
                 provide: 'MercadoPagoSubscriptionPlanRepositoryInterface',
                 useClass: MercadoPagoSubscriptionPlanRepository,
             },
-
+            {
+                provide: 'MpHandlerEventsInterface',
+                useClass: MpHandlerEvents,
+            },
+            {
+                provide: 'MpServiceInvoiceInterface',
+                useClass: MpInvoiceService,
+            },
+            {
+                provide: 'MpPaymentServiceInterface',
+                useValue: {}
+            },
+            {
+                provide: 'ErrorServiceInterface',
+                useValue: {}
+            },
+            {
+                provide: 'FetchToMpInterface',
+                useValue: {}
+            },
+            {
+                provide: 'MercadoPagoInvoiceRepositoryInterface',
+                useValue: {}
+            },
             { provide: getModelToken(UserPersonModel.modelName), useValue: {} },
             { provide: getModelToken(UserBusinessModel.modelName), useValue: {} },
         ],

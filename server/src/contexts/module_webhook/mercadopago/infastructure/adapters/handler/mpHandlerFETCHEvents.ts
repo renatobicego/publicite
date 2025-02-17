@@ -85,7 +85,7 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
 
 
 
-      const is_a_card_validation = await this.is_a_card_validation(mercadoPago_paymentResponse, "paymenty.created");
+      const is_a_card_validation = await this.is_a_card_validation(mercadoPago_paymentResponse, "payment.created");
       if (is_a_card_validation) return Promise.resolve(true);
 
       const statusOfThePayment = mercadoPago_paymentResponse.status.toString().toLowerCase();

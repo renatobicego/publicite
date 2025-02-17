@@ -11,6 +11,8 @@ import { IUser, UserModel } from "src/contexts/module_user/user/infrastructure/s
 import { getModelToken } from "@nestjs/mongoose";
 import SubscriptionPlanModel, { SubscriptionPlanDocument } from "../../../infastructure/schemas/subscriptionPlan.schema";
 import SubscriptionModel, { SubscriptionDocument } from "../../../infastructure/schemas/subscription.schema";
+import { MpHandlerEvents } from "../../../infastructure/adapters/handler/mpHandlerFETCHEvents";
+import generate_payment_card_validation from "./models/payment.card.validation";
 
 
 interface SubscriptionPlan {
@@ -32,11 +34,14 @@ interface SubscriptionPlan {
 
 describe('MercadopagoService - Subscription', () => {
     let connection: Connection;
+
+    let mpHandlerEvents: MpHandlerEvents;
+
     let mpSubscriptionService: MpSubscriptionService;
     let mpSubscriptionPlanService: MercadoPagoSubscriptionPlanService;
+    let userService: UserService;
 
     let subscriptionRepository: SubscriptionRepository;
-    let userService: UserService;
 
     let userModel: Model<IUser>;
     let subscriptionPlanModel: Model<SubscriptionPlanDocument>
@@ -49,17 +54,21 @@ describe('MercadopagoService - Subscription', () => {
 
 
     beforeAll(async () => {
+        connection = mongoose.connection;
         const moduleRef: TestingModule = await mpTestingModule.get("mp_testing_module")();
-        userModel = moduleRef.get<Model<IUser>>(getModelToken(UserModel.modelName));
-        subscriptionRepository = moduleRef.get<SubscriptionRepository>('SubscriptionRepositoryInterface');
+
+        mpHandlerEvents = moduleRef.get<MpHandlerEvents>('MpHandlerEventsInterface');
+
+        mpSubscriptionService = moduleRef.get<MpSubscriptionService>('SubscriptionServiceInterface');
         mpSubscriptionPlanService = moduleRef.get<MercadoPagoSubscriptionPlanService>('MercadoPagoSubscriptionPlanServiceInterface');
         userService = moduleRef.get<UserService>('UserServiceInterface');
-        mpSubscriptionService = moduleRef.get<MpSubscriptionService>('SubscriptionServiceInterface');
 
-        connection = mongoose.connection;
+        subscriptionRepository = moduleRef.get<SubscriptionRepository>('SubscriptionRepositoryInterface');
 
+        userModel = moduleRef.get<Model<IUser>>(getModelToken(UserModel.modelName));
         subscriptionPlanModel = moduleRef.get<Model<SubscriptionPlanDocument>>(getModelToken(SubscriptionPlanModel.modelName));
         subscriptionModel = moduleRef.get<Model<SubscriptionDocument>>(getModelToken(SubscriptionModel.modelName));
+
         await subscriptionPlanModel.create({
             mpPreapprovalPlanId: subcriptionPlanMeli_id,
             isActive: true,
@@ -82,8 +91,6 @@ describe('MercadopagoService - Subscription', () => {
         await userModel.deleteMany({});
         await subscriptionPlanModel.deleteMany({});
         await subscriptionModel.deleteMany({});
-
-
     });
 
 
@@ -157,6 +164,26 @@ describe('MercadopagoService - Subscription', () => {
 
     });
 
+
+    it('Should return true if the payment is a payment validation (Operation Type: card_validation)', async () => {
+        const payment = generate_payment_card_validation("card_validation", 100);
+        const result = await mpHandlerEvents.is_a_card_validation(payment, "paymenty.created");
+        expect(result).toBe(true);
+
+    });
+
+
+    it('Should return true if the payment is a payment validation (Operation is less than $30)', async () => {
+        const payment = generate_payment_card_validation("", 29);
+        const result = await mpHandlerEvents.is_a_card_validation(payment, "paymenty.created");
+        expect(result).toBe(true);
+    });
+
+    it('Should return false if the payment is not a payment validation', async () => {
+        const payment = generate_payment_card_validation("payment_recurrency", 200);
+        const result = await mpHandlerEvents.is_a_card_validation(payment, "paymenty.created");
+        expect(result).toBe(false);
+    });
 
 
 })// end

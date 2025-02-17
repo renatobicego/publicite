@@ -1,4 +1,5 @@
-import makeReponsePlanFunction from "./makeResponsePlan";
+import makeReponsePlanFunction from "../function/makeResponsePlan";
+
 
 
 describe('SubscriptionService - makeResponseDependingActivePlans', () => {
