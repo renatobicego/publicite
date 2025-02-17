@@ -78,7 +78,7 @@ const ReviewRequest = ({
       });
     }
     optionsList.push({
-      label: "Ver Post",
+      label: "Ver Anuncio",
       as: Link,
       href: `${POSTS}/${post._id}`,
       className: "text-text-color",

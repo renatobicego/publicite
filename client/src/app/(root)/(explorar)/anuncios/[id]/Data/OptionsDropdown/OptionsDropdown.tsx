@@ -26,7 +26,8 @@ const OptionsDropdown = ({ post }: { post: Post }) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isChangingActiveStatus, setIsChangingActiveStatus] = useState(false);
   const { userCanPublishPost } = useUserPostLimit(post.postBehaviourType);
-  const activeDropdownItem = useRef<() => void>(() => {});
+  const hidePostRef = useRef<() => void>(() => {});
+  const deletePostRef = useRef<() => void>(() => {});
 
   const handleDelete = async () => {
     setIsDeleting(true);
@@ -65,9 +66,15 @@ const OptionsDropdown = ({ post }: { post: Post }) => {
     setIsActive(!isActive);
     toastifySuccess(res.message as string);
   };
-  const handleItemClick = () => {
-    if (activeDropdownItem.current) {
-      activeDropdownItem.current(); // Trigger custom open function to open the modal
+  const handleShowConfirmHidePost = () => {
+    if (hidePostRef.current) {
+      hidePostRef.current(); // Trigger custom open function to open the modal
+    }
+  };
+
+  const handleShowConfirmDeletePost = () => {
+    if (deletePostRef.current) {
+      deletePostRef.current(); // Trigger custom open function to open the modal
     }
   };
 
@@ -97,7 +104,7 @@ const OptionsDropdown = ({ post }: { post: Post }) => {
             startContent={
               isChangingActiveStatus ? <Spinner size="sm" /> : <BiHide />
             }
-            onClick={handleItemClick}
+            onClick={handleShowConfirmHidePost}
           >
             {!isActive
               ? isChangingActiveStatus
@@ -114,7 +121,7 @@ const OptionsDropdown = ({ post }: { post: Post }) => {
             startContent={
               isDeleting ? <Spinner size="sm" /> : <IoTrashOutline />
             }
-            onClick={handleItemClick}
+            onClick={handleShowConfirmDeletePost}
           >
             {isDeleting ? "Borrando..." : "Borrar Anuncio"}
           </DropdownItem>
@@ -127,7 +134,7 @@ const OptionsDropdown = ({ post }: { post: Post }) => {
           tooltipMessage="Eliminar"
           confirmText="Eliminar"
           onConfirm={handleDelete}
-          customOpen={(openModal) => (activeDropdownItem.current = openModal)} // Set the reference for customOpen
+          customOpen={(openModal) => (deletePostRef.current = openModal)} // Set the reference for customOpen
         />
       </Suspense>
       <Suspense fallback={<Spinner color="warning" />}>
@@ -139,7 +146,7 @@ const OptionsDropdown = ({ post }: { post: Post }) => {
           tooltipMessage={isActive ? "Ocultar" : "Mostrar"}
           confirmText={isActive ? "Ocultar" : "Mostrar"}
           onConfirm={handleChangeIsActiveStatus}
-          customOpen={(openModal) => (activeDropdownItem.current = openModal)} // Set the reference for customOpen
+          customOpen={(openModal) => (hidePostRef.current = openModal)} // Set the reference for customOpen
         />
       </Suspense>
     </>
