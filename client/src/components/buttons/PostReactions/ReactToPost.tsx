@@ -7,25 +7,41 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@nextui-org/react";
-import React, { useMemo, useState } from "react";
+import React, { Dispatch, useMemo, useState } from "react";
 import { MdOutlineAddReaction } from "react-icons/md";
 import { emitPostActivityNotification } from "../../notifications/postsActivity/emitNotifications";
 import { useSocket } from "@/app/socketProvider";
-import { Good, Post } from "@/types/postTypes";
+import { Good, Post, PostReaction } from "@/types/postTypes";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { useUserData } from "@/app/(root)/providers/userDataProvider";
 import { removePostReaction } from "@/app/server/postActions";
 import { getEmojiName } from "@/utils/functions/utils";
 
-const ReactToPost = ({ post, emojis }: { post: Post; emojis: string[] }) => {
+const ReactToPost = ({
+  post,
+  emojis,
+  setLocalReactions,
+  reactions,
+}: {
+  post: {
+    author: {
+      _id: string;
+    };
+    _id: string;
+    title: string;
+    imagesUrls?: string[];
+    postType: PostType;
+  };
+  emojis: string[];
+  setLocalReactions: Dispatch<React.SetStateAction<PostReaction[]>>;
+  reactions: PostReaction[];
+}) => {
   // handle open state of popov er
   const [isOpen, setIsOpen] = useState(false);
 
   // is loading the petititon
   const [isLoading, setIsLoading] = useState(false);
   const { socket } = useSocket();
-  // reactions of the post, stored in the state to not make a request every time
-  const [reactions, setReactions] = useState(post.reactions);
   const { userIdLogged } = useUserData();
 
   // get the reaction of the user logged if exists
@@ -47,7 +63,7 @@ const ReactToPost = ({ post, emojis }: { post: Post; emojis: string[] }) => {
         setIsLoading(false);
         return;
       }
-      setReactions((prev) =>
+      setLocalReactions((prev) =>
         prev.filter((reaction) => reaction._id !== userReaction._id)
       );
 
@@ -78,7 +94,7 @@ const ReactToPost = ({ post, emojis }: { post: Post; emojis: string[] }) => {
     )
       .then((res) => {
         toastifySuccess(`Reaccionaste con ${getEmojiName(emoji)}`);
-        setReactions((prev) => [
+        setLocalReactions((prev) => [
           ...prev,
           { reaction: emoji, user: userIdLogged as string, _id: res.body },
         ]);

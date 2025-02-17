@@ -40,7 +40,7 @@ const NewContactPost = ({
         onPress: onOpen,
       },
       {
-        label: "Ver Post",
+        label: "Ver Anuncio",
         as: Link,
         href: `${POSTS}/${post._id}`,
         className: "text-text-color",
