@@ -9,6 +9,12 @@ export class PaymentResponse {
   mpPaymentId: string;
 
   @Field(() => String)
+  descriptionOfPayment: string
+
+  @Field(() => String)
+  mpPreapprovalId: string
+
+  @Field(() => String)
   payerId: string;
 
   @Field(() => String, { nullable: true })
@@ -40,6 +46,7 @@ export class PaymentResponse {
 
   constructor(document: any) {
     this._id = document._id;
+    this.descriptionOfPayment = document.descriptionOfPayment
     this.mpPaymentId = document.mpPaymentId;
     this.payerId = document.payerId;
     this.payerEmail = document.payerEmail;
@@ -51,5 +58,6 @@ export class PaymentResponse {
     this.status_detail = document.status_detail;
     this.timeOfUpdate = document.timeOfUpdate;
     this.status = document.status;
+    this.mpPreapprovalId = document.mpPreapprovalId;
   }
 }

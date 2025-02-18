@@ -1,6 +1,8 @@
 import { getModelToken, MongooseModule } from "@nestjs/mongoose";
 import * as dotenv from 'dotenv';
 import { Test, TestingModule } from "@nestjs/testing";
+import { EventEmitterModule } from "@nestjs/event-emitter";
+
 
 import { ContactModule } from "src/contexts/module_user/contact/infrastructure/module/contact.module";
 import { MyLoggerService } from "src/contexts/module_shared/logger/logger.service";
@@ -15,7 +17,6 @@ import { MercadoPagoSubscriptionPlanService } from "../mp-subscriptionPlan.servi
 import { MpSubscriptionService } from "../mp-subscription.service";
 import { UserModel } from "src/contexts/module_user/user/infrastructure/schemas/user.schema";
 import { MercadoPagoSubscriptionPlanRepository } from "../../../infastructure/repository/mp-subscriptionPlan.repository";
-import { EventEmitterModule } from "@nestjs/event-emitter";
 import { EmmiterModule } from "src/contexts/module_shared/event-emmiter/emiter.module";
 import { LoggerModule } from "src/contexts/module_shared/logger/logger.module";
 import { UserBusinessModel } from "src/contexts/module_user/user/infrastructure/schemas/userBussiness.schema";
@@ -23,6 +24,7 @@ import { UserPersonModel } from "src/contexts/module_user/user/infrastructure/sc
 import { MpHandlerEvents } from "../../../infastructure/adapters/handler/mpHandlerFETCHEvents";
 import { MpPaymentService } from "../mp-payment.service";
 import { MpInvoiceService } from "../mp-invoice.service";
+import { MercadoPagoPaymentsRepository } from "../../../infastructure/repository/mp-payments.repository";
 
 
 
@@ -83,7 +85,11 @@ const mercadopago_testing_module = async (): Promise<TestingModule> => {
             },
             {
                 provide: 'MpPaymentServiceInterface',
-                useValue: {}
+                useClass: MpPaymentService,
+            },
+            {
+                provide: 'MercadoPagoPaymentsRepositoryInterface',
+                useClass: MercadoPagoPaymentsRepository
             },
             {
                 provide: 'ErrorServiceInterface',
@@ -97,6 +103,8 @@ const mercadopago_testing_module = async (): Promise<TestingModule> => {
                 provide: 'MercadoPagoInvoiceRepositoryInterface',
                 useValue: {}
             },
+
+
             { provide: getModelToken(UserPersonModel.modelName), useValue: {} },
             { provide: getModelToken(UserBusinessModel.modelName), useValue: {} },
         ],
