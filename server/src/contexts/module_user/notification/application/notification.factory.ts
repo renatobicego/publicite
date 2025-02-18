@@ -100,7 +100,6 @@ export class NotificationFactory implements NotificationFactoryInterface {
             viewed === undefined ||
             !backData ||
             !backData.userIdTo ||
-            !backData.userIdFrom ||
             !socketJobId ||
             !type ||
             !notificationEntityId
