@@ -110,16 +110,19 @@ export class UserRepository implements UserRepositoryInterface {
       }
 
       if (user.magazines.length > 0) {
-        const populatedMagazines = await this.magazineModel
+        const populatedMagazines: any = await this.magazineModel
           .find({ _id: { $in: user.magazines } })
           .select('_id name description sections')
           .populate({
             path: 'sections',
-            select: '_id posts',
-            populate: { path: 'posts', select: '_id imagesUrls' },
+            select: '_id posts isFatherSection',
+            populate: {
+              path: 'posts',
+              model: 'Post',
+              select: '_id imagesUrls'
+            },
           })
           .lean();
-
         user.magazines = populatedMagazines as any[];
       }
 

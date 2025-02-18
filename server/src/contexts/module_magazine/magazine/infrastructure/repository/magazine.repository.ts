@@ -601,8 +601,9 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
       })
       .session(session)
       .lean();
-
+      
     const uniqueMagazineIds = new Set<string>(); // Track unique magazine IDs
+
     if (groups) {
       groups.forEach((group: any) => {
         group.magazines.forEach((magazine: any) => {
