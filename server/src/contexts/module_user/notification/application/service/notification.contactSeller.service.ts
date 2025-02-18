@@ -45,7 +45,7 @@ export class NotificationContactSellerService implements NotificationContactSell
         const session = await this.connection.startSession();
         try {
 
-            const userIdFrom = notificationContactSeller.getbackData.userIdFrom;
+            const userIdFrom = notificationContactSeller.getbackData.userIdFrom ?? "";
             const userIdTo = notificationContactSeller.getbackData.userIdTo;
 
 

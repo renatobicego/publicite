@@ -29,7 +29,7 @@ export const NotificationSchema = new Schema<NotificationDocument>({
     isActionsAvailable: { type: Boolean, required: true },
     backData: {
         userIdTo: { type: String, required: true },
-        userIdFrom: { type: String, required: true },
+        userIdFrom: { type: String },
     },
     socketJobId: {
         type: String, required: true

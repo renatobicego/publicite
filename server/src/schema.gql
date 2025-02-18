@@ -742,6 +742,8 @@ type BoardGetAllResponse {
 type PaymentResponse {
   _id: String!
   mpPaymentId: String!
+  descriptionOfPayment: String!
+  mpPreapprovalId: String!
   payerId: String!
   payerEmail: String
   paymentTypeId: String!
