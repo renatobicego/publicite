@@ -11,7 +11,7 @@ const SelectPostBehaviourType = ({
   errorMessage?: string;
 }) => {
   return (
-    <>
+    <div className="flex-col flex flex-1 gap-1 justify-start">
       <Select
         scrollShadowProps={{
           hideScrollBar: false,
@@ -20,7 +20,7 @@ const SelectPostBehaviourType = ({
           trigger: "shadow-none hover:shadow-sm border-[0.5px] py-1",
           value: "text-[0.8125rem]",
           label: "font-medium text-[0.8125rem]",
-          base: "flex-1",
+          base: "justify-start",
         }}
         label="Comportamiento de Anuncio"
         placeholder="Seleccione si el comportamiento del anuncio es libre o agenda"
@@ -59,7 +59,7 @@ const SelectPostBehaviourType = ({
         la localización. Los <em>anuncios de agenda</em> serán visibles solo
         para tu agenda de contactos
       </aside>
-    </>
+    </div>
   );
 };
 export default SelectPostBehaviourType;

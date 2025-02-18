@@ -1,15 +1,7 @@
-import {
-
-
-  ForbiddenException,
-
-} from '@nestjs/common';
-
-
+import { ForbiddenException } from '@nestjs/common';
 
 import { decodeJwt } from '@clerk/backend/jwt';
 import { GqlExecutionContext } from '@nestjs/graphql';
-
 
 interface JwtPayload {
   metadata: {
@@ -17,15 +9,10 @@ interface JwtPayload {
   };
 }
 
-
-
-
-
 function getTokenFromRequest(context: any) {
   let request;
   let token;
   try {
-
     const contextType = context.getType();
     if (contextType === 'http') {
       request = context.switchToHttp().getRequest();
@@ -54,7 +41,6 @@ function getTokenFromRequest(context: any) {
     throw error;
   }
 }
-
 
 function getIdFromClerkToken(token: string): string {
   const claims = decodeJwt(token);

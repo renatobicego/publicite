@@ -88,7 +88,7 @@ export const getSubscriptionsPlans = async () => {
   const res = await fetch(process.env.API_URL + "/subscriptionplans", {
     next: { revalidate: 180 },
     headers: {
-      Authorization: `${await auth().getToken({ template: "testing" })}`,
+      Authorization: `Bearer ${await auth().getToken({ template: "testing" })}`,
     },
   });
   if (!res.ok) {
@@ -105,7 +105,13 @@ export const getSubscriptionsOfUser = async (
   userId: string
 ): Promise<Subscription[] | { error: string }> => {
   try {
-    const res = await fetch(process.env.API_URL + "/subscription/" + userId);
+    const res = await fetch(process.env.API_URL + "/subscription/" + userId, {
+      headers: {
+        Authorization: `Bearer ${await auth().getToken({
+          template: "testing",
+        })}`,
+      },
+    });
     if (!res.ok) {
       return {
         error:
