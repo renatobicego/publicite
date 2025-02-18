@@ -751,6 +751,7 @@ export class UserRepository implements UserRepositoryInterface {
           `No se encontró un usuario con _id: ${external_reference}`,
         );
       }
+      this.logger.log("Suscription added to user successfully: " + external_reference);
     } catch (error) {
       console.error(
         `Error actualizando suscripción para el usuario ${external_reference}:`,

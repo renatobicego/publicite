@@ -51,11 +51,13 @@ export class MpSubscriptionService implements SubscriptionServiceInterface {
       this.logger.error('Invalid subscription data - missing dates');
       throw new BadRequestException('Invalid subscription data');
     }
+    this.logger.log('Data of suscription is valid... Continue to create it');
     let { start_date, /** end_date */ } = auto_recurring;
     start_date = this.parseTimeX(start_date);
     let end_date = this.parseTimeX(start_date);
 
     //Buscamos el plan al que pertenece la suscripción
+    this.logger.log('Searching plan for this suscription');
     const plan =
       await this.mpSubscriptionPlanService.findSubscriptionPlanByMeliID(
         preapproval_plan_id,

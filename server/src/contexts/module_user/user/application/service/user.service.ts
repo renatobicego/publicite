@@ -434,6 +434,7 @@ export class UserService implements UserServiceInterface {
   }
   async setSubscriptionToUser(external_reference: string, sub_id: any, session: any): Promise<any> {
     try {
+      this.logger.log("Setting suscription to user in the service: " + UserService.name);
       await this.userRepository.setSubscriptionToUser(external_reference, sub_id, session);
     } catch (error: any) {
       throw error;

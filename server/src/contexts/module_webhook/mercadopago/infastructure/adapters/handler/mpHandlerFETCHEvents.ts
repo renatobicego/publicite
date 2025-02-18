@@ -67,18 +67,21 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
   private readonly URL_PAYMENT_CHECK: string =
     'https://api.mercadopago.com/v1/payments/';
 
-  async check_status_of_the_payment_and_create(dataID: string): Promise<boolean> {
+  async create_payment(dataID: string): Promise<boolean> {
     try {
 
       this.logger.log(
-        `The proccess of payment are starting- PAYMENT.CREATE ARE RECEIVED: ${dataID}`,
+        `PAYMETN STATUS CREATE - BODY RECIVED: ${dataID}`,
       );
-      this.logger.log(`Fetching to Mercadopago....`);
+
       const mercadoPago_paymentResponse: Payment_meli = await this.fetchToMpAdapter.getDataFromMp_fetch(
         `${this.URL_PAYMENT_CHECK}${dataID}`,
       );
 
-      if (!mercadoPago_paymentResponse) return Promise.resolve(false);
+      if (!mercadoPago_paymentResponse) {
+        this.logger.warn(`Fetch to mercadopago returned an empty response, please try again -> ${this.URL_PAYMENT_CHECK}${dataID}`);
+        return Promise.resolve(false);
+      }
 
       console.log('PAYMENT CREATE RESPONSE:');
       console.log(mercadoPago_paymentResponse);
@@ -93,7 +96,7 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
 
 
       if (!this.availableStatusOfTheCreatePayment.includes(statusOfThePayment)) {
-        this.logger.error('Unknown payment CREATE status: ' + statusOfThePayment);
+        this.logger.error('Unknown payment CREATE status: ' + statusOfThePayment + " payment is not 'approved', 'rejected', 'pending', 'in_process', please verify status of payment");
         throw new Error('Unknown payment CREATE status: ' + statusOfThePayment);
       }
 
@@ -106,13 +109,13 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
       throw error;
     }
   }
+
   async update_payment(dataID: string): Promise<boolean> {
     try {
       this.logger.log(
-        `The proccess of payment are starting- PAYMENT.UPDATE ARE RECEIVED: ${dataID}`,
+        `PAYMETN STATUS UPDATE - BODY RECIVED: ${dataID}`,
       );
 
-      this.logger.log(`Fetching to Mercadopago....`);
       const mercadoPago_paymentResponse: Payment_meli = await this.fetchToMpAdapter.getDataFromMp_fetch(
         `${this.URL_PAYMENT_CHECK}${dataID}`,
       );
@@ -122,9 +125,9 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
 
       const statusOfThePayment = mercadoPago_paymentResponse.status.toString().toLowerCase();
 
-      if (!this.availableStatusOfTheUpdatePayment.includes(statusOfThePayment)) {
-        this.logger.error('Unknown payment UPDATE status: ' + statusOfThePayment);
-        throw new Error('Unknown payment UPDATE status: ' + statusOfThePayment);
+      if (!this.availableStatusOfTheCreatePayment.includes(statusOfThePayment)) {
+        this.logger.error('Unknown payment CREATE status: ' + statusOfThePayment + " payment is not 'approved', 'rejected', 'pending', 'in_process', please verify status of payment");
+        throw new Error('Unknown payment CREATE status: ' + statusOfThePayment);
       }
 
       console.log('PAYMENT UPDATE RESPONSE:');
@@ -156,7 +159,7 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
         `${this.URL_SUBCRIPTION_PREAPPROVAL_CHECK}${dataID}`,
 
       );
-      console.log('subscription_preapproval RESPONSE:');
+      console.log('Meli fetch response suscription:');
       console.log(subscription_preapproval);
 
       await this.subscriptionService.createSubscription_preapproval(
@@ -182,7 +185,7 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
         await this.fetchToMpAdapter.getDataFromMp_fetch(
           `${this.URL_SUBCRIPTION_PREAPPROVAL_CHECK}${dataID}`,
         );
-      console.log('subscription_preapproval_update RESPONSE:');
+        console.log('Meli fetch response suscription_preapproval_updated:');
       console.log(subscription_preapproval_update);
       const { preapproval_plan_id, reason, status, external_reference } =
         subscription_preapproval_update;

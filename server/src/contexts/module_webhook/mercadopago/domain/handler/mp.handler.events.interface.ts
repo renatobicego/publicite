@@ -1,5 +1,5 @@
 export interface MpHandlerEventsInterface {
-  check_status_of_the_payment_and_create(dataID: string): Promise<boolean>;
+  create_payment(dataID: string): Promise<boolean>;
 
   create_subscription_preapproval(dataID: string): Promise<boolean>;
 

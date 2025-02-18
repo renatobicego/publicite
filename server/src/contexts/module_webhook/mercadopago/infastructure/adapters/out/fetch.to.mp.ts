@@ -18,7 +18,7 @@ export class FetchToMercadoPagoAdapter implements FetchToMpInterface {
                 throw new Error('MP_ACCESS_TOKEN is not configured');
             }
 
-            this.logger.log('Fetching data to Mercadopago: ' + url);
+            this.logger.log('Fetching to Mercadopago----> ' + url);
             const response = await fetch(url, {
                 method: 'GET',
                 headers: {

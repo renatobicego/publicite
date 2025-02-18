@@ -68,6 +68,7 @@ export class MpPaymentService implements MpPaymentServiceInterface {
 
   async updatePayment(payment: any): Promise<void> {
     try {
+      this.logger.log("Mp-Payment-Service Updating payment with ID: " + payment.id);
       const timeOfUpdate = getTodayDateTime();
       const mpPaymentId = payment.id;
       const paymentUpdated = {
