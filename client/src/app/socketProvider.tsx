@@ -54,7 +54,10 @@ export const SocketProvider = ({
       if (!socket) return Promise.reject("Socket not initialized");
       return Promise.resolve(socket);
     }
-    const newToken = await getToken({ template: "testing" });
+    let newToken = await getToken({ template: "testing" });
+    // set not registered user token for petitions that allow not registered users
+    if (!newToken)
+      newToken = process.env.NEXT_PUBLIC_NOT_REGISTERED_TOKEN || "";
 
     if (socket) {
       socket.disconnect(); // Disconnect the current socket
