@@ -185,11 +185,13 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
         await this.fetchToMpAdapter.getDataFromMp_fetch(
           `${this.URL_SUBCRIPTION_PREAPPROVAL_CHECK}${dataID}`,
         );
-        console.log('Meli fetch response suscription_preapproval_updated:');
+      console.log('Meli fetch response suscription_preapproval_updated:');
       console.log(subscription_preapproval_update);
-      const { preapproval_plan_id, reason, status, external_reference } =
+      let { preapproval_plan_id, reason, status, external_reference } =
         subscription_preapproval_update;
 
+      const { free_trial } = subscription_preapproval_update.auto_recurring;
+      if (free_trial) status = 'free_trial';
       const data = {
         subscriptionPlanId: preapproval_plan_id,
         reason: reason,
@@ -286,10 +288,14 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
       }
       const paymenStatusMap = new Map<string, payment_notification_events_enum>([
         ['approved', payment_notification_events_enum.payment_approved],
+        ['authorized', payment_notification_events_enum.payment_approved],
         ['pending', payment_notification_events_enum.payment_pending],
         ['rejected', payment_notification_events_enum.payment_rejected],
         ['cancelled', payment_notification_events_enum.subscription_cancelled],
+        ['free_trial', payment_notification_events_enum.free_trial],
       ])
+
+
 
       const paymentStatus = data.status;
       const event = paymenStatusMap.get(paymentStatus) ?? payment_notification_events_enum.payment_pending;
