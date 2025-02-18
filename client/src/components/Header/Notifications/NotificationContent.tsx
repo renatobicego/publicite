@@ -1,8 +1,10 @@
 import NewContactPost from "@/components/notifications/contactSeller/NewContactPost";
 import GroupInvitation from "@/components/notifications/groups/GroupNotification";
 import MagazineNotificationCard from "@/components/notifications/magazines/MagazineNotification";
+import NotificationRenderer from "@/components/notifications/NotificationRenderer";
 import PostActivityNotificationCard from "@/components/notifications/postsActivity/PostActivityNotification";
 import ReviewRequest from "@/components/notifications/postsCalification/PostCalificationNotification";
+import ElementShared from "@/components/notifications/sharedElements/PostShared";
 import PaymentNotification from "@/components/notifications/suscriptions/PaymentNotification";
 import UserRelationNotificationCard from "@/components/notifications/users/UserRelationNotification";
 import { GroupNotification } from "@/types/groupTypes";
@@ -13,7 +15,10 @@ import {
   PostCalificationNotification,
 } from "@/types/postTypes";
 import { PaymentNotificationType } from "@/types/subscriptions";
-import { UserRelationNotification } from "@/types/userTypes";
+import {
+  ElementSharedNotification,
+  UserRelationNotification,
+} from "@/types/userTypes";
 import { Spinner } from "@nextui-org/react";
 
 const NotificationsContent = ({
@@ -74,6 +79,13 @@ const NotificationsContent = ({
             notification={notification as PostCalificationNotification}
           />
         );
+      case notification.event.includes("share"):
+        return (
+          <ElementShared
+            key={notification._id}
+            notification={notification as ElementSharedNotification}
+          />
+        );
       default:
         return null;
     }
@@ -83,7 +95,7 @@ const NotificationsContent = ({
       {!isLoading && notifications.length === 0 && (
         <p className="text-sm text-light-text">No hay notificaciones nuevas</p>
       )}
-      {notifications.map((notification) => renderNotification(notification))}
+      <NotificationRenderer notifications={notifications} />
       {isLoading && (
         <div className="w-full flex justify-center items-center top-0 left-0">
           <Spinner color="warning" />

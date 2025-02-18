@@ -8,6 +8,8 @@ import { groupNotificationBaseMessages } from "@/components/notifications/groups
 import { notificationMagazineBaseMessages } from "@/components/notifications/magazines/notificationMessages";
 import { showBrowserNotification } from "./browserNotifications";
 import {
+  ElementSharedNotification,
+  ShareTypesEnum,
   UserRelationNotification,
   UserRelationNotificationType,
 } from "@/types/userTypes";
@@ -141,4 +143,31 @@ export const handlePostContactSellerNotification = (
     body: message,
     badge: "/logo.png",
   });
+};
+
+export const handleElementSharedNotification = (
+  data: ElementSharedNotification
+) => {
+  const { description, type, username } = data.frontData.share;
+  const typeToShow: Record<ShareTypesEnum, string> = {
+    group: "el grupo",
+    post: "el anuncio",
+    magazine: "la revista",
+    user: "el perfil",
+  };
+
+  const typeTOSHowOnBrowserNotification: Record<ShareTypesEnum, string> = {
+    group: "un grupo",
+    post: "un anuncio",
+    magazine: "una revista",
+    user: "un perfil",
+  };
+  const message = `${username} te ha compartido ${typeToShow[type]} ${description}`;
+  showBrowserNotification(
+    "Publicité - Te han compartido " + typeTOSHowOnBrowserNotification[type],
+    {
+      body: message,
+      badge: "/logo.png",
+    }
+  );
 };

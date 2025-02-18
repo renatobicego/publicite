@@ -12,10 +12,12 @@ import { Socket } from "socket.io-client";
 import { getSocket } from "@/socket";
 import { useAuth } from "@clerk/nextjs";
 import {
+  handleElementSharedNotification,
   handleGroupNotification,
   handleMagazineNotification,
   handlePostActivityNotification,
   handlePostCalificationNotification,
+  handlePostContactSellerNotification,
   handleUserRelationNotification,
 } from "@/utils/notifications/notificationHandlers";
 import { requestNotificationPermission } from "@/utils/notifications/browserNotifications";
@@ -109,6 +111,12 @@ export const SocketProvider = ({
 
       newSocket.on("contact_seller_notifications", (data) => {
         setNewNotifications(true);
+        handlePostContactSellerNotification(data);
+      });
+
+      newSocket.on("share_calification_notifications", (data) => {
+        setNewNotifications(true);
+        handleElementSharedNotification(data);
       });
     });
   };

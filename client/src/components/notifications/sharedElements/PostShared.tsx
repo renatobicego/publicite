@@ -6,8 +6,7 @@ import {
   POSTS,
   PROFILE,
 } from "@/utils/data/urls";
-import { showDate } from "@/utils/functions/dates";
-import { parseDate, parseZonedDateTime } from "@internationalized/date";
+import { parseIsoDate, showDate } from "@/utils/functions/dates";
 import { Image, Link } from "@nextui-org/react";
 import {
   NotificationCard,
@@ -15,12 +14,10 @@ import {
   NotificationBody,
   NotificationOptions,
 } from "../NotificationCard";
-import { Good, PostSharedNotification } from "@/types/postTypes";
-import { MdQuestionAnswer } from "react-icons/md";
 import { ElementSharedNotification, ShareTypesEnum } from "@/types/userTypes";
 import { FaShareAlt } from "react-icons/fa";
 
-const PostShared = ({
+const ElementShared = ({
   notification,
 }: {
   notification: ElementSharedNotification;
@@ -105,11 +102,11 @@ const PostShared = ({
         </p>
       </NotificationBody>
       <NotificationOptions
-        date={showDate(parseZonedDateTime(notification.date))}
+        date={showDate(parseIsoDate(notification.date))}
         items={getOptions()}
       />
     </NotificationCard>
   );
 };
 
-export default PostShared;
+export default ElementShared;
