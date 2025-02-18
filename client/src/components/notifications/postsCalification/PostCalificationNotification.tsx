@@ -93,10 +93,10 @@ const ReviewRequest = ({
           <Image
             radius="sm"
             src={FILE_URL + imagesUrls[0]}
-            alt="foto"
-            className="h-full"
+            alt={"foto de portada de" + post.title}
+            className="h-full object-cover w-full"
             classNames={{
-              wrapper: "w-full !max-w-full object-cover h-full",
+              wrapper: "w-full !max-w-full object-cover h-full ",
             }}
           />
         </NotificationImage>

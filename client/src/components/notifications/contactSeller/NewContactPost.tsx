@@ -59,7 +59,7 @@ const NewContactPost = ({
               ? FILE_URL + post.imagesUrls[0]
               : "/logo.png"
           }
-          alt="foto"
+          alt={"foto de portada de" + post.title}
           className="object-cover w-full h-full"
           removeWrapper
         />

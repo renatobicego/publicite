@@ -173,3 +173,17 @@ export type UserRelationNotificationType =
   | "notification_user_new_relation_change" // Nueva relacion de amistad
   | "notification_user_new_relation_accepted" // Usuario A acepto tu relacion de amistad
   | "notifications_user_new_relation_rejected"; // Usuario A rechazo tu relacion de amistad
+
+export interface ElementSharedNotification extends BaseNotification {
+  frontData: {
+    share: {
+      type: ShareTypesEnum;
+      _id: string;
+      description: string;
+      username: string;
+      imageUrl?: string;
+    };
+  };
+}
+
+export type ShareTypesEnum = "post" | "group" | "magazine" | "user";
