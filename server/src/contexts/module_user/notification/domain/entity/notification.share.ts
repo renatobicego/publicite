@@ -8,6 +8,8 @@ export class NotificationShare extends Notification {
             type: ShareTypesEnum,
             _id: string,
             description: string
+            username: string,
+            imageUrl?: string
         }
     };
 
@@ -19,6 +21,8 @@ export class NotificationShare extends Notification {
                 type: ShareTypesEnum,
                 _id: string,
                 description: string
+                username: string,
+                imageUrl?: string
             }
         }
     ) {

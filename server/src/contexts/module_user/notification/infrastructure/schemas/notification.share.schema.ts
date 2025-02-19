@@ -10,6 +10,8 @@ interface INotificationShare extends NotificationDocument {
             type: ShareTypesEnum,
             _id: string,
             description: string
+            username: string,
+            imageUrl?: string
         }
     }
 }
@@ -21,6 +23,8 @@ const NotificationShareSchema = new Schema<INotificationShare>({
             type: { type: String, enum: Object.values(ShareTypesEnum), required: true },
             _id: { type: String, required: true },
             description: { type: String, required: true },
+            username: { type: String, required: true },
+            imageUrl: { type: String }
         }
     }
 })
