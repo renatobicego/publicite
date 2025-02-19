@@ -4,7 +4,7 @@ import MagazineNotificationCard from "@/components/notifications/magazines/Magaz
 import NotificationRenderer from "@/components/notifications/NotificationRenderer";
 import PostActivityNotificationCard from "@/components/notifications/postsActivity/PostActivityNotification";
 import ReviewRequest from "@/components/notifications/postsCalification/PostCalificationNotification";
-import ElementShared from "@/components/notifications/sharedElements/PostShared";
+import ElementShared from "@/components/notifications/sharedElements/ElementShared";
 import PaymentNotification from "@/components/notifications/suscriptions/PaymentNotification";
 import UserRelationNotificationCard from "@/components/notifications/users/UserRelationNotification";
 import { GroupNotification } from "@/types/groupTypes";

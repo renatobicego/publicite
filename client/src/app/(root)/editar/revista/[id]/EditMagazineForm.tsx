@@ -15,6 +15,7 @@ import { useRouter } from "next-nprogress-bar";
 import EditMagazineInputs from "./EditMagazineInputs";
 import { editMagazine } from "@/app/server/magazineActions";
 import { Group } from "@/types/groupTypes";
+import { useMagazinesData } from "@/app/(root)/providers/userDataProvider";
 
 const EditMagazineForm = ({
   isGroupMagazine,
@@ -33,6 +34,7 @@ const EditMagazineForm = ({
       : undefined,
   };
   const router = useRouter();
+  const { editMagazine: editMagazineOnStore } = useMagazinesData();
 
   const handleSubmit = async (
     values: EditMagazine,
@@ -49,6 +51,7 @@ const EditMagazineForm = ({
       actions.setSubmitting(false);
       return;
     }
+    editMagazineOnStore(resApi.id, values.name);
     actions.resetForm();
     actions.resetForm();
     toastifySuccess(resApi.message as string);

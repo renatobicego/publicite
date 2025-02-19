@@ -1,4 +1,5 @@
 "use client";
+import { useUserData } from "@/app/(root)/providers/userDataProvider";
 import ShareButton from "@/components/buttons/ShareButton";
 import { GetUser } from "@/types/userTypes";
 import {
@@ -14,6 +15,7 @@ import { FaChevronDown } from "react-icons/fa6";
 
 const OptionsDropdown = ({ user }: { user: GetUser }) => {
   const userShareRef = useRef<() => void>(() => {});
+  const { usernameLogged } = useUserData();
   const handleShareOpenModal = () => {
     if (userShareRef.current) {
       userShareRef.current(); // Trigger custom open function to open the modal
@@ -23,7 +25,13 @@ const OptionsDropdown = ({ user }: { user: GetUser }) => {
     <>
       <Dropdown placement="bottom-end">
         <DropdownTrigger>
-          <Button radius="full" size="sm" isIconOnly aria-label="opciones de perfil" variant="light">
+          <Button
+            radius="full"
+            size="sm"
+            isIconOnly
+            aria-label="opciones de perfil"
+            variant="light"
+          >
             <FaChevronDown />
           </Button>
         </DropdownTrigger>
@@ -42,7 +50,13 @@ const OptionsDropdown = ({ user }: { user: GetUser }) => {
       <ShareButton
         shareType="user"
         ButtonAction={<></>}
-        data={user}
+        data={{
+          _id: user._id,
+          username: usernameLogged as string,
+          description: user.username,
+          type: "user",
+          imageUrl: user.profilePhotoUrl,
+        }}
         customOpen={(openModal) => (userShareRef.current = openModal)}
       />
     </>

@@ -1,4 +1,5 @@
 "use client";
+import { useMagazinesData } from "@/app/(root)/providers/userDataProvider";
 import { deleteSection } from "@/app/server/magazineActions";
 import ConfirmModal from "@/components/modals/ConfirmModal";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
@@ -16,12 +17,14 @@ const DeleteMagazineSection = ({
   ownerType: "user" | "group";
 }) => {
   const router = useRouter();
+  const { removeSection } = useMagazinesData();
   const handleDelete = async () => {
     const res = await deleteSection(sectionId, magazineId, ownerType);
     if ("error" in res) {
       toastifyError(res.error as string);
       return;
     }
+    removeSection(magazineId, sectionId);
     toastifySuccess(res.message);
     router.refresh();
   };

@@ -47,6 +47,7 @@ const ShareButton = ({
   const { userIdLogged, usernameLogged } = useUserData();
   const { users } = useSearchUsers(undefined, usernameLogged);
   const { socket } = useSocket();
+  const [isLoading, setIsLoading] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const url = window.location.href;
 
@@ -88,28 +89,37 @@ const ShareButton = ({
     }
   }, [customOpen, onOpen]);
 
-  const handleShare = () => {
-    selectedUsers.forEach((user) =>
-      emitElementSharedNotification(
-        socket,
-        userIdLogged as string,
-        user,
-        data,
-        shareType
-      )
-        .then(() => {
-          toastifySuccess(
-            "Elemento compartido correctamente a " +
-              users.find((u) => u._id === user)?.username
+  const handleShare = async () => {
+    setIsLoading(true);
+    await Promise.all(
+      selectedUsers.map(async (user) => {
+        try {
+          await emitElementSharedNotification(
+            socket,
+            userIdLogged as string,
+            user,
+            data,
+            shareType
           );
-        })
-        .catch(() =>
-          toastifyError(
-            "Error al compartir el elemento a " +
+          toastifySuccess(
+            `Elemento compartido correctamente a ${
               users.find((u) => u._id === user)?.username
-          )
-        )
+            }`
+          );
+        } catch {
+          toastifyError(
+            `Error al compartir el elemento a ${
+              users.find((u) => u._id === user)?.username
+            }`
+          );
+        }
+      })
     );
+
+    // All notifications sent successfully
+    setSelectedUsers([]);
+    toastifySuccess("Todos los elementos fueron compartidos correctamente.");
+    setIsLoading(false);
   };
   return (
     <>
@@ -168,7 +178,13 @@ const ShareButton = ({
                 <PrimaryButton variant="light" onPress={onClose}>
                   Cerrar
                 </PrimaryButton>
-                <PrimaryButton onPress={handleShare}>Compartir</PrimaryButton>
+                <PrimaryButton
+                  isDisabled={isLoading}
+                  isLoading={isLoading}
+                  onPress={handleShare}
+                >
+                  Compartir
+                </PrimaryButton>
               </ModalFooter>
             </>
           )}

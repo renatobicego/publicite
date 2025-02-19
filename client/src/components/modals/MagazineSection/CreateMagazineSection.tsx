@@ -17,6 +17,7 @@ import { CustomInputWithoutFormik } from "../../inputs/CustomInputs";
 import { createMagazineSection } from "@/app/server/magazineActions";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { useRouter } from "next-nprogress-bar";
+import { useMagazinesData } from "@/app/(root)/providers/userDataProvider";
 
 const CreateMagazineSection = ({
   magazineId,
@@ -29,6 +30,7 @@ const CreateMagazineSection = ({
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [inputValue, setInputValue] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { addSection } = useMagazinesData();
   const handleCreate = async () => {
     if (!inputValue) return;
     setIsSubmitting(true);
@@ -38,6 +40,12 @@ const CreateMagazineSection = ({
       toastifyError(res.error as string);
       return;
     }
+    addSection(magazineId, {
+      _id: res.id,
+      isFatherSection: false,
+      posts: [],
+      title: inputValue,
+    });
     toastifySuccess(res.message);
     router.refresh();
     setInputValue("");

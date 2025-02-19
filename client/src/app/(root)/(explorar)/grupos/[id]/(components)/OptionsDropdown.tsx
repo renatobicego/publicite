@@ -23,6 +23,7 @@ import ExitGroupAsCreator from "./ExitGroupAsCreator";
 import { User } from "@/types/userTypes";
 import ShareButton from "@/components/buttons/ShareButton";
 import { Group } from "@/types/groupTypes";
+import { useUserData } from "@/app/(root)/providers/userDataProvider";
 
 const OptionsDropdown = ({
   group,
@@ -41,6 +42,7 @@ const OptionsDropdown = ({
   const exitGroupRef = useRef<() => void>(() => {});
   const shareGroupRef = useRef<() => void>(() => {});
   const { isOpen, onOpenChange, onOpen } = useDisclosure();
+  const { usernameLogged } = useUserData();
   const router = useRouter();
   const { deleteFile } = useUploadImage();
   const isEmptyGroup = membersIds.length + admins.length === 0;
@@ -170,7 +172,13 @@ const OptionsDropdown = ({
       <ShareButton
         shareType="group"
         ButtonAction={<></>}
-        data={group}
+        data={{
+          _id: group._id,
+          description: group.name,
+          type: "group",
+          username: usernameLogged as string,
+          imageUrl: group.profilePhotoUrl,
+        }}
         customOpen={(openModal) => (shareGroupRef.current = openModal)}
       />
     </>

@@ -91,7 +91,7 @@ const ElementShared = ({
             }}
           />
         ) : (
-          <FaShareAlt className="text-petition size-14" />
+          <FaShareAlt className="text-petition size-10" />
         )}
       </NotificationImage>
       <NotificationBody>

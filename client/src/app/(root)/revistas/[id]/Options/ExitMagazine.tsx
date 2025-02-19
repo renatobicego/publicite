@@ -1,4 +1,5 @@
 "use client";
+import { useMagazinesData } from "@/app/(root)/providers/userDataProvider";
 import { exitMagazine } from "@/app/server/magazineActions";
 const ConfirmModal = lazy(() => import("@/components/modals/ConfirmModal"));
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
@@ -15,12 +16,14 @@ const ExitMagazine = ({
   ownerType: "user" | "group";
 }) => {
   const router = useRouter();
+  const { removeMagazineOfStore } = useMagazinesData();
   const handleExit = async () => {
     const res = await exitMagazine(magazineId, ownerType);
     if (res.error) {
       toastifyError(res.error as string);
       return;
     }
+    removeMagazineOfStore(magazineId);
     toastifySuccess(res.message as string);
     router.refresh();
   };

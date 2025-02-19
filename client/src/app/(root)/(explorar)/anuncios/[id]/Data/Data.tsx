@@ -31,10 +31,12 @@ const Data = async ({
   post,
   isAuthor,
   isPetition,
+  usernameLogged,
 }: {
   post: Good | Service | Petition;
   isAuthor: boolean;
   isPetition: boolean;
+  usernameLogged: string | null | undefined;
 }) => {
   const good = post as Good;
   const service = post as Service;
@@ -129,7 +131,19 @@ const Data = async ({
                 <ContactPetitionsList post={post} />
               </Suspense>
             )}
-            <ShareButton shareType="post" data={post} />
+            <ShareButton
+              shareType="post"
+              data={{
+                _id: post._id,
+                description: post.title,
+                type: "post",
+                username: usernameLogged as string,
+                imageUrl:
+                  "imagesUrls" in post && post.imagesUrls
+                    ? (post as Good).imagesUrls[0]
+                    : "",
+              }}
+            />
             <SignedIn>
               <SaveButton post={post} />
               <PostReactionsContainer post={post} isAuthor={isAuthor} />

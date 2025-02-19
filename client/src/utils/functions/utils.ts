@@ -1,3 +1,5 @@
+import { Magazine } from "@/types/magazineTypes";
+import { Good, Post } from "@/types/postTypes";
 import { Subscription, SubscriptionPlan } from "@/types/subscriptions";
 
 export const checkIfUserIsSubscribed = (
@@ -114,4 +116,17 @@ export const getEmojiName = (emoji: string) => {
     default:
       return "";
   }
+};
+
+export const getFirstThreePostsImages = (magazineData: Magazine) => {
+  const posts: Post[] = [];
+
+  for (const section of magazineData.sections) {
+    if (posts.length >= 3) break; // Stop once we have 3 posts
+    posts.push(...section.posts.slice(0, 3 - posts.length));
+  }
+
+  return posts.map((post) =>
+    "imagesUrls" in post && post.imagesUrls ? (post as Good).imagesUrls[0] : ""
+  );
 };

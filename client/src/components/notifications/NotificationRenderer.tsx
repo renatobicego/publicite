@@ -7,7 +7,7 @@ import NewContactPost from "./contactSeller/NewContactPost";
 import MagazineNotificationCard from "./magazines/MagazineNotification";
 import PostActivityNotificationCard from "./postsActivity/PostActivityNotification";
 import ReviewRequest from "./postsCalification/PostCalificationNotification";
-import ElementShared from "./sharedElements/PostShared";
+import ElementShared from "./sharedElements/ElementShared";
 import PaymentNotification from "./suscriptions/PaymentNotification";
 import UserRelationNotificationCard from "./users/UserRelationNotification";
 

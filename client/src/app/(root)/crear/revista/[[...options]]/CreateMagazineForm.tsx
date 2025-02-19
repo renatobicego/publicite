@@ -18,7 +18,10 @@ import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
 import { PostUserMagazine, PostGroupMagazine } from "@/types/magazineTypes";
 import { useSocket } from "@/app/socketProvider";
 import { emitMagazineNotification } from "@/components/notifications/magazines/emitNotifications";
-import { useUserData } from "@/app/(root)/providers/userDataProvider";
+import {
+  useMagazinesData,
+  useUserData,
+} from "@/app/(root)/providers/userDataProvider";
 
 const CreateMagazineForm = ({
   isGroupMagazine,
@@ -37,8 +40,9 @@ const CreateMagazineForm = ({
   // get initial values for form
   const initialValues = isGroupMagazine ? groupMagazine : userMagazine;
   const router = useRouter();
-  const { updateSocketToken } = useSocket();
+  const { socket } = useSocket();
   const { userIdLogged, usernameLogged } = useUserData();
+  const { addMagazineToStore } = useMagazinesData();
 
   // if is group magazine but id of the group is not provided, throw error
   if (isGroupMagazine && !id) {
@@ -68,7 +72,13 @@ const CreateMagazineForm = ({
       actions.setSubmitting(false);
       return;
     }
-    const socket = await updateSocketToken();
+    if (!resApi.data) {
+      toastifyError(
+        "Hubo un error al crear la revista. Por favor intenta de nuevo."
+      );
+      actions.setSubmitting(false);
+      return;
+    }
     // to who send notifications
     const usersToSendNotifications = isGroupMagazine // if it is group magazine, send notifications to all allowed collaborators added
       ? (finalValues as PostGroupMagazine).allowedCollaborators
@@ -85,7 +95,7 @@ const CreateMagazineForm = ({
       emitMagazineNotification(
         socket,
         {
-          _id: resApi.id,
+          _id: resApi?.data?._id as string,
           name: finalValues.name,
           ownerType: finalValues.ownerType,
         },
@@ -98,6 +108,7 @@ const CreateMagazineForm = ({
         null
       );
     });
+    addMagazineToStore(resApi.data);
     actions.resetForm();
     toastifySuccess(resApi.message as string);
     router.push(`${MAGAZINES}/${resApi.id}`);
