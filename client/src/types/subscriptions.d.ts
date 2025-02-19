@@ -61,4 +61,18 @@ export interface PaymentNotificationType extends BaseNotification {
 export type PaymentStatusNotificationType =
   | "payment_pending"
   | "payment_approved"
-  | "payment_rejected";
+  | "payment_rejected"
+  | "subscription_cancelled"
+  | "free_trial";
+
+export interface SubscriptionNotification extends BaseNotification {
+  frontData: {
+    subscription: {
+      event: SubscriptionEvent;
+    };
+  };
+}
+
+export type SubscriptionEvent =
+  | "notification_downgrade_plan_contact"
+  | "notification_downgrade_plan_post";

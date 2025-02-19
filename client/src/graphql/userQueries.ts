@@ -177,6 +177,9 @@ export const getAllNotificationsQuery = gql`
               username
             }
           }
+          subscription {
+            event
+          }
           share {
             _id
             description

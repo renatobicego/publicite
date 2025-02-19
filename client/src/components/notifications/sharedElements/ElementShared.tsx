@@ -85,10 +85,8 @@ const ElementShared = ({
             radius="sm"
             src={FILE_URL + imageUrl}
             alt={"foto de portada de" + description}
-            className="object-cover"
-            classNames={{
-              wrapper: "w-full !max-w-full",
-            }}
+            removeWrapper
+            className="object-cover w-full h-full"
           />
         ) : (
           <FaShareAlt className="text-petition size-10" />
