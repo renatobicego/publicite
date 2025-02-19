@@ -42,7 +42,7 @@ const SelectUsers = (props: SelectUserProps) => {
           "shadow-none hover:shadow-sm border-[0.5px] group-data-[focus=true]:border-light-text py-1 h-fit",
         value: "text-[0.8125rem]",
         label: "font-medium text-[0.8125rem]",
-        innerWrapper: "h-fit"
+        innerWrapper: "h-fit",
       }}
       renderValue={(items) => {
         return (
@@ -87,7 +87,7 @@ export { SelectUsers };
 
 interface SearchUsersProps extends Omit<AutocompleteProps<User>, "children"> {
   items: User[];
-  onValueChange: (value: string) => void;
+  onValueChange?: (value: string) => void;
   onSelectionChange: (key: Key | null) => void;
   showOnlyUsername?: boolean;
   label?: string;
@@ -101,7 +101,7 @@ const SearchUsers = (props: SearchUsersProps) => {
     }[]
   >([]);
   const nameToShow = (user: User) => {
-    if(props.showOnlyUsername){
+    if (props.showOnlyUsername) {
       return user.username;
     }
     const { userType } = user;
@@ -121,7 +121,6 @@ const SearchUsers = (props: SearchUsersProps) => {
         variant="bordered"
         radius="full"
         labelPlacement="outside"
-        
         isLoading={isLoading}
         selectedKey={null}
         startContent={<FaSearch className="text-light-text" />}
@@ -137,16 +136,22 @@ const SearchUsers = (props: SearchUsersProps) => {
           },
         }}
         {...props}
-        onValueChange={(value) => {
-          setIsLoading(true);
-          try {
-            props.onValueChange(value);
-          } catch (error) {
-            toastifyError("Error al buscar usuarios");
-          } finally {
-            setIsLoading(false);
-          }
-        }}
+        onValueChange={
+          props.onValueChange !== undefined
+            ? (value) => {
+                setIsLoading(true);
+                try {
+                  if (props.onValueChange) {
+                    props.onValueChange(value);
+                  }
+                } catch (error) {
+                  toastifyError("Error al buscar usuarios");
+                } finally {
+                  setIsLoading(false);
+                }
+              }
+            : undefined
+        }
         onSelectionChange={(key) => {
           if (!key) return;
           const user = props.items.find((u) => u._id === key);

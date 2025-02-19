@@ -6,6 +6,7 @@ import {
   UserPersonFormValues,
   UserPreferences,
   UserRelationNotification,
+  UserRelations,
 } from "@/types/userTypes";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import axios from "axios";
@@ -23,11 +24,7 @@ import getUserByUsernameQuery, {
 import { ApolloError } from "@apollo/client";
 import { getApiContext } from "./apiContext";
 import { handleApolloError } from "@/utils/functions/errorHandler";
-import {
-  GetContactSellersPetitionDTO,
-  PetitionContactSeller,
-  Post,
-} from "@/types/postTypes";
+import { GetContactSellersPetitionDTO } from "@/types/postTypes";
 
 const baseUrl = `${process.env.API_URL}/user/personal`;
 
@@ -88,6 +85,38 @@ export const getUserProfileData = async (username: string) => {
       error:
         "Error al traer los datos personales del usuario. Por favor intenta de nuevo.",
     };
+  }
+};
+
+export const getFriendsOfUser = async (username: string) => {
+  try {
+    const user = auth();
+    const {
+      data,
+    }: { data: { findUserByUsername: { userRelations: UserRelations[] } } } =
+      await query({
+        query: getFriendRequestsQuery,
+        variables: { username },
+        context: {
+          headers: {
+            Authorization: await user.getToken({ template: "testing" }),
+          },
+        },
+      });
+
+    const relationsMapped = data.findUserByUsername.userRelations.map(
+      (relation) => {
+        if (relation.userA._id === user.sessionClaims?.metadata.mongoId) {
+          return relation.userB;
+        }
+        return relation.userA;
+      }
+    );
+
+    return relationsMapped;
+  } catch (error) {
+    console.log(error);
+    throw error;
   }
 };
 
