@@ -22,4 +22,12 @@ export class front_data_SHARE {
     @Field(() => String)
     description: string
 
+    @Field(() => String)
+    username: string
+
+    @Field(() => String, { nullable: true })
+    imageUrl: string
+
+
+
 }
