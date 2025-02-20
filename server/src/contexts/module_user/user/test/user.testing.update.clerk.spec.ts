@@ -7,7 +7,7 @@ import { UP_clerkUpdateRequestDto } from 'src/contexts/module_webhook/clerk/appl
 import { UserService } from '../application/service/user.service';
 import { UserRepository } from '../infrastructure/repository/user.repository';
 import { IUser, UserModel } from '../infrastructure/schemas/user.schema';
-import mapModuleTesting from './test.module';
+import mapModuleTesting from './user.test.module';
 
 
 

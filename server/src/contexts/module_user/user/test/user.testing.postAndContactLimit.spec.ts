@@ -3,7 +3,7 @@ import { TestingModule } from "@nestjs/testing";
 import { getModelToken } from '@nestjs/mongoose';
 
 
-import mapModuleTesting from "./test.module";
+import mapModuleTesting from "./user.test.module";
 import { UserService } from "../application/service/user.service";
 import { IUser, UserModel } from '../infrastructure/schemas/user.schema';
 import { UserRelationDocument, UserRelationModel } from "../infrastructure/schemas/user.relation.schema";

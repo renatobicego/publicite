@@ -11,13 +11,13 @@ async function createPersonalUser(user_id: Types.ObjectId, userModel: any, attri
         lastName: 'TEST_B',
         finder: 'TEST_B',
         profilePhotoUrl: 'TEST_B.jpg',
-        userType: 'Person',
+        userType: 'person',
         userRelations: [],
         kind: "Person",
         birthDate: "2000-01-01",
         gender: "M",
-        subscriptions: attributes?.get("subscriptions") ?? []
-
+        subscriptions: attributes?.get("subscriptions") ?? [],
+        notifications: []
 
     });
 

@@ -601,7 +601,7 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
       })
       .session(session)
       .lean();
-      
+
     const uniqueMagazineIds = new Set<string>(); // Track unique magazine IDs
 
     if (groups) {
@@ -778,11 +778,12 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
     if (magazine.getSections.length <= 0) {
       const session = await this.connection.startSession();
       try {
-        await session.withTransaction(async () => {
+        magazineSaved = await session.withTransaction(async () => {
           switch (magazine.getOwnerType) {
             case OwnerType.user: {
               const userMagazine = new this.userMagazine(magazine);
               magazineSaved = await userMagazine.save({ session });
+
               await this.userModel.findByIdAndUpdate(
                 //Updateo el dueño de la revista
                 userMagazine.user,
@@ -797,7 +798,15 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
                   { session },
                 );
               }
-              return magazineSaved._id;
+
+              return magazineSaved
+                .populate([
+                  {
+                    path: 'sections', model: 'MagazineSection', select: '_id isFatherSection posts title',
+
+                  },
+
+                ]);
             }
             case OwnerType.group: {
               const groupMagazine = new this.groupMagazine(magazine);
@@ -810,24 +819,38 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
               if (result.matchedCount === 0) {
                 throw new Error('Group not found');
               }
-              return magazineSaved._id;
+
+              return magazineSaved
+                .populate([
+                  {
+                    path: 'sections', model: 'MagazineSection', select: '_id isFatherSection posts title',
+
+                  },
+
+                ]);
             }
             default: {
               throw new Error('Invalid owner type');
             }
           }
         });
-        return magazineSaved!._id;
+
+
+
+        return magazineSaved;
       } catch (error: any) {
         throw error;
+      } finally {
+        session.endSession();
       }
+
     }
     return this.saveMagazineWithSection(magazine);
   }
 
   async saveSection(
     section: MagazineSectionCreateRequest,
-    session: any,
+    session?: any,
   ): Promise<any> {
     try {
       const newMagazineSection = new this.magazineSection(section);
@@ -839,16 +862,20 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
       }
     } catch (error: any) {
       throw error;
+    } finally {
+      session.endSession();
     }
+
   }
   async saveMagazineWithSection(magazine: Magazine): Promise<any> {
     const session = await this.connection.startSession();
-    let magazineSaved;
+    let magazineSaved: any;
     try {
-      await session.withTransaction(async () => {
+      magazineSaved = await session.withTransaction(async () => {
         const section = magazine.getSections.pop();
         const newMagazineSection = new this.magazineSection(section);
         const sectionSave = await newMagazineSection.save({ session });
+
         const magazineToSave = {
           ...magazine,
           sections: sectionSave._id,
@@ -858,50 +885,62 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
           case OwnerType.user: {
             const userMagazine = new this.userMagazine(magazineToSave);
             magazineSaved = await userMagazine.save({ session });
+
             await this.userModel.findByIdAndUpdate(
-              //Updateo el dueño de la revista
               userMagazine.user,
               { $push: { magazines: magazineSaved._id } },
               { session },
             );
+
             if (userMagazine.collaborators.length > 0) {
               await this.userModel.updateMany(
-                //Updateo los colaboradores
                 { _id: { $in: userMagazine.collaborators } },
                 { $push: { magazines: magazineSaved._id } },
                 { session },
               );
             }
-            session.commitTransaction();
-            return magazineSaved._id;
+
+            return magazineSaved;
           }
           case OwnerType.group: {
             const groupMagazine = new this.groupMagazine(magazineToSave);
             magazineSaved = await groupMagazine.save({ session });
+
             await this.groupModel.findByIdAndUpdate(
-              //Updateo la revista en el grupo
               groupMagazine.group,
               { $push: { magazines: magazineSaved._id } },
               { session },
             );
 
-            session.commitTransaction();
-            return magazineSaved._id;
+            return magazineSaved;
           }
           default: {
             throw new Error('Invalid owner type');
           }
         }
       });
-      return magazineSaved!._id;
+
+
+      if (magazineSaved) {
+        magazineSaved = await magazineSaved.populate([
+          {
+            path: 'sections',
+            model: 'MagazineSection',
+            select: '_id isFatherSection posts title',
+          }
+        ]);
+      }
+
+      return magazineSaved;
     } catch (error: any) {
       this.logger.error('Error creating Magazine with section: ' + error);
-      await session.abortTransaction();
       this.logger.error('Session aborted');
+      return null;
     } finally {
       session.endSession();
     }
   }
+
 
   async removeCollaboratorFromUserMagazine(magazineId: string, collaboratorId: string): Promise<any> {
     const session = await this.connection.startSession();

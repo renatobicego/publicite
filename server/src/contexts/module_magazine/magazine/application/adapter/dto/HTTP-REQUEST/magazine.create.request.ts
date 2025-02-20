@@ -23,19 +23,19 @@ export class MagazineCreateRequest {
 
   // User Magazines Atributes
   @Field(() => [String], { nullable: true })
-  collaborators: ObjectId[];
+  collaborators?: ObjectId[];
 
   @Field(() => String, { nullable: true })
-  user: ObjectId;
+  user?: ObjectId;
 
   @Field(() => String, { nullable: true })
-  visibility: string;
+  visibility?: string;
 
   // Group Magazines Atributes
 
   @Field(() => [String], { nullable: true })
-  allowedCollaborators: ObjectId[];
+  allowedCollaborators?: ObjectId[];
 
   @Field(() => String, { nullable: true })
-  group: ObjectId;
+  group?: ObjectId;
 }

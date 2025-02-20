@@ -1,6 +1,8 @@
 import { MongooseModule, getModelToken } from "@nestjs/mongoose";
 import * as dotenv from 'dotenv';
 import { Test, TestingModule } from "@nestjs/testing";
+
+
 import { MagazineModel } from "src/contexts/module_magazine/magazine/infrastructure/schemas/magazine.schema";
 import { EmitterService } from "src/contexts/module_shared/event-emmiter/emmiter";
 import { MyLoggerService } from "src/contexts/module_shared/logger/logger.service";

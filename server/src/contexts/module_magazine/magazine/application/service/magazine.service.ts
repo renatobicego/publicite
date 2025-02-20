@@ -185,9 +185,9 @@ export class MagazineService implements MagazineServiceInterface {
           this.logger.log('Creating new UserMagazine in service..');
           const userMagazine = new UserMagazine(
             magazineBase,
-            magazineRequest.collaborators,
+            magazineRequest.collaborators ?? [],
             userRequestId,
-            magazineRequest.visibility,
+            magazineRequest.visibility ?? "public",
           );
           return await this.magazineRepository.save(userMagazine);
         }
@@ -198,7 +198,7 @@ export class MagazineService implements MagazineServiceInterface {
           const groupMagazine = new GroupMagazine(
             magazineBase,
             allowedCollaborators,
-            magazineRequest.group,
+            magazineRequest.group!!,
           );
           return await this.magazineRepository.save(groupMagazine);
         }

@@ -12,6 +12,7 @@ import { MagazineSectionCreateRequest } from '../../application/adapter/dto/HTTP
 import { OwnerType } from '../../domain/entity/enum/magazine.ownerType.enum';
 import { CustomContextRequestInterface } from 'src/contexts/module_shared/auth/custom_request/custom.context.request.interface';
 import { OnEvent } from '@nestjs/event-emitter';
+import { MagazineCreateResponse } from '../../application/adapter/dto/HTTP-RESPONSE/magazine.create.response';
 
 
 
@@ -166,7 +167,7 @@ export class MagazineResolver {
     }
   }
 
-  @Mutation(() => String, {
+  @Mutation(() => MagazineCreateResponse, {
     nullable: true,
     description: 'Crear una revista',
   })
