@@ -1,14 +1,14 @@
-import { getModelToken } from "@nestjs/mongoose";
 import { TestingModule } from "@nestjs/testing";
 import mongoose, { Connection, Model, Models } from "mongoose";
 
 
 import mpTestingModule from "./test.module";
+import { MpHandlerEvents } from "../infastructure/adapters/handler/mpHandlerFETCHEvents";
 
 
 describe('MercadopagoService - Invoice', () => {
     let connection: Connection;
-
+    let mpHandlerEvents: MpHandlerEvents;
 
 
     beforeAll(async () => {
@@ -16,7 +16,7 @@ describe('MercadopagoService - Invoice', () => {
 
         connection = mongoose.connection;
         const moduleRef: TestingModule = await mpTestingModule.get("mp_testing_module")();
-
+        mpHandlerEvents = moduleRef.get<MpHandlerEvents>('MpHandlerEventsInterface');
 
 
     });
@@ -29,7 +29,7 @@ describe('MercadopagoService - Invoice', () => {
 
 
 
-    it('', async () => {
+    it('Should create subscription ', async () => {
 
 
     });

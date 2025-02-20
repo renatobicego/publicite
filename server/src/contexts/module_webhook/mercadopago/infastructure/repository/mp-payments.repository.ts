@@ -49,6 +49,8 @@ export class MercadoPagoPaymentsRepository
 
   async updatePayment(paymentToUpdate: any, id: any): Promise<void> {
     try {
+      console.log(paymentToUpdate)
+      console.log(id)
       this.logger.log('Update payment: ' + id);
 
       await this.paymentModel.findOneAndUpdate(

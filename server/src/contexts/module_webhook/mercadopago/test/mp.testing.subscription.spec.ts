@@ -1,18 +1,15 @@
 import mongoose, { Model, Connection, Types } from "mongoose";
 import { TestingModule } from "@nestjs/testing";
 import mpTestingModule from "./test.module";
-import { SubscriptionRepository } from "../../../infastructure/repository/mp-subscription.repository";
-import { MercadoPagoSubscriptionPlanService } from "../mp-subscriptionPlan.service";
-import { UserService } from "src/contexts/module_user/user/application/service/user.service";
-import { MpSubscriptionService } from "../mp-subscription.service";
-import { Subscription_preapproval } from "../../../domain/entity_mp/subscription_preapproval";
-import { createPersonalUser } from "src/contexts/module_user/user/test/functions/create.user";
-import { IUser, UserModel } from "src/contexts/module_user/user/infrastructure/schemas/user.schema";
 import { getModelToken } from "@nestjs/mongoose";
-import SubscriptionPlanModel, { SubscriptionPlanDocument } from "../../../infastructure/schemas/subscriptionPlan.schema";
-import SubscriptionModel, { SubscriptionDocument } from "../../../infastructure/schemas/subscription.schema";
-import { MpHandlerEvents } from "../../../infastructure/adapters/handler/mpHandlerFETCHEvents";
-import { BadRequestException } from "@nestjs/common";
+import { IUser, UserModel } from "src/contexts/module_user/user/infrastructure/schemas/user.schema";
+import { createPersonalUser } from "src/contexts/module_user/user/test/functions/create.user";
+import { MpSubscriptionService } from "../application/service/mp-subscription.service";
+import { Subscription_preapproval } from "../domain/entity_mp/subscription_preapproval";
+import SubscriptionModel, { SubscriptionDocument } from "../infastructure/schemas/subscription.schema";
+import SubscriptionPlanModel, { SubscriptionPlanDocument } from "../infastructure/schemas/subscriptionPlan.schema";
+import { MpHandlerEvents } from "../infastructure/adapters/handler/mpHandlerFETCHEvents";
+import { get_subscription_preapproval } from "./models/subscription.creator";
 
 
 interface SubscriptionPlan {
@@ -32,7 +29,7 @@ interface SubscriptionPlan {
 
 
 
-describe('MercadopagoService - Subscription', () => {
+describe('MercadopagoService - Subscription create', () => {
     let connection: Connection;
 
 
@@ -63,7 +60,7 @@ describe('MercadopagoService - Subscription', () => {
         subscriptionPlanModel = moduleRef.get<Model<SubscriptionPlanDocument>>(getModelToken(SubscriptionPlanModel.modelName));
         subscriptionModel = moduleRef.get<Model<SubscriptionDocument>>(getModelToken(SubscriptionModel.modelName));
 
-      
+
         await createPersonalUser(user_id, userModel, new Map([["subscriptions", []]]));
         await subscriptionPlanModel.create({
             mpPreapprovalPlanId: subcriptionPlanMeli_id,
@@ -84,20 +81,18 @@ describe('MercadopagoService - Subscription', () => {
 
     afterAll(async () => {
         await connection.close();
-        await userModel.deleteMany({});
         await subscriptionPlanModel.deleteMany({});
-        await subscriptionModel.deleteMany({});
+
 
     });
 
-
+    afterEach(async () => {
+        await userModel.deleteMany({});
+        await subscriptionModel.deleteMany({});
+    });
 
 
     it('Create a subscription', async () => {
-
-
-
-
 
         const subscription_preapproval: Subscription_preapproval = {
             id: subcriptionPlanMeli_id,
@@ -163,11 +158,6 @@ describe('MercadopagoService - Subscription', () => {
 
 
     it('Create a subscription without auto_recurring', async () => {
-
-
-     
-
-
 
         const subscription_preapproval: any = {
             id: subcriptionPlanMeli_id,
@@ -281,3 +271,160 @@ describe('MercadopagoService - Subscription', () => {
 
 
 })// end
+
+
+
+describe('Mercadopago - MpHandlerEvents - Subscription  -> Create', () => {
+    let connection: Connection;
+    let mpHandlerEvents: MpHandlerEvents;
+    let subscriptionModel: Model<SubscriptionDocument>;
+    let subscriptionPlanModel: Model<SubscriptionPlanDocument>
+    let userModel: Model<IUser>;
+
+    let maockedSubscriptionResponse: any
+    let payment: any;
+    let mockFetchToMpAdapter: any;
+    const subcriptionPlanMeli_id = "2c93808494b8c5eb0194be9f312902f2"
+    const external_reference = new Types.ObjectId("67420686b02bdd1f9f0ef449")
+    const subscriptionPlan_id = new Types.ObjectId("67420686b02bdd1f9f0ef445")
+
+    beforeAll(async () => {
+        connection = mongoose.connection;
+        const moduleRef: TestingModule = await mpTestingModule.get("mp_testing_module")();
+        subscriptionModel = moduleRef.get<Model<SubscriptionDocument>>(getModelToken('Subscription'));
+        subscriptionPlanModel = moduleRef.get<Model<SubscriptionPlanDocument>>(getModelToken('SubscriptionPlan'));
+        userModel = moduleRef.get<Model<IUser>>(getModelToken('User'));
+        mpHandlerEvents = moduleRef.get<MpHandlerEvents>('MpHandlerEventsInterface');
+
+        mockFetchToMpAdapter = {
+            getDataFromMp_fetch: jest.fn()
+        };
+        maockedSubscriptionResponse = get_subscription_preapproval(external_reference.toString(), subcriptionPlanMeli_id);
+        await subscriptionPlanModel.create({
+            _id: subscriptionPlan_id,
+            mpPreapprovalPlanId: subcriptionPlanMeli_id,
+            isActive: true,
+            reason: maockedSubscriptionResponse.reason,
+            description: maockedSubscriptionResponse.reason,
+            features: ["TEST"],
+            intervalTime: 0,
+            price: 0,
+            isFree: false,
+            postsLibresCount: 0,
+            postsAgendaCount: 0,
+            maxContacts: 0,
+            isPack: false
+
+        });
+        await createPersonalUser(external_reference, userModel, new Map([["subscriptions", []]]));
+
+
+        (mpHandlerEvents as any).fetchToMpAdapter = mockFetchToMpAdapter;
+
+
+    });
+
+    afterAll(async () => {
+        await connection.close();
+        await subscriptionModel.deleteMany({});
+        await subscriptionPlanModel.deleteMany({});
+        await userModel.deleteMany({});
+
+    });
+
+
+
+
+    it('Should return true and create a suscription', async () => {
+
+
+        mockFetchToMpAdapter.getDataFromMp_fetch.mockResolvedValue(maockedSubscriptionResponse);
+        await mpHandlerEvents.create_subscription_preapproval("123456");
+
+
+        const subscriptionSaved = await subscriptionModel.findOne({ mpPreapprovalId: maockedSubscriptionResponse.id });
+        if (subscriptionSaved === null) throw new Error("subscriptionSaved not found");
+        expect(subscriptionSaved).not.toBeNull();
+        expect(subscriptionSaved.mpPreapprovalId).toBe(maockedSubscriptionResponse.id);
+        expect(subscriptionSaved.payerId).toBe(maockedSubscriptionResponse.payer_id.toString());
+        expect(subscriptionSaved.status).toBe(maockedSubscriptionResponse.status);
+        expect(subscriptionSaved.subscriptionPlan).toEqual(subscriptionPlan_id);
+        expect(subscriptionSaved.startDate).toBe((maockedSubscriptionResponse.auto_recurring.start_date).split('T')[0]);
+        expect(subscriptionSaved.endDate).toBe((maockedSubscriptionResponse.auto_recurring.start_date).split('T')[0]);
+        expect(subscriptionSaved.external_reference).toBe(maockedSubscriptionResponse.external_reference);
+        expect(subscriptionSaved.nextPaymentDate).toBe(maockedSubscriptionResponse.next_payment_date);
+        expect(subscriptionSaved.paymentMethodId).toBe(maockedSubscriptionResponse.payment_method_id);
+        expect(subscriptionSaved.cardId).toBe(maockedSubscriptionResponse.card_id);
+
+
+    });
+
+
+
+
+
+
+
+});
+
+
+
+describe('Mercadopago - MpHandlerEvents - Subscription  -> Update', () => {
+    let connection: Connection;
+    let mpHandlerEvents: MpHandlerEvents;
+    let subscriptionModel: Model<SubscriptionDocument>;
+    let subscriptionPlanModel: Model<SubscriptionPlanDocument>
+    let userModel: Model<IUser>;
+
+    let maockedSubscriptionResponse: any
+    let payment: any;
+    let mockFetchToMpAdapter: any;
+    const subcriptionPlanMeli_id = "2c93808494b8c5eb0194be9f312902f2"
+    const external_reference = new Types.ObjectId("67420686b02bdd1f9f0ef449")
+    const subscriptionPlan_id = new Types.ObjectId("67420686b02bdd1f9f0ef445")
+
+    beforeAll(async () => {
+        connection = mongoose.connection;
+        const moduleRef: TestingModule = await mpTestingModule.get("mp_testing_module")();
+        subscriptionModel = moduleRef.get<Model<SubscriptionDocument>>(getModelToken('Subscription'));
+        userModel = moduleRef.get<Model<IUser>>(getModelToken('User'));
+        mpHandlerEvents = moduleRef.get<MpHandlerEvents>('MpHandlerEventsInterface');
+
+        mockFetchToMpAdapter = {
+            getDataFromMp_fetch: jest.fn()
+        };
+        maockedSubscriptionResponse = get_subscription_preapproval(external_reference.toString(), subcriptionPlanMeli_id);
+
+        await createPersonalUser(external_reference, userModel, new Map([["subscriptions", []]]));
+
+
+        (mpHandlerEvents as any).fetchToMpAdapter = mockFetchToMpAdapter;
+
+
+    });
+
+    afterAll(async () => {
+        await connection.close();
+        await subscriptionModel.deleteMany({});
+
+        await userModel.deleteMany({});
+
+    });
+
+
+
+
+    it('Should update subscription and return true and send notification to user (FREE_TRIAL)', async () => {
+
+
+
+
+    });
+
+
+
+
+
+
+
+});

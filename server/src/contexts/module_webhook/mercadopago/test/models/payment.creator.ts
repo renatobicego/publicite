@@ -389,6 +389,4 @@ function get_payment(status: string, external_reference: string) {
 
 
 
-
-
 export { generate_payment_card_validation, get_payment }

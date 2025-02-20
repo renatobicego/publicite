@@ -11,7 +11,7 @@ async function createPersonalUser(user_id: Types.ObjectId, userModel: any, attri
         lastName: 'TEST_B',
         finder: 'TEST_B',
         profilePhotoUrl: 'TEST_B.jpg',
-        userType: 'person',
+        userType: 'Person',
         userRelations: [],
         kind: "Person",
         birthDate: "2000-01-01",

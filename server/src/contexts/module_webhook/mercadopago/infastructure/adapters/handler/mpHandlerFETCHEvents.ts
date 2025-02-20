@@ -55,7 +55,12 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
     private readonly emmiter: EmitterService
 
   ) { }
-
+  get getLogger() {
+    return this.logger
+  }
+  get getURL_PAYMENT_CHECK() {
+    return this.URL_PAYMENT_CHECK
+  }
   private availableStatusOfTheCreatePayment = ['approved', 'rejected', 'pending', 'in_process'];
   private availableStatusOfTheUpdatePayment = ['approved', 'rejected', 'pending', 'in_process', 'cancelled'];
 
