@@ -7,9 +7,10 @@ import NewContactPost from "./contactSeller/NewContactPost";
 import MagazineNotificationCard from "./magazines/MagazineNotification";
 import PostActivityNotificationCard from "./postsActivity/PostActivityNotification";
 import ReviewRequest from "./postsCalification/PostCalificationNotification";
-import ElementShared from "./sharedElements/PostShared";
+import ElementShared from "./sharedElements/ElementShared";
 import PaymentNotification from "./suscriptions/PaymentNotification";
 import UserRelationNotificationCard from "./users/UserRelationNotification";
+import SubscriptionDowngradeNotification from "./suscriptions/SubscriptionDowngradeNotification";
 
 type NotificationType =
   | "group"
@@ -19,7 +20,10 @@ type NotificationType =
   | "contact"
   | "payment"
   | "calification"
-  | "share";
+  | "share"
+  | "free_trial"
+  | "subscription_cancelled"
+  | "downgrade_plan";
 
 const notificationComponents = {
   group: GroupNotificationCard,
@@ -28,6 +32,9 @@ const notificationComponents = {
   post: PostActivityNotificationCard,
   contact: NewContactPost,
   payment: PaymentNotification,
+  free_trial: PaymentNotification,
+  subscription_cancelled: PaymentNotification,
+  downgrade_plan: SubscriptionDowngradeNotification,
   calification: ReviewRequest,
   share: ElementShared,
 };

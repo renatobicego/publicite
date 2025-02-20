@@ -504,6 +504,8 @@ type front_data_SHARE {
   type: ShareType!
   _id: String!
   description: String!
+  username: String!
+  imageUrl: String
 }
 
 """Type of share"""

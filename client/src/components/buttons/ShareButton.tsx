@@ -16,21 +16,26 @@ import { Group } from "@/types/groupTypes";
 import { Post } from "@/types/postTypes";
 import { Magazine } from "@/types/magazineTypes";
 import useSearchUsers from "@/utils/hooks/useSearchUsers";
-import { cloneElement, useEffect, useState } from "react";
+import { cloneElement, use, useEffect, useState } from "react";
 import { SearchUsers } from "../inputs/SearchUsers";
-import { GetUser, User } from "@/types/userTypes";
+import {
+  ElementSharedData,
+  GetUser,
+  ShareTypesEnum,
+  User,
+} from "@/types/userTypes";
 import { SignedIn } from "@clerk/nextjs";
+import { emitElementSharedNotification } from "../notifications/sharedElements/emitNotifications";
+import { useSocket } from "@/app/socketProvider";
+import { useUserData } from "@/app/(root)/providers/userDataProvider";
+import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 
-type ShareButtonBaseProps = {
+type ShareButtonProps = {
   ButtonAction?: JSX.Element;
   customOpen?: (openModal: () => void) => void;
+  data: ElementSharedData;
+  shareType: ShareTypesEnum;
 };
-
-type ShareButtonProps =
-  | ({ shareType: "group"; data: Group } & ShareButtonBaseProps)
-  | ({ shareType: "post"; data: Post } & ShareButtonBaseProps)
-  | ({ shareType: "user"; data: User | GetUser } & ShareButtonBaseProps)
-  | ({ shareType: "magazine"; data: Magazine } & ShareButtonBaseProps);
 
 const ShareButton = ({
   shareType,
@@ -39,9 +44,30 @@ const ShareButton = ({
   customOpen,
 }: ShareButtonProps) => {
   const { onOpen, isOpen, onOpenChange } = useDisclosure();
-  const { users, getUsersByQuery } = useSearchUsers();
+  const { userIdLogged, usernameLogged } = useUserData();
+  const { users } = useSearchUsers(undefined, usernameLogged);
+  const { socket } = useSocket();
+  const [isLoading, setIsLoading] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const url = window.location.href;
+
+  const [filteredUsers, setFilteredUsers] = useState(users);
+
+  useEffect(() => {
+    setFilteredUsers(users); // Ensure filteredUsers updates when users change
+  }, [users]);
+
+  const handleSearchChange = (query: string) => {
+    if (query.trim() === "") {
+      setFilteredUsers(users); // Reset to original users list
+    } else {
+      setFilteredUsers(
+        users.filter((user) =>
+          user.username.toLowerCase().includes(query.toLowerCase())
+        )
+      );
+    }
+  };
   const handleSelectionChange = (key: any) => {
     if (selectedUsers.includes(key)) {
       setSelectedUsers(selectedUsers.filter((item: any) => item !== key));
@@ -63,21 +89,37 @@ const ShareButton = ({
     }
   }, [customOpen, onOpen]);
 
-  const handleShare = () => {
-    switch (shareType) {
-      case "group":
-        // Handle sharing logic for a group
-        console.log("Sharing group:", data);
-        break;
-      case "post":
-        // Handle sharing logic for a post
-        console.log("Sharing post:", data);
-        break;
-      case "magazine":
-        // Handle sharing logic for a magazine
-        console.log("Sharing magazine:", data);
-        break;
-    }
+  const handleShare = async () => {
+    setIsLoading(true);
+    await Promise.all(
+      selectedUsers.map(async (user) => {
+        try {
+          await emitElementSharedNotification(
+            socket,
+            userIdLogged as string,
+            user,
+            data,
+            shareType
+          );
+          toastifySuccess(
+            `Elemento compartido correctamente a ${
+              users.find((u) => u._id === user)?.username
+            }`
+          );
+        } catch {
+          toastifyError(
+            `Error al compartir el elemento a ${
+              users.find((u) => u._id === user)?.username
+            }`
+          );
+        }
+      })
+    );
+
+    // All notifications sent successfully
+    setSelectedUsers([]);
+    toastifySuccess("Todos los elementos fueron compartidos correctamente.");
+    setIsLoading(false);
   };
   return (
     <>
@@ -123,11 +165,9 @@ const ShareButton = ({
                     </Snippet>
                     <SignedIn>
                       <SearchUsers
-                        items={users}
+                        items={filteredUsers}
                         label="Buscar contactos"
-                        onValueChange={(value: string | null) =>
-                          getUsersByQuery(value)
-                        }
+                        onValueChange={handleSearchChange}
                         onSelectionChange={handleSelectionChange}
                       />
                     </SignedIn>
@@ -138,7 +178,13 @@ const ShareButton = ({
                 <PrimaryButton variant="light" onPress={onClose}>
                   Cerrar
                 </PrimaryButton>
-                <PrimaryButton onPress={handleShare}>Compartir</PrimaryButton>
+                <PrimaryButton
+                  isDisabled={isLoading}
+                  isLoading={isLoading}
+                  onPress={handleShare}
+                >
+                  Compartir
+                </PrimaryButton>
               </ModalFooter>
             </>
           )}

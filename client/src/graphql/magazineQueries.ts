@@ -2,7 +2,19 @@ import gql from "graphql-tag";
 
 export const createMagazineMutation = gql`
   mutation CreateMagazine($magazineCreateRequest: MagazineCreateRequest!) {
-    createMagazine(magazineCreateRequest: $magazineCreateRequest)
+    createMagazine(magazineCreateRequest: $magazineCreateRequest) {
+      _id
+      name
+      sections {
+        _id
+        isFatherSection
+        posts {
+          _id
+        }
+        title
+      }
+      ownerType
+    }
   }
 `;
 

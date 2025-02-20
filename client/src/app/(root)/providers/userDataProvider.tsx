@@ -2,8 +2,13 @@
 import { Provider, useDispatch, useSelector } from "react-redux";
 import { createStore, RootState } from "./store";
 import {
+  addMagazine,
   addPostToMagazine,
+  addSectionToMagazine,
+  editMagazineName,
+  removeMagazine,
   removePostFromMagazine,
+  removeSectionFromMagazine,
 } from "./slices/magazineSlice";
 import { ReactNode, use } from "react";
 import {
@@ -16,6 +21,7 @@ import DataInitializer from "./DataInitializer";
 import { setActiveRelations, setSearchPreferences } from "./slices/configSlice";
 import { PersistGate } from "redux-persist/integration/react";
 import { PostCategory } from "@/types/postTypes";
+import { Magazine, MagazineSection } from "@/types/magazineTypes";
 
 export const UserDataProvider = ({
   children,
@@ -71,7 +77,37 @@ export const useMagazinesData = () => {
     dispatch(removePostFromMagazine({ postId, section }));
   };
 
-  return { magazines, postsInMagazine, addPost, removePost };
+  const addSection = (id: string, section: MagazineSection) => {
+    dispatch(addSectionToMagazine({ id, section }));
+  };
+
+  const removeSection = (id: string, sectionId: string) => {
+    dispatch(removeSectionFromMagazine({ id, sectionId }));
+  };
+
+  const editMagazine = (id: string, name: string) => {
+    dispatch(editMagazineName({ id, name }));
+  };
+
+  const addMagazineToStore = (magazine: Magazine) => {
+    dispatch(addMagazine(magazine));
+  };
+
+  const removeMagazineOfStore = (id: string) => {
+    dispatch(removeMagazine(id));
+  };
+
+  return {
+    magazines,
+    postsInMagazine,
+    addPost,
+    removePost,
+    addSection,
+    removeSection,
+    editMagazine,
+    addMagazineToStore,
+    removeMagazineOfStore,
+  };
 };
 
 export const useConfigData = () => {

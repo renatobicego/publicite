@@ -55,7 +55,12 @@ export default async function PostPage(props: {
         <BreadcrumbsAdmin items={breadcrumbsItems} />
         <section className="w-full flex max-lg:flex-col gap-4 lg:gap-6 3xl:gap-8 relative">
           {!isPetition && <Images images={(post as any).imagesUrls} />}
-          <Data post={post} isAuthor={isAuthor} isPetition={isPetition} />
+          <Data
+            post={post}
+            isAuthor={isAuthor}
+            isPetition={isPetition}
+            usernameLogged={user?.username}
+          />
         </section>
         <section className="w-full flex max-lg:flex-col gap-4 lg:gap-6 3xl:gap-8 md:mt-6 xl:mt-8">
           <Comments

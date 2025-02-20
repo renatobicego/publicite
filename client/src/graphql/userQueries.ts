@@ -93,6 +93,36 @@ const getUserByUsernameQuery = gql`
 export const getFriendRequestsQuery = gql`
   query FindUserByUsername($username: String!) {
     findUserByUsername(username: $username) {
+      userRelations {
+        _id
+        typeRelationA
+        typeRelationB
+        userA {
+          _id
+          businessName
+          lastName
+          name
+          profilePhotoUrl
+          userType
+          username
+        }
+        userB {
+          _id
+          businessName
+          username
+          userType
+          profilePhotoUrl
+          name
+          lastName
+        }
+      }
+    }
+  }
+`;
+
+export const getFriendsQuery = gql`
+  query FindUserByUsername($username: String!) {
+    findUserByUsername(username: $username) {
       _id
       friendRequests {
         event
@@ -146,6 +176,16 @@ export const getAllNotificationsQuery = gql`
               _id
               username
             }
+          }
+          subscription {
+            event
+          }
+          share {
+            _id
+            description
+            imageUrl
+            type
+            username
           }
           userRelation {
             userFrom {

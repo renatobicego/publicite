@@ -15,7 +15,9 @@ import {
   getMagazineWithoutPostsByIdQuery,
 } from "@/graphql/magazineQueries";
 import { getClient, query } from "@/lib/client";
+import { Magazine } from "@/types/magazineTypes";
 import { auth } from "@clerk/nextjs/server";
+import { getApiContext } from "./apiContext";
 
 export const getMagazineById = async (id: string) => {
   try {
@@ -27,7 +29,7 @@ export const getMagazineById = async (id: string) => {
           Authorization: await auth().getToken({ template: "testing" }),
         },
         fetchOptions: {
-          cache: "no-cache"
+          cache: "no-cache",
         },
       },
     });
@@ -42,13 +44,15 @@ export const getMagazineById = async (id: string) => {
 };
 export const getMagazineWithoutPostsById = async (id: string) => {
   try {
+    const { context } = await getApiContext();
     const { data } = await query({
       query: getMagazineWithoutPostsByIdQuery,
       variables: { getMagazineByMagazineIdId: id },
+      context,
     });
     return data.getMagazineByMagazineId;
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return {
       error:
         "Error al traer los datos de la revista. Por favor intenta de nuevo.",
@@ -56,7 +60,7 @@ export const getMagazineWithoutPostsById = async (id: string) => {
   }
 };
 
-export const postMagazine = async (formData: any) => {
+export const postMagazine = async (formData: any): Promise<Magazine> => {
   const { data } = await getClient().mutate({
     mutation: createMagazineMutation,
     variables: { magazineCreateRequest: formData },
@@ -66,10 +70,14 @@ export const postMagazine = async (formData: any) => {
       },
     },
   });
-  return data;
+  return data.createMagazine;
 };
 
-export const putMagazine = async (formData: any, userId: string, groupId?: string) => {
+export const putMagazine = async (
+  formData: any,
+  userId: string,
+  groupId?: string
+) => {
   const { data } = await getClient().mutate({
     mutation: editMagazineMutation,
     variables: { magazineUpdateRequest: formData, owner: userId, groupId },
@@ -102,7 +110,7 @@ export const postMagazineSection = async (
       },
     },
   });
-  return data;
+  return data.addNewMagazineSection;
 };
 
 export const editMagazineSection = async (
@@ -218,7 +226,10 @@ export const deleteMagazine = async (
   return data;
 };
 
-export const putExitMagazine = async (magazineId: string, ownerType: "user" | "group") => {
+export const putExitMagazine = async (
+  magazineId: string,
+  ownerType: "user" | "group"
+) => {
   const { data } = await getClient().mutate({
     mutation: exitMagazineMutation,
     variables: { magazineId, ownerType },

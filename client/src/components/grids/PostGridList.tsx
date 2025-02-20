@@ -19,6 +19,7 @@ import ShareButton from "../buttons/ShareButton";
 import { FILE_URL, POSTS } from "@/utils/data/urls";
 import { MdQuestionAnswer } from "react-icons/md";
 import { formatTotal } from "@/utils/functions/utils";
+import { useUserData } from "@/app/(root)/providers/userDataProvider";
 
 const PostGridList = ({
   items,
@@ -29,6 +30,7 @@ const PostGridList = ({
   isLoading: boolean;
   isSearchDone: boolean;
 }) => {
+  const { usernameLogged } = useUserData();
   const renderCell = useCallback(
     (
       data: Good | Service | Petition,
@@ -102,23 +104,36 @@ const PostGridList = ({
               break;
             case "petition":
               const dataAsPetition = data as Petition; // cast to Petition
-              if (dataAsPetition.toPrice) { // if its a range of prices
+              if (dataAsPetition.toPrice) {
+                // if its a range of prices
                 // if it has a toPrice, add the range
-                priceToShow = `De $${formatTotal(dataAsPetition.price)} a $${formatTotal(dataAsPetition.toPrice)}` // add the price
+                priceToShow = `De $${formatTotal(
+                  dataAsPetition.price
+                )} a $${formatTotal(dataAsPetition.toPrice)}`; // add the price
               }
-              if (dataAsPetition.frequencyPrice) { // if it has a frequency
+              if (dataAsPetition.frequencyPrice) {
+                // if it has a frequency
                 // add the frequency of the price (month, year, etc)
-                priceToShow += ` por ${frequencyPriceItems.find((p) => p.value === dataAsPetition.frequencyPrice)?.text}`
+                priceToShow += ` por ${
+                  frequencyPriceItems.find(
+                    (p) => p.value === dataAsPetition.frequencyPrice
+                  )?.text
+                }`;
               }
-              break
+              break;
             case "service":
               const dataAsService = data as Service; // cast to Service
-              priceToShow = `$${formatTotal(dataAsService.price)}` // add the price
-              if (dataAsService.frequencyPrice) { // if it has a frequency
+              priceToShow = `$${formatTotal(dataAsService.price)}`; // add the price
+              if (dataAsService.frequencyPrice) {
+                // if it has a frequency
                 // add the frequency of the price (month, year, etc)
-                priceToShow += ` por ${frequencyPriceItems.find((p) => p.value === dataAsService.frequencyPrice)?.text}`
+                priceToShow += ` por ${
+                  frequencyPriceItems.find(
+                    (p) => p.value === dataAsService.frequencyPrice
+                  )?.text
+                }`;
               }
-              break
+              break;
           }
 
           return (
@@ -180,12 +195,25 @@ const PostGridList = ({
         default:
           return (
             <div className="flex gap-1 items-center">
-              <ShareButton data={data} shareType="post" />
+              <ShareButton
+                data={{
+                  _id: data._id,
+                  description: data.title,
+                  type: "post",
+                  username: usernameLogged as string,
+                  imageUrl:
+                    "imagesUrls" in data && data.imagesUrls
+                      ? data.imagesUrls[0]
+                      : "",
+                }}
+                shareType="post"
+              />
               <SaveButton post={data} />
             </div>
           );
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 

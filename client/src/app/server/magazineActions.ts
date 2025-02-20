@@ -20,10 +20,11 @@ export const createMagazine = async (formData: any) => {
   }
 
   try {
-    const resApi: any = await postMagazine(formData);
+    const resApi = await postMagazine(formData);
     return {
       message: "Revista creada exitosamente",
-      id: resApi.createMagazine,
+      id: resApi._id,
+      data: resApi,
     };
   } catch (err) {
     console.log(err);
@@ -45,7 +46,6 @@ export const editMagazine = async (formData: any, groupId?: string) => {
       formData,
       user.sessionClaims.metadata.mongoId,
       groupId
-      
     );
     return {
       message: "Revista editada exitosamente",
@@ -70,13 +70,13 @@ export const createMagazineSection = async (
   }
 
   try {
-    await postMagazineSection(
+    const res = await postMagazineSection(
       sectionName,
       user.sessionClaims.metadata.mongoId,
       magazineId,
       groupId
     );
-    return { message: "Sección creada exitosamente" };
+    return { message: "Sección creada exitosamente", id: res };
   } catch (err) {
     console.log(err);
     return {
@@ -183,7 +183,10 @@ export const removeMagazine = async (
   }
 };
 
-export const exitMagazine = async (magazineId: string, ownerType: "user" | "group") => {
+export const exitMagazine = async (
+  magazineId: string,
+  ownerType: "user" | "group"
+) => {
   try {
     await putExitMagazine(magazineId, ownerType);
     return { message: "Has salido exitosamente" };

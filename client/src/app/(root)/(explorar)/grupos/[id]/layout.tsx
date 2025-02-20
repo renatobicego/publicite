@@ -38,7 +38,6 @@ export default async function GroupLayout(props: {
   const loggedUser = await currentUser();
   if (!loggedUser) {
     redirect("/iniciar-sesion");
-    return null;
   }
 
   const breadcrumbsItems = [
