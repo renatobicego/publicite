@@ -28,9 +28,6 @@ export const getMagazineById = async (id: string) => {
         headers: {
           Authorization: await auth().getToken({ template: "testing" }),
         },
-        fetchOptions: {
-          cache: "no-cache",
-        },
       },
     });
     return data.getMagazineByMagazineId;

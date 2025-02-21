@@ -209,9 +209,6 @@ export const getUserByUsername = async (
         headers: {
           Authorization: await auth().getToken({ template: "testing" }),
         },
-        fetchOptions: {
-          next: { revalidate: 60 },
-        },
       },
     });
 

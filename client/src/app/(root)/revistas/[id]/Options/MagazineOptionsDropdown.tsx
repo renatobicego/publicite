@@ -18,7 +18,11 @@ import { Magazine } from "@/types/magazineTypes";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { useRouter } from "next-nprogress-bar";
 import { removeMagazine } from "@/app/server/magazineActions";
-import { useMagazinesData } from "@/app/(root)/providers/userDataProvider";
+import {
+  useMagazinesData,
+  useUserData,
+} from "@/app/(root)/providers/userDataProvider";
+import { PROFILE } from "@/utils/data/urls";
 
 const MagazineOptionsDropdown = ({
   collaborators,
@@ -31,6 +35,7 @@ const MagazineOptionsDropdown = ({
 }) => {
   const router = useRouter();
   const { removeMagazineOfStore } = useMagazinesData();
+  const { usernameLogged } = useUserData();
   const handleDelete = async () => {
     const res = await removeMagazine(magazine._id, ownerType);
     if (res.error) {
@@ -39,7 +44,7 @@ const MagazineOptionsDropdown = ({
     }
     removeMagazineOfStore(magazine._id);
     toastifySuccess(res.message as string);
-    router.back();
+    window.location.replace(`${PROFILE}/${usernameLogged}`);
   };
   const confirmDeleteRef = useRef<() => void>(() => {});
   const modalDeleteCollaboratorRef = useRef<() => void>(() => {});
