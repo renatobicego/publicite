@@ -13,11 +13,11 @@ import UserRelationNotificationCard from "./users/UserRelationNotification";
 import SubscriptionDowngradeNotification from "./suscriptions/SubscriptionDowngradeNotification";
 
 type NotificationType =
-  | "group"
+  | "notification_group"
   | "magazine"
-  | "user"
-  | "post"
-  | "contact"
+  | "notification_user"
+  | "notification_post"
+  | "new_contact"
   | "payment"
   | "calification"
   | "share"
@@ -26,11 +26,11 @@ type NotificationType =
   | "downgrade_plan";
 
 const notificationComponents = {
-  group: GroupNotificationCard,
+  notification_group: GroupNotificationCard,
   magazine: MagazineNotificationCard,
-  user: UserRelationNotificationCard,
-  post: PostActivityNotificationCard,
-  contact: NewContactPost,
+  notification_user: UserRelationNotificationCard,
+  notification_post: PostActivityNotificationCard,
+  new_contact: NewContactPost,
   payment: PaymentNotification,
   free_trial: PaymentNotification,
   subscription_cancelled: PaymentNotification,

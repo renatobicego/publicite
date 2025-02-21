@@ -383,6 +383,24 @@ type MagazineResponse {
   group: group_graphql_magazine
 }
 
+type posts_magazine_create_response_ {
+  _id: String
+}
+
+type section_magazine_create_response_ {
+  _id: String
+  isFatherSection: Boolean
+  posts: [posts_magazine_create_response_!]
+  title: String
+}
+
+type MagazineCreateResponse {
+  _id: String!
+  name: String!
+  sections: [section_magazine_create_response_!]!
+  ownerType: String!
+}
+
 type userInviting_magazine {
   _id: String
   username: String
@@ -1070,7 +1088,7 @@ type Mutation {
   deleteSectionFromMagazineById(sectionIdsToDelete: [String!]!, magazineId: String!, allowedCollaboratorId: String, userMagazineAllowed: String): String
 
   """Crear una revista"""
-  createMagazine(magazineCreateRequest: MagazineCreateRequest!): String
+  createMagazine(magazineCreateRequest: MagazineCreateRequest!): MagazineCreateResponse
 
   """Actualizar una revista"""
   updateMagazineById(

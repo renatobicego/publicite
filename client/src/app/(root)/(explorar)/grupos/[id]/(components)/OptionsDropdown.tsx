@@ -143,7 +143,7 @@ const OptionsDropdown = ({
           </DropdownItem>
         </DropdownMenu>
       </Dropdown>
-      <Suspense fallback={<Spinner color="warning" />}>
+      <Suspense>
         <ConfirmModal
           ButtonAction={<></>}
           message={`¿Está seguro que desea eliminar el grupo?`}
@@ -153,7 +153,7 @@ const OptionsDropdown = ({
           customOpen={(openModal) => (deleteGroupRef.current = openModal)} // Set the reference for customOpen
         />
       </Suspense>
-      <Suspense fallback={<Spinner color="warning" />}>
+      <Suspense>
         <ConfirmModal
           ButtonAction={<></>}
           message={`¿Está seguro que desea salir del grupo?`}
