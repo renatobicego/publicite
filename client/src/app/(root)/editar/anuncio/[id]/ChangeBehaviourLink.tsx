@@ -1,7 +1,7 @@
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { PostBehaviourType } from "@/types/postTypes";
 import { postsBehavioursTypes } from "@/utils/data/selectData";
-import { POSTS } from "@/utils/data/urls";
+import { EDIT_POST } from "@/utils/data/urls";
 import Link from "next/link";
 import React from "react";
 
@@ -14,7 +14,7 @@ const ChangeBehaviourLink = ({
 }) => {
   return (
     <div className="flex flex-col gap-2 items-start">
-      <PrimaryButton as={Link} href={`${POSTS}/${id}/comportamiento`}>
+      <PrimaryButton as={Link} href={`${EDIT_POST}/${id}/comportamiento`}>
         Editar Comportamiento
       </PrimaryButton>
       <small>

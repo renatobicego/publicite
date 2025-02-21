@@ -52,10 +52,7 @@ export const editGroup = async (
   }
 
   try {
-    const res = await putGroup({
-      ...formData,
-      admin: user.sessionClaims.metadata.mongoId,
-    });
+    const res = await putGroup(formData);
     return res;
   } catch (err) {
     return {
@@ -65,9 +62,8 @@ export const editGroup = async (
 };
 
 export const editNoteGroup = async (
-  formData: Pick<Group, "_id" | "groupNote">,
+  formData: Pick<Group, "_id" | "groupNote">
 ) => {
-
   try {
     const res = await putNoteGroup(formData);
     return res;
@@ -109,9 +105,7 @@ export const removeAdmin = async (
   return res;
 };
 
-export const removeGroup = async (
-  groupId: string,
-) => {
+export const removeGroup = async (groupId: string) => {
   const res = await deleteGroup(groupId);
   return res;
 };
@@ -124,4 +118,3 @@ export const exitFromGroup = async (
   const res = await putExitGroup(groupId, isCreator, newCreatorId);
   return res;
 };
-

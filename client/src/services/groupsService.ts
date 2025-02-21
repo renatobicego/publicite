@@ -19,7 +19,6 @@ import {
 } from "@/graphql/groupQueries";
 import { auth } from "@clerk/nextjs/server";
 import { ApolloError } from "@apollo/client";
-import { Post } from "@/types/postTypes";
 import { PostGroup } from "@/app/(root)/crear/grupo/CreateGroupForm";
 import { handleApolloError } from "@/utils/functions/errorHandler";
 import { Coordinates } from "@/app/(root)/providers/LocationProvider";
@@ -145,7 +144,9 @@ export const getGroupPosts = async (
     });
 
     // sort randomly posts
-    const randomizedItems = [...data.getPostsOfGroupMembers.userAndPosts].sort(() => Math.random() - 0.5);
+    const randomizedItems = [...data.getPostsOfGroupMembers.userAndPosts].sort(
+      () => Math.random() - 0.5
+    );
     return {
       items: randomizedItems,
       hasMore: data.getPostsOfGroupMembers.hasMore,
@@ -196,7 +197,9 @@ export const putGroup = async (groupToUpdate: any) => {
   }
 };
 
-export const putNoteGroup = async (groupToUpdate: Pick<Group, "_id" | "groupNote">) => {
+export const putNoteGroup = async (
+  groupToUpdate: Pick<Group, "_id" | "groupNote">
+) => {
   try {
     const { data } = await getClient()
       .mutate({
