@@ -19,8 +19,15 @@ export default async function MagazinePage(props: { params: { id: string } }) {
   const magazine: Magazine | { error: string } = await getMagazineById(
     params.id
   );
-  if ("error" in magazine) {
-    return <ErrorCard message={magazine.error} />;
+  if (!magazine || "error" in magazine) {
+    return (
+      <ErrorCard
+        message={
+          magazine?.error ||
+          "No se encontró la revista. Por favor intenta de nuevo."
+        }
+      />
+    );
   }
   const userId = auth().sessionClaims?.metadata.mongoId;
 
@@ -72,7 +79,11 @@ export default async function MagazinePage(props: { params: { id: string } }) {
             canEdit: isOwner,
           }}
         />
-        <MagazineActions isOwner={isOwner} magazine={magazine} isCollaborator={isCollaborator}/>
+        <MagazineActions
+          isOwner={isOwner}
+          magazine={magazine}
+          isCollaborator={isCollaborator}
+        />
       </section>
       <div className="w-full relative">
         {(isOwner || isCollaborator) && (
@@ -81,7 +92,8 @@ export default async function MagazinePage(props: { params: { id: string } }) {
             groupId={!isOwnerTypeUser ? ownerAsGroup._id : undefined}
             ownerType={magazine.ownerType}
             sections={magazine.sections.filter(
-              (section) => !section.isFatherSection)}
+              (section) => !section.isFatherSection
+            )}
           />
         )}
         <PostsGrid
