@@ -14,7 +14,11 @@ import ManualLocationPicker from "./ManualLocationPicker";
 import { useState } from "react";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 
-const SelectManualLocationModal = ({ showAlways }: { showAlways?: boolean }) => {
+const SelectManualLocationModal = ({
+  showAlways,
+}: {
+  showAlways?: boolean;
+}) => {
   const { manualLocation } = useLocation();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [address, setAddress] = useState("");
@@ -27,13 +31,15 @@ const SelectManualLocationModal = ({ showAlways }: { showAlways?: boolean }) => 
           color="primary"
           radius="full"
           variant="light"
-          className="-ml-2.5 self-start"
-          startContent={<FaMapMarkerAlt />}
+          className="-ml-2.5 self-start max-w-full w-fit text-left"
+          startContent={<FaMapMarkerAlt className="size-4" />}
         >
-          {address ? address : "Seleccionar ubicación"}
+          <span className="w-full text-pretty">
+            {address ? address : "Seleccionar ubicación"}
+          </span>
         </Button>
       )}
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal placement="center" isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
           {(onClose) => (
             <>
