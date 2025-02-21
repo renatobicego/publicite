@@ -9,7 +9,7 @@ import {
 } from "@/services/postsServices";
 import { getUsers } from "@/services/userServices";
 
-export type ContactPostsVisibility = UserRelation | "hierarchy"
+export type ContactPostsVisibility = UserRelation | "hierarchy";
 export type PostsDataTypes =
   | {
       typeOfData: "posts";

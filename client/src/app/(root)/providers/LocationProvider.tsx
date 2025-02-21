@@ -28,14 +28,14 @@ const LocationContext = createContext<LocationContextType | undefined>(
   undefined
 );
 
-export const isLocationAwarePostType = (
-  type: PubliciteDataTypes
-) => {
+export const isLocationAwarePostType = (type: PubliciteDataTypes) => {
   if (type.typeOfData === "groupPosts") {
-    return true
+    return true;
   }
-  if ("postType" in type) { 
-    return ["good", "service", "petition"].includes(type.postType);
+  if ("postType" in type) {
+    return ["good", "service", "petition", "goodService"].includes(
+      type.postType
+    );
   }
 };
 
@@ -47,7 +47,7 @@ export const LocationProvider: React.FC<{ children: ReactNode }> = ({
 
   const requestLocationPermission = useCallback(
     async (postType?: PubliciteDataTypes) => {
-      if(manualLocation) return
+      if (manualLocation) return;
       if (postType && !isLocationAwarePostType(postType)) return;
 
       try {
@@ -95,7 +95,12 @@ export const LocationProvider: React.FC<{ children: ReactNode }> = ({
 
   return (
     <LocationContext.Provider
-      value={{ coordinates, requestLocationPermission, setCoordinates, manualLocation }}
+      value={{
+        coordinates,
+        requestLocationPermission,
+        setCoordinates,
+        manualLocation,
+      }}
     >
       {children}
     </LocationContext.Provider>

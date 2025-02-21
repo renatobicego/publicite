@@ -146,6 +146,7 @@ export const getPosts = async (
   limit: number | undefined = 20
 ) => {
   try {
+    console.log(postType, coordinates);
     if (!coordinates) {
       return {
         error: "Error al traer los anuncios. Por favor intenta de nuevo.",

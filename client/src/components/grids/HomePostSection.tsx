@@ -18,8 +18,10 @@ function PostFetcher({
 }: {
   type: "good" | "service" | "petition" | "goodService";
 }) {
-  const { items, isLoading } =
-    useInfiniteFetch({ typeOfData: "posts", postType: type });
+  const { items, isLoading } = useInfiniteFetch({
+    typeOfData: "posts",
+    postType: type,
+  });
 
   if (isLoading) return <Spinner color="warning" />;
 
@@ -36,9 +38,7 @@ export default function HomePostSection({
     <section className="flex flex-col gap-4 lg:gap-6 3xl:gap-8 w-full">
       <h2>{title}</h2>
       <Suspense fallback={<Spinner color="warning" />}>
-        <PostFetcher
-          type={type}
-        />
+        <PostFetcher type={type} />
       </Suspense>
       <SecondaryButton as={Link} href={buttonHref} className="self-center mt-4">
         {buttonText}
