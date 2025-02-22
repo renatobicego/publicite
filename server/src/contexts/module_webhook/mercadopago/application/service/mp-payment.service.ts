@@ -48,7 +48,7 @@ export class MpPaymentService implements MpPaymentServiceInterface {
     }
   }
 
-  async findPaymentByPaymentID(id: string): Promise<Payment | null> {
+  async findPaymentByPaymentID(id: string): Promise<any> {
     try {
       const payment = await this.mpPaymentRepository.findPaymentByPaymentID(id);
       if (payment) this.logger.log(`Payment with id ${id} successfully found.`);

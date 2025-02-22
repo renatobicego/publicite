@@ -63,10 +63,10 @@ export class MpInvoiceService implements MpServiceInvoiceInterface {
   }
 
 
-  async saveInvoice(subscription_authorized_payment: authorized_payments): Promise<{ payment: Payment, subscription: Subscription, paymentReady: boolean } | null> {
+  async saveInvoice(subscription_authorized_payment: authorized_payments): Promise<{ payment: any, subscription: any, paymentReady: boolean } | null> {
     this.logger.log('---INVOICE SERVICE CREATE ---');
     let paymetnId;
-
+    console.log(subscription_authorized_payment.preapproval_id)
     const subscripcion =
       await this.subscriptionService.findSubscriptionByPreapprovalId(
         subscription_authorized_payment.preapproval_id,
@@ -86,7 +86,7 @@ export class MpInvoiceService implements MpServiceInvoiceInterface {
     if (!payment) {
       paymetnId = this.generateCustomObjectId('0001abcd');
     } else {
-      paymetnId = payment.getId();
+      paymetnId = payment._id
     }
 
 
@@ -99,10 +99,10 @@ export class MpInvoiceService implements MpServiceInvoiceInterface {
         subscription_authorized_payment.status +
         ' Generate invoice to save',
       );
-      const timeOfUpdate = getTodayDateTime();;
+      const timeOfUpdate = getTodayDateTime();
       const newInvoice = new Invoice(
         paymetnId as any,
-        subscripcion.getId() ?? undefined, // Id de la suscripcion en nuestro schema
+        subscripcion._id ?? undefined, // Id de la suscripcion en nuestro schema
         subscription_authorized_payment.status ?? 'invoice scheduled',
         subscription_authorized_payment.payment.status ?? 'payment scheduled', //Payment status
         subscription_authorized_payment.preapproval_id, // ID de la suscripcion en MELI

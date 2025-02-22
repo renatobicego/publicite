@@ -1,9 +1,9 @@
 import { Types } from "mongoose";
 
-async function createPlanOfSubscription(plan_id: Types.ObjectId, subscriptionModel: any, libres: number, agenda: number, contact: number) {
+async function createPlanOfSubscription(plan_id: Types.ObjectId, subscriptionModel: any, libres: number, agenda: number, contact: number, mpPreapprovalPlanId?: string) {
     await subscriptionModel.create({
         _id: plan_id,
-        mpPreapprovalPlanId: "This is a free plan",
+        mpPreapprovalPlanId: mpPreapprovalPlanId,
         isActive: true,
         reason: "Publicité Free",
         description: "Este plan es publicite free.",
@@ -24,11 +24,12 @@ async function createSubscriptionForUser(
     external_reference: string,
     sub_plan_id: Types.ObjectId,
     subscriptionPlanModel: any,
+    mp_preapproval_id: string
 
 ) {
     await subscriptionPlanModel.create({
         _id: sub_id,
-        mpPreapprovalId: "FREE SUBSCRIPTION",
+        mpPreapprovalId: mp_preapproval_id,
         payerId: "FREE SUBSCRIPTION",
         status: "authorized",
         subscriptionPlan: sub_plan_id,
