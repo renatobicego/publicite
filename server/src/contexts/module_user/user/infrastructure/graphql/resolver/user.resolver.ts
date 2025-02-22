@@ -21,12 +21,12 @@ export class UserResolver {
   })
   @UseGuards(ClerkAuthGuard)
   async findUserByUsername(
-    @Args('username', { type: () => String }) username: string,
+    @Args('_id', { type: () => String }) _id: string,
     @Context() context: { req: CustomContextRequestInterface },
   ): Promise<User_Full_Grapql_Model | null> {
     try {
       const userRequestId = context.req.userRequestId;
-      return await this.userAdapter.findUserByUsername(username, userRequestId);
+      return await this.userAdapter.findUserByUsername(_id, userRequestId);
     } catch (error: any) {
       throw error;
     }
@@ -63,7 +63,7 @@ export class UserResolver {
       throw error;
     }
   }
-  
+
   @Query(() => [user_active_relation], {
     nullable: true,
     description: 'Obtiene las relaciones activas del usuario',

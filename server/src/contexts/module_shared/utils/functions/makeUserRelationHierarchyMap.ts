@@ -45,7 +45,7 @@ export function makeUserRelationHierarchyMap(userRelation: any, userRequestId: s
 }
 
 
-export function makeUserDirectRelationMap(userRelation: any, userRequestId: string, visibility: Visibility_Of_Find) {
+export function makeUserRelationMapWithoutHierarchy(userRelation: any[], userRequestId: string, visibility: Visibility_Of_Find): Map<string, String[]> {
     const friendID_and_typeOfRelation_map = new Map<string, String[]>()
     const TOPFRIENDS = 'topfriends';
     const CONTACTS = 'contacts';

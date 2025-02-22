@@ -1,7 +1,7 @@
-import { Schema } from 'mongoose';
+import { model, Schema } from 'mongoose';
 import { Visibility } from '../../domain/entity/enum/group.visibility.enum';
 
-export const GroupSchema = new Schema({
+const GroupSchema = new Schema({
   members: [{ type: Schema.Types.ObjectId, ref: 'User' }],
   creator: { type: Schema.Types.ObjectId, ref: 'User' },
   admins: [{ type: Schema.Types.ObjectId, ref: 'User' }],
@@ -24,7 +24,7 @@ export const GroupSchema = new Schema({
   groupNote: { type: String, default: 'Este grupo aun no tiene ninguna nota.' },
 });
 
-export interface GroupDocument extends Document {
+interface GroupDocument extends Document {
   members: string[];
   admins: string[];
   name: string;
@@ -80,3 +80,7 @@ GroupSchema.index({ name: 1, alias: 1 });
 GroupSchema.index({ admins: 1 });
 GroupSchema.index({ members: 1 });
 GroupSchema.index({ groupNotificationsRequest: 1 });
+
+const GroupModel = model<GroupDocument>('Group', GroupSchema);
+
+export { GroupModel, GroupDocument, GroupSchema };

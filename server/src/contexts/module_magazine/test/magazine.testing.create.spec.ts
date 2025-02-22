@@ -4,7 +4,7 @@ import { IUser, UserModel } from "src/contexts/module_user/user/infrastructure/s
 import { TestingModule } from "@nestjs/testing";
 import mapModuleTesting from "./magazine.test.module";
 import { getModelToken } from "@nestjs/mongoose";
-import { createPersonalUser } from "src/contexts/module_user/user/test/functions/create.user";
+import { createPersonalUser } from "test/functions/create.user";
 import { MagazineAdapter } from "../magazine/infrastructure/resolver/adapter/magazine.adapter";
 import { createGroupMagazine, createUserMagazine } from "./models/create.magazine.request";
 import { MagazineCreateRequest } from "../magazine/application/adapter/dto/HTTP-REQUEST/magazine.create.request";

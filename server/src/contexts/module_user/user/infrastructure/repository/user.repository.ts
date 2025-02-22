@@ -1,5 +1,5 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import { ClientSession, Connection, model, Model, Types } from 'mongoose';
+import { ClientSession, Connection, Model, Types } from 'mongoose';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 
 import { IUserPerson, UserPersonModel } from '../schemas/userPerson.schema';
@@ -17,7 +17,6 @@ import { UserBusinessUpdateDto } from '../../domain/entity/dto/user.business.upd
 import { UserPersonalUpdateDto } from '../../domain/entity/dto/user.personal.update.dto';
 import { UserPreferencesEntityDto } from '../../domain/entity/dto/user.preferences.update.dto';
 import { UP_clerkUpdateRequestDto } from 'src/contexts/module_webhook/clerk/application/dto/UP-clerk.update.request';
-import { UserFindAllResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.response.dto';
 import { fullNameNormalization } from '../../application/functions/fullNameNormalization';
 import { SectorRepositoryInterface } from 'src/contexts/module_user/businessSector/domain/repository/sector.repository.interface';
 import { UserType } from '../../domain/entity/enum/user.enums';
@@ -33,6 +32,7 @@ import {
 import { checkIfanyDataWasModified } from 'src/contexts/module_shared/utils/functions/check.result.functions';
 import { EmitterService } from 'src/contexts/module_shared/event-emmiter/emmiter';
 import { downgrade_plan_contact_notification } from 'src/contexts/module_shared/event-emmiter/events';
+import { throwDeprecation } from 'process';
 
 @Injectable()
 export class UserRepository implements UserRepositoryInterface {
@@ -69,7 +69,7 @@ export class UserRepository implements UserRepositoryInterface {
 
 
 
-  async findUserByUsername(username: string): Promise<any> {
+  async findUserByIdByOwnUser(username: string): Promise<any> {
     try {
       const userPopulate_userRelation =
         '_id userType name lastName businessName profilePhotoUrl username';
@@ -105,9 +105,11 @@ export class UserRepository implements UserRepositoryInterface {
           },
         ])
         .lean();
+
       if (!user) {
         return null;
       }
+
 
       if (user.magazines.length > 0) {
         const populatedMagazines: any = await this.magazineModel
@@ -238,6 +240,7 @@ export class UserRepository implements UserRepositoryInterface {
   }
 
 
+
   async getPostAndLimitsFromUserByUserId(author: string): Promise<any> {
     try {
       const user = await this.user
@@ -353,6 +356,86 @@ export class UserRepository implements UserRepositoryInterface {
       throw error;
     }
   }
+
+
+  async getProfileUserByExternalUserById(_id: string, postsCondition: any, magazineCondition: any): Promise<any> {
+    try {
+      const visibility = postsCondition[0]['visibility.post']
+      try {
+        const userPopulate_userRelation =
+          '_id userType name lastName businessName profilePhotoUrl username';
+        const user = await this.user
+          .findOne({ _id })
+          .select(
+            '_id profilePhotoUrl username contact lastName name businessName countryRegion userType board description email suscriptions groups magazines posts friendRequests userRelations',
+          )
+          .populate([
+            { path: 'magazines', select: '_id' },
+            { path: 'board' },
+            { path: 'groups' },
+            { path: 'contact' },
+            { path: 'friendRequests' },
+            {
+              path: 'userRelations',
+              populate: [
+                {
+                  path: 'userA',
+                  select: userPopulate_userRelation,
+                },
+                {
+                  path: 'userB',
+                  select: userPopulate_userRelation,
+                },
+              ],
+            },
+            {
+              path: 'posts',
+              select:
+                '_id author visibility imagesUrls title description price reviews frequencyPrice toPrice petitionType postType endDate isActive reviews',
+              populate: { path: 'reviews', model: 'PostReview', strictPopulate: false },
+              match: {
+                'visibility.post': visibility
+              }
+
+            },
+          ])
+          .lean();
+        if (!user) {
+          return null;
+        }
+
+
+        if (user.magazines.length > 0) {
+          const populatedMagazines: any = await this.magazineModel
+            .find({ _id: { $in: user.magazines } })
+            .select('_id name description sections')
+            .populate({
+              path: 'sections',
+              select: '_id posts isFatherSection',
+              populate: {
+                path: 'posts',
+                model: 'Post',
+                select: '_id imagesUrls',
+                match: {
+                  'visibility.post': visibility
+                }
+              },
+            })
+            .lean();
+          user.magazines = populatedMagazines as any[];
+        }
+
+        return user;
+      } catch (error: any) {
+        console.log(error);
+        throw error;
+      }
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
 
 
 

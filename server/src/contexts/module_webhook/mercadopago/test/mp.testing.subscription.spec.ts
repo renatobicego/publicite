@@ -3,7 +3,7 @@ import { TestingModule } from "@nestjs/testing";
 import mpTestingModule from "./test.module";
 import { getModelToken } from "@nestjs/mongoose";
 import { IUser, UserModel } from "src/contexts/module_user/user/infrastructure/schemas/user.schema";
-import { createPersonalUser } from "src/contexts/module_user/user/test/functions/create.user";
+import { createPersonalUser } from "test/functions/create.user";
 import { MpSubscriptionService } from "../application/service/mp-subscription.service";
 import { Subscription_preapproval } from "../domain/entity_mp/subscription_preapproval";
 import SubscriptionModel, { SubscriptionDocument } from "../infastructure/schemas/subscription.schema";

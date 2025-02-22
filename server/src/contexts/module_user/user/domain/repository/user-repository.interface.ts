@@ -17,7 +17,7 @@ export interface UserRepositoryInterface {
     limit: number,
     page: number,
   ): Promise<UserFindAllResponse>;
-  findUserByUsername(user: string): Promise<any>;
+  findUserByIdByOwnUser(user: string): Promise<any>;
 
   getUserPersonalInformationByUsername(
     username: string,
@@ -33,6 +33,7 @@ export interface UserRepositoryInterface {
   getLimitContactsFromUserByUserId(userRequestId: string, session?: any): Promise<any>
   getActiveRelationsOfUser(userRequestId: string, session?: any): Promise<any>
   getPostAndContactLimitsFromUserByUserId(author: string): Promise<any>
+  getProfileUserByExternalUserById(_id: string, postsCondition: any, magazineCondition: any): Promise<any>
 
   pushNotification(notification: any, userId: string, session?: any): Promise<any>;
   pushNewFriendRequestOrRelationRequestToUser(notificationId: Types.ObjectId, userNotificationOwner: string, session: any): Promise<any>

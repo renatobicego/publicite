@@ -14,7 +14,7 @@ import { PostType } from '../../domain/entity/enum/post-type.enum';
 import { UserLocation } from '../../domain/entity/models_graphql/HTTP-REQUEST/post.location.request';
 import { removeAccents_removeEmojisAndToLowerCase } from '../../domain/utils/normalice.data';
 import { checkStopWordsAndReturnSearchQuery, SearchType } from 'src/contexts/module_shared/utils/functions/checkStopWordsAndReturnSearchQuery';
-import { makeUserDirectRelationMap, makeUserRelationHierarchyMap } from 'src/contexts/module_shared/utils/functions/makeUserRelationHierarchyMap';
+import { makeUserRelationMapWithoutHierarchy, makeUserRelationHierarchyMap } from 'src/contexts/module_shared/utils/functions/makeUserRelationHierarchyMap';
 import { PostsMemberGroupResponse } from 'src/contexts/module_shared/sharedGraphql/group.posts.member.response';
 import { PostLimitResponseGraphql } from '../../domain/entity/models_graphql/HTTP-RESPONSE/post.limit.response.graphql';
 import { PostBehaviourType } from '../../domain/entity/enum/postBehaviourType.enum';
@@ -268,7 +268,7 @@ export class PostService implements PostServiceInterface {
     if (visibility === Visibility_Of_Find.hierarchy) {
       return makeUserRelationHierarchyMap(userActiveRelation, userRequestId)
     } else {
-      return makeUserDirectRelationMap(userActiveRelation, userRequestId, visibility)
+      return makeUserRelationMapWithoutHierarchy(userActiveRelation, userRequestId, visibility)
     }
 
 

@@ -18,6 +18,8 @@ import { UserType } from '../../domain/entity/enum/user.enums';
 import { UserRelation } from '../../domain/entity/userRelation.entity';
 import { calculateContactLimitFromUser, calculatePostLimitFromUser, userWithPostsAndSubscriptions } from '../functions/calculatePostLimitAndContactLimit';
 import { ommitUndefinedValues } from './ommit-function';
+import { makeUserRelationMapWithoutHierarchy } from 'src/contexts/module_shared/utils/functions/makeUserRelationHierarchyMap';
+
 
 
 @Injectable()
@@ -142,28 +144,74 @@ export class UserService implements UserServiceInterface {
     }
   }
 
-  async findUserByUsername(
-    username: string,
-    userRequestId?: string,
+  async findUserByIdByOwnUser(
+    _id: string,
   ): Promise<any> {
     try {
-      const user = await this.userRepository.findUserByUsername(username);
+      return await this.userRepository.findUserByIdByOwnUser(_id);
+    } catch (error: any) {
+      throw error;
+    }
+  }
 
+  async findProfileUserByExternalUserById(_id: string): Promise<any> {
+    try {
+      this.logger.log("finding user profile...")
+      // Traemos las relaciones del usuario
+      let userRelations = await this.getRelationsFromUserByUserId(_id);
+
+      const userRelationFilter = userRelations.filter((userRelation: { userA: ObjectId, userB: ObjectId }) =>
+        userRelation.userA.toString() === _id || userRelation.userB.toString() === _id
+      );
+      this.logger.log("User relation filter success")
+
+      const visibility = userRelationFilter[0].typeRelationA;
+
+      //hacemos el mapping
+      const userRelationMap = makeUserRelationMapWithoutHierarchy(userRelationFilter, _id, visibility)
+
+      this.logger.log("Making post condition...")
+      // generamos la condicion de busqueda
+      const postsCondition = Array.from(userRelationMap.entries()).map(
+        ([key, value]) => ({
+          author: key,
+          'visibility.post': { $in: value },
+        }),
+      );
+
+      this.logger.log("Making magazine condition...")
+      const magazineCondition = Array.from(userRelationMap.entries()).map(
+        ([key, value]) => ({
+          user: key,
+          visibility: { $in: value },
+        }),
+      );
+
+      //buscar user con las condiciones
+      this.logger.log("Searching user with magazine and posts conditions...")
+      const user = await this.userRepository.getProfileUserByExternalUserById(_id, postsCondition, magazineCondition);
+
+
+      // agregamos logica de isFriendRequestPending
       if (user) {
         user.isFriendRequestPending = false;
-
         if (user.friendRequests && user.friendRequests.length > 0) {
           user.friendRequests.map((friend_Request: any) => {
-            if (friend_Request.backData.userIdFrom === userRequestId) {
+            if (friend_Request.backData.userIdFrom === _id) {
               user.isFriendRequestPending = true;
             }
           });
         }
+        return user;
       } else {
         return null;
       }
 
-      return user;
+
+
+
+
+
     } catch (error: any) {
       throw error;
     }
@@ -194,7 +242,7 @@ export class UserService implements UserServiceInterface {
     }
   }
 
-  async getRelationsFromUserByUserId(userRequestId: string): Promise<any> {
+  async getRelationsFromUserByUserId(userRequestId: string): Promise<any[]> {
     try {
       this.logger.log('finding relations from user with id: ' + userRequestId);
       const userRelationDocument =

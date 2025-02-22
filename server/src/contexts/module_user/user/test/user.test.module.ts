@@ -15,6 +15,11 @@ import { UserBusinessModel } from "../infrastructure/schemas/userBussiness.schem
 import { UserPersonModel } from "../infrastructure/schemas/userPerson.schema";
 import { SubscriptionSchema } from "src/contexts/module_webhook/mercadopago/infastructure/schemas/subscription.schema";
 import { SubscriptionPlanSchema } from "src/contexts/module_webhook/mercadopago/infastructure/schemas/subscriptionPlan.schema";
+import PostModel from "src/contexts/module_post/post/infraestructure/schemas/post.schema";
+import { MagazineSectionModel } from "src/contexts/module_magazine/magazine/infrastructure/schemas/section/magazine.section.schema";
+import { GroupModel } from "src/contexts/module_group/group/infrastructure/schemas/group.schema";
+import NotificationModel from "../../notification/infrastructure/schemas/notification.schema";
+import PostReviewModel from "src/contexts/module_post/PostReview/infrastructure/schemas/review.schema";
 
 const clerk_update_module = async (): Promise<TestingModule> => {
     dotenv.config({ path: '.env.test' });
@@ -68,6 +73,14 @@ const make_relation_module = async (): Promise<TestingModule> => {
                 { name: UserRelationModel.modelName, schema: UserRelationModel.schema },
                 { name: 'Subscription', schema: SubscriptionSchema },
                 { name: 'SubscriptionPlan', schema: SubscriptionPlanSchema },
+                { name: PostModel.modelName, schema: PostModel.schema, },
+                { name: PostReviewModel.modelName, schema: PostReviewModel.schema, },
+                { name: MagazineModel.modelName, schema: MagazineModel.schema },
+                { name: MagazineSectionModel.modelName, schema: MagazineSectionModel.schema },
+                { name: GroupModel.modelName, schema: GroupModel.schema },
+                { name: NotificationModel.modelName, schema: GroupModel.schema },
+
+
             ]),
         ],
         providers: [
@@ -78,7 +91,6 @@ const make_relation_module = async (): Promise<TestingModule> => {
             { provide: 'SectorRepositoryInterface', useValue: {} },
             { provide: getModelToken(UserPersonModel.modelName), useValue: {} },
             { provide: getModelToken(UserBusinessModel.modelName), useValue: {} },
-            { provide: getModelToken(MagazineModel.modelName), useValue: {} },
         ],
     }).compile();
 };

@@ -26,7 +26,8 @@ export interface UserServiceInterface {
     page: number,
   ): Promise<UserFindAllResponse>;
 
-  findUserByUsername(username: string, userRequestId?: string): Promise<any>;
+  findUserByIdByOwnUser(username: string, userRequestId?: string): Promise<any>;
+  findProfileUserByExternalUserById(_id: string): Promise<any>
 
   getUserPersonalInformationByUsername(username: string): Promise<any>;
   getRelationsFromUserByUserId(userRequestId: string): Promise<any>;
