@@ -299,6 +299,7 @@ describe('Mercadopago - MpHandlerEvents - Subscription  -> Create', () => {
         mockFetchToMpAdapter = {
             getDataFromMp_fetch: jest.fn()
         };
+        (mpHandlerEvents as any).fetchToMpAdapter = mockFetchToMpAdapter;
         maockedSubscriptionResponse = get_subscription_preapproval(external_reference.toString(), subcriptionPlanMeli_id);
         await subscriptionPlanModel.create({
             _id: subscriptionPlan_id,
@@ -319,7 +320,7 @@ describe('Mercadopago - MpHandlerEvents - Subscription  -> Create', () => {
         await createPersonalUser(external_reference, userModel, new Map([["subscriptions", []]]));
 
 
-        (mpHandlerEvents as any).fetchToMpAdapter = mockFetchToMpAdapter;
+        
 
 
     });

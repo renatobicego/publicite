@@ -250,9 +250,9 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
         const { payment, subscription, paymentReady } = resultOfInvoice;
         if (paymentReady) {
           const data = {
-            subscriptionPlanId: subscription.getSubscriptionPlan(),
+            subscriptionPlanId: subscription.subscriptionPlan,
             reason: subscription_authorized_payment.reason,
-            status: payment.getStatus(),
+            status: payment.status,
             retryAttemp: subscription_authorized_payment.retry_attempt,
             userId: subscription_authorized_payment.external_reference,
           }

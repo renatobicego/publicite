@@ -26,6 +26,7 @@ import { InvoiceSchema } from "../infastructure/schemas/invoice.schema";
 import { PaymentSchema } from "../infastructure/schemas/payment.schema";
 import { SubscriptionSchema } from "../infastructure/schemas/subscription.schema";
 import { SubscriptionPlanSchema } from "../infastructure/schemas/subscriptionPlan.schema";
+import { MpInvoiceRepository } from "../infastructure/repository/mp-invoice.repository";
 
 
 
@@ -86,6 +87,10 @@ const mercadopago_testing_module = async (): Promise<TestingModule> => {
                 useClass: MpInvoiceService,
             },
             {
+                provide: 'MercadoPagoInvoiceRepositoryInterface',
+                useClass: MpInvoiceRepository,
+            },
+            {
                 provide: 'MpPaymentServiceInterface',
                 useClass: MpPaymentService,
             },
@@ -99,10 +104,6 @@ const mercadopago_testing_module = async (): Promise<TestingModule> => {
             },
             {
                 provide: 'FetchToMpInterface',
-                useValue: {}
-            },
-            {
-                provide: 'MercadoPagoInvoiceRepositoryInterface',
                 useValue: {}
             },
 

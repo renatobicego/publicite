@@ -41,16 +41,14 @@ export class MercadoPagoPaymentsRepository
     }
   }
 
-  async findPaymentByPaymentID(id: any): Promise<Payment | null> {
+  async findPaymentByPaymentID(id: any): Promise<any> {
     this.logger.log('Find payment by mpPaymentId ID: ' + id);
-    const payment = await this.paymentModel.findOne({ mpPaymentId: id }).exec();
-    return payment ? Payment.fromDocument(payment) : null;
+    return await this.paymentModel.findOne({ mpPaymentId: id }).lean();
+
   }
 
   async updatePayment(paymentToUpdate: any, id: any): Promise<void> {
     try {
-      console.log(paymentToUpdate)
-      console.log(id)
       this.logger.log('Update payment: ' + id);
 
       await this.paymentModel.findOneAndUpdate(

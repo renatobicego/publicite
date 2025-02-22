@@ -55,7 +55,7 @@ describe('UserService - Get limit of contacts and posts by user', () => {
         const user_id = new Types.ObjectId("66c49508e80296e90ec637d7");
         await createPersonalUser(user_id, userModel, new Map([["subscriptions", subscription_plan_id]]));
         await createPlanOfSubscription(plan_id, subscriptionPlanModel, totalAgendaPostLimit_EXPECTED, totalLibrePostLimit_EXPECTED, contactLimit_EXPECTED);
-        await createSubscriptionForUser(subscription_plan_id, user_id.toString(), plan_id, subscriptionModel);
+        await createSubscriptionForUser(subscription_plan_id, user_id.toString(), plan_id, subscriptionModel, "");
 
 
 

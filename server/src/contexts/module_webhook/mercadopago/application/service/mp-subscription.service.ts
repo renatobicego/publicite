@@ -124,7 +124,7 @@ export class MpSubscriptionService implements SubscriptionServiceInterface {
 
   async findSubscriptionByPreapprovalId(
     id: string,
-  ): Promise<Subscription | null> {
+  ): Promise<any> {
     const subscription =
       await this.subscriptionRepository.findSubscriptionByPreapprovalId(id);
 
