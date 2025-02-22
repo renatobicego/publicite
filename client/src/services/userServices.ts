@@ -201,14 +201,11 @@ export const getUserById = async (
   (GetUser & { isFriendRequestPending: boolean }) | { error: string }
 > => {
   try {
+    const { context } = await getApiContext();
     const { data } = await query({
       query: getUserByIdQuery,
       variables: { id },
-      context: {
-        headers: {
-          Authorization: await auth().getToken({ template: "testing" }),
-        },
-      },
+      context,
     });
 
     return data.findUserById;
@@ -225,17 +222,12 @@ export const getFriendRequests = async (
   id: string
 ): Promise<UserRelationNotification[] | { error: string }> => {
   try {
+    const { context } = await getApiContext();
+
     const { data } = await query({
       query: getFriendRequestsQuery,
       variables: { id },
-      context: {
-        headers: {
-          Authorization: await auth().getToken({ template: "testing" }),
-        },
-        fetchOptions: {
-          next: { revalidate: 60 },
-        },
-      },
+      context,
     });
 
     return data.findUserById.friendRequests;

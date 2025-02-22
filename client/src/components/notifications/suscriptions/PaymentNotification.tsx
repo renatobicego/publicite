@@ -36,7 +36,9 @@ const PaymentNotification = ({
           {messageToShow.message}
           <span className="font-semibold"> {reason}</span>
           {messageToShow.attemptMessage
-            ? `${messageToShow.attemptMessage}${retryAttemp}.`
+            ? `${messageToShow.attemptMessage}${retryAttemp}/4. ${
+                retryAttemp < 4 && "Haremos un nuevo intento próximanente."
+              } `
             : "."}
           {messageToShow.endMessage && messageToShow.endMessage}
         </p>
