@@ -11,7 +11,7 @@ import {
 import { auth, currentUser } from "@clerk/nextjs/server";
 import axios from "axios";
 import { getClient, query } from "@/lib/client";
-import getUserByUsernameQuery, {
+import getUserByIdQuery, {
   changeNotificationStatusMutation,
   deleteNotificationMutation,
   deleteUserRelationMutation,
@@ -93,7 +93,7 @@ export const getFriendsOfUser = async (username: string) => {
     const user = auth();
     const {
       data,
-    }: { data: { findUserByUsername: { userRelations: UserRelations[] } } } =
+    }: { data: { findUserById: { userRelations: UserRelations[] } } } =
       await query({
         query: getFriendRequestsQuery,
         variables: { username },
@@ -104,14 +104,12 @@ export const getFriendsOfUser = async (username: string) => {
         },
       });
 
-    const relationsMapped = data.findUserByUsername.userRelations.map(
-      (relation) => {
-        if (relation.userA._id === user.sessionClaims?.metadata.mongoId) {
-          return relation.userB;
-        }
-        return relation.userA;
+    const relationsMapped = data.findUserById.userRelations.map((relation) => {
+      if (relation.userA._id === user.sessionClaims?.metadata.mongoId) {
+        return relation.userB;
       }
-    );
+      return relation.userA;
+    });
 
     return relationsMapped;
   } catch (error) {
@@ -196,14 +194,14 @@ export const getUsers = async (searchTerm: string | null, page: number) => {
   }
 };
 
-export const getUserByUsername = async (
+export const getUserById = async (
   username: string
 ): Promise<
   (GetUser & { isFriendRequestPending: boolean }) | { error: string }
 > => {
   try {
     const { data } = await query({
-      query: getUserByUsernameQuery,
+      query: getUserByIdQuery,
       variables: { username },
       context: {
         headers: {
@@ -212,7 +210,7 @@ export const getUserByUsername = async (
       },
     });
 
-    return data.findUserByUsername;
+    return data.findUserById;
   } catch (error: ApolloError | any) {
     console.log(error);
     return {
@@ -223,12 +221,12 @@ export const getUserByUsername = async (
 };
 
 export const getFriendRequests = async (
-  username: string
+  _id: string
 ): Promise<UserRelationNotification[] | { error: string }> => {
   try {
     const { data } = await query({
       query: getFriendRequestsQuery,
-      variables: { username },
+      variables: { _id },
       context: {
         headers: {
           Authorization: await auth().getToken({ template: "testing" }),
@@ -239,7 +237,7 @@ export const getFriendRequests = async (
       },
     });
 
-    return data.findUserByUsername.friendRequests;
+    return data.findUserById.friendRequests;
   } catch (error: ApolloError | any) {
     return {
       error:

@@ -33,9 +33,8 @@ const MagazineOptionsDropdown = ({
   ownerType: "user" | "group";
   magazine: Magazine;
 }) => {
-  const router = useRouter();
   const { removeMagazineOfStore } = useMagazinesData();
-  const { usernameLogged } = useUserData();
+  const { userIdLogged } = useUserData();
   const handleDelete = async () => {
     const res = await removeMagazine(magazine._id, ownerType);
     if (res.error) {
@@ -44,7 +43,7 @@ const MagazineOptionsDropdown = ({
     }
     removeMagazineOfStore(magazine._id);
     toastifySuccess(res.message as string);
-    window.location.replace(`${PROFILE}/${usernameLogged}`);
+    window.location.replace(`${PROFILE}/${userIdLogged}`);
   };
   const confirmDeleteRef = useRef<() => void>(() => {});
   const modalDeleteCollaboratorRef = useRef<() => void>(() => {});

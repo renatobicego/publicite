@@ -39,7 +39,7 @@ const OptionsDropdown = ({ post }: { post: Post }) => {
     }
     setIsDeleting(false);
     toastifySuccess(res.message as string);
-    router.replace(`${PROFILE}/${post.author.username}`);
+    router.replace(`${PROFILE}/${post.author._id}`);
   };
 
   const handleChangeIsActiveStatus = async () => {

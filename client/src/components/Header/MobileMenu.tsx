@@ -3,11 +3,9 @@ import { SignedIn, SignedOut } from "@clerk/nextjs";
 import { Link, NavbarMenu, NavbarMenuItem } from "@nextui-org/react";
 import { Variants } from "framer-motion";
 import React, { Dispatch, SetStateAction } from "react";
-import Notifications from "./Notifications/Notifications";
 import SecondaryButton from "../buttons/SecondaryButton";
 import DropdownItems from "./DropdownItems";
 import NextLink from "next/link";
-import UserButtonModal from "@/app/(root)/(configuracion)/UserButtonPage";
 import { useUserData } from "@/app/(root)/providers/userDataProvider";
 
 const MobileMenu = ({
@@ -17,7 +15,7 @@ const MobileMenu = ({
   setIsMenuOpen: Dispatch<SetStateAction<boolean>>;
   isSignedIn: boolean;
 }) => {
-  const { usernameLogged } = useUserData();
+  const { userIdLogged } = useUserData();
   const menuItems = [
     {
       title: "Inicio",
@@ -34,7 +32,7 @@ const MobileMenu = ({
     },
     {
       title: "Mi Perfil",
-      url: `${PROFILE}/${usernameLogged}`,
+      url: `${PROFILE}/${userIdLogged}`,
       isPrivate: true,
     },
     {

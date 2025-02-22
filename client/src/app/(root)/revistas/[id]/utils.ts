@@ -1,6 +1,6 @@
 import { Group } from "@/types/groupTypes";
 import { GroupMagazine, Magazine, UserMagazine } from "@/types/magazineTypes";
-import { GetUser, User } from "@/types/userTypes";
+import { GetUser } from "@/types/userTypes";
 import { GROUPS, PROFILE } from "@/utils/data/urls";
 
 function getOwner(magazine: Magazine): GetUser | Group {
@@ -20,7 +20,7 @@ function checkIsOwner(
   const groupData: Group = (magazine as GroupMagazine).group as Group;
   return (
     groupData.admins.some((admin) => admin === userId) ||
-    groupData.creator as any === userId
+    (groupData.creator as any) === userId
   );
 }
 
@@ -29,7 +29,7 @@ function getProfileUrl(
   isOwnerTypeUser: boolean
 ): string {
   return isOwnerTypeUser
-    ? `${PROFILE}/${(owner as GetUser).username}`
+    ? `${PROFILE}/${(owner as GetUser)._id}`
     : `${GROUPS}/${(owner as Group)._id}`;
 }
 

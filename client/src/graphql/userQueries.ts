@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
-const getUserByUsernameQuery = gql`
-  query FindUserByUsername($username: String!) {
-    findUserByUsername(username: $username) {
+const getUserByIdQuery = gql`
+  query FindUserById($id: String!) {
+    findUserById(_id: $id) {
       _id
       businessName
       contact {
@@ -91,8 +91,8 @@ const getUserByUsernameQuery = gql`
 `;
 
 export const getFriendRequestsQuery = gql`
-  query FindUserByUsername($username: String!) {
-    findUserByUsername(username: $username) {
+  query FindUserById($id: String!) {
+    findUserById(_id: $id) {
       userRelations {
         _id
         typeRelationA
@@ -121,8 +121,8 @@ export const getFriendRequestsQuery = gql`
 `;
 
 export const getFriendsQuery = gql`
-  query FindUserByUsername($username: String!) {
-    findUserByUsername(username: $username) {
+  query FindUserById($id: String!) {
+    findUserById(_id: $id) {
       _id
       friendRequests {
         event
@@ -357,4 +357,4 @@ export const deleteNotificationMutation = gql`
   }
 `;
 
-export default getUserByUsernameQuery;
+export default getUserByIdQuery;

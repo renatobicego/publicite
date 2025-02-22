@@ -28,7 +28,7 @@ const MemberCard = ({
           className="shrink-0"
           isBordered
           as={Link}
-          href={`${PROFILE}/${user.username}`}
+          href={`${PROFILE}/${user._id}`}
           src={user.profilePhotoUrl}
           classNames={{
             base: "!w-14 md:!w-16 2xl:!w-20 !h-14 md:!h-16 2xl:!h-20",
@@ -37,7 +37,7 @@ const MemberCard = ({
         <div className="flex flex-col gap-2 md:gap-1 items-start flex-1">
           <Link
             className="text-text-color hover:text-primary"
-            href={`${PROFILE}/${user.username}`}
+            href={`${PROFILE}/${user._id}`}
           >
             <h6>{user.username}</h6>
           </Link>
@@ -46,9 +46,7 @@ const MemberCard = ({
           {isAdmin && (
             <p className="text-xs font-normal italic">Administrador</p>
           )}
-          {isCreator && (
-            <p className="text-xs font-normal italic">Dueño</p>
-          )}
+          {isCreator && <p className="text-xs font-normal italic">Dueño</p>}
           {!isMe &&
             (groupRequestGrid ? (
               <HandleGroupRequest user={user} group={group} />

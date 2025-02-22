@@ -1,7 +1,7 @@
 import BreadcrumbsAdmin from "@/components/BreadcrumbsAdmin";
 import { PROFILE } from "@/utils/data/urls";
 import UserInfo from "./(components)/sections/UserInfo";
-import { getFriendRequests, getUserByUsername } from "@/services/userServices";
+import { getFriendRequests, getUserById } from "@/services/userServices";
 import ErrorCard from "@/components/ErrorCard";
 import { auth } from "@clerk/nextjs/server";
 import UserSolapas from "@/components/solapas/UserSolapas";
@@ -13,7 +13,7 @@ import Loading from "./loading";
 import { Suspense } from "react";
 
 export default async function ProfileLayout(props: {
-  params: Promise<{ username: string }>;
+  params: Promise<{ id: string }>;
   children: React.ReactNode;
 }) {
   const params = await props.params;
@@ -30,8 +30,8 @@ export default async function ProfileLayout(props: {
       href: PROFILE,
     },
     {
-      label: params.username,
-      href: `${PROFILE}/${params.username}`,
+      label: params.id,
+      href: `${PROFILE}/${params.id}`,
     },
   ];
   const loggedUser = auth();
@@ -39,7 +39,7 @@ export default async function ProfileLayout(props: {
     redirect("/iniciar-sesion");
   }
 
-  const user = await getUserByUsername(params.username);
+  const user = await getUserById(params.id);
   if (!user || "error" in user) {
     return <ErrorCard message={user?.error ?? "Error al cargar el perfil."} />;
   }
@@ -60,7 +60,7 @@ export default async function ProfileLayout(props: {
 
   let friendRequests: UserRelationNotification[] = [];
   if (isMyProfile) {
-    const friendRequestsFromDb = await getFriendRequests(params.username);
+    const friendRequestsFromDb = await getFriendRequests(params.id);
     if (friendRequestsFromDb && "error" in friendRequestsFromDb) {
       toastifyError(friendRequestsFromDb.error);
     } else {

@@ -23,7 +23,7 @@ const PostListLogic = ({ postType }: { postType: PostsDataTypes }) => {
     postType,
     isContactPosts ? solapaSelected : undefined
   );
-  const { usernameLogged } = useUserData();
+  const { userIdLogged } = useUserData();
   const queryParams = useSearchParams();
   const querySearch = queryParams.get("busqueda") || "";
   const {
@@ -68,7 +68,7 @@ const PostListLogic = ({ postType }: { postType: PostsDataTypes }) => {
             gestionarlas, ve a tu{" "}
             <Link
               className="text-primary"
-              href={`${PROFILE}/${usernameLogged}/contactos`}
+              href={`${PROFILE}/${userIdLogged}/contactos`}
             >
               perfil
             </Link>

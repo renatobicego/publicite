@@ -26,9 +26,7 @@ const BoardContent = ({
     <Card
       // if is a board shown in baord grid (explorar), it should be a link
       as={!isProfile ? Link : undefined}
-      href={
-        !isProfile ? `${PROFILE}/${(board.user as User).username}` : undefined
-      }
+      href={!isProfile ? `${PROFILE}/${(board.user as User)._id}` : undefined}
       className={`p-4 flex flex-col gap-2 ${board.color} ${textColor} ${
         isProfile &&
         !widthFull &&

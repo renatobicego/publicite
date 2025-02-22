@@ -11,11 +11,10 @@ import Preferences from "./Preferences/Preferences";
 import { PROFILE } from "@/utils/data/urls";
 import Business from "./Business/Business";
 import { IoBusiness } from "react-icons/io5";
-import { BackgroundProvider } from "../providers/backgroundProvider";
 import { useUserData } from "../providers/userDataProvider";
 
 const UserButtonModal = () => {
-  const { userTypeLogged, usernameLogged } = useUserData();
+  const { userTypeLogged, usernameLogged, userIdLogged } = useUserData();
   const pageToReturn = useMemo(() => {
     switch (userTypeLogged) {
       case "Person":
@@ -59,7 +58,7 @@ const UserButtonModal = () => {
         <UserButton.Link
           label="Mi Perfil"
           labelIcon={<FaUser />}
-          href={`${PROFILE}/${usernameLogged}`}
+          href={`${PROFILE}/${userIdLogged}`}
         />
         <UserButton.Action label="manageAccount" />
       </UserButton.MenuItems>

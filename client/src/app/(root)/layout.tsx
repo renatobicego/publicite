@@ -31,7 +31,7 @@ export default async function NavigationLayout({
             {children}
             <HelpButton />
           </LocationProvider>
-          <Footer username={user?.username} />
+          <Footer id={user?.publicMetadata.mongoId} />
         </BackgroundProvider>
       </UserDataProvider>
     </SocketProvider>

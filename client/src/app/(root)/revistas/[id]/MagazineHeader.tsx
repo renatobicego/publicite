@@ -64,7 +64,7 @@ const MagazineHeader = ({
             <Avatar
               key={collaborator._id}
               as={Link}
-              href={`${PROFILE}/${collaborator.username}`}
+              href={`${PROFILE}/${collaborator._id}`}
               src={collaborator.profilePhotoUrl}
               size="lg"
               isBordered

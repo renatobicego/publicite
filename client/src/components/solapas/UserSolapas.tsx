@@ -9,9 +9,9 @@ import MagazinesGrid from "../grids/MagazinesGrid";
 import GroupsGrid from "@/app/(root)/(explorar)/grupos/GroupsGrid";
 import PrimaryButton from "../buttons/PrimaryButton";
 import { FaPlus } from "react-icons/fa6";
-import UserPosts from "@/app/(root)/(explorar)/perfiles/[username]/(components)/UserPosts/UserPosts";
-import UserRelationRequestsGrid from "@/app/(root)/(explorar)/perfiles/[username]/(components)/UserRelations/UserRelationRequestsGrid";
-import UserRelations from "@/app/(root)/(explorar)/perfiles/[username]/(components)/UserRelations/UserRelations";
+import UserPosts from "@/app/(root)/(explorar)/perfiles/[id]/(components)/UserPosts/UserPosts";
+import UserRelationRequestsGrid from "@/app/(root)/(explorar)/perfiles/[id]/(components)/UserRelations/UserRelationRequestsGrid";
+import UserRelations from "@/app/(root)/(explorar)/perfiles/[id]/(components)/UserRelations/UserRelations";
 import {
   useConfigData,
   useUserData,
@@ -29,7 +29,7 @@ const UserSolapas = ({
   const pathname = usePathname();
   const tabsRef = useRef<HTMLDivElement | null>(null);
   const { configData } = useConfigData();
-  const { usernameLogged } = useUserData();
+  const { userIdLogged } = useUserData();
 
   const isActiveRelation =
     isMyProfile ||
@@ -61,7 +61,7 @@ const UserSolapas = ({
         activa. Para gestionar tus relaciones activas, ve a tu{" "}
         <Link
           className="text-primary"
-          href={`${PROFILE}/${usernameLogged}/contactos`}
+          href={`${PROFILE}/${userIdLogged}/contactos`}
         >
           perfil
         </Link>
@@ -69,7 +69,7 @@ const UserSolapas = ({
     );
   }
 
-  const PROFILE_USERNAME = `${PROFILE}/${user.username}`;
+  const PROFILE_USERNAME = `${PROFILE}/${user._id}`;
 
   const tabDefinitions = [
     {

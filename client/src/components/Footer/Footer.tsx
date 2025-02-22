@@ -5,7 +5,7 @@ import Legals from "./Legals";
 import Support from "./Support";
 import ShareApp from "./ShareApp";
 
-const Footer = ({ username }: { username?: string | null }) => {
+const Footer = ({ id }: { id?: string | null }) => {
   return (
     <footer
       className={`bg-text-color layout-padding py-10 text-white flex items-start 
@@ -46,7 +46,7 @@ const Footer = ({ username }: { username?: string | null }) => {
         </nav>
       </div>
       <nav>
-        <Navigation username={username} />
+        <Navigation id={id} />
       </nav>
       <nav>
         <Legals />

@@ -3,7 +3,7 @@ import { GROUPS, MAGAZINES, PROFILE } from "@/utils/data/urls";
 import { Link } from "@nextui-org/react";
 import React from "react";
 
-const Navigation = ({ username }: { username?: string | null }) => {
+const Navigation = ({ id }: { id?: string | null }) => {
   return (
     <ul className="flex flex-col gap-1">
       <li className="text-white font-bold">Navegación</li>
@@ -12,14 +12,10 @@ const Navigation = ({ username }: { username?: string | null }) => {
           Inicio
         </Link>
       </li>
-      {username ? (
+      {id ? (
         <>
           <li>
-            <Link
-              size="sm"
-              className="text-white"
-              href={`${PROFILE}/${username}`}
-            >
+            <Link size="sm" className="text-white" href={`${PROFILE}/${id}`}>
               Mi Perfil
             </Link>
           </li>
@@ -27,7 +23,7 @@ const Navigation = ({ username }: { username?: string | null }) => {
             <Link
               size="sm"
               className="text-white"
-              href={`${PROFILE}/${username}/${MAGAZINES}}`}
+              href={`${PROFILE}/${id}/${MAGAZINES}}`}
             >
               Mis Revistas
             </Link>
@@ -36,7 +32,7 @@ const Navigation = ({ username }: { username?: string | null }) => {
             <Link
               size="sm"
               className="text-white"
-              href={`${PROFILE}/${username}/${GROUPS}}`}
+              href={`${PROFILE}/${id}/${GROUPS}}`}
             >
               Mis Grupos
             </Link>

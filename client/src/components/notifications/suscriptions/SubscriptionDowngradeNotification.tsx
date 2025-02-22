@@ -23,20 +23,20 @@ const SubscriptionDowngradeNotification = ({
 
   const eventParsed = event as SubscriptionEvent;
   const messageToShow = subscriptionNotificationMessages[eventParsed];
-  const { usernameLogged } = useUserData();
+  const { userIdLogged } = useUserData();
 
   const getLinkToTakeAction = () => {
     switch (eventParsed) {
       case "notification_downgrade_plan_contact":
         return (
-          <Link size="sm" href={`${PROFILE}/${usernameLogged}/contactos`}>
+          <Link size="sm" href={`${PROFILE}/${userIdLogged}/contactos`}>
             {" "}
             Perfil - Contactos - Activos
           </Link>
         );
       case "notification_downgrade_plan_post":
         return (
-          <Link size="sm" href={`${PROFILE}/${usernameLogged}`}>
+          <Link size="sm" href={`${PROFILE}/${userIdLogged}`}>
             Perfil - Anuncios - Inactivos
           </Link>
         );

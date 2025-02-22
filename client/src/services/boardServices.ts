@@ -71,7 +71,7 @@ export const getBoardByUsername = async (
       variables: { username },
       context,
     });
-    return data.findUserByUsername;
+    return data.findUserById;
   } catch (error) {
     return handleApolloError(error);
   }

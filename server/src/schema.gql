@@ -868,7 +868,7 @@ type ContactSeller_getAll {
 
 type Query {
   """Obtiene un usuario por su nombre de usuario """
-  findUserByUsername(username: String!): User_Full_Grapql_Model
+  findUserById(_id: String!): User_Full_Grapql_Model
 
   """Obtiene las relaciones activas del usuario"""
   getActiveRelationsOfUser: [user_active_relation!]

@@ -32,7 +32,7 @@ const UserRelationNotificationCard = ({
   } = notification.frontData;
   const { event, viewed, date, isActionsAvailable, backData, _id } =
     notification;
-  const { usernameLogged } = useUserData();
+  const { userIdLogged } = useUserData();
   const { updateSocketToken } = useSocket();
   const { deleteNotification } = useNotificationsContext();
   const [isActionSent, setIsActionSent] = useState(false);
@@ -66,14 +66,14 @@ const UserRelationNotificationCard = ({
       optionsList.push({
         label: "Ver Solicitud",
         as: Link,
-        href: `${PROFILE}/${usernameLogged}/solicitudes`,
+        href: `${PROFILE}/${userIdLogged}/solicitudes`,
       });
     }
     optionsList.push({
       label: "Ver Perfil",
       as: Link,
       className: "text-text-color",
-      href: `${PROFILE}/${userFrom.username}`,
+      href: `${PROFILE}/${userFrom._id}`,
     });
     if (
       notificationMessage?.rejectAction &&
