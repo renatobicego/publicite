@@ -32,15 +32,17 @@ const ChangePaymentMethodCheckout = ({
     editSubscription(subscriptionId, {
       card_token_id: formData.token,
     })
-      .then(() => {
+      .then((res) => {
+        console.log(res);
         toastifySuccess("Subscripción anterior cancelada con éxito");
         router.replace("/suscribirse/suscripcion-actualizada");
       })
-      .catch(() =>
+      .catch((err) => {
+        console.error(err);
         toastifyError(
           "Error al editar la subscripción. Por favor, intenta de nuevo o contacta a soporte"
-        )
-      );
+        );
+      });
   };
 
   const onError = async (error: any) => {
