@@ -90,7 +90,7 @@ const getUserByIdQuery = gql`
   }
 `;
 
-export const getFriendRequestsQuery = gql`
+export const getFriendsQuery = gql`
   query FindUserById($id: String!) {
     findUserById(_id: $id) {
       userRelations {
@@ -120,7 +120,7 @@ export const getFriendRequestsQuery = gql`
   }
 `;
 
-export const getFriendsQuery = gql`
+export const getFriendRequestsQuery = gql`
   query FindUserById($id: String!) {
     findUserById(_id: $id) {
       _id

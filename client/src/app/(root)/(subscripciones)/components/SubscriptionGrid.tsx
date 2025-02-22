@@ -25,14 +25,12 @@ const SubscriptionGrid = ({
 
   useEffect(() => {
     setIsLoading(true);
-    console.log(subscriptions);
     if (frequency === 0) {
-      setFilteredSubscriptions(
-        subscriptions.filter(
-          (plan) =>
-            plan.intervalTime === 7 || plan.intervalTime === 30 || plan.isFree
-        )
+      const filteredSubscriptions = subscriptions.filter(
+        (plan) =>
+          plan.intervalTime === 7 || plan.intervalTime === 30 || plan.isFree
       );
+      setFilteredSubscriptions(filteredSubscriptions);
     } else if (frequency === 1) {
       setFilteredSubscriptions(
         subscriptions.filter(
@@ -53,15 +51,13 @@ const SubscriptionGrid = ({
         setFrequency={setFrequency}
         type={type}
       />
-      <Suspense
-        fallback={
-          <div className={containerGridStyle}>
-            <Skeleton className="w-full h-72" />
-            <Skeleton className="w-full h-72" />
-            <Skeleton className="w-full h-72" />
-          </div>
-        }
-      >
+      {isLoading ? (
+        <div className={containerGridStyle}>
+          <Skeleton className="w-full h-72" />
+          <Skeleton className="w-full h-72" />
+          <Skeleton className="w-full h-72" />
+        </div>
+      ) : (
         <div className={containerGridStyle}>
           {type === "packs"
             ? filteredSubscriptions.map((plan) => (
@@ -77,6 +73,7 @@ const SubscriptionGrid = ({
                 ) as SubscriptionPlan,
                 ...filteredSubscriptions.filter((plan) => !plan.isFree),
               ].map((plan) => {
+                if (!plan) return null;
                 const isUserSubscribed = checkIfUserIsSubscribed(
                   subscriptionsOfUser,
                   plan
@@ -91,7 +88,7 @@ const SubscriptionGrid = ({
                 );
               })}
         </div>
-      </Suspense>
+      )}
     </>
   );
 };

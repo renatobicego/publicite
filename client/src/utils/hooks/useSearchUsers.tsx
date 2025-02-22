@@ -6,7 +6,7 @@ import { toastifyError } from "../functions/toastify";
 
 const useSearchUsers = (
   isGroupMembersInviteId?: string,
-  username?: string | null
+  id?: string | null
 ) => {
   const [users, setUsers] = useState<User[]>([]);
   const lastChange = useRef<NodeJS.Timeout | null>(null);
@@ -26,27 +26,27 @@ const useSearchUsers = (
   };
 
   const getFriends = useCallback(() => {
-    if (!username) return;
-    getFriendsOfUser(username)
+    if (!id) return;
+    getFriendsOfUser(id)
       .then((friends) => setUsers(friends))
       .catch(() =>
         toastifyError(
           "Error al traer las relaciones de amistad. Por favor intenta de nuevo."
         )
       );
-  }, [username]);
+  }, [id]);
 
   useEffect(() => {
     if (isGroupMembersInviteId) {
       getGroupMembers(isGroupMembersInviteId);
       return;
     }
-    if (username) {
+    if (id) {
       getFriends();
       return;
     }
     getUsersByQuery("");
-  }, [getFriends, isGroupMembersInviteId, username]);
+  }, [getFriends, isGroupMembersInviteId, id]);
 
   return { users, setUsers, getUsersByQuery };
 };

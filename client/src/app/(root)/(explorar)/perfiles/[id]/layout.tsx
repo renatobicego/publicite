@@ -20,6 +20,15 @@ export default async function ProfileLayout(props: {
 
   const { children } = props;
 
+  const loggedUser = auth();
+  if (!loggedUser) {
+    redirect("/iniciar-sesion");
+  }
+
+  const user = await getUserById(params.id);
+  if (!user || "error" in user) {
+    return <ErrorCard message={user?.error ?? "Error al cargar el perfil."} />;
+  }
   const breadcrumbsItems = [
     {
       label: "Inicio",
@@ -30,19 +39,10 @@ export default async function ProfileLayout(props: {
       href: PROFILE,
     },
     {
-      label: params.id,
+      label: user.username,
       href: `${PROFILE}/${params.id}`,
     },
   ];
-  const loggedUser = auth();
-  if (!loggedUser) {
-    redirect("/iniciar-sesion");
-  }
-
-  const user = await getUserById(params.id);
-  if (!user || "error" in user) {
-    return <ErrorCard message={user?.error ?? "Error al cargar el perfil."} />;
-  }
   const isMyProfile = user._id === loggedUser?.sessionClaims?.metadata.mongoId;
 
   let isMyContact: UserRelations | undefined;

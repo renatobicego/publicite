@@ -18,6 +18,7 @@ import getUserByIdQuery, {
   getAllNotificationsQuery,
   getContactSellersByTypeQuery,
   getFriendRequestsQuery,
+  getFriendsQuery,
   putActiveRelationsMutation,
   updateContactMutation,
 } from "@/graphql/userQueries";
@@ -88,15 +89,15 @@ export const getUserProfileData = async (username: string) => {
   }
 };
 
-export const getFriendsOfUser = async (username: string) => {
+export const getFriendsOfUser = async (id: string) => {
   try {
     const user = auth();
     const {
       data,
     }: { data: { findUserById: { userRelations: UserRelations[] } } } =
       await query({
-        query: getFriendRequestsQuery,
-        variables: { username },
+        query: getFriendsQuery,
+        variables: { id },
         context: {
           headers: {
             Authorization: await user.getToken({ template: "testing" }),
@@ -195,14 +196,14 @@ export const getUsers = async (searchTerm: string | null, page: number) => {
 };
 
 export const getUserById = async (
-  username: string
+  id: string
 ): Promise<
   (GetUser & { isFriendRequestPending: boolean }) | { error: string }
 > => {
   try {
     const { data } = await query({
       query: getUserByIdQuery,
-      variables: { username },
+      variables: { id },
       context: {
         headers: {
           Authorization: await auth().getToken({ template: "testing" }),
@@ -221,12 +222,12 @@ export const getUserById = async (
 };
 
 export const getFriendRequests = async (
-  _id: string
+  id: string
 ): Promise<UserRelationNotification[] | { error: string }> => {
   try {
     const { data } = await query({
       query: getFriendRequestsQuery,
-      variables: { _id },
+      variables: { id },
       context: {
         headers: {
           Authorization: await auth().getToken({ template: "testing" }),
