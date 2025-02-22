@@ -60,15 +60,12 @@ export const putBoard = async (id: string, values: any) => {
   }
 };
 
-export const getBoardByUsername = async (
-  username: string,
-  token?: string | null
-) => {
+export const getBoardByUsername = async (id: string, token?: string | null) => {
   try {
     const { context } = await getApiContext(false, token);
     const { data } = await query({
       query: getBoardByUsernameQuery,
-      variables: { username },
+      variables: { id },
       context,
     });
     return data.findUserById;

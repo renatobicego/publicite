@@ -13,7 +13,7 @@ export class SubscriptionPlan {
   private isFree: boolean;
   private postsLibresCount: number;
   private postsAgendaCount: number;
-  private isPack: boolean
+  private isPack: boolean;
 
   constructor(
     _id: ObjectId,
@@ -27,7 +27,7 @@ export class SubscriptionPlan {
     isFree: boolean,
     postsLibresCount: number,
     postsAgendaCount: number,
-    isPack: boolean
+    isPack: boolean,
   ) {
     this._id = _id;
     this.mpPreapprovalPlanId = mpPreapprovalPlanId;
@@ -40,7 +40,7 @@ export class SubscriptionPlan {
     this.isFree = isFree;
     this.postsLibresCount = postsLibresCount;
     this.postsAgendaCount = postsAgendaCount;
-    this.isPack = isPack
+    this.isPack = isPack;
   }
 
   public getId(): ObjectId {
@@ -79,11 +79,9 @@ export class SubscriptionPlan {
     return this.postsAgendaCount;
   }
 
-
   public getIsPack(): boolean {
     return this.isPack;
   }
-
 
   static fromDocument(doc: any): SubscriptionPlan {
     return new SubscriptionPlan(
@@ -98,7 +96,7 @@ export class SubscriptionPlan {
       doc.isFree,
       doc.postsLibresCount,
       doc.postsAgendaCount,
-      doc.isPack
+      doc.isPack,
     );
   }
 
@@ -117,7 +115,7 @@ export class SubscriptionPlan {
       isFree: subscriptionPlan.getIsFree(),
       postsLibresCount: subscriptionPlan.getPostsLibresCount(),
       postsAgendaCount: subscriptionPlan.getPostsAgendaCount(),
-      isPack: subscriptionPlan.getIsPack()
+      isPack: subscriptionPlan.getIsPack(),
     };
   }
 }

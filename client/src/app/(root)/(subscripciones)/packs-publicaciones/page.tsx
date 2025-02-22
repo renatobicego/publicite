@@ -1,8 +1,16 @@
 import BreadcrumbsAdmin from "@/components/BreadcrumbsAdmin";
 import { PACKS } from "@/utils/data/urls";
 import SubscriptionGrid from "../components/SubscriptionGrid";
+import ActivePostsCounter from "./ActivePostsCounter";
+import { SubscriptionPlan } from "@/types/subscriptions";
+import {
+  getSubscriptionsOfUser,
+  getSubscriptionsPlans,
+} from "@/services/subscriptionServices";
+import ErrorCard from "@/components/ErrorCard";
+import { auth } from "@clerk/nextjs/server";
 
-export default function PostPacks() {
+export default async function PostPacks() {
   const breadcrumbsItems = [
     {
       label: "Inicio",
@@ -14,6 +22,12 @@ export default function PostPacks() {
     },
   ];
 
+  const subscriptions: SubscriptionPlan[] | { error: string } =
+    await getSubscriptionsPlans();
+
+  if ("error" in subscriptions) {
+    return <ErrorCard message={"Error obteniendo planes de suscripción"} />;
+  }
   return (
     <main className="flex min-h-screen flex-col items-start main-style gap-8">
       <BreadcrumbsAdmin items={breadcrumbsItems} />
@@ -27,11 +41,13 @@ export default function PostPacks() {
             anuncios activos, ofreciendo mayor disponibilidad de productos o
             servicios a tus clientes.
           </p>
-          <p className="text-tiny md:text-small text-light-text">
-            Estás utilizando 40 de tus 50 publicaciones activas disponibles.
-          </p>
+          <ActivePostsCounter />
         </div>
-        <SubscriptionGrid type="packs" subscriptions={[]} subscriptionsOfUser={[]}/>
+        <SubscriptionGrid
+          type="packs"
+          subscriptions={subscriptions.filter((plan) => plan.isPack)}
+          subscriptionsOfUser={[]}
+        />
       </section>
     </main>
   );

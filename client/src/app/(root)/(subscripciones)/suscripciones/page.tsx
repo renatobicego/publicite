@@ -49,7 +49,9 @@ export default async function SubscriptionPlans() {
         <SubscriptionGrid
           type="suscripciones"
           subscriptions={subscriptions.filter((plan) => !plan.isPack)}
-          subscriptionsOfUser={susbcriptionsOfUser}
+          subscriptionsOfUser={susbcriptionsOfUser.filter(
+            (subscription) => !subscription.subscriptionPlan.isPack
+          )}
         />
       </section>
     </main>
