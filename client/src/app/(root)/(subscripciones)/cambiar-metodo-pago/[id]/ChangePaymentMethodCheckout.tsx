@@ -12,48 +12,35 @@ import { useRouter } from "next/navigation";
 
 initMercadoPago(process.env.NEXT_PUBLIC_MP_PUBLIC_KEY as string);
 
-type CheckoutProps = {
-  subscriptionPlan: any;
-  previousSubscriptionId?: string;
+type ChangePaymentMethodCheckoutProps = {
+  subscriptionId: string;
 };
 
-const Checkout = ({
-  subscriptionPlan,
-  previousSubscriptionId,
-}: CheckoutProps) => {
+const ChangePaymentMethodCheckout = ({
+  subscriptionId,
+}: ChangePaymentMethodCheckoutProps) => {
   const { user, isLoaded } = useUser();
   const router = useRouter();
   const initialization: { amount: number; payer: ICardPaymentBrickPayer } = {
-    amount: subscriptionPlan.auto_recurring.transaction_amount,
+    amount: 0,
     payer: {
       email: user?.emailAddresses[0].emailAddress,
     },
   };
 
   const onSubmit = async (formData: any, additionalData: any) => {
-    const res = await processPayment(
-      formData,
-      subscriptionPlan,
-      user?.publicMetadata?.mongoId as string
-    );
-    if ("error" in res) {
-      toastifyError(res.error);
-      return;
-    }
-    if (previousSubscriptionId) {
-      editSubscription(previousSubscriptionId, { status: "cancelled" })
-        .then(() => {
-          toastifySuccess("Subscripción anterior cancelada con éxito");
-          router.replace("/suscribirse/suscripcion-actualizada");
-        })
-        .catch(() =>
-          toastifyError(
-            "Error al cancelar la subscripción anterior. Por favor, contacta a soporte"
-          )
-        );
-      return;
-    }
-    router.replace("/suscribirse/suscripcion-exitosa");
+    editSubscription(subscriptionId, {
+      card_token_id: formData.token,
+    })
+      .then(() => {
+        toastifySuccess("Subscripción anterior cancelada con éxito");
+        router.replace("/suscribirse/suscripcion-actualizada");
+      })
+      .catch(() =>
+        toastifyError(
+          "Error al editar la subscripción. Por favor, intenta de nuevo o contacta a soporte"
+        )
+      );
   };
 
   const onError = async (error: any) => {
@@ -81,4 +68,4 @@ const Checkout = ({
   );
 };
 
-export default Checkout;
+export default ChangePaymentMethodCheckout;

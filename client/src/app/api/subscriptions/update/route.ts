@@ -15,7 +15,8 @@ export async function PUT(request: Request) {
         body: {
           ...formData,
           external_reference: formData.payer.email,
-          back_url: process.env.CLIENT_URL + "/suscribirse/suscripcion-exitosa",
+          back_url:
+            process.env.CLIENT_URL + "/suscribirse/suscripcion-actualizada",
         },
       })
       .then(console.log)

@@ -49,7 +49,8 @@ export const editPayment = async (formData: any, subscription: any) => {
 export const editSubscription = async (
   subscriptionId: string,
   formData: {
-    status: "authorized" | "paused" | "cancelled" | "pending";
+    status?: "authorized" | "paused" | "cancelled" | "pending";
+    card_token_id?: string;
   }
 ) => {
   try {

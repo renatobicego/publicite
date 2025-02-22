@@ -1,8 +1,8 @@
-import { Button } from "@nextui-org/react";
+import { Button, Link } from "@nextui-org/react";
 import FormCard from "../../FormCard";
 import { DataItem } from "../../DataBox";
-import { FaCcVisa } from "react-icons/fa6";
 import SecondaryButton from "@/components/buttons/SecondaryButton";
+import { useConfigData } from "@/app/(root)/providers/userDataProvider";
 
 const PaymentMethodForm = ({
   setIsFormVisible,
@@ -17,6 +17,8 @@ const PaymentMethodForm = ({
   };
   paymentIcon: React.ReactNode;
 }) => {
+  const { configData } = useConfigData();
+  const { accountType } = configData || {};
   return (
     <FormCard
       title="Actualizar método de pago"
@@ -40,7 +42,12 @@ const PaymentMethodForm = ({
         >
           Cancelar
         </Button>
-        <SecondaryButton>Cambiar Método</SecondaryButton>
+        <SecondaryButton
+          as={Link}
+          href={"/cambiar-metodo-pago/" + accountType?.mpPreapprovalId}
+        >
+          Cambiar Método
+        </SecondaryButton>
       </div>
     </FormCard>
   );
