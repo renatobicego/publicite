@@ -30,7 +30,9 @@ export async function POST(request: NextRequest) {
         },
       })
       .then(console.log)
-      .catch(console.log);
+      .catch((err) => {
+        throw err;
+      });
     return new Response("OK", { status: 200 });
   } catch (error) {
     console.log(error);

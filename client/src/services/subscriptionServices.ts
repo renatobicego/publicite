@@ -23,6 +23,7 @@ export const processPayment = async (
         userId,
       }
     );
+    console.log(data, status);
 
     if (status !== 200 && status !== 201) {
       return {

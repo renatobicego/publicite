@@ -36,6 +36,7 @@ const Checkout = ({
       subscriptionPlan,
       user?.publicMetadata?.mongoId as string
     );
+    console.log(res)
     if ("error" in res) {
       toastifyError(res.error);
       return;
