@@ -35,6 +35,7 @@ export const processPayment = async (
   } catch (error) {
     return {
       error: "Error al procesar el pago. Por favor intenta de nuevo.",
+      errorMessage: error,
     };
   }
 };

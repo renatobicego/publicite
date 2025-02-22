@@ -29,11 +29,12 @@ export async function POST(request: NextRequest) {
           external_reference: userId,
         },
       })
-      .then(console.log)
+      .then((data) => {
+        return new Response(JSON.stringify(data), { status: 200 });
+      })
       .catch((err) => {
         throw err;
       });
-    return new Response("OK", { status: 200 });
   } catch (error) {
     console.log(error);
     return new Response("Error", { status: 500, statusText: error as string });
