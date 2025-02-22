@@ -11,7 +11,7 @@ import { MpHandlerEvents } from "../infastructure/adapters/handler/mpHandlerFETC
 import { SubscriptionRepository } from "../infastructure/repository/mp-subscription.repository";
 import { PaymentDocument } from "../infastructure/schemas/payment.schema";
 
-describe('Mercadopago - HandlerAdapter - Payment  -> CREATE', () => {
+describe('Mercadopago - HandlerAdapter - Payment  -> CREATE', async () => {
     let connection: Connection;
     let mpHandlerEvents: MpHandlerEvents;
     let mpPaymentService: MpPaymentService;
@@ -19,10 +19,10 @@ describe('Mercadopago - HandlerAdapter - Payment  -> CREATE', () => {
     let paymentModel: Model<PaymentDocument>;
     let payment: any;
     let mockFetchToMpAdapter: any;
+    connection = await mongoose.connection;
 
 
     beforeAll(async () => {
-        connection = mongoose.connection;
         const moduleRef: TestingModule = await mpTestingModule.get("mp_testing_module")();
 
         mpHandlerEvents = moduleRef.get<MpHandlerEvents>('MpHandlerEventsInterface');

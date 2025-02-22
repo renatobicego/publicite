@@ -29,7 +29,7 @@ interface SubscriptionPlan {
 
 
 
-describe('MercadopagoService - Subscription create', () => {
+describe('MercadopagoService - Subscription create', async () => {
     let connection: Connection;
 
 
@@ -44,12 +44,12 @@ describe('MercadopagoService - Subscription create', () => {
     const subcriptionPlanMeli_id = "2c93808494b8c5eb0194be9f312902f1"
     const reason = "Publicité Premium TEST"
     const user_id = new Types.ObjectId("66c49508e80296e90ec637d8");
-
+    connection = await mongoose.connection;
 
     beforeAll(async () => {
 
 
-        connection = mongoose.connection;
+
         const moduleRef: TestingModule = await mpTestingModule.get("mp_testing_module")();
 
 
@@ -80,8 +80,8 @@ describe('MercadopagoService - Subscription create', () => {
     });
 
     afterAll(async () => {
-        await connection.close();
         await subscriptionPlanModel.deleteMany({});
+        await connection.close();
 
 
     });
@@ -369,7 +369,7 @@ describe('Mercadopago - MpHandlerEvents - Subscription  -> Create', () => {
 
 
 
-describe('Mercadopago - MpHandlerEvents - Subscription  -> Update', () => {
+describe('Mercadopago - MpHandlerEvents - Subscription  -> Update', async () => {
     let connection: Connection;
     let mpHandlerEvents: MpHandlerEvents;
     let subscriptionModel: Model<SubscriptionDocument>;
@@ -382,9 +382,9 @@ describe('Mercadopago - MpHandlerEvents - Subscription  -> Update', () => {
     const subcriptionPlanMeli_id = "2c93808494b8c5eb0194be9f312902f2"
     const external_reference = new Types.ObjectId("67420686b02bdd1f9f0ef449")
     const subscriptionPlan_id = new Types.ObjectId("67420686b02bdd1f9f0ef445")
-
     beforeAll(async () => {
         connection = mongoose.connection;
+
         const moduleRef: TestingModule = await mpTestingModule.get("mp_testing_module")();
         subscriptionModel = moduleRef.get<Model<SubscriptionDocument>>(getModelToken('Subscription'));
         userModel = moduleRef.get<Model<IUser>>(getModelToken('User'));
