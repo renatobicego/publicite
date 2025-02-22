@@ -6,15 +6,15 @@ import mpTestingModule from "./test.module";
 import { MpHandlerEvents } from "../infastructure/adapters/handler/mpHandlerFETCHEvents";
 
 
-describe('MercadopagoService - Invoice', () => {
+describe('MercadopagoService - Invoice', async () => {
     let connection: Connection;
     let mpHandlerEvents: MpHandlerEvents;
+    connection = await mongoose.connection;
 
 
     beforeAll(async () => {
 
 
-        connection = mongoose.connection;
         const moduleRef: TestingModule = await mpTestingModule.get("mp_testing_module")();
         mpHandlerEvents = moduleRef.get<MpHandlerEvents>('MpHandlerEventsInterface');
 
