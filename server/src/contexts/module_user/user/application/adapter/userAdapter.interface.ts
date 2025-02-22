@@ -19,7 +19,7 @@ export interface UserAdapterInterface {
     page: number,
   ): Promise<UserFindAllResponse>;
 
-  findUserByUsername(_id: string, userRequestId?: string): Promise<any>;
+  findUserById(_id: string, userRequestId?: string): Promise<any>;
 
   getUserPersonalInformationByUsername(
     username: string,

@@ -20,13 +20,13 @@ export class UserResolver {
     description: 'Obtiene un usuario por su nombre de usuario ',
   })
   @UseGuards(ClerkAuthGuard)
-  async findUserByUsername(
+  async findUserById(
     @Args('_id', { type: () => String }) _id: string,
     @Context() context: { req: CustomContextRequestInterface },
   ): Promise<User_Full_Grapql_Model | null> {
     try {
       const userRequestId = context.req.userRequestId;
-      return await this.userAdapter.findUserByUsername(_id, userRequestId);
+      return await this.userAdapter.findUserById(_id, userRequestId);
     } catch (error: any) {
       throw error;
     }

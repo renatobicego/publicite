@@ -73,7 +73,7 @@ export class UserAdapter implements UserAdapterInterface {
       throw error;
     }
   }
-  async findUserByUsername(_id: string, userRequestId: string): Promise<any> {
+  async findUserById(_id: string, userRequestId: string): Promise<any> {
 
     try {
       if (_id == userRequestId) {
