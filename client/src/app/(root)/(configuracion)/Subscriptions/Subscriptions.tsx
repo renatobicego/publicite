@@ -7,11 +7,11 @@ import { AnimatePresence, motion } from "framer-motion";
 import PaymentsTable from "./Payments/PaymentsTable";
 import { FaChevronLeft } from "react-icons/fa6";
 import SecondaryButton from "@/components/buttons/SecondaryButton";
-import { useConfigData } from "../../providers/userDataProvider";
+import { useActiveSubscriptions } from "../../providers/userDataProvider";
 
 const Subscriptions = () => {
-  const { configData } = useConfigData();
-  const { accountType, postsPacks } = configData || {};
+  const { accountType, postsPacks } = useActiveSubscriptions();
+  console.log(accountType);
   const [arePaymentsShown, setArePaymentsShown] = useState(false);
   const [showActivePosts, setShowActivePosts] = useState(false);
   return (

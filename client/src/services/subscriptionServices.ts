@@ -15,7 +15,7 @@ export const processPayment = async (
   userId: string
 ) => {
   try {
-    const result = await axios.post(
+    const { data } = await axios.post(
       process.env.CLIENT_URL + "/api/subscriptions/process_payment",
       {
         formData,
@@ -30,7 +30,7 @@ export const processPayment = async (
     //   };
     // }
 
-    return { result };
+    return data;
   } catch (error) {
     return {
       error: "Error al procesar el pago. Por favor intenta de nuevo.",

@@ -19,11 +19,15 @@ import magazineReducer, { type MagazineState } from "./slices/magazineSlice";
 import configReducer, { type ConfigState } from "./slices/configSlice";
 // Define the shape of the entire state
 import { PersistPartial } from "redux-persist/es/persistReducer";
+import subscriptionsReducer, {
+  type SubscriptionsState,
+} from "./slices/subscriptionsSlice";
 
 export interface RootState extends PersistPartial {
   user: UserState;
   magazine: MagazineState;
   config: ConfigState;
+  subscriptions: SubscriptionsState;
 }
 
 // Combine all reducers
@@ -31,6 +35,7 @@ const rootReducer = combineReducers({
   user: userReducer,
   magazine: magazineReducer,
   config: configReducer,
+  subscriptions: subscriptionsReducer,
 });
 
 // Configure Redux Persist
@@ -38,7 +43,7 @@ const persistConfig = {
   key: "root",
   storage: storageSession,
   whitelist: ["magazine", "config"],
-  blacklist: ["user"],
+  blacklist: ["user", "subscriptions"],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

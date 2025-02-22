@@ -124,3 +124,10 @@ export const useConfigData = () => {
 
   return { configData, updateActiveRelations, updateSearchTerms };
 };
+
+export const useActiveSubscriptions = () => {
+  const { postsPacks, accountType } = useSelector(
+    (state: RootState) => state.subscriptions
+  );
+  return { postsPacks, accountType };
+};

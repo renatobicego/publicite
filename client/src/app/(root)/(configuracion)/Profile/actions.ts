@@ -73,8 +73,6 @@ export const getProfileData = async (username?: string) => {
 };
 
 export interface ConfigData {
-  accountType: Subscription;
-  postsPacks: Subscription[];
   board: Board;
   userPreferences: UserPreferences;
   activeRelations: ActiveUserRelation[];
@@ -89,34 +87,17 @@ export const getConfigData = async (user: {
   try {
     const token = await auth().getToken({ template: "testing" });
     // Use Promise.all to fetch data concurrently
-    const [userBoard, subscriptions, preferences] = await Promise.all([
+    const [userBoard, preferences] = await Promise.all([
       getBoardByUsername(user.id, token),
-      getSubscriptionsOfUser(user.id),
       getUserPreferences(user.username, token),
     ]);
 
     // Handle cases where the required data is missing or errored
-    if (
-      !preferences ||
-      preferences.error ||
-      !userBoard ||
-      userBoard.error ||
-      "error" in subscriptions
-    ) {
+    if (!preferences || preferences.error || !userBoard || userBoard.error) {
       return;
     }
 
-    const accountType = subscriptions?.find(
-      (subscription: Subscription) => !subscription.subscriptionPlan.isPack
-    );
-    const postsPacks =
-      subscriptions?.filter(
-        (subscription: Subscription) => subscription.subscriptionPlan.isPack
-      ) || [];
-
     const configData: ConfigData = {
-      accountType: accountType as any,
-      postsPacks,
       board: userBoard.board
         ? {
             ...userBoard.board,
@@ -132,6 +113,27 @@ export const getConfigData = async (user: {
     };
 
     return configData;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getSubscriptions = async (userId: string) => {
+  try {
+    const subscriptions = await getSubscriptionsOfUser(userId);
+    // Handle cases where the required data is missing or errored
+    if ("error" in subscriptions || (subscriptions as any).error) {
+      return;
+    }
+    const accountType = subscriptions?.find(
+      (subscription: Subscription) => !subscription.subscriptionPlan.isPack
+    );
+    const postsPacks =
+      subscriptions?.filter(
+        (subscription: Subscription) => subscription.subscriptionPlan.isPack
+      ) || [];
+
+    return { accountType, postsPacks };
   } catch (error) {
     throw error;
   }

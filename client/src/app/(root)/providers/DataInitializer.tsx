@@ -5,7 +5,12 @@ import { useDispatch } from "react-redux";
 import { fetchMagazines } from "./slices/magazineSlice";
 import { fetchConfigData } from "./slices/configSlice";
 import { toastifyError } from "@/utils/functions/toastify";
-import { useConfigData, useMagazinesData } from "./userDataProvider";
+import {
+  useActiveSubscriptions,
+  useConfigData,
+  useMagazinesData,
+} from "./userDataProvider";
+import { fetchSubscriptions } from "./slices/subscriptionsSlice";
 
 const DataInitializer = ({
   userId,
@@ -17,6 +22,7 @@ const DataInitializer = ({
   const dispatch = useDispatch();
   const { magazines } = useMagazinesData();
   const { configData } = useConfigData();
+  const { accountType } = useActiveSubscriptions();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -36,6 +42,9 @@ const DataInitializer = ({
           }
           if (hasUsernameChanged || !configData) {
             await dispatch(fetchConfigData({ username, userId }) as any);
+          }
+          if (hasUsernameChanged || !accountType) {
+            await dispatch(fetchSubscriptions(userId as string) as any);
           }
         }
       } catch (error) {
