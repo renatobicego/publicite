@@ -4,10 +4,13 @@ export function get_subscription_authorized_payment(
     external_reference: string,
     preapproval_id: string,
     statusOfInvoce: string,
-    statusOfPayment: string,
     authorized_payments_id: number,
     transaction_amount: number,
-    mp_payment_id: number
+    payment: {
+        id: number,
+        status: string,
+        status_detail: string
+    },
 ): authorized_payments {
     return {
         preapproval_id: preapproval_id,
@@ -20,16 +23,12 @@ export function get_subscription_authorized_payment(
         currency_id: "ARS",
         reason: "Publicite prem",
         external_reference: external_reference,
-        payment: {
-            id: mp_payment_id,
-            status: statusOfPayment,
-            status_detail: "accredited"
-        },
         retry_attempt: 1,
         next_retry_date: "2025-02-21T19:14:36.000-04:00",
         debit_date: "2025-02-14T20:00:07.000-04:00",
         payment_method_id: "card",
-        rejection_code: "null"
+        rejection_code: "null",
+        payment: payment,
     };
 }
 

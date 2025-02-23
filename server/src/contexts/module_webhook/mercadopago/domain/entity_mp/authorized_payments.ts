@@ -16,12 +16,12 @@ export interface authorized_payments {
     currency_id: string;
     reason: string;
     external_reference: string;
-    payment: Payment;
     retry_attempt: any;
     next_retry_date: string;
     debit_date: string;
     payment_method_id: string;
     rejection_code: string;
+    payment: Payment;
 }
 
 

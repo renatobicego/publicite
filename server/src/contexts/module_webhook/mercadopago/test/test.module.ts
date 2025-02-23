@@ -27,6 +27,8 @@ import { PaymentSchema } from "../infastructure/schemas/payment.schema";
 import { SubscriptionSchema } from "../infastructure/schemas/subscription.schema";
 import { SubscriptionPlanSchema } from "../infastructure/schemas/subscriptionPlan.schema";
 import { MpInvoiceRepository } from "../infastructure/repository/mp-invoice.repository";
+import NotificationModel from "src/contexts/module_user/notification/infrastructure/schemas/notification.schema";
+import { PaymentNotificationService } from "../infastructure/adapters/handler/PaymentNotificationService";
 
 
 
@@ -56,12 +58,14 @@ const mercadopago_testing_module = async (): Promise<TestingModule> => {
                 { name: 'Payment', schema: PaymentSchema },
                 { name: 'SubscriptionPlan', schema: SubscriptionPlanSchema },
                 { name: 'Error', schema: ErrorSchema },
+                { name: NotificationModel.modelName, schema: NotificationModel.schema },
 
             ]),
             UserModule,
         ],
         providers: [
             MyLoggerService,
+            PaymentNotificationService,
             {
                 provide: 'SubscriptionRepositoryInterface',
                 useClass: SubscriptionRepository,

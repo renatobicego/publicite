@@ -6,14 +6,16 @@ import { FetchToMpInterface } from '../../../application/adapter/out/fech.to.mp.
 import { MpServiceInvoiceInterface } from '../../../domain/service/mp-invoice.service.interface';
 import { MpPaymentServiceInterface } from '../../../domain/service/mp-payments.service.interface';
 import { statusOfSubscription, SubscriptionServiceInterface } from '../../../domain/service/mp-subscription.service.interface';
-import { downgrade_plan_contact, downgrade_plan_post, subscription_event } from 'src/contexts/module_shared/event-emmiter/events';
+import { downgrade_plan_contact, downgrade_plan_post } from 'src/contexts/module_shared/event-emmiter/events';
 import { authorized_payments, } from '../../../domain/entity_mp/authorized_payments';
 import { Subscription_preapproval } from '../../../domain/entity_mp/subscription_preapproval';
 
 import { ErrorServiceInterface } from '../../../domain/service/error/error.service.interface';
-import { EmitterService } from 'src/contexts/module_shared/event-emmiter/emmiter';
-import { payment_notification_events_enum, PaymentDataFromMeli } from '../../../domain/entity/payment.data.meli';
+
 import { Payment as Payment_meli } from '../../../domain/entity_mp/payment';
+
+import { EmitterService } from 'src/contexts/module_shared/event-emmiter/emmiter';
+import { PaymentNotificationService } from './PaymentNotificationService';
 
 
 
@@ -43,7 +45,7 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
   constructor(
     private readonly logger: MyLoggerService,
     @Inject('MpServiceInvoiceInterface')
-    private readonly MpInvoiceService: MpServiceInvoiceInterface,
+    private readonly mpInvoiceService: MpServiceInvoiceInterface,
     @Inject('MpPaymentServiceInterface')
     private readonly mpPaymentService: MpPaymentServiceInterface,
     @Inject('SubscriptionServiceInterface')
@@ -52,6 +54,7 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
     private readonly errorService: ErrorServiceInterface,
     @Inject('FetchToMpInterface')
     private readonly fetchToMpAdapter: FetchToMpInterface,
+    private readonly paymentNotificationService: PaymentNotificationService,
     private readonly emmiter: EmitterService
 
   ) { }
@@ -205,7 +208,7 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
         userId: external_reference,
       }
 
-      await this.make_payment_notification_and_send(data);
+      this.paymentNotificationService.sendPaymentNotification(data);
 
       await this.subscriptionService.updateSubscription_preapproval(
         subscription_preapproval_update,
@@ -236,13 +239,10 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
       console.log('subscription_authorized_payment CREATE RESPONSE:');
       console.log(subscription_authorized_payment);
 
-      if (subscription_authorized_payment.transaction_amount < 30) {
-        this.logger.warn(
-          'Payment amount is less than $30, returning OK to Meli',
-        );
-        return Promise.resolve(true);
-      }
-      const resultOfInvoice = await this.MpInvoiceService.saveInvoice(
+      const isCardValidation = await this.is_a_card_validation(subscription_authorized_payment, "subscription_authorized_payment.created");
+      if (isCardValidation) return Promise.resolve(true);
+      
+      const resultOfInvoice = await this.mpInvoiceService.saveInvoice(
         subscription_authorized_payment,
       );
 
@@ -256,7 +256,7 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
             retryAttemp: subscription_authorized_payment.retry_attempt,
             userId: subscription_authorized_payment.external_reference,
           }
-          await this.make_payment_notification_and_send(data);
+          await this.paymentNotificationService.sendPaymentNotification(data);
         }
       }
 
@@ -271,56 +271,6 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
   }
 
 
-  private async make_payment_notification_and_send(data: {
-    subscriptionPlanId: any,
-    reason: string,
-    status: string,
-    retryAttemp: any,
-    userId: string,
-  }) {
-    try {
-      const {
-        subscriptionPlanId,
-        reason,
-        status,
-        retryAttemp,
-        userId,
-      } = data;
-
-      if (!subscriptionPlanId || !reason || !status || !retryAttemp || !userId) {
-        this.logger.error('One of the values is missing in the payment notification data. Payment notification not sent.')
-        return true
-      }
-      const paymenStatusMap = new Map<string, payment_notification_events_enum>([
-        ['approved', payment_notification_events_enum.payment_approved],
-        ['authorized', payment_notification_events_enum.payment_approved],
-        ['pending', payment_notification_events_enum.payment_pending],
-        ['rejected', payment_notification_events_enum.payment_rejected],
-        ['cancelled', payment_notification_events_enum.subscription_cancelled],
-        ['free_trial', payment_notification_events_enum.free_trial],
-      ])
-
-
-
-      const paymentStatus = data.status;
-      const event = paymenStatusMap.get(paymentStatus) ?? payment_notification_events_enum.payment_pending;
-
-      const paymentDataFromMeli: PaymentDataFromMeli = {
-        event: event,
-        subscriptionPlanId: subscriptionPlanId,
-        reason: reason,
-        status: paymentStatus,
-        retryAttemp: retryAttemp ?? 1,
-        userId: userId
-      }
-
-      await this.emmiter.emitAsync(subscription_event, paymentDataFromMeli);
-
-    } catch (error: any) {
-      throw error;
-    }
-
-  }
 
   async update_subscription_authorized_payment(
     dataID: string,
@@ -350,12 +300,10 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
       }
 
 
-      if (response_mp_subscription_authorized_payment.transaction_amount < 30) {
-        this.logger.warn(
-          'Payment amount is less than $30, returning OK to Meli',
-        );
-        return true;
-      }
+      const isCardValidation = await this.is_a_card_validation(response_mp_subscription_authorized_payment, 'UPDATE');
+      if (isCardValidation) return Promise.resolve(true);
+
+
 
 
       const paymentStatus =
@@ -373,7 +321,7 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
         //Aca tengo que pausar la suscription
         await this.subscriptionService.changeStatusOfSubscription(response_mp_subscription_authorized_payment.preapproval_id, statusOfSubscription.PAUSED)
 
-        const invoiceUpdated: any = await this.MpInvoiceService.updateInvoice(
+        const invoiceUpdated: any = await this.mpInvoiceService.updateInvoice(
           response_mp_subscription_authorized_payment,
           response_mp_subscription_authorized_payment.id
         );
@@ -389,7 +337,7 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
             retryAttemp: invoiceUpdated.retryAttempts,
             userId: invoiceUpdated.external_reference
           }
-          this.make_payment_notification_and_send(data)
+          this.paymentNotificationService.sendPaymentNotification(data)
         }
 
 
@@ -404,7 +352,7 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
         this.logger.log('status of payment: ' + paymentStatus);
         this.logger.log('Status of subscription:' + subscriptionStatus);
 
-        const invoiceUpdated: any = await this.MpInvoiceService.updateInvoice(
+        const invoiceUpdated: any = await this.mpInvoiceService.updateInvoice(
           response_mp_subscription_authorized_payment,
           response_mp_subscription_authorized_payment.id
         )
@@ -418,7 +366,7 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
             retryAttemp: invoiceUpdated.retryAttempts,
             userId: invoiceUpdated.external_reference
           }
-          this.make_payment_notification_and_send(data)
+          this.paymentNotificationService.sendPaymentNotification(data)
         }
         //Aca tengo que poner la suscripcion como authorized
         const isThisSubscriptionWasPaused = await this.subscriptionService.verifyIfSubscriptionWasPused(response_mp_subscription_authorized_payment.preapproval_id)
@@ -455,7 +403,7 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
 
       this.logger.log('Updating subscription_authorized_payment...');
 
-      const invoiceUpdated: any = await this.MpInvoiceService.updateInvoice(
+      const invoiceUpdated: any = await this.mpInvoiceService.updateInvoice(
         response_mp_subscription_authorized_payment,
         response_mp_subscription_authorized_payment.id
       );
@@ -467,7 +415,7 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
           retryAttemp: invoiceUpdated.retryAttempts,
           userId: invoiceUpdated.external_reference
         }
-        this.make_payment_notification_and_send(data)
+        this.paymentNotificationService.sendPaymentNotification(data)
       }
       return true;
     } catch (error: any) {
@@ -548,6 +496,7 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
 
 
   is_a_card_validation(mercado_pago_response: any, type: string): Promise<boolean> {
+    const limitOfCardValidation = 50;
 
     if (mercado_pago_response.operation_type === 'card_validation') {
       this.logger.warn(
@@ -556,8 +505,8 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
       return Promise.resolve(true);
     }
 
-    if (mercado_pago_response.transaction_amount < 30) {
-      this.logger.warn('Payment amount is less than $50 is a card validation, returning OK to Meli');
+    if (mercado_pago_response.transaction_amount <= limitOfCardValidation) {
+      this.logger.warn(`Payment amount is less than $${limitOfCardValidation} is a card validation, returning OK to Meli`);
       return Promise.resolve(true);
     }
 

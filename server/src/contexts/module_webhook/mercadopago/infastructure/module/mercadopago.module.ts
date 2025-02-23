@@ -37,6 +37,7 @@ import { ErrorService } from '../../application/service/error/error.service.inte
 import { ErrorRepository } from '../repository/error/error.repository';
 import { ErrorSchema } from '../schemas/error.schema';
 import { MpInvoiceResolver } from '../resolver/mp-invoice.resolver';
+import { PaymentNotificationService } from '../adapters/handler/PaymentNotificationService';
 
 
 @Module({
@@ -62,6 +63,7 @@ import { MpInvoiceResolver } from '../resolver/mp-invoice.resolver';
         MpWebhookAdapter,
         MpPaymentResolver,
         MpInvoiceResolver,
+        PaymentNotificationService,
         {
             provide: 'MpHandlerEventsInterface',
             useClass: MpHandlerEvents,
