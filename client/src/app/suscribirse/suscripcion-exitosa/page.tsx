@@ -4,7 +4,7 @@ import { Card, CardBody, CardHeader, Image, Link } from "@nextui-org/react";
 
 export default function CheckoutSuccess() {
   return (
-    <div className="flex items-center justify-center w-full min-h-screen bg-fondo">
+    <div className="flex items-center justify-center w-full min-h-[80vh] bg-fondo">
       <Card shadow="lg" className="px-4">
         <CardHeader className="flex flex-col gap-2 items-center">
           <Image

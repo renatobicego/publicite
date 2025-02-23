@@ -2,10 +2,7 @@ import { Button, Link } from "@nextui-org/react";
 import FormCard from "../../FormCard";
 import { DataItem } from "../../DataBox";
 import SecondaryButton from "@/components/buttons/SecondaryButton";
-import {
-  useActiveSubscriptions,
-  useConfigData,
-} from "@/app/(root)/providers/userDataProvider";
+import { useActiveSubscriptions } from "@/app/(root)/providers/userDataProvider";
 
 const PaymentMethodForm = ({
   setIsFormVisible,
@@ -32,8 +29,13 @@ const PaymentMethodForm = ({
         terminada en *****{paymentMethod.lastDigits}
       </DataItem>
       <p className="text-sm">
-        Este es el mêtodo de pago que se utilizará para realizar los pagos
-        recurrentes de su plan de subscripción.
+        Este es el mêtodo de pago que se en el último pago recurrente de su plan
+        de subscripción.{" "}
+        <em className="font-semibold">
+          Si cambió su método de pago, el mismo se verá reflejado en el próximo
+          cobro.
+        </em>
+        Ante cualquier duda o problema, por favor contactenos.
       </p>
       <div className="flex gap-2 items-center w-full justify-end">
         <Button
@@ -46,6 +48,7 @@ const PaymentMethodForm = ({
         </Button>
         <SecondaryButton
           as={Link}
+          target="_blank"
           href={"/cambiar-metodo-pago/" + accountType?.mpPreapprovalId}
         >
           Cambiar Método

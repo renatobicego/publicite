@@ -36,7 +36,6 @@ const Checkout = ({
       subscriptionPlan,
       user?.publicMetadata?.mongoId as string
     );
-    console.log(res);
     if ("error" in res) {
       toastifyError(res.error as string);
       return;
@@ -52,9 +51,9 @@ const Checkout = ({
             "Error al cancelar la subscripción anterior. Por favor, contacta a soporte"
           )
         );
-      return;
+    } else {
+      router.replace("/suscribirse/suscripcion-exitosa");
     }
-    router.replace("/suscribirse/suscripcion-exitosa");
   };
 
   const onError = async (error: any) => {

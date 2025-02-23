@@ -1,5 +1,6 @@
 "use client";
 
+import ErrorCard from "@/components/ErrorCard";
 import {
   editSubscription,
   processPayment,
@@ -14,15 +15,21 @@ initMercadoPago(process.env.NEXT_PUBLIC_MP_PUBLIC_KEY as string);
 
 type ChangePaymentMethodCheckoutProps = {
   subscriptionId: string;
+  amount?: number;
 };
 
 const ChangePaymentMethodCheckout = ({
   subscriptionId,
+  amount,
 }: ChangePaymentMethodCheckoutProps) => {
   const { user, isLoaded } = useUser();
   const router = useRouter();
+  if (!amount)
+    return (
+      <ErrorCard message="Error al traer los datos de la suscripción actual. Por favor, intente de nuevo." />
+    );
   const initialization: { amount: number; payer: ICardPaymentBrickPayer } = {
-    amount: 0,
+    amount,
     payer: {
       email: user?.emailAddresses[0].emailAddress,
     },
