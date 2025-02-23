@@ -97,7 +97,6 @@ const EditPetitionForm = ({ postData }: { postData: Petition }) => {
       validationSchema={petitionEditValidation}
     >
       {({ isSubmitting, errors, setFieldValue, values }) => {
-        console.log(values);
         return (
           <Form className="flex flex-col gap-4 w-full">
             <div className="flex gap-8 md:gap-4 w-full max-md:flex-col">

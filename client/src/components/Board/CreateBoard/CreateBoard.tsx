@@ -64,7 +64,6 @@ const CreateBoard = ({
     if (setShowEditBoard) {
       setShowEditBoard(false);
     }
-    console.log(resApi)
     if (resApi.updatedData) setLocalBoardData(resApi.updatedData as Board);
     toastifySuccess((resApi as any).message);
   };

@@ -64,7 +64,6 @@ const CreateGood = ({
     values: GoodPostValues,
     actions: FormikHelpers<GoodPostValues>
   ) => {
-    console.log("hola");
     if (!userCanPublishPost) {
       actions.setSubmitting(false);
       return;
@@ -121,7 +120,6 @@ const CreateGood = ({
       enableReinitialize
     >
       {({ isSubmitting, errors, setFieldValue, values }) => {
-        console.log(values);
         return (
           <Form className="flex flex-col gap-4">
             <TitleDescription errors={errors} setFieldValue={setFieldValue} />

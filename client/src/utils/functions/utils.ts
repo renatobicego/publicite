@@ -18,7 +18,8 @@ export const checkIfUserIsSubscribed = (
     if (isSameId) {
       // const todayDate = today(getLocalTimeZone());
       switch (true) {
-        case subscription.status === "active":
+        case subscription.status === "authorized" ||
+          subscription.status === "active":
           return true;
         // // if the subscription has been cancelled but it's still within 3 days of its end date
         // case subscription.status === "cancelled" &&

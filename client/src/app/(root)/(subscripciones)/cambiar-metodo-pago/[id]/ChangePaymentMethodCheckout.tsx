@@ -40,12 +40,10 @@ const ChangePaymentMethodCheckout = ({
       card_token_id: formData.token,
     })
       .then((res) => {
-        console.log(res);
         toastifySuccess("Método de pago actualizado con éxito");
         router.replace("/suscribirse/suscripcion-actualizada");
       })
       .catch((err) => {
-        console.error(err);
         toastifyError(
           "Error al editar la subscripción. Por favor, intenta de nuevo o contacta a soporte"
         );

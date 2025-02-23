@@ -33,7 +33,7 @@ const ContactPetitionCard = ({
 
   const showAskForOpinion =
     client.clientId &&
-    today(getLocalTimeZone()).compare(parseIsoDate(date)) >= 0; // TODO change to 3
+    today(getLocalTimeZone()).compare(parseIsoDate(date)) >= 3;
 
   const sendRequestForOpinion = () => {
     setIsLoading(true);

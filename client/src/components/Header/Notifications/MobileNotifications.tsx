@@ -57,13 +57,13 @@ const MobileNotifications = ({
         placement="center"
         className="max-md:px-4"
         isOpen={modalIsOpen}
-        onOpenChange={(open) => {
-          if (open) {
+        onOpenChange={async (open) => {
+          if (!open) {
             setNewNotifications(false);
             setNewNotificationsFromServer(false);
           }
-          if (!open) {
-            putNotificationStatus(
+          if (newNotificationsFromServer && !open) {
+            await putNotificationStatus(
               notifications
                 .filter((notification) => !notification.viewed)
                 .map((notification) => notification._id)

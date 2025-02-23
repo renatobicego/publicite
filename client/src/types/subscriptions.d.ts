@@ -16,7 +16,7 @@ export interface SubscriptionPlan {
 export interface Subscription {
   _id: ObjectId;
   payerId: string;
-  status: "active" | "cancelled" | "paused";
+  status: "active" | "cancelled" | "paused" | "authorized";
   mpPreapprovalId: string;
   startDate: string;
   endDate: string;

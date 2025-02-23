@@ -11,7 +11,6 @@ import { useActiveSubscriptions } from "../../providers/userDataProvider";
 
 const Subscriptions = () => {
   const { accountType, postsPacks } = useActiveSubscriptions();
-  console.log(accountType);
   const [arePaymentsShown, setArePaymentsShown] = useState(false);
   const [showActivePosts, setShowActivePosts] = useState(false);
   return (

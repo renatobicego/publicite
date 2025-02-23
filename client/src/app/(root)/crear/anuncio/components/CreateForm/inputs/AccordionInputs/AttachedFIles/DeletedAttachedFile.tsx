@@ -10,7 +10,6 @@ const DeletedAttachedFile = ({
   attachedFile: PostAttachedFile;
   addBackDeletedAttachedFile: (_id: string) => void;
 }) => {
-    console.log(attachedFile)
   return (
     <Card className="w-full border border-danger">
       <CardBody className="flex flex-col gap-2">
