@@ -6,6 +6,7 @@ import { Dispatch, lazy, SetStateAction, Suspense, useState } from "react";
 import { FaComment, FaX } from "react-icons/fa6";
 const CommentForm = lazy(() => import("./CommentForm"));
 import DeleteComment from "./DeleteComment";
+import { useUserData } from "@/app/(root)/providers/userDataProvider";
 
 const ReplyForm = ({
   comment,
@@ -19,13 +20,15 @@ const ReplyForm = ({
   setComments: Dispatch<SetStateAction<PostComment[]>>;
 }) => {
   const [showForm, setShowForm] = useState(false);
-
+  const { userIdLogged } = useUserData();
+  const isAuthorOfComment =
+    isAuthor || (comment.user as Reviewer)._id === userIdLogged;
   return (
     <CardFooter className="flex flex-col gap-2 mt-2">
       <div className="flex flex-row justify-between items-center w-full mb-2">
         <UsernameAvatar author={comment.user} />
-        {isAuthor && (
-          <div className="flex gap-1 items-center">
+        <div className="flex gap-1 items-center">
+          {isAuthor && (
             <Button
               variant="light"
               onClick={() => setShowForm(!showForm)}
@@ -41,9 +44,15 @@ const ReplyForm = ({
                 <FaComment className="size-4" />
               )}
             </Button>
-            {!showForm && <DeleteComment commentId={comment._id} />}
-          </div>
-        )}
+          )}
+          {!showForm && isAuthorOfComment && (
+            <DeleteComment
+              commentId={comment._id}
+              isAuthorOfPost={isAuthor}
+              setComments={setComments}
+            />
+          )}
+        </div>
       </div>
       {showForm && isAuthor && (
         <Suspense fallback={<Skeleton className="w-full h-40" />}>

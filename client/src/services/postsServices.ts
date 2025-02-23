@@ -12,6 +12,7 @@ import {
 import { getClient, query } from "@/lib/client";
 import {
   changePostBehaviourTypeMutation,
+  deleteCommentMutation,
   deletePostMutation,
   deletePostReactionMutation,
   editPostMutation,
@@ -377,6 +378,25 @@ export const getActiveRelations = async (): Promise<
       context,
     });
     return data.getActiveRelationsOfUser;
+  } catch (error) {
+    return handleApolloError(error);
+  }
+};
+
+export const deleteCommentById = async (
+  id: string,
+  isAuthorOfPost: boolean
+) => {
+  try {
+    const { context } = await getApiContext();
+    await getClient().mutate({
+      mutation: deleteCommentMutation,
+      variables: { id, isAuthorOfPost },
+      context,
+    });
+    return {
+      message: "Comentario borrado exitosamente",
+    };
   } catch (error) {
     return handleApolloError(error);
   }

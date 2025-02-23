@@ -5,7 +5,6 @@ import CommentCard from "./CommentCard";
 import { useState } from "react";
 import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 import SecondaryButton from "@/components/buttons/SecondaryButton";
-import { Link } from "@nextui-org/react";
 
 const Comments = ({
   comments,
