@@ -17,7 +17,7 @@ export interface UserRepositoryInterface {
     limit: number,
     page: number,
   ): Promise<UserFindAllResponse>;
-  findUserByIdByOwnUser(user: string): Promise<any>;
+  findUserByIdByOwnUser(_id: string): Promise<any>;
 
   getUserPersonalInformationByUsername(
     username: string,

@@ -326,7 +326,7 @@ describe('MercadopagoService - Invoice - CREATE METHODS  ', () => {
         });
 
 
-        it('Status Rejected -> Should pause subscription ', async () => {
+        it('Status Rejected -> Should pause subscription & update invoice', async () => {
             const statusOfInvoice = "rejected";
             const authorized_payments_id = 454545456;
             const transaction_amount = 100;
@@ -396,7 +396,7 @@ describe('MercadopagoService - Invoice - CREATE METHODS  ', () => {
 
         });
 
-        it('Status Approve -> Should update subscription ', async () => {
+        it('Status Approve -> Should update subscription & invoice ', async () => {
             const statusOfInvoice = "approveed";
             const transaction_amount = 100;
             const payment = {
@@ -460,10 +460,17 @@ describe('MercadopagoService - Invoice - CREATE METHODS  ', () => {
 
 
         })
-
-
-
     })
+
+
+
+
+    describe('MercadopagoService - Invoice - update_plan_user function ', () => {
+
+        it('Should try 3 times if result of emmiter is false and create a new error schema ', async () => { })
+        it('Should return true if result of emmiter is true ', async () => { })
+    })
+
 
 
 

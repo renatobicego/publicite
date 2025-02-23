@@ -69,12 +69,12 @@ export class UserRepository implements UserRepositoryInterface {
 
 
 
-  async findUserByIdByOwnUser(username: string): Promise<any> {
+  async findUserByIdByOwnUser(_id: string): Promise<any> {
     try {
       const userPopulate_userRelation =
         '_id userType name lastName businessName profilePhotoUrl username';
       const user = await this.user
-        .findOne({ username })
+        .findOne({ _id })
         .select(
           '_id profilePhotoUrl username contact lastName name businessName countryRegion userType board description email suscriptions groups magazines posts friendRequests userRelations',
         )
