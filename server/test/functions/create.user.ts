@@ -1,4 +1,5 @@
 import { Types } from "mongoose";
+import { UserType } from "src/contexts/module_user/user/domain/entity/enum/user.enums";
 
 
 async function createPersonalUser(user_id: Types.ObjectId,
@@ -16,7 +17,7 @@ async function createPersonalUser(user_id: Types.ObjectId,
         lastName: 'TEST_B',
         finder: 'TEST_B',
         profilePhotoUrl: 'TEST_B.jpg',
-        userType: 'person',
+        userType: "Person",
         userRelations: attributes?.get("userRelations") ?? [],
         kind: "Person",
         birthDate: "2000-01-01",

@@ -3,13 +3,14 @@ import { TestingModule } from "@nestjs/testing";
 import mpTestingModule from "./test.module";
 import { getModelToken } from "@nestjs/mongoose";
 import { IUser, UserModel } from "src/contexts/module_user/user/infrastructure/schemas/user.schema";
-import { createPersonalUser } from "test/functions/create.user";
+
 import { MpSubscriptionService } from "../application/service/mp-subscription.service";
 import { Subscription_preapproval } from "../domain/entity_mp/subscription_preapproval";
 import SubscriptionModel, { SubscriptionDocument } from "../infastructure/schemas/subscription.schema";
 import SubscriptionPlanModel, { SubscriptionPlanDocument } from "../infastructure/schemas/subscriptionPlan.schema";
 import { MpHandlerEvents } from "../infastructure/adapters/handler/mpHandlerFETCHEvents";
 import { get_subscription_preapproval } from "./models/subscription.creator";
+import { createPersonalUser } from "../../../../../test/functions/create.user";
 
 
 interface SubscriptionPlan {
@@ -29,7 +30,7 @@ interface SubscriptionPlan {
 
 
 
-describe('MercadopagoService - Subscription create', async () => {
+describe('MercadopagoService - Subscription create', () => {
     let connection: Connection;
 
 
@@ -44,17 +45,12 @@ describe('MercadopagoService - Subscription create', async () => {
     const subcriptionPlanMeli_id = "2c93808494b8c5eb0194be9f312902f1"
     const reason = "Publicité Premium TEST"
     const user_id = new Types.ObjectId("66c49508e80296e90ec637d8");
-    connection = await mongoose.connection;
 
     beforeAll(async () => {
-
-
-
+        connection = mongoose.connection;
         const moduleRef: TestingModule = await mpTestingModule.get("mp_testing_module")();
 
-
         mpSubscriptionService = moduleRef.get<MpSubscriptionService>('SubscriptionServiceInterface');
-
 
         userModel = moduleRef.get<Model<IUser>>(getModelToken(UserModel.modelName));
         subscriptionPlanModel = moduleRef.get<Model<SubscriptionPlanDocument>>(getModelToken(SubscriptionPlanModel.modelName));
@@ -183,10 +179,6 @@ describe('MercadopagoService - Subscription create', async () => {
     });
 
     it('Create a subscription without external_reference', async () => {
-
-
-
-
         const subscription_preapproval: any = {
             id: subcriptionPlanMeli_id,
             payer_id: 22,
@@ -225,10 +217,6 @@ describe('MercadopagoService - Subscription create', async () => {
 
 
     it('Create a subscription with invalid Plan ID', async () => {
-
-
-
-
         const subscription_preapproval: any = {
             id: subcriptionPlanMeli_id,
             payer_id: 22,
@@ -259,11 +247,6 @@ describe('MercadopagoService - Subscription create', async () => {
         }
         await expect(mpSubscriptionService.createSubscription_preapproval(subscription_preapproval))
             .rejects.toThrow(/Plan not found, we can't create the subscription/);
-
-
-
-
-
     });
 
 
@@ -320,7 +303,7 @@ describe('Mercadopago - MpHandlerEvents - Subscription  -> Create', () => {
         await createPersonalUser(external_reference, userModel, new Map([["subscriptions", []]]));
 
 
-        
+
 
 
     });
@@ -337,8 +320,6 @@ describe('Mercadopago - MpHandlerEvents - Subscription  -> Create', () => {
 
 
     it('Should return true and create a suscription', async () => {
-
-
         mockFetchToMpAdapter.getDataFromMp_fetch.mockResolvedValue(maockedSubscriptionResponse);
         await mpHandlerEvents.create_subscription_preapproval("123456");
 
@@ -357,20 +338,12 @@ describe('Mercadopago - MpHandlerEvents - Subscription  -> Create', () => {
         expect(subscriptionSaved.paymentMethodId).toBe(maockedSubscriptionResponse.payment_method_id);
         expect(subscriptionSaved.cardId).toBe(maockedSubscriptionResponse.card_id);
 
-
     });
-
-
-
-
-
-
-
 });
 
 
 
-describe('Mercadopago - MpHandlerEvents - Subscription  -> Update', async () => {
+describe('Mercadopago - MpHandlerEvents - Subscription  -> Update', () => {
     let connection: Connection;
     let mpHandlerEvents: MpHandlerEvents;
     let subscriptionModel: Model<SubscriptionDocument>;

@@ -8,8 +8,6 @@ import { MpPaymentServiceInterface } from 'src/contexts/module_webhook/mercadopa
 import { SubscriptionServiceInterface } from 'src/contexts/module_webhook/mercadopago/domain/service/mp-subscription.service.interface';
 import { MercadoPagoInvoiceRepositoryInterface } from '../../domain/repository/mp-invoice.respository.interface';
 import { getTodayDateTime } from 'src/contexts/module_shared/utils/functions/getTodayDateTime';
-import Payment from '../../domain/entity/payment.entity';
-import Subscription from '../../domain/entity/subcription.entity';
 import { authorized_payments } from '../../domain/entity_mp/authorized_payments';
 
 export class MpInvoiceService implements MpServiceInvoiceInterface {
