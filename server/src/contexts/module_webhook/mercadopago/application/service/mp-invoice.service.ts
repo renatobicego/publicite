@@ -46,7 +46,7 @@ export class MpInvoiceService implements MpServiceInvoiceInterface {
         const payment = await this.paymentService.findPaymentByPaymentID(
           subscription_authorized_payment_to_update?.payment?.id,
         );
-        subsToUpdate.paymentId = payment?.getId();
+        subsToUpdate.paymentId = payment?._id;
       }
 
       // Log para verificar el estado y otros datos antes de la actualización

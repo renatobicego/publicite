@@ -18,6 +18,7 @@ import { MpServiceInvoiceInterface } from "../domain/service/mp-invoice.service.
 import { MpInvoiceService } from "../application/service/mp-invoice.service";
 import { PaymentNotificationService } from "../infastructure/adapters/handler/PaymentNotificationService";
 import { MpSubscriptionService } from "../application/service/mp-subscription.service";
+import { statusOfSubscription } from "../domain/service/mp-subscription.service.interface";
 
 
 
@@ -354,10 +355,6 @@ describe('MercadopagoService - Invoice - CREATE METHODS  ', () => {
 
             updatePlanUserSpy.mockResolvedValue(true);
 
-
-
-
-
             const maockedSubscription_authorized_paymentResponse = get_subscription_authorized_payment(
                 external_reference,
                 mp_preapproval_id,
@@ -398,6 +395,72 @@ describe('MercadopagoService - Invoice - CREATE METHODS  ', () => {
             loggerWarnSpy.mockRestore();
 
         });
+
+        it('Status Approve -> Should update subscription ', async () => {
+            const statusOfInvoice = "approveed";
+            const transaction_amount = 100;
+            const payment = {
+                id: mp_payment_id,
+                status: "approved",
+                status_detail: "approved"
+            }
+            await invoiceModel.create({
+                paymentId: new Types.ObjectId("67ba578d7a32afe3416011fd"),
+                subscriptionId: new Types.ObjectId("67ba578d7a32afe3416011fe"),
+                status: "paused",
+                paymentStatus: "rejected",
+                preapprovalId: mp_preapproval_id,
+                external_reference: external_reference,
+                invoice_id: authorized_payments_id,
+                transactionAmount: transaction_amount,
+                currencyId: "ARS",
+                reason: "A"
+            });
+
+            //Functions mocked
+            const updateInvoicePusedSpy = jest.spyOn(mpInvoiceService, 'updateInvoice');
+            const sendPaymentNotificationSpy = jest.spyOn(paymentNotificationService, 'sendPaymentNotification');
+            const verifyIfSubscriptionWasPusedSpy = jest.spyOn(subscriptionService, 'verifyIfSubscriptionWasPused');
+            const changesubscriptionStatusSpy = jest.spyOn(subscriptionService, 'changeStatusOfSubscription');
+            sendPaymentNotificationSpy.mockResolvedValue(true);
+            verifyIfSubscriptionWasPusedSpy.mockResolvedValue(true);
+
+            const maockedSubscription_authorized_paymentResponse = get_subscription_authorized_payment(
+                external_reference,
+                mp_preapproval_id,
+                statusOfInvoice,
+                authorized_payments_id,
+                transaction_amount,
+                payment,
+
+            );
+
+
+            mockFetchToMpAdapter.getDataFromMp_fetch.mockResolvedValue(maockedSubscription_authorized_paymentResponse);
+
+
+            const result = await mpHandlerEvents.update_subscription_authorized_payment("123");
+            expect(result).toBe(true);
+            expect(updateInvoicePusedSpy).toHaveBeenCalledTimes(1);
+            expect(sendPaymentNotificationSpy).toHaveBeenCalledTimes(1);
+            expect(changesubscriptionStatusSpy).toHaveBeenCalledTimes(1);
+            const invoiceUpdated = await invoiceModel.findOne({ invoice_id: maockedSubscription_authorized_paymentResponse.id });
+            if (!invoiceUpdated) throw new Error("Invoice not found")
+            expect(invoiceUpdated.status).toBe(statusOfInvoice);
+            expect(invoiceUpdated.paymentStatus).toBe(payment.status);
+
+
+            console.log("Verify subscription updated")
+            const subscripcion = await subscriptionModel.findOne({ external_reference })
+            expect(subscripcion?.status).toBe("authorized");
+
+
+
+
+
+
+        })
+
 
 
     })
