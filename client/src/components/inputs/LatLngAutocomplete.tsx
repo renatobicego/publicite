@@ -6,13 +6,17 @@ import { FaLocationDot } from "react-icons/fa6";
 const LatLngAutocomplete = ({
   handleLocationChange,
   map,
-  createMarker
+  createMarker,
 }: {
-  handleLocationChange: (lat: number, lng: number, description?: string, userSetted?: boolean) => void;
+  handleLocationChange: (
+    lat: number,
+    lng: number,
+    description?: string,
+    userSetted?: boolean
+  ) => void;
   map: google.maps.Map | null;
-  createMarker: (lat?: number, lng?: number) => Promise<void>
+  createMarker: (lat?: number, lng?: number) => Promise<void>;
 }) => {
-
   const { placePredictions, getPlacePredictions, isPlacePredictionsLoading } =
     usePlacesService({
       apiKey: process.env.NEXT_PUBLIC_MAPS_API_KEY,
@@ -22,9 +26,7 @@ const LatLngAutocomplete = ({
       },
     });
 
-  const handleSelectPlace = (
-    placeId: string
-  ) => {
+  const handleSelectPlace = (placeId: string) => {
     if (map && placeId) {
       const service = new google.maps.places.PlacesService(map);
       service.getDetails({ placeId: placeId }, (result, status) => {
@@ -52,8 +54,9 @@ const LatLngAutocomplete = ({
       variant="bordered"
       inputProps={{
         classNames: {
-          inputWrapper: "shadow-none hover:shadow-sm border-[0.5px] group-data-[focus=true]:border-light-text",
-          input: "text-[0.8125rem]",
+          inputWrapper:
+            "shadow-none hover:shadow-sm border-[0.5px] group-data-[focus=true]:border-light-text",
+          input: "text-base",
           label: "font-medium text-[0.8125rem]",
         },
       }}
