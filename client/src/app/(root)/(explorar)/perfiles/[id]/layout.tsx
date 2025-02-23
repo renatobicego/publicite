@@ -26,9 +26,13 @@ export default async function ProfileLayout(props: {
   }
 
   const user = await getUserById(params.id);
-  if (!user || "error" in user) {
+  if (!user) {
+    return <ErrorCard message="El perfil que buscas no existe." />;
+  }
+  if ("error" in user) {
     return <ErrorCard message={user?.error ?? "Error al cargar el perfil."} />;
   }
+
   const breadcrumbsItems = [
     {
       label: "Inicio",

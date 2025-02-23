@@ -11,7 +11,7 @@ const ReplyCard = ({
 }: {
   reply: PostComment;
   isAuthor: boolean;
-  }) => {
+}) => {
   return (
     <Card shadow="sm" className="w-11/12 md:w-5/6 xl:w-3/4 px-2.5 py-2">
       <CardHeader className="flex w-full justify-between pb-0">
@@ -25,7 +25,9 @@ const ReplyCard = ({
       </CardHeader>
       <CardBody className="flex justify-between gap-1 flex-row">
         <p className="text-xs md:text-sm xl:text-base">{reply.comment}</p>
-        {isAuthor && <DeleteComment commentId={reply._id} isReply />}
+        {isAuthor && (
+          <DeleteComment commentId={reply._id} isAuthorOfPost isReply />
+        )}
       </CardBody>
     </Card>
   );

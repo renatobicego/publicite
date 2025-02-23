@@ -393,3 +393,9 @@ export const getMatchPostQuery = gql`
     }
   }
 `;
+
+export const deleteCommentMutation = gql`
+  mutation DeleteCommentById($id: String!, $isAuthorOfPost: Boolean!) {
+    deleteCommentById(_id: $id, isAuthorOfPost: $isAuthorOfPost)
+  }
+`;

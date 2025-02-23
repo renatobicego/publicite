@@ -207,7 +207,6 @@ export const getUserById = async (
       variables: { id },
       context,
     });
-
     return data.findUserById;
   } catch (error: ApolloError | any) {
     console.log(error);
