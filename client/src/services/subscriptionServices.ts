@@ -248,19 +248,21 @@ export const getPaymentMethod = async () => {
     );
     const { results } = data;
     if (!results || results.length === 0) return;
+    const resultsOrderedByDate = results.sort((a: any, b: any) => {
+      return (
+        new Date(b.date_approved).getTime() -
+        new Date(a.date_approved).getTime()
+      );
+    });
     const {
-      payment_method: {
-        data: {
-          routing_data: { merchant_account_id },
-        },
-        id,
-      },
+      payment_method: { id },
+      card: { last_four_digits },
       payment_type_id,
-    } = data.results.find(
+    } = resultsOrderedByDate.find(
       (payment: { status: string }) => payment.status === "approved"
     );
     return {
-      lastDigits: merchant_account_id,
+      lastDigits: last_four_digits,
       cardId: id,
       payment_type_id,
     };

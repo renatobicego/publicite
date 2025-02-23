@@ -41,7 +41,7 @@ const ChangePaymentMethodCheckout = ({
     })
       .then((res) => {
         console.log(res);
-        toastifySuccess("Subscripción anterior cancelada con éxito");
+        toastifySuccess("Método de pago actualizado con éxito");
         router.replace("/suscribirse/suscripcion-actualizada");
       })
       .catch((err) => {

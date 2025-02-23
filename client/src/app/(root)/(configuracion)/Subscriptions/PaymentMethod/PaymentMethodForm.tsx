@@ -33,7 +33,7 @@ const PaymentMethodForm = ({
         de subscripción.{" "}
         <em className="font-semibold">
           Si cambió su método de pago, el mismo se verá reflejado en el próximo
-          cobro.
+          cobro.{" "}
         </em>
         Ante cualquier duda o problema, por favor contactenos.
       </p>

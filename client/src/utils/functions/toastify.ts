@@ -12,8 +12,8 @@ export const toastifyError = (message: string) => {
     theme: "light",
     transition: Bounce,
     style: {
-      zIndex: 20000000,
-    }
+      zIndex: 100001,
+    },
   });
 };
 
@@ -28,7 +28,7 @@ export const toastifySuccess = (message: string) => {
     theme: "light",
     transition: Bounce,
     style: {
-      zIndex: 20000000,
-    }
+      zIndex: 100001,
+    },
   });
 };

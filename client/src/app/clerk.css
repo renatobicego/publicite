@@ -1,3 +1,7 @@
+.cl-modalBackdrop {
+  z-index: 9998 !important;
+}
+
 .cl-otpCodeFieldInput {
   border-radius: 8px !important;
   padding: 10px 8px !important;
