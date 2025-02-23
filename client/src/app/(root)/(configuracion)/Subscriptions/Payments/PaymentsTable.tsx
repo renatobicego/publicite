@@ -46,7 +46,6 @@ export default function PaymentsTable() {
       }
       if (!res) return;
       setData(res.invoices);
-      console.log(res.invoices);
       setHasMore(res.hasMore);
     };
     if (hasMore) {

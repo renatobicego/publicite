@@ -18,7 +18,6 @@ const PriceCategory = ({
   isService?: boolean;
 }) => {
   const { categories } = usePostCategories();
-  console.log(errors);
   return (
     <>
       <div className="flex gap-4 max-xl:flex-wrap items-start">

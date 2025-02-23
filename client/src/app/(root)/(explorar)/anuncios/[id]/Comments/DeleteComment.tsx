@@ -9,6 +9,7 @@ const DeleteComment = ({
   commentId: ObjectId;
   isReply?: boolean;
 }) => {
+  // TODO
   return (
     <Button
       radius="full"

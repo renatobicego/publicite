@@ -26,18 +26,21 @@ export default async function CheckoutPage(props: {
     redirect("/suscripciones");
   }
 
-  const isUserSubscribedToPayedPlan = subscriptionsOfUser.some(
+  const isUserSubscribedToPayedPlan = subscriptionsOfUser.find(
     (subscription) =>
       !subscription.subscriptionPlan.isFree &&
-      subscription.status === "active" &&
       !subscription.subscriptionPlan.isPack
   );
-
-  // TODO if the user is subscribed to payed plan and the id of the params.id is the not the same as the payed plan, redirect to /cambiar-plan
 
   const subscriptionPlan = await getSubscriptionPlanById(params.planId);
   if (subscriptionPlan.error)
     return <ErrorCard message={subscriptionPlan.error} />;
+
+  if (isUserSubscribedToPayedPlan?.subscriptionPlan._id !== params.planId) {
+    redirect(
+      `/suscribirse/${params.planId}/cambiarPlan/${isUserSubscribedToPayedPlan?.mpPreapprovalId}`
+    );
+  }
 
   return (
     <main className="w-screen min-h-screen flex-col lg:flex-row flex gap-8 lg:gap-4">

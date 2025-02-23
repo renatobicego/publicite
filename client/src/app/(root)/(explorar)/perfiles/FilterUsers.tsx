@@ -75,7 +75,7 @@ const FilterUsers = ({
                   onBlur={() => {}}
                   onChange={(e: {
                     target: { value: SetStateAction<string> };
-                  }) => console.log}
+                  }) => console.log} // TODO
                   onSelectionChange={(value) => setLocation(value as string)}
                   value={location}
                 />

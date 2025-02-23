@@ -41,7 +41,7 @@ export default async function EditMagazinePage(props: {
       (collaborator: any) => collaborator === userLoggedId
     ); // user is admin of the group
   const isGroupCreator =
-    !isOwnerTypeUser && ownerAsGroup.creator as any === userLoggedId; // user is creator of the group
+    !isOwnerTypeUser && (ownerAsGroup.creator as any) === userLoggedId; // user is creator of the group
 
   if (isOwnerTypeUser) {
     // if the owner is a user
@@ -50,7 +50,6 @@ export default async function EditMagazinePage(props: {
       redirect(`${MAGAZINES}/${magazineData._id}`);
     }
   } else {
-    console.log(ownerAsGroup);
     if (!isGroupAdmin && !isGroupCreator) {
       // if the user is not admin or creator redirect back
       redirect(`${MAGAZINES}/${magazineData._id}`);

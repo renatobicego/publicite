@@ -20,7 +20,7 @@ const GroupMagazineInputs = ({
   ) => Promise<void | FormikErrors<PostGroupMagazine>>;
 
   id: string | null;
-  }) => {
+}) => {
   const { userIdLogged } = useUserData();
   // Store members of the group
   const [groupMembers, setGroupMembers] = useState<User[]>();
@@ -39,7 +39,6 @@ const GroupMagazineInputs = ({
     }
   }, [id]);
   const allowAllCollaborators = () => {
-    console.log(groupMembers)
     setValues((prevValues) => ({
       ...prevValues,
       allowedCollaborators: groupMembers?.map((user) => user._id) || [],

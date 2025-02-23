@@ -58,7 +58,6 @@ const UploadImages = ({
         }
 
         if (currentFileCount + acceptedFiles.length > maxTotalFiles) {
-          console.log(currentFileCount, acceptedFiles.length, maxTotalFiles);
           toastifyError(
             `Solo puedes subir un máximo de ${maxTotalFiles} archivos.`
           );
