@@ -3,7 +3,8 @@ import FormCard from "../../FormCard";
 import SubscriptionPlanSelection from "./SubscriptionPlanSelection";
 import ActionButtons from "./ActionButtons";
 import { getSubscriptionsPlans } from "@/services/subscriptionServices";
-import { Subscription } from "@/types/subscriptions";
+import { Subscription, SubscriptionPlan } from "@/types/subscriptions";
+import { toastifyError } from "@/utils/functions/toastify";
 
 const AccountTypeForm = ({
   setIsFormVisible,
@@ -12,16 +13,24 @@ const AccountTypeForm = ({
   setIsFormVisible: (value: boolean) => void;
   subscription?: Subscription;
 }) => {
-  const previousSubscriptionPlan = subscription;
+  const previousSubscription = subscription;
   const [selected, setSelected] = useState(
-    previousSubscriptionPlan?.subscriptionPlan._id
+    previousSubscription?.subscriptionPlan.isFree
+      ? previousSubscription?.subscriptionPlan._id
+      : previousSubscription?.subscriptionPlan.mpPreapprovalPlanId
   );
-  const [subscriptionPlans, setSubscriptionPlans] = useState([]);
+  const [subscriptionPlans, setSubscriptionPlans] = useState<
+    SubscriptionPlan[]
+  >([]);
 
   useEffect(() => {
-    getSubscriptionsPlans().then((data) => {
-      setSubscriptionPlans(data);
-    });
+    getSubscriptionsPlans()
+      .then((data) => {
+        setSubscriptionPlans(
+          data.filter((subscription) => !subscription.isPack)
+        );
+      })
+      .catch((err) => toastifyError(err));
   }, []);
 
   return (
@@ -33,7 +42,7 @@ const AccountTypeForm = ({
       />
       <ActionButtons
         subscriptionPlans={subscriptionPlans}
-        previousPlan={previousSubscriptionPlan}
+        previousPlan={previousSubscription}
         selectedPlan={selected}
         onClose={() => setIsFormVisible(false)}
       />

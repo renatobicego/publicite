@@ -3,12 +3,7 @@ import { PACKS } from "@/utils/data/urls";
 import SubscriptionGrid from "../components/SubscriptionGrid";
 import ActivePostsCounter from "./ActivePostsCounter";
 import { SubscriptionPlan } from "@/types/subscriptions";
-import {
-  getSubscriptionsOfUser,
-  getSubscriptionsPlans,
-} from "@/services/subscriptionServices";
-import ErrorCard from "@/components/ErrorCard";
-import { auth } from "@clerk/nextjs/server";
+import { getSubscriptionsPlans } from "@/services/subscriptionServices";
 
 export default async function PostPacks() {
   const breadcrumbsItems = [
@@ -22,12 +17,8 @@ export default async function PostPacks() {
     },
   ];
 
-  const subscriptions: SubscriptionPlan[] | { error: string } =
-    await getSubscriptionsPlans();
+  const subscriptions: SubscriptionPlan[] = await getSubscriptionsPlans();
 
-  if ("error" in subscriptions) {
-    return <ErrorCard message={"Error obteniendo planes de suscripción"} />;
-  }
   return (
     <main className="flex min-h-screen flex-col items-start main-style gap-8">
       <BreadcrumbsAdmin items={breadcrumbsItems} />

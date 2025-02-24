@@ -24,13 +24,12 @@ export default async function SubscriptionPlans() {
   ];
   const { sessionClaims } = auth();
 
-  const subscriptions: SubscriptionPlan[] | { error: string } =
-    await getSubscriptionsPlans();
+  const subscriptions: SubscriptionPlan[] = await getSubscriptionsPlans();
   const susbcriptionsOfUser = await getSubscriptionsOfUser(
     sessionClaims?.metadata.mongoId as string
   );
 
-  if ("error" in susbcriptionsOfUser || "error" in subscriptions) {
+  if ("error" in susbcriptionsOfUser) {
     return <ErrorCard message={"Error obteniendo planes de suscripción"} />;
   }
 

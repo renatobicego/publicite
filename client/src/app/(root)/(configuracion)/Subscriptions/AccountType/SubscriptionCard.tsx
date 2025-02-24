@@ -39,6 +39,18 @@ const SubscriptionCard = ({
   subscriptionPlan: SubscriptionPlan;
   isFree?: boolean;
 }) => {
+  const getFrequencyOfPayment = () => {
+    switch (subscriptionPlan.intervalTime) {
+      case 7:
+        return "por semana";
+      case 30:
+        return "por mes";
+      case 90:
+        return "por trimestre";
+      case 365:
+        return "por año";
+    }
+  };
   return (
     <CustomRadio
       color="secondary"
@@ -53,7 +65,7 @@ const SubscriptionCard = ({
             <p className="text-sm font-semibold">Gratis</p>
           ) : (
             <p className="text-sm font-semibold">
-              ${subscriptionPlan.price} por mes
+              ${subscriptionPlan.price} {getFrequencyOfPayment()}
             </p>
           )}
         </div>

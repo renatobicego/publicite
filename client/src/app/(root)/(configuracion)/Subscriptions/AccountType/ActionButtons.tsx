@@ -62,7 +62,9 @@ const ActionButtons = ({
                 message="Estas seguro que quieres cancelar tu subscripción?"
                 tooltipMessage="Cambiar a Plan Gratuito"
                 onConfirm={handleCancelSubscription}
-                sideText="Los anuncios de tu cuenta que sobrepasen el límite de tu plan actual serán ocultados. Puedes ver los anuncios ocultos en tu perfil."
+                sideText="Los anuncios de tu cuenta que sobrepasen el límite de tu plan actual serán ocultados y las relaciones 
+                activas que sobrepasen el límite serán marcada como no activas.
+                 Puedes ver los anuncios ocultos y elegir las relaciones activas en tu perfil."
               />
             </Suspense>
           )}

@@ -7,7 +7,12 @@ import { query } from "@/lib/client";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import axios from "axios";
 import { getApiContext } from "./apiContext";
-import { Invoice, PaymentMethod, Subscription } from "@/types/subscriptions";
+import {
+  Invoice,
+  PaymentMethod,
+  Subscription,
+  SubscriptionPlan,
+} from "@/types/subscriptions";
 
 export const processPayment = async (
   formData: any,
@@ -86,7 +91,7 @@ export const getSubscriptionsPlansMP = async () => {
   }
 };
 
-export const getSubscriptionsPlans = async () => {
+export const getSubscriptionsPlans = async (): Promise<SubscriptionPlan[]> => {
   const res = await fetch(process.env.API_URL + "/subscriptionplans", {
     next: { revalidate: 180 },
     headers: {
@@ -94,10 +99,9 @@ export const getSubscriptionsPlans = async () => {
     },
   });
   if (!res.ok) {
-    return {
-      error:
-        "Error al traer los datos de los planes de suscripción. Por favor intenta de nuevo.",
-    };
+    throw new Error(
+      "Error al traer los datos de los planes de suscripción. Por favor intenta de nuevo."
+    );
   }
   const data = await res.json();
   return data;
