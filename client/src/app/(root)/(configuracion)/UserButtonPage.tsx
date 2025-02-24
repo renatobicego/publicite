@@ -71,13 +71,13 @@ const UserButtonModal = () => {
         <Subscriptions />
       </UserButton.UserProfilePage>
       <UserButton.UserProfilePage label="security" />
-      <UserButton.UserProfilePage
+      {/* <UserButton.UserProfilePage
         label="Privacidad"
         labelIcon={<FaEyeSlash className="size-4" />}
         url="privacidad"
       >
         <Privacy />
-      </UserButton.UserProfilePage>
+      </UserButton.UserProfilePage> */}
       {/* <UserButton.UserProfilePage
           label="Notificaciones"
           labelIcon={<FaBell className="size-4" />}

@@ -37,7 +37,11 @@ const CommentCard = ({
         />
       </Card>
       {comment.response && (
-        <ReplyCard reply={comment.response} isAuthor={isAuthor} />
+        <ReplyCard
+          reply={comment.response}
+          isAuthor={isAuthor}
+          setComments={setComments}
+        />
       )}
     </div>
   );
