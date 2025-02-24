@@ -121,7 +121,7 @@ const CreateMagazineForm = ({
       onSubmit={handleSubmit}
       validationSchema={magazineValidation}
     >
-      {({ isSubmitting, errors, setValues, values }) => {
+      {({ isSubmitting, errors, setValues }) => {
         return (
           <Form className="flex flex-col gap-4 max-md:w-full md:max-xl:flex-1 xl:w-1/2 self-center">
             <h2>

@@ -34,7 +34,7 @@ const AccountType = ({ subscription }: { subscription?: Subscription }) => {
           ) : (
             <CardDataItem
               title="Gratuita"
-              subtitle="No tiene suscripción activa"
+              subtitle="Tu plan actual es el plan gratuito"
             />
           )}
           <EditButton

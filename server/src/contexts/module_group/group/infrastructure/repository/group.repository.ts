@@ -40,7 +40,7 @@ export class GroupRepository implements GroupRepositoryInterface {
 
     @InjectConnection() private readonly connection: Connection,
     private readonly logger: MyLoggerService,
-  ) { }
+  ) {}
 
   async assignNewCreatorAndExitGroupById(
     groupId: string,
@@ -94,31 +94,29 @@ export class GroupRepository implements GroupRepositoryInterface {
     userRequestId: string,
     session: any,
   ): Promise<void> {
-
-
     try {
-      const result = await this.groupModel
-        .findOneAndUpdate(
-          {
-            _id: groupId,
+      const result = await this.groupModel.findOneAndUpdate(
+        {
+          _id: groupId,
+          'groupNotificationsRequest.groupInvitations': userRequestId,
+        },
+        {
+          $addToSet: { members: userRequestId },
+          $pull: {
             'groupNotificationsRequest.groupInvitations': userRequestId,
+            'groupNotificationsRequest.joinRequests': userRequestId,
           },
-          {
-            $addToSet: { members: userRequestId },
-            $pull: {
-              'groupNotificationsRequest.groupInvitations': userRequestId,
-              'groupNotificationsRequest.joinRequests': userRequestId,
-            },
 
-            $unset: { [`userIdAndNotificationMap.${userRequestId}`]: '' },
-          },
-          {
-            projection: { userIdAndNotificationMap: 1 },
-            session,
-          }
-        )
+          $unset: { [`userIdAndNotificationMap.${userRequestId}`]: '' },
+        },
+        {
+          projection: { userIdAndNotificationMap: 1 },
+          session,
+        },
+      );
 
-      const notificationID = result?.userIdAndNotificationMap.get(userRequestId);
+      const notificationID =
+        result?.userIdAndNotificationMap.get(userRequestId);
 
       if (notificationID) {
         await this.setNotificationActionsInFalse(notificationID, session);
@@ -128,7 +126,6 @@ export class GroupRepository implements GroupRepositoryInterface {
         { $addToSet: { groups: groupId } },
         { session },
       );
-
 
       this.logger.log(
         'Member added to group successfully Group ID: ' + groupId,
@@ -178,34 +175,30 @@ export class GroupRepository implements GroupRepositoryInterface {
       session = await this.connection.startSession();
     }
     try {
-      const result = await this.groupModel
-        .updateOne(
-          {
-            _id: groupId,
+      const result = await this.groupModel.updateOne(
+        {
+          _id: groupId,
+          'groupNotificationsRequest.joinRequests': newMember,
+          $or: [{ admins: groupAdmin }, { creator: groupAdmin }],
+        },
+        {
+          $addToSet: { members: newMember },
+          $pull: {
             'groupNotificationsRequest.joinRequests': newMember,
-            $or: [{ admins: groupAdmin }, { creator: groupAdmin }],
+            'groupNotificationsRequest.groupInvitations': newMember,
           },
-          {
-            $addToSet: { members: newMember },
-            $pull: {
-              'groupNotificationsRequest.joinRequests': newMember,
-              'groupNotificationsRequest.groupInvitations': newMember,
-            },
-          },
-          {
-            session,
-          }
-        )
-
+        },
+        {
+          session,
+        },
+      );
 
       chekResultOfOperation(result);
-      await this.userModel
-        .updateOne(
-          { _id: newMember },
-          { $addToSet: { groups: groupId } },
-          { session },
-        )
-
+      await this.userModel.updateOne(
+        { _id: newMember },
+        { $addToSet: { groups: groupId } },
+        { session },
+      );
 
       this.logger.log(
         'Member added to group successfully Group ID: ' + groupId,
@@ -473,7 +466,11 @@ export class GroupRepository implements GroupRepositoryInterface {
             populate: {
               path: 'sections',
               select: '_id posts',
-              populate: { path: 'posts', match: { isActive: true }, select: '_id imagesUrls' },
+              populate: {
+                path: 'posts',
+                match: { isActive: true },
+                select: '_id imagesUrls',
+              },
             },
           },
         ])
@@ -504,7 +501,6 @@ export class GroupRepository implements GroupRepositoryInterface {
     }
   }
 
-
   async findGroupByNameOrAlias(
     name: string,
     limit: number,
@@ -517,7 +513,8 @@ export class GroupRepository implements GroupRepositoryInterface {
       const session = await this.connection.startSession();
       session.startTransaction();
       let groups;
-      const selectedFields = '_id name profilePhotoUrl members admins details name magazines rules profilePhotoUrl visibility groupNotificationsRequest alias creator groupNote'
+      const selectedFields =
+        '_id name profilePhotoUrl members admins details name magazines rules profilePhotoUrl visibility groupNotificationsRequest alias creator groupNote';
       if (name) {
         const textSearchQuery = checkStopWordsAndReturnSearchQuery(
           name,
@@ -540,9 +537,7 @@ export class GroupRepository implements GroupRepositoryInterface {
           .and([{ visibility: 'public' }])
           .limit(limit + 1)
           .skip((page - 1) * limit)
-          .select(
-            selectedFields
-          )
+          .select(selectedFields)
           .populate([
             {
               path: 'members',
@@ -574,9 +569,7 @@ export class GroupRepository implements GroupRepositoryInterface {
           .and([{ visibility: 'public' }])
           .limit(limit + 1)
           .skip((page - 1) * limit)
-          .select(
-            selectedFields
-          )
+          .select(selectedFields)
           .populate([
             {
               path: 'members',
@@ -721,7 +714,7 @@ export class GroupRepository implements GroupRepositoryInterface {
       await this.notificationRepository.setNotificationActionsToFalseById(
         notificationId,
         session,
-      )
+      );
     } catch (error: any) {
       throw error;
     }
@@ -747,7 +740,9 @@ export class GroupRepository implements GroupRepositoryInterface {
       .map((admin: any) => admin._id.toString())
       .includes(userRequest);
 
-    const userIsCreator = group.creator._id.toString() === userRequest;
+    const userIsCreator = group.creator
+      ? group.creator._id.toString() === userRequest
+      : false;
     hasJoinRequest =
       group.groupNotificationsRequest?.joinRequests?.some(
         (user: any) => user._id.toString() === userRequest,
@@ -811,9 +806,8 @@ export class GroupRepository implements GroupRepositoryInterface {
     session: any,
   ): Promise<any> {
     try {
-      let userNotificationMap = new Map<string, string>();
+      const userNotificationMap = new Map<string, string>();
       userNotificationMap.set(userId, notificationId);
-
 
       const resultAddToSet = await this.groupModel
         .updateOne(
@@ -822,18 +816,17 @@ export class GroupRepository implements GroupRepositoryInterface {
             $addToSet: {
               'groupNotificationsRequest.groupInvitations': userId,
             },
-          }
+          },
         )
         .session(session)
         .lean();
-
 
       const resultSet = await this.groupModel
         .updateOne(
           { _id: groupId, userIdAndNotificationMap: { $exists: false } },
           {
             $set: { userIdAndNotificationMap: userNotificationMap },
-          }
+          },
         )
         .session(session)
         .lean();
@@ -846,7 +839,6 @@ export class GroupRepository implements GroupRepositoryInterface {
       throw error;
     }
   }
-
 
   async pullGroupInvitations(
     groupId: string,
@@ -861,7 +853,7 @@ export class GroupRepository implements GroupRepositoryInterface {
             $pull: { 'groupNotificationsRequest.groupInvitations': userId },
             $unset: { [`userIdAndNotificationMap.${userId}`]: '' },
           },
-          { projection: { userIdAndNotificationMap: 1 }, session }
+          { projection: { userIdAndNotificationMap: 1 }, session },
         )
         .session(session);
       checkIfanyDataWasModified(result);
@@ -871,10 +863,9 @@ export class GroupRepository implements GroupRepositoryInterface {
           'Setting actions false in notification ID: ' + notificationID,
         );
         await this.notificationRepository.setNotificationActionsToFalseById(
-          notificationID
-        )
+          notificationID,
+        );
       }
-
 
       this.logger.log(
         'Group request remove to group successfully. Group ID: ' + groupId,
@@ -883,7 +874,6 @@ export class GroupRepository implements GroupRepositoryInterface {
       throw error;
     }
   }
-
 
   async pullJoinRequest(
     groupId: string,
@@ -911,12 +901,18 @@ export class GroupRepository implements GroupRepositoryInterface {
     }
   }
 
-  async updateGroupById(group: GroupUpdateRequest, userRequestId: string): Promise<any> {
+  async updateGroupById(
+    group: GroupUpdateRequest,
+    userRequestId: string,
+  ): Promise<any> {
     try {
       const response = await this.groupModel
         .findOneAndUpdate(
-          { _id: group._id, $or: [{ creator: userRequestId }, { admins: userRequestId }] },
-          group
+          {
+            _id: group._id,
+            $or: [{ creator: userRequestId }, { admins: userRequestId }],
+          },
+          group,
         )
         .select('_id')
         .lean();

@@ -4,7 +4,7 @@ import {
   CustomTextarea,
 } from "@/components/inputs/CustomInputs";
 import { EditMagazine, PostUserMagazine } from "@/types/magazineTypes";
-import { visibilityItems } from "@/utils/data/selectData";
+import { relationTypes, visibilityItems } from "@/utils/data/selectData";
 import { Divider } from "@nextui-org/react";
 import { Field, FormikErrors } from "formik";
 
@@ -41,7 +41,7 @@ const EditMagazineInputs = ({
       {isUserMagazine && (
         <Field
           as={CustomSelect}
-          items={visibilityItems}
+          items={relationTypes}
           disallowEmptySelection
           getItemValue={(item: any) => item.value}
           getItemTextValue={(item: any) => item.label}

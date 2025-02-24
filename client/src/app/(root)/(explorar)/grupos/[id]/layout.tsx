@@ -31,7 +31,13 @@ export default async function GroupLayout(props: {
     | { error: string; error2: string } = await getGroupById(params.id);
 
   if ("error" in groupData) {
-    return <ErrorCard message={groupData.error} error={groupData.error2} />;
+    console.log(groupData.error2);
+    return (
+      <ErrorCard
+        message={groupData.error}
+        error={groupData.error2.toString()}
+      />
+    );
   }
 
   const { group, isMember } = groupData;

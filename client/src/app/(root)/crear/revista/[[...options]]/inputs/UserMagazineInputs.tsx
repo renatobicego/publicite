@@ -1,6 +1,6 @@
 import { CustomSelect } from "@/components/inputs/CustomInputs";
 import { SearchUsers } from "@/components/inputs/SearchUsers";
-import { visibilityItems } from "@/utils/data/selectData";
+import { relationTypes, visibilityItems } from "@/utils/data/selectData";
 import { Divider } from "@nextui-org/react";
 import { Field, FormikErrors } from "formik";
 import useSearchUsers from "@/utils/hooks/useSearchUsers";
@@ -40,7 +40,7 @@ const UserMagazineInputs = ({
       <Divider />
       <Field
         as={CustomSelect}
-        items={visibilityItems}
+        items={relationTypes}
         disallowEmptySelection
         getItemValue={(item: any) => item.value}
         getItemTextValue={(item: any) => item.label}
