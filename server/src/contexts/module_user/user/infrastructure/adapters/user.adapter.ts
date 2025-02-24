@@ -77,9 +77,9 @@ export class UserAdapter implements UserAdapterInterface {
 
     try {
       if (_id == userRequestId) {
-        return await this.userService.findProfileUserByExternalUserById(_id)
+        return await this.userService.findUserByIdByOwnUser(_id);
       }
-      return await this.userService.findUserByIdByOwnUser(_id);
+      return await this.userService.findProfileUserByExternalUserById(_id)
     } catch (error: any) {
       throw error;
     }
