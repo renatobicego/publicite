@@ -433,6 +433,7 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
 
     for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
       try {
+
         const result = await this.emmiter.emitAsync(event, user_id);
 
         if (result && result[0] === true) {

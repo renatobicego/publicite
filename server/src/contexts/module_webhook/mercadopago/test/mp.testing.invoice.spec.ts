@@ -18,13 +18,12 @@ import { MpServiceInvoiceInterface } from "../domain/service/mp-invoice.service.
 import { MpInvoiceService } from "../application/service/mp-invoice.service";
 import { PaymentNotificationService } from "../infastructure/adapters/handler/PaymentNotificationService";
 import { MpSubscriptionService } from "../application/service/mp-subscription.service";
-import { statusOfSubscription } from "../domain/service/mp-subscription.service.interface";
 import { EmitterService } from "src/contexts/module_shared/event-emmiter/emmiter";
 import { ErrorDocument } from "../infastructure/schemas/error.schema";
 
 
 
-describe('MercadopagoService - Invoice - CREATE METHODS  ', () => {
+describe('MercadopagoService - Invoice   ', () => {
     let connection: Connection;
     let mpHandlerEvents: MpHandlerEvents;
     let invoiceModel: Model<InvoiceDocument>;
@@ -94,6 +93,7 @@ describe('MercadopagoService - Invoice - CREATE METHODS  ', () => {
         await subscriptionPlanModel.deleteMany({});
         await subscriptionModel.deleteMany({});
         await paymentModel.deleteMany({});
+        await errorModel.deleteMany({})
         await connection.close();
 
     });
@@ -103,188 +103,238 @@ describe('MercadopagoService - Invoice - CREATE METHODS  ', () => {
         await invoiceModel.deleteMany({});
     });
 
-
-    it('Mercadopago - MpHandlerEvents - subscription_authorized_payment -> Create', async () => {
-        const statusOfInvoice = "approved";
-        const statusOfPayment = "approved";
-        const transaction_amount = 100;
+    describe('MercadopagoService - Invoice - update_plan_user function', () => {
 
 
-        const mockMpInvoiceService = {
-            saveInvoice: jest.fn(),
-        };
-
-        const payment = {
-            id: mp_payment_id,
-            status: statusOfPayment,
-            status_detail: "accredited"
-        }
-        const maockedSubscription_authorized_paymentResponse = get_subscription_authorized_payment(
-            external_reference,
-            mp_preapproval_id,
-            statusOfInvoice,
-            authorized_payments_id,
-            transaction_amount,
-            payment
-        );
+        it('Should try 3 times if result of emmiter is false and create a new error schema', async () => {
+            const event = "downgrade_plan_contact";
+            const userId = "213123123";
+            const errorExpected = {
+                user: userId,
+                code: "4545",
+                message: "No se pudo actualizar el plan del usuario luego de múltiples intentos",
+                result: false,
+                event: event
+            };
+            const emitAsyncSpy = jest.spyOn(emmiter, 'emitAsync');
+            emitAsyncSpy.mockResolvedValue([false]);
 
 
-        mockFetchToMpAdapter.getDataFromMp_fetch.mockResolvedValue(maockedSubscription_authorized_paymentResponse);
+            await expect(mpHandlerEvents.update_plan_user(userId, event))
+                .rejects.toThrow("No se pudo actualizar el plan del usuario después de múltiples intentos.");
+
+            const errorSaved = await errorModel.findOne({ user: userId });
+            expect(errorSaved).not.toBeNull();
+            expect(errorSaved?.user).toBe(errorExpected.user);
+            expect(errorSaved?.code).toBe(errorExpected.code);
+            expect(errorSaved?.message).toBe(errorExpected.message);
+            expect(errorSaved?.result).toBe("No se pudo actualizar el plan del usuario luego de múltiples intentos");
+            expect(errorSaved?.event).toBe(errorExpected.event);
+        });
+
+        it('Should return true if result of emmiter is true ', async () => {
+            const event = "downgrade_plan_post";
+            const userId = "123";
 
 
-        const mockResultOfInvoice = {
-            paymentReady: true,
-            payment: { status: statusOfPayment },
-            subscription: { subscriptionPlan: subscriptionPlanId },
-        };
-        mockMpInvoiceService.saveInvoice.mockResolvedValue(mockResultOfInvoice);
+            const emitAsyncSpy = jest.spyOn(emmiter, 'emitAsync');
+            emitAsyncSpy.mockResolvedValue([true]);
+
+            const result = await mpHandlerEvents.update_plan_user(userId, event);
+            const errorSaved = await errorModel.findOne({ user: userId });
+            expect(errorSaved).toBeNull();
+            expect(result).toBe(true);
 
 
 
-        const sendPaymentNotificationSpy = jest.spyOn(paymentNotificationService, 'sendPaymentNotification').mockImplementation(jest.fn());
+        })
 
-        await mpHandlerEvents.create_subscription_authorized_payment("123");
-
-
-        const subscription_authorized_payment_saved = await invoiceModel.findOne({ invoice_id: authorized_payments_id });
-        if (subscription_authorized_payment_saved === null) throw new Error("subscription_authorized_payment_saved not found");
-
-        expect(subscription_authorized_payment_saved).not.toBeNull();
-        expect(subscription_authorized_payment_saved.paymentId).toEqual(paymentId);
-        expect(subscription_authorized_payment_saved.subscriptionId).toEqual(subscriptionPlanId);
-        expect(subscription_authorized_payment_saved.status).toBe(maockedSubscription_authorized_paymentResponse.status);
-        expect(subscription_authorized_payment_saved.paymentStatus).toBe(maockedSubscription_authorized_paymentResponse.payment.status);
-        expect(subscription_authorized_payment_saved.preapprovalId).toBe(maockedSubscription_authorized_paymentResponse.preapproval_id);
-        expect(subscription_authorized_payment_saved.external_reference).toBe(maockedSubscription_authorized_paymentResponse.external_reference);
-        expect(subscription_authorized_payment_saved.invoice_id).toBe(maockedSubscription_authorized_paymentResponse.id.toString());
-        expect(subscription_authorized_payment_saved.transactionAmount).toBe(maockedSubscription_authorized_paymentResponse.transaction_amount);
-        expect(subscription_authorized_payment_saved.currencyId).toBe(maockedSubscription_authorized_paymentResponse.currency_id);
-        expect(subscription_authorized_payment_saved.reason).toBe(maockedSubscription_authorized_paymentResponse.reason);
-        expect(subscription_authorized_payment_saved.nextRetryDay).toBe(maockedSubscription_authorized_paymentResponse.next_retry_date);
-        expect(subscription_authorized_payment_saved.retryAttempts).toBe(maockedSubscription_authorized_paymentResponse.retry_attempt);
-
-
-        const expectedData = {
-            subscriptionPlanId: mockResultOfInvoice.subscription.subscriptionPlan,
-            reason: maockedSubscription_authorized_paymentResponse.reason,
-            status: mockResultOfInvoice.payment.status,
-            retryAttemp: maockedSubscription_authorized_paymentResponse.retry_attempt,
-            userId: maockedSubscription_authorized_paymentResponse.external_reference,
-        };
-
-
-        expect(sendPaymentNotificationSpy).toHaveBeenCalledWith(expectedData);
     });
 
-
-    it('Should return true and warn logger if is a card validation', async () => {
-        const loggerWarnSpy = jest.spyOn(mpHandlerEvents.getLogger, 'warn');
-        const saveInvoiceSpy = jest.spyOn(mpInvoiceService, 'saveInvoice');
-        const statusOfInvoice = "approved"
-        const transaction_amount = 50
-        const payment = {
-            id: 454545456,
-            status: "pending",
-            status_detail: "pending"
-        }
-        maockedSubscription_authorized_paymentResponse = get_subscription_authorized_payment(
-            external_reference,
-            mp_preapproval_id,
-            statusOfInvoice,
-            authorized_payments_id,
-            transaction_amount,
-            payment
-        )
-        mockFetchToMpAdapter.getDataFromMp_fetch.mockResolvedValue(maockedSubscription_authorized_paymentResponse);
+    describe('Mercadopago - MpHandlerEvents - subscription_authorized_payment', () => {
 
 
+        it('Mercadopago - MpHandlerEvents - subscription_authorized_payment -> Create', async () => {
+            const statusOfInvoice = "approved";
+            const statusOfPayment = "approved";
+            const transaction_amount = 100;
 
-        expect(await mpHandlerEvents.create_subscription_authorized_payment("123")).toBe(true);
-        expect(loggerWarnSpy).toHaveBeenCalledTimes(1);
-        expect(loggerWarnSpy).toHaveBeenCalledWith('Payment amount is less than $50 is a card validation, returning OK to Meli');
-        expect(saveInvoiceSpy).not.toHaveBeenCalled();
-        loggerWarnSpy.mockRestore();
+
+            const mockMpInvoiceService = {
+                saveInvoice: jest.fn(),
+            };
+
+            const payment = {
+                id: mp_payment_id,
+                status: statusOfPayment,
+                status_detail: "accredited"
+            }
+            const maockedSubscription_authorized_paymentResponse = get_subscription_authorized_payment(
+                external_reference,
+                mp_preapproval_id,
+                statusOfInvoice,
+                authorized_payments_id,
+                transaction_amount,
+                payment
+            );
+
+
+            mockFetchToMpAdapter.getDataFromMp_fetch.mockResolvedValue(maockedSubscription_authorized_paymentResponse);
+
+
+            const mockResultOfInvoice = {
+                paymentReady: true,
+                payment: { status: statusOfPayment },
+                subscription: { subscriptionPlan: subscriptionPlanId },
+            };
+            mockMpInvoiceService.saveInvoice.mockResolvedValue(mockResultOfInvoice);
+
+
+
+            const sendPaymentNotificationSpy = jest.spyOn(paymentNotificationService, 'sendPaymentNotification').mockImplementation(jest.fn());
+
+            await mpHandlerEvents.create_subscription_authorized_payment("123");
+
+
+            const subscription_authorized_payment_saved = await invoiceModel.findOne({ invoice_id: authorized_payments_id });
+            if (subscription_authorized_payment_saved === null) throw new Error("subscription_authorized_payment_saved not found");
+
+            expect(subscription_authorized_payment_saved).not.toBeNull();
+            expect(subscription_authorized_payment_saved.paymentId).toEqual(paymentId);
+            expect(subscription_authorized_payment_saved.subscriptionId).toEqual(subscriptionPlanId);
+            expect(subscription_authorized_payment_saved.status).toBe(maockedSubscription_authorized_paymentResponse.status);
+            expect(subscription_authorized_payment_saved.paymentStatus).toBe(maockedSubscription_authorized_paymentResponse.payment.status);
+            expect(subscription_authorized_payment_saved.preapprovalId).toBe(maockedSubscription_authorized_paymentResponse.preapproval_id);
+            expect(subscription_authorized_payment_saved.external_reference).toBe(maockedSubscription_authorized_paymentResponse.external_reference);
+            expect(subscription_authorized_payment_saved.invoice_id).toBe(maockedSubscription_authorized_paymentResponse.id.toString());
+            expect(subscription_authorized_payment_saved.transactionAmount).toBe(maockedSubscription_authorized_paymentResponse.transaction_amount);
+            expect(subscription_authorized_payment_saved.currencyId).toBe(maockedSubscription_authorized_paymentResponse.currency_id);
+            expect(subscription_authorized_payment_saved.reason).toBe(maockedSubscription_authorized_paymentResponse.reason);
+            expect(subscription_authorized_payment_saved.nextRetryDay).toBe(maockedSubscription_authorized_paymentResponse.next_retry_date);
+            expect(subscription_authorized_payment_saved.retryAttempts).toBe(maockedSubscription_authorized_paymentResponse.retry_attempt);
+
+
+            const expectedData = {
+                subscriptionPlanId: mockResultOfInvoice.subscription.subscriptionPlan,
+                reason: maockedSubscription_authorized_paymentResponse.reason,
+                status: mockResultOfInvoice.payment.status,
+                retryAttemp: maockedSubscription_authorized_paymentResponse.retry_attempt,
+                userId: maockedSubscription_authorized_paymentResponse.external_reference,
+            };
+
+
+            expect(sendPaymentNotificationSpy).toHaveBeenCalledWith(expectedData);
+        });
+
+
+        it('Should return true and warn logger if is a card validation', async () => {
+            const loggerWarnSpy = jest.spyOn(mpHandlerEvents.getLogger, 'warn');
+            const saveInvoiceSpy = jest.spyOn(mpInvoiceService, 'saveInvoice');
+            const statusOfInvoice = "approved"
+            const transaction_amount = 50
+            const payment = {
+                id: 454545456,
+                status: "pending",
+                status_detail: "pending"
+            }
+            maockedSubscription_authorized_paymentResponse = get_subscription_authorized_payment(
+                external_reference,
+                mp_preapproval_id,
+                statusOfInvoice,
+                authorized_payments_id,
+                transaction_amount,
+                payment
+            )
+            mockFetchToMpAdapter.getDataFromMp_fetch.mockResolvedValue(maockedSubscription_authorized_paymentResponse);
+
+
+
+            expect(await mpHandlerEvents.create_subscription_authorized_payment("123")).toBe(true);
+            expect(loggerWarnSpy).toHaveBeenCalledTimes(1);
+            expect(loggerWarnSpy).toHaveBeenCalledWith('Payment amount is less than $50 is a card validation, returning OK to Meli');
+            expect(saveInvoiceSpy).not.toHaveBeenCalled();
+            loggerWarnSpy.mockRestore();
+
+        })
+
+
+        it('Should return true and not send payment Notification because payment is not ready', async () => {
+            const statusOfInvoice = "scheduled";
+            const transaction_amount = 100;
+            const payment = {
+                id: 454545456,
+                status: "pending",
+                status_detail: "pending"
+            }
+
+            const maockedSubscription_authorized_paymentResponse = get_subscription_authorized_payment(
+                external_reference,
+                mp_preapproval_id,
+                statusOfInvoice,
+                authorized_payments_id,
+                transaction_amount,
+                payment,
+
+            );
+
+
+            mockFetchToMpAdapter.getDataFromMp_fetch.mockResolvedValue(maockedSubscription_authorized_paymentResponse);
+
+            const sendPaymentNotificationSpy = jest.spyOn(paymentNotificationService, 'sendPaymentNotification').mockImplementation(jest.fn());
+            await mpHandlerEvents.create_subscription_authorized_payment("123");
+
+
+            const subscription_authorized_payment_saved = await invoiceModel.findOne({ invoice_id: authorized_payments_id });
+            if (subscription_authorized_payment_saved === null) throw new Error("subscription_authorized_payment_saved not found");
+
+            expect(subscription_authorized_payment_saved).not.toBeNull();
+            expect(subscription_authorized_payment_saved.paymentId.toString().startsWith("0001abc")).toBe(true);
+            expect(subscription_authorized_payment_saved.subscriptionId).toEqual(subscriptionPlanId);
+            expect(subscription_authorized_payment_saved.status).toBe(maockedSubscription_authorized_paymentResponse.status);
+            expect(subscription_authorized_payment_saved.paymentStatus).toBe(maockedSubscription_authorized_paymentResponse.payment.status);
+            expect(subscription_authorized_payment_saved.preapprovalId).toBe(maockedSubscription_authorized_paymentResponse.preapproval_id);
+            expect(subscription_authorized_payment_saved.external_reference).toBe(maockedSubscription_authorized_paymentResponse.external_reference);
+            expect(subscription_authorized_payment_saved.invoice_id).toBe(maockedSubscription_authorized_paymentResponse.id.toString());
+            expect(subscription_authorized_payment_saved.transactionAmount).toBe(maockedSubscription_authorized_paymentResponse.transaction_amount);
+            expect(subscription_authorized_payment_saved.currencyId).toBe(maockedSubscription_authorized_paymentResponse.currency_id);
+            expect(subscription_authorized_payment_saved.reason).toBe(maockedSubscription_authorized_paymentResponse.reason);
+            expect(subscription_authorized_payment_saved.nextRetryDay).toBe(maockedSubscription_authorized_paymentResponse.next_retry_date);
+            expect(subscription_authorized_payment_saved.retryAttempts).toBe(maockedSubscription_authorized_paymentResponse.retry_attempt);
+
+            expect(sendPaymentNotificationSpy).not.toHaveBeenCalled();
+        });
+
+
+        it('Should return Bad Request if subscription doest not exist and invoice will not be saved', async () => {
+            const statusOfInvoice = "scheduled";
+            const transaction_amount = 100;
+            const payment = {
+                id: 454545456,
+                status: "pending",
+                status_detail: "pending"
+            }
+
+            const maockedSubscription_authorized_paymentResponse = get_subscription_authorized_payment(
+                external_reference,
+                "1616156165651", // mp_preapproval_id does not exist 
+                statusOfInvoice,
+                authorized_payments_id,
+                transaction_amount,
+                payment,
+
+            );
+
+
+            mockFetchToMpAdapter.getDataFromMp_fetch.mockResolvedValue(maockedSubscription_authorized_paymentResponse);
+
+            const sendPaymentNotificationSpy = jest.spyOn(paymentNotificationService, 'sendPaymentNotification').mockImplementation(jest.fn());
+
+
+            await expect(mpHandlerEvents.create_subscription_authorized_payment("123")).rejects.toThrow("Bad Request");
+            expect(sendPaymentNotificationSpy).not.toHaveBeenCalled();
+        });
 
     })
-
-
-    it('Should return true and not send payment Notification because payment is not ready', async () => {
-        const statusOfInvoice = "scheduled";
-        const transaction_amount = 100;
-        const payment = {
-            id: 454545456,
-            status: "pending",
-            status_detail: "pending"
-        }
-
-        const maockedSubscription_authorized_paymentResponse = get_subscription_authorized_payment(
-            external_reference,
-            mp_preapproval_id,
-            statusOfInvoice,
-            authorized_payments_id,
-            transaction_amount,
-            payment,
-
-        );
-
-
-        mockFetchToMpAdapter.getDataFromMp_fetch.mockResolvedValue(maockedSubscription_authorized_paymentResponse);
-
-        const sendPaymentNotificationSpy = jest.spyOn(paymentNotificationService, 'sendPaymentNotification').mockImplementation(jest.fn());
-        await mpHandlerEvents.create_subscription_authorized_payment("123");
-
-
-        const subscription_authorized_payment_saved = await invoiceModel.findOne({ invoice_id: authorized_payments_id });
-        if (subscription_authorized_payment_saved === null) throw new Error("subscription_authorized_payment_saved not found");
-
-        expect(subscription_authorized_payment_saved).not.toBeNull();
-        expect(subscription_authorized_payment_saved.paymentId.toString().startsWith("0001abc")).toBe(true);
-        expect(subscription_authorized_payment_saved.subscriptionId).toEqual(subscriptionPlanId);
-        expect(subscription_authorized_payment_saved.status).toBe(maockedSubscription_authorized_paymentResponse.status);
-        expect(subscription_authorized_payment_saved.paymentStatus).toBe(maockedSubscription_authorized_paymentResponse.payment.status);
-        expect(subscription_authorized_payment_saved.preapprovalId).toBe(maockedSubscription_authorized_paymentResponse.preapproval_id);
-        expect(subscription_authorized_payment_saved.external_reference).toBe(maockedSubscription_authorized_paymentResponse.external_reference);
-        expect(subscription_authorized_payment_saved.invoice_id).toBe(maockedSubscription_authorized_paymentResponse.id.toString());
-        expect(subscription_authorized_payment_saved.transactionAmount).toBe(maockedSubscription_authorized_paymentResponse.transaction_amount);
-        expect(subscription_authorized_payment_saved.currencyId).toBe(maockedSubscription_authorized_paymentResponse.currency_id);
-        expect(subscription_authorized_payment_saved.reason).toBe(maockedSubscription_authorized_paymentResponse.reason);
-        expect(subscription_authorized_payment_saved.nextRetryDay).toBe(maockedSubscription_authorized_paymentResponse.next_retry_date);
-        expect(subscription_authorized_payment_saved.retryAttempts).toBe(maockedSubscription_authorized_paymentResponse.retry_attempt);
-
-        expect(sendPaymentNotificationSpy).not.toHaveBeenCalled();
-    });
-
-
-    it('Should return Bad Request if subscription doest not exist and invoice will not be saved', async () => {
-        const statusOfInvoice = "scheduled";
-        const transaction_amount = 100;
-        const payment = {
-            id: 454545456,
-            status: "pending",
-            status_detail: "pending"
-        }
-
-        const maockedSubscription_authorized_paymentResponse = get_subscription_authorized_payment(
-            external_reference,
-            "1616156165651", // mp_preapproval_id does not exist 
-            statusOfInvoice,
-            authorized_payments_id,
-            transaction_amount,
-            payment,
-
-        );
-
-
-        mockFetchToMpAdapter.getDataFromMp_fetch.mockResolvedValue(maockedSubscription_authorized_paymentResponse);
-
-        const sendPaymentNotificationSpy = jest.spyOn(paymentNotificationService, 'sendPaymentNotification').mockImplementation(jest.fn());
-
-
-        await expect(mpHandlerEvents.create_subscription_authorized_payment("123")).rejects.toThrow("Bad Request");
-        expect(sendPaymentNotificationSpy).not.toHaveBeenCalled();
-    });
-
-
 
 
     describe('MercadopagoService - Invoice - UPDATE METHODS ', () => {
@@ -468,37 +518,6 @@ describe('MercadopagoService - Invoice - CREATE METHODS  ', () => {
         })
     })
 
-
-
-
-    describe('MercadopagoService - Invoice - update_plan_user function ', () => {
-
-        it('Should try 3 times if result of emmiter is false and create a new error schema ', async () => {
-            const event = "downgrade_plan_contact";
-            const userId = "q2e"
-            const errorExpected = {
-                user: userId,
-                code: "4545",
-                message: "No se pudo actualizar el plan del usuario luego de múltiples intentos",
-                result: false,
-                event: event
-            }
-            const emitAsyncSpy = jest.spyOn(emmiter, 'emitAsync');
-            emitAsyncSpy.mockResolvedValue(false);
-
-            mpHandlerEvents.update_plan_user(userId, event)
-            const errorSaved = await errorModel.findOne({ user: userId })
-            if (!errorSaved) throw new Error("error not found");
-            expect(errorSaved.user).toBe(errorExpected.user)
-            expect(errorSaved.code).toBe(errorExpected.code)
-            expect(errorSaved.message).toBe(errorExpected.message)
-            expect(errorSaved.result).toBe(errorExpected.result)
-            expect(errorSaved.event).toBe(errorExpected.event)
-
-
-        })
-        it('Should return true if result of emmiter is true ', async () => { })
-    })
 
 
 
