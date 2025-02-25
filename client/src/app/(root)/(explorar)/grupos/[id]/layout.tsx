@@ -35,7 +35,7 @@ export default async function GroupLayout(props: {
     return (
       <ErrorCard
         message={groupData.error}
-        error={groupData.error2.toString()}
+        error={groupData.error2?.toString()}
       />
     );
   }

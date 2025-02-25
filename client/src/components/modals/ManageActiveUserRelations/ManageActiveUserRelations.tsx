@@ -94,6 +94,12 @@ const ManageActiveUserRelations = ({
           base: "opacity-100",
         }}
       />
+      <PrimaryButton
+        size="sm"
+        onPress={() => setGroupSelected(relations.map((r) => r._id))}
+      >
+        Activar todos
+      </PrimaryButton>
       <div className="flex flex-col gap-1 w-full ">
         <CheckboxGroup
           classNames={{

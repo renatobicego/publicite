@@ -385,13 +385,14 @@ export const getActiveRelations = async (): Promise<
 
 export const deleteCommentById = async (
   id: string,
-  isAuthorOfPost: boolean
+  isAuthorOfPost: boolean,
+  isReply: boolean
 ) => {
   try {
     const { context } = await getApiContext();
     await getClient().mutate({
       mutation: deleteCommentMutation,
-      variables: { id, isAuthorOfPost },
+      variables: { id, isAuthorOfPost, isReply },
       context,
     });
     return {

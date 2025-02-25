@@ -19,7 +19,7 @@ const DeleteComment = ({
   setComments: Dispatch<SetStateAction<PostComment[]>>;
 }) => {
   const handleSubmit = async () => {
-    const res = await deleteCommentById(commentId, isAuthorOfPost);
+    const res = await deleteCommentById(commentId, isAuthorOfPost, isReply);
     if ("error" in res) {
       toastifyError(res.error);
       return;

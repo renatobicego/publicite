@@ -57,27 +57,25 @@ const MobileNotifications = ({
         placement="center"
         className="max-md:px-4"
         isOpen={modalIsOpen}
-        onOpenChange={async (open) => {
-          if (!open) {
-            setNewNotifications(false);
-            setNewNotificationsFromServer(false);
-          }
-          if (newNotificationsFromServer && !open) {
-            await putNotificationStatus(
-              notifications
-                .filter((notification) => !notification.viewed)
-                .map((notification) => notification._id)
-            );
-          }
-          setIsOpen(open);
-        }}
+        // onOpenChange={(open) => {
+        //   setIsOpen(open);
+        // }}
         closeButton={
           <Button
             size="sm"
             variant="light"
             isIconOnly
             aria-label="cerrar modal de notificaciones"
-            onPress={() => setIsOpen(false)}
+            onPress={async () => {
+              setNewNotifications(false);
+              setNewNotificationsFromServer(false);
+              setIsOpen(false);
+              await putNotificationStatus(
+                notifications
+                  .filter((notification) => !notification.viewed)
+                  .map((notification) => notification._id)
+              );
+            }}
           >
             <FaX />
           </Button>

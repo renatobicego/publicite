@@ -19,6 +19,7 @@ import { IoBook } from "react-icons/io5";
 import { useUserData } from "@/app/(root)/providers/userDataProvider";
 import { checkAndAddDeleteNotification } from "../deleteNotification";
 import { useNotificationsContext } from "@/app/(root)/providers/notificationsProvider";
+import { useState } from "react";
 
 const MagazineNotificationCard = ({
   notification,
@@ -30,6 +31,7 @@ const MagazineNotificationCard = ({
     notification;
   const { userIdLogged, usernameLogged } = useUserData();
   const { updateSocketToken } = useSocket();
+  const [isActionSent, setIsActionSent] = useState(false);
   const { deleteNotification } = useNotificationsContext();
   const getNotificationOptionsList = () => {
     const optionsList: NotificationOptionProps[] = [];
@@ -37,7 +39,11 @@ const MagazineNotificationCard = ({
       magazineNotificationMessages[event as MagazineNotificationType];
 
     // Check if acceptAction exists before adding it to options
-    if (notificationMessage?.acceptAction && isActionsAvailable) {
+    if (
+      notificationMessage?.acceptAction &&
+      isActionsAvailable &&
+      !isActionSent
+    ) {
       optionsList.push({
         label: "Aceptar Solicitud",
         onPress: async () => {
@@ -56,6 +62,7 @@ const MagazineNotificationCard = ({
             backData.userIdFrom,
             _id
           );
+          setIsActionSent(true);
         },
       });
     }
@@ -65,7 +72,11 @@ const MagazineNotificationCard = ({
       className: "text-text-color",
       href: `${MAGAZINES}/${magazine._id}`,
     });
-    if (notificationMessage?.rejectAction && isActionsAvailable) {
+    if (
+      notificationMessage?.rejectAction &&
+      isActionsAvailable &&
+      !isActionSent
+    ) {
       optionsList.push({
         label: "Rechazar Solicitud",
         color: "danger",
@@ -86,6 +97,7 @@ const MagazineNotificationCard = ({
             backData.userIdFrom,
             _id
           );
+          setIsActionSent(true);
         },
       });
     }
