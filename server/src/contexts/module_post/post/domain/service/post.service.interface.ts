@@ -16,7 +16,7 @@ export interface PostServiceInterface {
   activateOrDeactivatePost(_id: string, activate: boolean, postBehaviourType: PostBehaviourType, userRequestId: string): Promise<any>;
   create(post: PostRequest): Promise<void>;
   deletePostById(id: string): Promise<void>;
-  deleteCommentById(id: string, userRequestId: string, isAuthorOfPost: boolean): Promise<void>;
+  deleteCommentById(id: string, userRequestId: string, isAuthorOfPost: boolean, isComment: boolean): Promise<void>;
   desactivatePostByUserId(userId: string): Promise<void>;
 
   findPostsByAuthorId(id: string): Promise<void>;

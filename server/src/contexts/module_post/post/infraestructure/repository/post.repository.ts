@@ -229,30 +229,54 @@ export class PostRepository implements PostRepositoryInterface {
     }
   }
 
+  /*
+  casos de prueba
+  se elimina un comeentario con respustra, se debe eliminar los dos de la bd
+  Si elimino un comentario que el owner me respondio, se deberia eliminar el comentario mio como visitante y el del owner que me respondio
+  
+
+  */
+
+
   async deleteCommentById(
     id: string,
     userRequestId: string,
     isAuthorOfPost: boolean,
+    isComment: boolean
   ): Promise<void> {
     try {
       if (isAuthorOfPost) {
+        this.logger.log("Deleting comment in repository... ");
         const result = await this.postDocument.updateOne(
           { author: userRequestId, comments: id },
           { $pull: { comments: id } },
         );
         if (result.modifiedCount > 0) {
-          await this.postCommentDocument.deleteOne({ _id: id });
+          this.logger.log("Comment deleted successfully.");
+          const commentDelete: any = await this.postCommentDocument.findOneAndDelete({ _id: id });
+          if (commentDelete && commentDelete.response) {
+            this.logger.log("Comment has a response, deleting it...");
+            await this.postCommentDocument.deleteOne({ _id: commentDelete.response });
+            this.logger.log("Comment response deleted successfully.");
+          }
         }
+        if (isComment) {
+          await this.postCommentDocument.updateOne({ response: id }, { $set: { response: null } });
+          await this.postCommentDocument.deleteOne({ _id: id });
+          this.logger.log("Comment response deleted successfully.");
+        }
+
       } else {
-        const result = await this.postCommentDocument.deleteOne({
+        const result = await this.postCommentDocument.findOneAndDelete({
           _id: id,
           user: userRequestId,
         });
-        if (result.deletedCount > 0) {
+        if (result) {
           await this.postDocument.updateOne(
             { comments: id },
             { $pull: { comments: id } },
           );
+          await this.postCommentDocument.deleteOne({ _id: result.response });
         }
       }
     } catch (error: any) {

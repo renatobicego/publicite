@@ -147,9 +147,9 @@ export class PostService implements PostServiceInterface {
 
 
 
-  async deleteCommentById(id: string, userRequestId: string, isAuthorOfPost: boolean): Promise<void> {
+  async deleteCommentById(id: string, userRequestId: string, isAuthorOfPost: boolean, isComment: boolean): Promise<void> {
     try {
-      await this.postRepository.deleteCommentById(id, userRequestId, isAuthorOfPost);
+      await this.postRepository.deleteCommentById(id, userRequestId, isAuthorOfPost, isComment);
     } catch (error: any) {
       throw error;
     }
