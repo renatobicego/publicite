@@ -76,24 +76,29 @@ export class NotificationPostService implements NotificationPostServiceInterface
                 "Missing comment, userIdFrom, postId, or userIdTo."
             );
         }
-
+        console.log(userIdFrom)
+        console.log(userIdTo)
         const session = await this.connection.startSession();
         try {
             this.logger.log(`Iniciando transacción para el comentario en el post ID: ${postId}`);
 
             const postComment = await session.withTransaction(async () => {
 
-                const notificationId = await this.notificationRepository.savePostNotification(
-                    notificationPostComment,
-                    session
-                );
 
-                await this.userService.pushNotificationToUserArrayNotifications(
-                    notificationId,
-                    userIdTo,
-                    userIdFrom,
-                    session
-                );
+
+                if (userIdFrom != userIdTo) {
+                    const notificationId = await this.notificationRepository.savePostNotification(
+                        notificationPostComment,
+                        session
+                    );
+                    await this.userService.pushNotificationToUserArrayNotifications(
+                        notificationId,
+                        userIdTo,
+                        userIdFrom,
+                        session
+                    );
+                }
+
 
 
                 return await this.postService.makeCommentSchemaAndPutCommentInPost(
@@ -110,7 +115,6 @@ export class NotificationPostService implements NotificationPostServiceInterface
             this.logger.error(`Error al procesar el comentario en el post ID: ${postId}`, error.stack);
             throw new Error(`Error al guardar la notificación y comentario: ${error.message}`);
         } finally {
-
             session.endSession();
         }
     }
@@ -137,18 +141,20 @@ export class NotificationPostService implements NotificationPostServiceInterface
 
             const commentResponse = await session.withTransaction(async () => {
 
-                const notificationId = await this.notificationRepository.savePostNotification(
-                    notificationPostResponse,
-                    session
-                );
+                if (userIdFrom != userIdTo) {
+                    const notificationId = await this.notificationRepository.savePostNotification(
+                        notificationPostResponse,
+                        session
+                    );
 
-                await this.userService.pushNotificationToUserArrayNotifications(
-                    notificationId,
-                    userIdTo,
-                    userIdFrom,
-                    session
-                );
+                    await this.userService.pushNotificationToUserArrayNotifications(
+                        notificationId,
+                        userIdTo,
+                        userIdFrom,
+                        session
+                    );
 
+                }
 
                 return await this.postService.makeResponseAndPutResponseInComment(
                     author,

@@ -13,7 +13,7 @@ export interface PostAdapterInterface {
   create(post: PostRequest): Promise<any>;
   deletePostById(id: string): Promise<void>;
   desactivatePostByUserId(id: string): Promise<void>;
-  deleteCommentById(id: string, userRequestId: string, isAuthorOfPost: boolean): Promise<void>;
+  deleteCommentById(id: string, userRequestId: string, isAuthorOfPost: boolean, isComment: boolean): Promise<void>;
   findPostsByAuthorId(id: string): Promise<void>;
   findPostById(id: string): Promise<void>;
   findPostByIdAndCategoryPostsRecomended(id: string): Promise<any>;

@@ -170,26 +170,18 @@ export class UserService implements UserServiceInterface {
       //hacemos el mapping
       const userRelationMap = makeUserRelationMapWithoutHierarchy(userRelationFilter, _id, visibility)
 
-      this.logger.log("Making post condition...")
+      this.logger.log("Making visibility condition...")
       // generamos la condicion de busqueda
-      const postsCondition = Array.from(userRelationMap.entries()).map(
+      const conditionOfVisibility = Array.from(userRelationMap.entries()).map(
         ([key, value]) => ({
           author: key,
           'visibility.post': { $in: value },
         }),
       );
 
-      this.logger.log("Making magazine condition...")
-      const magazineCondition = Array.from(userRelationMap.entries()).map(
-        ([key, value]) => ({
-          user: key,
-          visibility: { $in: value },
-        }),
-      );
-
       //buscar user con las condiciones
       this.logger.log("Searching user with magazine and posts conditions...")
-      const user = await this.userRepository.getProfileUserByExternalUserById(_id, postsCondition, magazineCondition);
+      const user = await this.userRepository.getProfileUserByExternalUserById(_id, conditionOfVisibility);
 
 
       // agregamos logica de isFriendRequestPending

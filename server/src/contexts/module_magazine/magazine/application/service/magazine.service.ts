@@ -48,8 +48,6 @@ export class MagazineService implements MagazineServiceInterface {
           magazineId,
           magazineAdmin,
         )
-
-
         return this.magazineRepository.addNewMagazineGroupSection(
           magazineId,
           section
