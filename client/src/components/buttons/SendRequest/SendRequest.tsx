@@ -8,6 +8,7 @@ const SendRequest = ({
   removeMargin = true,
   idToSendRequest,
   previousUserRelation,
+  setIsRequestSent,
 }: {
   isGroup?: boolean;
   variant?:
@@ -21,6 +22,7 @@ const SendRequest = ({
   removeMargin?: boolean;
   idToSendRequest: string;
   previousUserRelation?: UserRelations; // for editing previous type of relation
+  setIsRequestSent: () => void;
 }) => {
   return (
     <>
@@ -29,6 +31,7 @@ const SendRequest = ({
           removeMargin={removeMargin}
           variant={variant}
           groupId={idToSendRequest}
+          setIsRequestSent={setIsRequestSent}
         />
       ) : (
         <SendUserRequest
@@ -36,6 +39,7 @@ const SendRequest = ({
           removeMargin={removeMargin}
           idToSendRequest={idToSendRequest}
           previousUserRelation={previousUserRelation}
+          setIsRequestSent={setIsRequestSent}
         />
       )}
     </>

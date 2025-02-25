@@ -5,9 +5,14 @@ import { putMemberGroup } from "@/services/groupsService";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { useRouter } from "next/navigation";
 
-const AcceptGroupInvitation = ({ groupId }: { groupId: string }) => {
+const AcceptGroupInvitation = ({
+  groupId,
+  setIsRequestSent,
+}: {
+  groupId: string;
+  setIsRequestSent: React.Dispatch<React.SetStateAction<boolean>>;
+}) => {
   //router to refresh
-  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const handleAccept = async () => {
     setIsSubmitting(true);
@@ -16,8 +21,8 @@ const AcceptGroupInvitation = ({ groupId }: { groupId: string }) => {
       toastifyError(res.error as string);
       return;
     }
+    setIsRequestSent(true);
     toastifySuccess(res.message as string);
-    router.refresh();
     setIsSubmitting(false);
   };
   return (

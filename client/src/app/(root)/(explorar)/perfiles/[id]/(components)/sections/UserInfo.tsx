@@ -5,15 +5,7 @@ import {
   UserBusiness,
   UserRelations,
 } from "@/types/userTypes";
-import {
-  Button,
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownTrigger,
-  Image,
-  Link,
-} from "@nextui-org/react";
+import { Image, Link } from "@nextui-org/react";
 import {
   FaFacebook,
   FaInstagram,
@@ -67,6 +59,7 @@ const UserInfo = ({
                   removeMargin={false}
                   idToSendRequest={user._id}
                   previousUserRelation={isMyContact}
+                  setIsRequestSent={() => window.location.reload()}
                 />
               )}
               <p className="text-xs md:text-small ml-2.5 italic">
@@ -97,6 +90,7 @@ const UserInfo = ({
             variant="solid"
             removeMargin={false}
             idToSendRequest={user._id}
+            setIsRequestSent={() => window.location.reload()}
           />
         );
     }
@@ -123,7 +117,9 @@ const UserInfo = ({
         </div>
         <h6>@{user.username}</h6>
         {user.description && (
-          <p className="text-small md:text-sm lg:text-base">{user.description}</p>
+          <p className="text-small md:text-sm lg:text-base">
+            {user.description}
+          </p>
         )}
         <div className="flex items-center gap-1">
           <TbWorldPin className="size-4 min-w-4" />

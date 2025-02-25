@@ -18,7 +18,6 @@ import { useSocket } from "@/app/socketProvider";
 import { emitUserRelationNotification } from "@/components/notifications/users/emitNotifications";
 import { UserRelations } from "@/types/userTypes";
 import { toastifySuccess } from "@/utils/functions/toastify";
-import { useRouter } from "next/navigation";
 import { handleUserRelationNotificationError } from "@/components/notifications/users/actions";
 
 const SendUserRequest = ({
@@ -26,6 +25,7 @@ const SendUserRequest = ({
   removeMargin,
   idToSendRequest,
   previousUserRelation,
+  setIsRequestSent,
 }: {
   variant?:
     | "light"
@@ -38,13 +38,13 @@ const SendUserRequest = ({
   removeMargin?: boolean;
   idToSendRequest: string;
   previousUserRelation?: UserRelations;
+  setIsRequestSent: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [value, setValue] = useState(
     previousUserRelation ? previousUserRelation.typeRelationA : ""
   );
   const { updateSocketToken } = useSocket();
-  const router = useRouter();
 
   const handleSelectionChange = (e: ChangeEvent<HTMLSelectElement>) => {
     setValue(e.target.value);
@@ -65,7 +65,7 @@ const SendUserRequest = ({
     )
       .then(() => {
         toastifySuccess("Solicitud enviada correctamente");
-        router.refresh();
+        setIsRequestSent(true);
       })
       .catch(handleUserRelationNotificationError);
   };

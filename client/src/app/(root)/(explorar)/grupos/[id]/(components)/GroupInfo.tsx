@@ -9,6 +9,7 @@ import { GetGroups } from "@/types/groupTypes";
 import AcceptGroupInvitation from "@/components/buttons/SendRequest/AcceptGroupInvitation";
 import { User } from "@/types/userTypes";
 import GroupNote from "@/components/GroupNote/GroupNote";
+import GroupActionButton from "./GroupActionButton";
 
 const GroupInfo = async ({
   group,
@@ -23,29 +24,6 @@ const GroupInfo = async ({
     group.group;
   const { isMember, hasGroupRequest, hasJoinRequest } = group;
 
-  const actionButtonToReturn = () => {
-    switch (true) {
-      case isMember:
-        return <RulesPopover rules={rules} />;
-      case hasGroupRequest:
-        return <AcceptGroupInvitation groupId={_id} />;
-      case hasJoinRequest:
-        return (
-          <p className="text-sm lg:text-small text-light-text">
-            Solicitud Enviada
-          </p>
-        );
-      default:
-        return (
-          <SendRequest
-            variant="solid"
-            removeMargin={false}
-            isGroup
-            idToSendRequest={_id}
-          />
-        );
-    }
-  };
   return (
     <section className="flex gap-4 md:gap-6 xl:gap-8 w-full max-md:flex-col md:max-lg:flex-wrap">
       <Image
@@ -76,7 +54,13 @@ const GroupInfo = async ({
             </SecondaryButton>
           )}
 
-          {actionButtonToReturn()}
+          <GroupActionButton
+            isMember={isMember}
+            hasGroupRequest={hasGroupRequest}
+            hasJoinRequest={hasJoinRequest}
+            rules={rules}
+            groupId={_id}
+          />
           <OptionsDropdown
             group={group.group}
             membersIds={(members as User[]).map((member) => member._id)}

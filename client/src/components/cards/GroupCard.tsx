@@ -4,6 +4,7 @@ import { FILE_URL, GROUPS } from "@/utils/data/urls";
 import SendRequest from "../buttons/SendRequest/SendRequest";
 import SecondaryButton from "../buttons/SecondaryButton";
 import AcceptGroupInvitation from "../buttons/SendRequest/AcceptGroupInvitation";
+import { useState } from "react";
 
 const GroupCard = ({
   group,
@@ -13,11 +14,12 @@ const GroupCard = ({
   isUserProfile?: boolean;
 }) => {
   const { group: groupData } = group;
+  const [isRequestSent, setIsRequestSent] = useState(false);
   const actionButtonToReturn = () => {
     switch (true) {
       case isUserProfile:
         return;
-      case group.isMember:
+      case group.isMember || (isRequestSent && group.hasGroupRequest):
         return (
           <SecondaryButton
             variant="light"
@@ -28,16 +30,27 @@ const GroupCard = ({
             Ver Grupo
           </SecondaryButton>
         );
-      case group.hasGroupRequest:
-        return <AcceptGroupInvitation groupId={groupData._id} />;
-      case group.hasJoinRequest:
+      case group.hasGroupRequest && !isRequestSent:
+        return (
+          <AcceptGroupInvitation
+            groupId={groupData._id}
+            setIsRequestSent={setIsRequestSent}
+          />
+        );
+      case group.hasJoinRequest || isRequestSent:
         return (
           <p className="text-sm lg:text-small text-light-text">
             Solicitud Enviada
           </p>
         );
       default:
-        return <SendRequest isGroup idToSendRequest={groupData._id} />;
+        return (
+          <SendRequest
+            isGroup
+            idToSendRequest={groupData._id}
+            setIsRequestSent={() => setIsRequestSent(true)}
+          />
+        );
     }
   };
   return (
@@ -46,7 +59,7 @@ const GroupCard = ({
         <Avatar
           className="shrink-0 bg-white"
           isBordered
-          as={Link} 
+          as={Link}
           href={`${GROUPS}/${groupData._id}`}
           src={
             groupData.profilePhotoUrl

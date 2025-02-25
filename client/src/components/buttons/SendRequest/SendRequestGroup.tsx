@@ -7,13 +7,13 @@ import { emitGroupNotification } from "@/components/notifications/groups/emitNot
 import { useSocket } from "@/app/socketProvider";
 import { useUserData } from "@/app/(root)/providers/userDataProvider";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { handleGroupNotificationError } from "@/components/notifications/groups/actions";
 
 const SendRequestGroup = ({
   variant,
   removeMargin,
   groupId,
+  setIsRequestSent,
 }: {
   variant:
     | "light"
@@ -25,10 +25,10 @@ const SendRequestGroup = ({
     | "ghost";
   removeMargin: boolean;
   groupId: string;
+  setIsRequestSent: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const { usernameLogged, userIdLogged } = useUserData();
   const { updateSocketToken } = useSocket();
-  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const sendRequestJoinGroup = async () => {
     setIsSubmitting(true);
@@ -58,7 +58,7 @@ const SendRequestGroup = ({
           })
           .catch(handleGroupNotificationError);
       });
-      router.refresh();
+      setIsRequestSent(true);
     } catch (error) {
       toastifyError(
         "Error al enviar la solicitud. Por favor intenta de nuevo."
