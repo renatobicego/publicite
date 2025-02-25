@@ -11,6 +11,13 @@ export class PaymentNotificationService {
         private readonly logger: MyLoggerService,
         private readonly emmiter: EmitterService
     ) { }
+
+    get getLogger() {
+        return this.logger;
+    }
+    get getEmmiter() {
+        return this.emmiter
+    }
     async sendPaymentNotification(data: any) {
         try {
             const {
@@ -48,8 +55,9 @@ export class PaymentNotificationService {
                 retryAttemp: retryAttemp ?? 1,
                 userId: userId
             }
-
+            this.logger.log("emmiting" + event + " to user id " + userId);
             await this.emmiter.emitAsync(subscription_event, paymentDataFromMeli);
+            console.log("asdasd")
         } catch (error: any) {
             throw error;
         }
