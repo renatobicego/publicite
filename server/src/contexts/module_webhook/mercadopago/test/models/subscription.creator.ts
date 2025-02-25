@@ -1,6 +1,6 @@
 import { Subscription_preapproval } from "../../domain/entity_mp/subscription_preapproval";
 
-export function get_subscription_preapproval(external_reference: string, subcriptionPlanMeli_id: string): Subscription_preapproval {
+export function get_subscription_preapproval(external_reference: string, subcriptionPlanMeli_id: string, free_trial: boolean): Subscription_preapproval {
     return {
         id: "sub_12345",
         payer_id: 123456789,
@@ -24,7 +24,11 @@ export function get_subscription_preapproval(external_reference: string, subcrip
             end_date: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString(),
             billing_day_proportional: false,
             has_billing_day: true,
-            free_trial: null
+            free_trial: free_trial ? {
+                frequency: 1,
+                first_invoice_offset: 1,
+                frequency_type: "days",
+            } : null
         },
         summarized: {
             quotas: 12,
