@@ -220,8 +220,8 @@ export class PostResolver {
     _id: string,
     @Args('isAuthorOfPost', { type: () => Boolean })
     isAuthorOfPost: boolean,
-    @Args('isComment', { type: () => Boolean })
-    isComment: boolean,
+    @Args('isReply', { type: () => Boolean })
+    isReply: boolean,
     @Context() context: { req: CustomContextRequestInterface },
   ): Promise<any> {
     try {
@@ -230,7 +230,7 @@ export class PostResolver {
         _id,
         userRequestId,
         isAuthorOfPost,
-        isComment
+        isReply
       );
     } catch (error: any) {
       throw error;

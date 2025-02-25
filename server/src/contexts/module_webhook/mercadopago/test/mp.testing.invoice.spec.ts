@@ -19,6 +19,8 @@ import { MpInvoiceService } from "../application/service/mp-invoice.service";
 import { PaymentNotificationService } from "../infastructure/adapters/handler/PaymentNotificationService";
 import { MpSubscriptionService } from "../application/service/mp-subscription.service";
 import { statusOfSubscription } from "../domain/service/mp-subscription.service.interface";
+import { EmitterService } from "src/contexts/module_shared/event-emmiter/emmiter";
+import { ErrorDocument } from "../infastructure/schemas/error.schema";
 
 
 
@@ -29,6 +31,7 @@ describe('MercadopagoService - Invoice - CREATE METHODS  ', () => {
     let subscriptionPlanModel: Model<SubscriptionPlanDocument>;
     let subscriptionModel: Model<SubscriptionDocument>;
     let paymentModel: Model<PaymentDocument>;
+    let errorModel: Model<ErrorDocument>;
 
 
     let mockFetchToMpAdapter: any;
@@ -36,6 +39,7 @@ describe('MercadopagoService - Invoice - CREATE METHODS  ', () => {
     let mpInvoiceService: MpServiceInvoiceInterface;
     let paymentNotificationService: PaymentNotificationService;
     let subscriptionService: MpSubscriptionService;
+    let emmiter: EmitterService;
     const external_reference = "67420686b02bdd1f9f0ef446";
     const authorized_payments_id = 456;
     const mp_preapproval_id = "8f03d95edd694438afe49d778339a832";
@@ -51,7 +55,9 @@ describe('MercadopagoService - Invoice - CREATE METHODS  ', () => {
         subscriptionPlanModel = moduleRef.get<Model<SubscriptionPlanDocument>>(getModelToken(SubscriptionPlanModel.modelName));
         subscriptionModel = moduleRef.get<Model<SubscriptionDocument>>(getModelToken('Subscription'));
         paymentModel = moduleRef.get<Model<PaymentDocument>>(getModelToken('Payment'));
+        errorModel = moduleRef.get<Model<ErrorDocument>>(getModelToken('Error'));
 
+        emmiter = moduleRef.get<EmitterService>(EmitterService);
         subscriptionService = moduleRef.get<MpSubscriptionService>("SubscriptionServiceInterface");
         paymentNotificationService = moduleRef.get<PaymentNotificationService>(PaymentNotificationService);
         mpHandlerEvents = moduleRef.get<MpHandlerEvents>('MpHandlerEventsInterface');
@@ -122,7 +128,7 @@ describe('MercadopagoService - Invoice - CREATE METHODS  ', () => {
             payment
         );
 
-        // Mock de `getDataFromMp_fetch`
+
         mockFetchToMpAdapter.getDataFromMp_fetch.mockResolvedValue(maockedSubscription_authorized_paymentResponse);
 
 
@@ -467,7 +473,30 @@ describe('MercadopagoService - Invoice - CREATE METHODS  ', () => {
 
     describe('MercadopagoService - Invoice - update_plan_user function ', () => {
 
-        it('Should try 3 times if result of emmiter is false and create a new error schema ', async () => { })
+        it('Should try 3 times if result of emmiter is false and create a new error schema ', async () => {
+            const event = "downgrade_plan_contact";
+            const userId = "q2e"
+            const errorExpected = {
+                user: userId,
+                code: "4545",
+                message: "No se pudo actualizar el plan del usuario luego de múltiples intentos",
+                result: false,
+                event: event
+            }
+            const emitAsyncSpy = jest.spyOn(emmiter, 'emitAsync');
+            emitAsyncSpy.mockResolvedValue(false);
+
+            mpHandlerEvents.update_plan_user(userId, event)
+            const errorSaved = await errorModel.findOne({ user: userId })
+            if (!errorSaved) throw new Error("error not found");
+            expect(errorSaved.user).toBe(errorExpected.user)
+            expect(errorSaved.code).toBe(errorExpected.code)
+            expect(errorSaved.message).toBe(errorExpected.message)
+            expect(errorSaved.result).toBe(errorExpected.result)
+            expect(errorSaved.event).toBe(errorExpected.event)
+
+
+        })
         it('Should return true if result of emmiter is true ', async () => { })
     })
 
