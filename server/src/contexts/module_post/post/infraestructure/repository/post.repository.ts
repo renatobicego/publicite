@@ -242,7 +242,7 @@ export class PostRepository implements PostRepositoryInterface {
     id: string,
     userRequestId: string,
     isAuthorOfPost: boolean,
-    isComment: boolean
+    isReply: boolean
   ): Promise<void> {
     try {
       if (isAuthorOfPost) {
@@ -260,7 +260,7 @@ export class PostRepository implements PostRepositoryInterface {
             this.logger.log("Comment response deleted successfully.");
           }
         }
-        if (isComment) {
+        if (isReply) {
           await this.postCommentDocument.updateOne({ response: id }, { $set: { response: null } });
           await this.postCommentDocument.deleteOne({ _id: id });
           this.logger.log("Comment response deleted successfully.");

@@ -241,7 +241,7 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
 
       const isCardValidation = await this.is_a_card_validation(subscription_authorized_payment, "subscription_authorized_payment.created");
       if (isCardValidation) return Promise.resolve(true);
-      
+
       const resultOfInvoice = await this.mpInvoiceService.saveInvoice(
         subscription_authorized_payment,
       );
@@ -462,7 +462,7 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
       }
     }
 
-    // Si llegamos aquí, significa que todos los intentos fallaron
+
     const errorBody = {
       code: "4545",
       message: "No se pudo actualizar el plan del usuario luego de múltiples intentos",
@@ -480,8 +480,6 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
 
   async create_error_schema(user: string, body: any) {
     try {
-      console.log(body)
-
       await this.errorService.createNewError(user, body);
     } catch (error: any) {
       throw error;
@@ -515,47 +513,3 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
 
 
 }
-
-//Test payment notif
-/*
-async test_payment_notif(testType: string, userId: string) {
-  const subscription = {
-    subscriptionPlan: "66c49508e80296e90ec637d8"
-  }
-
-  let paymentDataFromMeli: PaymentDataFromMeli = {
-    event: payment_notification_events_enum.payment_approved,
-    subscriptionPlanId: subscription.subscriptionPlan,
-    reason: "Publicite premium",
-    status: 'approved',
-    retryAttemp: "0",
-    userId: userId,
-  }
-
-  if (testType === 'rejected') {
-    paymentDataFromMeli = {
-      event: payment_notification_events_enum.payment_rejected,
-      subscriptionPlanId: subscription.subscriptionPlan,
-      reason: "Publicite premium",
-      status: 'rejected',
-      retryAttemp: "2",
-      userId: userId,
-    }
-  }
-
-  if (testType === 'pending') {
-    paymentDataFromMeli = {
-      event: payment_notification_events_enum.payment_pending,
-      subscriptionPlanId: subscription.subscriptionPlan,
-      reason: "Publicite premium",
-      status: 'pending',
-      retryAttemp: "0",
-      userId: userId,
-    }
-  }
-
-  await this.emmiter.emitAsync(subscription_event, paymentDataFromMeli);
-
-
-}
-  */
