@@ -1012,7 +1012,7 @@ type Mutation {
   """
   Elimina el comentario en un post, para eliminarlo si o si tenes que ser el creador del comentario
   """
-  deleteCommentById(_id: String!, isAuthorOfPost: Boolean!, isComment: Boolean!): String
+  deleteCommentById(_id: String!, isAuthorOfPost: Boolean!, isReply: Boolean!): String
 
   """
   Edita el comentario de un post. Tenes que ser el dueño del comentario para editarlo

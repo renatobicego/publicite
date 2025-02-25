@@ -361,8 +361,8 @@ export class UserRepository implements UserRepositoryInterface {
 
   async getProfileUserByExternalUserById(_id: string, condition: any): Promise<any> {
     try {
-      const conditionOfVisibility = condition[0]['visibility.post']
-      conditionOfVisibility["$in"].push("public");
+      const conditionOfVisibility = condition[0].visibility
+      console.log(conditionOfVisibility)
 
 
       try {

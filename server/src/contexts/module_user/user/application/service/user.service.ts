@@ -19,6 +19,7 @@ import { UserRelation } from '../../domain/entity/userRelation.entity';
 import { calculateContactLimitFromUser, calculatePostLimitFromUser, userWithPostsAndSubscriptions } from '../functions/calculatePostLimitAndContactLimit';
 import { ommitUndefinedValues } from './ommit-function';
 import { makeUserRelationMapWithoutHierarchy } from 'src/contexts/module_shared/utils/functions/makeUserRelationHierarchyMap';
+import { Visibility } from 'src/contexts/module_user/board/infrastructure/enum/visibility.enum.board';
 
 
 
@@ -158,32 +159,44 @@ export class UserService implements UserServiceInterface {
     try {
       this.logger.log("finding user profile...")
       // Traemos las relaciones del usuario
-      let userRelations = await this.getRelationsFromUserByUserId(_id);
+      let userRelations: any = await this.getRelationsFromUserByUserId(_id);
+      let conditionOfVisibility: any
+      let userRelationMap: Map<String, String[]> = new Map();
+      if (userRelations && userRelations.length > 0) {
 
-      const userRelationFilter = userRelations.filter((userRelation: { userA: ObjectId, userB: ObjectId }) =>
-        userRelation.userA.toString() === _id || userRelation.userB.toString() === _id
-      );
-      this.logger.log("User relation filter success")
+        const userRelationFilter = userRelations.filter((userRelation: { userA: ObjectId, userB: ObjectId }) =>
+          userRelation.userA.toString() === _id || userRelation.userB.toString() === _id
+        );
+        this.logger.log("User relation filter success")
 
-      const visibility = userRelationFilter[0].typeRelationA;
+        const visibility = userRelationFilter[0].typeRelationA;
 
-      //hacemos el mapping
-      const userRelationMap = makeUserRelationMapWithoutHierarchy(userRelationFilter, _id, visibility)
+        //hacemos el mapping
+        userRelationMap = makeUserRelationMapWithoutHierarchy(userRelationFilter, _id, visibility)
+      }
 
-      this.logger.log("Making visibility condition...")
-      // generamos la condicion de busqueda
-      const conditionOfVisibility = Array.from(userRelationMap.entries()).map(
-        ([key, value]) => ({
-          author: key,
-          'visibility.post': { $in: value },
-        }),
-      );
+      if (userRelationMap && userRelationMap.size > 0) {
+        this.logger.log("Making visibility condition...")
+        // generamos la condicion de busqueda
+        conditionOfVisibility = Array.from(userRelationMap.entries()).map(
+          ([key, value]) => ({
+            author: key,
+            visibility: { $in: value },
+          }),
+        )
+      } else {
+        conditionOfVisibility = [
+          {
+            author: "none",
+            visibility: { $in: ["public"] }
+          }
+        ]
+      }
 
-      //buscar user con las condiciones
+
+
       this.logger.log("Searching user with magazine and posts conditions...")
       const user = await this.userRepository.getProfileUserByExternalUserById(_id, conditionOfVisibility);
-
-
       // agregamos logica de isFriendRequestPending
       if (user) {
         user.isFriendRequestPending = false;
