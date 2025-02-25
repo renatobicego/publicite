@@ -862,8 +862,6 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
       }
     } catch (error: any) {
       throw error;
-    } finally {
-      session.endSession();
     }
 
   }
