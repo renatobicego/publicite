@@ -33,6 +33,7 @@ import { checkIfanyDataWasModified } from 'src/contexts/module_shared/utils/func
 import { EmitterService } from 'src/contexts/module_shared/event-emmiter/emmiter';
 import { downgrade_plan_contact_notification } from 'src/contexts/module_shared/event-emmiter/events';
 import { throwDeprecation } from 'process';
+import { UserMagazineDocument, UserMagazineModel } from 'src/contexts/module_magazine/magazine/infrastructure/schemas/magazine.user.schema';
 
 @Injectable()
 export class UserRepository implements UserRepositoryInterface {
@@ -54,8 +55,8 @@ export class UserRepository implements UserRepositoryInterface {
     @InjectModel(UserRelationModel.modelName)
     private readonly userRelation: Model<UserRelationDocument>,
 
-    @InjectModel(MagazineModel.modelName)
-    private readonly magazineModel: Model<MagazineDocument>,
+    @InjectModel(UserMagazineModel.modelName)
+    private readonly userMagazineModel: Model<UserMagazineDocument>,
 
     @Inject('SectorRepositoryInterface')
     private readonly sectorRepository: SectorRepositoryInterface,
@@ -79,7 +80,6 @@ export class UserRepository implements UserRepositoryInterface {
           '_id profilePhotoUrl username contact lastName name businessName countryRegion userType board description email suscriptions groups magazines posts friendRequests userRelations',
         )
         .populate([
-          { path: 'magazines', select: '_id' },
           { path: 'board' },
           { path: 'groups' },
           { path: 'contact' },
@@ -112,7 +112,7 @@ export class UserRepository implements UserRepositoryInterface {
 
 
       if (user.magazines.length > 0) {
-        const populatedMagazines: any = await this.magazineModel
+        const populatedMagazines: any = await this.userMagazineModel
           .find({ _id: { $in: user.magazines } })
           .select('_id name description sections')
           .populate({
@@ -121,10 +121,11 @@ export class UserRepository implements UserRepositoryInterface {
             populate: {
               path: 'posts',
               model: 'Post',
-              select: '_id imagesUrls'
+              select: '_id imagesUrls',
             },
           })
           .lean();
+
         user.magazines = populatedMagazines as any[];
       }
 
@@ -358,9 +359,13 @@ export class UserRepository implements UserRepositoryInterface {
   }
 
 
-  async getProfileUserByExternalUserById(_id: string, postsCondition: any, magazineCondition: any): Promise<any> {
+  async getProfileUserByExternalUserById(_id: string, condition: any): Promise<any> {
     try {
-      const visibility = postsCondition[0]['visibility.post']
+      const conditionOfVisibility = condition[0]['visibility.post']
+      conditionOfVisibility["$in"].push("public");
+
+      console.log(conditionOfVisibility)
+
       try {
         const userPopulate_userRelation =
           '_id userType name lastName businessName profilePhotoUrl username';
@@ -370,7 +375,6 @@ export class UserRepository implements UserRepositoryInterface {
             '_id profilePhotoUrl username contact lastName name businessName countryRegion userType board description email suscriptions groups magazines posts friendRequests userRelations',
           )
           .populate([
-            { path: 'magazines', select: '_id' },
             { path: 'board' },
             { path: 'groups' },
             { path: 'contact' },
@@ -394,7 +398,7 @@ export class UserRepository implements UserRepositoryInterface {
                 '_id author visibility imagesUrls title description price reviews frequencyPrice toPrice petitionType postType endDate isActive reviews',
               populate: { path: 'reviews', model: 'PostReview', strictPopulate: false },
               match: {
-                'visibility.post': visibility
+                'visibility.post': conditionOfVisibility
               }
 
             },
@@ -406,8 +410,8 @@ export class UserRepository implements UserRepositoryInterface {
 
 
         if (user.magazines.length > 0) {
-          const populatedMagazines: any = await this.magazineModel
-            .find({ _id: { $in: user.magazines } })
+          const populatedMagazines: any = await this.userMagazineModel
+            .find({ _id: { $in: user.magazines }, visibility: conditionOfVisibility })
             .select('_id name description sections')
             .populate({
               path: 'sections',
@@ -417,7 +421,7 @@ export class UserRepository implements UserRepositoryInterface {
                 model: 'Post',
                 select: '_id imagesUrls',
                 match: {
-                  'visibility.post': visibility
+                  'visibility.post': conditionOfVisibility
                 }
               },
             })

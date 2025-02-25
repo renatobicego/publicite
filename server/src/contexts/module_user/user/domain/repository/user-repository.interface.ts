@@ -33,7 +33,7 @@ export interface UserRepositoryInterface {
   getLimitContactsFromUserByUserId(userRequestId: string, session?: any): Promise<any>
   getActiveRelationsOfUser(userRequestId: string, session?: any): Promise<any>
   getPostAndContactLimitsFromUserByUserId(author: string): Promise<any>
-  getProfileUserByExternalUserById(_id: string, postsCondition: any, magazineCondition: any): Promise<any>
+  getProfileUserByExternalUserById(_id: string, conditionOfVisibility: any): Promise<any>
 
   pushNotification(notification: any, userId: string, session?: any): Promise<any>;
   pushNewFriendRequestOrRelationRequestToUser(notificationId: Types.ObjectId, userNotificationOwner: string, session: any): Promise<any>

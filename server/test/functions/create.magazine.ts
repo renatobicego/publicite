@@ -21,7 +21,8 @@ async function createUserMagazine(
     magazine_id: Types.ObjectId,
     magazineModel: any,
     author: Types.ObjectId,
-    sectios: Types.ObjectId[]) {
+    sectios: Types.ObjectId[],
+    visibility: string) {
     const MAGAZINE = await magazineModel.create({
         _id: magazine_id,
         name: 'Magazine 1',
@@ -29,7 +30,9 @@ async function createUserMagazine(
         ownerType: "user",
         description: 'Description 1',
         user: author,
-        visibility: 'public',
+        visibility: visibility,
+        kind: 'UserMagazine'
+
     });
 
     return MAGAZINE

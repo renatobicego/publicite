@@ -20,6 +20,7 @@ import { MagazineSectionModel } from "src/contexts/module_magazine/magazine/infr
 import { GroupModel } from "src/contexts/module_group/group/infrastructure/schemas/group.schema";
 import NotificationModel from "../../notification/infrastructure/schemas/notification.schema";
 import PostReviewModel from "src/contexts/module_post/PostReview/infrastructure/schemas/review.schema";
+import { MagazineModelSharedModule } from "src/contexts/module_shared/sharedSchemas/magazine.model.schema";
 
 const clerk_update_module = async (): Promise<TestingModule> => {
     dotenv.config({ path: '.env.test' });
@@ -80,8 +81,8 @@ const make_relation_module = async (): Promise<TestingModule> => {
                 { name: GroupModel.modelName, schema: GroupModel.schema },
                 { name: NotificationModel.modelName, schema: GroupModel.schema },
 
-
             ]),
+            MagazineModelSharedModule
         ],
         providers: [
             MyLoggerService,

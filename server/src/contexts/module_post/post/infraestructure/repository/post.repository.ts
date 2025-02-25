@@ -237,7 +237,7 @@ export class PostRepository implements PostRepositoryInterface {
     try {
       if (isAuthorOfPost) {
         const result = await this.postDocument.updateOne(
-          { author: userRequestId },
+          { author: userRequestId, comments: id },
           { $pull: { comments: id } },
         );
         if (result.modifiedCount > 0) {
