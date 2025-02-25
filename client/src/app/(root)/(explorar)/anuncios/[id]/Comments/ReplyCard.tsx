@@ -4,13 +4,16 @@ import { PostComment } from "@/types/postTypes";
 import { Card, CardBody, CardHeader } from "@nextui-org/react";
 import { FaReply } from "react-icons/fa6";
 import DeleteComment from "./DeleteComment";
+import { Dispatch, SetStateAction } from "react";
 
 const ReplyCard = ({
   reply,
   isAuthor,
+  setComments,
 }: {
   reply: PostComment;
   isAuthor: boolean;
+  setComments: Dispatch<SetStateAction<PostComment[]>>;
 }) => {
   return (
     <Card shadow="sm" className="w-11/12 md:w-5/6 xl:w-3/4 px-2.5 py-2">
@@ -26,7 +29,12 @@ const ReplyCard = ({
       <CardBody className="flex justify-between gap-1 flex-row">
         <p className="text-xs md:text-sm xl:text-base">{reply.comment}</p>
         {isAuthor && (
-          <DeleteComment commentId={reply._id} isAuthorOfPost isReply />
+          <DeleteComment
+            commentId={reply._id}
+            isAuthorOfPost
+            isReply
+            setComments={setComments}
+          />
         )}
       </CardBody>
     </Card>

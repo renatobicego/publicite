@@ -27,9 +27,11 @@ const DeleteComment = ({
     toastifySuccess(res.message as string);
     if (isReply) {
       setComments((prev) =>
-        prev.filter((c) => {
-          if (c.response?._id === commentId) return false;
-          return true;
+        prev.map((c) => {
+          if (c.response?._id === commentId) {
+            c.response = undefined;
+          }
+          return c;
         })
       );
       return;
