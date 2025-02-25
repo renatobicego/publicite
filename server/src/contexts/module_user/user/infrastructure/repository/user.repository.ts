@@ -364,7 +364,6 @@ export class UserRepository implements UserRepositoryInterface {
       const conditionOfVisibility = condition[0]['visibility.post']
       conditionOfVisibility["$in"].push("public");
 
-      console.log(conditionOfVisibility)
 
       try {
         const userPopulate_userRelation =
