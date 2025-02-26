@@ -111,7 +111,7 @@ const ElementShared = ({
       </NotificationBody>
       <NotificationOptions
         date={showDate(parseIsoDate(notification.date))}
-        items={getOptions()}
+        items={getOptions() as any}
       />
     </NotificationCard>
   );
