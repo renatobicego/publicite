@@ -19,7 +19,7 @@ const SelectSolapa = ({
     },
     {
       key: "contactos",
-      label: "Contactos",
+      label: "Anuncios de Agenda de Contactos",
       requiresLogin: true,
     },
     {
