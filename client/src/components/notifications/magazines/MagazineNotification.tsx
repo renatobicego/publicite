@@ -69,6 +69,7 @@ const MagazineNotificationCard = ({
     optionsList.push({
       label: "Ver Revista",
       as: Link,
+      color: "default",
       target: "_blank",
       className: "text-text-color",
       href: `${MAGAZINES}/${magazine._id}`,

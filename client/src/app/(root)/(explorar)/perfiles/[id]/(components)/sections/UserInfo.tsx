@@ -59,7 +59,6 @@ const UserInfo = ({
                   removeMargin={false}
                   idToSendRequest={user._id}
                   previousUserRelation={isMyContact}
-                  setIsRequestSent={() => window.location.reload()}
                 />
               )}
               <p className="text-xs md:text-small ml-2.5 italic">
@@ -90,7 +89,6 @@ const UserInfo = ({
             variant="solid"
             removeMargin={false}
             idToSendRequest={user._id}
-            setIsRequestSent={() => window.location.reload()}
           />
         );
     }

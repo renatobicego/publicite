@@ -44,6 +44,7 @@ const ElementShared = ({
         options.push({
           label: "Ver Grupo",
           as: Link,
+          color: "default",
           target: "_blank",
           className: "text-text-color",
           href: `${GROUPS}/${_id}`,
@@ -52,6 +53,7 @@ const ElementShared = ({
         options.push({
           label: "Ver Revista",
           as: Link,
+          color: "default",
           target: "_blank",
           className: "text-text-color",
           href: `${MAGAZINES}/${_id}`,
@@ -60,6 +62,7 @@ const ElementShared = ({
         options.push({
           label: "Ver Anuncio",
           as: Link,
+          color: "default",
           target: "_blank",
           className: "text-text-color",
           href: `${POSTS}/${_id}`,
@@ -67,6 +70,7 @@ const ElementShared = ({
         options.push({
           label: "Crear Revista Compartida",
           as: Link,
+          color: "default",
           target: "_blank",
           className: "text-text-color",
           href: `${CREATE_MAGAZINE}/compartida/${userIdFrom}/${_id}`,
@@ -75,6 +79,7 @@ const ElementShared = ({
         options.push({
           label: "Ver Perfil",
           as: Link,
+          color: "default",
           target: "_blank",
           className: "text-text-color",
           href: `${PROFILE}/${_id}`,

@@ -8,12 +8,12 @@ import { Group } from "@/types/groupTypes";
 import { User } from "@/types/userTypes";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { Button } from "@nextui-org/react";
-import { useRouter } from "next-nprogress-bar";
+import { useState } from "react";
 import { FaCheck, FaX } from "react-icons/fa6";
 
 const HandleGroupRequest = ({ user, group }: { user: User; group: Group }) => {
   const { updateSocketToken } = useSocket();
-  const router = useRouter();
+  const [isActionDone, setIsActionDone] = useState(false);
   const { usernameLogged, userIdLogged } = useUserData();
   const handleAcceptRequest = async () => {
     const res = await putMemberGroupByRequest(group._id, user._id);
@@ -33,9 +33,9 @@ const HandleGroupRequest = ({ user, group }: { user: User; group: Group }) => {
     )
       .then(() => {
         toastifySuccess("Solicitud aceptada correctamente");
+        setIsActionDone(true);
       })
       .catch(handleGroupNotificationError);
-    router.refresh();
   };
   const rejectRequest = async () => {
     const socket = await updateSocketToken();
@@ -50,10 +50,11 @@ const HandleGroupRequest = ({ user, group }: { user: User; group: Group }) => {
     )
       .then(() => {
         toastifySuccess("Solicitud rechazada correctamente");
+        setIsActionDone(true);
       })
       .catch(handleGroupNotificationError);
-    router.refresh();
   };
+  if (isActionDone) return null;
   return (
     <div className="flex gap-2 items-center">
       <ConfirmModal

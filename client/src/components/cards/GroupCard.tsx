@@ -14,12 +14,11 @@ const GroupCard = ({
   isUserProfile?: boolean;
 }) => {
   const { group: groupData } = group;
-  const [isRequestSent, setIsRequestSent] = useState(false);
   const actionButtonToReturn = () => {
     switch (true) {
       case isUserProfile:
         return;
-      case group.isMember || (isRequestSent && group.hasGroupRequest):
+      case group.isMember:
         return (
           <SecondaryButton
             variant="light"
@@ -30,27 +29,16 @@ const GroupCard = ({
             Ver Grupo
           </SecondaryButton>
         );
-      case group.hasGroupRequest && !isRequestSent:
-        return (
-          <AcceptGroupInvitation
-            groupId={groupData._id}
-            setIsRequestSent={setIsRequestSent}
-          />
-        );
-      case group.hasJoinRequest || isRequestSent:
+      case group.hasGroupRequest:
+        return <AcceptGroupInvitation groupId={groupData._id} />;
+      case group.hasJoinRequest:
         return (
           <p className="text-sm lg:text-small text-light-text">
             Solicitud Enviada
           </p>
         );
       default:
-        return (
-          <SendRequest
-            isGroup
-            idToSendRequest={groupData._id}
-            setIsRequestSent={() => setIsRequestSent(true)}
-          />
-        );
+        return <SendRequest isGroup idToSendRequest={groupData._id} />;
     }
   };
   return (

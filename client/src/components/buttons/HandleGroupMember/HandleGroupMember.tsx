@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { User } from "@/types/userTypes";
 import {
   Button,
@@ -30,10 +30,11 @@ const HandleGroupMember = ({
   group: Group;
   isAdmin?: boolean;
 }) => {
-  const router = useRouter();
   const { userIdLogged, usernameLogged } = useUserData();
   const { updateSocketToken } = useSocket();
-  const isCreator = group?.creator._id === userIdLogged;
+  const isCreator = group?.creator._id === userIdLogged; // is user logged creator of group
+  const [isAdminLocal, setIsAdminLocal] = useState(isAdmin); // is user been shown admin
+  const [deletedDone, setDeletedDone] = useState(false);
 
   const makeAdmin = async () => {
     const res = await addAdmin(group?._id, user._id);
@@ -52,7 +53,7 @@ const HandleGroupMember = ({
     )
       .then(() => {
         toastifySuccess(res.message);
-        router.refresh();
+        setIsAdminLocal(true);
       })
       .catch(handleGroupNotificationError);
   };
@@ -75,7 +76,7 @@ const HandleGroupMember = ({
     )
       .then(() => {
         toastifySuccess(res.message);
-        router.refresh();
+        setDeletedDone(true);
       })
       .catch(handleGroupNotificationError);
   };
@@ -98,9 +99,9 @@ const HandleGroupMember = ({
     )
       .then(() => {
         toastifySuccess(res.message);
+        setIsAdminLocal(false);
       })
       .catch(handleGroupNotificationError);
-    router.refresh();
   };
 
   const assignAdminRef = useRef<() => void>(() => {});
@@ -113,7 +114,7 @@ const HandleGroupMember = ({
 
   return (
     <div className="flex gap-2 items-center">
-      {!isAdmin && (
+      {!isAdminLocal && (
         <>
           <Dropdown placement="bottom">
             <DropdownTrigger>
@@ -155,6 +156,7 @@ const HandleGroupMember = ({
                 aria-label="Eliminar miembro de grupo"
                 color="danger"
                 variant="flat"
+                isDisabled={deletedDone}
                 radius="full"
               >
                 <IoTrashOutline />
@@ -168,7 +170,7 @@ const HandleGroupMember = ({
         </>
       )}
 
-      {isCreator && isAdmin && (
+      {isCreator && isAdminLocal && (
         <>
           <Dropdown placement="bottom">
             <DropdownTrigger>

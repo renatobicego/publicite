@@ -1,7 +1,5 @@
-"use client";
 import AcceptGroupInvitation from "@/components/buttons/SendRequest/AcceptGroupInvitation";
 import SendRequest from "@/components/buttons/SendRequest/SendRequest";
-import React, { useState } from "react";
 import RulesPopover from "./RulesPopover";
 
 const GroupActionButton = ({
@@ -22,12 +20,7 @@ const GroupActionButton = ({
       case isMember:
         return <RulesPopover rules={rules} />;
       case hasGroupRequest:
-        return (
-          <AcceptGroupInvitation
-            groupId={groupId}
-            setIsRequestSent={() => window.location.reload()}
-          />
-        );
+        return <AcceptGroupInvitation groupId={groupId} />;
       case hasJoinRequest:
         return (
           <p className="text-sm lg:text-small text-light-text">
@@ -41,7 +34,6 @@ const GroupActionButton = ({
             removeMargin={false}
             isGroup
             idToSendRequest={groupId}
-            setIsRequestSent={() => window.location.reload()}
           />
         );
     }

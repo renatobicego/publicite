@@ -66,6 +66,7 @@ const GroupNotificationCard = ({
       optionsList.push({
         label: "Ver Solicitud",
         as: Link,
+        color: "default",
         target: "_blank",
         href: `${GROUPS}/${group._id}/solicitudes`,
       });
@@ -73,6 +74,7 @@ const GroupNotificationCard = ({
     optionsList.push({
       label: "Ver Grupo",
       as: Link,
+      color: "default",
       target: "_blank",
       className: "text-text-color",
       href: `${GROUPS}/${group._id}`,

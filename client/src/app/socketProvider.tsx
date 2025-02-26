@@ -69,7 +69,6 @@ export const SocketProvider = ({
       const newSocket = getSocket(userId, newToken as string); // Create a new socket instance
 
       newSocket.on("connect", () => {
-        console.log("Socket connected");
         setSocket(newSocket);
         resolve(newSocket); // Resolve the promise when connected
       });
@@ -79,9 +78,9 @@ export const SocketProvider = ({
         // reject(error); // Reject the promise if there's an error
       });
 
-      newSocket.on("disconnect", () => {
-        console.log("Socket disconnected");
-      });
+      // newSocket.on("disconnect", () => {
+      //   console.log("Socket disconnected");
+      // });
 
       // Handle notifications
       newSocket.on("group_notifications", (data) => {

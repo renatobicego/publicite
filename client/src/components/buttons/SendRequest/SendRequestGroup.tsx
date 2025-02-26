@@ -13,7 +13,6 @@ const SendRequestGroup = ({
   variant,
   removeMargin,
   groupId,
-  setIsRequestSent,
 }: {
   variant:
     | "light"
@@ -25,10 +24,10 @@ const SendRequestGroup = ({
     | "ghost";
   removeMargin: boolean;
   groupId: string;
-  setIsRequestSent: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const { usernameLogged, userIdLogged } = useUserData();
   const { updateSocketToken } = useSocket();
+  const [isRequestSent, setIsRequestSent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const sendRequestJoinGroup = async () => {
     setIsSubmitting(true);
@@ -67,6 +66,12 @@ const SendRequestGroup = ({
       setIsSubmitting(false);
     }
   };
+
+  if (isRequestSent) {
+    return (
+      <p className="text-sm lg:text-small text-light-text">Solicitud Enviada</p>
+    );
+  }
   return (
     <>
       <SecondaryButton

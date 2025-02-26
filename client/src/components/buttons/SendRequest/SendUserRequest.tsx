@@ -25,7 +25,6 @@ const SendUserRequest = ({
   removeMargin,
   idToSendRequest,
   previousUserRelation,
-  setIsRequestSent,
 }: {
   variant?:
     | "light"
@@ -38,13 +37,13 @@ const SendUserRequest = ({
   removeMargin?: boolean;
   idToSendRequest: string;
   previousUserRelation?: UserRelations;
-  setIsRequestSent: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [value, setValue] = useState(
     previousUserRelation ? previousUserRelation.typeRelationA : ""
   );
   const { updateSocketToken } = useSocket();
+  const [isRequestSent, setIsRequestSent] = useState(false);
 
   const handleSelectionChange = (e: ChangeEvent<HTMLSelectElement>) => {
     setValue(e.target.value);
@@ -69,6 +68,14 @@ const SendUserRequest = ({
       })
       .catch(handleUserRelationNotificationError);
   };
+  if (isRequestSent)
+    return (
+      <PrimaryButton isDisabled className="hover:bg-none" variant="bordered">
+        {previousUserRelation
+          ? "Cambio de Relación Enviada"
+          : "Solicitud enviada"}
+      </PrimaryButton>
+    );
   return (
     <>
       <PrimaryButton

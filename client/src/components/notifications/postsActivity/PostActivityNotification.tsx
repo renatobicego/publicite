@@ -63,6 +63,7 @@ const PostActivityNotificationCard = ({
     optionsList.push({
       label: "Ver Anuncio",
       as: Link,
+      color: "default",
       target: "_blank",
       className: "text-text-color",
       href: `${POSTS}/${post._id}`,
@@ -71,6 +72,7 @@ const PostActivityNotificationCard = ({
       optionsList.push({
         label: "Ver Respuesta",
         as: Link,
+        color: "default",
         target: "_blank",
         className: "text-text-color",
         href: `${POSTS}/${post._id}#${postActivity.postResponse?.commentId}`,
@@ -81,6 +83,7 @@ const PostActivityNotificationCard = ({
       optionsList.push({
         label: "Ver Comentario",
         as: Link,
+        color: "default",
         target: "_blank",
         className: "text-text-color",
         href: `${POSTS}/${post._id}#comentarios`,

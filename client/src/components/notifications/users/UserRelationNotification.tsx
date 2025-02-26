@@ -65,6 +65,7 @@ const UserRelationNotificationCard = ({
       optionsList.push({
         label: "Ver Solicitud",
         as: Link,
+        color: "default",
         target: "_blank",
         href: `${PROFILE}/${userIdLogged}/solicitudes`,
       });
@@ -72,6 +73,7 @@ const UserRelationNotificationCard = ({
     optionsList.push({
       label: "Ver Perfil",
       as: Link,
+      color: "default",
       target: "_blank",
       className: "text-text-color",
       href: `${PROFILE}/${userFrom._id}`,
