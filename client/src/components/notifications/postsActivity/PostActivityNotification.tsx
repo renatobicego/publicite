@@ -1,6 +1,5 @@
 import { POSTS } from "@/utils/data/urls";
 import { parseIsoDate, showDate } from "@/utils/functions/dates";
-import Link from "next/link";
 import {
   NotificationCard,
   NotificationBody,
@@ -17,6 +16,7 @@ import { postActivitiesNotificationMessages } from "./notificationMessages";
 import PostActivityImage from "./PostActivityImage";
 import { checkAndAddDeleteNotification } from "../deleteNotification";
 import { useNotificationsContext } from "@/app/(root)/providers/notificationsProvider";
+import { Link } from "@nextui-org/react";
 
 const PostActivityNotificationCard = ({
   notification,
@@ -63,6 +63,7 @@ const PostActivityNotificationCard = ({
     optionsList.push({
       label: "Ver Anuncio",
       as: Link,
+      target: "_blank",
       className: "text-text-color",
       href: `${POSTS}/${post._id}`,
     });
@@ -70,6 +71,7 @@ const PostActivityNotificationCard = ({
       optionsList.push({
         label: "Ver Respuesta",
         as: Link,
+        target: "_blank",
         className: "text-text-color",
         href: `${POSTS}/${post._id}#${postActivity.postResponse?.commentId}`,
       });
@@ -79,6 +81,7 @@ const PostActivityNotificationCard = ({
       optionsList.push({
         label: "Ver Comentario",
         as: Link,
+        target: "_blank",
         className: "text-text-color",
         href: `${POSTS}/${post._id}#comentarios`,
       });

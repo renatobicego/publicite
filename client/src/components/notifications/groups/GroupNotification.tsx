@@ -1,7 +1,5 @@
 import { GROUPS } from "@/utils/data/urls";
 import { parseIsoDate, showDate } from "@/utils/functions/dates";
-import { parseZonedDateTime } from "@internationalized/date";
-import Link from "next/link";
 import {
   NotificationCard,
   NotificationBody,
@@ -17,6 +15,7 @@ import { useUserData } from "@/app/(root)/providers/userDataProvider";
 import { useState } from "react";
 import { checkAndAddDeleteNotification } from "../deleteNotification";
 import { useNotificationsContext } from "@/app/(root)/providers/notificationsProvider";
+import { Link } from "@nextui-org/react";
 
 const GroupNotificationCard = ({
   notification,
@@ -67,12 +66,14 @@ const GroupNotificationCard = ({
       optionsList.push({
         label: "Ver Solicitud",
         as: Link,
+        target: "_blank",
         href: `${GROUPS}/${group._id}/solicitudes`,
       });
     }
     optionsList.push({
       label: "Ver Grupo",
       as: Link,
+      target: "_blank",
       className: "text-text-color",
       href: `${GROUPS}/${group._id}`,
     });

@@ -73,6 +73,7 @@ const ReviewRequest = ({
       optionsList.push({
         label: "Ver Calificación",
         as: Link,
+        target: "_blank",
         href: `${POSTS}/${post._id}#opiniones`,
         className: "text-text-color",
       });
@@ -80,6 +81,7 @@ const ReviewRequest = ({
     optionsList.push({
       label: "Ver Anuncio",
       as: Link,
+      target: "_blank",
       href: `${POSTS}/${post._id}`,
       className: "text-text-color",
     });

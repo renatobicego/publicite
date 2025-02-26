@@ -42,6 +42,7 @@ const NewContactPost = ({
       {
         label: "Ver Anuncio",
         as: Link,
+        target: "_blank",
         href: `${POSTS}/${post._id}`,
         className: "text-text-color",
       },

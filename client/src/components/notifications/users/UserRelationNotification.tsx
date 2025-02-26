@@ -1,5 +1,4 @@
 import { parseIsoDate, showDate } from "@/utils/functions/dates";
-import Link from "next/link";
 import {
   NotificationCard,
   NotificationBody,
@@ -17,7 +16,7 @@ import {
 } from "@/types/userTypes";
 import { userRelationNotificationMessages } from "./notificationMessages";
 import { PROFILE } from "@/utils/data/urls";
-import { Image, user } from "@nextui-org/react";
+import { Image, Link, user } from "@nextui-org/react";
 import { relationTypes } from "@/utils/data/selectData";
 import { checkAndAddDeleteNotification } from "../deleteNotification";
 import { useNotificationsContext } from "@/app/(root)/providers/notificationsProvider";
@@ -66,12 +65,14 @@ const UserRelationNotificationCard = ({
       optionsList.push({
         label: "Ver Solicitud",
         as: Link,
+        target: "_blank",
         href: `${PROFILE}/${userIdLogged}/solicitudes`,
       });
     }
     optionsList.push({
       label: "Ver Perfil",
       as: Link,
+      target: "_blank",
       className: "text-text-color",
       href: `${PROFILE}/${userFrom._id}`,
     });

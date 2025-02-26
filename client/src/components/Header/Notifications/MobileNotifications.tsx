@@ -58,7 +58,7 @@ const MobileNotifications = ({
         className="max-md:px-4"
         isOpen={modalIsOpen}
         onOpenChange={(open) => {
-          setIsOpen(open);
+          setIsOpen(!open);
         }}
         closeButton={
           <Button

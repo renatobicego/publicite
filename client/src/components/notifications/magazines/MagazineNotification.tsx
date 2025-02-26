@@ -1,6 +1,5 @@
 import { MAGAZINES } from "@/utils/data/urls";
 import { parseIsoDate, showDate } from "@/utils/functions/dates";
-import Link from "next/link";
 import {
   NotificationCard,
   NotificationBody,
@@ -20,6 +19,7 @@ import { useUserData } from "@/app/(root)/providers/userDataProvider";
 import { checkAndAddDeleteNotification } from "../deleteNotification";
 import { useNotificationsContext } from "@/app/(root)/providers/notificationsProvider";
 import { useState } from "react";
+import { Link } from "@nextui-org/react";
 
 const MagazineNotificationCard = ({
   notification,
@@ -69,6 +69,7 @@ const MagazineNotificationCard = ({
     optionsList.push({
       label: "Ver Revista",
       as: Link,
+      target: "_blank",
       className: "text-text-color",
       href: `${MAGAZINES}/${magazine._id}`,
     });

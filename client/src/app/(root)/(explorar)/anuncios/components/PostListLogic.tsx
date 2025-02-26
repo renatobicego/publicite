@@ -9,8 +9,7 @@ import {
   ContactPostsVisibility,
   PostsDataTypes,
 } from "@/utils/data/fetchDataByType";
-import { Tabs, Tab } from "@nextui-org/react";
-import Link from "next/link";
+import { Tabs, Tab, Link } from "@nextui-org/react";
 import { useUserData } from "@/app/(root)/providers/userDataProvider";
 import { PROFILE } from "@/utils/data/urls";
 

@@ -59,12 +59,14 @@ const SubscriptionCard = ({
       }
     >
       <div className="flex flex-col gap-1 items-start w-full">
-        <div className="w-full flex justify-between items-center gap-4">
+        <div className="w-full flex justify-between items-start md:items-center flex-col gap-2 md:flex-row md:gap-4">
           <h4 className="text-sm font-semibold">{subscriptionPlan.reason}</h4>
           {isFree ? (
-            <p className="text-sm font-semibold">Gratis</p>
+            <p className="text-xs text-right md:text-sm font-semibold">
+              Gratis
+            </p>
           ) : (
-            <p className="text-sm font-semibold">
+            <p className="text-xs text-right md:text-sm font-semibold">
               ${subscriptionPlan.price} {getFrequencyOfPayment()}
             </p>
           )}

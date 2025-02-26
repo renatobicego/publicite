@@ -2,7 +2,7 @@ import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { PostBehaviourType } from "@/types/postTypes";
 import { postsBehavioursTypes } from "@/utils/data/selectData";
 import { EDIT_POST } from "@/utils/data/urls";
-import Link from "next/link";
+import { Link } from "@nextui-org/react";
 import React from "react";
 
 const ChangeBehaviourLink = ({

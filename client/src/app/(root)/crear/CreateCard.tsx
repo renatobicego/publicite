@@ -1,5 +1,4 @@
-import { Button, Card, CardBody, CardHeader } from "@nextui-org/react";
-import Link from "next/link";
+import { Button, Card, CardBody, CardHeader, Link } from "@nextui-org/react";
 import { IconType } from "react-icons";
 import { FaChevronRight } from "react-icons/fa6";
 
@@ -25,7 +24,12 @@ const CreateCard = ({ postType }: CreateCardProps) => {
     >
       <CardHeader className="flex w-full justify-between pl-8 pr-6 2xl:pl-10 2xl:pr-8 pt-8 pb-0 md:py-8 2xl:py-10">
         <postType.icon className="text-white size-12" />
-        <Button radius="full" isIconOnly aria-label={"Ir a crear " + postType.label} className="bg-white">
+        <Button
+          radius="full"
+          isIconOnly
+          aria-label={"Ir a crear " + postType.label}
+          className="bg-white"
+        >
           <FaChevronRight className={`text-${postType.bg.split("-")[1]}`} />
         </Button>
       </CardHeader>
