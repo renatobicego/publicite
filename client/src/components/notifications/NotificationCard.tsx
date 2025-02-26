@@ -51,7 +51,7 @@ const NotificationBody = (props: HTMLNextUIProps<"div", never> & LinkProps) => {
 
 export interface NotificationOptionProps extends DropdownItemProps {
   label: string;
-  color: "default" | "danger";
+  color?: "default" | "danger";
 }
 const NotificationOptions = ({
   items,
