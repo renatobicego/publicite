@@ -107,7 +107,7 @@ const ReviewRequest = ({
         <NotificationBody>{getMessageToShow()}</NotificationBody>
         <NotificationOptions
           date={showDate(parseIsoDate(date))}
-          items={getOptionsList()}
+          items={getOptionsList() as any}
         />
       </NotificationCard>
       {eventType === "notification_new_calification_request" && (

@@ -15,7 +15,13 @@ import {
 } from "@nextui-org/react";
 import { FaEllipsis } from "react-icons/fa6";
 
-const NotificationCard = ({ isNew, children }: { isNew: boolean; children: React.ReactNode }) => {
+const NotificationCard = ({
+  isNew,
+  children,
+}: {
+  isNew: boolean;
+  children: React.ReactNode;
+}) => {
   return (
     <Card
       shadow={isNew ? "sm" : "none"}
@@ -45,6 +51,7 @@ const NotificationBody = (props: HTMLNextUIProps<"div", never> & LinkProps) => {
 
 export interface NotificationOptionProps extends DropdownItemProps {
   label: string;
+  color: "default" | "danger";
 }
 const NotificationOptions = ({
   items,
