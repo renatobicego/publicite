@@ -29,6 +29,8 @@ import { SubscriptionPlanSchema } from "../infastructure/schemas/subscriptionPla
 import { MpInvoiceRepository } from "../infastructure/repository/mp-invoice.repository";
 import NotificationModel from "src/contexts/module_user/notification/infrastructure/schemas/notification.schema";
 import { PaymentNotificationService } from "../infastructure/adapters/handler/PaymentNotificationService";
+import { ErrorService } from "../application/service/error/error.service.interface";
+import { ErrorRepository } from "../infastructure/repository/error/error.repository";
 
 
 
@@ -104,7 +106,11 @@ const mercadopago_testing_module = async (): Promise<TestingModule> => {
             },
             {
                 provide: 'ErrorServiceInterface',
-                useValue: {}
+                useClass: ErrorService,
+            },
+            {
+                provide: 'ErrorRepositoryInterface',
+                useClass: ErrorRepository,
             },
             {
                 provide: 'FetchToMpInterface',

@@ -73,9 +73,9 @@ export class PostAdapter implements PostAdapterInterface {
   }
 
 
-  async deleteCommentById(id: string, userRequestId: string, isAuthorOfPost: boolean, isComment: boolean): Promise<void> {
+  async deleteCommentById(id: string, userRequestId: string, isAuthorOfPost: boolean, isReply: boolean): Promise<void> {
     try {
-      await this.postService.deleteCommentById(id, userRequestId, isAuthorOfPost, isComment);
+      await this.postService.deleteCommentById(id, userRequestId, isAuthorOfPost, isReply);
     } catch (error: any) {
       throw error;
     }

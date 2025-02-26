@@ -11,6 +11,7 @@ import SubscriptionPlanModel, { SubscriptionPlanDocument } from "../infastructur
 import { MpHandlerEvents } from "../infastructure/adapters/handler/mpHandlerFETCHEvents";
 import { get_subscription_preapproval } from "./models/subscription.creator";
 import { createPersonalUser } from "../../../../../test/functions/create.user";
+import { PaymentNotificationService } from "../infastructure/adapters/handler/PaymentNotificationService";
 
 
 interface SubscriptionPlan {
@@ -283,7 +284,7 @@ describe('Mercadopago - MpHandlerEvents - Subscription  -> Create', () => {
             getDataFromMp_fetch: jest.fn()
         };
         (mpHandlerEvents as any).fetchToMpAdapter = mockFetchToMpAdapter;
-        maockedSubscriptionResponse = get_subscription_preapproval(external_reference.toString(), subcriptionPlanMeli_id);
+        maockedSubscriptionResponse = get_subscription_preapproval(external_reference.toString(), subcriptionPlanMeli_id, false);
         await subscriptionPlanModel.create({
             _id: subscriptionPlan_id,
             mpPreapprovalPlanId: subcriptionPlanMeli_id,
@@ -349,6 +350,7 @@ describe('Mercadopago - MpHandlerEvents - Subscription  -> Update', () => {
     let subscriptionModel: Model<SubscriptionDocument>;
     let subscriptionPlanModel: Model<SubscriptionPlanDocument>
     let userModel: Model<IUser>;
+    let paymentNotification: PaymentNotificationService;
 
     let maockedSubscriptionResponse: any
     let payment: any;
@@ -361,13 +363,15 @@ describe('Mercadopago - MpHandlerEvents - Subscription  -> Update', () => {
 
         const moduleRef: TestingModule = await mpTestingModule.get("mp_testing_module")();
         subscriptionModel = moduleRef.get<Model<SubscriptionDocument>>(getModelToken('Subscription'));
-        userModel = moduleRef.get<Model<IUser>>(getModelToken('User'));
+        subscriptionPlanModel = moduleRef.get<Model<SubscriptionPlanDocument>>(getModelToken('SubscriptionPlan'));
+        userModel = moduleRef.get<Model<IUser>>(getModelToken(UserModel.modelName));
         mpHandlerEvents = moduleRef.get<MpHandlerEvents>('MpHandlerEventsInterface');
+        paymentNotification = moduleRef.get<PaymentNotificationService>(PaymentNotificationService);
 
         mockFetchToMpAdapter = {
             getDataFromMp_fetch: jest.fn()
         };
-        maockedSubscriptionResponse = get_subscription_preapproval(external_reference.toString(), subcriptionPlanMeli_id);
+
 
         await createPersonalUser(external_reference, userModel, new Map([["subscriptions", []]]));
 
@@ -389,8 +393,66 @@ describe('Mercadopago - MpHandlerEvents - Subscription  -> Update', () => {
 
 
     it('Should update subscription and return true and send notification to user (FREE_TRIAL)', async () => {
+        maockedSubscriptionResponse = get_subscription_preapproval(external_reference.toString(), subcriptionPlanMeli_id, true);
+        mockFetchToMpAdapter.getDataFromMp_fetch.mockResolvedValue(maockedSubscriptionResponse);
+        await subscriptionPlanModel.create({
+            _id: subscriptionPlan_id,
+            mpPreapprovalPlanId: subcriptionPlanMeli_id,
+            isActive: true,
+            reason: maockedSubscriptionResponse.reason,
+            description: maockedSubscriptionResponse.reason,
+            features: ["TEST"],
+            intervalTime: 0,
+            price: 0,
+            isFree: false,
+            postsLibresCount: 0,
+            postsAgendaCount: 0,
+            maxContacts: 0,
+            isPack: false
+
+        });
+        await subscriptionModel.create({
+            _id: external_reference,
+            mpPreapprovalId: maockedSubscriptionResponse.preapproval_plan_id,
+            payerId: maockedSubscriptionResponse.payer_id.toString(),
+            status: maockedSubscriptionResponse.status,
+            subscriptionPlan: subscriptionPlan_id,
+            startDate: (maockedSubscriptionResponse.auto_recurring.start_date).split('T')[0],
+            endDate: (maockedSubscriptionResponse.auto_recurring.start_date).split('T')[0],
+            external_reference: maockedSubscriptionResponse.external_reference,
+            nextPaymentDate: maockedSubscriptionResponse.next_payment_date,
+            paymentMethodId: maockedSubscriptionResponse.payment_method_id,
+            cardId: maockedSubscriptionResponse.card_id
+        })
+
+        let { preapproval_plan_id, reason } = maockedSubscriptionResponse;
+        const payNotif = jest.spyOn(paymentNotification, 'sendPaymentNotification');
 
 
+        const data = {
+            subscriptionPlanId: preapproval_plan_id,
+            reason: reason,
+            status: "free_trial",
+            retryAttemp: 1,
+            userId: external_reference.toString(),
+        }
+
+
+        await mpHandlerEvents.update_subscription_preapproval("123456");
+        expect(payNotif).toHaveBeenCalledWith(data);
+        const subscriptionSaved = await subscriptionModel.findOne({ mpPreapprovalId: subcriptionPlanMeli_id });
+        if (subscriptionSaved === null) throw new Error("subscriptionSaved not found");
+        expect(subscriptionSaved).not.toBeNull();
+        expect(subscriptionSaved.mpPreapprovalId).toBe(maockedSubscriptionResponse.preapproval_plan_id);
+        expect(subscriptionSaved.payerId).toBe(maockedSubscriptionResponse.payer_id.toString());
+        expect(subscriptionSaved.status).toBe(maockedSubscriptionResponse.status);
+        expect(subscriptionSaved.subscriptionPlan).toEqual(subscriptionPlan_id);
+        expect(subscriptionSaved.startDate).toBe((maockedSubscriptionResponse.auto_recurring.start_date).split('T')[0]);
+        expect(subscriptionSaved.endDate).toBe((maockedSubscriptionResponse.auto_recurring.start_date).split('T')[0]);
+        expect(subscriptionSaved.external_reference).toBe(maockedSubscriptionResponse.external_reference);
+        expect(subscriptionSaved.nextPaymentDate).toBe(maockedSubscriptionResponse.next_payment_date);
+        expect(subscriptionSaved.paymentMethodId).toBe(maockedSubscriptionResponse.payment_method_id);
+        expect(subscriptionSaved.cardId).toBe(maockedSubscriptionResponse.card_id);
 
 
     });

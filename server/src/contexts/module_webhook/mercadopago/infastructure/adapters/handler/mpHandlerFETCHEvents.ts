@@ -155,9 +155,6 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
   }
 
 
-
-
-
   async create_subscription_preapproval(
     dataID: string,
   ): Promise<boolean> {
@@ -182,6 +179,7 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
       throw new Error(error);
     }
   }
+
 
   async update_subscription_preapproval(
     dataID: string,
@@ -433,6 +431,7 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
 
     for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
       try {
+
         const result = await this.emmiter.emitAsync(event, user_id);
 
         if (result && result[0] === true) {

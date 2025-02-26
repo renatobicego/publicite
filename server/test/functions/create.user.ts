@@ -1,5 +1,4 @@
 import { Types } from "mongoose";
-import { UserType } from "src/contexts/module_user/user/domain/entity/enum/user.enums";
 
 
 async function createPersonalUser(user_id: Types.ObjectId,
