@@ -259,13 +259,6 @@ export class GroupRepository implements GroupRepositoryInterface, OnModuleInit {
           result,
           'You dont have permissions or the new admin is not a member',
         );
-        // await this.userModel
-        //   .updateMany(
-        //     { _id: { $in: admins } },
-        //     { $addToSet: { groups: groupId } },
-        //     { session },
-        //   )
-        //   .lean();
 
         await session.commitTransaction();
       });

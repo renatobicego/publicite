@@ -6,13 +6,15 @@ async function createGroup(
     alias: string,
     group_id: Types.ObjectId,
     creator: Types.ObjectId,
-    visibility: Visibility
+    visibility: Visibility,
+    members?: Types.ObjectId[],
+    admins?: Types.ObjectId[],
 
 ) {
     const GROUP = await groupModel.create({
         _id: group_id,
-        members: [],
-        admins: [],
+        members: members ?? [],
+        admins: admins ?? [],
         name: "Grupo testing",
         alias: alias,
         rules: "nothing here",

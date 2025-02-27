@@ -1,3 +1,4 @@
+import { random } from "lodash";
 import { Types } from "mongoose";
 
 
@@ -10,8 +11,8 @@ async function createPersonalUser(user_id: Types.ObjectId,
     const USER = await userModel.create({
         _id: user_id,
         clerkId: 'TEST_B',
-        email: 'TEST_B@email.com',
-        username: 'TEST_B',
+        email: 'TEST_B@email.com' + random(1, 100),
+        username: 'TEST_B' + random(1, 100),
         name: 'TEST_B',
         lastName: 'TEST_B',
         finder: 'TEST_B',

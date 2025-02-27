@@ -40,15 +40,16 @@ describe('GROUP - Create group service test', () => {
         groupService = moduleRef.get<GroupService>('GroupServiceInterface');
     })
 
-
-    afterAll(async () => {
+    afterEach(async () => {
         await userModel.deleteMany({});
         await groupModel.deleteMany({});
     })
 
 
 
-    it('Create group with unique alias', async () => {
+
+
+    it('Create group with unique alias and verify that group is in user array', async () => {
         const userId = new Types.ObjectId("66c49508e80296e90ec637d7");
         await createPersonalUser(userId, userModel, new Map([]));
         const groupRequest: groupRequest = {
@@ -79,7 +80,7 @@ describe('GROUP - Create group service test', () => {
 
 
         await groupService.saveGroup(groupRequest, userId.toString());
-        const groupSaved = await groupModel.findOneAndDelete({ alias: "test_alias" });
+        const groupSaved = await groupModel.findOne({ alias: "test_alias" });
 
         expect(groupSaved).toBeDefined();
         expect(groupSaved?.members).toEqual(groupExpected.members);
@@ -93,6 +94,10 @@ describe('GROUP - Create group service test', () => {
         expect(groupSaved?.visibility).toEqual(groupExpected.visibility);
         expect(groupSaved?.groupNotificationsRequest).toEqual(groupExpected.groupNotificationsRequest);
         expect(groupSaved?.groupNote).toEqual(groupExpected.groupNote);
+
+        console.log("Verify if group is in the user arraytest")
+        const user = await userModel.findById(userId);
+        expect(user?.groups).toContainEqual(groupSaved?._id);
 
     })
 
@@ -126,18 +131,89 @@ describe('GROUP - Create group service test', () => {
 
 
         }
-
-
-
         await expect(groupService.saveGroup(groupRequest, creator.toString())).rejects.toThrowError(
             new RegExp('duplicate key error')
         );
-
 
         const groupSaved = await groupModel.find({ alias: "hola" });
         expect(groupSaved.length).toBe(1);
 
 
     })
+
+    it('Create group with alias with space, should create with no space', async () => {
+
+        const creator = new Types.ObjectId("66c49508e80296e90ec637d7");
+        const name = "TEST WITHOUT SPACE"
+        const groupRequest: groupRequest = {
+            members: [],
+            admins: [],
+            name: name,
+            alias: "esto es un alias con espacios",
+            rules: "nothing here",
+            magazines: [],
+            details: "details",
+            profilePhotoUrl: "www.test.com",
+            visibility: Visibility.public,
+            groupNote: "Hello world",
+        }
+
+        const aliasWithOutSpaces = groupRequest.alias.replace(/\s+/g, '').toLowerCase();
+
+
+        await groupService.saveGroup(groupRequest, creator.toString());
+        const groupSaved = await groupModel.findOne({ name });
+        if (!groupSaved) throw new Error('Group not found');
+        expect(groupSaved.alias).toBe(aliasWithOutSpaces);
+
+
+
+    })
+
+    it('Add admin to group, Should it be in the admin array and remove from members array', async () => {
+        const groupId = new Types.ObjectId("66c49508e80296e90ec637d7");
+        const creator = new Types.ObjectId("66c49508e80296e90ec637d7");
+        const newAdmin = new Types.ObjectId("66c49508e80296e90ec637d2");
+        await createGroup(groupModel, "hola", groupId, creator, Visibility.public, [newAdmin]);
+
+
+
+
+        await groupService.addAdminToGroup(newAdmin.toString(), groupId.toString(), creator.toString());
+
+
+
+
+    })
+
+    it('Add admin being a member, Should return permissions error', async () => {
+        const groupId = new Types.ObjectId("66c49508e80296e90ec637d7");
+        const creator = new Types.ObjectId("66c49508e80296e90ec637d7");
+        const newAdmin = new Types.ObjectId("66c49508e80296e90ec637d2");
+        await createGroup(groupModel, "hola", groupId, creator, Visibility.public, [newAdmin]);
+
+
+
+
+        await groupService.addAdminToGroup(newAdmin.toString(), groupId.toString(), creator.toString());
+        const group = await groupModel.findOne({ _id: groupId });
+        if (!group) throw new Error('Group not found');
+        expect(group.members.length).toBe(0);
+        expect(group.admins.length).toBe(1);
+        expect(group.admins[0].toString()).toEqual(newAdmin.toString());
+        expect(group.creator.toString()).toEqual(creator.toString());
+
+
+
+
+    })
+
+
+
+
+
+
+
+
 
 })
