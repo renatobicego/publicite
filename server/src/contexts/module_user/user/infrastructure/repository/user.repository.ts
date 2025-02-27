@@ -72,6 +72,7 @@ export class UserRepository implements UserRepositoryInterface {
 
   async findUserByIdByOwnUser(_id: string): Promise<any> {
     try {
+
       const userPopulate_userRelation =
         '_id userType name lastName businessName profilePhotoUrl username';
       const user = await this.user
@@ -128,7 +129,7 @@ export class UserRepository implements UserRepositoryInterface {
 
         user.magazines = populatedMagazines as any[];
       }
-
+      console.log(user)
       return user;
     } catch (error: any) {
       console.log(error);
@@ -361,8 +362,9 @@ export class UserRepository implements UserRepositoryInterface {
 
   async getProfileUserByExternalUserById(_id: string, condition: any): Promise<any> {
     try {
+      this.logger.log('Get profile user by external user by id');
       const conditionOfVisibility = condition[0].visibility
-      console.log(conditionOfVisibility)
+
 
 
       try {

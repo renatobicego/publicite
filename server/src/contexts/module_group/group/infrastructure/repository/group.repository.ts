@@ -1,6 +1,6 @@
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Connection, Model } from 'mongoose';
-import { forwardRef, Inject } from '@nestjs/common';
+import { forwardRef, Inject, OnModuleInit } from '@nestjs/common';
 
 import { Group } from '../../domain/entity/group.entity';
 import { GroupRepositoryInterface } from '../../domain/repository/group.repository.interface';
@@ -24,8 +24,11 @@ import {
   SearchType,
 } from 'src/contexts/module_shared/utils/functions/checkStopWordsAndReturnSearchQuery';
 import { NotificationRepositoryInterface } from 'src/contexts/module_user/notification/domain/repository/notification.repository.interface';
+import { ModuleRef } from '@nestjs/core';
 
-export class GroupRepository implements GroupRepositoryInterface {
+export class GroupRepository implements GroupRepositoryInterface, OnModuleInit {
+
+  private notificationRepository: NotificationRepositoryInterface;
   constructor(
     @InjectModel('Group') private readonly groupModel: Model<GroupDocument>,
     @InjectModel('User') private readonly userModel: Model<IUser>,
@@ -35,12 +38,23 @@ export class GroupRepository implements GroupRepositoryInterface {
     @Inject('GroupRepositoryMapperInterface')
     private readonly groupMapper: GroupRepositoryMapperInterface,
 
-    @Inject(forwardRef(() => 'NotificationRepositoryInterface'))
-    private readonly notificationRepository: NotificationRepositoryInterface,
+    // @Inject(forwardRef(() => 'NotificationRepositoryInterface'))
+    // private readonly notificationRepository: NotificationRepositoryInterface,
 
     @InjectConnection() private readonly connection: Connection,
     private readonly logger: MyLoggerService,
-  ) {}
+    private readonly moduleRef: ModuleRef
+  ) { }
+
+
+  onModuleInit() {
+    this.notificationRepository = this.moduleRef.get<NotificationRepositoryInterface>(
+      "NotificationRepositoryInterface",
+      { strict: false }
+    );
+  }
+
+
 
   async assignNewCreatorAndExitGroupById(
     groupId: string,

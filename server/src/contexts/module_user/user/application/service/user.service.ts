@@ -193,8 +193,6 @@ export class UserService implements UserServiceInterface {
         ]
       }
 
-
-
       this.logger.log("Searching user with magazine and posts conditions...")
       const user = await this.userRepository.getProfileUserByExternalUserById(_id, conditionOfVisibility);
       // agregamos logica de isFriendRequestPending
@@ -281,6 +279,19 @@ export class UserService implements UserServiceInterface {
   async getPostAndContactLimit(author: string): Promise<{ agendaPostCount: number; librePostCount: number; totalAgendaPostLimit: number; totalLibrePostLimit: number; agendaAvailable: number; libreAvailable: number; contactLimit: number; contactCount: number; contactAvailable: number; }> {
     try {
       const userWithSubscriptionsAndPosts: userWithPostsAndSubscriptions = await this.userRepository.getPostAndContactLimitsFromUserByUserId(author);
+      if (userWithSubscriptionsAndPosts === null) {
+        return {
+          agendaPostCount: 0,
+          librePostCount: 0,
+          totalAgendaPostLimit: 0,
+          totalLibrePostLimit: 0,
+          agendaAvailable: 0,
+          libreAvailable: 0,
+          contactLimit: 0,
+          contactCount: 0,
+          contactAvailable: 0
+        }
+      }
       const { agendaPostCount, librePostCount, totalAgendaPostLimit, totalLibrePostLimit, agendaAvailable, libreAvailable } = calculatePostLimitFromUser(userWithSubscriptionsAndPosts, this.logger)
       const { contactLimit, contactCount, contactAvailable } = calculateContactLimitFromUser(userWithSubscriptionsAndPosts, this.logger)
 

@@ -151,7 +151,7 @@ describe('MercadopagoService - Invoice   ', () => {
 
     });
 
-    describe('Mercadopago - MpHandlerEvents - subscription_authorized_payment', () => {
+    describe('Mercadopago - MpHandlerEvents - subscription_authorized_payment -> CREATE METHODS ', () => {
 
 
         it('Mercadopago - MpHandlerEvents - subscription_authorized_payment -> Create', async () => {

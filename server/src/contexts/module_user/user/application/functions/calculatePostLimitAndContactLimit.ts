@@ -42,11 +42,12 @@ function calculatePostLimitFromUser(userWithSubscriptionsAndPosts: userWithPosts
         },
         { agendaPostCount: 0, librePostCount: 0 }
     );
-    logger.warn("STATUS ACTUAL, ANTES DE ACTUALIZAR")
+    logger.warn("Status of Limit posts of user: ");
     logger.log("User has agenda post: " + agendaPostCount + " |--|  User has Libre post: " + librePostCount);
     logger.log("Total agenda limit of user plan: " + totalAgendaPostLimit + " - Total libre limit of user plan : " + totalLibrePostLimit);
 
     const agendaAvailable = totalAgendaPostLimit - agendaPostCount;
+
     const libreAvailable = totalLibrePostLimit - librePostCount;
     logger.log('Agenda available of user: ' + agendaAvailable);
     logger.log('Libre available of user: ' + libreAvailable);

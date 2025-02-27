@@ -1,4 +1,4 @@
-function makeReponsePlanFunction(planes: any) {
+function makeReponsePlanFunction(planes: any[]) {
     let countPackPlan = 0;
     let countMainPlan = 0;
     let countFreePlan = 0;
@@ -6,7 +6,9 @@ function makeReponsePlanFunction(planes: any) {
     let packPlanArray: any = [];
     let freePlanArray: any = [];
     const response: any = [];
-
+    if (planes.length <= 0 || !planes) {
+        return response
+    }
     planes.forEach((plan: { subscriptionPlan: { isPack: any; isFree: any; }; }) => {
         if (plan.subscriptionPlan.isPack) {
             countPackPlan++;

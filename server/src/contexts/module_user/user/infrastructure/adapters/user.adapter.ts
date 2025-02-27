@@ -77,8 +77,10 @@ export class UserAdapter implements UserAdapterInterface {
 
     try {
       if (_id == userRequestId) {
+        this.logger.log('User id and user id from are the same');
         return await this.userService.findUserByIdByOwnUser(_id);
       }
+      this.logger.log('User id and user id from are not the same');
       return await this.userService.findProfileUserByExternalUserById(_id)
     } catch (error: any) {
       throw error;
