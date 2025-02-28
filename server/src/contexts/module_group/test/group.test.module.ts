@@ -18,6 +18,7 @@ import { PostModule } from "src/contexts/module_post/post/infraestructure/module
 import { LoggerModule } from "src/contexts/module_shared/logger/logger.module";
 import { MagazineModelSharedModule } from "src/contexts/module_shared/sharedSchemas/magazine.model.schema";
 import { UserModule } from "src/contexts/module_user/user/infrastructure/module/user.module";
+import { MagazineSectionModel } from "src/contexts/module_magazine/magazine/infrastructure/schemas/section/magazine.section.schema";
 
 
 
@@ -43,6 +44,7 @@ const group_testing_module = async (): Promise<TestingModule> => {
             MongooseModule.forFeature([
                 { name: 'Group', schema: GroupSchema },
                 { name: UserModel.modelName, schema: UserModel.schema },
+                { name: 'MagazineSection', schema: MagazineSectionModel.schema },
 
             ]),
             LoggerModule,

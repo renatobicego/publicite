@@ -24,21 +24,27 @@ const MagazineSchema = new Schema<MagazineDocument>(
   },
 );
 
-// Middleware para eliminar secciones asociadas antes de eliminar las revistas
 MagazineSchema.pre(
   'deleteMany',
   { document: false, query: true },
   async function (next) {
     const docs = await this.model.find(this.getFilter());
-    for (const doc of docs) {
-      console.log('eliminando las secciones de la revista ' + doc.name);
-      await doc
-        .model('MagazineSection')
-        .deleteMany({ _id: { $in: doc.sections } });
+    const sectionsToDelete: any[] = []
+    for (let i = 0; i < docs.length; i++) {
+      for (let j = 0; j < docs[i].sections.length; j++) {
+        sectionsToDelete.push(docs[i].sections[j])
+      }
     }
+
+    console.log(sectionsToDelete);
+
+    await docs[0].model('MagazineSection').deleteMany({ _id: { $in: sectionsToDelete } });
+
     next();
   },
 );
+
+
 
 
 

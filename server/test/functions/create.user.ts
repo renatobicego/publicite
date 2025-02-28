@@ -7,12 +7,13 @@ async function createPersonalUser(user_id: Types.ObjectId,
     attributes: Map<any, any> | undefined,
     magazines?: Types.ObjectId[],
     posts?: Types.ObjectId[],
+    groups?: Types.ObjectId[]
 ) {
     const USER = await userModel.create({
         _id: user_id,
         clerkId: 'TEST_B',
-        email: 'TEST_B@email.com' + random(1, 100),
-        username: 'TEST_B' + random(1, 100),
+        email: random(1, 100) + 'TEST_B@email.com' + random(1, 100),
+        username: random(1, 100) + 'TEST_B' + random(1, 100),
         name: 'TEST_B',
         lastName: 'TEST_B',
         finder: 'TEST_B',
@@ -26,6 +27,7 @@ async function createPersonalUser(user_id: Types.ObjectId,
         notifications: [],
         magazines: magazines ?? [],
         posts: posts ?? [],
+        groups: groups ?? []
     });
 
     return USER
