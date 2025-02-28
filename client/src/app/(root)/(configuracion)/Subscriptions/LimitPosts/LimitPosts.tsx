@@ -2,16 +2,12 @@ import { Subscription } from "@/types/subscriptions";
 import DataBox, { CardDataItem, DataItem } from "../../DataBox";
 import { Button } from "@nextui-org/react";
 import useUserPostLimit from "@/utils/hooks/useUserPostLimit";
+import { useActiveSubscriptions } from "@/app/(root)/providers/userDataProvider";
 
-const LimitPosts = ({
-  userSubscriptions,
-}: {
-  userSubscriptions?: {
-    accountType: Subscription;
-    postsPacks: Subscription[];
-  };
-}) => {
+const LimitPosts = () => {
   const { numberOfPosts, limit } = useUserPostLimit();
+  const { accountType, postsPacks } = useActiveSubscriptions();
+
   return (
     <DataBox
       key={"dataLimitPosts"}
@@ -33,14 +29,11 @@ const LimitPosts = ({
           </em>
         </DataItem>
         <CardDataItem
-          title={`${userSubscriptions?.accountType?.subscriptionPlan.postsAgendaCount} publicaciones de Agenda.
-           ${userSubscriptions?.accountType?.subscriptionPlan.postsLibresCount} publicaciones Libres.`}
-          subtitle={
-            userSubscriptions?.accountType?.subscriptionPlan.reason ||
-            "Gratuita"
-          }
+          title={`${accountType?.subscriptionPlan.postsAgendaCount} publicaciones de Agenda.
+           ${accountType?.subscriptionPlan.postsLibresCount} publicaciones Libres.`}
+          subtitle={accountType?.subscriptionPlan.reason || "Gratuita"}
         />
-        {userSubscriptions?.postsPacks?.map((subscription: Subscription) => (
+        {postsPacks?.map((subscription: Subscription) => (
           <CardDataItem
             key={subscription.subscriptionPlan.reason}
             title={`${subscription.subscriptionPlan.postsAgendaCount} publicaciones de Agenda. ${subscription.subscriptionPlan.postsLibresCount} publicaciones Libres.`}

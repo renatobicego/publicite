@@ -7,30 +7,35 @@ import { Button, Link, Spinner } from "@nextui-org/react";
 import { lazy, Suspense } from "react";
 
 const ActionButtons = ({
-  previousPlan,
+  previousSubscription,
   selectedPlan,
   subscriptionPlans,
   onClose,
 }: {
-  previousPlan?: Subscription;
+  previousSubscription?: Subscription;
   selectedPlan?: string;
   onClose: () => void;
   subscriptionPlans: SubscriptionPlan[];
 }) => {
-  const isSamePlanSelected = previousPlan?.subscriptionPlan.isFree // if its free, compare db id
-    ? previousPlan?.subscriptionPlan._id === selectedPlan
-    : previousPlan?.subscriptionPlan.mpPreapprovalPlanId === selectedPlan; // if not compare mp id
+  const previousSubscriptionPlanId = previousSubscription?.subscriptionPlan._id;
+  const isSamePlanSelected = previousSubscription?.subscriptionPlan.isFree // if its free, compare db id
+    ? previousSubscriptionPlanId === selectedPlan
+    : previousSubscription?.subscriptionPlan.mpPreapprovalPlanId ===
+      selectedPlan; // if not compare mp id
   const isFreePlanSelected =
     selectedPlan === subscriptionPlans.find((s) => s.isFree === true)?._id; // ID of the free plan
   const isFreePlanCurrent =
-    previousPlan === subscriptionPlans.find((s) => s.isFree === true)?._id;
+    previousSubscriptionPlanId ===
+    subscriptionPlans.find((s) => s.isFree === true)?._id;
 
   const handleCancelSubscription = () => {
-    if (!previousPlan) {
+    if (!previousSubscription) {
       toastifyError("No hay una subscripción activa.");
       return;
     }
-    editSubscription(previousPlan.mpPreapprovalId, { status: "cancelled" })
+    editSubscription(previousSubscription.mpPreapprovalId, {
+      status: "cancelled",
+    })
       .then(() => {
         toastifySuccess("Subscripción cancelada con éxito");
         onClose();
@@ -73,8 +78,8 @@ const ActionButtons = ({
               as={Link}
               target="_blank"
               href={
-                !isFreePlanCurrent && previousPlan
-                  ? `/suscribirse/${selectedPlan}/cambiarPlan/${previousPlan.mpPreapprovalId}`
+                !isFreePlanCurrent && previousSubscription
+                  ? `/suscribirse/${selectedPlan}/cambiarPlan/${previousSubscription.mpPreapprovalId}`
                   : `/suscribirse/${selectedPlan}`
               }
             >

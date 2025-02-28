@@ -42,7 +42,7 @@ const AccountTypeForm = ({
       />
       <ActionButtons
         subscriptionPlans={subscriptionPlans}
-        previousPlan={previousSubscription}
+        previousSubscription={previousSubscription}
         selectedPlan={selected}
         onClose={() => setIsFormVisible(false)}
       />

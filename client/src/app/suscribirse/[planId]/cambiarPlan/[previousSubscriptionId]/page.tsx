@@ -16,8 +16,13 @@ export default async function CheckoutChangePlanPage(props: {
   params: Promise<{ planId: string; previousSubscriptionId: string }>;
 }) {
   const params = await props.params;
+  if (!params.previousSubscriptionId) {
+    redirect("/suscribirse/" + params.planId);
+  }
   const { sessionClaims } = auth();
-  const subscriptionsOfUser = await getSubscriptionsOfUser(sessionClaims?.metadata.mongoId as string);
+  const subscriptionsOfUser = await getSubscriptionsOfUser(
+    sessionClaims?.metadata.mongoId as string
+  );
   if ("error" in subscriptionsOfUser)
     return <ErrorCard message={subscriptionsOfUser.error} />;
   // if user has no subscriptions

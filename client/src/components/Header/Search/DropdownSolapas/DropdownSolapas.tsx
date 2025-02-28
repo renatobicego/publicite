@@ -10,8 +10,8 @@ const DropdownSolapas = ({
   selectedPostType,
   setSelectedPostType,
 }: {
-  selectedKeys: Selection;
-  setSelectedKeys: Dispatch<SetStateAction<Selection>>;
+  selectedKeys: string | null;
+  setSelectedKeys: Dispatch<SetStateAction<string | null>>;
   selectedPostType: Selection;
   setSelectedPostType: Dispatch<SetStateAction<Selection>>;
 }) => {
@@ -30,10 +30,7 @@ const DropdownSolapas = ({
 
   // map the selected keys to the label, to be able to show the selected solapa in the dropdown text
   const selectedValue = useMemo(
-    () =>
-      Array.from(selectedKeys)
-        .map((key) => keyToLabel[key as string])
-        .join(", "),
+    () => (selectedKeys ? keyToLabel[selectedKeys] : ""),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [selectedKeys]
   );
@@ -64,7 +61,7 @@ const DropdownSolapas = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedValueIsPost]);
-  
+
   return (
     <>
       <Divider className="h-1/2" orientation="vertical" />

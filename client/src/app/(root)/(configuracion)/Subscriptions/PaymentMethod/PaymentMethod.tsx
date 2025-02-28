@@ -6,11 +6,13 @@ import { getPaymentMethod } from "@/services/subscriptionServices";
 import { toastifyError } from "@/utils/functions/toastify";
 import { Spinner } from "@nextui-org/react";
 import { getPaymentIcon } from "@/utils/functions/payments";
+import { useActiveSubscriptions } from "@/app/(root)/providers/userDataProvider";
 
 const PaymentMethod = () => {
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const { accountType } = useActiveSubscriptions();
   const [paymentMethod, setPaymentMethod] = useState<{
     lastDigits: string;
     cardId: string;
@@ -18,6 +20,10 @@ const PaymentMethod = () => {
   }>();
   useEffect(() => {
     const fetchPaymentMethod = async () => {
+      if (accountType?.subscriptionPlan.isFree) {
+        setIsLoading(false);
+        return;
+      }
       const res = await getPaymentMethod();
       setIsLoading(false);
       if (!res) {
@@ -30,8 +36,14 @@ const PaymentMethod = () => {
       }
       setPaymentMethod(res);
     };
-    fetchPaymentMethod();
-  }, []);
+    if (accountType?.subscriptionPlan.isFree) {
+      setIsLoading(false);
+      return;
+    }
+    if (accountType) {
+      fetchPaymentMethod();
+    }
+  }, [accountType]);
 
   const paymentIcon = useMemo(() => {
     if (isError || isLoading || !paymentMethod?.cardId) return;

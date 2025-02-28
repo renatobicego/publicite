@@ -10,7 +10,6 @@ import SecondaryButton from "@/components/buttons/SecondaryButton";
 import { useActiveSubscriptions } from "../../providers/userDataProvider";
 
 const Subscriptions = () => {
-  const { accountType, postsPacks } = useActiveSubscriptions();
   const [arePaymentsShown, setArePaymentsShown] = useState(false);
   const [showActivePosts, setShowActivePosts] = useState(false);
   return (
@@ -45,7 +44,7 @@ const Subscriptions = () => {
         >
           <h2 className="profile-title">Datos de Suscripción</h2>
           <Divider />
-          <AccountType subscription={accountType} />
+          <AccountType />
           <Divider />
           <PaymentMethod />
           <SecondaryButton
@@ -57,13 +56,7 @@ const Subscriptions = () => {
           </SecondaryButton>
           <Divider />
           {showActivePosts ? (
-            <LimitPosts
-              userSubscriptions={
-                accountType && postsPacks
-                  ? { accountType, postsPacks }
-                  : undefined
-              }
-            />
+            <LimitPosts />
           ) : (
             <SecondaryButton onPress={() => setShowActivePosts(true)}>
               Ver Limites de Anuncios

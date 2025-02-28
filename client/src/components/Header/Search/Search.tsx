@@ -1,12 +1,5 @@
-import {
-  Input,
-  Selection,
-} from "@nextui-org/react";
-import React, {
-  Dispatch,
-  SetStateAction,
-  useState,
-} from "react";
+import { Input, Selection } from "@nextui-org/react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import {
   BOARDS,
   GROUPS,
@@ -24,25 +17,28 @@ import SearchButton from "./SearchButton";
 import DropdownSolapas from "./DropdownSolapas/DropdownSolapas";
 
 // this is the general search input on the header
-const Search = ({ 
+const Search = ({
   isFocused,
   setIsFocused,
 }: {
   isFocused: boolean;
   setIsFocused: Dispatch<SetStateAction<boolean>>;
-  }) => {
+}) => {
   // search term state
   const [searchTerm, setSearchTerm] = useState("");
   // selected solapas keys
-  const [selectedKeys, setSelectedKeys] = useState<Selection>(
-    new Set(["recomendados"])
+  const [selectedKeys, setSelectedKeys] = useState<string | null>(
+    "recomendados"
   );
   // selected post type. By default, empty means that the user is searching for "bienes"
-  const [selectedPostType, setSelectedPostType] = useState<Selection>(new Set([]));
+  const [selectedPostType, setSelectedPostType] = useState<Selection>(
+    new Set([])
+  );
   const router = useRouter(); // Next.js router for redirection
 
   // Dynamically set the URL based on the selected search category
   const getSearchURL = (getBaseUrl?: boolean) => {
+    if (!selectedKeys) return "";
     const keyToPath: { [key: string]: string } = {
       recomendados: POSTS,
       contactos: POST_CONTACTS,
@@ -59,14 +55,12 @@ const Search = ({
       necesidades: NEEDS,
     };
 
-    // get selected solapa
-    const selectedKey = Array.from(selectedKeys)[0] as string;
     // get selected post type
     const postType = postTypePath[Array.from(selectedPostType)[0] as string];
     // generate url path
     const basePath = postType
-      ? keyToPath[selectedKey] + postType // if there is a post type, add to the path
-      : keyToPath[selectedKey];
+      ? keyToPath[selectedKeys] + postType // if there is a post type, add to the path
+      : keyToPath[selectedKeys];
     // if getBaseUrl is true, return the base path
     if (getBaseUrl) {
       return basePath;
@@ -125,7 +119,7 @@ const Search = ({
         inputWrapper: `border-secondary border-[0.5px] bg-[#F1FFFA] !transition-all duration-300 pr-0 
               data-[hover=true]:bg-[#ECFFF8] data-[hover=true]:border-secondary focus-within:border-[0.5px]
                min-h-6 max-lg:h-9`,
-        input: "md:ml-1 text-sm",
+        input: "md:ml-1 text-base lg:text-sm",
       }}
     />
   );

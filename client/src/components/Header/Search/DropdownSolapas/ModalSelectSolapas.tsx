@@ -26,11 +26,16 @@ const ModalSelectSolapas = ({
   selectedValueIsPost: boolean;
   selectedPostType: Selection;
   setSelectedPostType: Dispatch<SetStateAction<Selection>>;
-  setSelectedKeys: Dispatch<SetStateAction<Selection>>;
-  selectedKeys: Selection;
+  setSelectedKeys: Dispatch<SetStateAction<string | null>>;
+  selectedKeys: string | null;
 }) => {
   return (
-    <Modal placement="center" isOpen={isOpen} onOpenChange={onOpenChange}>
+    <Modal
+      placement="center"
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
+      shouldBlockScroll
+    >
       <ModalContent>
         {(onClose) => (
           <>

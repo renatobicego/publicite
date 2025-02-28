@@ -1,14 +1,20 @@
 import { useUserData } from "@/app/(root)/providers/userDataProvider";
-import { SignedIn } from "@clerk/nextjs";
-import { Select, Selection, SelectItem } from "@nextui-org/react";
-import React from "react";
+import {
+  Autocomplete,
+  Radio,
+  RadioGroup,
+  Select,
+  Selection,
+  SelectItem,
+} from "@nextui-org/react";
+import React, { Key } from "react";
 
 const SelectSolapa = ({
   selectedKeys,
   setSelectedKeys,
 }: {
-  selectedKeys: Selection;
-  setSelectedKeys: React.Dispatch<React.SetStateAction<Selection>>;
+  selectedKeys: string | null;
+  setSelectedKeys: React.Dispatch<React.SetStateAction<string | null>>;
 }) => {
   const { userIdLogged } = useUserData();
   const solapasItems = [
@@ -57,32 +63,32 @@ const SelectSolapa = ({
   const filteredSolapas = solapasItems.filter(
     (tab) => !tab.requiresLogin || (tab.requiresLogin && userIdLogged)
   );
+
+  const onSelectionChange = (keys: Key | null) =>
+    setSelectedKeys(keys as string | null);
   return (
-    <Select
-      selectionMode="single"
-      selectedKeys={selectedKeys}
-      onSelectionChange={setSelectedKeys}
-      scrollShadowProps={{
-        hideScrollBar: false,
-      }}
-      classNames={{
-        trigger:
-          "shadow-none hover:shadow-sm border-[0.5px] group-data-[focus=true]:border-light-text py-1",
-        value: `text-[0.8125rem]`,
-        label: `font-medium text-[0.8125rem]`,
-      }}
-      radius="full"
-      variant="bordered"
-      labelPlacement="outside"
-      disallowEmptySelection
-      aria-label="opciones de búsqueda"
-    >
-      {filteredSolapas.map((item, index) => (
-        <SelectItem key={item.key} value={item.key} textValue={item.label}>
-          {item.label}
-        </SelectItem>
-      ))}
-    </Select>
+    <>
+      <RadioGroup
+        value={selectedKeys}
+        title="Seleccione una solapa"
+        size="sm"
+        onValueChange={onSelectionChange}
+        aria-label="opciones de búsqueda"
+      >
+        {filteredSolapas.map((item, index) => (
+          <Radio key={item.key} value={item.key}>
+            {item.label}
+          </Radio>
+        ))}
+      </RadioGroup>
+      {["recomendados", "contactos", "hoy", "puntuados", "vencer"]?.includes(
+        selectedKeys as string
+      ) && (
+        <p className="text-sm font-semibold">
+          Por favor, seleccione un tipo de anuncio
+        </p>
+      )}
+    </>
   );
 };
 

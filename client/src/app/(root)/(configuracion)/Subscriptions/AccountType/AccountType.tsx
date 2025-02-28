@@ -3,8 +3,11 @@ import AccountTypeForm from "./AccountTypeForm";
 import AnimatedBox from "../../AnimatedBox";
 import DataBox, { CardDataItem, EditButton } from "../../DataBox";
 import { Subscription } from "@/types/subscriptions";
+import { useActiveSubscriptions } from "@/app/(root)/providers/userDataProvider";
 
-const AccountType = ({ subscription }: { subscription?: Subscription }) => {
+const AccountType = () => {
+  const { accountType: subscription } = useActiveSubscriptions();
+
   const [isFormVisible, setIsFormVisible] = useState(false);
   return (
     <AnimatedBox
@@ -25,7 +28,7 @@ const AccountType = ({ subscription }: { subscription?: Subscription }) => {
           labelText="Tipo de Cuenta"
           labelClassname="md:w-1/4 md:mt-2.5"
         >
-          {subscription ? (
+          {subscription && !subscription.subscriptionPlan.isFree ? (
             <CardDataItem
               title={subscription.subscriptionPlan.reason}
               subtitle={`Próximo pago: ${subscription.endDate}`}

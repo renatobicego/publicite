@@ -36,7 +36,10 @@ export default async function CheckoutPage(props: {
   if (subscriptionPlan.error)
     return <ErrorCard message={subscriptionPlan.error} />;
 
-  if (isUserSubscribedToPayedPlan?.subscriptionPlan._id !== params.planId) {
+  if (
+    isUserSubscribedToPayedPlan &&
+    isUserSubscribedToPayedPlan?.subscriptionPlan._id !== params.planId
+  ) {
     redirect(
       `/suscribirse/${params.planId}/cambiarPlan/${isUserSubscribedToPayedPlan?.mpPreapprovalId}`
     );
