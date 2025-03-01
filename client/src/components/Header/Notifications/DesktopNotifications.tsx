@@ -10,14 +10,10 @@ import NotificationsContent from "./NotificationContent";
 import { useSocket } from "@/app/socketProvider";
 import { putNotificationStatus } from "@/services/userServices";
 import { useNotificationsContext } from "@/app/(root)/providers/notificationsProvider";
+import { useNotificationsIsOpen } from "./notificationsOptionsProvider";
 
-const DesktopNotifications = ({
-  isOpen,
-  setIsOpen,
-}: {
-  isOpen: boolean;
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-}) => {
+const DesktopNotifications = () => {
+  const { isOpen, setIsOpen } = useNotificationsIsOpen();
   const { newNotifications: newNotificationsReceived, setNewNotifications } =
     useSocket();
 

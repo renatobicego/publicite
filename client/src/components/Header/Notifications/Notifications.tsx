@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import MobileNotifications from "./MobileNotifications";
 import DesktopNotifications from "./DesktopNotifications";
 import { NotificationsProvider } from "@/app/(root)/providers/notificationsProvider";
+import { NotificationsIsOpen } from "./notificationsOptionsProvider";
 
 const Notifications = () => {
   const [screenSize, setScreenSize] = useState(0);
-  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -23,13 +23,11 @@ const Notifications = () => {
     };
   }, []);
   return (
-    <NotificationsProvider isOpen={isOpen}>
-      {screenSize < 1024 ? (
-        <MobileNotifications isOpen={isOpen} setIsOpen={setIsOpen} />
-      ) : (
-        <DesktopNotifications isOpen={isOpen} setIsOpen={setIsOpen} />
-      )}
-    </NotificationsProvider>
+    <NotificationsIsOpen>
+      <NotificationsProvider>
+        {screenSize < 1024 ? <MobileNotifications /> : <DesktopNotifications />}
+      </NotificationsProvider>
+    </NotificationsIsOpen>
   );
 };
 

@@ -16,12 +16,14 @@ import {
 } from "../NotificationCard";
 import { ElementSharedNotification, ShareTypesEnum } from "@/types/userTypes";
 import { FaShareAlt } from "react-icons/fa";
+import { useNotificationsIsOpen } from "@/components/Header/Notifications/notificationsOptionsProvider";
 
 const ElementShared = ({
   notification,
 }: {
   notification: ElementSharedNotification;
 }) => {
+  const { setIsOpen } = useNotificationsIsOpen();
   const {
     frontData: {
       share: { _id, description, username, type, imageUrl },
@@ -45,7 +47,7 @@ const ElementShared = ({
           label: "Ver Grupo",
           as: Link,
           color: "default",
-          target: "_blank",
+          onClick: () => setIsOpen(false),
           className: "text-text-color",
           href: `${GROUPS}/${_id}`,
         });
@@ -54,7 +56,7 @@ const ElementShared = ({
           label: "Ver Revista",
           as: Link,
           color: "default",
-          target: "_blank",
+          onClick: () => setIsOpen(false),
           className: "text-text-color",
           href: `${MAGAZINES}/${_id}`,
         });
@@ -63,7 +65,7 @@ const ElementShared = ({
           label: "Ver Anuncio",
           as: Link,
           color: "default",
-          target: "_blank",
+          onClick: () => setIsOpen(false),
           className: "text-text-color",
           href: `${POSTS}/${_id}`,
         });
@@ -71,7 +73,7 @@ const ElementShared = ({
           label: "Crear Revista Compartida",
           as: Link,
           color: "default",
-          target: "_blank",
+          onClick: () => setIsOpen(false),
           className: "text-text-color",
           href: `${CREATE_MAGAZINE}/compartida/${userIdFrom}/${_id}`,
         });
@@ -80,7 +82,7 @@ const ElementShared = ({
           label: "Ver Perfil",
           as: Link,
           color: "default",
-          target: "_blank",
+          onClick: () => setIsOpen(false),
           className: "text-text-color",
           href: `${PROFILE}/${_id}`,
         });

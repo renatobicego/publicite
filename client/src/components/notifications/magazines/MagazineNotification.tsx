@@ -20,12 +20,14 @@ import { checkAndAddDeleteNotification } from "../deleteNotification";
 import { useNotificationsContext } from "@/app/(root)/providers/notificationsProvider";
 import { useState } from "react";
 import { Link } from "@nextui-org/react";
+import { useNotificationsIsOpen } from "@/components/Header/Notifications/notificationsOptionsProvider";
 
 const MagazineNotificationCard = ({
   notification,
 }: {
   notification: MagazineNotification;
 }) => {
+  const { setIsOpen } = useNotificationsIsOpen();
   const { magazine } = notification.frontData;
   const { event, backData, viewed, date, isActionsAvailable, _id } =
     notification;
@@ -70,7 +72,7 @@ const MagazineNotificationCard = ({
       label: "Ver Revista",
       as: Link,
       color: "default",
-      target: "_blank",
+      onClick: () => setIsOpen(false),
       className: "text-text-color",
       href: `${MAGAZINES}/${magazine._id}`,
     });

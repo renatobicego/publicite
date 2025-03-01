@@ -13,6 +13,7 @@ import { FILE_URL, POSTS } from "@/utils/data/urls";
 import { parseIsoDate, showDate } from "@/utils/functions/dates";
 import { lazy, Suspense } from "react";
 import { postCalificationNotificationMessages } from "./notificationMessages";
+import { useNotificationsIsOpen } from "@/components/Header/Notifications/notificationsOptionsProvider";
 const ReviewPost = lazy(
   () => import("@/components/modals/ReviewModal/ReviewPost")
 );
@@ -22,6 +23,7 @@ const ReviewRequest = ({
 }: {
   notification: PostCalificationNotification;
 }) => {
+  const { setIsOpen } = useNotificationsIsOpen();
   const {
     frontData: {
       postCalification: { post },
@@ -74,7 +76,7 @@ const ReviewRequest = ({
         label: "Ver Calificación",
         as: Link,
         color: "default",
-        target: "_blank",
+        onClick: () => setIsOpen(false),
         href: `${POSTS}/${post._id}#opiniones`,
         className: "text-text-color",
       });
@@ -83,7 +85,7 @@ const ReviewRequest = ({
       label: "Ver Anuncio",
       as: Link,
       color: "default",
-      target: "_blank",
+      onClick: () => setIsOpen(false),
       href: `${POSTS}/${post._id}`,
       className: "text-text-color",
     });

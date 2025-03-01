@@ -12,6 +12,7 @@ import { parseIsoDate, showDate } from "@/utils/functions/dates";
 import { lazy, Suspense } from "react";
 import { checkAndAddDeleteNotification } from "../deleteNotification";
 import { useNotificationsContext } from "@/app/(root)/providers/notificationsProvider";
+import { useNotificationsIsOpen } from "@/components/Header/Notifications/notificationsOptionsProvider";
 const ContactPetition = lazy(
   () => import("@/components/modals/ContactPetition/ContactPetition")
 );
@@ -21,6 +22,7 @@ const NewContactPost = ({
 }: {
   notification: ContactSellerNotification;
 }) => {
+  const { setIsOpen } = useNotificationsIsOpen();
   const {
     frontData: {
       contactSeller: { post, client },
@@ -43,7 +45,7 @@ const NewContactPost = ({
         label: "Ver Anuncio",
         as: Link,
         color: "default",
-        target: "_blank",
+        onClick: () => setIsOpen(false),
         href: `${POSTS}/${post._id}`,
         className: "text-text-color",
       },

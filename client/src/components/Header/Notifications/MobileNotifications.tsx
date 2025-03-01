@@ -12,14 +12,10 @@ import NotificationsContent from "./NotificationContent";
 import { useSocket } from "@/app/socketProvider";
 import { useNotificationsContext } from "@/app/(root)/providers/notificationsProvider";
 import { putNotificationStatus } from "@/services/userServices";
+import { useNotificationsIsOpen } from "./notificationsOptionsProvider";
 
-const MobileNotifications = ({
-  isOpen,
-  setIsOpen,
-}: {
-  isOpen: boolean;
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-}) => {
+const MobileNotifications = () => {
+  const { isOpen, setIsOpen } = useNotificationsIsOpen();
   const { isOpen: modalIsOpen } = useDisclosure({ isOpen });
   const { newNotifications: newNotificationsReceived, setNewNotifications } =
     useSocket();

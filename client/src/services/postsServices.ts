@@ -65,11 +65,6 @@ export const getPostDataAndRecommended = async (
       variables: {
         findPostByIdAndCategoryPostsRecomendedId: id,
       },
-      context: {
-        fetchOptions: {
-          cache: "no-cache",
-        },
-      },
     });
     return data.findPostByIdAndCategoryPostsRecomended;
   } catch (error: ApolloError | any) {

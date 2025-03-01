@@ -1,4 +1,5 @@
 "use client";
+import { useNotificationsIsOpen } from "@/components/Header/Notifications/notificationsOptionsProvider";
 import useNotifications from "@/utils/hooks/useNotifications";
 import {
   createContext,
@@ -27,11 +28,10 @@ const NotificationsContext = createContext<
 // Provider component
 export const NotificationsProvider = ({
   children,
-  isOpen,
 }: {
   children: ReactNode;
-  isOpen: boolean;
 }) => {
+  const { isOpen } = useNotificationsIsOpen();
   const {
     notifications,
     isLoading,

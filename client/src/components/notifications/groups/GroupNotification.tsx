@@ -16,12 +16,14 @@ import { useState } from "react";
 import { checkAndAddDeleteNotification } from "../deleteNotification";
 import { useNotificationsContext } from "@/app/(root)/providers/notificationsProvider";
 import { Link } from "@nextui-org/react";
+import { useNotificationsIsOpen } from "@/components/Header/Notifications/notificationsOptionsProvider";
 
 const GroupNotificationCard = ({
   notification,
 }: {
   notification: GroupNotification;
 }) => {
+  const { setIsOpen } = useNotificationsIsOpen();
   const { group } = notification.frontData;
   const { event, viewed, date, isActionsAvailable, backData, _id } =
     notification;
@@ -67,7 +69,7 @@ const GroupNotificationCard = ({
         label: "Ver Solicitud",
         as: Link,
         color: "default",
-        target: "_blank",
+        onClick: () => setIsOpen(false),
         href: `${GROUPS}/${group._id}/solicitudes`,
       });
     }
@@ -75,7 +77,7 @@ const GroupNotificationCard = ({
       label: "Ver Grupo",
       as: Link,
       color: "default",
-      target: "_blank",
+      onClick: () => setIsOpen(false),
       className: "text-text-color",
       href: `${GROUPS}/${group._id}`,
     });

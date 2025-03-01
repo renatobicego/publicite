@@ -20,12 +20,14 @@ import { Image, Link, user } from "@nextui-org/react";
 import { relationTypes } from "@/utils/data/selectData";
 import { checkAndAddDeleteNotification } from "../deleteNotification";
 import { useNotificationsContext } from "@/app/(root)/providers/notificationsProvider";
+import { useNotificationsIsOpen } from "@/components/Header/Notifications/notificationsOptionsProvider";
 
 const UserRelationNotificationCard = ({
   notification,
 }: {
   notification: UserRelationNotification;
 }) => {
+  const { setIsOpen } = useNotificationsIsOpen();
   const {
     userRelation: { userFrom, typeRelation, _id: userRelationId },
   } = notification.frontData;
@@ -66,7 +68,7 @@ const UserRelationNotificationCard = ({
         label: "Ver Solicitud",
         as: Link,
         color: "default",
-        target: "_blank",
+        onClick: () => setIsOpen(false),
         href: `${PROFILE}/${userIdLogged}/solicitudes`,
       });
     }
@@ -74,7 +76,7 @@ const UserRelationNotificationCard = ({
       label: "Ver Perfil",
       as: Link,
       color: "default",
-      target: "_blank",
+      onClick: () => setIsOpen(false),
       className: "text-text-color",
       href: `${PROFILE}/${userFrom._id}`,
     });

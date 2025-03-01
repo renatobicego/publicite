@@ -17,12 +17,14 @@ import PostActivityImage from "./PostActivityImage";
 import { checkAndAddDeleteNotification } from "../deleteNotification";
 import { useNotificationsContext } from "@/app/(root)/providers/notificationsProvider";
 import { Link } from "@nextui-org/react";
+import { useNotificationsIsOpen } from "@/components/Header/Notifications/notificationsOptionsProvider";
 
 const PostActivityNotificationCard = ({
   notification,
 }: {
   notification: PostActivityNotification;
 }) => {
+  const { setIsOpen } = useNotificationsIsOpen();
   const { event, viewed, date, _id } = notification;
   const {
     frontData: { postActivity },
@@ -64,7 +66,7 @@ const PostActivityNotificationCard = ({
       label: "Ver Anuncio",
       as: Link,
       color: "default",
-      target: "_blank",
+      onClick: () => setIsOpen(false),
       className: "text-text-color",
       href: `${POSTS}/${post._id}`,
     });
@@ -73,7 +75,7 @@ const PostActivityNotificationCard = ({
         label: "Ver Respuesta",
         as: Link,
         color: "default",
-        target: "_blank",
+        onClick: () => setIsOpen(false),
         className: "text-text-color",
         href: `${POSTS}/${post._id}#${postActivity.postResponse?.commentId}`,
       });
@@ -84,7 +86,7 @@ const PostActivityNotificationCard = ({
         label: "Ver Comentario",
         as: Link,
         color: "default",
-        target: "_blank",
+        onClick: () => setIsOpen(false),
         className: "text-text-color",
         href: `${POSTS}/${post._id}#comentarios`,
       });

@@ -13,6 +13,7 @@ import {
 import { Link } from "@nextui-org/react";
 import { useUserData } from "@/app/(root)/providers/userDataProvider";
 import { PROFILE } from "@/utils/data/urls";
+import { useNotificationsIsOpen } from "@/components/Header/Notifications/notificationsOptionsProvider";
 
 const SubscriptionDowngradeNotification = ({
   notification,
@@ -20,7 +21,7 @@ const SubscriptionDowngradeNotification = ({
   notification: SubscriptionNotification;
 }) => {
   const { event, viewed } = notification;
-
+  const { setIsOpen } = useNotificationsIsOpen();
   const eventParsed = event as SubscriptionEvent;
   const messageToShow = subscriptionNotificationMessages[eventParsed];
   const { userIdLogged } = useUserData();
@@ -29,14 +30,22 @@ const SubscriptionDowngradeNotification = ({
     switch (eventParsed) {
       case "notification_downgrade_plan_contact":
         return (
-          <Link size="sm" href={`${PROFILE}/${userIdLogged}/contactos`}>
+          <Link
+            size="sm"
+            onClick={() => setIsOpen(false)}
+            href={`${PROFILE}/${userIdLogged}/contactos`}
+          >
             {" "}
             Perfil - Contactos - Activos
           </Link>
         );
       case "notification_downgrade_plan_post":
         return (
-          <Link size="sm" href={`${PROFILE}/${userIdLogged}`}>
+          <Link
+            size="sm"
+            onClick={() => setIsOpen(false)}
+            href={`${PROFILE}/${userIdLogged}`}
+          >
             Perfil - Anuncios - Inactivos
           </Link>
         );
