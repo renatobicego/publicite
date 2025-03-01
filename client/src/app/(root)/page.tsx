@@ -5,7 +5,10 @@ import { Spinner } from "@nextui-org/react";
 import { Suspense } from "react";
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-start main-style gap-8">
+    <main
+      id="home-grids"
+      className="flex min-h-screen flex-col items-start main-style gap-8"
+    >
       <SelectManualLocationModal />
       <Suspense fallback={<Spinner color="warning" />}>
         <HomePostSection

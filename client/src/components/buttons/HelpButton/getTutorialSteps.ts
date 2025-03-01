@@ -1,11 +1,13 @@
 import { useMemo } from "react";
-import { homePageSteps } from "./tutorialSteps";
+import { explorePostsSteps, homePageSteps } from "./tutorialSteps";
 
 export const useTutorialSteps = (path: string) => {
   return useMemo(() => {
-    switch (path) {
-      case "/":
-        return homePageSteps
+    switch (true) {
+      case path === "/":
+        return homePageSteps;
+      case path === "/anuncios":
+        return explorePostsSteps;
     }
   }, [path]);
 };

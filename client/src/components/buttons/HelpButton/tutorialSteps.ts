@@ -23,4 +23,19 @@ export const homePageSteps = [
       "Aquí podrás ver tus notificaciones, gestionar tu perfil y administrar tus suscripciones.",
     disableBeacon: true,
   },
+  {
+    target: "body",
+    content:
+      "Aquí podrás ver algunos anuncios recomendados cerca tuyo. Podrás ver anuncios de tipo Bien, Servicio y Necesidad.",
+    disableBeacon: true,
+  },
+];
+
+export const explorePostsSteps = [
+  {
+    target: "body",
+    content:
+      "Aquí podrás encontrar anuncios de tipo Bien, Servicio y Necesidad, y filtrarlos según tu necesidad.",
+    disableBeacon: true,
+  },
 ];
