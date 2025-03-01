@@ -1,6 +1,13 @@
 "use client";
 
-import { PROFILE, MAGAZINES, GROUPS, CREATE } from "@/utils/data/urls";
+import {
+  PROFILE,
+  MAGAZINES,
+  GROUPS,
+  CREATE,
+  CREATE_MAGAZINE,
+  CREATE_GROUP,
+} from "@/utils/data/urls";
 import { GetUser, UserRelationNotification } from "@/types/userTypes";
 import { Link, Tab, Tabs } from "@nextui-org/react";
 import { usePathname } from "next/navigation";
@@ -84,7 +91,7 @@ const UserSolapas = ({
               as={Link}
               href={CREATE}
             >
-              Crear
+              Crear Anuncio
             </PrimaryButton>
           )}
           <UserPosts isMyProfile={isMyProfile} posts={user.posts || []} />
@@ -101,9 +108,9 @@ const UserSolapas = ({
               className="mb-2 md:self-start"
               startContent={<FaPlus />}
               as={Link}
-              href={CREATE}
+              href={CREATE_MAGAZINE}
             >
-              Crear
+              Crear Revista
             </PrimaryButton>
           )}
           <MagazinesGrid magazines={user.magazines} />
@@ -124,16 +131,28 @@ const UserSolapas = ({
       key: `${PROFILE_USERNAME}${GROUPS}`,
       title: "Grupos",
       component: (
-        <GroupsGrid
-          items={user.groups.map((group) => ({
-            group,
-            isMember: false,
-            hasGroupRequest: false,
-            hasJoinRequest: false,
-            isUserProfile: true,
-          }))}
-          isUserProfile
-        />
+        <>
+          {isMyProfile && (
+            <PrimaryButton
+              className="mb-2 md:self-start"
+              startContent={<FaPlus />}
+              as={Link}
+              href={CREATE_GROUP}
+            >
+              Crear Grupo
+            </PrimaryButton>
+          )}
+          <GroupsGrid
+            items={user.groups.map((group) => ({
+              group,
+              isMember: false,
+              hasGroupRequest: false,
+              hasJoinRequest: false,
+              isUserProfile: true,
+            }))}
+            isUserProfile
+          />
+        </>
       ),
     },
     {

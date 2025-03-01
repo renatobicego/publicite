@@ -3,9 +3,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { UserAdapterInterface } from '../../application/adapter/userAdapter.interface';
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { UserServiceInterface } from '../../domain/service/user.service.interface';
-import {
-  UserFindAllResponse,
-} from '../../application/adapter/dto/HTTP-RESPONSE/user.response.dto';
+import { UserFindAllResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.response.dto';
 import {
   UserPreferencesRequest,
   UserRequest,
@@ -25,13 +23,9 @@ export class UserAdapter implements UserAdapterInterface {
     private readonly logger: MyLoggerService,
     @Inject('UserServiceInterface')
     private readonly userService: UserServiceInterface,
-  ) { }
-
-
-
+  ) {}
 
   async createUser(newUserRequest: UserRequest): Promise<any> {
-
     if (!newUserRequest.userType) {
       throw new Error('UserType missing');
     }
@@ -40,12 +34,7 @@ export class UserAdapter implements UserAdapterInterface {
       const factory = UserFactory.getInstance(this.logger);
       const user = factory.createUser(newUserRequest.userType, newUserRequest);
 
-      return await this.userService.createUser(
-        user,
-        newUserRequest?.contact,
-      );
-
-
+      return await this.userService.createUser(user, newUserRequest?.contact);
     } catch (error: any) {
       throw error;
     }
@@ -60,8 +49,6 @@ export class UserAdapter implements UserAdapterInterface {
     }
   }
 
-
-
   async findAllUsers(
     user: string,
     limit: number,
@@ -74,19 +61,17 @@ export class UserAdapter implements UserAdapterInterface {
     }
   }
   async findUserById(_id: string, userRequestId: string): Promise<any> {
-
     try {
       if (_id == userRequestId) {
         this.logger.log('User id and user id from are the same');
         return await this.userService.findUserByIdByOwnUser(_id);
       }
       this.logger.log('User id and user id from are not the same');
-      return await this.userService.findProfileUserByExternalUserById(_id)
+      return await this.userService.findProfileUserByExternalUserById(_id);
     } catch (error: any) {
       throw error;
     }
   }
-
 
   async getUserPreferencesByUsername(username: string): Promise<any> {
     try {
@@ -127,10 +112,10 @@ export class UserAdapter implements UserAdapterInterface {
     }
   }
 
-
-
-
-  async removeFriend(relationId: string, friendRequestId?: string): Promise<any> {
+  async removeFriend(
+    relationId: string,
+    friendRequestId?: string,
+  ): Promise<any> {
     try {
       return await this.userService.removeFriend(relationId, friendRequestId);
     } catch (error: any) {
@@ -138,15 +123,19 @@ export class UserAdapter implements UserAdapterInterface {
     }
   }
 
-
-  async setNewActiveUserRelations(activeRelations: string[], userRequestId: string): Promise<any> {
+  async setNewActiveUserRelations(
+    activeRelations: string[],
+    userRequestId: string,
+  ): Promise<any> {
     try {
-      return await this.userService.setNewActiveUserRelations(activeRelations, userRequestId);
+      return await this.userService.setNewActiveUserRelations(
+        activeRelations,
+        userRequestId,
+      );
     } catch (error: any) {
       throw error;
     }
   }
-
 
   async updateUser(
     username: string,
@@ -155,20 +144,10 @@ export class UserAdapter implements UserAdapterInterface {
   ): Promise<any> {
     this.logger.log('Start udpate process in the adapter: Update');
 
-
     if (type === UserType.Person) {
-      return await this.userService.updateUser(
-        username,
-        req,
-        type,
-      );
+      return await this.userService.updateUser(username, req, type);
     } else if (UserType.Business) {
-      return await this.userService.updateUser(
-        username,
-        req,
-        type,
-      );
-
+      return await this.userService.updateUser(username, req, type);
     } else {
       throw new Error('Invalid user type');
     }
@@ -194,4 +173,3 @@ export class UserAdapter implements UserAdapterInterface {
     }
   }
 }
-

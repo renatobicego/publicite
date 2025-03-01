@@ -175,6 +175,7 @@ export const putPostInMagazine = async (
   sectionId: string,
   ownerType: "user" | "group"
 ) => {
+  const { context } = await getApiContext();
   const magazineAdmin = auth().sessionClaims?.metadata.mongoId;
   await getClient().mutate({
     mutation:
@@ -182,11 +183,7 @@ export const putPostInMagazine = async (
         ? addPostMagazineUserMutation
         : addPostMagazineGroupMutation,
     variables: { postId, magazineAdmin, magazineId, sectionId },
-    context: {
-      headers: {
-        Authorization: await auth().getToken({ template: "testing" }),
-      },
-    },
+    context,
   });
 };
 
@@ -196,14 +193,11 @@ export const deletPostInMagazine = async (
   sectionId: string,
   ownerType: "user" | "group"
 ) => {
+  const { context } = await getApiContext();
   await getClient().mutate({
     mutation: deletePostInSectionMutation,
     variables: { postIdToRemove, ownerType, magazineId, sectionId },
-    context: {
-      headers: {
-        Authorization: await auth().getToken({ template: "testing" }),
-      },
-    },
+    context,
   });
 };
 
@@ -211,14 +205,11 @@ export const deleteMagazine = async (
   magazineId: string,
   ownerType: "user" | "group"
 ) => {
+  const { context } = await getApiContext();
   const { data } = await getClient().mutate({
     mutation: deleteMagazineMutation,
     variables: { magazineId, ownerType },
-    context: {
-      headers: {
-        Authorization: await auth().getToken({ template: "testing" }),
-      },
-    },
+    context,
   });
   return data;
 };
@@ -227,14 +218,11 @@ export const putExitMagazine = async (
   magazineId: string,
   ownerType: "user" | "group"
 ) => {
+  const { context } = await getApiContext();
   const { data } = await getClient().mutate({
     mutation: exitMagazineMutation,
     variables: { magazineId, ownerType },
-    context: {
-      headers: {
-        Authorization: await auth().getToken({ template: "testing" }),
-      },
-    },
+    context,
   });
   return data;
 };

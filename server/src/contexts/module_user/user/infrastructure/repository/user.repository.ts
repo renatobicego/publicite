@@ -25,15 +25,13 @@ import {
   UserRelationModel,
 } from '../schemas/user.relation.schema';
 import { UserRelation } from '../../domain/entity/userRelation.entity';
-import {
-  MagazineDocument,
-  MagazineModel,
-} from 'src/contexts/module_magazine/magazine/infrastructure/schemas/magazine.schema';
 import { checkIfanyDataWasModified } from 'src/contexts/module_shared/utils/functions/check.result.functions';
 import { EmitterService } from 'src/contexts/module_shared/event-emmiter/emmiter';
 import { downgrade_plan_contact_notification } from 'src/contexts/module_shared/event-emmiter/events';
-import { throwDeprecation } from 'process';
-import { UserMagazineDocument, UserMagazineModel } from 'src/contexts/module_magazine/magazine/infrastructure/schemas/magazine.user.schema';
+import {
+  UserMagazineDocument,
+  UserMagazineModel,
+} from 'src/contexts/module_magazine/magazine/infrastructure/schemas/magazine.user.schema';
 
 @Injectable()
 export class UserRepository implements UserRepositoryInterface {
@@ -60,19 +58,10 @@ export class UserRepository implements UserRepositoryInterface {
 
     @Inject('SectorRepositoryInterface')
     private readonly sectorRepository: SectorRepositoryInterface,
-
-
-
-
-  ) { }
-
-
-
-
+  ) {}
 
   async findUserByIdByOwnUser(_id: string): Promise<any> {
     try {
-
       const userPopulate_userRelation =
         '_id userType name lastName businessName profilePhotoUrl username';
       const user = await this.user
@@ -111,7 +100,6 @@ export class UserRepository implements UserRepositoryInterface {
         return null;
       }
 
-
       if (user.magazines.length > 0) {
         const populatedMagazines: any = await this.userMagazineModel
           .find({ _id: { $in: user.magazines } })
@@ -129,7 +117,6 @@ export class UserRepository implements UserRepositoryInterface {
 
         user.magazines = populatedMagazines as any[];
       }
-      console.log(user)
       return user;
     } catch (error: any) {
       console.log(error);
@@ -137,11 +124,7 @@ export class UserRepository implements UserRepositoryInterface {
     }
   }
 
-  async findAllUsers(
-    user: string,
-    limit: number,
-    page: number,
-  ): Promise<any> {
+  async findAllUsers(user: string, limit: number, page: number): Promise<any> {
     try {
       const users = await this.user
         .find({
@@ -161,8 +144,7 @@ export class UserRepository implements UserRepositoryInterface {
 
       const hasMore = users.length > limit;
 
-      const userResponse = users.slice(0, limit)
-
+      const userResponse = users.slice(0, limit);
 
       return {
         user: userResponse,
@@ -172,7 +154,6 @@ export class UserRepository implements UserRepositoryInterface {
       throw error;
     }
   }
-
 
   async getUserPreferencesByUsername(
     username: string,
@@ -241,8 +222,6 @@ export class UserRepository implements UserRepositoryInterface {
     }
   }
 
-
-
   async getPostAndLimitsFromUserByUserId(author: string): Promise<any> {
     try {
       const user = await this.user
@@ -305,7 +284,10 @@ export class UserRepository implements UserRepositoryInterface {
     }
   }
 
-  async getLimitContactsFromUserByUserId(userRequestId: string, session?: any): Promise<any> {
+  async getLimitContactsFromUserByUserId(
+    userRequestId: string,
+    session?: any,
+  ): Promise<any> {
     try {
       const user = await this.user
         .findById(userRequestId)
@@ -320,7 +302,8 @@ export class UserRepository implements UserRepositoryInterface {
               select: 'maxContacts',
             },
           },
-        ]).session(session);
+        ])
+        .session(session);
       if (!user) {
         console.error('No se encontró el usuario.');
         return null;
@@ -331,21 +314,23 @@ export class UserRepository implements UserRepositoryInterface {
     }
   }
 
-
-  async getActiveRelationsOfUser(userRequestId: string, session: any): Promise<any> {
+  async getActiveRelationsOfUser(
+    userRequestId: string,
+    session: any,
+  ): Promise<any> {
     try {
       const userActiveRelation: any = await this.user
         .findById(userRequestId)
         .select('activeRelations -_id')
         .populate('activeRelations')
         .session(session)
-        .lean()
+        .lean();
       if (!userActiveRelation) {
         console.error('No se encontró el usuario.');
         return null;
       }
-      const { activeRelations } = userActiveRelation
-      return activeRelations ?? []
+      const { activeRelations } = userActiveRelation;
+      return activeRelations ?? [];
     } catch (error: any) {
       throw error;
     }
@@ -353,19 +338,22 @@ export class UserRepository implements UserRepositoryInterface {
 
   async getMongoIdByClerkId(clerk_id: string): Promise<any> {
     try {
-      return await this.user.findOne({ clerkId: clerk_id }).select("_id").lean() ?? null
+      return (
+        (await this.user.findOne({ clerkId: clerk_id }).select('_id').lean()) ??
+        null
+      );
     } catch (error: any) {
       throw error;
     }
   }
 
-
-  async getProfileUserByExternalUserById(_id: string, condition: any): Promise<any> {
+  async getProfileUserByExternalUserById(
+    _id: string,
+    condition: any,
+  ): Promise<any> {
     try {
       this.logger.log('Get profile user by external user by id');
-      const conditionOfVisibility = condition[0].visibility
-
-
+      const conditionOfVisibility = condition[0].visibility;
 
       try {
         const userPopulate_userRelation =
@@ -397,11 +385,14 @@ export class UserRepository implements UserRepositoryInterface {
               path: 'posts',
               select:
                 '_id author visibility imagesUrls title description price reviews frequencyPrice toPrice petitionType postType endDate isActive reviews',
-              populate: { path: 'reviews', model: 'PostReview', strictPopulate: false },
+              populate: {
+                path: 'reviews',
+                model: 'PostReview',
+                strictPopulate: false,
+              },
               match: {
-                'visibility.post': conditionOfVisibility
-              }
-
+                'visibility.post': conditionOfVisibility,
+              },
             },
           ])
           .lean();
@@ -409,10 +400,12 @@ export class UserRepository implements UserRepositoryInterface {
           return null;
         }
 
-
         if (user.magazines.length > 0) {
           const populatedMagazines: any = await this.userMagazineModel
-            .find({ _id: { $in: user.magazines }, visibility: conditionOfVisibility })
+            .find({
+              _id: { $in: user.magazines },
+              visibility: conditionOfVisibility,
+            })
             .select('_id name description sections')
             .populate({
               path: 'sections',
@@ -422,8 +415,8 @@ export class UserRepository implements UserRepositoryInterface {
                 model: 'Post',
                 select: '_id imagesUrls',
                 match: {
-                  'visibility.post': conditionOfVisibility
-                }
+                  'visibility.post': conditionOfVisibility,
+                },
               },
             })
             .lean();
@@ -439,10 +432,6 @@ export class UserRepository implements UserRepositoryInterface {
       throw error;
     }
   }
-
-
-
-
 
   async makeFriendRelationBetweenUsers(
     userRelation: UserRelation,
@@ -471,7 +460,6 @@ export class UserRepository implements UserRepositoryInterface {
       throw error;
     }
   }
-
 
   async pushNotification(
     notification: any,
@@ -514,17 +502,25 @@ export class UserRepository implements UserRepositoryInterface {
     }
   }
 
-  async pushActiveRelationToUser(userRequestId: any, userRelationId: any, session: any): Promise<void> {
+  async pushActiveRelationToUser(
+    userRequestId: any,
+    userRelationId: any,
+    session: any,
+  ): Promise<void> {
     try {
-      await this.user.updateOne({ _id: userRequestId }, { $push: { activeRelations: userRelationId } }).session(session);
-      this.logger.log("Relation active saved successfully in user's activeRelations array");
+      await this.user
+        .updateOne(
+          { _id: userRequestId },
+          { $push: { activeRelations: userRelationId } },
+        )
+        .session(session);
+      this.logger.log(
+        "Relation active saved successfully in user's activeRelations array",
+      );
     } catch (error: any) {
       throw error;
     }
   }
-
-
-
 
   async update(
     username: string,
@@ -532,7 +528,6 @@ export class UserRepository implements UserRepositoryInterface {
     type: UserType,
   ): Promise<any> {
     try {
-
       switch (type) {
         case UserType.Person: // Personal User
           this.logger.log('Search user(Personal) for update');
@@ -673,7 +668,11 @@ export class UserRepository implements UserRepositoryInterface {
     }
   }
 
-  async removeActiveRelationOfUser(userRequestId: string, contactsToDelete: any[], session?: any): Promise<any> {
+  async removeActiveRelationOfUser(
+    userRequestId: string,
+    contactsToDelete: any[],
+    session?: any,
+  ): Promise<any> {
     try {
       await this.user.updateOne(
         { _id: userRequestId },
@@ -682,15 +681,14 @@ export class UserRepository implements UserRepositoryInterface {
             activeRelations: { $in: contactsToDelete },
           },
         },
-        { session }
+        { session },
       );
       this.emmiter.emit(downgrade_plan_contact_notification, userRequestId);
-      return true
+      return true;
     } catch (error: any) {
       throw error;
     }
   }
-
 
   async save(reqUser: User, session?: ClientSession): Promise<any> {
     try {
@@ -786,7 +784,6 @@ export class UserRepository implements UserRepositoryInterface {
     user: UserBusiness,
     options?: { session?: ClientSession },
   ): Promise<any> {
-
     const newUser = {
       ...baseObj,
       userType: 'Business',
@@ -842,7 +839,9 @@ export class UserRepository implements UserRepositoryInterface {
           `No se encontró un usuario con _id: ${external_reference}`,
         );
       }
-      this.logger.log("Suscription added to user successfully: " + external_reference);
+      this.logger.log(
+        'Suscription added to user successfully: ' + external_reference,
+      );
     } catch (error) {
       console.error(
         `Error actualizando suscripción para el usuario ${external_reference}:`,
@@ -852,17 +851,18 @@ export class UserRepository implements UserRepositoryInterface {
     }
   }
 
-
-  async setNewActiveUserRelations(activeRelations: string[], userRequestId: string): Promise<any> {
+  async setNewActiveUserRelations(
+    activeRelations: string[],
+    userRequestId: string,
+  ): Promise<any> {
     try {
       return await this.user.updateOne(
         { _id: userRequestId },
         { $set: { activeRelations: activeRelations } },
-        { new: true }
+        { new: true },
       );
     } catch (error: any) {
       throw error;
     }
   }
-
 }

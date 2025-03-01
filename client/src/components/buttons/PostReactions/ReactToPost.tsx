@@ -83,7 +83,10 @@ const ReactToPost = ({
       {
         _id: post._id,
         title: post.title,
-        imageUrl: "imagesUrls" in post ? (post as Good).imagesUrls[0] : "",
+        imageUrl:
+          "imagesUrls" in post && post.imagesUrls
+            ? (post as Good).imagesUrls[0]
+            : "",
         postType: post.postType,
       },
       null,

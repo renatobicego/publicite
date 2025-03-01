@@ -11,6 +11,7 @@ const PostReactionsContainer = ({
   post: Post;
   isAuthor: boolean;
 }) => {
+  console.log(post.reactions);
   const [localReactions, setLocalReactions] = useState(post.reactions);
   const emojis = ["👍", "😊", "❤️", "😂", "😲"];
   // list of emojis to react
@@ -24,7 +25,9 @@ const PostReactionsContainer = ({
             postType: post.postType,
             title: post.title,
             imagesUrls:
-              "imagesUrls" in post ? (post.imagesUrls as string[]) : undefined,
+              "imagesUrls" in post && post.imagesUrls
+                ? (post.imagesUrls as string[])
+                : undefined,
           }}
           reactions={localReactions}
           emojis={emojis}

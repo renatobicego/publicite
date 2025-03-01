@@ -19,7 +19,7 @@ import {
   Service,
 } from "@/types/postTypes";
 import { MdContacts } from "react-icons/md";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import ContactPetitionCard from "./ContactPetitionCard";
 import { getContactSellers } from "@/services/userServices";
 import { toastifyError } from "@/utils/functions/toastify";
