@@ -79,7 +79,7 @@ export class GroupRepository implements GroupRepositoryInterface, OnModuleInit {
           },
           { session },
         );
-
+        console.log(resultOfOperation)
         chekResultOfOperation(
           resultOfOperation,
           'Group not found or the new creator is not an admin',
@@ -380,7 +380,7 @@ export class GroupRepository implements GroupRepositoryInterface, OnModuleInit {
   ): Promise<any> {
     try {
       await this.groupModel
-        .findByIdAndUpdate(
+        .findOneAndUpdate(
           {
             _id: groupId,
             $or: [{ admins: groupAdmin }, { creator: groupAdmin }],

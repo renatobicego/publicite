@@ -1,35 +1,49 @@
 import { Types } from "mongoose";
 import { Visibility } from "src/contexts/module_group/group/domain/entity/enum/group.visibility.enum";
 
-async function createGroup(
-    groupModel: any,
-    alias: string,
-    group_id: Types.ObjectId,
-    creator: Types.ObjectId,
-    visibility: Visibility,
-    members?: Types.ObjectId[],
-    admins?: Types.ObjectId[],
 
+export class GroupTestRequest {
+    _id: Types.ObjectId;
+    alias: string;
+    creator: Types.ObjectId;
+    visibility: Visibility;
+    members?: Types.ObjectId[];
+    admins?: Types.ObjectId[];
+    magazines?: Types.ObjectId[];
+    groupNotificationsRequest?: {
+        joinRequests: Types.ObjectId[];
+        groupInvitations: Types.ObjectId[];
+    }
+    userIdAndNotificationMap?: Map<string, string>;
+}
+
+
+async function createGroup(
+    groupRequest: GroupTestRequest,
+    groupModel: any,
 ) {
     const GROUP = await groupModel.create({
-        _id: group_id,
-        members: members ?? [],
-        admins: admins ?? [],
+        _id: groupRequest._id,
+        members: groupRequest.members ?? [],
+        admins: groupRequest.admins ?? [],
         name: "Grupo testing",
-        alias: alias,
+        alias: groupRequest.alias,
         rules: "nothing here",
-        magazines: [],
+        magazines: groupRequest.magazines ?? [],
         details: "details",
         profilePhotoUrl: "www.test.com",
-        visibility: visibility,
+        visibility: groupRequest.visibility,
         groupNote: "Hello world",
-        creator: creator,
-        groupNotificationsRequest: {
+        creator: groupRequest.creator,
+        groupNotificationsRequest: groupRequest.groupNotificationsRequest ?? {
             joinRequests: [],
             groupInvitations: [],
         },
-    });
+        userIdAndNotificationMap: groupRequest.userIdAndNotificationMap ?? new Map<string, string>(),
 
+
+
+    });
     return GROUP
 }
 

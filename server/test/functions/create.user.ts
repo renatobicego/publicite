@@ -2,7 +2,8 @@ import { random } from "lodash";
 import { Types } from "mongoose";
 
 
-async function createPersonalUser(user_id: Types.ObjectId,
+async function createPersonalUser(
+    user_id: Types.ObjectId,
     userModel: any,
     attributes: Map<any, any> | undefined,
     magazines?: Types.ObjectId[],

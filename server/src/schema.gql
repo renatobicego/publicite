@@ -1063,7 +1063,7 @@ type Mutation {
   """
   Salir de un grupo - En el caso de que sea el creador debera asignar otro creador
   """
-  exitGroupById(groupId: String!, member: String, creator: String, newCreator: String): String
+  exitGroupById(groupExitRequest: GroupExitRequest!): String
 
   """
   Cambia el estado de una notificacion a "vista o no vista"
@@ -1277,6 +1277,13 @@ input GroupUpdateRequest {
   profilePhotoUrl: String
   visibility: String
   groupNote: String
+}
+
+input GroupExitRequest {
+  groupId: String!
+  member: String
+  creator: String
+  newCreator: String
 }
 
 input MagazineSectionCreateRequest {

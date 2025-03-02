@@ -35,19 +35,11 @@ MagazineSchema.pre(
         sectionsToDelete.push(docs[i].sections[j])
       }
     }
-
-    console.log(sectionsToDelete);
-
     await docs[0].model('MagazineSection').deleteMany({ _id: { $in: sectionsToDelete } });
 
     next();
   },
 );
-
-
-
-
-
 
 
 MagazineSchema.index({ sections: 1 });

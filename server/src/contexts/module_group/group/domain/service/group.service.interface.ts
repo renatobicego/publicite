@@ -8,6 +8,7 @@ import {
   GroupResponse,
   GroupResponseById,
 } from '../../application/adapter/dto/HTTP-RESPONSE/group.response';
+import { GroupExitRequest } from '../../application/adapter/dto/HTTP-REQUEST/group.exit.request';
 
 export interface GroupServiceInterface {
   acceptGroupInvitation(groupId: string, userRequestId: string): Promise<void>;
@@ -40,14 +41,11 @@ export interface GroupServiceInterface {
   ): Promise<any>;
   deleteGroupById(groupId: string, groupAdmin: string): Promise<any>;
   exitGroupById(
-    groupId: string,
-    member?: string,
-    creator?: string,
-    newCreator?: string,
+    groupExitRequest: GroupExitRequest,
   ): Promise<any>;
 
   findGroupById(id: string, userRequest: string): Promise<GroupResponseById | null>;
-  findAllPostsOfGroupMembers(groupId: string, userRequest: string, userLocation:UserLocation_group,idsMembersArray: String [], limit: number, page: number): Promise<PostsMemberGroupResponse | null>;
+  findAllPostsOfGroupMembers(groupId: string, userRequest: string, userLocation: UserLocation_group, idsMembersArray: String[], limit: number, page: number): Promise<PostsMemberGroupResponse | null>;
 
   findGroupByNameOrAlias(
     name: string,
