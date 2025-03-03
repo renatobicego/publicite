@@ -167,19 +167,16 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
       console.log('Meli fetch response suscription:');
       console.log(subscription_preapproval);
 
-      let { preapproval_plan_id, reason, status, external_reference } =
-        subscription_preapproval;
+
+
 
       const { free_trial } = subscription_preapproval.auto_recurring;
-      if (free_trial) status = 'free_trial';
-      const data = {
-        subscriptionPlanId: preapproval_plan_id,
-        reason: reason,
-        status: status,
-        retryAttemp: 1,
-        userId: external_reference,
+      if (free_trial) {
+        this.logger.log("Sending free trial payment notification");
+        this.sendFreeTrialPaymentNotification(subscription_preapproval);
       }
-      this.paymentNotificationService.sendPaymentNotification(data);
+
+
 
       await this.subscriptionService.createSubscription_preapproval(
         subscription_preapproval,
@@ -195,6 +192,24 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
   }
 
 
+  async sendFreeTrialPaymentNotification(subscription_preapproval: Subscription_preapproval) {
+    try {
+      let { preapproval_plan_id, reason, external_reference } =
+        subscription_preapproval;
+
+      const data = {
+        subscriptionPlanId: preapproval_plan_id,
+        reason: reason,
+        status: "free_trial",
+        retryAttemp: 1,
+        userId: external_reference,
+      }
+
+      this.paymentNotificationService.sendPaymentNotification(data);
+    } catch (error: any) {
+      throw error;
+    }
+  }
   async update_subscription_preapproval(
     dataID: string,
   ): Promise<boolean> {
