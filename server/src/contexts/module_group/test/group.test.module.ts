@@ -58,10 +58,11 @@ const group_testing_module = async (): Promise<TestingModule> => {
                 { name: 'Group', schema: GroupSchema },
                 { name: UserModel.modelName, schema: UserModel.schema },
                 { name: 'MagazineSection', schema: MagazineSectionModel.schema },
-                { name: 'NotificationGroup', schema: NotificationGroupModel.schema },
+
 
             ]),
             LoggerModule,
+            NotificationModule
         ],
         providers: [
             MyLoggerService,
@@ -82,10 +83,7 @@ const group_testing_module = async (): Promise<TestingModule> => {
                 provide: 'GroupServiceMapperInterface',
                 useClass: GroupServiceMapper,
             },
-            {
-                provide: 'NotificationRepositoryInterface',
-                useClass: NotificationRepository
-            },
+
             {
                 provide: getModelToken(NotificationMagazineModel.modelName),
                 useValue: {}, // Mock vacío
@@ -109,6 +107,10 @@ const group_testing_module = async (): Promise<TestingModule> => {
                 provide: getModelToken(NotificationContactSellerModel.modelName),
                 useValue: {}, // Mock vacío
             },
+            {
+                provide: getModelToken(NotificationGroupModel.modelName),
+                useValue: {}, // Mock vacío
+            },
 
             {
                 provide: getModelToken(NotificationPaymentModel.modelName),
@@ -128,9 +130,6 @@ const group_testing_module = async (): Promise<TestingModule> => {
                 provide: getModelToken(NotificationSubscriptionModel.modelName),
                 useValue: {}, // Mock vacío
             },
-
-
-
             {
                 provide: EventEmitter2,
                 useValue: {}

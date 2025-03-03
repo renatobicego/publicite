@@ -379,8 +379,8 @@ export class GroupRepository implements GroupRepositoryInterface, OnModuleInit {
     groupAdmin: string,
   ): Promise<any> {
     try {
-      await this.groupModel
-        .findOneAndUpdate(
+      const result = await this.groupModel
+        .updateOne(
           {
             _id: groupId,
             $or: [{ admins: groupAdmin }, { creator: groupAdmin }],
@@ -390,6 +390,12 @@ export class GroupRepository implements GroupRepositoryInterface, OnModuleInit {
           },
         )
         .lean();
+
+      chekResultOfOperation(result);
+      if (result.modifiedCount > 0) {
+        await this.groupMagazine.deleteMany({ _id: { $in: magazinesToDelete } });
+      }
+
       this.logger.log(
         'Magazines deleted to group successfully Group ID: ' + groupId,
       );
@@ -718,6 +724,7 @@ export class GroupRepository implements GroupRepositoryInterface, OnModuleInit {
       this.logger.log(
         'Setting actions false in notification ID: ' + notificationId,
       );
+
       await this.notificationRepository.setNotificationActionsToFalseById(
         notificationId,
         session,

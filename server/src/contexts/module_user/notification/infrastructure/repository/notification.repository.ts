@@ -186,6 +186,7 @@ export class NotificationRepository implements NotificationRepositoryInterface {
     session: any,
   ): Promise<void> {
     try {
+      console.log("aaaaaaaaaaaaaaaaaaaaa")
       await this.notificationBaseDocument.updateOne(
         { _id: id },
         [

@@ -52,8 +52,8 @@ describe('Magazine Testing', () => {
         magazineModel = moduleRef.get<Model<MagazineDocument>>(getModelToken(MagazineModel.modelName));
         groupModel = moduleRef.get<Model<GroupDocument>>(getModelToken("Group"));
         magazineAdapter = moduleRef.get<MagazineAdapter>('MagazineAdapterInterface');
-
-        await createPersonalUser(user_id, userModel, new Map([["subscriptions", subscription_plan_id]]));
+        const subscription = new Map([["subscriptions", subscription_plan_id]])
+        await createPersonalUser(userModel, { _id: user_id, subscriptions: subscription });
         await groupModel.create(group);
         magazineUserRequest = createUserMagazine(user_id);
         magazineGroupRequest = createGroupMagazine(group._id);

@@ -7,7 +7,7 @@ import { UnauthorizedException } from "@nestjs/common";
 
 import { GroupDocument } from "../group/infrastructure/schemas/group.schema";
 import { GroupService } from "../group/application/service/group.service";
-import { createPersonalUser } from "../../../../test/functions/create.user";
+import { createPersonalUser, PersonalAccountTestRequest } from "../../../../test/functions/create.user";
 import { IUser, UserModel } from "src/contexts/module_user/user/infrastructure/schemas/user.schema";
 import { createGroup, GroupTestRequest } from "../../../../test/functions/create.group";
 import { MagazineDocument } from "src/contexts/module_magazine/magazine/infrastructure/schemas/magazine.schema";
@@ -85,13 +85,20 @@ describe('GROUP TEST SERVICE', () => {
         await notificationModel.deleteMany({});
     })
 
+    afterEach(async () => {
+        await magazineModel.deleteMany({});
+
+    })
+
 
 
 
     describe('Create a group', () => {
         it('Create group with unique alias and verify that group is in user array', async () => {
-
-            await createPersonalUser(users[0], userModel, new Map([]));
+            const userRequest: PersonalAccountTestRequest = {
+                _id: users[0],
+            }
+            await createPersonalUser(userModel, userRequest);
             const groupRequest: groupRequest = {
                 members: [],
                 admins: [],
@@ -330,7 +337,7 @@ describe('GROUP TEST SERVICE', () => {
 
             users.push(groupCreator);
             for (let i = 0; i < users.length; i++) {
-                await createPersonalUser(users[i], userModel, undefined, [], [], [groupId])
+                await createPersonalUser(userModel, { _id: users[i], groups: [groupId] } as PersonalAccountTestRequest)
             }
 
 
@@ -381,7 +388,7 @@ describe('GROUP TEST SERVICE', () => {
             let group = await groupModel.findById({ _id: groupId });
             expect(group?.magazines.length).toBe(3)
 
-            await groupService.deleteMagazinesFromGroup(
+            await expect(groupService.deleteMagazinesFromGroup(
                 [
                     groupMagazines[0].toString(),
                     groupMagazines[1].toString(),
@@ -389,7 +396,7 @@ describe('GROUP TEST SERVICE', () => {
                 ],
                 groupId.toString(),
                 groupRequest.members![0].toString(),
-            );
+            )).rejects.toThrow(UnauthorizedException);
 
             group = await groupModel.findById({ _id: groupId });
             expect(group).not.toBe(null);
@@ -484,7 +491,11 @@ describe('GROUP TEST SERVICE', () => {
                 magazines: groupMagazines
             }
             await createGroup(groupRequest, groupModel);
-            await createPersonalUser(groupRequest.members![0], userModel, undefined, [], [], [groupId])
+            const userRequest: PersonalAccountTestRequest = {
+                _id: groupRequest.members![0],
+                groups: [groupId]
+            }
+            await createPersonalUser(userModel, userRequest)
 
 
             let group = await groupModel.findById({ _id: groupId });
@@ -519,7 +530,11 @@ describe('GROUP TEST SERVICE', () => {
                 magazines: groupMagazines
             }
             await createGroup(groupRequest, groupModel);
-            await createPersonalUser(users[1], userModel, undefined, [], [], [groupId])
+            const userRequest: PersonalAccountTestRequest = {
+                _id: users[1],
+                groups: [groupId]
+            }
+            await createPersonalUser(userModel, userRequest)
 
 
             let group = await groupModel.findById({ _id: groupId });
@@ -555,7 +570,11 @@ describe('GROUP TEST SERVICE', () => {
                 magazines: groupMagazines
             }
             await createGroup(groupRequest, groupModel);
-            await createPersonalUser(users[1], userModel, undefined, [], [], [groupId])
+            const userRequest: PersonalAccountTestRequest = {
+                _id: users[1],
+                groups: [groupId]
+            }
+            await createPersonalUser(userModel, userRequest)
 
 
             let group = await groupModel.findById({ _id: groupId });
@@ -585,7 +604,11 @@ describe('GROUP TEST SERVICE', () => {
                 magazines: groupMagazines
             }
             await createGroup(groupRequest, groupModel);
-            await createPersonalUser(users[1], userModel, undefined, [], [], [groupId])
+            const userRequest: PersonalAccountTestRequest = {
+                _id: users[1],
+                groups: [groupId]
+            }
+            await createPersonalUser(userModel, userRequest)
 
 
             let group = await groupModel.findById({ _id: groupId });
@@ -618,8 +641,13 @@ describe('GROUP TEST SERVICE', () => {
                 magazines: groupMagazines
             }
             await createGroup(groupRequest, groupModel);
-            await createPersonalUser(users[1], userModel, undefined, [], [], [groupId])
-            await createPersonalUser(groupCreator, userModel, undefined, [], [], [groupId])
+            let userRequest = {
+                _id: users[1],
+                groups: [groupId]
+            }
+            await createPersonalUser(userModel, userRequest)
+            userRequest._id = groupCreator
+            await createPersonalUser(userModel, userRequest)
 
 
             let group = await groupModel.findById({ _id: groupId });
@@ -653,14 +681,37 @@ describe('GROUP TEST SERVICE', () => {
     })
 
 
-    describe('Group invitations test', () => {
+    describe('Group invitations test should put user in group member array and pull invitation from groupNotificationsRequest and userIdAndNotificationMap', () => {
+        const userInvited = users[2]
+        const groupRequest: GroupTestRequest = {
+            _id: groupId,
+            creator: groupCreator,
+            visibility: Visibility.public,
+            alias: "hola",
+            admins: [users[1]],
+            members: [users[3]],
+            groupNotificationsRequest: {
+                joinRequests: [userInvited],
+                groupInvitations: [],
+            },
+            userIdAndNotificationMap: new Map<string, string>(
+                [
+                    [userInvited.toString(), "67c326997c2ebf6094687b1e"],
+                ]
+            ),
+        }
+        beforeAll(async () => {
+            jest.spyOn(groupRepository, 'setNotificationActionsInFalse').mockImplementation(() => { return Promise.resolve() })
+        })
 
-
-        it('Acept group invitation, should put user in group member array and pull invitation from groupNotificationsRequest and userIdAndNotificationMap', async () => {
+        it('Acept GROUP INVITATION, ', async () => {
             const notificationId = new Types.ObjectId("67c326997c2ebf6094687b1e")
             const userInvited = users[2]
-            jest.spyOn(groupRepository, 'setNotificationActionsInFalse').mockImplementation(() => { return Promise.resolve() })
-            await createPersonalUser(userInvited, userModel, undefined, [], [], [])
+            const userRequest: PersonalAccountTestRequest = {
+                _id: userInvited,
+                groups: [],
+            }
+            await createPersonalUser(userModel, userRequest)
             await notificationModel.create({
                 _id: notificationId,
                 event: "notification_group_new_user_invited",
@@ -735,10 +786,178 @@ describe('GROUP TEST SERVICE', () => {
 
         })
 
+        it('Acept JOIN INVITATION being member, should return permission denied', async () => {
+
+            await createGroup(groupRequest, groupModel)
+            let group = await groupModel.findById({ _id: groupId });
+
+            expect(group?.members.length).toBe(1)
+            expect(group?.groupNotificationsRequest.joinRequests.length).toBe(1)
+            expect(group?.groupNotificationsRequest.groupInvitations.length).toBe(0)
+
+
+
+            await expect(groupService.acceptJoinGroupRequest(
+                userInvited.toString(),
+                groupRequest._id.toString(),
+                groupRequest.members![0].toString(),
+            )).rejects.toThrow(UnauthorizedException)
+
+            group = await groupModel.findById({ _id: groupId });
+
+            expect(group?.members.length).toBe(1)
+            expect(group?.groupNotificationsRequest.joinRequests.length).toBe(1)
+            expect(group?.groupNotificationsRequest.groupInvitations.length).toBe(0)
+
+
+            const user = await userModel.findById(userInvited)
+            expect(user?.groups[0]).not.toEqual(groupRequest._id)
+
+
+
+        })
+
+
+
+        it('Acept JOIN INVITATION being creator, should return work success', async () => {
+            await createGroup(groupRequest, groupModel)
+
+            await createPersonalUser(userModel, { _id: userInvited })
+            let group = await groupModel.findById({ _id: groupId });
+            expect(group?.members.length).toBe(1)
+            expect(group?.groupNotificationsRequest.joinRequests.length).toBe(1)
+            expect(group?.groupNotificationsRequest.groupInvitations.length).toBe(0)
+
+
+
+            await groupService.acceptJoinGroupRequest(
+                userInvited.toString(),
+                groupRequest._id.toString(),
+                groupCreator.toString(),
+            )
+
+            group = await groupModel.findById({ _id: groupId });
+
+            expect(group?.members.length).toBe(2)
+            expect(group?.groupNotificationsRequest.joinRequests.length).toBe(0)
+            expect(group?.groupNotificationsRequest.groupInvitations.length).toBe(0)
+
+
+            const user = await userModel.findById(userInvited)
+            expect(user?.groups[0]).toEqual(groupRequest._id)
+
+        })
+
+        it('Acept JOIN INVITATION being admin, should return work success', async () => {
+            await createGroup(groupRequest, groupModel)
+            await createPersonalUser(userModel, { _id: userInvited })
+            let group = await groupModel.findById({ _id: groupId });
+
+            expect(group?.members.length).toBe(1)
+            expect(group?.groupNotificationsRequest.joinRequests.length).toBe(1)
+            expect(group?.groupNotificationsRequest.groupInvitations.length).toBe(0)
+
+
+
+            await groupService.acceptJoinGroupRequest(
+                userInvited.toString(),
+                groupRequest._id.toString(),
+                groupRequest.admins![0].toString(),
+            )
+
+            group = await groupModel.findById({ _id: groupId });
+
+            expect(group?.members.length).toBe(2)
+            expect(group?.groupNotificationsRequest.joinRequests.length).toBe(0)
+            expect(group?.groupNotificationsRequest.groupInvitations.length).toBe(0)
+
+
+            const user = await userModel.findById(userInvited)
+            expect(user?.groups[0]).toEqual(groupRequest._id)
+
+        })
+
+
+    })
+
+    describe('Remove members of the group', () => {
+        const userToRemove = users[2]
+        const groupRequest: GroupTestRequest = {
+            _id: groupId,
+            creator: groupCreator,
+            visibility: Visibility.public,
+            alias: "hola",
+            admins: [users[1]],
+            members: [userToRemove, users[0]],
+        }
+        beforeEach(async () => {
+            await createGroup(groupRequest, groupModel)
+            await createPersonalUser(userModel, { _id: userToRemove, groups: [groupRequest._id] })
+        })
+
+
+        it('Remove Member being Member, should return permission denied', async () => {
+
+            await expect(groupService.deleteMembersFromGroup(
+                [userToRemove.toString()],
+                groupRequest._id.toString(),
+                groupRequest.members![0].toString(),
+            )).rejects.toThrow(UnauthorizedException)
+
+
+            const group = await groupModel.findById({ _id: groupId })
+            expect(group?.members.length).toBe(2)
+
+            const user = await userModel.findById(userToRemove)
+            expect(user?.groups[0]).toEqual(groupRequest._id)
+
+
+
+        })
+
+        it('Remove Member being Admin, should return work success', async () => {
+            await groupService.deleteMembersFromGroup(
+                [userToRemove.toString()],
+                groupRequest._id.toString(),
+                groupRequest.admins![0].toString(),
+            )
+
+            const group = await groupModel.findById({ _id: groupId })
+            expect(group?.members.length).toBe(1)
+
+            const user = await userModel.findById(userToRemove)
+            expect(user?.groups[0]).not.toEqual(groupRequest._id)
+
+        })
+
+        it('Remove Member being Creator, should return work success', async () => {
+            await groupService.deleteMembersFromGroup(
+                [userToRemove.toString()],
+                groupRequest._id.toString(),
+                groupRequest.creator.toString(),
+            )
+
+            const group = await groupModel.findById({ _id: groupId })
+            expect(group?.members.length).toBe(1)
+
+            const user = await userModel.findById(userToRemove)
+            expect(user?.groups[0]).not.toEqual(groupRequest._id)
+
+        })
+
+
 
 
     })
 
 
 
+
+
+
+
+
+
 })
+
+

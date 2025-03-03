@@ -42,8 +42,8 @@ describe('UserService - Make relation between two users', () => {
         postModel = moduleRef.get<Model<PostDocument>>(getModelToken(PostModel.modelName));
         magazineModel = moduleRef.get<Model<MagazineDocument>>(getModelToken(MagazineModel.modelName));
         magazineSectionModel = moduleRef.get<Model<MagazineSectionDocument>>(getModelToken(MagazineSectionModel.modelName));
-
-        await createPersonalUser(userProfileId, userModel, new Map([["userRelations", userRelationId]]), [magazineId], [postId]);
+        const userRelation = new Map([["userRelations", userRelationId]])
+        await createPersonalUser(userModel, { _id: userProfileId, userRelations: userRelation, magazines: [magazineId], posts: [postId] });
 
 
 

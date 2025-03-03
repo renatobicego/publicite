@@ -58,7 +58,7 @@ describe('MercadopagoService - Subscription create', () => {
         subscriptionModel = moduleRef.get<Model<SubscriptionDocument>>(getModelToken(SubscriptionModel.modelName));
 
 
-        await createPersonalUser(user_id, userModel, new Map([["subscriptions", []]]));
+        await createPersonalUser(userModel, { _id: user_id });
         await subscriptionPlanModel.create({
             mpPreapprovalPlanId: subcriptionPlanMeli_id,
             isActive: true,
@@ -301,7 +301,7 @@ describe('Mercadopago - MpHandlerEvents - Subscription  -> Create', () => {
             isPack: false
 
         });
-        await createPersonalUser(external_reference, userModel, new Map([["subscriptions", []]]));
+        await createPersonalUser(userModel, { _id: external_reference });
 
 
 
@@ -373,7 +373,7 @@ describe('Mercadopago - MpHandlerEvents - Subscription  -> Update', () => {
         };
 
 
-        await createPersonalUser(external_reference, userModel, new Map([["subscriptions", []]]));
+        await createPersonalUser(userModel, { _id: external_reference });
 
 
         (mpHandlerEvents as any).fetchToMpAdapter = mockFetchToMpAdapter;
