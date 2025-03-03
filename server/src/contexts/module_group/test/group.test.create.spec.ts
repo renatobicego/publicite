@@ -953,6 +953,26 @@ describe('GROUP TEST SERVICE', () => {
 
 
 
+    describe('Find group by alias/name an return role of user', () => {
+
+        beforeEach(async () => {
+
+        })
+
+
+        it('Remove Member being Member, should return permission denied', async () => {
+
+
+
+
+        })
+
+
+
+
+    })
+
+
 
 
 

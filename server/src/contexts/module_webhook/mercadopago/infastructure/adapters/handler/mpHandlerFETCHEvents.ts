@@ -167,6 +167,20 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
       console.log('Meli fetch response suscription:');
       console.log(subscription_preapproval);
 
+      let { preapproval_plan_id, reason, status, external_reference } =
+        subscription_preapproval;
+
+      const { free_trial } = subscription_preapproval.auto_recurring;
+      if (free_trial) status = 'free_trial';
+      const data = {
+        subscriptionPlanId: preapproval_plan_id,
+        reason: reason,
+        status: status,
+        retryAttemp: 1,
+        userId: external_reference,
+      }
+      this.paymentNotificationService.sendPaymentNotification(data);
+
       await this.subscriptionService.createSubscription_preapproval(
         subscription_preapproval,
       );
@@ -191,22 +205,12 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
         await this.fetchToMpAdapter.getDataFromMp_fetch(
           `${this.URL_SUBCRIPTION_PREAPPROVAL_CHECK}${dataID}`,
         );
+
       console.log('Meli fetch response suscription_preapproval_updated:');
       console.log(subscription_preapproval_update);
-      let { preapproval_plan_id, reason, status, external_reference } =
-        subscription_preapproval_update;
 
-      const { free_trial } = subscription_preapproval_update.auto_recurring;
-      if (free_trial) status = 'free_trial';
-      const data = {
-        subscriptionPlanId: preapproval_plan_id,
-        reason: reason,
-        status: status,
-        retryAttemp: 1,
-        userId: external_reference,
-      }
 
-      this.paymentNotificationService.sendPaymentNotification(data);
+
 
       await this.subscriptionService.updateSubscription_preapproval(
         subscription_preapproval_update,
@@ -494,16 +498,16 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
 
   is_a_card_validation(mercado_pago_response: any, type: string): Promise<boolean> {
     const limitOfCardValidation = 50;
-
+    this.logger.log("Verifying if payment is a card validation");
     if (mercado_pago_response.operation_type === 'card_validation') {
       this.logger.warn(
-        `MpWebhookAdapter - Case ${type} - type card_validation, sending response OK to meli & return`,
+        `MpWebhookAdapter - Case ${type} - type CARD_VALIDATION, sending response OK to meli & return`,
       );
       return Promise.resolve(true);
     }
 
     if (mercado_pago_response.transaction_amount <= limitOfCardValidation) {
-      this.logger.warn(`Payment amount is less than $${limitOfCardValidation} is a card validation, returning OK to Meli`);
+      this.logger.warn(`Payment amount is less than $${limitOfCardValidation} is a CARD VALIDATIONS, returning OK to Meli`);
       return Promise.resolve(true);
     }
 

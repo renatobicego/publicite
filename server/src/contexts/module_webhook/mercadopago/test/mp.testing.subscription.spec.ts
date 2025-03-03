@@ -425,21 +425,10 @@ describe('Mercadopago - MpHandlerEvents - Subscription  -> Update', () => {
             cardId: maockedSubscriptionResponse.card_id
         })
 
-        let { preapproval_plan_id, reason } = maockedSubscriptionResponse;
-        const payNotif = jest.spyOn(paymentNotification, 'sendPaymentNotification');
-
-
-        const data = {
-            subscriptionPlanId: preapproval_plan_id,
-            reason: reason,
-            status: "free_trial",
-            retryAttemp: 1,
-            userId: external_reference.toString(),
-        }
 
 
         await mpHandlerEvents.update_subscription_preapproval("123456");
-        expect(payNotif).toHaveBeenCalledWith(data);
+
         const subscriptionSaved = await subscriptionModel.findOne({ mpPreapprovalId: subcriptionPlanMeli_id });
         if (subscriptionSaved === null) throw new Error("subscriptionSaved not found");
         expect(subscriptionSaved).not.toBeNull();
