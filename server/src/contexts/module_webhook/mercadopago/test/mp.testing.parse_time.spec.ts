@@ -1,4 +1,4 @@
-describe('PaymentNotificationService - Test', () => {
+describe('Mercadopago parse_time subscription - Test', () => {
 
     function parseTimeX(start_date: string, frequency: number): { start_date_parsed: string, end_date_parsed: string } {
         const start_date_in_date = new Date(start_date);
