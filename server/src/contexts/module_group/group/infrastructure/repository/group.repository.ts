@@ -518,118 +518,62 @@ export class GroupRepository implements GroupRepositoryInterface, OnModuleInit {
     name: string,
     limit: number,
     page: number,
-  ): Promise<{
-    groups: any[];
-    hasMore: boolean;
-  }> {
+  ): Promise<{ groups: any[]; hasMore: boolean }> {
+    const session = await this.connection.startSession();
     try {
-      const session = await this.connection.startSession();
-      session.startTransaction();
-      let groups;
       const selectedFields =
         '_id name profilePhotoUrl members admins details name magazines rules profilePhotoUrl visibility groupNotificationsRequest alias creator groupNote';
-      if (name) {
-        const textSearchQuery = checkStopWordsAndReturnSearchQuery(
-          name,
-          SearchType.group,
-        );
-        if (!textSearchQuery) {
-          return {
-            groups: [],
-            hasMore: false,
-          };
+
+      const result = await session.withTransaction(async () => {
+        let query: any = { visibility: 'public' };
+
+        if (name) {
+          const textSearchQuery = checkStopWordsAndReturnSearchQuery(name, SearchType.group);
+          if (!textSearchQuery) return { groups: [], hasMore: false };
+
+          query.$or = [
+            { name: { $regex: textSearchQuery, $options: 'i' } },
+            { alias: { $regex: textSearchQuery, $options: 'i' } },
+          ];
         }
 
-        groups = await this.groupModel
-          .find({
-            $or: [
-              { name: { $regex: textSearchQuery, $options: 'i' } },
-              { alias: { $regex: textSearchQuery, $options: 'i' } },
-            ],
-          })
-          .and([{ visibility: 'public' }])
+        const groups = await this.groupModel
+          .find(query)
+          .select(selectedFields)
           .limit(limit + 1)
           .skip((page - 1) * limit)
-          .select(selectedFields)
           .populate([
-            {
-              path: 'members',
-              select: '_id username profilePhotoUrl',
-            },
-            {
-              path: 'admins',
-              select: '_id username',
-            },
+            { path: 'members', select: '_id username profilePhotoUrl' },
+            { path: 'admins', select: '_id username' },
             {
               path: 'magazines',
               select: '_id name sections',
               populate: {
                 path: 'sections',
                 select: 'posts',
-                populate: {
-                  path: 'posts',
-                  select: 'imagesUrls',
-                },
+                populate: { path: 'posts', select: 'imagesUrls' },
               },
             },
           ])
           .sort({ name: 1 })
           .session(session)
           .lean();
-      } else {
-        groups = await this.groupModel
-          .find()
-          .and([{ visibility: 'public' }])
-          .limit(limit + 1)
-          .skip((page - 1) * limit)
-          .select(selectedFields)
-          .populate([
-            {
-              path: 'members',
-              select: '_id username profilePhotoUrl',
-            },
-            {
-              path: 'admins',
-              select: '_id username',
-            },
-            {
-              path: 'magazines',
-              select: '_id name sections',
-              populate: {
-                path: 'sections',
-                select: 'posts',
-                populate: {
-                  path: 'posts',
-                  select: 'imagesUrls',
-                },
-              },
-            },
-          ])
-          .sort({ name: 1 })
-          .session(session)
-          .lean();
-      }
 
-      const hasMore = groups.length > limit;
-      if (groups.length <= 0) {
         return {
-          groups: [],
-          hasMore: false,
+          groups: groups.slice(0, limit),
+          hasMore: groups.length > limit,
         };
-      }
+      });
 
-      const groupResponse = groups.slice(0, limit);
-
-      await session.commitTransaction();
-      session.endSession();
-      return {
-        groups: groupResponse,
-        hasMore: hasMore,
-      };
-    } catch (error: any) {
+      return result;
+    } catch (error) {
+      console.error('Error in findGroupByNameOrAlias:', error);
       throw error;
+    } finally {
+      session.endSession();
     }
   }
+
 
   async isThisGroupExist(alias: string, _id?: string): Promise<boolean> {
     try {

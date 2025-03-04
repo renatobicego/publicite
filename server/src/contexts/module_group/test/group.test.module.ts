@@ -32,6 +32,7 @@ import NotificationModel from "src/contexts/module_user/notification/infrastruct
 import { NotificationShareModel } from "src/contexts/module_user/notification/infrastructure/schemas/notification.share.schema";
 import { NotificationSubscriptionModel } from "src/contexts/module_user/notification/infrastructure/schemas/notification.subscription.schema";
 import { NotificationUserModel } from "src/contexts/module_user/notification/infrastructure/schemas/notification.user.schema";
+import { Connection } from "mongoose";
 
 
 
@@ -134,6 +135,12 @@ const group_testing_module = async (): Promise<TestingModule> => {
                 provide: EventEmitter2,
                 useValue: {}
             },
+            {
+                provide: Connection,
+                useClass: Connection
+            }
+
+
 
         ]
 

@@ -5,6 +5,7 @@ import { Visibility } from "src/contexts/module_group/group/domain/entity/enum/g
 export class GroupTestRequest {
     _id: Types.ObjectId;
     alias: string;
+    name?: string;
     creator: Types.ObjectId;
     visibility: Visibility;
     members?: Types.ObjectId[];
@@ -26,7 +27,7 @@ async function createGroup(
         _id: groupRequest._id,
         members: groupRequest.members ?? [],
         admins: groupRequest.admins ?? [],
-        name: "Grupo testing",
+        name: groupRequest.name ?? "Grupo testing",
         alias: groupRequest.alias,
         rules: "nothing here",
         magazines: groupRequest.magazines ?? [],
@@ -47,4 +48,19 @@ async function createGroup(
     return GROUP
 }
 
-export { createGroup }
+
+class GroupUpdateRequestTest {
+    _id: string;
+    name?: string;
+    alias?: string;
+    rules?: string;
+    details?: string;
+    profilePhotoUrl?: string;
+    visibility?: string;
+    groupNote?: string;
+
+
+}
+
+
+export { createGroup, GroupUpdateRequestTest }

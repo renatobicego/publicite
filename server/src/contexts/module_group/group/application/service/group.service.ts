@@ -225,7 +225,6 @@ export class GroupService implements GroupServiceInterface {
         let isMember = false;
         let hasJoinRequest = false;
         let hasGroupRequest = false;
-
         if (
           group.members
             .map((member: any) => member._id.toString())
@@ -425,8 +424,6 @@ export class GroupService implements GroupServiceInterface {
     try {
       this.logger.log(`Handling event: ${event}`);
       const handler = eventHandlers.get(event);
-      console.log(handler?.toString());
-
       if (!handler) {
         throw new Error(`Event type ${event} is not supported`);
       }

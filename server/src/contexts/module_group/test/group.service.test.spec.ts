@@ -16,6 +16,8 @@ import { createGroupMagazine, createSection } from "../../../../test/functions/c
 import { MagazineSectionDocument } from "src/contexts/module_magazine/magazine/infrastructure/schemas/section/magazine.section.schema";
 import { INotificationGroup } from "src/contexts/module_user/notification/infrastructure/schemas/notification.group.schema";
 import { GroupRepository } from "../group/infrastructure/repository/group.repository";
+
+
 enum Visibility {
     public = 'public',
     private = 'private',
@@ -53,7 +55,6 @@ describe('GROUP TEST SERVICE', () => {
         new Types.ObjectId("66c49508e80296e90ec637d9"),
         new Types.ObjectId("66c49508e80296e90ec637d1"),
         new Types.ObjectId("66c49508e80296e90ec637d2"),
-
         new Types.ObjectId("66c49508e80296e90ec637d4"),
         new Types.ObjectId("66c49508e80296e90ec637d5"),
         new Types.ObjectId("66c49508e80296e90ec637d6"),
@@ -83,13 +84,8 @@ describe('GROUP TEST SERVICE', () => {
         await groupModel.deleteMany({});
         await sectionModel.deleteMany({});
         await notificationModel.deleteMany({});
-    })
-
-    afterEach(async () => {
         await magazineModel.deleteMany({});
-
     })
-
 
 
 
@@ -953,24 +949,8 @@ describe('GROUP TEST SERVICE', () => {
 
 
 
-    describe('Find group by alias/name an return role of user', () => {
-
-        beforeEach(async () => {
-
-        })
 
 
-        it('Remove Member being Member, should return permission denied', async () => {
-
-
-
-
-        })
-
-
-
-
-    })
 
 
 
