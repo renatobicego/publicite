@@ -7,12 +7,7 @@ import { query } from "@/lib/client";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import axios from "axios";
 import { getApiContext } from "./apiContext";
-import {
-  Invoice,
-  PaymentMethod,
-  Subscription,
-  SubscriptionPlan,
-} from "@/types/subscriptions";
+import { Invoice, Subscription, SubscriptionPlan } from "@/types/subscriptions";
 
 export const processPayment = async (
   formData: any,
@@ -37,19 +32,11 @@ export const processPayment = async (
 
     return data;
   } catch (error) {
+    console.error(error);
     return {
       error: "Error al procesar el pago. Por favor intenta de nuevo.",
-      errorMessage: error,
     };
   }
-};
-
-export const editPayment = async (formData: any, subscription: any) => {
-  const { data } = await axios.put("/api/subscriptions/process_payment", {
-    formData,
-    subscription,
-  });
-  return data;
 };
 
 export const editSubscription = async (
@@ -68,6 +55,7 @@ export const editSubscription = async (
       message: "Suscripción actualizada exitosamente.",
     };
   } catch (error) {
+    console.error(error);
     return {
       error: "Error al actualizar la suscripción. Por favor intenta de nuevo.",
     };

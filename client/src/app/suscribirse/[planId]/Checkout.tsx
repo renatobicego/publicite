@@ -30,7 +30,7 @@ const Checkout = ({
     },
   };
 
-  const onSubmit = async (formData: any, additionalData: any) => {
+  const onSubmit = async (formData: any) => {
     const res = await processPayment(
       formData,
       subscriptionPlan,
@@ -61,15 +61,14 @@ const Checkout = ({
     toastifyError(error);
   };
 
-  // const onReady = async () => {
-  // };
+  const onReady = async () => {};
   if (!isLoaded) return null;
   return (
     <CardPayment
       initialization={initialization}
       key={"cardPaymentBrick"}
       onSubmit={onSubmit}
-      // onReady={onReady}
+      onReady={onReady}
       onError={onError}
       locale="es-AR"
       customization={{

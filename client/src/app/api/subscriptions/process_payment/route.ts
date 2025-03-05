@@ -23,7 +23,9 @@ export async function POST(request: NextRequest) {
         external_reference: userId,
       },
     });
-    return NextResponse.json(result);
+    return NextResponse.json({
+      message: "OK",
+    });
   } catch (error) {
     console.error(error);
     return NextResponse.json(

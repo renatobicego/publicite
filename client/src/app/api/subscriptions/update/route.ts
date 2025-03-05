@@ -19,7 +19,9 @@ export async function PUT(request: Request) {
           process.env.CLIENT_URL + "/suscribirse/suscripcion-actualizada",
       },
     });
-    return NextResponse.json(result);
+    return NextResponse.json({
+      message: "OK",
+    });
   } catch (error) {
     console.error(error);
     return NextResponse.json(
