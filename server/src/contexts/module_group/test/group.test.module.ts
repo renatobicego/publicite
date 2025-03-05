@@ -19,6 +19,20 @@ import { LoggerModule } from "src/contexts/module_shared/logger/logger.module";
 import { MagazineModelSharedModule } from "src/contexts/module_shared/sharedSchemas/magazine.model.schema";
 import { UserModule } from "src/contexts/module_user/user/infrastructure/module/user.module";
 import { MagazineSectionModel } from "src/contexts/module_magazine/magazine/infrastructure/schemas/section/magazine.section.schema";
+import { NotificationGroup } from "src/contexts/module_user/notification/domain/entity/notification.group.entity";
+import { NotificationGroupModel } from "src/contexts/module_user/notification/infrastructure/schemas/notification.group.schema";
+import { NotificationGroupService } from "src/contexts/module_user/notification/application/service/notification.group.service";
+import { NotificationRepository } from "src/contexts/module_user/notification/infrastructure/repository/notification.repository";
+import { NotificationContactSellerModel } from "src/contexts/module_user/notification/infrastructure/schemas/notification.contactSeller.schema";
+import { NotificationMagazineModel } from "src/contexts/module_user/notification/infrastructure/schemas/notification.magazine.schema";
+import { NotificationPaymentModel } from "src/contexts/module_user/notification/infrastructure/schemas/notification.payment.schema";
+import { NotificationPostModel } from "src/contexts/module_user/notification/infrastructure/schemas/notification.post.schema";
+import { NotificationPostCalificationModel } from "src/contexts/module_user/notification/infrastructure/schemas/notification.postCalification.schema";
+import NotificationModel from "src/contexts/module_user/notification/infrastructure/schemas/notification.schema";
+import { NotificationShareModel } from "src/contexts/module_user/notification/infrastructure/schemas/notification.share.schema";
+import { NotificationSubscriptionModel } from "src/contexts/module_user/notification/infrastructure/schemas/notification.subscription.schema";
+import { NotificationUserModel } from "src/contexts/module_user/notification/infrastructure/schemas/notification.user.schema";
+import { Connection } from "mongoose";
 
 
 
@@ -46,8 +60,10 @@ const group_testing_module = async (): Promise<TestingModule> => {
                 { name: UserModel.modelName, schema: UserModel.schema },
                 { name: 'MagazineSection', schema: MagazineSectionModel.schema },
 
+
             ]),
             LoggerModule,
+            NotificationModule
         ],
         providers: [
             MyLoggerService,
@@ -68,10 +84,61 @@ const group_testing_module = async (): Promise<TestingModule> => {
                 provide: 'GroupServiceMapperInterface',
                 useClass: GroupServiceMapper,
             },
+
+            {
+                provide: getModelToken(NotificationMagazineModel.modelName),
+                useValue: {}, // Mock vacío
+            },
+            {
+                provide: getModelToken(NotificationModel.modelName),
+                useValue: {}, // Mock vacío
+            },
+
+            {
+                provide: getModelToken(NotificationUserModel.modelName),
+                useValue: {}, // Mock vacío
+            },
+
+            {
+                provide: getModelToken(NotificationPostModel.modelName),
+                useValue: {}, // Mock vacío
+            },
+
+            {
+                provide: getModelToken(NotificationContactSellerModel.modelName),
+                useValue: {}, // Mock vacío
+            },
+            {
+                provide: getModelToken(NotificationGroupModel.modelName),
+                useValue: {}, // Mock vacío
+            },
+
+            {
+                provide: getModelToken(NotificationPaymentModel.modelName),
+                useValue: {}, // Mock vacío
+            },
+
+            {
+                provide: getModelToken(NotificationPostCalificationModel.modelName),
+                useValue: {}, // Mock vacío
+            },
+
+            {
+                provide: getModelToken(NotificationShareModel.modelName),
+                useValue: {}, // Mock vacío
+            },
+            {
+                provide: getModelToken(NotificationSubscriptionModel.modelName),
+                useValue: {}, // Mock vacío
+            },
             {
                 provide: EventEmitter2,
                 useValue: {}
             },
+            {
+                provide: Connection,
+                useClass: Connection
+            }
 
 
 

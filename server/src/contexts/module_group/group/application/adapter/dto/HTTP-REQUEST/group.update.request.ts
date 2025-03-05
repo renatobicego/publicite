@@ -6,25 +6,25 @@ export class GroupUpdateRequest {
   _id: string;
 
   @Field(() => String, { nullable: true })
-  name: string;
+  name?: string;
 
   @Field(() => String, { nullable: true })
-  alias: string;
+  alias?: string;
 
   @Field(() => String, { nullable: true })
-  rules: string;
+  rules?: string;
 
   @Field(() => String, { nullable: true })
-  details: string;
+  details?: string;
 
   @Field(() => String, { nullable: true })
-  profilePhotoUrl: string;
+  profilePhotoUrl?: string;
 
   @Field(() => String, { nullable: true })
-  visibility: string;
+  visibility?: string;
 
   @Field(() => String, { nullable: true })
-  groupNote: string;
+  groupNote?: string;
 
 
 }

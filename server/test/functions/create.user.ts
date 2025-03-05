@@ -1,33 +1,51 @@
 import { random } from "lodash";
 import { Types } from "mongoose";
 
+export class PersonalAccountTestRequest {
+    _id: Types.ObjectId;
+    clerkId?: string;
+    email?: string;
+    username?: string;
+    name?: string;
+    lastName?: string;
+    finder?: string;
+    profilePhotoUrl?: string;
+    userType?: string;
+    userRelations?: Map<string, Types.ObjectId>;
+    kind?: string;
+    birthDate?: string;
+    gender?: string;
+    subscriptions?: Map<string, Types.ObjectId>;
+    notifications?: string[];
+    magazines?: Types.ObjectId[];
+    posts?: Types.ObjectId[];
+    groups?: Types.ObjectId[];
+    attributes?: Map<string, string>
 
-async function createPersonalUser(user_id: Types.ObjectId,
+}
+async function createPersonalUser(
     userModel: any,
-    attributes: Map<any, any> | undefined,
-    magazines?: Types.ObjectId[],
-    posts?: Types.ObjectId[],
-    groups?: Types.ObjectId[]
+    personalAccountTestRequest: PersonalAccountTestRequest
 ) {
     const USER = await userModel.create({
-        _id: user_id,
-        clerkId: 'TEST_B',
-        email: random(1, 100) + 'TEST_B@email.com' + random(1, 100),
-        username: random(1, 100) + 'TEST_B' + random(1, 100),
-        name: 'TEST_B',
-        lastName: 'TEST_B',
-        finder: 'TEST_B',
-        profilePhotoUrl: 'TEST_B.jpg',
-        userType: "Person",
-        userRelations: attributes?.get("userRelations") ?? [],
-        kind: "Person",
-        birthDate: "2000-01-01",
-        gender: "M",
-        subscriptions: attributes?.get("subscriptions") ?? [],
-        notifications: [],
-        magazines: magazines ?? [],
-        posts: posts ?? [],
-        groups: groups ?? []
+        _id: personalAccountTestRequest._id,
+        clerkId: personalAccountTestRequest.clerkId ?? 'TEST_B',
+        email: personalAccountTestRequest.email ?? random(1, 100) + 'TEST_B@email.com' + random(1, 100),
+        username: personalAccountTestRequest.username ?? random(1, 100) + 'TEST_B' + random(1, 100),
+        name: personalAccountTestRequest.name ?? 'TEST_B',
+        lastName: personalAccountTestRequest.lastName ?? 'TEST_B',
+        finder: personalAccountTestRequest.finder ?? 'TEST_B',
+        profilePhotoUrl: personalAccountTestRequest.profilePhotoUrl ?? 'TEST_B.jpg',
+        userType: personalAccountTestRequest.userType ?? "Person",
+        userRelations: personalAccountTestRequest.attributes?.get("userRelations") ?? [],
+        kind: personalAccountTestRequest.kind ?? "Person",
+        birthDate: personalAccountTestRequest.birthDate ?? "2000-01-01",
+        gender: personalAccountTestRequest.gender ?? "M",
+        subscriptions: personalAccountTestRequest.attributes?.get("subscriptions") ?? [],
+        notifications: personalAccountTestRequest.notifications ?? [],
+        magazines: personalAccountTestRequest.magazines ?? [],
+        posts: personalAccountTestRequest.posts ?? [],
+        groups: personalAccountTestRequest.groups ?? []
     });
 
     return USER

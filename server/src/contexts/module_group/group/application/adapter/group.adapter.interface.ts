@@ -8,6 +8,7 @@ import {
   GroupResponse,
   GroupResponseById,
 } from './dto/HTTP-RESPONSE/group.response';
+import { GroupExitRequest } from './dto/HTTP-REQUEST/group.exit.request';
 
 export interface GroupAdapterInterface {
   acceptGroupInvitation(groupId: string, userRequestId: string): Promise<void>;
@@ -39,10 +40,7 @@ export interface GroupAdapterInterface {
   ): Promise<any>;
   deleteGroupById(groupId: string, groupAdmin: string): Promise<any>;
   exitGroupById(
-    groupId: string,
-    member?: string,
-    creator?: string,
-    newCreator?: string,
+    groupExitRequest: GroupExitRequest,
   ): Promise<any>;
   findGroupById(id: string, userRequest: string): Promise<GroupResponseById | null>;
   findGroupByNameOrAlias(
@@ -52,7 +50,7 @@ export interface GroupAdapterInterface {
     userRequest: string,
   ): Promise<GroupListResponse>;
 
-  findAllPostsOfGroupMembers(groupId: string, userRequest: string, userLocation: UserLocation_group, idsMembersArray: String [],limit: number, page: number): Promise<PostsMemberGroupResponse | null>;
+  findAllPostsOfGroupMembers(groupId: string, userRequest: string, userLocation: UserLocation_group, idsMembersArray: String[], limit: number, page: number): Promise<PostsMemberGroupResponse | null>;
   isThisGroupExist(alias: string): Promise<boolean>;
   removeAdminsFromGroupByGroupId(
     admins: string[],

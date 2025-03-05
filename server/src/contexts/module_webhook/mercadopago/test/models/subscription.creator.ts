@@ -1,8 +1,9 @@
+import { random } from "lodash";
 import { Subscription_preapproval } from "../../domain/entity_mp/subscription_preapproval";
 
 export function get_subscription_preapproval(external_reference: string, subcriptionPlanMeli_id: string, free_trial: boolean): Subscription_preapproval {
     return {
-        id: "sub_12345",
+        id: "sub_12345" + random(10000, 99999),
         payer_id: 123456789,
         payer_email: "payer@example.com",
         back_url: "https://example.com/back",

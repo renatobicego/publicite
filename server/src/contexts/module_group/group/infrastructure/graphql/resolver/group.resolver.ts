@@ -15,6 +15,7 @@ import { CustomContextRequestInterface } from 'src/contexts/module_shared/auth/c
 
 import { UserLocation_group } from '../../../application/adapter/dto/HTTP-REQUEST/user.location.request';
 import { PostsMemberGroupResponse } from 'src/contexts/module_shared/sharedGraphql/group.posts.member.response';
+import { GroupExitRequest } from '../../../application/adapter/dto/HTTP-REQUEST/group.exit.request';
 
 @Resolver('Group')
 export class GroupResolver {
@@ -362,18 +363,14 @@ export class GroupResolver {
   })
   @UseGuards(ClerkAuthGuard)
   async exitGroupById(
-    @Args('groupId', { type: () => String })
-    groupId: string,
+    @Args('groupExitRequest', { type: () => GroupExitRequest })
+    groupExitRequest: GroupExitRequest,
     @Context() context: { req: CustomContextRequestInterface },
-    @Args('member', { type: () => String, nullable: true })
-    member?: string,
-    @Args('creator', { type: () => String, nullable: true })
-    creator?: string,
-    @Args('newCreator', { type: () => String, nullable: true })
-    newCreator?: string,
   ): Promise<any> {
     try {
       const userRequestId = context.req.userRequestId;
+      const { creator, newCreator, member, groupId } = groupExitRequest;
+
       if (creator) {
         if (!newCreator || member) {
           return 'newCreator is required';
@@ -387,10 +384,7 @@ export class GroupResolver {
       }
 
       await this.groupAdapter.exitGroupById(
-        groupId,
-        member,
-        creator,
-        newCreator,
+        groupExitRequest
       );
     } catch (error: any) {
       throw error;

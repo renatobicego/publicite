@@ -11,6 +11,7 @@ import { UserServiceInterface } from 'src/contexts/module_user/user/domain/servi
 import { InjectConnection } from '@nestjs/mongoose';
 import { Connection } from 'mongoose';
 import makeReponsePlanFunction from './function/makeResponsePlan';
+import parseTimeX from './function/parse_time';
 
 export class MpSubscriptionService implements SubscriptionServiceInterface {
   constructor(
@@ -52,9 +53,13 @@ export class MpSubscriptionService implements SubscriptionServiceInterface {
       throw new BadRequestException('Invalid subscription data');
     }
     this.logger.log('Data of suscription is valid... Continue to create it');
-    let { start_date, /** end_date */ } = auto_recurring;
-    start_date = this.parseTimeX(start_date);
-    let end_date = this.parseTimeX(start_date);
+    let { start_date, frequency } = auto_recurring;
+    const { start_date_parsed, end_date_parsed } = parseTimeX(start_date, frequency);
+
+
+
+    start_date = start_date_parsed;
+    let end_date = end_date_parsed;
 
     //Buscamos el plan al que pertenece la suscripción
     this.logger.log('Searching plan for this suscription');
@@ -157,10 +162,11 @@ export class MpSubscriptionService implements SubscriptionServiceInterface {
 
       const { id, payer_id, status, auto_recurring, external_reference, next_payment_date, payment_method_id, card_id } =
         subscription_preapproval_update;
-      let end_date;
-      let { start_date, /*end_date*/ } = auto_recurring;
-      start_date = this.parseTimeX(start_date);
-      end_date = this.parseTimeX(start_date);
+      let { start_date, frequency } = auto_recurring;
+      const { start_date_parsed, end_date_parsed } = parseTimeX(start_date, frequency);
+
+      start_date = start_date_parsed;
+      let end_date = end_date_parsed;
       const timeOfUpdate = getTodayDateTime();
 
 
@@ -209,7 +215,5 @@ export class MpSubscriptionService implements SubscriptionServiceInterface {
   }
 
 
-  parseTimeX(date: string): string {
-    return date.split('T')[0];
-  }
+
 }

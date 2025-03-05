@@ -132,7 +132,7 @@ export class GroupResponse {
   constructor(group: any) {
     this._id = group._id;
     this.members = group.members;
-    this.admins = group.admins ?? [];
+    this.admins = group.admins;
     this.name = group.name;
     this.alias = group.alias;
     this.creator = group.creator;
@@ -143,6 +143,7 @@ export class GroupResponse {
     this.visibility = group.visibility;
     this.groupNotificationsRequest = group.groupNotificationsRequest;
     this.groupNote = group.groupNote
+
   }
 }
 

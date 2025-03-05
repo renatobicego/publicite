@@ -17,6 +17,7 @@ import { makeUserRelationHierarchyMap } from 'src/contexts/module_shared/utils/f
 import { UserLocation_group } from '../adapter/dto/HTTP-REQUEST/user.location.request';
 import { PostServiceInterface } from 'src/contexts/module_post/post/domain/service/post.service.interface';
 import { PostsMemberGroupResponse } from 'src/contexts/module_shared/sharedGraphql/group.posts.member.response';
+import { GroupExitRequest } from '../adapter/dto/HTTP-REQUEST/group.exit.request';
 
 interface UserRelation {
   userA: string;
@@ -40,6 +41,9 @@ export class GroupService implements GroupServiceInterface {
 
   ) { }
 
+  get getLogger() {
+    return this.logger;
+  }
 
   async acceptGroupInvitation(
     groupId: string,
@@ -167,14 +171,12 @@ export class GroupService implements GroupServiceInterface {
   }
 
   async exitGroupById(
-    groupId: string,
-    member?: string,
-    creator?: string,
-    newCreator?: string,
+    groupExitRequest: GroupExitRequest,
   ): Promise<any> {
     try {
-      if (creator && newCreator) {
-        this.logger.log('Exit group and assign new creator ');
+      const { creator, newCreator, member, groupId } = groupExitRequest;
+      if (creator && newCreator && !member) {
+        this.logger.log('Exit group and assign new creator');
         await this.groupRepository.assignNewCreatorAndExitGroupById(
           groupId,
           newCreator,
@@ -223,7 +225,6 @@ export class GroupService implements GroupServiceInterface {
         let isMember = false;
         let hasJoinRequest = false;
         let hasGroupRequest = false;
-
         if (
           group.members
             .map((member: any) => member._id.toString())
@@ -423,8 +424,6 @@ export class GroupService implements GroupServiceInterface {
     try {
       this.logger.log(`Handling event: ${event}`);
       const handler = eventHandlers.get(event);
-      console.log(handler?.toString());
-
       if (!handler) {
         throw new Error(`Event type ${event} is not supported`);
       }

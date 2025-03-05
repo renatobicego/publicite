@@ -34,7 +34,8 @@ describe('UserService - Get limit of contacts and posts by user', () => {
         notificationAdapter = moduleRef.get<NotificationAdapter>('NotificationAdapterInterface');
         subscription_plan_id = new Types.ObjectId("66c49508e80296e90ec637d9");
         user_id = new Types.ObjectId("66c49508e80296e90ec637d7");
-        await createPersonalUser(user_id, userModel, new Map([["subscriptions", subscription_plan_id]]));
+        const subscription = new Map([["subscriptions", subscription_plan_id]])
+        await createPersonalUser(userModel, { _id: user_id, subscriptions: subscription });
     });
 
     afterAll(async () => {

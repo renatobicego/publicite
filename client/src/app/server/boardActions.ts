@@ -15,7 +15,7 @@ export const createBoard = async (formData: any) => {
     return { error: res.error };
   }
 
-  return { message: "Pizarra creada exitosamente", updatedData: res };
+  return { message: "Pizarra creada exitosamente.", updatedData: res };
 };
 
 export const editBoard = async (id: string, formData: any) => {
@@ -23,5 +23,7 @@ export const editBoard = async (id: string, formData: any) => {
   if (res.error) {
     return res
   }
-  return { message: "Pizarra editada exitosamente", updatedData: res };
+  return { message: "Pizarra editada exitosamente.", updatedData: res };
 };
+
+

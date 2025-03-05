@@ -12,6 +12,7 @@ import { GroupUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/g
 
 import { UserLocation_group } from '../../application/adapter/dto/HTTP-REQUEST/user.location.request';
 import { PostsMemberGroupResponse } from 'src/contexts/module_shared/sharedGraphql/group.posts.member.response';
+import { GroupExitRequest } from '../../application/adapter/dto/HTTP-REQUEST/group.exit.request';
 
 export class GroupAdapter implements GroupAdapterInterface {
   constructor(
@@ -115,17 +116,11 @@ export class GroupAdapter implements GroupAdapterInterface {
   }
 
   async exitGroupById(
-    groupId: string,
-    member?: string,
-    creator?: string,
-    newCreator?: string,
+    groupExitRequest: GroupExitRequest,
   ): Promise<any> {
     try {
       await this.groupService.exitGroupById(
-        groupId,
-        member,
-        creator,
-        newCreator,
+        groupExitRequest
       );
     } catch (error: any) {
       throw error;

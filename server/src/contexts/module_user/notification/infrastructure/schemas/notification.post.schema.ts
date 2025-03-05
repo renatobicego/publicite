@@ -42,7 +42,7 @@ const NotificationPostSchema = new Schema<INotificationPost>({
             post: {
                 _id: { type: String, required: true },
                 title: { type: String, required: true },
-                imageUrl: { type: String, required: true },
+                imageUrl: { type: String, default: null },
                 postType: { type: String, enum: Object.values(PostType), required: true },
             },
             postReaction: { emoji: { type: String } },

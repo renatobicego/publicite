@@ -36,18 +36,13 @@ MagazineSchema.pre(
       }
     }
 
-    console.log(sectionsToDelete);
 
-    await docs[0].model('MagazineSection').deleteMany({ _id: { $in: sectionsToDelete } });
-
+    if (sectionsToDelete.length > 0) {
+      await docs[0].model('MagazineSection').deleteMany({ _id: { $in: sectionsToDelete } });
+    }
     next();
   },
 );
-
-
-
-
-
 
 
 MagazineSchema.index({ sections: 1 });

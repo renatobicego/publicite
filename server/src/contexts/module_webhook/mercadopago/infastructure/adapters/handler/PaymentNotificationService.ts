@@ -18,6 +18,7 @@ export class PaymentNotificationService {
     get getEmmiter() {
         return this.emmiter
     }
+
     async sendPaymentNotification(data: any) {
         try {
             const {
