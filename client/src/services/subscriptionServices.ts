@@ -47,10 +47,19 @@ export const editSubscription = async (
   }
 ) => {
   try {
-    await axios.put(process.env.CLIENT_URL + "/api/subscriptions/update", {
-      formData,
-      subscriptionId,
-    });
+    const { data, status } = await axios.put(
+      process.env.CLIENT_URL + "/api/subscriptions/update",
+      {
+        formData,
+        subscriptionId,
+      }
+    );
+    if (status !== 200 && status !== 201) {
+      throw new Error(
+        "Error al actualizar la suscripción. Por favor intenta de nuevo.",
+        data
+      );
+    }
     return {
       message: "Suscripción actualizada exitosamente.",
     };

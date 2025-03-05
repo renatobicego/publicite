@@ -1,3 +1,4 @@
+import { currentUser } from "@clerk/nextjs/server";
 import MercadoPagoConfig, { PreApproval } from "mercadopago";
 import { NextResponse } from "next/server";
 
@@ -10,11 +11,12 @@ export async function PUT(request: Request) {
 
     const paymentSubscription = new PreApproval(client);
     const { formData, subscriptionId } = await request.json();
-    const result = await paymentSubscription.update({
+    const user = await currentUser();
+    await paymentSubscription.update({
       id: subscriptionId,
       body: {
         ...formData,
-        external_reference: formData.payer.email,
+        external_reference: user?.emailAddresses[0].emailAddress,
         back_url:
           process.env.CLIENT_URL + "/suscribirse/suscripcion-actualizada",
       },
