@@ -4,7 +4,7 @@ import * as request from 'supertest';
 import { AppModule } from 'src/app.module';
 import { DatabaseService } from 'src/contexts/module_shared/database/infrastructure/database.service';
 import { UserBusinessRequest, UserPersonRequest } from 'src/contexts/module_user/user/application/adapter/dto/HTTP-REQUEST/user.request.CREATE';
-import { userSub, userSub_id, userSubBusiness } from '../../model/user.stub';
+import { userSub, userSubBusiness } from '../../model/user.stub';
 import { UserType } from 'src/contexts/module_user/user/domain/entity/enum/user.enums';
 
 

@@ -764,9 +764,9 @@ export class GroupRepository implements GroupRepositoryInterface, OnModuleInit {
     session: any,
   ): Promise<any> {
     try {
+      
       const userNotificationMap = new Map<string, string>();
       userNotificationMap.set(userId, notificationId);
-
       const resultAddToSet = await this.groupModel
         .updateOne(
           { _id: groupId },
@@ -804,6 +804,7 @@ export class GroupRepository implements GroupRepositoryInterface, OnModuleInit {
     session: any,
   ): Promise<any> {
     try {
+
       const result = await this.groupModel
         .findOneAndUpdate(
           { _id: groupId },
@@ -815,6 +816,7 @@ export class GroupRepository implements GroupRepositoryInterface, OnModuleInit {
         )
         .session(session);
       checkIfanyDataWasModified(result);
+
       const notificationID = result?.userIdAndNotificationMap.get(userId);
       if (notificationID) {
         this.logger.log(
@@ -824,6 +826,7 @@ export class GroupRepository implements GroupRepositoryInterface, OnModuleInit {
           notificationID,
         );
       }
+
 
       this.logger.log(
         'Group request remove to group successfully. Group ID: ' + groupId,
