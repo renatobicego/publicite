@@ -20,6 +20,7 @@ export interface Subscription {
   mpPreapprovalId: string;
   startDate: string;
   endDate: string;
+  nextPaymentDate: string;
   subscriptionPlan: SubscriptionPlan;
   external_reference: string;
 }

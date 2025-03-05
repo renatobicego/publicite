@@ -2,7 +2,6 @@ import { useState } from "react";
 import AccountTypeForm from "./AccountTypeForm";
 import AnimatedBox from "../../AnimatedBox";
 import DataBox, { CardDataItem, EditButton } from "../../DataBox";
-import { Subscription } from "@/types/subscriptions";
 import { useActiveSubscriptions } from "@/app/(root)/providers/userDataProvider";
 
 const AccountType = () => {
@@ -31,7 +30,7 @@ const AccountType = () => {
           {subscription && !subscription.subscriptionPlan.isFree ? (
             <CardDataItem
               title={subscription.subscriptionPlan.reason}
-              subtitle={`Próximo pago: ${subscription.endDate}`}
+              subtitle={`Próximo pago: ${subscription.nextPaymentDate}`}
               boldLabel={`$${subscription.subscriptionPlan.price} por mes`}
             />
           ) : (
