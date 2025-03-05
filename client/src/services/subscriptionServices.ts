@@ -47,7 +47,7 @@ export const editSubscription = async (
   }
 ) => {
   try {
-    await axios.put("/api/subscriptions/update", {
+    await axios.put(process.env.CLIENT_URL + "/api/subscriptions/update", {
       formData,
       subscriptionId,
     });

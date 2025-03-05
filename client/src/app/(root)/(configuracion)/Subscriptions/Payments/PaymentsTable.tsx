@@ -64,6 +64,8 @@ export default function PaymentsTable() {
       case "reason":
         return data?.reason;
       case "paymentId":
+        console.log(data.paymentId);
+        if (!data?.paymentId) return;
         const { paymentMethodId, paymentTypeId } = data?.paymentId;
         const icon = getPaymentIcon(paymentMethodId);
         return (
@@ -92,7 +94,7 @@ export default function PaymentsTable() {
       case "transactionAmount":
         return "$" + data?.transactionAmount;
       case "retryAttempts":
-        return data?.retryAttempts;
+        return data?.retryAttempts === "0" ? 1 : data?.retryAttempts;
       case "nextRetryDay":
         if (data.paymentStatus === "approved") return;
         const nextRetryDay = parseAbsoluteToLocal(
