@@ -58,7 +58,7 @@ export class PaymentNotificationService {
             }
             this.logger.log("emmiting" + event + " to user id " + userId);
             await this.emmiter.emitAsync(subscription_event, paymentDataFromMeli);
-            console.log("asdasd")
+
         } catch (error: any) {
             throw error;
         }

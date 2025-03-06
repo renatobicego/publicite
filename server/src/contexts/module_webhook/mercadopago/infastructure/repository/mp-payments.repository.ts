@@ -20,7 +20,7 @@ export class MercadoPagoPaymentsRepository
 
   async createPayment(payment: Payment): Promise<void> {
     try {
-      this.logger.log('Save payment: ' + payment.getMPPaymentId() + ' with status ' + payment.getStatus() + ' and description ' + payment.getDescriptionOfPayment() + 'for preapproval id ' + payment.getMPPreapprovalId());
+      this.logger.log('Save payment: ' + payment.getMPPaymentId() + ' with status ' + payment.getStatus() + ' and description ' + payment.getDescriptionOfPayment() + ' for preapproval id ' + payment.getMPPreapprovalId());
       const newPayment = new this.paymentModel(payment);
       await newPayment.save();
     } catch (error: any) {

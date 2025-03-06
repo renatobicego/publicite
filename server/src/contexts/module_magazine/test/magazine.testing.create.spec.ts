@@ -71,7 +71,7 @@ describe('Magazine Testing', () => {
 
     });
 
-    it('Create new User magazine and return some required values', async () => {
+    it('Create new USER magazine and return MagazineCreateResponse', async () => {
         magazineUserRequest.addedPost = new Types.ObjectId("66c49508e80296e90ec637d8") as unknown as ObjectId;
 
         const magazineCreated: MagazineCreateResponse = await magazineAdapter.createMagazine(magazineUserRequest, user_id.toString());
@@ -88,7 +88,7 @@ describe('Magazine Testing', () => {
 
 
 
-    it('Create new Group magazine and return some required values', async () => {
+    it('Create new GROUP magazine and return MagazineCreateResponse', async () => {
         magazineGroupRequest.addedPost = new Types.ObjectId("66c49508e80296e90ec637d8") as unknown as ObjectId;
 
         const magazineCreated: MagazineCreateResponse = await magazineAdapter.createMagazine(magazineGroupRequest, user_id.toString());

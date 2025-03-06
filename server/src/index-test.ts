@@ -17,19 +17,22 @@ async function bootstrap() {
   // Habilitar CORS
   app.enableCors();
 
-  // Configuración de Swagger
-  const config = new DocumentBuilder()
-    .setTitle('Publicite API documentation')
-    .setDescription('Publicite - API documentation')
-    .setVersion('1.0')
-    .addTag('Endpoints 🚀')
-    .build();
-
-  const document = SwaggerModule.createDocument(app, config);
-
-  SwaggerModule.setup('api', app, document); // La documentación estará disponible en /api
-  //Racibe las cookies y las hace un populate
   app.use(cookieParser());
+
+  // // Configuración de Swagger
+  // const config = new DocumentBuilder()
+  //   .setTitle('Publicite API documentation')
+  //   .setDescription('Publicite - API documentation')
+  //   .setVersion('1.0')
+  //   .addTag('Endpoints 🚀')
+  //   .build();
+
+  // const document = SwaggerModule.createDocument(app, config);
+
+  // SwaggerModule.setup('api', app, document);
+  //  // La documentación estará disponible en /api
+  // //Racibe las cookies y las hace un populate
+
 
   // const grpcApp = await NestFactory.createMicroservice(AppModule, {
   //   transport: Transport.GRPC,
@@ -41,7 +44,7 @@ async function bootstrap() {
   // });
 
   //await grpcApp.listen();  
- 
+
 
   await app.listen(3001);
 }

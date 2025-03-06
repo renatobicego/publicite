@@ -40,6 +40,8 @@ export class NotificationMagazineService implements NotificationMagazineServiceI
             }
         } catch (error: any) {
             throw error;
+        } finally {
+            session.endSession();
         }
     }
 
@@ -55,9 +57,12 @@ export class NotificationMagazineService implements NotificationMagazineServiceI
             }
         } catch (error: any) {
             throw error;
+        } finally {
+            session.endSession();
         }
-
     }
+
+
 
     async saveNotificationMagazineAndSentToUser(notificationMagazine: NotificationMagazine): Promise<any> {
         try {

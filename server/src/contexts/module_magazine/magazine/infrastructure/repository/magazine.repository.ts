@@ -70,7 +70,7 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
   ): Promise<any> {
     const session = await this.connection.startSession();
     try {
-      session.withTransaction(async () => {
+      await session.withTransaction(async () => {
         const sectionId = await this.saveSection(section, session);
         if (sectionId === null || !sectionId) {
           throw new Error('Error saving section in repository');
@@ -81,10 +81,12 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
             { $addToSet: { sections: sectionId } },
             { session },
           )
-          .lean();
+
       });
     } catch (error: any) {
       throw error;
+    } finally {
+      await session.endSession();
     }
   }
   async addNewMagazineUserSection(
@@ -100,6 +102,7 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
         if (sectionId === null || !sectionId) {
           throw new Error('Error saving section in repository');
         }
+
         const result = await this.userMagazine.updateOne(
           {
             _id: magazineId,
@@ -108,6 +111,8 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
           { $addToSet: { sections: sectionId } },
           { session },
         );
+
+
         chekResultOfOperation(
           result,
           'Error saving section in repository, you dont have permissions',
@@ -126,25 +131,14 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
     postId: string,
     sectionId: string,
   ): Promise<any> {
-    const session = await this.connection.startSession();
-    session.startTransaction();
     try {
       await this.magazineSection
         .updateOne(
           { _id: sectionId },
           { $addToSet: { posts: postId } },
-          { session },
         )
-        .lean();
-
-      await session.commitTransaction();
     } catch (error: any) {
-      if (session.inTransaction()) {
-        await session.abortTransaction();
-      }
       throw error;
-    } finally {
-      session.endSession();
     }
   }
 
@@ -154,36 +148,27 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
     magazineAdmin: string,
     sectionId: string,
   ): Promise<any> {
-    const session = await this.connection.startSession();
+
 
     try {
-      await session.withTransaction(async () => {
-        const result = await this.userMagazine
-          .find({
-            _id: magazineId,
-            $or: [{ user: magazineAdmin }, { collaborators: magazineAdmin }],
-          })
-          .session(session);
-        chekResultOfOperation(
-          result,
-          'You must be an admin or a collaborator to add a post to a magazine',
-        );
+      const result = await this.userMagazine
+        .findOne({
+          _id: magazineId,
+          $or: [{ user: magazineAdmin }, { collaborators: magazineAdmin }],
+        })
+        .lean();
+      chekResultOfOperation(
+        result,
+        'You must be an admin or a collaborator to add a post to a magazine',
+      );
 
-        await this.magazineSection.updateOne(
-          { _id: sectionId },
-          { $addToSet: { posts: postId } },
-          { session },
-        );
-      });
+      await this.magazineSection.updateOne(
+        { _id: sectionId },
+        { $addToSet: { posts: postId } },
+      );
 
-      await session.commitTransaction();
     } catch (error: any) {
-      if (session.inTransaction()) {
-        await session.abortTransaction();
-      }
       throw error;
-    } finally {
-      session.endSession();
     }
   }
 
@@ -216,16 +201,14 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
       throw error;
     }
   }
+
   async addAllowedCollaboratorsToGroupMagazine(
     newAllowedCollaborators: string[],
     magazineId: string,
     magazineAdmin: string,
-    session: any
+    session?: any
   ): Promise<any> {
-
     try {
-
-      //Verifico si es un admin en el grupo
       const result = await this.groupModel
         .findOne({
           magazines: magazineId,
@@ -245,7 +228,6 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
           },
           { session },
         )
-        .lean();
 
       // await this.userModel
       //   .updateMany(
@@ -263,7 +245,6 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
         'Error adding Allowed Collaborators to Magazine',
         error,
       );
-      await session.abortTransaction();
       throw error;
     }
   }
@@ -662,7 +643,7 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
         .lean();
 
       if (!collaborator && !isAdminOrCreatorOfGroup) {
-        throw new Error('The user is not allowed');
+        throw new UnauthorizedException('The user is not allowed');
       }
     } catch (error: any) {
       throw error;
@@ -854,8 +835,10 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
   ): Promise<any> {
     try {
       const newMagazineSection = new this.magazineSection(section);
+
       const sectionSave = await newMagazineSection.save({ session });
       if (sectionSave) {
+
         return sectionSave._id;
       } else {
         return null;

@@ -110,7 +110,7 @@ export class MagazineService implements MagazineServiceInterface {
     newAllowedCollaborators: string[],
     magazineId: string,
     magazineAdmin: string,
-    session: any
+    session?: any
   ): Promise<any> {
     try {
       this.logger.log(
