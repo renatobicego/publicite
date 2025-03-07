@@ -28,21 +28,21 @@ const SelectSolapa = ({
       label: "Anuncios de Agenda de Contactos",
       requiresLogin: true,
     },
-    {
-      key: "hoy",
-      label: "Anuncios de Hoy",
-      requiresLogin: false,
-    },
-    {
-      key: "puntuados",
-      label: "Mejor Puntuados",
-      requiresLogin: false,
-    },
-    {
-      key: "vencer",
-      label: "Próximos a Vencer",
-      requiresLogin: false,
-    },
+    // {
+    //   key: "hoy",
+    //   label: "Anuncios de Hoy",
+    //   requiresLogin: false,
+    // },
+    // {
+    //   key: "puntuados",
+    //   label: "Mejor Puntuados",
+    //   requiresLogin: false,
+    // },
+    // {
+    //   key: "vencer",
+    //   label: "Próximos a Vencer",
+    //   requiresLogin: false,
+    // },
     {
       key: "pizarras",
       label: "Pizarras",

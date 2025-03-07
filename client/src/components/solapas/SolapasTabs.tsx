@@ -101,21 +101,21 @@ const SolapasTabs = () => {
       component: <PostsList postTypeVisited={postTypeVisited} hideMap />,
       requiresLogin: true,
     },
-    {
-      key: `${POST_RECENTS}${postTypeUrlVisited}`,
-      title: "Anuncios de Hoy",
-      component: <PostsList postTypeVisited={postTypeVisited} />,
-    },
-    {
-      key: `${POST_BEST}${postTypeUrlVisited}`,
-      title: "Mejor Puntuados",
-      component: <PostsList postTypeVisited={postTypeVisited} />,
-    },
-    {
-      key: `${POST_NEXT_TO_EXPIRE}${postTypeUrlVisited}`,
-      title: "Próximos a Vencer",
-      component: <PostsList postTypeVisited={postTypeVisited} />,
-    },
+    // {
+    //   key: `${POST_RECENTS}${postTypeUrlVisited}`,
+    //   title: "Anuncios de Hoy",
+    //   component: <PostsList postTypeVisited={postTypeVisited} />,
+    // },
+    // {
+    //   key: `${POST_BEST}${postTypeUrlVisited}`,
+    //   title: "Mejor Puntuados",
+    //   component: <PostsList postTypeVisited={postTypeVisited} />,
+    // },
+    // {
+    //   key: `${POST_NEXT_TO_EXPIRE}${postTypeUrlVisited}`,
+    //   title: "Próximos a Vencer",
+    //   component: <PostsList postTypeVisited={postTypeVisited} />,
+    // },
     {
       key: BOARDS,
       title: "Pizarras",

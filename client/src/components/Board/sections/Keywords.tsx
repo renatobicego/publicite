@@ -10,7 +10,7 @@ const Keywords = ({
   borderColor: string;
 }) => {
   return (
-    <div className="flex gap-1">
+    <div className="flex gap-1 max-w-full overflow-x-auto pb-2">
       {keywords.map((item) => (
         <Chip
           size="sm"
