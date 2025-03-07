@@ -3,6 +3,7 @@ import AccountTypeForm from "./AccountTypeForm";
 import AnimatedBox from "../../AnimatedBox";
 import DataBox, { CardDataItem, EditButton } from "../../DataBox";
 import { useActiveSubscriptions } from "@/app/(root)/providers/userDataProvider";
+import { parseIsoDate, showDate } from "@/utils/functions/dates";
 
 const AccountType = () => {
   const { accountType: subscription } = useActiveSubscriptions();
@@ -30,7 +31,9 @@ const AccountType = () => {
           {subscription && !subscription.subscriptionPlan.isFree ? (
             <CardDataItem
               title={subscription.subscriptionPlan.reason}
-              subtitle={`Próximo pago: ${subscription.nextPaymentDate}`}
+              subtitle={`Próximo pago: ${showDate(
+                parseIsoDate(subscription.nextPaymentDate)
+              )}`}
               boldLabel={`$${subscription.subscriptionPlan.price} por mes`}
             />
           ) : (

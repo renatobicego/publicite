@@ -48,10 +48,10 @@ const CreateBoardInputs = ({
         </ul>
       )}
       <AnnotationsInputs setValues={setValues} textColor={textColor} />
-      <div>
+      <div className="w-full">
         <KeywordsInput setValues={setValues} textColor={textColor} />
         {values.keywords.length > 0 && (
-          <div className="flex gap-1 items-center">
+          <div className="flex gap-1 items-center max-w-full overflow-x-auto">
             {values.keywords.map((keyword, index) => (
               <KeywordAdded
                 key={index}
