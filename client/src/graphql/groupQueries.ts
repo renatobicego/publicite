@@ -265,17 +265,7 @@ export const acceptJoinRequestMutation = gql`
 `;
 
 export const exitGroupMutation = gql`
-  mutation ExitGroupById(
-    $groupId: String!
-    $member: String
-    $creator: String
-    $newCreator: String
-  ) {
-    exitGroupById(
-      groupId: $groupId
-      member: $member
-      creator: $creator
-      newCreator: $newCreator
-    )
+  mutation ExitGroupById($groupExitRequest: GroupExitRequest!) {
+    exitGroupById(groupExitRequest: $groupExitRequest)
   }
 `;

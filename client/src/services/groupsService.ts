@@ -395,7 +395,9 @@ export const putExitGroup = async (
     await getClient()
       .mutate({
         mutation: exitGroupMutation,
-        variables,
+        variables: {
+          groupExitRequest: variables,
+        },
         context: {
           headers: {
             Authorization: `${await auth().getToken({ template: "testing" })}`,
