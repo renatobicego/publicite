@@ -40,7 +40,7 @@ const UserSolapas = ({
 
   const isActiveRelation =
     isMyProfile ||
-    configData?.activeRelations.find(
+    configData?.activeRelations.some(
       (relation) => relation.userA === user._id || relation.userB === user._id
     );
 

@@ -72,14 +72,23 @@ const UserRelations = ({
   return (
     <>
       {isMyProfile && (
-        <PrimaryButton
-          className="mb-2 md:self-start"
-          startContent={<FaPlus />}
-          as={Link}
-          href={PROFILE}
-        >
-          Agregar Contactos
-        </PrimaryButton>
+        <menu className="gap-2 flex items-center">
+          <PrimaryButton
+            className="mb-2 md:self-start"
+            startContent={<FaPlus />}
+            as={Link}
+            href={PROFILE}
+          >
+            Agregar Contactos
+          </PrimaryButton>
+          <ManageActiveUserRelationsModal
+            relations={user.userRelations}
+            activeRelationsIds={filteredRelations.map(
+              (relation) => relation._id
+            )}
+            userId={user._id}
+          />
+        </menu>
       )}
       <Tabs
         selectedKey={solapaSelected}
@@ -94,13 +103,6 @@ const UserRelations = ({
           <Tab key={tab.key} title={tab.label} />
         ))}
       </Tabs>
-      {isMyProfile && solapaSelected === "active" && (
-        <ManageActiveUserRelationsModal
-          relations={user.userRelations}
-          activeRelationsIds={filteredRelations.map((relation) => relation._id)}
-          userId={user._id}
-        />
-      )}
       <UserRelationsGrid userId={user._id} items={filteredRelations} />
     </>
   );

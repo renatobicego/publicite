@@ -20,9 +20,9 @@ const DropdownSolapas = ({
   const keyToLabel: { [key: string]: string } = {
     recomendados: "Recomendados",
     contactos: "Contactos",
-    hoy: "Anuncios de Hoy",
-    puntuados: "Mejor Puntuados",
-    vencer: "Próximos a Vencer",
+    // hoy: "Anuncios de Hoy",
+    // puntuados: "Mejor Puntuados",
+    // vencer: "Próximos a Vencer",
     pizarras: "Pizarras",
     perfiles: "Perfiles",
     grupos: "Grupos",
@@ -39,9 +39,9 @@ const DropdownSolapas = ({
   const postSolapas = [
     "Recomendados",
     "Contactos",
-    "Anuncios de Hoy",
-    "Mejor Puntuados",
-    "Próximos a Vencer",
+    // "Anuncios de Hoy",
+    // "Mejor Puntuados",
+    // "Próximos a Vencer",
   ];
 
   const selectedValueIsPost = useMemo(
