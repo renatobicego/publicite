@@ -1,30 +1,27 @@
-import mongoose, { Connection, Model, ObjectId, Types } from "mongoose";
+import mongoose, { Connection, Model, Types } from "mongoose";
 import { TestingModule } from "@nestjs/testing";
 import { getModelToken } from "@nestjs/mongoose";
 
 
 import mapModuleTesting from "./magazine.test.module";
 import { GroupDocument } from "src/contexts/module_group/group/infrastructure/schemas/group.schema";
-import { insertGroupMagazine, insertSection, insertUserMagazine } from "./models/db/insert.group.magazine";
+import { insertGroupMagazine, insertUserMagazine } from "./models/db/insert.group.magazine";
 import { createGroup } from "../../../../test/functions/create.group";
 import { MagazineService } from "../magazine/application/service/magazine.service";
 import { GroupMagazineDocument, GroupMagazineModel } from "../magazine/infrastructure/schemas/magazine.group.schema";
 import { UnauthorizedException } from "@nestjs/common";
-import { MagazineSectionDocument, MagazineSectionModel } from "../magazine/infrastructure/schemas/section/magazine.section.schema";
 import { UserMagazineDocument } from "../magazine/infrastructure/schemas/magazine.user.schema";
+import { createPersonalUser } from "../../../../test/functions/create.user";
+import { IUser, UserModel } from "src/contexts/module_user/user/infrastructure/schemas/user.schema";
 
-interface SectionRequest {
-    title: string,
-    isFatherSection: boolean
-}
 
 describe('Magazine Service Testing - Add collaborators & Allowd collaborators', () => {
     let connection: Connection;
 
     let groupMagazineModel: Model<GroupMagazineDocument>
-    let magazineSection: Model<MagazineSectionDocument>
     let groupModel: Model<GroupDocument>
     let userMagazineModel: Model<UserMagazineDocument>
+    let userModel: Model<IUser>;
 
 
     let magazineService: MagazineService;
@@ -50,6 +47,7 @@ describe('Magazine Service Testing - Add collaborators & Allowd collaborators', 
         groupMagazineModel = moduleRef.get<Model<GroupMagazineDocument>>(getModelToken(GroupMagazineModel.modelName));
         userMagazineModel = moduleRef.get<Model<UserMagazineDocument>>(getModelToken("UserMagazine"));
         groupModel = moduleRef.get<Model<GroupDocument>>(getModelToken("Group"));
+        userModel = moduleRef.get<Model<IUser>>(getModelToken(UserModel.modelName));
 
 
         magazineService = moduleRef.get<MagazineService>('MagazineServiceInterface');
@@ -58,12 +56,15 @@ describe('Magazine Service Testing - Add collaborators & Allowd collaborators', 
     afterAll(async () => {
         await connection.close();
 
+
     });
 
     afterEach(async () => {
         await groupModel.deleteMany({});
         await groupMagazineModel.deleteMany({});
         await userMagazineModel.deleteMany({});
+        await userModel.deleteMany({});
+
     });
 
 
@@ -185,11 +186,242 @@ describe('Magazine Service Testing - Add collaborators & Allowd collaborators', 
 
 
 
+    describe('Add Allowed Collaborator in user magazine', () => {
+        it('User Magazine-> type of user : Creator of Magazine - Add new Collaborator, should return work success', async () => {
+            const newCollaborator = new Types.ObjectId("624c2d5d7b8e4d1e4c2d5d7c");
+
+            await createPersonalUser(userModel, {
+                _id: newCollaborator,
+            })
+            const userMagazine = await insertUserMagazine(
+                userMagazineModel,
+                {
+                    _id: magazineId,
+                    user: members[0]
+                }
+            )
+
+
+
+            await magazineService.addCollaboratorsToUserMagazine(
+                [newCollaborator.toString()],
+                userMagazine._id.toString(),
+                userMagazine.user.toString(),
+            )
+
+            const magazineSaved: any = await userMagazineModel.findById(magazineId)
+
+            expect(magazineSaved).toBeDefined();
+            expect(magazineSaved!.collaborators.length).toBe(1);
+            expect(magazineSaved!.collaborators[0]).toEqual(newCollaborator);
+
+            const user: any = await userModel.findById(newCollaborator)
+            expect(user).toBeDefined();
+            expect(user.magazines[0]).toEqual(magazineId);
+        })
+
+        it('User Magazine-> type of user : Unknown User - Add new Collaborator, should persmission denied', async () => {
+            const newCollaborator = new Types.ObjectId("624c2d5d7b8e4d1e4c2d5d7c");
+            const unauthorizedUserId = new Types.ObjectId("334c2d5d7b8e3d1e4c2d5d7c");
+
+            const userMagazine = await insertUserMagazine(
+                userMagazineModel,
+                {
+                    _id: magazineId,
+                    user: members[0]
+                }
+            )
+
+
+
+            await expect(magazineService.addCollaboratorsToUserMagazine(
+                [newCollaborator.toString()],
+                userMagazine._id.toString(),
+                unauthorizedUserId.toString(),
+            )).rejects.toThrow(UnauthorizedException)
+
+
+            const magazineSaved: any = await userMagazineModel.findById(magazineId)
+            expect(magazineSaved).toBeDefined();
+            expect(magazineSaved!.collaborators.length).toBe(0);
+
+        })
+    });
+
+
+    describe('Delete Collaborator in user magazine', () => {
+        it('User Magazine-> type of user : Creator of Magazine - delete Collaborator, should return work success', async () => {
+            const collaboratorToDelete = new Types.ObjectId("624c2d5d7bce4d1e4c2d5d7c");
+
+            await createPersonalUser(userModel, {
+                _id: collaboratorToDelete,
+                magazines: [magazineId]
+            })
+            const userMagazine = await insertUserMagazine(
+                userMagazineModel,
+                {
+                    _id: magazineId,
+                    user: members[0],
+                    collaborators: [collaboratorToDelete]
+                }
+            )
+
+
+
+            await magazineService.deleteCollaboratorsFromMagazine(
+                [collaboratorToDelete.toString()],
+                userMagazine._id.toString(),
+                userMagazine.user.toString(),
+            )
+
+            const magazineSaved: any = await userMagazineModel.findById(magazineId)
+
+            expect(magazineSaved).toBeDefined();
+            expect(magazineSaved!.collaborators.length).toBe(0);
+
+
+            const user: any = await userModel.findById(collaboratorToDelete)
+            expect(user).toBeDefined();
+            expect(user.magazines.length).toBe(0);
+        })
+
+        it('User Magazine-> type of user : Unknown User - Add new Collaborator, should persmission denied', async () => {
+            const collaboratorToDelete = new Types.ObjectId("624c2d5d7b8e4d1e4c2d5d7c");
+            const unauthorizedUserId = new Types.ObjectId("334c2d5d7b8e3d1e4c2d5d7c");
+
+            const userMagazine = await insertUserMagazine(
+                userMagazineModel,
+                {
+                    _id: magazineId,
+                    user: members[0],
+                    collaborators: [collaboratorToDelete]
+                }
+            )
+
+
+            await createPersonalUser(userModel, {
+                _id: collaboratorToDelete,
+                magazines: [magazineId]
+            })
+
+
+            await expect(magazineService.deleteCollaboratorsFromMagazine(
+                [collaboratorToDelete.toString()],
+                userMagazine._id.toString(),
+                unauthorizedUserId.toString(),
+            )).rejects.toThrow(UnauthorizedException)
+
+
+            const magazineSaved: any = await userMagazineModel.findById(magazineId)
+            expect(magazineSaved).toBeDefined();
+            expect(magazineSaved!.collaborators.length).toBe(1);
+
+            const user: any = await userModel.findById(collaboratorToDelete)
+            expect(user).toBeDefined();
+            expect(user.magazines.length).toBe(1);
+            expect(user.magazines[0]).toEqual(magazineId);
+
+
+        })
+    });
+
+
+
+    describe('Delete Collaborator in group magazine', () => {
+        it('Group Magazine-> type of user : Creator of Magazine - delete Collaborator, should return work success', async () => {
+            const allowedCollaboratorToDelete = new Types.ObjectId("624c2c5d7bce4d1e4c2d5d7c");
+            const creatorOfGroup = members[0]
+            await createPersonalUser(userModel, {
+                _id: allowedCollaboratorToDelete,
+                magazines: [magazineId]
+            })
+            await createGroup({
+                _id: groupId,
+                creator: creatorOfGroup,
+                magazines: [magazineId]
+            }, groupModel)
+
+            const grupMagazine = await insertGroupMagazine(
+                groupMagazineModel,
+                {
+                    _id: magazineId,
+                    allowedCollaborators: [allowedCollaboratorToDelete],
+                    group: groupId
+
+                }
+            )
+
+
+
+            await magazineService.deleteAllowedCollaboratorsFromMagazineGroup(
+                [allowedCollaboratorToDelete.toString()],
+                grupMagazine._id.toString(),
+                creatorOfGroup.toString(),
+            )
+
+            const groupMagazineSaved: any = await groupMagazineModel.findById(magazineId)
+
+            expect(groupMagazineSaved).toBeDefined();
+            expect(groupMagazineSaved!.allowedCollaborators.length).toBe(0);
+
+
+            const user: any = await userModel.findById(allowedCollaboratorToDelete)
+            expect(user).toBeDefined();
+            expect(user.magazines.length).toBe(0);
+        })
+
+        it('Group Magazine-> type of user : Unknown User - delete Collaborator, should persmission denied', async () => {
+            const allowedCollaboratorToDelete = new Types.ObjectId("624c2c5d7bce4d1e4c2d5d7c");
+            const creatorOfGroup = members[0]
+            const unauthorizedUserId = new Types.ObjectId("334c2d5d7b8e3d1e4c2d5d2c");
+
+            await createPersonalUser(userModel, {
+                _id: allowedCollaboratorToDelete,
+                magazines: [magazineId]
+            })
+            await createGroup({
+                _id: groupId,
+                creator: creatorOfGroup,
+                magazines: [magazineId]
+            }, groupModel)
+
+            const grupMagazine = await insertGroupMagazine(
+                groupMagazineModel,
+                {
+                    _id: magazineId,
+                    allowedCollaborators: [allowedCollaboratorToDelete],
+                    group: groupId
+
+                }
+            )
+
+
+
+            await expect(magazineService.deleteAllowedCollaboratorsFromMagazineGroup(
+                [allowedCollaboratorToDelete.toString()],
+                grupMagazine._id.toString(),
+                unauthorizedUserId.toString(),
+            )).rejects.toThrow(UnauthorizedException)
+
+            const groupMagazineSaved: any = await groupMagazineModel.findById(magazineId)
+
+            expect(groupMagazineSaved).toBeDefined();
+            expect(groupMagazineSaved!.allowedCollaborators.length).toBe(1);
+            expect(groupMagazineSaved!.allowedCollaborators[0]).toEqual(allowedCollaboratorToDelete);
+
+
+            const user: any = await userModel.findById(allowedCollaboratorToDelete)
+            expect(user).toBeDefined();
+            expect(user.magazines.length).toBe(1);
+            expect(user.magazines[0]).toEqual(magazineId);
+
+
+        })
 
 
 
 
 
+    });
 
-
-});
+})

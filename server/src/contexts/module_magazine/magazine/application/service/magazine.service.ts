@@ -135,7 +135,7 @@ export class MagazineService implements MagazineServiceInterface {
     newCollaborators: string[],
     magazineId: string,
     magazineAdmin: string,
-    session: any
+    session?: any
   ): Promise<void> {
     try {
       this.logger.log('Adding Collaborators to Group Magazine in service..');
@@ -211,7 +211,7 @@ export class MagazineService implements MagazineServiceInterface {
     collaboratorsToDelete: string[],
     magazineId: string,
     magazineAdmin: string,
-    session: any
+    session?: any
   ): Promise<void> {
     try {
       this.logger.log('Deleting Collaborators from Magazine in service..');
@@ -233,7 +233,7 @@ export class MagazineService implements MagazineServiceInterface {
     allowedCollaboratorsToDelete: string[],
     magazineId: string,
     magazineAdmin: string,
-    session: any
+    session?: any
   ): Promise<any> {
     try {
       this.logger.log(

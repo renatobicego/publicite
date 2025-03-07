@@ -12,6 +12,7 @@ import { GroupMagazineDocument, GroupMagazineModel } from "../magazine/infrastru
 import { UnauthorizedException } from "@nestjs/common";
 import { MagazineSectionDocument, MagazineSectionModel } from "../magazine/infrastructure/schemas/section/magazine.section.schema";
 import { UserMagazineDocument } from "../magazine/infrastructure/schemas/magazine.user.schema";
+import { createGroupMagazine } from "test/functions/create.magazine";
 
 interface SectionRequest {
     title: string,
@@ -59,7 +60,7 @@ describe('Magazine Service Testing - Sections & Post', () => {
     });
 
     afterAll(async () => {
-        await magazineSection.deleteMany({});
+
         await connection.close();
 
     });
@@ -68,6 +69,7 @@ describe('Magazine Service Testing - Sections & Post', () => {
         await groupModel.deleteMany({});
         await groupMagazineModel.deleteMany({});
         await userMagazineModel.deleteMany({});
+        await magazineSection.deleteMany({});
     });
 
 
@@ -616,6 +618,311 @@ describe('Magazine Service Testing - Sections & Post', () => {
 
 
 
+    describe('Delete Sections from Magazine', () => {
+        const sectionId = new Types.ObjectId("66c49508e45096e90ec637d8")
+
+        it('Group Magazine-> type of user : Admin group - Delete section in magazine, should return work success', async () => {
+            await insertGroupMagazine(
+                groupMagazineModel,
+                {
+                    _id: magazineId,
+                    group: groupId,
+                    sections: [sectionId]
+                }
+            )
+            await insertSection(
+                magazineSection,
+                {
+                    _id: sectionId,
+                    title: "Section 1",
+                    isFatherSection: false
+                }
+            )
+
+            const group = await createGroup({
+                _id: groupId,
+                admins: [admins[0]],
+                magazines: [magazineId],
+                creator: admins[1],
+            }, groupModel)
+
+            await magazineService.deleteSectionFromMagazineGroupById(
+                [sectionId.toString()],
+                magazineId.toString(),
+                group.admins[0].toString(),
+            )
+
+            const sectionDeleted = await magazineSection.findById(sectionId)
+            expect(sectionDeleted).toBeNull();
+
+            const groupMagazine = await groupMagazineModel.findById(magazineId)
+            expect(groupMagazine?.sections.length).toBe(0);
+
+        })
+
+        it('Group Magazine-> type of user : Creator of group - Delete section in magazine, should return work success', async () => {
+            await insertGroupMagazine(
+                groupMagazineModel,
+                {
+                    _id: magazineId,
+                    group: groupId,
+                    sections: [sectionId]
+                }
+            )
+            await insertSection(
+                magazineSection,
+                {
+                    _id: sectionId,
+                    title: "Section 1",
+                    isFatherSection: false
+                }
+            )
+
+            const group = await createGroup({
+                _id: groupId,
+                admins: [admins[0]],
+                magazines: [magazineId],
+                creator: admins[1],
+            }, groupModel)
+
+            await magazineService.deleteSectionFromMagazineGroupById(
+                [sectionId.toString()],
+                magazineId.toString(),
+                group.creator.toString(),
+            )
+
+            const sectionDeleted = await magazineSection.findById(sectionId)
+            expect(sectionDeleted).toBeNull();
+
+            const groupMagazine = await groupMagazineModel.findById(magazineId)
+            expect(groupMagazine?.sections.length).toBe(0);
+        })
+
+        it('Group Magazine-> type of user : Allowed Collaborator - Delete section in magazine, should return work success', async () => {
+            const groupMagazineCreated = await insertGroupMagazine(
+                groupMagazineModel,
+                {
+                    _id: magazineId,
+                    group: groupId,
+                    sections: [sectionId],
+                    allowedCollaborators: [admins[1]]
+                }
+            )
+            await insertSection(
+                magazineSection,
+                {
+                    _id: sectionId,
+                    title: "Section 1",
+                    isFatherSection: false
+                }
+            )
+
+            await createGroup({
+                _id: groupId,
+                magazines: [magazineId],
+            }, groupModel)
+
+            await magazineService.deleteSectionFromMagazineGroupById(
+                [sectionId.toString()],
+                magazineId.toString(),
+                groupMagazineCreated.allowedCollaborators![0].toString(),
+            )
+
+            const sectionDeleted = await magazineSection.findById(sectionId)
+            expect(sectionDeleted).toBeNull();
+
+            const groupMagazine = await groupMagazineModel.findById(magazineId)
+            expect(groupMagazine?.sections.length).toBe(0);
+        })
+
+        it('Group Magazine-> type of user : Member of group - Delete section in magazine, should return permission denied', async () => {
+
+            await insertGroupMagazine(
+                groupMagazineModel,
+                {
+                    _id: magazineId,
+                    group: groupId,
+                    sections: [sectionId]
+                }
+            )
+            await insertSection(
+                magazineSection,
+                {
+                    _id: sectionId,
+                    title: "Section 1",
+                    isFatherSection: false
+                }
+            )
+
+            const group = await createGroup({
+                _id: groupId,
+                admins: [admins[0]],
+                magazines: [magazineId],
+                creator: admins[1],
+                members: [members[0]]
+            }, groupModel)
+
+            await expect(magazineService.deleteSectionFromMagazineGroupById(
+                [sectionId.toString()],
+                magazineId.toString(),
+                group.members[0].toString(),
+            )).rejects.toThrow(UnauthorizedException)
+
+            const sectionDeleted = await magazineSection.findById(sectionId)
+            expect(sectionDeleted!._id).toEqual(sectionId);
+
+            const groupMagazine = await groupMagazineModel.findById(magazineId)
+            expect(groupMagazine?.sections.length).toBe(1);
+        })
+
+        it('Group Magazine-> type of user : Unknown User - Delete section in magazine, should return permission denied', async () => {
+            const unauthorizedUserId = new Types.ObjectId("334c2d5d7b8e4d1e4c2d5d7c");
+            await insertGroupMagazine(
+                groupMagazineModel,
+                {
+                    _id: magazineId,
+                    group: groupId,
+                    sections: [sectionId]
+                }
+            )
+            await insertSection(
+                magazineSection,
+                {
+                    _id: sectionId,
+                    title: "Section 1",
+                    isFatherSection: false
+                }
+            )
+
+            const group = await createGroup({
+                _id: groupId,
+                admins: [admins[0]],
+                magazines: [magazineId],
+                creator: admins[1],
+                members: [members[0]]
+            }, groupModel)
+
+            await expect(magazineService.deleteSectionFromMagazineGroupById(
+                [sectionId.toString()],
+                magazineId.toString(),
+                unauthorizedUserId.toString(),
+            )).rejects.toThrow(UnauthorizedException)
+
+            const sectionDeleted = await magazineSection.findById(sectionId)
+            expect(sectionDeleted!._id).toEqual(sectionId);
+
+            const groupMagazine = await groupMagazineModel.findById(magazineId)
+            expect(groupMagazine?.sections.length).toBe(1);
+
+        })
+
+
+        it('User Magazine-> type of user : creator of Magazine - Delete section in magazine, should return work success', async () => {
+            const userMagazine = await insertUserMagazine(
+                userMagazineModel,
+                {
+                    _id: magazineId,
+                    user: admins[0],
+                    sections: [sectionId]
+                }
+            )
+            await insertSection(
+                magazineSection,
+                {
+                    _id: sectionId,
+                    title: "Section 1",
+                    isFatherSection: false
+                }
+            )
+
+
+            await magazineService.deleteSectionFromMagazineUserById(
+                [sectionId.toString()],
+                magazineId.toString(),
+                userMagazine.user.toString(),
+            )
+
+            const sectionDeleted = await magazineSection.findById(sectionId)
+            expect(sectionDeleted).toBeNull();
+
+            const groupMagazine = await userMagazineModel.findById(magazineId)
+            expect(groupMagazine?.sections.length).toBe(0);
+
+        })
+
+
+        it('User Magazine-> type of user : creator of Magazine - Delete section in magazine, should return work success', async () => {
+            const userMagazine = await insertUserMagazine(
+                userMagazineModel,
+                {
+                    _id: magazineId,
+                    user: admins[0],
+                    sections: [sectionId],
+                    collaborators: [members[0]]
+                }
+            )
+            await insertSection(
+                magazineSection,
+                {
+                    _id: sectionId,
+                    title: "Section 1",
+                    isFatherSection: false
+                }
+            )
+
+
+            await magazineService.deleteSectionFromMagazineUserById(
+                [sectionId.toString()],
+                magazineId.toString(),
+                userMagazine.collaborators![0].toString(),
+            )
+
+            const sectionDeleted = await magazineSection.findById(sectionId)
+            expect(sectionDeleted).toBeNull();
+
+            const groupMagazine = await userMagazineModel.findById(magazineId)
+            expect(groupMagazine?.sections.length).toBe(0);
+
+        })
+
+        it('User Magazine-> type of user : Unknown User - Delete section in magazine, should return permission denied', async () => {
+            const unauthorizedUserId = new Types.ObjectId("334c2d5d7b8e4d1e4c2d5d7c");
+            await insertUserMagazine(
+                userMagazineModel,
+                {
+                    _id: magazineId,
+                    user: admins[0],
+                    sections: [sectionId]
+                }
+            )
+            await insertSection(
+                magazineSection,
+                {
+                    _id: sectionId,
+                    title: "Section 1",
+                    isFatherSection: false
+                }
+            )
+
+            await expect(magazineService.deleteSectionFromMagazineUserById(
+                [sectionId.toString()],
+                magazineId.toString(),
+                unauthorizedUserId.toString(),
+            )).rejects.toThrow(UnauthorizedException)
+
+            const sectionDeleted = await magazineSection.findById(sectionId)
+            expect(sectionDeleted!._id).toEqual(sectionId);
+
+            const groupMagazine = await userMagazineModel.findById(magazineId)
+            expect(groupMagazine?.sections.length).toBe(1);
+
+        })
+
+
+
+
+
+    })
 
 
 

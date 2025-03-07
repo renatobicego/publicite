@@ -176,7 +176,7 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
     newCollaborators: string[],
     magazineId: string,
     magazineAdmin: string,
-    session: any
+    session?: any
   ): Promise<void> {
     try {
       const result = await this.userMagazine.updateOne(
@@ -197,7 +197,9 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
       this.logger.log('Collaborators added to Magazine successfully');
     } catch (error: any) {
       this.logger.error('Error adding Collaborators to Magazine', error);
-      await session.abortTransaction();
+      if (session) {
+        await session.abortTransaction();
+      }
       throw error;
     }
   }
@@ -253,7 +255,7 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
     collaboratorsToDelete: string[],
     magazineId: string,
     magazineAdmin: string,
-    session: any
+    session?: any
   ): Promise<void> {
 
     try {
@@ -279,6 +281,9 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
 
     } catch (error: any) {
       this.logger.error('Error deleting Collaborators from Magazine', error);
+      if(session){
+        await session.abortTransaction();
+      }
       throw error;
     }
   }
@@ -287,7 +292,7 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
     allowedCollaboratorsToDelete: string[],
     magazineId: string,
     magazineAdmin: string,
-    session: any
+    session?: any
   ): Promise<any> {
 
     try {
