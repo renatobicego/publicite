@@ -70,7 +70,7 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
   ): Promise<any> {
     const session = await this.connection.startSession();
     try {
-      await session.withTransaction(async () => {
+      const sectionId = await session.withTransaction(async () => {
         const sectionId = await this.saveSection(section, session);
         if (sectionId === null || !sectionId) {
           throw new Error('Error saving section in repository');
@@ -81,8 +81,9 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
             { $addToSet: { sections: sectionId } },
             { session },
           )
-
+        return sectionId
       });
+      return sectionId.toString();
     } catch (error: any) {
       throw error;
     } finally {
@@ -97,7 +98,7 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
     const session = await this.connection.startSession();
 
     try {
-      await session.withTransaction(async () => {
+      const sectionId = await session.withTransaction(async () => {
         const sectionId = await this.saveSection(section, session);
         if (sectionId === null || !sectionId) {
           throw new Error('Error saving section in repository');
@@ -117,7 +118,9 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
           result,
           'Error saving section in repository, you dont have permissions',
         );
+        return sectionId
       });
+      return sectionId.toString();
     } catch (error: any) {
       throw error;
     } finally {
@@ -452,7 +455,7 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
           }
         }
 
-        
+
         this.logger.log("Pulling magazines from users...");
 
         await this.userModel.updateMany(

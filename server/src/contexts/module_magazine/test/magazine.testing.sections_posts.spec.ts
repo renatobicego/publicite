@@ -97,7 +97,7 @@ describe('Magazine Service Testing - Sections & Post', () => {
             }
 
 
-            await magazineService.addNewMagazineSection(
+            const result = await magazineService.addNewMagazineSection(
                 group.admins[0].toString(),
                 magazineId.toString(),
                 sectionToAdd,
@@ -105,7 +105,7 @@ describe('Magazine Service Testing - Sections & Post', () => {
             )
 
             const magazineSaved: any = await groupMagazineModel.findById(magazineId).populate('sections');
-
+            expect(result).toEqual(magazineSaved!.sections[0]._id.toString());
             expect(magazineSaved).toBeDefined();
             expect(magazineSaved!.sections.length).toBe(1);
             expect(magazineSaved!.sections[0].title).toBe(sectionToAdd.title);
@@ -141,7 +141,7 @@ describe('Magazine Service Testing - Sections & Post', () => {
             }
 
 
-            await magazineService.addNewMagazineSection(
+            const result = await magazineService.addNewMagazineSection(
                 group.creator.toString(),
                 magazineId.toString(),
                 sectionToAdd,
@@ -149,7 +149,7 @@ describe('Magazine Service Testing - Sections & Post', () => {
             )
 
             const magazineSaved: any = await groupMagazineModel.findById(magazineId).populate('sections');
-
+            expect(result).toEqual(magazineSaved!.sections[0]._id.toString());
             expect(magazineSaved).toBeDefined();
             expect(magazineSaved!.sections.length).toBe(1);
             expect(magazineSaved!.sections[0].title).toBe(sectionToAdd.title);
@@ -184,7 +184,7 @@ describe('Magazine Service Testing - Sections & Post', () => {
             }
 
 
-            await magazineService.addNewMagazineSection(
+            const result = await magazineService.addNewMagazineSection(
                 magazine.allowedCollaborators![0].toString(),
                 magazineId.toString(),
                 sectionToAdd,
@@ -192,7 +192,7 @@ describe('Magazine Service Testing - Sections & Post', () => {
             )
 
             const magazineSaved: any = await groupMagazineModel.findById(magazineId).populate('sections');
-
+            expect(result).toEqual(magazineSaved!.sections[0]._id.toString());
             expect(magazineSaved).toBeDefined();
             expect(magazineSaved!.sections.length).toBe(1);
             expect(magazineSaved!.sections[0].title).toBe(sectionToAdd.title);
@@ -258,7 +258,7 @@ describe('Magazine Service Testing - Sections & Post', () => {
             }
 
 
-            await magazineService.addNewMagazineSection(
+            const result = await magazineService.addNewMagazineSection(
                 magazine.user.toString(),
                 magazineId.toString(),
                 sectionToAdd,
@@ -267,6 +267,7 @@ describe('Magazine Service Testing - Sections & Post', () => {
             const magazineSaved: any = await userMagazineModel.findById(magazineId).populate('sections');
 
             expect(magazineSaved).toBeDefined();
+            expect(result).toEqual(magazineSaved!.sections[0]._id.toString());
             expect(magazineSaved!.sections.length).toBe(1);
             expect(magazineSaved!.sections[0].title).toBe(sectionToAdd.title);
             expect(magazineSaved!.sections[0].isFatherSection).toBe(false);

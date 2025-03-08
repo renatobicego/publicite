@@ -34,7 +34,7 @@ export class MagazineAdapter implements MagazineAdapterInterface {
     groupId?: string,
   ): Promise<any> {
     try {
-      await this.magazineService.addNewMagazineSection(
+      return await this.magazineService.addNewMagazineSection(
         magazineAdmin,
         magazineId,
         section,

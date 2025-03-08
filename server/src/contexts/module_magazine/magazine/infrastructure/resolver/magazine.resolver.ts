@@ -47,13 +47,13 @@ export class MagazineResolver {
     try {
       const userRequestId = context.req.userRequestId;
       PubliciteAuth.authorize(userRequestId, magazineAdmin);
-      await this.magazineAdapter.addNewMagazineSection(
+      return await this.magazineAdapter.addNewMagazineSection(
         magazineAdmin,
         magazineId,
         section,
         groupId,
       );
-      return 'Section added in magazine';
+
     } catch (error: any) {
       throw error;
     }
