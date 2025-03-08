@@ -12,7 +12,7 @@ import { GroupMagazineDocument, GroupMagazineModel } from "../magazine/infrastru
 import { UnauthorizedException } from "@nestjs/common";
 import { MagazineSectionDocument, MagazineSectionModel } from "../magazine/infrastructure/schemas/section/magazine.section.schema";
 import { UserMagazineDocument } from "../magazine/infrastructure/schemas/magazine.user.schema";
-import { createGroupMagazine } from "test/functions/create.magazine";
+
 
 interface SectionRequest {
     title: string,
@@ -613,8 +613,6 @@ describe('Magazine Service Testing - Sections & Post', () => {
 
 
     })
-
-
 
 
 

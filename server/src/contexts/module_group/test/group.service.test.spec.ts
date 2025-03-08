@@ -930,7 +930,7 @@ describe('GROUP TEST SERVICE', () => {
             await groupService.deleteMembersFromGroup(
                 [userToRemove.toString()],
                 groupRequest._id.toString(),
-                groupRequest.creator.toString(),
+                groupRequest.creator!.toString(),
             )
 
             const group = await groupModel.findById({ _id: groupId })

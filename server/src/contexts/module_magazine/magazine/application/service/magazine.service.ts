@@ -289,31 +289,38 @@ export class MagazineService implements MagazineServiceInterface {
     }
   }
 
+
   async deleteMagazineByMagazineId(magazineId: string, userRequestId: string, ownerType: string): Promise<any> {
     let isUserAllowedToDelete = false;
+
+
+   
     try {
+  
       switch (ownerType.toLowerCase()) {
         case OwnerType.user: {
           isUserAllowedToDelete = await this.userMagazineAllowedVerifications.is_creator_of_magazine_USER_MAGAZINE(magazineId, userRequestId)
           if (isUserAllowedToDelete) {
             this.logger.log('You are allowed to delete this magazine');
-            return this.magazineRepository.deleteMagazineByMagazineId(magazineId)
+            return this.magazineRepository.deleteMagazineByMagazineId(magazineId, OwnerType.user)
           } else {
             return 'You are not allowed to delete this magazine'
           }
 
         }
         case OwnerType.group: {
+
           isUserAllowedToDelete = await this.userMagazineAllowedVerifications.is_admin_or_creator_of_magazine_GROUP_MAGAZINE(magazineId, userRequestId)
           if (isUserAllowedToDelete) {
             this.logger.log('You are allowed to delete this magazine');
-            return this.magazineRepository.deleteMagazineByMagazineId(magazineId)
+            return this.magazineRepository.deleteMagazineByMagazineId(magazineId, OwnerType.group)
           } else {
             return 'You are not allowed to delete this magazine'
           }
 
         }
         default: {
+
           throw new BadRequestException('Invalid owner type - check owner type Magazine in request');
         }
 

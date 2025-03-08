@@ -1,6 +1,6 @@
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Magazine } from '../../domain/entity/magazine.entity';
-import { Connection, Model, ObjectId } from 'mongoose';
+import { Connection, Model, ObjectId, Types } from 'mongoose';
 import { Inject, UnauthorizedException } from '@nestjs/common';
 
 import { MagazineRepositoryInterface } from '../../domain/repository/magazine.repository.interface';
@@ -281,7 +281,7 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
 
     } catch (error: any) {
       this.logger.error('Error deleting Collaborators from Magazine', error);
-      if(session){
+      if (session) {
         await session.abortTransaction();
       }
       throw error;
@@ -412,54 +412,64 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
       throw error;
     }
   }
-  async deleteMagazineByMagazineId(magazineId: string): Promise<any> {
+  async deleteMagazineByMagazineId(magazineId: string, ownerType: string): Promise<any> {
     const session = await this.connection.startSession();
+    let magazineToDelete: UserMagazineDocument | GroupMagazineDocument | null;
 
     try {
       await session.withTransaction(async () => {
-        const magazineDeleted = await this.magazineModel.findOneAndDelete({
-          _id: magazineId
-        }).session(session).lean();
+        this.logger.log("Finding Magazine to delete...");
+        magazineToDelete = await this.magazineModel.findById(magazineId)
 
-        if (magazineDeleted) {
-          this.logger.log('Deleting Magazine... ');
-          await this.magazineSection.deleteMany({ _id: { $in: magazineDeleted.sections } }, { session });
+        if (magazineToDelete == null) {
+          this.logger.warn("Magazine not found, skipping deletion...");
+          return;
+        }
 
+        let usersToPullMagazine: any = [];
 
+        if (ownerType === OwnerType.user) {
+          this.logger.log("Deleting User Magazine...");
+          const magazineUser = magazineToDelete as UserMagazineDocument;
 
-          if (magazineDeleted.ownerType === OwnerType.user) {
-            let userMagazine = magazineDeleted as unknown as UserMagazineDocument
-            let collaboratorsAndCreatorIds = userMagazine.collaborators
-            collaboratorsAndCreatorIds.push(userMagazine.user)
+          usersToPullMagazine.push(magazineUser.user);
+          usersToPullMagazine.push(...magazineUser.collaborators);
 
-            if (collaboratorsAndCreatorIds && collaboratorsAndCreatorIds.length > 0) {
-              this.logger.log('Removing collaborators and creator from magazines... ');
-              await this.userModel.updateMany({ _id: { $in: collaboratorsAndCreatorIds } }, { $pull: { magazines: magazineId } }, { session });
-              this.logger.log('Removing collaborators successfully');
-            }
+        } else {
+          this.logger.log("Deleting Group Magazine...");
+          const magazineGroup = magazineToDelete as GroupMagazineDocument;
 
-            this.logger.log('Magazine deleted successfully');
-            return 'Magazine deleted successfully';
-          } else if (magazineDeleted.ownerType === OwnerType.group) {
+          const group = await this.groupModel.findOneAndUpdate(
+            { _id: magazineGroup.group },
+            { $pull: { magazines: magazineId } },
 
-            let userMagazine = magazineDeleted as unknown as GroupMagazineDocument
-            const groupOfMagazine = userMagazine.group;
-            await this.groupModel.updateOne({ _id: groupOfMagazine }, { $pull: { magazines: magazineId } }, { session });
-            this.logger.log('Magazine deleted successfully');
-
-            return 'Magazine deleted successfully';
-          } else {
-            this.logger.error('Error deleting magazine, please try again: INVALID OWNER TYPE');
-            throw new Error('Error deleting magazine, please try again: INVALID OWNER TYPE');
+          ).session(session);
+          if (group) {
+            usersToPullMagazine.push(...magazineGroup.allowedCollaborators);
+            usersToPullMagazine.push(...group.admins);
+            usersToPullMagazine.push(...group.members);
+            usersToPullMagazine.push(group.creator);
           }
         }
 
-      })
+        
+        this.logger.log("Pulling magazines from users...");
+
+        await this.userModel.updateMany(
+          { _id: { $in: usersToPullMagazine } },
+          { $pull: { magazines: magazineId } },
+        ).session(session);
+
+        this.logger.log("Deleting Magazine...");
+        await this.magazineModel.deleteMany({ _id: { $in: [magazineId] } }, { session });
+        this.logger.log("Deleted Magazine successfully...");
+      });
     } catch (error) {
       this.logger.error('Error deleting magazine', error);
       throw error;
+    } finally {
+      session.endSession();
     }
-
   }
 
 
@@ -659,23 +669,17 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
     magazineId: string,
     userId: string,
   ): Promise<any> {
-    const session = await this.connection.startSession();
-    session.startTransaction();
-
     try {
-
       const isAdminOrCreatorOfGroup = await this.groupModel
-        .findOne({
+        .exists({
           magazines: magazineId,
           $or: [{ admins: userId }, { creator: userId }],
         })
-        .session(session)
-        .select('_id')
-        .lean();
 
       if (!isAdminOrCreatorOfGroup) {
         throw new Error('The user is not allowed');
       }
+      return isAdminOrCreatorOfGroup;
     } catch (error: any) {
       throw error;
     }

@@ -76,7 +76,7 @@ export interface MagazineRepositoryInterface {
     _id: string,
   ): Promise<any>;
 
-  deleteMagazineByMagazineId(magazineId: string): Promise<any>;
+  deleteMagazineByMagazineId(magazineId: string, ownerType: string): Promise<any>;
 
 
   save(magazine: Magazine): Promise<any>;

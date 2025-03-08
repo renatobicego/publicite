@@ -1,4 +1,4 @@
-import { BadRequestException, NotFoundException } from "@nestjs/common";
+import { BadRequestException } from "@nestjs/common";
 import { TestingModule } from "@nestjs/testing";
 import mapModuleTesting from "./group.test.module";
 import { getModelToken } from "@nestjs/mongoose";
@@ -68,7 +68,7 @@ describe('Update group', () => {
 
         await expect(groupService.updateGroupById(
             updateRequest,
-            groupRequest.creator.toString(),
+            groupRequest.creator!.toString(),
         )).rejects.toThrow(BadRequestException);
     });
 
@@ -80,7 +80,7 @@ describe('Update group', () => {
 
         await groupService.updateGroupById(
             updateRequest,
-            groupRequest.creator.toString(),
+            groupRequest.creator!.toString(),
         );
         const updatedGroup = await groupModel.findById(groupId);
 
@@ -97,7 +97,7 @@ describe('Update group', () => {
 
         await groupService.updateGroupById(
             updateRequest,
-            groupRequest.creator.toString(),
+            groupRequest.creator!.toString(),
         );
         const updatedGroup = await groupModel.findById(groupId);
         expect(updatedGroup!.alias).toBe(updateRequest.alias);
@@ -113,7 +113,7 @@ describe('Update group', () => {
 
         await groupService.updateGroupById(
             updateRequest,
-            groupRequest.creator.toString(),
+            groupRequest.creator!.toString(),
         );
 
         const updatedGroup = await groupModel.findById(groupId);
@@ -130,7 +130,7 @@ describe('Update group', () => {
 
         await groupService.updateGroupById(
             updateRequest,
-            groupRequest.creator.toString(),
+            groupRequest.creator!.toString(),
         );
 
         const updatedGroup = await groupModel.findById(groupId);
@@ -160,7 +160,7 @@ describe('Update group', () => {
 
         await groupService.updateGroupById(
             updateRequest,
-            groupRequest.creator.toString(),
+            groupRequest.creator!.toString(),
         );
 
         const updatedGroup = await groupModel.findById(groupId);
@@ -191,7 +191,7 @@ describe('Update group', () => {
 
         const response = await groupService.updateGroupById(
             updateRequest,
-            groupRequest.creator.toString(),
+            groupRequest.creator!.toString(),
         );
 
         expect(response).toBe(undefined)
