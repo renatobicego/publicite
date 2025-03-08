@@ -123,6 +123,9 @@ const SearchUsers = (props: SearchUsersProps) => {
         labelPlacement="outside"
         isLoading={isLoading}
         selectedKey={null}
+        listboxProps={{
+          emptyContent: "No se encontraron usuarios.",
+        }}
         startContent={<FaSearch className="text-light-text" />}
         scrollShadowProps={{
           hideScrollBar: false,

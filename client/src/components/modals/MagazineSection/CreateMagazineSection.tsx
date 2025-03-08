@@ -40,6 +40,7 @@ const CreateMagazineSection = ({
       toastifyError(res.error as string);
       return;
     }
+    console.log(res);
     addSection(magazineId, {
       _id: res.id,
       isFatherSection: false,
