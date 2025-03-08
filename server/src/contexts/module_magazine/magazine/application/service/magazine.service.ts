@@ -1,4 +1,4 @@
-import { BadRequestException, Inject } from '@nestjs/common';
+import { BadRequestException, Inject, UnauthorizedException } from '@nestjs/common';
 import { ObjectId } from 'mongoose';
 
 
@@ -27,13 +27,7 @@ export class MagazineService implements MagazineServiceInterface {
 
   ) { }
 
-  async deletePostInMagazineWithEmitter(postId: string) {
-    try {
-      await this.magazineRepository.deletePostInMagazine(postId);
-    } catch (error: any) {
-      throw error;
-    }
-  }
+
   async addNewMagazineSection(
     magazineAdmin: string,
     magazineId: string,
@@ -294,9 +288,9 @@ export class MagazineService implements MagazineServiceInterface {
     let isUserAllowedToDelete = false;
 
 
-   
+
     try {
-  
+
       switch (ownerType.toLowerCase()) {
         case OwnerType.user: {
           isUserAllowedToDelete = await this.userMagazineAllowedVerifications.is_creator_of_magazine_USER_MAGAZINE(magazineId, userRequestId)
@@ -331,18 +325,25 @@ export class MagazineService implements MagazineServiceInterface {
   }
 
 
+
   async deletePostInMagazineSection(postIdToRemove: string, sectionId: string, ownerType: string, userRequestId: string, magazineId?: string): Promise<any> {
 
     try {
-      const isUserAllowed = await this.isUserAllowedToModifySection(sectionId, userRequestId, ownerType, magazineId);
-      if (!isUserAllowed) return
+      await this.isUserAllowedToModifySection(sectionId, userRequestId, ownerType, magazineId);
       return await this.magazineRepository.deletePostInMagazineSection(postIdToRemove, sectionId);
-
     } catch (error: any) {
       this.logger.error('Error removing post of section', error);
       throw error;
     }
 
+  }
+
+  async deletePostInMagazineWithEmitter(postId: string) {
+    try {
+      await this.magazineRepository.deletePostInMagazine(postId);
+    } catch (error: any) {
+      throw error;
+    }
   }
 
   async exitMagazineByMagazineId(magazineId: string, userRequestId: string, ownerType: string): Promise<any> {
@@ -404,10 +405,10 @@ export class MagazineService implements MagazineServiceInterface {
         break
       }
       default: {
-        throw new Error('Please select a valid owner type');
+        throw new BadRequestException('Please select a valid owner type');
       }
     }
-    if (!isUserAllowed) throw new Error('User not allowed to update this section');
+    if (!isUserAllowed) throw new UnauthorizedException('User not allowed to update this section');
     return isUserAllowed;
   }
 
