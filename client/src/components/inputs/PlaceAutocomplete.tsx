@@ -8,7 +8,7 @@ import usePlacesService from "react-google-autocomplete/lib/usePlacesAutocomplet
 const libraries: Libraries = ["places"];
 // Combine FieldInputProps with any additional props required by Autocomplete
 interface PlaceAutocompleteProps extends FieldInputProps<string> {
-  onSelectionChange: ((key: Key | null) => void) | undefined
+  onSelectionChange: ((key: Key | null) => void) | undefined;
 }
 
 const PlaceAutocomplete = (props: PlaceAutocompleteProps) => {
@@ -45,10 +45,14 @@ const PlaceAutocomplete = (props: PlaceAutocompleteProps) => {
       variant="bordered"
       inputProps={{
         classNames: {
-          inputWrapper: "shadow-none hover:shadow-sm border-[0.5px] group-data-[focus=true]:border-light-text",
+          inputWrapper:
+            "shadow-none hover:shadow-sm border-[0.5px] group-data-[focus=true]:border-light-text",
           input: "text-[0.8125rem]",
           label: "font-medium text-[0.8125rem]",
         },
+      }}
+      listboxProps={{
+        emptyContent: "No se encontraron resultados",
       }}
       className="px-4 py-[10px]"
       description="Ingrese una ubicación y seleccione de la lista."
@@ -75,4 +79,3 @@ const PlaceAutocomplete = (props: PlaceAutocompleteProps) => {
 };
 
 export default PlaceAutocomplete;
-

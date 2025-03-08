@@ -27,7 +27,6 @@ const InviteCollabMagazine = ({ magazine }: { magazine: Magazine }) => {
         .then(() => toastifySuccess("Invitación enviada con éxito"))
         .catch(handleMagazineNotificationError)
     );
-
   };
   return (
     <InvitationModal
@@ -45,10 +44,18 @@ const InviteCollabMagazine = ({ magazine }: { magazine: Magazine }) => {
       }
       filterUsers={
         magazine.ownerType === "group"
-          ? (magazine as GroupMagazine).allowedCollaborators.map(
-              (user) => user._id
-            )
-          : (magazine as UserMagazine).collaborators.map((user) => user._id)
+          ? [
+              ...(magazine as GroupMagazine).allowedCollaborators.map(
+                (user) => user._id
+              ),
+              userIdLogged as string,
+            ]
+          : [
+              ...(magazine as UserMagazine).collaborators.map(
+                (user) => user._id
+              ),
+              userIdLogged as string,
+            ]
       }
     />
   );

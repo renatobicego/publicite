@@ -2,11 +2,10 @@
 import { useMemo } from "react";
 import { UserButton } from "@clerk/nextjs";
 import { BiSolidUserDetail } from "react-icons/bi";
-import { FaEyeSlash, FaSliders, FaUser } from "react-icons/fa6";
+import { FaSliders, FaUser } from "react-icons/fa6";
 import Profile from "./Profile/Profile";
 import Subscriptions from "./Subscriptions/Subscriptions";
 import { MdPayments } from "react-icons/md";
-import Privacy from "./Privacy/Privacy";
 import Preferences from "./Preferences/Preferences";
 import { PROFILE } from "@/utils/data/urls";
 import Business from "./Business/Business";
@@ -53,6 +52,7 @@ const UserButtonModal = () => {
           avatarBox: "h-full w-full border-[0.8px]",
         },
       }}
+      userProfileUrl={`${PROFILE}/${userIdLogged}`}
     >
       <UserButton.MenuItems>
         <UserButton.Link

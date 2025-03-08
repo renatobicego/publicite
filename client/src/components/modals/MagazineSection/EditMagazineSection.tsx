@@ -14,10 +14,7 @@ import {
 } from "@nextui-org/react";
 import { useState } from "react";
 import { CustomInputWithoutFormik } from "../../inputs/CustomInputs";
-import {
-  createMagazineSection,
-  putMagazineSection,
-} from "@/app/server/magazineActions";
+import { putMagazineSection } from "@/app/server/magazineActions";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { useRouter } from "next-nprogress-bar";
 

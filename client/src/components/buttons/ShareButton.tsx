@@ -12,18 +12,10 @@ import {
 } from "@nextui-org/react";
 import { FaShareAlt } from "react-icons/fa";
 import PrimaryButton from "./PrimaryButton";
-import { Group } from "@/types/groupTypes";
-import { Post } from "@/types/postTypes";
-import { Magazine } from "@/types/magazineTypes";
 import useSearchUsers from "@/utils/hooks/useSearchUsers";
-import { cloneElement, use, useEffect, useState } from "react";
+import { cloneElement, useEffect, useState } from "react";
 import { SearchUsers } from "../inputs/SearchUsers";
-import {
-  ElementSharedData,
-  GetUser,
-  ShareTypesEnum,
-  User,
-} from "@/types/userTypes";
+import { ElementSharedData, ShareTypesEnum } from "@/types/userTypes";
 import { SignedIn } from "@clerk/nextjs";
 import { emitElementSharedNotification } from "../notifications/sharedElements/emitNotifications";
 import { useSocket } from "@/app/socketProvider";
@@ -141,7 +133,15 @@ const ShareButton = ({
         </Tooltip>
       )}
 
-      <Modal placement="center" isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal
+        placement="center"
+        size="md"
+        classNames={{
+          base: "max-w-screen",
+        }}
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+      >
         <ModalContent>
           {(onClose) => (
             <>

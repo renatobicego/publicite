@@ -18,14 +18,47 @@ const initialState: MagazineState = {
   postsInMagazine: [],
 };
 
-export const fetchMagazines = createAsyncThunk(
-  "magazine/fetchMagazines",
-  async (userId: string | undefined, { rejectWithValue }) => {
-    if (!userId) return [];
+// Helper function to implement retry logic
+const fetchWithRetry = async (
+  userId: string | undefined,
+  maxRetries = 5
+): Promise<Magazine[]> => {
+  let retries = 0;
+
+  while (retries < maxRetries) {
     try {
       const magazines: Magazine[] = await getMagazinesOfUser();
       return magazines;
     } catch (error) {
+      retries++;
+
+      // If we've reached max retries, throw the error to be handled by the thunk
+      if (retries >= maxRetries) {
+        throw error;
+      }
+
+      // Wait before retrying (exponential backoff)
+      await new Promise((resolve) =>
+        setTimeout(resolve, 1000 * Math.pow(2, retries - 1))
+      );
+    }
+  }
+
+  // This should never be reached due to the throw in the catch block
+  return [];
+};
+
+export const fetchMagazines = createAsyncThunk(
+  "magazine/fetchMagazines",
+  async (userId: string | undefined, { rejectWithValue }) => {
+    if (!userId) return [];
+
+    try {
+      // Use the retry function with 5 max attempts
+      const magazines = await fetchWithRetry(userId, 5);
+      return magazines;
+    } catch (error) {
+      // Only show error toast after all retries have failed
       toastifyError(
         "Error al obtener las revistas. Por favor recarga la página."
       );

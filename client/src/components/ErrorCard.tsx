@@ -28,8 +28,10 @@ const ErrorCard = ({
           <p className="text-sm">{message}</p>
           {error && (
             <p className="text-sm text-danger">
-              {error.toLowerCase() === "connection closed"
-                ? "Hubo un error de conexión"
+              {error.toLowerCase().includes("connection closed")
+                ? "Hubo un error en el servidor. Por favor, intenta de nuevo."
+                : error?.toLowerCase().includes("server components render")
+                ? "Hubo un error de conexión. Por favor, intenta de nuevo."
                 : error}
             </p>
           )}

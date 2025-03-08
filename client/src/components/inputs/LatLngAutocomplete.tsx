@@ -51,6 +51,9 @@ const LatLngAutocomplete = ({
       autoComplete="hidden"
       radius="full"
       labelPlacement="outside"
+      listboxProps={{
+        emptyContent: "No se encontraron resultados",
+      }}
       variant="bordered"
       inputProps={{
         classNames: {
