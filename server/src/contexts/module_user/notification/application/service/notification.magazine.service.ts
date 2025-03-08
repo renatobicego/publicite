@@ -29,7 +29,6 @@ export class NotificationMagazineService implements NotificationMagazineServiceI
     }
     private async addNewMemberToMagazine(newMemberData: newMemberData, session: any) {
         const { memberToAdd, magazineAdmin, magazineId, magazineType } = newMemberData
-
         try {
             if (ownerType.user === magazineType) {
                 return await this.magazineService.addCollaboratorsToUserMagazine([memberToAdd], magazineId, magazineAdmin, session)
@@ -40,8 +39,6 @@ export class NotificationMagazineService implements NotificationMagazineServiceI
             }
         } catch (error: any) {
             throw error;
-        } finally {
-            session.endSession();
         }
     }
 

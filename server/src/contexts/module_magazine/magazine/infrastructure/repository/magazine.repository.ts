@@ -940,11 +940,13 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
     try {
       await session.withTransaction(async () => {
         this.logger.log('Deleting magazine from user schema ');
-        await this.userModel.findByIdAndUpdate(collaboratorId, { $pull: { magazines: magazineId } }, { session });
+        await this.userModel.updateOne({ _id: collaboratorId }, { $pull: { magazines: magazineId } }, { session });
         this.logger.log('Deleting succsesfully');
+
         this.logger.log('Deleting user from Magazine schema');
         await this.userMagazine.updateOne({ _id: magazineId }, { $pull: { collaborators: collaboratorId } }, { session });
         this.logger.log('User deleted from Magazine schema');
+
       })
     } catch (error: any) {
       this.logger.error('A problem occurred while removing user from magazine: ' + error);

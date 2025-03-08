@@ -325,7 +325,6 @@ export class MagazineService implements MagazineServiceInterface {
   }
 
 
-
   async deletePostInMagazineSection(postIdToRemove: string, sectionId: string, ownerType: string, userRequestId: string, magazineId?: string): Promise<any> {
 
     try {

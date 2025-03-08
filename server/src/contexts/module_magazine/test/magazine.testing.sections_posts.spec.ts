@@ -1,6 +1,7 @@
 import mongoose, { Connection, Model, ObjectId, Types } from "mongoose";
 import { TestingModule } from "@nestjs/testing";
 import { getModelToken } from "@nestjs/mongoose";
+import { BadRequestException, UnauthorizedException } from "@nestjs/common";
 
 
 import mapModuleTesting from "./magazine.test.module";
@@ -9,10 +10,9 @@ import { insertGroupMagazine, insertSection, insertUserMagazine } from "./models
 import { createGroup } from "../../../../test/functions/create.group";
 import { MagazineService } from "../magazine/application/service/magazine.service";
 import { GroupMagazineDocument, GroupMagazineModel } from "../magazine/infrastructure/schemas/magazine.group.schema";
-import { BadRequestException, UnauthorizedException } from "@nestjs/common";
 import { MagazineSectionDocument, MagazineSectionModel } from "../magazine/infrastructure/schemas/section/magazine.section.schema";
 import { UserMagazineDocument } from "../magazine/infrastructure/schemas/magazine.user.schema";
-import { MagazineModel } from "../magazine/infrastructure/schemas/magazine.schema";
+
 
 
 interface SectionRequest {
@@ -1229,9 +1229,137 @@ describe('Magazine Service Testing - Sections & Post', () => {
         })
 
 
+        it('USER Magazine-> type of user : Creator of magazine delete post in magazine, should return work success', async () => {
+            const sectionId = new Types.ObjectId("66c49508e80296e90ec637d8")
+            const postId = new Types.ObjectId("66c49508e45096e90ec637d8")
+            const creatorOfMagazine = new Types.ObjectId("42c49508e45096e90ec637c3")
 
 
 
+            await insertSection(
+                magazineSection,
+                {
+                    _id: sectionId,
+                    title: "Section 1",
+                    isFatherSection: false,
+                    posts: [postId]
+                })
+
+            await insertUserMagazine(
+                userMagazineModel,
+                {
+                    _id: magazineId,
+                    user: creatorOfMagazine,
+                    sections: [sectionId]
+                }
+            )
+
+            await magazineService.deletePostInMagazineSection(
+                postId.toString(),
+                sectionId.toString(),
+                'user',
+                creatorOfMagazine.toString(),
+                magazineId.toString(),
+            )
+
+            const section = await magazineSection.findById(sectionId)
+            expect(section).not.toBeNull();
+            expect(section!.posts.length).toBe(0);
+
+            const userMagazine = await userMagazineModel.findById(magazineId)
+            expect(userMagazine).not.toBeNull();
+            expect(userMagazine!.sections.length).toBe(1);
+
+
+        })
+
+
+        it('USER Magazine-> type of user : Collaborator of magazine delete post in magazine, should return work success', async () => {
+            const sectionId = new Types.ObjectId("66c49508e80296e90ec637d8")
+            const postId = new Types.ObjectId("66c49508e45096e90ec637d8")
+            const collaboratorOfMagazine = new Types.ObjectId("42c49508e45096e90ec637c3")
+
+            await insertSection(
+                magazineSection,
+                {
+                    _id: sectionId,
+                    title: "Section 1",
+                    isFatherSection: false,
+                    posts: [postId]
+                })
+
+            await insertUserMagazine(
+                userMagazineModel,
+                {
+                    _id: magazineId,
+                    collaborators: [collaboratorOfMagazine],
+                    sections: [sectionId],
+                    user: members[0]
+                }
+            )
+
+            await magazineService.deletePostInMagazineSection(
+                postId.toString(),
+                sectionId.toString(),
+                'user',
+                collaboratorOfMagazine.toString(),
+                magazineId.toString(),
+            )
+
+            const section = await magazineSection.findById(sectionId)
+            expect(section).not.toBeNull();
+            expect(section!.posts.length).toBe(0);
+
+            const userMagazine = await userMagazineModel.findById(magazineId)
+            expect(userMagazine).not.toBeNull();
+            expect(userMagazine!.sections.length).toBe(1);
+
+
+        })
+
+
+
+        it('USER Magazine-> type of user : Unknwon user delete post in magazine, should return work success', async () => {
+            const sectionId = new Types.ObjectId("66c49508e80296e90ec637d8")
+            const postId = new Types.ObjectId("66c49508e45096e90ec637d8")
+            const unauthorizedUserId = new Types.ObjectId("42c49508e45096e90ec637c3")
+
+            await insertSection(
+                magazineSection,
+                {
+                    _id: sectionId,
+                    title: "Section 1",
+                    isFatherSection: false,
+                    posts: [postId]
+                })
+
+            await insertUserMagazine(
+                userMagazineModel,
+                {
+                    _id: magazineId,
+                    sections: [sectionId],
+                    user: members[0]
+                }
+            )
+
+            await expect(magazineService.deletePostInMagazineSection(
+                postId.toString(),
+                sectionId.toString(),
+                'user',
+                unauthorizedUserId.toString(),
+                magazineId.toString(),
+            )).rejects.toThrow(UnauthorizedException)
+
+            const section = await magazineSection.findById(sectionId)
+            expect(section).not.toBeNull();
+            expect(section!.posts.length).toBe(1);
+
+            const userMagazine = await userMagazineModel.findById(magazineId)
+            expect(userMagazine).not.toBeNull();
+            expect(userMagazine!.sections.length).toBe(1);
+
+
+        })
 
     })
 
