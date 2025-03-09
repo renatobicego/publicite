@@ -7,14 +7,14 @@ export class MagazineUpdateRequest {
   _id: string;
 
   @Field(() => String, { nullable: true })
-  name: string;
+  name?: string;
 
   @Field(() => OwnerType)
   ownerType: OwnerType;
 
   @Field(() => String, { nullable: true })
-  description: string;
+  description?: string;
 
   @Field(() => String, { nullable: true })
-  visibility: string;
+  visibility?: string;
 }

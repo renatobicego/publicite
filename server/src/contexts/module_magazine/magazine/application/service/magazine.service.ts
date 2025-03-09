@@ -428,6 +428,7 @@ export class MagazineService implements MagazineServiceInterface {
     }
   }
 
+
   async updateTitleOfSectionById(sectionId: string, newTitle: string, userRequestId: string, ownerType: string, magazineId?: string): Promise<any> {
     try {
       const isUserAllowed = await this.isUserAllowedToModifySection(sectionId, userRequestId, ownerType, magazineId);
