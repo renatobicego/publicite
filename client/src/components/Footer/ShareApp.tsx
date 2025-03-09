@@ -1,30 +1,10 @@
 "use client";
 import { toastifySuccess } from "@/utils/functions/toastify";
+import { shareLink } from "@/utils/functions/utils";
 import { Button } from "@nextui-org/react";
 import { FaShare } from "react-icons/fa6";
 
 const ShareApp = () => {
-  const shareLink = async (url: string, title: string) => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: title,
-          url: url,
-          text: "Compartir Publicité",
-        });
-      } catch (error) {
-        console.log("Error sharing link:", error);
-      }
-    } else {
-      // Fallback for browsers that don't support Web Share API
-      try {
-        await navigator.clipboard.writeText(url);
-        toastifySuccess("¡Link copiado en el portapapeles!");
-      } catch (error) {
-        console.log("Error copying link to clipboard:", error);
-      }
-    }
-  };
   return (
     <Button
       onPress={() =>

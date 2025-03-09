@@ -55,11 +55,11 @@ const UserButtonModal = () => {
       userProfileUrl={`${PROFILE}/${userIdLogged}`}
     >
       <UserButton.MenuItems>
-        <UserButton.Link
+        {/* <UserButton.Link
           label="Mi Perfil"
           labelIcon={<FaUser />}
           href={`${PROFILE}/${userIdLogged}`}
-        />
+        /> */}
         <UserButton.Action label="manageAccount" />
       </UserButton.MenuItems>
       {pageToReturn}

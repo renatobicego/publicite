@@ -1,6 +1,7 @@
 import { Magazine } from "@/types/magazineTypes";
 import { Good, Post } from "@/types/postTypes";
 import { Subscription, SubscriptionPlan } from "@/types/subscriptions";
+import { toastifySuccess } from "./toastify";
 
 export const checkIfUserIsSubscribed = (
   subscriptionsOfUser: Subscription[],
@@ -130,4 +131,26 @@ export const getFirstThreePostsImages = (magazineData: Magazine) => {
   return posts.map((post) =>
     "imagesUrls" in post && post.imagesUrls ? (post as Good).imagesUrls[0] : ""
   );
+};
+
+export const shareLink = async (url: string, title: string) => {
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: title,
+        url: url,
+        text: "Compartir Publicité",
+      });
+    } catch (error) {
+      console.log("Error sharing link:", error);
+    }
+  } else {
+    // Fallback for browsers that don't support Web Share API
+    try {
+      await navigator.clipboard.writeText(url);
+      toastifySuccess("¡Link copiado en el portapapeles!");
+    } catch (error) {
+      console.log("Error copying link to clipboard:", error);
+    }
+  }
 };

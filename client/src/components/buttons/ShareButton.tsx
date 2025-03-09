@@ -21,6 +21,7 @@ import { emitElementSharedNotification } from "../notifications/sharedElements/e
 import { useSocket } from "@/app/socketProvider";
 import { useUserData } from "@/app/(root)/providers/userDataProvider";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
+import { shareLink } from "@/utils/functions/utils";
 
 type ShareButtonProps = {
   ButtonAction?: JSX.Element;
@@ -82,6 +83,10 @@ const ShareButton = ({
   }, [customOpen, onOpen]);
 
   const handleShare = async () => {
+    if (!userIdLogged) {
+      shareLink(url, "Compartir");
+      return;
+    }
     setIsLoading(true);
     await Promise.all(
       selectedUsers.map(async (user) => {
@@ -153,6 +158,7 @@ const ShareButton = ({
                   <>
                     <Snippet
                       symbol=""
+                      title="Compartir URL"
                       tooltipProps={{
                         content: "Copiar",
                       }}
