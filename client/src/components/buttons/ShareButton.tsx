@@ -16,11 +16,12 @@ import useSearchUsers from "@/utils/hooks/useSearchUsers";
 import { cloneElement, useEffect, useState } from "react";
 import { SearchUsers } from "../inputs/SearchUsers";
 import { ElementSharedData, ShareTypesEnum } from "@/types/userTypes";
-import { SignedIn } from "@clerk/nextjs";
+import { SignedIn, SignedOut } from "@clerk/nextjs";
 import { emitElementSharedNotification } from "../notifications/sharedElements/emitNotifications";
 import { useSocket } from "@/app/socketProvider";
 import { useUserData } from "@/app/(root)/providers/userDataProvider";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
+import { shareLink } from "@/utils/functions/utils";
 
 type ShareButtonProps = {
   ButtonAction?: JSX.Element;
@@ -82,6 +83,10 @@ const ShareButton = ({
   }, [customOpen, onOpen]);
 
   const handleShare = async () => {
+    if (!userIdLogged) {
+      shareLink(url, "Compartir");
+      return;
+    }
     setIsLoading(true);
     await Promise.all(
       selectedUsers.map(async (user) => {
@@ -151,18 +156,22 @@ const ShareButton = ({
               <ModalBody>
                 {isOpen && (
                   <>
-                    <Snippet
-                      symbol=""
-                      tooltipProps={{
-                        content: "Copiar",
-                      }}
-                      classNames={{
-                        pre: "text-ellipsis overflow-hidden",
-                      }}
-                      variant="bordered"
-                    >
-                      {url}
-                    </Snippet>
+                    <SignedOut>
+                      <Snippet
+                        symbol=""
+                        title="Compartir URL"
+                        aria-label="Compartir URL"
+                        tooltipProps={{
+                          content: "Copiar",
+                        }}
+                        classNames={{
+                          pre: "text-ellipsis overflow-hidden",
+                        }}
+                        variant="bordered"
+                      >
+                        {url}
+                      </Snippet>
+                    </SignedOut>
                     <SignedIn>
                       <SearchUsers
                         items={filteredUsers}
@@ -170,6 +179,13 @@ const ShareButton = ({
                         onValueChange={handleSearchChange}
                         onSelectionChange={handleSelectionChange}
                       />
+                      <PrimaryButton
+                        size="sm"
+                        variant="flat"
+                        onPress={() => shareLink(url, "Compartir")}
+                      >
+                        Compartir URL
+                      </PrimaryButton>
                     </SignedIn>
                   </>
                 )}

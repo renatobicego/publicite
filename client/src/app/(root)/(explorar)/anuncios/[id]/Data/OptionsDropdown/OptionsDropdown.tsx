@@ -111,8 +111,8 @@ const OptionsDropdown = ({ post }: { post: Post }) => {
                 ? "Activando..."
                 : "Activar Anuncio"
               : isChangingActiveStatus
-              ? "Ocultando..."
-              : "Ocultar Anuncio"}
+              ? "Desactivando..."
+              : "Desactivar Anuncio"}
           </DropdownItem>
           <DropdownItem
             className="rounded-full text-danger pl-4"
@@ -143,8 +143,8 @@ const OptionsDropdown = ({ post }: { post: Post }) => {
           message={`¿Está seguro de ${
             isActive ? "ocultar" : "mostrar"
           } el anuncio ${post.title}?`}
-          tooltipMessage={isActive ? "Ocultar" : "Mostrar"}
-          confirmText={isActive ? "Ocultar" : "Mostrar"}
+          tooltipMessage={isActive ? "Desactivar" : "Mostrar"}
+          confirmText={isActive ? "Desactivar" : "Mostrar"}
           onConfirm={handleChangeIsActiveStatus}
           customOpen={(openModal) => (hidePostRef.current = openModal)} // Set the reference for customOpen
         />

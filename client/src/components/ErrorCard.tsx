@@ -32,6 +32,8 @@ const ErrorCard = ({
                 ? "Hubo un error en el servidor. Por favor, intenta de nuevo."
                 : error?.toLowerCase().includes("server components render")
                 ? "Hubo un error de conexión. Por favor, intenta de nuevo."
+                : error?.toLowerCase().includes("load failed")
+                ? "Hubo un error de conexión. Por favor, intenta de nuevo."
                 : error}
             </p>
           )}

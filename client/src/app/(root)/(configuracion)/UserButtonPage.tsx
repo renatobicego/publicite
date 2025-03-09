@@ -52,7 +52,6 @@ const UserButtonModal = () => {
           avatarBox: "h-full w-full border-[0.8px]",
         },
       }}
-      userProfileUrl={`${PROFILE}/${userIdLogged}`}
     >
       <UserButton.MenuItems>
         <UserButton.Link
