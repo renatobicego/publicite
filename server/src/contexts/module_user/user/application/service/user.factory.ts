@@ -27,8 +27,8 @@ export class UserFactory implements UserFactoryInterface {
 
     createUser(userType: UserType, userRequest: any): User {
 
-        console.log(userType, userRequest)
-        const subscriptionFree = ["67ad4c4bdb9283528cea83b9" as unknown as ObjectId]
+
+        const subscriptionFree = ["675f2b75b0a367029a0d35a6" as unknown as ObjectId]
         const activeRelations = [] as unknown as ObjectId[]
         const userBase = new User(
             userRequest.clerkId,

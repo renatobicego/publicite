@@ -19,7 +19,7 @@ import { UserRelation } from '../../domain/entity/userRelation.entity';
 import { calculateContactLimitFromUser, calculatePostLimitFromUser, userWithPostsAndSubscriptions } from '../functions/calculatePostLimitAndContactLimit';
 import { ommitUndefinedValues } from './ommit-function';
 import { makeUserRelationMapWithoutHierarchy } from 'src/contexts/module_shared/utils/functions/makeUserRelationHierarchyMap';
-import { Visibility } from 'src/contexts/module_user/board/infrastructure/enum/visibility.enum.board';
+
 
 
 
