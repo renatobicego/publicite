@@ -85,7 +85,7 @@ export default async function MagazinePage(props: { params: { id: string } }) {
           isCollaborator={isCollaborator}
         />
       </section>
-      <div className="w-full relative">
+      <div className="w-full relative flex flex-col gap-2">
         {(isOwner || isCollaborator) && (
           <MagazineSectionActions
             magazineId={magazine._id}

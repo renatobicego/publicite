@@ -71,6 +71,7 @@ const ManageMagazineSections = ({
                     <p className="ml-4">{section.title}</p>
                   </div>
                 ))}
+                {sections.length === 0 && <p>No has creado secciones</p>}
               </ModalBody>
             </>
           )}
