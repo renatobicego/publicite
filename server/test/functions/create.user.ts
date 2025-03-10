@@ -11,7 +11,7 @@ export class PersonalAccountTestRequest {
     finder?: string;
     profilePhotoUrl?: string;
     userType?: string;
-    userRelations?: Map<string, Types.ObjectId>;
+    userRelations?: any[];
     kind?: string;
     birthDate?: string;
     gender?: string;
@@ -37,7 +37,7 @@ async function createPersonalUser(
         finder: personalAccountTestRequest.finder ?? 'TEST_B',
         profilePhotoUrl: personalAccountTestRequest.profilePhotoUrl ?? 'TEST_B.jpg',
         userType: personalAccountTestRequest.userType ?? "person",
-        userRelations: personalAccountTestRequest.attributes?.get("userRelations") ?? [],
+        userRelations: personalAccountTestRequest.userRelations ?? [],
         kind: personalAccountTestRequest.kind ?? "person",
         birthDate: personalAccountTestRequest.birthDate ?? "2000-01-01",
         gender: personalAccountTestRequest.gender ?? "M",

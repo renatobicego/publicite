@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
 
 
-class postTestRequest {
+class PostTestRequest {
     _id?: Types.ObjectId;
     title?: string;
     description?: string;
@@ -23,7 +23,6 @@ class postTestRequest {
         ratio: number;
     };
     category?: Types.ObjectId[];
-    createAt?: Date;
     postBehaviourType?: string;
     isActive?: boolean;
     comments?: any[];
@@ -32,22 +31,55 @@ class postTestRequest {
     imagesUrls?: any[];
 }
 
+class posTestGoodRequest extends PostTestRequest {
+    year?: number;
+    brand?: string;
+    modelType?: string;
+    reviews?: any[];
+    condition?: string;
+
+}
+
+class postTestServiceRequest extends PostTestRequest {
+    frequencyPrice?: string;
+    imagesUrls?: string[];
+    reviews?: any[];
+}
+
+class postTestPetitionRequest extends PostTestRequest {
+    toPrice?: number;
+    frequencyPrice?: FrequencyPrice;
+    petitionType?: PetitionType;
+}
+
+enum FrequencyPrice {
+    hour = 'hour',
+    day = 'day',
+    week = 'week',
+    month = 'month',
+    year = 'year',
+}
+enum PetitionType {
+    Good = 'good',
+    Service = 'service',
+}
 
 
-async function createPostGood(post_id: Types.ObjectId, postModel: any, author: string, visibility: string) {
-    const POST = await postModel.create({
-        _id: post_id,
-        title: "title",
-        description: "description",
-        searchTitle: "title",
-        author: author,
+
+async function insertPostGood(postModel: any, postRequest: posTestGoodRequest) {
+    const postGood = await postModel.create({
+        _id: postRequest._id,
+        title: postRequest.title ?? "title",
+        description: postRequest.description ?? "description",
+        searchTitle: postRequest.searchTitle ?? "title",
+        author: postRequest.author,
         postType: "good",
-        visibility: {
-            post: visibility,
+        visibility: postRequest.visibility ?? {
+            post: "public",
             socialMedia: "public"
         },
-        price: 300,
-        geoLocation: {
+        price: postRequest.price ?? 300,
+        geoLocation: postRequest.geoLocation ?? {
             location: {
                 type: "Point",
                 coordinates: [-73.935242, 40.73061]
@@ -56,18 +88,92 @@ async function createPostGood(post_id: Types.ObjectId, postModel: any, author: s
             description: "descripcion",
             ratio: 0
         },
-        category: [new Types.ObjectId("63c0d4f9d8f8f8f8f8f8f8f8")],
+        category: postRequest.category ?? [new Types.ObjectId("63c0d4f9d8f8f8f8f8f8f8f8")],
         createAt: new Date(),
-        postBehaviourType: "libre",
-        isActive: true,
-        comments: [],
-        reactions: [],
-        reviews: [],
-        imagesUrls: [],
-
+        postBehaviourType: postRequest.postBehaviourType ?? "libre",
+        isActive: postRequest.isActive ?? true,
+        comments: postRequest.comments ?? [],
+        reactions: postRequest.reactions ?? [],
+        reviews: postRequest.reviews ?? [],
+        imagesUrls: postRequest.imagesUrls ?? [],
+        year: postRequest.year ?? 2025,
+        brand: postRequest.brand ?? "brand",
+        modelType: postRequest.modelType ?? "new",
+        condition: postRequest.condition ?? "new",
     });
 
-    return POST
+    return postGood
 }
 
-export { createPostGood }
+async function inserPostService(postServiceModel: any, postRequest: postTestServiceRequest) {
+    const postService = await postServiceModel.create({
+        _id: postRequest._id,
+        title: postRequest.title ?? "title",
+        description: postRequest.description ?? "description",
+        searchTitle: postRequest.searchTitle ?? "title",
+        author: postRequest.author,
+        postType: "good",
+        visibility: postRequest.visibility ?? {
+            post: "public",
+            socialMedia: "public"
+        },
+        price: postRequest.price ?? 300,
+        geoLocation: postRequest.geoLocation ?? {
+            location: {
+                type: "Point",
+                coordinates: [-73.935242, 40.73061]
+            },
+            userSetted: false,
+            description: "descripcion",
+            ratio: 0
+        },
+        category: postRequest.category ?? [new Types.ObjectId("63c0d4f9d8f8f8f8f8f8f8f8")],
+        createAt: new Date(),
+        postBehaviourType: postRequest.postBehaviourType ?? "libre",
+        isActive: postRequest.isActive ?? true,
+        comments: postRequest.comments ?? [],
+        reactions: postRequest.reactions ?? [],
+        reviews: postRequest.reviews ?? [],
+        imagesUrls: postRequest.imagesUrls ?? [],
+        year: postRequest.frequencyPrice ?? "day",
+    });
+
+    return postService
+}
+
+async function insertPostPetition(postModel: any, postRequest: postTestPetitionRequest) {
+    const postPetition = await postModel.create({
+        _id: postRequest._id,
+        title: postRequest.title ?? "title",
+        description: postRequest.description ?? "description",
+        searchTitle: postRequest.searchTitle ?? "title",
+        author: postRequest.author,
+        postType: "petition",
+        visibility: postRequest.visibility ?? {
+            post: "public",
+            socialMedia: "public"
+        },
+        price: postRequest.price ?? 300,
+        geoLocation: postRequest.geoLocation ?? {
+            location: {
+                type: "Point",
+                coordinates: [-73.935242, 40.73061]
+            },
+            userSetted: false,
+            description: "descripcion",
+            ratio: 0
+        },
+        category: postRequest.category ?? [new Types.ObjectId("63c0d4f9d8f8f8f8f8f8f8f8")],
+        createAt: new Date(),
+        postBehaviourType: postRequest.postBehaviourType ?? "libre",
+        isActive: postRequest.isActive ?? true,
+        comments: postRequest.comments ?? [],
+        reactions: postRequest.reactions ?? [],
+        reviews: postRequest.reviews ?? [],
+        imagesUrls: postRequest.imagesUrls ?? [],
+        toPrice: postRequest.toPrice ?? 300,
+        frequencyPrice: postRequest.frequencyPrice ?? "day",
+        petitionType: postRequest.petitionType ?? "good",
+    });
+}
+export { insertPostGood, inserPostService, insertPostPetition }

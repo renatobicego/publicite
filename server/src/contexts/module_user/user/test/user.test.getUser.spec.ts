@@ -9,10 +9,11 @@ import { IUser, UserModel } from '../infrastructure/schemas/user.schema';
 import { UserRelationDocument, UserRelationModel } from "../infrastructure/schemas/user.relation.schema";
 import { createPersonalUser } from "../../../../../test/functions/create.user";
 import PostModel, { PostDocument } from "src/contexts/module_post/post/infraestructure/schemas/post.schema";
-import { createPostGood } from "../../../../../test/functions/create.post";
-import { createSection, createUserMagazine } from "../../../../../test/functions/create.magazine";
+import { insertPostGood } from "../../../../../test/functions/create.post";
 import { MagazineDocument, MagazineModel } from "src/contexts/module_magazine/magazine/infrastructure/schemas/magazine.schema";
 import { MagazineSectionDocument, MagazineSectionModel } from "src/contexts/module_magazine/magazine/infrastructure/schemas/section/magazine.section.schema";
+import { insertSection, insertUserMagazine } from "src/contexts/module_magazine/test/models/db/insert.group.magazine";
+import { UserMagazineDocument, UserMagazineModel } from "src/contexts/module_magazine/magazine/infrastructure/schemas/magazine.user.schema";
 
 
 describe('UserService - Make relation between two users', () => {
@@ -21,7 +22,7 @@ describe('UserService - Make relation between two users', () => {
     let userRelationModel: Model<UserRelationDocument>
     let userModel: Model<IUser>;
     let postModel: Model<PostDocument>
-    let magazineModel: Model<MagazineDocument>
+    let userMagazineModel: Model<UserMagazineDocument>
     let magazineSectionModel: Model<MagazineSectionDocument>
 
     const userProfileId = new Types.ObjectId("624c2d5d7b8e4d1e4c2d5d7c");
@@ -32,7 +33,7 @@ describe('UserService - Make relation between two users', () => {
     const sectionId = new Types.ObjectId("624c2d5d7b8e4d1e4c2d5d7e");
 
 
-    jest.setTimeout(10000);
+
     beforeAll(async () => {
         const moduleRef: TestingModule = await mapModuleTesting.get("make-relation")();
         userService = moduleRef.get<UserService>('UserServiceInterface');
@@ -40,10 +41,9 @@ describe('UserService - Make relation between two users', () => {
         userModel = moduleRef.get<Model<IUser>>(getModelToken(UserModel.modelName));
         userRelationModel = moduleRef.get<Model<UserRelationDocument>>(getModelToken(UserRelationModel.modelName));
         postModel = moduleRef.get<Model<PostDocument>>(getModelToken(PostModel.modelName));
-        magazineModel = moduleRef.get<Model<MagazineDocument>>(getModelToken(MagazineModel.modelName));
+        userMagazineModel = moduleRef.get<Model<UserMagazineDocument>>(getModelToken(UserMagazineModel.modelName));
         magazineSectionModel = moduleRef.get<Model<MagazineSectionDocument>>(getModelToken(MagazineSectionModel.modelName));
-        const userRelation = new Map([["userRelations", userRelationId]])
-        await createPersonalUser(userModel, { _id: userProfileId, userRelations: userRelation, magazines: [magazineId], posts: [postId] });
+        await createPersonalUser(userModel, { _id: userProfileId, userRelations: [userRelationId], magazines: [magazineId], posts: [postId] });
 
 
 
@@ -56,23 +56,26 @@ describe('UserService - Make relation between two users', () => {
 
     })
     afterEach(async () => {
-        await magazineModel.deleteMany({});
+        await userMagazineModel.deleteMany({});
         await userRelationModel.deleteMany({});
         await postModel.deleteMany({});
         await magazineSectionModel.deleteMany({});
     })
 
     it('GET profile by external user -Should return PostArray and MagazineArray length 1 RelationShip -> friends & Post visibility -> friends Magazine visibility -> friends', async () => {
-        await createPostGood(postId, postModel, userProfileId.toString(), "friends")
-        await createSection(sectionId, magazineSectionModel, [postId], true)
-        await createUserMagazine(magazineId, magazineModel, userProfileId, [sectionId], "friends");
-        userRelationModel.create({
+
+        await insertPostGood(postModel, { _id: postId, author: userProfileId.toString(), visibility: { post: "friends", socialMedia: "public" } })
+        await insertSection(magazineSectionModel, { _id: sectionId, posts: [postId], isFatherSection: true })
+        await insertUserMagazine(userMagazineModel, { _id: magazineId, sections: [sectionId], visibility: "friends", user: new Types.ObjectId() });
+
+        await userRelationModel.create({
             _id: userRelationId,
             userA: userProfileId,
             userB: userRequestId,
             typeRelationA: "friends",
             typeRelationB: "friends",
         })
+
 
         const user = await userService.findProfileUserByExternalUserById(userProfileId.toString());
         console.log(user)
@@ -86,11 +89,11 @@ describe('UserService - Make relation between two users', () => {
 
 
     it('GET profile by external user -Should return PostArray and MagazineArray length 1 relationShip -> friends & Post visibility -> contacts Magazine visibility -> contacts ', async () => {
-        await createPostGood(postId, postModel, userProfileId.toString(), "contacts")
-        await createSection(sectionId, magazineSectionModel, [postId], true)
-        await createUserMagazine(magazineId, magazineModel, userProfileId, [sectionId], "contacts");
+        await insertPostGood(postModel, { _id: postId, author: userProfileId.toString(), visibility: { post: "contacts", socialMedia: "public" } })
+        await insertSection(magazineSectionModel, { _id: sectionId, posts: [postId], isFatherSection: true })
+        await insertUserMagazine(userMagazineModel, { _id: magazineId, sections: [sectionId], visibility: "contacts", user: new Types.ObjectId() });
 
-        userRelationModel.create({
+        await userRelationModel.create({
             _id: userRelationId,
             userA: userProfileId,
             userB: userRequestId,
@@ -106,10 +109,11 @@ describe('UserService - Make relation between two users', () => {
     });
 
     it('GET profile by external user -Should return PostArray and MagazineArray length 1 relationShip -> topfriends & Post visibility -> contacts Magazine visibility -> friends ', async () => {
-        await createPostGood(postId, postModel, userProfileId.toString(), "contacts")
-        await createSection(sectionId, magazineSectionModel, [postId], true)
-        await createUserMagazine(magazineId, magazineModel, userProfileId, [sectionId], "friends");
-        userRelationModel.create({
+        await insertPostGood(postModel, { _id: postId, author: userProfileId.toString(), visibility: { post: "contacts", socialMedia: "public" } })
+        await insertSection(magazineSectionModel, { _id: sectionId, posts: [postId], isFatherSection: true })
+        await insertUserMagazine(userMagazineModel, { _id: magazineId, sections: [sectionId], visibility: "friends", user: new Types.ObjectId() });
+
+        await userRelationModel.create({
             _id: userRelationId,
             userA: userProfileId,
             userB: userRequestId,
@@ -126,10 +130,10 @@ describe('UserService - Make relation between two users', () => {
 
 
     it('GET profile by external user -Should return PostArray and MagazineArray length 1 relationShip -> topfriends & Post visibility -> friends Magazine visibility -> topfriends ', async () => {
-        await createPostGood(postId, postModel, userProfileId.toString(), "friends")
-        await createSection(sectionId, magazineSectionModel, [postId], true)
-        await createUserMagazine(magazineId, magazineModel, userProfileId, [sectionId], "topfriends");
-        userRelationModel.create({
+        await insertPostGood(postModel, { _id: postId, author: userProfileId.toString(), visibility: { post: "friends", socialMedia: "public" } })
+        await insertSection(magazineSectionModel, { _id: sectionId, posts: [postId], isFatherSection: true })
+        await insertUserMagazine(userMagazineModel, { _id: magazineId, sections: [sectionId], visibility: "topfriends", user: new Types.ObjectId() });
+        await userRelationModel.create({
             _id: userRelationId,
             userA: userProfileId,
             userB: userRequestId,
@@ -145,10 +149,10 @@ describe('UserService - Make relation between two users', () => {
     });
 
     it('GET profile by external user -Should return PostArray and MagazineArray length 1 relationShip -> topfriends & Post visibility -> topfriends Magazine visibility -> topfriends ', async () => {
-        await createPostGood(postId, postModel, userProfileId.toString(), "topfriends")
-        await createSection(sectionId, magazineSectionModel, [postId], true)
-        await createUserMagazine(magazineId, magazineModel, userProfileId, [sectionId], "topfriends");
-        userRelationModel.create({
+        await insertPostGood(postModel, { _id: postId, author: userProfileId.toString(), visibility: { post: "topfriends", socialMedia: "public" } })
+        await insertSection(magazineSectionModel, { _id: sectionId, posts: [postId], isFatherSection: true })
+        await insertUserMagazine(userMagazineModel, { _id: magazineId, sections: [sectionId], visibility: "topfriends", user: new Types.ObjectId() });
+        await userRelationModel.create({
             _id: userRelationId,
             userA: userProfileId,
             userB: userRequestId,
@@ -166,10 +170,10 @@ describe('UserService - Make relation between two users', () => {
 
 
     it('GET profile by external user -Should return PostArray and MagazineArray length 0 relationShip -> contacts & Post visibility -> friends Magazine visibility -> topfriends', async () => {
-        await createPostGood(postId, postModel, userProfileId.toString(), "friends")
-        await createSection(sectionId, magazineSectionModel, [postId], true)
-        await createUserMagazine(magazineId, magazineModel, userProfileId, [sectionId], "topfriends");
-        userRelationModel.create({
+        await insertPostGood(postModel, { _id: postId, author: userProfileId.toString(), visibility: { post: "friends", socialMedia: "public" } })
+        await insertSection(magazineSectionModel, { _id: sectionId, posts: [postId], isFatherSection: true })
+        await insertUserMagazine(userMagazineModel, { _id: magazineId, sections: [sectionId], visibility: "topfriends", user: new Types.ObjectId() });
+        await userRelationModel.create({
             _id: userRelationId,
             userA: userProfileId,
             userB: userRequestId,
@@ -184,10 +188,10 @@ describe('UserService - Make relation between two users', () => {
 
 
     it('GET profile by external user -Should return PostArray and MagazineArray length 0 relationShip -> friends & Post visibility -> topfriends Magazine visibility -> topfriends', async () => {
-        await createPostGood(postId, postModel, userProfileId.toString(), "topfriends")
-        await createSection(sectionId, magazineSectionModel, [postId], true)
-        await createUserMagazine(magazineId, magazineModel, userProfileId, [sectionId], "topfriends");
-        userRelationModel.create({
+        await insertPostGood(postModel, { _id: postId, author: userProfileId.toString(), visibility: { post: "topfriends", socialMedia: "public" } })
+        await insertSection(magazineSectionModel, { _id: sectionId, posts: [postId], isFatherSection: true })
+        await insertUserMagazine(userMagazineModel, { _id: magazineId, sections: [sectionId], visibility: "topfriends", user: new Types.ObjectId() });
+        await userRelationModel.create({
             _id: userRelationId,
             userA: userProfileId,
             userB: userRequestId,
