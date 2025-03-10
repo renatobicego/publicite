@@ -15,7 +15,7 @@ const MagazineSectionActions = ({
   sections: MagazineSection[];
 }) => {
   return (
-    <div className="flex gap-2 items-center absolute top-0 right-0">
+    <div className="flex gap-2 items-center self-end">
       <CreateMagazineSection magazineId={magazineId} groupId={groupId} />
       <ManageMagazineSections
         ownerType={ownerType}

@@ -21,8 +21,8 @@ const SavePostLogic = ({
     postId: string;
     section: string;
   }[];
-  }) => {
-  const {addPost} = useMagazinesData();
+}) => {
+  const { addPost } = useMagazinesData();
   // the selected magazine section and magazine id
   const [selectedMagazineSection, setSelectedMagazineSection] = useState<{
     id: string;
@@ -65,7 +65,7 @@ const SavePostLogic = ({
             const magazineSectionsIds = magazine.sections.map(
               (section) => section._id
             );
-            const getPostSavedInThisMagazine = saved?.find((post) =>
+            const getPostSavedInThisMagazine = saved?.filter((post) =>
               magazineSectionsIds.includes(post.section)
             );
             return (

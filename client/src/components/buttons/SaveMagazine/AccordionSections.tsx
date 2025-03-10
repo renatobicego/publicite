@@ -12,7 +12,7 @@ const AccordionSections = ({
   selectedMagazineSection,
 }: {
   magazine: Magazine;
-  savedPost?: { postId: string; section: string };
+  savedPost?: { postId: string; section: string }[];
   handleDeletePostClick: (sectionId: string) => void;
   handleSelectMagazineSection: (sectionId: string) => void;
   selectedMagazineSection: {
@@ -20,8 +20,9 @@ const AccordionSections = ({
     magazineId: string;
   };
   isPostInSection: (sectionId: string) => boolean;
-  }) => {
-  const ownerType = magazine.ownerType === "user" ? "Revista de usuario" : "Revista de grupo";
+}) => {
+  const ownerType =
+    magazine.ownerType === "user" ? "Revista de usuario" : "Revista de grupo";
   const subtitle = savedPost ? " - Guardado" : "";
   return (
     <>
@@ -32,7 +33,9 @@ const AccordionSections = ({
           title={magazine.name}
           subtitle={`${ownerType}${subtitle}`}
           classNames={{
-            title: `text-small font-normal ${savedPost ? "text-primary" : ""}`,
+            title: `text-small font-normal ${
+              savedPost && savedPost.length > 0 ? "text-primary" : ""
+            }`,
             subtitle: "text-xs",
             content: `flex flex-col gap-1`,
           }}

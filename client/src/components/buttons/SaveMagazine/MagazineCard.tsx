@@ -27,9 +27,9 @@ const MagazineCard = ({
   savedPost?: {
     postId: string;
     section: string;
-  };
-  }) => {
-    const {removePost} = useMagazinesData();
+  }[];
+}) => {
+  const { removePost } = useMagazinesData();
   const [sectionToDeletePost, setSectionToDeletePost] = useState<string | null>(
     null
   );
@@ -49,11 +49,11 @@ const MagazineCard = ({
   };
 
   const deletePost = async () => {
-    if (!sectionToDeletePost) return;
+    if (!sectionToDeletePost || !savedPost) return;
 
     const res = await removePostInMagazineSection(
       magazine._id,
-      savedPost?.postId as string,
+      savedPost[0].postId,
       sectionToDeletePost,
       magazine.ownerType
     );
@@ -63,7 +63,7 @@ const MagazineCard = ({
       return;
     }
 
-    removePost(savedPost?.postId as string, sectionToDeletePost);
+    removePost(savedPost[0].postId, sectionToDeletePost);
     toastifySuccess(res.message as string);
   };
   const deletePostRef = useRef<() => void>(() => {});
@@ -76,7 +76,8 @@ const MagazineCard = ({
   };
 
   const isPostInSection = (sectionId: string) => {
-    return savedPost?.section === sectionId;
+    if (!savedPost) return false;
+    return savedPost?.some((post) => post.section === sectionId);
   };
 
   return (
