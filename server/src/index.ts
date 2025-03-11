@@ -24,6 +24,7 @@ const initializeNestApp = async (): Promise<void> => {
   const PUBLICITE_CORS_VERCEL_URI = process.env.PUBLICITE_CORS_VERCEL_URI ?? "Verify PUBLICITE_CORS_VERCEL_URI";
   const PUBLICITE_CORS_DOMAIN_URI = process.env.PUBLICITE_CORS_DOMAIN_URI ?? "Verify PUBLICITE_CORS_DOMAIN_URI";
   const PUBLICITE_CORS_SOCKET_URI = process.env.PUBLICITE_CORS_SOCKET_URI ?? "Verify PUBLICITE_CORS_SOCKET_URI";
+  const PUBLICITE_CORS_GRAPHQL_URI = process.env.PUBLICITE_CORS_GRAPHQL_URI ?? "Verify PUBLICITE_CORS_GRAPHQL_URI";
   if (!nestApp) {
     // Crear la aplicación HTTP
     nestApp = await NestFactory.create<NestExpressApplication>(
@@ -39,23 +40,25 @@ const initializeNestApp = async (): Promise<void> => {
           PUBLICITE_CORS_VERCEL_URI,
           PUBLICITE_CORS_DOMAIN_URI,
           PUBLICITE_CORS_SOCKET_URI,
+          PUBLICITE_CORS_GRAPHQL_URI
         ];
 
-        if (!origin) {
 
-          return callback(new Error("CORS bloqueado: origen no permitido"));
-        }
+        const allowedPatterns = allowedOrigins.map((url) => new RegExp(`^${url.replace(/\/$/, '')}(/.*)?$`));
 
-        if (allowedOrigins.includes(origin)) {
+
+        if (allowedPatterns.some((pattern) => pattern.test(origin))) {
           return callback(null, true);
         } else {
-          return callback(new Error("CORS bloqueado: origen no permitido"));
+          return callback(new Error(`CORS bloqueado: ${origin} no está permitido`));
         }
       },
       methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
       credentials: true,
       optionsSuccessStatus: 200,
     });
+
+
 
     // Crear el microservicio gRPC
     // const grpcApp = await NestFactory.createMicroservice(AppModule, {
