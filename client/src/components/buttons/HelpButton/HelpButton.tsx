@@ -33,10 +33,23 @@ const CustomTooltip = ({
 }: TooltipRenderProps) => (
   <aside
     {...tooltipProps}
-    className="w-full relative flex flex-col items-end gap-4 bg-white p-4 rounded-xl"
+    className="relative flex flex-col items-end gap-4 bg-white p-4 rounded-xl max-w-xs md:max-w-md xl:max-w-lg"
   >
     {step.title && <h4>{step.title}</h4>}
-    <div>{step.content}</div>
+    <div className="flex gap-1 items-start">
+      {step.content}
+      <Button
+        {...closeProps}
+        isIconOnly
+        radius="full"
+        aria-label="cerrar ayuda"
+        variant="light"
+        size="sm"
+        className="-mt-1"
+      >
+        <FaX />
+      </Button>
+    </div>
     <div className="flex gap-2 items-center">
       {index > 0 && (
         <PrimaryButton {...backProps} variant="light">
@@ -49,14 +62,6 @@ const CustomTooltip = ({
         </PrimaryButton>
       )}
     </div>
-    <Button
-      {...closeProps}
-      isIconOnly
-      variant="flat"
-      className="absolute top-2 right-2"
-    >
-      <FaX />
-    </Button>
   </aside>
 );
 
