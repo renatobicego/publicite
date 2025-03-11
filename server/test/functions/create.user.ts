@@ -15,7 +15,7 @@ export class PersonalAccountTestRequest {
     kind?: string;
     birthDate?: string;
     gender?: string;
-    subscriptions?: Map<string, Types.ObjectId>;
+    subscriptions?: any[];
     notifications?: string[];
     magazines?: Types.ObjectId[];
     posts?: Types.ObjectId[];
@@ -36,12 +36,12 @@ async function createPersonalUser(
         lastName: personalAccountTestRequest.lastName ?? 'TEST_B',
         finder: personalAccountTestRequest.finder ?? 'TEST_B',
         profilePhotoUrl: personalAccountTestRequest.profilePhotoUrl ?? 'TEST_B.jpg',
-        userType: personalAccountTestRequest.userType ?? "person",
+        userType: personalAccountTestRequest.userType ?? "Person",
         userRelations: personalAccountTestRequest.userRelations ?? [],
-        kind: personalAccountTestRequest.kind ?? "person",
+        kind: personalAccountTestRequest.kind ?? "Person",
         birthDate: personalAccountTestRequest.birthDate ?? "2000-01-01",
         gender: personalAccountTestRequest.gender ?? "M",
-        subscriptions: personalAccountTestRequest.attributes?.get("subscriptions") ?? [],
+        subscriptions: personalAccountTestRequest.subscriptions ?? [],
         notifications: personalAccountTestRequest.notifications ?? [],
         magazines: personalAccountTestRequest.magazines ?? [],
         posts: personalAccountTestRequest.posts ?? [],
