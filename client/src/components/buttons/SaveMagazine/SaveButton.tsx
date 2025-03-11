@@ -23,7 +23,7 @@ const SaveButton: React.FC<SaveButtonProps> = ({ post, ...props }) => {
   // get posts in each magazine and section
   const saved = postsInMagazine.filter(
     (postInMagazine) => postInMagazine.postId === post._id
-  )
+  );
   return (
     <Popover
       isOpen={isOpen}
@@ -36,13 +36,17 @@ const SaveButton: React.FC<SaveButtonProps> = ({ post, ...props }) => {
       <PopoverTrigger>
         <Button
           isIconOnly
-          aria-label={saved.length > 0 ? "Quitar de guardados en revistas" : "Guardar en revista"}
+          aria-label={
+            saved.length > 0
+              ? "Quitar de guardados en revistas"
+              : "Guardar en revista"
+          }
           color="primary"
           radius="full"
           {...props}
           className={`opacity-75 data-[hover=true]:opacity-100 ${props.className}`}
         >
-          { saved.length > 0 ? <FaBookmark /> : <FaRegBookmark />}
+          {saved.length > 0 ? <FaBookmark /> : <FaRegBookmark />}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[270px]">

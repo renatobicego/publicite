@@ -30,6 +30,8 @@ const SelectManualLocationModal = ({
           onClick={onOpen}
           color="primary"
           radius="full"
+          id="manual-location-button"
+          aria-label="seleccionar ubicación manual"
           variant="light"
           className="-ml-2.5 self-start max-w-full w-fit text-left"
           startContent={<FaMapMarkerAlt className="size-4" />}

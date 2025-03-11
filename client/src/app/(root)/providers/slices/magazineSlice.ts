@@ -77,11 +77,15 @@ const magazineSlice = createSlice({
     },
     removePostFromMagazine(state, action: PayloadAction<PostInMagazine>) {
       // Remove the post by postId
-      state.postsInMagazine = state.postsInMagazine.filter(
-        (post) =>
-          post.postId !== action.payload.postId &&
-          post.section !== action.payload.section
-      );
+      state.postsInMagazine = state.postsInMagazine.filter((post) => {
+        if (
+          post.postId === action.payload.postId &&
+          post.section === action.payload.section
+        ) {
+          return false;
+        }
+        return true;
+      });
     },
     addMagazine(state, action: PayloadAction<Magazine>) {
       state.magazines?.push(action.payload);

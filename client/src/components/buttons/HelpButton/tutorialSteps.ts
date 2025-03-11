@@ -26,7 +26,7 @@ export const homePageSteps = [
   {
     target: "body",
     content:
-      "Aquí podrás ver algunos anuncios recomendados cerca tuyo. Podrás ver anuncios de tipo Bien, Servicio y Necesidad.",
+      "Aquí podrás ver algunos anuncios recomendados cerca tuyo. Podrás ver anuncios de tipo Bien, Servicio y Necesidad. Es importante que podamos acceder a tu ubicación para mostrarte anuncios, por lo que puedes darnos permisos de ubicación o seleccionar la ubicación manualmente.",
     disableBeacon: true,
   },
 ];
@@ -37,5 +37,20 @@ export const explorePostsSteps = [
     content:
       "Aquí podrás encontrar anuncios de tipo Bien, Servicio y Necesidad, y filtrarlos según tu necesidad.",
     disableBeacon: true,
+  },
+  {
+    target: "#select-post-type",
+    content: "Aquí podrás filtrar por Bien, Servicio y Necesidad.",
+    disableBeacon: true,
+  },
+  {
+    target: "#manual-location-button",
+    content: "Aquí podrás seleccionar tu ubicación manualmente.",
+    disableBeacon: true,
+  },
+  {
+    target: "#post-list-header",
+    content:
+      "Aquí podrás refinar tu búsqueda aun más; filtrando, ordenando y agregando fases de búsqueda a los resultados obtenidos de la búsqueda general.",
   },
 ];

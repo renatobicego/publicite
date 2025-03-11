@@ -5,7 +5,9 @@ import { usePathname } from "next/navigation";
 const SelectPostType = ({ postType }: { postType: PostType }) => {
   const pathname = usePathname();
   const getUrlPostType = (postType: PostType) => {
-    const urlWithoutPostType = pathname.replace("/servicios", "").replace("/necesidades", "");
+    const urlWithoutPostType = pathname
+      .replace("/servicios", "")
+      .replace("/necesidades", "");
     switch (postType) {
       case "good":
         return urlWithoutPostType;
@@ -19,6 +21,7 @@ const SelectPostType = ({ postType }: { postType: PostType }) => {
     <Select
       selectedKeys={[postType]}
       items={postTypesItems}
+      id="select-post-type"
       label="Bienes, servicios o necesidades"
       placeholder="Seleccione el tipo de anuncio"
       disallowEmptySelection
