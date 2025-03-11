@@ -364,7 +364,6 @@ export class UserService implements UserServiceInterface {
 
 
       const { agendaPostCount, librePostCount, totalAgendaPostLimit, totalLibrePostLimit } = await this.getPostAndLimitsFromUserByUserId(authorId);
-
       switch (postBehaviourType) {
         case 'agenda':
           if (agendaPostCount >= totalAgendaPostLimit) {
@@ -382,6 +381,7 @@ export class UserService implements UserServiceInterface {
           this.logger.warn('Invalid post type specified');
           return false;
       }
+
     } catch (error: any) {
       this.logger.error('Error while verifying user posting permissions', error);
       throw error;

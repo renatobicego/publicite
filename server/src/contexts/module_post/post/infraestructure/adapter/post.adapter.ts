@@ -180,7 +180,7 @@ export class PostAdapter implements PostAdapterInterface {
   async updateBehaviourType(_id: string, postBehaviourType: PostBehaviourType, userRequestId: string, visibility: VisibilityEnum): Promise<any> {
     try {
       if (postBehaviourType === PostBehaviourType.agenda) {
-        if (visibility === undefined || visibility === null) {
+        if (visibility === undefined || visibility === null || visibility.post === undefined || visibility.post === null) {
           throw new BadRequestException("visibility is required when postBehaviourType is agenda");
         }
         if (visibility.post === Visibility.public) {

@@ -347,7 +347,7 @@ export class PostService implements PostServiceInterface {
           visibility: visibility,
         }
 
-        return await this.postRepository.updateBehaviourType(_id, makeObjectUpdate);
+        await this.postRepository.updateBehaviourType(_id, makeObjectUpdate);
       } else {
         throw new BadRequestException('You are not allowed to change behaviour_type, please upgrade your plan');
       }

@@ -19,6 +19,7 @@ import PostCommentModel from "../post/infraestructure/schemas/post.comment.schem
 import { UserModule } from "src/contexts/module_user/user/infrastructure/module/user.module";
 import { SubscriptionPlanSchema } from "src/contexts/module_webhook/mercadopago/infastructure/schemas/subscriptionPlan.schema";
 import { SubscriptionSchema } from "src/contexts/module_webhook/mercadopago/infastructure/schemas/subscription.schema";
+import { PostAdapter } from "../post/infraestructure/adapter/post.adapter";
 
 const post_testing_module = async (): Promise<TestingModule> => {
     dotenv.config({ path: '.env.test' });
@@ -67,6 +68,14 @@ const post_testing_module = async (): Promise<TestingModule> => {
             {
                 provide: 'PostServiceInterface',
                 useClass: PostService,
+            },
+            {
+                provide: 'PostAdapterInterface',
+                useClass: PostAdapter,
+            },
+            {
+                provide: 'PostMapperAdapterInterface',
+                useValue: {},
             },
 
             // { provide: 'SectorRepositoryInterface', useValue: {} },

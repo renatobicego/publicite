@@ -29,6 +29,7 @@ class PostTestRequest {
     reactions?: any[];
     reviews?: any[];
     imagesUrls?: any[];
+    endDate?: Date;
 }
 
 class posTestGoodRequest extends PostTestRequest {
@@ -48,21 +49,12 @@ class postTestServiceRequest extends PostTestRequest {
 
 class postTestPetitionRequest extends PostTestRequest {
     toPrice?: number;
-    frequencyPrice?: FrequencyPrice;
-    petitionType?: PetitionType;
+    frequencyPrice?: string;
+    petitionType?: string;
 }
 
-enum FrequencyPrice {
-    hour = 'hour',
-    day = 'day',
-    week = 'week',
-    month = 'month',
-    year = 'year',
-}
-enum PetitionType {
-    Good = 'good',
-    Service = 'service',
-}
+
+
 
 
 
@@ -100,10 +92,13 @@ async function insertPostGood(postModel: any, postRequest: posTestGoodRequest) {
         brand: postRequest.brand ?? "brand",
         modelType: postRequest.modelType ?? "new",
         condition: postRequest.condition ?? "new",
+        endDate: postRequest.endDate ?? new Date(),
+
     });
 
     return postGood
 }
+
 
 async function inserPostService(postServiceModel: any, postRequest: postTestServiceRequest) {
     const postService = await postServiceModel.create({
@@ -135,7 +130,7 @@ async function inserPostService(postServiceModel: any, postRequest: postTestServ
         reactions: postRequest.reactions ?? [],
         reviews: postRequest.reviews ?? [],
         imagesUrls: postRequest.imagesUrls ?? [],
-        year: postRequest.frequencyPrice ?? "day",
+        frequencyPrice: postRequest.frequencyPrice ?? "day",
     });
 
     return postService
@@ -174,6 +169,9 @@ async function insertPostPetition(postModel: any, postRequest: postTestPetitionR
         toPrice: postRequest.toPrice ?? 300,
         frequencyPrice: postRequest.frequencyPrice ?? "day",
         petitionType: postRequest.petitionType ?? "good",
+
     });
+
+    return postPetition
 }
 export { insertPostGood, inserPostService, insertPostPetition }

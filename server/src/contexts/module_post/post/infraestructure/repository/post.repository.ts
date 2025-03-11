@@ -40,6 +40,7 @@ import { PostComment } from '../../domain/entity/postComment.entity';
 import { PostCommentDocument } from '../schemas/post.comment.schema';
 import { EmitterService } from 'src/contexts/module_shared/event-emmiter/emmiter';
 import { downgrade_plan_post_notification } from 'src/contexts/module_shared/event-emmiter/events';
+import { BadRequestException } from '@nestjs/common';
 
 export class PostRepository implements PostRepositoryInterface {
   constructor(
@@ -957,7 +958,7 @@ export class PostRepository implements PostRepositoryInterface {
           this.logger.error(
             'Invalid post type we could not update: ' + postType,
           );
-          throw Error;
+          throw new BadRequestException;
       }
     } catch (error: any) {
       throw error;
