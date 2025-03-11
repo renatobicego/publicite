@@ -1,3 +1,5 @@
+// import { Transport } from '@nestjs/microservices';
+// import { join } from 'path';
 import { NestFactory } from '@nestjs/core';
 import {
   ExpressAdapter,
@@ -6,10 +8,11 @@ import {
 import * as express from 'express';
 import * as compression from 'compression';
 import { onRequest } from 'firebase-functions/v2/https';
-import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-// import { Transport } from '@nestjs/microservices';
-// import { join } from 'path';
+import * as dotenv from 'dotenv';
+
+import { AppModule } from './app.module';
+
 
 const expressServer = express();
 expressServer.use(compression());
@@ -17,6 +20,10 @@ expressServer.use(compression());
 let nestApp: NestExpressApplication;
 
 const initializeNestApp = async (): Promise<void> => {
+  dotenv.config({ path: '.env' });
+  const PUBLICITE_CORS_VERCEL_URI = process.env.PUBLICITE_CORS_VERCEL_URI ?? "Verify PUBLICITE_CORS_VERCEL_URI";
+  const PUBLICITE_CORS_DOMAIN_URI = process.env.PUBLICITE_CORS_DOMAIN_URI ?? "Verify PUBLICITE_CORS_DOMAIN_URI";
+  const PUBLICITE_CORS_SOCKET_URI = process.env.PUBLICITE_CORS_SOCKET_URI ?? "Verify PUBLICITE_CORS_SOCKET_URI";
   if (!nestApp) {
     // Crear la aplicación HTTP
     nestApp = await NestFactory.create<NestExpressApplication>(
@@ -24,7 +31,15 @@ const initializeNestApp = async (): Promise<void> => {
       new ExpressAdapter(expressServer),
     );
     nestApp.useGlobalPipes(new ValidationPipe({ transform: true }));
-    nestApp.enableCors({});
+    nestApp.enableCors({
+      origin: [
+        PUBLICITE_CORS_VERCEL_URI,
+        PUBLICITE_CORS_DOMAIN_URI,
+        PUBLICITE_CORS_SOCKET_URI,
+      ],
+      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+      optionsSuccessStatus: 200,
+    });
 
     // Crear el microservicio gRPC
     // const grpcApp = await NestFactory.createMicroservice(AppModule, {

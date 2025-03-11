@@ -12,6 +12,8 @@ import { IUser, UserModel } from "src/contexts/module_user/user/infrastructure/s
 import SubscriptionPlanModel, { SubscriptionPlanDocument } from "src/contexts/module_webhook/mercadopago/infastructure/schemas/subscriptionPlan.schema";
 import SubscriptionModel, { SubscriptionDocument } from "src/contexts/module_webhook/mercadopago/infastructure/schemas/subscription.schema";
 import { BadRequestException } from "@nestjs/common";
+import { EmitterService } from "src/contexts/module_shared/event-emmiter/emmiter";
+import { PostRepository } from "../post/infraestructure/repository/post.repository";
 
 
 enum PostBehaviourType {
@@ -27,7 +29,8 @@ describe('Post Service Testing ', () => {
     let userModel: Model<IUser>;
     let subscriptionPlanModel: Model<SubscriptionPlanDocument>
     let subscriptionModel: Model<SubscriptionDocument>
-
+    let emitter: EmitterService;
+    let postRepository: PostRepository;
 
     const subscriptionPlanId = new Types.ObjectId("66c49508e80296e90ec637d9");
     const subscriptionId = new Types.ObjectId("66c49508e80296e90ec637d8");
@@ -37,7 +40,8 @@ describe('Post Service Testing ', () => {
     beforeAll(async () => {
         connection = mongoose.connection;
         const moduleRef: TestingModule = await mapModuleTesting.get("post")();
-
+        emitter = moduleRef.get<EmitterService>(EmitterService);
+        postRepository = moduleRef.get<PostRepository>("PostRepositoryInterface");
         postService = moduleRef.get<PostService>('PostServiceInterface');
         postGoodModel = moduleRef.get<Model<IPostGood>>('PostGoodModel');
         userModel = moduleRef.get<Model<IUser>>(getModelToken(UserModel.modelName));
@@ -180,7 +184,119 @@ describe('Post Service Testing ', () => {
         })
 
 
-        
+
     })
 
+
+    describe('Post Service Testing - Desactivate Post if user not have subscription with space', () => {
+
+        it('User not have subscription with space, should desactivate some posts', async () => {
+            jest.spyOn(postRepository.getEmmiter, 'emitAsync').mockResolvedValue(true);
+
+            let postArray: any[] = []
+            let countOfPost = 30;
+
+            for (let index = 0; index < countOfPost; index++) {
+                let post: any = await insertPostGood(postGoodModel, {
+                    _id: new Types.ObjectId(),
+                    imagesUrls: ["asd.com"],
+                    isActive: true,
+                    postBehaviourType: "libre",
+                    author: userId.toString()
+                });
+                postArray.push(post._id);
+            }
+            await createPersonalUser(userModel, { _id: userId, posts: postArray, subscriptions: [subscriptionId] });
+
+            await postService.desactivatePostByUserId(userId.toString());
+
+            const user: any = await userModel.findById(userId).select("posts").populate("posts");
+            expect(user).toBeDefined();
+            expect(user?.posts.length).toBe(30);
+
+            let countOfActivePost = 0;
+            for (let index = 0; index < user!.posts.length; index++) {
+                if (user!.posts[index].isActive) {
+                    countOfActivePost++;
+                }
+            }
+            console.log("Inactive: ", countOfPost - countOfActivePost + " Active posts: ", countOfActivePost)
+            expect(countOfActivePost).toBe(10);
+        })
+
+
+        it('User  have subscription with space, should dont desactivate posts', async () => {
+            jest.spyOn(postRepository.getEmmiter, 'emitAsync').mockResolvedValue(true);
+
+            let postArray: any[] = []
+            let countOfPost = 10;
+
+            for (let index = 0; index < countOfPost; index++) {
+                let post: any = await insertPostGood(postGoodModel, {
+                    _id: new Types.ObjectId(),
+                    imagesUrls: ["asd.com"],
+                    isActive: true,
+                    postBehaviourType: "libre",
+                    author: userId.toString()
+                });
+                postArray.push(post._id);
+            }
+            await createPersonalUser(userModel, { _id: userId, posts: postArray, subscriptions: [subscriptionId] });
+
+            await postService.desactivatePostByUserId(userId.toString());
+
+            const user: any = await userModel.findById(userId).select("posts").populate("posts");
+            expect(user).toBeDefined();
+            expect(user?.posts.length).toBe(10);
+
+            let countOfActivePost = 0;
+            for (let index = 0; index < user!.posts.length; index++) {
+                if (user!.posts[index].isActive) {
+                    countOfActivePost++;
+                }
+            }
+            console.log("Inactive: ", countOfPost - countOfActivePost + " Active posts: ", countOfActivePost)
+            expect(countOfActivePost).toBe(10);
+        })
+
+        
+        it('User  have subscription with space, should dont desactivate posts', async () => {
+            jest.spyOn(postRepository.getEmmiter, 'emitAsync').mockResolvedValue(true);
+
+            let postArray: any[] = []
+            let countOfPost = 7;
+
+            for (let index = 0; index < countOfPost; index++) {
+                let post: any = await insertPostGood(postGoodModel, {
+                    _id: new Types.ObjectId(),
+                    imagesUrls: ["asd.com"],
+                    isActive: true,
+                    postBehaviourType: "libre",
+                    author: userId.toString()
+                });
+                postArray.push(post._id);
+            }
+            await createPersonalUser(userModel, { _id: userId, posts: postArray, subscriptions: [subscriptionId] });
+
+            await postService.desactivatePostByUserId(userId.toString());
+
+            const user: any = await userModel.findById(userId).select("posts").populate("posts");
+            expect(user).toBeDefined();
+            expect(user?.posts.length).toBe(7);
+
+            let countOfActivePost = 0;
+            for (let index = 0; index < user!.posts.length; index++) {
+                if (user!.posts[index].isActive) {
+                    countOfActivePost++;
+                }
+            }
+            console.log("Inactive: ", countOfPost - countOfActivePost + " Active posts: ", countOfActivePost)
+            expect(countOfActivePost).toBe(7);
+        })
+
+
+
+
+
+    })
 })

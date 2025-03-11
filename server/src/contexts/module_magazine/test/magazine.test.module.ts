@@ -1,4 +1,4 @@
-import { MongooseModule, getModelToken } from "@nestjs/mongoose";
+import { MongooseModule } from "@nestjs/mongoose";
 import * as dotenv from 'dotenv';
 import { Test, TestingModule } from "@nestjs/testing";
 import { MagazineAdapter } from "../magazine/infrastructure/resolver/adapter/magazine.adapter";

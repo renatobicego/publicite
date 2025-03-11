@@ -73,6 +73,10 @@ export class PostRepository implements PostRepositoryInterface {
 
   ) { }
 
+  get getEmmiter() {
+    return this.emmiter
+  }
+
   async activateOrDeactivatePost(_id: string, activate: boolean): Promise<any> {
     try {
       await this.postDocument.updateOne(
@@ -210,6 +214,7 @@ export class PostRepository implements PostRepositoryInterface {
       }
 
       if (randomIds.length === 0) {
+        this.logger.log('No se encontraron documentos para desactivar.');
         console.log('No se encontraron documentos para desactivar.');
         return;
       }

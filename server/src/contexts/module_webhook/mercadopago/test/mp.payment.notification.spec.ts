@@ -3,10 +3,9 @@ import { EmmiterModule } from "src/contexts/module_shared/event-emmiter/emiter.m
 import { MyLoggerService } from "src/contexts/module_shared/logger/logger.service";
 import { PaymentNotificationService } from "../infastructure/adapters/handler/PaymentNotificationService";
 import { EmitterService } from "src/contexts/module_shared/event-emmiter/emmiter";
-import { PaymentDataFromMeli, payment_notification_events_enum } from "../domain/entity/payment.data.meli";
+import { payment_notification_events_enum } from "../domain/entity/payment.data.meli";
 import { LoggerModule } from "src/contexts/module_shared/logger/logger.module";
 import { EventEmitterModule } from "@nestjs/event-emitter";
-import { subscription_event } from "src/contexts/module_shared/event-emmiter/events";
 
 
 

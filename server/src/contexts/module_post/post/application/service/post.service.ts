@@ -108,10 +108,6 @@ export class PostService implements PostServiceInterface {
 
 
 
-
-
-
-
   async deletePostById(id: string): Promise<void> {
     try {
       this.logger.log('Deleting post with id: ' + id);
@@ -124,7 +120,7 @@ export class PostService implements PostServiceInterface {
 
   async desactivatePostByUserId(userId: string): Promise<void> {
     try {
-      //Enviar notificarion
+
       let totalLibresExceded = 0;
       let totalAgendaExceded = 0;
       const { agendaPostCount, librePostCount, totalAgendaPostLimit, totalLibrePostLimit } = await this.userService.getPostAndLimitsFromUserByUserId(userId);
