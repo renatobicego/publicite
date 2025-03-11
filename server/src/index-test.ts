@@ -1,52 +1,51 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
 // import { Transport } from '@nestjs/microservices';
 // import { join } from 'path';
-
+import * as dotenv from 'dotenv';
 
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  dotenv.config({ path: '.env' });
+  const PUBLICITE_CORS_VERCEL_URI = process.env.PUBLICITE_CORS_VERCEL_URI ?? "Verify PUBLICITE_CORS_VERCEL_URI";
+  const PUBLICITE_CORS_DOMAIN_URI = process.env.PUBLICITE_CORS_DOMAIN_URI ?? "Verify PUBLICITE_CORS_DOMAIN_URI";
+  const PUBLICITE_CORS_SOCKET_URI = process.env.PUBLICITE_CORS_SOCKET_URI ?? "Verify PUBLICITE_CORS_SOCKET_URI";
+  const app = await NestFactory.create(AppModule, { cors: true });
 
   // Usar el ValidationPipe globalmente
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
+  
+  app.enableCors({
+    origin: (origin, callback) => {
+      const allowedOrigins = [
+        PUBLICITE_CORS_VERCEL_URI,
+        PUBLICITE_CORS_DOMAIN_URI,
+        PUBLICITE_CORS_SOCKET_URI,
+      ];
+      
+      if (!origin) {
 
-  // Habilitar CORS
-  app.enableCors();
+        return callback(new Error("CORS bloqueado: origen no permitido"));
+      }
+  
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        return callback(new Error("CORS bloqueado: origen no permitido"));
+      }
+    },
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    credentials: true, 
+    optionsSuccessStatus: 200,
+  });
+
 
   app.use(cookieParser());
 
-  // // Configuración de Swagger
-  // const config = new DocumentBuilder()
-  //   .setTitle('Publicite API documentation')
-  //   .setDescription('Publicite - API documentation')
-  //   .setVersion('1.0')
-  //   .addTag('Endpoints 🚀')
-  //   .build();
-
-  // const document = SwaggerModule.createDocument(app, config);
-
-  // SwaggerModule.setup('api', app, document);
-  //  // La documentación estará disponible en /api
-  // //Racibe las cookies y las hace un populate
-
-
-  // const grpcApp = await NestFactory.createMicroservice(AppModule, {
-  //   transport: Transport.GRPC,
-  //   options: {
-  //     package: 'notification',
-  //     protoPath: join(__dirname, 'contexts/module_shared/socket/infrastructure/proto/notification.proto'),
-  //     url: 'localhost:3001',
-  //   },
-  // });
-
-  //await grpcApp.listen();  
-
-
   await app.listen(3001);
+
 }
 
 bootstrap();

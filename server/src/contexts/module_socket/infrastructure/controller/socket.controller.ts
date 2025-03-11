@@ -1,4 +1,4 @@
-import { Body, Controller, Inject, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Inject, Post, UseGuards } from "@nestjs/common";
 
 
 import { SocketAdapterInterface } from "../../application/adapter/socket.adapter.interface";
@@ -103,6 +103,20 @@ export class SocketController {
     }
   }
 
+
+
+  @Get('test')
+  //@UseGuards(AuthSocket)
+  async get(
+    @Body() notificationBody: any,
+  ): Promise<any> {
+    try {
+
+      return { body: "Success" };
+    } catch (error: any) {
+      throw error;
+    }
+  }
 
 
 

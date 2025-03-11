@@ -29,15 +29,31 @@ const initializeNestApp = async (): Promise<void> => {
     nestApp = await NestFactory.create<NestExpressApplication>(
       AppModule,
       new ExpressAdapter(expressServer),
+      { cors: true },
     );
     nestApp.useGlobalPipes(new ValidationPipe({ transform: true }));
+
     nestApp.enableCors({
-      origin: [
-        PUBLICITE_CORS_VERCEL_URI,
-        PUBLICITE_CORS_DOMAIN_URI,
-        PUBLICITE_CORS_SOCKET_URI,
-      ],
+      origin: (origin, callback) => {
+        const allowedOrigins = [
+          PUBLICITE_CORS_VERCEL_URI,
+          PUBLICITE_CORS_DOMAIN_URI,
+          PUBLICITE_CORS_SOCKET_URI,
+        ];
+
+        if (!origin) {
+
+          return callback(new Error("CORS bloqueado: origen no permitido"));
+        }
+
+        if (allowedOrigins.includes(origin)) {
+          return callback(null, true);
+        } else {
+          return callback(new Error("CORS bloqueado: origen no permitido"));
+        }
+      },
       methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+      credentials: true,
       optionsSuccessStatus: 200,
     });
 
