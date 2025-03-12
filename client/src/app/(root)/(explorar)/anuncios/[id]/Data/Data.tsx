@@ -150,7 +150,7 @@ const Data = async ({
             </SignedIn>
           </div>
         </div>
-        {isPetition && (
+        {isPetition && isAuthor && (
           <Suspense fallback={<Spinner color="warning" />}>
             <MatchPetitionPost
               postTitle={post.title}
