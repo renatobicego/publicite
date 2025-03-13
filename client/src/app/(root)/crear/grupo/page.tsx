@@ -19,7 +19,10 @@ export default async function CreateGroupPage() {
   ];
 
   return (
-    <main className="flex min-h-screen flex-col items-start main-style gap-4 md:gap-6 lg:gap-8">
+    <main
+      id="create-group"
+      className="flex min-h-screen flex-col items-start main-style gap-4 md:gap-6 lg:gap-8"
+    >
       <BreadcrumbsAdmin items={breadcrumbsItems} />
       <CreateGroupForm />
     </main>

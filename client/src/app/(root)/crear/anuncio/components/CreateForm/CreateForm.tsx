@@ -19,7 +19,10 @@ const CreateForm = ({ userId }: { userId?: string }) => {
   const { userCanPublishPost, limit, numberOfPosts } =
     useUserPostLimit(postBehaviourType);
   return (
-    <section className="w-full flex gap-4 items-start max-md:flex-col relative">
+    <section
+      id="create-post"
+      className="w-full flex gap-4 items-start max-md:flex-col relative"
+    >
       <UploadImages
         files={files}
         setFiles={setFiles}
@@ -27,7 +30,10 @@ const CreateForm = ({ userId }: { userId?: string }) => {
         customClassname="max-md:mb-4"
       />
       <AttachedFilesProvider>
-        <section className="flex flex-col flex-1 gap-4 max-md:w-full">
+        <section
+          id="create-post-form"
+          className="flex flex-col flex-1 gap-4 max-md:w-full"
+        >
           <SelectPostBehaviourType
             type={postBehaviourType}
             setType={setPostBehaviourType}
