@@ -15,7 +15,7 @@ export interface PostRepositoryInterface {
   create(
     post: Post,
     options?: { session?: ClientSession },
-  ): Promise<String>;
+  ): Promise<String | null>;
   deletePostById(id: string): Promise<any>;
   desactivateAllPost(userId: string, criteria: { [key: string]: number }): Promise<void>;
   deleteCommentById(id: string, userRequestId: string, isAuthorOfPost: boolean, isReply: boolean): Promise<void>;

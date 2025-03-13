@@ -57,8 +57,8 @@ export class PostService implements PostServiceInterface {
 
 
   async create(post: PostRequest): Promise<any> {
-    const postType = post.postType.toLowerCase();
-    if (!postType) throw new Error('Post type is required');
+    const postType = post.postType?.toLowerCase()
+    if (!postType) throw new BadRequestException('Post type is required');
     const postFactory = PostFactory.getInstance(this.logger);
     const postMapped = postFactory.createPost(postType as PostType, post);
 
@@ -67,7 +67,7 @@ export class PostService implements PostServiceInterface {
     if (!author || !postBehaviourType) throw new Error('Author or postBehaviourType is required');
 
     const session = await this.connection.startSession();
-    let newPostId: String;
+    let newPostId: String | null;
     try {
       const newPostIdId = await session.withTransaction(async () => {
 
@@ -76,7 +76,7 @@ export class PostService implements PostServiceInterface {
           postBehaviourType,
         )
 
-        if (!isThisUserAllowedToPost) throw new Error('No es posible crear el post, agostaste el limite de posts según tu plan');
+        if (!isThisUserAllowedToPost) throw new BadRequestException('No es posible crear el post, agostaste el limite de posts según tu plan');
 
         //Post to save
         newPostId = await this.postRepository.create(postMapped, {
@@ -93,8 +93,6 @@ export class PostService implements PostServiceInterface {
         return newPostId;
       });
 
-      //Todo ok
-      await session.commitTransaction();
 
       return {
         _id: newPostIdId,
@@ -151,9 +149,6 @@ export class PostService implements PostServiceInterface {
       throw error;
     }
   }
-
-
-
 
 
   async findMatchPost(postType: string, searchTerm: string): Promise<void> {

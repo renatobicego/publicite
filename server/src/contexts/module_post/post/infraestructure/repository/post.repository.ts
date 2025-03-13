@@ -41,6 +41,7 @@ import { PostCommentDocument } from '../schemas/post.comment.schema';
 import { EmitterService } from 'src/contexts/module_shared/event-emmiter/emmiter';
 import { downgrade_plan_post_notification } from 'src/contexts/module_shared/event-emmiter/events';
 import { BadRequestException } from '@nestjs/common';
+import { IPostReviewDocument } from 'src/contexts/module_post/PostReview/infrastructure/schemas/review.schema';
 
 export class PostRepository implements PostRepositoryInterface {
   constructor(
@@ -67,6 +68,9 @@ export class PostRepository implements PostRepositoryInterface {
     @InjectModel('PostComment')
     private readonly postCommentDocument: Model<PostCommentDocument>,
 
+    @InjectModel('PostReview')
+    private readonly postReviewDocument: Model<IPostReviewDocument>,
+
     @InjectModel('Post')
     private readonly postDocument: Model<PostDocument>,
 
@@ -92,7 +96,7 @@ export class PostRepository implements PostRepositoryInterface {
   async create(
     post: Post,
     options?: { session?: ClientSession },
-  ): Promise<string> {
+  ): Promise<string | null> {
     try {
       this.logger.log('Saving post in repository');
       const documentToSave = {
@@ -143,21 +147,30 @@ export class PostRepository implements PostRepositoryInterface {
 
   async deletePostById(id: string): Promise<void> {
     const session = await this.connection.startSession();
+    let deletePromises = [];
     try {
       await session.withTransaction(async () => {
-        const postDeleted = await this.postDocument
+        const postDeleted: any = await this.postDocument
           .findByIdAndDelete(id, {
             session,
           })
           .select('author comments reactions');
         if (!postDeleted) throw new Error('Post not found');
 
-        const deletePromises = [
-          //- Falta reviews
+        if (postDeleted.postType != PostType.petition) {
+          deletePromises.push(
+            //Reactions
+            this.postReviewDocument.deleteMany(
+              { _id: { $in: postDeleted.reviews } },
+              { session },
+            ),
 
-          //Reactions
-          this.postReactionDocument.deleteMany(
-            { _id: { $in: postDeleted.reactions } },
+          )
+        }
+        deletePromises = [
+          //- Falta reviews
+          this.postReviewDocument.deleteMany(
+            { _id: { $in: postDeleted.reviews } },
             { session },
           ),
 
@@ -842,7 +855,7 @@ export class PostRepository implements PostRepositoryInterface {
     baseObj: any,
     post: PostGood,
     options?: { session?: ClientSession },
-  ): Promise<string> {
+  ): Promise<string | null> {
     try {
       const newPost = {
         ...baseObj,
@@ -856,7 +869,7 @@ export class PostRepository implements PostRepositoryInterface {
       const postPostedDocument = new this.postGoodDocument(newPost);
       const documentSaved: any = await postPostedDocument.save(options);
       this.logger.log('Post good created successfully');
-      return documentSaved._id.toString();
+      return documentSaved._id.toString() ?? null;
     } catch (error: any) {
       this.logger.error('Error creating PostGood REPOSITORY: ' + error);
       throw error;
@@ -866,7 +879,7 @@ export class PostRepository implements PostRepositoryInterface {
     baseObj: any,
     post: PostService,
     options?: { session?: ClientSession },
-  ): Promise<string> {
+  ): Promise<string | null> {
     try {
       const newPost = {
         ...baseObj,
@@ -879,7 +892,7 @@ export class PostRepository implements PostRepositoryInterface {
       const documentSaved: any = await postPostedDocument.save(options);
 
       this.logger.log('Post service created successfully');
-      return documentSaved._id.toString();
+      return documentSaved._id.toString() ?? null;
     } catch (error: any) {
       this.logger.error('Error creating PostService REPOSITORY: ' + error);
       throw error;
@@ -890,7 +903,7 @@ export class PostRepository implements PostRepositoryInterface {
     baseObj: any,
     post: PostPetition,
     options?: { session?: ClientSession },
-  ): Promise<string> {
+  ): Promise<string | null> {
     try {
       const newPost = {
         ...baseObj,
@@ -902,7 +915,7 @@ export class PostRepository implements PostRepositoryInterface {
       const postPostedDocument = new this.postPetitionDocument(newPost);
       const documentSaved: any = await postPostedDocument.save(options);
       this.logger.log('Post service created successfully');
-      return documentSaved._id.toString();
+      return documentSaved._id.toString() ?? null;
     } catch (error: any) {
       this.logger.error('Error creating PostService REPOSITORY: ' + error);
       throw error;

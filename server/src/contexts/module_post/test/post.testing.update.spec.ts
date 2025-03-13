@@ -4,8 +4,8 @@ import { getModelToken } from "@nestjs/mongoose";
 
 import mapModuleTesting from "./post.test.module";
 import { PostService } from "../post/application/service/post.service";
-import { IPostGood } from "../post/infraestructure/schemas/post-types-schemas/post.good.schema";
-import { inserPostService, insertPostGood, insertPostPetition } from "../../../../test/functions/create.post";
+import { IPostGood, PostGoodModel } from "../post/infraestructure/schemas/post-types-schemas/post.good.schema";
+import { inserPostService, insertPostComment, insertPostGood, insertPostPetition } from "../../../../test/functions/create.post";
 import { createPlanOfSubscription, createSubscriptionForUser } from "../../../../test/functions/create.planAndSub";
 import { createPersonalUser } from "../../../../test/functions/create.user";
 import { IUser, UserModel } from "src/contexts/module_user/user/infrastructure/schemas/user.schema";
@@ -17,6 +17,7 @@ import { PostRepository } from "../post/infraestructure/repository/post.reposito
 import { IPostService } from "../post/infraestructure/schemas/post-types-schemas/post.service.schema";
 import { IPostPetition } from "../post/infraestructure/schemas/post-types-schemas/post.petition.schema";
 import { PostAdapter } from "../post/infraestructure/adapter/post.adapter";
+import PostCommentModel, { PostCommentDocument } from "../post/infraestructure/schemas/post.comment.schema";
 
 
 enum PostBehaviourType {
@@ -48,11 +49,12 @@ interface PostUpdateDto {
 }
 
 
-describe('Post Service Testing ', () => {
+describe('Post Service Testing - Update post  ', () => {
     let connection: Connection;
     let postService: PostService;
     let postAdapter: PostAdapter;
 
+    let postCommentModel: Model<PostCommentDocument>;
     let postServiceModel: Model<IPostService>;
     let postGoodModel: Model<IPostGood>;
     let postPetitionModel: Model<IPostPetition>;
@@ -76,12 +78,16 @@ describe('Post Service Testing ', () => {
         postAdapter = moduleRef.get<PostAdapter>('PostAdapterInterface');
         postRepository = moduleRef.get<PostRepository>("PostRepositoryInterface");
         postService = moduleRef.get<PostService>('PostServiceInterface');
-        postGoodModel = moduleRef.get<Model<IPostGood>>('PostGoodModel');
+
+        postGoodModel = moduleRef.get<Model<IPostGood>>(getModelToken(PostGoodModel.modelName));
         postServiceModel = moduleRef.get<Model<IPostService>>('PostServiceModel');
         postPetitionModel = moduleRef.get<Model<IPostPetition>>('PostPetitionModel');
+
         userModel = moduleRef.get<Model<IUser>>(getModelToken(UserModel.modelName));
         subscriptionPlanModel = moduleRef.get<Model<SubscriptionPlanDocument>>(getModelToken(SubscriptionPlanModel.modelName));
         subscriptionModel = moduleRef.get<Model<SubscriptionDocument>>(getModelToken(SubscriptionModel.modelName));
+        postCommentModel = moduleRef.get<Model<PostCommentDocument>>(getModelToken(PostCommentModel.modelName));
+
 
         await createPlanOfSubscription(
             subscriptionPlanId_2,
@@ -125,6 +131,7 @@ describe('Post Service Testing ', () => {
     afterAll(async () => {
         await subscriptionModel.deleteMany({});
         await subscriptionPlanModel.deleteMany({});
+        await postCommentModel.deleteMany({});
         await connection.close();
     })
 
@@ -738,5 +745,48 @@ describe('Post Service Testing ', () => {
 
 
 
-    describe('Update Comments in post', () => {})
+    describe('Update Comments in post', () => {
+
+        it('Update commen being owner of the comment, should return work success and set isEdited to true', async () => {
+
+            const postComment = await insertPostComment(postCommentModel, {
+                _id: new Types.ObjectId(),
+                comment: "hola",
+                user: userId,
+                isEdited: false,
+            });
+
+
+            await postService.updateCommentById(postComment._id.toString(), "hola editado", userId.toString())
+            const response: any = await postCommentModel.findById(postComment._id)
+
+
+            expect(response.isEdited).toBe(true);
+            expect(response.comment).toBe("hola editado");
+
+
+        })
+
+
+        it('Update commen being external user, should not change the comment', async () => {
+            const unauthorizedUserId = new Types.ObjectId();
+
+            const postComment = await insertPostComment(postCommentModel, {
+                _id: new Types.ObjectId(),
+                comment: "hola",
+                user: userId,
+                isEdited: false,
+            });
+
+
+            await postService.updateCommentById(postComment._id.toString(), "hola editado 22", unauthorizedUserId.toString())
+            const response: any = await postCommentModel.findById(postComment._id)
+
+
+            expect(response.isEdited).toBe(false);
+            expect(response.comment).toBe("hola");
+
+
+        })
+    })
 })

@@ -53,6 +53,14 @@ class postTestPetitionRequest extends PostTestRequest {
     petitionType?: string;
 }
 
+class PostCommentRequest {
+    _id: Types.ObjectId;
+    user?: Types.ObjectId;
+    comment?: string;
+    isEdited?: boolean;
+    createdAt?: Date;
+    response?: Types.ObjectId;
+}
 
 
 
@@ -174,4 +182,23 @@ async function insertPostPetition(postModel: any, postRequest: postTestPetitionR
 
     return postPetition
 }
-export { insertPostGood, inserPostService, insertPostPetition }
+
+
+async function insertPostComment(postCommentModel: any, postCommentRequest: PostCommentRequest) {
+    const postComment = await postCommentModel.create(
+        {
+            _id: postCommentRequest._id,
+            user: postCommentRequest.user ?? new Types.ObjectId(),
+            comment: postCommentRequest.comment ?? "Nuevo comentario",
+            isEdited: postCommentRequest.isEdited ?? false,
+            createdAt: postCommentRequest.createdAt ?? new Date(),
+            response: postCommentRequest.response
+        }
+    )
+
+
+
+    return postComment;
+
+}
+export { insertPostGood, inserPostService, insertPostPetition, insertPostComment }

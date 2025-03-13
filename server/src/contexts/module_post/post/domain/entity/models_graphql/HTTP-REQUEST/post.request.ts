@@ -75,7 +75,6 @@ export class PostRequest {
   @Field(() => [String], { nullable: true })
   category: ObjectId[];
 
-
   @Field(() => [AttachedFilesRequest], { nullable: true })
   attachedFiles: AttachedFilesRequest[]
 
@@ -126,24 +125,3 @@ export class PostIdResponse {
   @Field(() => String)
   _id: String
 }
-
-// export interface PostGoodRequest extends PostRequest {
-// imagesUrls: string[];
-// year: number;
-// brand: string;
-// modelType: string;
-// reviews: ObjectId[];
-// condition: string;
-// }
-
-// export interface PostServiceRequest extends PostRequest {
-//   frequencyPrice: string;
-//   imagesUrls: string[];
-//   reviews: ObjectId[];
-// }
-
-// export interface PostPetitionRequest extends PostRequest {
-//   toPrice: number;
-//   frequencyPrice: string;
-//   petitionType: string;
-// }
