@@ -123,7 +123,10 @@ const CreateMagazineForm = ({
     >
       {({ isSubmitting, errors, setValues }) => {
         return (
-          <Form className="flex flex-col gap-4 max-md:w-full md:max-xl:flex-1 xl:w-1/2 self-center">
+          <Form
+            id="create-magazine-form"
+            className="flex flex-col gap-4 max-md:w-full md:max-xl:flex-1 xl:w-1/2 self-center"
+          >
             <h2>
               Crear Revista{" "}
               <span className={`${!isGroupMagazine && "hidden"}`}>

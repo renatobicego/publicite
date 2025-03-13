@@ -11,7 +11,10 @@ const SelectPostBehaviourType = ({
   errorMessage?: string;
 }) => {
   return (
-    <div className="flex-col flex flex-1 gap-1 justify-start">
+    <div
+      id="post-behaviour"
+      className="flex-col flex flex-1 gap-1 justify-start"
+    >
       <Select
         scrollShadowProps={{
           hideScrollBar: false,
