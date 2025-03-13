@@ -4,7 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
 // import { Transport } from '@nestjs/microservices';
 // import { join } from 'path';
-import * as dotenv from 'dotenv';
+
 
 
 async function bootstrap() {

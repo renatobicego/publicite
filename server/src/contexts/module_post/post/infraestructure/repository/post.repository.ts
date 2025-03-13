@@ -145,18 +145,29 @@ export class PostRepository implements PostRepositoryInterface {
     }
   }
 
-  async deletePostById(id: string): Promise<void> {
+  async deletePostById(id: string): Promise<any> {
     const session = await this.connection.startSession();
     let deletePromises = [];
+    let postCommentResponse: any[] = [];
     try {
       await session.withTransaction(async () => {
         const postDeleted: any = await this.postDocument
           .findByIdAndDelete(id, {
             session,
           })
-          .select('author comments reactions reviews');
+          .select('author comments reactions reviews')
+          .populate({ path: 'comments' })
+          .lean()
+
         if (!postDeleted) return null;
-        console.log(postDeleted)
+
+        if (postDeleted.comments.length > 0) {
+          postDeleted.comments.map((comment: { _id: any, response: any }) => {
+            if (comment.response) {
+              postCommentResponse.push(comment.response);
+            }
+          })
+        }
 
         if (postDeleted.postType != PostType.petition) {
           deletePromises.push(
@@ -169,14 +180,16 @@ export class PostRepository implements PostRepositoryInterface {
 
         deletePromises.push(
           this.postReactionDocument.deleteMany(
-            { _id: { $in: postDeleted.reviews } },
+            { _id: { $in: postDeleted.reactions } },
             { session },
           ),
 
           this.postCommentDocument.deleteMany(
-            { _id: { $in: postDeleted.comments } },
+            { $or: [{ _id: { $in: postDeleted.comments } }, { _id: { $in: postCommentResponse } }] },
             { session },
           ),
+
+
 
           this.userDocument.updateOne(
             {
@@ -193,14 +206,15 @@ export class PostRepository implements PostRepositoryInterface {
         await Promise.all(deletePromises);
       });
 
-      await session.commitTransaction();
+
     } catch (error) {
       this.logger.error('Error deleting post REPOSITORY: ' + error);
-      await session.abortTransaction();
       this.logger.error('Session aborted');
       throw error;
     } finally {
-      session.endSession();
+      if (session) {
+        session.endSession();
+      }
     }
   }
 

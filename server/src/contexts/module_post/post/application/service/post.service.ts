@@ -109,7 +109,7 @@ export class PostService implements PostServiceInterface {
   async deletePostById(id: string): Promise<void> {
     try {
       this.logger.log('Deleting post with id: ' + id);
-      await this.postRepository.deletePostById(id);
+      return await this.postRepository.deletePostById(id);
     } catch (error: any) {
       this.logger.log('An error was ocurred deleting a post with id: ' + id);
       throw error;

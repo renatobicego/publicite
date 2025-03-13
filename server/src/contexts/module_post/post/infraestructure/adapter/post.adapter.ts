@@ -1,5 +1,6 @@
 import { BadRequestException, Inject } from '@nestjs/common';
 import { Date } from 'mongoose';
+import { OnEvent } from '@nestjs/event-emitter';
 
 import { PostMapperAdapterInterface } from 'src/contexts/module_post/post/application/adapter/mapper/post.adapter.mapper.interface';
 import { PostAdapterInterface } from 'src/contexts/module_post/post/application/adapter/post.adapter.interface';
@@ -14,7 +15,6 @@ import { UserLocation } from '../../domain/entity/models_graphql/HTTP-REQUEST/po
 import { PostLimitResponseGraphql } from '../../domain/entity/models_graphql/HTTP-RESPONSE/post.limit.response.graphql';
 import { PostBehaviourType } from '../../domain/entity/enum/postBehaviourType.enum';
 import { Visibility, Visibility_Of_Find } from '../../domain/entity/enum/post-visibility.enum';
-import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { downgrade_plan_post, post_deleted } from 'src/contexts/module_shared/event-emmiter/events';
 import { EmitterService } from 'src/contexts/module_shared/event-emmiter/emmiter';
 
@@ -66,7 +66,7 @@ export class PostAdapter implements PostAdapterInterface {
         post_deleted,
         id
       );
-      await this.postService.deletePostById(id);
+      return await this.postService.deletePostById(id);
     } catch (error: any) {
       throw error;
     }
