@@ -134,7 +134,7 @@ const SearchUsers = (props: SearchUsersProps) => {
           classNames: {
             inputWrapper:
               "shadow-none hover:shadow-sm border-[0.5px] group-data-[focus=true]:border-light-text",
-            input: "text-[0.8125rem]",
+            input: "text-base",
             label: "font-medium text-[0.8125rem]",
           },
         }}
