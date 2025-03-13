@@ -1,7 +1,7 @@
 import { InjectConnection, InjectModel } from "@nestjs/mongoose";
 import { PostReviewRepositoryInterface } from "../../domain/repository/review.repository.interface";
 import { Connection, Model } from "mongoose";
-import { IPostReviewDocument } from "../schemas/review.schema";
+import { PostReviewDocument } from "../schemas/review.schema";
 import { PostReview } from "../../domain/review.entity";
 import { PostGoodModel, IPostGood } from "src/contexts/module_post/post/infraestructure/schemas/post-types-schemas/post.good.schema";
 import { PostServiceModel, IPostService } from "src/contexts/module_post/post/infraestructure/schemas/post-types-schemas/post.service.schema";
@@ -11,7 +11,7 @@ import { MyLoggerService } from "src/contexts/module_shared/logger/logger.servic
 export class PostReviewRepository implements PostReviewRepositoryInterface {
   constructor(
     @InjectModel("PostReview")
-    private readonly reviewModel: Model<IPostReviewDocument>,
+    private readonly reviewModel: Model<PostReviewDocument>,
     @InjectConnection()
     private readonly connection: Connection,
     @InjectModel(PostGoodModel.modelName)

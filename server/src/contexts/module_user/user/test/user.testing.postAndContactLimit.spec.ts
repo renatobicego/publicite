@@ -10,8 +10,8 @@ import { UserRelationDocument, UserRelationModel } from "../infrastructure/schem
 import SubscriptionModel, { SubscriptionDocument } from "src/contexts/module_webhook/mercadopago/infastructure/schemas/subscription.schema";
 import SubscriptionPlanModel, { SubscriptionPlanDocument } from "src/contexts/module_webhook/mercadopago/infastructure/schemas/subscriptionPlan.schema";
 
-import { createPersonalUser } from "../../../../../test/functions/create.user";
-import { createPlanOfSubscription, createSubscriptionForUser } from "../../../../../test/functions/create.planAndSub";
+import { createPersonalUser } from "../../../../../test/functions/user/create.user";
+import { createPlanOfSubscription, createSubscriptionForUser } from "../../../../../test/functions/plans/create.planAndSub";
 
 
 

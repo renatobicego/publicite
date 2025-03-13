@@ -9,7 +9,7 @@ import mapModuleTesting from "./magazine.test.module";
 import { UserMagazineDocument, UserMagazineModel } from "../magazine/infrastructure/schemas/magazine.user.schema";
 import { IUser, UserModel } from "src/contexts/module_user/user/infrastructure/schemas/user.schema";
 import { insertUserMagazine } from "./models/db/insert.group.magazine";
-import { createPersonalUser } from "../../../../test/functions/create.user";
+import { createPersonalUser } from "../../../../test/functions/user/create.user";
 
 
 describe('Magazine Service Testing - Exit Magazine', () => {

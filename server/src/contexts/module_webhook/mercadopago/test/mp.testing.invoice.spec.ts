@@ -9,11 +9,11 @@ import { InvoiceDocument } from "../infastructure/schemas/invoice.schema";
 import { getModelToken } from "@nestjs/mongoose";
 
 import SubscriptionPlanModel, { SubscriptionPlanDocument } from "../infastructure/schemas/subscriptionPlan.schema";
-import { createPlanOfSubscription, createSubscriptionForUser } from "../../../../../test/functions/create.planAndSub";
+import { createPlanOfSubscription, createSubscriptionForUser } from "../../../../../test/functions/plans/create.planAndSub";
 import { authorized_payments } from "../domain/entity_mp/authorized_payments";
 import { SubscriptionDocument } from "../infastructure/schemas/subscription.schema";
 import { PaymentDocument } from "../infastructure/schemas/payment.schema";
-import createPayment from "../../../../../test/functions/createPayment";
+import createPayment from "../../../../../test/functions/plans/createPayment";
 import { MpServiceInvoiceInterface } from "../domain/service/mp-invoice.service.interface";
 import { MpInvoiceService } from "../application/service/mp-invoice.service";
 import { PaymentNotificationService } from "../infastructure/adapters/handler/PaymentNotificationService";

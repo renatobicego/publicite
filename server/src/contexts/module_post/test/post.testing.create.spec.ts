@@ -1,19 +1,18 @@
 import mongoose, { Connection, Model, Types } from "mongoose";
 import { TestingModule } from "@nestjs/testing";
 import { getModelToken } from "@nestjs/mongoose";
-
+import { BadRequestException } from "@nestjs/common";
 
 import mapModuleTesting from "./post.test.module";
 import { PostService } from "../post/application/service/post.service";
 import { IPostGood } from "../post/infraestructure/schemas/post-types-schemas/post.good.schema";
 import { IPostPetition } from "../post/infraestructure/schemas/post-types-schemas/post.petition.schema";
 import { IPostService } from "../post/infraestructure/schemas/post-types-schemas/post.service.schema";
-import { createPersonalUser } from "../../../../test/functions/create.user";
+import { createPersonalUser } from "../../../../test/functions/user/create.user";
 import { IUser } from "src/contexts/module_user/user/infrastructure/schemas/user.schema";
-import { createPlanOfSubscription, createSubscriptionForUser } from "../../../../test/functions/create.planAndSub";
+import { createPlanOfSubscription, createSubscriptionForUser } from "../../../../test/functions/plans/create.planAndSub";
 import SubscriptionModel, { SubscriptionDocument } from "src/contexts/module_webhook/mercadopago/infastructure/schemas/subscription.schema";
 import SubscriptionPlanModel, { SubscriptionPlanDocument } from "src/contexts/module_webhook/mercadopago/infastructure/schemas/subscriptionPlan.schema";
-import { BadRequestException } from "@nestjs/common";
 import { PostRepository } from "../post/infraestructure/repository/post.repository";
 
 enum PostBehaviourType {

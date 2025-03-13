@@ -41,7 +41,7 @@ import { PostCommentDocument } from '../schemas/post.comment.schema';
 import { EmitterService } from 'src/contexts/module_shared/event-emmiter/emmiter';
 import { downgrade_plan_post_notification } from 'src/contexts/module_shared/event-emmiter/events';
 import { BadRequestException } from '@nestjs/common';
-import { IPostReviewDocument } from 'src/contexts/module_post/PostReview/infrastructure/schemas/review.schema';
+import { PostReviewDocument } from 'src/contexts/module_post/PostReview/infrastructure/schemas/review.schema';
 
 export class PostRepository implements PostRepositoryInterface {
   constructor(
@@ -69,7 +69,7 @@ export class PostRepository implements PostRepositoryInterface {
     private readonly postCommentDocument: Model<PostCommentDocument>,
 
     @InjectModel('PostReview')
-    private readonly postReviewDocument: Model<IPostReviewDocument>,
+    private readonly postReviewDocument: Model<PostReviewDocument>,
 
     @InjectModel('Post')
     private readonly postDocument: Model<PostDocument>,
@@ -154,32 +154,30 @@ export class PostRepository implements PostRepositoryInterface {
           .findByIdAndDelete(id, {
             session,
           })
-          .select('author comments reactions');
-        if (!postDeleted) throw new Error('Post not found');
+          .select('author comments reactions reviews');
+        if (!postDeleted) return null;
+        console.log(postDeleted)
 
         if (postDeleted.postType != PostType.petition) {
           deletePromises.push(
-            //Reactions
             this.postReviewDocument.deleteMany(
               { _id: { $in: postDeleted.reviews } },
               { session },
             ),
-
           )
         }
-        deletePromises = [
-          //- Falta reviews
-          this.postReviewDocument.deleteMany(
+
+        deletePromises.push(
+          this.postReactionDocument.deleteMany(
             { _id: { $in: postDeleted.reviews } },
             { session },
           ),
 
-          //Comments
           this.postCommentDocument.deleteMany(
             { _id: { $in: postDeleted.comments } },
             { session },
           ),
-          //User
+
           this.userDocument.updateOne(
             {
               _id: postDeleted.author,
@@ -189,7 +187,8 @@ export class PostRepository implements PostRepositoryInterface {
             },
             { session },
           ),
-        ];
+        )
+
 
         await Promise.all(deletePromises);
       });

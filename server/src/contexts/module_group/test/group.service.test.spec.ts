@@ -7,12 +7,12 @@ import { UnauthorizedException } from "@nestjs/common";
 
 import { GroupDocument } from "../group/infrastructure/schemas/group.schema";
 import { GroupService } from "../group/application/service/group.service";
-import { createPersonalUser, PersonalAccountTestRequest } from "../../../../test/functions/create.user";
+import { createPersonalUser, PersonalAccountTestRequest } from "../../../../test/functions/user/create.user";
 import { IUser, UserModel } from "src/contexts/module_user/user/infrastructure/schemas/user.schema";
-import { createGroup, GroupTestRequest } from "../../../../test/functions/create.group";
+import { createGroup, GroupTestRequest } from "../../../../test/functions/user/create.group";
 import { MagazineDocument } from "src/contexts/module_magazine/magazine/infrastructure/schemas/magazine.schema";
 import { GroupMagazineDocument } from "src/contexts/module_magazine/magazine/infrastructure/schemas/magazine.group.schema";
-import { createGroupMagazine, createSection } from "../../../../test/functions/create.magazine";
+import { createGroupMagazine, createSection } from "../../../../test/functions/user/create.magazine";
 import { MagazineSectionDocument } from "src/contexts/module_magazine/magazine/infrastructure/schemas/section/magazine.section.schema";
 import { INotificationGroup } from "src/contexts/module_user/notification/infrastructure/schemas/notification.group.schema";
 import { GroupRepository } from "../group/infrastructure/repository/group.repository";

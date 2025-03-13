@@ -10,7 +10,7 @@ import SubscriptionModel, { SubscriptionDocument } from "../infastructure/schema
 import SubscriptionPlanModel, { SubscriptionPlanDocument } from "../infastructure/schemas/subscriptionPlan.schema";
 import { MpHandlerEvents } from "../infastructure/adapters/handler/mpHandlerFETCHEvents";
 import { get_subscription_preapproval } from "./models/subscription.creator";
-import { createPersonalUser } from "../../../../../test/functions/create.user";
+import { createPersonalUser } from "../../../../../test/functions/user/create.user";
 import { PaymentNotificationService } from "../infastructure/adapters/handler/PaymentNotificationService";
 
 

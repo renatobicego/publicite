@@ -4,9 +4,9 @@ import { TestingModule } from "@nestjs/testing"
 
 
 
-import { createGroup, GroupTestRequest } from "../../../../test/functions/create.group";
+import { createGroup, GroupTestRequest } from "../../../../test/functions/user/create.group";
 import { GroupListResponse } from "../group/application/adapter/dto/HTTP-RESPONSE/group.response"
-import { createPersonalUser } from "../../../../test/functions/create.user"
+import { createPersonalUser } from "../../../../test/functions/user/create.user"
 import { Visibility } from "../group/domain/entity/enum/group.visibility.enum"
 import { IUser, UserModel } from "src/contexts/module_user/user/infrastructure/schemas/user.schema"
 import { GroupService } from "../group/application/service/group.service"

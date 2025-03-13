@@ -7,7 +7,7 @@ import { insertGroupMagazine, insertSection, insertUserMagazine } from "./models
 import { getModelToken } from "@nestjs/mongoose";
 import { TestingModule } from "@nestjs/testing";
 import mapModuleTesting from "./magazine.test.module";
-import { createGroup } from "../../../../test/functions/create.group";
+import { createGroup } from "../../../../test/functions/user/create.group";
 import { GroupDocument } from "src/contexts/module_group/group/infrastructure/schemas/group.schema";
 import { MagazineSectionDocument, MagazineSectionModel } from "../magazine/infrastructure/schemas/section/magazine.section.schema";
 import { UnauthorizedException } from "@nestjs/common";
