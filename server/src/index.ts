@@ -25,6 +25,7 @@ const initializeNestApp = async (): Promise<void> => {
   const PUBLICITE_CORS_DOMAIN_URI = process.env.PUBLICITE_CORS_DOMAIN_URI ?? "Verify PUBLICITE_CORS_DOMAIN_URI";
   const PUBLICITE_CORS_SOCKET_URI = process.env.PUBLICITE_CORS_SOCKET_URI ?? "Verify PUBLICITE_CORS_SOCKET_URI";
   const PUBLICITE_CORS_GRAPHQL_URI = process.env.PUBLICITE_CORS_GRAPHQL_URI ?? "Verify PUBLICITE_CORS_GRAPHQL_URI";
+  const PUBLICITE_CORS_ORIGIN = process.env.PUBLICITE_CORS_ORIGIN ?? undefined;
   if (!nestApp) {
     // Crear la aplicación HTTP
     nestApp = await NestFactory.create<NestExpressApplication>(
@@ -40,12 +41,10 @@ const initializeNestApp = async (): Promise<void> => {
           PUBLICITE_CORS_VERCEL_URI,
           PUBLICITE_CORS_DOMAIN_URI,
           PUBLICITE_CORS_SOCKET_URI,
-          PUBLICITE_CORS_GRAPHQL_URI
+          PUBLICITE_CORS_GRAPHQL_URI,
+          PUBLICITE_CORS_ORIGIN,
         ];
-
-
-        const allowedPatterns = allowedOrigins.map((url) => new RegExp(`^${url.replace(/\/$/, '')}(/.*)?$`));
-
+        const allowedPatterns = allowedOrigins.map((url) => new RegExp(`^${url?.replace(/\/$/, '')}(/.*)?$`));
 
         if (allowedPatterns.some((pattern) => pattern.test(origin))) {
           return callback(null, true);

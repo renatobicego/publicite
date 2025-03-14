@@ -31,6 +31,7 @@ const stopWordsGroup = new Set([
   'por',
   'durante',
   'como',
+  'en'
 ]);
 
 const stopWordsPost = new Set([
@@ -70,6 +71,7 @@ const stopWordsPost = new Set([
   'busco',
   'quiero',
   'necesito',
+  'en'
 ]);
 
 
