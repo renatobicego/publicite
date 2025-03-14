@@ -1143,6 +1143,7 @@ input PostRequest {
   attachedFiles: [AttachedFilesRequest!]
   createAt: String!
   postBehaviourType: PostBehaviourType!
+  endDate: DateTime
   imagesUrls: [String!]
   year: Float
   brand: String
@@ -1151,7 +1152,6 @@ input PostRequest {
   frequencyPrice: String
   toPrice: Float
   petitionType: String
-  endDate: DateTime
 }
 
 input VisibilityOfPost {

@@ -31,6 +31,7 @@ export class PostService extends Post {
       post.getReactions,
       post.getPostBehaviourType,
       post.getIsActive,
+      post.getEndDate,
       post.getId,
     );
     this.frequencyPrice = frequencyPrice ?? '';

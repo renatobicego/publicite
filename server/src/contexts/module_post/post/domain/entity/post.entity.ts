@@ -40,8 +40,8 @@ export class Post {
   private reactions: ObjectId[];
   private postBehaviourType: string;
   private isActive: boolean;
+  private endDate: Date;
   private _id?: ObjectId;
-  private endDate?: Date;
 
   constructor(
     title: string,
@@ -61,8 +61,8 @@ export class Post {
     reactions: ObjectId[],
     postBehaviourType: string,
     isActive: boolean,
+    endDate: Date,
     _id?: ObjectId,
-    endDate?: Date,
   ) {
     this.title = title;
     this.searchTitle = searchTitle;
@@ -81,8 +81,8 @@ export class Post {
     this.reactions = reactions;
     this.postBehaviourType = postBehaviourType;
     this.isActive = isActive;
-    this._id = _id;
     this.endDate = endDate;
+    this._id = _id;
   }
 
   get getId() {

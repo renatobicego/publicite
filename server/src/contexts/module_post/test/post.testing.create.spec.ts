@@ -67,6 +67,7 @@ class PostRequest_testing {
     ]
     createAt: string;
     postBehaviourType: PostBehaviourType;
+    endDate: Date;
 }
 
 
@@ -88,6 +89,11 @@ class PostPetitionRequest_testing extends PostRequest_testing {
     petitionType: string;
 }
 
+const addDays = (date: any, days: any) => {
+    const result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
+};
 
 
 describe('Post Service Testing - Create post ', () => {
@@ -188,6 +194,7 @@ describe('Post Service Testing - Create post ', () => {
                 brand: "MarcaX",
                 modelType: "ModeloY",
                 condition: "Nuevo",
+                endDate: addDays(new Date(), 7)
             };
 
             await postService.create(postGoodRequest as any);
@@ -208,6 +215,7 @@ describe('Post Service Testing - Create post ', () => {
             expect(postCreated?.category[0]).toEqual(postGoodRequest.category[0]);
             expect(postCreated?.attachedFiles[0].url).toEqual(postGoodRequest.attachedFiles[0].url);
             expect(postCreated?.attachedFiles[0].label).toEqual(postGoodRequest.attachedFiles[0].label);
+            expect(postCreated?.endDate).toEqual(postGoodRequest.endDate);
 
             console.log("Verify if post was asociated to user");
             const user = await userModel.findById(postCreated?.author);
@@ -244,6 +252,7 @@ describe('Post Service Testing - Create post ', () => {
                 ],
                 createAt: new Date().toISOString(),
                 postBehaviourType: PostBehaviourType.agenda,
+                endDate: addDays(new Date(), 7)
             };
 
             await postService.create(postPetitionRequest as any);
@@ -253,6 +262,7 @@ describe('Post Service Testing - Create post ', () => {
             expect(postCreated?.author).toBe(postPetitionRequest.author);
             expect(postCreated?.petitionType).toBe(postPetitionRequest.petitionType);
             expect(postCreated?.toPrice).toBe(postPetitionRequest.toPrice);
+            expect(postCreated?.endDate).toEqual(postPetitionRequest.endDate);
             console.log("Verify if post was associated to user");
             const user = await userModel.findById(postCreated?.author);
             expect(user!.posts[1]).toEqual(postCreated!._id);
@@ -285,6 +295,7 @@ describe('Post Service Testing - Create post ', () => {
                 ],
                 createAt: new Date().toISOString(),
                 postBehaviourType: PostBehaviourType.libre,
+                endDate: addDays(new Date(), 7)
             };
 
             await postService.create(postServiceRequest as any);
@@ -293,9 +304,11 @@ describe('Post Service Testing - Create post ', () => {
             expect(postCreated?.title).toBe(postServiceRequest.title);
             expect(postCreated?.author).toBe(postServiceRequest.author);
             expect(postCreated?.frequencyPrice).toBe(postServiceRequest.frequencyPrice);
+            expect(postCreated?.endDate).toEqual(postServiceRequest.endDate);
             console.log("Verify if post was associated to user");
             const user = await userModel.findById(postCreated?.author);
             expect(user!.posts[2]).toEqual(postCreated!._id);
+
         });
 
 
@@ -332,6 +345,7 @@ describe('Post Service Testing - Create post ', () => {
                 brand: "MarcaX",
                 modelType: "ModeloY",
                 condition: "Nuevo",
+                endDate: addDays(new Date(), 7)
             };
 
 

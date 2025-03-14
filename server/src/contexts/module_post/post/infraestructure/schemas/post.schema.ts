@@ -113,7 +113,7 @@ export const PostSchema = new Schema<PostDocument>(
       },
     ],
     createAt: { type: String, required: true },
-    endDate: { type: Date, default: () => addDays(Date.now(), 365) },
+    endDate: { type: Date, default: () => addDays(Date.now(), 14) },
     reactions: [
       {
         type: Schema.Types.ObjectId,

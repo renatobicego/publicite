@@ -36,6 +36,7 @@ export class PostGood extends Post {
       post.getReactions,
       post.getPostBehaviourType,
       post.getIsActive,
+      post.getEndDate,
       post.getId,
       
     );

@@ -69,11 +69,11 @@ export class PostFactory implements PostFactoryInterface {
             postReactions,
             post.postBehaviourType,
             isActive,
-
+            post.endDate ?? null
         );
 
 
-        console.log(postBase)
+
         switch (post.postType.toLowerCase()) {
             case PostType.good:
                 this.logger.log('We are creating a good post');

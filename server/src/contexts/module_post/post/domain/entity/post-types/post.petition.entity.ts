@@ -32,6 +32,7 @@ export class PostPetition extends Post {
       post.getReactions,
       post.getPostBehaviourType,
       post.getIsActive,
+      post.getEndDate,
       post.getId,
     );
     this.toPrice = toPrice;

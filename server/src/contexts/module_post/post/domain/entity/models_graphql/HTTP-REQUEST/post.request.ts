@@ -83,6 +83,9 @@ export class PostRequest {
   @Field(() => PostBehaviourType)
   postBehaviourType: PostBehaviourType;
 
+  @Field(() => Date, { nullable: true })
+  endDate: Date;
+
   // attributes of good
   @Field(() => [String], { nullable: true })
   imagesUrls: string[];
@@ -110,8 +113,7 @@ export class PostRequest {
   @Field(() => String, { nullable: true })
   petitionType: string;
 
-  @Field(() => Date, { nullable: true })
-  endDate: Date;
+
 }
 
 @ObjectType()
