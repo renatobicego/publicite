@@ -848,16 +848,14 @@ export class PostRepository implements PostRepositoryInterface {
     }
   }
 
-  async savePostComment(postComment: PostComment, session: any): Promise<any> {
+  async savePostComment(postComment: PostComment, session?: any): Promise<any> {
     try {
       const postCommentDocument = new this.postCommentDocument(postComment);
       const postCommentSaved = await postCommentDocument.save({ session });
-
       const populatedPostComment = await postCommentSaved.populate({
         path: 'user',
         select: 'username profilePhotoUrl',
       });
-
       return populatedPostComment;
     } catch (error: any) {
       throw error;
@@ -938,7 +936,7 @@ export class PostRepository implements PostRepositoryInterface {
   async setCommenOnPost(
     postId: string,
     postCommentId: string,
-    session: any,
+    session?: any,
   ): Promise<any> {
     try {
       await this.postDocument.updateOne(
@@ -1086,65 +1084,3 @@ export class PostRepository implements PostRepositoryInterface {
     }
   }
 }
-
-/*
-
-const posts = await this.postDocument.aggregate([
-  {
-    $geoNear: {
-      near: {
-        type: 'Point',
-        coordinates: [userLocation.longitude, userLocation.latitude],
-      },
-      distanceField: 'distance',
-      spherical: true,
-      query: matchStage,
-    },
-  },
-  {
-    $match: {
-      $expr: { $lte: ['$distance', '$geoLocation.ratio'] },
-    },
-  },
-  {
-    $lookup: {
-      from: 'postcategories',
-      localField: 'category',
-      foreignField: '_id',
-      as: 'category',
-      pipeline: [{ $project: { _id: 1, label: 1 } }],
-    },
-  },
-  {
-    $addFields: {
-      categories: {
-        $map: {
-          input: '$category',
-          as: 'category',
-          in: {
-            _id: '$$category._id',
-            label: '$$category.label',
-          },
-        },
-      },
-    },
-  },
-  {
-    $project: {
-      _id: 1,
-      title: 1,
-      description: 1,
-      frequencyPrice: 1,
-      imagesUrls: 1,
-      petitionType: 1,
-      postType: 1,
-      price: 1,
-      reviews: 1,
-      toPrice: 1,
-      'geoLocation.description': 1,
-    },
-  },
-  { $skip: (page - 1) * limit },
-  { $limit: limit + 1 },
-]);
-*/

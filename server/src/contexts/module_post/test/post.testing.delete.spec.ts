@@ -402,7 +402,68 @@ describe('Post Service Testing - Delete Post', () => {
     })
 
 
+    describe('Delete reaction of the post', () => {
 
+
+        it('Delete reaction of the post being owner of the reaction', async () => {
+            const postId = new Types.ObjectId();
+            const userId = new Types.ObjectId();
+
+            const reaction = await insertPostReaction(postReactionModel, {
+                _id: new Types.ObjectId(),
+                user: userId._id,
+                reaction: "like"
+            })
+
+            await insertPostGood(postGoodModel, {
+                _id: postId,
+                title: "Post 1",
+                author: userId._id.toString(),
+                reactions: [reaction._id],
+            })
+
+
+            await postService.removeReactionFromPost(userId._id.toString(), reaction._id.toString());
+            const reactionDeleted = await postReactionModel.findById(reaction._id);
+            expect(reactionDeleted).toBeNull();
+
+            const post = await postGoodModel.findById(postId);
+            expect(post?.reactions.length).toBe(0);
+
+
+        })
+
+        it('Delete reaction of the post being unknown user', async () => {
+            const postId = new Types.ObjectId();
+            const userUnknownId = new Types.ObjectId();
+
+            const reaction = await insertPostReaction(postReactionModel, {
+                _id: new Types.ObjectId(),
+                user: new Types.ObjectId(),
+                reaction: "like"
+            })
+
+            await insertPostGood(postGoodModel, {
+                _id: postId,
+                title: "Post 1",
+                author: reaction._id.toString(),
+                reactions: [reaction._id],
+            })
+
+
+            await postService.removeReactionFromPost(userUnknownId._id.toString(), reaction._id.toString());
+            const reactionDeleted = await postReactionModel.findById(reaction._id);
+            expect(reactionDeleted!._id).toEqual(reaction._id);
+
+            const post = await postGoodModel.findById(postId);
+            expect(post?.reactions.length).toBe(1);
+
+
+
+
+        })
+
+    })
 
 
 })

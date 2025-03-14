@@ -23,8 +23,6 @@ export class PostReviewService implements PostReviewServiceInterface {
         try {
             const reviewEntity = new PostReview(postReview.author, postReview.review, postReview.date, postReview.rating, postReview.post_id, postReview.postType);
             return await this.postReviewService.saveReview(reviewEntity)
-
-
         } catch (error: any) {
             this.logger.error('An error was ocurred creating new review... ');
             throw error;

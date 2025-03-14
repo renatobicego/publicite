@@ -250,8 +250,6 @@ export class PostService implements PostServiceInterface {
   }
 
 
-
-
   async makeUserRelationMap(userRequestId: string, visibility: Visibility_Of_Find): Promise<any> {
     const userActiveRelation = await this.userService.getActiveRelationOfUser(userRequestId)
 
@@ -284,7 +282,7 @@ export class PostService implements PostServiceInterface {
       const newResponse = new PostComment(author, response, false)
       const commentResponse = await this.postRepository.savePostComment(newResponse, session)
       const commentResponseId = commentResponse._id
-      if (!commentResponseId) throw new Error('Error al crear la respuesta in makeCommentSchemaAndPutCommentInPost')
+      if (!commentResponseId) throw new Error('Error al crear la respuesta in makeResponseAndPutResponseInComment')
       await this.postRepository.setResponseOnComment(commentId, commentResponseId, session)
       return commentResponse;
     } catch (error: any) {
@@ -293,9 +291,8 @@ export class PostService implements PostServiceInterface {
   }
 
 
-  async makeCommentSchemaAndPutCommentInPost(postId: string, userCommentId: string, comment: string, session: any): Promise<any> {
+  async makeCommentSchemaAndPutCommentInPost(postId: string, userCommentId: string, comment: string, session?: any): Promise<any> {
     try {
-
       const newComment = new PostComment(userCommentId, comment, false)
       const postComment = await this.postRepository.savePostComment(newComment, session)
       const postCommentId = postComment._id
