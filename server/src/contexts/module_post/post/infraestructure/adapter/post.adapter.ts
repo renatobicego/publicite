@@ -4,18 +4,25 @@ import { OnEvent } from '@nestjs/event-emitter';
 
 import { PostMapperAdapterInterface } from 'src/contexts/module_post/post/application/adapter/mapper/post.adapter.mapper.interface';
 import { PostAdapterInterface } from 'src/contexts/module_post/post/application/adapter/post.adapter.interface';
+import { PostRequest } from 'src/contexts/module_post/post/domain/entity/models_graphql/HTTP-REQUEST/post.request';
 import {
-  PostRequest,
-} from 'src/contexts/module_post/post/domain/entity/models_graphql/HTTP-REQUEST/post.request';
-import { PostUpdateRequest, VisibilityEnum } from 'src/contexts/module_post/post/domain/entity/models_graphql/HTTP-REQUEST/post.update.request';
+  PostUpdateRequest,
+  VisibilityEnum,
+} from 'src/contexts/module_post/post/domain/entity/models_graphql/HTTP-REQUEST/post.update.request';
 
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { PostServiceInterface } from '../../domain/service/post.service.interface';
 import { UserLocation } from '../../domain/entity/models_graphql/HTTP-REQUEST/post.location.request';
 import { PostLimitResponseGraphql } from '../../domain/entity/models_graphql/HTTP-RESPONSE/post.limit.response.graphql';
 import { PostBehaviourType } from '../../domain/entity/enum/postBehaviourType.enum';
-import { Visibility, Visibility_Of_Find } from '../../domain/entity/enum/post-visibility.enum';
-import { downgrade_plan_post, post_deleted } from 'src/contexts/module_shared/event-emmiter/events';
+import {
+  Visibility,
+  Visibility_Of_Find,
+} from '../../domain/entity/enum/post-visibility.enum';
+import {
+  downgrade_plan_post,
+  post_deleted,
+} from 'src/contexts/module_shared/event-emmiter/events';
 import { EmitterService } from 'src/contexts/module_shared/event-emmiter/emmiter';
 
 export class PostAdapter implements PostAdapterInterface {
@@ -25,9 +32,8 @@ export class PostAdapter implements PostAdapterInterface {
     @Inject('PostMapperAdapterInterface')
     private readonly postMapper: PostMapperAdapterInterface,
     private readonly logger: MyLoggerService,
-    private readonly emmiter: EmitterService
-  ) { }
-
+    private readonly emmiter: EmitterService,
+  ) {}
 
   @OnEvent(downgrade_plan_post)
   async desactivatePostByUserId(id: string): Promise<any> {
@@ -39,17 +45,23 @@ export class PostAdapter implements PostAdapterInterface {
     }
   }
 
-
-
-  async activateOrDeactivatePost(_id: string, activate: boolean, postBehaviourType: PostBehaviourType, userRequestId: string): Promise<any> {
+  async activateOrDeactivatePost(
+    _id: string,
+    activate: boolean,
+    postBehaviourType: PostBehaviourType,
+    userRequestId: string,
+  ): Promise<any> {
     try {
-      return await this.postService.activateOrDeactivatePost(_id, activate, postBehaviourType, userRequestId);
+      return await this.postService.activateOrDeactivatePost(
+        _id,
+        activate,
+        postBehaviourType,
+        userRequestId,
+      );
     } catch (error: any) {
       throw error;
     }
   }
-
-
 
   async create(post: PostRequest): Promise<any> {
     try {
@@ -59,28 +71,32 @@ export class PostAdapter implements PostAdapterInterface {
     }
   }
 
-
   async deletePostById(id: string): Promise<void> {
     try {
-      await this.emmiter.emitAsync(
-        post_deleted,
-        id
-      );
+      await this.emmiter.emitAsync(post_deleted, id);
       return await this.postService.deletePostById(id);
     } catch (error: any) {
       throw error;
     }
   }
 
-
-  async deleteCommentById(id: string, userRequestId: string, isAuthorOfPost: boolean, isReply: boolean): Promise<void> {
+  async deleteCommentById(
+    id: string,
+    userRequestId: string,
+    isAuthorOfPost: boolean,
+    isReply: boolean,
+  ): Promise<void> {
     try {
-      await this.postService.deleteCommentById(id, userRequestId, isAuthorOfPost, isReply);
+      await this.postService.deleteCommentById(
+        id,
+        userRequestId,
+        isAuthorOfPost,
+        isReply,
+      );
     } catch (error: any) {
       throw error;
     }
   }
-
 
   async findPostsByAuthorId(id: string): Promise<void> {
     try {
@@ -112,7 +128,7 @@ export class PostAdapter implements PostAdapterInterface {
         postType,
         userLocation,
         searchTerm,
-        userRequestId
+        userRequestId,
       );
     } catch (error: any) {
       throw error;
@@ -127,9 +143,23 @@ export class PostAdapter implements PostAdapterInterface {
     }
   }
 
-  async findFriendPosts(postType: string, userRequestId: string, page: number, limit: number, visibility: Visibility_Of_Find, searchTerm?: string): Promise<void> {
+  async findFriendPosts(
+    postType: string,
+    userRequestId: string,
+    page: number,
+    limit: number,
+    visibility: Visibility_Of_Find,
+    searchTerm?: string,
+  ): Promise<void> {
     try {
-      return await this.postService.findFriendPosts(postType, userRequestId, page, limit, visibility, searchTerm);
+      return await this.postService.findFriendPosts(
+        postType,
+        userRequestId,
+        page,
+        limit,
+        visibility,
+        searchTerm,
+      );
     } catch (error: any) {
       throw error;
     }
@@ -137,15 +167,15 @@ export class PostAdapter implements PostAdapterInterface {
 
   async findPostByIdAndCategoryPostsRecomended(id: string): Promise<any> {
     try {
-      return await this.postService.findPostByIdAndCategoryPostsRecomended(id)
+      return await this.postService.findPostByIdAndCategoryPostsRecomended(id);
     } catch (error: any) {
       throw error;
     }
   }
 
-
-
-  async getPostAndContactLimit(userRequestId: string): Promise<PostLimitResponseGraphql> {
+  async getPostAndContactLimit(
+    userRequestId: string,
+  ): Promise<PostLimitResponseGraphql> {
     try {
       return await this.postService.getPostAndContactLimit(userRequestId);
     } catch (error: any) {
@@ -169,48 +199,85 @@ export class PostAdapter implements PostAdapterInterface {
     }
   }
 
-  async updateEndDateFromPostById(postId: string, userRequestId: string, newDate: Date): Promise<void> {
+  async updateEndDateFromPostById(
+    postId: string,
+    userRequestId: string,
+    newDate: Date,
+  ): Promise<void> {
     try {
-      return this.postService.updateEndDateFromPostById(postId, userRequestId, newDate);
+      return this.postService.updateEndDateFromPostById(
+        postId,
+        userRequestId,
+        newDate,
+      );
     } catch (error: any) {
       throw error;
     }
   }
 
-  async updateBehaviourType(_id: string, postBehaviourType: PostBehaviourType, userRequestId: string, visibility: VisibilityEnum): Promise<any> {
+  async updateBehaviourType(
+    _id: string,
+    postBehaviourType: PostBehaviourType,
+    userRequestId: string,
+    visibility: VisibilityEnum,
+  ): Promise<any> {
     try {
       if (postBehaviourType === PostBehaviourType.agenda) {
-        if (visibility === undefined || visibility === null || visibility.post === undefined || visibility.post === null) {
-          throw new BadRequestException("visibility is required when postBehaviourType is agenda");
+        if (
+          visibility === undefined ||
+          visibility === null ||
+          visibility.post === undefined ||
+          visibility.post === null
+        ) {
+          throw new BadRequestException(
+            'visibility is required when postBehaviourType is agenda',
+          );
         }
         if (visibility.post === Visibility.public) {
-          throw new BadRequestException("visibility can't be public when postBehaviourType is agenda");
+          throw new BadRequestException(
+            "visibility can't be public when postBehaviourType is agenda",
+          );
         }
       } else {
-        visibility.post != Visibility.public ? visibility.post = Visibility.public : visibility.post = Visibility.public;
+        visibility.post != Visibility.public
+          ? (visibility.post = Visibility.public)
+          : (visibility.post = Visibility.public);
       }
-      return await this.postService.updateBehaviourType(_id, postBehaviourType, userRequestId, visibility);
+      return await this.postService.updateBehaviourType(
+        _id,
+        postBehaviourType,
+        userRequestId,
+        visibility,
+      );
     } catch (error: any) {
       throw error;
     }
   }
 
-
-  async updateCommentById(id: string, comment: string, userRequestId: string): Promise<any> {
+  async updateCommentById(
+    id: string,
+    comment: string,
+    userRequestId: string,
+  ): Promise<any> {
     try {
-      return await this.postService.updateCommentById(id, comment, userRequestId);
+      return await this.postService.updateCommentById(
+        id,
+        comment,
+        userRequestId,
+      );
     } catch (error: any) {
       throw error;
     }
   }
 
-  async removeReactionFromPost(userRequestId: string, _id: string): Promise<any> {
+  async removeReactionFromPost(
+    userRequestId: string,
+    _id: string,
+  ): Promise<any> {
     try {
       await this.postService.removeReactionFromPost(userRequestId, _id);
     } catch (error: any) {
       throw error;
     }
   }
-
-
 }

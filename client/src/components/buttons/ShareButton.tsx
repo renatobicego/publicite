@@ -87,6 +87,8 @@ const ShareButton = ({
       shareLink(url, "Compartir");
       return;
     }
+    if (selectedUsers.length === 0)
+      return toastifyError("No se seleccionaron usuarios");
     setIsLoading(true);
     await Promise.all(
       selectedUsers.map(async (user) => {
@@ -195,7 +197,10 @@ const ShareButton = ({
                   Cerrar
                 </PrimaryButton>
                 <PrimaryButton
-                  isDisabled={isLoading}
+                  isDisabled={
+                    isLoading ||
+                    (userIdLogged && !selectedUsers.length ? true : false)
+                  }
                   isLoading={isLoading}
                   onPress={handleShare}
                 >

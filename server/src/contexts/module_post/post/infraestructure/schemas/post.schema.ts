@@ -1,6 +1,9 @@
 import { Schema, model, Document, Date } from 'mongoose';
 import { PostType } from '../../domain/entity/enum/post-type.enum';
-import { Visibility, Visibility_Of_Social_Media } from '../../domain/entity/enum/post-visibility.enum';
+import {
+  Visibility,
+  Visibility_Of_Social_Media,
+} from '../../domain/entity/enum/post-visibility.enum';
 import { PostBehaviourType } from '../../domain/entity/enum/postBehaviourType.enum';
 
 export interface attachedFiles {
@@ -25,7 +28,7 @@ export interface PostDocument extends Document {
     location: {
       type: string;
       coordinates: [number, number];
-    }
+    };
     userSetted: boolean;
     description: string;
     ratio: number;
@@ -118,7 +121,11 @@ export const PostSchema = new Schema<PostDocument>(
         required: true,
       },
     ],
-    postBehaviourType: { type: String, enum: Object.values(PostBehaviourType), required: true },
+    postBehaviourType: {
+      type: String,
+      enum: Object.values(PostBehaviourType),
+      required: true,
+    },
     isActive: { type: Boolean, required: true },
   },
   {

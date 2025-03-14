@@ -1,8 +1,8 @@
 "use client";
 import { PetitionPostValues, PostBehaviourType } from "@/types/postTypes";
-import { Form, Formik, FormikHelpers } from "formik";
+import { Field, Form, Formik, FormikHelpers } from "formik";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
-import { getLocalTimeZone, today } from "@internationalized/date";
+import { CalendarDate, getLocalTimeZone, today } from "@internationalized/date";
 import { petitionValidation } from "./petititonValidation";
 import TitleDescription from "../anuncio/components/CreateForm/inputs/TitleDescription";
 import { Divider } from "@nextui-org/react";
@@ -18,6 +18,7 @@ import AttachedFiles from "../anuncio/components/CreateForm/inputs/AccordionInpu
 import PetitionType from "./PetitionType";
 import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
 import { useAttachedFiles } from "../anuncio/components/CreateForm/inputs/AccordionInputs/AttachedFIles/AttachedFilesContext";
+import { CustomDateInput } from "@/components/inputs/CustomInputs";
 
 const CreatePetition = ({
   userId,
@@ -50,6 +51,7 @@ const CreatePetition = ({
     frequencyPrice: undefined,
     toPrice: undefined,
     postBehaviourType,
+    endDate: today(getLocalTimeZone()).add({ days: 14 }).toString(),
   };
 
   const router = useRouter();
@@ -122,6 +124,18 @@ const CreatePetition = ({
                   setFieldValue={setFieldValue}
                 />
                 <PetitionType errors={errors.petitionType} />
+                <Field
+                  as={CustomDateInput}
+                  name="endDate"
+                  label="Fecha de Vencimiento"
+                  aria-label="fecha de vencimiento"
+                  description="La fecha de vencimiento es la fecha en la que el anuncio se considera vencido. Luego podrá cambiarla o renovarla."
+                  onChange={(value: CalendarDate) =>
+                    setFieldValue("endDate", value ? value.toString() : "")
+                  }
+                  minValue={today(getLocalTimeZone())}
+                  maxValue={today(getLocalTimeZone()).add({ years: 1 })}
+                />
                 <Divider />
                 <h6>Busque su ubicación o seleccionela en el mapa</h6>
                 <PlacePicker

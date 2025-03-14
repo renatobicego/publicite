@@ -22,4 +22,5 @@ export class PostUpdateDto {
   frequencyPrice?: string;
   toPrice?: number;
   petitionType?: string;
+  endDate?: Date;
 }

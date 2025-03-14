@@ -34,7 +34,6 @@ const useUserPostLimit = (postBehaviourType?: PostBehaviourType) => {
         );
         return;
       }
-      console.log(res);
       setLimits({
         agenda: res.totalAgendaPostLimit,
         libre: res.totalLibrePostLimit,

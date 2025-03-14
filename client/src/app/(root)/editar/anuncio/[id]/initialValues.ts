@@ -1,15 +1,14 @@
-import {
-  CreatePostValues,
-  Good,
-  Petition,
-  Service,
-} from "@/types/postTypes";
+import { CreatePostValues, Good, Petition, Service } from "@/types/postTypes";
+import { parseIsoDate } from "@/utils/functions/dates";
 
 export const getPostInitialValues = (
   postData: Good | Service,
   postType: "good" | "service"
 ) => {
-  const postValues: Omit<CreatePostValues, "createAt" | "geoLocation" | "author" | "postBehaviourType" | "isActive"> = {
+  const postValues: Omit<
+    CreatePostValues,
+    "createAt" | "geoLocation" | "author" | "postBehaviourType" | "isActive"
+  > = {
     attachedFiles: postData.attachedFiles,
     // author: postData.author._id,
     category: postData.category[0]._id,
@@ -18,6 +17,7 @@ export const getPostInitialValues = (
     postType: postData.postType,
     title: postData.title,
     visibility: postData.visibility,
+    endDate: postData.endDate.split("T")[0],
   };
 
   switch (postType) {

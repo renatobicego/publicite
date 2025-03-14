@@ -63,7 +63,6 @@ const useNotifications = (isOpen: boolean) => {
         setErrorOccurred(false);
       }
     } catch (error) {
-      console.log(error);
       toastifyError(error as string);
       setErrorOccurred(true);
     } finally {

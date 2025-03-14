@@ -82,7 +82,7 @@ const useUploadFiles = (
           ...uploadedAttachedFileUrls,
         ];
       } else {
-        values.attachedFiles = uploadedAttachedFileUrls
+        values.attachedFiles = uploadedAttachedFileUrls;
       }
     } else {
       if (!isPetition) {
@@ -97,7 +97,6 @@ const useUploadFiles = (
     try {
       await deleteFilesService(urls);
     } catch (error) {
-      console.log(error);
       toastifyError(
         "Error al eliminar los archivos anteriores. Por favor intenta de nuevo."
       );

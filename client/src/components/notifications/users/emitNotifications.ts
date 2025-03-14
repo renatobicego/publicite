@@ -10,7 +10,7 @@ export const emitUserRelationNotification = (
   previousNotificationId: string | null,
   userRelationId?: string
 ): Promise<{ status?: number; message?: string }> => {
-  return new Promise((resolve, reject) => { 
+  return new Promise((resolve, reject) => {
     if (!socket) {
       return reject(new Error("Socket is not initialized."));
     }
@@ -29,19 +29,20 @@ export const emitUserRelationNotification = (
             _id: userRelationId,
           },
         },
-      }
+      };
       socket?.emit(
         "user_notifications",
         userRelationId ? notificationWIthUserRelationId : notification,
         (response: { status?: number; message?: string }) => {
-          console.log(response)
           if (response?.status === 200) {
             resolve(response);
           } else {
-            reject(new Error(response?.message || "Error al enviar la notificación."));
+            reject(
+              new Error(response?.message || "Error al enviar la notificación.")
+            );
           }
         }
       );
-    })
-  })
+    });
+  });
 };

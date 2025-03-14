@@ -73,13 +73,10 @@ export class PostRepository implements PostRepositoryInterface {
 
     @InjectModel('Post')
     private readonly postDocument: Model<PostDocument>,
-
-
-
-  ) { }
+  ) {}
 
   get getEmmiter() {
-    return this.emmiter
+    return this.emmiter;
   }
 
   async activateOrDeactivatePost(_id: string, activate: boolean): Promise<any> {
@@ -116,6 +113,7 @@ export class PostRepository implements PostRepositoryInterface {
         createAt: post.getCreateAt,
         postBehaviourType: post.getPostBehaviourType,
         isActive: post.getIsActive,
+        endDate: post.getEndDate,
       };
       switch (post.getPostType.toLowerCase()) {
         case 'good':
@@ -147,8 +145,8 @@ export class PostRepository implements PostRepositoryInterface {
 
   async deletePostById(id: string): Promise<any> {
     const session = await this.connection.startSession();
-    let deletePromises = [];
-    let postCommentResponse: any[] = [];
+    const deletePromises: any[] = [];
+    const postCommentResponse: any[] = [];
     try {
       await session.withTransaction(async () => {
         const postDeleted: any = await this.postDocument
@@ -157,16 +155,16 @@ export class PostRepository implements PostRepositoryInterface {
           })
           .select('author comments reactions reviews')
           .populate({ path: 'comments' })
-          .lean()
+          .lean();
 
         if (!postDeleted) return null;
 
         if (postDeleted.comments.length > 0) {
-          postDeleted.comments.map((comment: { _id: any, response: any }) => {
+          postDeleted.comments.map((comment: { _id: any; response: any }) => {
             if (comment.response) {
               postCommentResponse.push(comment.response);
             }
-          })
+          });
         }
 
         if (postDeleted.postType != PostType.petition) {
@@ -175,7 +173,7 @@ export class PostRepository implements PostRepositoryInterface {
               { _id: { $in: postDeleted.reviews } },
               { session },
             ),
-          )
+          );
         }
 
         deletePromises.push(
@@ -185,11 +183,14 @@ export class PostRepository implements PostRepositoryInterface {
           ),
 
           this.postCommentDocument.deleteMany(
-            { $or: [{ _id: { $in: postDeleted.comments } }, { _id: { $in: postCommentResponse } }] },
+            {
+              $or: [
+                { _id: { $in: postDeleted.comments } },
+                { _id: { $in: postCommentResponse } },
+              ],
+            },
             { session },
           ),
-
-
 
           this.userDocument.updateOne(
             {
@@ -200,13 +201,10 @@ export class PostRepository implements PostRepositoryInterface {
             },
             { session },
           ),
-        )
-
+        );
 
         await Promise.all(deletePromises);
       });
-
-
     } catch (error) {
       this.logger.error('Error deleting post REPOSITORY: ' + error);
       this.logger.error('Session aborted');
@@ -267,35 +265,39 @@ export class PostRepository implements PostRepositoryInterface {
 
   */
 
-
   async deleteCommentById(
     id: string,
     userRequestId: string,
     isAuthorOfPost: boolean,
-    isReply: boolean
+    isReply: boolean,
   ): Promise<void> {
     try {
       if (isAuthorOfPost) {
-        this.logger.log("Deleting comment in repository... ");
+        this.logger.log('Deleting comment in repository... ');
         const result = await this.postDocument.updateOne(
           { author: userRequestId, comments: id },
           { $pull: { comments: id } },
         );
         if (result.modifiedCount > 0) {
-          this.logger.log("Comment deleted successfully.");
-          const commentDelete: any = await this.postCommentDocument.findOneAndDelete({ _id: id });
+          this.logger.log('Comment deleted successfully.');
+          const commentDelete: any =
+            await this.postCommentDocument.findOneAndDelete({ _id: id });
           if (commentDelete && commentDelete.response) {
-            this.logger.log("Comment has a response, deleting it...");
-            await this.postCommentDocument.deleteOne({ _id: commentDelete.response });
-            this.logger.log("Comment response deleted successfully.");
+            this.logger.log('Comment has a response, deleting it...');
+            await this.postCommentDocument.deleteOne({
+              _id: commentDelete.response,
+            });
+            this.logger.log('Comment response deleted successfully.');
           }
         }
         if (isReply) {
-          await this.postCommentDocument.updateOne({ response: id }, { $set: { response: null } });
+          await this.postCommentDocument.updateOne(
+            { response: id },
+            { $set: { response: null } },
+          );
           await this.postCommentDocument.deleteOne({ _id: id });
-          this.logger.log("Comment response deleted successfully.");
+          this.logger.log('Comment response deleted successfully.');
         }
-
       } else {
         const result = await this.postCommentDocument.findOneAndDelete({
           _id: id,
@@ -386,19 +388,21 @@ export class PostRepository implements PostRepositoryInterface {
 
   async findMatchPost(postType: string, searchTerm: string): Promise<any> {
     try {
-      return await this.postDocument.findOne({
-        postType,
-        $or: [
-          { searchTitle: { $regex: searchTerm } },
-          { searchDescription: { $regex: searchTerm } },
-        ],
-      }
-      ).populate([
-        {
-          path: 'reviews',
-          model: 'PostReview',
-        },
-      ]).lean()
+      return await this.postDocument
+        .findOne({
+          postType,
+          $or: [
+            { searchTitle: { $regex: searchTerm } },
+            { searchDescription: { $regex: searchTerm } },
+          ],
+        })
+        .populate([
+          {
+            path: 'reviews',
+            model: 'PostReview',
+          },
+        ])
+        .lean();
     } catch (error: any) {
       throw error;
     }
@@ -471,11 +475,12 @@ export class PostRepository implements PostRepositoryInterface {
               path: 'author',
               model: 'User',
               select: '_id profilePhotoUrl username lastName name contact',
-              populate: [{
-                path: 'contact',
-                model: 'Contact',
-              },
-              ]
+              populate: [
+                {
+                  path: 'contact',
+                  model: 'Contact',
+                },
+              ],
             },
             {
               path: 'reviews',
@@ -542,11 +547,8 @@ export class PostRepository implements PostRepositoryInterface {
         matchStage.$or = [
           { searchTitle: { $regex: textSearchQuery, $options: 'i' } },
           { searchDescription: { $regex: textSearchQuery, $options: 'i' } },
-
         ];
-        matchStage.postBehaviourType = "libre";
-
-
+        matchStage.postBehaviourType = 'libre';
       }
 
       // Agregación optimizada
@@ -768,7 +770,6 @@ export class PostRepository implements PostRepositoryInterface {
     }
   }
 
-
   async findPostByIdAndCategoryPostsRecomended(id: string): Promise<any> {
     try {
       const today = new Date();
@@ -805,19 +806,15 @@ export class PostRepository implements PostRepositoryInterface {
       ];
 
       if (postById.postType !== PostType.petition) {
-        pipeline.push(
-          {
-            $lookup: {
-              from: 'postreviews', // NOMBRE SCHEMA
-              localField: 'reviews', // El campo en 'posts' que contiene los ObjectId de 'PostReview'
-              foreignField: '_id', // El campo que se compara en la colección 'PostReview'
-              as: 'reviews', // El nombre del campo donde se guardarán las reseñas pobladas
-            },
+        pipeline.push({
+          $lookup: {
+            from: 'postreviews', // NOMBRE SCHEMA
+            localField: 'reviews', // El campo en 'posts' que contiene los ObjectId de 'PostReview'
+            foreignField: '_id', // El campo que se compara en la colección 'PostReview'
+            as: 'reviews', // El nombre del campo donde se guardarán las reseñas pobladas
           },
-
-        );
+        });
       }
-
 
       const posts = await this.postDocument.aggregate(pipeline);
 
@@ -829,8 +826,6 @@ export class PostRepository implements PostRepositoryInterface {
       throw error;
     }
   }
-
-
 
   async setResponseOnComment(
     commentId: string,
@@ -982,7 +977,7 @@ export class PostRepository implements PostRepositoryInterface {
           this.logger.error(
             'Invalid post type we could not update: ' + postType,
           );
-          throw new BadRequestException;
+          throw new BadRequestException();
       }
     } catch (error: any) {
       throw error;

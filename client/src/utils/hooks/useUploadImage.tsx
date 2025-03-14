@@ -39,7 +39,6 @@ const useUploadImage = () => {
     try {
       await deleteFilesService([key]);
     } catch (error) {
-      console.log(error);
       toastifyError(
         "Error al eliminar el archivo anteriores. Por favor intenta de nuevo."
       );

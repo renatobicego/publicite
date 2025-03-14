@@ -2,7 +2,10 @@ import { Field, Float, InputType, Int } from '@nestjs/graphql';
 import { ObjectId } from 'mongoose';
 import { FrequencyPrice } from 'src/contexts/module_post/post/domain/entity/enum/post-service-freq-type.enum';
 import { PostType } from 'src/contexts/module_post/post/domain/entity/enum/post-type.enum';
-import { Visibility, Visibility_Of_Social_Media } from 'src/contexts/module_post/post/domain/entity/enum/post-visibility.enum';
+import {
+  Visibility,
+  Visibility_Of_Social_Media,
+} from 'src/contexts/module_post/post/domain/entity/enum/post-visibility.enum';
 
 @InputType()
 export class VisibilityEnum {
@@ -71,5 +74,7 @@ export class PostUpdateRequest {
 
   @Field(() => String, { nullable: true })
   petitionType?: string;
-}
 
+  @Field(() => Date, { nullable: true })
+  endDate: Date;
+}

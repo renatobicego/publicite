@@ -1151,6 +1151,7 @@ input PostRequest {
   frequencyPrice: String
   toPrice: Float
   petitionType: String
+  endDate: DateTime
 }
 
 input VisibilityOfPost {
@@ -1211,6 +1212,7 @@ input PostUpdateRequest {
   toPrice: Float
   frequencyPrice: FrequencyPrice
   petitionType: String
+  endDate: DateTime
 }
 
 input AttachedFiles {

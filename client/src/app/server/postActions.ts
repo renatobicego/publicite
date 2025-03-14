@@ -19,7 +19,10 @@ export const createPost = async (
   }
 
   try {
-    const resApi: string = await postPost(formData);
+    const resApi: string = await postPost({
+      ...formData,
+      endDate: new Date(formData.endDate),
+    });
     return { message: "Anuncio creado exitosamente", id: resApi };
   } catch (err) {
     return {
@@ -34,7 +37,10 @@ export const editPost = async (
   authorUsername: string
 ) => {
   try {
-    const resApi: any = await putPost(formData, id);
+    const resApi: any = await putPost(
+      { ...formData, endDate: new Date(formData.endDate) },
+      id
+    );
     if (resApi.error) {
       return resApi;
     }

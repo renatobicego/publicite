@@ -64,7 +64,6 @@ export default function PaymentsTable() {
       case "reason":
         return data?.reason;
       case "paymentId":
-        console.log(data.paymentId);
         if (!data?.paymentId) return;
         const { paymentMethodId, paymentTypeId } = data?.paymentId;
         const icon = getPaymentIcon(paymentMethodId);
