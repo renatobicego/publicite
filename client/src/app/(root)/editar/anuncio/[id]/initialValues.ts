@@ -1,4 +1,5 @@
 import { CreatePostValues, Good, Petition, Service } from "@/types/postTypes";
+import { parseIsoDate } from "@/utils/functions/dates";
 
 export const getPostInitialValues = (
   postData: Good | Service,
@@ -16,7 +17,7 @@ export const getPostInitialValues = (
     postType: postData.postType,
     title: postData.title,
     visibility: postData.visibility,
-    endDate: postData.endDate,
+    endDate: postData.endDate.split("T")[0],
   };
 
   switch (postType) {

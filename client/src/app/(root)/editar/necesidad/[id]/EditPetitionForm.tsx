@@ -52,7 +52,7 @@ const EditPetitionForm = ({ postData }: { postData: Petition }) => {
     frequencyPrice: postData.frequencyPrice,
     petitionType: postData.petitionType,
     toPrice: postData.toPrice,
-    endDate: postData.endDate,
+    endDate: postData.endDate.split("T")[0],
   };
   const handleSubmit = async (
     values: EditPetitionFormValues,
