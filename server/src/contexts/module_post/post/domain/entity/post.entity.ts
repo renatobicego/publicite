@@ -8,28 +8,27 @@ interface Visibility {
 }
 
 interface AttachedFile {
-  url: string,
-  label: string
+  url: string;
+  label: string;
 }
 
 interface PostLocation {
   location: {
     type: string;
-    coordinates: number[]
-  }
+    coordinates: number[];
+  };
   userSetted: boolean;
-  description: string
-  ratio: number
+  description: string;
+  ratio: number;
 }
-
 
 export class Post {
   private title: string;
-  private searchTitle: string
+  private searchTitle: string;
   private author: string;
   private postType: string;
   private description: string;
-  private searchDescription: string
+  private searchDescription: string;
   private visibility: Visibility;
   private recomendations: PostRecomendation[];
   private price: number;
@@ -42,7 +41,7 @@ export class Post {
   private postBehaviourType: string;
   private isActive: boolean;
   private _id?: ObjectId;
-
+  private endDate?: Date;
 
   constructor(
     title: string,
@@ -63,6 +62,7 @@ export class Post {
     postBehaviourType: string,
     isActive: boolean,
     _id?: ObjectId,
+    endDate?: Date,
   ) {
     this.title = title;
     this.searchTitle = searchTitle;
@@ -82,6 +82,7 @@ export class Post {
     this.postBehaviourType = postBehaviourType;
     this.isActive = isActive;
     this._id = _id;
+    this.endDate = endDate;
   }
 
   get getId() {
@@ -156,4 +157,7 @@ export class Post {
     return this.isActive;
   }
 
+  get getEndDate() {
+    return this.endDate;
+  }
 }

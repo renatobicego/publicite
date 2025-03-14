@@ -29,7 +29,7 @@ export class PostResolver {
   constructor(
     @Inject('PostAdapterInterface')
     private readonly postAdapter: PostAdapterInterface,
-  ) { }
+  ) {}
 
   @Mutation(() => String, {
     nullable: true,
@@ -230,7 +230,7 @@ export class PostResolver {
         _id,
         userRequestId,
         isAuthorOfPost,
-        isReply
+        isReply,
       );
     } catch (error: any) {
       throw error;

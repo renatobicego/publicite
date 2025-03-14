@@ -88,6 +88,7 @@ export const getPostByIdQuery = gql`
         socialMedia
       }
       year
+      endDate
     }
   }
 `;

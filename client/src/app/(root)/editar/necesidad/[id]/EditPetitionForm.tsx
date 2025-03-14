@@ -3,20 +3,18 @@ import { useAttachedFiles } from "@/app/(root)/crear/anuncio/components/CreateFo
 import Visibility from "@/app/(root)/crear/anuncio/components/CreateForm/inputs/AccordionInputs/Visibility";
 import TitleDescription from "@/app/(root)/crear/anuncio/components/CreateForm/inputs/TitleDescription";
 import PetitionType from "@/app/(root)/crear/necesidad/PetitionType";
-import {
-  petitionEditValidation,
-  petitionValidation,
-} from "@/app/(root)/crear/necesidad/petititonValidation";
+import { petitionEditValidation } from "@/app/(root)/crear/necesidad/petititonValidation";
 import PriceRangeCategory from "@/app/(root)/crear/necesidad/PriceRangeCategory";
 import { editPost } from "@/app/server/postActions";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
+import { CustomDateInput } from "@/components/inputs/CustomInputs";
 import { Petition, PetitionPostValues } from "@/types/postTypes";
 import { POSTS } from "@/utils/data/urls";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import useUploadFiles from "@/utils/hooks/useUploadFiles";
-import { Divider } from "@nextui-org/react";
-import { Form, Formik, FormikHelpers } from "formik";
+import { today, getLocalTimeZone, CalendarDate } from "@internationalized/date";
+import { Field, Form, Formik, FormikHelpers } from "formik";
 import { useRouter } from "next-nprogress-bar";
 import { useEffect } from "react";
 
@@ -54,11 +52,23 @@ const EditPetitionForm = ({ postData }: { postData: Petition }) => {
     frequencyPrice: postData.frequencyPrice,
     petitionType: postData.petitionType,
     toPrice: postData.toPrice,
+    endDate: postData.endDate,
   };
   const handleSubmit = async (
     values: EditPetitionFormValues,
     actions: FormikHelpers<any>
   ) => {
+    if (
+      values.endDate < today(getLocalTimeZone()).toString() ||
+      values.endDate > today(getLocalTimeZone()).add({ years: 1 }).toString()
+    ) {
+      actions.setFieldError(
+        "endDate",
+        "La fecha de finalización debe ser posterior a la fecha actual"
+      );
+      actions.setSubmitting(false);
+      return;
+    }
     // delete prev files deleted
     await deleteFiles(prevAttachedFilesDeleted.map((file) => file.url));
     // upload new files if any
@@ -106,6 +116,18 @@ const EditPetitionForm = ({ postData }: { postData: Petition }) => {
                   setFieldValue={setFieldValue}
                 />
                 <PetitionType errors={errors.petitionType} />
+                <Field
+                  as={CustomDateInput}
+                  name="endDate"
+                  label="Fecha de Vencimiento"
+                  aria-label="fecha de vencimiento"
+                  description="La fecha de vencimiento es la fecha en la que el anuncio se considera vencido. Luego podrá cambiarla o renovarla."
+                  onChange={(value: CalendarDate) =>
+                    setFieldValue("endDate", value ? value.toString() : "")
+                  }
+                  minValue={today(getLocalTimeZone())}
+                  maxValue={today(getLocalTimeZone()).add({ years: 1 })}
+                />
               </div>
               <div className="w-full md:w-1/2 flex flex-col gap-4">
                 <PriceRangeCategory

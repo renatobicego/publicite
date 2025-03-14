@@ -109,7 +109,6 @@ export interface CreatePostValues
     | "category"
     | "recommendations"
     | "geoLocation"
-    | "endDate"
     | "reactions"
     | "isActive"
   > {
@@ -127,7 +126,6 @@ export interface GoodPostValues
       | "reviews"
       | "comments"
       | "recommendations"
-      | "endDate"
       | "reactions"
       | "isActive"
     > {
@@ -149,7 +147,6 @@ export interface ServicePostValues
       | "comments"
       | "recommendations"
       | "_id"
-      | "endDate"
       | "reactions"
       | "isActive"
     > {
@@ -169,7 +166,6 @@ export interface PetitionPostValues
       | "_id"
       | "recommendations"
       | "comments"
-      | "endDate"
       | "reactions"
       | "isActive"
     > {

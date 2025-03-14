@@ -1,9 +1,11 @@
 import { Field, InputType, ObjectType } from '@nestjs/graphql';
 import { ObjectId } from 'mongoose';
 import { PostType } from '../../enum/post-type.enum';
-import { Visibility, Visibility_Of_Social_Media } from '../../enum/post-visibility.enum';
+import {
+  Visibility,
+  Visibility_Of_Social_Media,
+} from '../../enum/post-visibility.enum';
 import { PostBehaviourType } from '../../enum/postBehaviourType.enum';
-
 
 @InputType()
 class VisibilityOfPost {
@@ -33,7 +35,6 @@ class LocationPost {
 
 @InputType()
 class LocationOfPost {
-
   @Field(() => LocationPost)
   location: LocationPost;
 
@@ -49,7 +50,6 @@ class LocationOfPost {
 
 @InputType()
 export class PostRequest {
-
   @Field(() => String)
   title: string;
 
@@ -65,7 +65,6 @@ export class PostRequest {
   @Field(() => VisibilityOfPost)
   visibility: VisibilityOfPost;
 
-
   @Field(() => Number, { nullable: true })
   price: number;
 
@@ -76,15 +75,13 @@ export class PostRequest {
   category: ObjectId[];
 
   @Field(() => [AttachedFilesRequest], { nullable: true })
-  attachedFiles: AttachedFilesRequest[]
+  attachedFiles: AttachedFilesRequest[];
 
   @Field(() => String)
   createAt: string;
 
   @Field(() => PostBehaviourType)
   postBehaviourType: PostBehaviourType;
-
-
 
   // attributes of good
   @Field(() => [String], { nullable: true })
@@ -102,11 +99,9 @@ export class PostRequest {
   @Field(() => String, { nullable: true })
   condition: string;
 
-
   // attributes of service
   @Field(() => String, { nullable: true })
   frequencyPrice: string;
-
 
   // attributes of petition
   @Field(() => Number, { nullable: true })
@@ -115,13 +110,12 @@ export class PostRequest {
   @Field(() => String, { nullable: true })
   petitionType: string;
 
-
-
+  @Field(() => Date, { nullable: true })
+  endDate: Date;
 }
-
 
 @ObjectType()
 export class PostIdResponse {
   @Field(() => String)
-  _id: String
+  _id: string;
 }

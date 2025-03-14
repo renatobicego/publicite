@@ -1,7 +1,7 @@
 "use client";
 import { Good, Service } from "@/types/postTypes";
 import { getPostInitialValues } from "./initialValues";
-import { Form, Formik, FormikErrors, FormikHelpers } from "formik";
+import { Field, Form, Formik, FormikErrors, FormikHelpers } from "formik";
 import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { useEffect, useState } from "react";
@@ -23,6 +23,8 @@ import { goodEditValidation } from "@/app/(root)/crear/anuncio/components/Create
 import { serviceEditValidation } from "@/app/(root)/crear/anuncio/components/CreateService/serviceValidation";
 import { handleFileSubmission } from "./handleFileSubmission";
 import ChangeBehaviourLink from "./ChangeBehaviourLink";
+import { CalendarDate, getLocalTimeZone, today } from "@internationalized/date";
+import { CustomDateInput } from "@/components/inputs/CustomInputs";
 
 const EditPostForm = ({ postData }: { postData: Good | Service }) => {
   const { postType } = postData;
@@ -47,6 +49,17 @@ const EditPostForm = ({ postData }: { postData: Good | Service }) => {
   );
 
   const handleSubmit = async (values: any, actions: FormikHelpers<any>) => {
+    if (
+      values.endDate < today(getLocalTimeZone()).toString() ||
+      values.endDate > today(getLocalTimeZone()).add({ years: 1 }).toString()
+    ) {
+      actions.setFieldError(
+        "endDate",
+        "La fecha de finalización debe ser posterior a la fecha actual"
+      );
+      actions.setSubmitting(false);
+      return;
+    }
     // check if all images were deleted and no new images were added
     if (
       newImages.length === 0 &&
@@ -149,7 +162,18 @@ const EditPostForm = ({ postData }: { postData: Good | Service }) => {
                 isService={postType === "service"}
               />
               {postType === "good" && <Condition errors={errors} />}
-
+              <Field
+                as={CustomDateInput}
+                name="endDate"
+                label="Fecha de Vencimiento"
+                aria-label="fecha de vencimiento"
+                description="La fecha de vencimiento es la fecha en la que el anuncio se considera vencido. Luego podrá cambiarla o renovarla."
+                onChange={(value: CalendarDate) =>
+                  setFieldValue("endDate", value ? value.toString() : "")
+                }
+                minValue={today(getLocalTimeZone())}
+                maxValue={today(getLocalTimeZone()).add({ years: 1 })}
+              />
               <Divider />
               <AccordionInputs
                 errors={errors}
