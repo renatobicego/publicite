@@ -28,12 +28,11 @@ export const emitGroupNotification = (
       userSending._id,
       previousNotificationId
     );
-    console.log(notification);
+
     socket.emit(
       "group_notifications",
       notification,
       (response: { status?: number; message?: string }) => {
-        console.log(response);
         if (response?.status === 200) {
           resolve(response);
         } else {

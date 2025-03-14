@@ -11,7 +11,6 @@ const PostReactionsContainer = ({
   post: Post;
   isAuthor: boolean;
 }) => {
-  console.log(post.reactions);
   const [localReactions, setLocalReactions] = useState(post.reactions);
   const emojis = ["👍", "😊", "❤️", "😂", "😲"];
   // list of emojis to react

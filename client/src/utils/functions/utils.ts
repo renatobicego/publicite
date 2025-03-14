@@ -1,7 +1,7 @@
 import { Magazine } from "@/types/magazineTypes";
 import { Good, Post } from "@/types/postTypes";
 import { Subscription, SubscriptionPlan } from "@/types/subscriptions";
-import { toastifySuccess } from "./toastify";
+import { toastifyError, toastifySuccess } from "./toastify";
 
 export const checkIfUserIsSubscribed = (
   subscriptionsOfUser: Subscription[],
@@ -142,7 +142,7 @@ export const shareLink = async (url: string, title: string) => {
         text: "Compartir Publicité",
       });
     } catch (error) {
-      console.log("Error sharing link:", error);
+      toastifyError("Error al compartir el link");
     }
   } else {
     // Fallback for browsers that don't support Web Share API
@@ -150,7 +150,7 @@ export const shareLink = async (url: string, title: string) => {
       await navigator.clipboard.writeText(url);
       toastifySuccess("¡Link copiado en el portapapeles!");
     } catch (error) {
-      console.log("Error copying link to clipboard:", error);
+      toastifyError("Error al compartir el link");
     }
   }
 };

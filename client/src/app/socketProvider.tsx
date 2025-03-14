@@ -114,7 +114,6 @@ export const SocketProvider = ({
       });
 
       newSocket.on("share_calification_notifications", (data) => {
-        console.log(data);
         setNewNotifications(true);
         handleElementSharedNotification(data);
       });

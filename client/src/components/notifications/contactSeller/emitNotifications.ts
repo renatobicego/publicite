@@ -17,7 +17,7 @@ export const emitContactSellerNotification = (
       client,
       userSending
     );
-    console.log(notification);
+
     socket?.emit(
       "contact_seller_notifications",
       {
@@ -33,7 +33,6 @@ export const emitContactSellerNotification = (
         },
       },
       (response: { status?: number; message?: string }) => {
-        console.log(response);
         if (response?.status === 200) {
           resolve(response);
         } else {

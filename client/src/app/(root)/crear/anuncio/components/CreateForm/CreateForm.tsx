@@ -16,7 +16,7 @@ const CreateForm = ({ userId }: { userId?: string }) => {
   const [files, setFiles] = useState<File[]>([]);
   const [postBehaviourType, setPostBehaviourType] =
     useState<PostBehaviourType>();
-  const { userCanPublishPost, limit, numberOfPosts } =
+  const { userCanPublishPost, limit, numberOfPosts, loading } =
     useUserPostLimit(postBehaviourType);
   return (
     <section
@@ -76,7 +76,7 @@ const CreateForm = ({ userId }: { userId?: string }) => {
           )}
         </section>
       </AttachedFilesProvider>
-      {!userCanPublishPost && postBehaviourType && (
+      {!userCanPublishPost && postBehaviourType && !loading && (
         <PostsLimitReached
           limit={limit[postBehaviourType]}
           numberOfPosts={numberOfPosts[postBehaviourType]}

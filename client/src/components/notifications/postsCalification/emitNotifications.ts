@@ -22,12 +22,10 @@ export const emitPostCalificationNotification = <T>(
       previousNotificationId,
       payload
     ).then((notification) => {
-      console.log(notification);
       socket?.emit(
         "post_calification_notifications",
         notification,
         (response: SocketResponse<T>) => {
-          console.log(response);
           if (response?.status === 200) {
             resolve(response);
           } else {
