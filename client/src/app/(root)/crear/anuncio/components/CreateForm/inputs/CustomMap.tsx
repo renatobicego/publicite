@@ -41,6 +41,7 @@ const CustomMap = ({
           mapTypeIds: ["roadmap"],
         },
         streetViewControl: false,
+        zoomControl: true,
         draggableCursor: "pointer",
         draggingCursor: "pointer",
         mapId: "google-maps-" + Math.random().toString(36).slice(2, 9),
@@ -68,6 +69,15 @@ const CustomMap = ({
       setMarkerCluster(cluster);
 
       map.addListener("click", (e: google.maps.MapMouseEvent) => {
+        if (e.latLng) {
+          const lat = e.latLng.lat();
+          const lng = e.latLng.lng();
+          setMarker({ lat, lng });
+          circle?.setCenter(e.latLng);
+          geocodeLatLng(lat, lng, true); // Get the address based on coordinates
+        }
+      });
+      circle?.addListener("click", (e: google.maps.PolyMouseEvent) => {
         if (e.latLng) {
           const lat = e.latLng.lat();
           const lng = e.latLng.lng();
