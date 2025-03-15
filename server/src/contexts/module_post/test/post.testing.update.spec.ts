@@ -46,6 +46,7 @@ interface PostUpdateDto {
     frequencyPrice?: string;
     toPrice?: number;
     petitionType?: string;
+    endDate?: Date;
 }
 
 
@@ -373,15 +374,15 @@ describe('Post Service Testing - Update post  ', () => {
                 postBehaviourType: "libre",
                 author: userId.toString()
             });
-
+            const newDate = new Date();
+            newDate.setDate(newDate.getDate() + 10);
             const updatePostRequest: PostUpdateDto = {
                 title: "test update",
                 description: "test update description",
                 imagesUrls: ["asd.com", "abc.com"],
                 brand: "test brand 22",
                 year: 99,
-
-
+                endDate: newDate,
             }
 
             await postService.updatePostById(updatePostRequest, post._id.toString(), "good");
@@ -394,6 +395,7 @@ describe('Post Service Testing - Update post  ', () => {
             expect(postUpdated.imagesUrls).toEqual(updatePostRequest.imagesUrls);
             expect(postUpdated.brand).toBe(updatePostRequest.brand);
             expect(postUpdated.year).toBe(updatePostRequest.year);
+            expect(postUpdated.endDate).toEqual(updatePostRequest.endDate);
 
 
 
@@ -410,15 +412,18 @@ describe('Post Service Testing - Update post  ', () => {
                 postBehaviourType: "libre",
                 author: userId.toString(),
                 frequencyPrice: "day",
+                endDate: new Date()
             });
+
+            const newDate = new Date();
+            newDate.setDate(newDate.getDate() + 10);
 
             const updatePostRequest: PostUpdateDto = {
                 title: "test update",
                 description: "test update description",
                 imagesUrls: ["asd.com", "abc.com"],
                 frequencyPrice: "week",
-
-
+                endDate: newDate
             }
 
             await postService.updatePostById(updatePostRequest, post._id.toString(), "service");
@@ -430,6 +435,7 @@ describe('Post Service Testing - Update post  ', () => {
             expect(postUpdated.description).toBe(updatePostRequest.description);
             expect(postUpdated.imagesUrls).toEqual(updatePostRequest.imagesUrls);
             expect(postUpdated.frequencyPrice).toBe(updatePostRequest.frequencyPrice);
+            expect(postUpdated.endDate).toEqual(updatePostRequest.endDate);
 
         })
 
@@ -445,8 +451,12 @@ describe('Post Service Testing - Update post  ', () => {
                 toPrice: 100,
                 frequencyPrice: "day",
                 petitionType: "service",
+                endDate: new Date()
 
             });
+
+            const newDate = new Date();
+            newDate.setDate(newDate.getDate() + 10);
 
             const updatePostRequest: PostUpdateDto = {
                 title: "test update",
@@ -455,6 +465,7 @@ describe('Post Service Testing - Update post  ', () => {
                 frequencyPrice: "week",
                 toPrice: 300,
                 petitionType: "good",
+                endDate: newDate
             }
 
             await postService.updatePostById(updatePostRequest, post._id.toString(), "petition");
@@ -465,6 +476,7 @@ describe('Post Service Testing - Update post  ', () => {
             expect(postUpdated.title).toBe(updatePostRequest.title);
             expect(postUpdated.description).toBe(updatePostRequest.description);
             expect(postUpdated.frequencyPrice).toBe(updatePostRequest.frequencyPrice);
+            expect(postUpdated.endDate).toEqual(updatePostRequest.endDate);
 
         })
 
