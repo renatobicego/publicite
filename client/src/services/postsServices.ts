@@ -65,6 +65,8 @@ export const getPostDataAndRecommended = async (
       variables: {
         findPostByIdAndCategoryPostsRecomendedId: id,
       },
+      // Ensure we're not using cached data
+      fetchPolicy: "network-only",
     });
     return data.findPostByIdAndCategoryPostsRecomended;
   } catch (error: ApolloError | any) {
