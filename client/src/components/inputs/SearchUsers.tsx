@@ -115,6 +115,24 @@ const SearchUsers = (props: SearchUsersProps) => {
 
   return (
     <div className="flex flex-col gap-2">
+      <div className="flex flex-wrap gap-2">
+        {selectedUsers.map((item) => (
+          <Chip
+            as={Button}
+            onPress={() => {
+              props.onSelectionChange(item._id);
+              deleteUser(item._id);
+            }}
+            startContent={<FaTimes className="text-gray-500" />}
+            color="default"
+            size="sm"
+            variant="bordered"
+            key={item._id}
+          >
+            {item.username}
+          </Chip>
+        ))}
+      </div>
       <Autocomplete
         label="Invitar colaboradores"
         placeholder="Seleccionar usuarios"
@@ -195,24 +213,6 @@ const SearchUsers = (props: SearchUsersProps) => {
           </AutocompleteItem>
         )}
       </Autocomplete>
-      <div className="flex flex-wrap gap-2">
-        {selectedUsers.map((item) => (
-          <Chip
-            as={Button}
-            onPress={() => {
-              props.onSelectionChange(item._id);
-              deleteUser(item._id);
-            }}
-            startContent={<FaTimes className="text-gray-500" />}
-            color="default"
-            size="sm"
-            variant="bordered"
-            key={item._id}
-          >
-            {item.username}
-          </Chip>
-        ))}
-      </div>
     </div>
   );
 };
