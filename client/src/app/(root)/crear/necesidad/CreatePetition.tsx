@@ -127,6 +127,8 @@ const CreatePetition = ({
                 <Field
                   as={CustomDateInput}
                   name="endDate"
+                  errorMessage={errors.endDate}
+                  isInvalid={!!errors.endDate}
                   label="Fecha de Vencimiento"
                   aria-label="fecha de vencimiento"
                   description="La fecha de vencimiento es la fecha en la que el anuncio se considera vencido. Luego podrá cambiarla o renovarla."

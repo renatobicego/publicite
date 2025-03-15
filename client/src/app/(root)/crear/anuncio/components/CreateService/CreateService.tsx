@@ -78,7 +78,7 @@ const CreateService = ({
     ) {
       actions.setFieldError(
         "endDate",
-        "La fecha de finalización debe ser posterior a la fecha actual"
+        "La fecha de finalización debe ser posterior a la fecha actual y no más de 1 año"
       );
       actions.setSubmitting(false);
       return;
@@ -143,6 +143,8 @@ const CreateService = ({
             <Field
               as={CustomDateInput}
               name="endDate"
+              errorMessage={errors.endDate}
+              isInvalid={!!errors.endDate}
               label="Fecha de Vencimiento"
               aria-label="fecha de vencimiento"
               description="La fecha de vencimiento es la fecha en la que el anuncio se considera vencido. Luego podrá cambiarla o renovarla."
