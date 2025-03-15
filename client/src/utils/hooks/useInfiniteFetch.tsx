@@ -5,7 +5,7 @@ import {
   fetchDataByType,
   PubliciteDataTypes,
 } from "../data/fetchDataByType";
-import { toastifyError } from "../functions/toastify";
+import { toastifyError, toastifyWarn } from "../functions/toastify";
 import { useInfiniteScroll } from "./useInfiniteScroll";
 import {
   isLocationAwarePostType,
@@ -51,8 +51,9 @@ export const useInfiniteFetch = (
       try {
         await requestLocationPermission(postType);
       } catch {
-        toastifyError(
-          "Por favor, autoriza el acceso la localización en tu dispositivo o selecciona la ubicación manualmente."
+        toastifyWarn(
+          "Por favor, autoriza el acceso la localización en tu dispositivo o selecciona la ubicación manualmente.",
+          "warn-location"
         );
         return;
       }
