@@ -38,8 +38,9 @@ export class PostAdapterMapper implements PostMapperAdapterInterface {
       frequencyPrice: postUpdateRequest.frequencyPrice,
       toPrice: postUpdateRequest.toPrice,
       petitionType: postUpdateRequest.petitionType,
+      endDate: postUpdateRequest.endDate
     };
-    
+
     return omitBy(postUpdateDto, isUndefined);
   }
 }
