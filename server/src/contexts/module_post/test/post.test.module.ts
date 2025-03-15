@@ -20,8 +20,6 @@ import { UserModule } from "src/contexts/module_user/user/infrastructure/module/
 import { SubscriptionPlanSchema } from "src/contexts/module_webhook/mercadopago/infastructure/schemas/subscriptionPlan.schema";
 import { SubscriptionSchema } from "src/contexts/module_webhook/mercadopago/infastructure/schemas/subscription.schema";
 import { PostAdapter } from "../post/infraestructure/adapter/post.adapter";
-import { PostComment } from "../post/domain/entity/postComment.entity";
-import { PostReview } from "../PostReview/domain/review.entity";
 import PostReviewModel from "../PostReview/infrastructure/schemas/review.schema";
 
 const post_testing_module = async (): Promise<TestingModule> => {

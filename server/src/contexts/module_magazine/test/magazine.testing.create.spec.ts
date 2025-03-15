@@ -5,7 +5,7 @@ import { getModelToken } from "@nestjs/mongoose";
 import { MagazineDocument, MagazineModel } from "../magazine/infrastructure/schemas/magazine.schema";
 import { IUser, UserModel } from "src/contexts/module_user/user/infrastructure/schemas/user.schema";
 import mapModuleTesting from "./magazine.test.module";
-import { createPersonalUser } from "../../../../test/functions/user/create.user";
+import { createPersonalUser } from "../../../../test/functions_unit_testing/user/create.user";
 
 import { MagazineAdapter } from "../magazine/infrastructure/resolver/adapter/magazine.adapter";
 import { createGroupMagazine, createUserMagazine } from "./models/create.magazine.request";

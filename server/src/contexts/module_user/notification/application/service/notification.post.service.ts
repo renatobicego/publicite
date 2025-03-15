@@ -25,6 +25,7 @@ export class NotificationPostService implements NotificationPostServiceInterface
     ) {
 
     }
+
     async saveNotificationPostReactionAndSendToUser(notificationPost: NotificationPost) {
         const postId = notificationPost.getPostId;
         const reaction = notificationPost.getPostReactionEmoji;

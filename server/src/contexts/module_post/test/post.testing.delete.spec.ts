@@ -4,16 +4,16 @@ import { getModelToken } from "@nestjs/mongoose";
 
 import { PostService } from "../post/application/service/post.service";
 import mapModuleTesting from "./post.test.module";
-import { insertPostGood } from "../../../../test/functions/post/create.post";
-import { createPersonalUser } from "../../../../test/functions/user/create.user";
+import { insertPostGood } from "../../../../test/functions_unit_testing/post/create.post";
+import { createPersonalUser } from "../../../../test/functions_unit_testing/user/create.user";
 import { IUser } from "src/contexts/module_user/user/infrastructure/schemas/user.schema";
 import { IPostGood, PostGoodModel } from "../post/infraestructure/schemas/post-types-schemas/post.good.schema";
 import PostReactionModel, { PostReactionDocument } from "../post/infraestructure/schemas/post.reaction.schema";
 import PostCommentModel, { PostCommentDocument } from "../post/infraestructure/schemas/post.comment.schema";
 import PostReviewModel, { PostReviewDocument } from "../PostReview/infrastructure/schemas/review.schema";
-import { insertPostComment } from "../../../../test/functions/post/create.postComment";
-import { insertPostReview } from "../../../../test/functions/post/create.postReview";
-import { insertPostReaction } from "../../../../test/functions/post/create.postReaction";
+import { insertPostComment } from "../../../../test/functions_unit_testing/post/create.postComment";
+import { insertPostReview } from "../../../../test/functions_unit_testing/post/create.postReview";
+import { insertPostReaction } from "../../../../test/functions_unit_testing/post/create.postReaction";
 import PostModel, { PostDocument } from "../post/infraestructure/schemas/post.schema";
 
 

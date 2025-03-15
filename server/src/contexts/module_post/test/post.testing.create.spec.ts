@@ -8,15 +8,14 @@ import { PostService } from "../post/application/service/post.service";
 import { IPostGood } from "../post/infraestructure/schemas/post-types-schemas/post.good.schema";
 import { IPostPetition } from "../post/infraestructure/schemas/post-types-schemas/post.petition.schema";
 import { IPostService } from "../post/infraestructure/schemas/post-types-schemas/post.service.schema";
-import { createPersonalUser } from "../../../../test/functions/user/create.user";
+import { createPersonalUser } from "../../../../test/functions_unit_testing/user/create.user";
 import { IUser } from "src/contexts/module_user/user/infrastructure/schemas/user.schema";
-import { createPlanOfSubscription, createSubscriptionForUser } from "../../../../test/functions/plans/create.planAndSub";
+import { createPlanOfSubscription, createSubscriptionForUser } from "../../../../test/functions_unit_testing/plans/create.planAndSub";
 import SubscriptionModel, { SubscriptionDocument } from "src/contexts/module_webhook/mercadopago/infastructure/schemas/subscription.schema";
 import SubscriptionPlanModel, { SubscriptionPlanDocument } from "src/contexts/module_webhook/mercadopago/infastructure/schemas/subscriptionPlan.schema";
 import { PostRepository } from "../post/infraestructure/repository/post.repository";
 import PostCommentModel, { PostCommentDocument } from "../post/infraestructure/schemas/post.comment.schema";
-import { insertPostGood } from "../../../../test/functions/post/create.post";
-import PostModel from "../post/infraestructure/schemas/post.schema";
+
 
 enum PostBehaviourType {
     libre = 'libre',

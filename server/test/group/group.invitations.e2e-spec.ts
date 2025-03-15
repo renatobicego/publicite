@@ -5,9 +5,9 @@ import { AppModule } from 'src/app.module';
 import { GroupService } from 'src/contexts/module_group/group/application/service/group.service';
 import { DatabaseService } from 'src/contexts/module_shared/database/infrastructure/database.service';
 
-import createTestingGroup_e2e from '../utils/create.group';
-import createTestingNotification_e2e from '../utils/createNotification';
-import createTestingUser_e2e, { UserType_test } from '../utils/create.user';
+import createTestingGroup_e2e from '../functions_e2e_testing/create.group';
+import createTestingNotification_e2e from '../functions_e2e_testing/createNotification';
+import createTestingUser_e2e, { UserType_test } from '../functions_e2e_testing/create.user';
 
 
 

@@ -5,7 +5,7 @@ import { getModelToken } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
 
 
-import { createGroup, GroupTestRequest, GroupUpdateRequestTest } from "../../../../test/functions/user/create.group";
+import { createGroup, GroupTestRequest, GroupUpdateRequestTest } from "../../../../test/functions_unit_testing/user/create.group";
 import { GroupDocument } from "../group/infrastructure/schemas/group.schema";
 import { IUser, UserModel } from "src/contexts/module_user/user/infrastructure/schemas/user.schema";
 import { GroupService } from "../group/application/service/group.service";

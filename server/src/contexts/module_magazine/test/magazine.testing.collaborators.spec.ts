@@ -6,12 +6,12 @@ import { getModelToken } from "@nestjs/mongoose";
 import mapModuleTesting from "./magazine.test.module";
 import { GroupDocument } from "src/contexts/module_group/group/infrastructure/schemas/group.schema";
 import { insertGroupMagazine, insertUserMagazine } from "./models/db/insert.group.magazine";
-import { createGroup } from "../../../../test/functions/user/create.group";
+import { createGroup } from "../../../../test/functions_unit_testing/user/create.group";
 import { MagazineService } from "../magazine/application/service/magazine.service";
 import { GroupMagazineDocument, GroupMagazineModel } from "../magazine/infrastructure/schemas/magazine.group.schema";
 import { UnauthorizedException } from "@nestjs/common";
 import { UserMagazineDocument } from "../magazine/infrastructure/schemas/magazine.user.schema";
-import { createPersonalUser } from "../../../../test/functions/user/create.user";
+import { createPersonalUser } from "../../../../test/functions_unit_testing/user/create.user";
 import { IUser, UserModel } from "src/contexts/module_user/user/infrastructure/schemas/user.schema";
 
 

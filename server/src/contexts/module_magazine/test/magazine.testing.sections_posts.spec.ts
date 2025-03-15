@@ -7,7 +7,7 @@ import { BadRequestException, UnauthorizedException } from "@nestjs/common";
 import mapModuleTesting from "./magazine.test.module";
 import { GroupDocument } from "src/contexts/module_group/group/infrastructure/schemas/group.schema";
 import { insertGroupMagazine, insertSection, insertUserMagazine } from "./models/db/insert.group.magazine";
-import { createGroup } from "../../../../test/functions/user/create.group";
+import { createGroup } from "../../../../test/functions_unit_testing/user/create.group";
 import { MagazineService } from "../magazine/application/service/magazine.service";
 import { GroupMagazineDocument, GroupMagazineModel } from "../magazine/infrastructure/schemas/magazine.group.schema";
 import { MagazineSectionDocument, MagazineSectionModel } from "../magazine/infrastructure/schemas/section/magazine.section.schema";

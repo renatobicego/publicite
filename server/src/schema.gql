@@ -1209,10 +1209,10 @@ input PostUpdateRequest {
   brand: String
   modelType: String
   condition: String
+  endDate: DateTime
   toPrice: Float
   frequencyPrice: FrequencyPrice
   petitionType: String
-  endDate: DateTime
 }
 
 input AttachedFiles {

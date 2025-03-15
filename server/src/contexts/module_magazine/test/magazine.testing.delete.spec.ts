@@ -4,8 +4,8 @@ import mongoose, { Connection, Model, Types } from "mongoose";
 
 import { GroupDocument } from "src/contexts/module_group/group/infrastructure/schemas/group.schema";
 import { IUser, UserModel } from "src/contexts/module_user/user/infrastructure/schemas/user.schema";
-import { createGroup } from "../../../../test/functions/user/create.group";
-import { createPersonalUser } from "../../../../test/functions/user/create.user";
+import { createGroup } from "../../../../test/functions_unit_testing/user/create.group";
+import { createPersonalUser } from "../../../../test/functions_unit_testing/user/create.user";
 import { MagazineService } from "../magazine/application/service/magazine.service";
 
 import { MagazineDocument, MagazineModel } from "../magazine/infrastructure/schemas/magazine.schema";
