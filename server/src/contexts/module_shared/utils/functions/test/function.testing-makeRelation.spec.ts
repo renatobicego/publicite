@@ -87,6 +87,6 @@ describe('makeUserRelationMapWithoutHierarchy', () => {
         const result = makeUserRelationMapWithoutHierarchy(userRelations, userRequestId, visibility);
 
         expect(result.get('3')).toEqual(['contacts', 'contacts']);
-        expect(result.get('2')).toBeUndefined(); // '2' is not included because its typeRelationA is 'topfriends'
+        expect(result.get('2')).toBeUndefined(); 
     });
 });

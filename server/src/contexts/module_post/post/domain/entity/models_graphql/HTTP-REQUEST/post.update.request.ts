@@ -65,6 +65,10 @@ export class PostUpdateRequest {
   @Field(() => String, { nullable: true })
   condition?: string;
 
+  @Field(() => Date, { nullable: true })
+  endDate: Date;
+
+
   //POST Petition
   @Field(() => Float, { nullable: true })
   toPrice?: number;
@@ -75,6 +79,5 @@ export class PostUpdateRequest {
   @Field(() => String, { nullable: true })
   petitionType?: string;
 
-  @Field(() => Date, { nullable: true })
-  endDate: Date;
+
 }
