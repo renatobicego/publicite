@@ -401,7 +401,7 @@ export class UserService implements UserServiceInterface {
       this.logger.log(
         'Notification received in the service: ' + UserService.name,
       );
-      if (userId === userIdFrom) {
+      if (userId == userIdFrom) {
         this.logger.log('User id and user id from are the same');
         return
       }

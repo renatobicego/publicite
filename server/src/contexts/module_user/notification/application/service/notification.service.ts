@@ -241,6 +241,7 @@ export class NotificationService implements NotificationHandlerServiceInterface,
         try {
             const factory = NotificationFactory.getInstance(this.logger);
             const notificationUser = factory.createNotification(typeOfNotification.user_notifications, notification);
+            
             const event = notificationUser.getEvent
             if (event === notification_user_new_friend_request || event === notification_user_new_relation_change) {
                 await this.isThisNotificationDuplicate(notificationUser.getNotificationEntityId);

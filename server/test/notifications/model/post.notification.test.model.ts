@@ -1,19 +1,7 @@
+import { Notification_testing_model } from "./base.notification.test.module";
 
 
-class Notification_testing_model {
-    event: string;
-    viewed?: boolean;
-    date?: any;
-    user?: string;
-    isActionsAvailable?: boolean;
-    backData: {
-        userIdTo: string
-        userIdFrom: string
-    }
-    socketJobId?: string
-    type: string
-    notificationEntityId?: string
-}
+
 
 export enum NotificationPostType_testing {
     reaction = 'reaction',
