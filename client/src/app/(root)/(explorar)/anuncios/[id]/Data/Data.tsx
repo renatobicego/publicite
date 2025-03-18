@@ -31,12 +31,10 @@ const Data = async ({
   post,
   isAuthor,
   isPetition,
-  usernameLogged,
 }: {
   post: Good | Service | Petition;
   isAuthor: boolean;
   isPetition: boolean;
-  usernameLogged: string | null | undefined;
 }) => {
   const good = post as Good;
   const service = post as Service;
@@ -137,7 +135,7 @@ const Data = async ({
                 _id: post._id,
                 description: post.title,
                 type: "post",
-                username: usernameLogged as string,
+                username: "",
                 imageUrl:
                   "imagesUrls" in post && post.imagesUrls
                     ? (post as Good).imagesUrls[0]

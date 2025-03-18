@@ -3,7 +3,7 @@ import ErrorCard from "@/components/ErrorCard";
 import { getPostData } from "@/services/postsServices";
 import { Good, Service } from "@/types/postTypes";
 import { EDIT_POST, NEEDS, POSTS } from "@/utils/data/urls";
-import { currentUser } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import EditPostBehaviourType from "./EditPostBehaviourType";
 import PostCard from "@/components/cards/PostCard/PostCard";
@@ -15,10 +15,10 @@ export default async function ModifyPostBehaviour(props: {
   const postData: Good | Service | { error: string } = await getPostData(
     params.id
   );
-  const userLogged = await currentUser();
+  const userLogged = auth();
   if (
     !("error" in postData) &&
-    userLogged?.username !== postData.author.username
+    userLogged?.sessionClaims?.metadata.mongoId !== postData.author._id
   ) {
     redirect(`${POSTS}/${params.id}`);
   }
@@ -58,7 +58,7 @@ export default async function ModifyPostBehaviour(props: {
           id={postData._id}
           postType={postData.postType}
           postBehaviourType={postData.postBehaviourType}
-          authorId={userLogged?.publicMetadata.mongoId}
+          authorId={userLogged?.sessionClaims?.metadata.mongoId}
           visibility={postData.visibility}
         />
       </section>

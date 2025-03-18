@@ -94,7 +94,10 @@ const UserInfo = ({
     }
   };
   return (
-    <section className="flex gap-4 md:gap-6 xl:gap-8 md:max-w-[65%] xl:max-w-[50%]">
+    <section
+      id="user-info"
+      className="flex gap-4 md:gap-6 xl:gap-8 md:max-w-[65%] xl:max-w-[50%]"
+    >
       <Image
         src={user.profilePhotoUrl}
         alt={`foto de perfil de ${user.username}`}

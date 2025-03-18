@@ -172,3 +172,24 @@ export const createGroupSteps = [
     disableBeacon: true,
   },
 ];
+
+export const profileSteps = [
+  {
+    target: "#profile-container",
+    content:
+      "Aquí podrás ver un perfil de un usuario, de tipo persona o empresa.",
+    disableBeacon: true,
+  },
+  {
+    target: "#user-info-container",
+    content:
+      "Aquí podrás ver los datos del usuario, con opciones para interactuar y su pizarra.",
+    disableBeacon: true,
+  },
+  {
+    target: "#user-info",
+    content:
+      "Aquí podrás ver los datos del usuario e interactuar, como enviar solicitud de agenda de contacto y compartir su perfil.",
+    disableBeacon: true,
+  },
+];

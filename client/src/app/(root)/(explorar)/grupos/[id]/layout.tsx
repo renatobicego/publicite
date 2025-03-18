@@ -2,7 +2,7 @@ import { Suspense, lazy } from "react";
 import BreadcrumbsAdmin from "@/components/BreadcrumbsAdmin";
 import { GROUPS } from "@/utils/data/urls";
 import ErrorCard from "@/components/ErrorCard";
-import { currentUser } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 import { getGroupById } from "@/services/groupsService";
 import type { User } from "@/types/userTypes";
 import type { GroupAdmin } from "@/types/groupTypes";
@@ -18,6 +18,10 @@ export default async function GroupLayout(props: {
   params: Promise<{ id: string }>;
   children: React.ReactNode;
 }) {
+  const loggedUser = auth();
+  if (!loggedUser) {
+    redirect("/iniciar-sesion");
+  }
   const params = await props.params;
   const { children } = props;
 
@@ -31,7 +35,6 @@ export default async function GroupLayout(props: {
     | { error: string; error2: string } = await getGroupById(params.id);
 
   if ("error" in groupData) {
-    console.log(groupData.error2);
     return (
       <ErrorCard
         message={groupData.error}
@@ -41,10 +44,6 @@ export default async function GroupLayout(props: {
   }
 
   const { group, isMember } = groupData;
-  const loggedUser = await currentUser();
-  if (!loggedUser) {
-    redirect("/iniciar-sesion");
-  }
 
   const breadcrumbsItems = [
     { label: "Inicio", href: "/" },
@@ -52,11 +51,13 @@ export default async function GroupLayout(props: {
     { label: group.name, href: `${GROUPS}/${params.id}` },
   ];
 
-  const isCreator = loggedUser.publicMetadata.mongoId === group.creator._id;
+  const isCreator =
+    loggedUser.sessionClaims?.metadata.mongoId === group.creator._id;
   const isAdmin =
     group.admins.some(
       (admin) =>
-        (admin as User)._id === (loggedUser?.publicMetadata.mongoId as string)
+        (admin as User)._id ===
+        (loggedUser?.sessionClaims?.metadata.mongoId as string)
     ) || isCreator;
 
   return (

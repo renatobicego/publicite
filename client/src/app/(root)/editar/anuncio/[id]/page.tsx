@@ -3,18 +3,20 @@ import ErrorCard from "@/components/ErrorCard";
 import { getPostData } from "@/services/postsServices";
 import { Good, Service } from "@/types/postTypes";
 import { EDIT_PETITION, EDIT_POST, POSTS } from "@/utils/data/urls";
-import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import EditPostClient from "./EditPost";
-export default async function EditPost(props: { params: Promise<{ id: string }> }) {
+import { auth } from "@clerk/nextjs/server";
+export default async function EditPost(props: {
+  params: Promise<{ id: string }>;
+}) {
   const params = await props.params;
   const postData: Good | Service | { error: string } = await getPostData(
     params.id
   );
-  const userLogged = await currentUser();
+  const userLogged = auth();
   if (
     !("error" in postData) &&
-    userLogged?.username !== postData.author.username
+    userLogged?.sessionClaims?.metadata.mongoId !== postData.author._id
   ) {
     redirect(`${POSTS}/${params.id}`);
   }
