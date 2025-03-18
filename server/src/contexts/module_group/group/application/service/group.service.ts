@@ -287,7 +287,8 @@ export class GroupService implements GroupServiceInterface {
       if (idsMembersArray.length === 0) return { userAndPosts: [], hasMore: false };
 
       const friendRelationsOfUserRequest: UserRelation[] = await this.userService.getRelationsFromUserByUserId(userRequest)
-
+      if (friendRelationsOfUserRequest.length === 0) return { userAndPosts: [], hasMore: false };
+      
       const idAndTypeOfRelationMap: Map<string, String[]> = makeUserRelationHierarchyMap(friendRelationsOfUserRequest, userRequest)
 
 
