@@ -1,6 +1,16 @@
 import { ObjectId, Types } from 'mongoose';
 import { UserPersonRequest, UserBusinessRequest } from 'src/contexts/module_user/user/application/adapter/dto/HTTP-REQUEST/user.request.CREATE';
-import { UserType, Gender } from 'src/contexts/module_user/user/domain/entity/enum/user.enums';
+
+enum UserType {
+  Person = 'Person',
+  Business = 'Business',
+}
+enum Gender {
+  Male = 'M',
+  Female = 'F',
+  Other = 'O',
+  Unknown = 'X',
+}
 
 
 export const userSub = (): UserPersonRequest => {
@@ -22,7 +32,7 @@ export const userSub = (): UserPersonRequest => {
       website: '',
     },
     createdTime: '2024-10-10T00:00:00Z',
-    userType: UserType.Person,
+    userType: UserType.Person as any,
     userPreferences: {
       searchPreference: ['66e608531f76fc4dda965554' as unknown as ObjectId],
       backgroundColor: 12,
@@ -59,7 +69,7 @@ export const userSubBusiness = (): UserBusinessRequest => {
     createdTime: '2024-10-10T00:00:00Z',
     name: 'Maxi',
     lastName: 'Cvetic',
-    userType: UserType.Business,
+    userType: UserType.Business as any,
     userPreferences: {
       searchPreference: [],
       backgroundColor: 12,

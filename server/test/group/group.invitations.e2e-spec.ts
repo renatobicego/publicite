@@ -1,13 +1,13 @@
-import { Test } from '@nestjs/testing';
-import { Connection, Types } from 'mongoose';
-
-import { AppModule } from 'src/app.module';
+import { Connection, Model, Types } from 'mongoose';
 import { GroupService } from 'src/contexts/module_group/group/application/service/group.service';
-import { DatabaseService } from 'src/contexts/module_shared/database/infrastructure/database.service';
 
 import createTestingGroup_e2e from '../functions_e2e_testing/create.group';
 import createTestingNotification_e2e from '../functions_e2e_testing/createNotification';
 import createTestingUser_e2e, { UserType_test } from '../functions_e2e_testing/create.user';
+import startServerForE2ETest from '../../test/getStartede2e-test';
+import { TestingModule } from '@nestjs/testing';
+import { GroupDocument } from 'src/contexts/module_group/group/infrastructure/schemas/group.schema';
+import { getModelToken } from '@nestjs/mongoose';
 
 
 
@@ -24,6 +24,7 @@ enum Visibility {
 let dbConnection: Connection;
 let httpServer: any;
 let app: any;
+let moduleRef: TestingModule;
 
 async function findById(id: any, collection: any, dbConnection: Connection) {
     try {
@@ -39,6 +40,7 @@ async function findById(id: any, collection: any, dbConnection: Connection) {
 describe('Group Service Invitations', () => {
 
     let groupService: GroupService;
+    let groupModel: Model<GroupDocument>
     const groupId = new Types.ObjectId("66d2177dda11f93d8647cf3b");
     const users = [
         new Types.ObjectId("66c5a1b0e80296e90ec638a1"),
@@ -49,19 +51,18 @@ describe('Group Service Invitations', () => {
 
 
     beforeAll(async () => {
-        const moduleRef = await Test.createTestingModule({
-            imports: [AppModule],
-        }).compile();
+        const {
+            databaseConnection,
+            application,
+            server,
+            module } = await startServerForE2ETest();
+        moduleRef = module
+        dbConnection = databaseConnection
+        app = application
+        httpServer = server
 
-        app = moduleRef.createNestApplication();
-        await app.init();
-
-        dbConnection = moduleRef
-            .get<DatabaseService>(DatabaseService)
-            .getDBHandle();
-        httpServer = app.getHttpServer();
         groupService = moduleRef.get<GroupService>("GroupServiceInterface");
-
+        groupModel = moduleRef.get<Model<GroupDocument>>(getModelToken("Group"));
 
     });
 
@@ -83,8 +84,9 @@ describe('Group Service Invitations', () => {
 
 
     it('Push notification to group - notification_group_new_user_invited', async () => {
-        await createTestingGroup_e2e({
-            _id: groupId,
+        const userId_2 = "67cf3e1306834d3262313c40"
+        const groupCreated = await createTestingGroup_e2e({
+            _id: new Types.ObjectId(),
             alias: "hola22",
             members: [users[0]],
             admins: [],
@@ -95,7 +97,10 @@ describe('Group Service Invitations', () => {
             creator: users[0],
             magazines: [],
             visibility: Visibility.public,
-            name: "hola"
+            name: "hola",
+            userIdAndNotificationMap: new Map<string, string>(
+                [[userId_2, "notification_id_test_23"]]
+            )
 
         }, dbConnection)
 
@@ -104,20 +109,22 @@ describe('Group Service Invitations', () => {
             userIdFrom: users[0],
         }
         const event = "notification_group_new_user_invited"
+        let group = await groupModel.findById(groupCreated._id);
+        console.log(group)
+
         await groupService.handleNotificationGroupAndSendToGroup(
-            groupId.toString(),
+            groupCreated._id.toString(),
             backData,
             event,
             null,
             "notification_id_test"
         )
-
-        const group = await findById(groupId, "groups", dbConnection);
-
+        group = await groupModel.findById(groupCreated._id);
+        console.log(group)
         expect(group!.groupNotificationsRequest.groupInvitations.length).toBe(1)
         expect(group!.groupNotificationsRequest.groupInvitations[0].toString()).toEqual(backData.userIdTo.toString())
-        expect(group!.userIdAndNotificationMap[backData.userIdTo.toString()]).toEqual("notification_id_test")
-
+        expect(group!.userIdAndNotificationMap.get(backData.userIdTo.toString())).toEqual("notification_id_test")
+        expect(group!.userIdAndNotificationMap.get(userId_2)).toEqual("notification_id_test_23")
     })
 
 

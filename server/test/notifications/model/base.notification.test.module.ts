@@ -12,7 +12,7 @@ export class Notification_testing_model {
         userIdFrom: string
     }
     socketJobId?: string
-    type: string
+    type?: string
     notificationEntityId?: string
     previousNotificationId?: string | null;
 }

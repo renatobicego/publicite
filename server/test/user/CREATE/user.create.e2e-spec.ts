@@ -1,13 +1,11 @@
-import { Test } from '@nestjs/testing';
 import { Connection, ObjectId, Types } from 'mongoose';
 import * as request from 'supertest';
 
 
-import { AppModule } from 'src/app.module';
-import { DatabaseService } from 'src/contexts/module_shared/database/infrastructure/database.service';
 import { UserBusinessRequest, UserPersonRequest } from 'src/contexts/module_user/user/application/adapter/dto/HTTP-REQUEST/user.request.CREATE';
-import { userSub, userSubBusiness } from '../../model/user.stub';
 import { UserType } from 'src/contexts/module_user/user/domain/entity/enum/user.enums';
+import { userSub, userSubBusiness } from '../model/user.stub';
+import startServerForE2ETest from '../../../test/getStartede2e-test';
 
 
 
@@ -18,38 +16,31 @@ let dbConnection: Connection;
 let httpServer: any;
 let app: any;
 
-/*
 
-Pendiente: Ver como arrojar disintos codigos de error para los casos. 
--> should throw an error if sector does not exist: Deberia arrojar 400
--> 
-
-*/
 
 describe('Create  account', () => {
-  beforeEach(async () => {
-    // Limpiar la base de datos si es necesario
-    await dbConnection.collection('users').deleteMany({});
+
+
+
+  beforeAll(async () => {
+    const {
+      databaseConnection,
+      application,
+      server } = await startServerForE2ETest();
+    dbConnection = databaseConnection
+    app = application
+    httpServer = server
   });
+
+  afterEach(async () => {
+    await dbConnection.collection('users').deleteMany({});
+  })
 
   afterAll(async () => {
     await dbConnection.close();
     await app.close();
   });
 
-  beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-
-    app = moduleRef.createNestApplication();
-    await app.init();
-
-    dbConnection = moduleRef
-      .get<DatabaseService>(DatabaseService)
-      .getDBHandle();
-    httpServer = app.getHttpServer();
-  });
 
   it('should create a personal account', async () => {
     const userPersonDto: UserPersonRequest = {
@@ -84,6 +75,38 @@ describe('Create  account', () => {
 
     expect(response.status).toBe(201);
     expect(Types.ObjectId.isValid(response.body)).toBe(true);
+
+    const user = await dbConnection.collection('users').findOne({ email: userSub().email });
+    console.log(user)
+    expect(user).toBeTruthy();
+    expect(user?.clerkId).toBe(userSub().clerkId);
+    expect(user?.email).toBe(userSub().email);
+    expect(user?.username).toBe(userSub().username);
+    expect(user?.description).toBe(userSub().description);
+    expect(user?.profilePhotoUrl).toBe(userSub().profilePhotoUrl);
+    expect(user?.countryRegion).toBe(userSub().countryRegion);
+    expect(user?.isActive).toBe(userSub().isActive);
+    expect(user?.name).toBe(userSub().name);
+    expect(user?.lastName).toBe(userSub().lastName);
+    expect(Types.ObjectId.isValid(user?.contact)).toBe(true);
+    expect(user?.createdTime).toBe(userSub().createdTime);
+    expect(user?.subscriptions.length).toBe(1)
+    expect(user?.groups).toEqual(userSub().groups);
+    expect(user?.magazines).toEqual(userSub().magazines);
+    expect(user?.board).toBe(userSub().board);
+    expect(user?.posts).toEqual(userSub().posts);
+    expect(user?.userRelations).toEqual(userSub().userRelations);
+    expect(user?.userType).toBe(userSub().userType);
+    expect(user?.userPreferences.toString()).toEqual(userSub().userPreferences.toString());
+    expect(user?.activeRelations).toEqual(userSub().activeRelations);
+    expect(user?.gender).toBe(userSub().gender);
+    expect(user?.birthDate).toBe(userSub().birthDate);
+
+
+
+
+
+
   });
 
   it('should create a business account', async () => {
@@ -120,6 +143,29 @@ describe('Create  account', () => {
 
     expect(response.status).toBe(201);
     expect(Types.ObjectId.isValid(response.body)).toBe(true);
+
+    const user = await dbConnection.collection('users').findOne({ clerkId: userSubBusiness().clerkId });
+    expect(user).toBeTruthy();
+    expect(user?.clerkId).toBe(userSubBusiness().clerkId);
+    expect(user?.email).toBe(userSubBusiness().email);
+    expect(user?.username).toBe(userSubBusiness().username);
+    expect(user?.description).toBe(userSubBusiness().description);
+    expect(user?.profilePhotoUrl).toBe(userSubBusiness().profilePhotoUrl);
+    expect(user?.countryRegion).toBe(userSubBusiness().countryRegion);
+    expect(user?.isActive).toBe(userSubBusiness().isActive);
+    expect(user?.name).toBe(userSubBusiness().name);
+    expect(user?.lastName).toBe(userSubBusiness().lastName);
+    expect(Types.ObjectId.isValid(user?.contact)).toBe(true);
+    expect(user?.createdTime).toBe(userSubBusiness().createdTime);
+    expect(user?.subscriptions.length).toBe(1)
+    expect(user?.sector.toString()).toEqual(userSubBusiness().sector.toString());
+    expect(user?.businessName).toBe(userSubBusiness().businessName);
+    expect(user?.groups).toEqual(userSubBusiness().groups);
+    expect(user?.magazines).toEqual(userSubBusiness().magazines);
+    expect(user?.board).toBe(userSubBusiness().board);
+    expect(user?.posts).toEqual(userSubBusiness().posts);
+
+
 
 
   });

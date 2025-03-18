@@ -1,14 +1,11 @@
-import { Test } from "@nestjs/testing";
 import { Connection, Types } from "mongoose";
-import { AppModule } from "src/app.module";
 import * as request from 'supertest';
-import * as dotenv from 'dotenv';
 
 
-import { DatabaseService } from "src/contexts/module_shared/database/infrastructure/database.service";
 import { createNotificationPost_testing, NotificationPostType_testing } from "../model/post.notification.test.model";
 import createTestingPost_e2e from "../../../test/functions_e2e_testing/create.post";
 import createTestingUser_e2e from "../../../test/functions_e2e_testing/create.user";
+import startServerForE2ETest from "../../../test/getStartede2e-test";
 
 
 
@@ -22,20 +19,16 @@ describe('Post Comments', () => {
     let PUBLICITE_SOCKET_API_KEY: string;
 
     beforeAll(async () => {
-        dotenv.config({ path: '.env.test' });
-        PUBLICITE_SOCKET_API_KEY = process.env.PUBLICITE_SOCKET_API_KEY!;
+        const {
+            databaseConnection,
+            SOCKET_SECRET,
+            application,
+            server } = await startServerForE2ETest();
 
-        const moduleRef = await Test.createTestingModule({
-            imports: [AppModule],
-        }).compile();
-
-        app = moduleRef.createNestApplication();
-        await app.init();
-
-        dbConnection = moduleRef
-            .get<DatabaseService>(DatabaseService)
-            .getDBHandle();
-        httpServer = app.getHttpServer();
+        PUBLICITE_SOCKET_API_KEY = SOCKET_SECRET
+        dbConnection = databaseConnection
+        app = application
+        httpServer = server
 
 
 

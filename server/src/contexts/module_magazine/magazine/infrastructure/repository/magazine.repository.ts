@@ -200,9 +200,6 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
       this.logger.log('Collaborators added to Magazine successfully');
     } catch (error: any) {
       this.logger.error('Error adding Collaborators to Magazine', error);
-      if (session) {
-        await session.abortTransaction();
-      }
       throw error;
     }
   }
@@ -267,8 +264,7 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
         .updateOne(
           { _id: magazineId, user: magazineAdmin },
           { $pullAll: { collaborators: collaboratorsToDelete } },
-          { session },
-        )
+        ).session(session);
       checkIfanyDataWasModified(result);
 
 
@@ -277,16 +273,12 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
         .updateMany(
           { _id: { $in: collaboratorsToDelete } },
           { $pull: { magazines: magazineId } },
-          { session },
-        )
+        ).session(session);
 
       this.logger.log('Collaborators deleted from Magazine successfully');
 
     } catch (error: any) {
       this.logger.error('Error deleting Collaborators from Magazine', error);
-      if (session) {
-        await session.abortTransaction();
-      }
       throw error;
     }
   }
@@ -306,21 +298,16 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
           creator: magazineAdmin,
         })
         .session(session)
+        .select("_id")
         .lean();
+
+
       if (!isAuthorized) {
         throw new UnauthorizedException();
       }
 
 
-      const result1 = await this.userModel
-        .updateMany(
-          { _id: { $in: allowedCollaboratorsToDelete } },
-          { $pull: { magazines: magazineId } },
-          { session },
-        )
-        .lean();
-      checkIfanyDataWasModified(result1);
-      const result2 = await this.groupMagazine
+      const result1 = await this.groupMagazine
         .updateOne(
           { _id: magazineId },
           {
@@ -329,7 +316,7 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
           { session },
         )
         .lean();
-      checkIfanyDataWasModified(result2)
+      checkIfanyDataWasModified(result1)
       this.logger.log(
         'Allowed Collaborators deleted from Magazine Group successfully',
       );

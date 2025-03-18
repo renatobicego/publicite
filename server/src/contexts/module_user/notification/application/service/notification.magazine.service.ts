@@ -50,12 +50,10 @@ export class NotificationMagazineService implements NotificationMagazineServiceI
             } else if (ownerType.group === magazineType) {
                 return await this.magazineService.deleteAllowedCollaboratorsFromMagazineGroup([memberToDelete], magazineId, magazineAdmin, session)
             } else {
-                throw new Error('Owner type (delete member) not supported in socket, please check it');
+                throw new Error('Owner type' + magazineType + ' not supported in magazine service, please check it');
             }
         } catch (error: any) {
             throw error;
-        } finally {
-            session.endSession();
         }
     }
 
@@ -105,7 +103,6 @@ export class NotificationMagazineService implements NotificationMagazineServiceI
                     await this.addNewMemberToMagazine(newMemberData, session)
 
                 }
-
 
                 await this.userService.pushNotificationToUserArrayNotifications(notificationId, userNotificationOwner, userIdFrom, session);
             })

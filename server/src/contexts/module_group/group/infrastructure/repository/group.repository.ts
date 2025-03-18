@@ -764,32 +764,25 @@ export class GroupRepository implements GroupRepositoryInterface, OnModuleInit {
     session: any,
   ): Promise<any> {
     try {
-      
+
       const userNotificationMap = new Map<string, string>();
       userNotificationMap.set(userId, notificationId);
-      const resultAddToSet = await this.groupModel
+
+      await this.groupModel
         .updateOne(
           { _id: groupId },
           {
             $addToSet: {
               'groupNotificationsRequest.groupInvitations': userId,
             },
+            $set: { [`userIdAndNotificationMap.${userId}`]: notificationId },
           },
         )
         .session(session)
         .lean();
 
-      const resultSet = await this.groupModel
-        .updateOne(
-          { _id: groupId, userIdAndNotificationMap: { $exists: false } },
-          {
-            $set: { userIdAndNotificationMap: userNotificationMap },
-          },
-        )
-        .session(session)
-        .lean();
 
-      checkIfanyDataWasModified(resultAddToSet || resultSet);
+
       this.logger.log(
         'Group request added to group successfully. Group ID: ' + groupId,
       );

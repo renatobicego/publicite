@@ -5,8 +5,9 @@ import * as request from 'supertest';
 import { AppModule } from 'src/app.module';
 import { DatabaseService } from 'src/contexts/module_shared/database/infrastructure/database.service';
 import { UserType } from 'src/contexts/module_user/user/domain/entity/enum/user.enums';
-import { userSub, userSubBusiness } from '../../model/user.stub';
 import { UserBusinessRequest, UserPersonRequest } from 'src/contexts/module_user/user/application/adapter/dto/HTTP-REQUEST/user.request.CREATE';
+import { userSub, userSubBusiness } from '../model/user.stub';
+import startServerForE2ETest from '../../../test/getStartede2e-test';
 
 
 let dbConnection: Connection;
@@ -89,18 +90,14 @@ const createBusinessUser = async () => {
 
 describe('Update a Personal Account', () => {
   beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-
-    app = moduleRef.createNestApplication();
-    await app.init();
-
-    dbConnection = moduleRef.get<DatabaseService>(DatabaseService).getDBHandle();
-    httpServer = app.getHttpServer();
-
-
-    await dbConnection.collection('users').deleteMany({});
+    const {
+      databaseConnection,
+      application,
+      server } = await startServerForE2ETest();
+    dbConnection = databaseConnection
+    app = application
+    httpServer = server
+    
     await createPersonalUser()
   });
 
