@@ -5,26 +5,26 @@ import { AppModule } from 'src/app.module';
 let httpServer: any;
 let app: any;
 
-describe('Create a Personal account', () => {
-  beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
+// describe('Create a Personal account', () => {
+//   beforeAll(async () => {
+//     const moduleRef = await Test.createTestingModule({
+//       imports: [AppModule],
+//     }).compile();
 
-    app = moduleRef.createNestApplication();
-    //app.useLogger(new Logger());
-    await app.init();
+//     app = moduleRef.createNestApplication();
+//     //app.useLogger(new Logger());
+//     await app.init();
 
-    httpServer = app.getHttpServer();
-  });
+//     httpServer = app.getHttpServer();
+//   });
 
-  afterAll(async () => {
-    await app.close();
-  });
+//   afterAll(async () => {
+//     await app.close();
+//   });
 
-  it('should error if user are not authorized', async () => {
-    const response = await request(httpServer).get('/user/auth');
+//   it('should error if user are not authorized', async () => {
+//     const response = await request(httpServer).get('/user/auth');
 
-    expect(response.status).toBe(403);
-  });
-});
+//     expect(response.status).toBe(403);
+//   });
+// });

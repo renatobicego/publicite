@@ -10,6 +10,7 @@ import createTestingUser_e2e from "../../functions_e2e_testing/create.user";
 import { IUser, UserModel } from "src/contexts/module_user/user/infrastructure/schemas/user.schema";
 import { getModelToken } from "@nestjs/mongoose";
 import { UserRelationDocument, UserRelationModel } from "src/contexts/module_user/user/infrastructure/schemas/user.relation.schema";
+import startServerForE2ETest from "../../../test/getStartede2e-test";
 
 
 
@@ -25,20 +26,18 @@ describe('Notification - User RelationShip test', () => {
 
 
     beforeAll(async () => {
-        dotenv.config({ path: '.env.test' });
-        PUBLICITE_SOCKET_API_KEY = process.env.PUBLICITE_SOCKET_API_KEY!;
+        const {
+            module,
+            databaseConnection,
+            SOCKET_SECRET,
+            application,
+            server } = await startServerForE2ETest();
 
-        const moduleRef = await Test.createTestingModule({
-            imports: [AppModule],
-        }).compile();
-
-        app = moduleRef.createNestApplication();
-        await app.init();
-
-        dbConnection = moduleRef
-            .get<DatabaseService>(DatabaseService)
-            .getDBHandle();
-        httpServer = app.getHttpServer();
+        PUBLICITE_SOCKET_API_KEY = SOCKET_SECRET
+        dbConnection = databaseConnection
+        const moduleRef = module
+        app = application
+        httpServer = server
 
         userModel = moduleRef.get<Model<IUser>>(getModelToken(UserModel.modelName));
         userRelationModel = moduleRef.get<Model<UserRelationDocument>>(getModelToken(UserRelationModel.modelName));
@@ -705,7 +704,7 @@ describe('Notification - User RelationShip test', () => {
             userRelations: [oldRelationShip._id]
         }, dbConnection)
 
-    
+
 
 
         const response = await request(httpServer)
@@ -826,7 +825,7 @@ describe('Notification - User RelationShip test', () => {
             userRelations: [oldRelationShip._id]
         }, dbConnection)
 
-    
+
 
 
         const response = await request(httpServer)
@@ -865,7 +864,7 @@ describe('Notification - User RelationShip test', () => {
     })
 
 
-    
+
     it('Reject request friend relation change without previous notification, should return 400 error', async () => {
         const juan_id = new Types.ObjectId();
         const pedro_id = new Types.ObjectId();
@@ -948,7 +947,7 @@ describe('Notification - User RelationShip test', () => {
             userRelations: [oldRelationShip._id]
         }, dbConnection)
 
-    
+
 
 
         const response = await request(httpServer)

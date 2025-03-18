@@ -1,20 +1,17 @@
-import { Test } from "@nestjs/testing";
 import { Connection, Model, Types } from "mongoose";
 import * as request from 'supertest';
-import * as dotenv from 'dotenv';
 import { getModelToken } from "@nestjs/mongoose";
 
-import { AppModule } from "src/app.module";
+
 import { IUser, UserModel } from "src/contexts/module_user/user/infrastructure/schemas/user.schema";
-import { DatabaseService } from "src/contexts/module_shared/database/infrastructure/database.service";
 import { createNotificationMagazine_testing } from "../model/magazine.notification.test.model";
 import createTestingUser_e2e from "../../../test/functions_e2e_testing/create.user";
 import { MagazineDocument, MagazineModel } from "src/contexts/module_magazine/magazine/infrastructure/schemas/magazine.schema";
 import { createGroupMagazine_e2e, createUserMagazine_e2e } from "../../../test/functions_e2e_testing/createMagazine";
 import NotificationModel, { NotificationDocument } from "src/contexts/module_user/notification/infrastructure/schemas/notification.schema";
 import createTestingGroup_e2e from "../../../test/functions_e2e_testing/create.group";
-import { group } from "console";
 import { GroupDocument, GroupModel } from "src/contexts/module_group/group/infrastructure/schemas/group.schema";
+import startServerForE2ETest from "../../../test/getStartede2e-test";
 
 
 
@@ -32,20 +29,19 @@ describe('Notification - Magazine invitations test', () => {
     let groupModel: Model<GroupDocument>
 
     beforeAll(async () => {
-        dotenv.config({ path: '.env.test' });
-        PUBLICITE_SOCKET_API_KEY = process.env.PUBLICITE_SOCKET_API_KEY!;
+        const {
+            module,
+            databaseConnection,
+            SOCKET_SECRET,
+            application,
+            server } = await startServerForE2ETest();
+            
+        PUBLICITE_SOCKET_API_KEY = SOCKET_SECRET
+        dbConnection = databaseConnection
+        const moduleRef = module
+        app = application
+        httpServer = server
 
-        const moduleRef = await Test.createTestingModule({
-            imports: [AppModule],
-        }).compile();
-
-        app = moduleRef.createNestApplication();
-        await app.init();
-
-        dbConnection = moduleRef
-            .get<DatabaseService>(DatabaseService)
-            .getDBHandle();
-        httpServer = app.getHttpServer();
 
         userModel = moduleRef.get<Model<IUser>>(getModelToken(UserModel.modelName));
         magazineModel = moduleRef.get<Model<MagazineDocument>>(getModelToken(MagazineModel.modelName))
