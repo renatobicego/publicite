@@ -25,11 +25,11 @@ export default async function SubscriptionPlans() {
   const { sessionClaims } = auth();
 
   const subscriptions: SubscriptionPlan[] = await getSubscriptionsPlans();
-  const susbcriptionsOfUser = await getSubscriptionsOfUser(
+  const subcriptionsOfUser = await getSubscriptionsOfUser(
     sessionClaims?.metadata.mongoId as string
   );
 
-  if ("error" in susbcriptionsOfUser) {
+  if ("error" in subcriptionsOfUser) {
     return <ErrorCard message={"Error obteniendo planes de suscripción"} />;
   }
 
@@ -50,7 +50,7 @@ export default async function SubscriptionPlans() {
         <SubscriptionGrid
           type="suscripciones"
           subscriptions={subscriptions.filter((plan) => !plan.isPack)}
-          subscriptionsOfUser={susbcriptionsOfUser.filter(
+          subscriptionsOfUser={subcriptionsOfUser.filter(
             (subscription) => !subscription.subscriptionPlan.isPack
           )}
         />

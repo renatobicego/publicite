@@ -18,7 +18,6 @@ export default async function PostPacks() {
   ];
 
   const subscriptions: SubscriptionPlan[] = await getSubscriptionsPlans();
-
   return (
     <main className="flex min-h-screen flex-col items-start main-style gap-8">
       <BreadcrumbsAdmin items={breadcrumbsItems} />
