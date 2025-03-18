@@ -1,5 +1,6 @@
 import { Link } from "@nextui-org/react";
 import React from "react";
+import AboutUs from "../modals/AboutUs";
 
 const Support = () => {
   return (
@@ -16,9 +17,7 @@ const Support = () => {
         </Link>
       </li>
       <li>
-        <Link size="sm" className="text-white" href={""}>
-          Sobre Nosotros
-        </Link>
+        <AboutUs />
       </li>
     </ul>
   );
