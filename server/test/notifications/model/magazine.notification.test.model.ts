@@ -37,6 +37,7 @@ export function createNotificationMagazine_testing(notificationMagazineRequest: 
         type: notificationMagazineRequest.type ?? "magazine_notifications",
         notificationEntityId: notificationMagazineRequest.notificationEntityId ?? "notificationEntityId",
         previousNotificationId: notificationMagazineRequest.previousNotificationId ?? null,
+        
         frontData: {
             magazine: {
                 _id: notificationMagazineRequest.frontData.magazine._id ?? new Types.ObjectId().toString(),

@@ -279,9 +279,6 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
 
     } catch (error: any) {
       this.logger.error('Error deleting Collaborators from Magazine', error);
-      if (session) {
-        await session.abortTransaction();
-      }
       throw error;
     }
   }
@@ -301,21 +298,16 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
           creator: magazineAdmin,
         })
         .session(session)
+        .select("_id")
         .lean();
+
+
       if (!isAuthorized) {
         throw new UnauthorizedException();
       }
 
 
-      const result1 = await this.userModel
-        .updateMany(
-          { _id: { $in: allowedCollaboratorsToDelete } },
-          { $pull: { magazines: magazineId } },
-          { session },
-        )
-        .lean();
-      checkIfanyDataWasModified(result1);
-      const result2 = await this.groupMagazine
+      const result1 = await this.groupMagazine
         .updateOne(
           { _id: magazineId },
           {
@@ -324,7 +316,7 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
           { session },
         )
         .lean();
-      checkIfanyDataWasModified(result2)
+      checkIfanyDataWasModified(result1)
       this.logger.log(
         'Allowed Collaborators deleted from Magazine Group successfully',
       );

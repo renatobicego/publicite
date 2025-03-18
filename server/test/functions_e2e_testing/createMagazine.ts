@@ -32,14 +32,14 @@ async function createUserMagazine_e2e(userMagazineRequest: UserMagazineRequest, 
 
 
 class GroupMagazineRequest {
-    _id: Types.ObjectId;
-    name: string;
-    sections: Types.ObjectId[];
-    ownerType: string;
-    description: string
-    allowedCollaborators: Types.ObjectId[]
-    group: Types.ObjectId;
-    kind: string;
+    _id?: Types.ObjectId;
+    name?: string;
+    sections?: Types.ObjectId[];
+    ownerType?: string;
+    description?: string
+    allowedCollaborators?: Types.ObjectId[]
+    group?: Types.ObjectId;
+    kind?: string;
 }
 
 
@@ -55,7 +55,8 @@ async function createGroupMagazine_e2e(groupMagazineRequest: GroupMagazineReques
         group: groupMagazineRequest.group,
         kind: "GroupMagazine"
     }
-
+    await dbConnection.collection('magazines').insertOne(groupMagazineRequest);
+    return groupMagazineRequest;
     
 }
 
