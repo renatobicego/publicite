@@ -20,6 +20,7 @@ import { useTutorialSteps } from "./getTutorialSteps";
 import { usePathname, useRouter } from "next/navigation";
 import PrimaryButton from "../PrimaryButton";
 import { FaX } from "react-icons/fa6";
+import GlosaryModal from "./GlosaryModal";
 
 const CustomTooltip = ({
   continuous,
@@ -138,14 +139,20 @@ const HelpButton = () => {
             size="lg"
             radius="full"
             variant="light"
-            className="fixed bottom-8 right-8 bg-fondo shadow"
+            className="fixed bottom-4 md:bottom-8 right-4 md:right-8 bg-fondo shadow"
           >
             <IoIosHelp className="size-16" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="flex flex-col">
-          <Button onPress={handleClickStart}>Ver Tutorial</Button>
-          <Button>Glosario</Button>
+        <PopoverContent className="flex flex-col items-start">
+          <PrimaryButton
+            variant="light"
+            className="hover:text-primary text-left"
+            onPress={handleClickStart}
+          >
+            Ver Tutorial
+          </PrimaryButton>
+          <GlosaryModal />
         </PopoverContent>
       </Popover>
     </>
