@@ -6,7 +6,7 @@ import * as dotenv from 'dotenv';
 import { AppModule } from "src/app.module";
 import { DatabaseService } from "src/contexts/module_shared/database/infrastructure/database.service";
 import { createNotification_user, UserRelationType_testing } from "../model/user.notification.test.model";
-import createTestingUser_e2e from "../../../test/functions_e2e_testing/create.user";
+import createTestingUser_e2e from "../../functions_e2e_testing/create.user";
 import { IUser, UserModel } from "src/contexts/module_user/user/infrastructure/schemas/user.schema";
 import { getModelToken } from "@nestjs/mongoose";
 import { UserRelationDocument, UserRelationModel } from "src/contexts/module_user/user/infrastructure/schemas/user.relation.schema";
@@ -14,7 +14,7 @@ import { UserRelationDocument, UserRelationModel } from "src/contexts/module_use
 
 
 
-describe('', () => {
+describe('Notification - User RelationShip test', () => {
 
     let dbConnection: Connection;
     let httpServer: any;

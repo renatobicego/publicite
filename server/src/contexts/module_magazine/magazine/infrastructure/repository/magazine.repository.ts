@@ -200,9 +200,6 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
       this.logger.log('Collaborators added to Magazine successfully');
     } catch (error: any) {
       this.logger.error('Error adding Collaborators to Magazine', error);
-      if (session) {
-        await session.abortTransaction();
-      }
       throw error;
     }
   }
@@ -267,8 +264,7 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
         .updateOne(
           { _id: magazineId, user: magazineAdmin },
           { $pullAll: { collaborators: collaboratorsToDelete } },
-          { session },
-        )
+        ).session(session);
       checkIfanyDataWasModified(result);
 
 
@@ -277,8 +273,7 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
         .updateMany(
           { _id: { $in: collaboratorsToDelete } },
           { $pull: { magazines: magazineId } },
-          { session },
-        )
+        ).session(session);
 
       this.logger.log('Collaborators deleted from Magazine successfully');
 

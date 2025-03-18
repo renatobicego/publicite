@@ -105,18 +105,18 @@ export class SocketController {
 
 
 
-  @Get('test')
-  //@UseGuards(AuthSocket)
-  async get(
-    @Body() notificationBody: any,
-  ): Promise<any> {
-    try {
+  // @Get('test')
+  // //@UseGuards(AuthSocket)
+  // async get(
+  //   @Body() notificationBody: any,
+  // ): Promise<any> {
+  //   try {
 
-      return { body: "Success" };
-    } catch (error: any) {
-      throw error;
-    }
-  }
+  //     return { body: "Success" };
+  //   } catch (error: any) {
+  //     throw error;
+  //   }
+  // }
 
 
 
