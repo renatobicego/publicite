@@ -124,6 +124,7 @@ const AccordionData = ({
       itemClasses={{
         title: "text-text-color font-semibold max-md:text-sm text-base",
       }}
+      id="accordion-post-data"
     >
       {accordionItems}
     </Accordion>

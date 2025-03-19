@@ -10,6 +10,8 @@ import {
   explorePostsSteps,
   exploreProfilesSteps,
   homePageSteps,
+  postSteps,
+  profileSteps,
 } from "./tutorialSteps";
 import {
   BOARDS,
@@ -50,6 +52,10 @@ export const useTutorialSteps = (path: string) => {
         return createMagazineSteps;
       case path === `${CREATE_GROUP}`:
         return createGroupSteps;
+      case path.includes(`${PROFILE}/`):
+        return profileSteps;
+      case path.includes(`${POSTS}/`):
+        return postSteps;
     }
   }, [path]);
 };

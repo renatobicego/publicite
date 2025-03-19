@@ -175,7 +175,7 @@ export const createGroupSteps = [
 
 export const profileSteps = [
   {
-    target: "#profile-container",
+    target: "body",
     content:
       "Aquí podrás ver un perfil de un usuario, de tipo persona o empresa.",
     disableBeacon: true,
@@ -190,6 +190,58 @@ export const profileSteps = [
     target: "#user-info",
     content:
       "Aquí podrás ver los datos del usuario e interactuar, como enviar solicitud de agenda de contacto y compartir su perfil.",
+    disableBeacon: true,
+  },
+  {
+    target: "#my-info",
+    content:
+      "Aquí podrás ver tus datos personales, con opciones para ver las peticiones de contacto (los usuarios que te han contactado por tus anuncios). Para editar tu perfil, puedes hacerlo en la sección de Configuración.",
+    disableBeacon: true,
+  },
+  {
+    target: "#board",
+    content: "Aquí podrás ver la pizarra, donde hay anotaciones del usuario.",
+    disableBeacon: true,
+  },
+  {
+    target: "#user-tabs",
+    content: "Aquí podrás seleccionar las distintas solapas del usuario.",
+    disableBeacon: true,
+  },
+];
+
+export const postSteps = [
+  {
+    target: "body",
+    content: "Aquí podrás los detalles de un anuncio.",
+    disableBeacon: true,
+  },
+  {
+    target: "#post-data",
+    content:
+      "Aquí podrás ver los datos del anuncio. Podrás contactar al anunciante, compartir el anuncio o guardarlo en una revista. En caso de que tu hayas publicado el mismo anuncio, podrás editarlo.",
+    disableBeacon: true,
+  },
+  {
+    target: "#contact-button",
+    content:
+      "Aquí podrás contactar al anunciante por el anuncio, donde luego te contactará para lograr la venta o compra de manera externa a la plataforma Publicité.",
+    disableBeacon: true,
+  },
+  {
+    target: "#contact-petitions-button",
+    content:
+      "Aquí podrás ver las peticiones de contacto que has recibido por el anuncio. En caso de que completes una venta, luego de 3 días de realizada la petición de contacto, podrás solicitar una calificación al usuario que contactó (deberá estar registrado).",
+  },
+  {
+    target: "#accordion-post-data",
+    content: "Aquí podrás desplegar mas información del anuncio.",
+    disableBeacon: true,
+  },
+  {
+    target: "#post-comments",
+    content:
+      "Aquí podrás ver y dejar comentarios, donde el anunciante podrá responderte, y anuncios recomendados a partir del anuncio que estás visualizando.",
     disableBeacon: true,
   },
 ];

@@ -78,6 +78,7 @@ const ContactPetitionsList = ({
           color="primary"
           radius="full"
           className="p-1"
+          id="contact-petitions-button"
         >
           <MdContacts className="size-5" />
         </Button>

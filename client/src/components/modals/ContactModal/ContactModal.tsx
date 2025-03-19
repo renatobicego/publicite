@@ -23,7 +23,9 @@ const ContactModal = ({
 
   return (
     <>
-      <PrimaryButton onPress={onOpen}>Contactar</PrimaryButton>
+      <PrimaryButton id="contact-button" onPress={onOpen}>
+        Contactar
+      </PrimaryButton>
       <Modal
         radius="lg"
         className="p-2"

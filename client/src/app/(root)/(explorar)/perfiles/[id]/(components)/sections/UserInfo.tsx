@@ -95,7 +95,7 @@ const UserInfo = ({
   };
   return (
     <section
-      id="user-info"
+      id={isMyProfile ? "my-info" : "user-info"}
       className="flex gap-4 md:gap-6 xl:gap-8 md:max-w-[65%] xl:max-w-[50%]"
     >
       <Image

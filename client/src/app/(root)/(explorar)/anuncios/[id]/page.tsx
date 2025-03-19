@@ -51,10 +51,7 @@ export default async function PostPage(props: {
 
   return (
     <Suspense fallback={<Loading />}>
-      <main
-        id="post-container"
-        className="flex min-h-screen flex-col items-start main-style gap-6 md:gap-8"
-      >
+      <main className="flex min-h-screen flex-col items-start main-style gap-6 md:gap-8">
         <BreadcrumbsAdmin items={breadcrumbsItems} />
         <section
           id="post-data"
