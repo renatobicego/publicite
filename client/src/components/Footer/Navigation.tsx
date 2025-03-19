@@ -23,7 +23,7 @@ const Navigation = ({ id }: { id?: string | null }) => {
             <Link
               size="sm"
               className="text-white"
-              href={`${PROFILE}/${id}/${MAGAZINES}}`}
+              href={`${PROFILE}/${id}/${MAGAZINES}`}
             >
               Mis Revistas
             </Link>
@@ -32,7 +32,7 @@ const Navigation = ({ id }: { id?: string | null }) => {
             <Link
               size="sm"
               className="text-white"
-              href={`${PROFILE}/${id}/${GROUPS}}`}
+              href={`${PROFILE}/${id}/${GROUPS}`}
             >
               Mis Grupos
             </Link>
