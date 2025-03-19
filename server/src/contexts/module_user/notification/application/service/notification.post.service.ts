@@ -77,8 +77,7 @@ export class NotificationPostService implements NotificationPostServiceInterface
                 "Missing comment, userIdFrom, postId, or userIdTo."
             );
         }
-        console.log(userIdFrom)
-        console.log(userIdTo)
+
         const session = await this.connection.startSession();
         try {
             this.logger.log(`Iniciando transacción para el comentario en el post ID: ${postId}`);

@@ -39,20 +39,20 @@ export class NotificationGroupService implements NotificationGroupServiceInterfa
         let notificationId: Types.ObjectId;
         if (!event || !userNotificationOwner || !userIdFrom) throw new Error('Missing event, userNotificationOwner or userIdFrom');
         try {
-
-
             await session.withTransaction(async () => {
                 this.logger.log('Saving notification....');
 
                 notificationId = await this.notificationRepository.saveGroupNotification(notificationGroup, session);
                 this.logger.log('Notification save successfully');
+                console.log(notificationGroup)
+
                 if (eventsThatMakeNotificationActionsInactive_GROUP.includes(event)) {
                     this.logger.log('Setting notification actions to false');
                     const previousNotificationId = notificationGroup.getpreviousNotificationId;
                     if (!previousNotificationId) {
                         throw new PreviousIdMissingException()
                     }
-                    await this.notificationRepository.setNotificationActionsToFalseById(previousNotificationId, session);
+                    
                 }
 
                 if (GROUP_NOTIFICATION_send_group.includes(event)) {
@@ -67,7 +67,9 @@ export class NotificationGroupService implements NotificationGroupServiceInterfa
                 }
 
                 await this.userService.pushNotificationToUserArrayNotifications(notificationId, userNotificationOwner, userIdFrom, session);
+                return
             });
+            return
         } catch (error: any) {
             this.logger.error('An error occurred while sending notification');
             throw error;

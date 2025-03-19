@@ -186,7 +186,6 @@ export class NotificationRepository implements NotificationRepositoryInterface {
     session: any,
   ): Promise<void> {
     try {
-      console.log(id)
       const result = await this.notificationBaseDocument.updateOne(
         { _id: id },
         [
@@ -206,7 +205,7 @@ export class NotificationRepository implements NotificationRepositoryInterface {
         ],
         { session },
       );
-      console.log(result)
+
     } catch (error: any) {
       throw error;
     }
