@@ -7,11 +7,13 @@ const MasonryPostGrid = ({
   isGroupPost,
   showChangeExpirationDate,
   showEmptyMessage,
+  hideSaveMagazineButton,
 }: {
   posts: Post[];
   isGroupPost: boolean;
   showChangeExpirationDate?: boolean;
   showEmptyMessage?: boolean;
+  hideSaveMagazineButton?: boolean;
 }) => {
   const { columns } = useMasonryGrid(posts, [2, 3, 4, 5], [768, 1280, 1720]);
   if (!posts || posts.length === 0)
@@ -31,6 +33,7 @@ const MasonryPostGrid = ({
               className={post.postType === "petition" ? "mt-3" : ""}
               isGroupPost={isGroupPost}
               showChangeExpirationDate={showChangeExpirationDate}
+              hideSaveMagazineButton={hideSaveMagazineButton}
             />
           ))}
         </div>

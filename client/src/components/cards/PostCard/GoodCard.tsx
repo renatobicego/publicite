@@ -4,22 +4,28 @@ import PostCardBody from "./PostCardBody";
 import PostImage from "./PostImage";
 import { formatTotal } from "@/utils/functions/utils";
 
-
 const GoodCard = ({
   post,
   recommendation,
   savePostMagazine,
-  isGroupPost
+  isGroupPost,
+  hideSaveMagazineButton,
 }: {
   post: Good;
   recommendation: boolean;
-    savePostMagazine: boolean;
+  savePostMagazine: boolean;
   isGroupPost: boolean;
+  hideSaveMagazineButton?: boolean;
 }) => {
   const { title, reviews, description, price } = post;
   return (
     <>
-      <PostImage post={post} recommendation={recommendation} savePostMagazine={savePostMagazine}/>
+      <PostImage
+        post={post}
+        recommendation={recommendation}
+        savePostMagazine={savePostMagazine}
+        hideSaveMagazineButton={hideSaveMagazineButton}
+      />
       <PostCardBody
         title={title}
         reviews={reviews}

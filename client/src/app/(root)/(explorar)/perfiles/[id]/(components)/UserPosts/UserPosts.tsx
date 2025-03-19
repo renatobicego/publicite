@@ -59,6 +59,9 @@ const UserPosts = ({
         showChangeExpirationDate={
           solapaSelected === "nextToExpire" || solapaSelected === "expired"
         }
+        hideSaveMagazineButton={
+          solapaSelected === "inactive" || solapaSelected === "expired"
+        }
       />
     </>
   );
