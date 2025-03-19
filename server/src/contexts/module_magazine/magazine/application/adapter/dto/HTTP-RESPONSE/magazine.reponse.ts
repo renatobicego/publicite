@@ -29,6 +29,9 @@ export class posts_graphql_magazine {
 
   @Field(() => String, { nullable: true })
   postType: string;
+
+  @Field(() => Boolean, { nullable: true })
+  isActive: boolean;
 }
 
 @ObjectType()
@@ -56,7 +59,6 @@ export class sections_graphql_magazine {
 
   @Field(() => String, { nullable: true })
   title: string;
-
 }
 
 @ObjectType()
@@ -75,7 +77,6 @@ export class group_graphql_magazine {
 
   @Field(() => String, { nullable: true })
   creator: string;
-
 }
 
 @ObjectType()
@@ -112,7 +113,6 @@ export class MagazineResponse {
 
   @Field(() => [sections_graphql_magazine])
   sections: sections_graphql_magazine[];
-
 
   @Field(() => String, { nullable: true })
   visibility: string;

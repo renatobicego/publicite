@@ -71,6 +71,7 @@ export const getMagazineByIdQuery = gql`
           postType
           price
           title
+          isActive
         }
         isFatherSection
         _id

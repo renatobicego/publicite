@@ -10,13 +10,11 @@ import { MagazineAdapterInterface } from 'src/contexts/module_magazine/magazine/
 import { MagazineServiceInterface } from 'src/contexts/module_magazine/magazine/domain/service/magazine.service.interface';
 import { post_deleted } from 'src/contexts/module_shared/event-emmiter/events';
 
-
 export class MagazineAdapter implements MagazineAdapterInterface {
   constructor(
     @Inject('MagazineServiceInterface')
     private readonly magazineService: MagazineServiceInterface,
-  ) { }
-
+  ) {}
 
   @OnEvent(post_deleted)
   async deletePostInMagazineWithEmitter(postId: string): Promise<any> {
@@ -79,26 +77,35 @@ export class MagazineAdapter implements MagazineAdapterInterface {
     }
   }
 
-
-
-  async createMagazine(magazineRequest: MagazineCreateRequest, userRequestId: string): Promise<any> {
+  async createMagazine(
+    magazineRequest: MagazineCreateRequest,
+    userRequestId: string,
+  ): Promise<any> {
     try {
-      return await this.magazineService.createMagazine(magazineRequest, userRequestId);
+      return await this.magazineService.createMagazine(
+        magazineRequest,
+        userRequestId,
+      );
     } catch (error: any) {
       throw error;
     }
   }
 
-
-  async deleteMagazineByMagazineId(magazineId: string, userRequestId: string, ownerType: string): Promise<any> {
+  async deleteMagazineByMagazineId(
+    magazineId: string,
+    userRequestId: string,
+    ownerType: string,
+  ): Promise<any> {
     try {
-      await this.magazineService.deleteMagazineByMagazineId(magazineId, userRequestId, ownerType);
+      await this.magazineService.deleteMagazineByMagazineId(
+        magazineId,
+        userRequestId,
+        ownerType,
+      );
     } catch (error: any) {
       throw error;
     }
   }
-
-
 
   async deleteSectionFromMagazineById(
     sectionIdsToDelete: string[],
@@ -124,30 +131,47 @@ export class MagazineAdapter implements MagazineAdapterInterface {
           break;
         default:
           return 'You are not allowed to delete this section';
-
       }
-
     } catch (error: any) {
       throw error;
     }
   }
 
-  async deletePostInMagazineSection(postIdToRemove: string, sectionId: string, ownerType: string, userRequestId: string, magazineId?: string): Promise<any> {
+  async deletePostInMagazineSection(
+    postIdToRemove: string,
+    sectionId: string,
+    ownerType: string,
+    userRequestId: string,
+    magazineId?: string,
+  ): Promise<any> {
     try {
-      await this.magazineService.deletePostInMagazineSection(postIdToRemove, sectionId, ownerType, userRequestId, magazineId);
+      await this.magazineService.deletePostInMagazineSection(
+        postIdToRemove,
+        sectionId,
+        ownerType,
+        userRequestId,
+        magazineId,
+      );
     } catch (error: any) {
       throw error;
     }
   }
 
-  async exitMagazineByMagazineId(magazineId: string, userRequestId: string, ownerType: string): Promise<any> {
+  async exitMagazineByMagazineId(
+    magazineId: string,
+    userRequestId: string,
+    ownerType: string,
+  ): Promise<any> {
     try {
-      await this.magazineService.exitMagazineByMagazineId(magazineId, userRequestId, ownerType);
+      await this.magazineService.exitMagazineByMagazineId(
+        magazineId,
+        userRequestId,
+        ownerType,
+      );
     } catch (error: any) {
       throw error;
     }
   }
-
 
   async findMagazineByMagazineId(
     id: ObjectId,
@@ -159,8 +183,9 @@ export class MagazineAdapter implements MagazineAdapterInterface {
     }
   }
 
-
-  async findAllMagazinesByUserId(userId: string): Promise<MagazineResponse[] | []> {
+  async findAllMagazinesByUserId(
+    userId: string,
+  ): Promise<MagazineResponse[] | []> {
     try {
       return await this.magazineService.findAllMagazinesByUserId(userId);
     } catch (error: any) {
@@ -184,10 +209,21 @@ export class MagazineAdapter implements MagazineAdapterInterface {
     }
   }
 
-
-  async updateTitleOfSectionById(sectionId: string, newTitle: string, userRequestId: string, ownerType: string, magazineId?: string): Promise<any> {
+  async updateTitleOfSectionById(
+    sectionId: string,
+    newTitle: string,
+    userRequestId: string,
+    ownerType: string,
+    magazineId?: string,
+  ): Promise<any> {
     try {
-      await this.magazineService.updateTitleOfSectionById(sectionId, newTitle, userRequestId, ownerType, magazineId);
+      await this.magazineService.updateTitleOfSectionById(
+        sectionId,
+        newTitle,
+        userRequestId,
+        ownerType,
+        magazineId,
+      );
     } catch (error: any) {
       throw error;
     }

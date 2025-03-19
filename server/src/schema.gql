@@ -335,6 +335,7 @@ type posts_graphql_magazine {
   frequencyPrice: String
   petitionType: String
   postType: String
+  isActive: Boolean
 }
 
 type collaborators_graphql {

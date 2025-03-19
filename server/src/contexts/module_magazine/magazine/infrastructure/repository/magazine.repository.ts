@@ -1,6 +1,6 @@
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Magazine } from '../../domain/entity/magazine.entity';
-import { Connection, Model, ObjectId, Types } from 'mongoose';
+import { Connection, Model, ObjectId } from 'mongoose';
 import { Inject, UnauthorizedException } from '@nestjs/common';
 
 import { MagazineRepositoryInterface } from '../../domain/repository/magazine.repository.interface';
@@ -24,7 +24,10 @@ import { MagazineRepositoryMapperInterface } from '../../domain/repository/mappe
 
 import { MagazineSectionCreateRequest } from '../../application/adapter/dto/HTTP-REQUEST/magazineSection.create.request';
 import { GroupDocument } from 'src/contexts/module_group/group/infrastructure/schemas/group.schema';
-import { checkIfanyDataWasModified, chekResultOfOperation } from 'src/contexts/module_shared/utils/functions/check.result.functions';
+import {
+  checkIfanyDataWasModified,
+  chekResultOfOperation,
+} from 'src/contexts/module_shared/utils/functions/check.result.functions';
 import { IUser } from 'src/contexts/module_user/user/infrastructure/schemas/user.schema';
 import { MagazineUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/magazine.update.request';
 import { UserMagazineAllowedVerificationsInterface } from '../../domain/repository/user.allowed.verifications.interface';
@@ -38,7 +41,11 @@ Al utilizar findOneAndDelete y deleteMany, se debe tener en cuenta que se elimin
 
 */
 
-export class MagazineRepository implements MagazineRepositoryInterface, UserMagazineAllowedVerificationsInterface {
+export class MagazineRepository
+  implements
+    MagazineRepositoryInterface,
+    UserMagazineAllowedVerificationsInterface
+{
   constructor(
     @InjectConnection() private readonly connection: Connection,
     private readonly logger: MyLoggerService,
@@ -60,9 +67,7 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
 
     @InjectModel('User') private readonly userModel: Model<IUser>,
     @InjectModel('Group') private readonly groupModel: Model<GroupDocument>,
-  ) { }
-
-
+  ) {}
 
   async addNewMagazineGroupSection(
     magazineId: string,
@@ -75,13 +80,12 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
         if (sectionId === null || !sectionId) {
           throw new Error('Error saving section in repository');
         }
-        await this.groupMagazine
-          .updateOne(
-            { _id: magazineId },
-            { $addToSet: { sections: sectionId } },
-            { session },
-          )
-        return sectionId
+        await this.groupMagazine.updateOne(
+          { _id: magazineId },
+          { $addToSet: { sections: sectionId } },
+          { session },
+        );
+        return sectionId;
       });
       return sectionId.toString();
     } catch (error: any) {
@@ -113,12 +117,11 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
           { session },
         );
 
-
         chekResultOfOperation(
           result,
           'Error saving section in repository, you dont have permissions',
         );
-        return sectionId
+        return sectionId;
       });
       return sectionId.toString();
     } catch (error: any) {
@@ -128,18 +131,15 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
     }
   }
 
-
-
   async addPostInGroupMagazine(
     postId: string,
     sectionId: string,
   ): Promise<any> {
     try {
-      await this.magazineSection
-        .updateOne(
-          { _id: sectionId },
-          { $addToSet: { posts: postId } },
-        )
+      await this.magazineSection.updateOne(
+        { _id: sectionId },
+        { $addToSet: { posts: postId } },
+      );
     } catch (error: any) {
       throw error;
     }
@@ -151,8 +151,6 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
     magazineAdmin: string,
     sectionId: string,
   ): Promise<any> {
-
-
     try {
       const result = await this.userMagazine
         .findOne({
@@ -169,7 +167,6 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
         { _id: sectionId },
         { $addToSet: { posts: postId } },
       );
-
     } catch (error: any) {
       throw error;
     }
@@ -179,7 +176,7 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
     newCollaborators: string[],
     magazineId: string,
     magazineAdmin: string,
-    session?: any
+    session?: any,
   ): Promise<void> {
     try {
       const result = await this.userMagazine.updateOne(
@@ -187,7 +184,6 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
         { $addToSet: { collaborators: { $each: newCollaborators } } },
         { session },
       );
-
 
       chekResultOfOperation(result);
 
@@ -208,7 +204,7 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
     newAllowedCollaborators: string[],
     magazineId: string,
     magazineAdmin: string,
-    session?: any
+    session?: any,
   ): Promise<any> {
     try {
       const result = await this.groupModel
@@ -220,16 +216,15 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
         .lean();
       chekResultOfOperation(result);
 
-      await this.groupMagazine
-        .updateOne(
-          { _id: magazineId },
-          {
-            $addToSet: {
-              allowedCollaborators: { $each: newAllowedCollaborators },
-            },
+      await this.groupMagazine.updateOne(
+        { _id: magazineId },
+        {
+          $addToSet: {
+            allowedCollaborators: { $each: newAllowedCollaborators },
           },
-          { session },
-        )
+        },
+        { session },
+      );
 
       // await this.userModel
       //   .updateMany(
@@ -238,7 +233,6 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
       //     { session },
       //   )
       //   .lean();
-
 
       this.logger.log('Allowed Collaborators added to Magazine successfully');
       return;
@@ -255,28 +249,25 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
     collaboratorsToDelete: string[],
     magazineId: string,
     magazineAdmin: string,
-    session?: any
+    session?: any,
   ): Promise<void> {
-
     try {
-
       const result = await this.userMagazine
         .updateOne(
           { _id: magazineId, user: magazineAdmin },
           { $pullAll: { collaborators: collaboratorsToDelete } },
-        ).session(session);
+        )
+        .session(session);
       checkIfanyDataWasModified(result);
-
-
 
       await this.userModel
         .updateMany(
           { _id: { $in: collaboratorsToDelete } },
           { $pull: { magazines: magazineId } },
-        ).session(session);
+        )
+        .session(session);
 
       this.logger.log('Collaborators deleted from Magazine successfully');
-
     } catch (error: any) {
       this.logger.error('Error deleting Collaborators from Magazine', error);
       throw error;
@@ -287,25 +278,21 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
     allowedCollaboratorsToDelete: string[],
     magazineId: string,
     magazineAdmin: string,
-    session?: any
+    session?: any,
   ): Promise<any> {
-
     try {
-
       const isAuthorized = await this.groupModel
         .findOne({
           magazines: magazineId,
           creator: magazineAdmin,
         })
         .session(session)
-        .select("_id")
+        .select('_id')
         .lean();
-
 
       if (!isAuthorized) {
         throw new UnauthorizedException();
       }
-
 
       const result1 = await this.groupMagazine
         .updateOne(
@@ -316,7 +303,7 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
           { session },
         )
         .lean();
-      checkIfanyDataWasModified(result1)
+      checkIfanyDataWasModified(result1);
       this.logger.log(
         'Allowed Collaborators deleted from Magazine Group successfully',
       );
@@ -324,7 +311,6 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
     } catch (error: any) {
       this.logger.error('Error deleting Collaborators from Magazine', error);
       throw error;
-
     }
   }
 
@@ -402,38 +388,41 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
       throw error;
     }
   }
-  async deleteMagazineByMagazineId(magazineId: string, ownerType: string): Promise<any> {
+  async deleteMagazineByMagazineId(
+    magazineId: string,
+    ownerType: string,
+  ): Promise<any> {
     const session = await this.connection.startSession();
     let magazineToDelete: UserMagazineDocument | GroupMagazineDocument | null;
 
     try {
       await session.withTransaction(async () => {
-        this.logger.log("Finding Magazine to delete...");
-        magazineToDelete = await this.magazineModel.findById(magazineId)
+        this.logger.log('Finding Magazine to delete...');
+        magazineToDelete = await this.magazineModel.findById(magazineId);
 
         if (magazineToDelete == null) {
-          this.logger.warn("Magazine not found, skipping deletion...");
+          this.logger.warn('Magazine not found, skipping deletion...');
           return;
         }
 
-        let usersToPullMagazine: any = [];
+        const usersToPullMagazine: any = [];
 
         if (ownerType === OwnerType.user) {
-          this.logger.log("Deleting User Magazine...");
+          this.logger.log('Deleting User Magazine...');
           const magazineUser = magazineToDelete as UserMagazineDocument;
 
           usersToPullMagazine.push(magazineUser.user);
           usersToPullMagazine.push(...magazineUser.collaborators);
-
         } else {
-          this.logger.log("Deleting Group Magazine...");
+          this.logger.log('Deleting Group Magazine...');
           const magazineGroup = magazineToDelete as GroupMagazineDocument;
 
-          const group = await this.groupModel.findOneAndUpdate(
-            { _id: magazineGroup.group },
-            { $pull: { magazines: magazineId } },
-
-          ).session(session);
+          const group = await this.groupModel
+            .findOneAndUpdate(
+              { _id: magazineGroup.group },
+              { $pull: { magazines: magazineId } },
+            )
+            .session(session);
           if (group) {
             usersToPullMagazine.push(...magazineGroup.allowedCollaborators);
             usersToPullMagazine.push(...group.admins);
@@ -442,17 +431,21 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
           }
         }
 
+        this.logger.log('Pulling magazines from users...');
 
-        this.logger.log("Pulling magazines from users...");
+        await this.userModel
+          .updateMany(
+            { _id: { $in: usersToPullMagazine } },
+            { $pull: { magazines: magazineId } },
+          )
+          .session(session);
 
-        await this.userModel.updateMany(
-          { _id: { $in: usersToPullMagazine } },
-          { $pull: { magazines: magazineId } },
-        ).session(session);
-
-        this.logger.log("Deleting Magazine...");
-        await this.magazineModel.deleteMany({ _id: { $in: [magazineId] } }, { session });
-        this.logger.log("Deleted Magazine successfully...");
+        this.logger.log('Deleting Magazine...');
+        await this.magazineModel.deleteMany(
+          { _id: { $in: [magazineId] } },
+          { session },
+        );
+        this.logger.log('Deleted Magazine successfully...');
       });
     } catch (error) {
       this.logger.error('Error deleting magazine', error);
@@ -462,22 +455,16 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
     }
   }
 
-
   async deletePostInMagazine(_id: string): Promise<any> {
     try {
       await this.magazineSection.updateMany(
         { posts: _id },
         { $pull: { posts: _id } },
-      )
+      );
     } catch (error: any) {
       throw error;
     }
   }
-
-
-
-
-
 
   async findMagazineByMagazineId(
     id: ObjectId,
@@ -514,7 +501,7 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
               path: 'posts',
               match: { isActive: true },
               select:
-                '_id imagesUrls title description price frequencyPrice petitionType postType',
+                '_id imagesUrls title description price frequencyPrice petitionType postType isActive',
               model: 'Post',
             },
           },
@@ -660,11 +647,10 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
     userId: string,
   ): Promise<any> {
     try {
-      const isAdminOrCreatorOfGroup = await this.groupModel
-        .exists({
-          magazines: magazineId,
-          $or: [{ admins: userId }, { creator: userId }],
-        })
+      const isAdminOrCreatorOfGroup = await this.groupModel.exists({
+        magazines: magazineId,
+        $or: [{ admins: userId }, { creator: userId }],
+      });
 
       if (!isAdminOrCreatorOfGroup) {
         throw new Error('The user is not allowed');
@@ -734,7 +720,10 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
     }
   }
 
-  async is_creator_of_magazine_USER_MAGAZINE(magazineId: string, userId: string): Promise<boolean> {
+  async is_creator_of_magazine_USER_MAGAZINE(
+    magazineId: string,
+    userId: string,
+  ): Promise<boolean> {
     try {
       const result = await this.userMagazine
         .findOne({
@@ -744,14 +733,11 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
         .select('_id')
         .lean();
 
-      return !!result
-
+      return !!result;
     } catch (error: any) {
       throw error;
     }
   }
-
-
 
   async save(magazine: Magazine): Promise<any> {
     let magazineSaved;
@@ -779,14 +765,13 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
                 );
               }
 
-              return magazineSaved
-                .populate([
-                  {
-                    path: 'sections', model: 'MagazineSection', select: '_id isFatherSection posts title',
-
-                  },
-
-                ]);
+              return magazineSaved.populate([
+                {
+                  path: 'sections',
+                  model: 'MagazineSection',
+                  select: '_id isFatherSection posts title',
+                },
+              ]);
             }
             case OwnerType.group: {
               const groupMagazine = new this.groupMagazine(magazine);
@@ -800,14 +785,13 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
                 throw new Error('Group not found');
               }
 
-              return magazineSaved
-                .populate([
-                  {
-                    path: 'sections', model: 'MagazineSection', select: '_id isFatherSection posts title',
-
-                  },
-
-                ]);
+              return magazineSaved.populate([
+                {
+                  path: 'sections',
+                  model: 'MagazineSection',
+                  select: '_id isFatherSection posts title',
+                },
+              ]);
             }
             default: {
               throw new Error('Invalid owner type');
@@ -815,15 +799,12 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
           }
         });
 
-
-
         return magazineSaved;
       } catch (error: any) {
         throw error;
       } finally {
         session.endSession();
       }
-
     }
     return this.saveMagazineWithSection(magazine);
   }
@@ -837,7 +818,6 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
 
       const sectionSave = await newMagazineSection.save({ session });
       if (sectionSave) {
-
         return sectionSave._id;
       } else {
         return null;
@@ -845,7 +825,6 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
     } catch (error: any) {
       throw error;
     }
-
   }
   async saveMagazineWithSection(magazine: Magazine): Promise<any> {
     const session = await this.connection.startSession();
@@ -900,14 +879,13 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
         }
       });
 
-
       if (magazineSaved) {
         magazineSaved = await magazineSaved.populate([
           {
             path: 'sections',
             model: 'MagazineSection',
             select: '_id isFatherSection posts title',
-          }
+          },
         ]);
       }
 
@@ -921,43 +899,60 @@ export class MagazineRepository implements MagazineRepositoryInterface, UserMaga
     }
   }
 
-
-  async removeCollaboratorFromUserMagazine(magazineId: string, collaboratorId: string): Promise<any> {
+  async removeCollaboratorFromUserMagazine(
+    magazineId: string,
+    collaboratorId: string,
+  ): Promise<any> {
     const session = await this.connection.startSession();
     try {
       await session.withTransaction(async () => {
         this.logger.log('Deleting magazine from user schema ');
-        await this.userModel.updateOne({ _id: collaboratorId }, { $pull: { magazines: magazineId } }, { session });
+        await this.userModel.updateOne(
+          { _id: collaboratorId },
+          { $pull: { magazines: magazineId } },
+          { session },
+        );
         this.logger.log('Deleting succsesfully');
 
         this.logger.log('Deleting user from Magazine schema');
-        await this.userMagazine.updateOne({ _id: magazineId }, { $pull: { collaborators: collaboratorId } }, { session });
+        await this.userMagazine.updateOne(
+          { _id: magazineId },
+          { $pull: { collaborators: collaboratorId } },
+          { session },
+        );
         this.logger.log('User deleted from Magazine schema');
-
-      })
+      });
     } catch (error: any) {
-      this.logger.error('A problem occurred while removing user from magazine: ' + error);
+      this.logger.error(
+        'A problem occurred while removing user from magazine: ' + error,
+      );
       throw error;
     }
   }
 
-
-  async removeAllowedCollaboratorFromGroupMagazine(magazineId: string, collaboratorId: string): Promise<any> {
+  async removeAllowedCollaboratorFromGroupMagazine(
+    magazineId: string,
+    collaboratorId: string,
+  ): Promise<any> {
     const session = await this.connection.startSession();
     try {
       await session.withTransaction(async () => {
         this.logger.log('Deleting user from Magazine group schema');
-        await this.groupMagazine.updateOne({ _id: magazineId }, { $pull: { allowedCollaborators: collaboratorId } }, { session });
+        await this.groupMagazine.updateOne(
+          { _id: magazineId },
+          { $pull: { allowedCollaborators: collaboratorId } },
+          { session },
+        );
         this.logger.log('User deleted from Magazine schema');
         return 'Allowed collaborator removed successfully';
-      })
+      });
     } catch (error: any) {
-      this.logger.error('A problem occurred while removing user from magazine: ' + error);
+      this.logger.error(
+        'A problem occurred while removing user from magazine: ' + error,
+      );
       throw error;
     }
   }
-
-
 
   async updateMagazineById(
     magazine: MagazineUpdateRequest,
