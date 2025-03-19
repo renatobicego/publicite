@@ -1,4 +1,3 @@
-import { putMemberGroup } from "@/services/groupsService";
 import { Group } from "@/types/groupTypes";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { Socket } from "socket.io-client";

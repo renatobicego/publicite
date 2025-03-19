@@ -16,14 +16,13 @@ const HandleUserRelationRequest = ({
 }: {
   userRelation: UserRelationNotification;
 }) => {
-  const { updateSocketToken } = useSocket();
+  const { socket } = useSocket();
   const { event } = userRelation;
   const isChangeOfRelation =
     (event as UserRelationNotificationType) ===
     "notification_user_new_relation_change";
   const router = useRouter();
   const handleAcceptRequest = async () => {
-    const socket = await updateSocketToken();
     emitUserRelationNotification(
       socket,
       isChangeOfRelation
@@ -45,7 +44,6 @@ const HandleUserRelationRequest = ({
       .catch(handleUserRelationNotificationError);
   };
   const rejectRequest = async () => {
-    const socket = await updateSocketToken();
     emitUserRelationNotification(
       socket,
       isChangeOfRelation

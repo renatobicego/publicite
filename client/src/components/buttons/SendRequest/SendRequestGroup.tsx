@@ -26,7 +26,7 @@ const SendRequestGroup = ({
   groupId: string;
 }) => {
   const { usernameLogged, userIdLogged } = useUserData();
-  const { updateSocketToken } = useSocket();
+  const { socket } = useSocket();
   const [isRequestSent, setIsRequestSent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const sendRequestJoinGroup = async () => {
@@ -41,7 +41,6 @@ const SendRequestGroup = ({
       }
       const adminIds = group.admins.map((admin: any) => admin._id);
       const creatorId = group.creator._id;
-      const socket = await updateSocketToken();
 
       [...adminIds, creatorId].forEach((adminId) => {
         emitGroupNotification(

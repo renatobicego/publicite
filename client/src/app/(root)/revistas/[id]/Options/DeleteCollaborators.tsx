@@ -34,7 +34,7 @@ const DeleteCollaborators = ({
 }) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [selected, setSelected] = useState<string[]>([]);
-  const { updateSocketToken } = useSocket();
+  const { socket } = useSocket();
   const { userIdLogged, usernameLogged } = useUserData();
 
   useEffect(() => {
@@ -45,10 +45,9 @@ const DeleteCollaborators = ({
   }, [customOpen, onOpen]);
 
   const handleDelete = async () => {
-    const newSocket = await updateSocketToken();
     selected.forEach((collaboratorId) => {
       emitMagazineNotification(
-        newSocket,
+        socket,
         {
           _id: magazine._id,
           name: magazine.name,
