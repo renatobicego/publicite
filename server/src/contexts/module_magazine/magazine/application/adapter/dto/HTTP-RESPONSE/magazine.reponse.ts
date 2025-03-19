@@ -18,6 +18,8 @@ export class posts_graphql_magazine {
   @Field(() => Float, { nullable: true })
   price: number;
 
+  @Field(() => Boolean, { nullable: true })
+  isActive: boolean;
   // @Field(() => String, { nullable: true })
   // reviews: string;
 
@@ -30,8 +32,7 @@ export class posts_graphql_magazine {
   @Field(() => String, { nullable: true })
   postType: string;
 
-  @Field(() => Boolean, { nullable: true })
-  isActive: boolean;
+
 }
 
 @ObjectType()

@@ -32,6 +32,7 @@ import {
   UserMagazineDocument,
   UserMagazineModel,
 } from 'src/contexts/module_magazine/magazine/infrastructure/schemas/magazine.user.schema';
+import { match } from 'assert';
 
 @Injectable()
 export class UserRepository implements UserRepositoryInterface {
@@ -58,7 +59,7 @@ export class UserRepository implements UserRepositoryInterface {
 
     @Inject('SectorRepositoryInterface')
     private readonly sectorRepository: SectorRepositoryInterface,
-  ) {}
+  ) { }
 
   async findUserByIdByOwnUser(_id: string): Promise<any> {
     try {
@@ -110,7 +111,9 @@ export class UserRepository implements UserRepositoryInterface {
             populate: {
               path: 'posts',
               model: 'Post',
-              select: '_id imagesUrls',
+              select: '_id imagesUrls isActive',
+              match: { isActive: true },
+
             },
           })
           .lean();
@@ -413,9 +416,10 @@ export class UserRepository implements UserRepositoryInterface {
               populate: {
                 path: 'posts',
                 model: 'Post',
-                select: '_id imagesUrls',
+                select: '_id imagesUrls isActive',
                 match: {
                   'visibility.post': conditionOfVisibility,
+                  isActive: true,
                 },
               },
             })
