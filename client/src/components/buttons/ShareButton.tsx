@@ -37,7 +37,7 @@ const ShareButton = ({
   customOpen,
 }: ShareButtonProps) => {
   const { onOpen, isOpen, onOpenChange } = useDisclosure();
-  const { userIdLogged } = useUserData();
+  const { userIdLogged, usernameLogged } = useUserData();
   const { users } = useSearchUsers(undefined, userIdLogged);
   const { socket } = useSocket();
   const [isLoading, setIsLoading] = useState(false);
@@ -97,7 +97,7 @@ const ShareButton = ({
             socket,
             userIdLogged as string,
             user,
-            data,
+            { ...data, username: usernameLogged as string },
             shareType
           );
           toastifySuccess(

@@ -1,22 +1,20 @@
 import BreadcrumbsAdmin from "@/components/BreadcrumbsAdmin";
 import ErrorCard from "@/components/ErrorCard";
 import { getPostData } from "@/services/postsServices";
-import { Good, Petition, Service } from "@/types/postTypes";
-import { EDIT_PETITION, EDIT_POST, POSTS } from "@/utils/data/urls";
-import { currentUser } from "@clerk/nextjs/server";
+import { Petition } from "@/types/postTypes";
+import { EDIT_PETITION, POSTS } from "@/utils/data/urls";
+import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import EditPetitionClient from "./EditPetitionClient";
-export default async function EditPetitionPage(
-  props: {
-    params: Promise<{ id: string }>;
-  }
-) {
+export default async function EditPetitionPage(props: {
+  params: Promise<{ id: string }>;
+}) {
   const params = await props.params;
   const postData: Petition | { error: string } = await getPostData(params.id);
-  const userLogged = await currentUser();
+  const userLogged = auth();
   if (
     !("error" in postData) &&
-    userLogged?.username !== postData.author.username
+    userLogged?.sessionClaims?.metadata.mongoId !== postData.author._id
   ) {
     redirect(`${POSTS}/${params.id}`);
   }

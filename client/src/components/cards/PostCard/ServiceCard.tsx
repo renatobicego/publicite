@@ -10,11 +10,13 @@ const ServiceCard = ({
   recommendation,
   savePostMagazine,
   isGroupPost,
+  hideSaveMagazineButton,
 }: {
   post: Service;
   recommendation: boolean;
   savePostMagazine: boolean;
   isGroupPost: boolean;
+  hideSaveMagazineButton?: boolean;
 }) => {
   const { title, reviews, description, price, frequencyPrice } = post;
   const frequencyShown = frequencyPrice
@@ -29,6 +31,7 @@ const ServiceCard = ({
         post={post}
         recommendation={recommendation}
         savePostMagazine={savePostMagazine}
+        hideSaveMagazineButton={hideSaveMagazineButton}
       />
       <PostCardBody
         title={title}

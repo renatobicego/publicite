@@ -32,7 +32,7 @@ const MagazineNotificationCard = ({
   const { event, backData, viewed, date, isActionsAvailable, _id } =
     notification;
   const { userIdLogged, usernameLogged } = useUserData();
-  const { updateSocketToken } = useSocket();
+  const { socket } = useSocket();
   const [isActionSent, setIsActionSent] = useState(false);
   const { deleteNotification } = useNotificationsContext();
   const getNotificationOptionsList = () => {
@@ -49,7 +49,6 @@ const MagazineNotificationCard = ({
       optionsList.push({
         label: "Aceptar Solicitud",
         onPress: async () => {
-          const socket = await updateSocketToken();
           notificationMessage.acceptAction?.(
             socket,
             {
@@ -85,8 +84,6 @@ const MagazineNotificationCard = ({
         label: "Rechazar Solicitud",
         color: "danger",
         onPress: async () => {
-          const socket = await updateSocketToken();
-
           notificationMessage.rejectAction?.(
             socket,
             {

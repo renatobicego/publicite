@@ -3,6 +3,7 @@ import {
   Button,
   Image,
   Link,
+  LinkIcon,
   Modal,
   ModalBody,
   ModalContent,
@@ -45,8 +46,9 @@ const AboutUs = () => {
             </p>
 
             <p>
-              <strong>Desarrollo en programación – Back y Frontend:</strong>{" "}
-              Dutsiland.
+              <strong>Desarrollo:</strong>{" "}
+              <Link href="https://dutsiland.com/">Dutsiland.</Link> <br />
+              <strong>QA:</strong> Gabriel Gesta.
             </p>
             <p>
               <strong>Testing:</strong>

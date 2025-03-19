@@ -32,6 +32,7 @@ const BoardContent = ({
         !widthFull &&
         "min-w-full md:min-w-[30%] lg:p-6 md:max-w-[34%] xl:max-w-[50%]"
       }`}
+      id="board"
     >
       <CardHeader className="p-0">
         {isProfile ? (

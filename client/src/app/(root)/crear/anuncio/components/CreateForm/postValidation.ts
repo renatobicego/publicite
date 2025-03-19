@@ -3,7 +3,8 @@ import { array, number, object, string } from "yup";
 export const postValidation = object({
   title: string()
     .required("El título es requerido")
-    .min(3, "El título debe tener al menos 3 caracteres"),
+    .min(3, "El título debe tener al menos 3 caracteres")
+    .max(120, "El título debe tener menos de 120 caracteres"),
   description: string()
     .optional()
     .max(2000, "La descripción debe tener menos de 2000 caracteres"),
@@ -37,7 +38,8 @@ export const postValidation = object({
 export const postEditValidation = object({
   title: string()
     .required("El título es requerido")
-    .min(3, "El título debe tener al menos 3 caracteres"),
+    .min(3, "El título debe tener al menos 3 caracteres")
+    .max(120, "El título debe tener menos de 120 caracteres"),
   description: string()
     .optional()
     .max(2000, "La descripción debe tener menos de 2000 caracteres"),

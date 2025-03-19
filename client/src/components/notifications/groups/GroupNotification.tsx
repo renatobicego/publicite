@@ -28,7 +28,7 @@ const GroupNotificationCard = ({
   const { event, viewed, date, isActionsAvailable, backData, _id } =
     notification;
   const { userIdLogged, usernameLogged } = useUserData();
-  const { updateSocketToken } = useSocket();
+  const { socket } = useSocket();
   const [isActionSent, setIsActionSent] = useState(false);
   const { deleteNotification } = useNotificationsContext();
   const getNotificationOptionsList = () => {
@@ -45,7 +45,6 @@ const GroupNotificationCard = ({
       optionsList.push({
         label: "Aceptar Solicitud",
         onPress: async () => {
-          const socket = await updateSocketToken();
           notificationMessage.acceptAction?.(
             socket,
             {
@@ -90,8 +89,6 @@ const GroupNotificationCard = ({
         label: "Rechazar Solicitud",
         color: "danger",
         onPress: async () => {
-          const socket = await updateSocketToken();
-
           notificationMessage.rejectAction?.(
             socket,
             {

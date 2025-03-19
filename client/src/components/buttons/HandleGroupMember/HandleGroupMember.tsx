@@ -31,7 +31,7 @@ const HandleGroupMember = ({
   isAdmin?: boolean;
 }) => {
   const { userIdLogged, usernameLogged } = useUserData();
-  const { updateSocketToken } = useSocket();
+  const { socket } = useSocket();
   const isCreator = group?.creator._id === userIdLogged; // is user logged creator of group
   const [isAdminLocal, setIsAdminLocal] = useState(isAdmin); // is user been shown admin
   const [deletedDone, setDeletedDone] = useState(false);
@@ -42,7 +42,7 @@ const HandleGroupMember = ({
       toastifyError(res.error as string);
       return;
     }
-    const socket = await updateSocketToken();
+
     emitGroupNotification(
       socket,
       group,
@@ -64,7 +64,6 @@ const HandleGroupMember = ({
       toastifyError(res.error as string);
       return;
     }
-    const socket = await updateSocketToken();
 
     emitGroupNotification(
       socket,
@@ -87,7 +86,6 @@ const HandleGroupMember = ({
       toastifyError(res.error as string);
       return;
     }
-    const socket = await updateSocketToken();
 
     emitGroupNotification(
       socket,

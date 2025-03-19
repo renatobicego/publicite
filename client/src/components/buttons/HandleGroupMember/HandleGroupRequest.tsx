@@ -12,7 +12,7 @@ import { useState } from "react";
 import { FaCheck, FaX } from "react-icons/fa6";
 
 const HandleGroupRequest = ({ user, group }: { user: User; group: Group }) => {
-  const { updateSocketToken } = useSocket();
+  const { socket } = useSocket();
   const [isActionDone, setIsActionDone] = useState(false);
   const { usernameLogged, userIdLogged } = useUserData();
   const handleAcceptRequest = async () => {
@@ -21,7 +21,6 @@ const HandleGroupRequest = ({ user, group }: { user: User; group: Group }) => {
       toastifyError(res.error as string);
       return;
     }
-    const socket = await updateSocketToken();
 
     emitGroupNotification(
       socket,
@@ -38,8 +37,6 @@ const HandleGroupRequest = ({ user, group }: { user: User; group: Group }) => {
       .catch(handleGroupNotificationError);
   };
   const rejectRequest = async () => {
-    const socket = await updateSocketToken();
-
     emitGroupNotification(
       socket,
       group,

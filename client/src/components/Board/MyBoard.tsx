@@ -22,7 +22,7 @@ const MyBoard = ({
     username: string;
     _id: string;
   };
-  }) => {
+}) => {
   const [showEditBoard, setShowEditBoard] = useState(false);
   const [localBoardData, setLocalBoardData] = useState(board);
   const bg = localBoardData?.color || "bg-fondo";
@@ -48,10 +48,13 @@ const MyBoard = ({
   // if the board is not being edited, return the board component
   return (
     <Card
-      className={`p-4 flex flex-col gap-2 ${localBoardData.color} ${textColor} ${
+      className={`p-4 flex flex-col gap-2 ${
+        localBoardData.color
+      } ${textColor} ${
         !widthFull &&
         "min-w-full md:min-w-[30%] lg:p-6 md:max-w-[34%] xl:max-w-[50%]"
       }`}
+      id="board"
     >
       <CardHeader className="p-0">
         <h6>Pizarra de {name}</h6>

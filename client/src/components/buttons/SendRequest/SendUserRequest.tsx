@@ -42,7 +42,7 @@ const SendUserRequest = ({
   const [value, setValue] = useState(
     previousUserRelation ? previousUserRelation.typeRelationA : ""
   );
-  const { updateSocketToken } = useSocket();
+  const { socket } = useSocket();
   const [isRequestSent, setIsRequestSent] = useState(false);
 
   const handleSelectionChange = (e: ChangeEvent<HTMLSelectElement>) => {
@@ -51,7 +51,6 @@ const SendUserRequest = ({
 
   const handleSubmit = async () => {
     if (!value) return;
-    const socket = await updateSocketToken();
     emitUserRelationNotification(
       socket,
       previousUserRelation

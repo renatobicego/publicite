@@ -181,6 +181,7 @@ const UserSolapas = ({
       aria-label="Options"
       variant="underlined"
       selectedKey={pathname}
+      id="user-tabs"
     >
       {filteredTabs.map((tab) => (
         <Tab

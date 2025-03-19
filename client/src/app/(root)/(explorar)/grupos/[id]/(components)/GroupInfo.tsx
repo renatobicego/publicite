@@ -1,12 +1,9 @@
-import SendRequest from "@/components/buttons/SendRequest/SendRequest";
 import { Image, Link } from "@nextui-org/react";
 import { FaUser } from "react-icons/fa6";
 import OptionsDropdown from "./OptionsDropdown";
-import RulesPopover from "./RulesPopover";
 import SecondaryButton from "@/components/buttons/SecondaryButton";
 import { EDIT_GROUP, FILE_URL } from "@/utils/data/urls";
 import { GetGroups } from "@/types/groupTypes";
-import AcceptGroupInvitation from "@/components/buttons/SendRequest/AcceptGroupInvitation";
 import { User } from "@/types/userTypes";
 import GroupNote from "@/components/GroupNote/GroupNote";
 import GroupActionButton from "./GroupActionButton";

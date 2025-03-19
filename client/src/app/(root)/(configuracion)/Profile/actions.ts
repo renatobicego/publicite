@@ -15,10 +15,9 @@ import {
   EditPersonProfileProps,
   EditProfileProps,
   UserPreferences,
-  UserRelations,
   UserType,
 } from "@/types/userTypes";
-import { auth, currentUser, User } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 
 export const editProfile = async (
   formData: EditProfileProps,

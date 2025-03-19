@@ -11,10 +11,9 @@ import { handleGroupNotificationError } from "@/components/notifications/groups/
 
 const InviteUsersGroup = ({ group }: { group: Group }) => {
   const { usernameLogged: username, userIdLogged } = useUserData();
-  const { updateSocketToken } = useSocket();
+  const { socket } = useSocket();
 
   const handleInvite = async (selectedUsers: string[]) => {
-    const socket = await updateSocketToken();
     selectedUsers.forEach((user) => {
       emitGroupNotification(
         socket,

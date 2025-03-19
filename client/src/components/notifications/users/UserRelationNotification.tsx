@@ -34,7 +34,7 @@ const UserRelationNotificationCard = ({
   const { event, viewed, date, isActionsAvailable, backData, _id } =
     notification;
   const { userIdLogged } = useUserData();
-  const { updateSocketToken } = useSocket();
+  const { socket } = useSocket();
   const { deleteNotification } = useNotificationsContext();
   const [isActionSent, setIsActionSent] = useState(false);
   const getNotificationOptionsList = () => {
@@ -51,7 +51,6 @@ const UserRelationNotificationCard = ({
       optionsList.push({
         label: "Aceptar Solicitud",
         onPress: async () => {
-          const socket = await updateSocketToken();
           notificationMessage.acceptAction?.(
             socket,
             backData.userIdFrom,
@@ -89,7 +88,6 @@ const UserRelationNotificationCard = ({
         label: "Rechazar Solicitud",
         color: "danger",
         onPress: async () => {
-          const socket = await updateSocketToken();
           notificationMessage.rejectAction?.(
             socket,
             backData.userIdFrom,
