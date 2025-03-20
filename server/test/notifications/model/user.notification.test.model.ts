@@ -1,5 +1,5 @@
 import { Types } from "mongoose";
-import { Notification_testing_model } from "./base.notification.test.module";
+import { Notification_testing_model } from "./base.notification.test.model";
 
 
 

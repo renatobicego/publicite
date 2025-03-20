@@ -30,10 +30,11 @@ describe('Contact seller notifications test', () => {
     it('should be defined', async () => {
 
 
-        
+
+
 
         const response = await request(httpServer)
-            .post('/socket/magazine')
+            .post('/socket/contact-seller')
             .set('Authorization', PUBLICITE_SOCKET_API_KEY)
             .send()
 
