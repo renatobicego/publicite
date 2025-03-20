@@ -4,7 +4,7 @@ import { Notification_testing_model } from "./base.notification.test.model";
 class NotificationContactSellerRequest extends Notification_testing_model {
     frontData: {
         contactSeller?: {
-            post?: Types.ObjectId;
+            post?: any;
             client?: {
                 clientId?: string;
                 name?: string;

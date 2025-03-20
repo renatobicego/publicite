@@ -1,4 +1,4 @@
-import { ContactSellerGetType } from '../../domain/graphql/contactSeller.model';
+import { ContactSellerGetType } from '../../domain/model/contactSeller.model';
 
 export interface ContactSellerAdapterInterface {
   createContactSeller(contactSeller: any): Promise<any>;

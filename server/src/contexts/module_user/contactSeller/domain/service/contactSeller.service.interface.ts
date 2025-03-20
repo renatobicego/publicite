@@ -1,5 +1,5 @@
 import { ContactSeller } from '../contactSeller.entity';
-import { ContactSellerGetType } from '../graphql/contactSeller.model';
+import { ContactSellerGetType } from '../model/contactSeller.model';
 
 export interface ContactSellerServiceInterface {
   createContactSeller(contactSeller: ContactSeller): Promise<boolean>;

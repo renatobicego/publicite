@@ -288,7 +288,7 @@ export class GroupService implements GroupServiceInterface {
 
       const friendRelationsOfUserRequest: UserRelation[] = await this.userService.getRelationsFromUserByUserId(userRequest)
       if (friendRelationsOfUserRequest.length === 0) return { userAndPosts: [], hasMore: false };
-      
+
       const idAndTypeOfRelationMap: Map<string, String[]> = makeUserRelationHierarchyMap(friendRelationsOfUserRequest, userRequest)
 
 
@@ -311,6 +311,14 @@ export class GroupService implements GroupServiceInterface {
           'visibility.post': { $in: value },
         }));
       }
+
+
+      if (!Array.isArray(conditions) || conditions.length === 0) {
+        conditions = [{ _id: { $exists: false } }];
+      } else {
+        conditions = conditions.filter(c => c && typeof c === 'object' && Object.keys(c).length > 0);
+      }
+
       return await this.postService.findPostOfGroupMembers(idsMembersArray, conditions, userLocation, limit, page)
 
     } catch (error: any) {

@@ -298,8 +298,10 @@ export class NotificationService implements NotificationHandlerServiceInterface,
 
     async isThisNotificationDuplicate(notificationEntityId: string): Promise<any> {
         try {
+            this.logger.log("Verifying if notification is duplicate...");
             const isDuplicate = await this.notificationRepository.isThisNotificationDuplicate(notificationEntityId);
             if (isDuplicate) throw new NotModifyException();
+            this.logger.log("Notification is not duplicate");
         } catch (error: any) {
             throw error;
         }

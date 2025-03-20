@@ -36,7 +36,7 @@ export class PostService implements PostServiceInterface {
     private readonly logger: MyLoggerService,
     @Inject('UserServiceInterface')
     private readonly userService: UserServiceInterface,
-  ) {}
+  ) { }
 
   async activateOrDeactivatePost(
     _id: string,
@@ -267,7 +267,7 @@ export class PostService implements PostServiceInterface {
 
   async findPostOfGroupMembers(
     membersId: any[],
-    conditionsOfSearch: any,
+    conditionsOfSearch: any[],
     userLocation: UserLocation,
     limit: number,
     page: number,

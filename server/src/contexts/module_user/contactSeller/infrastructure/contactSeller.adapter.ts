@@ -8,7 +8,7 @@ import {
 import { ContactSeller } from '../domain/contactSeller.entity';
 import { Inject } from '@nestjs/common';
 import { ContactSellerServiceInterface } from '../domain/service/contactSeller.service.interface';
-import { ContactSellerGetType } from '../domain/graphql/contactSeller.model';
+import { ContactSellerGetType } from '../domain/model/contactSeller.model';
 interface ContactSeller_model {
   post: any;
   client: {

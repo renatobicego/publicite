@@ -5,7 +5,7 @@ import { ClerkAuthGuard } from 'src/contexts/module_shared/auth/clerk-auth/clerk
 import {
   ContactSeller_getAll,
   ContactSellerGetType,
-} from '../../domain/graphql/contactSeller.model';
+} from '../../domain/model/contactSeller.model';
 import { ContactSellerAdapterInterface } from '../../application/adapter/contactSeller.adapter.interface';
 
 @Resolver()

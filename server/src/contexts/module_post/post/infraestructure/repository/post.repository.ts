@@ -73,7 +73,7 @@ export class PostRepository implements PostRepositoryInterface {
 
     @InjectModel('Post')
     private readonly postDocument: Model<PostDocument>,
-  ) {}
+  ) { }
 
   get getEmmiter() {
     return this.emmiter;
@@ -681,7 +681,7 @@ export class PostRepository implements PostRepositoryInterface {
   ): Promise<PostsMemberGroupResponse | null> {
     try {
       if (membersId.length === 0) return { userAndPosts: [], hasMore: false };
-
+      console.log(conditionsOfSearch)
       const pipeline: any[] = [
         {
           $geoNear: {

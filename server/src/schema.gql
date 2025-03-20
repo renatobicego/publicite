@@ -332,10 +332,10 @@ type posts_graphql_magazine {
   title: String
   description: String
   price: Float
+  isActive: Boolean
   frequencyPrice: String
   petitionType: String
   postType: String
-  isActive: Boolean
 }
 
 type collaborators_graphql {
@@ -1228,6 +1228,7 @@ enum FrequencyPrice {
   week
   month
   year
+  undefined
 }
 
 input BoardRequest {
