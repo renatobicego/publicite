@@ -8,6 +8,7 @@ import { PostPetition } from "../../domain/entity/post-types/post.petition.entit
 import { removeAccents_removeEmojisAndToLowerCase } from "../../domain/utils/normalice.data";
 import { PostRequest } from "../../domain/entity/models_graphql/HTTP-REQUEST/post.request";
 import { Schema } from "mongoose";
+import { FrequencyPrice } from "../../domain/entity/enum/post-service-freq-type.enum";
 
 
 
@@ -92,7 +93,7 @@ export class PostFactory implements PostFactoryInterface {
 
                 return new PostService(
                     postBase,
-                    post.frequencyPrice ?? null,
+                    post.frequencyPrice ?? FrequencyPrice.undefined,
                     post.imagesUrls ?? [],
                     postReviews, // reviews
                 );
@@ -102,7 +103,7 @@ export class PostFactory implements PostFactoryInterface {
                 return new PostPetition(
                     postBase,
                     post.toPrice ?? null,
-                    post.frequencyPrice ?? null,
+                    post.frequencyPrice ?? FrequencyPrice.undefined,
                     post.petitionType,
                 );
             default:
