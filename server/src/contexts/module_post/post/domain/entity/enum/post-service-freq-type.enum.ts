@@ -6,6 +6,7 @@ export enum FrequencyPrice {
   week = 'week',
   month = 'month',
   year = 'year',
+  undefined = 'undefined',
 }
 
 registerEnumType(FrequencyPrice, {
