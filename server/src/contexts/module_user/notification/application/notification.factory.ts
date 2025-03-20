@@ -105,7 +105,7 @@ export class NotificationFactory implements NotificationFactoryInterface {
             !notificationEntityId
 
         ) {
-            throw new Error("Notificacion no válida");
+            throw new Error("Notificacion no valida");
         }
 
         return {
