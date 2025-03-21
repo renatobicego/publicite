@@ -135,7 +135,7 @@ const SearchUsers = (props: SearchUsersProps) => {
       </div>
       <Autocomplete
         label="Invitar colaboradores"
-        placeholder="Seleccionar usuarios"
+        placeholder="Buscar y seleccionar usuarios"
         variant="bordered"
         radius="full"
         labelPlacement="outside"

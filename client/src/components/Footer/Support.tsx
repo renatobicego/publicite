@@ -8,11 +8,6 @@ const Support = () => {
       <li className="text-white font-bold">Soporte</li>
       <li>
         <Link size="sm" className="text-white" href={""}>
-          Tutoriales
-        </Link>
-      </li>
-      <li>
-        <Link size="sm" className="text-white" href={""}>
           Contactar Soporte
         </Link>
       </li>
