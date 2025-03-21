@@ -22,7 +22,10 @@ const GroupInfo = async ({
   const { isMember, hasGroupRequest, hasJoinRequest } = group;
 
   return (
-    <section className="flex gap-4 md:gap-6 xl:gap-8 w-full max-md:flex-col md:max-lg:flex-wrap">
+    <section
+      id="group-info"
+      className="flex gap-4 md:gap-6 xl:gap-8 w-full max-md:flex-col md:max-lg:flex-wrap"
+    >
       <Image
         src={profilePhotoUrl ? FILE_URL + profilePhotoUrl : "/groupLogo.png"}
         alt={`foto de perfil de ${name}`}
@@ -43,7 +46,10 @@ const GroupInfo = async ({
             {members.length + 1 + admins.length} miembro/s
           </p>
         </div>
-        <div className="flex gap-2 items-center max-md:flex-wrap">
+        <div
+          id="group-actions"
+          className="flex gap-2 items-center max-md:flex-wrap"
+        >
           {isAdmin && (
             <SecondaryButton as={Link} href={`${EDIT_GROUP}/${_id}`}>
               {" "}

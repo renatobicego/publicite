@@ -72,7 +72,7 @@ const GroupSolapas = ({
       component: (
         <>
           <h3>Anuncios de Miembros del Grupo</h3>
-          <SelectManualLocationModal showAlways/>
+          <SelectManualLocationModal showAlways />
           <PostListLogic
             postType={{
               typeOfData: "groupPosts",
@@ -164,6 +164,7 @@ const GroupSolapas = ({
       aria-label="Options"
       variant="underlined"
       selectedKey={pathname}
+      id="group-solapas"
     >
       {filteredTabs.map((tab) => (
         <Tab

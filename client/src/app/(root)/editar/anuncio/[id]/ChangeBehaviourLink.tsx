@@ -13,7 +13,7 @@ const ChangeBehaviourLink = ({
   postBehaviourType: PostBehaviourType;
 }) => {
   return (
-    <div className="flex flex-col gap-2 items-start">
+    <div id="post-behaviour" className="flex flex-col gap-2 items-start">
       <PrimaryButton as={Link} href={`${EDIT_POST}/${id}/comportamiento`}>
         Editar Comportamiento
       </PrimaryButton>

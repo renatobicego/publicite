@@ -1,17 +1,26 @@
 import { useMemo } from "react";
 import {
+  changeBehaviourSteps,
   createGroupSteps,
   createMagazineSteps,
   createNeedPostSteps,
   createPostSteps,
   createSteps,
+  editGroupSteps,
+  editMagazineSteps,
+  editNeedPostSteps,
+  editPostSteps,
   exploreAgendaPostsSteps,
   exploreBoardsSteps,
   explorePostsSteps,
   exploreProfilesSteps,
+  groupSteps,
   homePageSteps,
+  magazineSteps,
+  packsSteps,
   postSteps,
   profileSteps,
+  subscriptionSteps,
 } from "./tutorialSteps";
 import {
   BOARDS,
@@ -20,11 +29,18 @@ import {
   CREATE_MAGAZINE,
   CREATE_PETITION,
   CREATE_POST,
+  EDIT_GROUP,
+  EDIT_MAGAZINE,
+  EDIT_PETITION,
+  EDIT_POST,
   GROUPS,
+  MAGAZINES,
   NEEDS,
+  PACKS,
   POSTS,
   PROFILE,
   SERVICES,
+  SUBSCRIPTIONS,
 } from "@/utils/data/urls";
 
 export const useTutorialSteps = (path: string) => {
@@ -52,10 +68,28 @@ export const useTutorialSteps = (path: string) => {
         return createMagazineSteps;
       case path === `${CREATE_GROUP}`:
         return createGroupSteps;
+      case path === `${EDIT_POST}`:
+        return editPostSteps;
+      case path === `${EDIT_PETITION}`:
+        return editNeedPostSteps;
+      case path === `${EDIT_MAGAZINE}`:
+        return editMagazineSteps;
+      case path === `${EDIT_GROUP}`:
+        return editGroupSteps;
       case path.includes(`${PROFILE}/`):
         return profileSteps;
       case path.includes(`${POSTS}/`):
         return postSteps;
+      case path.includes(`${MAGAZINES}/`):
+        return magazineSteps;
+      case path.includes(`${GROUPS}/`):
+        return groupSteps;
+      case path === `${SUBSCRIPTIONS}`:
+        return subscriptionSteps;
+      case path === `${PACKS}`:
+        return packsSteps;
+      case path.includes(`/comportamiento`):
+        return changeBehaviourSteps;
     }
   }, [path]);
 };

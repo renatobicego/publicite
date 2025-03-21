@@ -128,16 +128,24 @@ const PlacePicker = ({ location, setFieldValue, error }: PlacePickerProps) => {
             label: "5km",
           },
           {
-            value: 20,
-            label: "20km",
+            value: 50,
+            label: "50km",
           },
           {
-            value: 40,
-            label: "40km",
+            value: 100,
+            label: "100km",
+          },
+          {
+            value: 500,
+            label: "500km",
+          },
+          {
+            value: 1000,
+            label: "1000km",
           },
         ]}
         minValue={1}
-        maxValue={50}
+        maxValue={1000}
         value={ratio}
         formatOptions={{ style: "unit", unit: "kilometer" }}
         onChange={handleRatioChange}

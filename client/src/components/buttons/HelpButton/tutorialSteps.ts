@@ -173,6 +173,65 @@ export const createGroupSteps = [
   },
 ];
 
+export const editPostSteps = [
+  {
+    target: "body",
+    content: "Aquí podrás crear anuncios de tipo bienes o servicios.",
+    disableBeacon: true,
+  },
+  {
+    target: "#edit-post-form",
+    content:
+      "Aquí podrás editar los datos del anuncio. Los campos que tienen * son obligatorios.",
+    disableBeacon: true,
+  },
+  {
+    target: "#post-behaviour",
+    content:
+      "Aquí podrás editar el comportamiento del anuncio (ver glosario para una explicación detallada).",
+    disableBeacon: true,
+  },
+];
+
+export const editNeedPostSteps = [
+  {
+    target: "body",
+    content:
+      "Aquí podrás editar tu anuncio de tipo necesidad, los cuales tienen como objetivo que encuentres personas que puedan ofrecerte el bien o servicio que buscas.",
+    disableBeacon: true,
+  },
+  {
+    target: "#edit-need-form",
+    content:
+      "Aquí podrás editar los datos del anuncio de necesidad. Los campos que tienen * son obligatorios.",
+    disableBeacon: true,
+  },
+];
+
+export const editMagazineSteps = [
+  {
+    target: "body",
+    content:
+      "Aquí podrás editar tu revista, los cuales tienen como objetivo que guardes y organices anuncios.",
+    disableBeacon: true,
+  },
+  {
+    target: "#edit-magazine-form",
+    content:
+      "Aquí podrás editar los datos de la revista. Los campos que tienen * son obligatorios.",
+    disableBeacon: true,
+  },
+];
+
+export const editGroupSteps = [
+  {
+    target: "body",
+    content:
+      "Aquí podrás editar tu grupo, los cuales tienen como objetivo que compartir anuncios y participar en revistas de grupo.",
+    disableBeacon: true,
+  },
+];
+
 export const profileSteps = [
   {
     target: "body",
@@ -242,6 +301,91 @@ export const postSteps = [
     target: "#post-comments",
     content:
       "Aquí podrás ver y dejar comentarios, donde el anunciante podrá responderte, y anuncios recomendados a partir del anuncio que estás visualizando.",
+    disableBeacon: true,
+  },
+];
+
+export const magazineSteps = [
+  {
+    target: "body",
+    content: "Aquí podrás los detalles de una revista.",
+    disableBeacon: true,
+  },
+  {
+    target: "#magazine-data",
+    content:
+      "Aquí podrás ver los datos de la revista, donde podrás compartirla.",
+    disableBeacon: true,
+  },
+  {
+    target: "#grid-posts-magazines",
+    content:
+      "Aquí podrás ver los anuncios guardados en la revista por los colaboradores.",
+    disableBeacon: true,
+  },
+  {
+    target: "#sections",
+    content:
+      "Aquí podrás ver las secciones de la revista, que al tocarlas, desplegaran sus anuncios guardados dentro.",
+    disableBeacon: true,
+  },
+];
+
+export const groupSteps = [
+  {
+    target: "body",
+    content:
+      "Aquí podrás los detalles de un grupo, donde podrás unirte, compartir tus anuncios y crear revistas de grupo.",
+    disableBeacon: true,
+  },
+  {
+    target: "#group-info",
+    content: "Aquí podrás ver los datos del grupo y las acciones disponibles.",
+    disableBeacon: true,
+  },
+  {
+    target: "#group-note",
+    content:
+      "Aquí podrás ver la nota del grupo, donde los administradores podrán anotar información relevante.",
+    disableBeacon: true,
+  },
+  {
+    target: "#group-actions",
+    content:
+      "Aquí podrás ver las acciones disponibles para el grupo, como unirse y compartirlo, o editarlo en caso de ser administrador.",
+    disableBeacon: true,
+  },
+  {
+    target: "#group-solapas",
+    content:
+      "Aquí podrás seleccionar las distintas solapas del grupo, donde podrás ver los anuncios de miembros del grupo y las revistas de grupo.",
+    disableBeacon: true,
+  },
+];
+
+export const subscriptionSteps = [
+  {
+    target: "body",
+    content:
+      "Aquí podrás los planes de suscripción disponibles y sus detalles. Para suscribirte, puedes hacerlo clickando en el botón de suscripción.",
+    disableBeacon: true,
+  },
+];
+
+export const packsSteps = [
+  {
+    target: "body",
+    content:
+      "Aquí podrás los packs de publicaciones disponibles y sus detalles, donde podrás aumentar tus limites de publicaciones. En caso de tener una suscripción de un plan activo, se sumarán al limite de publicaciones actual. Para suscribirte, puedes hacerlo clickando en el botón de suscripción.",
+    disableBeacon: true,
+  },
+];
+
+export const changeBehaviourSteps = [
+  {
+    target: "body",
+    content:
+      "Aquí podrás cambiar el comportamiento del anuncio. El anuncio de Agenda lo verán solo tu agenda de contactos, y los anuncios Libres lo verá cualquier usuario que se encuentre dentro del rango geográfico (ver glosario para una explicación detallada).",
     disableBeacon: true,
   },
 ];

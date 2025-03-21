@@ -151,7 +151,10 @@ const EditPostForm = ({ postData }: { postData: Good | Service }) => {
                   ))}
               </div>
             </div>
-            <div className="flex flex-col gap-4 flex-1 max-md:w-full">
+            <div
+              id="edit-post-form"
+              className="flex flex-col gap-4 flex-1 max-md:w-full"
+            >
               <ChangeBehaviourLink
                 id={postData._id}
                 postBehaviourType={postData.postBehaviourType}

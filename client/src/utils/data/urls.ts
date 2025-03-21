@@ -5,7 +5,6 @@ const CONFIGURATION = "/configuracion";
 const POSTS = "/anuncios";
 const SERVICES = "/servicios";
 const NEEDS = "/necesidades";
-const TUTORIALS = "/tutoriales";
 const SUBSCRIPTIONS = "/suscripciones";
 const SUSCRIBE = "/suscribirse";
 const PACKS = "/packs-publicaciones";
@@ -31,7 +30,6 @@ export {
   PROFILE,
   CONFIGURATION,
   POSTS,
-  TUTORIALS,
   SUBSCRIPTIONS,
   PACKS,
   CREATE,
@@ -52,5 +50,5 @@ export {
   FILE_URL,
   socketUrl,
   SERVICES,
-  NEEDS
+  NEEDS,
 };

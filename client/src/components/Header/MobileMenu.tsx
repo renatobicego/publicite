@@ -1,4 +1,4 @@
-import { CREATE, POSTS, PROFILE, TUTORIALS } from "@/utils/data/urls";
+import { CREATE, POSTS, PROFILE } from "@/utils/data/urls";
 import { SignedIn, SignedOut } from "@clerk/nextjs";
 import { Link, NavbarMenu, NavbarMenuItem } from "@nextui-org/react";
 import { Variants } from "framer-motion";
@@ -34,10 +34,6 @@ const MobileMenu = ({
       title: "Mi Perfil",
       url: `${PROFILE}/${userIdLogged}`,
       isPrivate: true,
-    },
-    {
-      title: "Ver Tutoriales",
-      url: TUTORIALS,
     },
   ];
   const variants: Variants = {

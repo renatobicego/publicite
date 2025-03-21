@@ -25,6 +25,7 @@ const GroupNote = ({
   return (
     <Card
       shadow="sm"
+      id="group-note"
       className="lg:float-right w-full md:w-1/2 lg:w-2/5 lg:p-6 xl:w-1/3 p-4 flex flex-col gap-2"
     >
       <CardHeader className="p-0">
