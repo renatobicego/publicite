@@ -17,12 +17,17 @@ export class PostReviewService implements PostReviewServiceInterface {
     ) {
 
     }
-    async createReview(postReview: PostReview_interface): Promise<void> {
-        console.log(postReview)
+    async createReview(postReview: PostReview_interface): Promise<any> {
+
         this.logger.log('creating new review... ');
         try {
             const reviewEntity = new PostReview(postReview.author, postReview.review, postReview.date, postReview.rating, postReview.post_id, postReview.postType);
-            return await this.postReviewService.saveReview(reviewEntity)
+            console.log(reviewEntity)
+            const postReviewSaved = await this.postReviewService.saveReview(reviewEntity)
+            if(!postReviewSaved){
+                return false
+            }
+            return true
         } catch (error: any) {
             this.logger.error('An error was ocurred creating new review... ');
             throw error;

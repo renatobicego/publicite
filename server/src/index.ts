@@ -12,6 +12,8 @@ import { ValidationPipe } from '@nestjs/common';
 import * as dotenv from 'dotenv';
 
 import { AppModule } from './app.module';
+import { defineInt } from 'firebase-functions/params';
+import { params } from 'firebase-functions/v2';
 
 
 const expressServer = express();
@@ -73,10 +75,21 @@ const initializeNestApp = async (): Promise<void> => {
 
     await nestApp.init();
     console.log(`Server initialized`);
+
+
   }
 };
 
-export const api = onRequest(async (request, response) => {
-  await initializeNestApp();
-  expressServer(request, response);
+const memory = defineInt("MEMORY", {
+  description: "How much memory do you need?",
+  input: params.select({ "micro": 256, "1GIB": 1024, "2GIB": 2048 }),
 });
+
+
+export const api = onRequest(
+  { memory: memory },
+  async (request, response) => {
+    await initializeNestApp();
+    expressServer(request, response);
+  }
+);

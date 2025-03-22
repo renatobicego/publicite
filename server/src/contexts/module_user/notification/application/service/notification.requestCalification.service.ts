@@ -76,6 +76,7 @@ export class NotificationRequestCalificationService implements NotificationReque
             const postId = notificationPostCalification.getPostId
             const postType = notificationPostCalification.getPostType;
             const previousNotificationId = notificationPostCalification.getpreviousNotificationId;
+
             if (!previousNotificationId) {
                 throw new PreviousIdMissingException()
             }
@@ -148,11 +149,11 @@ export class NotificationRequestCalificationService implements NotificationReque
             const notificationType = notificationPostCalification.getPostCalificationType;
             const review = notificationPostCalification.getReview;
             if (notificationType === PostCalificationEnum.request && review != null) {
-                this.logger.error("Error was occured, notificationType is request and review is not null, please delete review")
-                throw new BadRequestException("Error was occured, notificationType is request and review is not null, please delete review")
+                this.logger.error("Error was occured, the type of notification is request and review is not null, please delete review")
+                throw new BadRequestException("Error was occured, the type of notification is request and review is not null, please delete review")
             } else if (notificationType === PostCalificationEnum.response && review == null) {
-                this.logger.error("Error was occured, notificationType is response and review is null, plase send review")
-                throw new BadRequestException("Error was occured, notificationType is response and review is null, plase send review")
+                this.logger.error("Error was occured, the type of notification is response and review is null, plase send review")
+                throw new BadRequestException("Error was occured, the type of notification is response and review is null, plase send review")
             }
         } catch (error: any) {
             throw error;

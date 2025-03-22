@@ -241,7 +241,7 @@ export class NotificationService implements NotificationHandlerServiceInterface,
         try {
             const factory = NotificationFactory.getInstance(this.logger);
             const notificationUser = factory.createNotification(typeOfNotification.user_notifications, notification);
-            
+
             const event = notificationUser.getEvent
             if (event === notification_user_new_friend_request || event === notification_user_new_relation_change) {
                 await this.isThisNotificationDuplicate(notificationUser.getNotificationEntityId);
@@ -281,10 +281,8 @@ export class NotificationService implements NotificationHandlerServiceInterface,
                 return await this.notificationRequestCalificationService.createNotificatioRequestCalificationAndSendToUser(notificationRequestCalification as NotificationPostCalification)
 
             } else if (event === notification_new_calification_response) {
-
                 await this.isThisNotificationDuplicate(notificationRequestCalification.getNotificationEntityId);
                 return await this.notificationRequestCalificationService.createNotificationResponseCalificationAndSendToUser(notificationRequestCalification as NotificationPostCalification)
-
             } else {
                 throw new Error("Event is not supported in handleRequestCalificationNotification")
             }

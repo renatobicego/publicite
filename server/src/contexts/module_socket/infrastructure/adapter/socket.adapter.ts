@@ -11,6 +11,7 @@ export class SocketAdapter implements SocketAdapterInterface {
     ) { }
 
 
+
     async sendPostCalificationNotificationToNotificationService(notificationBody: any): Promise<void> {
         try {
             return await this.notificationHandler.handlePostCalificationNotification(notificationBody);
