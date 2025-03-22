@@ -31,6 +31,7 @@ interface PostTestRequest {
     reviews?: any[];
     imagesUrls?: any[];
     endDate?: Date;
+    kind?: string
 }
 
 
@@ -47,6 +48,7 @@ async function createTestingPost_e2e(postRequest: PostTestRequest, dbConnection:
             socialMedia: "public"
         },
         price: postRequest.price ?? 300,
+        kind: postRequest.kind ?? "PostGood",
         geoLocation: postRequest.geoLocation ?? {
             location: {
                 type: "Point",

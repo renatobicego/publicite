@@ -17,6 +17,7 @@ import { NotificationService } from "src/contexts/module_user/notification/appli
 import createTestingNotification_e2e from "../../../test/functions_e2e_testing/createNotification";
 import createTestingPost_e2e from "../../../test/functions_e2e_testing/create.post";
 import { PostDocument } from "src/contexts/module_post/post/infraestructure/schemas/post.schema";
+import { PostReviewDocument } from "src/contexts/module_post/PostReview/infrastructure/schemas/review.schema";
 
 
 
@@ -48,6 +49,7 @@ describe('Contact seller notifications & Post califications test', () => {
     let contactSellerModel: Model<ContactSellerDocument>
     let notificationModel: Model<NotificationDocument>
     let postModel: Model<PostDocument>
+    let postReview: Model<PostReviewDocument>
 
     beforeAll(async () => {
         const {
@@ -66,6 +68,7 @@ describe('Contact seller notifications & Post califications test', () => {
         contactSellerModel = moduleRef.get<Model<ContactSellerDocument>>(getModelToken(ContactSellerModel.modelName))
         notificationModel = moduleRef.get<Model<NotificationDocument>>(getModelToken(NotificationModel.modelName))
         postModel = moduleRef.get<Model<PostDocument>>(getModelToken('Post'))
+        postReview = moduleRef.get<Model<PostReviewDocument>>(getModelToken('PostReview'))
 
         notificationService = moduleRef.get<NotificationService>('NotificationServiceInterface');
         userService = moduleRef.get<UserService>('UserServiceInterface');
@@ -81,6 +84,7 @@ describe('Contact seller notifications & Post califications test', () => {
         jest.restoreAllMocks();
     })
     afterAll(async () => {
+        await postReview.deleteMany({});
         await dbConnection.close();
         await app.close();
     })
@@ -289,8 +293,7 @@ describe('Contact seller notifications & Post califications test', () => {
             expect(response.body.message).toContain("Failed to push notification");
         });
     })
-    //'notification_new_calification_request',   // Te han solicitado una calificación de un bien o servicio
-    //   'notification_new_calification_response'   // te han hecho una review de tu post
+
 
     describe('Post Calification notifications', () => {
 
@@ -493,8 +496,6 @@ describe('Contact seller notifications & Post califications test', () => {
 
 
 
-
-
         it('Send new calification post to user, Pedro send rating to Juan', async () => {
             const juanId = new Types.ObjectId();
             const pedroId = new Types.ObjectId();
@@ -527,11 +528,18 @@ describe('Contact seller notifications & Post califications test', () => {
                 event: "notification_new_calification_request",
             }, dbConnection);
 
+            await createTestingUser_e2e({
+                _id: juanId,
+                notifications: []
+            }, dbConnection)
             await createTestingPost_e2e({
                 _id: postId,
                 title: "post con comment",
                 author: juanId.toString(),
-                reviews: []
+                reviews: [],
+                postType: PostType.good,
+                kind: "PostGood"
+
             }, dbConnection)
 
             const notification_requestCalification = createNotificationPostCalification_testing({
@@ -559,8 +567,8 @@ describe('Contact seller notifications & Post califications test', () => {
                     }
                 },
                 backData: {
-                    userIdTo: pedroId.toString(),
-                    userIdFrom: juanId.toString()
+                    userIdTo: juanId.toString(),
+                    userIdFrom: pedroId.toString()
                 },
                 notificationEntityId: "asdasd",
                 socketJobId: "asdasd",
@@ -579,8 +587,17 @@ describe('Contact seller notifications & Post califications test', () => {
                 .send(notification_requestCalification);
 
             expect(response.status).toBe(201);
-            const post = await postModel.findById(postId);
-            console.log(post)
+            const post: any = await postModel.findById(postId);
+            expect(post?.reviews.length).toBe(1);
+
+            const juan = await userModel.findById(juanId);
+            expect(juan?.notifications.length).toBe(1);
+
+            const review = await postReview.findById(post?.reviews[0]);
+            expect(review?.author.toString()).toEqual(pedroId.toString());
+            expect(review?.review).toBe(notification_requestCalification.frontData.postCalification.review?.review);
+            expect(review?.rating).toEqual(notification_requestCalification.frontData.postCalification.review?.rating);
+
 
 
 
@@ -591,6 +608,158 @@ describe('Contact seller notifications & Post califications test', () => {
 
 
 
+        it('should throw an error if the post type is invalid', async () => {
+            const juanId = new Types.ObjectId();
+            const pedroId = new Types.ObjectId();
+            const previous_notification_id = new Types.ObjectId();
+            const postId = new Types.ObjectId();
+            const contactSellerId = new Types.ObjectId();
+
+
+            const notification_requestCalification = createNotificationPostCalification_testing({
+                event: "notification_new_calification_response",
+                type: "post_calification_notifications",
+                viewed: false,
+                frontData: {
+                    postCalification: {
+                        postCalificationType: PostCalificationEnum.response,
+                        contactSeller_id: contactSellerId.toString(),
+                        post: {
+                            _id: postId,
+                            title: "post con comment",
+                            author: juanId.toString(),
+                            description: "description",
+                            imagesUrls: ["imagesUrls"],
+                            postType: "invalid"
+                        },
+                        review: {
+                            author: new Types.ObjectId(),
+                            review: "Muy bueno",
+                            date: new Date(),
+                            rating: 5
+                        }
+                    }
+                },
+                backData: {
+                    userIdTo: juanId.toString(),
+                    userIdFrom: pedroId.toString()
+                },
+                notificationEntityId: "asdasd",
+                socketJobId: "asdasd",
+
+                previousNotificationId: previous_notification_id.toString()
+            });
+
+            const response = await request(httpServer)
+                .post('/socket/post-calification')
+                .set('Authorization', PUBLICITE_SOCKET_API_KEY)
+                .send(notification_requestCalification);
+
+            expect(response.status).toBe(500);
+            expect(response.body.message).toContain(" is not a valid enum value for path");
+        })
+
+
+        it('should throw an error if the rating is invalid', async () => {
+            const juanId = new Types.ObjectId();
+            const pedroId = new Types.ObjectId();
+            const previous_notification_id = new Types.ObjectId();
+            const postId = new Types.ObjectId();
+            const contactSellerId = new Types.ObjectId();
+
+
+            const notification_requestCalification = createNotificationPostCalification_testing({
+                event: "notification_new_calification_response",
+                type: "post_calification_notifications",
+                viewed: false,
+                frontData: {
+                    postCalification: {
+                        postCalificationType: PostCalificationEnum.response,
+                        contactSeller_id: contactSellerId.toString(),
+                        post: {
+                            _id: postId,
+                            title: "post con comment",
+                            author: juanId.toString(),
+                            description: "description",
+                            imagesUrls: ["imagesUrls"],
+                            postType: "invalid"
+                        },
+                        review: {
+                            author: new Types.ObjectId(),
+                            review: "Muy bueno",
+                            date: new Date(),
+                            rating: null as any
+                        }
+                    }
+                },
+                backData: {
+                    userIdTo: juanId.toString(),
+                    userIdFrom: pedroId.toString()
+                },
+                notificationEntityId: "asdasd",
+                socketJobId: "asdasd",
+
+                previousNotificationId: previous_notification_id.toString()
+            });
+
+            const response = await request(httpServer)
+                .post('/socket/post-calification')
+                .set('Authorization', PUBLICITE_SOCKET_API_KEY)
+                .send(notification_requestCalification);
+
+            expect(response.status).toBe(400);
+            expect(response.body.message.message).toContain("userIdFrom or rating or message or postType is null");
+        })
+
+        it('should throw an error if the previousNotificationId is missing', async () => {
+            const juanId = new Types.ObjectId();
+            const pedroId = new Types.ObjectId();
+            const postId = new Types.ObjectId();
+            const contactSellerId = new Types.ObjectId();
+
+
+            const notification_requestCalification = createNotificationPostCalification_testing({
+                event: "notification_new_calification_response",
+                type: "post_calification_notifications",
+                viewed: false,
+                frontData: {
+                    postCalification: {
+                        postCalificationType: PostCalificationEnum.response,
+                        contactSeller_id: contactSellerId.toString(),
+                        post: {
+                            _id: postId,
+                            title: "post con comment",
+                            author: juanId.toString(),
+                            description: "description",
+                            imagesUrls: ["imagesUrls"],
+                            postType: "invalid"
+                        },
+                        review: {
+                            author: new Types.ObjectId(),
+                            review: "Muy bueno",
+                            date: new Date(),
+                            rating: null as any
+                        }
+                    }
+                },
+                backData: {
+                    userIdTo: juanId.toString(),
+                    userIdFrom: pedroId.toString()
+                },
+                notificationEntityId: "asdasd",
+                socketJobId: "asdasd",
+
+                previousNotificationId: null
+            });
+
+            const response = await request(httpServer)
+                .post('/socket/post-calification')
+                .set('Authorization', PUBLICITE_SOCKET_API_KEY)
+                .send(notification_requestCalification);
+
+            expect(response.status).toBe(400);
+            expect(response.body.message).toContain("PREVIOUS_ID_MISSING");
+        })
 
 
 

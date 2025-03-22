@@ -45,7 +45,6 @@ export class PostReviewRepository implements PostReviewRepositoryInterface {
         const postModel = postType === "good" ? this.postGoodDocument
           : postType === "service" ? this.postServiceDocument
             : null;
-
         if (!postModel) {
           this.logger.error("Invalid post type. Please check the create review repository.");
           throw new Error("Invalid post type.");
@@ -65,8 +64,6 @@ export class PostReviewRepository implements PostReviewRepositoryInterface {
     } catch (error) {
       this.logger.error("Error in saveReview:", error);
       throw error;
-    } finally {
-      session.endSession();
     }
   }
 

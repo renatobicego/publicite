@@ -21,7 +21,6 @@ export class EmitterService {
 
     async emitAsync(event: string, body: any): Promise<any> {
         try {
-
             this.logger.log('Emitting event: ' + event);
             return await this.eventEmitter.emitAsync(event, body);
         } catch (error: any) {
