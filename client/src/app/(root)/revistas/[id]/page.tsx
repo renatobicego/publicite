@@ -64,7 +64,7 @@ export default async function MagazinePage(props: { params: { id: string } }) {
     },
   ];
 
-  const filteredActivePostsMagazine = {
+  const filteredActivePostsMagazine: Magazine = {
     ...magazine,
     sections: magazine.sections.map((section) => {
       return {
@@ -77,10 +77,13 @@ export default async function MagazinePage(props: { params: { id: string } }) {
   return (
     <main className="flex min-h-screen flex-col items-start main-style gap-4 md:gap-6 xl:gap-8">
       <BreadcrumbsAdmin items={breadcrumbsItems} />
-      <section className="w-full flex-col gap-4 flex items-center justify-center">
+      <section
+        id="magazine-data"
+        className="w-full flex-col gap-4 flex items-center justify-center"
+      >
         <MagazineHeader
           {...{
-            magazine,
+            magazine: filteredActivePostsMagazine,
             ownerAsUser,
             ownerAsGroup,
             urlProfile,
@@ -91,36 +94,37 @@ export default async function MagazinePage(props: { params: { id: string } }) {
         />
         <MagazineActions
           isOwner={isOwner}
-          magazine={magazine}
+          magazine={filteredActivePostsMagazine}
           isCollaborator={isCollaborator}
         />
       </section>
-      <div className="w-full relative flex flex-col gap-2">
+      <div
+        id="grid-posts-magazines"
+        className="w-full relative flex flex-col gap-2"
+      >
         {(isOwner || isCollaborator) && (
           <MagazineSectionActions
-            magazineId={magazine._id}
+            magazineId={filteredActivePostsMagazine._id}
             groupId={!isOwnerTypeUser ? ownerAsGroup._id : undefined}
-            ownerType={magazine.ownerType}
-            sections={magazine.sections.filter(
+            ownerType={filteredActivePostsMagazine.ownerType}
+            sections={filteredActivePostsMagazine.sections.filter(
               (section) => !section.isFatherSection
             )}
           />
         )}
         <PostsGrid
           posts={
-            (magazine.sections.find((section) => section.isFatherSection)
-              ?.posts as Post[]) || []
+            (filteredActivePostsMagazine.sections.find(
+              (section) => section.isFatherSection
+            )?.posts as Post[]) || []
           }
         />
       </div>
-      {magazine.sections.length > 1 && (
+      {filteredActivePostsMagazine.sections.length > 1 && (
         <AccordionSections
-          sections={magazine.sections.filter(
+          sections={filteredActivePostsMagazine.sections.filter(
             (section) => !section.isFatherSection
           )}
-          ownerType={magazine.ownerType}
-          canEdit={isOwner || isCollaborator}
-          magazineId={magazine._id}
         />
       )}
     </main>

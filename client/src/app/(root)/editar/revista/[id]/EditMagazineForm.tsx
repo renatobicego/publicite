@@ -67,7 +67,10 @@ const EditMagazineForm = ({
     >
       {({ isSubmitting, errors }) => {
         return (
-          <Form className="flex flex-col gap-4 max-md:w-full md:max-xl:flex-1 xl:w-1/2">
+          <Form
+            id="edit-magazine-form"
+            className="flex flex-col gap-4 max-md:w-full md:max-xl:flex-1 xl:w-1/2"
+          >
             <EditMagazineInputs
               errors={errors}
               isUserMagazine={!isGroupMagazine}
