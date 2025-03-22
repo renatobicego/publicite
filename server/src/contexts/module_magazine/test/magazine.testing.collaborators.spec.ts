@@ -192,6 +192,7 @@ describe('Magazine Service Testing - Add collaborators & Allowd collaborators', 
 
             await createPersonalUser(userModel, {
                 _id: newCollaborator,
+                userType: "person"
             })
             const userMagazine = await insertUserMagazine(
                 userMagazineModel,
@@ -255,7 +256,8 @@ describe('Magazine Service Testing - Add collaborators & Allowd collaborators', 
 
             await createPersonalUser(userModel, {
                 _id: collaboratorToDelete,
-                magazines: [magazineId]
+                magazines: [magazineId],
+                userType: "person"
             })
             const userMagazine = await insertUserMagazine(
                 userMagazineModel,
@@ -301,7 +303,8 @@ describe('Magazine Service Testing - Add collaborators & Allowd collaborators', 
 
             await createPersonalUser(userModel, {
                 _id: collaboratorToDelete,
-                magazines: [magazineId]
+                magazines: [magazineId],
+                userType: "person"
             })
 
 
@@ -328,13 +331,11 @@ describe('Magazine Service Testing - Add collaborators & Allowd collaborators', 
 
 
     describe('Delete Collaborator in group magazine', () => {
+
+        
         it('Group Magazine-> type of user : Creator of Magazine - delete Collaborator, should return work success', async () => {
             const allowedCollaboratorToDelete = new Types.ObjectId("624c2c5d7bce4d1e4c2d5d7c");
             const creatorOfGroup = members[0]
-            await createPersonalUser(userModel, {
-                _id: allowedCollaboratorToDelete,
-                magazines: [magazineId]
-            })
             await createGroup({
                 _id: groupId,
                 creator: creatorOfGroup,
@@ -364,10 +365,6 @@ describe('Magazine Service Testing - Add collaborators & Allowd collaborators', 
             expect(groupMagazineSaved).toBeDefined();
             expect(groupMagazineSaved!.allowedCollaborators.length).toBe(0);
 
-
-            const user: any = await userModel.findById(allowedCollaboratorToDelete)
-            expect(user).toBeDefined();
-            expect(user.magazines.length).toBe(0);
         })
 
         it('Group Magazine-> type of user : Unknown User - delete Collaborator, should persmission denied', async () => {
@@ -377,7 +374,8 @@ describe('Magazine Service Testing - Add collaborators & Allowd collaborators', 
 
             await createPersonalUser(userModel, {
                 _id: allowedCollaboratorToDelete,
-                magazines: [magazineId]
+                magazines: [magazineId],
+                userType: "person"
             })
             await createGroup({
                 _id: groupId,

@@ -21,6 +21,7 @@ import { GroupModel } from "src/contexts/module_group/group/infrastructure/schem
 import NotificationModel from "../../notification/infrastructure/schemas/notification.schema";
 import PostReviewModel from "src/contexts/module_post/PostReview/infrastructure/schemas/review.schema";
 import { MagazineModelSharedModule } from "src/contexts/module_shared/sharedSchemas/magazine.model.schema";
+import { UserMagazineModel } from "src/contexts/module_magazine/magazine/infrastructure/schemas/magazine.user.schema";
 
 const clerk_update_module = async (): Promise<TestingModule> => {
     dotenv.config({ path: '.env.test' });
@@ -38,6 +39,8 @@ const clerk_update_module = async (): Promise<TestingModule> => {
             }),
             MongooseModule.forFeature([
                 { name: UserModel.modelName, schema: UserModel.schema },
+                { name: UserRelationModel.modelName, schema: UserRelationModel.schema },
+                { name: UserMagazineModel.modelName, schema: UserMagazineModel.schema },
 
             ]),
         ],
@@ -49,7 +52,7 @@ const clerk_update_module = async (): Promise<TestingModule> => {
             { provide: 'SectorRepositoryInterface', useValue: {} },
             { provide: getModelToken(UserPersonModel.modelName), useValue: {} },
             { provide: getModelToken(UserBusinessModel.modelName), useValue: {} },
-            { provide: getModelToken(MagazineModel.modelName), useValue: {} },
+
         ],
     }).compile();
 };

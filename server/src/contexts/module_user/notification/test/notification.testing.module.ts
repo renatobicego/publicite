@@ -25,6 +25,8 @@ import { MagazineModel } from "src/contexts/module_magazine/magazine/infrastruct
 import { UserRelationModel } from "../../user/infrastructure/schemas/user.relation.schema";
 import { UserModel } from "../../user/infrastructure/schemas/user.schema";
 import { UserBusinessModel } from "../../user/infrastructure/schemas/userBussiness.schema";
+import { UserMagazine } from "src/contexts/module_magazine/magazine/domain/entity/user.magazine";
+import { UserMagazineModel } from "src/contexts/module_magazine/magazine/infrastructure/schemas/magazine.user.schema";
 
 
 
@@ -61,6 +63,7 @@ const downgradePlan_module = async (): Promise<TestingModule> => {
                     
                 },
                 { name: UserModel.modelName, schema: UserModel.schema },
+                { name: UserMagazineModel.modelName, schema: UserMagazineModel.schema },
             ]),
         ],
         providers: [
@@ -95,7 +98,7 @@ const downgradePlan_module = async (): Promise<TestingModule> => {
             { provide: getModelToken(UserBusinessModel.modelName), useValue: {} },
 
             { provide: getModelToken(UserRelationModel.modelName), useValue: {} },
-            { provide: getModelToken(MagazineModel.modelName), useValue: {} },
+
 
 
 

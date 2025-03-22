@@ -22,7 +22,6 @@ export class PostReviewService implements PostReviewServiceInterface {
         this.logger.log('creating new review... ');
         try {
             const reviewEntity = new PostReview(postReview.author, postReview.review, postReview.date, postReview.rating, postReview.post_id, postReview.postType);
-            console.log(reviewEntity)
             const postReviewSaved = await this.postReviewService.saveReview(reviewEntity)
             if(!postReviewSaved){
                 return false

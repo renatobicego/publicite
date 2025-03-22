@@ -83,7 +83,8 @@ describe('Magazine Testing', () => {
                 userModel,
                 {
                     _id: users[i],
-                    magazines: [magazineId]
+                    magazines: [magazineId],
+                    userType: "person"
                 });
         }
 

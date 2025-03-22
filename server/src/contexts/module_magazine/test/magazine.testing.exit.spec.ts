@@ -56,6 +56,7 @@ describe('Magazine Service Testing - Exit Magazine', () => {
             await createPersonalUser(userModel, {
                 _id: collaborators[0],
                 magazines: [magazineId],
+                userType: "person"
             })
 
 
@@ -92,6 +93,7 @@ describe('Magazine Service Testing - Exit Magazine', () => {
             await createPersonalUser(userModel, {
                 _id: collaborators[1],
                 magazines: [magazineId],
+                userType: "person"
             })
 
 

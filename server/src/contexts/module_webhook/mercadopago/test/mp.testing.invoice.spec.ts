@@ -251,7 +251,7 @@ describe('MercadopagoService - Invoice   ', () => {
 
             expect(await mpHandlerEvents.create_subscription_authorized_payment("123")).toBe(true);
             expect(loggerWarnSpy).toHaveBeenCalledTimes(1);
-            expect(loggerWarnSpy).toHaveBeenCalledWith('Payment amount is less than $50 is a card validation, returning OK to Meli');
+            expect(loggerWarnSpy).toHaveBeenCalledWith("Payment amount is less than $50 is a card validation, returning OK to Meli");
             expect(saveInvoiceSpy).not.toHaveBeenCalled();
             loggerWarnSpy.mockRestore();
 

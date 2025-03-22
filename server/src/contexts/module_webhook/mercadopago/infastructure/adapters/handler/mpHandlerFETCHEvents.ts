@@ -522,7 +522,7 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
     }
 
     if (mercado_pago_response.transaction_amount <= limitOfCardValidation) {
-      this.logger.warn(`Payment amount is less than $${limitOfCardValidation} is a CARD VALIDATIONS, returning OK to Meli`);
+      this.logger.warn(`Payment amount is less than $${limitOfCardValidation} is a card validation, returning OK to Meli`);
       return Promise.resolve(true);
     }
 

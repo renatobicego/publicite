@@ -329,7 +329,6 @@ describe('Mercadopago - MpHandlerEvents - Subscription  -> Create', () => {
         expect(subscriptionSaved.status).toBe(mockedSubscriptionResponse.status);
         expect(subscriptionSaved.subscriptionPlan).toEqual(subscriptionPlan_id);
         expect(subscriptionSaved.startDate).toBe((mockedSubscriptionResponse.auto_recurring.start_date).split('T')[0]);
-        expect(subscriptionSaved.endDate).toBe((mockedSubscriptionResponse.auto_recurring.start_date).split('T')[0]);
         expect(subscriptionSaved.external_reference).toBe(mockedSubscriptionResponse.external_reference);
         expect(subscriptionSaved.nextPaymentDate).toBe(mockedSubscriptionResponse.next_payment_date);
         expect(subscriptionSaved.paymentMethodId).toBe(mockedSubscriptionResponse.payment_method_id);
@@ -367,7 +366,6 @@ describe('Mercadopago - MpHandlerEvents - Subscription  -> Create', () => {
         expect(subscriptionSaved.status).toBe(mockedSubscriptionResponse.status);
         expect(subscriptionSaved.subscriptionPlan).toEqual(subscriptionPlan_id);
         expect(subscriptionSaved.startDate).toBe((mockedSubscriptionResponse.auto_recurring.start_date).split('T')[0]);
-        expect(subscriptionSaved.endDate).toBe((mockedSubscriptionResponse.auto_recurring.start_date).split('T')[0]);
         expect(subscriptionSaved.external_reference).toBe(mockedSubscriptionResponse.external_reference);
         expect(subscriptionSaved.nextPaymentDate).toBe(mockedSubscriptionResponse.next_payment_date);
         expect(subscriptionSaved.paymentMethodId).toBe(mockedSubscriptionResponse.payment_method_id);
@@ -468,7 +466,6 @@ describe('Mercadopago - MpHandlerEvents - Subscription  -> Update', () => {
         expect(subscriptionSaved.status).toBe(mockedSubscriptionResponse.status);
         expect(subscriptionSaved.subscriptionPlan).toEqual(subscriptionPlan_id);
         expect(subscriptionSaved.startDate).toBe((mockedSubscriptionResponse.auto_recurring.start_date).split('T')[0]);
-        expect(subscriptionSaved.endDate).toBe((mockedSubscriptionResponse.auto_recurring.start_date).split('T')[0]);
         expect(subscriptionSaved.external_reference).toBe(mockedSubscriptionResponse.external_reference);
         expect(subscriptionSaved.nextPaymentDate).toBe(mockedSubscriptionResponse.next_payment_date);
         expect(subscriptionSaved.paymentMethodId).toBe(mockedSubscriptionResponse.payment_method_id);

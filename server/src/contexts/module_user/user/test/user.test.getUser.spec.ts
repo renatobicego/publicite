@@ -43,7 +43,7 @@ describe('UserService - Make relation between two users', () => {
         postModel = moduleRef.get<Model<PostDocument>>(getModelToken(PostModel.modelName));
         userMagazineModel = moduleRef.get<Model<UserMagazineDocument>>(getModelToken(UserMagazineModel.modelName));
         magazineSectionModel = moduleRef.get<Model<MagazineSectionDocument>>(getModelToken(MagazineSectionModel.modelName));
-        await createPersonalUser(userModel, { _id: userProfileId, userRelations: [userRelationId], magazines: [magazineId], posts: [postId] });
+        await createPersonalUser(userModel, { _id: userProfileId, userRelations: [userRelationId], magazines: [magazineId], posts: [postId], userType: "person" });
 
 
 
