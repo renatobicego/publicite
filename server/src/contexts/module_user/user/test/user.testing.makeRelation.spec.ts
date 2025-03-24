@@ -90,7 +90,11 @@ describe('UserService - Make relation between two users', () => {
             typeOfRelation ?? "friends",
             null
         )
-        const realation: any = await userRelationModel.findOne({ userA: USER_A_ID, userB: USER_B_ID });
+        let realation: any = await userRelationModel.find({ userA: USER_A_ID, userB: USER_B_ID });
+        expect(realation.length).toBe(1);
+        if (realation.length == 1) {
+            realation = realation[0]
+        }
         console.log("Verificacion creacion schema")
         expect(realation).toBeDefined();
         expect(realation?.userA).toEqual(USER_A_ID);
@@ -161,9 +165,13 @@ describe('UserService - Make relation between two users', () => {
             typeOfRelation ?? "contacts",
             null
         )
-        const realation: any = await userRelationModel.findOne({ userA: USER_A_ID, userB: USER_B_ID });
+        let realation: any = await userRelationModel.find({ userA: USER_A_ID, userB: USER_B_ID });
         console.log("Verificacion creacion schema")
         expect(realation).toBeDefined();
+        expect(realation.length).toBe(1);
+        if (realation.length == 1) {
+            realation = realation[0]
+        }
         expect(realation?.userA).toEqual(USER_A_ID);
         expect(realation?.userB).toEqual(USER_B_ID);
         expect(realation?.typeRelationA).toBe(typeOfRelation);
@@ -411,7 +419,106 @@ describe('UserService - Make relation between two users', () => {
 
     })
 
-    it('Create a relationship between two users and two subscription plans (plan authorizated)', async () => {
+    it('Create a relationship and push it to active relations (USER A INITIATES RELATION)', async () => {
+
+
+        const typeOfRelation = relationAvailables.get("friends");
+        const USER_A_ID = new Types.ObjectId("66d2177dda11f93d8647cf3b")
+        const USER_B_ID = new Types.ObjectId("66d2177dda11f93d8647cf3c")
+
+        await subscriptionPlanModel.create({
+            _id: new Types.ObjectId("66d2177dda11f93d8647cf3d"),
+            mpPreapprovalPlanId: "This is a free plan",
+            isActive: true,
+            reason: "Publicité Free",
+            description: "Este plan es publicite free.",
+            features: ["feature1", "feature2"],
+            intervalTime: 7,
+            price: 0,
+            isFree: true,
+            postsLibresCount: 1,
+            postsAgendaCount: 1,
+            maxContacts: 5
+        });
+
+        await subscriptionModel.create({
+            _id: new Types.ObjectId("67ad4c4bdb9283528cea83b9"),
+            mpPreapprovalId: "FREE SUBSCRIPTION",
+            payerId: "FREE SUBSCRIPTION",
+            status: "authorized",
+            subscriptionPlan: new Types.ObjectId("66d2177dda11f93d8647cf3d"),
+            startDate: "test",
+            endDate: "test",
+            external_reference: USER_A_ID.toString(),
+            timeOfUpdate: "FREE SUBSCRIPTION",
+            nextPaymentDate: "FREE SUBSCRIPTION",
+            paymentMethodId: "FREE SUBSCRIPTION",
+            cardId: "FREE SUBSCRIPTION",
+            __v: 0
+        });
+
+
+
+        await userModel.create({
+            _id: USER_A_ID,
+            clerkId: 'TEST_A',
+            email: 'TEST_At@email.com',
+            username: 'TEST_A',
+            name: 'TEST_A',
+            lastName: 'TEST_A',
+            finder: 'TEST_A',
+            profilePhotoUrl: 'TEST_A.jpg',
+            userType: 'person',
+            userRelations: [],
+            subscriptions: new Types.ObjectId("67ad4c4bdb9283528cea83b9"),
+            activeRelations: []
+
+        });
+
+        await userModel.create({
+            _id: USER_B_ID,
+            clerkId: 'TEST_B',
+            email: 'TEST_B@email.com',
+            username: 'TEST_B',
+            name: 'TEST_B',
+            lastName: 'TEST_B',
+            finder: 'TEST_B',
+            profilePhotoUrl: 'TEST_B.jpg',
+            userType: 'business',
+            userRelations: [],
+            subscriptions: new Types.ObjectId("67ad4c4bdb9283528cea83b9"),
+            activeRelations: []
+        });
+
+
+
+        const backData = {
+            userIdFrom: USER_B_ID.toString(),
+            userIdTo: USER_A_ID.toString() // Es el que originalmente envio la solicitud
+        }
+
+
+
+        await userService.makeFriendRelationBetweenUsers(
+            backData,
+            typeOfRelation ?? "friends",
+            null
+        )
+
+
+        const user: any = await userModel.findOne({ _id: USER_A_ID }).select("activeRelations");
+        console.log("Verificacion de active relations USER A")
+        expect(user).toBeDefined();
+        expect(user?.activeRelations.length).toBe(1);
+        console.log("Verificacion de contactos max segun plan")
+        const maxContacts: number = await userService.getLimitContactsFromUserByUserId(USER_A_ID.toString());
+        expect(5).toBe(maxContacts);
+
+
+    })
+
+
+    it('Create relationship and check if the new one is added to active relations (user with two plan of subscription)', async () => {
 
 
         const typeOfRelation = relationAvailables.get("contacts");
@@ -487,8 +594,8 @@ describe('UserService - Make relation between two users', () => {
             await userRelationModel.create(
                 {
                     _id: new Types.ObjectId(id),
-                    userA: new Types.ObjectId("66d2177dda11f93d8647cf3b"),
-                    userB: new Types.ObjectId("66d2177dda11f93d8647cf3c"),
+                    userA: new Types.ObjectId(USER_A_ID),
+                    userB: new Types.ObjectId(),
                     typeRelationA: typeOfRelation,
                     typeRelationB: typeOfRelation
                 }
@@ -802,5 +909,9 @@ describe('UserService - Make relation between two users', () => {
 
 
     })
+
+
+
+    
 
 })// end

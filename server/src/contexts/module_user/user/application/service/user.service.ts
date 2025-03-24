@@ -155,7 +155,7 @@ export class UserService implements UserServiceInterface {
     }
   }
 
-  async findProfileUserByExternalUserById(_id: string): Promise<any> {
+  async findProfileUserByExternalUserById(_id: string, userRequestId?: string): Promise<any> {
     try {
       this.logger.log("finding user profile...")
       // Traemos las relaciones del usuario
@@ -196,11 +196,11 @@ export class UserService implements UserServiceInterface {
       this.logger.log("Searching user with magazine and posts conditions...")
       const user = await this.userRepository.getProfileUserByExternalUserById(_id, conditionOfVisibility);
       // agregamos logica de isFriendRequestPending
-      if (user) {
+      if (user && userRequestId) {
         user.isFriendRequestPending = false;
         if (user.friendRequests && user.friendRequests.length > 0) {
           user.friendRequests.map((friend_Request: any) => {
-            if (friend_Request.backData.userIdFrom === _id) {
+            if (friend_Request.backData.userIdFrom == userRequestId) {
               user.isFriendRequestPending = true;
             }
           });

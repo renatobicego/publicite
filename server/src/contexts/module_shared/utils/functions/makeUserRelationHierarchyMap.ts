@@ -50,6 +50,7 @@ export function makeUserRelationMapWithoutHierarchy(userRelation: any[], userReq
     const TOPFRIENDS = 'topfriends';
     const CONTACTS = 'contacts';
     const FRIENDS = 'friends';
+    
     userRelation.forEach((relation: UserRelation) => {
         const typeOfRelationArray: String[] = [];
         const friendId = relation.userA.toString() === userRequestId

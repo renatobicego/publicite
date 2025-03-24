@@ -67,7 +67,7 @@ export class UserAdapter implements UserAdapterInterface {
         return await this.userService.findUserByIdByOwnUser(_id);
       }
       this.logger.log('User id and user id from are not the same');
-      return await this.userService.findProfileUserByExternalUserById(_id);
+      return await this.userService.findProfileUserByExternalUserById(_id,userRequestId);
     } catch (error: any) {
       throw error;
     }
