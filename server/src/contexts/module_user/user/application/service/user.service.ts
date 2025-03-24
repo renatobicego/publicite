@@ -165,7 +165,7 @@ export class UserService implements UserServiceInterface {
       if (userRelations && userRelations.length > 0) {
 
         const userRelationFilter = userRelations.filter((userRelation: { userA: ObjectId, userB: ObjectId }) =>
-          userRelation.userA.toString() === _id || userRelation.userB.toString() === _id
+          userRelation.userA.toString() === userRequestId || userRelation.userB.toString() === userRequestId
         );
         this.logger.log("User relation filter success")
 
