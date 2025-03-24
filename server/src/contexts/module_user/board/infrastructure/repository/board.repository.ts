@@ -34,6 +34,8 @@ export class BoardRepository implements BoardRespositoryInterface {
     conditions: any
   ): Promise<BoardGetAllResponse> {
     try {
+
+
       const boardSearchTermSeparate = board
         ?.split(' ')
         .filter(

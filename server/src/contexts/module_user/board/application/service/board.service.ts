@@ -46,10 +46,14 @@ export class BoardService implements BoardServiceInterface {
       }
 
       if (relationMap.size > 0) {
-        conditions = Array.from(relationMap.entries()).map(([key, value]) => ({
-          user: key,
-          visibility: { $in: value },
-        }));
+        conditions = [
+          { visibility: 'public' }, 
+          ...Array.from(relationMap.entries()).map(([key, value]) => ({
+            user: key,
+            visibility: { $in: value },
+          }))
+        ];
+
       }
       if (!isUserRegister) conditions = [{ visibility: 'public' }];
 

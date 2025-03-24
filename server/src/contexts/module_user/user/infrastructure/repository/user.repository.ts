@@ -375,7 +375,7 @@ export class UserRepository implements UserRepositoryInterface {
                   { visibility: conditionOfVisibility }
                 ]
               }
-          
+
             },
             { path: 'groups' },
             { path: 'contact' },
@@ -403,7 +403,11 @@ export class UserRepository implements UserRepositoryInterface {
                 strictPopulate: false,
               },
               match: {
-                'visibility.post': conditionOfVisibility,
+                $or: [
+                  { 'visibility.post': 'public' },
+                  { 'visibility.post': conditionOfVisibility, }
+                ],
+                isActive: true,
               },
             },
           ])
@@ -427,7 +431,10 @@ export class UserRepository implements UserRepositoryInterface {
                 model: 'Post',
                 select: '_id imagesUrls isActive',
                 match: {
-                  'visibility.post': conditionOfVisibility,
+                  $or: [
+                    { 'visibility.post': 'public' },
+                    { 'visibility.post': conditionOfVisibility, }
+                  ],
                   isActive: true,
                 },
               },
