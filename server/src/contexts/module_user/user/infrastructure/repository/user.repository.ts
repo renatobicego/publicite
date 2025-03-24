@@ -367,7 +367,16 @@ export class UserRepository implements UserRepositoryInterface {
             '_id profilePhotoUrl username contact lastName name businessName countryRegion userType board description email suscriptions groups magazines posts friendRequests userRelations',
           )
           .populate([
-            { path: 'board' },
+            {
+              path: 'board',
+              match: {
+                $or: [
+                  { visibility: 'public' },
+                  { visibility: conditionOfVisibility }
+                ]
+              }
+          
+            },
             { path: 'groups' },
             { path: 'contact' },
             { path: 'friendRequests' },

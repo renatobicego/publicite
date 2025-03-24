@@ -162,7 +162,7 @@ export class UserService implements UserServiceInterface {
       let userRelations: any = await this.getRelationsFromUserByUserId(_id);
       let conditionOfVisibility: any
       let userRelationMap: Map<String, String[]> = new Map();
-      if (userRelations && userRelations.length > 0) {
+      if (userRelations && userRelations.length > 0 && userRequestId) {
 
         const userRelationFilter = userRelations.filter((userRelation: { userA: ObjectId, userB: ObjectId }) =>
           userRelation.userA.toString() === userRequestId || userRelation.userB.toString() === userRequestId
