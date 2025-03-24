@@ -36,7 +36,7 @@ export interface UserRepositoryInterface {
   getProfileUserByExternalUserById(_id: string, conditionOfVisibility: any): Promise<any>
 
   pushNotification(notification: any, userId: string, session?: any): Promise<any>;
-  pushNewFriendRequestOrRelationRequestToUser(notificationId: Types.ObjectId, userNotificationOwner: string, session: any): Promise<any>
+  pushNewFriendRequestOrRelationRequestToUser(notificationId: Types.ObjectId, backData: any, session: any): Promise<any>
   pushActiveRelationToUser(userRequestId: any, userRelationId: any, session: any): Promise<void>
   save(reqUser: User, session?: ClientSession): Promise<string>;
 
@@ -59,7 +59,10 @@ export interface UserRepositoryInterface {
   ): Promise<User>;
   setNewActiveUserRelations(activeRelations: string[], userRequestId: string): Promise<any>;
 
-  removeFriendRequest(previousNotificationId: string, userNotificationOwner: string, session: any): Promise<any>
+  removeFriendRequest(previousNotificationId: string, backData: {
+    userIdFrom: string;
+    userIdTo: string;
+  }, session: any): Promise<any>
   removeFriend(relationId: string, friendRequestId?: string): Promise<any>;
   removeActiveRelationOfUser(userRequestId: string, contactsToDelete: any[], session?: any): Promise<any>
 

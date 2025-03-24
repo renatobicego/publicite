@@ -26,6 +26,7 @@ export class NotificationUserService implements NotificationUserServiceInterface
             const event = notificationUser.getEvent;
             const userIdFrom = notificationUser.getbackData.userIdFrom;
             const userIdTo = notificationUser.getbackData.userIdTo;
+            const backData = notificationUser.getbackData
 
             if (!event || !userIdFrom || !userIdTo) throw new Error("Missing event, userIdFrom, userIdTo");
             await session.withTransaction(async () => {
@@ -49,7 +50,7 @@ export class NotificationUserService implements NotificationUserServiceInterface
                 const notificationId = await this.notificationRepository.saveUserNotification(notificationUser, session);
 
                 if (event === notification_user_new_friend_request || event === notification_user_new_relation_change) {
-                    await this.userService.pushNewFriendRequestOrRelationRequestToUser(notificationId, userIdTo, session)
+                    await this.userService.pushNewFriendRequestOrRelationRequestToUser(notificationId, backData, session)
                 }
 
 
@@ -59,7 +60,7 @@ export class NotificationUserService implements NotificationUserServiceInterface
                         throw new PreviousIdMissingException()
                     }
                     await this.notificationRepository.setNotificationActionsToFalseById(previousNotificationId, session)
-                    await this.userService.removeFriendRequest(previousNotificationId, userIdFrom, session)
+                    await this.userService.removeFriendRequest(previousNotificationId, backData, session)
 
                 }
 

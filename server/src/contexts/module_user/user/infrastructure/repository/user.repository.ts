@@ -487,13 +487,16 @@ export class UserRepository implements UserRepositoryInterface {
   }
   async pushNewFriendRequestOrRelationRequestToUser(
     notificationId: Types.ObjectId,
-    userNotificationOwner: string,
+    backData: any,
     session: any,
   ): Promise<any> {
     try {
+      let ids = [];
+      ids.push(backData.userIdFrom);
+      ids.push(backData.userIdTo);
       const result = await this.user
-        .updateOne(
-          { _id: userNotificationOwner },
+        .updateMany(
+          { _id: { $in: ids } },
           { $addToSet: { friendRequests: notificationId } },
         )
         .session(session);
@@ -624,13 +627,16 @@ export class UserRepository implements UserRepositoryInterface {
 
   async removeFriendRequest(
     previousNotificationId: string,
-    userNotificationOwner: string,
+    backData: {
+      userIdFrom: string;
+      userIdTo: string;
+    },
     session: any,
   ): Promise<any> {
     try {
       await this.user
-        .updateOne(
-          { _id: userNotificationOwner },
+        .updateMany(
+          { _id: { $in: [backData.userIdFrom, backData.userIdTo] } },
           { $pull: { friendRequests: previousNotificationId } },
         )
         .session(session);

@@ -293,6 +293,11 @@ type user_relation {
   typeRelationB: String!
 }
 
+type isAcceptRequestFriend {
+  value: Boolean
+  notification_id: String
+}
+
 type User_Full_Grapql_Model {
   _id: ID
   clerkId: String
@@ -316,6 +321,7 @@ type User_Full_Grapql_Model {
   groups: [Groups_Full_Graphql_Model]
   friendRequests: [friendRequests!]
   isFriendRequestPending: Boolean
+  isAcceptRequestFriend: isAcceptRequestFriend
 }
 
 type user_active_relation {

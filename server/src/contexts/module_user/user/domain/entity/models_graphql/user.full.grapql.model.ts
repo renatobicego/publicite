@@ -188,6 +188,17 @@ export class user_relation {
   @Field(() => String)
   typeRelationB: string;
 }
+
+@ObjectType()
+class isAcceptRequestFriend {
+  @Field(() => Boolean, { nullable: true })
+  value: boolean;
+
+
+  @Field(() => String, { nullable: true })
+  notification_id: string;
+
+}
 @ObjectType()
 export class User_Full_Grapql_Model {
   @Field(() => ID, { nullable: true })
@@ -253,4 +264,7 @@ export class User_Full_Grapql_Model {
 
   @Field(() => Boolean, { nullable: true })
   isFriendRequestPending?: boolean;
+
+  @Field(() => isAcceptRequestFriend, { nullable: true })
+  isAcceptRequestFriend?: isAcceptRequestFriend;
 }

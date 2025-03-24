@@ -61,7 +61,7 @@ export interface UserServiceInterface {
 
   pushNewFriendRequestOrRelationRequestToUser(
     notificationId: Types.ObjectId,
-    userNotificationOwner: string,
+    backData: any,
     session: any,
   ): Promise<any>;
 
@@ -74,7 +74,10 @@ export interface UserServiceInterface {
 
   removeFriendRequest(
     previousNotificationId: string,
-    userNotificationOwner: string,
+    backData: {
+      userIdFrom: string;
+      userIdTo: string;
+    },
     session: any,
   ): Promise<any>;
 

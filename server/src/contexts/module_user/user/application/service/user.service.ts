@@ -198,10 +198,19 @@ export class UserService implements UserServiceInterface {
       // agregamos logica de isFriendRequestPending
       if (user && userRequestId) {
         user.isFriendRequestPending = false;
+        user.isAcceptRequestFriend = {
+          value: false,
+          notification_id: ''
+        };
         if (user.friendRequests && user.friendRequests.length > 0) {
           user.friendRequests.map((friend_Request: any) => {
             if (friend_Request.backData.userIdFrom == userRequestId) {
               user.isFriendRequestPending = true;
+            }else if(friend_Request.backData.userIdFrom == _id && friend_Request.backData.userIdTo == userRequestId){
+              user.isAcceptRequestFriend = {
+                value: true,
+                notification_id: friend_Request._id
+              }
             }
           });
         }
@@ -412,7 +421,7 @@ export class UserService implements UserServiceInterface {
   }
   async pushNewFriendRequestOrRelationRequestToUser(
     notificationId: Types.ObjectId,
-    userNotificationOwner: string,
+    backData: any,
     session: any,
   ): Promise<any> {
     try {
@@ -422,7 +431,7 @@ export class UserService implements UserServiceInterface {
 
       await this.userRepository.pushNewFriendRequestOrRelationRequestToUser(
         notificationId,
-        userNotificationOwner,
+        backData,
         session,
       );
     } catch (error: any) {
@@ -432,13 +441,16 @@ export class UserService implements UserServiceInterface {
 
   async removeFriendRequest(
     previousNotificationId: string,
-    userNotificationOwner: string,
+    backData:{
+      userIdFrom: string;
+      userIdTo: string;
+    },
     session: any,
   ) {
     try {
       await this.userRepository.removeFriendRequest(
         previousNotificationId,
-        userNotificationOwner,
+        backData,
         session,
       );
     } catch (error: any) {
