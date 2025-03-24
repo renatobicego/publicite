@@ -200,7 +200,8 @@ export class UserService implements UserServiceInterface {
         user.isFriendRequestPending = false;
         user.isAcceptRequestFriend = {
           value: false,
-          notification_id: ''
+          notification_id: '',
+          type: ''
         };
         if (user.friendRequests && user.friendRequests.length > 0) {
           user.friendRequests.map((friend_Request: any) => {
@@ -208,8 +209,9 @@ export class UserService implements UserServiceInterface {
               user.isFriendRequestPending = true;
             }else if(friend_Request.backData.userIdFrom == _id && friend_Request.backData.userIdTo == userRequestId){
               user.isAcceptRequestFriend = {
-                value: true,
-                notification_id: friend_Request._id
+                value: true ,
+                notification_id: friend_Request._id ?? "",
+                type : friend_Request.event ?? ""
               }
             }
           });

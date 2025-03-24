@@ -198,6 +198,8 @@ class isAcceptRequestFriend {
   @Field(() => String, { nullable: true })
   notification_id: string;
 
+  @Field(() => String, { nullable: true })
+  type: string;
 }
 @ObjectType()
 export class User_Full_Grapql_Model {
