@@ -17,6 +17,9 @@ const AcceptRequestFriend = ({
       | "notification_user_new_friend_request"
       | "notification_user_new_relation_change";
     value: boolean;
+    userRelationId: string;
+    toRelationShipChange: UserRelation;
+    newRelation: UserRelation;
   };
   userIdTo: string;
 }) => {
@@ -33,8 +36,9 @@ const AcceptRequestFriend = ({
       acceptChangeContactRequest(
         socket,
         userIdTo,
-        "contacts",
-        isAcceptRequestFriend.notification_id
+        isAcceptRequestFriend.toRelationShipChange,
+        isAcceptRequestFriend.notification_id,
+        isAcceptRequestFriend.userRelationId
       );
     } else if (
       isAcceptRequestFriend.type === "notification_user_new_friend_request"
@@ -42,7 +46,7 @@ const AcceptRequestFriend = ({
       acceptNewContactRequest(
         socket,
         userIdTo,
-        "contacts",
+        isAcceptRequestFriend.newRelation,
         isAcceptRequestFriend.notification_id
       );
     }
