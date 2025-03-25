@@ -18,12 +18,13 @@ const PetitionCard = ({
   const price = post.toPrice
     ? `De $${formatTotal(post.price)} a $${formatTotal(post.toPrice)}`
     : `$${post.price}`;
-  const frequencyShown = post.frequencyPrice
-    ? `por ${
-        frequencyPriceItems.find((item) => item.value === post.frequencyPrice)
-          ?.text
-      }`
-    : "";
+  const frequencyShown =
+    post.frequencyPrice && (post.frequencyPrice as any) !== "undefined"
+      ? `por ${
+          frequencyPriceItems.find((item) => item.value === post.frequencyPrice)
+            ?.text
+        }`
+      : "";
   return (
     <CardBody
       as={Link}

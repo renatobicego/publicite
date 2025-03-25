@@ -19,12 +19,13 @@ const ServiceCard = ({
   hideSaveMagazineButton?: boolean;
 }) => {
   const { title, reviews, description, price, frequencyPrice } = post;
-  const frequencyShown = frequencyPrice
-    ? `por ${
-        frequencyPriceItems.find((item) => item.value === post.frequencyPrice)
-          ?.text
-      }`
-    : "";
+  const frequencyShown =
+    (post.frequencyPrice as any) !== "undefined"
+      ? `por ${
+          frequencyPriceItems.find((item) => item.value === post.frequencyPrice)
+            ?.text
+        }`
+      : "";
   return (
     <>
       <PostImage

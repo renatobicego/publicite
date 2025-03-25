@@ -13,11 +13,5 @@ export const { getClient, query } = registerApolloClient(() => {
   return new ApolloClient({
     cache: new InMemoryCache(),
     link,
-    defaultOptions: {
-      query: {
-        fetchPolicy: "network-only", // Don't cache for now to avoid issues
-        errorPolicy: "all",
-      },
-    },
   });
 });

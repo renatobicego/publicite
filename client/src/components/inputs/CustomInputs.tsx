@@ -134,7 +134,7 @@ export const CustomInputWithoutFormik: React.FC<InputProps> = (props) => {
       classNames={{
         inputWrapper:
           "shadow-none hover:shadow-sm border-[0.5px] group-data-[focus=true]:border-light-text py-1",
-        input: "text-[0.8125rem]",
+        input: `text-[0.8125rem] ${props.classNames?.input}`,
         label: `font-medium text-[0.8125rem] ${props.classNames?.label}`,
       }}
     />

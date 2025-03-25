@@ -71,6 +71,9 @@ const EditMagazineSection = ({
                   label="Sección de Revista"
                   placeholder="Escriba el nombre de la sección"
                   value={inputValue}
+                  classNames={{
+                    input: "text-base",
+                  }}
                   onValueChange={setInputValue}
                 />
               </ModalBody>

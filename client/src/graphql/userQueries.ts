@@ -86,6 +86,11 @@ const getUserByIdQuery = gql`
         }
       }
       isFriendRequestPending
+      isAcceptRequestFriend {
+        notification_id
+        type
+        value
+      }
     }
   }
 `;

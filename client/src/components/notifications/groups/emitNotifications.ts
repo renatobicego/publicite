@@ -33,6 +33,7 @@ export const emitGroupNotification = (
       "group_notifications",
       notification,
       (response: { status?: number; message?: string }) => {
+        console.log(response);
         if (response?.status === 200) {
           resolve(response);
         } else {

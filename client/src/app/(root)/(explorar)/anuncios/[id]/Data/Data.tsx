@@ -55,7 +55,8 @@ const Data = async ({
         return `$${formatTotal(good.price)}`;
       case "service":
         return `$${formatTotal(service.price)} ${
-          service.frequencyPrice
+          service.frequencyPrice &&
+          (service.frequencyPrice as any) !== "undefined"
             ? `por ${
                 (
                   frequencyPriceItems.find(
@@ -73,7 +74,8 @@ const Data = async ({
               )}`
             : `$${formatTotal(petition.price)}`
         } ${
-          petition.frequencyPrice
+          service.frequencyPrice &&
+          (service.frequencyPrice as any) !== "undefined"
             ? `por ${
                 (
                   frequencyPriceItems.find(

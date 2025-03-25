@@ -73,21 +73,12 @@ export default async function GroupLayout(props: {
         </Suspense>
         {isMember ? (
           <>
-            <Suspense
-              fallback={<Skeleton className="w-full h-20 rounded-lg" />}
-            >
-              <GroupSolapas group={group} isAdmin={isAdmin} />
-            </Suspense>
-            <Suspense
-              fallback={<Skeleton className="w-full h-96 rounded-lg" />}
-            >
-              {children}
-            </Suspense>
+            <GroupSolapas group={group} isAdmin={isAdmin} />
+
+            {children}
           </>
         ) : (
-          <Suspense fallback={<Skeleton className="w-full h-40 rounded-lg" />}>
-            <JoinGroupCard groupId={params.id} />
-          </Suspense>
+          <JoinGroupCard groupId={params.id} />
         )}
       </main>
     </Suspense>
