@@ -373,40 +373,39 @@ export class GroupRepository implements GroupRepositoryInterface, OnModuleInit {
     }
   }
 
-  async deleteAccount(id: string): Promise<any> {
+  async deleteAccount(id: string): Promise<void> {
     try {
-      this.logger.log('Deleting group from account');
-  
-      let magazinesToDelete: any[] = [];
-  
-      const groupMagazines = await this.groupModel
-        .findOneAndDelete({ creator: id })
-        .select('magazines -_id')
+      this.logger.log('Deleting groups and associated magazines for account');
+
+      const groups = await this.groupModel
+        .find({ creator: id })
+        .select('magazines _id')
         .lean();
-  
-      if (!groupMagazines) return;
-  
-      if (groupMagazines.magazines?.length > 0) {
-        console.log(groupMagazines);
-        this.logger.log('Group has group magazines');
-        magazinesToDelete = groupMagazines.magazines;
+
+      if (!groups || groups.length === 0) {
+        this.logger.log('No groups found for account');
+        return;
       }
-  
-      if (magazinesToDelete.length > 0) {
-        console.log(magazinesToDelete);
-        this.logger.log('Deleting magazines...');
-        await this.groupMagazine.deleteMany({ _id: { $in: magazinesToDelete } });
-      }
-  
-      this.logger.log('Group and associated magazines successfully deleted');
-  
-      return groupMagazines; 
-  
-    } catch (error: any) {
+
+
+      const groupIdsToDelete = groups.map(group => group._id);
+      const magazineIdsToDelete = groups.flatMap(group => group.magazines);
+
+      await Promise.all([
+        magazineIdsToDelete.length > 0
+          ? this.groupMagazine.deleteMany({ _id: { $in: magazineIdsToDelete } })
+          : Promise.resolve(),
+
+        this.groupModel.deleteMany({ _id: { $in: groupIdsToDelete } })
+      ]);
+
+      this.logger.log('Successfully deleted groups and associated magazines')
+    } catch (error) {
+      this.logger.error('Failed to delete account groups and magazines')
       throw error;
     }
   }
-  
+
 
   async deleteMagazinesFromGroup(
     magazinesToDelete: string[],

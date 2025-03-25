@@ -16,18 +16,6 @@ export class UserResolver {
   ) { }
 
 
-  @Mutation(() => String, {
-    nullable: true,
-    description: 'Remover una relacion de amistad entre dos usuarios',
-  })
-  @UseGuards(ClerkAuthGuard)
-  async deleteAccount(
-    @Args('id', { type: () => String })
-    id: string,
-  ): Promise<any> {
-    await this.userAdapter.deleteAccount(id);
-    return 'Account successfully deleted';
-  }
 
 
 

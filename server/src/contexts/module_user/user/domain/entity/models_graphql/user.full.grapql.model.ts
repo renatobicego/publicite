@@ -194,12 +194,20 @@ class isAcceptRequestFriend {
   @Field(() => Boolean, { nullable: true })
   value: boolean;
 
-
   @Field(() => String, { nullable: true })
   notification_id: string;
 
   @Field(() => String, { nullable: true })
   type: string;
+
+  @Field(() => String, { nullable: true })
+  toRelationShipChange: string;
+
+  @Field(() => String, { nullable: true })
+  userRelationId: string;
+
+  @Field(() => String, { nullable: true })
+  newRelation: string;
 }
 @ObjectType()
 export class User_Full_Grapql_Model {

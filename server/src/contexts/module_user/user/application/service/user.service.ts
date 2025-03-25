@@ -208,7 +208,10 @@ export class UserService implements UserServiceInterface {
         user.isAcceptRequestFriend = {
           value: false,
           notification_id: '',
-          type: ''
+          type: '',
+          toRelationShipChange: "",
+          userRelationId: "",
+          newRelation: ""
         };
         if (user.friendRequests && user.friendRequests.length > 0) {
           user.friendRequests.map((friend_Request: any) => {
@@ -218,7 +221,10 @@ export class UserService implements UserServiceInterface {
               user.isAcceptRequestFriend = {
                 value: true,
                 notification_id: friend_Request._id ?? "",
-                type: friend_Request.event ?? ""
+                type: friend_Request.event ?? "",
+                toRelationShipChange: friend_Request.frontData.userRelation._id ? friend_Request.frontData.userRelation.typeRelation : "",
+                userRelationId: friend_Request.frontData.userRelation._id,
+                newRelation: friend_Request.frontData.userRelation._id ? "" : friend_Request.frontData.userRelation.typeRelation
               }
             }
           });

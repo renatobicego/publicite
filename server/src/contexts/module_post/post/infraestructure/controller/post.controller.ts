@@ -3,7 +3,7 @@ import { PostAdapterInterface } from "../../application/adapter/post.adapter.int
 import { AuthSocket } from "src/contexts/module_socket/infrastructure/auth/socket.auth";
 
 
-@Controller("group")
+@Controller("post")
 export class PostController {
 
     constructor(

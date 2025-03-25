@@ -16,7 +16,6 @@ export class GroupController {
     async deleteAccount(@Param('id') id: string): Promise<any> {
         try {
             await this.groupAdapter.deleteAccount(id);
-
         } catch (error: any) {
             throw error;
         }

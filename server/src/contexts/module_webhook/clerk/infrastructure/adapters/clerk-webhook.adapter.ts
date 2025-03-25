@@ -87,12 +87,11 @@ export class ClerkWebhookAdapter {
         throw new Error('Error while deleting account: MongoDB ID not found');
       }
 
+      await fetch(`${config.groupService}/${mongoId}`, fetchOptions)
 
-      await Promise.all([
-        fetch(`${config.groupService}/${mongoId}`, fetchOptions),
-        fetch(`${config.notificationService}/${mongoId}`, fetchOptions),
-        fetch(`${config.postService}/${mongoId}`, fetchOptions)
-      ]);
+      await fetch(`${config.notificationService}/${mongoId}`, fetchOptions)
+      
+      await fetch(`${config.postService}/${mongoId}`, fetchOptions)
 
     } catch (error) {
       throw new Error(`Failed to delete account: ${error.message}`);
