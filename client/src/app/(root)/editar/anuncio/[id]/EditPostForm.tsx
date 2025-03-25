@@ -120,16 +120,18 @@ const EditPostForm = ({ postData }: { postData: Good | Service }) => {
         postType === "good" ? goodEditValidation : serviceEditValidation
       }
     >
-      {({ isSubmitting, errors, values, setFieldValue }) => {
+      {({ isSubmitting, errors, values, setFieldValue, setValues }) => {
         return (
           <Form className="w-full max-md:flex-col flex gap-4 items-start">
             <div className="flex flex-col gap-4 flex-1 max-md:w-full">
               <UploadImages
                 files={newImages}
                 setFiles={setNewImages}
-                isVideoUploaded={values.imagesUrls.some((url) => isVideo(url))}
+                isVideoUploaded={values.imagesUrls.some((url) =>
+                  isVideo(url, true)
+                )}
                 type={postType as any}
-                prevFilesCount={values.imagesUrls.length - deletedImages.length}
+                prevFilesCount={values.imagesUrls.length}
                 customClassname="md:w-full"
               />
               <h6>Imagenes Subidas Anteriormente</h6>
@@ -138,7 +140,7 @@ const EditPostForm = ({ postData }: { postData: Good | Service }) => {
               max-md:overflow-x-auto max-md:mb-4 pb-1"
               >
                 {values.imagesUrls &&
-                  values.imagesUrls.map((url, index) => (
+                  [...values.imagesUrls, ...deletedImages].map((url, index) => (
                     <ImagePreview
                       image={url}
                       key={index}
@@ -147,6 +149,7 @@ const EditPostForm = ({ postData }: { postData: Good | Service }) => {
                       }
                       deletedImages={deletedImages}
                       setDeletedImages={setDeletedImages}
+                      setValues={setValues}
                     />
                   ))}
               </div>

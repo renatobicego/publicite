@@ -82,7 +82,8 @@ export const handleBoardColor = (bg: string) => {
 const videoExtensions = ["mp4", "mov", "avi", "mkv", "webm"]; // Add more as needed
 
 // Helper function to check if the URL is a video based on file extension
-export const isVideo = (url: string) => {
+export const isVideo = (url: string, searchVdieoInUrl?: boolean) => {
+  if (searchVdieoInUrl) return url.includes("video");
   const extension = url.split(".").pop()?.toLowerCase();
   return extension ? videoExtensions.includes(extension) : false;
 };

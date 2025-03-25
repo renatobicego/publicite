@@ -11,7 +11,9 @@ export const handleFileSubmission = async (
 ) => {
   // delete files
   await deleteFiles([
-    ...deletedImages,
+    ...deletedImages.map((url) =>
+      url.includes("video") ? url.replace("video", "") : url
+    ),
     ...prevAttachedFilesDeleted.map((file) => file.url),
   ]);
 

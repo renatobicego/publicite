@@ -57,7 +57,9 @@ export default async function PostPage(props: {
           id="post-data"
           className="w-full flex max-lg:flex-col gap-4 lg:gap-6 3xl:gap-8 relative"
         >
-          {!isPetition && <Images images={(post as any).imagesUrls} />}
+          {!isPetition && (
+            <Images images={(post as any).imagesUrls} title={post.title} />
+          )}
           <Data post={post} isAuthor={isAuthor} isPetition={isPetition} />
         </section>
         <section

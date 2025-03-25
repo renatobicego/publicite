@@ -35,6 +35,7 @@ import { handleApolloError } from "@/utils/functions/errorHandler";
 import { ContactPostsVisibility } from "@/utils/data/fetchDataByType";
 import { getApiContext } from "./apiContext";
 import { ActiveUserRelation } from "@/types/userTypes";
+import { isVideo } from "@/utils/functions/utils";
 
 export const getPostData = async (id: string) => {
   try {
@@ -268,7 +269,11 @@ export const deletePostService = async (post: Post) => {
       post.imagesUrls &&
       (post as Good).imagesUrls.length > 0
     ) {
-      await deleteFilesService((post as Good).imagesUrls);
+      await deleteFilesService(
+        (post as Good).imagesUrls.map((url) =>
+          isVideo(url) ? url.replace("video", "") : url
+        )
+      );
     }
     return { message: "Anuncio borrado exitosamente" };
   } catch (error) {
