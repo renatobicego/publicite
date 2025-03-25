@@ -74,6 +74,13 @@ export class PostRepository implements PostRepositoryInterface {
     @InjectModel('Post')
     private readonly postDocument: Model<PostDocument>,
   ) { }
+  async deleteAccount(id: string): Promise<any> {
+    try {
+      await this.postDocument.deleteMany({ author: id });
+    } catch (error: any) {
+      throw error;
+    }
+  }
 
   get getEmmiter() {
     return this.emmiter;

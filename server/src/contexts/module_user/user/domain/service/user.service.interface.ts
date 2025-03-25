@@ -16,7 +16,7 @@ export interface UserServiceInterface {
   ): Promise<Types.ObjectId>;
   createUser(req: User, contactDto: ContactRequest): Promise<string>;
 
-
+  deleteAccount(id: string): Promise<any>;
   removeActiveRelationOfUser(userId: string, session?: any): Promise<any>;
 
 
@@ -27,7 +27,7 @@ export interface UserServiceInterface {
   ): Promise<UserFindAllResponse>;
 
   findUserByIdByOwnUser(username: string, userRequestId?: string): Promise<any>;
-  findProfileUserByExternalUserById(_id: string,userRequestId?: string): Promise<any>
+  findProfileUserByExternalUserById(_id: string, userRequestId?: string): Promise<any>
 
   getUserPersonalInformationByUsername(username: string): Promise<any>;
   getRelationsFromUserByUserId(userRequestId: string): Promise<any>;

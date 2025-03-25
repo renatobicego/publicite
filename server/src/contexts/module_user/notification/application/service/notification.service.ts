@@ -87,6 +87,15 @@ export class NotificationService implements NotificationHandlerServiceInterface,
     }
 
 
+    async deleteAccount(id: string): Promise<void> {
+        try {
+            this.logger.log(`Deleting notifications of user with id: ${id}`);
+            await this.notificationRepository.deleteAccount(id);
+            this.logger.log(`Successfully deleted notifications of user with id: ${id}`);
+        } catch (error: any) {
+            throw error;
+        }
+    }
 
 
     async getAllNotificationsFromUserById(

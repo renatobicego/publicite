@@ -112,6 +112,15 @@ export class NotificationRepository implements NotificationRepositoryInterface {
     }
   }
 
+  async deleteAccount(id: string): Promise<void> {
+    try {
+      await this.notificationBaseDocument.deleteMany({ user: id });
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
   async deleteNotificationById(
     event: string,
     userRequestId: string,

@@ -32,7 +32,7 @@ import {
   UserMagazineDocument,
   UserMagazineModel,
 } from 'src/contexts/module_magazine/magazine/infrastructure/schemas/magazine.user.schema';
-import { match } from 'assert';
+
 
 @Injectable()
 export class UserRepository implements UserRepositoryInterface {
@@ -41,6 +41,9 @@ export class UserRepository implements UserRepositoryInterface {
     private readonly emmiter: EmitterService,
     @InjectConnection()
     private readonly connection: Connection,
+
+    @InjectModel(UserModel.modelName)
+    private readonly userModel: Model<IUser>,
 
     @InjectModel(UserPersonModel.modelName)
     private readonly userPersonModel: Model<IUserPerson>,
@@ -60,6 +63,25 @@ export class UserRepository implements UserRepositoryInterface {
     @Inject('SectorRepositoryInterface')
     private readonly sectorRepository: SectorRepositoryInterface,
   ) { }
+  async deleteAccount(id: string): Promise<any> {
+    try {
+      const session = await this.connection.startSession();
+
+      const mongoId = await session.withTransaction(async () => {
+
+        const _id = await this.userModel.findOneAndDelete({ clerkId: id }).select("_id").lean().session(session);//await this.userModel.findOneAndDelete({ clerkId: id }, { session }).select('_id').lean();
+        await this.userMagazineModel.deleteMany({ user: _id });
+        await this.userRelation.deleteMany({ $or: [{ userA: _id }, { userB: _id }] });
+
+
+        return _id;
+      })
+
+      return mongoId;
+    } catch (error: any) {
+      throw error;
+    }
+  }
 
   async findUserByIdByOwnUser(_id: string): Promise<any> {
     try {

@@ -28,6 +28,7 @@ import { NotificationPostCalificationModel } from "../schemas/notification.postC
 import { NotificationShareService } from "../../application/service/notification.share.service";
 import { NotificationShareModel } from "../schemas/notification.share.schema";
 import { NotificationSubscriptionModel } from "../schemas/notification.subscription.schema";
+import { NotificationController } from "../controller/notification.controller";
 
 @Module({
     imports: [
@@ -96,10 +97,8 @@ import { NotificationSubscriptionModel } from "../schemas/notification.subscript
             provide: 'NotificationShareServiceInterface',
             useClass: NotificationShareService
         }
-        
-
-
     ],
+    controllers: [NotificationController],
     exports: [
         'NotificationGroupServiceInterface',
         'NotificationMagazineServiceInterface',

@@ -18,9 +18,9 @@ export class WebhookService implements WebhookServiceInterface {
   constructor(
     @Inject('UserServiceInterface')
     private readonly userService: UserServiceInterface,
-  ) {}
+  ) { }
 
-  async processEvent(event: WebhookEventInterface): Promise<void> {
+  async processEvent(event: WebhookEventInterface): Promise<any> {
     const { object, type, data } = event;
     console.log(`Processing webhook Object: ${object} and type: ${type}`);
 
@@ -31,7 +31,8 @@ export class WebhookService implements WebhookServiceInterface {
         return await this.userService.updateUserByClerkId(
           UP_clerkRequestUpdate,
         );
-
+      case 'user.deleted':
+        return type;
       default:
         console.log('Unknown event type:', type);
         break;

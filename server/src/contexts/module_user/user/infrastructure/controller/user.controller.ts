@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Inject,
   Param,
@@ -47,6 +48,7 @@ import {
   UserPersonResponse,
 } from '../../application/adapter/dto/HTTP-RESPONSE/user.response.dto';
 import { UserType } from '../../domain/entity/enum/user.enums';
+import { AuthSocket } from 'src/contexts/module_socket/infrastructure/auth/socket.auth';
 
 
 @ApiTags('Accounts')
@@ -274,6 +276,20 @@ export class UserController {
       throw error;
     }
   }
+
+
+
+  @Delete(':id')
+  @UseGuards(AuthSocket)
+  async deleteAccount(@Param('id') id: string): Promise<any> {
+    try {
+      const mongoID = await this.userAdapter.deleteAccount(id);
+      return { mongoID };
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
 
 
 

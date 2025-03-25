@@ -18,6 +18,7 @@ export interface PostRepositoryInterface {
     userId: string,
     criteria: { [key: string]: number },
   ): Promise<void>;
+  deleteAccount(id: string): Promise<any>;
   deleteCommentById(
     id: string,
     userRequestId: string,

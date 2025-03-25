@@ -373,6 +373,41 @@ export class GroupRepository implements GroupRepositoryInterface, OnModuleInit {
     }
   }
 
+  async deleteAccount(id: string): Promise<any> {
+    try {
+      this.logger.log('Deleting group from account');
+  
+      let magazinesToDelete: any[] = [];
+  
+      const groupMagazines = await this.groupModel
+        .findOneAndDelete({ creator: id })
+        .select('magazines -_id')
+        .lean();
+  
+      if (!groupMagazines) return;
+  
+      if (groupMagazines.magazines?.length > 0) {
+        console.log(groupMagazines);
+        this.logger.log('Group has group magazines');
+        magazinesToDelete = groupMagazines.magazines;
+      }
+  
+      if (magazinesToDelete.length > 0) {
+        console.log(magazinesToDelete);
+        this.logger.log('Deleting magazines...');
+        await this.groupMagazine.deleteMany({ _id: { $in: magazinesToDelete } });
+      }
+  
+      this.logger.log('Group and associated magazines successfully deleted');
+  
+      return groupMagazines; 
+  
+    } catch (error: any) {
+      throw error;
+    }
+  }
+  
+
   async deleteMagazinesFromGroup(
     magazinesToDelete: string[],
     groupId: string,

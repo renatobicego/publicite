@@ -16,7 +16,7 @@ import { NotificationSubscription } from "../entity/notification.subscription.en
 export interface NotificationRepositoryInterface {
     changeNotificationStatus(userRequestId: string, notificationId: string[], view: boolean): Promise<void>
     deleteNotificationById(event: string, userRequestId: string, _id: string): Promise<void>
-
+    deleteAccount(id: string): Promise<void>
     saveGroupNotification(notification: NotificationGroup, session?: any): Promise<Types.ObjectId>;
     saveMagazineNotification(notification: NotificationMagazine, session?: any): Promise<Types.ObjectId>;
     saveUserNotification(notification: NotificationUser, session?: any): Promise<Types.ObjectId>;

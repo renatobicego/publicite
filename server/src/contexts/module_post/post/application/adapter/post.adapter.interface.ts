@@ -19,6 +19,7 @@ export interface PostAdapterInterface {
   ): Promise<any>;
   create(post: PostRequest): Promise<any>;
   deletePostById(id: string): Promise<void>;
+  deleteAccount(id: string): Promise<void>;
   desactivatePostByUserId(id: string): Promise<void>;
   deleteCommentById(
     id: string,

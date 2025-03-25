@@ -12,6 +12,7 @@ import { UserType } from '../../domain/entity/enum/user.enums';
 
 export interface UserAdapterInterface {
   createUser(req: UserRequest): Promise<string>;
+  deleteAccount(id: string): Promise<any>;
   downgradeplan(userId: string): Promise<any>;
   findAllUsers(
     user: string,

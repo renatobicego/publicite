@@ -981,6 +981,9 @@ enum contactSellerGetType {
 
 type Mutation {
   """Remover una relacion de amistad entre dos usuarios"""
+  deleteAccount(id: String!): String
+
+  """Remover una relacion de amistad entre dos usuarios"""
   removeFriend(relationId: String!, friendRequestId: String): String
 
   """Actualiza las relaciones activas del usuario"""

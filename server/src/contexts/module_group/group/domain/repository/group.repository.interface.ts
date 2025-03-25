@@ -30,7 +30,7 @@ export interface GroupRepositoryInterface {
     creator: string,
   ): Promise<any>;
 
-
+  deleteAccount(id: string): Promise<any>;
   deleteMembersFromGroup(
     membersToDelete: string[],
     groupId: string,

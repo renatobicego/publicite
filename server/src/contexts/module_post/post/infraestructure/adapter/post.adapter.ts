@@ -33,7 +33,14 @@ export class PostAdapter implements PostAdapterInterface {
     private readonly postMapper: PostMapperAdapterInterface,
     private readonly logger: MyLoggerService,
     private readonly emmiter: EmitterService,
-  ) {}
+  ) { }
+  async deleteAccount(id: string): Promise<void> {
+    try {
+      return await this.postService.deleteAccount(id);
+    } catch (error: any){
+      throw error;
+    }
+  }
 
   @OnEvent(downgrade_plan_post)
   async desactivatePostByUserId(id: string): Promise<any> {

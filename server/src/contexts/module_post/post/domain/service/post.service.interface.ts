@@ -18,7 +18,7 @@ export interface PostServiceInterface {
   deletePostById(id: string): Promise<void>;
   deleteCommentById(id: string, userRequestId: string, isAuthorOfPost: boolean, isComment: boolean): Promise<void>;
   desactivatePostByUserId(userId: string): Promise<void>;
-
+  deleteAccount(id: string): Promise<void>;
   findPostsByAuthorId(id: string): Promise<void>;
   findPostById(id: string): Promise<any>;
   findAllPostByPostType(

@@ -107,6 +107,15 @@ export class GroupAdapter implements GroupAdapterInterface {
     }
   }
 
+  async deleteAccount(id: string): Promise<any> {
+    try {
+      await this.groupService.deleteAccount(id);
+    } catch (error: any){
+      throw error;
+    }
+  }
+
+
   async deleteGroupById(groupId: string, groupCreator: string): Promise<any> {
     try {
       await this.groupService.deleteGroupById(groupId, groupCreator);

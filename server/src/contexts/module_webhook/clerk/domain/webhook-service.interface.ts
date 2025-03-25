@@ -5,5 +5,5 @@ import { WebhookEventInterface } from '../../clerk/domain/webhook-event.interfac
 */
 
 export interface WebhookServiceInterface {
-  processEvent(event: WebhookEventInterface): Promise<void>;
+  processEvent(event: WebhookEventInterface): Promise<any>;
 }

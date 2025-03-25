@@ -36,6 +36,13 @@ export class NotificationAdapter implements NotificationAdapterInterface {
     }
 
 
+    async deleteAccount(id: string): Promise<any> {
+        try {
+            await this.notificationService.deleteAccount(id);
+        } catch (error: any){
+            throw error;
+        }
+    }
 
 
     @OnEvent(subscription_event)
