@@ -104,6 +104,7 @@ export const getFriendsOfUser = async (id: string) => {
           },
         },
       });
+    if (!data.findUserById) return [];
 
     const relationsMapped = data.findUserById.userRelations.map((relation) => {
       if (relation.userA._id === user.sessionClaims?.metadata.mongoId) {
@@ -198,7 +199,17 @@ export const getUsers = async (searchTerm: string | null, page: number) => {
 export const getUserById = async (
   id: string
 ): Promise<
-  (GetUser & { isFriendRequestPending: boolean }) | { error: string }
+  | (GetUser & {
+      isFriendRequestPending: boolean;
+      isAcceptRequestFriend: {
+        notification_id: string;
+        type:
+          | "notification_user_new_friend_request"
+          | "notification_user_new_relation_change";
+        value: boolean;
+      };
+    })
+  | { error: string }
 > => {
   try {
     const { context } = await getApiContext();

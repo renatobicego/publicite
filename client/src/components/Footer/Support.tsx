@@ -7,7 +7,11 @@ const Support = () => {
     <ul className="flex flex-col gap-1">
       <li className="text-white font-bold">Soporte</li>
       <li>
-        <Link size="sm" className="text-white" href={""}>
+        <Link
+          size="sm"
+          className="text-white"
+          href={"mailto:publicite@soonpublicite.com"}
+        >
           Contactar Soporte
         </Link>
       </li>

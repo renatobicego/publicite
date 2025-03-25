@@ -42,8 +42,8 @@ const rootReducer = combineReducers({
 const persistConfig = {
   key: "root",
   storage: storageSession,
-  whitelist: ["magazine", "config"],
-  blacklist: ["user", "subscriptions"],
+  whitelist: ["config"],
+  blacklist: ["user", "subscriptions", "magazine"],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

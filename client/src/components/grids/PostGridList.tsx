@@ -111,7 +111,10 @@ const PostGridList = ({
                   dataAsPetition.price
                 )} a $${formatTotal(dataAsPetition.toPrice)}`; // add the price
               }
-              if (dataAsPetition.frequencyPrice) {
+              if (
+                dataAsPetition.frequencyPrice &&
+                (dataAsPetition.frequencyPrice as any) !== "undefined"
+              ) {
                 // if it has a frequency
                 // add the frequency of the price (month, year, etc)
                 priceToShow += ` por ${
@@ -124,7 +127,10 @@ const PostGridList = ({
             case "service":
               const dataAsService = data as Service; // cast to Service
               priceToShow = `$${formatTotal(dataAsService.price)}`; // add the price
-              if (dataAsService.frequencyPrice) {
+              if (
+                dataAsService.frequencyPrice &&
+                (dataAsService.frequencyPrice as any) !== "undefined"
+              ) {
                 // if it has a frequency
                 // add the frequency of the price (month, year, etc)
                 priceToShow += ` por ${

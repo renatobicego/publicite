@@ -37,10 +37,14 @@ const useUploadFiles = (
       );
       return;
     }
+    let isVideoBeingUploaded = false;
     // Combine both files and attachedFiles into a single array for upload
     const compressedFiles = await Promise.all(
       files.map(async (file) => {
-        if (file.type.startsWith("video/")) return file;
+        if (file.type.startsWith("video/")) {
+          isVideoBeingUploaded = true;
+          return file;
+        }
         const options = {
           maxSizeMB: 1,
           maxWidthOrHeight: 600,
@@ -49,11 +53,23 @@ const useUploadFiles = (
         return await imageCompression(file, options);
       })
     );
+
+    // Separate images and videos
+    const images = compressedFiles.filter(
+      (file) => !file.type.startsWith("video/")
+    );
+    const videos = compressedFiles.filter((file) =>
+      file.type.startsWith("video/")
+    );
+
+    // Ensure videos are at the end
+    const orderedCompressedFiles = [...images, ...videos];
+
+    // Combine with attached files
     const combinedFiles = [
-      ...compressedFiles,
+      ...orderedCompressedFiles,
       ...attachedFiles.map((file) => file.file),
     ];
-
     // Start the upload
     let res;
     if (combinedFiles.length > 0) {
@@ -72,6 +88,11 @@ const useUploadFiles = (
           label: attachedFiles[index].label,
         }))
       : [];
+
+    // Append "video" to the last uploaded file if a video was uploaded
+    if (isVideoBeingUploaded && uploadedFileUrls.length > 0) {
+      uploadedFileUrls[uploadedFileUrls.length - 1] += "video";
+    }
 
     // Assign URLs to their respective fields in the form values
     if (isEditing) {

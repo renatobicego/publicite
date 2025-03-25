@@ -11,14 +11,20 @@ const ImagePreview = ({
   deletedImages,
   setDeletedImages,
   isMaxFileCountExceeded,
+  setValues,
 }: {
   image: string;
   deletedImages: string[];
   setDeletedImages: Dispatch<SetStateAction<string[]>>;
   isMaxFileCountExceeded: boolean;
+  setValues: any;
 }) => {
   const removeImage = (key: string) => {
     setDeletedImages([...deletedImages, key]);
+    setValues((prevValues: any) => ({
+      ...prevValues,
+      imagesUrls: prevValues.imagesUrls.filter((url: string) => url !== key),
+    }));
   };
   const addBackImage = (key: string) => {
     if (isMaxFileCountExceeded) {
@@ -28,6 +34,10 @@ const ImagePreview = ({
       return;
     }
     setDeletedImages(deletedImages.filter((image) => image !== key));
+    setValues((prevValues: any) => ({
+      ...prevValues,
+      imagesUrls: [...prevValues.imagesUrls, key],
+    }));
   };
   const isBeingDeleted = deletedImages.includes(image);
   return (
@@ -36,9 +46,9 @@ const ImagePreview = ({
         isBeingDeleted ? "border border-danger rounded-2xl" : ""
       }`}
     >
-      {isVideo(image) ? (
+      {isVideo(image, true) ? (
         <video
-          src={FILE_URL + image}
+          src={FILE_URL + image.replace("video", "")}
           controls
           className={`object-cover size-20 md:size-24 lg:size-28 xl:size-32 rounded-lg md:rounded-xl xl:rounded-2xl ${
             isBeingDeleted ? "opacity-50" : ""

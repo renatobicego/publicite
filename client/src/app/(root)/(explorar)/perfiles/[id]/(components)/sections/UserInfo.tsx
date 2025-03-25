@@ -24,13 +24,23 @@ import {
   formatFacebookUrl,
   formatInstagamUrl,
 } from "@/utils/functions/formatUrls";
+import AcceptRequestFriend from "./AcceptRequestFriend";
 
 const UserInfo = ({
   user,
   isMyProfile,
   isMyContact,
 }: {
-  user: GetUser & { isFriendRequestPending: boolean };
+  user: GetUser & {
+    isFriendRequestPending: boolean;
+    isAcceptRequestFriend: {
+      notification_id: string;
+      type:
+        | "notification_user_new_friend_request"
+        | "notification_user_new_relation_change";
+      value: boolean;
+    };
+  };
   isMyProfile: boolean;
   isMyContact?: UserRelations;
 }) => {
@@ -83,6 +93,11 @@ const UserInfo = ({
             Solicitud enviada
           </PrimaryButton>
         );
+      case user.isAcceptRequestFriend.value:
+        <AcceptRequestFriend
+          isAcceptRequestFriend={user.isAcceptRequestFriend}
+          userIdTo={user._id}
+        />;
       default:
         return (
           <SendRequest

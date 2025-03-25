@@ -18,7 +18,7 @@ const Footer = ({ id }: { id?: string | null }) => {
             <li>
               <ShareApp />
             </li>
-            <li>
+            {/* <li>
               <Button
                 aria-label="Twitter"
                 isIconOnly
@@ -29,13 +29,13 @@ const Footer = ({ id }: { id?: string | null }) => {
               >
                 <FaXTwitter className="text-white size-4" />
               </Button>
-            </li>
+            </li> */}
             <li>
               <Button
                 aria-label="Instagram"
                 isIconOnly
                 as={Link}
-                href={""}
+                href={"https://www.instagram.com/soonpublicite"}
                 size="sm"
                 variant="light"
               >
