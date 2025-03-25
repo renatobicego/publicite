@@ -15,6 +15,22 @@ export class UserResolver {
     private readonly userAdapter: UserAdapterInterface,
   ) { }
 
+
+  @Mutation(() => String, {
+    nullable: true,
+    description: 'Remover una relacion de amistad entre dos usuarios',
+  })
+  @UseGuards(ClerkAuthGuard)
+  async deleteAccount(
+    @Args('id', { type: () => String })
+    id: string,
+  ): Promise<any> {
+    await this.userAdapter.deleteAccount(id);
+    return 'Account successfully deleted';
+  }
+
+
+
   @Query(() => User_Full_Grapql_Model, {
     nullable: true,
     description: 'Obtiene un usuario por su nombre de usuario ',

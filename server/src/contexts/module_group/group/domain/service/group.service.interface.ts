@@ -33,7 +33,7 @@ export interface GroupServiceInterface {
     groupId: string,
     groupAdmin: string,
   ): Promise<any>;
-
+  deleteAccount(id: string): Promise<any>;
   deleteMagazinesFromGroup(
     magazineIds: string[],
     groupId: string,

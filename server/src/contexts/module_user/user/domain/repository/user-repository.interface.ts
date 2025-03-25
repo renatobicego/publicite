@@ -12,6 +12,9 @@ import { UserRelation } from '../entity/userRelation.entity';
 import { UserType } from '../entity/enum/user.enums';
 
 export interface UserRepositoryInterface {
+
+  deleteAccount(id: string): Promise<any>;
+
   findAllUsers(
     user: string,
     limit: number,

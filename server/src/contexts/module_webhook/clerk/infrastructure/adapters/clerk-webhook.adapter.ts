@@ -5,6 +5,7 @@ import { Webhook } from 'svix';
 
 import { WebhookEventInterface } from '../../domain/webhook-event.interface';
 import { WebhookServiceInterface } from '../../domain/webhook-service.interface';
+import { ConfigService } from '@nestjs/config';
 
 
 
@@ -18,12 +19,17 @@ export class ClerkWebhookAdapter {
   constructor(
     private readonly webhookService: WebhookServiceInterface,
     private readonly webhookSecret: string,
+    private readonly configService: ConfigService
   ) { }
+
 
   async validateRequestAndProcessEvent(payload: any, headers: any): Promise<void> {
     const event = this.validateRequest(payload, headers);
 
     const userUpdated = await this.webhookService.processEvent(event);
+    if (userUpdated == "user.deleted") {
+      await this.deleteAccount(event.data.id);
+    }
     return userUpdated;
   }
 
@@ -53,4 +59,44 @@ export class ClerkWebhookAdapter {
     }
 
   }
+
+  private async deleteAccount(id: string) {
+    const PUBLICITE_SOCKET_API_KEY = this.configService.get<string>('PUBLICITE_SOCKET_API_KEY');
+    const config = {
+      userService: this.configService.get<string>('DELETE_ACCOUNT_USER_SERVICE'),
+      groupService: this.configService.get<string>('DELETE_ACCOUNT_GROUP_SERVICE'),
+      notificationService: this.configService.get<string>('DELETE_ACCOUNT_NOTIFICATION_SERVICE'),
+      postService: this.configService.get<string>('DELETE_ACCOUNT_POST_SERVICE')
+    };
+
+    const fetchOptions = {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `${PUBLICITE_SOCKET_API_KEY}`,
+        'Content-Type': 'application/json'
+      }
+    };
+
+    try {
+
+      const userResponse = await fetch(`${config.userService}/${id}`, fetchOptions);
+      const userData = await userResponse.json();
+
+      const mongoId = userData?.mongoID?._id;
+      if (!mongoId) {
+        throw new Error('Error while deleting account: MongoDB ID not found');
+      }
+
+
+      await Promise.all([
+        fetch(`${config.groupService}/${mongoId}`, fetchOptions),
+        fetch(`${config.notificationService}/${mongoId}`, fetchOptions),
+        fetch(`${config.postService}/${mongoId}`, fetchOptions)
+      ]);
+
+    } catch (error) {
+      throw new Error(`Failed to delete account: ${error.message}`);
+    }
+  }
+
 }

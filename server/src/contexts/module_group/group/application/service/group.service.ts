@@ -120,6 +120,15 @@ export class GroupService implements GroupServiceInterface {
     }
   }
 
+  async deleteAccount(id: string): Promise<any> {
+    try {
+      await this.groupRepository.deleteAccount(id);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
   async deleteMembersFromGroup(
     membersToDelete: string[],
     groupId: string,

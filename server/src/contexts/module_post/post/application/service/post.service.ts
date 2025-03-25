@@ -38,6 +38,7 @@ export class PostService implements PostServiceInterface {
     private readonly userService: UserServiceInterface,
   ) { }
 
+
   async activateOrDeactivatePost(
     _id: string,
     activate: boolean,
@@ -127,6 +128,13 @@ export class PostService implements PostServiceInterface {
     }
   }
 
+  async deleteAccount(id: string): Promise<void> {
+    try {
+      await this.postRepository.deleteAccount(id);
+    } catch (error: any) {
+      throw error;
+    }
+  }
   async desactivatePostByUserId(userId: string): Promise<void> {
     try {
       let totalLibresExceded = 0;

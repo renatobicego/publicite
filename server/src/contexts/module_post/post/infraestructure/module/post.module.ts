@@ -19,6 +19,7 @@ import { PostReviewService } from 'src/contexts/module_post/PostReview/applicati
 import { PostReviewRepository } from 'src/contexts/module_post/PostReview/infrastructure/repository/review.repository';
 import { PostReviewSchema } from 'src/contexts/module_post/PostReview/infrastructure/schemas/review.schema';
 import { PostReviewAdapter } from 'src/contexts/module_post/PostReview/infrastructure/adapter/postReview.adapter';
+import { PostController } from '../controller/post.controller';
 
 @Module({
   imports: [
@@ -76,5 +77,6 @@ import { PostReviewAdapter } from 'src/contexts/module_post/PostReview/infrastru
     },
   ],
   exports: ['PostServiceInterface'],
+  controllers: [PostController],
 })
 export class PostModule { }

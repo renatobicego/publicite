@@ -14,6 +14,7 @@ import { NotificationModule } from 'src/contexts/module_user/notification/infras
 import { MagazineModelSharedModule } from 'src/contexts/module_shared/sharedSchemas/magazine.model.schema';
 import { UserModule } from 'src/contexts/module_user/user/infrastructure/module/user.module';
 import { PostModule } from 'src/contexts/module_post/post/infraestructure/module/post.module';
+import { GroupController } from '../controller/group.controller';
 
 @Module({
   imports: [
@@ -27,7 +28,7 @@ import { PostModule } from 'src/contexts/module_post/post/infraestructure/module
     forwardRef(() => NotificationModule)
     ,
   ],
-  controllers: [],
+  controllers: [GroupController],
   providers: [
     GroupResolver,
     {

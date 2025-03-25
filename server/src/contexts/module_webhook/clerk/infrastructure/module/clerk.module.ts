@@ -32,7 +32,7 @@ import { ClerkController } from '../controllers/clerk.controller';
             'Please add WEBHOOK_SECRET_CLERK to your environment variables',
           );
         }
-        return new ClerkWebhookAdapter(webhookService, WEBHOOK_SECRET_CLERK);
+        return new ClerkWebhookAdapter(webhookService, WEBHOOK_SECRET_CLERK, configService);
       },
       inject: [WebhookService, ConfigService], // Inyecta dependencias necesarias
     },

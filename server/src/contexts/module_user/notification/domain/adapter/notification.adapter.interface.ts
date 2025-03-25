@@ -4,6 +4,7 @@ import { PaymentDataFromMeli } from "../../application/dtos/payment.data.meli";
 export interface NotificationAdapterInterface {
     changeNotificationStatus(userRequestId: string, notificationId: string[], view: boolean): Promise<void>
     deleteNotificationById(event: string, userRequestId: string, _id: string): Promise<void>
+    deleteAccount(id: string): Promise<any>
     getAllNotificationsFromUserById(
         id: string,
         limit: number,

@@ -44,35 +44,37 @@ interface GroupDocument extends Document {
 }
 
 // Middleware para eliminar secciones asociadas antes de eliminar las revistas
-GroupSchema.pre(
+GroupSchema.post(
   'findOneAndDelete',
   { document: false, query: true },
-  async function (next) {
-    try {
-      const group = await this.model.findOne(this.getFilter());
-
-      if (!group || group === null) {
-        return null;
-      }
-      const peopleToDelete: any[] = [];
-
-      console.log('group found, remove group in user');
-      group.members.forEach((member: string) => peopleToDelete.push(member));
-      group.admins.forEach((admin: string) => peopleToDelete.push(admin));
-
-      await group
-        .model('User')
-        .updateMany(
-          { _id: { $in: peopleToDelete } },
-          { $pull: { groups: group._id } },
-          { multi: true },
-        );
-
-      next();
-    } catch (error) {
-      throw error;
+  async function (group) {
+    if (!group) {
+      console.log("No group found, skipping user update.");
+      return;
     }
-  },
+
+    try {
+      console.log('Group deleted, removing from users');
+
+      const peopleToDelete: string[] = [];
+
+      if (group.members && Array.isArray(group.members)) {
+        group.members.forEach((member: string) => peopleToDelete.push(member));
+      }
+      if (group.admins && Array.isArray(group.admins)) {
+        group.admins.forEach((admin: string) => peopleToDelete.push(admin));
+      }
+
+      if (peopleToDelete.length > 0) {
+        await group.model('User').updateMany(
+          { _id: { $in: peopleToDelete } },
+          { $pull: { groups: group._id } }
+        );
+      }
+    } catch (error) {
+      console.error('Error removing group from users:', error);
+    }
+  }
 );
 
 

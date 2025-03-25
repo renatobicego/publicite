@@ -36,6 +36,13 @@ export class UserService implements UserServiceInterface {
 
 
 
+  async deleteAccount(id: string): Promise<any> {
+    try {
+      return await this.userRepository.deleteAccount(id);
+    } catch (error: any) {
+      throw error;
+    }
+  }
 
 
   async makeFriendRelationBetweenUsers(
@@ -207,11 +214,11 @@ export class UserService implements UserServiceInterface {
           user.friendRequests.map((friend_Request: any) => {
             if (friend_Request.backData.userIdFrom == userRequestId) {
               user.isFriendRequestPending = true;
-            }else if(friend_Request.backData.userIdFrom == _id && friend_Request.backData.userIdTo == userRequestId){
+            } else if (friend_Request.backData.userIdFrom == _id && friend_Request.backData.userIdTo == userRequestId) {
               user.isAcceptRequestFriend = {
-                value: true ,
+                value: true,
                 notification_id: friend_Request._id ?? "",
-                type : friend_Request.event ?? ""
+                type: friend_Request.event ?? ""
               }
             }
           });
@@ -443,7 +450,7 @@ export class UserService implements UserServiceInterface {
 
   async removeFriendRequest(
     previousNotificationId: string,
-    backData:{
+    backData: {
       userIdFrom: string;
       userIdTo: string;
     },
