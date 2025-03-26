@@ -51,6 +51,7 @@ const UserInfo = ({
   const business = user as unknown as UserBusiness;
 
   const actionToShow = () => {
+    console.log(user.isAcceptRequestFriend);
     switch (true) {
       case isMyProfile:
         return <ContactPetitionsList userId={user._id} />;
