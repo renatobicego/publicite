@@ -26,7 +26,7 @@ import { shareLink } from "@/utils/functions/utils";
 type ShareButtonProps = {
   ButtonAction?: JSX.Element;
   customOpen?: (openModal: () => void) => void;
-  data: ElementSharedData;
+  data: Omit<ElementSharedData, "username">;
   shareType: ShareTypesEnum;
 };
 

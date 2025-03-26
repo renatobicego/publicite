@@ -137,7 +137,6 @@ const Data = async ({
                 _id: post._id,
                 description: post.title,
                 type: "post",
-                username: "",
                 imageUrl:
                   "imagesUrls" in post && post.imagesUrls
                     ? (post as Good).imagesUrls[0]

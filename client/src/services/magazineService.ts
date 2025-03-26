@@ -19,14 +19,15 @@ import { Magazine } from "@/types/magazineTypes";
 import { auth } from "@clerk/nextjs/server";
 import { getApiContext } from "./apiContext";
 
-export const getMagazineById = async (id: string) => {
+export const getMagazineById = async (id: string, token?: string | null) => {
   try {
     const { data } = await query({
       query: getMagazineByIdQuery,
       variables: { getMagazineByMagazineIdId: id },
       context: {
         headers: {
-          Authorization: await auth().getToken({ template: "testing" }),
+          Authorization:
+            token || (await auth().getToken({ template: "testing" })),
         },
       },
     });
