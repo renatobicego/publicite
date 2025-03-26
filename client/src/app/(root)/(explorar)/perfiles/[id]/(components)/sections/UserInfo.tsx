@@ -51,10 +51,16 @@ const UserInfo = ({
   const business = user as unknown as UserBusiness;
 
   const actionToShow = () => {
-    console.log(user.isAcceptRequestFriend);
     switch (true) {
       case isMyProfile:
         return <ContactPetitionsList userId={user._id} />;
+      case user.isAcceptRequestFriend.value:
+        return (
+          <AcceptRequestFriend
+            isAcceptRequestFriend={user.isAcceptRequestFriend}
+            userIdTo={user._id}
+          />
+        );
       case isMyContact !== undefined:
         return (
           <>
@@ -97,11 +103,6 @@ const UserInfo = ({
             Solicitud enviada
           </PrimaryButton>
         );
-      case user.isAcceptRequestFriend.value:
-        <AcceptRequestFriend
-          isAcceptRequestFriend={user.isAcceptRequestFriend}
-          userIdTo={user._id}
-        />;
       default:
         return (
           <SendRequest
