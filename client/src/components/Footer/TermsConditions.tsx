@@ -19,7 +19,7 @@ const TermsConditions = () => {
         variant="light"
         className="text-white -ml-4 -mt-1.5 data-[hover=true]:bg-transparent"
       >
-        Sobre Nosotros
+        Términos y Condiciones
       </Button>
       <Modal
         size="xl"
