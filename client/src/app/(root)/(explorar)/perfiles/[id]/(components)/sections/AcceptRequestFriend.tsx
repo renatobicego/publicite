@@ -6,6 +6,7 @@ import {
   acceptChangeContactRequest,
   acceptNewContactRequest,
 } from "@/components/notifications/users/actions";
+import { useRouter } from "next/navigation";
 
 const AcceptRequestFriend = ({
   isAcceptRequestFriend,
@@ -24,6 +25,7 @@ const AcceptRequestFriend = ({
   userIdTo: string;
 }) => {
   const { socket } = useSocket();
+  const router = useRouter();
   const textToShow =
     isAcceptRequestFriend.type === "notification_user_new_relation_change"
       ? "Aceptar Cambio de Relación"
@@ -50,6 +52,7 @@ const AcceptRequestFriend = ({
         isAcceptRequestFriend.notification_id
       );
     }
+    router.refresh();
   };
   return (
     <PrimaryButton
