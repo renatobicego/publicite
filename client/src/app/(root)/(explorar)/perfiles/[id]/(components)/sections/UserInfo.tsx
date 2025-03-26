@@ -39,6 +39,9 @@ const UserInfo = ({
         | "notification_user_new_friend_request"
         | "notification_user_new_relation_change";
       value: boolean;
+      userRelationId: string;
+      toRelationShipChange: UserRelation;
+      newRelation: UserRelation;
     };
   };
   isMyProfile: boolean;

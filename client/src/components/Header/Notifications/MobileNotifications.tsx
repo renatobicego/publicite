@@ -66,7 +66,7 @@ const MobileNotifications = () => {
               setNewNotifications(false);
               setNewNotificationsFromServer(false);
               setIsOpen(false);
-              await putNotificationStatus(
+              putNotificationStatus(
                 notifications
                   .filter((notification) => !notification.viewed)
                   .map((notification) => notification._id)

@@ -164,9 +164,6 @@ export const getMagazinesOfUser = async () => {
       headers: {
         Authorization: await authData.getToken({ template: "testing" }),
       },
-      fetchOptions: {
-        next: { revalidate: 120 },
-      },
     },
   });
   return data.getAllMagazinesByUserId;

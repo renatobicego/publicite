@@ -35,7 +35,7 @@ const UserRelationCard = ({
         <div className="flex flex-col gap-2 md:gap-1 items-start flex-1">
           <Link
             className="text-text-color hover:text-primary"
-            href={`${PROFILE}/${userFrom.username}`}
+            href={`${PROFILE}/${userFrom._id}`}
           >
             <h6>{userFrom.username}</h6>
           </Link>

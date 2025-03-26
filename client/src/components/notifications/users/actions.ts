@@ -1,6 +1,8 @@
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { Socket } from "socket.io-client";
 import { emitUserRelationNotification } from "./emitNotifications";
+import { setActiveRelations } from "@/app/(root)/providers/slices/configSlice";
+import { getActiveRelations } from "@/services/postsServices";
 
 const handleUserRelationNotificationError = (error: Error) => {
   switch (error.message as NotificationError) {
@@ -45,7 +47,13 @@ const acceptNewContactRequest = async (
     typeRelation,
     previousNotificationId
   )
-    .then(() => toastifySuccess("Solicitud aceptada correctamente"))
+    .then(async () => {
+      toastifySuccess("Solicitud aceptada correctamente");
+      const newActiveRelations = await getActiveRelations();
+      if (!("error" in newActiveRelations)) {
+        setActiveRelations(newActiveRelations);
+      }
+    })
     .catch(handleUserRelationNotificationError);
 };
 const declineNewContactRequest = async (

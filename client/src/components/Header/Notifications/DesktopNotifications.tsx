@@ -45,7 +45,7 @@ const DesktopNotifications = () => {
           setNewNotificationsFromServer(false);
         }
         if (newNotificationsFromServer && !open) {
-          await putNotificationStatus(
+          putNotificationStatus(
             notifications
               .filter((notification) => !notification.viewed)
               .map((notification) => notification._id)
