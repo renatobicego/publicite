@@ -54,7 +54,6 @@ const AcceptRequestFriend = ({
   return (
     <PrimaryButton
       onPress={acceptRequest}
-      isDisabled
       className="hover:bg-none"
       variant="bordered"
     >
