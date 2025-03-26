@@ -4,6 +4,7 @@ import UsersGrid from "./UsersGrid";
 import Order, { SortOption } from "@/components/inputs/Order";
 import FilterUsers from "./FilterUsers";
 import { useFilteredAndSortedUsers } from "@/utils/hooks/useFilteredOrderedUsers";
+import { useUserData } from "../../providers/userDataProvider";
 
 const UsersLogic = () => {
   const { items, isLoading } = useInfiniteFetch({ typeOfData: "users" });
@@ -23,6 +24,8 @@ const UsersLogic = () => {
     { label: "Z-A", key: "zA", direction: "descending", column: "name" },
   ];
 
+  const { userIdLogged } = useUserData();
+
   return (
     <section className="w-full flex-col flex gap-4">
       <h2>Perfiles</h2>
@@ -35,7 +38,10 @@ const UsersLogic = () => {
           sortOptions={sortOptions}
         />
       </div>
-      <UsersGrid items={sortedItems} isLoading={isLoading}/>
+      <UsersGrid
+        items={sortedItems.filter((user) => user._id !== userIdLogged)}
+        isLoading={isLoading}
+      />
     </section>
   );
 };
