@@ -1,8 +1,9 @@
 import { Subscription } from "@/types/subscriptions";
 import DataBox, { CardDataItem, DataItem } from "../../DataBox";
-import { Button } from "@nextui-org/react";
+import { Button, Link } from "@nextui-org/react";
 import useUserPostLimit from "@/utils/hooks/useUserPostLimit";
 import { useActiveSubscriptions } from "@/app/(root)/providers/userDataProvider";
+import { PACKS } from "@/utils/data/urls";
 
 const LimitPosts = () => {
   const { numberOfPosts, limit } = useUserPostLimit();
@@ -46,7 +47,9 @@ const LimitPosts = () => {
         color="secondary"
         variant="light"
         radius="full"
-        className={`font-normal max-md:absolute max-md:right-0 max-md:-top-2.5`}
+        className={`font-normal`}
+        as={Link}
+        href={PACKS}
       >
         Aumentar Límite
       </Button>
