@@ -4,6 +4,6 @@ export class RelationExistsException extends Error {
   constructor() {
     super('RELATION_EXISTS');
     this.name = 'RelationExistsException';
-    this.statusCode = 400; // Asigna el código de estado HTTP correcto
+    this.statusCode = 304; // Asigna el código de estado HTTP correcto
   }
 }
