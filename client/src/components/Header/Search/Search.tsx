@@ -119,7 +119,7 @@ const Search = ({
         inputWrapper: `border-secondary border-[0.5px] bg-[#F1FFFA] !transition-all duration-300 pr-0 
               data-[hover=true]:bg-[#ECFFF8] data-[hover=true]:border-secondary focus-within:border-[0.5px]
                min-h-6 max-lg:h-9`,
-        input: "md:ml-1 text-base lg:text-sm",
+        input: "md:ml-1 text-[0.8125rem] lg:text-sm",
       }}
     />
   );

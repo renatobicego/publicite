@@ -59,7 +59,7 @@ const LatLngAutocomplete = ({
         classNames: {
           inputWrapper:
             "shadow-none hover:shadow-sm border-[0.5px] group-data-[focus=true]:border-light-text",
-          input: "text-base",
+          input: "text-[0.8125rem]",
           label: "font-medium text-[0.8125rem]",
         },
       }}

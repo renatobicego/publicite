@@ -78,9 +78,6 @@ const CreateMagazineSection = ({
                   placeholder="Escriba el nombre de la sección"
                   value={inputValue}
                   onValueChange={setInputValue}
-                  classNames={{
-                    input: "text-base",
-                  }}
                 />
               </ModalBody>
               <ModalFooter>
