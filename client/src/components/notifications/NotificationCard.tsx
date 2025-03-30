@@ -10,7 +10,6 @@ import {
   DropdownMenu,
   DropdownTrigger,
   HTMLNextUIProps,
-  Link,
   LinkProps,
 } from "@nextui-org/react";
 import { FaEllipsis } from "react-icons/fa6";
@@ -18,14 +17,17 @@ import { FaEllipsis } from "react-icons/fa6";
 const NotificationCard = ({
   isNew,
   children,
+  id,
 }: {
   isNew: boolean;
+  id: string;
   children: React.ReactNode;
 }) => {
   return (
     <Card
       shadow={isNew ? "sm" : "none"}
       isHoverable
+      id={id}
       className={`flex flex-row relative max-w-96 ${isNew ? "bg-fondo" : ""}`}
     >
       {children}

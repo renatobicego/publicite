@@ -94,7 +94,7 @@ const ReviewRequest = ({
 
   return (
     <>
-      <NotificationCard isNew={!viewed}>
+      <NotificationCard isNew={!viewed} id={notification._id}>
         <NotificationImage>
           <Image
             radius="sm"

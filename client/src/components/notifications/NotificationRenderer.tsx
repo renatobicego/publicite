@@ -58,7 +58,12 @@ const NotificationRenderer: React.FC<NotificationRendererProps> = ({
   notifications,
 }) => {
   const renderedNotifications = useMemo(() => {
-    return notifications.map((notification) => {
+    //filter notifications by unique id
+    const uniqueNotifications = notifications.filter(
+      (notification, index, self) =>
+        index === self.findIndex((n) => n._id === notification._id)
+    );
+    return uniqueNotifications.map((notification) => {
       const type = getNotificationType(notification.event);
       if (!type) return null;
 

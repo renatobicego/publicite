@@ -107,7 +107,7 @@ const MagazineNotificationCard = ({
     return optionsList;
   };
   return (
-    <NotificationCard isNew={!viewed}>
+    <NotificationCard isNew={!viewed} id={_id}>
       <NotificationImage>
         <IoBook className="text-secondary size-14" />
       </NotificationImage>
