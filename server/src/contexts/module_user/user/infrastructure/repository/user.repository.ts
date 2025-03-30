@@ -32,6 +32,7 @@ import {
   UserMagazineDocument,
   UserMagazineModel,
 } from 'src/contexts/module_magazine/magazine/infrastructure/schemas/magazine.user.schema';
+import { RelationExistsException } from 'src/contexts/module_shared/exceptionFilter/relationExists';
 
 @Injectable()
 export class UserRepository implements UserRepositoryInterface {
@@ -485,6 +486,16 @@ export class UserRepository implements UserRepositoryInterface {
       const userB = userRelation.getUserB;
 
       if (!userA || !userB) return null;
+
+      const userRelationExists = await this.userRelation.findOne({
+        $or: [
+          { userA: userA, userB: userB },
+          { userA: userB, userB: userA },
+        ],
+      });
+      if (userRelationExists) {
+        throw new RelationExistsException();
+      }
 
       const newUserRelation = new this.userRelation(userRelation);
       const userRelationSaved = (await newUserRelation.save()) as any;
