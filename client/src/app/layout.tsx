@@ -44,7 +44,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Departamento Turistas - Mendoza",
+    title: "Publicité",
     description: "Publicité es tu sitio publicitario",
     images: ["https://soonpublicite/thumbnail.png"], // Must be an absolute URL
   },

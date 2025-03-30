@@ -1,4 +1,8 @@
-import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
+import {
+  toastifyError,
+  toastifySuccess,
+  toastifyWarn,
+} from "@/utils/functions/toastify";
 import { Socket } from "socket.io-client";
 import { emitUserRelationNotification } from "./emitNotifications";
 import { setActiveRelations } from "@/app/(root)/providers/slices/configSlice";
@@ -19,6 +23,9 @@ const handleUserRelationNotificationError = (error: Error) => {
       break;
     case "PREVIOUS_ID_MISSING":
       toastifyError("La solicitud no existe. Por favor intenta de nuevo.");
+      break;
+    case "RELATION_EXISTS" as NotificationError:
+      toastifyWarn("La relación ya existe.");
       break;
     default:
       toastifyError(
