@@ -19,7 +19,6 @@ export interface UserServiceInterface {
   deleteAccount(id: string): Promise<any>;
   removeActiveRelationOfUser(userId: string, session?: any): Promise<any>;
 
-
   findAllUsers(
     user: string,
     limit: number,
@@ -27,14 +26,20 @@ export interface UserServiceInterface {
   ): Promise<UserFindAllResponse>;
 
   findUserByIdByOwnUser(username: string, userRequestId?: string): Promise<any>;
-  findProfileUserByExternalUserById(_id: string, userRequestId?: string): Promise<any>
+  findProfileUserByExternalUserById(
+    _id: string,
+    userRequestId?: string,
+  ): Promise<any>;
 
   getUserPersonalInformationByUsername(username: string): Promise<any>;
   getRelationsFromUserByUserId(userRequestId: string): Promise<any>;
   getActiveRelationOfUser(userRequestId: string, session?: any): Promise<any>;
-  getMongoIdByClerkId(clerk_id: string): Promise<void>
+  getMongoIdByClerkId(clerk_id: string): Promise<void>;
 
-  isThisUserAllowedToPost(author: string, postBehaviourType: string): Promise<boolean>;
+  isThisUserAllowedToPost(
+    author: string,
+    postBehaviourType: string,
+  ): Promise<boolean>;
   getUserPreferencesByUsername(
     username: string,
   ): Promise<UserPreferences | null>;
@@ -49,9 +54,12 @@ export interface UserServiceInterface {
     contactLimit: number;
     contactCount: number;
     contactAvailable: number;
-  }>
-  getPostAndLimitsFromUserByUserId(author: string): Promise<any>
-  getLimitContactsFromUserByUserId(userRequestId: string, session?: any): Promise<any>
+  }>;
+  getPostAndLimitsFromUserByUserId(author: string): Promise<any>;
+  getLimitContactsFromUserByUserId(
+    userRequestId: string,
+    session?: any,
+  ): Promise<any>;
 
   makeFriendRelationBetweenUsers(
     backData: { userIdFrom: string; userIdTo: string },
@@ -83,17 +91,19 @@ export interface UserServiceInterface {
 
   removeFriend(relationId: string, friendRequestId?: string): Promise<any>;
 
-
   saveNewPostInUser(
-    postId: String,
-    authorId: String,
+    postId: string,
+    authorId: string,
     options?: { session?: ClientSession },
   ): Promise<any>;
-  setNewActiveUserRelations(activeRelations: string[], userRequestId: string): Promise<any>;
+  setNewActiveUserRelations(
+    activeRelations: string[],
+    userRequestId: string,
+  ): Promise<any>;
   setSubscriptionToUser(
     external_reference: string,
     sub_id: any,
-    sesion: any
+    sesion: any,
   ): Promise<any>;
   updateFriendRelationOfUsers(
     userRelationId: string,

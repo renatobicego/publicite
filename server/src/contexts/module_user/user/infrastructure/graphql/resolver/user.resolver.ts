@@ -13,11 +13,7 @@ export class UserResolver {
   constructor(
     @Inject('UserAdapterInterface')
     private readonly userAdapter: UserAdapterInterface,
-  ) { }
-
-
-
-
+  ) {}
 
   @Query(() => User_Full_Grapql_Model, {
     nullable: true,
@@ -56,12 +52,16 @@ export class UserResolver {
   })
   @UseGuards(ClerkAuthGuard)
   async setNewActiveUserRelations(
-    @Args('activeRelations', { type: () => [String] }) activeRelations: string[],
+    @Args('activeRelations', { type: () => [String] })
+    activeRelations: string[],
     @Context() context: { req: CustomContextRequestInterface },
-  ): Promise<String> {
+  ): Promise<string> {
     try {
       const userRequestId = context.req.userRequestId;
-      await this.userAdapter.setNewActiveUserRelations(activeRelations, userRequestId);
+      await this.userAdapter.setNewActiveUserRelations(
+        activeRelations,
+        userRequestId,
+      );
       return 'Active relation  successfully updated';
     } catch (error: any) {
       throw error;
@@ -78,12 +78,11 @@ export class UserResolver {
   ): Promise<user_active_relation[] | null> {
     try {
       const userRequestId = context.req.userRequestId;
-      const activeRelations = await this.userAdapter.getActiveRelationsOfUser(userRequestId) ?? []
-      return activeRelations
+      const activeRelations =
+        (await this.userAdapter.getActiveRelationsOfUser(userRequestId)) ?? [];
+      return activeRelations;
     } catch (error: any) {
       throw error;
     }
   }
-
-
 }
