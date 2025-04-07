@@ -73,7 +73,7 @@ export class PostRepository implements PostRepositoryInterface {
 
     @InjectModel('Post')
     private readonly postDocument: Model<PostDocument>,
-  ) { }
+  ) {}
   async deleteAccount(id: string): Promise<any> {
     try {
       await this.postDocument.deleteMany({ author: id });
@@ -688,7 +688,7 @@ export class PostRepository implements PostRepositoryInterface {
   ): Promise<PostsMemberGroupResponse | null> {
     try {
       if (membersId.length === 0) return { userAndPosts: [], hasMore: false };
-      console.log(conditionsOfSearch)
+      console.log(conditionsOfSearch);
       const pipeline: any[] = [
         {
           $geoNear: {

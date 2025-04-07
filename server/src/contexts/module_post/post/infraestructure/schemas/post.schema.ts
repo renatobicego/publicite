@@ -14,7 +14,7 @@ export interface attachedFiles {
 export interface PostDocument extends Document {
   title: string;
   searchTitle: string;
-  author: string;
+  author: Schema.Types.ObjectId;
   postType: string;
   description: string;
   searchDescription: string;
@@ -54,7 +54,7 @@ export const PostSchema = new Schema<PostDocument>(
     title: { type: String, required: true },
     searchTitle: { type: String, required: true },
     author: {
-      type: String,
+      type: Schema.Types.ObjectId,
       ref: 'User',
       required: true,
     },
