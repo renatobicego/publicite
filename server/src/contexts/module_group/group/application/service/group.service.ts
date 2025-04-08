@@ -18,6 +18,7 @@ import { UserLocation_group } from '../adapter/dto/HTTP-REQUEST/user.location.re
 import { PostServiceInterface } from 'src/contexts/module_post/post/domain/service/post.service.interface';
 import { PostsMemberGroupResponse } from 'src/contexts/module_shared/sharedGraphql/group.posts.member.response';
 import { GroupExitRequest } from '../adapter/dto/HTTP-REQUEST/group.exit.request';
+import { Types } from 'mongoose';
 
 interface UserRelation {
   userA: string;
@@ -296,7 +297,9 @@ export class GroupService implements GroupServiceInterface {
         return { userAndPosts: [], hasMore: false };
 
       const friendRelationsOfUserRequest: UserRelation[] =
-        await this.userService.getRelationsFromUserByUserId(userRequest);
+        await this.userService.getRelationsFromUserByUserId(
+          '67e33e16287f9156a65a8b86',
+        );
 
       if (friendRelationsOfUserRequest.length > 0) {
         const idAndTypeOfRelationMap: Map<string, string[]> =
@@ -317,14 +320,13 @@ export class GroupService implements GroupServiceInterface {
               idAndTypeOfRelationMap.get(memberId),
             ]),
         );
-
         if (
           userRelationMapOfGroupMembers &&
           userRelationMapOfGroupMembers.size > 0
         ) {
           conditions = Array.from(userRelationMapOfGroupMembers.entries()).map(
             ([key, value]) => ({
-              author: key,
+              author: new Types.ObjectId(key),
               'visibility.post': { $in: value },
             }),
           );
