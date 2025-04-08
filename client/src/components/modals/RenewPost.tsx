@@ -40,7 +40,7 @@ const RenewPost = ({ postTitle, id }: { postTitle: string; id: string }) => {
       <PrimaryButton variant="flat" size="sm" onPress={onOpen}>
         Renovar
       </PrimaryButton>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="center">
         <ModalContent>
           {(onClose) => (
             <>

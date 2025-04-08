@@ -1,27 +1,38 @@
 import { PACKS, SUBSCRIPTIONS } from "@/utils/data/urls";
-import { SignOutButton } from "@clerk/nextjs";
 import {
   Button,
   Dropdown,
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
-  Link,
 } from "@nextui-org/react";
 import { FaChevronDown } from "react-icons/fa6";
 
-const DropdownItems = () => {
+const DropdownItems = ({
+  setIsMenuOpen,
+}: {
+  setIsMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}) => {
+  const redirectAndCloseMenu = (url: string) => {
+    setIsMenuOpen((prev) => !prev);
+    window.location.replace(url);
+  };
   return (
     <Dropdown radius="lg" placement="bottom-end" className="bg-fondo">
       <DropdownTrigger>
-        <Button radius="full" variant="light" size="sm" isIconOnly aria-label="Más acciones">
+        <Button
+          radius="full"
+          variant="light"
+          size="sm"
+          isIconOnly
+          aria-label="Más acciones"
+        >
           <FaChevronDown />
         </Button>
       </DropdownTrigger>
       <DropdownMenu aria-label="Más acciones" className="bg-fondo">
         <DropdownItem
-          as={Link}
-          href={SUBSCRIPTIONS}
+          onPress={() => redirectAndCloseMenu(SUBSCRIPTIONS)}
           className="rounded-full pl-4 text-text-color"
           key="planes"
           color="secondary"
@@ -30,8 +41,7 @@ const DropdownItems = () => {
           Planes de Subscripción
         </DropdownItem>
         <DropdownItem
-          as={Link}
-          href={PACKS}
+          onPress={() => redirectAndCloseMenu(PACKS)}
           className="rounded-full pl-4 text-text-color"
           key="packs"
           color="secondary"

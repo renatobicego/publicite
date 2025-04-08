@@ -1,5 +1,5 @@
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
-import { ClientSession, Connection, Model } from 'mongoose';
+import { ClientSession, Connection, Model, Types } from 'mongoose';
 import { Date } from 'mongoose';
 
 import { Post } from '../../domain/entity/post.entity';
@@ -688,7 +688,6 @@ export class PostRepository implements PostRepositoryInterface {
   ): Promise<PostsMemberGroupResponse | null> {
     try {
       if (membersId.length === 0) return { userAndPosts: [], hasMore: false };
-      console.log(conditionsOfSearch);
       const pipeline: any[] = [
         {
           $geoNear: {
@@ -705,7 +704,11 @@ export class PostRepository implements PostRepositoryInterface {
             $or: [
               {
                 $and: [
-                  { author: { $in: membersId } },
+                  {
+                    author: {
+                      $in: membersId.map((f) => new Types.ObjectId(f)),
+                    },
+                  },
                   { postBehaviourType: 'libre' },
                   { isActive: true },
                   { $expr: { $lte: ['$distance', '$geoLocation.ratio'] } },
@@ -759,7 +762,6 @@ export class PostRepository implements PostRepositoryInterface {
       ];
 
       const posts = await this.postDocument.aggregate(pipeline);
-
       if (!posts || posts.length === 0) {
         return { userAndPosts: [], hasMore: false };
       }

@@ -14,7 +14,11 @@ export default function GlobalError({
     // global-error must include html and body tags
     <html>
       <body className="flex flex-col items-center w-screen h-screen">
-        <ErrorCard error={error.message} />
+        <ErrorCard
+          error={
+            "¡Ups! Hubo un error inesperado. Por favor, recargue la página e intente de nuevo."
+          }
+        />
       </body>
     </html>
   );

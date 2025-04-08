@@ -297,7 +297,9 @@ export class UserService implements UserServiceInterface {
     try {
       this.logger.log('finding relations from user with id: ' + userRequestId);
       const userRelationDocument =
-        await this.userRepository.getRelationsFromUserByUserId(userRequestId);
+        await this.userRepository.getRelationsFromUserByUserId(
+          '67e33e16287f9156a65a8b86',
+        );
       const { userRelations } = userRelationDocument;
       return userRelations ?? [];
     } catch (error: any) {
