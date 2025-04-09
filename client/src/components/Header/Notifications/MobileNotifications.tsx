@@ -13,6 +13,7 @@ import { useSocket } from "@/app/socketProvider";
 import { useNotificationsContext } from "@/app/(root)/providers/notificationsProvider";
 import { putNotificationStatus } from "@/services/userServices";
 import { useNotificationsIsOpen } from "./notificationsOptionsProvider";
+import { requestNotificationPermission } from "@/utils/notifications/browserNotifications";
 
 const MobileNotifications = () => {
   const { isOpen, setIsOpen } = useNotificationsIsOpen();
@@ -30,7 +31,10 @@ const MobileNotifications = () => {
   return (
     <>
       <Button
-        onPress={() => setIsOpen(true)}
+        onPress={() => {
+          setIsOpen(true);
+          requestNotificationPermission();
+        }}
         radius="full"
         variant="light"
         isIconOnly

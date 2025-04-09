@@ -1,4 +1,5 @@
-import { auth } from "@clerk/nextjs/server";
+import { auth, getAuth } from "@clerk/nextjs/server";
+import { getAuthToken } from "./auth-token";
 
 export const getApiContext = async (
   sendTokenNotRegistered?: boolean,
@@ -19,10 +20,10 @@ export const getApiContext = async (
   }
 
   if (!sendTokenNotRegistered) {
-    authToken = await user.getToken({ template: "testing" });
+    authToken = await getAuthToken();
   } else {
     if (user.userId) {
-      authToken = await user.getToken({ template: "testing" });
+      authToken = await getAuthToken();
     } else {
       authToken = process.env.NOT_REGISTERED_TOKEN || "";
     }

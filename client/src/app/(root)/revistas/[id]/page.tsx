@@ -18,8 +18,7 @@ export default async function MagazinePage(props: { params: { id: string } }) {
   const params = props.params;
   const authData = auth();
   const magazine: Magazine | { error: string } = await getMagazineById(
-    params.id,
-    await authData.getToken({ template: "testing" })
+    params.id
   );
   if (!magazine || "error" in magazine) {
     return (

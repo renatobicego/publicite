@@ -26,6 +26,7 @@ import { ApolloError } from "@apollo/client";
 import { getApiContext } from "./apiContext";
 import { handleApolloError } from "@/utils/functions/errorHandler";
 import { GetContactSellersPetitionDTO } from "@/types/postTypes";
+import { getAuthToken } from "./auth-token";
 
 const baseUrl = `${process.env.API_URL}/user/personal`;
 
@@ -39,7 +40,7 @@ export const putUserProfileData = async (
 ) => {
   return await axios.put(`${baseUrl}/${username}`, formData, {
     headers: {
-      Authorization: `Bearer ${await auth().getToken({ template: "testing" })}`,
+      Authorization: `Bearer ${await getAuthToken()}`,
     },
   });
 };
@@ -54,7 +55,7 @@ export const putContactData = async (
       variables: { contactId, updateRequest: contactData },
       context: {
         headers: {
-          Authorization: await auth().getToken({ template: "testing" }),
+          Authorization: await getAuthToken(),
         },
       },
     });
@@ -185,7 +186,7 @@ export const getUsers = async (searchTerm: string | null, page: number) => {
       }&limit=20&page=${page}`,
       {
         headers: {
-          Authorization: `${await auth().getToken({ template: "testing" })}`,
+          Authorization: `${await getAuthToken()}`,
         },
       }
     );
@@ -261,7 +262,7 @@ export const getContactSellers = async (
   | { error: string }
 > => {
   try {
-    const token = await auth().getToken({ template: "testing" });
+    const token = await getAuthToken();
     const { data } = await query({
       query: getContactSellersByTypeQuery,
       variables: { contactSellerGetType: type, id, page, limit: 20 },
@@ -330,7 +331,7 @@ export const putNotificationStatus = async (id: string[]) => {
       variables: { notificationIds: id, view: true },
       context: {
         headers: {
-          Authorization: await auth().getToken({ template: "testing" }),
+          Authorization: await getAuthToken(),
         },
       },
     });
@@ -347,7 +348,7 @@ export const deleteNotificationById = async (event: string, id: string) => {
       variables: { event, id },
       context: {
         headers: {
-          Authorization: await auth().getToken({ template: "testing" }),
+          Authorization: await getAuthToken(),
         },
       },
     });
@@ -366,7 +367,7 @@ export const deleteUserRelation = async (relationId: string) => {
       variables: { relationId },
       context: {
         headers: {
-          Authorization: await auth().getToken({ template: "testing" }),
+          Authorization: await getAuthToken(),
         },
       },
     });

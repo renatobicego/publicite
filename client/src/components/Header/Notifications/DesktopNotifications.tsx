@@ -11,6 +11,7 @@ import { useSocket } from "@/app/socketProvider";
 import { putNotificationStatus } from "@/services/userServices";
 import { useNotificationsContext } from "@/app/(root)/providers/notificationsProvider";
 import { useNotificationsIsOpen } from "./notificationsOptionsProvider";
+import { requestNotificationPermission } from "@/utils/notifications/browserNotifications";
 
 const DesktopNotifications = () => {
   const { isOpen, setIsOpen } = useNotificationsIsOpen();
@@ -52,6 +53,7 @@ const DesktopNotifications = () => {
           );
         }
         setIsOpen(open);
+        requestNotificationPermission();
       }}
     >
       <PopoverTrigger>

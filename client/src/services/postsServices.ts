@@ -36,6 +36,7 @@ import { ContactPostsVisibility } from "@/utils/data/fetchDataByType";
 import { getApiContext } from "./apiContext";
 import { ActiveUserRelation } from "@/types/userTypes";
 import { isVideo } from "@/utils/functions/utils";
+import { getAuthToken } from "./auth-token";
 
 export const getPostData = async (id: string) => {
   try {
@@ -81,7 +82,7 @@ export const getCategories = async () => {
       query: getPostCategories,
       context: {
         headers: {
-          Authorization: await auth().getToken({ template: "testing" }),
+          Authorization: await getAuthToken(),
         },
       },
     });
@@ -104,7 +105,7 @@ export const postPost = async (
       variables: { postRequest: values, authorId },
       context: {
         headers: {
-          Authorization: await auth().getToken({ template: "testing" }),
+          Authorization: await getAuthToken(),
         },
       },
     });
@@ -127,7 +128,7 @@ export const putPost = async (
       variables: { updatePostByIdId: id, postUpdate: values, authorId },
       context: {
         headers: {
-          Authorization: await auth().getToken({ template: "testing" }),
+          Authorization: await getAuthToken(),
         },
       },
     });
@@ -259,7 +260,7 @@ export const deletePostService = async (post: Post) => {
       },
       context: {
         headers: {
-          Authorization: await auth().getToken({ template: "testing" }),
+          Authorization: await getAuthToken(),
         },
       },
     });
@@ -288,7 +289,7 @@ export const putEndDate = async (postId: string, endDate: string) => {
       variables: { postId, newDate: endDate },
       context: {
         headers: {
-          Authorization: await auth().getToken({ template: "testing" }),
+          Authorization: await getAuthToken(),
         },
       },
     });
@@ -307,7 +308,7 @@ export const deletePostReaction = async (reactionId: string) => {
       variables: { id: reactionId },
       context: {
         headers: {
-          Authorization: await auth().getToken({ template: "testing" }),
+          Authorization: await getAuthToken(),
         },
       },
     });
@@ -334,7 +335,7 @@ export const putPostBehavior = async (
       variables: { id: postId, postBehaviourType, authorId, visibility },
       context: {
         headers: {
-          Authorization: await auth().getToken({ template: "testing" }),
+          Authorization: await getAuthToken(),
         },
       },
     });
@@ -358,7 +359,7 @@ export const putActiveStatus = async (
       variables: { id: postId, authorId, postBehaviourType, activate },
       context: {
         headers: {
-          Authorization: await auth().getToken({ template: "testing" }),
+          Authorization: await getAuthToken(),
         },
       },
     });

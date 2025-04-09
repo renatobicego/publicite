@@ -8,6 +8,7 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import axios from "axios";
 import { getApiContext } from "./apiContext";
 import { Invoice, Subscription, SubscriptionPlan } from "@/types/subscriptions";
+import { getAuthToken } from "./auth-token";
 
 export const processPayment = async (
   formData: any,
@@ -92,7 +93,7 @@ export const getSubscriptionsPlans = async (): Promise<SubscriptionPlan[]> => {
   const res = await fetch(process.env.API_URL + "/subscriptionplans", {
     next: { revalidate: 180 },
     headers: {
-      Authorization: `Bearer ${await auth().getToken({ template: "testing" })}`,
+      Authorization: `Bearer ${await getAuthToken()}`,
     },
   });
   if (!res.ok) {
@@ -111,9 +112,7 @@ export const getSubscriptionsOfUser = async (
   try {
     const res = await fetch(process.env.API_URL + "/subscription/" + userId, {
       headers: {
-        Authorization: `Bearer ${await auth().getToken({
-          template: "testing",
-        })}`,
+        Authorization: `Bearer ${await getAuthToken()}`,
       },
     });
     if (!res.ok) {
