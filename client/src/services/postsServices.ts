@@ -151,7 +151,8 @@ export const getPosts = async (
         error: "Error al traer los anuncios. Por favor intenta de nuevo.",
       };
     }
-    const { context } = await getApiContext(true);
+    const tokenCache = await getAuthToken();
+    const { context } = await getApiContext(true, tokenCache);
     const { data } = await query({
       query: getPostsQuery,
       variables: {
@@ -179,7 +180,8 @@ export const getMatchPostPetition = async (
   searchTerm: string
 ): Promise<Post | null | { error: string }> => {
   try {
-    const { context } = await getApiContext(true);
+    const tokenCache = await getAuthToken();
+    const { context } = await getApiContext(true, tokenCache);
     const { data } = await query({
       query: getMatchPostQuery,
       variables: {
@@ -202,7 +204,8 @@ export const getPostsOfContacts = async (
   visibility: ContactPostsVisibility
 ) => {
   try {
-    const { context } = await getApiContext(true);
+    const tokenCache = await getAuthToken();
+    const { context } = await getApiContext(true, tokenCache);
     const { data } = await query({
       query: getPostsOfFriendsQuery,
       variables: {
@@ -375,7 +378,8 @@ export const getActiveRelations = async (): Promise<
   ActiveUserRelation[] | { error: string }
 > => {
   try {
-    const { context } = await getApiContext(true);
+    const tokenCache = await getAuthToken();
+    const { context } = await getApiContext(true, tokenCache);
     const { data } = await getClient().query({
       query: getActiveRelationsQuery,
       context,

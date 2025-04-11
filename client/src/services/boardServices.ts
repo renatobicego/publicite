@@ -12,7 +12,8 @@ import { getAuthToken } from "./auth-token";
 
 export const getBoards = async (searchTerm: string | null, page: number) => {
   try {
-    const { context } = await getApiContext(true);
+    const tokenCache = await getAuthToken();
+    const { context } = await getApiContext(true, tokenCache);
     const { data } = await query({
       query: getBoardsQuery,
       variables: { board: searchTerm ? searchTerm : "", page, limit: 20 },

@@ -15,7 +15,7 @@ export async function getAuthToken(template = "testing"): Promise<string> {
   const authData = auth();
 
   if (!authData.userId) {
-    throw new Error("User not authenticated");
+    return "";
   }
 
   const currentTime = Date.now();
@@ -31,7 +31,7 @@ export async function getAuthToken(template = "testing"): Promise<string> {
   const token = await authData.getToken({ template });
 
   if (!token) {
-    throw new Error("Token not found");
+    return "";
   }
 
   // Parse the JWT to get the expiration time

@@ -5,7 +5,6 @@ export const getApiContext = async (
   sendTokenNotRegistered?: boolean,
   token?: string | null
 ) => {
-  const user = auth();
   let authToken: string | null;
 
   if (token) {
@@ -13,7 +12,7 @@ export const getApiContext = async (
     return {
       context: {
         headers: {
-          Authorization: token,
+          Authorization: authToken,
         },
       },
     };
@@ -22,6 +21,7 @@ export const getApiContext = async (
   if (!sendTokenNotRegistered) {
     authToken = await getAuthToken();
   } else {
+    const user = auth();
     if (user.userId) {
       authToken = await getAuthToken();
     } else {
