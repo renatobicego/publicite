@@ -1,11 +1,12 @@
 import mongoose, { Model, Connection, Types } from "mongoose";
 import { TestingModule } from "@nestjs/testing";
 import { getModelToken } from '@nestjs/mongoose';
-import mapModuleTesting from "./notification.testing.module";
+
 import { NotificationAdapter } from "../infrastructure/adapter/notification.adapter";
 import { IUser, UserModel } from "../../user/infrastructure/schemas/user.schema";
 import { createPersonalUser } from "../../../../../test/functions_unit_testing/user/create.user";
 import { typeOfNotification } from "../domain/allowed-events/allowed.events.notifications";
+import mapModuleTesting from "./notification.testing.module";
 
 
 

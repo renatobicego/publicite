@@ -14,7 +14,7 @@ import { DatabaseService } from './database.service';
       imports: [ConfigModule],
       //UseFactory es una funcion de fabrica crea la configuración que necesita MongooseModule para conectarse a MongoDB.
       useFactory: async (configService: ConfigService) => ({
-        uri: configService.get<string>('DATABASE_URI'),
+        uri: configService.get<string>('DATABASE_URI') ?? configService.get<string>('DATABASE_URI_TEST'),
         //maxPoolSize: 10, -> configuramos el numero max de sesiones. Ver que onda el trafico
       }),
       inject: [ConfigService], // Inyecta ConfigService para poder utilizarlo
@@ -23,4 +23,4 @@ import { DatabaseService } from './database.service';
   providers: [DatabaseService],
   exports: [DatabaseService],
 })
-export class DatabaseModule {}
+export class DatabaseModule { }

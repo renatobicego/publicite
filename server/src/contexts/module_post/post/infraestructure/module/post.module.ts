@@ -20,6 +20,7 @@ import { PostReviewRepository } from 'src/contexts/module_post/PostReview/infras
 import { PostReviewSchema } from 'src/contexts/module_post/PostReview/infrastructure/schemas/review.schema';
 import { PostReviewAdapter } from 'src/contexts/module_post/PostReview/infrastructure/adapter/postReview.adapter';
 import { PostController } from '../controller/post.controller';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -41,7 +42,7 @@ import { PostController } from '../controller/post.controller';
       { name: 'PostComment', schema: PostCommentSchema },
       { name: 'PostReview', schema: PostReviewSchema },
     ]),
-
+    ConfigModule.forRoot(),
     UserModule,
   ],
   providers: [

@@ -11,20 +11,24 @@ import { MagazineSchema } from "../magazine/infrastructure/schemas/magazine.sche
 import { MagazineSectionModel } from "../magazine/infrastructure/schemas/section/magazine.section.schema";
 import { MagazineModelSharedModule } from "src/contexts/module_shared/sharedSchemas/magazine.model.schema";
 import { PostSchema } from "src/contexts/module_post/post/infraestructure/schemas/post.schema";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 
 
 const magazine_module_test = async (): Promise<TestingModule> => {
     dotenv.config({ path: '.env.test' });
-    const uri = process.env.DATABASE_URI;
+
 
     return Test.createTestingModule({
         imports: [
+            ConfigModule.forRoot({
+                envFilePath: '.env.test',
+                isGlobal: true,
+            }),
             MongooseModule.forRootAsync({
-                useFactory: async () => {
-                    return {
-                        uri: uri,
-                    };
-                },
+                useFactory: async (configService: ConfigService) => ({
+                    uri: configService.get<string>('DATABASE_URI_TEST'),
+                }),
+                inject: [ConfigService],
             }),
             MagazineModelSharedModule,
             MongooseModule.forFeature([

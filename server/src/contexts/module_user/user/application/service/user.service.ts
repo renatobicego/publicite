@@ -212,7 +212,7 @@ export class UserService implements UserServiceInterface {
           }
         }
       }
-      
+
       this.logger.log('Searching user with magazine and posts conditions...');
       const user = await this.userRepository.getProfileUserByExternalUserById(
         _id,
@@ -254,7 +254,7 @@ export class UserService implements UserServiceInterface {
           });
         }
       }
-
+      console.log(JSON.stringify(user, null, 2));
       return user;
     } catch (error: any) {
       throw error;

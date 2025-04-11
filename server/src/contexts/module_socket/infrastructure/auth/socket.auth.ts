@@ -9,6 +9,7 @@ export class AuthSocket implements CanActivate {
 
 
     constructor(
+        
         private readonly configService: ConfigService,
     ) { }
 

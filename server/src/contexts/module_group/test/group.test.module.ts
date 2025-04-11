@@ -4,14 +4,14 @@ import * as dotenv from 'dotenv';
 import { EventEmitter2, EventEmitterModule } from "@nestjs/event-emitter";
 
 import { MyLoggerService } from "src/contexts/module_shared/logger/logger.service";
-import { UserModel} from "src/contexts/module_user/user/infrastructure/schemas/user.schema";
+import { UserModel } from "src/contexts/module_user/user/infrastructure/schemas/user.schema";
 import { GroupSchema } from "../group/infrastructure/schemas/group.schema";
 import { GroupService } from "../group/application/service/group.service";
 import { GroupServiceMapper } from "../group/application/service/mapper/group.service.mapper";
 import { GroupRepository } from "../group/infrastructure/repository/group.repository";
 import { GroupRepositoryMapper } from "../group/infrastructure/repository/mapper/group.repository.mapper";
 import { NotificationModule } from "src/contexts/module_user/notification/infrastructure/module/notification.module";
-
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 import { EmmiterModule } from "src/contexts/module_shared/event-emmiter/emiter.module";
 import { PostModule } from "src/contexts/module_post/post/infraestructure/module/post.module";
@@ -35,10 +35,14 @@ import { Connection } from "mongoose";
 
 const group_testing_module = async (): Promise<TestingModule> => {
     dotenv.config({ path: '.env.test' });
-    const uri = process.env.DATABASE_URI
+
 
     return Test.createTestingModule({
         imports: [
+            ConfigModule.forRoot({ 
+                envFilePath: '.env.test',
+                isGlobal: true, 
+            }),
             PostModule,
             UserModule,
             EventEmitterModule.forRoot(
@@ -46,18 +50,15 @@ const group_testing_module = async (): Promise<TestingModule> => {
             EmmiterModule,
             MagazineModelSharedModule,
             MongooseModule.forRootAsync({
-                useFactory: async () => {
-                    return {
-                        uri: uri,
-                    };
-                },
+                useFactory: async (configService: ConfigService) => ({
+                    uri: configService.get<string>('DATABASE_URI_TEST'),
+                }),
+                inject: [ConfigService], 
             }),
             MongooseModule.forFeature([
                 { name: 'Group', schema: GroupSchema },
                 { name: UserModel.modelName, schema: UserModel.schema },
                 { name: 'MagazineSection', schema: MagazineSectionModel.schema },
-
-
             ]),
             LoggerModule,
             NotificationModule
