@@ -217,6 +217,7 @@ export const getUserById = async (
 > => {
   try {
     const tokenCache = await getAuthToken();
+    console.log(tokenCache);
     const { context } = await getApiContext(false, tokenCache);
     const { data } = await query({
       query: getUserByIdQuery,
