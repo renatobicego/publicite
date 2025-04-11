@@ -16,6 +16,7 @@ import MagazineSectionActions from "./Sections/MagazineSectionActions";
 
 export default async function MagazinePage(props: { params: { id: string } }) {
   const params = props.params;
+  const authData = auth();
   const magazine: Magazine | { error: string } = await getMagazineById(
     params.id
   );
@@ -29,8 +30,7 @@ export default async function MagazinePage(props: { params: { id: string } }) {
       />
     );
   }
-  const userId = auth().sessionClaims?.metadata.mongoId;
-
+  const userId = authData.sessionClaims?.metadata.mongoId;
   const owner = getOwner(magazine);
   const isOwner = checkIsOwner(magazine, owner, userId as string);
   const isOwnerTypeUser = magazine.ownerType === "user";

@@ -3,8 +3,8 @@ import {
   EditBusinessProfileProps,
   UserBusinessFormValues,
 } from "@/types/userTypes";
-import { auth } from "@clerk/nextjs/server";
 import axios from "axios";
+import { getAuthToken } from "./auth-token";
 
 export const postUserBusiness = async (formData: UserBusinessFormValues) => {
   return await axios.post(`${process.env.API_URL}/user/business`, formData);
@@ -19,7 +19,7 @@ export const putBusinessProfileData = async (
     formData,
     {
       headers: {
-        Authorization: `Bearer ${await auth().getToken({ template: "testing" })}`,
+        Authorization: `Bearer ${await getAuthToken()}`,
       },
     }
   );

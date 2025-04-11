@@ -23,8 +23,7 @@ export class UserAdapter implements UserAdapterInterface {
     private readonly logger: MyLoggerService,
     @Inject('UserServiceInterface')
     private readonly userService: UserServiceInterface,
-  ) { }
-
+  ) {}
 
   async createUser(newUserRequest: UserRequest): Promise<any> {
     if (!newUserRequest.userType) {
@@ -79,7 +78,10 @@ export class UserAdapter implements UserAdapterInterface {
         return await this.userService.findUserByIdByOwnUser(_id);
       }
       this.logger.log('User id and user id from are not the same');
-      return await this.userService.findProfileUserByExternalUserById(_id, userRequestId);
+      return await this.userService.findProfileUserByExternalUserById(
+        _id,
+        userRequestId,
+      );
     } catch (error: any) {
       throw error;
     }

@@ -6,6 +6,7 @@ import {
   acceptChangeContactRequest,
   acceptNewContactRequest,
 } from "@/components/notifications/users/actions";
+import { useRouter } from "next/navigation";
 
 const AcceptRequestFriend = ({
   isAcceptRequestFriend,
@@ -17,10 +18,14 @@ const AcceptRequestFriend = ({
       | "notification_user_new_friend_request"
       | "notification_user_new_relation_change";
     value: boolean;
+    userRelationId: string;
+    toRelationShipChange: UserRelation;
+    newRelation: UserRelation;
   };
   userIdTo: string;
 }) => {
   const { socket } = useSocket();
+  const router = useRouter();
   const textToShow =
     isAcceptRequestFriend.type === "notification_user_new_relation_change"
       ? "Aceptar Cambio de Relación"
@@ -33,8 +38,9 @@ const AcceptRequestFriend = ({
       acceptChangeContactRequest(
         socket,
         userIdTo,
-        "contacts",
-        isAcceptRequestFriend.notification_id
+        isAcceptRequestFriend.toRelationShipChange,
+        isAcceptRequestFriend.notification_id,
+        isAcceptRequestFriend.userRelationId
       );
     } else if (
       isAcceptRequestFriend.type === "notification_user_new_friend_request"
@@ -42,15 +48,15 @@ const AcceptRequestFriend = ({
       acceptNewContactRequest(
         socket,
         userIdTo,
-        "contacts",
+        isAcceptRequestFriend.newRelation,
         isAcceptRequestFriend.notification_id
       );
     }
+    router.refresh();
   };
   return (
     <PrimaryButton
       onPress={acceptRequest}
-      isDisabled
       className="hover:bg-none"
       variant="bordered"
     >

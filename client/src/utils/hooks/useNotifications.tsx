@@ -20,16 +20,51 @@ const useNotifications = (isOpen: boolean) => {
 
   // Error flag to prevent repeated calls
   const [errorOccurred, setErrorOccurred] = useState(false);
+
+  // Helper function to add delay between retries
+  const delay = (ms: number) =>
+    new Promise((resolve) => setTimeout(resolve, ms));
+
+  // Helper function to retry API calls
+  const retryFetch = useCallback(
+    async (fetchFn: () => Promise<any>, maxRetries = 3, retryDelay = 1000) => {
+      let retries = 0;
+
+      while (retries < maxRetries) {
+        try {
+          return await fetchFn();
+        } catch (error) {
+          retries++;
+
+          // If we've reached max retries, throw the error
+          if (retries >= maxRetries) {
+            throw error;
+          }
+
+          // Wait before next retry with exponential backoff
+          await delay(retryDelay * Math.pow(2, retries - 1));
+        }
+      }
+    },
+    []
+  );
+
   const fetchNotifications = useCallback(async () => {
     if (isLoading || !hasMore || errorOccurred) return;
     setIsLoading(true);
+
     try {
-      const data = await getNotifications(page);
+      const data = await retryFetch(
+        () => getNotifications(page),
+        3, // Max 3 retries
+        1000 // Start with 1s delay (will increase with exponential backoff)
+      );
+
       if ("error" in data && data.error) {
-        // toastifyError(data.error);
         setErrorOccurred(true);
         return;
       }
+
       if ("items" in data) {
         if (data.hasMore) {
           setPage((prevPage) => prevPage + 1);
@@ -44,16 +79,22 @@ const useNotifications = (isOpen: boolean) => {
     } finally {
       setIsLoading(false);
     }
-  }, [isLoading, hasMore, errorOccurred, page]);
+  }, [isLoading, hasMore, errorOccurred, retryFetch, page]);
 
   const getNotificationsFirstRender = useCallback(async () => {
     try {
-      const data = await getNotifications(1);
+      const data = await retryFetch(
+        () => getNotifications(1),
+        3, // Max 3 retries
+        1000 // Start with 1s delay (will increase with exponential backoff)
+      );
+
       if ("error" in data && data.error) {
         toastifyError(data.error);
         setErrorOccurred(true);
         return;
       }
+
       if ("items" in data) {
         if (data.hasMore) {
           setPage((prevPage) => prevPage + 1);
@@ -68,7 +109,7 @@ const useNotifications = (isOpen: boolean) => {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [retryFetch]);
 
   // Trigger to reset state when postType or search term changes
   useEffect(() => {
@@ -87,8 +128,7 @@ const useNotifications = (isOpen: boolean) => {
       initialLoadCompleted.current = true;
       getNotificationsFirstRender();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [newNotificationsReceived]);
+  }, [getNotificationsFirstRender, newNotificationsReceived]);
 
   // Effect to call `fetchNotifications` only after `hasMore` is set to true
   useEffect(() => {

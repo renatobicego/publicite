@@ -12,6 +12,8 @@ import { fetchDataByType } from "@/utils/data/fetchDataByType";
 import { GROUPS } from "@/utils/data/urls";
 import { SelectUsers } from "@/components/inputs/SearchUsers";
 import { groupAliasExists } from "@/services/groupsService";
+import { useUserData } from "../../providers/userDataProvider";
+import { User } from "@/types/userTypes";
 
 const Inputs = ({
   errors,
@@ -33,16 +35,19 @@ const Inputs = ({
   prevAlias?: string;
 }) => {
   const [listUsers, setListUsers] = useState([]);
+  const { userIdLogged } = useUserData();
   useEffect(() => {
     //debería traer contactos del admin
-    fetchDataByType({ typeOfData: "users" }, null, 1, null).then((data: any) => {
-      setListUsers(data.items);
-    });
+    fetchDataByType({ typeOfData: "users" }, null, 1, null).then(
+      (data: any) => {
+        setListUsers(data.items);
+      }
+    );
   }, []);
   const validateGroupAlias = async (alias: string) => {
-    if(alias === prevAlias) return
+    if (alias === prevAlias) return;
     const res = await groupAliasExists(alias);
-    if (typeof res === "object" && res !== null && "error" in res)  {
+    if (typeof res === "object" && res !== null && "error" in res) {
       setFieldError(
         "alias",
         "Error al validar el alias. Por favor intenta de nuevo."
@@ -113,7 +118,7 @@ const Inputs = ({
             name={"members"}
             label="Invitar Miembros"
             aria-label="invitar miembros"
-            items={listUsers}
+            items={listUsers.filter((user: User) => user._id !== userIdLogged)}
             isInvalid={!!errors.members}
             errorMessage={errors.members}
           />

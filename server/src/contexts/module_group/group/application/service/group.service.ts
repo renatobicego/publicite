@@ -18,13 +18,13 @@ import { UserLocation_group } from '../adapter/dto/HTTP-REQUEST/user.location.re
 import { PostServiceInterface } from 'src/contexts/module_post/post/domain/service/post.service.interface';
 import { PostsMemberGroupResponse } from 'src/contexts/module_shared/sharedGraphql/group.posts.member.response';
 import { GroupExitRequest } from '../adapter/dto/HTTP-REQUEST/group.exit.request';
+import { Types } from 'mongoose';
 
 interface UserRelation {
   userA: string;
   userB: string;
   typeRelationA: string;
   typeRelationB: string;
-
 }
 
 export class GroupService implements GroupServiceInterface {
@@ -38,8 +38,7 @@ export class GroupService implements GroupServiceInterface {
     private readonly userService: UserServiceInterface,
     @Inject('PostServiceInterface')
     private readonly postService: PostServiceInterface,
-
-  ) { }
+  ) {}
 
   get getLogger() {
     return this.logger;
@@ -101,7 +100,6 @@ export class GroupService implements GroupServiceInterface {
     }
   }
 
-
   async addAdminToGroup(
     newAdmin: string,
     groupId: string,
@@ -127,7 +125,6 @@ export class GroupService implements GroupServiceInterface {
       throw error;
     }
   }
-
 
   async deleteMembersFromGroup(
     membersToDelete: string[],
@@ -179,9 +176,7 @@ export class GroupService implements GroupServiceInterface {
     }
   }
 
-  async exitGroupById(
-    groupExitRequest: GroupExitRequest,
-  ): Promise<any> {
+  async exitGroupById(groupExitRequest: GroupExitRequest): Promise<any> {
     try {
       const { creator, newCreator, member, groupId } = groupExitRequest;
       if (creator && newCreator && !member) {
@@ -262,9 +257,7 @@ export class GroupService implements GroupServiceInterface {
           hasGroupRequest = true;
         }
 
-
         group.groupNotificationsRequest = group.groupNotificationsRequest || {};
-
 
         group.groupNotificationsRequest.groupInvitations = [
           'You cant access here from this route',
@@ -289,58 +282,83 @@ export class GroupService implements GroupServiceInterface {
     }
   }
 
-  async findAllPostsOfGroupMembers(groupId: string, userRequest: string, userLocation: UserLocation_group, idsMembersArray: String[], limit: number, page: number): Promise<PostsMemberGroupResponse | null> {
+  async findAllPostsOfGroupMembers(
+    groupId: string,
+    userRequest: string,
+    userLocation: UserLocation_group,
+    idsMembersArray: string[],
+    limit: number,
+    page: number,
+  ): Promise<PostsMemberGroupResponse | null> {
     try {
       this.logger.log('Finding posts of members of group by id: ' + groupId);
       let conditions;
-      if (idsMembersArray.length === 0) return { userAndPosts: [], hasMore: false };
+      if (idsMembersArray.length === 0)
+        return { userAndPosts: [], hasMore: false };
 
-      const friendRelationsOfUserRequest: UserRelation[] = await this.userService.getRelationsFromUserByUserId(userRequest)
-      if (friendRelationsOfUserRequest.length === 0) return { userAndPosts: [], hasMore: false };
+      const friendRelationsOfUserRequest: UserRelation[] =
+        await this.userService.getRelationsFromUserByUserId(userRequest);
 
-      const idAndTypeOfRelationMap: Map<string, String[]> = makeUserRelationHierarchyMap(friendRelationsOfUserRequest, userRequest)
+      if (friendRelationsOfUserRequest.length > 0) {
+        const idAndTypeOfRelationMap: Map<string, string[]> =
+          makeUserRelationHierarchyMap(
+            friendRelationsOfUserRequest,
+            userRequest,
+          );
 
-
-      const userRelationMapOfGroupMembers = new Map(
-        idsMembersArray
-          .filter((memberOfGroupId: any) => {
-            const typeOfRelation = idAndTypeOfRelationMap.get(memberOfGroupId);
-            return typeOfRelation && Array.isArray(typeOfRelation);
-          })
-          .map((memberId: any) => [memberId, idAndTypeOfRelationMap.get(memberId)])
-      );
-
-
-
-
-
-      if (userRelationMapOfGroupMembers && userRelationMapOfGroupMembers.size > 0) {
-        conditions = Array.from(userRelationMapOfGroupMembers.entries()).map(([key, value]) => ({
-          author: key,
-          'visibility.post': { $in: value },
-        }));
+        const userRelationMapOfGroupMembers = new Map(
+          idsMembersArray
+            .filter((memberOfGroupId: any) => {
+              const typeOfRelation =
+                idAndTypeOfRelationMap.get(memberOfGroupId);
+              return typeOfRelation && Array.isArray(typeOfRelation);
+            })
+            .map((memberId: any) => [
+              memberId,
+              idAndTypeOfRelationMap.get(memberId),
+            ]),
+        );
+        if (
+          userRelationMapOfGroupMembers &&
+          userRelationMapOfGroupMembers.size > 0
+        ) {
+          conditions = Array.from(userRelationMapOfGroupMembers.entries()).map(
+            ([key, value]) => ({
+              author: new Types.ObjectId(key),
+              'visibility.post': { $in: value },
+            }),
+          );
+        }
       }
-
 
       if (!Array.isArray(conditions) || conditions.length === 0) {
         conditions = [{ _id: { $exists: false } }];
       } else {
-        conditions = conditions.filter(c => c && typeof c === 'object' && Object.keys(c).length > 0);
+        conditions = conditions.filter(
+          (c) => c && typeof c === 'object' && Object.keys(c).length > 0,
+        );
       }
 
-      return await this.postService.findPostOfGroupMembers(idsMembersArray, conditions, userLocation, limit, page)
-
+      return await this.postService.findPostOfGroupMembers(
+        idsMembersArray,
+        conditions,
+        userLocation,
+        limit,
+        page,
+      );
     } catch (error: any) {
       throw error;
     }
   }
 
-
   async isThisGroupExist(alias: string, _id?: string): Promise<boolean> {
     const aliasWithOutSpaces = alias.replace(/\s+/g, '').toLowerCase();
     try {
       this.logger.log('Finding group by alias: ' + alias);
-      return await this.groupRepository.isThisGroupExist(aliasWithOutSpaces, _id);
+      return await this.groupRepository.isThisGroupExist(
+        aliasWithOutSpaces,
+        _id,
+      );
     } catch (error: any) {
       throw error;
     }
@@ -390,7 +408,8 @@ export class GroupService implements GroupServiceInterface {
         'notification_group_new_user_invited',
         async () =>
           await this.groupRepository.pushGroupInvitationsAndMakeUserMapNotification(
-            notificationId ?? 'Please check, NOTIFICATION ID IN  handleNotificationGroupAndSendToGroup NOT PROVIDED',
+            notificationId ??
+              'Please check, NOTIFICATION ID IN  handleNotificationGroupAndSendToGroup NOT PROVIDED',
             groupId,
             userIdTo,
             session,
@@ -416,8 +435,9 @@ export class GroupService implements GroupServiceInterface {
       ],
       [
         'notification_group_user_accepted',
-        async () => { return }
-
+        async () => {
+          return;
+        },
       ],
       [
         'notification_group_user_rejected',
@@ -450,13 +470,12 @@ export class GroupService implements GroupServiceInterface {
       this.logger.error(`Error handling event ${event}:`, error);
       throw error;
     }
-
-
   }
 
-
-
-  async updateGroupById(group: GroupUpdateRequest, userRequestId: string): Promise<any> {
+  async updateGroupById(
+    group: GroupUpdateRequest,
+    userRequestId: string,
+  ): Promise<any> {
     try {
       this.logger.log('Updating group by id: ' + group._id);
       if (group.alias != undefined && group.alias != null) {
@@ -464,7 +483,10 @@ export class GroupService implements GroupServiceInterface {
         if (group.alias.length < 1) {
           throw new BadRequestException('Alias is not valid');
         }
-        const isThisGroupExist = await this.isThisGroupExist(group.alias, group._id);
+        const isThisGroupExist = await this.isThisGroupExist(
+          group.alias,
+          group._id,
+        );
         if (isThisGroupExist) {
           throw new BadRequestException('Alias already exist');
         }
@@ -476,5 +498,3 @@ export class GroupService implements GroupServiceInterface {
     }
   }
 }
-
-

@@ -27,7 +27,7 @@ const PaymentNotification = ({
     paymentNotificationMessages[event as PaymentStatusNotificationType];
 
   return (
-    <NotificationCard isNew={!viewed}>
+    <NotificationCard isNew={!viewed} id={notification._id}>
       <NotificationImage>
         <FaFileInvoiceDollar className="text-success size-10" />
       </NotificationImage>

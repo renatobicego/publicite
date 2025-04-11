@@ -90,7 +90,7 @@ const ElementShared = ({
     }
   };
   return (
-    <NotificationCard isNew={!viewed}>
+    <NotificationCard isNew={!viewed} id={notification._id}>
       <NotificationImage>
         {imageUrl ? (
           <Image

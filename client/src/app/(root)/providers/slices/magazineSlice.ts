@@ -14,7 +14,7 @@ export interface MagazineState {
 }
 
 const initialState: MagazineState = {
-  magazines: [],
+  magazines: undefined,
   postsInMagazine: [],
 };
 

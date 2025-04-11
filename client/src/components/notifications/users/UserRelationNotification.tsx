@@ -102,7 +102,7 @@ const UserRelationNotificationCard = ({
     return optionsList;
   };
   return (
-    <NotificationCard isNew={!viewed}>
+    <NotificationCard isNew={!viewed} id={_id}>
       <NotificationImage>
         <Image
           radius="full"

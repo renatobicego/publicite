@@ -11,6 +11,7 @@ import { useSocket } from "@/app/socketProvider";
 import { putNotificationStatus } from "@/services/userServices";
 import { useNotificationsContext } from "@/app/(root)/providers/notificationsProvider";
 import { useNotificationsIsOpen } from "./notificationsOptionsProvider";
+import { requestNotificationPermission } from "@/utils/notifications/browserNotifications";
 
 const DesktopNotifications = () => {
   const { isOpen, setIsOpen } = useNotificationsIsOpen();
@@ -45,13 +46,14 @@ const DesktopNotifications = () => {
           setNewNotificationsFromServer(false);
         }
         if (newNotificationsFromServer && !open) {
-          await putNotificationStatus(
+          putNotificationStatus(
             notifications
               .filter((notification) => !notification.viewed)
               .map((notification) => notification._id)
           );
         }
         setIsOpen(open);
+        requestNotificationPermission();
       }}
     >
       <PopoverTrigger>

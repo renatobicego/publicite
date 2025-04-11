@@ -112,8 +112,6 @@ export class PostRequest {
 
   @Field(() => String, { nullable: true })
   petitionType: string;
-
-
 }
 
 @ObjectType()

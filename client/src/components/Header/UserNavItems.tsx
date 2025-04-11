@@ -8,9 +8,11 @@ import UserButtonModal from "@/app/(root)/(configuracion)/UserButtonPage";
 const UserNavItems = ({
   isMenuOpen,
   isFocused,
+  setIsMenuOpen,
 }: {
   isMenuOpen: boolean;
   isFocused: boolean;
+  setIsMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   return (
     <>
@@ -18,7 +20,7 @@ const UserNavItems = ({
         <SignedIn>
           <Notifications />
           <UserButtonModal />
-          <DropdownItems />
+          <DropdownItems setIsMenuOpen={setIsMenuOpen} />
         </SignedIn>
         <SignedOut>
           <SecondaryButton as={Link} href="/iniciar-sesion" variant="flat">

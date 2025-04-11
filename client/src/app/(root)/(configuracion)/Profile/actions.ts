@@ -1,4 +1,5 @@
 "use server";
+import { getAuthToken } from "@/services/auth-token";
 import { getBoardByUsername } from "@/services/boardServices";
 import { putBusinessProfileData } from "@/services/businessServices";
 import { getSubscriptionsOfUser } from "@/services/subscriptionServices";
@@ -84,7 +85,7 @@ export const getConfigData = async (user: {
     return;
   }
   try {
-    const token = await auth().getToken({ template: "testing" });
+    const token = await getAuthToken();
     // Use Promise.all to fetch data concurrently
     const [userBoard, preferences] = await Promise.all([
       getBoardByUsername(user.id, token),

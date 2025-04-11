@@ -69,7 +69,11 @@ const Header = ({ isSignedIn }: { isSignedIn: boolean }) => {
         id="user-options"
         className={`max-w-fit gap-2 !transition-all duration-300`}
       >
-        <UserNavItems isMenuOpen={isMenuOpen} isFocused={isFocused} />
+        <UserNavItems
+          isMenuOpen={isMenuOpen}
+          isFocused={isFocused}
+          setIsMenuOpen={setIsMenuOpen}
+        />
       </NavbarContent>
       <MobileMenu setIsMenuOpen={setIsMenuOpen} isSignedIn={isSignedIn} />
     </Navbar>

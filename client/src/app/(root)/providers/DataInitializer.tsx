@@ -28,22 +28,13 @@ const DataInitializer = ({
     const fetchData = async () => {
       try {
         if (userId && username) {
-          // Get the previous username from session storage
-          const prevUsername = sessionStorage.getItem("prevUsername");
-          // Check if the username has changed
-          const hasUsernameChanged = prevUsername !== username;
-          // Update sessionStorage ONLY if the username has changed
-          if (hasUsernameChanged) {
-            sessionStorage.setItem("prevUsername", username);
-          }
-
-          if (hasUsernameChanged || !magazines) {
+          if (!magazines) {
             await dispatch(fetchMagazines(userId) as any);
           }
-          if (hasUsernameChanged || !configData) {
+          if (!configData) {
             await dispatch(fetchConfigData({ username, userId }) as any);
           }
-          if (hasUsernameChanged || !accountType) {
+          if (!accountType) {
             await dispatch(fetchSubscriptions(userId as string) as any);
           }
         }

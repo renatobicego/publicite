@@ -11,6 +11,12 @@ import { IoBook } from "react-icons/io5";
 import { MdQuestionAnswer } from "react-icons/md";
 import CreateCard, { PostType } from "./CreateCard";
 
+//add metadata
+export const metadata = {
+  title: "Crear - Publicité",
+  description: "Crea publicaciones, grupos y revistas en Publicité.",
+};
+
 export default function Create() {
   const breadcrumbsItems = [
     {
@@ -56,7 +62,9 @@ export default function Create() {
   return (
     <main className="flex min-h-screen flex-col items-start main-style gap-6 md:gap-8">
       <BreadcrumbsAdmin items={breadcrumbsItems} />
-      <h1 className="text-2xl md:text-3xl xl:text-4xl font-bold">¿Qué tipo de publicación te gustaría crear?</h1>
+      <h1 className="text-2xl md:text-3xl xl:text-4xl font-bold">
+        ¿Qué tipo de publicación te gustaría crear?
+      </h1>
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 w-full gap-5">
         {postsTypes.map((postType) => (
           <CreateCard key={postType.label} postType={postType} />

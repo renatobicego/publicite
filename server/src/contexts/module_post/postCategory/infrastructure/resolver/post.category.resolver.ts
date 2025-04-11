@@ -33,7 +33,7 @@ export class PostCategoryResolver {
     nullable: true,
     description: 'Devuelve todas las categorias creadas',
   })
-  @UseGuards(ClerkAuthGuard)
+  //@UseGuards(ClerkAuthGuard)
   async getAllCategoryPost(): Promise<PostCategoryResponse[]> {
     try {
       return await this.postCategoryAdapter.findAllCategoryPost();

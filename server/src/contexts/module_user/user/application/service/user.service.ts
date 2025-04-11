@@ -16,12 +16,13 @@ import { UP_clerkUpdateRequestDto } from 'src/contexts/module_webhook/clerk/appl
 import { UserFindAllResponse } from '../adapter/dto/HTTP-RESPONSE/user.response.dto';
 import { UserType } from '../../domain/entity/enum/user.enums';
 import { UserRelation } from '../../domain/entity/userRelation.entity';
-import { calculateContactLimitFromUser, calculatePostLimitFromUser, userWithPostsAndSubscriptions } from '../functions/calculatePostLimitAndContactLimit';
+import {
+  calculateContactLimitFromUser,
+  calculatePostLimitFromUser,
+  userWithPostsAndSubscriptions,
+} from '../functions/calculatePostLimitAndContactLimit';
 import { ommitUndefinedValues } from './ommit-function';
 import { makeUserRelationMapWithoutHierarchy } from 'src/contexts/module_shared/utils/functions/makeUserRelationHierarchyMap';
-
-
-
 
 @Injectable()
 export class UserService implements UserServiceInterface {
@@ -32,9 +33,7 @@ export class UserService implements UserServiceInterface {
     private readonly contactService: ContactServiceInterface,
     private readonly logger: MyLoggerService,
     @InjectConnection() private readonly connection: Connection,
-  ) { }
-
-
+  ) {}
 
   async deleteAccount(id: string): Promise<any> {
     try {
@@ -43,7 +42,6 @@ export class UserService implements UserServiceInterface {
       throw error;
     }
   }
-
 
   async makeFriendRelationBetweenUsers(
     backData: { userIdFrom: string; userIdTo: string },
@@ -57,21 +55,29 @@ export class UserService implements UserServiceInterface {
         typeOfRelation,
         typeOfRelation,
       );
-      const userRelationId = await this.userRepository.makeFriendRelationBetweenUsers(
-        userRelation,
+      const userRelationId =
+        await this.userRepository.makeFriendRelationBetweenUsers(
+          userRelation,
+          session,
+        );
+
+      const maxRelation = await this.getLimitContactsFromUserByUserId(
+        backData.userIdTo,
         session,
       );
 
-      const maxRelation = await this.getLimitContactsFromUserByUserId(backData.userIdTo, session)
+      const activeRelationOfUser =
+        await this.userRepository.getActiveRelationsOfUser(
+          backData.userIdTo,
+          session,
+        );
 
-      const activeRelationOfUser = await this.userRepository.getActiveRelationsOfUser(
-        backData.userIdTo,
-        session
-      )
-
-
-      if (activeRelationOfUser && (activeRelationOfUser.length < maxRelation)) {
-        await this.userRepository.pushActiveRelationToUser(backData.userIdTo, userRelationId, session)
+      if (activeRelationOfUser && activeRelationOfUser.length < maxRelation) {
+        await this.userRepository.pushActiveRelationToUser(
+          backData.userIdTo,
+          userRelationId,
+          session,
+        );
       }
 
       return userRelationId;
@@ -96,16 +102,15 @@ export class UserService implements UserServiceInterface {
           case UserType.Person:
             this.logger.log(
               'Creating PERSONAL ACCOUNT with username: ' +
-              userEntity.getUsername,
+                userEntity.getUsername,
             );
-
 
             return await this.userRepository.save(userEntity, session);
 
           case UserType.Business:
             this.logger.log(
               'Creating BUSINESS ACCOUNT with username: ' +
-              userEntity.getUsername,
+                userEntity.getUsername,
             );
 
             return await this.userRepository.save(userEntity, session);
@@ -152,9 +157,7 @@ export class UserService implements UserServiceInterface {
     }
   }
 
-  async findUserByIdByOwnUser(
-    _id: string,
-  ): Promise<any> {
+  async findUserByIdByOwnUser(_id: string): Promise<any> {
     try {
       return await this.userRepository.findUserByIdByOwnUser(_id);
     } catch (error: any) {
@@ -162,46 +165,66 @@ export class UserService implements UserServiceInterface {
     }
   }
 
-  async findProfileUserByExternalUserById(_id: string, userRequestId?: string): Promise<any> {
+  async findProfileUserByExternalUserById(
+    _id: string,
+    userRequestId?: string,
+  ): Promise<any> {
     try {
-      this.logger.log("finding user profile...")
+      this.logger.log('finding user profile...');
       // Traemos las relaciones del usuario
-      let userRelations: any = await this.getRelationsFromUserByUserId(_id);
-      let conditionOfVisibility: any
-      let userRelationMap: Map<String, String[]> = new Map();
+      const userRelations: any = await this.getRelationsFromUserByUserId(_id);
+      let conditionOfVisibility: any;
+      let userRelationMap: Map<string, string[]> = new Map();
       if (userRelations && userRelations.length > 0 && userRequestId) {
-
-        const userRelationFilter = userRelations.filter((userRelation: { userA: ObjectId, userB: ObjectId }) =>
-          userRelation.userA.toString() === userRequestId || userRelation.userB.toString() === userRequestId
+        const userRelationFilter = userRelations.filter(
+          (userRelation: { userA: ObjectId; userB: ObjectId }) =>
+            userRelation.userA.toString() === userRequestId ||
+            userRelation.userB.toString() === userRequestId,
         );
-        this.logger.log("User relation filter success")
+        this.logger.log('User relation filter success');
+        if (userRelationFilter.length <= 0) {
+          this.logger.log('User relation filter empty');
+          conditionOfVisibility = [
+            {
+              author: 'none',
+              visibility: { $in: ['public'] },
+            },
+          ];
+        } else {
+          const visibility = userRelationFilter[0].typeRelationA;
 
-        const visibility = userRelationFilter[0].typeRelationA;
-
-        //hacemos el mapping
-        userRelationMap = makeUserRelationMapWithoutHierarchy(userRelationFilter, _id, visibility)
+          //hacemos el mapping
+          userRelationMap = makeUserRelationMapWithoutHierarchy(
+            userRelationFilter,
+            _id,
+            visibility,
+          );
+        }
       }
 
       if (userRelationMap && userRelationMap.size > 0) {
-        this.logger.log("Making visibility condition...")
+        this.logger.log('Making visibility condition...');
         // generamos la condicion de busqueda
         conditionOfVisibility = Array.from(userRelationMap.entries()).map(
           ([key, value]) => ({
             author: key,
             visibility: { $in: value },
           }),
-        )
+        );
       } else {
         conditionOfVisibility = [
           {
-            author: "none",
-            visibility: { $in: ["public"] }
-          }
-        ]
+            author: 'none',
+            visibility: { $in: ['public'] },
+          },
+        ];
       }
 
-      this.logger.log("Searching user with magazine and posts conditions...")
-      const user = await this.userRepository.getProfileUserByExternalUserById(_id, conditionOfVisibility);
+      this.logger.log('Searching user with magazine and posts conditions...');
+      const user = await this.userRepository.getProfileUserByExternalUserById(
+        _id,
+        conditionOfVisibility,
+      );
       // agregamos logica de isFriendRequestPending
       if (user && userRequestId) {
         user.isFriendRequestPending = false;
@@ -209,23 +232,30 @@ export class UserService implements UserServiceInterface {
           value: false,
           notification_id: '',
           type: '',
-          toRelationShipChange: "",
-          userRelationId: "",
-          newRelation: ""
+          toRelationShipChange: '',
+          userRelationId: '',
+          newRelation: '',
         };
         if (user.friendRequests && user.friendRequests.length > 0) {
           user.friendRequests.map((friend_Request: any) => {
             if (friend_Request.backData.userIdFrom == userRequestId) {
               user.isFriendRequestPending = true;
-            } else if (friend_Request.backData.userIdFrom == _id && friend_Request.backData.userIdTo == userRequestId) {
+            } else if (
+              friend_Request.backData.userIdFrom == _id &&
+              friend_Request.backData.userIdTo == userRequestId
+            ) {
               user.isAcceptRequestFriend = {
                 value: true,
-                notification_id: friend_Request._id ?? "",
-                type: friend_Request.event ?? "",
-                toRelationShipChange: friend_Request.frontData.userRelation._id ? friend_Request.frontData.userRelation.typeRelation : "",
+                notification_id: friend_Request._id ?? '',
+                type: friend_Request.event ?? '',
+                toRelationShipChange: friend_Request.frontData.userRelation._id
+                  ? friend_Request.frontData.userRelation.typeRelation
+                  : '',
                 userRelationId: friend_Request.frontData.userRelation._id,
-                newRelation: friend_Request.frontData.userRelation._id ? "" : friend_Request.frontData.userRelation.typeRelation
-              }
+                newRelation: friend_Request.frontData.userRelation._id
+                  ? ''
+                  : friend_Request.frontData.userRelation.typeRelation,
+              };
             }
           });
         }
@@ -268,13 +298,11 @@ export class UserService implements UserServiceInterface {
       const userRelationDocument =
         await this.userRepository.getRelationsFromUserByUserId(userRequestId);
       const { userRelations } = userRelationDocument;
-      return userRelations ?? []
+      return userRelations ?? [];
     } catch (error: any) {
       throw error;
     }
   }
-
-
 
   async getPostAndLimitsFromUserByUserId(author: string): Promise<any> {
     try {
@@ -285,17 +313,31 @@ export class UserService implements UserServiceInterface {
         return false;
       }
 
-      return calculatePostLimitFromUser(userWithSubscriptionsAndPosts, this.logger);
+      return calculatePostLimitFromUser(
+        userWithSubscriptionsAndPosts,
+        this.logger,
+      );
     } catch (error: any) {
       throw error;
     }
   }
 
-
-
-  async getPostAndContactLimit(author: string): Promise<{ agendaPostCount: number; librePostCount: number; totalAgendaPostLimit: number; totalLibrePostLimit: number; agendaAvailable: number; libreAvailable: number; contactLimit: number; contactCount: number; contactAvailable: number; }> {
+  async getPostAndContactLimit(author: string): Promise<{
+    agendaPostCount: number;
+    librePostCount: number;
+    totalAgendaPostLimit: number;
+    totalLibrePostLimit: number;
+    agendaAvailable: number;
+    libreAvailable: number;
+    contactLimit: number;
+    contactCount: number;
+    contactAvailable: number;
+  }> {
     try {
-      const userWithSubscriptionsAndPosts: userWithPostsAndSubscriptions = await this.userRepository.getPostAndContactLimitsFromUserByUserId(author);
+      const userWithSubscriptionsAndPosts: userWithPostsAndSubscriptions =
+        await this.userRepository.getPostAndContactLimitsFromUserByUserId(
+          author,
+        );
       if (userWithSubscriptionsAndPosts === null) {
         return {
           agendaPostCount: 0,
@@ -306,11 +348,25 @@ export class UserService implements UserServiceInterface {
           libreAvailable: 0,
           contactLimit: 0,
           contactCount: 0,
-          contactAvailable: 0
-        }
+          contactAvailable: 0,
+        };
       }
-      const { agendaPostCount, librePostCount, totalAgendaPostLimit, totalLibrePostLimit, agendaAvailable, libreAvailable } = calculatePostLimitFromUser(userWithSubscriptionsAndPosts, this.logger)
-      const { contactLimit, contactCount, contactAvailable } = calculateContactLimitFromUser(userWithSubscriptionsAndPosts, this.logger)
+      const {
+        agendaPostCount,
+        librePostCount,
+        totalAgendaPostLimit,
+        totalLibrePostLimit,
+        agendaAvailable,
+        libreAvailable,
+      } = calculatePostLimitFromUser(
+        userWithSubscriptionsAndPosts,
+        this.logger,
+      );
+      const { contactLimit, contactCount, contactAvailable } =
+        calculateContactLimitFromUser(
+          userWithSubscriptionsAndPosts,
+          this.logger,
+        );
 
       return {
         agendaPostCount,
@@ -321,44 +377,43 @@ export class UserService implements UserServiceInterface {
         libreAvailable,
         contactLimit,
         contactCount,
-        contactAvailable
-      }
+        contactAvailable,
+      };
     } catch (error: any) {
       throw error;
     }
   }
 
-
-
-
-
-  async getLimitContactsFromUserByUserId(userRequestId: string, session?: any): Promise<any> {
+  async getLimitContactsFromUserByUserId(
+    userRequestId: string,
+    session?: any,
+  ): Promise<any> {
     try {
-
       this.logger.log('finding relations from user with id: ' + userRequestId);
       let maxContacts = 0;
-      const userSubscriptionPlans = await this.userRepository.getLimitContactsFromUserByUserId(userRequestId, session);
+      const userSubscriptionPlans =
+        await this.userRepository.getLimitContactsFromUserByUserId(
+          userRequestId,
+          session,
+        );
 
-      if (!userSubscriptionPlans || userSubscriptionPlans.length === 0) return maxContacts;
+      if (!userSubscriptionPlans || userSubscriptionPlans.length === 0)
+        return maxContacts;
 
-      const { subscriptions } = userSubscriptionPlans
+      const { subscriptions } = userSubscriptionPlans;
       subscriptions.map((plan: any) => {
-        return maxContacts += plan.subscriptionPlan.maxContacts
-      })
+        return (maxContacts += plan.subscriptionPlan.maxContacts);
+      });
 
-
-      return maxContacts
-
-
+      return maxContacts;
     } catch (error: any) {
       throw error;
     }
-
   }
 
-  async getActiveRelationOfUser(userRequestId: string, session?: any): Promise<any> {
+  async getActiveRelationOfUser(userRequestId: string): Promise<any> {
     try {
-      return await this.userRepository.getActiveRelationsOfUser(userRequestId)
+      return await this.userRepository.getActiveRelationsOfUser(userRequestId);
     } catch (error: any) {
       throw error;
     }
@@ -372,15 +427,17 @@ export class UserService implements UserServiceInterface {
     }
   }
 
-
-
-
-
-  async isThisUserAllowedToPost(authorId: string, postBehaviourType: string): Promise<boolean> {
+  async isThisUserAllowedToPost(
+    authorId: string,
+    postBehaviourType: string,
+  ): Promise<boolean> {
     try {
-
-
-      const { agendaPostCount, librePostCount, totalAgendaPostLimit, totalLibrePostLimit } = await this.getPostAndLimitsFromUserByUserId(authorId);
+      const {
+        agendaPostCount,
+        librePostCount,
+        totalAgendaPostLimit,
+        totalLibrePostLimit,
+      } = await this.getPostAndLimitsFromUserByUserId(authorId);
       switch (postBehaviourType) {
         case 'agenda':
           if (agendaPostCount >= totalAgendaPostLimit) {
@@ -398,15 +455,14 @@ export class UserService implements UserServiceInterface {
           this.logger.warn('Invalid post type specified');
           return false;
       }
-
     } catch (error: any) {
-      this.logger.error('Error while verifying user posting permissions', error);
+      this.logger.error(
+        'Error while verifying user posting permissions',
+        error,
+      );
       throw error;
     }
   }
-
-
-
 
   async pushNotificationToUserArrayNotifications(
     notification: Types.ObjectId,
@@ -420,7 +476,7 @@ export class UserService implements UserServiceInterface {
       );
       if (userId == userIdFrom) {
         this.logger.log('User id and user id from are the same');
-        return
+        return;
       }
       await this.userRepository.pushNotification(notification, userId, session);
     } catch (error: any) {
@@ -479,30 +535,51 @@ export class UserService implements UserServiceInterface {
     }
   }
 
-
-
-  async removeActiveRelationOfUser(userId: string, session?: any): Promise<any> {
+  async removeActiveRelationOfUser(
+    userId: string,
+    session?: any,
+  ): Promise<any> {
     try {
-      const limitContact: number = await this.getLimitContactsFromUserByUserId(userId)
-      let activeRelations: [] = await this.getActiveRelationOfUser(userId)
+      const limitContact: number =
+        await this.getLimitContactsFromUserByUserId(userId);
+      const activeRelations: [] = await this.getActiveRelationOfUser(userId);
       let contactExceded: number = 0;
       const activeRelationsLenght: number = activeRelations.length ?? 0;
 
       if (limitContact < activeRelationsLenght) {
         contactExceded = activeRelationsLenght - limitContact;
-        this.logger.warn("Limite de contactos: " + limitContact + " Contactos actuales: " + activeRelationsLenght + " Contactos a eliminar: " + contactExceded)
-        const contactsToDelete: any[] = activeRelations.slice(limitContact, (limitContact + contactExceded));
-        return await this.userRepository.removeActiveRelationOfUser(userId, contactsToDelete, session);
-
+        this.logger.warn(
+          'Limite de contactos: ' +
+            limitContact +
+            ' Contactos actuales: ' +
+            activeRelationsLenght +
+            ' Contactos a eliminar: ' +
+            contactExceded,
+        );
+        const contactsToDelete: any[] = activeRelations.slice(
+          limitContact,
+          limitContact + contactExceded,
+        );
+        return await this.userRepository.removeActiveRelationOfUser(
+          userId,
+          contactsToDelete,
+          session,
+        );
       } else {
-        this.logger.warn("Limite de contactos: " + limitContact + " Contactos actuales: " + activeRelationsLenght + " Contactos a eliminar: " + contactExceded)
-        return true
+        this.logger.warn(
+          'Limite de contactos: ' +
+            limitContact +
+            ' Contactos actuales: ' +
+            activeRelationsLenght +
+            ' Contactos a eliminar: ' +
+            contactExceded,
+        );
+        return true;
       }
     } catch (error: any) {
       throw error;
     }
   }
-
 
   async saveNewPostInUser(
     postId: string,
@@ -516,34 +593,51 @@ export class UserService implements UserServiceInterface {
       throw error;
     }
   }
-  async setSubscriptionToUser(external_reference: string, sub_id: any, session: any): Promise<any> {
+  async setSubscriptionToUser(
+    external_reference: string,
+    sub_id: any,
+    session: any,
+  ): Promise<any> {
     try {
-      this.logger.log("Setting suscription to user in the service: " + UserService.name);
-      await this.userRepository.setSubscriptionToUser(external_reference, sub_id, session);
+      this.logger.log(
+        'Setting suscription to user in the service: ' + UserService.name,
+      );
+      await this.userRepository.setSubscriptionToUser(
+        external_reference,
+        sub_id,
+        session,
+      );
     } catch (error: any) {
       throw error;
     }
-
   }
 
-
-  async setNewActiveUserRelations(activeRelations: string[], userRequestId: string): Promise<any> {
+  async setNewActiveUserRelations(
+    activeRelations: string[],
+    userRequestId: string,
+  ): Promise<any> {
     try {
-
-      if (activeRelations.length <= 0) return null
-      const newActiveRelationLength = activeRelations.length
-      const limitAvailableOfUser: number = await this.getLimitContactsFromUserByUserId(userRequestId)
+      if (activeRelations.length <= 0) return null;
+      const newActiveRelationLength = activeRelations.length;
+      const limitAvailableOfUser: number =
+        await this.getLimitContactsFromUserByUserId(userRequestId);
 
       if (newActiveRelationLength > limitAvailableOfUser) {
-        throw new BadRequestException("El usuario no puede tener mas de " + limitAvailableOfUser + " contactos activos")
+        throw new BadRequestException(
+          'El usuario no puede tener mas de ' +
+            limitAvailableOfUser +
+            ' contactos activos',
+        );
       }
 
-      return await this.userRepository.setNewActiveUserRelations(activeRelations, userRequestId);
+      return await this.userRepository.setNewActiveUserRelations(
+        activeRelations,
+        userRequestId,
+      );
     } catch (error: any) {
       throw error;
     }
   }
-
 
   async updateFriendRelationOfUsers(
     userRelationId: string,
@@ -563,7 +657,7 @@ export class UserService implements UserServiceInterface {
     } catch (error: any) {
       this.logger.error(
         'An error has occurred in user service - updateFriendRelationOfUsers: ' +
-        error,
+          error,
       );
       throw error;
     }
@@ -582,7 +676,7 @@ export class UserService implements UserServiceInterface {
     } catch (error: any) {
       this.logger.error(
         'An error has occurred in user service - updateUserPreferencesByUsername: ' +
-        error,
+          error,
       );
       throw error;
     }
@@ -593,13 +687,11 @@ export class UserService implements UserServiceInterface {
     req: UserPersonalUpdateDto | UserBusinessUpdateDto,
     type: UserType,
   ): Promise<UserPersonalUpdateDto | UserBusinessUpdateDto> {
-
     this.logger.log('Updating user in the service: ' + UserService.name);
     try {
       const updated = ommitUndefinedValues(req);
       if (type === UserType.Person) {
         return await this.userRepository.update(username, updated, type);
-
       } else if (type === UserType.Business) {
         return await this.userRepository.update(username, updated, type);
       } else {
@@ -620,7 +712,7 @@ export class UserService implements UserServiceInterface {
     } catch (error: any) {
       this.logger.error(
         'An error has occurred in user service - UpdateUserByClerk: ' +
-        error.message,
+          error.message,
       );
       throw error;
     }

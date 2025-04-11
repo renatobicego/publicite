@@ -3,27 +3,15 @@ import {
   configureStore,
   type ConfigureStoreOptions,
 } from "@reduxjs/toolkit";
-import storageSession from "redux-persist/lib/storage/session";
 import userReducer, { type UserState } from "./slices/userSlice";
-import {
-  persistStore,
-  persistReducer,
-  FLUSH,
-  REHYDRATE,
-  PAUSE,
-  PERSIST,
-  PURGE,
-  REGISTER,
-} from "redux-persist";
 import magazineReducer, { type MagazineState } from "./slices/magazineSlice";
 import configReducer, { type ConfigState } from "./slices/configSlice";
-// Define the shape of the entire state
-import { PersistPartial } from "redux-persist/es/persistReducer";
 import subscriptionsReducer, {
   type SubscriptionsState,
 } from "./slices/subscriptionsSlice";
 
-export interface RootState extends PersistPartial {
+// Define the shape of the entire state without PersistPartial
+export interface RootState {
   user: UserState;
   magazine: MagazineState;
   config: ConfigState;
@@ -38,42 +26,22 @@ const rootReducer = combineReducers({
   subscriptions: subscriptionsReducer,
 });
 
-// Configure Redux Persist
-const persistConfig = {
-  key: "root",
-  storage: storageSession,
-  whitelist: ["config"],
-  blacklist: ["user", "subscriptions", "magazine"],
-};
-
-const persistedReducer = persistReducer(persistConfig, rootReducer);
-
-// Define the return type of createStore
+// Define the return type of createStore (without persistor)
 interface StoreReturn {
   store: ReturnType<typeof configureStore>;
-  persistor: ReturnType<typeof persistStore>;
 }
 
-// Create the store
+// Create the store without persistence
 export const createStore = (
   preloadedState: Partial<RootState> = {}
 ): StoreReturn => {
   const storeOptions: ConfigureStoreOptions<RootState> = {
-    reducer: persistedReducer,
+    reducer: rootReducer,
     preloadedState: preloadedState as RootState,
-
-    middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware({
-        serializableCheck: {
-          ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-        },
-      }),
   };
 
   const store = configureStore(storeOptions);
-  const persistor = persistStore(store);
-
-  return { store, persistor };
+  return { store };
 };
 
 export type AppDispatch = ReturnType<

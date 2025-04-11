@@ -39,6 +39,9 @@ const UserInfo = ({
         | "notification_user_new_friend_request"
         | "notification_user_new_relation_change";
       value: boolean;
+      userRelationId: string;
+      toRelationShipChange: UserRelation;
+      newRelation: UserRelation;
     };
   };
   isMyProfile: boolean;
@@ -51,6 +54,13 @@ const UserInfo = ({
     switch (true) {
       case isMyProfile:
         return <ContactPetitionsList userId={user._id} />;
+      case user.isAcceptRequestFriend.value:
+        return (
+          <AcceptRequestFriend
+            isAcceptRequestFriend={user.isAcceptRequestFriend}
+            userIdTo={user._id}
+          />
+        );
       case isMyContact !== undefined:
         return (
           <>
@@ -93,11 +103,6 @@ const UserInfo = ({
             Solicitud enviada
           </PrimaryButton>
         );
-      case user.isAcceptRequestFriend.value:
-        <AcceptRequestFriend
-          isAcceptRequestFriend={user.isAcceptRequestFriend}
-          userIdTo={user._id}
-        />;
       default:
         return (
           <SendRequest

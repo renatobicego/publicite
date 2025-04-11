@@ -15,7 +15,6 @@ import {
 import { IUser } from 'src/contexts/module_user/user/infrastructure/schemas/user.schema';
 import { stopWordsPost } from 'src/contexts/module_shared/utils/functions/stopWords';
 
-
 export class BoardRepository implements BoardRespositoryInterface {
   constructor(
     @InjectModel('Board')
@@ -26,16 +25,14 @@ export class BoardRepository implements BoardRespositoryInterface {
     private readonly userModel: Model<IUser>,
     @InjectConnection() private readonly connection: Connection,
     private readonly logger: MyLoggerService,
-  ) { }
+  ) {}
   async getBoardByAnnotationOrKeyword(
     board: string,
     limit: number,
     page: number,
-    conditions: any
+    conditions: any,
   ): Promise<BoardGetAllResponse> {
     try {
-
-
       const boardSearchTermSeparate = board
         ?.split(' ')
         .filter(
@@ -53,7 +50,7 @@ export class BoardRepository implements BoardRespositoryInterface {
         const boards = await this.boardModel
           .find({
             $text: { $search: textSearchQuery },
-            $or: conditions
+            $or: conditions,
           })
           .populate({
             path: 'user',
@@ -62,11 +59,15 @@ export class BoardRepository implements BoardRespositoryInterface {
           .limit(limit + 1)
           .skip((page - 1) * limit)
           .lean();
+        // for boards that were not deleted and user yes
+        const filterBoardsWithoutUser = boards.filter((board) => board.user);
 
-        const hasMore = boards.length > limit;
-        const boardsResponse = boards.slice(0, limit).map((board) => {
-          return this.boardMapper.toResponse(board);
-        });
+        const hasMore = filterBoardsWithoutUser.length > limit;
+        const boardsResponse = filterBoardsWithoutUser
+          .slice(0, limit)
+          .map((board) => {
+            return this.boardMapper.toResponse(board);
+          });
         return {
           boards: boardsResponse,
           hasMore: hasMore,
@@ -78,7 +79,7 @@ export class BoardRepository implements BoardRespositoryInterface {
 
         const boards = await this.boardModel
           .find({
-            $or: conditions
+            $or: conditions,
           })
           .populate({
             path: 'user',
@@ -88,10 +89,15 @@ export class BoardRepository implements BoardRespositoryInterface {
           .skip((page - 1) * limit)
           .lean();
 
-        const hasMore = boards.length > limit;
-        const boardsResponse = boards.slice(0, limit).map((board) => {
-          return this.boardMapper.toResponse(board);
-        });
+        // for boards that were not deleted and user yes
+        const filterBoardsWithoutUser = boards.filter((board) => board.user);
+
+        const hasMore = filterBoardsWithoutUser.length > limit;
+        const boardsResponse = filterBoardsWithoutUser
+          .slice(0, limit)
+          .map((board) => {
+            return this.boardMapper.toResponse(board);
+          });
         return {
           boards: boardsResponse,
           hasMore: hasMore,
@@ -108,9 +114,10 @@ export class BoardRepository implements BoardRespositoryInterface {
     board: UpdateBoardDto,
   ): Promise<BoardResponse | null> {
     try {
-      const boardUpdated = await this.boardModel.findByIdAndUpdate(
-        { _id: id, user: owner }, board, { new: true }).lean()
-      if (boardUpdated === null) return null
+      const boardUpdated = await this.boardModel
+        .findByIdAndUpdate({ _id: id, user: owner }, board, { new: true })
+        .lean();
+      if (boardUpdated === null) return null;
       return this.boardMapper.toResponse(boardUpdated);
     } catch (error: any) {
       throw error;
@@ -130,11 +137,9 @@ export class BoardRepository implements BoardRespositoryInterface {
           { session },
         );
         return this.boardMapper.toDomain(boardSaved);
-      })
+      });
       return boardSaved;
-
     } catch (error) {
-
       throw error;
     } finally {
       session.endSession();

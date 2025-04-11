@@ -90,6 +90,9 @@ const getUserByIdQuery = gql`
         notification_id
         type
         value
+        userRelationId
+        toRelationShipChange
+        newRelation
       }
     }
   }

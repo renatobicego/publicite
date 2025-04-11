@@ -10,16 +10,10 @@ import {
   removePostFromMagazine,
   removeSectionFromMagazine,
 } from "./slices/magazineSlice";
-import { ReactNode, use } from "react";
-import {
-  ActiveUserRelation,
-  UserPreferences,
-  UserRelations,
-  UserType,
-} from "@/types/userTypes";
+import { ReactNode } from "react";
+import { ActiveUserRelation, UserType } from "@/types/userTypes";
 import DataInitializer from "./DataInitializer";
 import { setActiveRelations, setSearchPreferences } from "./slices/configSlice";
-import { PersistGate } from "redux-persist/integration/react";
 import { PostCategory } from "@/types/postTypes";
 import { Magazine, MagazineSection } from "@/types/magazineTypes";
 
@@ -37,7 +31,7 @@ export const UserDataProvider = ({
   userType?: UserType;
 }) => {
   // Create a Redux store with preloaded state
-  const { store, persistor } = createStore({
+  const { store } = createStore({
     user: {
       usernameLogged: username,
       userIdLogged: userId,
@@ -48,10 +42,8 @@ export const UserDataProvider = ({
 
   return (
     <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <DataInitializer userId={userId} username={username} />
-        {children}
-      </PersistGate>
+      <DataInitializer userId={userId} username={username} />
+      {children}
     </Provider>
   );
 };

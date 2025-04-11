@@ -19,7 +19,7 @@ const TermsConditions = () => {
         variant="light"
         className="text-white -ml-4 -mt-1.5 data-[hover=true]:bg-transparent"
       >
-        Sobre Nosotros
+        Términos y Condiciones
       </Button>
       <Modal
         size="xl"
@@ -62,7 +62,7 @@ const TermsConditions = () => {
               Eres responsable de la información que publiques, compartas o
               recibas en nuestra plataforma. Te comprometes a:
             </p>
-            <ul>
+            <ul className="list-inside list-disc">
               <li>
                 No publicar contenido que sea ilegal, ofensivo, discriminatorio
                 o que viole los derechos de terceros.
@@ -94,7 +94,7 @@ const TermsConditions = () => {
               como resultado del uso de la plataforma, incluyendo pero no
               limitado a:
             </p>
-            <ul>
+            <ul className="list-inside list-disc">
               <li>
                 Daños o pérdidas causados por la publicación de contenido
                 inapropiado o ilegal.

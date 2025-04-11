@@ -5,6 +5,12 @@ import ActivePostsCounter from "./ActivePostsCounter";
 import { SubscriptionPlan } from "@/types/subscriptions";
 import { getSubscriptionsPlans } from "@/services/subscriptionServices";
 
+//add metadata
+export const metadata = {
+  title: "Packs de Publicaciones - Publicité",
+  description: "Packs de Publicaciones en Publicité.",
+};
+
 export default async function PostPacks() {
   const breadcrumbsItems = [
     {

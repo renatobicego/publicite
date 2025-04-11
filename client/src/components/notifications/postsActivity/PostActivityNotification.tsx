@@ -162,7 +162,7 @@ const PostActivityNotificationCard = ({
   };
 
   return (
-    <NotificationCard isNew={!viewed}>
+    <NotificationCard isNew={!viewed} id={_id}>
       <NotificationImage>
         <PostActivityImage
           postTitle={post.title}

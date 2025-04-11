@@ -11,6 +11,12 @@ import { auth } from "@clerk/nextjs/server";
 import ErrorCard from "@/components/ErrorCard";
 import { SubscriptionPlan } from "@/types/subscriptions";
 
+//add metadata
+export const metadata = {
+  title: "Planes de Suscripción - Publicité",
+  description: "Planes de Suscripción en Publicité.",
+};
+
 export default async function SubscriptionPlans() {
   const breadcrumbsItems = [
     {

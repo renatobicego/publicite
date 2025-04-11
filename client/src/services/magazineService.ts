@@ -18,6 +18,7 @@ import { getClient, query } from "@/lib/client";
 import { Magazine } from "@/types/magazineTypes";
 import { auth } from "@clerk/nextjs/server";
 import { getApiContext } from "./apiContext";
+import { getAuthToken } from "./auth-token";
 
 export const getMagazineById = async (id: string) => {
   try {
@@ -26,7 +27,7 @@ export const getMagazineById = async (id: string) => {
       variables: { getMagazineByMagazineIdId: id },
       context: {
         headers: {
-          Authorization: await auth().getToken({ template: "testing" }),
+          Authorization: await getAuthToken(),
         },
       },
     });
@@ -63,7 +64,7 @@ export const postMagazine = async (formData: any): Promise<Magazine> => {
     variables: { magazineCreateRequest: formData },
     context: {
       headers: {
-        Authorization: await auth().getToken({ template: "testing" }),
+        Authorization: await getAuthToken(),
       },
     },
   });
@@ -80,7 +81,7 @@ export const putMagazine = async (
     variables: { magazineUpdateRequest: formData, owner: userId, groupId },
     context: {
       headers: {
-        Authorization: await auth().getToken({ template: "testing" }),
+        Authorization: await getAuthToken(),
       },
     },
   });
@@ -103,7 +104,7 @@ export const postMagazineSection = async (
     },
     context: {
       headers: {
-        Authorization: await auth().getToken({ template: "testing" }),
+        Authorization: await getAuthToken(),
       },
     },
   });
@@ -124,7 +125,7 @@ export const editMagazineSection = async (
     },
     context: {
       headers: {
-        Authorization: await auth().getToken({ template: "testing" }),
+        Authorization: await getAuthToken(),
       },
     },
   });
@@ -148,7 +149,7 @@ export const deleteMagazineSection = async (
     },
     context: {
       headers: {
-        Authorization: await auth().getToken({ template: "testing" }),
+        Authorization: await getAuthToken(),
       },
     },
   });
@@ -157,15 +158,15 @@ export const deleteMagazineSection = async (
 
 export const getMagazinesOfUser = async () => {
   const authData = auth();
+  if (!authData.userId) {
+    return [];
+  }
   const { data } = await query({
     query: getMagazinesQuery,
     variables: { userId: authData.sessionClaims?.metadata.mongoId },
     context: {
       headers: {
-        Authorization: await authData.getToken({ template: "testing" }),
-      },
-      fetchOptions: {
-        next: { revalidate: 120 },
+        Authorization: await getAuthToken(),
       },
     },
   });

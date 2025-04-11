@@ -1,6 +1,12 @@
-import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
+import {
+  toastifyError,
+  toastifySuccess,
+  toastifyWarn,
+} from "@/utils/functions/toastify";
 import { Socket } from "socket.io-client";
 import { emitUserRelationNotification } from "./emitNotifications";
+import { setActiveRelations } from "@/app/(root)/providers/slices/configSlice";
+import { getActiveRelations } from "@/services/postsServices";
 
 const handleUserRelationNotificationError = (error: Error) => {
   switch (error.message as NotificationError) {
@@ -17,6 +23,9 @@ const handleUserRelationNotificationError = (error: Error) => {
       break;
     case "PREVIOUS_ID_MISSING":
       toastifyError("La solicitud no existe. Por favor intenta de nuevo.");
+      break;
+    case "RELATION_EXISTS" as NotificationError:
+      toastifyWarn("La relación ya existe.");
       break;
     default:
       toastifyError(
@@ -45,7 +54,13 @@ const acceptNewContactRequest = async (
     typeRelation,
     previousNotificationId
   )
-    .then(() => toastifySuccess("Solicitud aceptada correctamente"))
+    .then(async () => {
+      toastifySuccess("Solicitud aceptada correctamente");
+      const newActiveRelations = await getActiveRelations();
+      if (!("error" in newActiveRelations)) {
+        setActiveRelations(newActiveRelations);
+      }
+    })
     .catch(handleUserRelationNotificationError);
 };
 const declineNewContactRequest = async (

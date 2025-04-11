@@ -144,7 +144,6 @@ export class review {
   rating: number;
 }
 
-
 @ObjectType()
 export class Post_response_graphql_model {
   @Field(() => String, { nullable: true })

@@ -9,7 +9,16 @@ export default function Home() {
       id="home-grids"
       className="flex min-h-screen flex-col items-start main-style gap-8"
     >
+      <p className="text-xs lg:text-sm lg:max-w-[50%]">
+        Hola! Estamos trabajando para llevar el sitio al próximo nivel. Queremos
+        mejorar la experiencia de los usuarios! Vamos por uno internacional.
+        Mientras tanto puedes disfrutar del plan gratuito-extendido. Comparte
+        Publicité a tus amigos, y a quien quieras ! Acompáñanos a mejorar el
+        sitio. <strong className="font-noto">Publicité</strong> es tu sitio
+        publicitario.
+      </p>
       <SelectManualLocationModal />
+
       <Suspense fallback={<Spinner color="warning" />}>
         <HomePostSection
           type={"goodService"}

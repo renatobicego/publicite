@@ -1,5 +1,5 @@
 import { frequencyPriceItems } from "@/utils/data/selectData";
-import { Good, Petition, Post, Service } from "@/types/postTypes";
+import { Good, Petition, Service } from "@/types/postTypes";
 import {
   Table,
   TableHeader,
@@ -19,7 +19,6 @@ import ShareButton from "../buttons/ShareButton";
 import { FILE_URL, POSTS } from "@/utils/data/urls";
 import { MdQuestionAnswer } from "react-icons/md";
 import { formatTotal } from "@/utils/functions/utils";
-import { useUserData } from "@/app/(root)/providers/userDataProvider";
 
 const PostGridList = ({
   items,
@@ -30,7 +29,6 @@ const PostGridList = ({
   isLoading: boolean;
   isSearchDone: boolean;
 }) => {
-  const { usernameLogged } = useUserData();
   const renderCell = useCallback(
     (
       data: Good | Service | Petition,
@@ -206,7 +204,6 @@ const PostGridList = ({
                   _id: data._id,
                   description: data.title,
                   type: "post",
-                  username: usernameLogged as string,
                   imageUrl:
                     "imagesUrls" in data && data.imagesUrls
                       ? data.imagesUrls[0]

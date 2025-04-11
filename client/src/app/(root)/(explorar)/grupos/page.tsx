@@ -1,6 +1,11 @@
 import BreadcrumbsAdmin from "@/components/BreadcrumbsAdmin";
 import SolapasTabs from "@/components/solapas/SolapasTabs";
 import { GROUPS } from "@/utils/data/urls";
+
+export const metadata = {
+  title: "Grupos - Publicité",
+  description: "Explora los grupos de Publicité.",
+};
 export default async function GroupsList() {
   const breadcrumbsItems = [
     {

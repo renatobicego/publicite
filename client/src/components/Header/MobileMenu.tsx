@@ -74,7 +74,7 @@ const MobileMenu = ({
       ))}
       <div className="flex gap-2 items-center">
         <SignedIn>
-          <DropdownItems />
+          <DropdownItems setIsMenuOpen={setIsMenuOpen} />
         </SignedIn>
         <SignedOut>
           <SecondaryButton

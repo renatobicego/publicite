@@ -1,23 +1,22 @@
-import { Body, Controller, Get, Inject, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Inject, Post, UseGuards } from '@nestjs/common';
 
-
-import { SocketAdapterInterface } from "../../application/adapter/socket.adapter.interface";
-import { AuthSocket } from "../auth/socket.auth";
+import { SocketAdapterInterface } from '../../application/adapter/socket.adapter.interface';
+import { AuthSocket } from '../auth/socket.auth';
 
 @Controller('socket')
 export class SocketController {
   constructor(
     @Inject('SocketAdapterInterface')
-    private readonly socketAdapter: SocketAdapterInterface
-  ) { }
+    private readonly socketAdapter: SocketAdapterInterface,
+  ) {}
   @Post('group')
   @UseGuards(AuthSocket)
-  async socketGroupController(
-    @Body() notificationBody: any,
-  ): Promise<any> {
+  async socketGroupController(@Body() notificationBody: any): Promise<any> {
     try {
-      await this.socketAdapter.sendGroupNotificationToNotificationService(notificationBody);
-      return { body: "Success" };
+      await this.socketAdapter.sendGroupNotificationToNotificationService(
+        notificationBody,
+      );
+      return { body: 'Success' };
     } catch (error: any) {
       throw error;
     }
@@ -25,25 +24,24 @@ export class SocketController {
 
   @Post('magazine')
   @UseGuards(AuthSocket)
-  async socketMagazineController(
-    @Body() notificationBody: any,
-  ): Promise<any> {
+  async socketMagazineController(@Body() notificationBody: any): Promise<any> {
     try {
-      await this.socketAdapter.sendMagazineNotificationToNotificationService(notificationBody);
+      await this.socketAdapter.sendMagazineNotificationToNotificationService(
+        notificationBody,
+      );
       return { status: 'ok' };
     } catch (error: any) {
       throw error;
     }
   }
 
-
   @Post('user')
   @UseGuards(AuthSocket)
-  async socketUserController(
-    @Body() notificationBody: any,
-  ): Promise<any> {
+  async socketUserController(@Body() notificationBody: any): Promise<any> {
     try {
-      await this.socketAdapter.sendUserNotificationToNotificationService(notificationBody);
+      await this.socketAdapter.sendUserNotificationToNotificationService(
+        notificationBody,
+      );
       return { status: 'ok' };
     } catch (error: any) {
       throw error;
@@ -51,16 +49,15 @@ export class SocketController {
   }
   @Post('post')
   @UseGuards(AuthSocket)
-  async socketPostController(
-    @Body() notificationBody: any,
-  ): Promise<any> {
+  async socketPostController(@Body() notificationBody: any): Promise<any> {
     try {
-      return await this.socketAdapter.sendPostNotificationToNotificationService(notificationBody);
+      return await this.socketAdapter.sendPostNotificationToNotificationService(
+        notificationBody,
+      );
     } catch (error: any) {
       throw error;
     }
   }
-
 
   @Post('contact-seller')
   @UseGuards(AuthSocket)
@@ -68,13 +65,14 @@ export class SocketController {
     @Body() notificationBody: any,
   ): Promise<any> {
     try {
-      await this.socketAdapter.sendContactSellerNotificationToNotificationService(notificationBody);
-      return { body: "Success" };
+      await this.socketAdapter.sendContactSellerNotificationToNotificationService(
+        notificationBody,
+      );
+      return { body: 'Success' };
     } catch (error: any) {
       throw error;
     }
   }
-
 
   @Post('post-calification')
   @UseGuards(AuthSocket)
@@ -82,13 +80,14 @@ export class SocketController {
     @Body() notificationBody: any,
   ): Promise<any> {
     try {
-      await this.socketAdapter.sendPostCalificationNotificationToNotificationService(notificationBody);
-      return { body: "Success" };
+      await this.socketAdapter.sendPostCalificationNotificationToNotificationService(
+        notificationBody,
+      );
+      return { body: 'Success' };
     } catch (error: any) {
       throw error;
     }
   }
-
 
   @Post('share')
   @UseGuards(AuthSocket)
@@ -96,14 +95,14 @@ export class SocketController {
     @Body() notificationBody: any,
   ): Promise<any> {
     try {
-      await this.socketAdapter.sendShareNotificationToNotificationService(notificationBody);
-      return { body: "Success" };
+      await this.socketAdapter.sendShareNotificationToNotificationService(
+        notificationBody,
+      );
+      return { body: 'Success' };
     } catch (error: any) {
       throw error;
     }
   }
-
-
 
   // @Get('test')
   // //@UseGuards(AuthSocket)
@@ -117,20 +116,9 @@ export class SocketController {
   //     throw error;
   //   }
   // }
-
-
-
-
-
 }
 
-
-
-
-
-
 // GPRC CONFIG ----->
-
 
 // interface NotificationResponse {
 //   success: boolean;

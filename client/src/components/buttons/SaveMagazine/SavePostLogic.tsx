@@ -1,5 +1,5 @@
 import { addPostToMagazine } from "@/app/server/magazineActions";
-import { CREATE_MAGAZINE } from "@/utils/data/urls";
+import { CREATE_MAGAZINE, MAGAZINES } from "@/utils/data/urls";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { DOMAttributes, useState } from "react";
 import PrimaryButton from "../PrimaryButton";
@@ -7,6 +7,8 @@ import MagazineCard from "./MagazineCard";
 import { Link, Spinner } from "@nextui-org/react";
 import { Magazine } from "@/types/magazineTypes";
 import { useMagazinesData } from "@/app/(root)/providers/userDataProvider";
+import { usePathname } from "next/navigation";
+import { useRouter } from "next-nprogress-bar";
 
 const SavePostLogic = ({
   titleProps,
@@ -32,6 +34,8 @@ const SavePostLogic = ({
     magazineId: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
   // add post to section
   const handleAddPost = async () => {
     setIsSubmitting(true);
@@ -52,6 +56,9 @@ const SavePostLogic = ({
     addPost(postId, selectedMagazineSection.id);
     setIsSubmitting(false);
     toastifySuccess(res.message as string);
+    if (pathname.includes(MAGAZINES + "/")) {
+      router.refresh();
+    }
   };
   return (
     <div className="px-1 py-2 w-full">

@@ -143,6 +143,11 @@ export const shareLink = async (url: string, title: string) => {
         text: "Compartir Publicité",
       });
     } catch (error) {
+      if (error instanceof Error) {
+        if (error.name === "AbortError") {
+          return;
+        }
+      }
       toastifyError("Error al compartir el link");
     }
   } else {

@@ -12,7 +12,6 @@ import { UserRelation } from '../entity/userRelation.entity';
 import { UserType } from '../entity/enum/user.enums';
 
 export interface UserRepositoryInterface {
-
   deleteAccount(id: string): Promise<any>;
 
   findAllUsers(
@@ -22,25 +21,41 @@ export interface UserRepositoryInterface {
   ): Promise<UserFindAllResponse>;
   findUserByIdByOwnUser(_id: string): Promise<any>;
 
-  getUserPersonalInformationByUsername(
-    username: string,
-  ): Promise<any>;
+  getUserPersonalInformationByUsername(username: string): Promise<any>;
 
   getUserPreferencesByUsername(
     username: string,
   ): Promise<UserPreferences | null>;
 
-  getRelationsFromUserByUserId(userRequestId: string): Promise<any>
-  getMongoIdByClerkId(clerk_id: string): Promise<void>
-  getPostAndLimitsFromUserByUserId(author: string): Promise<any>
-  getLimitContactsFromUserByUserId(userRequestId: string, session?: any): Promise<any>
-  getActiveRelationsOfUser(userRequestId: string, session?: any): Promise<any>
-  getPostAndContactLimitsFromUserByUserId(author: string): Promise<any>
-  getProfileUserByExternalUserById(_id: string, conditionOfVisibility: any): Promise<any>
+  getRelationsFromUserByUserId(userRequestId: string): Promise<any>;
+  getMongoIdByClerkId(clerk_id: string): Promise<void>;
+  getPostAndLimitsFromUserByUserId(author: string): Promise<any>;
+  getLimitContactsFromUserByUserId(
+    userRequestId: string,
+    session?: any,
+  ): Promise<any>;
+  getActiveRelationsOfUser(userRequestId: string, session?: any): Promise<any>;
+  getPostAndContactLimitsFromUserByUserId(author: string): Promise<any>;
+  getProfileUserByExternalUserById(
+    _id: string,
+    conditionOfVisibility: any,
+  ): Promise<any>;
 
-  pushNotification(notification: any, userId: string, session?: any): Promise<any>;
-  pushNewFriendRequestOrRelationRequestToUser(notificationId: Types.ObjectId, backData: any, session: any): Promise<any>
-  pushActiveRelationToUser(userRequestId: any, userRelationId: any, session: any): Promise<void>
+  pushNotification(
+    notification: any,
+    userId: string,
+    session?: any,
+  ): Promise<any>;
+  pushNewFriendRequestOrRelationRequestToUser(
+    notificationId: Types.ObjectId,
+    backData: any,
+    session: any,
+  ): Promise<any>;
+  pushActiveRelationToUser(
+    userRequestId: any,
+    userRelationId: any,
+    session: any,
+  ): Promise<void>;
   save(reqUser: User, session?: ClientSession): Promise<string>;
 
   saveBusinessAccount(
@@ -50,26 +65,44 @@ export interface UserRepositoryInterface {
   ): Promise<User>;
 
   saveNewPost(
-    postId: String,
-    authorId: String,
+    postId: string,
+    authorId: string,
     options?: { session?: ClientSession },
   ): Promise<any>;
-  setSubscriptionToUser(external_reference: string, sub_id: any, session: any): Promise<any>
+  setSubscriptionToUser(
+    external_reference: string,
+    sub_id: any,
+    session: any,
+  ): Promise<any>;
   savePersonalAccount(
     baseObj: any,
     user: UserPerson,
     options?: { session?: ClientSession },
   ): Promise<User>;
-  setNewActiveUserRelations(activeRelations: string[], userRequestId: string): Promise<any>;
+  setNewActiveUserRelations(
+    activeRelations: string[],
+    userRequestId: string,
+  ): Promise<any>;
 
-  removeFriendRequest(previousNotificationId: string, backData: {
-    userIdFrom: string;
-    userIdTo: string;
-  }, session: any): Promise<any>
+  removeFriendRequest(
+    previousNotificationId: string,
+    backData: {
+      userIdFrom: string;
+      userIdTo: string;
+    },
+    session: any,
+  ): Promise<any>;
   removeFriend(relationId: string, friendRequestId?: string): Promise<any>;
-  removeActiveRelationOfUser(userRequestId: string, contactsToDelete: any[], session?: any): Promise<any>
+  removeActiveRelationOfUser(
+    userRequestId: string,
+    contactsToDelete: any[],
+    session?: any,
+  ): Promise<any>;
 
-  makeFriendRelationBetweenUsers(userRelation: UserRelation, session: any): Promise<string | null>
+  makeFriendRelationBetweenUsers(
+    userRelation: UserRelation,
+    session: any,
+  ): Promise<string | null>;
   update(
     _id: string,
     reqUser: UserPersonalUpdateDto | UserBusinessUpdateDto,

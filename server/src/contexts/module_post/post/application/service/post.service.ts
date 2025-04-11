@@ -36,8 +36,7 @@ export class PostService implements PostServiceInterface {
     private readonly logger: MyLoggerService,
     @Inject('UserServiceInterface')
     private readonly userService: UserServiceInterface,
-  ) { }
-
+  ) {}
 
   async activateOrDeactivatePost(
     _id: string,
@@ -381,17 +380,25 @@ export class PostService implements PostServiceInterface {
     }
   }
 
-
-
-  async makeCommentSchemaAndPutCommentInPost(postId: string, userCommentId: string, comment: string, session: any): Promise<any> {
+  async makeCommentSchemaAndPutCommentInPost(
+    postId: string,
+    userCommentId: string,
+    comment: string,
+    session: any,
+  ): Promise<any> {
     try {
-
-      const newComment = new PostComment(userCommentId, comment, false)
-      const postComment = await this.postRepository.savePostComment(newComment, session)
-      const postCommentId = postComment._id
-      if (!postCommentId) throw new Error('Error al crear el comentario in makeCommentSchemaAndPutCommentInPost')
-      await this.postRepository.setCommenOnPost(postId, postCommentId, session)
-      return postComment
+      const newComment = new PostComment(userCommentId, comment, false);
+      const postComment = await this.postRepository.savePostComment(
+        newComment,
+        session,
+      );
+      const postCommentId = postComment._id;
+      if (!postCommentId)
+        throw new Error(
+          'Error al crear el comentario in makeCommentSchemaAndPutCommentInPost',
+        );
+      await this.postRepository.setCommenOnPost(postId, postCommentId, session);
+      return postComment;
     } catch (error: any) {
       throw error;
     }

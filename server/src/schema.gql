@@ -297,6 +297,9 @@ type isAcceptRequestFriend {
   value: Boolean
   notification_id: String
   type: String
+  toRelationShipChange: String
+  userRelationId: String
+  newRelation: String
 }
 
 type User_Full_Grapql_Model {
@@ -980,9 +983,6 @@ enum contactSellerGetType {
 }
 
 type Mutation {
-  """Remover una relacion de amistad entre dos usuarios"""
-  deleteAccount(id: String!): String
-
   """Remover una relacion de amistad entre dos usuarios"""
   removeFriend(relationId: String!, friendRequestId: String): String
 
