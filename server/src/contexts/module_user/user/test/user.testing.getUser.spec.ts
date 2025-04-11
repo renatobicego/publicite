@@ -77,8 +77,8 @@ describe('UserService - Make relation between two users', () => {
         })
 
 
-        const user = await userService.findProfileUserByExternalUserById(userProfileId.toString());
-        console.log(user)
+        const user = await userService.findProfileUserByExternalUserById(userProfileId.toString(),userRequestId.toString());
+ 
         expect(user.posts.length).toBe(1);
         expect(user.magazines[0].sections[0].posts.length).toBe(1);
         expect(user.magazines[0].sections[0].posts[0]._id).toEqual(postId);
@@ -101,7 +101,7 @@ describe('UserService - Make relation between two users', () => {
             typeRelationB: "friends",
         })
 
-        const user = await userService.findProfileUserByExternalUserById(userProfileId.toString());
+        const user = await userService.findProfileUserByExternalUserById(userProfileId.toString(),userRequestId.toString());
         expect(user.posts.length).toBe(1);
         expect(user.magazines[0].sections[0].posts.length).toBe(1);
         expect(user.magazines[0].sections[0].posts[0]._id).toEqual(postId);
@@ -121,7 +121,7 @@ describe('UserService - Make relation between two users', () => {
             typeRelationB: "topfriends",
         })
 
-        const user = await userService.findProfileUserByExternalUserById(userProfileId.toString());
+        const user = await userService.findProfileUserByExternalUserById(userProfileId.toString(),userRequestId.toString());
         expect(user.posts.length).toBe(1);
         expect(user.magazines[0].sections[0].posts.length).toBe(1);
         expect(user.magazines[0].sections[0].posts[0]._id).toEqual(postId);
@@ -141,7 +141,7 @@ describe('UserService - Make relation between two users', () => {
             typeRelationB: "topfriends",
         })
 
-        const user = await userService.findProfileUserByExternalUserById(userProfileId.toString());
+        const user = await userService.findProfileUserByExternalUserById(userProfileId.toString(),userRequestId.toString());
         expect(user.posts.length).toBe(1);
         expect(user.magazines[0].sections[0].posts.length).toBe(1);
         expect(user.magazines[0].sections[0].posts[0]._id).toEqual(postId);
@@ -160,7 +160,7 @@ describe('UserService - Make relation between two users', () => {
             typeRelationB: "topfriends",
         })
 
-        const user = await userService.findProfileUserByExternalUserById(userProfileId.toString());
+        const user = await userService.findProfileUserByExternalUserById(userProfileId.toString(),userRequestId.toString());
         expect(user.posts.length).toBe(1);
         expect(user.magazines[0].sections[0].posts.length).toBe(1);
         expect(user.magazines[0].sections[0].posts[0]._id).toEqual(postId);
@@ -180,7 +180,7 @@ describe('UserService - Make relation between two users', () => {
             typeRelationA: "contacts",
             typeRelationB: "contacts",
         })
-        const user = await userService.findProfileUserByExternalUserById(userProfileId.toString());
+        const user = await userService.findProfileUserByExternalUserById(userProfileId.toString(),userRequestId.toString());
         expect(user.posts.length).toBe(0);
         expect(user.magazines).toEqual([]);
 
@@ -198,7 +198,7 @@ describe('UserService - Make relation between two users', () => {
             typeRelationA: "friends",
             typeRelationB: "friends",
         })
-        const user = await userService.findProfileUserByExternalUserById(userProfileId.toString());
+        const user = await userService.findProfileUserByExternalUserById(userProfileId.toString(),userRequestId.toString());
         expect(user.posts.length).toBe(0);
         expect(user.magazines).toEqual([]);
     });

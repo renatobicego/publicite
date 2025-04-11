@@ -176,16 +176,16 @@ export class user_relation {
   @Field(() => ID)
   _id: string;
 
-  @Field(() => user_user_relation)
+  @Field(() => user_user_relation, { nullable: true })
   userA: user_user_relation;
 
-  @Field(() => user_user_relation)
+  @Field(() => user_user_relation, { nullable: true })
   userB: user_user_relation;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   typeRelationA: string;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   typeRelationB: string;
 }
 
@@ -263,6 +263,7 @@ export class User_Full_Grapql_Model {
 
   @Field(() => [user_relation], { nullable: true })
   userRelations: user_relation[] = [];
+
   @Field(() => String, { nullable: true })
   userType?: string;
 

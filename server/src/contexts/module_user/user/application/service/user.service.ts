@@ -229,16 +229,9 @@ export class UserService implements UserServiceInterface {
             }
           });
         }
-        return user;
-      } else {
-        return null;
       }
 
-
-
-
-
-
+      return user;
     } catch (error: any) {
       throw error;
     }
