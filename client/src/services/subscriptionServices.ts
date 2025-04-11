@@ -146,7 +146,8 @@ export const getUserActivePostandActiveRelationsNumber = async (): Promise<
   | { error: string }
 > => {
   try {
-    const { context } = await getApiContext();
+    const tokenCache = await getAuthToken();
+    const { context } = await getApiContext(false, tokenCache);
     const { data } = await query({
       query: getPostNumbersOfUserQuery,
       context,
@@ -284,7 +285,8 @@ export const getPayments = async (
   | { error: string }
 > => {
   try {
-    const { context } = await getApiContext();
+    const tokenCache = await getAuthToken();
+    const { context } = await getApiContext(false, tokenCache);
     const { data } = await query({
       query: getPaymentsQuery,
       variables: {

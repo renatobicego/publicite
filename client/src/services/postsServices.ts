@@ -392,7 +392,8 @@ export const deleteCommentById = async (
   isReply: boolean
 ) => {
   try {
-    const { context } = await getApiContext();
+    const tokenCache = await getAuthToken();
+    const { context } = await getApiContext(false, tokenCache);
     await getClient().mutate({
       mutation: deleteCommentMutation,
       variables: { id, isAuthorOfPost, isReply },

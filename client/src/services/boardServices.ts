@@ -8,6 +8,7 @@ import {
 } from "@/graphql/boardQueries";
 import { getApiContext } from "./apiContext";
 import { handleApolloError } from "@/utils/functions/errorHandler";
+import { getAuthToken } from "./auth-token";
 
 export const getBoards = async (searchTerm: string | null, page: number) => {
   try {
@@ -28,7 +29,8 @@ export const getBoards = async (searchTerm: string | null, page: number) => {
 
 export const postBoard = async (values: any) => {
   try {
-    const { context } = await getApiContext();
+    const tokenCache = await getAuthToken();
+    const { context } = await getApiContext(false, tokenCache);
     const { data } = await getClient().mutate({
       mutation: postBoardMutation,
       variables: {
@@ -44,7 +46,8 @@ export const postBoard = async (values: any) => {
 };
 
 export const putBoard = async (id: string, values: any) => {
-  const { context } = await getApiContext();
+  const tokenCache = await getAuthToken();
+  const { context } = await getApiContext(false, tokenCache);
   try {
     const { data } = await getClient().mutate({
       mutation: editBoardByUsernameMutation,

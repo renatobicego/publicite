@@ -216,8 +216,8 @@ export const getUserById = async (
   | { error: string }
 > => {
   try {
-    const { context } = await getApiContext();
-    const user = await currentUser();
+    const tokenCache = await getAuthToken();
+    const { context } = await getApiContext(false, tokenCache);
     const { data } = await query({
       query: getUserByIdQuery,
       variables: { id },
@@ -237,7 +237,8 @@ export const getFriendRequests = async (
   id: string
 ): Promise<UserRelationNotification[] | { error: string }> => {
   try {
-    const { context } = await getApiContext();
+    const tokenCache = await getAuthToken();
+    const { context } = await getApiContext(false, tokenCache);
 
     const { data } = await query({
       query: getFriendRequestsQuery,
@@ -382,7 +383,8 @@ export const deleteUserRelation = async (relationId: string) => {
 
 export const putActiveRelations = async (activeRelations: string[]) => {
   try {
-    const { context } = await getApiContext();
+    const tokenCache = await getAuthToken();
+    const { context } = await getApiContext(false, tokenCache);
     const { data } = await getClient().mutate({
       mutation: putActiveRelationsMutation,
       variables: { activeRelations },

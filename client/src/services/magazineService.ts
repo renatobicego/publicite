@@ -42,7 +42,8 @@ export const getMagazineById = async (id: string) => {
 };
 export const getMagazineWithoutPostsById = async (id: string) => {
   try {
-    const { context } = await getApiContext();
+    const tokenCache = await getAuthToken();
+    const { context } = await getApiContext(false, tokenCache);
     const { data } = await query({
       query: getMagazineWithoutPostsByIdQuery,
       variables: { getMagazineByMagazineIdId: id },
@@ -179,7 +180,8 @@ export const putPostInMagazine = async (
   sectionId: string,
   ownerType: "user" | "group"
 ) => {
-  const { context } = await getApiContext();
+  const tokenCache = await getAuthToken();
+  const { context } = await getApiContext(false, tokenCache);
   const magazineAdmin = auth().sessionClaims?.metadata.mongoId;
   await getClient().mutate({
     mutation:
@@ -197,7 +199,8 @@ export const deletPostInMagazine = async (
   sectionId: string,
   ownerType: "user" | "group"
 ) => {
-  const { context } = await getApiContext();
+  const tokenCache = await getAuthToken();
+  const { context } = await getApiContext(false, tokenCache);
   await getClient().mutate({
     mutation: deletePostInSectionMutation,
     variables: { postIdToRemove, ownerType, magazineId, sectionId },
@@ -209,7 +212,8 @@ export const deleteMagazine = async (
   magazineId: string,
   ownerType: "user" | "group"
 ) => {
-  const { context } = await getApiContext();
+  const tokenCache = await getAuthToken();
+  const { context } = await getApiContext(false, tokenCache);
   const { data } = await getClient().mutate({
     mutation: deleteMagazineMutation,
     variables: { magazineId, ownerType },
@@ -222,7 +226,8 @@ export const putExitMagazine = async (
   magazineId: string,
   ownerType: "user" | "group"
 ) => {
-  const { context } = await getApiContext();
+  const tokenCache = await getAuthToken();
+  const { context } = await getApiContext(false, tokenCache);
   const { data } = await getClient().mutate({
     mutation: exitMagazineMutation,
     variables: { magazineId, ownerType },
