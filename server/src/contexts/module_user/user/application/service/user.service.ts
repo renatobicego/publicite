@@ -33,7 +33,7 @@ export class UserService implements UserServiceInterface {
     private readonly contactService: ContactServiceInterface,
     private readonly logger: MyLoggerService,
     @InjectConnection() private readonly connection: Connection,
-  ) {}
+  ) { }
 
   async deleteAccount(id: string): Promise<any> {
     try {
@@ -102,7 +102,7 @@ export class UserService implements UserServiceInterface {
           case UserType.Person:
             this.logger.log(
               'Creating PERSONAL ACCOUNT with username: ' +
-                userEntity.getUsername,
+              userEntity.getUsername,
             );
 
             return await this.userRepository.save(userEntity, session);
@@ -110,7 +110,7 @@ export class UserService implements UserServiceInterface {
           case UserType.Business:
             this.logger.log(
               'Creating BUSINESS ACCOUNT with username: ' +
-                userEntity.getUsername,
+              userEntity.getUsername,
             );
 
             return await this.userRepository.save(userEntity, session);
@@ -173,8 +173,10 @@ export class UserService implements UserServiceInterface {
       this.logger.log('finding user profile...');
       // Traemos las relaciones del usuario
       const userRelations: any = await this.getRelationsFromUserByUserId(_id);
-      let conditionOfVisibility: any;
+
+
       let userRelationMap: Map<string, string[]> = new Map();
+
       if (userRelations && userRelations.length > 0 && userRequestId) {
         const userRelationFilter = userRelations.filter(
           (userRelation: { userA: ObjectId; userB: ObjectId }) =>
@@ -182,26 +184,24 @@ export class UserService implements UserServiceInterface {
             userRelation.userB.toString() === userRequestId,
         );
         this.logger.log('User relation filter success');
-        if (userRelationFilter.length <= 0) {
-          this.logger.log('User relation filter empty');
-          conditionOfVisibility = [
-            {
-              author: 'none',
-              visibility: { $in: ['public'] },
-            },
-          ];
-        } else {
-          const visibility = userRelationFilter[0].typeRelationA;
+        const visibility = userRelationFilter[0].typeRelationA;
 
-          //hacemos el mapping
-          userRelationMap = makeUserRelationMapWithoutHierarchy(
-            userRelationFilter,
-            _id,
-            visibility,
-          );
-        }
+        //hacemos el mapping
+        userRelationMap = makeUserRelationMapWithoutHierarchy(
+          userRelationFilter,
+          _id,
+          visibility,
+        );
       }
 
+      let conditionOfVisibility = [
+        {
+          author: 'none',
+          visibility: { $in: ['public'] },
+        },
+      ];
+      
+      
       if (userRelationMap && userRelationMap.size > 0) {
         this.logger.log('Making visibility condition...');
         // generamos la condicion de busqueda
@@ -211,20 +211,13 @@ export class UserService implements UserServiceInterface {
             visibility: { $in: value },
           }),
         );
-      } else {
-        conditionOfVisibility = [
-          {
-            author: 'none',
-            visibility: { $in: ['public'] },
-          },
-        ];
       }
-
       this.logger.log('Searching user with magazine and posts conditions...');
       const user = await this.userRepository.getProfileUserByExternalUserById(
         _id,
         conditionOfVisibility,
       );
+
       // agregamos logica de isFriendRequestPending
       if (user && userRequestId) {
         user.isFriendRequestPending = false;
@@ -550,11 +543,11 @@ export class UserService implements UserServiceInterface {
         contactExceded = activeRelationsLenght - limitContact;
         this.logger.warn(
           'Limite de contactos: ' +
-            limitContact +
-            ' Contactos actuales: ' +
-            activeRelationsLenght +
-            ' Contactos a eliminar: ' +
-            contactExceded,
+          limitContact +
+          ' Contactos actuales: ' +
+          activeRelationsLenght +
+          ' Contactos a eliminar: ' +
+          contactExceded,
         );
         const contactsToDelete: any[] = activeRelations.slice(
           limitContact,
@@ -568,11 +561,11 @@ export class UserService implements UserServiceInterface {
       } else {
         this.logger.warn(
           'Limite de contactos: ' +
-            limitContact +
-            ' Contactos actuales: ' +
-            activeRelationsLenght +
-            ' Contactos a eliminar: ' +
-            contactExceded,
+          limitContact +
+          ' Contactos actuales: ' +
+          activeRelationsLenght +
+          ' Contactos a eliminar: ' +
+          contactExceded,
         );
         return true;
       }
@@ -625,8 +618,8 @@ export class UserService implements UserServiceInterface {
       if (newActiveRelationLength > limitAvailableOfUser) {
         throw new BadRequestException(
           'El usuario no puede tener mas de ' +
-            limitAvailableOfUser +
-            ' contactos activos',
+          limitAvailableOfUser +
+          ' contactos activos',
         );
       }
 
@@ -657,7 +650,7 @@ export class UserService implements UserServiceInterface {
     } catch (error: any) {
       this.logger.error(
         'An error has occurred in user service - updateFriendRelationOfUsers: ' +
-          error,
+        error,
       );
       throw error;
     }
@@ -676,7 +669,7 @@ export class UserService implements UserServiceInterface {
     } catch (error: any) {
       this.logger.error(
         'An error has occurred in user service - updateUserPreferencesByUsername: ' +
-          error,
+        error,
       );
       throw error;
     }
@@ -712,7 +705,7 @@ export class UserService implements UserServiceInterface {
     } catch (error: any) {
       this.logger.error(
         'An error has occurred in user service - UpdateUserByClerk: ' +
-          error.message,
+        error.message,
       );
       throw error;
     }
