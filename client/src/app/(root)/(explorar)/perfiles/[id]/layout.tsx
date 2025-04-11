@@ -51,7 +51,6 @@ export default async function ProfileLayout(props: {
 
   let isMyContact: UserRelations | undefined;
   if (!isMyProfile) {
-    console.log(user.userRelations);
     isMyContact =
       user.userRelations?.find(
         (relation) =>

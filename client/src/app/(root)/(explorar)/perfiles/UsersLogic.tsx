@@ -31,7 +31,7 @@ const UsersLogic = () => {
       <h2>Perfiles</h2>
       <div className="flex gap-2 items-center max-md:flex-wrap justify-end">
         <SearchPosts searchTerms={searchTerm} setSearchTerms={setSearchTerm} />
-        <FilterUsers setFilter={setFilter} />
+        {/* <FilterUsers setFilter={setFilter} /> */}
         <Order
           sortDescriptor={sortDescriptor}
           setSortDescriptor={setSortDescriptor}
