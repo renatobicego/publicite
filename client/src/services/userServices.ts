@@ -217,6 +217,7 @@ export const getUserById = async (
 > => {
   try {
     const { context } = await getApiContext();
+    console.log(context);
     const { data } = await query({
       query: getUserByIdQuery,
       variables: { id },
