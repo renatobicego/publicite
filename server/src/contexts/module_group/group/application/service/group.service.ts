@@ -297,9 +297,7 @@ export class GroupService implements GroupServiceInterface {
         return { userAndPosts: [], hasMore: false };
 
       const friendRelationsOfUserRequest: UserRelation[] =
-        await this.userService.getRelationsFromUserByUserId(
-          '67e33e16287f9156a65a8b86',
-        );
+        await this.userService.getRelationsFromUserByUserId(userRequest);
 
       if (friendRelationsOfUserRequest.length > 0) {
         const idAndTypeOfRelationMap: Map<string, string[]> =

@@ -218,8 +218,6 @@ export const getUserById = async (
   try {
     const { context } = await getApiContext();
     const user = await currentUser();
-    console.log("user", user?.publicMetadata);
-    console.log("context", context);
     const { data } = await query({
       query: getUserByIdQuery,
       variables: { id },
