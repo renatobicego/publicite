@@ -49,6 +49,7 @@ const UserInfo = ({
 }) => {
   const { userType } = user;
   const business = user as unknown as UserBusiness;
+  console.log(user.isAcceptRequestFriend, isMyContact);
 
   const actionToShow = () => {
     switch (true) {
