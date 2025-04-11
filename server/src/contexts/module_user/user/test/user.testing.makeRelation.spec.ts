@@ -843,8 +843,8 @@ describe('UserService - Make relation between two users', () => {
             await userRelationModel.create(
                 {
                     _id: new Types.ObjectId(id),
-                    userA: new Types.ObjectId("66d2177dda11f93d8647cf3b"),
-                    userB: new Types.ObjectId("66d2177dda11f93d8647cf3c"),
+                    userA: new Types.ObjectId(),
+                    userB: new Types.ObjectId(),
                     typeRelationA: typeOfRelation,
                     typeRelationB: typeOfRelation
                 }

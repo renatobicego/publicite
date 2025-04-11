@@ -9,11 +9,17 @@ import { GroupModule } from 'src/contexts/module_group/group/infrastructure/modu
 import { MagazineModule } from 'src/contexts/module_magazine/magazine/infrastructure/module/magazine.module';
 import { PostModule } from 'src/contexts/module_post/post/infraestructure/module/post.module';
 import { NotificationService } from 'src/contexts/module_user/notification/application/service/notification.service';
+import { AuthSocket } from '../auth/socket.auth';
+import { ConfigModule } from '@nestjs/config';
+
 
 
 @Module({
-  imports: [NotificationModule, UserModule, GroupModule, MagazineModule, PostModule],
+  imports: [
+
+    NotificationModule, UserModule, GroupModule, MagazineModule, PostModule],
   providers: [
+    AuthSocket,
     {
       provide: 'SocketAdapterInterface',
       useClass: SocketAdapter,

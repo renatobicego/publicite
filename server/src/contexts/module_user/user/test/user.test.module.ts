@@ -22,20 +22,22 @@ import NotificationModel from "../../notification/infrastructure/schemas/notific
 import PostReviewModel from "src/contexts/module_post/PostReview/infrastructure/schemas/review.schema";
 import { MagazineModelSharedModule } from "src/contexts/module_shared/sharedSchemas/magazine.model.schema";
 import { UserMagazineModel } from "src/contexts/module_magazine/magazine/infrastructure/schemas/magazine.user.schema";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 
 const clerk_update_module = async (): Promise<TestingModule> => {
     dotenv.config({ path: '.env.test' });
-    const uri = process.env.DATABASE_URI;
-
     return Test.createTestingModule({
         imports: [
             ContactModule,
+            ConfigModule.forRoot({
+                envFilePath: '.env.test',
+                isGlobal: true,
+            }),
             MongooseModule.forRootAsync({
-                useFactory: async () => {
-                    return {
-                        uri: uri,
-                    };
-                },
+                useFactory: async (configService: ConfigService) => ({
+                    uri: configService.get<string>('DATABASE_URI_TEST'),
+                }),
+                inject: [ConfigService],
             }),
             MongooseModule.forFeature([
                 { name: UserModel.modelName, schema: UserModel.schema },
@@ -59,18 +61,20 @@ const clerk_update_module = async (): Promise<TestingModule> => {
 
 const make_relation_module = async (): Promise<TestingModule> => {
     dotenv.config({ path: '.env.test' });
-    const uri = process.env.DATABASE_URI;
+
 
     return Test.createTestingModule({
         imports: [
             ContactModule,
+            ConfigModule.forRoot({
+                envFilePath: '.env.test',
+                isGlobal: true,
+            }),
             MongooseModule.forRootAsync({
-
-                useFactory: async () => {
-                    return {
-                        uri: uri,
-                    };
-                },
+                useFactory: async (configService: ConfigService) => ({
+                    uri: configService.get<string>('DATABASE_URI_TEST'),
+                }),
+                inject: [ConfigService],
             }),
             MongooseModule.forFeature([
                 { name: UserModel.modelName, schema: UserModel.schema },

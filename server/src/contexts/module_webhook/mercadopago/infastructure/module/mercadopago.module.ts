@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 
 
@@ -148,6 +148,7 @@ import { PaymentNotificationService } from '../adapters/handler/PaymentNotificat
             },
             inject: [ConfigService, MyLoggerService],
         },
+
     ],
 })
 export class MercadoPagoModule { }

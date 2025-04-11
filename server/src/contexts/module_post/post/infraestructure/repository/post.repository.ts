@@ -73,7 +73,7 @@ export class PostRepository implements PostRepositoryInterface {
 
     @InjectModel('Post')
     private readonly postDocument: Model<PostDocument>,
-  ) {}
+  ) { }
   async deleteAccount(id: string): Promise<any> {
     try {
       await this.postDocument.deleteMany({ author: id });
@@ -230,17 +230,17 @@ export class PostRepository implements PostRepositoryInterface {
     try {
       const randomIds: string[] = [];
 
+      const userObjectId = new Types.ObjectId(userId.toString());
       for (const [postBehaviourType, count] of Object.entries(criteria)) {
         if (count > 0) {
           const aggregationPipeline = [
-            { $match: { author: userId, postBehaviourType, isActive: true } },
+            { $match: { author: userObjectId, postBehaviourType, isActive: true } },
             { $sample: { size: count } },
             { $project: { _id: 1 } },
           ];
 
           const randomDocuments = await this.postDocument
             .aggregate(aggregationPipeline)
-            .exec();
           randomDocuments.forEach((doc) => randomIds.push(doc._id));
         }
       }

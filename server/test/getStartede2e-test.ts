@@ -15,7 +15,9 @@ async function startServerForE2ETest(): Promise<{
 }> {
     dotenv.config({ path: '.env.test' });
     let SOCKET_SECRET = process.env.PUBLICITE_SOCKET_API_KEY!;
-
+    let db = process.env.DATABASE_URI_TEST!;
+    console.log(db)
+    
     const module = await Test.createTestingModule({
         imports: [AppModule],
     }).compile();

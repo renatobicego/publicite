@@ -16,6 +16,7 @@ import { UserAdapter } from '../adapters/user.adapter';
 import { UserResolver } from '../graphql/resolver/user.resolver';
 import { UserRelationModel } from '../schemas/user.relation.schema';
 import { MagazineModelSharedModule } from 'src/contexts/module_shared/sharedSchemas/magazine.model.schema';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { MagazineModelSharedModule } from 'src/contexts/module_shared/sharedSche
     ContactModule,
     SectorModule,
     MagazineModelSharedModule,
+    ConfigModule.forRoot(),
   ],
   controllers: [UserController],
   providers: [

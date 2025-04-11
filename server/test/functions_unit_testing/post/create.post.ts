@@ -6,7 +6,7 @@ class PostTestRequest {
     title?: string;
     description?: string;
     searchTitle?: string;
-    author?: string;
+    author?: any;
     postType?: string;
     visibility?: {
         post: string;

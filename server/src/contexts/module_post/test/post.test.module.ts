@@ -1,6 +1,9 @@
-import { getModelToken, MongooseModule } from "@nestjs/mongoose";
+import {  MongooseModule } from "@nestjs/mongoose";
 import { Test, TestingModule } from "@nestjs/testing";
 import * as dotenv from 'dotenv';
+import { EventEmitterModule } from "@nestjs/event-emitter";
+import { ConfigModule, ConfigService } from "@nestjs/config";
+
 
 
 import { MyLoggerService } from "src/contexts/module_shared/logger/logger.service";
@@ -10,8 +13,7 @@ import { PostServiceModel } from "../post/infraestructure/schemas/post-types-sch
 import PostModel from "../post/infraestructure/schemas/post.schema";
 import { PostService } from "../post/application/service/post.service";
 import { PostRepository } from "../post/infraestructure/repository/post.repository";
-import { UserModel, UserSchema } from "src/contexts/module_user/user/infrastructure/schemas/user.schema";
-import { EventEmitterModule } from "@nestjs/event-emitter";
+import { UserModel } from "src/contexts/module_user/user/infrastructure/schemas/user.schema";
 import { EmmiterModule } from "src/contexts/module_shared/event-emmiter/emiter.module";
 import { LoggerModule } from "src/contexts/module_shared/logger/logger.module";
 import PostReactionModel from "../post/infraestructure/schemas/post.reaction.schema";
@@ -24,7 +26,7 @@ import PostReviewModel from "../PostReview/infrastructure/schemas/review.schema"
 
 const post_testing_module = async (): Promise<TestingModule> => {
     dotenv.config({ path: '.env.test' });
-    const uri = process.env.DATABASE_URI;
+
 
     return Test.createTestingModule({
         imports: [
@@ -33,13 +35,15 @@ const post_testing_module = async (): Promise<TestingModule> => {
             UserModule,
             EmmiterModule,
             LoggerModule,
+            ConfigModule.forRoot({
+                envFilePath: '.env.test',
+                isGlobal: true,
+            }),
             MongooseModule.forRootAsync({
-
-                useFactory: async () => {
-                    return {
-                        uri: uri,
-                    };
-                },
+                useFactory: async (configService: ConfigService) => ({
+                    uri: configService.get<string>('DATABASE_URI_TEST'),
+                }),
+                inject: [ConfigService],
             }),
             MongooseModule.forFeature([
                 {

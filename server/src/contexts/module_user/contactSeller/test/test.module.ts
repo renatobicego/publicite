@@ -9,21 +9,25 @@ import { MyLoggerService } from "src/contexts/module_shared/logger/logger.servic
 import { ContactSellerService } from "../application/service/contactSeller.service";
 import { ContactSellerAdapter } from "../infrastructure/contactSeller.adapter";
 import { ContactSellerRepository } from "../infrastructure/repository/contactSeller.repository";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 
 
 const contactSellerModuleTesting = async (): Promise<TestingModule> => {
     dotenv.config({ path: '.env.test' });
-    const uri = process.env.DATABASE_URI;
+
 
     return Test.createTestingModule({
         imports: [
             ContactSellerModule,
+            ConfigModule.forRoot({
+                envFilePath: '.env.test',
+                isGlobal: true,
+            }),
             MongooseModule.forRootAsync({
-                useFactory: async () => {
-                    return {
-                        uri: uri,
-                    };
-                },
+                useFactory: async (configService: ConfigService) => ({
+                    uri: configService.get<string>('DATABASE_URI_TEST'),
+                }),
+                inject: [ConfigService],
             }),
             MongooseModule.forFeature([
                 {
@@ -33,7 +37,6 @@ const contactSellerModuleTesting = async (): Promise<TestingModule> => {
 
             ]),
         ],
-
         providers: [
             MyLoggerService,
             {

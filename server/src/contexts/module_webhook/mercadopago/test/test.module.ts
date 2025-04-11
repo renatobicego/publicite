@@ -31,28 +31,33 @@ import NotificationModel from "src/contexts/module_user/notification/infrastruct
 import { PaymentNotificationService } from "../infastructure/adapters/handler/PaymentNotificationService";
 import { ErrorService } from "../application/service/error/error.service.interface";
 import { ErrorRepository } from "../infastructure/repository/error/error.repository";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 
 
 
 
 const mercadopago_testing_module = async (): Promise<TestingModule> => {
     dotenv.config({ path: '.env.test' });
-    const uri = process.env.DATABASE_URI;
+
 
     return Test.createTestingModule({
         imports: [
+            ConfigModule.forRoot({
+                envFilePath: '.env.test',
+                isGlobal: true,
+            }),
+            MongooseModule.forRootAsync({
+                useFactory: async (configService: ConfigService) => ({
+                    uri: configService.get<string>('DATABASE_URI_TEST'),
+                }),
+                inject: [ConfigService],
+            }),
             ContactModule,
             LoggerModule,
             EventEmitterModule.forRoot(
             ),
             EmmiterModule,
-            MongooseModule.forRootAsync({
-                useFactory: async () => {
-                    return {
-                        uri: uri,
-                    };
-                },
-            }),
+
             MongooseModule.forFeature([
                 { name: 'Subscription', schema: SubscriptionSchema },
                 { name: UserModel.modelName, schema: UserModel.schema },
@@ -116,7 +121,6 @@ const mercadopago_testing_module = async (): Promise<TestingModule> => {
                 provide: 'FetchToMpInterface',
                 useValue: {}
             },
-
 
             { provide: getModelToken(UserPersonModel.modelName), useValue: {} },
             { provide: getModelToken(UserBusinessModel.modelName), useValue: {} },

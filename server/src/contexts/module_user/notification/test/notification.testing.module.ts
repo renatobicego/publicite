@@ -21,29 +21,29 @@ import { NotificationUserModel } from "../infrastructure/schemas/notification.us
 import { NotificationGroupModel } from "../infrastructure/schemas/notification.group.schema";
 import { EmitterService } from "src/contexts/module_shared/event-emmiter/emmiter";
 import { UserPersonModel } from "../../user/infrastructure/schemas/userPerson.schema";
-import { MagazineModel } from "src/contexts/module_magazine/magazine/infrastructure/schemas/magazine.schema";
 import { UserRelationModel } from "../../user/infrastructure/schemas/user.relation.schema";
 import { UserModel } from "../../user/infrastructure/schemas/user.schema";
 import { UserBusinessModel } from "../../user/infrastructure/schemas/userBussiness.schema";
-import { UserMagazine } from "src/contexts/module_magazine/magazine/domain/entity/user.magazine";
 import { UserMagazineModel } from "src/contexts/module_magazine/magazine/infrastructure/schemas/magazine.user.schema";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 
 
 
 const downgradePlan_module = async (): Promise<TestingModule> => {
     dotenv.config({ path: '.env.test' });
-    const uri = process.env.DATABASE_URI;
+
 
     return Test.createTestingModule({
         imports: [
-
+            ConfigModule.forRoot({
+                envFilePath: '.env.test',
+                isGlobal: true,
+            }),
             MongooseModule.forRootAsync({
-
-                useFactory: async () => {
-                    return {
-                        uri: uri,
-                    };
-                },
+                useFactory: async (configService: ConfigService) => ({
+                    uri: configService.get<string>('DATABASE_URI_TEST'),
+                }),
+                inject: [ConfigService],
             }),
             MongooseModule.forFeature([
                 {

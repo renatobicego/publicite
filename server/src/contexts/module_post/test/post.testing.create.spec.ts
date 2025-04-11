@@ -200,7 +200,7 @@ describe('Post Service Testing - Create post ', () => {
             const postCreated = await postGoodModel.findOne({ title: postGoodRequest.title });
             expect(postCreated).toBeDefined();
             expect(postCreated?.title).toBe(postGoodRequest.title);
-            expect(postCreated?.author).toBe(postGoodRequest.author);
+            expect(postCreated?.author.toString()).toEqual(postGoodRequest.author.toString());
             expect(postCreated?.postType).toBe(postGoodRequest.postType);
             expect(postCreated?.description).toBe(postGoodRequest.description);
             expect(postCreated?.visibility.post).toBe(postGoodRequest.visibility.post);
@@ -258,7 +258,7 @@ describe('Post Service Testing - Create post ', () => {
             const postCreated = await postPetitionModel.findOne({ title: postPetitionRequest.title });
             expect(postCreated).toBeDefined();
             expect(postCreated?.title).toBe(postPetitionRequest.title);
-            expect(postCreated?.author).toBe(postPetitionRequest.author);
+            expect(postCreated?.author.toString()).toEqual(postPetitionRequest.author.toString());
             expect(postCreated?.petitionType).toBe(postPetitionRequest.petitionType);
             expect(postCreated?.toPrice).toBe(postPetitionRequest.toPrice);
             expect(postCreated?.endDate).toEqual(postPetitionRequest.endDate);
@@ -301,7 +301,7 @@ describe('Post Service Testing - Create post ', () => {
             const postCreated = await postServiceModel.findOne({ title: postServiceRequest.title });
             expect(postCreated).toBeDefined();
             expect(postCreated?.title).toBe(postServiceRequest.title);
-            expect(postCreated?.author).toBe(postServiceRequest.author);
+            expect(postCreated?.author.toString()).toEqual(postServiceRequest.author.toString());
             expect(postCreated?.frequencyPrice).toBe(postServiceRequest.frequencyPrice);
             expect(postCreated?.endDate).toEqual(postServiceRequest.endDate);
             console.log("Verify if post was associated to user");

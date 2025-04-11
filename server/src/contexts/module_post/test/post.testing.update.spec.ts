@@ -265,7 +265,7 @@ describe('Post Service Testing - Update post  ', () => {
                     imagesUrls: ["asd.com"],
                     isActive: true,
                     postBehaviourType: "libre",
-                    author: userId.toString()
+                    author: userId
                 });
                 postArray.push(post._id);
             }
