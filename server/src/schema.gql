@@ -287,10 +287,10 @@ type user_user_relation {
 
 type user_relation {
   _id: ID!
-  userA: user_user_relation!
-  userB: user_user_relation!
-  typeRelationA: String!
-  typeRelationB: String!
+  userA: user_user_relation
+  userB: user_user_relation
+  typeRelationA: String
+  typeRelationB: String
 }
 
 type isAcceptRequestFriend {
