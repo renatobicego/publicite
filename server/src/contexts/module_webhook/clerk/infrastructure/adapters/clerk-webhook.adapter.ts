@@ -85,7 +85,7 @@ export class ClerkWebhookAdapter {
       const mongoId = userData?.mongoID?._id;
       if (!mongoId) {
         throw new Error('Error while deleting account: MongoDB ID not found');
-      }
+      } 
 
       await fetch(`${config.groupService}/${mongoId}`, fetchOptions)
 
