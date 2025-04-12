@@ -219,17 +219,18 @@ export class UserService implements UserServiceInterface {
         conditionOfVisibility,
       );
 
-      // agregamos logica de isFriendRequestPending
+      
+      user.isFriendRequestPending = false;
+      user.isAcceptRequestFriend = {
+        value: false,
+        notification_id: '',
+        type: '',
+        toRelationShipChange: '',
+        userRelationId: '',
+        newRelation: '',
+      };
+
       if (user && userRequestId) {
-        user.isFriendRequestPending = false;
-        user.isAcceptRequestFriend = {
-          value: false,
-          notification_id: '',
-          type: '',
-          toRelationShipChange: '',
-          userRelationId: '',
-          newRelation: '',
-        };
         if (user.friendRequests && user.friendRequests.length > 0) {
           user.friendRequests.map((friend_Request: any) => {
             if (friend_Request.backData.userIdFrom == userRequestId) {
