@@ -23,7 +23,7 @@ export class UserFactory implements UserFactoryInterface {
 
   createUser(userType: UserType, userRequest: any): User {
     const subscriptionFree = [
-      '67ad4c4bdb9283528cea83b9' as unknown as ObjectId,
+      '66c49508e80296e90ec637d6' as unknown as ObjectId,
     ];
     const activeRelations = [] as unknown as ObjectId[];
     const userBase = new User(
