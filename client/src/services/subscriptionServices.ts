@@ -102,8 +102,7 @@ export const getSubscriptionsPlans = async (): Promise<SubscriptionPlan[]> => {
     );
   }
   const data = await res.json();
-  // return data;
-  return [];
+  return data;
 };
 
 export const getSubscriptionsOfUser = async (
