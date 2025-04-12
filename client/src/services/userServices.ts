@@ -202,7 +202,7 @@ export const getUserById = async (
 ): Promise<
   | (GetUser & {
       isFriendRequestPending: boolean;
-      isAcceptRequestFriend: {
+      isAcceptRequestFriend?: {
         notification_id: string;
         type:
           | "notification_user_new_friend_request"
@@ -217,7 +217,6 @@ export const getUserById = async (
 > => {
   try {
     const tokenCache = await getAuthToken();
-    console.log(tokenCache);
     const { context } = await getApiContext(false, tokenCache);
     const { data } = await query({
       query: getUserByIdQuery,

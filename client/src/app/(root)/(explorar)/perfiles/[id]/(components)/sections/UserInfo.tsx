@@ -33,7 +33,7 @@ const UserInfo = ({
 }: {
   user: GetUser & {
     isFriendRequestPending: boolean;
-    isAcceptRequestFriend: {
+    isAcceptRequestFriend?: {
       notification_id: string;
       type:
         | "notification_user_new_friend_request"
@@ -55,7 +55,7 @@ const UserInfo = ({
     switch (true) {
       case isMyProfile:
         return <ContactPetitionsList userId={user._id} />;
-      case user.isAcceptRequestFriend.value:
+      case user.isAcceptRequestFriend?.value:
         return (
           <AcceptRequestFriend
             isAcceptRequestFriend={user.isAcceptRequestFriend}
