@@ -18,6 +18,14 @@ export async function getAuthToken(template = "testing"): Promise<string> {
     return "";
   }
 
+  // Get a new token
+  const token = await authData.getToken({ template });
+   
+  if (!token) {
+    return "";
+  }
+  return token
+
   const currentTime = Date.now();
 
   // Check if we have a cached token that's still valid (with buffer time)
@@ -27,12 +35,9 @@ export async function getAuthToken(template = "testing"): Promise<string> {
 
   console.log("llamando token");
 
-  // Get a new token
-  const token = await authData.getToken({ template });
+  
 
-  if (!token) {
-    return "";
-  }
+ 
 
   // Parse the JWT to get the expiration time
   // JWT tokens have three parts separated by dots
