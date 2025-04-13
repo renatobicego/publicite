@@ -71,7 +71,12 @@ const SubscriptionGrid = ({
                 filteredSubscriptions.find(
                   (plan) => plan.isFree
                 ) as SubscriptionPlan,
-                ...filteredSubscriptions.filter((plan) => !plan.isFree),
+                filteredSubscriptions.find(
+                  (plan) => plan.reason === "Publicité Premium"
+                ) as SubscriptionPlan,
+                ...filteredSubscriptions.filter(
+                  (plan) => !plan.isFree || plan.reason !== "Publicité Premium"
+                ),
               ].map((plan) => {
                 if (!plan) return null;
                 const isUserSubscribed = checkIfUserIsSubscribed(
