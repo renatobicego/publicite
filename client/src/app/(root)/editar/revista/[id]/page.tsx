@@ -61,7 +61,7 @@ export default async function EditMagazinePage(props: {
       href: "/",
     },
     {
-      label: isOwnerTypeUser ? "Perfiles" : "Grupos",
+      label: isOwnerTypeUser ? "Carteles de Usuario" : "Grupos",
       href: isOwnerTypeUser ? PROFILE : GROUPS,
     },
     {

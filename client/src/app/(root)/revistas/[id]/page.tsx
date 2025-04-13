@@ -51,7 +51,7 @@ export default async function MagazinePage(props: { params: { id: string } }) {
       href: "/",
     },
     {
-      label: isOwnerTypeUser ? "Perfiles" : "Grupos",
+      label: isOwnerTypeUser ? "Carteles de Usuario" : "Grupos",
       href: isOwnerTypeUser ? PROFILE : GROUPS,
     },
     {

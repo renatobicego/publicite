@@ -79,7 +79,7 @@ const ElementShared = ({
         });
       case "user":
         options.push({
-          label: "Ver Perfil",
+          label: "Ver Cartel de Usuario",
           as: Link,
           color: "default",
           onClick: () => setIsOpen(false),

@@ -11,7 +11,7 @@ const MemoizedPersonalData = memo(PersonalData);
 const MemoizedDescription = memo(Description);
 const MemoizedSocialMedia = memo(SocialMedia);
 
-const Profile = ({username} : {username: string}) => {
+const Profile = ({ username }: { username: string }) => {
   const [userData, setUserData] = useState<EditPersonProfileProps>();
 
   const getUserData = async () => {
@@ -33,12 +33,15 @@ const Profile = ({username} : {username: string}) => {
   if (!userData) return <Spinner color="warning" />;
   return (
     <section className="flex flex-col gap-4 w-full">
-      <h2 className="profile-title">Datos de Perfil</h2>
+      <h2 className="profile-title">Datos de Cartel</h2>
 
       <Divider />
       <MemoizedPersonalData data={userData} />
       <Divider />
-      <MemoizedDescription description={userData.description} isBusiness={false} />
+      <MemoizedDescription
+        description={userData.description}
+        isBusiness={false}
+      />
       <Divider />
       <MemoizedSocialMedia contact={userData.contact} />
     </section>
