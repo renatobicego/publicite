@@ -33,7 +33,6 @@ import {
   UserMagazineModel,
 } from 'src/contexts/module_magazine/magazine/infrastructure/schemas/magazine.user.schema';
 
-
 @Injectable()
 export class UserRepository implements UserRepositoryInterface {
   constructor(
@@ -100,7 +99,10 @@ export class UserRepository implements UserRepositoryInterface {
           { path: 'board' },
           { path: 'groups' },
           { path: 'contact' },
-          { path: 'friendRequests' },
+          {
+            path: 'friendRequests',
+            match: { user: _id },
+          },
           {
             path: 'userRelations',
             populate: [
