@@ -54,7 +54,7 @@
     "firebase-functions": "^6.1.1",
     "graphql": "^16.9.0",
     "lodash": "^4.17.21",
-    "mongoose": "^8.5.2",
+    "mongoose": "^8.13.2",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
     "svix": "^1.29.0"
