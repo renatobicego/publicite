@@ -501,7 +501,7 @@ type PostContactSeller {
   description: String!
   postType: String!
   price: String!
-  imagesUrls: [String!]!
+  imagesUrls: [String!]
   petitionType: String
   toPrice: String
   frequencyPrice: String
