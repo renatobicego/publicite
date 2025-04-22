@@ -28,7 +28,7 @@ const UsersLogic = () => {
 
   return (
     <section className="w-full flex-col flex gap-4">
-      <h2>carteles de Usuario</h2>
+      <h2>Carteles de Usuario</h2>
       <div className="flex gap-2 items-center max-md:flex-wrap justify-end">
         <SearchPosts searchTerms={searchTerm} setSearchTerms={setSearchTerm} />
         {/* <FilterUsers setFilter={setFilter} /> */}

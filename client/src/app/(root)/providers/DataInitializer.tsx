@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { fetchMagazines } from "./slices/magazineSlice";
 import { fetchConfigData } from "./slices/configSlice";
