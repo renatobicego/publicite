@@ -68,6 +68,7 @@ const GroupInfo = async ({
             group={group.group}
             membersIds={(members as User[]).map((member) => member._id)}
             isCreator={isCreator}
+            isMember={isMember}
             image={profilePhotoUrl}
             admins={admins as User[]}
           />
