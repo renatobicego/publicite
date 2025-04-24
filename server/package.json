@@ -15,7 +15,7 @@
     "shell": "npm run build && firebase functions:shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
-    "dev": "nodemon --exec ts-node -r tsconfig-paths/register src/index-test.ts",
+    "dev": "cross-env NODE_ENV=qa nodemon --exec ts-node -r tsconfig-paths/register src/index-test.ts",
     "dep": "set DEBUG=nest:dependencies && npm run start:dev",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
@@ -28,7 +28,7 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "cross-env NODE_ENV=test ENV_PATH=.env.test jest --config ./test/jest-e2e.json"
+    "test:e2e": "cross-env NODE_ENV=qa ENV_PATH=.env.qa jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
     "@apollo/server": "^4.11.0",
@@ -54,7 +54,7 @@
     "firebase-functions": "^6.3.2",
     "graphql": "^16.9.0",
     "lodash": "^4.17.21",
-    "mongoose": "^8.5.2",
+    "mongoose": "^8.13.2",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
     "svix": "^1.29.0"
@@ -71,7 +71,6 @@
     "@types/supertest": "^6.0.0",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
-    "cross-env": "^7.0.3",
     "eslint": "^8.42.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",

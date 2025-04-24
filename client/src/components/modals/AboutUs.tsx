@@ -48,7 +48,6 @@ const AboutUs = () => {
             <p>
               <strong>Desarrollo:</strong>{" "}
               <Link href="https://dutsiland.com/">Dutsiland.</Link> <br />
-              <strong>Testing:</strong> Gabriel Gesta.
             </p>
 
             <p>

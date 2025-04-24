@@ -25,7 +25,7 @@ import { PostAdapter } from "../post/infraestructure/adapter/post.adapter";
 import PostReviewModel from "../PostReview/infrastructure/schemas/review.schema";
 
 const post_testing_module = async (): Promise<TestingModule> => {
-    dotenv.config({ path: '.env.test' });
+    dotenv.config({ path: '.env.qa' });
 
 
     return Test.createTestingModule({
@@ -41,7 +41,7 @@ const post_testing_module = async (): Promise<TestingModule> => {
             }),
             MongooseModule.forRootAsync({
                 useFactory: async (configService: ConfigService) => ({
-                    uri: configService.get<string>('DATABASE_URI_TEST'),
+                    uri: configService.get<string>('DATABASE_URI'),
                 }),
                 inject: [ConfigService],
             }),

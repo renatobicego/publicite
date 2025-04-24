@@ -47,7 +47,7 @@ const OnboardingPersonInputs = ({
         isInvalid={!!errors.birthDate}
         errorMessage={errors.birthDate}
         onChange={(value: CalendarDate) => {
-          if (!value) return
+          if (!value) return;
           if (value.compare(maxBirthdate) > 0) {
             setFieldError("birthDate", "Debe ser mayor de 18 años");
             return;
@@ -96,7 +96,7 @@ const OnboardingPersonInputs = ({
         name="description"
         label="Descripción (opcional)"
         aria-label="apellido"
-        placeholder="Ingrese una descripción para su perfil"
+        placeholder="Ingrese una descripción para su cartel de usuario"
       />
     </>
   );

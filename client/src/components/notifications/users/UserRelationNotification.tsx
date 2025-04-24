@@ -72,7 +72,7 @@ const UserRelationNotificationCard = ({
       });
     }
     optionsList.push({
-      label: "Ver Perfil",
+      label: "Ver Cartel de Usuario",
       as: Link,
       color: "default",
       onClick: () => setIsOpen(false),

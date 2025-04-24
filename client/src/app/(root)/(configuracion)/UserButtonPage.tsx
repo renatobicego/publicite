@@ -19,7 +19,7 @@ const UserButtonModal = () => {
       case "Person":
         return (
           <UserButton.UserProfilePage
-            label="Perfil"
+            label="Cartel"
             labelIcon={<BiSolidUserDetail className="size-4" />}
             url="perfil"
             key="Profile"
@@ -55,7 +55,7 @@ const UserButtonModal = () => {
     >
       <UserButton.MenuItems>
         <UserButton.Link
-          label="Mi Perfil"
+          label="Mi Cartel"
           labelIcon={<FaUser />}
           href={`${PROFILE}/${userIdLogged}`}
         />

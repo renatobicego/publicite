@@ -30,7 +30,7 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 
 
 const downgradePlan_module = async (): Promise<TestingModule> => {
-    dotenv.config({ path: '.env.test' });
+    dotenv.config({ path: '.env.qa' });
 
 
     return Test.createTestingModule({
@@ -41,7 +41,7 @@ const downgradePlan_module = async (): Promise<TestingModule> => {
             }),
             MongooseModule.forRootAsync({
                 useFactory: async (configService: ConfigService) => ({
-                    uri: configService.get<string>('DATABASE_URI_TEST'),
+                    uri: configService.get<string>('DATABASE_URI'),
                 }),
                 inject: [ConfigService],
             }),

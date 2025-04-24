@@ -10,11 +10,11 @@ import * as compression from 'compression';
 import { onRequest } from 'firebase-functions/v2/https';
 import { ValidationPipe } from '@nestjs/common';
 import * as dotenv from 'dotenv';
+import * as path from 'path';
 
 import { AppModule } from './app.module';
 import { defineInt } from 'firebase-functions/params';
 import { params } from 'firebase-functions/v2';
-
 
 const expressServer = express();
 expressServer.use(compression());
@@ -22,11 +22,26 @@ expressServer.use(compression());
 let nestApp: NestExpressApplication;
 
 const initializeNestApp = async (): Promise<void> => {
-  dotenv.config({ path: '.env' });
-  const PUBLICITE_CORS_VERCEL_URI = process.env.PUBLICITE_CORS_VERCEL_URI ?? "Verify PUBLICITE_CORS_VERCEL_URI";
-  const PUBLICITE_CORS_DOMAIN_URI = process.env.PUBLICITE_CORS_DOMAIN_URI ?? "Verify PUBLICITE_CORS_DOMAIN_URI";
-  const PUBLICITE_CORS_SOCKET_URI = process.env.PUBLICITE_CORS_SOCKET_URI ?? "Verify PUBLICITE_CORS_SOCKET_URI";
-  const PUBLICITE_CORS_GRAPHQL_URI = process.env.PUBLICITE_CORS_GRAPHQL_URI ?? "Verify PUBLICITE_CORS_GRAPHQL_URI";
+  const envPath = path.resolve(
+    __dirname,
+    process.env.NODE_ENV === 'qa' ? '.env.qa' : '.env',
+  );
+  dotenv.config({ path: envPath });
+  console.log('========================================');
+  console.log(`🔵 Cargando variables de entorno desde: ${envPath}`);
+  console.log(
+    `🔵 Entorno actual (NODE_ENV): ${process.env.NODE_ENV || 'production (default)'}`,
+  );
+  console.log('========================================');
+  const PUBLICITE_CORS_VERCEL_URI =
+    process.env.PUBLICITE_CORS_VERCEL_URI ?? 'Verify PUBLICITE_CORS_VERCEL_URI';
+  const PUBLICITE_CORS_DOMAIN_URI =
+    process.env.PUBLICITE_CORS_DOMAIN_URI ?? 'Verify PUBLICITE_CORS_DOMAIN_URI';
+  const PUBLICITE_CORS_SOCKET_URI =
+    process.env.PUBLICITE_CORS_SOCKET_URI ?? 'Verify PUBLICITE_CORS_SOCKET_URI';
+  const PUBLICITE_CORS_GRAPHQL_URI =
+    process.env.PUBLICITE_CORS_GRAPHQL_URI ??
+    'Verify PUBLICITE_CORS_GRAPHQL_URI';
   const PUBLICITE_CORS_ORIGIN = process.env.PUBLICITE_CORS_ORIGIN ?? undefined;
   if (!nestApp) {
     // Crear la aplicación HTTP
@@ -46,20 +61,22 @@ const initializeNestApp = async (): Promise<void> => {
           PUBLICITE_CORS_GRAPHQL_URI,
           PUBLICITE_CORS_ORIGIN,
         ];
-        const allowedPatterns = allowedOrigins.map((url) => new RegExp(`^${url?.replace(/\/$/, '')}(/.*)?$`));
+        const allowedPatterns = allowedOrigins.map(
+          (url) => new RegExp(`^${url?.replace(/\/$/, '')}(/.*)?$`),
+        );
 
         if (allowedPatterns.some((pattern) => pattern.test(origin))) {
           return callback(null, true);
         } else {
-          return callback(new Error(`CORS bloqueado: ${origin} no está permitido`));
+          return callback(
+            new Error(`CORS bloqueado: ${origin} no está permitido`),
+          );
         }
       },
       methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
       credentials: true,
       optionsSuccessStatus: 200,
     });
-
-
 
     // Crear el microservicio gRPC
     // const grpcApp = await NestFactory.createMicroservice(AppModule, {
@@ -75,21 +92,15 @@ const initializeNestApp = async (): Promise<void> => {
 
     await nestApp.init();
     console.log(`Server initialized`);
-
-
   }
 };
 
-const memory = defineInt("MEMORY", {
-  description: "How much memory do you need?",
-  input: params.select({ "micro": 256, "1GIB": 1024, "2GIB": 2048 }),
+const memory = defineInt('MEMORY', {
+  description: 'How much memory do you need?',
+  input: params.select({ micro: 256, '1GIB': 1024, '2GIB': 2048 }),
 });
 
-
-export const api = onRequest(
-  { memory: memory },
-  async (request, response) => {
-    await initializeNestApp();
-    expressServer(request, response);
-  }
-);
+export const api = onRequest({ memory: memory }, async (request, response) => {
+  await initializeNestApp();
+  expressServer(request, response);
+});

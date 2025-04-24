@@ -1,9 +1,6 @@
 import { Schema, model, Document } from 'mongoose';
 import { UserType } from '../../domain/entity/enum/user.enums';
 
-
-
-
 export interface UserPreferences {
   searchPreference: Schema.Types.ObjectId[];
   backgroundColor: number | undefined;
@@ -17,6 +14,7 @@ interface IUser extends Document {
   profilePhotoUrl: string;
   countryRegion: string;
   isActive: boolean;
+  dni: string;
   contact: Schema.Types.ObjectId;
   createdTime: string;
   subscriptions: Schema.Types.ObjectId[];
@@ -45,6 +43,7 @@ const UserSchema = new Schema<IUser>(
     profilePhotoUrl: { type: String },
     countryRegion: { type: String },
     isActive: { type: Boolean, default: true },
+    dni: { type: String, required: true },
     contact: { type: Schema.Types.ObjectId, ref: 'Contact' },
     createdTime: { type: String, default: '' },
     subscriptions: [{ type: Schema.Types.ObjectId, ref: 'Subscription' }],

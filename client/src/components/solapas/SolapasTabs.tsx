@@ -124,7 +124,7 @@ const SolapasTabs = () => {
     },
     {
       key: PROFILE,
-      title: "Perfiles",
+      title: "Carteles de Usuario",
       component: <UsersLogic />,
       requiresLogin: true,
     },

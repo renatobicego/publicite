@@ -186,9 +186,9 @@ const GlosaryModal = () => {
               como tu usuario-contacto, con relación establecida, configure la
               visibilidad del anuncio, lo encontraras en esta solapa. Ya sabes,
               debes activar los contactos que quieras visualizar. Además, tienes
-              las solapas de Pizarra, Perfiles y Grupos, en las cuales, hay:
-              pizarras configuradas según visibilidad permitida, perfiles de
-              todos los usuarios y grupos creados por los usuarios.
+              las solapas de Pizarra, Carteles de Usuario y Grupos, en las
+              cuales, hay: pizarras configuradas según visibilidad permitida,
+              perfiles de todos los usuarios y grupos creados por los usuarios.
             </p>
 
             <p>

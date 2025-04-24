@@ -69,7 +69,7 @@ const PostListLogic = ({ postType }: { postType: PostsDataTypes }) => {
               className="text-primary"
               href={`${PROFILE}/${userIdLogged}/contactos`}
             >
-              perfil
+              cartel
             </Link>
           </p>
         </>

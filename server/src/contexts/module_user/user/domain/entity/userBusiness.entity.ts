@@ -22,6 +22,7 @@ export class UserBusiness extends User {
       user.getProfilePhotoUrl,
       user.getCountryRegion,
       user.getIsActive,
+      user.getDni,
       user.getName,
       user.getLastName,
       user.getUserType ?? UserType.Business,

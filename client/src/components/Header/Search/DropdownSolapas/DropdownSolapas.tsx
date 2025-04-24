@@ -24,7 +24,7 @@ const DropdownSolapas = ({
     // puntuados: "Mejor Puntuados",
     // vencer: "Próximos a Vencer",
     pizarras: "Pizarras",
-    perfiles: "Perfiles",
+    perfiles: "Carteles de Usuario",
     grupos: "Grupos",
   };
 

@@ -28,6 +28,7 @@ const OptionsDropdown = ({
   isCreator,
   image,
   membersIds,
+  isMember,
   admins,
 }: {
   group: Group;
@@ -35,6 +36,7 @@ const OptionsDropdown = ({
   image?: string;
   membersIds: string[];
   admins: User[];
+  isMember: boolean;
 }) => {
   const deleteGroupRef = useRef<() => void>(() => {});
   const exitGroupRef = useRef<() => void>(() => {});
@@ -124,7 +126,7 @@ const OptionsDropdown = ({
             key="salir"
             onPress={exitGroupClick}
             className={`rounded-full px-4 ${
-              isCreator && isEmptyGroup ? "hidden" : ""
+              (isCreator && isEmptyGroup) || !isMember ? "hidden" : ""
             }`}
           >
             Salir del Grupo

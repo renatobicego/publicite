@@ -39,7 +39,9 @@ const PostsLimitReached = ({
       >
         Volver
       </Button>
-      <h4 className="text-center">¡Ups! Has alcanzado el límite de publicaciones activas.</h4>
+      <h4 className="text-center">
+        ¡Ups! Has alcanzado el límite de publicaciones activas.
+      </h4>
       <h5 className="text-center">
         {numberOfPosts} / {limit} publicaciones de comportamiento{" "}
         <em>{postBehaviourTypeLabel[postBehaviourType]}</em> activas
@@ -57,7 +59,8 @@ const PostsLimitReached = ({
         </SecondaryButton>
       </div>
       <p className="text-xs text-center">
-        También puedes modificar tus publicaciones activas en tu perfil.
+        También puedes modificar tus publicaciones activas en tu cartel de
+        usuario.
       </p>
     </section>
   );

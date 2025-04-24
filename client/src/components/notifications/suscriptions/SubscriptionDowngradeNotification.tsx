@@ -36,7 +36,7 @@ const SubscriptionDowngradeNotification = ({
             href={`${PROFILE}/${userIdLogged}/contactos`}
           >
             {" "}
-            Perfil - Contactos - Activos
+            Cartel de Usuario - Contactos - Activos
           </Link>
         );
       case "notification_downgrade_plan_post":
@@ -46,7 +46,7 @@ const SubscriptionDowngradeNotification = ({
             onClick={() => setIsOpen(false)}
             href={`${PROFILE}/${userIdLogged}`}
           >
-            Perfil - Anuncios - Inactivos
+            Cartel de Usuario - Anuncios - Inactivos
           </Link>
         );
       default:

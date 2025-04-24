@@ -49,7 +49,7 @@ import {
 } from '../../application/adapter/dto/HTTP-RESPONSE/user.response.dto';
 import { UserType } from '../../domain/entity/enum/user.enums';
 import { AuthSocket } from 'src/contexts/module_socket/infrastructure/auth/socket.auth';
-
+import { ConfigService } from '@nestjs/config';
 
 @ApiTags('Accounts')
 @Controller('user')
@@ -57,8 +57,8 @@ export class UserController {
   constructor(
     @Inject('UserAdapterInterface')
     private readonly userAdapter: UserAdapterInterface,
-
-  ) { }
+    private readonly configService: ConfigService,
+  ) {}
 
   ///------------CONTROLLERS CREATE ACCOUNT-------------------
   @Post('/personal')
@@ -277,8 +277,6 @@ export class UserController {
     }
   }
 
-
-
   @Delete(':id')
   @UseGuards(AuthSocket)
   async deleteAccount(@Param('id') id: string): Promise<any> {
@@ -290,8 +288,20 @@ export class UserController {
     }
   }
 
-
-
+  @Get('enviroment')
+  async test_env(): Promise<any> {
+    try {
+      const enviroment = this.configService.get<string>('ENVIROMENT');
+      const nodeEnv = process.env.NODE_ENV;
+      return { 
+        message: enviroment,
+        nodeEnv,
+        configEnv: this.configService.get<string>('NODE_ENV')
+      };
+    } catch (error: any) {
+      throw error;
+    }
+  }
 
   // @Get("/test")
   // async test(
@@ -311,5 +321,4 @@ export class UserController {
   //     throw error;
   //   }
   // }
-
 }

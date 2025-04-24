@@ -4,7 +4,7 @@ import { Skeleton } from "@nextui-org/react";
 export default function Loading() {
   const breadcrumbsItems = [
     { label: "Inicio", href: "/" },
-    { label: "Perfiles", href: "/profile" },
+    { label: "Carteles de Usuario", href: "/profile" },
     { label: "Cargando...", href: "#" },
   ];
 

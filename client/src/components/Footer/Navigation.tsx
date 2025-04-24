@@ -1,5 +1,11 @@
 "use client";
-import { GROUPS, MAGAZINES, PROFILE } from "@/utils/data/urls";
+import {
+  GROUPS,
+  MAGAZINES,
+  PACKS,
+  PROFILE,
+  SUBSCRIPTIONS,
+} from "@/utils/data/urls";
 import { Link } from "@nextui-org/react";
 import React from "react";
 
@@ -16,7 +22,7 @@ const Navigation = ({ id }: { id?: string | null }) => {
         <>
           <li>
             <Link size="sm" className="text-white" href={`${PROFILE}/${id}`}>
-              Mi Perfil
+              Mi Cartel
             </Link>
           </li>
           <li>
@@ -35,6 +41,16 @@ const Navigation = ({ id }: { id?: string | null }) => {
               href={`${PROFILE}/${id}/${GROUPS}`}
             >
               Mis Grupos
+            </Link>
+          </li>
+          <li>
+            <Link size="sm" className="text-white" href={`${SUBSCRIPTIONS}`}>
+              Suscribete
+            </Link>
+          </li>
+          <li>
+            <Link size="sm" className="text-white" href={`${PACKS}`}>
+              Packs de Publicaciones
             </Link>
           </li>
         </>

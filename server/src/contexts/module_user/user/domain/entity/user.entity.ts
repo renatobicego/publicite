@@ -17,6 +17,7 @@ export class User {
   private name: string;
   private lastName: string;
   private isActive: boolean;
+  private dni: string;
   private contact?: ObjectId | undefined;
   private createdTime?: string;
   private subscriptions?: ObjectId[];
@@ -39,6 +40,7 @@ export class User {
     profilePhotoUrl: string,
     countryRegion: string,
     isActive: boolean,
+    dni: string,
     name: string,
     lastName: string,
     userType: UserType,
@@ -54,7 +56,7 @@ export class User {
     _id?: ObjectId,
     notifications?: any[],
     friendRequests?: any[],
-    activeRelations?:ObjectId[],
+    activeRelations?: ObjectId[],
   ) {
     this.clerkId = clerkId;
     this.email = email;
@@ -63,6 +65,7 @@ export class User {
     this.profilePhotoUrl = profilePhotoUrl;
     this.countryRegion = countryRegion;
     this.isActive = isActive;
+    this.dni = dni;
     this.name = name;
     this.lastName = lastName;
     this.userType = userType;
@@ -172,9 +175,12 @@ export class User {
   get getUserPreferences() {
     return this.userPreferences;
   }
-  
 
-  get getActiveRelations(){
-    return this.activeRelations; 
+  get getActiveRelations() {
+    return this.activeRelations;
+  }
+
+  get getDni() {
+    return this.dni;
   }
 }

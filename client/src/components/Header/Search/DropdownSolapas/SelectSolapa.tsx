@@ -50,7 +50,7 @@ const SelectSolapa = ({
     },
     {
       key: "perfiles",
-      label: "Perfiles",
+      label: "Carteles de Usuario",
       requiresLogin: true,
     },
     {

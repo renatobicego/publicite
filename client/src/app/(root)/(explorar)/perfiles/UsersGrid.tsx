@@ -41,7 +41,7 @@ const UsersGrid = ({
       </div>
       {!isLoading && (!items || items.length === 0) && (
         <p className="max-md:text-sm text-light-text">
-          No se encontraron perfiles para mostrar
+          No se encontraron usuarios para mostrar
         </p>
       )}
       {isLoading && <Spinner color="warning" />}

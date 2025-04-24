@@ -21,6 +21,11 @@ notepad.txt
 /coverage
 /.nyc_output
 
+# Deploy scripts
+deploy-prod.sh
+deploy-qa.sh
+
+
 # IDEs and editors
 /.idea
 .project

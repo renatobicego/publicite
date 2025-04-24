@@ -64,8 +64,8 @@ const UserSolapas = ({
   if (!isActiveRelation) {
     return (
       <p>
-        No puedes ver las publicaciones de este perfil porque no es una relación
-        activa. Para gestionar tus relaciones activas, ve a tu{" "}
+        No puedes ver las publicaciones de este cartel de usuario porque no es
+        una relación activa. Para gestionar tus relaciones activas, ve a tu{" "}
         <Link
           className="text-primary"
           href={`${PROFILE}/${userIdLogged}/contactos`}

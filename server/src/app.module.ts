@@ -28,11 +28,10 @@ import { EmmiterModule } from './contexts/module_shared/event-emmiter/emiter.mod
 
 @Module({
   imports: [
-    EventEmitterModule.forRoot(
-    ),
+    EventEmitterModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: process.env.NODE_ENV === 'test' ? '.env.test' : '.env',
+      envFilePath: process.env.NODE_ENV === 'qa' ? '.env.qa' : '.env',
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
@@ -67,4 +66,4 @@ import { EmmiterModule } from './contexts/module_shared/event-emmiter/emiter.mod
     NotificationSocketModule,
   ],
 })
-export class AppModule { }
+export class AppModule {}

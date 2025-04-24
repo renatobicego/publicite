@@ -25,7 +25,7 @@ import { UserMagazineModel } from "src/contexts/module_magazine/magazine/infrast
 import { ConfigModule, ConfigService } from "@nestjs/config";
 
 const clerk_update_module = async (): Promise<TestingModule> => {
-    dotenv.config({ path: '.env.test' });
+    dotenv.config({ path: '.env.qa' });
     return Test.createTestingModule({
         imports: [
             ContactModule,
@@ -35,7 +35,7 @@ const clerk_update_module = async (): Promise<TestingModule> => {
             }),
             MongooseModule.forRootAsync({
                 useFactory: async (configService: ConfigService) => ({
-                    uri: configService.get<string>('DATABASE_URI_TEST'),
+                    uri: configService.get<string>('DATABASE_URI'),
                 }),
                 inject: [ConfigService],
             }),
@@ -60,7 +60,7 @@ const clerk_update_module = async (): Promise<TestingModule> => {
 };
 
 const make_relation_module = async (): Promise<TestingModule> => {
-    dotenv.config({ path: '.env.test' });
+    dotenv.config({ path: '.env.qa' });
 
 
     return Test.createTestingModule({
@@ -72,7 +72,7 @@ const make_relation_module = async (): Promise<TestingModule> => {
             }),
             MongooseModule.forRootAsync({
                 useFactory: async (configService: ConfigService) => ({
-                    uri: configService.get<string>('DATABASE_URI_TEST'),
+                    uri: configService.get<string>('DATABASE_URI'),
                 }),
                 inject: [ConfigService],
             }),

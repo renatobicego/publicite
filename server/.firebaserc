@@ -1,7 +1,9 @@
 {
   "projects": {
     "publicite-test": "publicite-test-44880",
-    "default": "publicite-2bf22"
+    "default": "publicite-2bf22",
+    "publicite-QA": "publicite-qa",
+    "publicite-production": "publicite-2bf22"
   },
   "targets": {},
   "etags": {},

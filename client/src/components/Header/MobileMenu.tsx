@@ -31,7 +31,7 @@ const MobileMenu = ({
       isPrivate: true,
     },
     {
-      title: "Mi Perfil",
+      title: "Mi Cartel de Usuario",
       url: `${PROFILE}/${userIdLogged}`,
       isPrivate: true,
     },

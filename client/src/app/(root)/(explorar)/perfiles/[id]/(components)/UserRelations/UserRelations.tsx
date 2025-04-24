@@ -2,10 +2,10 @@ import { useConfigData } from "@/app/(root)/providers/userDataProvider";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import UserRelationsGrid from "@/components/grids/UserRelationsGrid";
 import ManageActiveUserRelationsModal from "@/components/modals/ManageActiveUserRelations/ManageActiveUserRelationsModal";
-import { User } from "@/types/userTypes";
+import type { User, UserRelations } from "@/types/userTypes";
 import { PROFILE } from "@/utils/data/urls";
 import { Link, Tab, Tabs, user } from "@nextui-org/react";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { FaPlus } from "react-icons/fa";
 
 type UserRelationsType = "all" | "active" | UserRelation;
@@ -44,21 +44,26 @@ const UserRelations = ({
     },
   ];
 
+  const getActiveRelations = useCallback(
+    (items: UserRelations[]) => {
+      const activeRelations = configData?.activeRelations ?? [];
+      // Create a Set of active relation IDs for faster lookups
+      const activeRelationIds = new Set(
+        activeRelations.map((relation) => relation._id)
+      );
+
+      // Filter items by checking if their IDs exist in the Set
+      return items.filter((relation) => activeRelationIds.has(relation._id));
+    },
+    [configData?.activeRelations]
+  );
   const filteredRelations = useMemo(() => {
     const items = [...user.userRelations];
     switch (solapaSelected) {
       case "all":
         return items;
       case "active":
-        const activeRelations = configData?.activeRelations ?? [];
-
-        // Create a Set of active relation IDs for faster lookups
-        const activeRelationIds = new Set(
-          activeRelations.map((relation) => relation._id)
-        );
-
-        // Filter items by checking if their IDs exist in the Set
-        return items.filter((relation) => activeRelationIds.has(relation._id));
+        return getActiveRelations(items);
       case "contacts":
         return items.filter((item) => item.typeRelationA === "contacts");
       case "friends":
@@ -68,7 +73,8 @@ const UserRelations = ({
       default:
         return items;
     }
-  }, [configData?.activeRelations, solapaSelected, user.userRelations]);
+  }, [getActiveRelations, solapaSelected, user.userRelations]);
+
   return (
     <>
       {isMyProfile && (
@@ -83,7 +89,7 @@ const UserRelations = ({
           </PrimaryButton>
           <ManageActiveUserRelationsModal
             relations={user.userRelations}
-            activeRelationsIds={filteredRelations.map(
+            activeRelationsIds={getActiveRelations(user.userRelations).map(
               (relation) => relation._id
             )}
             userId={user._id}

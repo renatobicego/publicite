@@ -92,7 +92,7 @@ export default function RootLayout({
   };
   return (
     <ClerkProvider localization={localization}>
-      <html lang="en">
+      <html lang="es">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

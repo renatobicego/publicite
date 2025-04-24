@@ -15,7 +15,7 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 
 
 const magazine_module_test = async (): Promise<TestingModule> => {
-    dotenv.config({ path: '.env.test' });
+    dotenv.config({ path: '.env.qa' });
 
 
     return Test.createTestingModule({
@@ -26,7 +26,7 @@ const magazine_module_test = async (): Promise<TestingModule> => {
             }),
             MongooseModule.forRootAsync({
                 useFactory: async (configService: ConfigService) => ({
-                    uri: configService.get<string>('DATABASE_URI_TEST'),
+                    uri: configService.get<string>('DATABASE_URI'),
                 }),
                 inject: [ConfigService],
             }),

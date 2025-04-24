@@ -5,6 +5,7 @@ import {
 } from "../../(configuracion)/Profile/actions";
 import { getActiveRelations } from "@/services/postsServices";
 import { ActiveUserRelation, UserRelations } from "@/types/userTypes";
+import { toastifyError } from "@/utils/functions/toastify";
 
 export interface ConfigState {
   configData?: ConfigData;
@@ -18,6 +19,52 @@ const initialState: ConfigState = {
   error: null,
 };
 
+// Helper function to implement retry logic
+const fetchWithRetry = async (
+  username: string,
+  userId: string,
+  maxRetries = 5
+): Promise<ConfigData | undefined> => {
+  let retries = 0;
+
+  while (retries < maxRetries) {
+    try {
+      // First API call
+      const configData = await getConfigData({ username, id: userId });
+
+      // Second API call
+      const userRelations = await getActiveRelations();
+
+      // Check for error in userRelations
+      if ("error" in userRelations && userRelations.error) {
+        throw new Error(userRelations.error);
+      }
+
+      // Combine the data
+      if (configData) {
+        configData.activeRelations = userRelations as ActiveUserRelation[];
+      }
+
+      return configData;
+    } catch (error) {
+      retries++;
+
+      // If we've reached max retries, throw the error to be handled by the thunk
+      if (retries >= maxRetries) {
+        throw error;
+      }
+
+      // Wait before retrying (exponential backoff)
+      await new Promise((resolve) =>
+        setTimeout(resolve, 1000 * Math.pow(2, retries - 1))
+      );
+    }
+  }
+
+  // This should never be reached due to the throw in the catch block
+  return;
+};
+
 export const fetchConfigData = createAsyncThunk(
   "config/fetchConfigData",
   async (
@@ -25,19 +72,25 @@ export const fetchConfigData = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const data = await getConfigData({ username, id: userId });
-      const userRelations = await getActiveRelations();
-      if ("error" in userRelations && userRelations.error) {
-        return rejectWithValue(userRelations.error);
+      // Use the retry function with 5 max attempts
+      const data = await fetchWithRetry(username, userId, 5);
+
+      if (!data) {
+        throw new Error(
+          "Error al obtener los datos de configuración. Por favor recarga la página."
+        );
       }
-      if (data) data.activeRelations = userRelations as ActiveUserRelation[];
+
       return data;
     } catch (error) {
+      // Only show error toast after all retries have failed
+      toastifyError(
+        "Error al obtener los datos de configuración. Por favor recarga la página."
+      );
       return rejectWithValue(error);
     }
   }
 );
-
 const configSlice = createSlice({
   name: "config",
   initialState,
