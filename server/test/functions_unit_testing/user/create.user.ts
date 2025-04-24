@@ -21,6 +21,7 @@ export class PersonalAccountTestRequest {
     posts?: Types.ObjectId[];
     groups?: Types.ObjectId[];
     attributes?: Map<string, string>
+    dni?: string
 
 }
 async function createPersonalUser(
@@ -45,7 +46,8 @@ async function createPersonalUser(
         notifications: personalAccountTestRequest.notifications ?? [],
         magazines: personalAccountTestRequest.magazines ?? [],
         posts: personalAccountTestRequest.posts ?? [],
-        groups: personalAccountTestRequest.groups ?? []
+        groups: personalAccountTestRequest.groups ?? [],
+        dni: personalAccountTestRequest.dni ?? "123"
     });
 
     return USER

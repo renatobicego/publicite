@@ -15,10 +15,6 @@ import PostModel, {
 } from 'src/contexts/module_post/post/infraestructure/schemas/post.schema';
 import { insertPostGood } from '../../../../../test/functions_unit_testing/post/create.post';
 import {
-  MagazineDocument,
-  MagazineModel,
-} from 'src/contexts/module_magazine/magazine/infrastructure/schemas/magazine.schema';
-import {
   MagazineSectionDocument,
   MagazineSectionModel,
 } from 'src/contexts/module_magazine/magazine/infrastructure/schemas/section/magazine.section.schema';

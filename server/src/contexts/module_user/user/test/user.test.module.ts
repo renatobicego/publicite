@@ -43,6 +43,8 @@ const clerk_update_module = async (): Promise<TestingModule> => {
                 { name: UserModel.modelName, schema: UserModel.schema },
                 { name: UserRelationModel.modelName, schema: UserRelationModel.schema },
                 { name: UserMagazineModel.modelName, schema: UserMagazineModel.schema },
+                { name: UserPersonModel.modelName, schema: UserPersonModel.schema },
+                { name: UserBusinessModel.modelName, schema: UserBusinessModel.schema },
 
             ]),
         ],
@@ -52,8 +54,6 @@ const clerk_update_module = async (): Promise<TestingModule> => {
             { provide: 'UserRepositoryInterface', useClass: UserRepository },
             { provide: EmitterService, useValue: {} },
             { provide: 'SectorRepositoryInterface', useValue: {} },
-            { provide: getModelToken(UserPersonModel.modelName), useValue: {} },
-            { provide: getModelToken(UserBusinessModel.modelName), useValue: {} },
 
         ],
     }).compile();

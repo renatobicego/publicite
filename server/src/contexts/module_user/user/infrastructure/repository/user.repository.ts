@@ -588,14 +588,14 @@ export class UserRepository implements UserRepositoryInterface {
   ): Promise<any> {
     try {
       switch (type) {
-        case UserType.Person: // Personal User
+        case UserType.Person:
           this.logger.log('Search user(Personal) for update');
           return await this.userPersonModel.updateOne(
             { username: username },
             reqUser,
           );
 
-        case UserType.Business: // Business User
+        case UserType.Business:
           const cast = reqUser as UserBusinessUpdateDto;
           if (cast.sector) {
             this.logger.log(

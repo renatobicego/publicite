@@ -49,7 +49,6 @@ import {
 } from '../../application/adapter/dto/HTTP-RESPONSE/user.response.dto';
 import { UserType } from '../../domain/entity/enum/user.enums';
 import { AuthSocket } from 'src/contexts/module_socket/infrastructure/auth/socket.auth';
-import { ConfigService } from '@nestjs/config';
 
 @ApiTags('Accounts')
 @Controller('user')
@@ -57,22 +56,10 @@ export class UserController {
   constructor(
     @Inject('UserAdapterInterface')
     private readonly userAdapter: UserAdapterInterface,
-    private readonly configService: ConfigService,
   ) {}
 
   ///------------CONTROLLERS CREATE ACCOUNT-------------------
   @Post('/personal')
-  @ApiOperation({ summary: 'Create a new personal account' })
-  @ApiResponse({
-    status: 201,
-    description: 'The account has been successfully created.',
-    type: [UserPersonResponseDto_SWAGGER],
-  })
-  @ApiResponse({
-    status: 500,
-    description: 'Internal server error.',
-  })
-  @ApiBody({ type: UserPersonRequestDto_SWAGGER })
   async createPersonalAccount(
     @Body() requesNewtUser: UserPersonRequest,
   ): Promise<string> {
@@ -84,17 +71,6 @@ export class UserController {
   }
 
   @Post('/business')
-  @ApiOperation({ summary: 'Create a new business account' })
-  @ApiResponse({
-    status: 201,
-    description: 'The account has been successfully created.',
-    type: [UserBusinessResponseDto_SWAGGER],
-  })
-  @ApiResponse({
-    status: 500,
-    description: 'Internal server error.',
-  })
-  @ApiBody({ type: UserBusinessRequestDto_SWAGGER })
   async createBusinessAccount(
     @Body() requestNewUser: UserBusinessRequest,
   ): Promise<string> {
@@ -108,17 +84,6 @@ export class UserController {
   ///------------CONTROLLERS UPDATE ACCOUNT-------------------
 
   @Put('/personal/:username')
-  @ApiOperation({ summary: 'Update a new personal account' })
-  @ApiResponse({
-    status: 200,
-    description: 'The account has been successfully Updated.',
-    //type: [UserPersonResponseDto_SWAGGER],
-  })
-  @ApiResponse({
-    status: 500,
-    description: 'Internal server error.',
-  })
-  @ApiBody({ type: PersonalUpdateRequest_SWAGGER })
   @UseGuards(ClerkAuthGuard)
   async updatePersonalAccount(
     @Body() updateRequest: personalAccountUpdateRequest,
@@ -136,16 +101,6 @@ export class UserController {
   }
 
   @Put('/business/:username')
-  @ApiOperation({ summary: 'Update a new business account' })
-  @ApiResponse({
-    status: 200,
-    description: 'The account has been successfully Updated.',
-  })
-  @ApiResponse({
-    status: 500,
-    description: 'Internal server error.',
-  })
-  @ApiBody({ type: BusinessUpdateRequest_SWAGGER })
   @UseGuards(ClerkAuthGuard)
   async updateBusinessAccount(
     @Body() updateRequest: businessAccountUpdateRequest,
@@ -165,19 +120,6 @@ export class UserController {
   ///------------CONTROLLERS GET  ACCOUNT-------------------
 
   @Get('/personal-data/:username')
-  @ApiOperation({ summary: 'Get profile information of particular account' })
-  @ApiResponse({
-    status: 200,
-    description: "Data it's correct.",
-  })
-  @ApiResponse({
-    status: 500,
-    description: 'Internal server error.',
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'User not found.',
-  })
   @UseGuards(ClerkAuthGuard)
   async getPersonalInformation(
     @Param('username') username: string,
@@ -190,19 +132,6 @@ export class UserController {
   }
 
   @Get('/preferences/:username')
-  @ApiOperation({ summary: 'Get profile preferences of particular account' })
-  @ApiResponse({
-    status: 200,
-    description: "Data it's correct.",
-  })
-  @ApiResponse({
-    status: 500,
-    description: 'Internal server error.',
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'User not found.',
-  })
   @UseGuards(ClerkAuthGuard)
   async getUserPreferences(
     @Param('username') username: string,
@@ -215,17 +144,6 @@ export class UserController {
   }
 
   @Put('/user-preferences/:username')
-  @ApiOperation({ summary: 'Update a new business account' })
-  @ApiResponse({
-    status: 200,
-    description: 'The account has been successfully Updated.',
-    type: [UserPreferencesDto_SWAGGER],
-  })
-  @ApiResponse({
-    status: 500,
-    description: 'Internal server error.',
-  })
-  @ApiBody({ type: UserPreferencesDto_SWAGGER })
   @UseGuards(ClerkAuthGuard)
   async updateUserPreferences(
     @Body() userPreference: UserPreferencesRequest,
@@ -242,28 +160,6 @@ export class UserController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all users by username, lastName or Name' })
-  @ApiResponse({
-    status: 200,
-    description: "Data it's correct.",
-    type: [UserFindAllResponseDto_SWAGGER],
-  })
-  @ApiResponse({
-    status: 500,
-    description: 'Internal server error.',
-  })
-  @ApiQuery({
-    name: 'user',
-    required: true,
-    type: String,
-    description: 'Name, lastName or username of the user',
-  })
-  @ApiQuery({
-    name: 'limit',
-    required: true,
-    type: Number,
-    description: 'Number of users to return',
-  })
   async getAllUsers(
     @Query('user') user: string,
     @Query('limit') limit: number,
@@ -288,20 +184,6 @@ export class UserController {
     }
   }
 
-  @Get('enviroment')
-  async test_env(): Promise<any> {
-    try {
-      const enviroment = this.configService.get<string>('ENVIROMENT');
-      const nodeEnv = process.env.NODE_ENV;
-      return { 
-        message: enviroment,
-        nodeEnv,
-        configEnv: this.configService.get<string>('NODE_ENV')
-      };
-    } catch (error: any) {
-      throw error;
-    }
-  }
 
   // @Get("/test")
   // async test(
