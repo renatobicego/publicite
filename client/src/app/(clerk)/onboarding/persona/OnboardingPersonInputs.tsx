@@ -58,6 +58,18 @@ const OnboardingPersonInputs = ({
       />
       <Field
         as={CustomInput}
+        name="dni"
+        label="DNI"
+        aria-label="dni"
+        isRequired
+        isInvalid={!!errors.dni}
+        type="text"
+        errorMessage={errors.dni}
+        placeholder="Ingrese su DNI sin puntos ni espacios"
+        description="Utilizaremos su DNI para realizar la facturación en caso de suscribirse."
+      />
+      <Field
+        as={CustomInput}
         name="contact.phone"
         label="Teléfono"
         aria-label="telefono"

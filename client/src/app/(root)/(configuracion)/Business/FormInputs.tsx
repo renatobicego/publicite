@@ -1,8 +1,5 @@
 import { Field, FormikErrors } from "formik";
-import {
-  CustomInput,
-  CustomSelect,
-} from "@/components/inputs/CustomInputs";
+import { CustomInput, CustomSelect } from "@/components/inputs/CustomInputs";
 import PlaceAutocomplete from "@/components/inputs/PlaceAutocomplete";
 import { BusinessSector, EditBusinessProfileProps } from "@/types/userTypes";
 import { useEffect, useState } from "react";
@@ -21,16 +18,16 @@ const FormInputs = ({
   errors,
   setFieldValue,
 }: PersonalDataFormInputsProps) => {
-  const [businessSectorItems, setBusinessSectorItems] = useState([])
+  const [businessSectorItems, setBusinessSectorItems] = useState([]);
 
   useEffect(() => {
-    const getItems = async() => {
-      const res = await getBusinessSector()
-      setBusinessSectorItems(res)
-    }
-    if(!businessSectorItems.length) getItems()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    const getItems = async () => {
+      const res = await getBusinessSector();
+      setBusinessSectorItems(res);
+    };
+    if (!businessSectorItems.length) getItems();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <>
       <Field
@@ -41,6 +38,15 @@ const FormInputs = ({
         aria-label="Ingrese el nombre"
         isInvalid={!!errors.businessName}
         errorMessage={errors.businessName}
+      />
+      <Field
+        as={CustomInput}
+        isRequired
+        name="dni"
+        label="CUIT/DNI"
+        aria-label="Ingrese el CUIT de la empresa o DNI del propietario"
+        isInvalid={!!errors.dni}
+        errorMessage={errors.dni}
       />
       <Field
         as={CustomSelect}

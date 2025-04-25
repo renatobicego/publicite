@@ -1,6 +1,7 @@
 import { Field, FormikErrors } from "formik";
 import {
   CustomDateInput,
+  CustomInput,
   CustomSelect,
 } from "@/components/inputs/CustomInputs";
 import PlaceAutocomplete from "@/components/inputs/PlaceAutocomplete";
@@ -21,7 +22,6 @@ const FormInputs = ({
   errors,
   setFieldValue,
 }: PersonalDataFormInputsProps) => {
-
   return (
     <>
       <Field
@@ -45,6 +45,15 @@ const FormInputs = ({
         onSelectionChange={(value: string) =>
           setFieldValue("countryRegion", value)
         }
+      />
+      <Field
+        as={CustomInput}
+        isRequired
+        name="dni"
+        label="CUIT/DNI"
+        aria-label="Ingrese el CUIT de la empresa o DNI del propietario"
+        isInvalid={!!errors.dni}
+        errorMessage={errors.dni}
       />
       <Field
         as={CustomSelect}

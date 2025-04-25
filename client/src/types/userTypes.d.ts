@@ -22,12 +22,13 @@ export interface User {
   name: string;
   lastName: string;
   userPreferences: UserPreferences;
+  dni: string;
 }
 
 export interface GetUser
   extends Omit<
     User,
-    "userPreferences" | "clerkId" | "createdTime" | "isActive"
+    "userPreferences" | "clerkId" | "createdTime" | "isActive" | "dni"
   > {}
 
 export interface UserPreferences {
@@ -115,7 +116,7 @@ export interface EditPersonProfileProps
   extends Partial<
     Pick<
       UserPersonFormValues,
-      "description" | "birthDate" | "gender" | "countryRegion"
+      "description" | "birthDate" | "gender" | "countryRegion" | "dni"
     >
   > {
   contact?: Contact;
@@ -125,7 +126,7 @@ export interface EditBusinessProfileProps
   extends Partial<
     Pick<
       UserBusinessFormValues,
-      "businessName" | "countryRegion" | "description" | "contact"
+      "businessName" | "countryRegion" | "description" | "contact" | "dni"
     >
   > {
   sector: BusinessSector | ObjectId;

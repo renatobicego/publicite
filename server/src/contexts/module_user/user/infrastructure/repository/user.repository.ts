@@ -779,6 +779,7 @@ export class UserRepository implements UserRepositoryInterface {
         userPreferences: reqUser.getUserPreferences,
         notifications: reqUser.getNotifications,
         friendRequests: reqUser.getFriendRequests,
+        dni: reqUser.getDni,
       };
 
       switch (reqUser.getUserType?.toLowerCase()) {

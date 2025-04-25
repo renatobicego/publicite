@@ -5,7 +5,7 @@ import { TbWorldPin } from "react-icons/tb";
 import BusinessDataForm from "./BusinessDataForm";
 import { BusinessSector, EditBusinessProfileProps } from "@/types/userTypes";
 
-const BusinessData = ({data} : {data?: EditBusinessProfileProps}) => {
+const BusinessData = ({ data }: { data?: EditBusinessProfileProps }) => {
   const [isFormVisible, setIsFormVisible] = useState(false);
 
   return (
@@ -25,6 +25,9 @@ const BusinessData = ({data} : {data?: EditBusinessProfileProps}) => {
           <DataBox className=" max-md:my-2.5" labelText="Nombre de la Empresa">
             <DataItem>{data?.businessName}</DataItem>
             <EditButton text="Editar" onPress={() => setIsFormVisible(true)} />
+          </DataBox>
+          <DataBox labelText="CUIT/DNI" className="-mt-2.5">
+            <DataItem>{data?.dni}</DataItem>
           </DataBox>
           <DataBox labelText="Rubro" className="-mt-2.5">
             <DataItem>{(data?.sector as BusinessSector).label}</DataItem>
