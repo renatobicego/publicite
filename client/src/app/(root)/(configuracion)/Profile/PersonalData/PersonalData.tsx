@@ -28,6 +28,9 @@ const PersonalData = ({ data }: { data?: EditPersonProfileProps }) => {
             <DataItem>{data && formatDate(data?.birthDate)}</DataItem>
             <EditButton text="Editar" onPress={() => setIsFormVisible(true)} />
           </DataBox>
+          <DataBox labelText="DNI" className="-mt-2.5">
+            <DataItem>{data?.dni}</DataItem>
+          </DataBox>
           <DataBox labelText="Género" className="-mt-2.5">
             <DataItem>{gender?.name}</DataItem>
           </DataBox>

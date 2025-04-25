@@ -11,9 +11,9 @@ import { completeOnboardingPerson } from "../_actions";
 import { toastifyError } from "@/utils/functions/toastify";
 import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
 import { useUser } from "@clerk/nextjs";
-const OnboardingPerson = ({user} : {user: any}) => {
+const OnboardingPerson = ({ user }: { user: any }) => {
   const router = useRouter();
-  const {user: clerkUser} = useUser();
+  const { user: clerkUser } = useUser();
   if (!user) return null;
 
   const initialValues: UserPersonFormValues = {
@@ -22,7 +22,9 @@ const OnboardingPerson = ({user} : {user: any}) => {
       phone: "",
     },
     countryRegion: "",
-    createdTime:fromAbsolute(user.createdAt, getLocalTimeZone()).toAbsoluteString().split(".")[0],
+    createdTime: fromAbsolute(user.createdAt, getLocalTimeZone())
+      .toAbsoluteString()
+      .split(".")[0],
     description: "",
     email: user.emailAddress,
     isActive: true,
@@ -33,6 +35,7 @@ const OnboardingPerson = ({user} : {user: any}) => {
     username: user.username as string,
     birthDate: "",
     gender: "",
+    dni: "",
   };
 
   const handleSubmit = async (
@@ -44,7 +47,7 @@ const OnboardingPerson = ({user} : {user: any}) => {
       // Reloads the user's data from Clerk's API
       await clerkUser?.reload();
       router.refresh();
-      return
+      return;
     }
     if (res?.error) {
       toastifyError(res.error);

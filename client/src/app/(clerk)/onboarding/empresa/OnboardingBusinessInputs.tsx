@@ -4,15 +4,9 @@ import {
   CustomTextarea,
 } from "@/components/inputs/CustomInputs";
 import PlaceAutocomplete from "@/components/inputs/PlaceAutocomplete";
-import { getBusinessSector } from "@/services/businessServices";
 import { BusinessSector, UserBusinessFormValues } from "@/types/userTypes";
 import { Field, FormikErrors } from "formik";
-import { useEffect, useState } from "react";
-import {
-
-  FaLink,
-  FaXTwitter,
-} from "react-icons/fa6";
+import { FaLink, FaXTwitter } from "react-icons/fa6";
 import {
   IoLogoFacebook,
   IoLogoInstagram,
@@ -26,15 +20,14 @@ interface OnboardingBusinessInputsProps {
     value: any,
     shouldValidate?: boolean
   ) => Promise<void | FormikErrors<UserBusinessFormValues>>;
-  businessSectors: BusinessSector[]
+  businessSectors: BusinessSector[];
 }
 
 const OnboardingBusinessInputs = ({
   errors,
   setFieldValue,
-  businessSectors
+  businessSectors,
 }: OnboardingBusinessInputsProps) => {
-
   return (
     <>
       <div className="flex gap-4 w-full max-2xl:flex-col">
@@ -59,6 +52,20 @@ const OnboardingBusinessInputs = ({
           }
         />
       </div>
+      <Field
+        as={CustomInput}
+        name="dni"
+        label="CUIT/DNI"
+        aria-label="dni o cuit"
+        isRequired
+        //only accept numbers and dashes
+        pattern="^[0-9-]+$"
+        isInvalid={!!errors.dni}
+        type="text"
+        errorMessage={errors.dni}
+        placeholder="Ingrese el CUIT de la empresa sin puntos ni espacios"
+        description="Utilizaremos su CUIT para realizar la facturación en caso de suscribirse."
+      />
       <div className="flex gap-4 w-full max-2xl:flex-col">
         <Field
           as={CustomSelect}

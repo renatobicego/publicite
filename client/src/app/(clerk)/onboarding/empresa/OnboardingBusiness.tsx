@@ -11,9 +11,15 @@ import { completeOnboardingBusiness } from "../_actions";
 import { toastifyError } from "@/utils/functions/toastify";
 import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
 import { useUser } from "@clerk/nextjs";
-const OnboardingBusiness = ({ user, businessSectors }: { user: any;  businessSectors: BusinessSector[]}) => {
+const OnboardingBusiness = ({
+  user,
+  businessSectors,
+}: {
+  user: any;
+  businessSectors: BusinessSector[];
+}) => {
   const router = useRouter();
-  const {user: clerkUser} = useUser();
+  const { user: clerkUser } = useUser();
   if (!user) return null;
   const initialValues: UserBusinessFormValues = {
     clerkId: user?.id as string,
@@ -25,7 +31,9 @@ const OnboardingBusiness = ({ user, businessSectors }: { user: any;  businessSec
       website: "",
     },
     countryRegion: "",
-    createdTime: fromAbsolute(user.createdAt, getLocalTimeZone()).toAbsoluteString().split(".")[0],
+    createdTime: fromAbsolute(user.createdAt, getLocalTimeZone())
+      .toAbsoluteString()
+      .split(".")[0],
     description: "",
     email: user.emailAddress,
     isActive: true,
@@ -36,6 +44,7 @@ const OnboardingBusiness = ({ user, businessSectors }: { user: any;  businessSec
     sector: "",
     name: user.firstName as string,
     lastName: user.lastName as string,
+    dni: "",
   };
 
   const handleSubmit = async (
@@ -46,7 +55,7 @@ const OnboardingBusiness = ({ user, businessSectors }: { user: any;  businessSec
     if (res?.message) {
       await clerkUser?.reload();
       router.refresh();
-      return
+      return;
     }
     if (res?.error) {
       toastifyError(res.error);

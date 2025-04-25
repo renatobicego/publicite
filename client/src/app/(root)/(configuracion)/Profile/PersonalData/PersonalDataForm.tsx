@@ -21,19 +21,31 @@ const personalDataFormSchema = object({
   countryRegion: string()
     .required("La ubicación es requerida")
     .min(3, "La ubicación es requerida"),
+  dni: string()
+    .required("El DNI es requerido")
+    .test("dni", "El DNI no debe incluir puntos", (value) => {
+      if (!value) return false;
+      return !value.includes(".");
+    })
+    .test("dni", "El DNI no es válido", (value) => {
+      if (!value) return false;
+      const dniRegex = /^\d{7,8}$/; // DNI format: 7-8 digits
+      return dniRegex.test(value.trim()); // Validate the DNI format
+    }),
 });
 
 const PersonalDataForm = ({
   setIsFormVisible,
-  data
+  data,
 }: {
   setIsFormVisible: (value: boolean) => void;
-  data?: EditPersonProfileProps
+  data?: EditPersonProfileProps;
 }) => {
   const initialValues: EditPersonProfileProps = {
     birthDate: data?.birthDate || "",
     gender: data?.gender || "",
     countryRegion: data?.countryRegion || "",
+    dni: data?.dni || "",
   };
   const router = useRouter();
   const handleSubmit = async (
@@ -48,7 +60,6 @@ const PersonalDataForm = ({
     }
     if (res?.error) toastifyError(res.error);
     actions.setSubmitting(false);
-
   };
 
   return (
