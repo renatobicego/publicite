@@ -5,13 +5,11 @@ import {
   Headers,
   HttpCode,
   HttpStatus,
-  Get,
   Res,
   Req,
-  Body,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { ApiExcludeEndpoint } from '@nestjs/swagger';
+
 
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { MpWebhookAdapter } from '../../adapters/in/mp-webhook.adapter';
@@ -24,7 +22,6 @@ export class MercadopagoController {
   ) { }
 
   @Post('/mp')
-  @ApiExcludeEndpoint()
   @HttpCode(HttpStatus.OK)
   async handleWebhookMp(
     @Headers() headers: Record<string, string>,

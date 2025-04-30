@@ -1,5 +1,6 @@
 import {
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -10,32 +11,19 @@ import {
 
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { SubscriptionAdapterInterface } from '../../application/adapter/in/mp-subscription.adapter.interface';
-
-import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ClerkAuthGuard } from 'src/contexts/module_shared/auth/clerk-auth/clerk.auth.guard';
+import { AuthSocket } from 'src/contexts/module_socket/infrastructure/auth/socket.auth';
 
-@ApiTags('My Subscriptions')
 @Controller('subscription')
 export class SubscriptionController {
   constructor(
     private readonly logger: MyLoggerService,
     @Inject('SubscriptionAdapterInterface')
     private readonly subscriptionAdapter: SubscriptionAdapterInterface,
-  ) { }
+  ) {}
 
   @Get(':_id')
-  @ApiOperation({ summary: 'Get subscriptions by clerId' })
-  @ApiResponse({
-    status: 200,
-    description: 'Return subscriptions of user.',
-
-  })
-  @ApiResponse({
-    status: 500,
-    description: 'Internal server error.',
-  })
   @HttpCode(HttpStatus.OK)
-  @ApiParam({ name: '_id', description: 'The user mongo id' })
   @UseGuards(ClerkAuthGuard)
   async getActiveSubscriptionController(
     @Param('_id') _id: string,
@@ -50,7 +38,13 @@ export class SubscriptionController {
     }
   }
 
-
-
-
+  @Delete(':id')
+  @UseGuards(AuthSocket)
+  async deleteSubscriptionController(@Param('id') id: string) {
+    try {
+      await this.subscriptionAdapter.deleteSubscription(id);
+    } catch (error: any) {
+      throw error;
+    }
+  }
 }

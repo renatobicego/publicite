@@ -10,30 +10,15 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import {
-  ApiBody,
-  ApiOperation,
-  ApiQuery,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+
 
 import { UserAdapterInterface } from '../../application/adapter/userAdapter.interface';
 
 import { ClerkAuthGuard } from 'src/contexts/module_shared/auth/clerk-auth/clerk.auth.guard';
-import {
-  UserPersonRequestDto_SWAGGER,
-  UserPersonResponseDto_SWAGGER,
-} from './swagger/user.person.dto.swagger';
 
-import {
-  UserBusinessRequestDto_SWAGGER,
-  UserBusinessResponseDto_SWAGGER,
-} from './swagger/user.business.dto.swagger';
 
-import { PersonalUpdateRequest_SWAGGER } from './swagger/update/UP-publicite.update.request';
 import { personalAccountUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/user.personal.request.UPDATE';
-import { BusinessUpdateRequest_SWAGGER } from './swagger/update/UB-publicite.update.request';
+
 import {
   UserPersonRequest,
   UserBusinessRequest,
@@ -41,8 +26,6 @@ import {
 } from '../../application/adapter/dto/HTTP-REQUEST/user.request.CREATE';
 import { businessAccountUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/user.business.request.UPDATE';
 import { UserPreferenceResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.preferences.response';
-import { UserPreferencesDto_SWAGGER } from './swagger/user.preferences.dto.swagger';
-import { UserFindAllResponseDto_SWAGGER } from './swagger/user.findAll.response.swagger';
 import {
   UserBusinessResponse,
   UserPersonResponse,
@@ -50,7 +33,7 @@ import {
 import { UserType } from '../../domain/entity/enum/user.enums';
 import { AuthSocket } from 'src/contexts/module_socket/infrastructure/auth/socket.auth';
 
-@ApiTags('Accounts')
+
 @Controller('user')
 export class UserController {
   constructor(

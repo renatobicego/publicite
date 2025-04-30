@@ -1,7 +1,9 @@
 import { BadRequestException, Inject } from '@nestjs/common';
 
-
-import { statusOfSubscription, SubscriptionServiceInterface } from 'src/contexts/module_webhook/mercadopago/domain/service/mp-subscription.service.interface';
+import {
+  statusOfSubscription,
+  SubscriptionServiceInterface,
+} from 'src/contexts/module_webhook/mercadopago/domain/service/mp-subscription.service.interface';
 import Subscription from 'src/contexts/module_webhook/mercadopago/domain/entity/subcription.entity';
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { MercadoPagoSubscriptionPlanServiceInterface } from 'src/contexts/module_webhook/mercadopago/domain/service/mp-subscriptionPlan.service.interface';
@@ -23,8 +25,7 @@ export class MpSubscriptionService implements SubscriptionServiceInterface {
     @Inject('UserServiceInterface')
     private readonly userService: UserServiceInterface,
     @InjectConnection() private readonly connection: Connection,
-  ) { }
-
+  ) {}
 
   async createSubscription_preapproval(
     subscription_preapproval: any,
@@ -44,19 +45,16 @@ export class MpSubscriptionService implements SubscriptionServiceInterface {
       card_id,
     } = subscription_preapproval;
 
-    if (
-      !auto_recurring ||
-      !auto_recurring.start_date ||
-      !external_reference
-    ) {
+    if (!auto_recurring || !auto_recurring.start_date || !external_reference) {
       this.logger.error('Invalid subscription data - missing dates');
       throw new BadRequestException('Invalid subscription data');
     }
     this.logger.log('Data of suscription is valid... Continue to create it');
     let { start_date, frequency } = auto_recurring;
-    const { start_date_parsed, end_date_parsed } = parseTimeX(start_date, frequency);
-
-
+    const { start_date_parsed, end_date_parsed } = parseTimeX(
+      start_date,
+      frequency,
+    );
 
     start_date = start_date_parsed;
     let end_date = end_date_parsed;
@@ -78,12 +76,12 @@ export class MpSubscriptionService implements SubscriptionServiceInterface {
     try {
       this.logger.log(
         'Creating a new subscription with ID: ' +
-        id +
-        'external reference: ' +
-        external_reference +
-        'for plan ' +
-        plan.getDescription() +
-        ' - Class: mpWebhookService',
+          id +
+          'external reference: ' +
+          external_reference +
+          'for plan ' +
+          plan.getDescription() +
+          ' - Class: mpWebhookService',
       );
       const timeOfUpdate = getTodayDateTime();
       const newUserSuscription = new Subscription(
@@ -97,13 +95,20 @@ export class MpSubscriptionService implements SubscriptionServiceInterface {
         timeOfUpdate, // dia de actualización
         next_payment_date, // fecha de siguiente pago
         payment_method_id, // metodo de pago
-        card_id // id de la tarjeta
+        card_id, // id de la tarjeta
       );
       await session.withTransaction(async () => {
-        const subscriptionId = await this.subscriptionRepository.saveSubPreapproval(newUserSuscription, session);
-        await this.userService.setSubscriptionToUser(external_reference, subscriptionId, session);
-
-      })
+        const subscriptionId =
+          await this.subscriptionRepository.saveSubPreapproval(
+            newUserSuscription,
+            session,
+          );
+        await this.userService.setSubscriptionToUser(
+          external_reference,
+          subscriptionId,
+          session,
+        );
+      });
     } catch (error: any) {
       throw error;
     } finally {
@@ -111,25 +116,26 @@ export class MpSubscriptionService implements SubscriptionServiceInterface {
     }
   }
 
-
-  async changeStatusOfSubscription(preapproval_id: string, status: statusOfSubscription): Promise<void> {
+  async changeStatusOfSubscription(
+    preapproval_id: string,
+    status: statusOfSubscription,
+  ): Promise<void> {
     try {
-      this.logger.log("Changin status of subscription NEW STATUS: " + status);
+      this.logger.log('Changin status of subscription NEW STATUS: ' + status);
       const statusObj = {
         status: status,
         timeOfUpdate: getTodayDateTime(),
-      }
-      await this.subscriptionRepository.updateSubscriptionStatus(preapproval_id, statusObj);
+      };
+      await this.subscriptionRepository.updateSubscriptionStatus(
+        preapproval_id,
+        statusObj,
+      );
     } catch (error: any) {
       throw error;
     }
   }
 
-
-
-  async findSubscriptionByPreapprovalId(
-    id: string,
-  ): Promise<any> {
+  async findSubscriptionByPreapprovalId(id: string): Promise<any> {
     const subscription =
       await this.subscriptionRepository.findSubscriptionByPreapprovalId(id);
 
@@ -141,35 +147,48 @@ export class MpSubscriptionService implements SubscriptionServiceInterface {
   ): Promise<Subscription[]> {
     try {
       const subscriptions =
-        await this.subscriptionRepository.getSubscriptionHistory(external_reference);
+        await this.subscriptionRepository.getSubscriptionHistory(
+          external_reference,
+        );
       return makeReponsePlanFunction(subscriptions);
-
     } catch (error: any) {
       throw error;
     }
   }
 
-
-
-
-
-
+  async getActiveSubscriptions(external_reference: string): Promise<any[]> {
+    try {
+      return this.subscriptionRepository.getActiveSubscriptions(
+        external_reference,
+      );
+    } catch (error: any) {
+      throw error;
+    }
+  }
 
   async updateSubscription_preapproval(
     subscription_preapproval_update: any,
   ): Promise<void> {
     try {
-
-      const { id, payer_id, status, auto_recurring, external_reference, next_payment_date, payment_method_id, card_id } =
-        subscription_preapproval_update;
+      const {
+        id,
+        payer_id,
+        status,
+        auto_recurring,
+        external_reference,
+        next_payment_date,
+        payment_method_id,
+        card_id,
+      } = subscription_preapproval_update;
       let { start_date, frequency } = auto_recurring;
-      const { start_date_parsed, end_date_parsed } = parseTimeX(start_date, frequency);
+      const { start_date_parsed, end_date_parsed } = parseTimeX(
+        start_date,
+        frequency,
+      );
 
       start_date = start_date_parsed;
       let end_date = end_date_parsed;
       const timeOfUpdate = getTodayDateTime();
-
-
 
       const updateObject = {
         mpPreapprovalId: id,
@@ -184,11 +203,29 @@ export class MpSubscriptionService implements SubscriptionServiceInterface {
         cardId: card_id,
       };
 
-      const statusSubscriptionMap = new Map<string, (id: string, updateObj?: any) => Promise<void>>([
-        ['cancelled', (id) => this.subscriptionRepository.cancelSubscription(id)],
-        ['paused', (id, updateObj) => this.subscriptionRepository.pauseSubscription(id, updateObj)],
-        ['pending', (id, updateObj) => this.subscriptionRepository.pendingSubscription(id, updateObj)],
-        ['authorized', (id, updateObj) => this.subscriptionRepository.updateSubscription(id, updateObj)],
+      const statusSubscriptionMap = new Map<
+        string,
+        (id: string, updateObj?: any) => Promise<void>
+      >([
+        [
+          'cancelled',
+          (id) => this.subscriptionRepository.cancelSubscription(id),
+        ],
+        [
+          'paused',
+          (id, updateObj) =>
+            this.subscriptionRepository.pauseSubscription(id, updateObj),
+        ],
+        [
+          'pending',
+          (id, updateObj) =>
+            this.subscriptionRepository.pendingSubscription(id, updateObj),
+        ],
+        [
+          'authorized',
+          (id, updateObj) =>
+            this.subscriptionRepository.updateSubscription(id, updateObj),
+        ],
       ]);
 
       const action = statusSubscriptionMap.get(status);
@@ -197,7 +234,6 @@ export class MpSubscriptionService implements SubscriptionServiceInterface {
         await action(id, updateObject);
         return Promise.resolve();
       }
-
     } catch (error: any) {
       throw error;
     }
@@ -205,15 +241,17 @@ export class MpSubscriptionService implements SubscriptionServiceInterface {
 
   async verifyIfSubscriptionWasPused(preapproval_id: string): Promise<boolean> {
     try {
-      this.logger.log('Verifing if subscription was pused ID:' + preapproval_id);
-      return await this.subscriptionRepository.verifyIfSubscriptionWasPused(preapproval_id);
+      this.logger.log(
+        'Verifing if subscription was pused ID:' + preapproval_id,
+      );
+      return await this.subscriptionRepository.verifyIfSubscriptionWasPused(
+        preapproval_id,
+      );
     } catch (error: any) {
-      this.logger.error('Error verifying if subscription was pused ID:' + preapproval_id);
+      this.logger.error(
+        'Error verifying if subscription was pused ID:' + preapproval_id,
+      );
       throw error;
     }
-
   }
-
-
-
 }

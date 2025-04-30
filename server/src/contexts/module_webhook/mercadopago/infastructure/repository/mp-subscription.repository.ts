@@ -73,6 +73,18 @@ export class SubscriptionRepository implements SubscriptionRepositoryInterface {
     }
   }
 
+  async getActiveSubscriptions(external_reference: string): Promise<any[]> {
+    try {
+      const subscriptions = await this.subscriptionModel.find({
+        status: 'authorized',
+        external_reference: external_reference,
+      });
+      return subscriptions ?? [];
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
   async pauseSubscription(id: string, updateObject: any): Promise<void> {
     try {
       this.logger.log('Update subscription with ID: ' + id + 'STATUS: PAUSED');

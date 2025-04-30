@@ -1,7 +1,4 @@
-
-
 export interface SubscriptionAdapterInterface {
-  getSubscriptionHistory(
-    external_reference: string,
-  ): Promise<any[]>;
+  deleteSubscription(id: string): Promise<void>;
+  getSubscriptionHistory(external_reference: string): Promise<any[]>;
 }

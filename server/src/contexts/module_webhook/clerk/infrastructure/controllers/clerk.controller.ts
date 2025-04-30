@@ -8,7 +8,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config'; // Asegúrate de importar ConfigServic
-import { ApiExcludeEndpoint } from '@nestjs/swagger';
+
 
 
 
@@ -29,7 +29,6 @@ export class ClerkController {
   ) { }
 
   @Post('/clerk')
-  @ApiExcludeEndpoint()
   @HttpCode(HttpStatus.OK)
   async handleWebhookClerk(
     @Body() payload: any,

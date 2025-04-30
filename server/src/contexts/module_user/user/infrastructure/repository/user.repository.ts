@@ -76,7 +76,6 @@ export class UserRepository implements UserRepositoryInterface {
         await this.userRelation.deleteMany({
           $or: [{ userA: _id }, { userB: _id }],
         });
-
         return _id;
       });
 

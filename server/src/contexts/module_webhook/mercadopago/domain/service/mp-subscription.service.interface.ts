@@ -8,6 +8,7 @@ export enum statusOfSubscription {
 }
 export interface SubscriptionServiceInterface {
   getSubscriptionHistory(external_reference: string): Promise<Subscription[]>;
+  getActiveSubscriptions(external_reference: string): Promise<any[]>;
   findSubscriptionByPreapprovalId(id: string): Promise<any>;
   createSubscription_preapproval(subscription_preapproval: any): Promise<void>;
   updateSubscription_preapproval(

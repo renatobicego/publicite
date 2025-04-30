@@ -66,7 +66,8 @@ export class ClerkWebhookAdapter {
       userService: this.configService.get<string>('DELETE_ACCOUNT_USER_SERVICE'),
       groupService: this.configService.get<string>('DELETE_ACCOUNT_GROUP_SERVICE'),
       notificationService: this.configService.get<string>('DELETE_ACCOUNT_NOTIFICATION_SERVICE'),
-      postService: this.configService.get<string>('DELETE_ACCOUNT_POST_SERVICE')
+      postService: this.configService.get<string>('DELETE_ACCOUNT_POST_SERVICE'),
+      subscriptionService: this.configService.get<string>('DELETE_ACCOUNT_SUBSCRIPTION_SERVICE')
     };
 
     const fetchOptions = {
@@ -92,6 +93,8 @@ export class ClerkWebhookAdapter {
       await fetch(`${config.notificationService}/${mongoId}`, fetchOptions)
       
       await fetch(`${config.postService}/${mongoId}`, fetchOptions)
+
+      await fetch(`${config.subscriptionService}/${mongoId}`, fetchOptions)
 
     } catch (error) {
       throw new Error(`Failed to delete account: ${error.message}`);

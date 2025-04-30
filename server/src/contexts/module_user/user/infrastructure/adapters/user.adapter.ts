@@ -33,7 +33,6 @@ export class UserAdapter implements UserAdapterInterface {
     try {
       const factory = UserFactory.getInstance(this.logger);
       const user = factory.createUser(newUserRequest.userType, newUserRequest);
-
       return await this.userService.createUser(user, newUserRequest?.contact);
     } catch (error: any) {
       throw error;
