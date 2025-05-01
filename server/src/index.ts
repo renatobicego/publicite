@@ -27,12 +27,6 @@ const initializeNestApp = async (): Promise<void> => {
     process.env.NODE_ENV === 'qa' ? '.env.qa' : '.env',
   );
   dotenv.config({ path: envPath });
-  console.log('========================================');
-  console.log(`🔵 Cargando variables de entorno desde: ${envPath}`);
-  console.log(
-    `🔵 Entorno actual (NODE_ENV): ${process.env.NODE_ENV || 'production (default)'}`,
-  );
-  console.log('========================================');
   const PUBLICITE_CORS_VERCEL_URI =
     process.env.PUBLICITE_CORS_VERCEL_URI ?? 'Verify PUBLICITE_CORS_VERCEL_URI';
   const PUBLICITE_CORS_DOMAIN_URI =
