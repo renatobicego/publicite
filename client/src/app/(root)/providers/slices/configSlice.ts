@@ -32,6 +32,11 @@ const fetchWithRetry = async (
       // First API call
       const configData = await getConfigData({ username, id: userId });
 
+      // Check for error in configData
+      if (!configData || "error" in configData) {
+        return;
+      }
+
       // Second API call
       const userRelations = await getActiveRelations();
 
@@ -74,12 +79,6 @@ export const fetchConfigData = createAsyncThunk(
     try {
       // Use the retry function with 5 max attempts
       const data = await fetchWithRetry(username, userId, 5);
-
-      if (!data) {
-        throw new Error(
-          "Error al obtener los datos de configuración. Por favor recarga la página."
-        );
-      }
 
       return data;
     } catch (error) {

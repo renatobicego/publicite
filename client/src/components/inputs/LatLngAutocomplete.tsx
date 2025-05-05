@@ -1,5 +1,4 @@
 import { Autocomplete, AutocompleteItem } from "@nextui-org/react";
-import { useState, useEffect, Key } from "react";
 import usePlacesService from "react-google-autocomplete/lib/usePlacesAutocompleteService";
 import { FaLocationDot } from "react-icons/fa6";
 
