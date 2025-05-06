@@ -11,9 +11,12 @@ import { completeOnboardingPerson } from "../_actions";
 import { toastifyError } from "@/utils/functions/toastify";
 import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
 import { useUser } from "@clerk/nextjs";
+import TermsConditions from "@/components/Footer/TermsConditions";
+import { useState } from "react";
 const OnboardingPerson = ({ user }: { user: any }) => {
   const router = useRouter();
   const { user: clerkUser } = useUser();
+  const [checkboxAccept, setCheckboxAccept] = useState(false);
   if (!user) return null;
 
   const initialValues: UserPersonFormValues = {
@@ -42,6 +45,10 @@ const OnboardingPerson = ({ user }: { user: any }) => {
     formData: UserPersonFormValues,
     actions: FormikHelpers<UserPersonFormValues>
   ) => {
+    if (!checkboxAccept) {
+      toastifyError("Debes aceptar los términos y condiciones.");
+      return;
+    }
     const res = await completeOnboardingPerson(formData);
     if (res?.message) {
       // Reloads the user's data from Clerk's API
@@ -75,6 +82,11 @@ const OnboardingPerson = ({ user }: { user: any }) => {
               setFieldValue={setFieldValue}
               initialValues={initialValues}
               setFieldError={setFieldError}
+            />
+            <TermsConditions
+              showCheckbox={true}
+              checkboxAccept={checkboxAccept}
+              setCheckboxAccept={setCheckboxAccept}
             />
             <RequiredFieldsMsg />
             <PrimaryButton
