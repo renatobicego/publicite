@@ -92,7 +92,7 @@ const SolapasTabs = () => {
   const tabDefinitions = [
     {
       key: `${POSTS}${postTypeUrlVisited}`,
-      title: "Recomendados",
+      title: "Anuncios Libres",
       component: <PostsList postTypeVisited={postTypeVisited} />,
     },
     {
