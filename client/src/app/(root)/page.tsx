@@ -10,7 +10,7 @@ export default function Home() {
       className="flex min-h-screen flex-col items-start main-style gap-8"
     >
       <div className="text-xs lg:text-sm lg:max-w-[50%]">
-        <p>¡Hola! Ayudas para entender el sitio</p>
+        <p>¡Hola!</p>
         <ul className="list-disc list-inside">
           <li>Regístrate - Inicia sesión</li>
           <li>
