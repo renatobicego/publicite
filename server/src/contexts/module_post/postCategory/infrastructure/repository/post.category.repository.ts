@@ -12,12 +12,16 @@ export class PostCategoryRepository implements PostCategoryRepositoryInterface {
   ) {}
   async findAllCategoryPost(): Promise<PostCategoryResponse[]> {
     try {
-      const categories = await this.postCategoryModel.find().lean();
+      const categories = await this.postCategoryModel
+        .find()
+        .sort({ label: 1 })
+        .lean();
       return categories.map((category) => new PostCategoryResponse(category));
     } catch (error: any) {
       throw error;
     }
   }
+
   async saveCategory(category: PostCategory): Promise<PostCategoryResponse> {
     try {
       const newCategory = new this.postCategoryModel(category);
