@@ -7,20 +7,41 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import PrimaryButton from "../PrimaryButton";
+import { cloneElement, isValidElement } from "react";
 
-const GlosaryModal = () => {
+// Define a type for elements that can have onClick/onPress handlers
+type ButtonLikeElement = React.ReactElement<{
+  onClick?: (e: React.MouseEvent) => void;
+  onPress?: (e: any) => void;
+}>;
+
+const GlosaryModal = ({ customButton }: { customButton?: React.ReactNode }) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  return (
-    <>
+  const renderButton = () => {
+    if (customButton && isValidElement(customButton)) {
+      // Type assertion to tell TypeScript this element has onClick/onPress props
+      const buttonElement = customButton as ButtonLikeElement;
+
+      return cloneElement(buttonElement, {
+        onClick: () => onOpen(),
+      });
+    }
+
+    // Default button
+    return (
       <PrimaryButton
-        onPress={() => {
-          onOpen();
-        }}
+        onPress={onOpen}
         variant="light"
         className="hover:text-primary text-left"
       >
         Glosario
       </PrimaryButton>
+    );
+  };
+
+  return (
+    <>
+      {renderButton()}
       <Modal
         size="xl"
         placement="center"

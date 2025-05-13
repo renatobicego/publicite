@@ -1,5 +1,6 @@
 "use server";
 import {
+  BusinessSector,
   EditBusinessProfileProps,
   UserBusinessFormValues,
 } from "@/types/userTypes";
@@ -29,7 +30,9 @@ export const getBusinessSector = async () => {
   try {
     const res = await fetch(`${process.env.API_URL}/businessSector`);
 
-    return await res.json();
+    const businessSector: BusinessSector[] = await res.json();
+    //order by name
+    return businessSector.sort((a, b) => a.label.localeCompare(b.label));
   } catch (error) {
     return {
       error:
