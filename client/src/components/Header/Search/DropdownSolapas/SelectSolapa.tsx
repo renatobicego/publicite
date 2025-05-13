@@ -20,7 +20,7 @@ const SelectSolapa = ({
   const solapasItems = [
     {
       key: "recomendados",
-      label: "Recomendados",
+      label: "Anuncios Libres",
       requiresLogin: false,
     },
     {

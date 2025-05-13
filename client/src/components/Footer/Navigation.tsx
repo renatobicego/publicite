@@ -63,7 +63,7 @@ const Navigation = ({ id }: { id?: string | null }) => {
           </li>
           <li>
             <Link size="sm" className="text-white" href={`/registrarse`}>
-              Registarse
+              Registrarse
             </Link>
           </li>
         </>

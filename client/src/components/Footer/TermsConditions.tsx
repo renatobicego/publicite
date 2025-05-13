@@ -1,6 +1,7 @@
 "use client";
 import {
   Button,
+  Checkbox,
   Modal,
   ModalBody,
   ModalContent,
@@ -9,18 +10,47 @@ import {
 } from "@nextui-org/react";
 import React from "react";
 
-const TermsConditions = () => {
+const TermsConditions = ({
+  showCheckbox = false,
+  checkboxAccept,
+  setCheckboxAccept,
+}: {
+  showCheckbox?: boolean;
+  checkboxAccept?: boolean;
+  setCheckboxAccept?: React.Dispatch<React.SetStateAction<boolean>>;
+}) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   return (
     <>
-      <Button
-        onPress={onOpen}
-        radius="full"
-        variant="light"
-        className="text-white -ml-4 -mt-1.5 data-[hover=true]:bg-transparent"
-      >
-        Términos y Condiciones
-      </Button>
+      {showCheckbox ? (
+        <div className="flex items-center gap-1">
+          <Checkbox
+            size="sm"
+            isSelected={checkboxAccept}
+            onValueChange={setCheckboxAccept}
+          >
+            Acepto los
+          </Checkbox>
+          <Button
+            onPress={onOpen}
+            radius="full"
+            variant="light"
+            color="primary"
+            className="-ml-4 mt-[1px] data-[hover=true]:bg-transparent"
+          >
+            términos y condiciones
+          </Button>
+        </div>
+      ) : (
+        <Button
+          onPress={onOpen}
+          radius="full"
+          variant="light"
+          className="text-white -ml-4 -mt-1.5 data-[hover=true]:bg-transparent"
+        >
+          Términos y Condiciones
+        </Button>
+      )}
       <Modal
         size="xl"
         placement="center"

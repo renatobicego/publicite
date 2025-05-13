@@ -11,6 +11,8 @@ import { completeOnboardingBusiness } from "../_actions";
 import { toastifyError } from "@/utils/functions/toastify";
 import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
 import { useUser } from "@clerk/nextjs";
+import TermsConditions from "@/components/Footer/TermsConditions";
+import { useState } from "react";
 const OnboardingBusiness = ({
   user,
   businessSectors,
@@ -20,6 +22,7 @@ const OnboardingBusiness = ({
 }) => {
   const router = useRouter();
   const { user: clerkUser } = useUser();
+  const [checkboxAccept, setCheckboxAccept] = useState(false);
   if (!user) return null;
   const initialValues: UserBusinessFormValues = {
     clerkId: user?.id as string,
@@ -51,6 +54,10 @@ const OnboardingBusiness = ({
     formData: UserBusinessFormValues,
     actions: FormikHelpers<UserBusinessFormValues>
   ) => {
+    if (!checkboxAccept) {
+      toastifyError("Debes aceptar los términos y condiciones.");
+      return;
+    }
     const res = await completeOnboardingBusiness(formData);
     if (res?.message) {
       await clerkUser?.reload();
@@ -80,6 +87,11 @@ const OnboardingBusiness = ({
             errors={errors}
             setFieldValue={setFieldValue}
             businessSectors={businessSectors}
+          />
+          <TermsConditions
+            showCheckbox={true}
+            checkboxAccept={checkboxAccept}
+            setCheckboxAccept={setCheckboxAccept}
           />
           <RequiredFieldsMsg />
           <PrimaryButton

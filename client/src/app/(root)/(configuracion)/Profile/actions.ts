@@ -86,6 +86,9 @@ export const getConfigData = async (user: {
   }
   try {
     const token = await getAuthToken();
+    if (!token) {
+      return;
+    }
     // Use Promise.all to fetch data concurrently
     const [userBoard, preferences] = await Promise.all([
       getBoardByUsername(user.id, token),

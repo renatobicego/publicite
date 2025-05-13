@@ -10,6 +10,7 @@ import {
   ModalHeader,
   useDisclosure,
 } from "@nextui-org/react";
+import GlosaryModal from "../buttons/HelpButton/GlosaryModal";
 
 const AboutUs = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -185,7 +186,12 @@ const AboutUs = () => {
 
             <p>
               Para información más detallada sobre el funcionamiento del sitio,
-              accede al glosario funcional.
+              accede al{" "}
+              <GlosaryModal
+                customButton={
+                  <button className="text-primary"> glosario funcional.</button>
+                }
+              />
             </p>
 
             <p>Tus comentarios nos ayudan a mejorar el sitio.</p>

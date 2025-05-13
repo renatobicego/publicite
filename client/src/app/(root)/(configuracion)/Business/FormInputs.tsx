@@ -4,6 +4,7 @@ import PlaceAutocomplete from "@/components/inputs/PlaceAutocomplete";
 import { BusinessSector, EditBusinessProfileProps } from "@/types/userTypes";
 import { useEffect, useState } from "react";
 import { getBusinessSector } from "@/services/businessServices";
+import { toastifyError } from "@/utils/functions/toastify";
 interface PersonalDataFormInputsProps {
   initialValues: EditBusinessProfileProps;
   errors: FormikErrors<EditBusinessProfileProps>;
@@ -18,11 +19,18 @@ const FormInputs = ({
   errors,
   setFieldValue,
 }: PersonalDataFormInputsProps) => {
-  const [businessSectorItems, setBusinessSectorItems] = useState([]);
+  const [businessSectorItems, setBusinessSectorItems] = useState<
+    BusinessSector[]
+  >([]);
 
   useEffect(() => {
     const getItems = async () => {
       const res = await getBusinessSector();
+      if ("error" in res) {
+        toastifyError(res.error);
+        setBusinessSectorItems([]);
+        return;
+      }
       setBusinessSectorItems(res);
     };
     if (!businessSectorItems.length) getItems();

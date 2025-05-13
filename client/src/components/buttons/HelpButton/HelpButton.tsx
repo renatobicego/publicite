@@ -17,7 +17,7 @@ import Joyride, {
   TooltipRenderProps,
 } from "react-joyride";
 import { useTutorialSteps } from "./getTutorialSteps";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import PrimaryButton from "../PrimaryButton";
 import { FaX } from "react-icons/fa6";
 import GlosaryModal from "./GlosaryModal";
