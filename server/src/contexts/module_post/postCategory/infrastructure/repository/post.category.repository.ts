@@ -1,7 +1,8 @@
 import { InjectModel } from '@nestjs/mongoose';
 import { PostCategory } from '../../domain/entity/post.category.entity';
-import { PostCategoryRepositoryInterface } from '../../domain/repository/post.category.repository.interface';
 import { Model } from 'mongoose';
+
+import { PostCategoryRepositoryInterface } from '../../domain/repository/post.category.repository.interface';
 import { PostCategoryDocument } from '../schemas/post.cateogory.schema';
 import { PostCategoryResponse } from '../../application/adapter/dto/HTTP-RESPONSE/post.category.response';
 

@@ -32,7 +32,8 @@ export class SectorRepository implements SectorRepositoryInterface {
   }
   async getAll(): Promise<Sector[]> {
     try {
-      const sectorDocuments = await this.sectorModel.find();
+      const sectorDocuments = await this.sectorModel.find().sort({ label: 1 });
+
       return sectorDocuments.map((doc) => Sector.formatDocumentToClass(doc));
     } catch (error: any) {
       throw error;
