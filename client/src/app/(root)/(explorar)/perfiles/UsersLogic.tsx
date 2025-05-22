@@ -15,7 +15,6 @@ const UsersLogic = () => {
     setSearchTerm,
     sortDescriptor,
     setSortDescriptor,
-    setFilter,
     sortedItems,
   } = useFilteredAndSortedUsers(items);
 
