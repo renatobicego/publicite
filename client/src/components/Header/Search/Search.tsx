@@ -95,7 +95,7 @@ const Search = ({
           "recomendados"
       );
     }
-  }, [pathname, selectedKeys]);
+  }, [pathname]);
   return (
     <Input
       startContent={
