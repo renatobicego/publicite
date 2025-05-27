@@ -1,5 +1,5 @@
 import { Input, Selection } from "@nextui-org/react";
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import {
   BOARDS,
   GROUPS,
@@ -15,6 +15,18 @@ import {
 import { useRouter } from "next-nprogress-bar";
 import SearchButton from "./SearchButton";
 import DropdownSolapas from "./DropdownSolapas/DropdownSolapas";
+import { usePathname } from "next/navigation";
+
+const keyToPath: { [key: string]: string } = {
+  recomendados: POSTS,
+  contactos: POST_CONTACTS,
+  hoy: POST_RECENTS,
+  puntuados: POST_BEST,
+  vencer: POST_NEXT_TO_EXPIRE,
+  pizarras: BOARDS,
+  perfiles: PROFILE,
+  grupos: GROUPS,
+};
 
 // this is the general search input on the header
 const Search = ({
@@ -34,21 +46,13 @@ const Search = ({
   const [selectedPostType, setSelectedPostType] = useState<Selection>(
     new Set([])
   );
-  const router = useRouter(); // Next.js router for redirection
+  const router = useRouter();
+  const pathname = usePathname();
 
   // Dynamically set the URL based on the selected search category
   const getSearchURL = (getBaseUrl?: boolean) => {
     if (!selectedKeys) return "";
-    const keyToPath: { [key: string]: string } = {
-      recomendados: POSTS,
-      contactos: POST_CONTACTS,
-      hoy: POST_RECENTS,
-      puntuados: POST_BEST,
-      vencer: POST_NEXT_TO_EXPIRE,
-      pizarras: BOARDS,
-      perfiles: PROFILE,
-      grupos: GROUPS,
-    };
+
     const postTypePath: { [key: string]: string } = {
       bienes: "",
       servicios: SERVICES,
@@ -83,6 +87,15 @@ const Search = ({
       handleSearch();
     }
   };
+
+  useEffect(() => {
+    if (pathname.split("/")[1]) {
+      setSelectedKeys(
+        Object.keys(keyToPath).find((key) => keyToPath[key] === pathname) ||
+          "recomendados"
+      );
+    }
+  }, [pathname, selectedKeys]);
   return (
     <Input
       startContent={
