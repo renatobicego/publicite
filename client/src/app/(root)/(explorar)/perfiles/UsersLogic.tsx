@@ -2,7 +2,6 @@ import SearchPosts from "@/components/inputs/SearchPosts";
 import { useInfiniteFetch } from "@/utils/hooks/useInfiniteFetch";
 import UsersGrid from "./UsersGrid";
 import Order, { SortOption } from "@/components/inputs/Order";
-import FilterUsers from "./FilterUsers";
 import { useFilteredAndSortedUsers } from "@/utils/hooks/useFilteredOrderedUsers";
 import { useUserData } from "../../providers/userDataProvider";
 

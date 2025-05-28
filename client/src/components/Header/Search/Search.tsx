@@ -17,7 +17,7 @@ import SearchButton from "./SearchButton";
 import DropdownSolapas from "./DropdownSolapas/DropdownSolapas";
 import { usePathname } from "next/navigation";
 
-const keyToPath: { [key: string]: string } = {
+export const keyToPath: { [key: string]: string } = {
   recomendados: POSTS,
   contactos: POST_CONTACTS,
   hoy: POST_RECENTS,

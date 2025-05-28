@@ -1,3 +1,5 @@
+import { SERVICES, NEEDS } from "../data/urls";
+
 export const formatInstagamUrl = (url: string) => {
   const regex =
     /^(?:@|(?:https?:\/\/)?(?:www\.)?instagr(?:\.am|am\.com)\/)?([\w\.]+)\/?$/g;
@@ -20,9 +22,10 @@ export const formatTwitterUrl = (url: string) => {
 
 export function extractDomain(url: string | URL) {
   // Ensure the URL has a protocol, add "http://" if missing
-  const formattedUrl = typeof url === "string" && !/^https?:\/\//i.test(url)
-    ? `http://${url}`
-    : url;
+  const formattedUrl =
+    typeof url === "string" && !/^https?:\/\//i.test(url)
+      ? `http://${url}`
+      : url;
 
   const parsedUrl = new URL(formattedUrl);
   const hostname = parsedUrl.hostname;
@@ -31,3 +34,9 @@ export function extractDomain(url: string | URL) {
 
   return domain;
 }
+
+export const getSearchURL = (currentExploreUrl: string, searchTerm: string) => {
+  if (!currentExploreUrl) return "";
+  // otherwise, return the base path with the search term
+  return `${currentExploreUrl}?busqueda=${encodeURIComponent(searchTerm)}`;
+};
