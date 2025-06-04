@@ -62,6 +62,18 @@ const SearchPosts = ({
           startContent={<FaSearch className="text-light-text min-w-3.5" />}
           value={currentTerm}
           onValueChange={setCurrentTerm}
+          onKeyDown={(e) => {
+            if (
+              e.key === "Enter" &&
+              ((isMultiSearch &&
+                queryParams.get("busqueda") &&
+                currentTerm &&
+                searchTerms.length < 2) ||
+                currentTerm)
+            ) {
+              handleAddTerm();
+            }
+          }}
           placeholder={
             isMultiSearch && queryParams.get("busqueda")
               ? "Ingrese un término para filtrar los resultados..."
