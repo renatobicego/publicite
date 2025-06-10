@@ -3,6 +3,7 @@ import { User } from "@/types/userTypes";
 import { Group } from "@/types/groupTypes";
 import { Spinner } from "@nextui-org/react";
 import MemberCard from "@/components/cards/MemberCard";
+import { useSearchParams } from "next/navigation";
 
 const UsersGrid = ({
   items,
@@ -20,6 +21,8 @@ const UsersGrid = ({
   const isAdmin = (user: User) =>
     group?.admins.some((admin) => (admin as User)._id === user._id);
   const isCreator = (id: string) => group?.creator._id === id;
+  const searchParams = useSearchParams();
+  const busqueda = searchParams.get("busqueda");
   return (
     <>
       <div className="grid grid-cols-2 lg:grid-cols-3 3xl:grid-cols-4 gap-4">
@@ -41,7 +44,9 @@ const UsersGrid = ({
       </div>
       {!isLoading && (!items || items.length === 0) && (
         <p className="max-md:text-sm text-light-text">
-          No se encontraron usuarios para mostrar
+          {busqueda
+            ? `No se encontraron carteles de usuarios para "${busqueda}"`
+            : "Por favor, haga una búsqueda en el campo de búsqueda del encabezado"}
         </p>
       )}
       {isLoading && <Spinner color="warning" />}

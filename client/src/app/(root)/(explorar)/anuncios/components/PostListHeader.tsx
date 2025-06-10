@@ -14,6 +14,7 @@ interface PostListHeaderProps {
   showAsList?: boolean;
   setShowAsList?: (value: boolean) => void;
   showToggleList?: boolean;
+  dontPushSearch?: boolean;
 }
 
 const PostListHeader = ({
@@ -26,6 +27,7 @@ const PostListHeader = ({
   showAsList,
   setShowAsList,
   showToggleList = true,
+  dontPushSearch = false,
 }: PostListHeaderProps) => {
   // Sorting options for the Order component
   const sortOptions: SortOption[] = [
@@ -53,6 +55,7 @@ const PostListHeader = ({
         searchTerms={searchTerms}
         setSearchTerms={setSearchTerms}
         isMultiSearch
+        dontPushSearch={dontPushSearch}
       />
       <FilterPosts filter={filter} setFilter={setFilter} />
       <Order

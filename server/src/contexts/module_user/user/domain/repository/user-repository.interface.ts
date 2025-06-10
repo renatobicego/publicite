@@ -126,3 +126,4 @@ export interface UserRepositoryInterface {
     userPreference: UserPreferencesEntityDto,
   ): Promise<UserPreferencesEntityDto | null>;
 }
+

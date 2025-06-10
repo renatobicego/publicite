@@ -32,6 +32,7 @@ const UserPosts = ({
         sortDescriptor={sortDescriptor}
         setSortDescriptor={setSortDescriptor}
         showToggleList={false}
+        dontPushSearch
       />
       {isMyProfile && (
         <Tabs

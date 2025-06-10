@@ -1,23 +1,49 @@
+import { getSearchURL } from "@/utils/functions/formatUrls";
 import { Input, Button, Chip } from "@nextui-org/react";
-import { Dispatch, SetStateAction, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
 import { FaSearch, FaPlus, FaTimes } from "react-icons/fa";
 
 const SearchPosts = ({
   searchTerms,
   setSearchTerms,
   isMultiSearch = false, // New prop to toggle multi-search functionality
+  dontPushSearch = false,
 }: {
   searchTerms: (string | undefined)[] | string;
   setSearchTerms: any;
   isMultiSearch?: boolean; // Optional prop to toggle single or multi-search
+  dontPushSearch?: boolean;
 }) => {
   const [currentTerm, setCurrentTerm] = useState("");
+  const router = useRouter();
+  const pathname = usePathname();
+  const queryParams = useSearchParams();
 
   // Handler to add a search term (only used for multi-search)
   const handleAddTerm = () => {
-    if (currentTerm && searchTerms.length < 2) {
+    if (dontPushSearch) {
       setSearchTerms((prev: any) => [...prev, currentTerm]);
-      setCurrentTerm(""); // Reset input after adding
+      setCurrentTerm("");
+      return;
+    }
+    if (queryParams.get("busqueda")) {
+      if (!isMultiSearch) {
+        const searchUrl = getSearchURL(pathname, currentTerm);
+        if (searchUrl) {
+          router.push(searchUrl);
+        }
+        return;
+      }
+      if (currentTerm && searchTerms.length < 2) {
+        setSearchTerms((prev: any) => [...prev, currentTerm]);
+        setCurrentTerm(""); // Reset input after adding
+      }
+      return;
+    }
+    const searchUrl = getSearchURL(pathname, currentTerm);
+    if (searchUrl) {
+      router.push(searchUrl);
     }
   };
 
@@ -34,11 +60,27 @@ const SearchPosts = ({
           variant="bordered"
           radius="full"
           startContent={<FaSearch className="text-light-text min-w-3.5" />}
-          value={isMultiSearch ? currentTerm : searchTerms as string}
-          onValueChange={isMultiSearch ? setCurrentTerm : setSearchTerms}
-          placeholder="Buscar en resultados..."
+          value={currentTerm}
+          onValueChange={setCurrentTerm}
+          onKeyDown={(e) => {
+            if (
+              e.key === "Enter" &&
+              ((isMultiSearch &&
+                queryParams.get("busqueda") &&
+                currentTerm &&
+                searchTerms.length < 2) ||
+                currentTerm)
+            ) {
+              handleAddTerm();
+            }
+          }}
+          placeholder={
+            isMultiSearch && queryParams.get("busqueda")
+              ? "Ingrese un término para filtrar los resultados..."
+              : "Ingrese un término para buscar..."
+          }
           // Disable input when there are 2 search terms (in multi-search mode)
-          isDisabled={isMultiSearch && searchTerms.length >= 2}
+          isDisabled={searchTerms.length >= 2}
           className="flex-1"
           classNames={{
             inputWrapper: `border-[0.5px] pr-0 group-data-[focus=true]:border-light-text 
@@ -46,7 +88,7 @@ const SearchPosts = ({
             input: "md:ml-1 text-xs md:text-sm",
           }}
           endContent={
-            isMultiSearch ? (
+            isMultiSearch && queryParams.get("busqueda") ? (
               <Button
                 variant="ghost"
                 size="sm"
@@ -57,10 +99,23 @@ const SearchPosts = ({
                 isDisabled={searchTerms.length >= 2 || !currentTerm}
                 startContent={<FaPlus />}
               >
-                <span className="max-md:hidden">Agregar a búsqueda</span>
-                <span className="md:hidden">Agregar</span>
+                <span className="max-md:hidden">Filtrar búsqueda</span>
+                <span className="md:hidden">Filtrar</span>
               </Button>
-            ) : null // No add button if single search mode is enabled
+            ) : (
+              <Button
+                variant="ghost"
+                size="sm"
+                color="secondary"
+                radius="full"
+                className="px-3 min-w-fit h-[106%] -mr-[1px]"
+                onPress={handleAddTerm}
+                isDisabled={!currentTerm}
+                startContent={<FaSearch />}
+              >
+                Buscar
+              </Button>
+            ) // No add button if single search mode is enabled
           }
         />
       </div>
