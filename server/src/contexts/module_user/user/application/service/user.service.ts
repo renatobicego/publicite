@@ -33,7 +33,7 @@ export class UserService implements UserServiceInterface {
     private readonly contactService: ContactServiceInterface,
     private readonly logger: MyLoggerService,
     @InjectConnection() private readonly connection: Connection,
-  ) { }
+  ) {}
 
   async deleteAccount(id: string): Promise<any> {
     try {
@@ -91,6 +91,7 @@ export class UserService implements UserServiceInterface {
       'Creating ACCOUNT -> start process in the service: ' + UserService.name,
     );
     let userId: string;
+    let user: any;
     const session = await this.connection.startSession();
 
     try {
@@ -102,18 +103,21 @@ export class UserService implements UserServiceInterface {
           case UserType.Person:
             this.logger.log(
               'Creating PERSONAL ACCOUNT with username: ' +
-              userEntity.getUsername,
+                userEntity.getUsername,
             );
-
-            return await this.userRepository.save(userEntity, session);
+            user = await this.userRepository.save(userEntity, session);
+            await this.userRepository.createPubliciteRelation(user._id);
+            return user;
 
           case UserType.Business:
             this.logger.log(
               'Creating BUSINESS ACCOUNT with username: ' +
-              userEntity.getUsername,
+                userEntity.getUsername,
             );
 
-            return await this.userRepository.save(userEntity, session);
+            user = await this.userRepository.save(userEntity, session);
+            await this.userRepository.createPubliciteRelation(user._id);
+            return user;
 
           default:
             throw new BadRequestException('Invalid user type');
@@ -219,7 +223,6 @@ export class UserService implements UserServiceInterface {
         conditionOfVisibility,
       );
 
-      
       user.isFriendRequestPending = false;
       user.isAcceptRequestFriend = {
         value: false,
@@ -545,11 +548,11 @@ export class UserService implements UserServiceInterface {
         contactExceded = activeRelationsLenght - limitContact;
         this.logger.warn(
           'Limite de contactos: ' +
-          limitContact +
-          ' Contactos actuales: ' +
-          activeRelationsLenght +
-          ' Contactos a eliminar: ' +
-          contactExceded,
+            limitContact +
+            ' Contactos actuales: ' +
+            activeRelationsLenght +
+            ' Contactos a eliminar: ' +
+            contactExceded,
         );
         const contactsToDelete: any[] = activeRelations.slice(
           limitContact,
@@ -563,11 +566,11 @@ export class UserService implements UserServiceInterface {
       } else {
         this.logger.warn(
           'Limite de contactos: ' +
-          limitContact +
-          ' Contactos actuales: ' +
-          activeRelationsLenght +
-          ' Contactos a eliminar: ' +
-          contactExceded,
+            limitContact +
+            ' Contactos actuales: ' +
+            activeRelationsLenght +
+            ' Contactos a eliminar: ' +
+            contactExceded,
         );
         return true;
       }
@@ -620,8 +623,8 @@ export class UserService implements UserServiceInterface {
       if (newActiveRelationLength > limitAvailableOfUser) {
         throw new BadRequestException(
           'El usuario no puede tener mas de ' +
-          limitAvailableOfUser +
-          ' contactos activos',
+            limitAvailableOfUser +
+            ' contactos activos',
         );
       }
 
@@ -652,7 +655,7 @@ export class UserService implements UserServiceInterface {
     } catch (error: any) {
       this.logger.error(
         'An error has occurred in user service - updateFriendRelationOfUsers: ' +
-        error,
+          error,
       );
       throw error;
     }
@@ -671,7 +674,7 @@ export class UserService implements UserServiceInterface {
     } catch (error: any) {
       this.logger.error(
         'An error has occurred in user service - updateUserPreferencesByUsername: ' +
-        error,
+          error,
       );
       throw error;
     }
@@ -707,7 +710,7 @@ export class UserService implements UserServiceInterface {
     } catch (error: any) {
       this.logger.error(
         'An error has occurred in user service - UpdateUserByClerk: ' +
-        error.message,
+          error.message,
       );
       throw error;
     }

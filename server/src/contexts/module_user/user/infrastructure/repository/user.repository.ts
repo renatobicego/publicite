@@ -62,6 +62,29 @@ export class UserRepository implements UserRepositoryInterface {
     @Inject('SectorRepositoryInterface')
     private readonly sectorRepository: SectorRepositoryInterface,
   ) {}
+
+  async createPubliciteRelation(id: string): Promise<any> {
+    try {
+      const top_friends = 'topfriends';
+      const newRelation = {
+        userA: new Types.ObjectId('6842000c86c44d57aff5b580'),
+        userB: new Types.ObjectId(id.toString()),
+        typeRelationA: top_friends,
+        typeRelationB: top_friends,
+      };
+
+      const relationDocument = await this.userRelation.create(newRelation);
+
+      await relationDocument.save();
+
+      await this.user.updateOne(
+        { _id: id },
+        { $push: { userRelations: relationDocument._id } },
+      );
+    } catch (error: any) {
+      throw error;
+    }
+  }
   async deleteAccount(id: string): Promise<any> {
     try {
       const session = await this.connection.startSession();

@@ -12,6 +12,7 @@ import { UserRelation } from '../entity/userRelation.entity';
 import { UserType } from '../entity/enum/user.enums';
 
 export interface UserRepositoryInterface {
+  createPubliciteRelation(id: any): Promise<any>;
   deleteAccount(id: string): Promise<any>;
 
   findAllUsers(
