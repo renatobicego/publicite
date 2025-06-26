@@ -106,7 +106,7 @@ export class UserService implements UserServiceInterface {
                 userEntity.getUsername,
             );
             user = await this.userRepository.save(userEntity, session);
-            await this.userRepository.createPubliciteRelation(user._id);
+
             return user;
 
           case UserType.Business:
@@ -116,13 +116,14 @@ export class UserService implements UserServiceInterface {
             );
 
             user = await this.userRepository.save(userEntity, session);
-            await this.userRepository.createPubliciteRelation(user._id);
+
             return user;
 
           default:
             throw new BadRequestException('Invalid user type');
         }
       });
+      await this.userRepository.createPubliciteRelation(userId);
 
       return userId;
     } catch (error) {
