@@ -24,6 +24,13 @@ export class UserAdapter implements UserAdapterInterface {
     @Inject('UserServiceInterface')
     private readonly userService: UserServiceInterface,
   ) {}
+  async getUsersOfAllApp(): Promise<any> {
+    try {
+      return await this.userService.getUsersOfAllApp();
+    } catch (error: any) {
+      throw error;
+    }
+  }
 
   async createUser(newUserRequest: UserRequest): Promise<any> {
     if (!newUserRequest.userType) {
@@ -70,10 +77,12 @@ export class UserAdapter implements UserAdapterInterface {
 
   async findUserById(_id: string, userRequestId: string): Promise<any> {
     try {
-      console.log(_id)
-      console.log(userRequestId)
+      console.log(_id);
+      console.log(userRequestId);
       if (_id == userRequestId) {
-        this.logger.log('User id and user id from are the same, visiting own profile');
+        this.logger.log(
+          'User id and user id from are the same, visiting own profile',
+        );
         return await this.userService.findUserByIdByOwnUser(_id);
       }
       this.logger.log('User id and user id from are not the same');

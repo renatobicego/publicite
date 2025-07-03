@@ -15,7 +15,7 @@ export interface UserServiceInterface {
     options?: { session?: ClientSession },
   ): Promise<Types.ObjectId>;
   createUser(req: User, contactDto: ContactRequest): Promise<string>;
-
+  getUsersOfAllApp(): Promise<any>;
   deleteAccount(id: string): Promise<any>;
   removeActiveRelationOfUser(userId: string, session?: any): Promise<any>;
 

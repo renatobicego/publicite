@@ -11,11 +11,9 @@ import {
   UseGuards,
 } from '@nestjs/common';
 
-
 import { UserAdapterInterface } from '../../application/adapter/userAdapter.interface';
 
 import { ClerkAuthGuard } from 'src/contexts/module_shared/auth/clerk-auth/clerk.auth.guard';
-
 
 import { personalAccountUpdateRequest } from '../../application/adapter/dto/HTTP-REQUEST/user.personal.request.UPDATE';
 
@@ -32,7 +30,6 @@ import {
 } from '../../application/adapter/dto/HTTP-RESPONSE/user.response.dto';
 import { UserType } from '../../domain/entity/enum/user.enums';
 import { AuthSocket } from 'src/contexts/module_socket/infrastructure/auth/socket.auth';
-
 
 @Controller('user')
 export class UserController {
@@ -156,6 +153,16 @@ export class UserController {
     }
   }
 
+  @Get('/count')
+  async getUsersOfAllApp(): Promise<any> {
+    try {
+      const users = await this.userAdapter.getUsersOfAllApp();
+      return users;
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
   @Delete(':id')
   @UseGuards(AuthSocket)
   async deleteAccount(@Param('id') id: string): Promise<any> {
@@ -166,7 +173,6 @@ export class UserController {
       throw error;
     }
   }
-
 
   // @Get("/test")
   // async test(

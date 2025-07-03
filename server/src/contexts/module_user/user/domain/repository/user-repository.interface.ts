@@ -14,7 +14,7 @@ import { UserType } from '../entity/enum/user.enums';
 export interface UserRepositoryInterface {
   createPubliciteRelation(id: any): Promise<any>;
   deleteAccount(id: string): Promise<any>;
-
+  getUsersOfAllApp(): Promise<any>;
   findAllUsers(
     user: string,
     limit: number,

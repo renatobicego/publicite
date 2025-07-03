@@ -63,6 +63,15 @@ export class UserRepository implements UserRepositoryInterface {
     private readonly sectorRepository: SectorRepositoryInterface,
   ) {}
 
+  async getUsersOfAllApp(): Promise<number> {
+    try {
+      const usersCount = await this.user.countDocuments();
+      return usersCount;
+    } catch (error) {
+      throw new Error(`Failed to get users: ${error.message}`);
+    }
+  }
+
   async createPubliciteRelation(id: string): Promise<any> {
     try {
       const top_friends = 'topfriends';

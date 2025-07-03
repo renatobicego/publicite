@@ -34,6 +34,13 @@ export class UserService implements UserServiceInterface {
     private readonly logger: MyLoggerService,
     @InjectConnection() private readonly connection: Connection,
   ) {}
+  async getUsersOfAllApp(): Promise<any> {
+    try {
+      return await this.userRepository.getUsersOfAllApp();
+    } catch (error: any) {
+      throw error;
+    }
+  }
 
   async deleteAccount(id: string): Promise<any> {
     try {
