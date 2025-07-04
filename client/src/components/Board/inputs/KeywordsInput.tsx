@@ -17,36 +17,54 @@ const KeywordsInput = ({
   const [currentKeyword, setCurrentKeyword] = useState<string>("");
 
   return (
-    <CustomInputWithoutFormik
-      key={"keywords"}
-      label="Palabras Clave (opcional)"
-      aria-label="palabras clave"
-      description="Presione el botón + para agregar la palabra clave"
-      placeholder="Agregue una palabra"
-      value={currentKeyword}
-      classNames={{ label: `!${textColor}` }}
-      onValueChange={setCurrentKeyword}
-      endContent={
-        <Button
-          onPress={() => {
-            setCurrentKeyword("");
-            setValues((prev) => ({
-              ...prev,
-              keywords: [...prev.keywords, currentKeyword],
-            }));
-          }}
-          size="sm"
-          isDisabled={currentKeyword.trim() === ""}
-          radius="full"
-          isIconOnly
-          aria-label="Agregar palabra clave"
-          variant="light"
-          color="primary"
-        >
-          <FaPlus />
-        </Button>
-      }
-    />
+    <div className="w-full flex flex-col gap-1 items-start">
+      <CustomInputWithoutFormik
+        key={"keywords"}
+        label="Palabras Clave (opcional)"
+        aria-label="palabras clave"
+        description="Presione el botón + para agregar la palabra clave"
+        placeholder="Agregue una palabra"
+        value={currentKeyword}
+        classNames={{ label: `!${textColor}` }}
+        onValueChange={setCurrentKeyword}
+        endContent={
+          <Button
+            onPress={() => {
+              setCurrentKeyword("");
+              setValues((prev) => ({
+                ...prev,
+                keywords: [...prev.keywords, currentKeyword],
+              }));
+            }}
+            size="sm"
+            isDisabled={currentKeyword.trim() === ""}
+            radius="full"
+            isIconOnly
+            aria-label="Agregar palabra clave"
+            variant="bordered"
+            color="primary"
+          >
+            <FaPlus />
+          </Button>
+        }
+      />
+      <Button
+        onPress={() => {
+          setCurrentKeyword("");
+          setValues((prev) => ({
+            ...prev,
+            keywords: [...prev.keywords, currentKeyword],
+          }));
+        }}
+        isDisabled={currentKeyword.trim() === ""}
+        radius="full"
+        color="primary"
+        startContent={<FaPlus />}
+        size="sm"
+      >
+        Agregar Palabra
+      </Button>
+    </div>
   );
 };
 

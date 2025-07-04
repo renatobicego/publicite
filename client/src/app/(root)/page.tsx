@@ -1,3 +1,4 @@
+import UserAmountChips from "@/components/chips/UserAmountChips";
 import HomePostSection from "@/components/grids/HomePostSection";
 import SelectManualLocationModal from "@/components/modals/SelectManualLocation/SelectManualLocationModal";
 import { POSTS } from "@/utils/data/urls";
@@ -20,6 +21,7 @@ export default function Home() {
           <li>Crea relaciones</li>
           <li>Activa cuentas para ver anuncios de tus contactos</li>
         </ul>
+        <UserAmountChips />
       </div>
       <SelectManualLocationModal />
       <Suspense fallback={<Spinner color="warning" />}>
