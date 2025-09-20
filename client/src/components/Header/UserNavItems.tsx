@@ -26,6 +26,9 @@ const UserNavItems = ({
           <SecondaryButton as={Link} href="/iniciar-sesion" variant="flat">
             Iniciar Sesión
           </SecondaryButton>
+          <SecondaryButton as={Link} href="/iniciar-sesion">
+            Registrate
+          </SecondaryButton>
         </SignedOut>
       </NavbarItem>
       <SignedIn>

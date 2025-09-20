@@ -12,6 +12,7 @@ import Search from "./Search/Search";
 import MobileMenu from "./MobileMenu";
 import NavMenuItems from "./NavMenuItems";
 import UserNavItems from "./UserNavItems";
+import { POSTS } from "@/utils/data/urls";
 
 const Header = ({ isSignedIn }: { isSignedIn: boolean }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -48,6 +49,15 @@ const Header = ({ isSignedIn }: { isSignedIn: boolean }) => {
             } hover:scale-[1.04]`}
           />
         </NavbarBrand>
+        <NavbarItem
+          className={`w-auto !transition-all duration-300 ${
+            isFocused ? "!w-0 overflow-hidden" : ""
+          }`}
+        >
+          <Link size="sm" className="text-text-color font-medium" href={POSTS}>
+            Explorar
+          </Link>
+        </NavbarItem>
         <NavbarItem
           className={`flex-1 !transition-all duration-300 ${
             isFocused ? "w-full" : "w-auto"

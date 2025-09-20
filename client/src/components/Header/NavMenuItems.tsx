@@ -6,14 +6,11 @@ import { CREATE, POSTS } from "@/utils/data/urls";
 const NavMenuItems = () => {
   return (
     <>
-      <Link size="sm" className="text-text-color font-medium" href="/">
+      {/* <Link size="sm" className="text-text-color font-medium" href="/">
         Inicio
-      </Link>
-      <Link size="sm" className="text-text-color font-medium" href={POSTS}>
-        Explorar
-      </Link>
-      <PrimaryButton as={Link} href={CREATE}>
-        Publicar
+      </Link> */}
+      <PrimaryButton as={Link} href={CREATE} className="text-base px-8">
+        Crear
       </PrimaryButton>
     </>
   );
