@@ -38,9 +38,9 @@ const Inputs = ({
   const { userIdLogged } = useUserData();
   useEffect(() => {
     //debería traer contactos del admin
-    fetchDataByType({ typeOfData: "users" }, null, 1, null).then(
+    fetchDataByType({ typeOfData: "users" }, "buscarEnGrupo", 1, null).then(
       (data: any) => {
-        setListUsers(data.items);
+        setListUsers(data.items ? data.items : []);
       }
     );
   }, []);
