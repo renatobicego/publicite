@@ -30,7 +30,7 @@ const Footer = ({ id }: { id?: string | null }) => {
                 <FaXTwitter className="text-white size-4" />
               </Button>
             </li> */}
-            <li>
+            {/* <li>
               <Button
                 aria-label="Instagram"
                 isIconOnly
@@ -41,7 +41,7 @@ const Footer = ({ id }: { id?: string | null }) => {
               >
                 <FaInstagram className="text-white size-5" />
               </Button>
-            </li>
+            </li> */}
           </ul>
         </nav>
       </div>
