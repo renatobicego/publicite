@@ -46,7 +46,7 @@ const TermsConditions = ({
           onPress={onOpen}
           radius="full"
           variant="light"
-          className="text-white -ml-4 -mt-1.5 data-[hover=true]:bg-transparent"
+          className="text-white -ml-4 -my-2 data-[hover=true]:bg-transparent"
         >
           Términos y Condiciones
         </Button>
