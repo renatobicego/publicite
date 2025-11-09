@@ -19,6 +19,10 @@ import {
 import { Tab, Tabs } from "@nextui-org/react";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
+import TabTitle from "./TabTitle";
+import { FaLocationDot, FaUser, FaUserGroup } from "react-icons/fa6";
+import { IoMdMegaphone } from "react-icons/io";
+import { FaChalkboardTeacher } from "react-icons/fa";
 
 const SolapasTabs = () => {
   const pathname = usePathname();
@@ -92,12 +96,32 @@ const SolapasTabs = () => {
   const tabDefinitions = [
     {
       key: `${POSTS}${postTypeUrlVisited}`,
-      title: "Anuncios Libres",
+      title: (
+        <TabTitle
+          title="Anuncios Libres"
+          icon={
+            <>
+              <FaLocationDot className="size-4 md:size-5 " />{" "}
+              <IoMdMegaphone className="size-4 md:size-5 " />
+            </>
+          }
+        />
+      ),
       component: <PostsList postTypeVisited={postTypeVisited} />,
     },
     {
       key: `${POST_CONTACTS}${postTypeUrlVisited}`,
-      title: "Agenda de Contactos",
+      title: (
+        <TabTitle
+          title="Agenda de Contactos"
+          icon={
+            <>
+              <FaUser className="size-4 md:size-5 " />{" "}
+              <IoMdMegaphone className="size-4 md:size-5 " />
+            </>
+          }
+        />
+      ),
       component: <PostsList postTypeVisited={postTypeVisited} hideMap />,
       requiresLogin: true,
     },
@@ -118,19 +142,19 @@ const SolapasTabs = () => {
     // },
     {
       key: BOARDS,
-      title: "Pizarras",
+      title: <TabTitle title="Pizarras" icon={<FaChalkboardTeacher />} />,
       component: <BoardsLogic />,
       requiresLogin: true,
     },
     {
       key: PROFILE,
-      title: "Carteles de Usuario",
+      title: <TabTitle title="Carteles de Usuario" icon={<FaUser />} />,
       component: <UsersLogic />,
       requiresLogin: true,
     },
     {
       key: GROUPS,
-      title: "Grupos",
+      title: <TabTitle title="Grupos" icon={<FaUserGroup />} />,
       component: <GroupsLogic />,
       requiresLogin: true,
     },

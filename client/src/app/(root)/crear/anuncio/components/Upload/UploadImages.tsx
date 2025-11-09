@@ -34,7 +34,6 @@ const UploadImages = ({
   const maxVideoSize = 32 * 1024 * 1024; // 32MB for videos
   const maxTotalFiles = 10 - prevFilesCount;
   const maxVideoFiles = allowVideos ? (isVideoUploaded ? 0 : 1) : 0;
-  console.log(prevFilesCount);
 
   // Handle file drop
   const onDrop = useCallback(
@@ -53,7 +52,6 @@ const UploadImages = ({
           return false;
         }
 
-        console.log(currentVideoCount, maxVideoFiles);
         if (allowVideos && isVideo && currentVideoCount >= maxVideoFiles) {
           toastifyError("Solo se permite un video.");
           return false;

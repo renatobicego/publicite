@@ -2,11 +2,14 @@ import { useConfigData } from "@/app/(root)/providers/userDataProvider";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import UserRelationsGrid from "@/components/grids/UserRelationsGrid";
 import ManageActiveUserRelationsModal from "@/components/modals/ManageActiveUserRelations/ManageActiveUserRelationsModal";
+import TabTitle from "@/components/solapas/TabTitle";
 import type { User, UserRelations } from "@/types/userTypes";
 import { PROFILE } from "@/utils/data/urls";
 import { Link, Tab, Tabs, user } from "@nextui-org/react";
 import { useCallback, useMemo, useState } from "react";
-import { FaPlus } from "react-icons/fa";
+import { FaUserFriends } from "react-icons/fa";
+import { FaUserCheck, FaPlus, FaUserGroup } from "react-icons/fa6";
+import { MdContacts } from "react-icons/md";
 
 type UserRelationsType = "all" | "active" | UserRelation;
 
@@ -21,26 +24,36 @@ const UserRelations = ({
     useState<UserRelationsType>("all");
   const { configData } = useConfigData();
 
-  const tabs: { key: UserRelationsType; label: string }[] = [
+  const tabs: { key: UserRelationsType; label: JSX.Element }[] = [
     {
       key: "all",
-      label: "Todos",
+      label: <TabTitle title="Todos" icon={<FaUserGroup />} />,
     },
     {
       key: "active",
-      label: "Activos",
+      label: <TabTitle title="Activos" icon={<FaUserCheck />} />,
     },
     {
       key: "contacts",
-      label: "Contactos",
+      label: <TabTitle title="Contactos" icon={<MdContacts />} />,
     },
     {
       key: "friends",
-      label: "Amigos",
+      label: <TabTitle title="Amigos" icon={<FaUserFriends />} />,
     },
     {
       key: "topfriends",
-      label: "Top Amigos",
+      label: (
+        <TabTitle
+          title="Top Amigos"
+          icon={
+            <>
+              <FaPlus className="size-3 md:size-4 " />
+              <FaUserFriends className="size-4 md:size-5 " />
+            </>
+          }
+        />
+      ),
     },
   ];
 
