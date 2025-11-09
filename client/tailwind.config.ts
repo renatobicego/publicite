@@ -1,21 +1,20 @@
 import type { Config } from "tailwindcss";
-import {nextui} from "@nextui-org/react";
+import { nextui } from "@nextui-org/react";
 import { withUt } from "uploadthing/tw";
 const config: Config = withUt({
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
-    "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}"
-
+    "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
   ],
   safelist: [
-    '!text-white',
-    'bg-[#D8FFC6]', 
-    'bg-[#20A4F3]/30', 
-    'bg-[#FFF275]/80', 
-    'bg-[#FFB238]/80', 
-    'bg-[#5A0001]/80',
+    "!text-white",
+    "bg-[#D8FFC6]",
+    "bg-[#20A4F3]/30",
+    "bg-[#FFF275]/80",
+    "bg-[#FFB238]/80",
+    "bg-[#5A0001]/80",
   ],
   theme: {
     extend: {
@@ -31,27 +30,36 @@ const config: Config = withUt({
       colors: {
         fondo: "#FFFDF7",
         pistacho: "#8CD867",
-        'text-color': '#031926',
+        "text-color": "#031926",
         service: "#F0931A",
         primary: "#EF2D56",
         secondary: "#8CD867",
-        'light-text': "#818181",
-        petition: "#0091AD"
+        "light-text": "#818181",
+        petition: "#0091AD",
       },
       borderRadius: {
-        "20": "20px"
+        "20": "20px",
       },
       screens: {
-        '3xl': '1720px'
+        "3xl": "1720px",
       },
       transitionProperty: {
-        'height': 'height',
-        'radius': 'border-radius'
-      }
+        height: "height",
+        radius: "border-radius",
+      },
     },
   },
   darkMode: "class",
-  plugins: [nextui()]
+  plugins: [
+    nextui({
+      themes: {
+        light: {
+          colors: {
+            warning: "#F0931A",
+          },
+        },
+      },
+    }),
+  ],
 });
 export default config;
-

@@ -1,5 +1,5 @@
 import { PostBehaviourType } from "@/types/postTypes";
-import { Select, SelectItem } from "@nextui-org/react";
+import { Button, Select, SelectItem } from "@nextui-org/react";
 
 const SelectPostBehaviourType = ({
   type,
@@ -11,11 +11,28 @@ const SelectPostBehaviourType = ({
   errorMessage?: string;
 }) => {
   return (
-    <div
-      id="post-behaviour"
-      className="flex-col flex flex-1 gap-1 justify-start"
-    >
-      <Select
+    <div id="post-behaviour" className="flex-col flex gap-1 justify-start">
+      <h2 className="text-lg font-medium">Comportamiento de Anuncio</h2>
+      <div className="flex gap-4 w-full">
+        <Button
+          variant={type === "libre" ? "solid" : "flat"}
+          color="primary"
+          className="flex-1 h-20 text-center "
+          onPress={() => setType("libre")}
+        >
+          Anuncio Libre
+        </Button>
+        <Button
+          variant={type === "agenda" ? "solid" : "flat"}
+          color="warning"
+          className="flex-1 h-20 text-center"
+          onPress={() => setType("agenda")}
+        >
+          Anuncio de Agenda
+        </Button>
+      </div>
+      {errorMessage && <p className="text-red-500">{errorMessage}</p>}
+      {/* <Select
         scrollShadowProps={{
           hideScrollBar: false,
         }}
@@ -56,11 +73,12 @@ const SelectPostBehaviourType = ({
         >
           Agenda
         </SelectItem>
-      </Select>
+      </Select> */}
       <aside className="text-sm">
-        Los <em>anuncios libres</em> serán públicos y visibles por el alcance de
-        la localización. Los <em>anuncios de agenda</em> serán visibles solo
-        para tu agenda de contactos
+        Seleccione si el comportamiento del anuncio es libre o agenda. Los
+        <em>anuncios libres</em> serán públicos y visibles por el alcance de la
+        localización. Los <em>anuncios de agenda</em> serán visibles solo para
+        tu agenda de contactos
       </aside>
     </div>
   );
