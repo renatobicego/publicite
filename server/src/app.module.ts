@@ -25,6 +25,7 @@ import { NotificationModule } from './contexts/module_user/notification/infrastr
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ContactSellerModule } from './contexts/module_user/contactSeller/infrastructure/module/contactSeller.module';
 import { EmmiterModule } from './contexts/module_shared/event-emmiter/emiter.module';
+import { ChatbotModule } from './contexts/module_user/chatbot/infrastructure/module/chatbot.module';
 
 @Module({
   imports: [
@@ -56,6 +57,7 @@ import { EmmiterModule } from './contexts/module_shared/event-emmiter/emiter.mod
     NotificationSocketModule,
     NotificationModule,
     ContactSellerModule,
+    ChatbotModule,
   ],
   providers: [
     {
