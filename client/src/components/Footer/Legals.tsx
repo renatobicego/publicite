@@ -1,5 +1,6 @@
 import { Link } from "@nextui-org/react";
 import TermsConditions from "./TermsConditions";
+import PrivacyPolicy from "./PrivacyPolicy";
 
 const Legals = () => {
   return (
@@ -7,6 +8,9 @@ const Legals = () => {
       <li className="text-white font-bold">Recursos Legales</li>
       <li>
         <TermsConditions />
+      </li>
+      <li>
+        <PrivacyPolicy />
       </li>
     </ul>
   );

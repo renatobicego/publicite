@@ -11,11 +11,13 @@ import { Magazine } from "@/types/magazineTypes";
 import UsersGrid from "@/app/(root)/(explorar)/perfiles/UsersGrid";
 import InviteUsersGroup from "../modals/InvitationModal/InviteUsersGroup";
 import PrimaryButton from "../buttons/PrimaryButton";
-import { FaPlus } from "react-icons/fa6";
+import { FaBookmark, FaPlus, FaUserGroup, FaUserPlus } from "react-icons/fa6";
 import { User } from "@/types/userTypes";
 import { useRouter } from "next-nprogress-bar";
 import SelectManualLocationModal from "../modals/SelectManualLocation/SelectManualLocationModal";
 import { useUserData } from "@/app/(root)/providers/userDataProvider";
+import TabTitle from "./TabTitle";
+import { IoMdMegaphone } from "react-icons/io";
 const GroupSolapas = ({
   group,
   isAdmin,
@@ -68,7 +70,7 @@ const GroupSolapas = ({
   const tabDefinitions = [
     {
       key: `${GROUP_URL}`,
-      title: "Anuncios del Grupo",
+      title: <TabTitle title="Anuncios del Grupo" icon={<IoMdMegaphone />} />,
       component: (
         <>
           <h3>Anuncios de Miembros del Grupo</h3>
@@ -87,7 +89,7 @@ const GroupSolapas = ({
     },
     {
       key: `${GROUP_URL}${MAGAZINES}`,
-      title: "Revistas del Grupo",
+      title: <TabTitle title="Revistas del Grupo" icon={<FaBookmark />} />,
       component: (
         <>
           <div className="w-full flex justify-between items-center">
@@ -108,7 +110,7 @@ const GroupSolapas = ({
     },
     {
       key: `${GROUP_URL}/miembros`,
-      title: "Administrar Miembros",
+      title: <TabTitle title="Administrar Miembros" icon={<FaUserGroup />} />,
       component: (
         <>
           <div className="w-full flex justify-between items-center">
@@ -122,7 +124,7 @@ const GroupSolapas = ({
     },
     {
       key: `${GROUP_URL}/solicitudes`,
-      title: "Administrar Solicitudes",
+      title: <TabTitle title="Administrar Solicitudes" icon={<FaUserPlus />} />,
       component: (
         <>
           <div className="w-full flex justify-between items-center">

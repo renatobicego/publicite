@@ -15,7 +15,7 @@ import { useEffect, useRef } from "react";
 import MagazinesGrid from "../grids/MagazinesGrid";
 import GroupsGrid from "@/app/(root)/(explorar)/grupos/GroupsGrid";
 import PrimaryButton from "../buttons/PrimaryButton";
-import { FaPlus } from "react-icons/fa6";
+import { FaPlus, FaUserGroup } from "react-icons/fa6";
 import UserPosts from "@/app/(root)/(explorar)/perfiles/[id]/(components)/UserPosts/UserPosts";
 import UserRelationRequestsGrid from "@/app/(root)/(explorar)/perfiles/[id]/(components)/UserRelations/UserRelationRequestsGrid";
 import UserRelations from "@/app/(root)/(explorar)/perfiles/[id]/(components)/UserRelations/UserRelations";
@@ -23,6 +23,10 @@ import {
   useConfigData,
   useUserData,
 } from "@/app/(root)/providers/userDataProvider";
+import { IoMdMegaphone } from "react-icons/io";
+import { FaBookmark, FaUserPlus } from "react-icons/fa";
+import TabTitle from "./TabTitle";
+import { MdContacts } from "react-icons/md";
 
 const UserSolapas = ({
   user,
@@ -81,7 +85,7 @@ const UserSolapas = ({
   const tabDefinitions = [
     {
       key: `${PROFILE_USERNAME}`,
-      title: "Anuncios",
+      title: <TabTitle title="Anuncios" icon={<IoMdMegaphone />} />,
       component: (
         <>
           {isMyProfile && (
@@ -100,7 +104,7 @@ const UserSolapas = ({
     },
     {
       key: `${PROFILE_USERNAME}${MAGAZINES}`,
-      title: "Revistas",
+      title: <TabTitle title="Revistas" icon={<FaBookmark />} />,
       component: (
         <>
           {isMyProfile && (
@@ -119,7 +123,7 @@ const UserSolapas = ({
     },
     {
       key: `${PROFILE_USERNAME}/contactos`,
-      title: "Agenda de Contactos",
+      title: <TabTitle title="Agenda de Contactos" icon={<MdContacts />} />,
       component: (
         <UserRelations
           user={{ _id: user._id, userRelations: user.userRelations }}
@@ -129,7 +133,7 @@ const UserSolapas = ({
     },
     {
       key: `${PROFILE_USERNAME}${GROUPS}`,
-      title: "Grupos",
+      title: <TabTitle title="Grupos" icon={<FaUserGroup />} />,
       component: (
         <>
           {isMyProfile && (
@@ -157,7 +161,7 @@ const UserSolapas = ({
     },
     {
       key: `${PROFILE_USERNAME}/solicitudes`,
-      title: "Administrar Solicitudes",
+      title: <TabTitle title="Administrar Solicitudes" icon={<FaUserPlus />} />,
       component: <UserRelationRequestsGrid items={friendRequests} />,
       requiredProfile: true,
     },

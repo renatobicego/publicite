@@ -55,6 +55,9 @@ export const fetchDataByType = async (
       return await getGroups(searchTerm, page);
     case "users":
       if (!searchTerm) return [];
+      if (searchTerm === "buscarEnGrupo") {
+        return await getUsers(null, page);
+      }
       return await getUsers(searchTerm, page);
     case "groupPosts":
       return await getGroupPosts(

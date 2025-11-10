@@ -102,7 +102,7 @@ export const getSubscriptionsPlans = async (): Promise<SubscriptionPlan[]> => {
     );
   }
   const data = await res.json();
-  return data;
+  return data.filter((plan: SubscriptionPlan) => plan.isActive);
 };
 
 export const getSubscriptionsOfUser = async (

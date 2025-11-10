@@ -79,7 +79,7 @@ export default async function ProfileLayout(props: {
     <Suspense fallback={<Loading />}>
       <main
         id="profile-container"
-        className="flex min-h-screen flex-col items-start main-style gap-4 md:gap-6 xl:gap-8"
+        className="flex min-h-screen flex-col items-start main-style gap-4 md:gap-6 xl:gap-8 max-w-screen-xl mx-auto"
       >
         <BreadcrumbsAdmin items={breadcrumbsItems} />
         <div

@@ -1,7 +1,8 @@
+import UserAmountChips from "@/components/chips/UserAmountChips";
 import HomePostSection from "@/components/grids/HomePostSection";
 import SelectManualLocationModal from "@/components/modals/SelectManualLocation/SelectManualLocationModal";
 import { POSTS } from "@/utils/data/urls";
-import { Spinner } from "@nextui-org/react";
+import { Image, Spinner } from "@nextui-org/react";
 import { Suspense } from "react";
 export default function Home() {
   return (
@@ -10,7 +11,7 @@ export default function Home() {
       className="flex min-h-screen flex-col items-start main-style gap-8"
     >
       <div className="text-xs lg:text-sm lg:max-w-[50%]">
-        <p>¡Hola!</p>
+        {/* <p>¡Hola!</p>
         <ul className="list-disc list-inside">
           <li>Regístrate - Inicia sesión</li>
           <li>
@@ -19,7 +20,15 @@ export default function Home() {
           </li>
           <li>Crea relaciones</li>
           <li>Activa cuentas para ver anuncios de tus contactos</li>
-        </ul>
+        </ul> */}
+        <Image
+          src="/instructivo.png"
+          alt="instructivo"
+          className="object-contain"
+          width={600}
+          removeWrapper
+        />
+        <UserAmountChips />
       </div>
       <SelectManualLocationModal />
       <Suspense fallback={<Spinner color="warning" />}>

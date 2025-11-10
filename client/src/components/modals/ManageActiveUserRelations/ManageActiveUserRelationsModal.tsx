@@ -39,6 +39,7 @@ const ManageActiveUserRelationsModal = ({
         radius="lg"
         className="p-2"
         placement="center"
+        scrollBehavior="inside"
         isOpen={isOpen}
         isDismissable={false}
         onOpenChange={onOpenChange}

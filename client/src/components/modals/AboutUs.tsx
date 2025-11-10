@@ -40,7 +40,7 @@ const AboutUs = () => {
           <ModalBody>
             <h5>¿Qué es Publicite?</h5>
             <p>
-              Publicite es un emprendimiento en desarrollo impulsado por un
+              Soonpublicite S.A. es un emprendimiento en desarrollo impulsado por un
               grupo de programadores web y estudiantes de diseño. El proyecto
               inició durante 2024 y fue lanzado al uso internacional en 2025.
               Agradecemos especialmente a nuestro equipo de trabajo.

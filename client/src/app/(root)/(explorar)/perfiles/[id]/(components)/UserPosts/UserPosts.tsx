@@ -1,8 +1,11 @@
 import PostListHeader from "@/app/(root)/(explorar)/anuncios/components/PostListHeader";
 import MasonryPostGrid from "@/components/grids/MasonryPostGrid";
+import TabTitle from "@/components/solapas/TabTitle";
 import { Post } from "@/types/postTypes";
 import { useFilteredAndSortedPosts } from "@/utils/hooks/useFilteredOrderedPosts";
 import { Tab, Tabs } from "@nextui-org/react";
+import { FaCheck, FaRegCalendar, FaXmark } from "react-icons/fa6";
+import { TbClockExclamation } from "react-icons/tb";
 
 const UserPosts = ({
   posts,
@@ -48,10 +51,24 @@ const UserPosts = ({
           aria-label="solapas de tipos anuncios"
           variant={"underlined"}
         >
-          <Tab key="active" title="Activos" />
-          <Tab key="nextToExpire" title="Próximos a Vencer" />
-          <Tab key="inactive" title="Inactivos" />
-          <Tab key="expired" title="Vencidos" />
+          <Tab
+            key="active"
+            title={<TabTitle title="Activos" icon={<FaCheck />} />}
+          />
+          <Tab
+            key="nextToExpire"
+            title={
+              <TabTitle title="Próximos a Vencer" icon={<FaRegCalendar />} />
+            }
+          />
+          <Tab
+            key="inactive"
+            title={<TabTitle title="Inactivos" icon={<FaXmark />} />}
+          />
+          <Tab
+            key="expired"
+            title={<TabTitle title="Vencidos" icon={<TbClockExclamation />} />}
+          />
         </Tabs>
       )}
       <MasonryPostGrid
