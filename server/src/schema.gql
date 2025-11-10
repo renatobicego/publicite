@@ -877,6 +877,34 @@ type ContactSeller_getAll {
   hasMore: Boolean!
 }
 
+type ChatMessageResponse {
+  role: String!
+  content: String!
+  timestamp: DateTime!
+}
+
+type ChatSessionResponse {
+  sessionId: String!
+  userId: String
+  messages: [ChatMessageResponse!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  isActive: Boolean!
+}
+
+type SendMessageResponse {
+  sessionId: String!
+  userMessage: String!
+  botResponse: String!
+  timestamp: DateTime!
+}
+
+type GetSessionHistoryResponse {
+  sessionId: String!
+  messages: [ChatMessageResponse!]!
+  totalMessages: Float!
+}
+
 type Query {
   """Obtiene un usuario por su nombre de usuario """
   findUserById(_id: String!): User_Full_Grapql_Model
@@ -949,6 +977,9 @@ type Query {
 
   """Obtiene las peticiones de contacto por post o por usuario"""
   getContactSellerById(contactSellerGetType: contactSellerGetType!, _id: String!, limit: Float!, page: Float!): ContactSeller_getAll
+
+  """Obtener el historial de una sesión de chat"""
+  getChatSessionHistory(sessionId: String!, limit: Float, page: Float): GetSessionHistoryResponse!
 }
 
 """Type of the post """
@@ -1126,6 +1157,15 @@ type Mutation {
 
   """Crear una categoria de un post"""
   createNewCategoryPost(category: PostCategoryRequest!): PostCategoryResponse
+
+  """Crear una nueva sesión de chat"""
+  createChatSession(createSessionRequest: CreateSessionRequest): ChatSessionResponse!
+
+  """Enviar un mensaje al chatbot (crea la sesión automáticamente)"""
+  sendMessageToChatbot(sendMessageRequest: SendMessageRequest!): SendMessageResponse!
+
+  """Eliminar una sesión de chat completa (sesión + todos los mensajes)"""
+  deleteChatSession(sessionId: String!): Boolean!
 }
 
 input UpdateContactRequest {
@@ -1334,4 +1374,14 @@ input MagazineUpdateRequest {
 
 input PostCategoryRequest {
   label: String!
+}
+
+input CreateSessionRequest {
+  userId: String
+}
+
+input SendMessageRequest {
+  sessionId: String
+  message: String!
+  userId: String
 }
