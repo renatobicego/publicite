@@ -178,7 +178,7 @@ export type UserRelationNotificationType =
 export type ElementSharedData = {
   type: ShareTypesEnum;
   _id: string;
-  description: string;
+  description?: string;
   username: string;
   imageUrl?: string;
 };

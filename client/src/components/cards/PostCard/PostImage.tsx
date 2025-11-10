@@ -1,9 +1,12 @@
 "use client";
-import { CardHeader, Image, Link } from "@nextui-org/react";
+import { Button, CardHeader, Image, Link, Tooltip } from "@nextui-org/react";
 import SaveButton from "../../buttons/SaveMagazine/SaveButton";
 import { FILE_URL, POSTS } from "@/utils/data/urls";
 import { Good, Service } from "@/types/postTypes";
 import { SignedIn } from "@clerk/nextjs";
+import ShareButton from "@/components/buttons/ShareButton";
+import { FaShare } from "react-icons/fa6";
+import { FaShareAlt } from "react-icons/fa";
 
 const PostImage = ({
   post,
@@ -44,6 +47,24 @@ const PostImage = ({
           />
         )}
       </SignedIn>
+      <ShareButton
+        data={{ ...post, type: "post" }}
+        shareType="post"
+        customUrl={`${POSTS}/${post._id}`}
+        customTitle={`Echa un vistazo a este post: ${post.title}`}
+        ButtonAction={
+          <Button
+            isIconOnly
+            aria-label="Compartir"
+            variant="flat"
+            color="secondary"
+            radius="full"
+            className="absolute bottom-2 right-2  z-10 min-w-8 size-8"
+          >
+            <FaShareAlt />
+          </Button>
+        }
+      />
     </CardHeader>
   );
 };
