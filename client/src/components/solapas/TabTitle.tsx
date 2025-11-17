@@ -31,16 +31,39 @@ const TabTitle = (props: TabProps) => {
 
   const color = interpolateColor("#F0931A", "#031926", factor);
 
-  const clonedIcon = props.icon
-    ? React.cloneElement(props.icon as React.ReactElement, {
-        className: "size-4 md:size-5 xl:size-6",
+  const processIcons = (icon: React.ReactNode) => {
+    if (!icon) return null;
+
+    // Si es fragmento, iteramos los hijos
+    if ((icon as any)?.type === React.Fragment) {
+      const children = (icon as any).props.children;
+
+      return React.Children.map(children, (child) => {
+        if (!React.isValidElement(child)) return child;
+
+        return React.cloneElement(child as React.ReactElement<any>, {
+          className: "size-5 xl:size-6",
+          color,
+        });
+      });
+    }
+
+    // Si es un solo ícono:
+    if (React.isValidElement(icon)) {
+      return React.cloneElement(icon as React.ReactElement<any>, {
+        className: "size-6 xl:size-7",
         color,
-      })
-    : null;
+      });
+    }
+
+    return icon;
+  };
+
+  const renderedIcons = processIcons(props.icon);
 
   return (
     <div className="flex items-center space-x-2">
-      {clonedIcon}
+      {renderedIcons}
       <span>{props.title}</span>
     </div>
   );

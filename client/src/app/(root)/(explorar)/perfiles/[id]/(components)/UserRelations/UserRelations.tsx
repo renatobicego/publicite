@@ -49,7 +49,7 @@ const UserRelations = ({
           icon={
             <>
               <FaPlus className="size-3 md:size-4 " />
-              <FaUserFriends className="size-4 md:size-5 " />
+              <FaUserFriends className="size-5 md:size-6 " />
             </>
           }
         />
