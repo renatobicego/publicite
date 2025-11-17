@@ -27,7 +27,7 @@ const CreateForm = ({ userId }: { userId?: string }) => {
         files={files}
         setFiles={setFiles}
         type={type}
-        customClassname="max-md:mb-4"
+        customClassname="max-md:hidden"
       />
       <AttachedFilesProvider>
         <section
@@ -54,6 +54,14 @@ const CreateForm = ({ userId }: { userId?: string }) => {
                 <p className="text-red-500 text-center max-lg:text-sm">
                   Por favor, seleccione si es un bien o un servicio.
                 </p>
+              )}
+              {type && (
+                <UploadImages
+                  files={files}
+                  setFiles={setFiles}
+                  type={type}
+                  customClassname="md:hidden"
+                />
               )}
               {type === "good" ? (
                 <CreateGood
