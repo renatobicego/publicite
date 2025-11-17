@@ -105,6 +105,8 @@ const HelpButton = () => {
     }
   };
 
+  const screenWidth = typeof window !== "undefined" ? window.innerWidth : 0;
+
   return (
     <>
       <Joyride
@@ -137,17 +139,21 @@ const HelpButton = () => {
           <Button
             isIconOnly
             aria-label="Ayuda"
-            color="primary"
+            color={screenWidth >= 768 ? "secondary" : "primary"}
             size="lg"
             radius="full"
             variant="light"
-            className="fixed bottom-4 md:bottom-8 right-4 md:right-8 bg-fondo shadow"
+            className="fixed bottom-4 md:bottom-8 right-4 md:right-8 bg-fondo shadow w-16 h-16 md:w-14 md:h-14"
           >
-            <FaPlus className="size-8" />
+            {screenWidth >= 768 ? (
+              <IoIosHelp className="size-16" />
+            ) : (
+              <FaPlus className="size-10" />
+            )}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="flex flex-col items-start">
-          <PrimaryButton as={Link} href={CREATE} className="w-full">
+          <PrimaryButton as={Link} href={CREATE} className="w-full md:hidden">
             Crear
           </PrimaryButton>
           <PrimaryButton
