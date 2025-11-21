@@ -12,6 +12,7 @@ import {
   ScrollShadow,
 } from "@nextui-org/react";
 import { FaPaperPlane, FaX } from "react-icons/fa6";
+import { CustomInputWithoutFormik } from "@/components/inputs/CustomInputs";
 
 interface ChatWindowProps {
   messages: UIMessage[];
@@ -49,12 +50,13 @@ export function ChatWindow({
     <div className="fixed bottom-24 right-8 z-50 w-96">
       <Card className="h-[500px] shadow-2xl bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800">
         {/* Header */}
-        <CardHeader className="flex items-center justify-between gap-3 border-b border-orange-200 dark:border-orange-900 bg-gradient-to-r from-orange-500 to-orange-600 text-white">
-          <h2 className="text-lg font-semibold">Chat with AI</h2>
+        <CardHeader className="flex items-center justify-between gap-3 border-b border-orange-200 dark:border-orange-900 bg-service text-white">
+          <h2 className="text-lg font-semibold">Chatea con Cubito</h2>
           <Button
             isIconOnly
             size="sm"
             variant="light"
+            radius="full"
             onClick={onClose}
             className="text-white hover:bg-orange-700"
             aria-label="Close chat"
@@ -68,7 +70,7 @@ export function ChatWindow({
           <ScrollShadow className="flex-1 overflow-y-auto p-4 space-y-3">
             {messages.length === 0 ? (
               <div className="flex items-center justify-center h-full text-center text-gray-500 dark:text-gray-400">
-                <p>Start a conversation with AI</p>
+                <p>Preguntale a Cubito lo que quieras</p>
               </div>
             ) : (
               messages.map((message) => (
@@ -123,23 +125,18 @@ export function ChatWindow({
         {/* Input Form */}
         <div className="border-t border-gray-200 dark:border-slate-600 p-3 bg-white dark:bg-slate-800">
           <form onSubmit={handleSubmit} className="flex gap-2">
-            <Input
+            <CustomInputWithoutFormik
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              placeholder="Type your message..."
+              placeholder="Tu mensaje..."
               disabled={isLoading}
-              size="sm"
-              className="flex-1"
-              classNames={{
-                input: "text-sm",
-              }}
             />
             <Button
               isIconOnly
               type="submit"
+              radius="full"
               disabled={isLoading || !inputValue.trim()}
-              size="sm"
-              className="bg-gradient-to-br from-orange-500 to-orange-600 text-white"
+              className="text-white bg-service"
             >
               <FaPaperPlane size={16} />
             </Button>
