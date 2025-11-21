@@ -47,7 +47,7 @@ export function ChatWindow({
   };
 
   return (
-    <div className="fixed bottom-24 right-8 z-50 w-96">
+    <div className="fixed bottom-28 md:bottom-24 right-4 md:right-8 z-50 w-96">
       <Card className="h-[500px] shadow-2xl bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800">
         {/* Header */}
         <CardHeader className="flex items-center justify-between gap-3 border-b border-orange-200 dark:border-orange-900 bg-service text-white">
@@ -83,7 +83,7 @@ export function ChatWindow({
                   <div
                     className={`max-w-xs px-4 py-2 rounded-xl ${
                       message.role === "user"
-                        ? "bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-br-none"
+                        ? "bg-service text-white rounded-br-none"
                         : "bg-white dark:bg-slate-700 text-gray-900 dark:text-white border border-gray-200 dark:border-slate-600 rounded-bl-none"
                     }`}
                   >

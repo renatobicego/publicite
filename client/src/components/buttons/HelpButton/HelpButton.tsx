@@ -143,7 +143,7 @@ const HelpButton = () => {
             size="lg"
             radius="full"
             variant="light"
-            className="fixed bottom-4 md:bottom-8 right-4 md:right-8 bg-fondo shadow w-16 h-16 md:w-14 md:h-14"
+            className="fixed bottom-8 right-4 md:right-8 bg-fondo shadow w-16 h-16 md:w-14 md:h-14"
           >
             {screenWidth >= 768 ? (
               <IoIosHelp className="size-16" />
