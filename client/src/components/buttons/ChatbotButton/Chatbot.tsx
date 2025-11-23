@@ -1,21 +1,59 @@
 "use client";
 
 import { useState } from "react";
-import { useChat } from "@ai-sdk/react";
-import { DefaultChatTransport } from "ai";
 import { Button } from "@nextui-org/react";
+import { sendMessageToAI } from "@/services/chatbotServices";
 import { OrangeCubeIcon } from "./OrangeCubeIcon";
 import { ChatWindow } from "./ChatWindow";
+import { toastifyError } from "@/utils/functions/toastify";
+import { UIMessage } from "ai";
 
 export function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
+  const [messages, setMessages] = useState<UIMessage[]>([]);
+  const [status, setStatus] = useState<"idle" | "in_progress" | "error">(
+    "idle"
+  );
 
-  const { messages, sendMessage, status } = useChat({
-    transport: new DefaultChatTransport({ api: "/api/chat" }),
-  });
-
-  const handleSendMessage = (text: string) => {
-    sendMessage({ text });
+  const handleSendMessage = async (text: string) => {
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      {
+        role: "user",
+        content: text,
+        id: prevMessages.length.toString(),
+        parts: [{ text, type: "text" }],
+      },
+    ]);
+    try {
+      const sessionId = sessionStorage.getItem("chatSessionId") || "";
+      setStatus("in_progress");
+      const response = await sendMessageToAI({
+        sessionId,
+        message: text,
+      });
+      if (!response || "botResponse" in response === false) {
+        setStatus("error");
+        toastifyError("Error al enviar el mensaje al chatbot.");
+        return;
+      }
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          role: "assistant",
+          content: response.botResponse,
+          id: `${(prevMessages.length + 1).toString()}bot`,
+          parts: [{ text: response.botResponse, type: "text" }],
+        },
+      ]);
+      setStatus("idle");
+      if (!sessionId && response.sessionId) {
+        sessionStorage.setItem("chatSessionId", response.sessionId);
+      }
+    } catch (error) {
+      setStatus("error");
+      toastifyError("Error al enviar el mensaje al chatbot.");
+    }
   };
 
   return (

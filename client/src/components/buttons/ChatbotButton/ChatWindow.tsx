@@ -46,6 +46,85 @@ export function ChatWindow({
     }
   };
 
+  const parseAndRenderText = (text: string) => {
+    const lines = text.split("\n");
+    const elements: React.ReactNode[] = [];
+    let inList = false;
+    let listItems: React.ReactNode[] = [];
+
+    lines.forEach((line, idx) => {
+      const trimmedLine = line.trim();
+
+      // Detect numbered list items (e.g., "1. **Title**: description")
+      const numberedMatch = trimmedLine.match(/^\d+\.\s+(.+)$/);
+      if (numberedMatch) {
+        if (!inList) {
+          inList = true;
+          listItems = [];
+        }
+        // Parse bold text within the line
+        const content = numberedMatch[1];
+        const boldRegex = /\*\*([^*]+)\*\*/g;
+        const parts = content.split(boldRegex);
+
+        listItems.push(
+          <li key={idx} className="ml-4 mb-2">
+            {parts.map((part, partIdx) =>
+              partIdx % 2 === 1 ? (
+                <strong key={partIdx}>{part}</strong>
+              ) : (
+                <span key={partIdx}>{part}</span>
+              )
+            )}
+          </li>
+        );
+      } else {
+        // End list if we encounter a non-list line
+        if (inList && listItems.length > 0) {
+          elements.push(
+            <ul key={`list-${elements.length}`} className="list-disc space-y-1">
+              {listItems}
+            </ul>
+          );
+          inList = false;
+          listItems = [];
+        }
+
+        // Handle empty lines
+        if (trimmedLine === "") {
+          elements.push(<div key={idx} className="h-2" />);
+        } else {
+          // Parse bold text in regular paragraphs
+          const boldRegex = /\*\*([^*]+)\*\*/g;
+          const parts = trimmedLine.split(boldRegex);
+
+          elements.push(
+            <p key={idx} className="text-sm leading-relaxed">
+              {parts.map((part, partIdx) =>
+                partIdx % 2 === 1 ? (
+                  <strong key={partIdx}>{part}</strong>
+                ) : (
+                  <span key={partIdx}>{part}</span>
+                )
+              )}
+            </p>
+          );
+        }
+      }
+    });
+
+    // Don't forget remaining list items
+    if (inList && listItems.length > 0) {
+      elements.push(
+        <ul key={`list-${elements.length}`} className="list-disc space-y-1">
+          {listItems}
+        </ul>
+      );
+    }
+
+    return elements;
+  };
+
   return (
     <div className="fixed bottom-28 md:bottom-24 right-4 md:right-8 z-50 w-96">
       <Card className="h-[500px] shadow-2xl bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800">
@@ -90,9 +169,9 @@ export function ChatWindow({
                     {message.parts.map((part, idx) => {
                       if (part.type === "text") {
                         return (
-                          <p key={idx} className="text-sm leading-relaxed">
-                            {part.text}
-                          </p>
+                          <div key={idx} className="text-sm leading-relaxed">
+                            {parseAndRenderText(part.text)}
+                          </div>
                         );
                       }
                       return null;
