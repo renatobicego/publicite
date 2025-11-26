@@ -139,21 +139,17 @@ const HelpButton = () => {
           <Button
             isIconOnly
             aria-label="Ayuda"
-            color={screenWidth >= 768 ? "secondary" : "primary"}
+            color={"primary"}
             size="lg"
             radius="full"
             variant="light"
-            className="fixed bottom-8 right-4 md:right-8 bg-fondo shadow w-16 h-16 md:w-14 md:h-14"
+            className="fixed bottom-8 right-4 md:right-8 lg:right-12 xl:right-16 3xl:right-[6%] bg-fondo shadow w-16 h-16 md:w-14 md:h-14 xl:w-20 xl:h-20"
           >
-            {screenWidth >= 768 ? (
-              <IoIosHelp className="size-16" />
-            ) : (
-              <FaPlus className="size-10" />
-            )}
+            <FaPlus className="size-10 md:size-12" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="flex flex-col items-start">
-          <PrimaryButton as={Link} href={CREATE} className="w-full md:hidden">
+          <PrimaryButton as={Link} href={CREATE} className="w-full ">
             Crear
           </PrimaryButton>
           <PrimaryButton

@@ -62,7 +62,7 @@ export function Chatbot() {
       <Button
         isIconOnly
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-28 md:bottom-24 right-4 md:right-8 z-40 bg-fondo hover:shadow-3xl transition-all duration-300 shadow w-16 h-16 md:w-14 md:h-14 pt-2"
+        className="fixed bottom-28 md:bottom-24 right-4 md:right-8 z-40 bg-fondo hover:shadow-3xl transition-all duration-300 shadow w-16 h-16 md:w-14 md:h-14 xl:w-20 xl:h-20 lg:right-12 xl:right-16 3xl:right-[6%] xl:bottom-32 pt-2"
         aria-label="Open chat"
         radius="full"
         size="lg"
