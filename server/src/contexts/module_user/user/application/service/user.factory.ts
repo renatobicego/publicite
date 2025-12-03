@@ -35,6 +35,7 @@ export class UserFactory implements UserFactoryInterface {
       userRequest.countryRegion,
       userRequest.isActive,
       userRequest.dni,
+      userRequest.addressPrivacy ?? 'all',
       userRequest.name,
       userRequest.lastName,
       userType,

@@ -21,6 +21,7 @@ export class UserPerson extends User {
       user.getCountryRegion,
       user.getIsActive,
       user.getDni,
+      user.getaddressPrivacy,
       user.getName,
       user.getLastName,
       user.getUserType ?? UserType.Person,

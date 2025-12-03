@@ -243,6 +243,9 @@ export class User_Full_Grapql_Model {
   @Field(() => String, { nullable: true })
   businessName?: string;
 
+  @Field(() => String, { nullable: true })
+  addressPrivacy?: string;
+
   @Field(() => Contact, { nullable: true })
   contact?: Contact;
 

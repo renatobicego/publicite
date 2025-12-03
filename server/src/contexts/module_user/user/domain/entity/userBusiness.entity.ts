@@ -23,6 +23,7 @@ export class UserBusiness extends User {
       user.getCountryRegion,
       user.getIsActive,
       user.getDni,
+      user.getaddressPrivacy,
       user.getName,
       user.getLastName,
       user.getUserType ?? UserType.Business,

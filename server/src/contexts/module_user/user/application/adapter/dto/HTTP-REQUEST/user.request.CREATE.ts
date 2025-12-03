@@ -25,6 +25,7 @@ export interface UserRequest {
   profilePhotoUrl: string;
   countryRegion: string;
   isActive: boolean;
+  addressPrivacy: string;
   name: string;
   lastName: string;
   contact: ContactRequest;

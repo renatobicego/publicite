@@ -15,6 +15,7 @@ interface IUser extends Document {
   countryRegion: string;
   isActive: boolean;
   dni: string;
+  addressPrivacy: string;
   contact: Schema.Types.ObjectId;
   createdTime: string;
   subscriptions: Schema.Types.ObjectId[];
@@ -44,6 +45,7 @@ const UserSchema = new Schema<IUser>(
     countryRegion: { type: String },
     isActive: { type: Boolean, default: true },
     dni: { type: String, required: true },
+    addressPrivacy: { type: String, required: true },
     contact: { type: Schema.Types.ObjectId, ref: 'Contact' },
     createdTime: { type: String, default: '' },
     subscriptions: [{ type: Schema.Types.ObjectId, ref: 'Subscription' }],

@@ -18,6 +18,7 @@ export class User {
   private lastName: string;
   private isActive: boolean;
   private dni: string;
+  private addressPrivacy: string;
   private contact?: ObjectId | undefined;
   private createdTime?: string;
   private subscriptions?: ObjectId[];
@@ -41,6 +42,7 @@ export class User {
     countryRegion: string,
     isActive: boolean,
     dni: string,
+    addressPrivacy: string,
     name: string,
     lastName: string,
     userType: UserType,
@@ -66,6 +68,7 @@ export class User {
     this.countryRegion = countryRegion;
     this.isActive = isActive;
     this.dni = dni;
+    this.addressPrivacy = addressPrivacy;
     this.name = name;
     this.lastName = lastName;
     this.userType = userType;
@@ -182,5 +185,9 @@ export class User {
 
   get getDni() {
     return this.dni;
+  }
+
+  get getaddressPrivacy() {
+    return this.addressPrivacy;
   }
 }

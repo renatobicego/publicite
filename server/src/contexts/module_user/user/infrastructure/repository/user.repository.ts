@@ -799,6 +799,7 @@ export class UserRepository implements UserRepositoryInterface {
         lastName: reqUser.getLastName,
         finder: '',
         isActive: reqUser.getIsActive,
+        addressPrivacy: reqUser.getaddressPrivacy,
         contact: reqUser.getContact,
         createdTime: reqUser.getCreatedTime,
         subscriptions: reqUser.getSubscriptions,
