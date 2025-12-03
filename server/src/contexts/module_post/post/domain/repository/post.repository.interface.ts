@@ -35,6 +35,13 @@ export interface PostRepositoryInterface {
     searchTerm?: string,
     userRequestId?: string,
   ): Promise<any>;
+  findAllPosts(
+    page: number,
+    limit: number,
+    userLocation: UserLocation,
+    searchTerm?: string,
+    userRequestId?: string,
+  ): Promise<any>;
   findMatchPost(postType: string, searchTerm: string): Promise<void>;
   findFriendPosts(
     postType: string,

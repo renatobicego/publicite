@@ -222,6 +222,20 @@ export class PostService implements PostServiceInterface {
     }
   }
 
+  async findAllPosts(
+    page: number,
+    limit: number,
+    userLocation: UserLocation,
+    searchTerm?: string,
+    userRequestId?: string,
+  ): Promise<any> {
+    try {
+      return await this.postRepository.findAllPosts(page, limit, userLocation, searchTerm, userRequestId);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
   async findPostsByAuthorId(id: string): Promise<any> {
     try {
       this.logger.log('Finding posts by author id: ' + id);

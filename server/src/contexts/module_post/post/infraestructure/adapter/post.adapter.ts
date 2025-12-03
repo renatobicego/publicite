@@ -142,6 +142,20 @@ export class PostAdapter implements PostAdapterInterface {
     }
   }
 
+  async findAllPosts(
+    page: number,
+    limit: number,
+    userLocation: UserLocation,
+    searchTerm?: string,
+    userRequestId?: string,
+  ): Promise<void> {
+    try {
+      return await this.postService.findAllPosts(page, limit, userLocation, searchTerm, userRequestId);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
   async findMatchPost(postType: string, searchTerm: string): Promise<void> {
     try {
       return await this.postService.findMatchPost(postType, searchTerm);

@@ -338,6 +338,36 @@ export class PostResolver {
     }
   }
 
+  @Query(() => PostFindAllResponse, {
+    nullable: true,
+    description:
+      'Buscar todos los post, recibe pagina, limite. De ser necesario podes enviarle un searchTerm para filtrar. (Post libres)',
+  })
+  @UseGuards(ClerkAuthGuard)
+  async findAllPosts(
+    @Args('page', { type: () => Number }) page: number,
+    @Args('limit', { type: () => Number }) limit: number,
+    @Args('userLocation', { type: () => UserLocation })
+    userLocation: UserLocation,
+    @Args('searchTerm', { type: () => String, nullable: true })
+    searchTerm: string,
+    @Context() context: { req: CustomContextRequestInterface },
+  ): Promise<any> {
+    try {
+      const userRequestId = context.req.userRequestId ?? undefined;
+      return await this.postAdapter.findAllPosts(
+        page,
+        limit,
+        userLocation,
+        searchTerm,
+        userRequestId,
+      );
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
   // @Mutation(() => String, {
   //   nullable: true,
   // })

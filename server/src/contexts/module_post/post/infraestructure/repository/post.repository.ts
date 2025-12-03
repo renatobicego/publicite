@@ -679,6 +679,173 @@ export class PostRepository implements PostRepositoryInterface {
     }
   }
 
+  async findAllPosts(
+    page: number,
+    limit: number,
+    userLocation: UserLocation,
+    searchTerm?: string,
+    userRequestId?: string,
+  ): Promise<any> {
+    try {
+      try {
+        this.logger.log('Finding all posts');
+        const today = new Date();
+  
+        // Prepara el stage de filtrado
+        const matchStage: any = {
+          'visibility.post': 'public',
+          isActive: true,
+          endDate: { $gte: today },
+        };
+  
+        if (userRequestId) {
+          matchStage.author = { $ne: userRequestId };
+        }
+  
+        // Si se especifica un término de búsqueda, lo procesamos
+        if (searchTerm) {
+          const textSearchQuery = checkStopWordsAndReturnSearchQuery(
+            searchTerm,
+            SearchType.post,
+          );
+          if (!textSearchQuery) {
+            this.logger.log(
+              'No valid search terms provided. Returning empty result.',
+            );
+            return { posts: [], hasMore: false };
+          }
+  
+          matchStage.$or = [
+            { searchTitle: { $regex: textSearchQuery, $options: 'i' } },
+            { searchDescription: { $regex: textSearchQuery, $options: 'i' } },
+          ];
+          matchStage.postBehaviourType = 'libre';
+        }
+  
+        // Agregación optimizada
+        const posts = await this.postDocument.aggregate([
+          {
+            $geoNear: {
+              near: {
+                type: 'Point',
+                coordinates: [userLocation.longitude, userLocation.latitude],
+              },
+              distanceField: 'distance',
+              spherical: true,
+              query: matchStage,
+            },
+          },
+          {
+            $match: {
+              $expr: { $lte: ['$distance', '$geoLocation.ratio'] },
+            },
+          },
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'author',
+              foreignField: '_id',
+              as: 'author',
+              pipeline: [
+                {
+                  $project: {
+                    _id: 1,
+                    profilePhotoUrl: 1,
+                    username: 1,
+                    lastName: 1,
+                    name: 1,
+                    contact: 1,
+                  },
+                },
+              ], // Solo traemos los campos necesarios
+            },
+          },
+          { $unwind: { path: '$author', preserveNullAndEmptyArrays: true } },
+          {
+            $lookup: {
+              from: 'contacts',
+              localField: 'author.contact',
+              foreignField: '_id',
+              as: 'author.contact',
+              pipeline: [
+                {
+                  $project: {
+                    _id: 1,
+                    facebook: 1,
+                    phone: 1,
+                    instagram: 1,
+                    website: 1,
+                    x: 1,
+                  },
+                },
+              ], // Solo traemos los campos necesarios
+            },
+          },
+          {
+            $unwind: {
+              path: '$author.contact',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+          {
+            $lookup: {
+              from: 'postcategories',
+              localField: 'category',
+              foreignField: '_id',
+              as: 'category',
+              pipeline: [{ $project: { _id: 1, label: 1 } }], // Solo traemos los campos necesarios
+            },
+          },
+          {
+            $addFields: {
+              author: {
+                _id: '$author._id',
+                profilePhotoUrl: '$author.profilePhotoUrl',
+                username: '$author.username',
+                lastName: '$author.lastName',
+                name: '$author.name',
+                contact: '$author.contact',
+              },
+              categories: {
+                $map: {
+                  input: '$category',
+                  as: 'category',
+                  in: {
+                    _id: '$$category._id',
+                    label: '$$category.label',
+                  },
+                },
+              },
+            },
+          },
+          // Paginación optimizada
+          { $skip: (page - 1) * limit },
+          { $limit: limit + 1 },
+        ]);
+        if (!posts) {
+          return { posts: [], hasMore: false };
+        }
+  
+        // Determinamos si hay más posts basados en el límite
+        const hasMore = posts.length > limit;
+        const postResponse = posts.slice(0, limit); // Solo devolvemos hasta el límite
+  
+        return {
+          posts: postResponse,
+          hasMore,
+        };
+      } catch (error: any) {
+        this.logger.error(
+          'An error occurred finding all posts',
+          error,
+        );
+        throw error;
+      }
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
   async findPostOfGroupMembers(
     membersId: any[],
     conditionsOfSearch: any[],
