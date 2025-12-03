@@ -55,7 +55,7 @@ export class PostFactory implements PostFactoryInterface {
       searchDescription,
       visibilityNormalizated,
       [] as any, // recomendations
-      post.price,
+      post.price ?? 0,
       post.geoLocation,
       post.category ?? [],
       postComments,

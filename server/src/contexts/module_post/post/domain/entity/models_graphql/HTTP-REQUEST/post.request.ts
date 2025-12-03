@@ -65,7 +65,7 @@ export class PostRequest {
   @Field(() => VisibilityOfPost)
   visibility: VisibilityOfPost;
 
-  @Field(() => Number, { nullable: true })
+  @Field(() => Number, { nullable: true, defaultValue: 0 })
   price: number;
 
   @Field(() => LocationOfPost)
