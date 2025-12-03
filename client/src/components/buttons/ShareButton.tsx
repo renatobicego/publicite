@@ -28,6 +28,8 @@ type ShareButtonProps = {
   customOpen?: (openModal: () => void) => void;
   data: Omit<ElementSharedData, "username">;
   shareType: ShareTypesEnum;
+  customUrl?: string;
+  customTitle?: string;
 };
 
 const ShareButton = ({
@@ -35,6 +37,8 @@ const ShareButton = ({
   data,
   ButtonAction,
   customOpen,
+  customUrl,
+  customTitle,
 }: ShareButtonProps) => {
   const { onOpen, isOpen, onOpenChange } = useDisclosure();
   const { userIdLogged, usernameLogged } = useUserData();
@@ -42,7 +46,7 @@ const ShareButton = ({
   const { socket } = useSocket();
   const [isLoading, setIsLoading] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
-  const url = window.location.href;
+  const url = customUrl ?? window.location.href;
 
   const [filteredUsers, setFilteredUsers] = useState(users);
 
@@ -84,7 +88,7 @@ const ShareButton = ({
 
   const handleShare = async () => {
     if (!userIdLogged) {
-      shareLink(url, "Compartir");
+      shareLink(url, customTitle ?? "Compartir");
       return;
     }
     if (selectedUsers.length === 0)

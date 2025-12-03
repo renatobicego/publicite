@@ -1,10 +1,12 @@
 import { Petition } from "@/types/postTypes";
-import { CardBody, Chip, Link } from "@nextui-org/react";
+import { Button, CardBody, Chip, Link } from "@nextui-org/react";
 import React from "react";
 import ServiceChip from "../chips/ServiceChip";
 import { frequencyPriceItems } from "@/utils/data/selectData";
 import { POSTS } from "@/utils/data/urls";
 import { formatTotal } from "@/utils/functions/utils";
+import ShareButton from "../buttons/ShareButton";
+import { FaShareAlt } from "react-icons/fa";
 
 const PetitionCard = ({
   post,
@@ -29,7 +31,7 @@ const PetitionCard = ({
     <CardBody
       as={Link}
       href={`${POSTS}/${post._id}`}
-      className={`flex flex-col gap-2 ${
+      className={`flex flex-col relative gap-2 ${
         !isGroupPost && "pb-5"
       }  justify-start items-start`}
     >
@@ -48,6 +50,24 @@ const PetitionCard = ({
       <p className="text-light-text text-small lg:text-sm 2xl:text-base font-semibold">
         {price} {frequencyShown}
       </p>
+      <ShareButton
+        data={{ ...post, type: "post" }}
+        shareType="post"
+        customUrl={`${POSTS}/${post._id}`}
+        customTitle={`Echa un vistazo a este post: ${post.title}`}
+        ButtonAction={
+          <Button
+            isIconOnly
+            aria-label="Compartir"
+            variant="flat"
+            color="secondary"
+            radius="full"
+            className="absolute bottom-2 right-2 md:right-3 z-10 min-w-8 size-8"
+          >
+            <FaShareAlt />
+          </Button>
+        }
+      />
     </CardBody>
   );
 };

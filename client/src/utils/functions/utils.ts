@@ -140,8 +140,8 @@ export const shareLink = async (url: string, title: string) => {
       await navigator.share({
         title: title,
         url: url,
-        text: "Compartir Publicité",
       });
+      return;
     } catch (error) {
       if (error instanceof Error) {
         if (error.name === "AbortError") {

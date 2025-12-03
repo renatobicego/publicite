@@ -28,9 +28,7 @@ const PostCardBody = ({
 
   return (
     <CardBody
-      className={`pt-0 flex flex-col gap-1 max-md:px-1 md:px-2 lg:px-3 ${
-        isGroupPost && "pb-2"
-      }`}
+      className={`pt-0 flex flex-col gap-1 max-md:px-1 md:px-2 lg:px-3 pb-6`}
     >
       <div className="flex gap-1 w-full justify-between items-start">
         <h6>{title}</h6>

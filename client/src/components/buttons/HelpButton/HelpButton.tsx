@@ -2,6 +2,7 @@
 import {
   Button,
   forwardRef,
+  Link,
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -19,8 +20,9 @@ import Joyride, {
 import { useTutorialSteps } from "./getTutorialSteps";
 import { usePathname } from "next/navigation";
 import PrimaryButton from "../PrimaryButton";
-import { FaX } from "react-icons/fa6";
+import { FaPlus, FaX } from "react-icons/fa6";
 import GlosaryModal from "./GlosaryModal";
+import { CREATE } from "@/utils/data/urls";
 
 const CustomTooltip = ({
   continuous,
@@ -103,6 +105,8 @@ const HelpButton = () => {
     }
   };
 
+  const screenWidth = typeof window !== "undefined" ? window.innerWidth : 0;
+
   return (
     <>
       <Joyride
@@ -135,16 +139,19 @@ const HelpButton = () => {
           <Button
             isIconOnly
             aria-label="Ayuda"
-            color="secondary"
+            color={"primary"}
             size="lg"
             radius="full"
             variant="light"
-            className="fixed bottom-4 md:bottom-8 right-4 md:right-8 bg-fondo shadow"
+            className="fixed bottom-8 right-4 md:right-8 lg:right-12 xl:right-16 3xl:right-[6%] bg-fondo shadow w-16 h-16 md:w-14 md:h-14 xl:w-20 xl:h-20"
           >
-            <IoIosHelp className="size-16" />
+            <FaPlus className="size-10 md:size-12" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="flex flex-col items-start">
+          <PrimaryButton as={Link} href={CREATE} className="w-full ">
+            Crear
+          </PrimaryButton>
           <PrimaryButton
             variant="light"
             className="hover:text-primary text-left"

@@ -9,6 +9,7 @@ import { ourFileRouter } from "../api/uploadthing/core";
 import { SocketProvider } from "../socketProvider";
 import { UserDataProvider } from "./providers/userDataProvider";
 import { LocationProvider } from "./providers/LocationProvider";
+import { Chatbot } from "@/components/buttons/ChatbotButton/Chatbot";
 export default async function NavigationLayout({
   children,
 }: {
@@ -30,6 +31,7 @@ export default async function NavigationLayout({
           <LocationProvider>
             {children}
             <HelpButton />
+            <Chatbot />
           </LocationProvider>
           <Footer id={user?.publicMetadata.mongoId} />
         </BackgroundProvider>

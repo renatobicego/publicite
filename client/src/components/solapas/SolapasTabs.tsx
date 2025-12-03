@@ -101,8 +101,8 @@ const SolapasTabs = () => {
           title="Anuncios Libres"
           icon={
             <>
-              <FaLocationDot className="size-4 md:size-5 " />{" "}
-              <IoMdMegaphone className="size-4 md:size-5 " />
+              <FaLocationDot className="size-5 md:size-6 " />{" "}
+              <IoMdMegaphone className="size-5 md:size-6 " />
             </>
           }
         />
@@ -116,8 +116,8 @@ const SolapasTabs = () => {
           title="Agenda de Contactos"
           icon={
             <>
-              <FaUser className="size-4 md:size-5 " />{" "}
-              <IoMdMegaphone className="size-4 md:size-5 " />
+              <FaUser className="size-5 md:size-6 " />{" "}
+              <IoMdMegaphone className="size-5 md:size-6 " />
             </>
           }
         />
