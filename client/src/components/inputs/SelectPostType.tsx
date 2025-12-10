@@ -1,34 +1,29 @@
 import { postTypesItems } from "@/utils/data/selectData";
-import { Link, Select, SelectItem } from "@nextui-org/react";
-import { usePathname } from "next/navigation";
+import { Select, SelectItem } from "@nextui-org/react";
+import { Dispatch, SetStateAction } from "react";
 
-const SelectPostType = ({ postType }: { postType: PostType }) => {
-  const pathname = usePathname();
-  const getUrlPostType = (postType: PostType) => {
-    const urlWithoutPostType = pathname
-      .replace("/servicios", "")
-      .replace("/necesidades", "");
-    switch (postType) {
-      case "good":
-        return urlWithoutPostType;
-      case "service":
-        return `${urlWithoutPostType}/servicios`;
-      case "petition":
-        return `${urlWithoutPostType}/necesidades`;
-    }
-  };
+const SelectPostType = ({
+  postType,
+  setPostType,
+}: {
+  postType: PostType | null;
+  setPostType: Dispatch<SetStateAction<PostType | null>>;
+}) => {
   return (
     <Select
-      selectedKeys={[postType]}
+      selectedKeys={postType ? [postType] : []}
       items={postTypesItems}
       id="select-post-type"
       label="Bienes, servicios o necesidades"
       placeholder="Seleccione el tipo de anuncio"
       disallowEmptySelection
       labelPlacement="outside"
-      className="max-w-64"
       scrollShadowProps={{
         hideScrollBar: false,
+      }}
+      onSelectionChange={(keys) => {
+        const selectedKey = Array.from(keys)[0] as PostType;
+        setPostType(selectedKey);
       }}
       classNames={{
         trigger:
@@ -45,8 +40,6 @@ const SelectPostType = ({ postType }: { postType: PostType }) => {
           className="text-text-color"
           key={postType.value}
           value={postType.value}
-          as={Link}
-          href={getUrlPostType(postType.value)}
         >
           {postType.label}
         </SelectItem>

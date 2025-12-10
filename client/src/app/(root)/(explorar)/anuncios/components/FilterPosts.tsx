@@ -1,4 +1,5 @@
 import { CustomInputWithoutFormik } from "@/components/inputs/CustomInputs";
+import SelectPostType from "@/components/inputs/SelectPostType";
 import usePostCategories from "@/utils/hooks/usePostCategories";
 import {
   Button,
@@ -12,7 +13,13 @@ import {
   SelectItem,
   useDisclosure,
 } from "@nextui-org/react";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { FaFilter, FaX } from "react-icons/fa6";
 
 const FilterPosts = ({
@@ -23,11 +30,13 @@ const FilterPosts = ({
     SetStateAction<{
       category: string[];
       priceRange: (number | undefined)[];
+      postType: PostType | null;
     }>
   >;
   filter: {
     category: string[];
     priceRange: (number | undefined)[];
+    postType: PostType | null;
   };
 }) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -36,10 +45,16 @@ const FilterPosts = ({
     undefined,
     undefined,
   ]);
+  const [postType, setPostType] = useState<PostType | null>(null);
 
   const filterPosts = () => {
-    setFilter({ category: Array.from(category) as string[], priceRange });
+    setFilter({
+      category: Array.from(category) as string[],
+      priceRange,
+      postType,
+    });
   };
+
   return (
     <>
       <Button
@@ -63,7 +78,11 @@ const FilterPosts = ({
           className="min-w-fit"
           radius="full"
           onPress={() => {
-            setFilter({ category: [], priceRange: [undefined, undefined] });
+            setFilter({
+              category: [],
+              priceRange: [undefined, undefined],
+              postType: null,
+            });
             setCategory(new Set([]));
             setPriceRange([undefined, undefined]);
           }}
@@ -86,6 +105,7 @@ const FilterPosts = ({
                 Filtrar Anuncios
               </ModalHeader>
               <ModalBody>
+                <SelectPostType setPostType={setPostType} postType={postType} />
                 <SelectCategory category={category} setCategory={setCategory} />
                 <PriceRange
                   priceRange={priceRange}

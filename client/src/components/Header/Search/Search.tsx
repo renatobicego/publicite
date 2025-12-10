@@ -2,6 +2,7 @@ import { Input, Selection } from "@nextui-org/react";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import {
   BOARDS,
+  GOODS,
   GROUPS,
   NEEDS,
   POST_BEST,
@@ -54,7 +55,8 @@ const Search = ({
     if (!selectedKeys) return "";
 
     const postTypePath: { [key: string]: string } = {
-      bienes: "",
+      todos: "",
+      bienes: GOODS,
       servicios: SERVICES,
       necesidades: NEEDS,
     };

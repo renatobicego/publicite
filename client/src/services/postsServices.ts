@@ -17,6 +17,8 @@ import {
   deletePostReactionMutation,
   editPostMutation,
   getActiveRelationsQuery,
+  getAllPostsOfFriendsQuery,
+  getAllPostsQuery,
   getMatchPostQuery,
   getPostByIdQuery,
   getPostCategories,
@@ -175,6 +177,41 @@ export const getPosts = async (
   }
 };
 
+export const getAllPosts = async (
+  searchTerm: string | null,
+  page: number,
+  coordinates: Coordinates | null,
+  limit: number | undefined = 20
+) => {
+  try {
+    if (!coordinates) {
+      return {
+        error: "Error al traer los anuncios. Por favor intenta de nuevo.",
+      };
+    }
+    const tokenCache = await getAuthToken();
+    const { context } = await getApiContext(true, tokenCache);
+    const { data } = await query({
+      query: getAllPostsQuery,
+      variables: {
+        limit,
+        page,
+        searchTerm: searchTerm ? searchTerm : "",
+        userLocation: coordinates,
+      },
+      context,
+    });
+    return {
+      items: data.findAllPosts.posts,
+      hasMore: data.findAllPosts.hasMore,
+    }; // Return the same mocked data
+  } catch (error) {
+    return {
+      error: "Error al traer los anuncios. Por favor intenta de nuevo.",
+    };
+  }
+};
+
 export const getMatchPostPetition = async (
   postPetitionType: "good" | "service",
   searchTerm: string
@@ -220,6 +257,37 @@ export const getPostsOfContacts = async (
     return {
       items: data.findFriendPosts.posts,
       hasMore: data.findFriendPosts.hasMore,
+    }; // Return the same mocked data
+  } catch (error) {
+    return {
+      error:
+        "Error al traer los anuncios de tus contactos. Por favor intenta de nuevo.",
+    };
+  }
+};
+
+export const getAllPostsOfContacts = async (
+  searchTerm: string | null,
+  page: number,
+  limit: number | undefined = 20,
+  visibility: ContactPostsVisibility
+) => {
+  try {
+    const tokenCache = await getAuthToken();
+    const { context } = await getApiContext(true, tokenCache);
+    const { data } = await query({
+      query: getAllPostsOfFriendsQuery,
+      variables: {
+        limit,
+        page,
+        searchTerm: searchTerm ? searchTerm : "",
+        visibility,
+      },
+      context,
+    });
+    return {
+      items: data.findAllFriendPosts.posts,
+      hasMore: data.findAllFriendPosts.hasMore,
     }; // Return the same mocked data
   } catch (error) {
     return {

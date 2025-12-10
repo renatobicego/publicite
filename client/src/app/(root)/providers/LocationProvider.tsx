@@ -33,7 +33,7 @@ export const isLocationAwarePostType = (type: PubliciteDataTypes) => {
     return true;
   }
   if ("postType" in type) {
-    return ["good", "service", "petition", "goodService"].includes(
+    return ["good", "service", "petition", "goodService", "all"].includes(
       type.postType
     );
   }

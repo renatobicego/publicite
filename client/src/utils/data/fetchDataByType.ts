@@ -2,6 +2,8 @@ import { Coordinates } from "@/app/(root)/providers/LocationProvider";
 import { getBoards } from "@/services/boardServices";
 import { getGroupPosts, getGroups } from "@/services/groupsService";
 import {
+  getAllPosts,
+  getAllPostsOfContacts,
   getGoods,
   getPosts,
   getPostsOfContacts,
@@ -13,11 +15,11 @@ export type ContactPostsVisibility = UserRelation | "hierarchy";
 export type PostsDataTypes =
   | {
       typeOfData: "posts";
-      postType: "good" | "service" | "petition" | "goodService";
+      postType: "good" | "service" | "petition" | "goodService" | "all";
     }
   | {
       typeOfData: "contactPosts";
-      postType: "good" | "service" | "petition" | "goodService";
+      postType: "good" | "service" | "petition" | "goodService" | "all";
       visibility: ContactPostsVisibility;
     }
   | {
@@ -48,6 +50,9 @@ export const fetchDataByType = async (
           hasMore: services.hasMore,
         };
       }
+      if (postType.postType === "all") {
+        return await getAllPosts(searchTerm, page, coordinates);
+      }
       return await getPosts(searchTerm, page, postType.postType, coordinates);
     case "boards":
       return await getBoards(searchTerm, page);
@@ -67,6 +72,14 @@ export const fetchDataByType = async (
         postType.memberIds
       );
     case "contactPosts":
+      if (postType.postType === "all") {
+        return await getAllPostsOfContacts(
+          searchTerm,
+          page,
+          20,
+          postType.visibility
+        );
+      }
       return await getPostsOfContacts(
         searchTerm,
         page,

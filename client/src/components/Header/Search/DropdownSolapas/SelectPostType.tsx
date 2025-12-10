@@ -29,6 +29,7 @@ const SelectPostType = ({
       disallowEmptySelection
       aria-label="tipo de anuncio"
     >
+      <SelectItem key="todos">Todos</SelectItem>
       <SelectItem key="bienes">Bienes</SelectItem>
       <SelectItem key="servicios">Servicios</SelectItem>
       <SelectItem key="necesidades">Necesidades</SelectItem>

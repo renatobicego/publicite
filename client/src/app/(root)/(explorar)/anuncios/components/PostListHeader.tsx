@@ -7,7 +7,11 @@ import { Dispatch, SetStateAction } from "react";
 interface PostListHeaderProps {
   searchTerms: (string | undefined)[];
   setSearchTerms: Dispatch<SetStateAction<(string | undefined)[]>>;
-  filter: { category: string[]; priceRange: (number | undefined)[] };
+  filter: {
+    category: string[];
+    priceRange: (number | undefined)[];
+    postType: PostType | null;
+  };
   setFilter: (filter: any) => void;
   sortDescriptor: { column: string; direction: string };
   setSortDescriptor: (sort: any) => void;

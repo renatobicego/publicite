@@ -4,6 +4,7 @@ const PROFILE = "/perfiles";
 const CONFIGURATION = "/configuracion";
 const POSTS = "/anuncios";
 const SERVICES = "/servicios";
+const GOODS = "/bienes";
 const NEEDS = "/necesidades";
 const SUBSCRIPTIONS = "/suscripciones";
 const SUSCRIBE = "/suscribirse";
@@ -45,6 +46,7 @@ export {
   BOARDS,
   EDIT_POST,
   EDIT_PETITION,
+  GOODS,
   EDIT_MAGAZINE,
   EDIT_GROUP,
   FILE_URL,

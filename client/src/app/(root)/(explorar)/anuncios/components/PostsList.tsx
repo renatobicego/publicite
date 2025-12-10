@@ -29,16 +29,16 @@ const PostsList = ({
       postTypeVisited.typeOfData === "contactPosts"
         ? postTypesItems.find(
             (pType) => pType.value === postTypeVisited.postType
-          )?.label
+          )?.label ?? "Todos"
         : "";
 
     switch (true) {
       case pathname.includes(`${POST_RECENTS}`):
         return "Anuncios de Hoy - " + typeSelected;
       case pathname.includes(`${POST_BEST}`):
-        return "Mejor Puntuados - " + typeSelected;
+        return "Mejor Puntuados";
       case pathname.includes(`${POST_NEXT_TO_EXPIRE}`):
-        return "Próximos a Vencer - " + typeSelected;
+        return "Próximos a Vencer";
       case pathname.includes(`${POST_CONTACTS}`):
         return "Anuncios de Contactos - " + typeSelected;
       case pathname.includes(POSTS):
@@ -49,13 +49,6 @@ const PostsList = ({
   };
   return (
     <section className="w-full flex-col flex gap-4 items-start">
-      <SelectPostType
-        postType={
-          "postType" in postTypeVisited
-            ? (postTypeVisited.postType as PostType)
-            : "good"
-        }
-      />
       <h2>{titleToShow()}</h2>
       {!hideMap && <SelectManualLocationModal showAlways />}
       <PostListLogic postType={postTypeVisited} />
