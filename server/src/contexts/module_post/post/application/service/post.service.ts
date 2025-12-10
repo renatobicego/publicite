@@ -230,7 +230,13 @@ export class PostService implements PostServiceInterface {
     userRequestId?: string,
   ): Promise<any> {
     try {
-      return await this.postRepository.findAllPosts(page, limit, userLocation, searchTerm, userRequestId);
+      return await this.postRepository.findAllPosts(
+        page,
+        limit,
+        userLocation,
+        searchTerm,
+        userRequestId,
+      );
     } catch (error: any) {
       throw error;
     }
@@ -276,6 +282,31 @@ export class PostService implements PostServiceInterface {
         return { posts: [], hasMore: false };
       return await this.postRepository.findFriendPosts(
         postType,
+        relationMap,
+        page,
+        limit,
+        searchTerm,
+      );
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  async findAllFriendsPosts(
+    userRequestId: string,
+    page: number,
+    limit: number,
+    visibility: Visibility_Of_Find,
+    searchTerm?: string,
+  ): Promise<any> {
+    try {
+      const relationMap: Map<string, string[]> = await this.makeUserRelationMap(
+        userRequestId,
+        visibility,
+      );
+      if (relationMap.size === 0 || relationMap === null || !relationMap)
+        return { posts: [], hasMore: false };
+      return await this.postRepository.findAllFriendsPosts(
         relationMap,
         page,
         limit,
@@ -509,3 +540,4 @@ export class PostService implements PostServiceInterface {
     }
   }
 }
+

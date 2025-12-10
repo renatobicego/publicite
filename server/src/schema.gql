@@ -314,6 +314,7 @@ type User_Full_Grapql_Model {
   lastName: String
   isActive: String
   businessName: String
+  addressPrivacy: String
   contact: Contact
   createdTime: String
   magazines: [Magazines_Full_Graphql_Model]
@@ -935,6 +936,11 @@ type Query {
   """
   findAllPostByPostType(page: Float!, limit: Float!, postType: PostType!, userLocation: UserLocation!, searchTerm: String): PostFindAllResponse
 
+  """
+  Buscar todos los post, recibe pagina, limite. De ser necesario podes enviarle un searchTerm para filtrar. (Post libres)
+  """
+  findAllPosts(page: Float!, limit: Float!, userLocation: UserLocation!, searchTerm: String): PostFindAllResponse
+
   """Encuentra 1 post que cumpla con las palabras clave del array"""
   findMatchPost(postType: PostType!, searchTerm: String!): Post_response_graphql_model
 
@@ -1188,7 +1194,7 @@ input PostRequest {
   postType: PostType!
   description: String
   visibility: VisibilityOfPost!
-  price: Float
+  price: Float = 0
   geoLocation: LocationOfPost!
   category: [String!]
   attachedFiles: [AttachedFilesRequest!]

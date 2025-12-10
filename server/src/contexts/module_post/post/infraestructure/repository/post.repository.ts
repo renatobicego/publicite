@@ -42,6 +42,7 @@ import { EmitterService } from 'src/contexts/module_shared/event-emmiter/emmiter
 import { downgrade_plan_post_notification } from 'src/contexts/module_shared/event-emmiter/events';
 import { BadRequestException } from '@nestjs/common';
 import { PostReviewDocument } from 'src/contexts/module_post/PostReview/infrastructure/schemas/review.schema';
+import { Visibility_Of_Find } from '../../domain/entity/enum/post-visibility.enum';
 
 export class PostRepository implements PostRepositoryInterface {
   constructor(
@@ -73,7 +74,8 @@ export class PostRepository implements PostRepositoryInterface {
 
     @InjectModel('Post')
     private readonly postDocument: Model<PostDocument>,
-  ) { }
+  ) {}
+
   async deleteAccount(id: string): Promise<any> {
     try {
       await this.postDocument.deleteMany({ author: id });
@@ -234,13 +236,19 @@ export class PostRepository implements PostRepositoryInterface {
       for (const [postBehaviourType, count] of Object.entries(criteria)) {
         if (count > 0) {
           const aggregationPipeline = [
-            { $match: { author: userObjectId, postBehaviourType, isActive: true } },
+            {
+              $match: {
+                author: userObjectId,
+                postBehaviourType,
+                isActive: true,
+              },
+            },
             { $sample: { size: count } },
             { $project: { _id: 1 } },
           ];
 
-          const randomDocuments = await this.postDocument
-            .aggregate(aggregationPipeline)
+          const randomDocuments =
+            await this.postDocument.aggregate(aggregationPipeline);
           randomDocuments.forEach((doc) => randomIds.push(doc._id));
         }
       }
@@ -514,6 +522,103 @@ export class PostRepository implements PostRepositoryInterface {
     }
   }
 
+  async findAllFriendsPosts(
+    userRelationMap: Map<string, string[]>,
+    page: number,
+    limit: number,
+    searchTerm?: string,
+  ): Promise<any> {
+    try {
+      const conditions = Array.from(userRelationMap.entries()).map(
+        ([key, value]) => ({
+          author: key,
+          'visibility.post': { $in: value },
+        }),
+      );
+
+      let friendPosts: any;
+
+      if (searchTerm) {
+        const textSearchQuery = checkStopWordsAndReturnSearchQuery(
+          searchTerm,
+          SearchType.post,
+        );
+        if (!textSearchQuery) {
+          this.logger.log(
+            'No valid search terms provided. Returning empty result.',
+          );
+          return { posts: [], hasMore: false };
+        }
+
+        friendPosts = await this.postDocument
+          .find({
+            $and: [
+              { isActive: true },
+              { $or: conditions },
+              {
+                $or: [
+                  { searchTitle: { $regex: textSearchQuery, $options: 'i' } },
+                  {
+                    searchDescription: {
+                      $regex: textSearchQuery,
+                      $options: 'i',
+                    },
+                  },
+                ],
+              },
+            ],
+          })
+          .populate([
+            {
+              path: 'reviews',
+              model: 'PostReview',
+            },
+          ])
+          .skip((page - 1) * limit)
+          .limit(limit + 1);
+      } else {
+        friendPosts = await this.postDocument
+          .find({
+            isActive: true,
+            $or: conditions,
+          })
+          .populate([
+            {
+              path: 'author',
+              model: 'User',
+              select: '_id profilePhotoUrl username lastName name contact',
+              populate: [
+                {
+                  path: 'contact',
+                  model: 'Contact',
+                },
+              ],
+            },
+            {
+              path: 'reviews',
+              model: 'PostReview',
+            },
+          ])
+          .skip((page - 1) * limit)
+          .limit(limit + 1);
+      }
+      if (!friendPosts || friendPosts.length === 0) {
+        return { posts: [], hasMore: false };
+      }
+
+      const hasMore = friendPosts.length > limit;
+      const postResponse = friendPosts.slice(0, limit);
+
+      return {
+        posts: postResponse,
+        hasMore,
+      };
+    } catch (error: any) {
+      this.logger.error('Error fetching friend posts:', error.message);
+      throw new Error('Unable to fetch friend posts. Please try again later.');
+    }
+  }
+
   async findAllPostByPostType(
     page: number,
     limit: number,
@@ -690,18 +795,18 @@ export class PostRepository implements PostRepositoryInterface {
       try {
         this.logger.log('Finding all posts');
         const today = new Date();
-  
+
         // Prepara el stage de filtrado
         const matchStage: any = {
           'visibility.post': 'public',
           isActive: true,
           endDate: { $gte: today },
         };
-  
+
         if (userRequestId) {
           matchStage.author = { $ne: userRequestId };
         }
-  
+
         // Si se especifica un término de búsqueda, lo procesamos
         if (searchTerm) {
           const textSearchQuery = checkStopWordsAndReturnSearchQuery(
@@ -714,14 +819,14 @@ export class PostRepository implements PostRepositoryInterface {
             );
             return { posts: [], hasMore: false };
           }
-  
+
           matchStage.$or = [
             { searchTitle: { $regex: textSearchQuery, $options: 'i' } },
             { searchDescription: { $regex: textSearchQuery, $options: 'i' } },
           ];
           matchStage.postBehaviourType = 'libre';
         }
-  
+
         // Agregación optimizada
         const posts = await this.postDocument.aggregate([
           {
@@ -825,20 +930,17 @@ export class PostRepository implements PostRepositoryInterface {
         if (!posts) {
           return { posts: [], hasMore: false };
         }
-  
+
         // Determinamos si hay más posts basados en el límite
         const hasMore = posts.length > limit;
         const postResponse = posts.slice(0, limit); // Solo devolvemos hasta el límite
-  
+
         return {
           posts: postResponse,
           hasMore,
         };
       } catch (error: any) {
-        this.logger.error(
-          'An error occurred finding all posts',
-          error,
-        );
+        this.logger.error('An error occurred finding all posts', error);
         throw error;
       }
     } catch (error: any) {
@@ -1255,3 +1357,4 @@ export class PostRepository implements PostRepositoryInterface {
     }
   }
 }
+
