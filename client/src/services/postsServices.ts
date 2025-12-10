@@ -286,8 +286,8 @@ export const getAllPostsOfContacts = async (
       context,
     });
     return {
-      items: data.findAllFriendPosts.posts,
-      hasMore: data.findAllFriendPosts.hasMore,
+      items: data.findAllFriendsPosts.posts,
+      hasMore: data.findAllFriendsPosts.hasMore,
     }; // Return the same mocked data
   } catch (error) {
     return {

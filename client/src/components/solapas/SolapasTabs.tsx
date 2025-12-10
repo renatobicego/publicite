@@ -63,6 +63,9 @@ const SolapasTabs = () => {
         break;
       case pathname.includes(`${POST_CONTACTS}`):
         (postTypeVisited as PostsDataTypes).typeOfData = "contactPosts";
+        if (pathname === `${POST_CONTACTS}`) {
+          postTypeVisited.postType = "all";
+        }
         break;
       case pathname.includes(POSTS):
         postTypeVisited.typeOfData = "posts";

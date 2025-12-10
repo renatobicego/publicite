@@ -947,6 +947,9 @@ type Query {
   """Encuentra todos los posts de mis amigos, segun el tipo de post"""
   findFriendPosts(postType: PostType!, page: Float!, limit: Float!, visibility: Visibility_Of_Find!, searchTerm: String): PostFindAllResponse
 
+  """Encuentra todos los posts de mis amigos, segun el tipo de post"""
+  findAllFriendsPosts(page: Float!, limit: Float!, visibility: Visibility_Of_Find!, searchTerm: String): PostFindAllResponse
+
   """Obtener un board por anotaciones o palabras clave"""
   getBoardByAnnotationOrKeyword(board: String!, limit: Float!, page: Float!): BoardGetAllResponse
 
