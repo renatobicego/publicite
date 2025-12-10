@@ -7,7 +7,9 @@ import { PostBehaviourType } from '../entity/enum/postBehaviourType.enum';
 import { VisibilityEnum } from '../entity/models_graphql/HTTP-REQUEST/post.update.request';
 import { PostComment } from '../entity/postComment.entity';
 
+
 export interface PostRepositoryInterface {
+  findAllFriendsPosts(userRelationMap: Map<string, string[]>, page: number, limit: number, searchTerm?: string): Promise<void>;
   activateOrDeactivatePost(_id: string, activate: boolean): Promise<any>;
   create(
     post: Post,

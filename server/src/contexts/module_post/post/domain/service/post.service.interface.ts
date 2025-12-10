@@ -9,6 +9,7 @@ import { VisibilityEnum } from '../entity/models_graphql/HTTP-REQUEST/post.updat
 import { Date } from 'mongoose';
 
 export interface PostServiceInterface {
+
   activateOrDeactivatePost(
     _id: string,
     activate: boolean,
@@ -51,6 +52,15 @@ export interface PostServiceInterface {
     visibility: Visibility_Of_Find,
     searchTerm?: string,
   ): Promise<void>;
+  findAllFriendsPosts(
+    userRequestId: string,
+    page: number,
+    limit: number,
+    visibility: Visibility_Of_Find,
+    searchTerm?: string,
+  ): Promise<void>;
+
+
   findPostOfGroupMembers(
     membersId: any[],
     conditionsOfSearch: any,

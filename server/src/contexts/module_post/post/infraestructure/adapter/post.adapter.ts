@@ -34,6 +34,13 @@ export class PostAdapter implements PostAdapterInterface {
     private readonly logger: MyLoggerService,
     private readonly emmiter: EmitterService,
   ) { }
+  async findAllFriendsPosts(userRequestId: string, page: number, limit: number, visibility: Visibility_Of_Find, searchTerm?: string): Promise<void> {
+    try {
+      return await this.postService.findAllFriendsPosts(userRequestId, page, limit, visibility, searchTerm);
+    } catch (error: any) {
+      throw error;
+    }
+  }
   async deleteAccount(id: string): Promise<void> {
     try {
       return await this.postService.deleteAccount(id);

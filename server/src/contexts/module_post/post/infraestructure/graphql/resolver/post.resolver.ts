@@ -343,7 +343,6 @@ export class PostResolver {
     description:
       'Buscar todos los post, recibe pagina, limite. De ser necesario podes enviarle un searchTerm para filtrar. (Post libres)',
   })
-  @UseGuards(ClerkAuthGuard)
   async findAllPosts(
     @Args('page', { type: () => Number }) page: number,
     @Args('limit', { type: () => Number }) limit: number,
@@ -431,6 +430,38 @@ export class PostResolver {
       throw error;
     }
   }
+
+
+  @Query(() => PostFindAllResponse, {
+    nullable: true,
+    description:
+      'Encuentra todos los posts de mis amigos, segun el tipo de post',
+  })
+  @UseGuards(ClerkAuthGuard)
+  async findAllFriendsPosts(
+    @Args('page', { type: () => Number }) page: number,
+    @Args('limit', { type: () => Number }) limit: number,
+    @Context() context: { req: CustomContextRequestInterface },
+    @Args('visibility', { type: () => Visibility_Of_Find })
+    visibility: Visibility_Of_Find,
+    @Args('searchTerm', { type: () => String, nullable: true })
+    searchTerm: string,
+  ): Promise<any> {
+    try {
+      const userRequestId = context.req.userRequestId;
+      return await this.postAdapter.findAllFriendsPosts(
+        userRequestId,
+        page,
+        limit,
+        visibility,
+        searchTerm,
+      );
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
 
   @Mutation(() => String, {
     nullable: true,

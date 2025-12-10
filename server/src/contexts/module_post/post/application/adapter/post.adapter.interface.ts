@@ -54,6 +54,13 @@ export interface PostAdapterInterface {
     visibility: Visibility_Of_Find,
     searchTerm?: string,
   ): Promise<void>;
+  findAllFriendsPosts(
+    userRequestId: string,
+    page: number,
+    limit: number,
+    visibility: Visibility_Of_Find,
+    searchTerm?: string,
+  ): Promise<void>;
   getPostAndContactLimit(
     userRequestId: string,
   ): Promise<PostLimitResponseGraphql>;
