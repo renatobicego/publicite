@@ -50,6 +50,13 @@ const PostsList = ({
   return (
     <section className="w-full flex-col flex gap-4 items-start">
       <h2>{titleToShow()}</h2>
+      <SelectPostType
+        postType={
+          "postType" in postTypeVisited
+            ? (postTypeVisited.postType as PostType)
+            : "all"
+        }
+      />
       {!hideMap && <SelectManualLocationModal showAlways />}
       <PostListLogic postType={postTypeVisited} />
     </section>

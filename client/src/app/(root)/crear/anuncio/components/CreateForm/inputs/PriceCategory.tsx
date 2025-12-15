@@ -27,7 +27,6 @@ const PriceCategory = ({
           startContent={<FaDollarSign />}
           label="Precio"
           placeholder="Agregue el precio"
-          isRequired
           aria-label="precio"
           isInvalid={!!errors.price}
           errorMessage={errors.price}

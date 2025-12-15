@@ -30,13 +30,11 @@ const FilterPosts = ({
     SetStateAction<{
       category: string[];
       priceRange: (number | undefined)[];
-      postType: PostType | null;
     }>
   >;
   filter: {
     category: string[];
     priceRange: (number | undefined)[];
-    postType: PostType | null;
   };
 }) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -45,13 +43,11 @@ const FilterPosts = ({
     undefined,
     undefined,
   ]);
-  const [postType, setPostType] = useState<PostType | null>(null);
 
   const filterPosts = () => {
     setFilter({
       category: Array.from(category) as string[],
       priceRange,
-      postType,
     });
   };
 
@@ -81,7 +77,6 @@ const FilterPosts = ({
             setFilter({
               category: [],
               priceRange: [undefined, undefined],
-              postType: null,
             });
             setCategory(new Set([]));
             setPriceRange([undefined, undefined]);
@@ -105,7 +100,6 @@ const FilterPosts = ({
                 Filtrar Anuncios
               </ModalHeader>
               <ModalBody>
-                <SelectPostType setPostType={setPostType} postType={postType} />
                 <SelectCategory category={category} setCategory={setCategory} />
                 <PriceRange
                   priceRange={priceRange}

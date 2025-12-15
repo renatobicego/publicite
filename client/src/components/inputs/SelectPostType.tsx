@@ -1,29 +1,40 @@
 import { postTypesItems } from "@/utils/data/selectData";
-import { Select, SelectItem } from "@nextui-org/react";
-import { Dispatch, SetStateAction } from "react";
+import { Link, Select, SelectItem } from "@nextui-org/react";
+import { usePathname } from "next/navigation";
 
-const SelectPostType = ({
-  postType,
-  setPostType,
-}: {
-  postType: PostType | null;
-  setPostType: Dispatch<SetStateAction<PostType | null>>;
-}) => {
+const SelectPostType = ({ postType }: { postType: PostType | "all" }) => {
+  const pathname = usePathname();
+  const getUrlPostType = (postType: PostType | "all") => {
+    const urlWithoutPostType = pathname
+      .replace("/servicios", "")
+      .replace("/necesidades", "")
+      .replace("/bienes", "");
+    switch (postType) {
+      case "all":
+        return urlWithoutPostType;
+      case "good":
+        return `${urlWithoutPostType}/bienes`;
+      case "service":
+        return `${urlWithoutPostType}/servicios`;
+      case "petition":
+        return `${urlWithoutPostType}/necesidades`;
+    }
+  };
   return (
     <Select
-      selectedKeys={postType ? [postType] : []}
-      items={postTypesItems}
+      selectedKeys={[postType]}
+      items={[
+        { key: "all", label: "Todos", value: "all" as "all" },
+        ...postTypesItems,
+      ]}
       id="select-post-type"
       label="Bienes, servicios o necesidades"
       placeholder="Seleccione el tipo de anuncio"
       disallowEmptySelection
       labelPlacement="outside"
+      className="max-w-64"
       scrollShadowProps={{
         hideScrollBar: false,
-      }}
-      onSelectionChange={(keys) => {
-        const selectedKey = Array.from(keys)[0] as PostType;
-        setPostType(selectedKey);
       }}
       classNames={{
         trigger:
@@ -40,6 +51,8 @@ const SelectPostType = ({
           className="text-text-color"
           key={postType.value}
           value={postType.value}
+          as={Link}
+          href={getUrlPostType(postType.value)}
         >
           {postType.label}
         </SelectItem>
