@@ -52,39 +52,43 @@ const Data = async ({
   const priceToShow = () => {
     switch (post.postType) {
       case "good":
-        return `$${formatTotal(good.price)}`;
+        return good.price ? `$${formatTotal(good.price)}` : "Consultar precio";
       case "service":
-        return `$${formatTotal(service.price)} ${
-          service.frequencyPrice &&
-          (service.frequencyPrice as any) !== "undefined"
-            ? `por ${
-                (
-                  frequencyPriceItems.find(
-                    (item) => item.value === petition.frequencyPrice
-                  ) ?? {}
-                ).text as string
-              }`
-            : ""
-        }`;
+        return service.price
+          ? `$${formatTotal(service.price)} ${
+              service.frequencyPrice &&
+              (service.frequencyPrice as any) !== "undefined"
+                ? `por ${
+                    (
+                      frequencyPriceItems.find(
+                        (item) => item.value === petition.frequencyPrice
+                      ) ?? {}
+                    ).text as string
+                  }`
+                : ""
+            }`
+          : "Consultar precio";
       case "petition":
-        return `${
-          petition.toPrice
-            ? `De $${formatTotal(petition.price)} a $${formatTotal(
-                petition.toPrice
-              )}`
-            : `$${formatTotal(petition.price)}`
-        } ${
-          service.frequencyPrice &&
-          (service.frequencyPrice as any) !== "undefined"
-            ? `por ${
-                (
-                  frequencyPriceItems.find(
-                    (item) => item.value === petition.frequencyPrice
-                  ) ?? {}
-                ).text as string
-              }`
-            : ""
-        }`;
+        return petition.price
+          ? `${
+              petition.toPrice
+                ? `De $${formatTotal(petition.price)} a $${formatTotal(
+                    petition.toPrice
+                  )}`
+                : `$${formatTotal(petition.price)}`
+            } ${
+              service.frequencyPrice &&
+              (service.frequencyPrice as any) !== "undefined"
+                ? `por ${
+                    (
+                      frequencyPriceItems.find(
+                        (item) => item.value === petition.frequencyPrice
+                      ) ?? {}
+                    ).text as string
+                  }`
+                : ""
+            }`
+          : "";
     }
   };
   return (
@@ -105,7 +109,7 @@ const Data = async ({
         {"reviews" in post && post.reviews && post.reviews.length > 0 && (
           <ReviewsStars reviews={post.reviews} />
         )}
-        <h3 className="font-medium">{priceToShow()}</h3>
+        {priceToShow() && <h3 className="font-medium">{priceToShow()}</h3>}
         <div className="flex gap-2">
           <CategoryChip>
             {(post.category as any)[0] ? (post.category as any)[0].label : ""}
