@@ -35,7 +35,7 @@
     "framer-motion": "^11.3.24",
     "graphql-tag": "^2.12.6",
     "mercadopago": "^2.0.11",
-    "next": "^14.2.26",
+    "next": "14.2.35",
     "next-nprogress-bar": "^2.3.13",
     "react": "^18",
     "react-dom": "^18",
