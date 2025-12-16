@@ -1,4 +1,10 @@
-import { POST_BEST, POST_CONTACTS, POST_NEXT_TO_EXPIRE, POST_RECENTS, POSTS } from "@/utils/data/urls";
+import {
+  POST_BEST,
+  POST_CONTACTS,
+  POST_NEXT_TO_EXPIRE,
+  POST_RECENTS,
+  POSTS,
+} from "@/utils/data/urls";
 
 export const postsBaseBreadcrumbsItems = [
   {
@@ -10,6 +16,11 @@ export const postsBaseBreadcrumbsItems = [
     href: POSTS,
   },
 ];
+
+export const goodsBreadcrumbsItems = {
+  label: "Bienes",
+  href: `${POSTS}/bienes`,
+};
 
 export const serviceBreadcrumbsItems = {
   label: "Servicios",

@@ -48,7 +48,7 @@ const SolapasTabs = () => {
 
   const getPostType = (): PostsDataTypes => {
     const postTypeVisited: PostsDataTypes = {
-      postType: "good",
+      postType: "all",
       typeOfData: "posts",
     };
     switch (true) {
@@ -63,6 +63,9 @@ const SolapasTabs = () => {
         break;
       case pathname.includes(`${POST_CONTACTS}`):
         (postTypeVisited as PostsDataTypes).typeOfData = "contactPosts";
+        if (pathname === `${POST_CONTACTS}`) {
+          postTypeVisited.postType = "all";
+        }
         break;
       case pathname.includes(POSTS):
         postTypeVisited.typeOfData = "posts";
@@ -75,8 +78,11 @@ const SolapasTabs = () => {
       case pathname.includes("necesidades"):
         postTypeVisited.postType = "petition";
         break;
-      default:
+      case pathname.includes("bienes"):
         postTypeVisited.postType = "good";
+        break;
+      default:
+        postTypeVisited.postType = "all";
         break;
     }
     return postTypeVisited;
@@ -89,6 +95,8 @@ const SolapasTabs = () => {
         ? "/necesidades"
         : postTypeVisited.postType === "service"
         ? "/servicios"
+        : postTypeVisited.postType === "good"
+        ? "/bienes"
         : ""
       : "";
 

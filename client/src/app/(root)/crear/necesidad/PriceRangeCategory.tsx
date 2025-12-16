@@ -1,4 +1,8 @@
-import { CustomInput, CustomPriceInput, CustomSelect } from "@/components/inputs/CustomInputs";
+import {
+  CustomInput,
+  CustomPriceInput,
+  CustomSelect,
+} from "@/components/inputs/CustomInputs";
 import { frequencyPriceItems } from "@/utils/data/selectData";
 import { PetitionPostValues, PostCategory } from "@/types/postTypes";
 import { Checkbox } from "@nextui-org/react";
@@ -41,7 +45,6 @@ const PriceRangeCategory = ({
           startContent={<FaDollarSign />}
           label={isChecked ? "Precio Desde" : "Precio"}
           placeholder="Agregue el precio"
-          isRequired
           aria-label="precio"
           isInvalid={!!errors.price}
           errorMessage={errors.price}

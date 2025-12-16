@@ -252,6 +252,42 @@ export const getPostsQuery = gql`
   }
 `;
 
+export const getAllPostsQuery = gql`
+  query FindAllPosts(
+    $page: Float!
+    $limit: Float!
+    $userLocation: UserLocation!
+    $searchTerm: String
+  ) {
+    findAllPosts(
+      page: $page
+      limit: $limit
+      userLocation: $userLocation
+      searchTerm: $searchTerm
+    ) {
+      hasMore
+      posts {
+        _id
+        title
+        description
+        frequencyPrice
+        imagesUrls
+        petitionType
+        postType
+        price
+        reviews {
+          rating
+          _id
+        }
+        toPrice
+        geoLocation {
+          description
+        }
+      }
+    }
+  }
+`;
+
 export const getPostsOfFriendsQuery = gql`
   query FindFriendPosts(
     $postType: PostType!
@@ -262,6 +298,42 @@ export const getPostsOfFriendsQuery = gql`
   ) {
     findFriendPosts(
       postType: $postType
+      page: $page
+      limit: $limit
+      searchTerm: $searchTerm
+      visibility: $visibility
+    ) {
+      hasMore
+      posts {
+        _id
+        title
+        description
+        frequencyPrice
+        imagesUrls
+        petitionType
+        postType
+        price
+        reviews {
+          rating
+          _id
+        }
+        toPrice
+        geoLocation {
+          description
+        }
+      }
+    }
+  }
+`;
+
+export const getAllPostsOfFriendsQuery = gql`
+  query FindAllFriendsPosts(
+    $page: Float!
+    $limit: Float!
+    $searchTerm: String
+    $visibility: Visibility_Of_Find!
+  ) {
+    findAllFriendsPosts(
       page: $page
       limit: $limit
       searchTerm: $searchTerm

@@ -27,9 +27,11 @@ export const useFilteredAndSortedPosts = (
   const [filter, setFilter] = useState<{
     category: string[];
     priceRange: (number | undefined)[];
+    postType: PostType | null;
   }>({
     category: [],
     priceRange: [undefined, undefined],
+    postType: null,
   });
 
   // Filtered items
@@ -103,6 +105,13 @@ export const useFilteredAndSortedPosts = (
           : true;
         return minPrice && maxPrice;
       });
+
+      // Filter by post type
+      if (filter.postType) {
+        filteredPosts = filteredPosts.filter(
+          (post) => post.postType === filter.postType
+        );
+      }
     }
 
     return filteredPosts;

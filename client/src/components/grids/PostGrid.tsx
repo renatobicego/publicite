@@ -9,16 +9,18 @@ const PostsGrid = ({
   isLoading = false,
   isGroupPosts = false,
   isSearchDone = false,
+  showAsMasonry = false,
 }: {
   posts: Post[];
   recommendation?: boolean;
   isLoading?: boolean;
   isGroupPosts?: boolean;
   isSearchDone?: boolean;
+  showAsMasonry?: boolean;
 }) => {
   return (
     <>
-      {isGroupPosts ? (
+      {isGroupPosts || showAsMasonry ? (
         <MasonryPostGrid
           posts={posts}
           isGroupPost={isGroupPosts}

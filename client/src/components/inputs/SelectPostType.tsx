@@ -2,15 +2,18 @@ import { postTypesItems } from "@/utils/data/selectData";
 import { Link, Select, SelectItem } from "@nextui-org/react";
 import { usePathname } from "next/navigation";
 
-const SelectPostType = ({ postType }: { postType: PostType }) => {
+const SelectPostType = ({ postType }: { postType: PostType | "all" }) => {
   const pathname = usePathname();
-  const getUrlPostType = (postType: PostType) => {
+  const getUrlPostType = (postType: PostType | "all") => {
     const urlWithoutPostType = pathname
       .replace("/servicios", "")
-      .replace("/necesidades", "");
+      .replace("/necesidades", "")
+      .replace("/bienes", "");
     switch (postType) {
-      case "good":
+      case "all":
         return urlWithoutPostType;
+      case "good":
+        return `${urlWithoutPostType}/bienes`;
       case "service":
         return `${urlWithoutPostType}/servicios`;
       case "petition":
@@ -20,7 +23,10 @@ const SelectPostType = ({ postType }: { postType: PostType }) => {
   return (
     <Select
       selectedKeys={[postType]}
-      items={postTypesItems}
+      items={[
+        { key: "all", label: "Todos", value: "all" as "all" },
+        ...postTypesItems,
+      ]}
       id="select-post-type"
       label="Bienes, servicios o necesidades"
       placeholder="Seleccione el tipo de anuncio"

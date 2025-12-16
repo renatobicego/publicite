@@ -47,7 +47,7 @@ const PostCardBody = ({
         {description}
       </p>
       <p className="text-light-text text-small lg:text-sm 2xl:text-base font-semibold">
-        ${price}
+        {price ? `$${price}` : "Consultar precio"}
       </p>
     </CardBody>
   );

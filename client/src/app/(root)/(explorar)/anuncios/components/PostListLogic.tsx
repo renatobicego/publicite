@@ -111,6 +111,9 @@ const PostListLogic = ({ postType }: { postType: PostsDataTypes }) => {
           posts={sortedItems}
           isLoading={isLoading}
           isGroupPosts={postType.typeOfData === "groupPosts"}
+          showAsMasonry={
+            postType.typeOfData === "posts" && postType.postType === "all"
+          }
           isSearchDone={querySearch.length > 0}
         />
       )}

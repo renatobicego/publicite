@@ -19,7 +19,9 @@ const PetitionCard = ({
 }) => {
   const price = post.toPrice
     ? `De $${formatTotal(post.price)} a $${formatTotal(post.toPrice)}`
-    : `$${post.price}`;
+    : post.price
+    ? `$${post.price}`
+    : null;
   const frequencyShown =
     post.frequencyPrice && (post.frequencyPrice as any) !== "undefined"
       ? `por ${
@@ -47,9 +49,11 @@ const PetitionCard = ({
           {post.description}
         </div>
       )}
-      <p className="text-light-text text-small lg:text-sm 2xl:text-base font-semibold">
-        {price} {frequencyShown}
-      </p>
+      {price && (
+        <p className="text-light-text text-small lg:text-sm 2xl:text-base font-semibold">
+          {price} {frequencyShown}
+        </p>
+      )}
       <ShareButton
         data={{ ...post, type: "post" }}
         shareType="post"
