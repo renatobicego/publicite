@@ -2,7 +2,7 @@
 import { useMemo } from "react";
 import { UserButton } from "@clerk/nextjs";
 import { BiSolidUserDetail } from "react-icons/bi";
-import { FaSliders, FaUser } from "react-icons/fa6";
+import { FaEyeSlash, FaSliders, FaUser } from "react-icons/fa6";
 import Profile from "./Profile/Profile";
 import Subscriptions from "./Subscriptions/Subscriptions";
 import { MdPayments } from "react-icons/md";
@@ -11,6 +11,7 @@ import { PROFILE } from "@/utils/data/urls";
 import Business from "./Business/Business";
 import { IoBusiness } from "react-icons/io5";
 import { useUserData } from "../providers/userDataProvider";
+import Privacy from "./Privacy/Privacy";
 
 const UserButtonModal = () => {
   const { userTypeLogged, usernameLogged, userIdLogged } = useUserData();
@@ -70,13 +71,16 @@ const UserButtonModal = () => {
         <Subscriptions />
       </UserButton.UserProfilePage>
       <UserButton.UserProfilePage label="security" />
-      {/* <UserButton.UserProfilePage
+      <UserButton.UserProfilePage
         label="Privacidad"
         labelIcon={<FaEyeSlash className="size-4" />}
         url="privacidad"
       >
-        <Privacy />
-      </UserButton.UserProfilePage> */}
+        <Privacy
+          username={usernameLogged as string}
+          userTypeLogged={userTypeLogged as string}
+        />
+      </UserButton.UserProfilePage>
       {/* <UserButton.UserProfilePage
           label="Notificaciones"
           labelIcon={<FaBell className="size-4" />}

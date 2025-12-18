@@ -6,4 +6,5 @@ export interface businessAccountUpdateRequest {
   countryRegion?: string;
   description?: string;
   dni?: string;
+  addressPrivacy?: string;
 }

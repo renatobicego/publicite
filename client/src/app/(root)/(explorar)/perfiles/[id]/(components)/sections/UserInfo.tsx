@@ -113,6 +113,28 @@ const UserInfo = ({
         );
     }
   };
+
+  const showAddress = () => {
+    if (isMyProfile) return true;
+    if (isMyContact) {
+      if (!user.addressPrivacy) return true;
+      if (user.addressPrivacy === "all") return true;
+      if (user.addressPrivacy === isMyContact.typeRelationA) return true;
+      switch (user.addressPrivacy) {
+        case "contacts":
+          if (
+            isMyContact.typeRelationA === "friends" ||
+            isMyContact.typeRelationA === "topfriends"
+          )
+            return true;
+          return false;
+        case "friends":
+          if (isMyContact.typeRelationA === "topfriends") return true;
+          return false;
+      }
+      return false;
+    }
+  };
   return (
     <section
       id={isMyProfile ? "my-info" : "user-info"}
@@ -144,7 +166,9 @@ const UserInfo = ({
         )}
         <div className="flex items-center gap-1">
           <TbWorldPin className="size-4 min-w-4" />
-          <p className="text-xs md:text-sm">{user.countryRegion}</p>
+          {showAddress() && (
+            <p className="text-xs md:text-sm">{user.countryRegion}</p>
+          )}
         </div>
         {user.contact && <SocialMedia contact={user.contact} />}
         <div className="flex gap-2 items-start">{actionToShow()}</div>

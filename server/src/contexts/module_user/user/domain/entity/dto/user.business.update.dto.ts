@@ -5,5 +5,5 @@ export interface UserBusinessUpdateDto {
   sector?: ObjectId;
   countryRegion: string;
   description?: string;
-
+  addressPrivacy?: string;
 }

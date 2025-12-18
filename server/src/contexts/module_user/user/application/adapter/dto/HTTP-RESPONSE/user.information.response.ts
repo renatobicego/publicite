@@ -8,4 +8,5 @@ export interface UserPersonalInformationResponse {
   contact?: ContactRespose;
   sector?: string;
   businessName?: string;
+  addressPrivacy?: string;
 }

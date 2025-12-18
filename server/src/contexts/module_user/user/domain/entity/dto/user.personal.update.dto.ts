@@ -3,4 +3,5 @@ export interface UserPersonalUpdateDto {
   gender?: string;
   countryRegion?: string;
   description?: string;
+  addressPrivacy?: string;
 }

@@ -4,4 +4,5 @@ export interface personalAccountUpdateRequest {
   countryRegion?: string;
   description?: string;
   dni?: string;
+  addressPrivacy?: string;
 }

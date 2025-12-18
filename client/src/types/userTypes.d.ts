@@ -23,6 +23,7 @@ export interface User {
   lastName: string;
   userPreferences: UserPreferences;
   dni: string;
+  addressPrivacy: UserRelation | "none" | "all";
 }
 
 export interface GetUser
@@ -126,7 +127,12 @@ export interface EditBusinessProfileProps
   extends Partial<
     Pick<
       UserBusinessFormValues,
-      "businessName" | "countryRegion" | "description" | "contact" | "dni"
+      | "businessName"
+      | "countryRegion"
+      | "description"
+      | "contact"
+      | "dni"
+      | "addressPrivacy"
     >
   > {
   sector: BusinessSector | ObjectId;

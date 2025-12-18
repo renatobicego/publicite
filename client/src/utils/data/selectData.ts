@@ -121,28 +121,33 @@ export const visibilityRegisteredOrNot = [
     value: "registered",
     label: "Usuarios Registrados",
   },
-]
-
-export const visibilityRegisteredItems: { value: Visibility; label: string }[] = [
-  {
-    value: "public",
-    label: "Público",
-  },
-  {
-    value: "contacts",
-    label: "Contactos",
-  },
-  {
-    value: "friends",
-    label: "Amigos",
-  },
-  {
-    value: "topfriends",
-    label: "Top Amigos",
-  },
 ];
 
-export const relationTypes: {value: UserRelation; label: string, plural: string}[] = [
+export const visibilityRegisteredItems: { value: Visibility; label: string }[] =
+  [
+    {
+      value: "public",
+      label: "Público",
+    },
+    {
+      value: "contacts",
+      label: "Contactos",
+    },
+    {
+      value: "friends",
+      label: "Amigos",
+    },
+    {
+      value: "topfriends",
+      label: "Top Amigos",
+    },
+  ];
+
+export const relationTypes: {
+  value: UserRelation;
+  label: string;
+  plural: string;
+}[] = [
   {
     label: "Contacto",
     value: "contacts",
@@ -157,10 +162,45 @@ export const relationTypes: {value: UserRelation; label: string, plural: string}
     label: "Top Amigo",
     value: "topfriends",
     plural: "Top Amigos",
-  }
-]
+  },
+];
 
-export const groupVisibilityItems: { value: "public" | "private"; label: string }[] = [
+export const relationAddressVisibilityTypes: {
+  value: UserRelation | "all" | "none";
+  label: string;
+  plural: string;
+}[] = [
+  {
+    label: "Todos",
+    value: "all",
+    plural: "Todos",
+  },
+  {
+    label: "Contacto",
+    value: "contacts",
+    plural: "Contactos",
+  },
+  {
+    label: "Amigo",
+    value: "friends",
+    plural: "Amigos",
+  },
+  {
+    label: "Top Amigo",
+    value: "topfriends",
+    plural: "Top Amigos",
+  },
+  {
+    label: "Ocultar Dirección",
+    value: "none",
+    plural: "Ocultar Dirección",
+  },
+];
+
+export const groupVisibilityItems: {
+  value: "public" | "private";
+  label: string;
+}[] = [
   {
     value: "public",
     label: "Público",
@@ -168,10 +208,10 @@ export const groupVisibilityItems: { value: "public" | "private"; label: string 
   {
     value: "private",
     label: "Privado",
-  }
+  },
 ];
 
 export const postsBehavioursTypes: Record<PostBehaviourType, string> = {
   agenda: "Agenda",
   libre: "Libre",
-}
+};

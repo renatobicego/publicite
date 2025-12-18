@@ -21,7 +21,7 @@ import {
 import { auth, currentUser } from "@clerk/nextjs/server";
 
 export const editProfile = async (
-  formData: EditProfileProps,
+  formData: Partial<EditProfileProps>,
   userType: UserType
 ) => {
   const user = await currentUser();

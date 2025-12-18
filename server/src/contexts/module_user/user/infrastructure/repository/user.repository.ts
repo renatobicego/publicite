@@ -245,7 +245,7 @@ export class UserRepository implements UserRepositoryInterface {
   async getUserPersonalInformationByUsername(username: string): Promise<any> {
     try {
       const selectFields =
-        'sector businessName birthDate gender countryRegion description contact dni';
+        'sector businessName birthDate gender countryRegion description contact dni addressPrivacy';
       const populatedUser = await this.user
         .findOne({ username })
         .select(selectFields)
