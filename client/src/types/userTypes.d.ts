@@ -79,6 +79,7 @@ export interface UserPersonFormValues
     | "groups"
     | "magazines"
     | "userPreferences"
+    | "addressPrivacy"
   > {
   contact: {
     phone: string;
@@ -100,6 +101,7 @@ export interface UserBusinessFormValues
     | "name"
     | "lastName"
     | "userPreferences"
+    | "addressPrivacy"
   > {
   contact: {
     phone?: string;
