@@ -46,6 +46,63 @@ export function ChatWindow({
     }
   };
 
+  const parseInline = (text: string) => {
+    // 👉 HEADERS ###
+    if (text.startsWith("### ")) {
+      return (
+        <h5 className=" mt-4 mb-2">
+          {parseInline(text.replace(/^###\s*/, ""))}
+        </h5>
+      );
+    }
+    const elements: React.ReactNode[] = [];
+
+    // Primero links, luego bold
+    const regex = /(\[([^\]]+)\]\(([^)]+)\))|(\*\*([^*]+)\*\*)/g;
+
+    let lastIndex = 0;
+    let match;
+    let key = 0;
+
+    while ((match = regex.exec(text)) !== null) {
+      // Texto previo
+      if (match.index > lastIndex) {
+        elements.push(
+          <span key={key++}>{text.slice(lastIndex, match.index)}</span>
+        );
+      }
+
+      // Link
+      if (match[1]) {
+        elements.push(
+          <a
+            key={key++}
+            href={match[3]}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 underline"
+          >
+            {match[2]}
+          </a>
+        );
+      }
+
+      // Bold
+      if (match[4]) {
+        elements.push(<strong key={key++}>{match[5]}</strong>);
+      }
+
+      lastIndex = regex.lastIndex;
+    }
+
+    // Texto restante
+    if (lastIndex < text.length) {
+      elements.push(<span key={key++}>{text.slice(lastIndex)}</span>);
+    }
+
+    return elements;
+  };
+
   const parseAndRenderText = (text: string) => {
     const lines = text.split("\n");
     const elements: React.ReactNode[] = [];
@@ -55,31 +112,8 @@ export function ChatWindow({
     lines.forEach((line, idx) => {
       const trimmedLine = line.trim();
 
-      // Detect numbered list items (e.g., "1. **Title**: description")
-      const numberedMatch = trimmedLine.match(/^\d+\.\s+(.+)$/);
-      if (numberedMatch) {
-        if (!inList) {
-          inList = true;
-          listItems = [];
-        }
-        // Parse bold text within the line
-        const content = numberedMatch[1];
-        const boldRegex = /\*\*([^*]+)\*\*/g;
-        const parts = content.split(boldRegex);
-
-        listItems.push(
-          <li key={idx} className="ml-4 mb-2">
-            {parts.map((part, partIdx) =>
-              partIdx % 2 === 1 ? (
-                <strong key={partIdx}>{part}</strong>
-              ) : (
-                <span key={partIdx}>{part}</span>
-              )
-            )}
-          </li>
-        );
-      } else {
-        // End list if we encounter a non-list line
+      /** ## HEADINGS **/
+      if (trimmedLine.startsWith("## ")) {
         if (inList && listItems.length > 0) {
           elements.push(
             <ul key={`list-${elements.length}`} className="list-disc space-y-1">
@@ -90,30 +124,56 @@ export function ChatWindow({
           listItems = [];
         }
 
-        // Handle empty lines
-        if (trimmedLine === "") {
-          elements.push(<div key={idx} className="h-2" />);
-        } else {
-          // Parse bold text in regular paragraphs
-          const boldRegex = /\*\*([^*]+)\*\*/g;
-          const parts = trimmedLine.split(boldRegex);
-
-          elements.push(
-            <p key={idx} className="text-sm leading-relaxed">
-              {parts.map((part, partIdx) =>
-                partIdx % 2 === 1 ? (
-                  <strong key={partIdx}>{part}</strong>
-                ) : (
-                  <span key={partIdx}>{part}</span>
-                )
-              )}
-            </p>
-          );
-        }
+        elements.push(
+          <h2 key={idx} className="text-lg font-semibold mt-4 mb-2">
+            {parseInline(trimmedLine.replace(/^##\s+/, ""))}
+          </h2>
+        );
+        return;
       }
+
+      /** LISTAS NUMERADAS **/
+      const numberedMatch = trimmedLine.match(/^\d+\.\s+(.+)$/);
+      if (numberedMatch) {
+        if (!inList) {
+          inList = true;
+          listItems = [];
+        }
+
+        listItems.push(
+          <li key={idx} className="ml-4 mb-2">
+            {parseInline(numberedMatch[1])}
+          </li>
+        );
+        return;
+      }
+
+      /** FIN DE LISTA **/
+      if (inList && listItems.length > 0) {
+        elements.push(
+          <ul key={`list-${elements.length}`} className="list-disc space-y-1">
+            {listItems}
+          </ul>
+        );
+        inList = false;
+        listItems = [];
+      }
+
+      /** LÍNEA VACÍA **/
+      if (trimmedLine === "") {
+        elements.push(<div key={idx} className="h-2" />);
+        return;
+      }
+
+      /** PÁRRAFOS **/
+      elements.push(
+        <p key={idx} className="text-sm leading-relaxed">
+          {parseInline(trimmedLine)}
+        </p>
+      );
     });
 
-    // Don't forget remaining list items
+    /** LISTA FINAL **/
     if (inList && listItems.length > 0) {
       elements.push(
         <ul key={`list-${elements.length}`} className="list-disc space-y-1">
@@ -126,7 +186,7 @@ export function ChatWindow({
   };
 
   return (
-    <div className="fixed bottom-28 md:bottom-24 right-4 md:right-8 z-50 w-96">
+    <div className="fixed bottom-28 md:bottom-24 right-4 md:right-8 lg:right-12 xl:right-16 3xl:right-[6%] xl:bottom-32 z-50 w-96">
       <Card className="h-[500px] shadow-2xl bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800">
         {/* Header */}
         <CardHeader className="flex items-center justify-between gap-3 border-b border-orange-200 dark:border-orange-900 bg-service text-white">
