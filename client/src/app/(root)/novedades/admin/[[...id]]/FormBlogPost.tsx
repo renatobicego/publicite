@@ -1,5 +1,5 @@
 "use client";
-import EditorJS from "@editorjs/editorjs";
+import EditorJS, { OutputData } from "@editorjs/editorjs";
 import Header from "@editorjs/header";
 import List from "@editorjs/list";
 import Image from "@editorjs/image";
@@ -8,7 +8,8 @@ import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useUploadThing } from "@/utils/uploadThing";
 import { toastifyError } from "@/utils/functions/toastify";
 import { deleteFilesService } from "@/app/server/uploadThing";
-const FormBlogPost = () => {
+import PrimaryButton from "@/components/buttons/PrimaryButton";
+const FormBlogPost = ({ defaultData }: { defaultData?: OutputData }) => {
   const ejInstance = useRef<EditorJS | null>();
   const DEFAULT_INITIAL_DATA = useMemo(
     () => ({
@@ -17,7 +18,7 @@ const FormBlogPost = () => {
         {
           type: "header",
           data: {
-            text: "This is my awesome editor!",
+            text: "Este es un título de ejemplo!",
             level: 1,
           },
         },
@@ -39,7 +40,7 @@ const FormBlogPost = () => {
         ejInstance.current = editor;
       },
       autofocus: true,
-      data: DEFAULT_INITIAL_DATA,
+      data: defaultData ?? DEFAULT_INITIAL_DATA,
       onChange: async () => {
         let content = await editor.saver.save();
 
@@ -183,7 +184,7 @@ const FormBlogPost = () => {
         link: Link,
       },
     });
-  }, [DEFAULT_INITIAL_DATA, startUpload]);
+  }, [DEFAULT_INITIAL_DATA, defaultData, startUpload]);
 
   useEffect(() => {
     if (ejInstance.current === null) {
@@ -198,6 +199,14 @@ const FormBlogPost = () => {
   return (
     <>
       <div className="w-full" id="editorjs"></div>
+      <menu>
+        <PrimaryButton>
+          {defaultData ? "Actualizar publicación" : "Crear publicación"}
+        </PrimaryButton>
+        {defaultData && (
+          <PrimaryButton variant="light">Eliminar publicación</PrimaryButton>
+        )}
+      </menu>
     </>
   );
 };

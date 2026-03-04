@@ -133,3 +133,7 @@
   );
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f09433', endColorstr='#bc1888',GradientType=1 );
 }
+
+.codex-editor__redactor {
+  padding-bottom: 150px !important;
+}
