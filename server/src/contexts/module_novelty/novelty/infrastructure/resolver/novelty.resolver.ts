@@ -17,7 +17,7 @@ export class NoveltyResolver {
     nullable: true,
     description: 'Crear una novedad',
   })
-  //@UseGuards(ClerkAuthGuard)
+  @UseGuards(ClerkAuthGuard)
   async createNewNovelty(
     @Args('noveltyDto', { type: () => NoveltyRequest })
     noveltyRequest: NoveltyRequest,
@@ -33,7 +33,7 @@ export class NoveltyResolver {
     nullable: true,
     description: 'Obtener novedad por id',
   })
-  //@UseGuards(ClerkAuthGuard)
+  @UseGuards(ClerkAuthGuard)
   async getNoveltyById(
     @Args('id', { type: () => String })
     id: string,
@@ -49,7 +49,7 @@ export class NoveltyResolver {
     nullable: true,
     description: 'Obtener todas las novedades',
   })
-  //@UseGuards(ClerkAuthGuard)
+  @UseGuards(ClerkAuthGuard)
   async getAllNovelties(): Promise<NoveltyResponse[]> {
     try {
       return await this.noveltyAdapter.getAllNovelties();
@@ -62,7 +62,7 @@ export class NoveltyResolver {
     nullable: true,
     description: 'Actualizar una novedad',
   })
-  //@UseGuards(ClerkAuthGuard)
+  @UseGuards(ClerkAuthGuard)
   async updateNoveltyById(
     @Args('noveltyToUpdate', { type: () => NoveltyUpdateRequest })
     noveltyToUpdate: NoveltyUpdateRequest,
@@ -78,7 +78,7 @@ export class NoveltyResolver {
     nullable: true,
     description: 'Eliminar una novedad por su id',
   })
-  //  @UseGuards(ClerkAuthGuard)
+  @UseGuards(ClerkAuthGuard)
   async deleteNoveltyById(
     @Args('id', { type: () => String })
     id: string,
