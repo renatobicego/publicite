@@ -906,6 +906,24 @@ type GetSessionHistoryResponse {
   totalMessages: Float!
 }
 
+type NoveltyPropertyResponse {
+  key: String!
+  value: String!
+}
+
+type NoveltyBlockResponse {
+  type: String!
+  data: String!
+}
+
+type NoveltyResponse {
+  _id: String!
+  properties: [NoveltyPropertyResponse!]!
+  blocks: [NoveltyBlockResponse!]!
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
 type Query {
   """Obtiene un usuario por su nombre de usuario """
   findUserById(_id: String!): User_Full_Grapql_Model
@@ -989,6 +1007,12 @@ type Query {
 
   """Obtener el historial de una sesión de chat"""
   getChatSessionHistory(sessionId: String!, limit: Float, page: Float): GetSessionHistoryResponse!
+
+  """Obtener novedad por id"""
+  getNoveltyById(id: String!): NoveltyResponse
+
+  """Obtener todas las novedades"""
+  getAllNovelties: [NoveltyResponse!]
 }
 
 """Type of the post """
@@ -1175,6 +1199,15 @@ type Mutation {
 
   """Eliminar una sesión de chat completa (sesión + todos los mensajes)"""
   deleteChatSession(sessionId: String!): Boolean!
+
+  """Crear una novedad"""
+  createNewNovelty(noveltyDto: NoveltyRequest!): NoveltyResponse
+
+  """Actualizar una novedad"""
+  updateNoveltyById(noveltyToUpdate: NoveltyUpdateRequest!): String
+
+  """Eliminar una novedad por su id"""
+  deleteNoveltyById(id: String!): String
 }
 
 input UpdateContactRequest {
@@ -1393,4 +1426,25 @@ input SendMessageRequest {
   sessionId: String
   message: String!
   userId: String
+}
+
+input NoveltyRequest {
+  properties: [NoveltyPropertyRequest!]!
+  blocks: [NoveltyBlockRequest!]!
+}
+
+input NoveltyPropertyRequest {
+  key: String!
+  value: String!
+}
+
+input NoveltyBlockRequest {
+  type: String!
+  data: String!
+}
+
+input NoveltyUpdateRequest {
+  _id: String!
+  properties: [NoveltyPropertyRequest!]
+  blocks: [NoveltyBlockRequest!]
 }
