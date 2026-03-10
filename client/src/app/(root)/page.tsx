@@ -4,12 +4,16 @@ import SelectManualLocationModal from "@/components/modals/SelectManualLocation/
 import { POSTS } from "@/utils/data/urls";
 import { Image, Spinner } from "@nextui-org/react";
 import { Suspense } from "react";
+import NovedadesCarousel from "./novedades/NovedadesCarousel";
+import { mockNovedades } from "@/utils/data/mock-novedades";
 export default function Home() {
+  const novedades = mockNovedades;
   return (
     <main
       id="home-grids"
       className="flex min-h-screen flex-col items-start main-style gap-8"
     >
+      <NovedadesCarousel novedades={novedades} />
       <div className="text-xs lg:text-sm lg:max-w-[50%]">
         {/* <p>¡Hola!</p>
         <ul className="list-disc list-inside">
@@ -21,13 +25,13 @@ export default function Home() {
           <li>Crea relaciones</li>
           <li>Activa cuentas para ver anuncios de tus contactos</li>
         </ul> */}
-        <Image
+        {/* <Image
           src="/instructivo.png"
           alt="instructivo"
           className="object-contain"
           width={600}
           removeWrapper
-        />
+        /> */}
         <UserAmountChips />
       </div>
       <SelectManualLocationModal />

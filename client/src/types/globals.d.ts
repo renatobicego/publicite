@@ -6,6 +6,7 @@ declare global {
       onboardingComplete?: boolean;
       userType: "Person" | "Business";
       mongoId: ObjectId;
+      role?: "admin" | "user";
     };
     firstName?: string;
   }
@@ -13,6 +14,7 @@ declare global {
     onboardingComplete?: boolean;
     userType: "Person" | "Business";
     mongoId: ObjectId;
+    role?: "admin" | "user";
   }
   type ObjectId = string;
   type Visibility =
