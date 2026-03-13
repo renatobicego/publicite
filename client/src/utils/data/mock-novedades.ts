@@ -1,4 +1,4 @@
-import type { Novedad, LoggedUser } from "@/types/novedades"
+import type { Novedad, LoggedUser } from "@/types/novedades";
 
 // Mock user - change role to "admin" to see edit buttons
 export const mockLoggedUser: LoggedUser = {
@@ -9,18 +9,15 @@ export const mockLoggedUser: LoggedUser = {
       role: "admin", // Change to "user" to hide edit buttons
     },
   },
-}
+};
 
 // Mock novedades data with EditorJS format
 export const mockNovedades: Novedad[] = [
   {
     id: "nov_001",
-    slug: "nueva-funcionalidad-dashboard",
     createdAt: "2026-03-01T10:00:00Z",
     updatedAt: "2026-03-01T10:00:00Z",
     content: {
-      time: 1709294400000,
-      version: "2.28.0",
       blocks: [
         {
           id: "block_1",
@@ -62,12 +59,9 @@ export const mockNovedades: Novedad[] = [
   },
   {
     id: "nov_002",
-    slug: "actualizacion-sistema-seguridad",
     createdAt: "2026-02-28T14:30:00Z",
     updatedAt: "2026-02-28T14:30:00Z",
     content: {
-      time: 1709131800000,
-      version: "2.28.0",
       blocks: [
         {
           id: "block_1",
@@ -102,12 +96,9 @@ export const mockNovedades: Novedad[] = [
   },
   {
     id: "nov_003",
-    slug: "nuevo-modulo-reportes",
     createdAt: "2026-02-25T09:15:00Z",
     updatedAt: "2026-02-25T09:15:00Z",
     content: {
-      time: 1708855500000,
-      version: "2.28.0",
       blocks: [
         {
           id: "block_1",
@@ -142,12 +133,9 @@ export const mockNovedades: Novedad[] = [
   },
   {
     id: "nov_004",
-    slug: "integracion-apis-externas",
     createdAt: "2026-02-20T16:45:00Z",
     updatedAt: "2026-02-20T16:45:00Z",
     content: {
-      time: 1708447500000,
-      version: "2.28.0",
       blocks: [
         {
           id: "block_1",
@@ -182,12 +170,9 @@ export const mockNovedades: Novedad[] = [
   },
   {
     id: "nov_005",
-    slug: "mejoras-rendimiento-mobile",
     createdAt: "2026-02-15T11:00:00Z",
     updatedAt: "2026-02-15T11:00:00Z",
     content: {
-      time: 1708000800000,
-      version: "2.28.0",
       blocks: [
         {
           id: "block_1",
@@ -222,12 +207,9 @@ export const mockNovedades: Novedad[] = [
   },
   {
     id: "nov_006",
-    slug: "nuevo-sistema-notificaciones",
     createdAt: "2026-02-10T08:30:00Z",
     updatedAt: "2026-02-10T08:30:00Z",
     content: {
-      time: 1707550200000,
-      version: "2.28.0",
       blocks: [
         {
           id: "block_1",
@@ -260,4 +242,4 @@ export const mockNovedades: Novedad[] = [
       ],
     },
   },
-]
+];
