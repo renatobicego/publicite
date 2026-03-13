@@ -35,10 +35,11 @@ const FormBlogPost = ({
   noveltyId?: string;
   properties?: NoveltyProperty[] | undefined;
 }) => {
-  const ejInstance = useRef<EditorJS | null>();
+  const ejInstance = useRef<EditorJS | undefined | null>();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [initialized, setInitialized] = useState(false);
   const DEFAULT_INITIAL_DATA = useMemo(
     () => ({
       time: new Date().getTime(),
@@ -141,8 +142,6 @@ const FormBlogPost = ({
       data: defaultData ?? DEFAULT_INITIAL_DATA,
       onChange: async () => {
         let content = await editor.saver.save();
-
-        console.log(content);
 
         const currentKeys = new Set<string>();
 
@@ -285,7 +284,7 @@ const FormBlogPost = ({
   }, [DEFAULT_INITIAL_DATA, defaultData, startUpload]);
 
   useEffect(() => {
-    if (ejInstance.current === null) {
+    if (ejInstance.current === undefined) {
       initEditor();
     }
 
