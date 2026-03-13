@@ -1,6 +1,6 @@
 import { ApolloError, ServerError } from "@apollo/client";
 
-interface ErrorResponse {
+export interface ErrorResponse {
     error: string;
   }
   

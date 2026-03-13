@@ -4,17 +4,18 @@ import type {
   HeaderData,
   ParagraphData,
   ImageData,
-} from "@/lib/types/novedades"
+} from "@/types/novedades";
 
 /**
  * Parse a stringify JSON data from EditorJS block
  */
 export function parseBlockData<T>(data: string): T | null {
+  if (typeof data === "object") return data as T;
   try {
-    return JSON.parse(data) as T
+    return JSON.parse(data) as T;
   } catch {
-    console.error("Failed to parse block data:", data)
-    return null
+    console.error("Failed to parse block data:", data);
+    return null;
   }
 }
 
@@ -24,11 +25,11 @@ export function parseBlockData<T>(data: string): T | null {
 export function findFirstHeader(
   content: EditorJSData
 ): { text: string; level: number } | null {
-  const headerBlock = content.blocks.find((block) => block.type === "header")
-  if (!headerBlock) return null
+  const headerBlock = content.blocks.find((block) => block.type === "header");
+  if (!headerBlock) return null;
 
-  const data = parseBlockData<HeaderData>(headerBlock.data)
-  return data ? { text: data.text, level: data.level } : null
+  const data = parseBlockData<HeaderData>(headerBlock.data);
+  return data ? { text: data.text, level: data.level } : null;
 }
 
 /**
@@ -37,11 +38,11 @@ export function findFirstHeader(
 export function findFirstParagraph(content: EditorJSData): string | null {
   const paragraphBlock = content.blocks.find(
     (block) => block.type === "paragraph"
-  )
-  if (!paragraphBlock) return null
+  );
+  if (!paragraphBlock) return null;
 
-  const data = parseBlockData<ParagraphData>(paragraphBlock.data)
-  return data?.text || null
+  const data = parseBlockData<ParagraphData>(paragraphBlock.data);
+  return data?.text || null;
 }
 
 /**
@@ -50,29 +51,29 @@ export function findFirstParagraph(content: EditorJSData): string | null {
 export function findFirstImage(
   content: EditorJSData
 ): { url: string; caption?: string } | null {
-  const imageBlock = content.blocks.find((block) => block.type === "image")
-  if (!imageBlock) return null
+  const imageBlock = content.blocks.find((block) => block.type === "image");
+  if (!imageBlock) return null;
 
-  const data = parseBlockData<ImageData>(imageBlock.data)
-  return data ? { url: data.file.url, caption: data.caption } : null
+  const data = parseBlockData<ImageData>(imageBlock.data);
+  return data ? { url: data.file.url, caption: data.caption } : null;
 }
 
 /**
  * Truncate text to a specific number of lines (approximation)
  */
 export function truncateText(text: string, maxChars: number = 150): string {
-  if (text.length <= maxChars) return text
-  return text.slice(0, maxChars).trim() + "..."
+  if (text.length <= maxChars) return text;
+  return text.slice(0, maxChars).trim() + "...";
 }
 
 /**
  * Format date to Spanish locale
  */
 export function formatDate(dateString: string): string {
-  const date = new Date(dateString)
+  const date = new Date(dateString);
   return date.toLocaleDateString("es-ES", {
     year: "numeric",
     month: "long",
     day: "numeric",
-  })
+  });
 }

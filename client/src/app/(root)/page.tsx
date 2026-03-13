@@ -5,15 +5,27 @@ import { POSTS } from "@/utils/data/urls";
 import { Image, Spinner } from "@nextui-org/react";
 import { Suspense } from "react";
 import NovedadesCarousel from "./novedades/NovedadesCarousel";
-import { mockNovedades } from "@/utils/data/mock-novedades";
-export default function Home() {
-  const novedades = mockNovedades;
+import { getAllNovelties, parseNoveltyBlocks } from "@/services/noveltyService";
+import { Novedad } from "@/types/novedades";
+
+export default async function Home() {
+  // Fetch novelties from backend
+  const noveltiesData = await getAllNovelties();
+  
+  // Transform backend data to frontend format
+  const novedades = !("error" in noveltiesData) && await Promise.all(noveltiesData.map(async(novelty) => ({
+    id: novelty._id,
+    slug: novelty._id,
+    createdAt: novelty.createdAt,
+    updatedAt: novelty.updatedAt,
+    content: await parseNoveltyBlocks(novelty.blocks),
+  })));
   return (
     <main
       id="home-grids"
       className="flex min-h-screen flex-col items-start main-style gap-8"
     >
-      <NovedadesCarousel novedades={novedades} />
+      {novedades && <NovedadesCarousel novedades={novedades as Novedad[]} />}
       <div className="text-xs lg:text-sm lg:max-w-[50%]">
         {/* <p>¡Hola!</p>
         <ul className="list-disc list-inside">

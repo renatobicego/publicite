@@ -1,4 +1,4 @@
-import type { Novedad, LoggedUser } from "@/lib/types/novedades"
+import type { Novedad, LoggedUser } from "@/types/novedades"
 
 // Mock user - change role to "admin" to see edit buttons
 export const mockLoggedUser: LoggedUser = {

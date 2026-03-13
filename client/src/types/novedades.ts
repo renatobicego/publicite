@@ -1,14 +1,14 @@
 // EditorJS block types
 export interface EditorJSBlock {
   id: string
-  type: "header" | "paragraph" | "image" | "list" | "quote"
+  type: "header" | "paragraph" | "image" | "list" | "quote" | "linkTool"
   data: string // Stringify JSON data from backend
 }
 
 export interface EditorJSData {
-  time: number
+  time?: number
   blocks: EditorJSBlock[]
-  version: string
+  version?: string
 }
 
 // Parsed data interfaces
@@ -34,10 +34,11 @@ export interface ImageData {
 // Novedad (announcement) interface
 export interface Novedad {
   id: string
-  slug: string
   createdAt: string
   updatedAt: string
-  content: EditorJSData
+  content: {
+    blocks: EditorJSBlock[]
+  }
 }
 
 // Mock user interface for role checking
