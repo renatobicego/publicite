@@ -4,12 +4,28 @@ import SelectManualLocationModal from "@/components/modals/SelectManualLocation/
 import { POSTS } from "@/utils/data/urls";
 import { Image, Spinner } from "@nextui-org/react";
 import { Suspense } from "react";
-export default function Home() {
+import NovedadesCarousel from "./novedades/NovedadesCarousel";
+import { getAllNovelties, parseNoveltyBlocks } from "@/services/noveltyService";
+import { Novedad } from "@/types/novedades";
+
+export default async function Home() {
+  // Fetch novelties from backend
+  const noveltiesData = await getAllNovelties();
+  
+  // Transform backend data to frontend format
+  const novedades = !("error" in noveltiesData) && await Promise.all(noveltiesData.map(async(novelty) => ({
+    id: novelty._id,
+    slug: novelty._id,
+    createdAt: novelty.createdAt,
+    updatedAt: novelty.updatedAt,
+    content: await parseNoveltyBlocks(novelty.blocks),
+  })));
   return (
     <main
       id="home-grids"
       className="flex min-h-screen flex-col items-start main-style gap-8"
     >
+      {novedades && <NovedadesCarousel novedades={novedades as Novedad[]} />}
       <div className="text-xs lg:text-sm lg:max-w-[50%]">
         {/* <p>¡Hola!</p>
         <ul className="list-disc list-inside">
@@ -21,13 +37,13 @@ export default function Home() {
           <li>Crea relaciones</li>
           <li>Activa cuentas para ver anuncios de tus contactos</li>
         </ul> */}
-        <Image
+        {/* <Image
           src="/instructivo.png"
           alt="instructivo"
           className="object-contain"
           width={600}
           removeWrapper
-        />
+        /> */}
         <UserAmountChips />
       </div>
       <SelectManualLocationModal />
