@@ -959,6 +959,11 @@ type Query {
   """
   findAllPosts(page: Float!, limit: Float!, userLocation: UserLocation!, searchTerm: String): PostFindAllResponse
 
+  """
+  Todos los anuncios sin filtros de descubrimiento (sin geo, sin excluir autor). Sin token: solo public. Con token: public + registered. Respeta isActive=true y endDate>=today. Orden por createAt desc.
+  """
+  findAllPostsGlobal(page: Float!, limit: Float!): PostFindAllResponse
+
   """Encuentra 1 post que cumpla con las palabras clave del array"""
   findMatchPost(postType: PostType!, searchTerm: String!): Post_response_graphql_model
 

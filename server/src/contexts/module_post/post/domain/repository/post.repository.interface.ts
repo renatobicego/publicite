@@ -44,6 +44,7 @@ export interface PostRepositoryInterface {
     searchTerm?: string,
     userRequestId?: string,
   ): Promise<any>;
+  findAllPostsGlobal(page: number, limit: number, userRelationMap?: Map<string, string[]>): Promise<any>;
   findMatchPost(postType: string, searchTerm: string): Promise<void>;
   findFriendPosts(
     postType: string,

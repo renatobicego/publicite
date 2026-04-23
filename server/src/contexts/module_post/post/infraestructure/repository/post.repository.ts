@@ -784,6 +784,138 @@ export class PostRepository implements PostRepositoryInterface {
     }
   }
 
+  async findAllPostsGlobal(page: number, limit: number, userRelationMap?: Map<string, string[]>): Promise<any> {
+    try {
+      this.logger.log('Finding all posts (global, sin filtros de descubrimiento)');
+      const today = new Date();
+
+      const isAuthenticated = userRelationMap !== undefined;
+      const openVisibility = isAuthenticated ? ['public', 'registered'] : ['public'];
+
+      const baseCondition: any = {
+        'visibility.post': { $in: openVisibility },
+        isActive: true,
+        endDate: { $gte: today },
+      };
+
+      let matchStage: any;
+
+      if (userRelationMap && userRelationMap.size > 0) {
+        const friendConditions = Array.from(userRelationMap.entries()).map(
+          ([authorId, visibilityValues]) => ({
+            author: authorId,
+            'visibility.post': { $in: visibilityValues },
+            isActive: true,
+            endDate: { $gte: today },
+          }),
+        );
+        matchStage = { $or: [baseCondition, ...friendConditions] };
+      } else {
+        matchStage = baseCondition;
+      }
+
+      const posts = await this.postDocument.aggregate([
+        { $match: matchStage },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'author',
+            foreignField: '_id',
+            as: 'author',
+            pipeline: [
+              {
+                $project: {
+                  _id: 1,
+                  profilePhotoUrl: 1,
+                  username: 1,
+                  lastName: 1,
+                  name: 1,
+                  contact: 1,
+                },
+              },
+            ],
+          },
+        },
+        { $unwind: { path: '$author', preserveNullAndEmptyArrays: true } },
+        {
+          $lookup: {
+            from: 'contacts',
+            localField: 'author.contact',
+            foreignField: '_id',
+            as: 'author.contact',
+            pipeline: [
+              {
+                $project: {
+                  _id: 1,
+                  facebook: 1,
+                  phone: 1,
+                  instagram: 1,
+                  website: 1,
+                  x: 1,
+                },
+              },
+            ],
+          },
+        },
+        {
+          $unwind: {
+            path: '$author.contact',
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $lookup: {
+            from: 'postcategories',
+            localField: 'category',
+            foreignField: '_id',
+            as: 'category',
+            pipeline: [{ $project: { _id: 1, label: 1 } }],
+          },
+        },
+        {
+          $addFields: {
+            author: {
+              _id: '$author._id',
+              profilePhotoUrl: '$author.profilePhotoUrl',
+              username: '$author.username',
+              lastName: '$author.lastName',
+              name: '$author.name',
+              contact: '$author.contact',
+            },
+            categories: {
+              $map: {
+                input: '$category',
+                as: 'category',
+                in: {
+                  _id: '$$category._id',
+                  label: '$$category.label',
+                },
+              },
+            },
+          },
+        },
+        { $sort: { createAt: -1 } },
+        { $skip: (page - 1) * limit },
+        { $limit: limit + 1 },
+      ]);
+
+      if (!posts) {
+        return { posts: [], hasMore: false };
+      }
+
+      const hasMore = posts.length > limit;
+      const postResponse = posts.slice(0, limit);
+
+      return {
+        posts: postResponse,
+        hasMore,
+      };
+    } catch (error: any) {
+      this.logger.error('An error occurred finding all posts (global)', error);
+      throw error;
+    }
+  }
+
   async findAllPosts(
     page: number,
     limit: number,

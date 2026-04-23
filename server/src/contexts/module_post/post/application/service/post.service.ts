@@ -242,6 +242,25 @@ export class PostService implements PostServiceInterface {
     }
   }
 
+  async findAllPostsGlobal(page: number, limit: number, userRequestId?: string): Promise<any> {
+    try {
+      this.logger.log('Finding all posts global (sin filtros de descubrimiento)');
+
+      if (!userRequestId) {
+        return await this.postRepository.findAllPostsGlobal(page, limit, undefined);
+      }
+
+      const userActiveRelation = await this.userService.getActiveRelationOfUser(userRequestId);
+      const userRelationMap: Map<string, string[]> = userActiveRelation
+        ? makeUserRelationHierarchyMap(userActiveRelation, userRequestId)
+        : new Map();
+
+      return await this.postRepository.findAllPostsGlobal(page, limit, userRelationMap);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
   async findPostsByAuthorId(id: string): Promise<any> {
     try {
       this.logger.log('Finding posts by author id: ' + id);

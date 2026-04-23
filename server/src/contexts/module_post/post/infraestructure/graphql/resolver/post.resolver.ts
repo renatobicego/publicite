@@ -1,6 +1,7 @@
 import { Inject, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Resolver, Query, Context } from '@nestjs/graphql';
 import { ClerkAuthGuard } from 'src/contexts/module_shared/auth/clerk-auth/clerk.auth.guard';
+import { ClerkAuthGuardOptional } from 'src/contexts/module_shared/auth/clerk-auth/clerk.auth.guard.optional';
 import { Date } from 'mongoose';
 
 import { PostAdapterInterface } from 'src/contexts/module_post/post/application/adapter/post.adapter.interface';
@@ -361,6 +362,25 @@ export class PostResolver {
         searchTerm,
         userRequestId,
       );
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  @Query(() => PostFindAllResponse, {
+    nullable: true,
+    description:
+      'Todos los anuncios sin filtros de descubrimiento (sin geo, sin excluir autor). Sin token: solo public. Con token: public + registered. Respeta isActive=true y endDate>=today. Orden por createAt desc.',
+  })
+  @UseGuards(ClerkAuthGuardOptional)
+  async findAllPostsGlobal(
+    @Args('page', { type: () => Number }) page: number,
+    @Args('limit', { type: () => Number }) limit: number,
+    @Context() context: { req: CustomContextRequestInterface },
+  ): Promise<any> {
+    try {
+      const userRequestId = context.req.userRequestId ?? undefined;
+      return await this.postAdapter.findAllPostsGlobal(page, limit, userRequestId);
     } catch (error: any) {
       throw error;
     }
