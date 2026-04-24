@@ -198,6 +198,7 @@ export const getAllPosts = async (
       hasMore: data.findAllPostsGlobal.hasMore,
     }; // Return the same mocked data
   } catch (error) {
+    console.log(error);
     return {
       error: "Error al traer los anuncios. Por favor intenta de nuevo.",
     };
@@ -233,6 +234,8 @@ export const getAllPostsLibre = async (
       hasMore: data.findAllPosts.hasMore,
     }; // Return the same mocked data
   } catch (error) {
+    console.log(error);
+
     return {
       error: "Error al traer los anuncios. Por favor intenta de nuevo.",
     };
