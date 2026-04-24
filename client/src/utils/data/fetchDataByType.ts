@@ -3,6 +3,7 @@ import { getBoards } from "@/services/boardServices";
 import { getGroupPosts, getGroups } from "@/services/groupsService";
 import {
   getAllPosts,
+  getAllPostsLibre,
   getAllPostsOfContacts,
   getGoods,
   getPosts,
@@ -15,7 +16,13 @@ export type ContactPostsVisibility = UserRelation | "hierarchy";
 export type PostsDataTypes =
   | {
       typeOfData: "posts";
-      postType: "good" | "service" | "petition" | "goodService" | "all";
+      postType:
+        | "good"
+        | "service"
+        | "petition"
+        | "goodService"
+        | "all"
+        | "libre";
     }
   | {
       typeOfData: "contactPosts";
@@ -51,7 +58,10 @@ export const fetchDataByType = async (
         };
       }
       if (postType.postType === "all") {
-        return await getAllPosts(searchTerm, page, coordinates);
+        return await getAllPosts(page);
+      }
+      if (postType.postType === "libre") {
+        return await getAllPostsLibre(searchTerm, page, coordinates);
       }
       return await getPosts(searchTerm, page, postType.postType, coordinates);
     case "boards":

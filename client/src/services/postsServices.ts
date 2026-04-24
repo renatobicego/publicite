@@ -17,6 +17,7 @@ import {
   deletePostReactionMutation,
   editPostMutation,
   getActiveRelationsQuery,
+  getAllPostsLibreQuery,
   getAllPostsOfFriendsQuery,
   getAllPostsQuery,
   getMatchPostQuery,
@@ -178,6 +179,32 @@ export const getPosts = async (
 };
 
 export const getAllPosts = async (
+  page: number,
+  limit: number | undefined = 20
+) => {
+  try {
+    const tokenCache = await getAuthToken();
+    const { context } = await getApiContext(true, tokenCache);
+    const { data } = await query({
+      query: getAllPostsQuery,
+      variables: {
+        limit,
+        page,
+      },
+      context,
+    });
+    return {
+      items: data.findAllPostsGlobal.posts,
+      hasMore: data.findAllPostsGlobal.hasMore,
+    }; // Return the same mocked data
+  } catch (error) {
+    return {
+      error: "Error al traer los anuncios. Por favor intenta de nuevo.",
+    };
+  }
+};
+
+export const getAllPostsLibre = async (
   searchTerm: string | null,
   page: number,
   coordinates: Coordinates | null,
@@ -192,7 +219,7 @@ export const getAllPosts = async (
     const tokenCache = await getAuthToken();
     const { context } = await getApiContext(true, tokenCache);
     const { data } = await query({
-      query: getAllPostsQuery,
+      query: getAllPostsLibreQuery,
       variables: {
         limit,
         page,

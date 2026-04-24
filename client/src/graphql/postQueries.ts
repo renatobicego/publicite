@@ -253,6 +253,32 @@ export const getPostsQuery = gql`
 `;
 
 export const getAllPostsQuery = gql`
+  query FindAllPostsGlobal($page: Float!, $limit: Float!) {
+    findAllPostsGlobal(page: $page, limit: $limit) {
+      hasMore
+      posts {
+        _id
+        title
+        description
+        frequencyPrice
+        imagesUrls
+        petitionType
+        postType
+        price
+        reviews {
+          rating
+          _id
+        }
+        toPrice
+        geoLocation {
+          description
+        }
+      }
+    }
+  }
+`;
+
+export const getAllPostsLibreQuery = gql`
   query FindAllPosts(
     $page: Float!
     $limit: Float!

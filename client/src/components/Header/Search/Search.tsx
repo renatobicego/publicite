@@ -7,6 +7,7 @@ import {
   NEEDS,
   POST_BEST,
   POST_CONTACTS,
+  POST_LIBRE,
   POST_NEXT_TO_EXPIRE,
   POST_RECENTS,
   POSTS,
@@ -19,7 +20,7 @@ import DropdownSolapas from "./DropdownSolapas/DropdownSolapas";
 import { usePathname } from "next/navigation";
 
 export const keyToPath: { [key: string]: string } = {
-  recomendados: POSTS,
+  recomendados: POST_LIBRE,
   contactos: POST_CONTACTS,
   hoy: POST_RECENTS,
   puntuados: POST_BEST,

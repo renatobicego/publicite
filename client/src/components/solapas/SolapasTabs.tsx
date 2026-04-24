@@ -15,6 +15,7 @@ import {
   PROFILE,
   GROUPS,
   POST_CONTACTS,
+  POST_LIBRE,
 } from "@/utils/data/urls";
 import { Tab, Tabs } from "@nextui-org/react";
 import { usePathname } from "next/navigation";
@@ -67,6 +68,9 @@ const SolapasTabs = () => {
           postTypeVisited.postType = "all";
         }
         break;
+      case pathname.includes(POST_LIBRE):
+        postTypeVisited.typeOfData = "posts";
+        break;
       case pathname.includes(POSTS):
         postTypeVisited.typeOfData = "posts";
         break;
@@ -104,6 +108,20 @@ const SolapasTabs = () => {
   const tabDefinitions = [
     {
       key: `${POSTS}${postTypeUrlVisited}`,
+      title: (
+        <TabTitle
+          title="Anuncios"
+          icon={
+            <>
+              <IoMdMegaphone className="size-5 md:size-6 " />
+            </>
+          }
+        />
+      ),
+      component: <PostsList postTypeVisited={postTypeVisited} hideMap />,
+    },
+    {
+      key: `${POST_LIBRE}${postTypeUrlVisited}`,
       title: (
         <TabTitle
           title="Anuncios Libres"

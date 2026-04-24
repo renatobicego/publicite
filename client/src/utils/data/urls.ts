@@ -16,6 +16,7 @@ const CREATE_MAGAZINE = "/crear/revista";
 const CREATE_GROUP = "/crear/grupo";
 const POST_RECENTS = `${POSTS}/recientes`;
 const POST_CONTACTS = `${POSTS}/contactos`;
+const POST_LIBRE = `${POSTS}/libres`;
 const POST_BEST = `${POSTS}/mejor-puntuados`;
 const POST_NEXT_TO_EXPIRE = `${POSTS}/proximos-a-vencer`;
 const BOARDS = "/pizarras";
@@ -53,4 +54,5 @@ export {
   socketUrl,
   SERVICES,
   NEEDS,
+  POST_LIBRE,
 };
