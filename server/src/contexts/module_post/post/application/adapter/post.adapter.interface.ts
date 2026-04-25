@@ -45,7 +45,13 @@ export interface PostAdapterInterface {
     searchTerm?: string,
     userRequestId?: string,
   ): Promise<void>;
-  findAllPostsGlobal(page: number, limit: number, userRequestId?: string): Promise<any>;
+  findAllPostsGlobal(
+    page: number,
+    limit: number,
+    userRequestId?: string,
+    userLocation?: UserLocation,
+    searchTerm?: string,
+  ): Promise<any>;
   findMatchPost(postType: string, searchTerm: string): Promise<void>;
   findFriendPosts(
     postType: string,

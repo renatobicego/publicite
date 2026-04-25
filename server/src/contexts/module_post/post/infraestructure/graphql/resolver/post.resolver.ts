@@ -370,17 +370,27 @@ export class PostResolver {
   @Query(() => PostFindAllResponse, {
     nullable: true,
     description:
-      'Todos los anuncios sin filtros de descubrimiento (sin geo, sin excluir autor). Sin token: solo public. Con token: public + registered. Respeta isActive=true y endDate>=today. Orden por createAt desc.',
+      'Todos los anuncios. Sin token: solo public. Con token: public + registered + posts de amigos según relación. userLocation y searchTerm son opcionales: si vienen, filtran por geo (ratio del dueño) y por texto. Respeta isActive=true y endDate>=today. Orden por createAt desc.',
   })
   @UseGuards(ClerkAuthGuardOptional)
   async findAllPostsGlobal(
     @Args('page', { type: () => Number }) page: number,
     @Args('limit', { type: () => Number }) limit: number,
     @Context() context: { req: CustomContextRequestInterface },
+    @Args('userLocation', { type: () => UserLocation, nullable: true })
+    userLocation?: UserLocation,
+    @Args('searchTerm', { type: () => String, nullable: true })
+    searchTerm?: string,
   ): Promise<any> {
     try {
       const userRequestId = context.req.userRequestId ?? undefined;
-      return await this.postAdapter.findAllPostsGlobal(page, limit, userRequestId);
+      return await this.postAdapter.findAllPostsGlobal(
+        page,
+        limit,
+        userRequestId,
+        userLocation,
+        searchTerm,
+      );
     } catch (error: any) {
       throw error;
     }

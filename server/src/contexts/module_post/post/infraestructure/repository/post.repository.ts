@@ -784,38 +784,84 @@ export class PostRepository implements PostRepositoryInterface {
     }
   }
 
-  async findAllPostsGlobal(page: number, limit: number, userRelationMap?: Map<string, string[]>): Promise<any> {
+  async findAllPostsGlobal(
+    page: number,
+    limit: number,
+    userRelationMap?: Map<string, string[]>,
+    userLocation?: UserLocation,
+    searchTerm?: string,
+  ): Promise<any> {
     try {
-      this.logger.log('Finding all posts (global, sin filtros de descubrimiento)');
+      this.logger.log('Finding all posts (global)');
       const today = new Date();
 
       const isAuthenticated = userRelationMap !== undefined;
       const openVisibility = isAuthenticated ? ['public', 'registered'] : ['public'];
 
-      const baseCondition: any = {
-        'visibility.post': { $in: openVisibility },
-        isActive: true,
-        endDate: { $gte: today },
-      };
-
-      let matchStage: any;
+      const andClauses: any[] = [
+        { isActive: true, endDate: { $gte: today } },
+      ];
 
       if (userRelationMap && userRelationMap.size > 0) {
         const friendConditions = Array.from(userRelationMap.entries()).map(
           ([authorId, visibilityValues]) => ({
             author: authorId,
             'visibility.post': { $in: visibilityValues },
-            isActive: true,
-            endDate: { $gte: today },
           }),
         );
-        matchStage = { $or: [baseCondition, ...friendConditions] };
+        andClauses.push({
+          $or: [
+            { 'visibility.post': { $in: openVisibility } },
+            ...friendConditions,
+          ],
+        });
       } else {
-        matchStage = baseCondition;
+        andClauses.push({ 'visibility.post': { $in: openVisibility } });
+      }
+
+      if (searchTerm) {
+        const textSearchQuery = checkStopWordsAndReturnSearchQuery(
+          searchTerm,
+          SearchType.post,
+        );
+        if (!textSearchQuery) {
+          this.logger.log('No valid search terms. Returning empty result.');
+          return { posts: [], hasMore: false };
+        }
+        andClauses.push({
+          $or: [
+            { searchTitle: { $regex: textSearchQuery, $options: 'i' } },
+            { searchDescription: { $regex: textSearchQuery, $options: 'i' } },
+          ],
+        });
+        andClauses.push({ postBehaviourType: 'libre' });
+      }
+
+      const matchStage = { $and: andClauses };
+
+      const pipeline: any[] = [];
+
+      if (userLocation) {
+        pipeline.push({
+          $geoNear: {
+            near: {
+              type: 'Point',
+              coordinates: [userLocation.longitude, userLocation.latitude],
+            },
+            distanceField: 'distance',
+            spherical: true,
+            query: matchStage,
+          },
+        });
+        pipeline.push({
+          $match: { $expr: { $lte: ['$distance', '$geoLocation.ratio'] } },
+        });
+      } else {
+        pipeline.push({ $match: matchStage });
       }
 
       const posts = await this.postDocument.aggregate([
-        { $match: matchStage },
+        ...pipeline,
         {
           $lookup: {
             from: 'users',

@@ -242,12 +242,24 @@ export class PostService implements PostServiceInterface {
     }
   }
 
-  async findAllPostsGlobal(page: number, limit: number, userRequestId?: string): Promise<any> {
+  async findAllPostsGlobal(
+    page: number,
+    limit: number,
+    userRequestId?: string,
+    userLocation?: UserLocation,
+    searchTerm?: string,
+  ): Promise<any> {
     try {
-      this.logger.log('Finding all posts global (sin filtros de descubrimiento)');
+      this.logger.log('Finding all posts global');
 
       if (!userRequestId) {
-        return await this.postRepository.findAllPostsGlobal(page, limit, undefined);
+        return await this.postRepository.findAllPostsGlobal(
+          page,
+          limit,
+          undefined,
+          userLocation,
+          searchTerm,
+        );
       }
 
       const userActiveRelation = await this.userService.getActiveRelationOfUser(userRequestId);
@@ -255,7 +267,13 @@ export class PostService implements PostServiceInterface {
         ? makeUserRelationHierarchyMap(userActiveRelation, userRequestId)
         : new Map();
 
-      return await this.postRepository.findAllPostsGlobal(page, limit, userRelationMap);
+      return await this.postRepository.findAllPostsGlobal(
+        page,
+        limit,
+        userRelationMap,
+        userLocation,
+        searchTerm,
+      );
     } catch (error: any) {
       throw error;
     }
