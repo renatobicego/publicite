@@ -22,6 +22,7 @@ interface LocationContextType {
   requestLocationPermission: (postType: PubliciteDataTypes) => Promise<void>;
   setCoordinates: React.Dispatch<React.SetStateAction<Coordinates | null>>;
   manualLocation: boolean;
+  needsUserGesture: boolean;
 }
 
 const LocationContext = createContext<LocationContextType | undefined>(
@@ -44,15 +45,25 @@ export const LocationProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
   const [coordinates, setCoordinates] = useState<Coordinates | null>(null);
   const [manualLocation, setManualLocation] = useState(false);
+  const [needsUserGesture, setNeedsUserGesture] = useState(false);
 
   const requestLocationPermission = useCallback(
     async (postType?: PubliciteDataTypes) => {
+      console.log("1. Called with postType:", postType);
+      console.log("2. manualLocation:", manualLocation);
+
       if (manualLocation) return;
       if (postType && !isLocationAwarePostType(postType)) return;
 
+      console.log("3. Passed guards");
+
       const getPosition = (): Promise<GeolocationPosition> =>
         new Promise((resolve, reject) =>
-          navigator.geolocation.getCurrentPosition(resolve, reject)
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            timeout: 10000,
+            maximumAge: 0,
+            enableHighAccuracy: false, // set true only if needed, it's slower
+          })
         );
 
       try {
@@ -61,27 +72,43 @@ export const LocationProvider: React.FC<{ children: ReactNode }> = ({
             name: "geolocation",
           });
 
+          console.log("4. Permission state:", state);
+
           if (state === "denied") {
-            throw new Error("Permiso de localización denegado");
+            setManualLocation(true);
+            return;
           }
-          // "prompt" and "granted" both proceed to getCurrentPosition
+
+          if (state === "granted") {
+            const position = await getPosition();
+            console.log("5. Got position:", position.coords);
+            setCoordinates({
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+            });
+            return;
+          }
+
+          setNeedsUserGesture(true);
+          return;
         }
 
+        console.log("4b. permissions API not available, trying directly");
         const position = await getPosition();
-
+        console.log("5b. Got position:", position.coords);
         setCoordinates({
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
         });
       } catch (error) {
+        console.error("6. Error:", error); // error.code: 1=denied, 2=unavailable, 3=timeout
         setManualLocation(true);
-        throw error;
       }
     },
     [manualLocation]
   );
 
-  console.log(coordinates);
+  console.log(needsUserGesture, "needsUserGesture");
   return (
     <LocationContext.Provider
       value={{
@@ -89,6 +116,7 @@ export const LocationProvider: React.FC<{ children: ReactNode }> = ({
         requestLocationPermission,
         setCoordinates,
         manualLocation,
+        needsUserGesture,
       }}
     >
       {children}
