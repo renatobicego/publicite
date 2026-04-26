@@ -58,7 +58,7 @@ export const fetchDataByType = async (
         };
       }
       if (postType.postType === "all") {
-        return await getAllPosts(page);
+        return await getAllPosts(searchTerm, page, coordinates);
       }
       if (postType.postType === "libre") {
         return await getAllPostsLibre(searchTerm, page, coordinates);

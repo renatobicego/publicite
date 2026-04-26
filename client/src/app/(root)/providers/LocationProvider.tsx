@@ -81,6 +81,7 @@ export const LocationProvider: React.FC<{ children: ReactNode }> = ({
     [manualLocation]
   );
 
+  console.log(coordinates);
   return (
     <LocationContext.Provider
       value={{

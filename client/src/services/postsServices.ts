@@ -179,7 +179,9 @@ export const getPosts = async (
 };
 
 export const getAllPosts = async (
+  searchTerm: string | null,
   page: number,
+  coordinates: Coordinates | null,
   limit: number | undefined = 20
 ) => {
   try {
@@ -190,6 +192,8 @@ export const getAllPosts = async (
       variables: {
         limit,
         page,
+        searchTerm: searchTerm ? searchTerm : "",
+        userLocation: coordinates,
       },
       context,
     });

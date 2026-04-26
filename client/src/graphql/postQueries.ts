@@ -253,8 +253,18 @@ export const getPostsQuery = gql`
 `;
 
 export const getAllPostsQuery = gql`
-  query FindAllPostsGlobal($page: Float!, $limit: Float!) {
-    findAllPostsGlobal(page: $page, limit: $limit) {
+  query FindAllPostsGlobal(
+    $page: Float!
+    $limit: Float!
+    $userLocation: UserLocation!
+    $searchTerm: String
+  ) {
+    findAllPostsGlobal(
+      page: $page
+      limit: $limit
+      userLocation: $userLocation
+      searchTerm: $searchTerm
+    ) {
       hasMore
       posts {
         _id
