@@ -79,7 +79,7 @@ export const useInfiniteFetch = (
           : postType,
         busqueda,
         state.page,
-        coordinatesToUse
+        coordinatesToUse ?? localCoordinates
       );
       // update state
       if (data.error) {
