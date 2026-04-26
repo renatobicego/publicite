@@ -20,7 +20,9 @@ export interface Coordinates {
 
 interface LocationContextType {
   coordinates: Coordinates | null;
-  requestLocationPermission: (postType: PubliciteDataTypes) => Promise<void>;
+  requestLocationPermission: (
+    postType: PubliciteDataTypes
+  ) => Promise<GeolocationCoordinates | null>;
   setCoordinates: React.Dispatch<React.SetStateAction<Coordinates | null>>;
   manualLocation: boolean;
   needsUserGesture: boolean;
@@ -58,8 +60,8 @@ export const LocationProvider: React.FC<{ children: ReactNode }> = ({
 
   const requestLocationPermission = useCallback(
     async (postType?: PubliciteDataTypes) => {
-      if (manualLocation) return;
-      if (postType && !isLocationAwarePostType(postType)) return;
+      if (manualLocation) return null;
+      if (postType && !isLocationAwarePostType(postType)) return null;
 
       const getPosition = (): Promise<GeolocationPosition> =>
         new Promise((resolve, reject) =>
@@ -78,7 +80,7 @@ export const LocationProvider: React.FC<{ children: ReactNode }> = ({
 
           if (state === "denied") {
             setManualLocation(true);
-            return;
+            return null;
           }
 
           if (state === "granted") {
@@ -87,11 +89,11 @@ export const LocationProvider: React.FC<{ children: ReactNode }> = ({
               latitude: position.coords.latitude,
               longitude: position.coords.longitude,
             });
-            return;
+            return position.coords;
           }
 
           setNeedsUserGesture(true);
-          return;
+          return null;
         }
 
         const position = await getPosition();
@@ -99,8 +101,10 @@ export const LocationProvider: React.FC<{ children: ReactNode }> = ({
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
         });
+        return position.coords;
       } catch (error) {
         setManualLocation(true);
+        return null;
       }
     },
     [manualLocation]

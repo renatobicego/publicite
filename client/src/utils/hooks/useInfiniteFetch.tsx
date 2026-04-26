@@ -39,6 +39,7 @@ export const useInfiniteFetch = (
   // get the coordinates of the user and the function to request the permission
   const { coordinates, requestLocationPermission, manualLocation } =
     useLocation();
+  const [localCoordinates, setLocalCoordinates] = useState(coordinates);
   // get the busqueda from the url
   const searchParams = useSearchParams();
   const busqueda = searchParams.get("busqueda");
@@ -48,13 +49,15 @@ export const useInfiniteFetch = (
     // if isLoading, hasMoreData is false or errorOccurred, return
     if (state.isLoading || !state.hasMoreData || state.errorOccurred) return;
     // if postType is location aware and coordinates is null, request the permission
+    let coordinatesToUse = localCoordinates;
     if (
       isLocationAwarePostType(postType) &&
-      (!coordinates || coordinates.latitude === INITIAL_LOCATION.lat) &&
+      (!localCoordinates ||
+        localCoordinates.latitude === INITIAL_LOCATION.lat) &&
       !manualLocation
     ) {
       try {
-        await requestLocationPermission(postType);
+        coordinatesToUse = await requestLocationPermission(postType);
       } catch {
         toastifyWarn(
           "Por favor, autoriza el acceso la localización en tu dispositivo o selecciona la ubicación manualmente.",
@@ -63,7 +66,7 @@ export const useInfiniteFetch = (
         return;
       }
     }
-    if (isLocationAwarePostType(postType) && !coordinates) {
+    if (isLocationAwarePostType(postType) && !localCoordinates) {
       return;
     }
     // set isLoading to true
@@ -76,7 +79,7 @@ export const useInfiniteFetch = (
           : postType,
         busqueda,
         state.page,
-        coordinates
+        coordinatesToUse
       );
       // update state
       if (data.error) {
@@ -97,14 +100,18 @@ export const useInfiniteFetch = (
       updateState({ isLoading: false });
     }
   }, [
-    state,
+    state.isLoading,
+    state.hasMoreData,
+    state.errorOccurred,
+    state.page,
+    state.items,
+    localCoordinates,
     postType,
-    busqueda,
-    coordinates,
+    manualLocation,
     updateState,
     requestLocationPermission,
-    manualLocation,
     visibility,
+    busqueda,
   ]);
 
   // Trigger to reset state when postType or search term changes
