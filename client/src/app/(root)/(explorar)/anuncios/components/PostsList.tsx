@@ -20,6 +20,7 @@ const PostsList = ({
   postTypeVisited: PostsDataTypes;
   hideMap?: boolean;
 }) => {
+  console.log(postTypeVisited, "postTypeVisited");
   const pathname = usePathname();
 
   // Function to determine the title based on path and post type

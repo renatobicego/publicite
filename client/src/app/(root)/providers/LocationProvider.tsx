@@ -34,9 +34,14 @@ export const isLocationAwarePostType = (type: PubliciteDataTypes) => {
     return true;
   }
   if ("postType" in type) {
-    return ["good", "service", "petition", "goodService", "all"].includes(
-      type.postType
-    );
+    return [
+      "good",
+      "service",
+      "petition",
+      "goodService",
+      "all",
+      "libre",
+    ].includes(type.postType);
   }
 };
 
@@ -49,13 +54,8 @@ export const LocationProvider: React.FC<{ children: ReactNode }> = ({
 
   const requestLocationPermission = useCallback(
     async (postType?: PubliciteDataTypes) => {
-      console.log("1. Called with postType:", postType);
-      console.log("2. manualLocation:", manualLocation);
-
       if (manualLocation) return;
       if (postType && !isLocationAwarePostType(postType)) return;
-
-      console.log("3. Passed guards");
 
       const getPosition = (): Promise<GeolocationPosition> =>
         new Promise((resolve, reject) =>
@@ -72,8 +72,6 @@ export const LocationProvider: React.FC<{ children: ReactNode }> = ({
             name: "geolocation",
           });
 
-          console.log("4. Permission state:", state);
-
           if (state === "denied") {
             setManualLocation(true);
             return;
@@ -81,7 +79,6 @@ export const LocationProvider: React.FC<{ children: ReactNode }> = ({
 
           if (state === "granted") {
             const position = await getPosition();
-            console.log("5. Got position:", position.coords);
             setCoordinates({
               latitude: position.coords.latitude,
               longitude: position.coords.longitude,
@@ -93,22 +90,18 @@ export const LocationProvider: React.FC<{ children: ReactNode }> = ({
           return;
         }
 
-        console.log("4b. permissions API not available, trying directly");
         const position = await getPosition();
-        console.log("5b. Got position:", position.coords);
         setCoordinates({
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
         });
       } catch (error) {
-        console.error("6. Error:", error); // error.code: 1=denied, 2=unavailable, 3=timeout
         setManualLocation(true);
       }
     },
     [manualLocation]
   );
 
-  console.log(needsUserGesture, "needsUserGesture");
   return (
     <LocationContext.Provider
       value={{
