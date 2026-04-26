@@ -85,6 +85,9 @@ const SolapasTabs = () => {
       case pathname.includes("bienes"):
         postTypeVisited.postType = "good";
         break;
+      case pathname.includes(POST_LIBRE):
+        postTypeVisited.postType = "libre";
+        break;
       default:
         postTypeVisited.postType = "all";
         break;
