@@ -118,7 +118,7 @@ const SolapasTabs = () => {
           }
         />
       ),
-      component: <PostsList postTypeVisited={postTypeVisited} hideMap />,
+      component: <PostsList postTypeVisited={postTypeVisited} />,
     },
     {
       key: `${POST_LIBRE}${postTypeUrlVisited}`,
