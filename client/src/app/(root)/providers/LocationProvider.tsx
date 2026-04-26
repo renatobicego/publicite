@@ -50,8 +50,13 @@ export const LocationProvider: React.FC<{ children: ReactNode }> = ({
       if (manualLocation) return;
       if (postType && !isLocationAwarePostType(postType)) return;
 
+      const getPosition = (): Promise<GeolocationPosition> =>
+        new Promise((resolve, reject) =>
+          navigator.geolocation.getCurrentPosition(resolve, reject)
+        );
+
       try {
-        if (navigator.permissions && navigator.permissions.query) {
+        if (navigator.permissions?.query) {
           const { state } = await navigator.permissions.query({
             name: "geolocation",
           });
@@ -59,27 +64,10 @@ export const LocationProvider: React.FC<{ children: ReactNode }> = ({
           if (state === "denied") {
             throw new Error("Permiso de localización denegado");
           }
-
-          if (state === "prompt") {
-            const promptResult = await new Promise<GeolocationPosition>(
-              (resolve, reject) => {
-                navigator.geolocation.getCurrentPosition(resolve, reject);
-              }
-            );
-
-            setCoordinates({
-              latitude: promptResult.coords.latitude,
-              longitude: promptResult.coords.longitude,
-            });
-            return;
-          }
+          // "prompt" and "granted" both proceed to getCurrentPosition
         }
 
-        const position = await new Promise<GeolocationPosition>(
-          (resolve, reject) => {
-            navigator.geolocation.getCurrentPosition(resolve, reject);
-          }
-        );
+        const position = await getPosition();
 
         setCoordinates({
           latitude: position.coords.latitude,
