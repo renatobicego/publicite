@@ -11,6 +11,7 @@ import {
   isLocationAwarePostType,
   useLocation,
 } from "@/app/(root)/providers/LocationProvider";
+import { INITIAL_LOCATION } from "@/components/modals/SelectManualLocation/ManualLocationPicker";
 
 interface FetchState {
   isLoading: boolean; // loading state
@@ -47,7 +48,11 @@ export const useInfiniteFetch = (
     // if isLoading, hasMoreData is false or errorOccurred, return
     if (state.isLoading || !state.hasMoreData || state.errorOccurred) return;
     // if postType is location aware and coordinates is null, request the permission
-    if (isLocationAwarePostType(postType) && !coordinates && !manualLocation) {
+    if (
+      isLocationAwarePostType(postType) &&
+      (!coordinates || coordinates.latitude === INITIAL_LOCATION.lat) &&
+      !manualLocation
+    ) {
       try {
         await requestLocationPermission(postType);
       } catch {
