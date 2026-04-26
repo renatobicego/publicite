@@ -22,7 +22,7 @@ interface LocationContextType {
   coordinates: Coordinates | null;
   requestLocationPermission: (
     postType: PubliciteDataTypes
-  ) => Promise<GeolocationCoordinates | null>;
+  ) => Promise<Coordinates | null>;
   setCoordinates: React.Dispatch<React.SetStateAction<Coordinates | null>>;
   manualLocation: boolean;
   needsUserGesture: boolean;
@@ -85,11 +85,12 @@ export const LocationProvider: React.FC<{ children: ReactNode }> = ({
 
           if (state === "granted") {
             const position = await getPosition();
-            setCoordinates({
+            const coordinates = {
               latitude: position.coords.latitude,
               longitude: position.coords.longitude,
-            });
-            return position.coords;
+            };
+            setCoordinates(coordinates);
+            return coordinates;
           }
 
           setNeedsUserGesture(true);
@@ -97,11 +98,12 @@ export const LocationProvider: React.FC<{ children: ReactNode }> = ({
         }
 
         const position = await getPosition();
-        setCoordinates({
+        const coordinates = {
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
-        });
-        return position.coords;
+        };
+        setCoordinates(coordinates);
+        return coordinates;
       } catch (error) {
         setManualLocation(true);
         return null;
