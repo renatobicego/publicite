@@ -1,5 +1,6 @@
 "use client";
 
+import { INITIAL_LOCATION } from "@/components/modals/SelectManualLocation/ManualLocationPicker";
 import { PubliciteDataTypes } from "@/utils/data/fetchDataByType";
 import { toastifyError } from "@/utils/functions/toastify";
 import React, {
@@ -48,7 +49,10 @@ export const isLocationAwarePostType = (type: PubliciteDataTypes) => {
 export const LocationProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [coordinates, setCoordinates] = useState<Coordinates | null>(null);
+  const [coordinates, setCoordinates] = useState<Coordinates | null>({
+    latitude: INITIAL_LOCATION.lat,
+    longitude: INITIAL_LOCATION.lng,
+  });
   const [manualLocation, setManualLocation] = useState(false);
   const [needsUserGesture, setNeedsUserGesture] = useState(false);
 

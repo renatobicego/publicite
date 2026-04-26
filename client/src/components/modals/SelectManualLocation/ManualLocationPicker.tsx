@@ -6,7 +6,10 @@ import { useLocation } from "@/app/(root)/providers/LocationProvider";
 import CustomMap from "./CustomMap";
 import LatLngAutocomplete from "@/components/inputs/LatLngAutocomplete";
 const libraries: Libraries = ["places"];
-const INITIAL_LOCATION = { lat: -34.6115643483578, lng: -58.38901999245833 };
+export const INITIAL_LOCATION = {
+  lat: -34.6115643483578,
+  lng: -58.38901999245833,
+};
 const PlacePickerWrapper = ({
   setAddress,
 }: {
