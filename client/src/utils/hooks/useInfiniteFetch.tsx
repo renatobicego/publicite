@@ -39,7 +39,6 @@ export const useInfiniteFetch = (
   // get the coordinates of the user and the function to request the permission
   const { coordinates, requestLocationPermission, manualLocation } =
     useLocation();
-  const [localCoordinates, setLocalCoordinates] = useState(coordinates);
   // get the busqueda from the url
   const searchParams = useSearchParams();
   const busqueda = searchParams.get("busqueda");
@@ -49,11 +48,10 @@ export const useInfiniteFetch = (
     // if isLoading, hasMoreData is false or errorOccurred, return
     if (state.isLoading || !state.hasMoreData || state.errorOccurred) return;
     // if postType is location aware and coordinates is null, request the permission
-    let coordinatesToUse = localCoordinates;
+    let coordinatesToUse = coordinates;
     if (
       isLocationAwarePostType(postType) &&
-      (!localCoordinates ||
-        localCoordinates.latitude === INITIAL_LOCATION.lat) &&
+      (!coordinates || coordinates.latitude === INITIAL_LOCATION.lat) &&
       !manualLocation
     ) {
       try {
@@ -66,7 +64,7 @@ export const useInfiniteFetch = (
         return;
       }
     }
-    if (isLocationAwarePostType(postType) && !localCoordinates) {
+    if (isLocationAwarePostType(postType) && !coordinates) {
       return;
     }
     // set isLoading to true
@@ -79,7 +77,7 @@ export const useInfiniteFetch = (
           : postType,
         busqueda,
         state.page,
-        coordinatesToUse ?? localCoordinates
+        coordinatesToUse ?? coordinates
       );
       // update state
       if (data.error) {
@@ -105,7 +103,7 @@ export const useInfiniteFetch = (
     state.errorOccurred,
     state.page,
     state.items,
-    localCoordinates,
+    coordinates,
     postType,
     manualLocation,
     updateState,
