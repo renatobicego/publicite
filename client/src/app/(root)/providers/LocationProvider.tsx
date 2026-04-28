@@ -1,5 +1,6 @@
 "use client";
 
+import { INITIAL_LOCATION } from "@/components/modals/SelectManualLocation/ManualLocationPicker";
 import { PubliciteDataTypes } from "@/utils/data/fetchDataByType";
 import { toastifyError } from "@/utils/functions/toastify";
 import React, {
@@ -19,9 +20,12 @@ export interface Coordinates {
 
 interface LocationContextType {
   coordinates: Coordinates | null;
-  requestLocationPermission: (postType: PubliciteDataTypes) => Promise<void>;
+  requestLocationPermission: (
+    postType: PubliciteDataTypes
+  ) => Promise<Coordinates | null>;
   setCoordinates: React.Dispatch<React.SetStateAction<Coordinates | null>>;
   manualLocation: boolean;
+  needsUserGesture: boolean;
 }
 
 const LocationContext = createContext<LocationContextType | undefined>(
@@ -33,61 +37,76 @@ export const isLocationAwarePostType = (type: PubliciteDataTypes) => {
     return true;
   }
   if ("postType" in type) {
-    return ["good", "service", "petition", "goodService", "all"].includes(
-      type.postType
-    );
+    return [
+      "good",
+      "service",
+      "petition",
+      "goodService",
+      "all",
+      "libre",
+    ].includes(type.postType);
   }
 };
 
 export const LocationProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [coordinates, setCoordinates] = useState<Coordinates | null>(null);
+  const [coordinates, setCoordinates] = useState<Coordinates | null>({
+    latitude: INITIAL_LOCATION.lat,
+    longitude: INITIAL_LOCATION.lng,
+  });
   const [manualLocation, setManualLocation] = useState(false);
+  const [needsUserGesture, setNeedsUserGesture] = useState(false);
 
   const requestLocationPermission = useCallback(
     async (postType?: PubliciteDataTypes) => {
-      if (manualLocation) return;
-      if (postType && !isLocationAwarePostType(postType)) return;
+      if (manualLocation) return null;
+      if (postType && !isLocationAwarePostType(postType)) return null;
+
+      const getPosition = (): Promise<GeolocationPosition> =>
+        new Promise((resolve, reject) =>
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            timeout: 10000,
+            maximumAge: 0,
+            enableHighAccuracy: false, // set true only if needed, it's slower
+          })
+        );
 
       try {
-        if (navigator.permissions && navigator.permissions.query) {
+        if (navigator.permissions?.query) {
           const { state } = await navigator.permissions.query({
             name: "geolocation",
           });
 
           if (state === "denied") {
-            throw new Error("Permiso de localización denegado");
+            setManualLocation(true);
+            return null;
           }
 
-          if (state === "prompt") {
-            const promptResult = await new Promise<GeolocationPosition>(
-              (resolve, reject) => {
-                navigator.geolocation.getCurrentPosition(resolve, reject);
-              }
-            );
-
-            setCoordinates({
-              latitude: promptResult.coords.latitude,
-              longitude: promptResult.coords.longitude,
-            });
-            return;
+          if (state === "granted") {
+            const position = await getPosition();
+            const coordinates = {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+            };
+            setCoordinates(coordinates);
+            return coordinates;
           }
+
+          setNeedsUserGesture(true);
+          return null;
         }
 
-        const position = await new Promise<GeolocationPosition>(
-          (resolve, reject) => {
-            navigator.geolocation.getCurrentPosition(resolve, reject);
-          }
-        );
-
-        setCoordinates({
+        const position = await getPosition();
+        const coordinates = {
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
-        });
+        };
+        setCoordinates(coordinates);
+        return coordinates;
       } catch (error) {
         setManualLocation(true);
-        throw error;
+        return null;
       }
     },
     [manualLocation]
@@ -100,6 +119,7 @@ export const LocationProvider: React.FC<{ children: ReactNode }> = ({
         requestLocationPermission,
         setCoordinates,
         manualLocation,
+        needsUserGesture,
       }}
     >
       {children}

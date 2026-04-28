@@ -85,6 +85,9 @@ const SolapasTabs = () => {
       case pathname.includes("bienes"):
         postTypeVisited.postType = "good";
         break;
+      case pathname.includes(POST_LIBRE):
+        postTypeVisited.postType = "libre";
+        break;
       default:
         postTypeVisited.postType = "all";
         break;
@@ -118,7 +121,7 @@ const SolapasTabs = () => {
           }
         />
       ),
-      component: <PostsList postTypeVisited={postTypeVisited} hideMap />,
+      component: <PostsList postTypeVisited={postTypeVisited} />,
     },
     {
       key: `${POST_LIBRE}${postTypeUrlVisited}`,

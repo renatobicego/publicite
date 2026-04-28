@@ -11,6 +11,7 @@ import {
   isLocationAwarePostType,
   useLocation,
 } from "@/app/(root)/providers/LocationProvider";
+import { INITIAL_LOCATION } from "@/components/modals/SelectManualLocation/ManualLocationPicker";
 
 interface FetchState {
   isLoading: boolean; // loading state
@@ -47,9 +48,14 @@ export const useInfiniteFetch = (
     // if isLoading, hasMoreData is false or errorOccurred, return
     if (state.isLoading || !state.hasMoreData || state.errorOccurred) return;
     // if postType is location aware and coordinates is null, request the permission
-    if (isLocationAwarePostType(postType) && !coordinates && !manualLocation) {
+    let coordinatesToUse = coordinates;
+    if (
+      isLocationAwarePostType(postType) &&
+      (!coordinates || coordinates.latitude === INITIAL_LOCATION.lat) &&
+      !manualLocation
+    ) {
       try {
-        await requestLocationPermission(postType);
+        coordinatesToUse = await requestLocationPermission(postType);
       } catch {
         toastifyWarn(
           "Por favor, autoriza el acceso la localización en tu dispositivo o selecciona la ubicación manualmente.",
@@ -71,7 +77,7 @@ export const useInfiniteFetch = (
           : postType,
         busqueda,
         state.page,
-        coordinates
+        coordinatesToUse ?? coordinates
       );
       // update state
       if (data.error) {
@@ -92,14 +98,18 @@ export const useInfiniteFetch = (
       updateState({ isLoading: false });
     }
   }, [
-    state,
-    postType,
-    busqueda,
+    state.isLoading,
+    state.hasMoreData,
+    state.errorOccurred,
+    state.page,
+    state.items,
     coordinates,
+    postType,
+    manualLocation,
     updateState,
     requestLocationPermission,
-    manualLocation,
     visibility,
+    busqueda,
   ]);
 
   // Trigger to reset state when postType or search term changes

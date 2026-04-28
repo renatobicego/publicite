@@ -52,7 +52,8 @@ const PostsList = ({
       <h2>{titleToShow()}</h2>
       <SelectPostType
         postType={
-          "postType" in postTypeVisited
+          "postType" in postTypeVisited &&
+          !(postTypeVisited.postType === "libre")
             ? (postTypeVisited.postType as PostType)
             : "all"
         }
