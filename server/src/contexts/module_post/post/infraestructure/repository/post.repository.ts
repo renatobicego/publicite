@@ -794,6 +794,11 @@ export class PostRepository implements PostRepositoryInterface {
     try {
       this.logger.log('Finding all posts (global)');
       const today = new Date();
+      const hasUserLocation =
+        userLocation !== undefined &&
+        userLocation !== null &&
+        typeof userLocation.latitude === 'number' &&
+        typeof userLocation.longitude === 'number';
 
       const isAuthenticated = userRelationMap !== undefined;
       const openVisibility = isAuthenticated ? ['public', 'registered'] : ['public'];
@@ -805,7 +810,7 @@ export class PostRepository implements PostRepositoryInterface {
       if (userRelationMap && userRelationMap.size > 0) {
         const friendConditions = Array.from(userRelationMap.entries()).map(
           ([authorId, visibilityValues]) => ({
-            author: authorId,
+            author: new Types.ObjectId(authorId),
             'visibility.post': { $in: visibilityValues },
           }),
         );
@@ -841,12 +846,12 @@ export class PostRepository implements PostRepositoryInterface {
 
       const pipeline: any[] = [];
 
-      if (userLocation) {
+      if (hasUserLocation) {
         pipeline.push({
           $geoNear: {
             near: {
               type: 'Point',
-              coordinates: [userLocation.longitude, userLocation.latitude],
+              coordinates: [userLocation!.longitude, userLocation!.latitude],
             },
             distanceField: 'distance',
             spherical: true,
