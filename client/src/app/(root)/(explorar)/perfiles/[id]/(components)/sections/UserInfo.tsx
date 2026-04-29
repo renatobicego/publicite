@@ -15,6 +15,7 @@ import {
   FaXTwitter,
 } from "react-icons/fa6";
 import { TbWorldPin } from "react-icons/tb";
+import { MdWork, MdDownload } from "react-icons/md";
 import OptionsDropdown from "../OptionsDropdown";
 import ContactPetitionsList from "@/components/modals/ContactPetition/ContactPetitionsList";
 import { relationTypes } from "@/utils/data/selectData";
@@ -24,6 +25,7 @@ import {
   extractDomain,
   formatFacebookUrl,
   formatInstagamUrl,
+  formatTwitterUrl,
 } from "@/utils/functions/formatUrls";
 import AcceptRequestFriend from "./AcceptRequestFriend";
 import { AnimatePresence, motion } from "framer-motion";
@@ -89,12 +91,12 @@ const UserInfo = ({
                 Es tu{" "}
                 {
                   relationTypes.find(
-                    (relation) => relation.value === isMyContact.typeRelationA
+                    (relation) => relation.value === isMyContact!.typeRelationA
                   )?.label
                 }
               </p>
             </div>
-            <DeleteUserRelation relationId={isMyContact._id} />
+            <DeleteUserRelation relationId={isMyContact!._id} />
           </>
         );
       case user.isFriendRequestPending:
@@ -139,6 +141,10 @@ const UserInfo = ({
       return false;
     }
   };
+
+  // Resolve description: prefer contact.description.text, fallback to user.description
+  const displayDescription = user.contact?.description?.text ?? user.description;
+
   return (
     <section className="w-full max-w-4xl  flex flex-col gap-4">
       {/* CARD PRINCIPAL */}
@@ -168,15 +174,36 @@ const UserInfo = ({
         {/* DERECHA (GRIS) */}
         <div className="p-6 md:w-1/2 flex flex-col justify-start gap-4">
           <div className="flex justify-between items-start">
-            <h4>Profesion</h4>
+            {user.contact && (
+              <ContactField
+                value={user.contact.profesion?.label}
+                visibility={user.contact.profesion?.visibility}
+                isMyProfile={isMyProfile}
+                isMyContact={isMyContact}
+                render={(val) => (
+                  <div className="flex items-center gap-1 text-sm">
+                    <MdWork className="size-4 shrink-0" />
+                    <span>{val}</span>
+                  </div>
+                )}
+                fallback={<h4>Profesión</h4>}
+              />
+            )}
             <OptionsDropdown user={user} />
           </div>
 
-          {user.description && (
-            <p className="text-small md:text-sm lg:text-base">
-              {user.description}
-            </p>
+          {displayDescription && (
+            <ContactField
+              value={displayDescription}
+              visibility={user.contact?.description?.visibility}
+              isMyProfile={isMyProfile}
+              isMyContact={isMyContact}
+              render={(val) => (
+                <p className="text-small md:text-sm lg:text-base">{val}</p>
+              )}
+            />
           )}
+
           {showAddress() && (
             <div className="flex items-center gap-2 text-sm text-default-600">
               <TbWorldPin />
@@ -205,18 +232,16 @@ const UserInfo = ({
                 className="overflow-hidden"
               >
                 <div className="flex flex-col md:flex-row border rounded-2xl overflow-hidden">
-                  {/* TITULO */}
                   <div className="bg-primary text-white p-4 md:w-1/2 font-medium">
                     <h3>Links útiles</h3>
                   </div>
 
-                  {/* LINKS */}
                   <div className="p-4 md:w-1/2 flex flex-col gap-2">
-                    <SocialMedia contact={user.contact} />
-
-                    <PrimaryButton className="mt-2 w-fit">
-                      Descargar CV
-                    </PrimaryButton>
+                    <SocialMediaLinks
+                      contact={user.contact}
+                      isMyProfile={isMyProfile}
+                      isMyContact={isMyContact}
+                    />
                   </div>
                 </div>
               </motion.div>
@@ -230,69 +255,175 @@ const UserInfo = ({
 
 export default UserInfo;
 
-const SocialMedia = ({ contact }: { contact: Contact }) => {
-  const { phone, instagram, facebook, x, website } = contact;
-  function formatXTwitterUrl(x: string): import("react").ReactNode {
-    throw new Error("Function not implemented.");
-  }
+// ─── Visibility helper ────────────────────────────────────────────────────────
+
+const relationHierarchy: UserRelation[] = ["contacts", "friends", "topfriends"];
+
+function canSeeField(
+  visibility: Visibility | undefined,
+  isMyProfile: boolean,
+  isMyContact?: UserRelations
+): boolean {
+  if (isMyProfile) return true;
+  if (!visibility || visibility === "public" || visibility === "registered") return true;
+  if (!isMyContact) return false;
+  const myRelationIndex = relationHierarchy.indexOf(isMyContact.typeRelationA);
+  const requiredIndex = relationHierarchy.indexOf(visibility as UserRelation);
+  return myRelationIndex >= requiredIndex;
+}
+
+function ContactField<T extends string | undefined>({
+  value,
+  visibility,
+  isMyProfile,
+  isMyContact,
+  render,
+  fallback = null,
+}: {
+  value: T;
+  visibility: Visibility | undefined;
+  isMyProfile: boolean;
+  isMyContact?: UserRelations;
+  render: (val: NonNullable<T>) => React.ReactNode;
+  fallback?: React.ReactNode;
+}) {
+  if (!canSeeField(visibility, isMyProfile, isMyContact)) return <>{fallback}</>;
+  if (!value) return <>{fallback}</>;
+  return <>{render(value as NonNullable<T>)}</>;
+}
+
+// ─── Social media links section ───────────────────────────────────────────────
+
+const SocialMediaLinks = ({
+  contact,
+  isMyProfile,
+  isMyContact,
+}: {
+  contact: Contact;
+  isMyProfile: boolean;
+  isMyContact?: UserRelations;
+}) => {
+  const { phone, instagram, facebook, x, website, curriculum, links } = contact;
 
   return (
     <div className="flex gap-2 flex-col items-start">
-      {phone && (
+      <ContactField
+        value={phone}
+        visibility={contact.phoneVisibility}
+        isMyProfile={isMyProfile}
+        isMyContact={isMyContact}
+        render={(val) => (
+          <Link
+            href={`https://api.whatsapp.com/send?phone=${val}`}
+            target="_blank"
+            color="foreground"
+            className="flex items-center gap-1"
+          >
+            <FaWhatsapp className="size-4" />
+            <p className="text-xs md:text-sm">{val}</p>
+          </Link>
+        )}
+      />
+
+      <ContactField
+        value={instagram}
+        visibility={contact.instagramVisibility}
+        isMyProfile={isMyProfile}
+        isMyContact={isMyContact}
+        render={(val) => (
+          <Link
+            className="flex items-center gap-1"
+            color="foreground"
+            href={val}
+            target="_blank"
+          >
+            <FaInstagram className="size-4" />
+            <p className="text-xs md:text-sm">{formatInstagamUrl(val)}</p>
+          </Link>
+        )}
+      />
+
+      <ContactField
+        value={facebook}
+        visibility={contact.facebookVisibility}
+        isMyProfile={isMyProfile}
+        isMyContact={isMyContact}
+        render={(val) => (
+          <Link
+            className="flex items-center gap-1"
+            color="foreground"
+            href={val}
+            target="_blank"
+          >
+            <FaFacebook className="size-4" />
+            <p className="text-xs md:text-sm">{formatFacebookUrl(val)}</p>
+          </Link>
+        )}
+      />
+
+      <ContactField
+        value={x}
+        visibility={contact.xVisibility}
+        isMyProfile={isMyProfile}
+        isMyContact={isMyContact}
+        render={(val) => (
+          <Link
+            className="flex items-center gap-1"
+            color="foreground"
+            href={val}
+            target="_blank"
+          >
+            <FaXTwitter className="size-4" />
+            <p className="text-xs md:text-sm">{formatTwitterUrl(val)}</p>
+          </Link>
+        )}
+      />
+
+      <ContactField
+        value={website}
+        visibility={contact.websiteVisibility}
+        isMyProfile={isMyProfile}
+        isMyContact={isMyContact}
+        render={(val) => (
+          <Link
+            className="flex items-center gap-1"
+            color="foreground"
+            href={val}
+            target="_blank"
+          >
+            <FaLink className="size-4" />
+            <p className="text-xs md:text-sm">{extractDomain(val)}</p>
+          </Link>
+        )}
+      />
+
+      {curriculum?.ref && canSeeField(curriculum.visibility, isMyProfile, isMyContact) && (
         <Link
-          href={`https://api.whatsapp.com/send?phone=${phone}`}
+          href={`https://utfs.io/f/${curriculum.ref}`}
           target="_blank"
           color="foreground"
           className="flex items-center gap-1"
         >
-          <FaWhatsapp className="size-4" />
-          <p className="text-xs md:text-sm">{phone}</p>
+          <MdDownload className="size-4" />
+          <p className="text-xs md:text-sm">Descargar CV</p>
         </Link>
       )}
-      {instagram && (
-        <Link
-          className="flex items-center gap-1"
-          color="foreground"
-          href={instagram}
-          target="_blank"
-        >
-          <FaInstagram className="size-4" />
-          <p className="text-xs md:text-sm">{formatInstagamUrl(instagram)}</p>
-        </Link>
-      )}
-      {facebook && (
-        <Link
-          className="flex items-center gap-1"
-          color="foreground"
-          href={facebook}
-          target="_blank"
-        >
-          <FaFacebook className="size-4" />
-          <p className="text-xs md:text-sm">{formatFacebookUrl(facebook)}</p>
-        </Link>
-      )}
-      {x && (
-        <Link
-          className="flex items-center gap-1"
-          color="foreground"
-          href={x}
-          target="_blank"
-        >
-          <FaXTwitter className="size-4" />
-          <p className="text-xs md:text-sm">{formatXTwitterUrl(x)}</p>
-        </Link>
-      )}
-      {website && (
-        <Link
-          className="flex items-center gap-1"
-          color="foreground"
-          href={website}
-          target="_blank"
-        >
-          <FaLink className="size-4" />
-          <p className="text-xs md:text-sm">{extractDomain(website)}</p>
-        </Link>
-      )}
+
+      {links && links.length > 0 &&
+        links
+          .filter((link) => canSeeField(link.visibility, isMyProfile, isMyContact))
+          .map((link, i) => (
+            <Link
+              key={i}
+              href={link.url}
+              target="_blank"
+              color="foreground"
+              className="flex items-center gap-1"
+            >
+              <FaLink className="size-4" />
+              <p className="text-xs md:text-sm">{link.label || extractDomain(link.url)}</p>
+            </Link>
+          ))}
     </div>
   );
 };

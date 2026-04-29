@@ -35,7 +35,7 @@ export const postUserPerson = async (formData: UserPersonFormValues) => {
 };
 
 export const putUserProfileData = async (
-  formData: EditPersonProfileProps,
+  formData: EditPersonProfileProps & { descriptionVisibility?: Visibility },
   username: string
 ) => {
   return await axios.put(`${baseUrl}/${username}`, formData, {
@@ -81,7 +81,12 @@ export const getUserProfileData = async (username: string) => {
       }
     );
 
-    return await res.json();
+    const data = await res.json();
+    // Merge contact.description into top-level description if contact.description exists
+    if (data?.contact?.description?.text && !data.description) {
+      data.description = data.contact.description.text;
+    }
+    return data;
   } catch (error) {
     return {
       error:
@@ -160,12 +165,11 @@ export const getUserPreferences = async (
       `${process.env.API_URL}/user/preferences/${username}`,
       {
         headers: {
-          Authorization: `Bearer ${
-            token ||
+          Authorization: `Bearer ${token ||
             (await auth().getToken({
               template: "testing",
             }))
-          }`,
+            }`,
         },
       }
     );
@@ -181,8 +185,7 @@ export const getUserPreferences = async (
 export const getUsers = async (searchTerm: string | null, page: number) => {
   try {
     const res = await fetch(
-      `${process.env.API_URL}/user?user=${
-        searchTerm ? searchTerm : ""
+      `${process.env.API_URL}/user?user=${searchTerm ? searchTerm : ""
       }&limit=20&page=${page}`,
       {
         headers: {
@@ -201,18 +204,18 @@ export const getUserById = async (
   id: string
 ): Promise<
   | (GetUser & {
-      isFriendRequestPending: boolean;
-      isAcceptRequestFriend?: {
-        notification_id: string;
-        type:
-          | "notification_user_new_friend_request"
-          | "notification_user_new_relation_change";
-        value: boolean;
-        userRelationId: string;
-        toRelationShipChange: UserRelation;
-        newRelation: UserRelation;
-      };
-    })
+    isFriendRequestPending: boolean;
+    isAcceptRequestFriend?: {
+      notification_id: string;
+      type:
+      | "notification_user_new_friend_request"
+      | "notification_user_new_relation_change";
+      value: boolean;
+      userRelationId: string;
+      toRelationShipChange: UserRelation;
+      newRelation: UserRelation;
+    };
+  })
   | { error: string }
 > => {
   try {

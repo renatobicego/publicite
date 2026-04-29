@@ -8,8 +8,13 @@ import { Contact } from "@/types/userTypes";
 import { contactSchema } from "./socialMediaValidation";
 import { putContactData } from "@/services/userServices";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
+import useUploadFiles from "@/utils/hooks/useUploadFiles";
 
 const LOCAL_STORAGE_KEY = "socialMediaFormValues";
+
+export interface SocialMediaFormValues extends Omit<Contact, "_id"> {
+  curriculumFile?: File | null;
+}
 
 const SocialMediaForm = ({
   setIsFormVisible,
@@ -18,41 +23,61 @@ const SocialMediaForm = ({
   setIsFormVisible: (value: boolean) => void;
   contact?: Contact;
 }) => {
-  const [initialValues, setInitialValues] = useState<Omit<Contact, "_id">>({
+  const { uploadCurriculum } = useUploadFiles([], []);
+
+  const [initialValues, setInitialValues] = useState<SocialMediaFormValues>({
     phone: contact?.phone ?? "",
+    phoneVisibility: contact?.phoneVisibility ?? "contacts",
     instagram: contact?.instagram ?? "",
+    instagramVisibility: contact?.instagramVisibility ?? "contacts",
     facebook: contact?.facebook ?? "",
+    facebookVisibility: contact?.facebookVisibility ?? "contacts",
     x: contact?.x ?? "",
+    xVisibility: contact?.xVisibility ?? "contacts",
     website: contact?.website ?? "",
+    websiteVisibility: contact?.websiteVisibility ?? "contacts",
+    curriculum: contact?.curriculum ?? undefined,
+    links: contact?.links ?? [],
+    curriculumFile: null,
   });
 
-  // Check localStorage when the component mounts
   useEffect(() => {
     const storedValues = localStorage.getItem(LOCAL_STORAGE_KEY);
     if (storedValues) {
-      // Set initial values from localStorage
       const parsedValues = JSON.parse(storedValues);
-      Object.keys(parsedValues).forEach((key) => {
-        const keyValue = key as keyof Contact;
-        setInitialValues((prev) => ({
-          ...prev,
-          [keyValue]: parsedValues[key],
-        }));
-      });
+      setInitialValues((prev) => ({ ...prev, ...parsedValues, curriculumFile: null }));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleSubmit = async (
-    values: Omit<Contact, "_id">,
-    actions: FormikHelpers<Omit<Contact, "_id">>
+    values: SocialMediaFormValues,
+    actions: FormikHelpers<SocialMediaFormValues>
   ) => {
-    // Clear localStorage on submit
     localStorage.removeItem(LOCAL_STORAGE_KEY);
-    const res = await putContactData(contact!._id, values);
+
+    let curriculumRef = values.curriculum?.ref;
+
+    if (values.curriculumFile) {
+      const uploaded = await uploadCurriculum(values.curriculumFile);
+      if (!uploaded) {
+        actions.setSubmitting(false);
+        return;
+      }
+      curriculumRef = uploaded;
+    }
+
+    const { curriculumFile, ...contactData } = values;
+    const payload: Omit<Contact, "_id"> = {
+      ...contactData,
+      curriculum: curriculumRef
+        ? { ref: curriculumRef, visibility: values.curriculum?.visibility ?? "contacts" }
+        : undefined,
+    };
+
+    const res = await putContactData(contact!._id, payload);
     if (res.error) {
       actions.setSubmitting(false);
-
       return toastifyError(res.error);
     }
     toastifySuccess(res.message as string);
@@ -61,16 +86,16 @@ const SocialMediaForm = ({
   };
 
   const handleCancel = () => {
-    // Clear localStorage on cancel
     localStorage.removeItem(LOCAL_STORAGE_KEY);
     setIsFormVisible(false);
   };
 
-  const handleChange = (event: any, values: Omit<Contact, "_id">) => {
+  const handleChange = (event: any, values: SocialMediaFormValues) => {
     const { name, value } = event.target;
+    const { curriculumFile, ...storableValues } = values;
     localStorage.setItem(
       LOCAL_STORAGE_KEY,
-      JSON.stringify({ ...values, [name]: value })
+      JSON.stringify({ ...storableValues, [name]: value })
     );
   };
 
@@ -87,7 +112,7 @@ const SocialMediaForm = ({
             onChange={(e) => handleChange(e, values)}
             className="flex flex-col gap-2"
           >
-            <FormInputs errors={errors} setFieldValue={setFieldValue} />
+            <FormInputs errors={errors} setFieldValue={setFieldValue} values={values} />
             <div className="flex gap-2">
               <Button
                 color="default"

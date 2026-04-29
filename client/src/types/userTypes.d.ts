@@ -30,7 +30,7 @@ export interface GetUser
   extends Omit<
     User,
     "userPreferences" | "clerkId" | "createdTime" | "isActive" | "dni"
-  > {}
+  > { }
 
 export interface UserPreferences {
   searchPreference: ObjectId[] | PostCategory[];
@@ -58,10 +58,32 @@ export interface BusinessSector {
 export interface Contact {
   _id: ObjectId;
   phone: string;
+  phoneVisibility?: Visibility
   instagram?: string;
+  instagramVisibility?: Visibility
   facebook?: string;
+  facebookVisibility?: Visibility
   x?: string;
+  xVisibility?: Visibility
   website?: string;
+  websiteVisibility?: Visibility
+  profesion?: {
+    label: string;
+    visibility: Visibility
+  }
+  curriculum?: {
+    ref: string;
+    visibility: Visibility
+  }
+  links?: {
+    url: string;
+    label: string
+    visibility: Visibility
+  }[]
+  description?: {
+    text: string;
+    visibility: Visibility
+  }
 }
 
 /**

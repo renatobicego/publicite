@@ -8,11 +8,33 @@ const getUserByIdQuery = gql`
       addressPrivacy
       contact {
         _id
-        facebook
-        instagram
         phone
-        website
+        phoneVisibility
+        instagram
+        instagramVisibility
+        facebook
+        facebookVisibility
         x
+        xVisibility
+        website
+        websiteVisibility
+        profesion {
+          label
+          visibility
+        }
+        curriculum {
+          ref
+          visibility
+        }
+        links {
+          url
+          label
+          visibility
+        }
+        description {
+          text
+          visibility
+        }
       }
       countryRegion
       description

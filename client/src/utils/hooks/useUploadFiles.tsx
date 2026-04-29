@@ -123,10 +123,26 @@ const useUploadFiles = (
       );
     }
   };
+
+  const uploadCurriculum = async (file: File): Promise<string | undefined> => {
+    try {
+      const res = await startUpload([file]);
+      if (!res || !res.length) {
+        toastifyError("Error al subir el curriculum. Por favor intenta de nuevo.");
+        return undefined;
+      }
+      return res[0].key;
+    } catch (error) {
+      toastifyError("Error al subir el curriculum. Por favor intenta de nuevo.");
+      return undefined;
+    }
+  };
+
   return {
     submitFiles,
     progress,
     deleteFiles,
+    uploadCurriculum,
   };
 };
 

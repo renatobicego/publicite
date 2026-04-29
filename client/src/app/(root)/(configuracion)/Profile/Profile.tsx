@@ -41,6 +41,7 @@ const Profile = ({ username }: { username: string }) => {
       <MemoizedDescription
         description={userData.description}
         isBusiness={false}
+        contact={userData.contact}
       />
       <Divider />
       <MemoizedSocialMedia contact={userData.contact} />
