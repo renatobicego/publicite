@@ -47,8 +47,8 @@ export interface PostRepositoryInterface {
   findAllPostsGlobal(
     page: number,
     limit: number,
+    userLocation: UserLocation,
     userRelationMap?: Map<string, string[]>,
-    userLocation?: UserLocation,
     searchTerm?: string,
   ): Promise<any>;
   findMatchPost(postType: string, searchTerm: string): Promise<void>;

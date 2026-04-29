@@ -787,18 +787,13 @@ export class PostRepository implements PostRepositoryInterface {
   async findAllPostsGlobal(
     page: number,
     limit: number,
+    userLocation: UserLocation,
     userRelationMap?: Map<string, string[]>,
-    userLocation?: UserLocation,
     searchTerm?: string,
   ): Promise<any> {
     try {
       this.logger.log('Finding all posts (global)');
       const today = new Date();
-      const hasUserLocation =
-        userLocation !== undefined &&
-        userLocation !== null &&
-        typeof userLocation.latitude === 'number' &&
-        typeof userLocation.longitude === 'number';
 
       const isAuthenticated = userRelationMap !== undefined;
       const openVisibility = isAuthenticated ? ['public', 'registered'] : ['public'];
@@ -844,26 +839,39 @@ export class PostRepository implements PostRepositoryInterface {
 
       const matchStage = { $and: andClauses };
 
-      const pipeline: any[] = [];
+      const friendAuthorIds =
+        userRelationMap && userRelationMap.size > 0
+          ? Array.from(userRelationMap.keys()).map(
+              (id) => new Types.ObjectId(id),
+            )
+          : [];
 
-      if (hasUserLocation) {
-        pipeline.push({
+      const geoExpr =
+        friendAuthorIds.length > 0
+          ? {
+              $expr: {
+                $or: [
+                  { $in: ['$author', friendAuthorIds] },
+                  { $lte: ['$distance', '$geoLocation.ratio'] },
+                ],
+              },
+            }
+          : { $expr: { $lte: ['$distance', '$geoLocation.ratio'] } };
+
+      const pipeline: any[] = [
+        {
           $geoNear: {
             near: {
               type: 'Point',
-              coordinates: [userLocation!.longitude, userLocation!.latitude],
+              coordinates: [userLocation.longitude, userLocation.latitude],
             },
             distanceField: 'distance',
             spherical: true,
             query: matchStage,
           },
-        });
-        pipeline.push({
-          $match: { $expr: { $lte: ['$distance', '$geoLocation.ratio'] } },
-        });
-      } else {
-        pipeline.push({ $match: matchStage });
-      }
+        },
+        { $match: geoExpr },
+      ];
 
       const posts = await this.postDocument.aggregate([
         ...pipeline,
