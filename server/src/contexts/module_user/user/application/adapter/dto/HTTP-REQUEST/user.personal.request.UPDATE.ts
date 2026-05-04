@@ -1,8 +1,10 @@
+import { DescriptionRequest } from './user.request.CREATE';
+
 export interface personalAccountUpdateRequest {
   birthDate?: string;
   gender?: string;
   countryRegion?: string;
-  description?: string;
+  description?: DescriptionRequest;
   dni?: string;
   addressPrivacy?: string;
 }

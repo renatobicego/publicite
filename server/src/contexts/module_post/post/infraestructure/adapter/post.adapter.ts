@@ -166,16 +166,16 @@ export class PostAdapter implements PostAdapterInterface {
   async findAllPostsGlobal(
     page: number,
     limit: number,
+    userLocation: UserLocation,
     userRequestId?: string,
-    userLocation?: UserLocation,
     searchTerm?: string,
   ): Promise<any> {
     try {
       return await this.postService.findAllPostsGlobal(
         page,
         limit,
-        userRequestId,
         userLocation,
+        userRequestId,
         searchTerm,
       );
     } catch (error: any) {

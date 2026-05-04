@@ -33,6 +33,8 @@ import {
   UserMagazineModel,
 } from 'src/contexts/module_magazine/magazine/infrastructure/schemas/magazine.user.schema';
 
+import { applyContactDescriptionFallback } from './apply-contact-description-fallback';
+
 @Injectable()
 export class UserRepository implements UserRepositoryInterface {
   constructor(
@@ -178,6 +180,9 @@ export class UserRepository implements UserRepositoryInterface {
 
         user.magazines = populatedMagazines as any[];
       }
+
+      applyContactDescriptionFallback(user);
+
       return user;
     } catch (error: any) {
       console.log(error);
@@ -261,12 +266,28 @@ export class UserRepository implements UserRepositoryInterface {
 
       if (!populatedUser) return null;
 
+      applyContactDescriptionFallback(populatedUser);
+
       return populatedUser;
     } catch (error) {
       this.logger.error(
         'Error in getUserPersonalInformationByUsername method',
         error,
       );
+      throw error;
+    }
+  }
+
+  async getContactIdByUsername(username: string): Promise<string | null> {
+    try {
+      const user = await this.user
+        .findOne({ username })
+        .select('contact')
+        .lean();
+      if (!user || !user.contact) return null;
+      return user.contact.toString();
+    } catch (error: any) {
+      this.logger.error('Error in getContactIdByUsername method', error);
       throw error;
     }
   }
@@ -499,6 +520,8 @@ export class UserRepository implements UserRepositoryInterface {
             .lean();
           user.magazines = populatedMagazines as any[];
         }
+
+        applyContactDescriptionFallback(user);
 
         return user;
       } catch (error: any) {

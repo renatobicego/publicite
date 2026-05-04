@@ -48,8 +48,8 @@ export interface PostAdapterInterface {
   findAllPostsGlobal(
     page: number,
     limit: number,
+    userLocation: UserLocation,
     userRequestId?: string,
-    userLocation?: UserLocation,
     searchTerm?: string,
   ): Promise<any>;
   findMatchPost(postType: string, searchTerm: string): Promise<void>;

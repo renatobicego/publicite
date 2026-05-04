@@ -245,8 +245,8 @@ export class PostService implements PostServiceInterface {
   async findAllPostsGlobal(
     page: number,
     limit: number,
+    userLocation: UserLocation,
     userRequestId?: string,
-    userLocation?: UserLocation,
     searchTerm?: string,
   ): Promise<any> {
     try {
@@ -256,8 +256,8 @@ export class PostService implements PostServiceInterface {
         return await this.postRepository.findAllPostsGlobal(
           page,
           limit,
-          undefined,
           userLocation,
+          undefined,
           searchTerm,
         );
       }
@@ -270,8 +270,8 @@ export class PostService implements PostServiceInterface {
       return await this.postRepository.findAllPostsGlobal(
         page,
         limit,
-        userRelationMap,
         userLocation,
+        userRelationMap,
         searchTerm,
       );
     } catch (error: any) {

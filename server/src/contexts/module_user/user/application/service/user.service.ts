@@ -695,7 +695,22 @@ export class UserService implements UserServiceInterface {
   ): Promise<UserPersonalUpdateDto | UserBusinessUpdateDto> {
     this.logger.log('Updating user in the service: ' + UserService.name);
     try {
-      const updated = ommitUndefinedValues(req);
+      const { description, ...userPayload } = req as any;
+
+      if (description !== undefined) {
+        const contactId =
+          await this.userRepository.getContactIdByUsername(username);
+        if (!contactId) {
+          this.logger.warn(
+            'User without contact reference, skipping description update: ' +
+              username,
+          );
+        } else {
+          await this.contactService.updateContact(contactId, { description });
+        }
+      }
+
+      const updated = ommitUndefinedValues(userPayload);
       if (type === UserType.Person) {
         return await this.userRepository.update(username, updated, type);
       } else if (type === UserType.Business) {

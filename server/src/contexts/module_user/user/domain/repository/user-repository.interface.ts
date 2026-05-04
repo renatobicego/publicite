@@ -24,6 +24,8 @@ export interface UserRepositoryInterface {
 
   getUserPersonalInformationByUsername(username: string): Promise<any>;
 
+  getContactIdByUsername(username: string): Promise<string | null>;
+
   getUserPreferencesByUsername(
     username: string,
   ): Promise<UserPreferences | null>;

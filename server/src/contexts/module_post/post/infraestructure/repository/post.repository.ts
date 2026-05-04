@@ -787,8 +787,8 @@ export class PostRepository implements PostRepositoryInterface {
   async findAllPostsGlobal(
     page: number,
     limit: number,
+    userLocation: UserLocation,
     userRelationMap?: Map<string, string[]>,
-    userLocation?: UserLocation,
     searchTerm?: string,
   ): Promise<any> {
     try {
@@ -805,7 +805,7 @@ export class PostRepository implements PostRepositoryInterface {
       if (userRelationMap && userRelationMap.size > 0) {
         const friendConditions = Array.from(userRelationMap.entries()).map(
           ([authorId, visibilityValues]) => ({
-            author: authorId,
+            author: new Types.ObjectId(authorId),
             'visibility.post': { $in: visibilityValues },
           }),
         );
@@ -839,10 +839,27 @@ export class PostRepository implements PostRepositoryInterface {
 
       const matchStage = { $and: andClauses };
 
-      const pipeline: any[] = [];
+      const friendAuthorIds =
+        userRelationMap && userRelationMap.size > 0
+          ? Array.from(userRelationMap.keys()).map(
+              (id) => new Types.ObjectId(id),
+            )
+          : [];
 
-      if (userLocation) {
-        pipeline.push({
+      const geoExpr =
+        friendAuthorIds.length > 0
+          ? {
+              $expr: {
+                $or: [
+                  { $in: ['$author', friendAuthorIds] },
+                  { $lte: ['$distance', '$geoLocation.ratio'] },
+                ],
+              },
+            }
+          : { $expr: { $lte: ['$distance', '$geoLocation.ratio'] } };
+
+      const pipeline: any[] = [
+        {
           $geoNear: {
             near: {
               type: 'Point',
@@ -852,13 +869,9 @@ export class PostRepository implements PostRepositoryInterface {
             spherical: true,
             query: matchStage,
           },
-        });
-        pipeline.push({
-          $match: { $expr: { $lte: ['$distance', '$geoLocation.ratio'] } },
-        });
-      } else {
-        pipeline.push({ $match: matchStage });
-      }
+        },
+        { $match: geoExpr },
+      ];
 
       const posts = await this.postDocument.aggregate([
         ...pipeline,

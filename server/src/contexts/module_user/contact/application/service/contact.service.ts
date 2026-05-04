@@ -31,13 +31,22 @@ export class ContactService implements ContactServiceInterface {
   ): Promise<Types.ObjectId> {
     try {
       this.logger.log('Creating contact in service: ' + ContactService.name);
-      const contactMapped = new Contact(
-        contact.phone ?? '',
-        contact.instagram ?? '',
-        contact.facebook ?? '',
-        contact.x ?? '',
-        contact.website ?? '',
-      );
+      const contactMapped = new Contact({
+        phone: contact.phone,
+        phoneVisibility: contact.phoneVisibility,
+        instagram: contact.instagram,
+        instagramVisibility: contact.instagramVisibility,
+        facebook: contact.facebook,
+        facebookVisibility: contact.facebookVisibility,
+        x: contact.x,
+        xVisibility: contact.xVisibility,
+        website: contact.website,
+        websiteVisibility: contact.websiteVisibility,
+        profesion: contact.profesion,
+        curriculum: contact.curriculum,
+        description: contact.description,
+        links: contact.links,
+      });
       return await this.contactRepository.createContact(contactMapped, session);
     } catch (error) {
       throw error;
