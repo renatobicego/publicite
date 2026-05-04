@@ -6,6 +6,7 @@ import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { editProfile } from "../actions";
 import { putContactData } from "@/services/userServices";
+import { Contact } from "@/types/userTypes";
 import { useRouter } from "next-nprogress-bar";
 import { visibilityItems } from "@/utils/data/selectData";
 
@@ -22,7 +23,6 @@ const DescriptionForm = ({
   descriptionVisibility,
   profesion,
   profesionVisibility,
-  isBusiness = false,
   contactId,
 }: {
   setIsFormVisible: (value: boolean) => void;
@@ -30,7 +30,6 @@ const DescriptionForm = ({
   descriptionVisibility?: Visibility;
   profesion?: string;
   profesionVisibility?: Visibility;
-  isBusiness?: boolean;
   contactId?: string;
 }) => {
   const router = useRouter();
@@ -46,25 +45,16 @@ const DescriptionForm = ({
     values: DescriptionFormValues,
     actions: FormikHelpers<DescriptionFormValues>
   ) => {
-    // Update top-level description via profile endpoint
-    const profileRes = await editProfile(
-      { description: values.description },
-      isBusiness ? "Business" : "Person"
-    );
-    if (profileRes?.error) {
-      toastifyError(profileRes.error);
-      actions.setSubmitting(false);
-      return;
-    }
 
     // Update contact fields if contactId is available
     if (contactId) {
-      const contactRes = await putContactData(contactId, {
+      const payload: Omit<Contact, "_id"> = {
         description: { text: values.description, visibility: values.descriptionVisibility },
-        profesion: values.profesion
-          ? { label: values.profesion, visibility: values.profesionVisibility }
-          : undefined,
-      } as any);
+        ...(values.profesion
+          ? { profesion: { label: values.profesion, visibility: values.profesionVisibility } }
+          : {}),
+      };
+      const contactRes = await putContactData(contactId, payload);
       if (contactRes?.error) {
         toastifyError(contactRes.error);
         actions.setSubmitting(false);
@@ -81,7 +71,7 @@ const DescriptionForm = ({
   return (
     <FormCard title="Actualizar Descripción">
       <Formik initialValues={initialValues} onSubmit={handleSubmit} enableReinitialize>
-        {({ isSubmitting, errors, values }) => (
+        {({ isSubmitting, errors }) => (
           <Form className="flex flex-col gap-4">
             <div className="flex gap-3 items-end">
               <Field

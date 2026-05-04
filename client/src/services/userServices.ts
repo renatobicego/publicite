@@ -45,14 +45,41 @@ export const putUserProfileData = async (
   });
 };
 
+const uppercaseContactVisibilities = (
+  contactData: Omit<Contact, "_id">
+): Omit<Contact, "_id"> => {
+  const up = (v?: string) => v?.toUpperCase() as Visibility | undefined;
+  return {
+    ...contactData,
+    ...(contactData.phoneVisibility !== undefined && { phoneVisibility: up(contactData.phoneVisibility) }),
+    ...(contactData.instagramVisibility !== undefined && { instagramVisibility: up(contactData.instagramVisibility) }),
+    ...(contactData.facebookVisibility !== undefined && { facebookVisibility: up(contactData.facebookVisibility) }),
+    ...(contactData.xVisibility !== undefined && { xVisibility: up(contactData.xVisibility) }),
+    ...(contactData.websiteVisibility !== undefined && { websiteVisibility: up(contactData.websiteVisibility) }),
+    ...(contactData.profesion !== undefined && {
+      profesion: { ...contactData.profesion, visibility: up(contactData.profesion.visibility)! },
+    }),
+    ...(contactData.curriculum !== undefined && {
+      curriculum: { ...contactData.curriculum, visibility: up(contactData.curriculum.visibility)! },
+    }),
+    ...(contactData.links !== undefined && {
+      links: contactData.links.map((l) => ({ ...l, visibility: up(l.visibility)! })),
+    }),
+    ...(contactData.description !== undefined && {
+      description: { ...contactData.description, visibility: up(contactData.description.visibility)! },
+    }),
+  };
+};
+
 export const putContactData = async (
   contactId: string,
   contactData: Omit<Contact, "_id">
 ) => {
   try {
+    const updateRequest = uppercaseContactVisibilities(contactData);
     await getClient().mutate({
       mutation: updateContactMutation,
-      variables: { contactId, updateRequest: contactData },
+      variables: { contactId, updateRequest },
       context: {
         headers: {
           Authorization: await getAuthToken(),
@@ -112,8 +139,8 @@ export const getFriendsOfUser = async (id: string) => {
       });
     if (!data.findUserById) return [];
 
-    const relationsMapped = data.findUserById.userRelations.map((relation) => {
-      if (relation.userA._id === user.sessionClaims?.metadata.mongoId) {
+    const relationsMapped = data.findUserById.userRelations?.map((relation) => {
+      if (relation.userA?._id === user.sessionClaims?.metadata.mongoId) {
         return relation.userB;
       }
       return relation.userA;

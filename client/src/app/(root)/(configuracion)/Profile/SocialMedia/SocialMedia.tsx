@@ -15,7 +15,6 @@ import {
   formatInstagamUrl,
   formatTwitterUrl,
 } from "@/utils/functions/formatUrls";
-import { visibilityItems } from "@/utils/data/selectData";
 
 const SocialMedia = ({ contact }: { contact?: Contact }) => {
   const [isFormVisible, setIsFormVisible] = useState(false);
@@ -38,11 +37,6 @@ const SocialMedia = ({ contact }: { contact?: Contact }) => {
             <DataItem Icon={<IoLogoWhatsapp className="size-5 text-green-600" />}>
               {contact?.phone}
             </DataItem>
-            {contact?.phoneVisibility && (
-              <DataItem className="text-xs text-default-400 italic">
-                {visibilityItems.find((v) => v.value === contact.phoneVisibility)?.label}
-              </DataItem>
-            )}
             <EditButton text="Editar" onPress={() => setIsFormVisible(true)} />
           </DataBox>
 
@@ -54,55 +48,30 @@ const SocialMedia = ({ contact }: { contact?: Contact }) => {
             >
               {contact?.instagram ? formatInstagamUrl(contact.instagram) : "-"}
             </DataItem>
-            {contact?.instagramVisibility && (
-              <DataItem className="text-xs text-default-400 italic">
-                {visibilityItems.find((v) => v.value === contact.instagramVisibility)?.label}
-              </DataItem>
-            )}
           </DataBox>
 
           <DataBox labelText="Facebook">
             <DataItem Icon={<IoLogoFacebook className="size-5 text-blue-600" />}>
               {contact?.facebook ? formatFacebookUrl(contact.facebook) : "-"}
             </DataItem>
-            {contact?.facebookVisibility && (
-              <DataItem className="text-xs text-default-400 italic">
-                {visibilityItems.find((v) => v.value === contact.facebookVisibility)?.label}
-              </DataItem>
-            )}
           </DataBox>
 
           <DataBox labelText="X/Twitter">
             <DataItem Icon={<FaXTwitter className="size-4 text-slate-900" />}>
               {contact?.x ? formatTwitterUrl(contact.x) : "-"}
             </DataItem>
-            {contact?.xVisibility && (
-              <DataItem className="text-xs text-default-400 italic">
-                {visibilityItems.find((v) => v.value === contact.xVisibility)?.label}
-              </DataItem>
-            )}
           </DataBox>
 
           <DataBox labelText="Sitio Web">
             <DataItem Icon={<FaLink className="size-4 text-text-color" />}>
               {contact?.website ? extractDomain(contact.website) : "-"}
             </DataItem>
-            {contact?.websiteVisibility && (
-              <DataItem className="text-xs text-default-400 italic">
-                {visibilityItems.find((v) => v.value === contact.websiteVisibility)?.label}
-              </DataItem>
-            )}
           </DataBox>
 
           <DataBox labelText="Curriculum">
             <DataItem>
               {contact?.curriculum?.ref ? "CV cargado" : "-"}
             </DataItem>
-            {contact?.curriculum?.visibility && (
-              <DataItem className="text-xs text-default-400 italic">
-                {visibilityItems.find((v) => v.value === contact.curriculum?.visibility)?.label}
-              </DataItem>
-            )}
           </DataBox>
 
           {contact?.links && contact.links.length > 0 && (
@@ -112,9 +81,6 @@ const SocialMedia = ({ contact }: { contact?: Contact }) => {
                   <div key={i} className="flex items-center gap-2 text-sm">
                     <FaLink className="size-3 text-text-color shrink-0" />
                     <span className="flex-1 truncate">{link.label || extractDomain(link.url)}</span>
-                    <span className="text-xs text-default-400 italic">
-                      {visibilityItems.find((v) => v.value === link.visibility)?.label}
-                    </span>
                   </div>
                 ))}
               </div>

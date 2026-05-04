@@ -57,7 +57,7 @@ export interface BusinessSector {
 
 export interface Contact {
   _id: ObjectId;
-  phone: string;
+  phone?: string;
   phoneVisibility?: Visibility
   instagram?: string;
   instagramVisibility?: Visibility

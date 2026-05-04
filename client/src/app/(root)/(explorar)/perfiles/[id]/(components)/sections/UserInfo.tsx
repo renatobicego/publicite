@@ -41,8 +41,8 @@ const UserInfo = ({
     isAcceptRequestFriend?: {
       notification_id: string;
       type:
-        | "notification_user_new_friend_request"
-        | "notification_user_new_relation_change";
+      | "notification_user_new_friend_request"
+      | "notification_user_new_relation_change";
       value: boolean;
       userRelationId: string;
       toRelationShipChange: UserRelation;
@@ -54,7 +54,7 @@ const UserInfo = ({
 }) => {
   const { userType } = user;
   const business = user as unknown as UserBusiness;
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
 
   const actionToShow = () => {
     switch (true) {
@@ -174,23 +174,19 @@ const UserInfo = ({
         {/* DERECHA (GRIS) */}
         <div className="p-6 md:w-1/2 flex flex-col justify-start gap-4">
           <div className="flex justify-between items-start">
-            {user.contact && (
-              <ContactField
-                value={user.contact.profesion?.label}
-                visibility={user.contact.profesion?.visibility}
-                isMyProfile={isMyProfile}
-                isMyContact={isMyContact}
-                render={(val) => (
-                  <div className="flex items-center gap-1 text-sm">
-                    <MdWork className="size-4 shrink-0" />
-                    <span>{val}</span>
-                  </div>
-                )}
-                fallback={<h4>Profesión</h4>}
-              />
-            )}
+            <h3 className="font-semibold">Credencial de {user.username}</h3>
             <OptionsDropdown user={user} />
           </div>
+
+          {user.contact && (
+            <ContactField
+              value={user.contact.profesion?.label}
+              visibility={user.contact.profesion?.visibility}
+              isMyProfile={isMyProfile}
+              isMyContact={isMyContact}
+              render={(val) => <h4 className="font-semibold">{val}</h4>}
+            />
+          )}
 
           {displayDescription && (
             <ContactField
@@ -388,7 +384,8 @@ const SocialMediaLinks = ({
           <Link
             className="flex items-center gap-1"
             color="foreground"
-            href={val}
+            href={/^https?:\/\//i.test(val) ? val : `https://${val}`}
+            isExternal
             target="_blank"
           >
             <FaLink className="size-4" />
@@ -396,18 +393,6 @@ const SocialMediaLinks = ({
           </Link>
         )}
       />
-
-      {curriculum?.ref && canSeeField(curriculum.visibility, isMyProfile, isMyContact) && (
-        <Link
-          href={`https://utfs.io/f/${curriculum.ref}`}
-          target="_blank"
-          color="foreground"
-          className="flex items-center gap-1"
-        >
-          <MdDownload className="size-4" />
-          <p className="text-xs md:text-sm">Descargar CV</p>
-        </Link>
-      )}
 
       {links && links.length > 0 &&
         links
@@ -424,6 +409,12 @@ const SocialMediaLinks = ({
               <p className="text-xs md:text-sm">{link.label || extractDomain(link.url)}</p>
             </Link>
           ))}
+
+      {curriculum?.ref && canSeeField(curriculum.visibility, isMyProfile, isMyContact) && (
+        <Link href={`https://utfs.io/f/${curriculum.ref}`} target="_blank">
+          <PrimaryButton className="mt-1">Descargar CV</PrimaryButton>
+        </Link>
+      )}
     </div>
   );
 };
