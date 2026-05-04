@@ -8,6 +8,7 @@ import { ContactService } from '../../application/service/contact.service';
 import { ContactRepository } from '../repository/contact.repository';
 import { ContactSchema } from '../schema/contact.schema';
 import { ContactResolver } from '../controller/contact.resolver';
+import '../../domain/entity/visibility.enum';
 
 @Module({
   imports: [

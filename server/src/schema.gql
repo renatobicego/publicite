@@ -126,13 +126,54 @@ type PostsMemberGroupResponse {
   hasMore: Boolean!
 }
 
+type ProfesionField {
+  label: String
+  visibility: Visibility_Enum_Contact
+}
+
+"""
+Audiencia que puede ver un campo del Contact: public | registered | contacts | friends | topfriends
+"""
+enum Visibility_Enum_Contact {
+  PUBLIC
+  REGISTERED
+  CONTACTS
+  FRIENDS
+  TOPFRIENDS
+}
+
+type CurriculumField {
+  ref: String
+  visibility: Visibility_Enum_Contact
+}
+
+type DescriptionField {
+  text: String
+  visibility: Visibility_Enum_Contact
+}
+
+type LinkItem {
+  url: String
+  label: String
+  visibility: Visibility_Enum_Contact
+}
+
 type Contact {
   _id: ID
   phone: String
+  phoneVisibility: Visibility_Enum_Contact
   instagram: String
+  instagramVisibility: Visibility_Enum_Contact
   facebook: String
+  facebookVisibility: Visibility_Enum_Contact
   x: String
+  xVisibility: Visibility_Enum_Contact
   website: String
+  websiteVisibility: Visibility_Enum_Contact
+  profesion: ProfesionField
+  curriculum: CurriculumField
+  links: [LinkItem!]
+  description: DescriptionField
 }
 
 type Board {
@@ -1217,10 +1258,40 @@ type Mutation {
 
 input UpdateContactRequest {
   phone: String
+  phoneVisibility: Visibility_Enum_Contact
   instagram: String
+  instagramVisibility: Visibility_Enum_Contact
   facebook: String
+  facebookVisibility: Visibility_Enum_Contact
   website: String
+  websiteVisibility: Visibility_Enum_Contact
   x: String
+  xVisibility: Visibility_Enum_Contact
+  profesion: ProfesionInput
+  curriculum: CurriculumInput
+  description: DescriptionInput
+  links: [LinkItemInput!]
+}
+
+input ProfesionInput {
+  label: String
+  visibility: Visibility_Enum_Contact
+}
+
+input CurriculumInput {
+  ref: String
+  visibility: Visibility_Enum_Contact
+}
+
+input DescriptionInput {
+  text: String
+  visibility: Visibility_Enum_Contact
+}
+
+input LinkItemInput {
+  url: String
+  label: String
+  visibility: Visibility_Enum_Contact
 }
 
 """Type of the post """
