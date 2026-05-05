@@ -1,54 +1,126 @@
 import { Button } from "@nextui-org/react";
 import FormCard from "../../FormCard";
 import { Field, Form, Formik, FormikHelpers } from "formik";
-import {
-  CustomTextarea,
-} from "@/components/inputs/CustomInputs";
+import { CustomInput, CustomSelect, CustomTextarea } from "@/components/inputs/CustomInputs";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { editProfile } from "../actions";
+import { putContactData } from "@/services/userServices";
+import { Contact } from "@/types/userTypes";
 import { useRouter } from "next-nprogress-bar";
+import { visibilityItems } from "@/utils/data/selectData";
+
+interface DescriptionFormValues {
+  description: string;
+  descriptionVisibility: Visibility;
+  profesion: string;
+  profesionVisibility: Visibility;
+}
 
 const DescriptionForm = ({
   setIsFormVisible,
   description,
-  isBusiness = false,
+  descriptionVisibility,
+  profesion,
+  profesionVisibility,
+  contactId,
 }: {
   setIsFormVisible: (value: boolean) => void;
   description?: string;
-  isBusiness?: boolean;
+  descriptionVisibility?: Visibility;
+  profesion?: string;
+  profesionVisibility?: Visibility;
+  contactId?: string;
 }) => {
   const router = useRouter();
-  const initialValues = {
+
+  const initialValues: DescriptionFormValues = {
     description: description || "",
+    descriptionVisibility: descriptionVisibility || "contacts",
+    profesion: profesion || "",
+    profesionVisibility: profesionVisibility || "contacts",
   };
+
   const handleSubmit = async (
-    values: { description: string },
-    actions: FormikHelpers<{ description: string }>
+    values: DescriptionFormValues,
+    actions: FormikHelpers<DescriptionFormValues>
   ) => {
-    const res = await editProfile(values, isBusiness ? "Business" : "Person");
-    if (res?.message) {
-      toastifySuccess(res.message);
-      router.refresh();
-      setIsFormVisible(false);
+
+    // Update contact fields if contactId is available
+    if (contactId) {
+      const payload: Omit<Contact, "_id"> = {
+        description: { text: values.description, visibility: values.descriptionVisibility },
+        ...(values.profesion
+          ? { profesion: { label: values.profesion, visibility: values.profesionVisibility } }
+          : {}),
+      };
+      const contactRes = await putContactData(contactId, payload);
+      if (contactRes?.error) {
+        toastifyError(contactRes.error);
+        actions.setSubmitting(false);
+        return;
+      }
     }
-    if (res?.error) toastifyError(res.error);
+
+    toastifySuccess("Descripción actualizada");
+    router.refresh();
+    setIsFormVisible(false);
     actions.setSubmitting(false);
   };
+
   return (
     <FormCard title="Actualizar Descripción">
-      <Formik initialValues={initialValues} onSubmit={handleSubmit}>
+      <Formik initialValues={initialValues} onSubmit={handleSubmit} enableReinitialize>
         {({ isSubmitting, errors }) => (
-          <Form className="flex flex-col gap-2">
-            <Field
-              as={CustomTextarea}
-              name="description"
-              label="Descripción"
-              aria-label="descripción"
-              isInvalid={!!errors.description}
-              errorMessage={errors.description}
-              placeholder="Agregar descripción"
-            />
+          <Form className="flex flex-col gap-4">
+            <div className="flex gap-3 items-end">
+              <Field
+                as={CustomTextarea}
+                name="description"
+                label="Descripción"
+                aria-label="descripción"
+                isInvalid={!!errors.description}
+                errorMessage={errors.description}
+                placeholder="Agregar descripción"
+                className="flex-1"
+              />
+              <Field
+                as={CustomSelect}
+                name="descriptionVisibility"
+                label="Visibilidad"
+                aria-label="visibilidad descripción"
+                items={visibilityItems}
+                getItemValue={(item: any) => item.value}
+                getItemTextValue={(item: any) => item.label}
+                getItemLabel={(item: any) => item.label}
+                placeholder="Visibilidad"
+                className="max-w-[180px]"
+              />
+            </div>
+            <div className="flex gap-3 items-end">
+              <Field
+                as={CustomInput}
+                name="profesion"
+                label="Profesión"
+                aria-label="profesión"
+                isInvalid={!!errors.profesion}
+                errorMessage={(errors as any).profesion}
+                placeholder="Ej: Diseñador Gráfico"
+                className="flex-1"
+              />
+              <Field
+                as={CustomSelect}
+                name="profesionVisibility"
+                label="Visibilidad"
+                aria-label="visibilidad profesión"
+                items={visibilityItems}
+                getItemValue={(item: any) => item.value}
+                getItemTextValue={(item: any) => item.label}
+                getItemLabel={(item: any) => item.label}
+                placeholder="Visibilidad"
+                className="max-w-[180px]"
+              />
+            </div>
             <div className="flex gap-2">
               <Button
                 color="default"

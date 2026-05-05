@@ -35,7 +35,7 @@ export const postUserPerson = async (formData: UserPersonFormValues) => {
 };
 
 export const putUserProfileData = async (
-  formData: EditPersonProfileProps,
+  formData: EditPersonProfileProps & { descriptionVisibility?: Visibility },
   username: string
 ) => {
   return await axios.put(`${baseUrl}/${username}`, formData, {
@@ -45,14 +45,41 @@ export const putUserProfileData = async (
   });
 };
 
+const uppercaseContactVisibilities = (
+  contactData: Omit<Contact, "_id">
+): Omit<Contact, "_id"> => {
+  const up = (v?: string) => v?.toUpperCase() as Visibility | undefined;
+  return {
+    ...contactData,
+    ...(contactData.phoneVisibility !== undefined && { phoneVisibility: up(contactData.phoneVisibility) }),
+    ...(contactData.instagramVisibility !== undefined && { instagramVisibility: up(contactData.instagramVisibility) }),
+    ...(contactData.facebookVisibility !== undefined && { facebookVisibility: up(contactData.facebookVisibility) }),
+    ...(contactData.xVisibility !== undefined && { xVisibility: up(contactData.xVisibility) }),
+    ...(contactData.websiteVisibility !== undefined && { websiteVisibility: up(contactData.websiteVisibility) }),
+    ...(contactData.profesion !== undefined && {
+      profesion: { ...contactData.profesion, visibility: up(contactData.profesion.visibility)! },
+    }),
+    ...(contactData.curriculum !== undefined && {
+      curriculum: { ...contactData.curriculum, visibility: up(contactData.curriculum.visibility)! },
+    }),
+    ...(contactData.links !== undefined && {
+      links: contactData.links.map((l) => ({ ...l, visibility: up(l.visibility)! })),
+    }),
+    ...(contactData.description !== undefined && {
+      description: { ...contactData.description, visibility: up(contactData.description.visibility)! },
+    }),
+  };
+};
+
 export const putContactData = async (
   contactId: string,
   contactData: Omit<Contact, "_id">
 ) => {
   try {
+    const updateRequest = uppercaseContactVisibilities(contactData);
     await getClient().mutate({
       mutation: updateContactMutation,
-      variables: { contactId, updateRequest: contactData },
+      variables: { contactId, updateRequest },
       context: {
         headers: {
           Authorization: await getAuthToken(),
@@ -81,7 +108,12 @@ export const getUserProfileData = async (username: string) => {
       }
     );
 
-    return await res.json();
+    const data = await res.json();
+    // Merge contact.description into top-level description if contact.description exists
+    if (data?.contact?.description?.text && !data.description) {
+      data.description = data.contact.description.text;
+    }
+    return data;
   } catch (error) {
     return {
       error:
@@ -107,8 +139,8 @@ export const getFriendsOfUser = async (id: string) => {
       });
     if (!data.findUserById) return [];
 
-    const relationsMapped = data.findUserById.userRelations.map((relation) => {
-      if (relation.userA._id === user.sessionClaims?.metadata.mongoId) {
+    const relationsMapped = data.findUserById.userRelations?.map((relation) => {
+      if (relation.userA?._id === user.sessionClaims?.metadata.mongoId) {
         return relation.userB;
       }
       return relation.userA;
@@ -160,12 +192,11 @@ export const getUserPreferences = async (
       `${process.env.API_URL}/user/preferences/${username}`,
       {
         headers: {
-          Authorization: `Bearer ${
-            token ||
+          Authorization: `Bearer ${token ||
             (await auth().getToken({
               template: "testing",
             }))
-          }`,
+            }`,
         },
       }
     );
@@ -181,8 +212,7 @@ export const getUserPreferences = async (
 export const getUsers = async (searchTerm: string | null, page: number) => {
   try {
     const res = await fetch(
-      `${process.env.API_URL}/user?user=${
-        searchTerm ? searchTerm : ""
+      `${process.env.API_URL}/user?user=${searchTerm ? searchTerm : ""
       }&limit=20&page=${page}`,
       {
         headers: {
@@ -201,18 +231,18 @@ export const getUserById = async (
   id: string
 ): Promise<
   | (GetUser & {
-      isFriendRequestPending: boolean;
-      isAcceptRequestFriend?: {
-        notification_id: string;
-        type:
-          | "notification_user_new_friend_request"
-          | "notification_user_new_relation_change";
-        value: boolean;
-        userRelationId: string;
-        toRelationShipChange: UserRelation;
-        newRelation: UserRelation;
-      };
-    })
+    isFriendRequestPending: boolean;
+    isAcceptRequestFriend?: {
+      notification_id: string;
+      type:
+      | "notification_user_new_friend_request"
+      | "notification_user_new_relation_change";
+      value: boolean;
+      userRelationId: string;
+      toRelationShipChange: UserRelation;
+      newRelation: UserRelation;
+    };
+  })
   | { error: string }
 > => {
   try {

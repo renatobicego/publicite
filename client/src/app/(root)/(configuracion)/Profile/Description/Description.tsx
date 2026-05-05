@@ -1,17 +1,22 @@
 import { useState } from "react";
 import DataBox, { DataItem, EditButton } from "../../DataBox";
-
 import AnimatedBox from "../../AnimatedBox";
 import DescriptionForm from "./DescriptionForm";
+import { Contact } from "@/types/userTypes";
+import { visibilityItems } from "@/utils/data/selectData";
 
 const Description = ({
   description,
   isBusiness,
+  contact,
 }: {
   description?: string;
   isBusiness?: boolean;
+  contact?: Contact;
 }) => {
   const [isFormVisible, setIsFormVisible] = useState(false);
+
+  const displayDescription = contact?.description?.text ?? description;
 
   return (
     <AnimatedBox
@@ -23,19 +28,22 @@ const Description = ({
         <DescriptionForm
           key={"formDescription"}
           setIsFormVisible={setIsFormVisible}
-          description={description}
-          isBusiness={isBusiness}
+          description={displayDescription}
+          descriptionVisibility={contact?.description?.visibility}
+          profesion={contact?.profesion?.label}
+          profesionVisibility={contact?.profesion?.visibility}
+          contactId={contact?._id}
         />
       ) : (
-        <DataBox labelText="Descripción" className="my-2.5">
-          <DataItem className="max-md:order-last">{description}</DataItem>
-          <EditButton
-            text="Editar"
-            onPress={() => {
-              setIsFormVisible(true);
-            }}
-          />
-        </DataBox>
+        <div className="flex flex-col gap-4 my-2.5">
+          <DataBox labelText="Descripción">
+            <DataItem className="max-md:order-last">{displayDescription}</DataItem>
+            <EditButton text="Editar" onPress={() => setIsFormVisible(true)} />
+          </DataBox>
+          <DataBox labelText="Profesión" className="-mt-2.5">
+            <DataItem>{contact?.profesion?.label ?? "-"}</DataItem>
+          </DataBox>
+        </div>
       )}
     </AnimatedBox>
   );
