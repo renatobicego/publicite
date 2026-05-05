@@ -265,7 +265,7 @@ function canSeeField(
   if (!isMyContact) return false;
   const myRelationIndex = relationHierarchy.indexOf(isMyContact.typeRelationA);
   const requiredIndex = relationHierarchy.indexOf(visibility as UserRelation);
-  console.log(isMyContact, myRelationIndex, requiredIndex)
+  console.log(visibility)
   return myRelationIndex >= requiredIndex;
 }
 
