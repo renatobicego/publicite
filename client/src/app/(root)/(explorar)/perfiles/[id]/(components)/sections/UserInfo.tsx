@@ -264,8 +264,7 @@ function canSeeField(
   if (!visibility || visibility === "public" || visibility === "registered") return true;
   if (!isMyContact) return false;
   const myRelationIndex = relationHierarchy.indexOf(isMyContact.typeRelationA);
-  const requiredIndex = relationHierarchy.indexOf(visibility as UserRelation);
-  console.log(visibility)
+  const requiredIndex = relationHierarchy.indexOf(visibility.toLowerCase() as UserRelation);
   return myRelationIndex >= requiredIndex;
 }
 
