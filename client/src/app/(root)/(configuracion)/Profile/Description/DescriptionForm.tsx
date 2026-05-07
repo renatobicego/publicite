@@ -222,7 +222,6 @@ const DescriptionForm = ({
             }
           : {}),
       };
-      console.log(payload);
       const contactRes = await putContactData(contactId, payload);
       if (contactRes?.error) {
         toastifyError(contactRes.error);
@@ -230,7 +229,6 @@ const DescriptionForm = ({
         return;
       }
     }
-    console.log(initialValues);
 
     toastifySuccess("Descripción actualizada");
     router.refresh();
