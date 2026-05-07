@@ -227,7 +227,7 @@ const DescriptionForm = ({
       >
         {({ isSubmitting, errors, values, setFieldValue }) => (
           <Form className="flex flex-col gap-4">
-            <div className="flex items-end gap-3">
+            <div className="flex items-start gap-3">
               <Field
                 as={CustomTextarea}
                 name="description"
@@ -251,7 +251,7 @@ const DescriptionForm = ({
                 className="max-w-[180px]"
               />
             </div>
-            <div className="flex items-end gap-3">
+            <div className="flex items-start gap-3">
               <div className="flex flex-col flex-1 gap-2">
                 {values.profesionIsCustom ? (
                   <Field
