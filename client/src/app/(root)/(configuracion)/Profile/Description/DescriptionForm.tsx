@@ -45,13 +45,19 @@ const PROFESION_OPTIONS = [
   { value: "Ingeniero/a Químico/a", label: "Ingeniero/a Químico/a" },
   { value: "Ingeniero/a Agrónomo/a", label: "Ingeniero/a Agrónomo/a" },
   { value: "Ingeniero/a en Sistemas", label: "Ingeniero/a en Sistemas" },
-  { value: "Desarrollador/a de Software", label: "Desarrollador/a de Software" },
+  {
+    value: "Desarrollador/a de Software",
+    label: "Desarrollador/a de Software",
+  },
   { value: "Técnico/a Electricista", label: "Técnico/a Electricista" },
   { value: "Técnico/a Mecánico/a", label: "Técnico/a Mecánico/a" },
   { value: "Analista de Datos", label: "Analista de Datos" },
   { value: "Científico/a de Datos", label: "Científico/a de Datos" },
   { value: "Administrador/a de Redes", label: "Administrador/a de Redes" },
-  { value: "Especialista en Ciberseguridad", label: "Especialista en Ciberseguridad" },
+  {
+    value: "Especialista en Ciberseguridad",
+    label: "Especialista en Ciberseguridad",
+  },
   // Arquitectura y Construcción
   { value: "Arquitecto/a", label: "Arquitecto/a" },
   { value: "Diseñador/a de Interiores", label: "Diseñador/a de Interiores" },
@@ -66,7 +72,10 @@ const PROFESION_OPTIONS = [
   { value: "Docente Universitario/a", label: "Docente Universitario/a" },
   { value: "Psicopedagogo/a", label: "Psicopedagogo/a" },
   // Comunicación, Marketing y Diseño
-  { value: "Licenciado/a en Comunicación", label: "Licenciado/a en Comunicación" },
+  {
+    value: "Licenciado/a en Comunicación",
+    label: "Licenciado/a en Comunicación",
+  },
   { value: "Licenciado/a en Marketing", label: "Licenciado/a en Marketing" },
   { value: "Periodista", label: "Periodista" },
   { value: "Relacionista Público/a", label: "Relacionista Público/a" },
@@ -79,7 +88,10 @@ const PROFESION_OPTIONS = [
   { value: "Animador/a Digital", label: "Animador/a Digital" },
   { value: "Traductor/a", label: "Traductor/a" },
   // Administración y Gestión
-  { value: "Licenciado/a en Administración", label: "Licenciado/a en Administración" },
+  {
+    value: "Licenciado/a en Administración",
+    label: "Licenciado/a en Administración",
+  },
   { value: "Gerente", label: "Gerente" },
   { value: "Director/a", label: "Director/a" },
   { value: "Consultor/a de Empresas", label: "Consultor/a de Empresas" },
@@ -92,7 +104,10 @@ const PROFESION_OPTIONS = [
   { value: "Representante Comercial", label: "Representante Comercial" },
   { value: "Agente Inmobiliario/a", label: "Agente Inmobiliario/a" },
   { value: "Corredor/a de Seguros", label: "Corredor/a de Seguros" },
-  { value: "Importador/a / Exportador/a", label: "Importador/a / Exportador/a" },
+  {
+    value: "Importador/a / Exportador/a",
+    label: "Importador/a / Exportador/a",
+  },
   // Gastronomía y Turismo
   { value: "Chef / Cocinero/a", label: "Chef / Cocinero/a" },
   { value: "Pastelero/a / Repostero/a", label: "Pastelero/a / Repostero/a" },
@@ -114,7 +129,10 @@ const PROFESION_OPTIONS = [
   { value: "Productor/a Agropecuario/a", label: "Productor/a Agropecuario/a" },
   { value: "Biólogo/a", label: "Biólogo/a" },
   { value: "Geólogo/a", label: "Geólogo/a" },
-  { value: "Especialista en Medio Ambiente", label: "Especialista en Medio Ambiente" },
+  {
+    value: "Especialista en Medio Ambiente",
+    label: "Especialista en Medio Ambiente",
+  },
   // Transporte y Seguridad
   { value: "Chofer / Conductor/a", label: "Chofer / Conductor/a" },
   { value: "Piloto", label: "Piloto" },
@@ -169,7 +187,8 @@ const DescriptionForm = ({
 }) => {
   const router = useRouter();
 
-  const { selectValue, customValue, isCustom } = resolveInitialProfesion(profesion);
+  const { selectValue, customValue, isCustom } =
+    resolveInitialProfesion(profesion);
 
   const initialValues: DescriptionFormValues = {
     description: description || "",
@@ -184,10 +203,9 @@ const DescriptionForm = ({
     values: DescriptionFormValues,
     actions: FormikHelpers<DescriptionFormValues>,
   ) => {
-    const resolvedProfesion =
-      values.profesionIsCustom
-        ? values.profesionCustom.trim()
-        : values.profesionSelect;
+    const resolvedProfesion = values.profesionIsCustom
+      ? values.profesionCustom.trim()
+      : values.profesionSelect;
 
     if (contactId) {
       const payload: Omit<Contact, "_id"> = {
@@ -197,13 +215,14 @@ const DescriptionForm = ({
         },
         ...(resolvedProfesion
           ? {
-            profesion: {
-              label: resolvedProfesion,
-              visibility: values.profesionVisibility,
-            },
-          }
+              profesion: {
+                label: resolvedProfesion,
+                visibility: values.profesionVisibility,
+              },
+            }
           : {}),
       };
+      console.log(payload);
       const contactRes = await putContactData(contactId, payload);
       if (contactRes?.error) {
         toastifyError(contactRes.error);
@@ -211,6 +230,7 @@ const DescriptionForm = ({
         return;
       }
     }
+    console.log(initialValues);
 
     toastifySuccess("Descripción actualizada");
     router.refresh();
