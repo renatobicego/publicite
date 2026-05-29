@@ -20,6 +20,7 @@ export const sendMessageMutation = gql`
       sessionId
       timestamp
       userMessage
+      action
     }
   }
 `;

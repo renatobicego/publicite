@@ -7,18 +7,24 @@ import {
   Card,
   CardBody,
   CardHeader,
-  Input,
   Button,
   ScrollShadow,
 } from "@nextui-org/react";
 import { FaPaperPlane, FaX } from "react-icons/fa6";
 import { CustomInputWithoutFormik } from "@/components/inputs/CustomInputs";
+import { useCreateAdWizard } from "./CreateAdWizard/useCreateAdWizard";
+import { ActiveStepInput } from "./CreateAdWizard/CreateAdWizard";
 
 interface ChatWindowProps {
   messages: UIMessage[];
   onSendMessage: (text: string) => void;
   onClose: () => void;
   isLoading: boolean;
+  showCreateAdButton?: boolean;
+  onStartCreateAd?: () => void;
+  wizard?: ReturnType<typeof useCreateAdWizard>;
+  onSubmitAd?: () => void;
+  isSubmittingAd?: boolean;
 }
 
 export function ChatWindow({
@@ -26,9 +32,20 @@ export function ChatWindow({
   onSendMessage,
   onClose,
   isLoading,
+  showCreateAdButton,
+  onStartCreateAd,
+  wizard,
+  onSubmitAd,
+  isSubmittingAd,
 }: ChatWindowProps) {
   const [inputValue, setInputValue] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const isWizardActive =
+    wizard &&
+    wizard.step !== "idle" &&
+    wizard.step !== "done" &&
+    wizard.step !== "error";
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -36,11 +53,11 @@ export function ChatWindow({
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, wizard?.messages, wizard?.step]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (inputValue.trim() && !isLoading) {
+    if (inputValue.trim() && !isLoading && !isWizardActive) {
       onSendMessage(inputValue);
       setInputValue("");
     }
@@ -207,39 +224,91 @@ export function ChatWindow({
         {/* Messages Container */}
         <CardBody className="flex-1 overflow-hidden p-0">
           <ScrollShadow className="flex-1 overflow-y-auto p-4 space-y-3">
-            {messages.length === 0 ? (
+            {messages.length === 0 && !isWizardActive ? (
               <div className="flex items-center justify-center h-full text-center text-gray-500 dark:text-gray-400">
                 <p>Preguntale a Cubito lo que quieras</p>
               </div>
             ) : (
-              messages.map((message) => (
-                <div
-                  key={message.id}
-                  className={`flex ${
-                    message.role === "user" ? "justify-end" : "justify-start"
-                  }`}
-                >
+              <>
+                {/* Regular chat messages */}
+                {messages.map((message) => (
                   <div
-                    className={`max-w-xs px-4 py-2 rounded-xl ${
-                      message.role === "user"
-                        ? "bg-service text-white rounded-br-none"
-                        : "bg-white dark:bg-slate-700 text-gray-900 dark:text-white border border-gray-200 dark:border-slate-600 rounded-bl-none"
-                    }`}
+                    key={message.id}
+                    className={`flex ${message.role === "user" ? "justify-end" : "justify-start"
+                      }`}
                   >
-                    {message.parts.map((part, idx) => {
-                      if (part.type === "text") {
-                        return (
-                          <div key={idx} className="text-sm leading-relaxed">
-                            {parseAndRenderText(part.text)}
-                          </div>
-                        );
-                      }
-                      return null;
-                    })}
+                    <div
+                      className={`max-w-xs px-4 py-2 rounded-xl ${message.role === "user"
+                          ? "bg-service text-white rounded-br-none"
+                          : "bg-white dark:bg-slate-700 text-gray-900 dark:text-white border border-gray-200 dark:border-slate-600 rounded-bl-none"
+                        }`}
+                    >
+                      {message.parts.map((part, idx) => {
+                        if (part.type === "text") {
+                          return (
+                            <div key={idx} className="text-sm leading-relaxed">
+                              {parseAndRenderText(part.text)}
+                            </div>
+                          );
+                        }
+                        return null;
+                      })}
+                    </div>
                   </div>
-                </div>
-              ))
+                ))}
+
+                {/* Create Ad Button */}
+                {showCreateAdButton && onStartCreateAd && (
+                  <div className="flex justify-start">
+                    <Button
+                      size="sm"
+                      color="primary"
+                      variant="shadow"
+                      onPress={onStartCreateAd}
+                      className="mt-2"
+                    >
+                      ✨ Crear anuncio aquí
+                    </Button>
+                  </div>
+                )}
+
+                {/* Wizard messages */}
+                {wizard &&
+                  wizard.messages.map((msg) => (
+                    <div
+                      key={msg.id}
+                      className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"
+                        }`}
+                    >
+                      <div
+                        className={`max-w-xs px-4 py-2 rounded-xl ${msg.role === "user"
+                            ? "bg-service text-white rounded-br-none"
+                            : "bg-white dark:bg-slate-700 text-gray-900 dark:text-white border border-gray-200 dark:border-slate-600 rounded-bl-none"
+                          }`}
+                      >
+                        <div className="text-sm leading-relaxed">
+                          {parseAndRenderText(msg.content)}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+
+                {/* Active wizard step input */}
+                {isWizardActive && wizard && onSubmitAd && (
+                  <div className="flex justify-start w-full">
+                    <div className="max-w-xs w-full">
+                      <ActiveStepInput
+                        step={wizard.step}
+                        wizard={wizard}
+                        onSubmitAd={onSubmitAd}
+                        isSubmitting={isSubmittingAd || false}
+                      />
+                    </div>
+                  </div>
+                )}
+              </>
             )}
+
             {isLoading && (
               <div className="flex justify-start">
                 <div className="bg-white dark:bg-slate-700 text-gray-900 dark:text-white border border-gray-200 dark:border-slate-600 px-4 py-2 rounded-xl rounded-bl-none">
@@ -267,14 +336,18 @@ export function ChatWindow({
             <CustomInputWithoutFormik
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              placeholder="Tu mensaje..."
-              disabled={isLoading}
+              placeholder={
+                isWizardActive
+                  ? "Completá los pasos arriba..."
+                  : "Tu mensaje..."
+              }
+              disabled={isLoading || !!isWizardActive}
             />
             <Button
               isIconOnly
               type="submit"
               radius="full"
-              disabled={isLoading || !inputValue.trim()}
+              disabled={isLoading || !inputValue.trim() || !!isWizardActive}
               className="text-white bg-service"
             >
               <FaPaperPlane size={16} />

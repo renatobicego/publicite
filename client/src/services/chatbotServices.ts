@@ -29,6 +29,20 @@ export const createChatWithAI = async () => {
 export const sendMessageToAI = async (
   sendMessageRequest: SendMessageRequest
 ) => {
+  // TODO: Remover mock cuando el BE despliegue el campo action
+  const CREATE_AD_KEYWORDS = [
+    "crear anuncio",
+    "publicar",
+    "quiero vender",
+    "ofrecer servicio",
+    "crear publicación",
+    "necesito publicar",
+  ];
+  const messageLower = sendMessageRequest.message.toLowerCase();
+  const wantsToCreateAd = CREATE_AD_KEYWORDS.some((kw) =>
+    messageLower.includes(kw)
+  );
+
   try {
     const {
       data: { sendMessageToChatbot },
@@ -38,11 +52,18 @@ export const sendMessageToAI = async (
         variables: { sendMessageRequest },
       })
       .then((res) => res);
+
+    // Mock: si el BE aún no devuelve action, detectamos del lado del FE
+    const action = sendMessageToChatbot.action || (wantsToCreateAd ? "CREATE_AD" : null);
+
     return {
-      botResponse: sendMessageToChatbot.botResponse,
+      botResponse: wantsToCreateAd && !sendMessageToChatbot.action
+        ? "¡Genial! Te ayudo a crear tu anuncio. Tocá el botón de abajo para comenzar."
+        : sendMessageToChatbot.botResponse,
       sessionId: sendMessageToChatbot.sessionId,
       timestamp: sendMessageToChatbot.timestamp,
       userMessage: sendMessageToChatbot.userMessage,
+      action,
     };
   } catch (error) {
     return handleApolloError(error);

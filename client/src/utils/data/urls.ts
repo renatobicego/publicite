@@ -26,6 +26,7 @@ const EDIT_MAGAZINE = "/editar/revista";
 const EDIT_GROUP = "/editar/grupo";
 const FILE_URL = process.env.NEXT_PUBLIC_UPLOADTHING_URL as string;
 const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL;
+const CUBITO = "/cubito";
 export {
   MAGAZINES,
   GROUPS,
@@ -55,4 +56,5 @@ export {
   SERVICES,
   NEEDS,
   POST_LIBRE,
+  CUBITO,
 };
