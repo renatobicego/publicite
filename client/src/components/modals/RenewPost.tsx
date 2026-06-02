@@ -53,7 +53,7 @@ const RenewPost = ({ postTitle, id }: { postTitle: string; id: string }) => {
                     aria-label="input fecha para renovar"
                     label="Fecha para renovar"
                     minValue={today(getLocalTimeZone())}
-                    maxValue={today(getLocalTimeZone()).add({ years: 1 })}
+                    maxValue={today(getLocalTimeZone()).add({ years: 10 })}
                     description="Selecciona la fecha hasta la que deseas renovar el anuncio"
                     classNames={{
                       inputWrapper:

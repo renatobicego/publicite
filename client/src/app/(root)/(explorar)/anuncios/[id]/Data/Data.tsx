@@ -44,58 +44,53 @@ const Data = async ({
   );
   const showCondition =
     post.postType === "good"
-      ? `${
-          conditionItems.find((item) => item.value === good.condition)?.label
-        } | `
+      ? `${conditionItems.find((item) => item.value === good.condition)?.label
+      } | `
       : "";
 
   const priceToShow = () => {
     switch (post.postType) {
       case "good":
+        if (good.price === 8613.1) return "Negociable / a pactar";
         return good.price ? `$${formatTotal(good.price)}` : "Consultar precio";
       case "service":
+        if (service.price === 8613.1) return "Negociable / a pactar";
         return service.price
-          ? `$${formatTotal(service.price)} ${
-              service.frequencyPrice &&
-              (service.frequencyPrice as any) !== "undefined"
-                ? `por ${
-                    (
-                      frequencyPriceItems.find(
-                        (item) => item.value === petition.frequencyPrice
-                      ) ?? {}
-                    ).text as string
-                  }`
-                : ""
+          ? `$${formatTotal(service.price)} ${service.frequencyPrice &&
+            (service.frequencyPrice as any) !== "undefined"
+            ? `por ${(
+              frequencyPriceItems.find(
+                (item) => item.value === petition.frequencyPrice
+              ) ?? {}
+            ).text as string
             }`
+            : ""
+          }`
           : "Consultar precio";
       case "petition":
         return petition.price
-          ? `${
+          ? `${petition.toPrice
+            ? `De $${formatTotal(petition.price)} a $${formatTotal(
               petition.toPrice
-                ? `De $${formatTotal(petition.price)} a $${formatTotal(
-                    petition.toPrice
-                  )}`
-                : `$${formatTotal(petition.price)}`
-            } ${
-              service.frequencyPrice &&
-              (service.frequencyPrice as any) !== "undefined"
-                ? `por ${
-                    (
-                      frequencyPriceItems.find(
-                        (item) => item.value === petition.frequencyPrice
-                      ) ?? {}
-                    ).text as string
-                  }`
-                : ""
+            )}`
+            : `$${formatTotal(petition.price)}`
+          } ${service.frequencyPrice &&
+            (service.frequencyPrice as any) !== "undefined"
+            ? `por ${(
+              frequencyPriceItems.find(
+                (item) => item.value === petition.frequencyPrice
+              ) ?? {}
+            ).text as string
             }`
+            : ""
+          }`
           : "";
     }
   };
   return (
     <div
-      className={`flex-1 flex gap-4 items-start w-full ${
-        isPetition ? "max-lg:flex-col" : "lg:w-1/2 flex-col"
-      }`}
+      className={`flex-1 flex gap-4 items-start w-full ${isPetition ? "max-lg:flex-col" : "lg:w-1/2 flex-col"
+        }`}
     >
       <div className="flex flex-col gap-3 md:gap-4 w-full">
         <div className="flex justify-between gap-2 md:gap-4 items-start">

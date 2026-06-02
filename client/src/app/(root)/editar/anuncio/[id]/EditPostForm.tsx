@@ -51,7 +51,7 @@ const EditPostForm = ({ postData }: { postData: Good | Service }) => {
   const handleSubmit = async (values: any, actions: FormikHelpers<any>) => {
     if (
       values.endDate < today(getLocalTimeZone()).toString() ||
-      values.endDate > today(getLocalTimeZone()).add({ years: 1 }).toString()
+      values.endDate > today(getLocalTimeZone()).add({ years: 10 }).toString()
     ) {
       actions.setFieldError(
         "endDate",
@@ -180,7 +180,7 @@ const EditPostForm = ({ postData }: { postData: Good | Service }) => {
                   setFieldValue("endDate", value ? value.toString() : "")
                 }
                 minValue={today(getLocalTimeZone())}
-                maxValue={today(getLocalTimeZone()).add({ years: 1 })}
+                maxValue={today(getLocalTimeZone()).add({ years: 10 })}
               />
               <Divider />
               <AccordionInputs

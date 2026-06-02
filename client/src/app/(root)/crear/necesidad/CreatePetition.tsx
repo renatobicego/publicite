@@ -136,7 +136,7 @@ const CreatePetition = ({
                     setFieldValue("endDate", value ? value.toString() : "")
                   }
                   minValue={today(getLocalTimeZone())}
-                  maxValue={today(getLocalTimeZone()).add({ years: 1 })}
+                  maxValue={today(getLocalTimeZone()).add({ years: 10 })}
                 />
                 <Divider />
                 <h6>Busque su ubicación o seleccionela en el mapa</h6>

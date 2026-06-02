@@ -21,11 +21,14 @@ const ServiceCard = ({
   const { title, reviews, description, price, frequencyPrice } = post;
   const frequencyShown =
     (post.frequencyPrice as any) !== "undefined"
-      ? `por ${
-          frequencyPriceItems.find((item) => item.value === post.frequencyPrice)
-            ?.text
-        }`
+      ? `por ${frequencyPriceItems.find((item) => item.value === post.frequencyPrice)
+        ?.text
+      }`
       : "";
+  const displayPrice =
+    price === 8613.1
+      ? "Negociable / a pactar"
+      : `${formatTotal(price)} ${frequencyShown}`;
   return (
     <>
       <PostImage
@@ -39,7 +42,7 @@ const ServiceCard = ({
         reviews={reviews}
         isGroupPost={isGroupPost}
         description={description}
-        price={`${formatTotal(price)} ${frequencyShown}`}
+        price={displayPrice}
         isService={true}
       />
     </>

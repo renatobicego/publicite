@@ -18,6 +18,8 @@ const GoodCard = ({
   hideSaveMagazineButton?: boolean;
 }) => {
   const { title, reviews, description, price } = post;
+  const displayPrice =
+    price === 8613.1 ? "Negociable / a pactar" : formatTotal(price);
   return (
     <>
       <PostImage
@@ -30,7 +32,7 @@ const GoodCard = ({
         title={title}
         reviews={reviews}
         description={description}
-        price={formatTotal(price)}
+        price={displayPrice}
         isGroupPost={isGroupPost}
         isService={false}
       />

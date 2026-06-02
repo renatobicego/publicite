@@ -1,13 +1,13 @@
 import {
-  CustomInput,
   CustomPriceInput,
   CustomSelect,
 } from "@/components/inputs/CustomInputs";
 import { frequencyPriceItems } from "@/utils/data/selectData";
 import { GoodPostValues, ServicePostValues } from "@/types/postTypes";
-import { Field, FormikErrors } from "formik";
-import React, { useEffect, useState } from "react";
+import { Field, FormikErrors, useFormikContext } from "formik";
+import React, { useState } from "react";
 import { FaDollarSign } from "react-icons/fa6";
+import { Checkbox } from "@nextui-org/react";
 import usePostCategories from "@/utils/hooks/usePostCategories";
 
 const PriceCategory = ({
@@ -18,20 +18,37 @@ const PriceCategory = ({
   isService?: boolean;
 }) => {
   const { categories } = usePostCategories();
+  const { setFieldValue } = useFormikContext();
+  const [hidePrice, setHidePrice] = useState<
+    "negotiable" | "no_price" | null
+  >(null);
+
+  const handleCheckbox = (option: "negotiable" | "no_price") => {
+    if (hidePrice === option) {
+      // Uncheck
+      setHidePrice(null);
+    } else {
+      setHidePrice(option);
+      setFieldValue("price", option === "negotiable" ? 8613.10 : undefined);
+    }
+  };
+
   return (
     <>
       <div className="flex gap-4 max-xl:flex-wrap items-start">
-        <Field
-          as={CustomPriceInput}
-          name="price"
-          startContent={<FaDollarSign />}
-          label="Precio"
-          placeholder="Agregue el precio"
-          aria-label="precio"
-          isInvalid={!!errors.price}
-          errorMessage={errors.price}
-        />
-        {isService && (
+        {!hidePrice && (
+          <Field
+            as={CustomPriceInput}
+            name="price"
+            startContent={<FaDollarSign />}
+            label="Precio"
+            placeholder="Agregue el precio"
+            aria-label="precio"
+            isInvalid={!!errors.price}
+            errorMessage={errors.price}
+          />
+        )}
+        {!hidePrice && isService && (
           <Field
             as={CustomSelect}
             items={frequencyPriceItems}
@@ -50,6 +67,24 @@ const PriceCategory = ({
             }
           />
         )}
+      </div>
+      <div className="flex gap-6 px-4">
+        <Checkbox
+          isSelected={hidePrice === "negotiable"}
+          onValueChange={() => handleCheckbox("negotiable")}
+          aria-label="Negociable / a pactar"
+          size="sm"
+        >
+          Negociable / a pactar
+        </Checkbox>
+        <Checkbox
+          isSelected={hidePrice === "no_price"}
+          onValueChange={() => handleCheckbox("no_price")}
+          aria-label="Sin precio"
+          size="sm"
+        >
+          Sin Precio
+        </Checkbox>
       </div>
       <Field
         as={CustomSelect}
