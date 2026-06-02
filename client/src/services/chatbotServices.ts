@@ -1,6 +1,7 @@
 "use server";
 import {
   createChatSessionMutation,
+  generateAdImageMutation,
   sendMessageMutation,
 } from "@/graphql/chatBotQueries";
 import { getClient } from "@/lib/client";
@@ -29,20 +30,6 @@ export const createChatWithAI = async () => {
 export const sendMessageToAI = async (
   sendMessageRequest: SendMessageRequest
 ) => {
-  // TODO: Remover mock cuando el BE despliegue el campo action
-  const CREATE_AD_KEYWORDS = [
-    "crear anuncio",
-    "publicar",
-    "quiero vender",
-    "ofrecer servicio",
-    "crear publicación",
-    "necesito publicar",
-  ];
-  const messageLower = sendMessageRequest.message.toLowerCase();
-  const wantsToCreateAd = CREATE_AD_KEYWORDS.some((kw) =>
-    messageLower.includes(kw)
-  );
-
   try {
     const {
       data: { sendMessageToChatbot },
@@ -53,17 +40,30 @@ export const sendMessageToAI = async (
       })
       .then((res) => res);
 
-    // Mock: si el BE aún no devuelve action, detectamos del lado del FE
-    const action = sendMessageToChatbot.action || (wantsToCreateAd ? "CREATE_AD" : null);
-
     return {
-      botResponse: wantsToCreateAd && !sendMessageToChatbot.action
-        ? "¡Genial! Te ayudo a crear tu anuncio. Tocá el botón de abajo para comenzar."
-        : sendMessageToChatbot.botResponse,
+      botResponse: sendMessageToChatbot.botResponse,
       sessionId: sendMessageToChatbot.sessionId,
       timestamp: sendMessageToChatbot.timestamp,
       userMessage: sendMessageToChatbot.userMessage,
-      action,
+      action: sendMessageToChatbot.action ?? null,
+    };
+  } catch (error) {
+    return handleApolloError(error);
+  }
+};
+
+export const generateAdImageWithAI = async (prompt: string) => {
+  try {
+    const {
+      data: { generateAdImage },
+    } = await getClient()
+      .mutate({
+        mutation: generateAdImageMutation,
+        variables: { generateAdImageRequest: { prompt } },
+      })
+      .then((res) => res);
+    return {
+      imageBase64: generateAdImage.imageBase64 as string,
     };
   } catch (error) {
     return handleApolloError(error);

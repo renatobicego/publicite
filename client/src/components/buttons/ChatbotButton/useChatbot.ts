@@ -11,6 +11,8 @@ import { useUploadThing } from "@/utils/uploadThing";
 import imageCompression from "browser-image-compression";
 import { useRouter } from "next-nprogress-bar";
 import { POSTS } from "@/utils/data/urls";
+import { useUser } from "@clerk/nextjs";
+import { getUserActivePostandActiveRelationsNumber } from "@/services/subscriptionServices";
 
 /**
  * Shared hook that encapsulates all chatbot logic.
@@ -26,6 +28,7 @@ export function useChatbot() {
 
   const wizard = useCreateAdWizard();
   const router = useRouter();
+  const { user } = useUser();
 
   const { startUpload } = useUploadThing("fileUploader", {
     onUploadError: (e) => {
@@ -101,6 +104,36 @@ export function useChatbot() {
 
     try {
       const { data } = wizard;
+
+      // El autor del anuncio es el mongoId del usuario logueado (mismo dato que usa el flujo normal)
+      const authorId = user?.publicMetadata?.mongoId as string | undefined;
+      if (!authorId) {
+        wizard.setError("Necesitás iniciar sesión para publicar un anuncio");
+        setIsSubmittingAd(false);
+        return;
+      }
+
+      // Verificar el límite de anuncios según el plan/suscripción del usuario
+      const limitRes = await getUserActivePostandActiveRelationsNumber();
+      if ("error" in limitRes) {
+        wizard.setError(
+          "No pudimos verificar tu límite de anuncios. Intentá de nuevo"
+        );
+        setIsSubmittingAd(false);
+        return;
+      }
+      const userCanPublishPost =
+        data.postBehaviourType === "agenda"
+          ? limitRes.agendaPostCount < limitRes.totalAgendaPostLimit
+          : limitRes.librePostCount < limitRes.totalLibrePostLimit;
+      if (!userCanPublishPost) {
+        wizard.setError(
+          "Alcanzaste el límite de anuncios activos de tu plan"
+        );
+        setIsSubmittingAd(false);
+        return;
+      }
+
       const files = data.images || [];
 
       // Upload images if any (for good/service)
@@ -132,7 +165,7 @@ export function useChatbot() {
         description: data.description || "",
         price: data.price,
         category: [data.category],
-        author: "",
+        author: authorId,
         postType: data.postType,
         postBehaviourType: data.postBehaviourType,
         visibility: {
@@ -167,7 +200,7 @@ export function useChatbot() {
         postData.toPrice = data.toPrice;
       }
 
-      const resApi = await createPost(postData, true);
+      const resApi = await createPost(postData, userCanPublishPost);
       if (resApi.error) {
         wizard.setError(resApi.error);
         setIsSubmittingAd(false);
@@ -185,7 +218,7 @@ export function useChatbot() {
       wizard.setError("Error inesperado al crear el anuncio");
       setIsSubmittingAd(false);
     }
-  }, [wizard, router, startUpload]);
+  }, [wizard, router, startUpload, user]);
 
   return {
     messages,

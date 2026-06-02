@@ -1,0 +1,59 @@
+
+> publicite-client@0.1.0 dev
+> next dev
+
+  ▲ Next.js 14.2.35
+  - Local:        http://localhost:3000
+  - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 1957ms
+ ✓ Compiled /src/middleware in 180ms (225 modules)
+ ○ Compiling / ...
+ ✓ Compiled / in 11.7s (8874 modules)
+ ✓ Compiled in 1196ms (2993 modules)
+ApolloError: Error generating AI image: 400 Unknown parameter: 'response_format'.
+    at new ApolloError (webpack-internal:///(action-browser)/./node_modules/@apollo/client/errors/index.js:50:28)
+    at eval (webpack-internal:///(action-browser)/./node_modules/@apollo/client/core/QueryManager.js:155:47)
+    at both (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/asyncMap.js:27:31)
+    at eval (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/asyncMap.js:16:72)
+    at new Promise (<anonymous>)
+    at Object.then (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/asyncMap.js:16:24)
+    at Object.eval [as next] (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/asyncMap.js:29:49)
+    at notifySubscription (webpack-internal:///(action-browser)/./node_modules/zen-observable-ts/module.js:136:18)
+    at onNotify (webpack-internal:///(action-browser)/./node_modules/zen-observable-ts/module.js:180:3)
+    at SubscriptionObserver.next (webpack-internal:///(action-browser)/./node_modules/zen-observable-ts/module.js:229:5)
+    at eval (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/iteration.js:11:68)
+    at Array.forEach (<anonymous>)
+    at iterateObserversSafely (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/iteration.js:11:25)
+    at Object.next (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/Concast.js:69:90)
+    at notifySubscription (webpack-internal:///(action-browser)/./node_modules/zen-observable-ts/module.js:136:18)
+    at onNotify (webpack-internal:///(action-browser)/./node_modules/zen-observable-ts/module.js:180:3)
+    at SubscriptionObserver.next (webpack-internal:///(action-browser)/./node_modules/zen-observable-ts/module.js:229:5)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  graphQLErrors: [
+    {
+      message: "Error generating AI image: 400 Unknown parameter: 'response_format'.",
+      locations: [Array],
+      path: [Array],
+      extensions: [Object]
+    }
+  ],
+  protocolErrors: [],
+  clientErrors: [],
+  networkError: null,
+  extraInfo: undefined,
+  cause: {
+    message: "Error generating AI image: 400 Unknown parameter: 'response_format'.",
+    locations: [ [Object] ],
+    path: [ 'generateAdImage' ],
+    extensions: {
+      code: 'INTERNAL_SERVER_ERROR',
+      stacktrace: [Array],
+      status: 500,
+      originalError: [Object]
+    }
+  }
+}
+undefined
+ POST / 200 in 13716ms

@@ -24,3 +24,11 @@ export const sendMessageMutation = gql`
     }
   }
 `;
+
+export const generateAdImageMutation = gql`
+  mutation GenerateAdImage($generateAdImageRequest: GenerateAdImageRequest!) {
+    generateAdImage(generateAdImageRequest: $generateAdImageRequest) {
+      imageBase64
+    }
+  }
+`;
