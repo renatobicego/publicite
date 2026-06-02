@@ -1,9 +1,27 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import OpenAI from 'openai';
-import { ChatbotAIServiceInterface } from './chatbot.ai.service.interface';
+import {
+  ChatbotAIResult,
+  ChatbotAIServiceInterface,
+} from './chatbot.ai.service.interface';
 import { ChatMessage } from '../entity/chat.message.entity';
 import { MessageRole } from '../entity/enum/message.role.enum';
+import { ChatbotAction } from '../entity/enum/chatbot.action.enum';
+
+const CREATE_AD_TOOL_NAME = 'create_ad';
+
+const CREATE_AD_RESPONSE_COPY =
+  '¡Genial! Te ayudo a crear tu anuncio. Completá los datos a continuación 👇';
+
+// Configuración de generación de imágenes con IA.
+// La cuenta no tiene acceso a dall-e; usamos la familia gpt-image (mini = más económico).
+// gpt-image solo soporta 1024x1024 / 1024x1536 / 1536x1024 / auto (no 512x512) y devuelve base64.
+const IMAGE_GENERATION_MODEL = 'gpt-image-1-mini';
+const IMAGE_GENERATION_SIZE = '1024x1024';
+const IMAGE_GENERATION_QUALITY = 'low';
+// Límite de caracteres del prompt (alineado con el límite del FE)
+const IMAGE_PROMPT_MAX_LENGTH = 200;
 
 @Injectable()
 export class ChatbotAIService implements ChatbotAIServiceInterface {
@@ -63,7 +81,7 @@ Puedes usar Publicite de dos maneras:
 ## 3. TU PERFIL Y CONFIGURACIÓN
 
 ### 🎨 Cartel de Usuario
-Tu cartel es tu perfil público donde otros usuarios pueden ver tu información. 
+Tu cartel es tu perfil público donde otros usuarios pueden ver tu información.
 
 **Para configurar tu perfil:**
 1. Haz clic en tu avatar (esquina superior derecha)
@@ -93,11 +111,11 @@ Tu cartel es tu perfil público donde otros usuarios pueden ver tu información.
 **1. Accede a la página de creación**
    - Ve a: https://soonpublicite.com/crear
    - Selecciona "Crear Anuncio": https://soonpublicite.com/crear/anuncio
-   
+
 **2. Elige el tipo de comportamiento del anuncio**
    - **Anuncio Libre**: Visible según localización y alcance geográfico
    - **Anuncio de Agenda**: Solo visible para tus contactos/amigos
-   
+
 **3. Selecciona si es un Bien o Servicio**
    - Bien: Productos físicos (ej: celular, muebles, ropa)
    - Servicio: Prestaciones (ej: plomería, diseño, clases)
@@ -159,7 +177,7 @@ Tu cartel es tu perfil público donde otros usuarios pueden ver tu información.
      - **Contacto**: Relación básica
      - **Amigo**: Relación más cercana
      - **TopAmigo**: Tu círculo más íntimo
-   
+
 **4. Espera la aceptación**
    - El usuario recibirá una notificación
    - Si acepta, la relación se establecerá
@@ -222,7 +240,7 @@ Para no saturarte con anuncios de todos tus contactos.
 4. Selecciona quiénes activar
 5. Guarda cambios
 
-**Importante**: 
+**Importante**:
 - Solo verás anuncios de agenda de contactos ACTIVADOS
 - Puedes activar/desactivar cuando quieras
 - Esto no afecta la relación, solo la visualización de anuncios
@@ -424,7 +442,7 @@ Si necesitas más anuncios pero no quieres cambiar de plan completo:
    - Ver historial de pagos
    - Cancelar suscripción
 
-**Importante**: 
+**Importante**:
 - Los planes se renuevan automáticamente
 - Puedes cancelar en cualquier momento
 - Al cancelar, mantienes el acceso hasta el fin del período pagado
@@ -482,7 +500,7 @@ Esperamos que disfrutes de la plataforma y encuentres todo lo que buscas.
 
   constructor(private configService: ConfigService) {
     const apiKey = this.configService.get<string>('OPENAI_API_KEY');
-    
+
     if (!apiKey) {
       throw new Error('OPENAI_API_KEY is not defined in environment variables');
     }
@@ -495,57 +513,146 @@ Esperamos que disfrutes de la plataforma y encuentres todo lo que buscas.
   async generateResponse(
     conversationHistory: ChatMessage[],
     userMessage: string,
-  ): Promise<string> {
+  ): Promise<ChatbotAIResult> {
     try {
-      // Construir el historial de mensajes para OpenAI
       const messages = this.buildOpenAIMessages(conversationHistory, userMessage);
 
-      // Llamar a la API de OpenAI
       const completion = await this.openai.chat.completions.create({
         model: 'gpt-4o-mini',
         messages: messages,
+        tools: this.buildTools(),
+        tool_choice: 'auto',
         temperature: 0.7,
         max_tokens: 800,
       });
 
-      const response = completion.choices[0]?.message?.content || 
-        'Lo siento, no pude generar una respuesta en este momento.';
+      const choice = completion.choices[0]?.message;
 
-      return response;
+      const createAdToolCall = choice?.tool_calls?.find(
+        (tc) => tc.type === 'function' && tc.function?.name === CREATE_AD_TOOL_NAME,
+      );
+
+      if (createAdToolCall) {
+        return {
+          content: CREATE_AD_RESPONSE_COPY,
+          action: ChatbotAction.CREATE_AD,
+        };
+      }
+
+      const content =
+        choice?.content || 'Lo siento, no pude generar una respuesta en este momento.';
+
+      return { content };
     } catch (error: any) {
       console.error('Error calling OpenAI API:', error);
       throw new Error(`Error generating AI response: ${error.message}`);
     }
   }
 
+  async generateImage(prompt: string): Promise<string> {
+    const cleanPrompt = (prompt || '').trim();
+
+    if (!cleanPrompt) {
+      throw new Error('El prompt para generar la imagen no puede estar vacío');
+    }
+
+    if (cleanPrompt.length > IMAGE_PROMPT_MAX_LENGTH) {
+      throw new Error(
+        `El prompt no puede superar los ${IMAGE_PROMPT_MAX_LENGTH} caracteres`,
+      );
+    }
+
+    try {
+      const result = await this.openai.images.generate({
+        model: IMAGE_GENERATION_MODEL,
+        prompt: cleanPrompt,
+        n: 1,
+        size: IMAGE_GENERATION_SIZE,
+        quality: IMAGE_GENERATION_QUALITY,
+      });
+
+      const image = result.data?.[0];
+
+      if (!image) {
+        throw new Error('OpenAI no devolvió ninguna imagen');
+      }
+
+      // Según el modelo, OpenAI devuelve la imagen en base64 o como URL temporal.
+      if (image.b64_json) {
+        return `data:image/png;base64,${image.b64_json}`;
+      }
+
+      if (image.url) {
+        const resp = await fetch(image.url);
+        const arrayBuffer = await resp.arrayBuffer();
+        const b64 = Buffer.from(arrayBuffer).toString('base64');
+        const contentType = resp.headers.get('content-type') || 'image/png';
+        return `data:${contentType};base64,${b64}`;
+      }
+
+      throw new Error('OpenAI no devolvió ninguna imagen');
+    } catch (error: any) {
+      console.error('Error calling OpenAI Images API:', error);
+      throw new Error(`Error generating AI image: ${error.message}`);
+    }
+  }
+
+  private buildTools(): OpenAI.Chat.Completions.ChatCompletionTool[] {
+    return [
+      {
+        type: 'function',
+        function: {
+          name: CREATE_AD_TOOL_NAME,
+          description:
+            'Se activa cuando el usuario expresa intención de crear un anuncio, ' +
+            'publicar un bien, ofrecer un servicio, vender algo o publicar una necesidad en la plataforma Publicite. ' +
+            'Ejemplos: "quiero crear un anuncio", "cómo publico algo", "necesito vender un producto", ' +
+            '"puedo ofrecer un servicio acá", "quiero subir una publicación". ' +
+            'No activar si el usuario solamente pregunta cómo funciona el proceso o pide información sobre los pasos: ' +
+            'en ese caso responder con texto explicativo.',
+          parameters: {
+            type: 'object',
+            properties: {},
+            required: [],
+          },
+        },
+      },
+    ];
+  }
+
   private buildOpenAIMessages(
     conversationHistory: ChatMessage[],
     userMessage: string,
-  ): Array<{ role: 'system' | 'user' | 'assistant'; content: string }> {
-    const messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [];
+  ): Array<OpenAI.Chat.Completions.ChatCompletionMessageParam> {
+    const messages: Array<OpenAI.Chat.Completions.ChatCompletionMessageParam> = [];
 
-    // Mensaje del sistema con el glosario
     messages.push({
       role: 'system',
-      content: `Eres un asistente virtual de Publicite, una plataforma de publicación y gestión de anuncios. 
+      content: `Eres un asistente virtual de Publicite, una plataforma de publicación y gestión de anuncios.
 Tu objetivo es ayudar a los usuarios a entender cómo funciona la plataforma y guiarlos paso a paso.
 
-IMPORTANTE: Solo debes responder preguntas relacionadas con la información del siguiente glosario. 
-Si te hacen una pregunta que no está relacionada con Publicite o el glosario, debes indicar amablemente 
+IMPORTANTE: Para preguntas informativas, solo debes responder en base a la información del siguiente glosario.
+Si te hacen una pregunta informativa que no está relacionada con Publicite o el glosario, debes indicar amablemente
 que solo puedes ayudar con preguntas sobre el funcionamiento de Publicite.
+
+EXCEPCIÓN — DETECCIÓN DE INTENCIÓN:
+Tenés a disposición la tool "${CREATE_AD_TOOL_NAME}". Debés invocarla SIEMPRE que el usuario exprese intención
+de crear un anuncio, publicar algo, vender un producto, ofrecer un servicio o publicar una necesidad.
+No debés invocar la tool cuando el usuario solamente pide información sobre cómo funciona el proceso de creación.
+Cuando invocás la tool no devuelvas texto adicional: el sistema se encarga de responder.
 
 GLOSARIO DE PUBLICITE:
 ${this.GLOSSARY}
 
 ═══════════════════════════════════════════════════════════════
-INSTRUCCIONES PARA RESPONDER:
+INSTRUCCIONES PARA RESPONDER (cuando NO disparás la tool):
 ═══════════════════════════════════════════════════════════════
 
 1. **Sé amable y profesional**: Trata al usuario con cortesía y empatía.
 
 2. **Proporciona pasos claros**: Cuando expliques cómo hacer algo, enumera los pasos de forma ordenada y simple.
 
-3. **SIEMPRE incluye enlaces relevantes**: 
+3. **SIEMPRE incluye enlaces relevantes**:
    - Cuando hables de crear anuncios, incluye: https://soonpublicite.com/crear/anuncio
    - Cuando hables de contactos/amigos, incluye: https://soonpublicite.com/perfiles
    - Para explorar anuncios: https://soonpublicite.com/anuncios
@@ -558,7 +665,7 @@ INSTRUCCIONES PARA RESPONDER:
    - Usa viñetas para opciones
    - Usa **negritas** para resaltar información importante
 
-5. **Sé específico**: Si el usuario pregunta "¿cómo creo un anuncio?", no solo le digas que vaya a crear, 
+5. **Sé específico**: Si el usuario pregunta "¿cómo creo un anuncio?", no solo le digas que vaya a crear,
    sino que le expliques PASO A PASO todo el proceso como está en el glosario.
 
 6. **Contexto**: Si el usuario hace una pregunta de seguimiento, mantén el contexto de la conversación anterior.
@@ -570,16 +677,15 @@ INSTRUCCIONES PARA RESPONDER:
 
 9. **Enlaces múltiples**: Si una respuesta abarca varios temas, proporciona todos los enlaces relevantes.
 
-10. **Longitud de respuesta**: 
+10. **Longitud de respuesta**:
     - Para preguntas simples: respuestas concisas
     - Para preguntas sobre "cómo hacer" algo: respuestas detalladas con todos los pasos
     - Siempre prioriza la claridad sobre la brevedad
 
-RECUERDA: Tu objetivo es que el usuario entienda perfectamente cómo usar Publicite y tenga enlaces 
+RECUERDA: Tu objetivo es que el usuario entienda perfectamente cómo usar Publicite y tenga enlaces
 directos para acceder a las funcionalidades que necesita.`,
     });
 
-    // Agregar historial de conversación (últimos 10 mensajes para mantener contexto)
     const recentHistory = conversationHistory.slice(-10);
     for (const message of recentHistory) {
       messages.push({
@@ -588,7 +694,6 @@ directos para acceder a las funcionalidades que necesita.`,
       });
     }
 
-    // Agregar el mensaje actual del usuario
     messages.push({
       role: 'user',
       content: userMessage,
@@ -597,4 +702,3 @@ directos para acceder a las funcionalidades que necesita.`,
     return messages;
   }
 }
-

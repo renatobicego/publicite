@@ -5,10 +5,12 @@ import { ClerkAuthGuard } from 'src/contexts/module_shared/auth/clerk-auth/clerk
 import { CustomContextRequestInterface } from 'src/contexts/module_shared/auth/custom_request/custom.context.request.interface';
 import { SendMessageRequest } from '../../../application/dto/HTTP-REQUEST/send.message.request';
 import { CreateSessionRequest } from '../../../application/dto/HTTP-REQUEST/create.session.request';
+import { GenerateAdImageRequest } from '../../../application/dto/HTTP-REQUEST/generate.ad.image.request';
 import {
   ChatSessionResponse,
   SendMessageResponse,
   GetSessionHistoryResponse,
+  GenerateAdImageResponse,
 } from '../../../application/dto/HTTP-RESPONSE/chatbot.response';
 
 @Resolver()
@@ -60,6 +62,28 @@ export class ChatbotResolver {
       }
 
       return await this.chatbotAdapter.sendMessage(sendMessageRequest);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  @Mutation(() => GenerateAdImageResponse, {
+    nullable: false,
+    description:
+      'Genera una imagen para un anuncio a partir de un prompt usando IA (OpenAI)',
+  })
+  async generateAdImage(
+    @Args('generateAdImageRequest', { type: () => GenerateAdImageRequest })
+    generateAdImageRequest: GenerateAdImageRequest,
+    @Context() context?: { req: CustomContextRequestInterface },
+  ): Promise<GenerateAdImageResponse> {
+    try {
+      const userRequestId = context?.req?.userRequestId;
+      const imageBase64 = await this.chatbotAdapter.generateAdImage(
+        generateAdImageRequest.prompt,
+        userRequestId,
+      );
+      return { imageBase64 };
     } catch (error: any) {
       throw error;
     }

@@ -1,4 +1,5 @@
 import { Field, ObjectType } from '@nestjs/graphql';
+import { ChatbotAction } from './enum/chatbot.action.enum';
 
 export enum MessageRole {
   USER = 'user',
@@ -17,10 +18,19 @@ export class ChatMessage {
   @Field(() => Date)
   private timestamp: Date;
 
-  constructor(role: MessageRole, content: string, timestamp: Date) {
+  @Field(() => ChatbotAction, { nullable: true })
+  private action?: ChatbotAction;
+
+  constructor(
+    role: MessageRole,
+    content: string,
+    timestamp: Date,
+    action?: ChatbotAction,
+  ) {
     this.role = role;
     this.content = content;
     this.timestamp = timestamp;
+    this.action = action;
   }
 
   get getRole(): MessageRole {
@@ -34,5 +44,8 @@ export class ChatMessage {
   get getTimestamp(): Date {
     return this.timestamp;
   }
-}
 
+  get getAction(): ChatbotAction | undefined {
+    return this.action;
+  }
+}

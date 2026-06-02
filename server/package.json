@@ -17,6 +17,7 @@
     "logs": "firebase functions:log",
     "dev": "cross-env NODE_ENV=qa nodemon --exec ts-node -r tsconfig-paths/register src/index-test.ts",
     "dev:prod": "cross-env NODE_ENV=production nodemon --exec ts-node -r tsconfig-paths/register src/index-test.ts",
+    "prod": "npm run dev:prod",
     "dep": "set DEBUG=nest:dependencies && npm run start:dev",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",

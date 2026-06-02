@@ -34,7 +34,7 @@ import { Connection } from "mongoose";
 
 
 const group_testing_module = async (): Promise<TestingModule> => {
-    dotenv.config({ path: '.env.qa' });
+    dotenv.config({ path: '.env.test' });
 
 
     return Test.createTestingModule({

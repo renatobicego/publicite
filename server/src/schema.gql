@@ -923,6 +923,14 @@ type ChatMessageResponse {
   role: String!
   content: String!
   timestamp: DateTime!
+  action: ChatbotAction
+}
+
+"""
+Acciones que el chatbot puede señalizar al FE cuando detecta una intención del usuario
+"""
+enum ChatbotAction {
+  CREATE_AD
 }
 
 type ChatSessionResponse {
@@ -939,6 +947,12 @@ type SendMessageResponse {
   userMessage: String!
   botResponse: String!
   timestamp: DateTime!
+  action: ChatbotAction
+}
+
+type GenerateAdImageResponse {
+  """Imagen generada como data URL en base64 (data:image/png;base64,...)"""
+  imageBase64: String!
 }
 
 type GetSessionHistoryResponse {
@@ -1243,6 +1257,11 @@ type Mutation {
   """Enviar un mensaje al chatbot (crea la sesión automáticamente)"""
   sendMessageToChatbot(sendMessageRequest: SendMessageRequest!): SendMessageResponse!
 
+  """
+  Genera una imagen para un anuncio a partir de un prompt usando IA (OpenAI)
+  """
+  generateAdImage(generateAdImageRequest: GenerateAdImageRequest!): GenerateAdImageResponse!
+
   """Eliminar una sesión de chat completa (sesión + todos los mensajes)"""
   deleteChatSession(sessionId: String!): Boolean!
 
@@ -1502,6 +1521,10 @@ input SendMessageRequest {
   sessionId: String
   message: String!
   userId: String
+}
+
+input GenerateAdImageRequest {
+  prompt: String!
 }
 
 input NoveltyRequest {

@@ -22,7 +22,9 @@ async function bootstrap() {
 
   app.use(cookieParser());
 
-  await app.listen(3001);
+  const port = process.env.APP_PORT_LOCAL ?? 3002;
+  await app.listen(port);
+  console.log(`🚀 Backend escuchando en http://localhost:${port}`);
 }
 
 bootstrap();

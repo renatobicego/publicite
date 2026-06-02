@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Test Chatbot — Publicite</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+    .container { width: 100%; max-width: 720px; display: flex; flex-direction: column; gap: 12px; }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      background: #1e293b;
+      border-radius: 12px;
+      border: 1px solid #334155;
+    }
+    header h1 { font-size: 16px; font-weight: 600; }
+    header .session {
+      font-size: 11px;
+      color: #94a3b8;
+      font-family: 'JetBrains Mono', 'Consolas', monospace;
+    }
+    header button {
+      background: #ef4444;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    header button:hover { background: #dc2626; }
+    #chat {
+      flex: 1;
+      background: #1e293b;
+      border-radius: 12px;
+      border: 1px solid #334155;
+      padding: 20px;
+      min-height: 500px;
+      max-height: 65vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .msg {
+      max-width: 80%;
+      padding: 10px 14px;
+      border-radius: 14px;
+      font-size: 14px;
+      line-height: 1.45;
+      word-wrap: break-word;
+      white-space: pre-wrap;
+    }
+    .msg.user {
+      background: #3b82f6;
+      color: white;
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+    .msg.bot {
+      background: #334155;
+      color: #f1f5f9;
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+    }
+    .msg.system {
+      background: transparent;
+      color: #94a3b8;
+      align-self: center;
+      font-size: 12px;
+      font-style: italic;
+    }
+    .msg.bot a { color: #60a5fa; }
+    .badge-action {
+      display: inline-block;
+      margin-top: 6px;
+      padding: 2px 8px;
+      background: #fbbf24;
+      color: #0f172a;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+    .action-banner {
+      background: linear-gradient(135deg, #f59e0b, #ef4444);
+      color: white;
+      align-self: stretch;
+      padding: 14px 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+    }
+    .action-banner strong { display: block; margin-bottom: 4px; font-size: 14px; }
+    .typing {
+      color: #94a3b8;
+      font-size: 12px;
+      font-style: italic;
+      align-self: flex-start;
+    }
+    .typing::after {
+      content: '...';
+      animation: dots 1.4s infinite;
+    }
+    @keyframes dots {
+      0%, 20% { content: '.'; }
+      40% { content: '..'; }
+      60%, 100% { content: '...'; }
+    }
+    form {
+      display: flex;
+      gap: 10px;
+      background: #1e293b;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid #334155;
+    }
+    #input {
+      flex: 1;
+      background: #0f172a;
+      border: 1px solid #334155;
+      color: #e2e8f0;
+      padding: 12px 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+    }
+    #input:focus { border-color: #3b82f6; }
+    form button {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 0 22px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    form button:hover { background: #2563eb; }
+    form button:disabled { background: #475569; cursor: not-allowed; }
+    .footer-info {
+      font-size: 11px;
+      color: #64748b;
+      text-align: center;
+      padding: 8px;
+    }
+    .footer-info code { background: #1e293b; padding: 2px 6px; border-radius: 4px; color: #94a3b8; }
+    .quick-tests { display: flex; gap: 6px; flex-wrap: wrap; padding: 4px 0; }
+    .quick-tests button {
+      background: #334155;
+      color: #e2e8f0;
+      border: 1px solid #475569;
+      padding: 4px 10px;
+      border-radius: 14px;
+      font-size: 11px;
+      cursor: pointer;
+    }
+    .quick-tests button:hover { background: #475569; }
+    .error {
+      background: #7f1d1d;
+      color: #fecaca;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      align-self: stretch;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1>🤖 Test Chatbot — Publicite</h1>
+        <div class="session">sessionId: <span id="sessionId">(nuevo)</span></div>
+      </div>
+      <button id="resetBtn" title="Empieza una sesión nueva">Reset sesión</button>
+    </header>
+
+    <div class="quick-tests">
+      <span style="font-size: 11px; color: #94a3b8; align-self: center;">Pruebas rápidas:</span>
+      <button data-msg="Quiero crear un anuncio">Quiero crear un anuncio</button>
+      <button data-msg="Necesito vender un producto">Necesito vender un producto</button>
+      <button data-msg="¿Cómo funciona crear un anuncio?">¿Cómo funciona crear un anuncio?</button>
+      <button data-msg="¿Qué es Publicite?">¿Qué es Publicite?</button>
+      <button data-msg="Cuáles son los planes disponibles?">Cuáles son los planes?</button>
+    </div>
+
+    <div id="chat">
+      <div class="msg system">👋 Iniciá conversación escribiendo abajo o tocá un botón rápido.</div>
+    </div>
+
+    <form id="form">
+      <input id="input" type="text" placeholder="Escribí tu mensaje..." autocomplete="off" required />
+      <button type="submit" id="sendBtn">Enviar</button>
+    </form>
+
+    <div class="footer-info">
+      Endpoint: <code>http://localhost:3001/graphql</code> · Si la action es <code>CREATE_AD</code>, el FE debería abrir el formulario.
+    </div>
+  </div>
+
+  <script>
+    const GRAPHQL_URL = 'http://localhost:3001/graphql';
+    const chat = document.getElementById('chat');
+    const form = document.getElementById('form');
+    const input = document.getElementById('input');
+    const sendBtn = document.getElementById('sendBtn');
+    const sessionIdEl = document.getElementById('sessionId');
+    const resetBtn = document.getElementById('resetBtn');
+
+    let sessionId = localStorage.getItem('chat_session_id') || null;
+    if (sessionId) sessionIdEl.textContent = sessionId;
+
+    const SEND_MESSAGE = `
+      mutation Send($req: SendMessageRequest!) {
+        sendMessageToChatbot(sendMessageRequest: $req) {
+          sessionId
+          userMessage
+          botResponse
+          timestamp
+          action
+        }
+      }
+    `;
+
+    function addMsg(role, content, action) {
+      const div = document.createElement('div');
+      div.className = 'msg ' + role;
+      div.innerHTML = content.replace(/\n/g, '<br/>');
+      if (action) {
+        const badge = document.createElement('div');
+        badge.className = 'badge-action';
+        badge.textContent = '🎯 action: ' + action;
+        div.appendChild(badge);
+      }
+      chat.appendChild(div);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    function addActionBanner(action) {
+      const banner = document.createElement('div');
+      banner.className = 'action-banner';
+      banner.innerHTML = `
+        <strong>🚀 FE: abrir flujo guiado (${action})</strong>
+        Acá el front renderizaría el formulario de creación de anuncio inline en el chat.
+      `;
+      chat.appendChild(banner);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    function addSystem(content) {
+      const div = document.createElement('div');
+      div.className = 'msg system';
+      div.textContent = content;
+      chat.appendChild(div);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    function addError(msg) {
+      const div = document.createElement('div');
+      div.className = 'error';
+      div.textContent = '❌ ' + msg;
+      chat.appendChild(div);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    function showTyping() {
+      const div = document.createElement('div');
+      div.className = 'typing';
+      div.id = 'typing-indicator';
+      div.textContent = 'Bot escribiendo';
+      chat.appendChild(div);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    function hideTyping() {
+      const el = document.getElementById('typing-indicator');
+      if (el) el.remove();
+    }
+
+    async function sendMessage(message) {
+      addMsg('user', message);
+      showTyping();
+      sendBtn.disabled = true;
+
+      try {
+        const res = await fetch(GRAPHQL_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            query: SEND_MESSAGE,
+            variables: {
+              req: { message, sessionId: sessionId || undefined }
+            }
+          })
+        });
+
+        const json = await res.json();
+        hideTyping();
+
+        if (json.errors) {
+          addError(json.errors[0].message);
+          return;
+        }
+
+        const data = json.data.sendMessageToChatbot;
+
+        if (!sessionId) {
+          sessionId = data.sessionId;
+          localStorage.setItem('chat_session_id', sessionId);
+          sessionIdEl.textContent = sessionId;
+        }
+
+        addMsg('bot', data.botResponse, data.action);
+
+        if (data.action === 'CREATE_AD') {
+          addActionBanner(data.action);
+        }
+      } catch (err) {
+        hideTyping();
+        addError('Error de red: ' + err.message + ' — ¿está el server arriba en :3001?');
+      } finally {
+        sendBtn.disabled = false;
+        input.focus();
+      }
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const message = input.value.trim();
+      if (!message) return;
+      input.value = '';
+      sendMessage(message);
+    });
+
+    document.querySelectorAll('.quick-tests button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        sendMessage(btn.dataset.msg);
+      });
+    });
+
+    resetBtn.addEventListener('click', () => {
+      if (!confirm('¿Empezar una sesión nueva? Se va a perder el contexto local.')) return;
+      sessionId = null;
+      localStorage.removeItem('chat_session_id');
+      sessionIdEl.textContent = '(nuevo)';
+      chat.innerHTML = '';
+      addSystem('Sesión nueva iniciada.');
+      input.focus();
+    });
+
+    input.focus();
+  </script>
+</body>
+</html>

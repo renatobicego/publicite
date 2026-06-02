@@ -6,6 +6,7 @@ import { ChatSession } from '../../domain/entity/chat.session.entity';
 import { ChatMessage } from '../../domain/entity/chat.message.entity';
 import { ChatSessionDocument } from '../schemas/chatbot.schema';
 import { MessageRole } from '../../domain/entity/enum/message.role.enum';
+import { ChatbotAction } from '../../domain/entity/enum/chatbot.action.enum';
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 
 @Injectable()
@@ -25,6 +26,7 @@ export class ChatbotRepository implements ChatbotRepositoryInterface {
           role: msg.getRole,
           content: msg.getContent,
           timestamp: msg.getTimestamp,
+          action: msg.getAction,
         })),
         createdAt: session.getCreatedAt,
         updatedAt: session.getUpdatedAt,
@@ -67,6 +69,7 @@ export class ChatbotRepository implements ChatbotRepositoryInterface {
               role: msg.getRole,
               content: msg.getContent,
               timestamp: msg.getTimestamp,
+              action: msg.getAction,
             })),
             updatedAt: new Date(),
           },
@@ -137,6 +140,7 @@ export class ChatbotRepository implements ChatbotRepositoryInterface {
           msg.role as MessageRole,
           msg.content,
           msg.timestamp,
+          msg.action as ChatbotAction | undefined,
         ),
     );
 

@@ -15,6 +15,14 @@ import {
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { v4 as uuidv4 } from 'uuid';
 
+/**
+ * Flag para exigir un plan/suscripción habilitado para generar imágenes con IA.
+ * Por ahora en `false`: cualquier usuario logueado puede generar (no se revisa el plan).
+ * Cuando se quiera atar la feature a la suscripción, poner en `true` e implementar
+ * el chequeo del plan en `generateAdImage` (ver TODO más abajo).
+ */
+const AI_IMAGE_REQUIRES_SUBSCRIPTION = false;
+
 @Injectable()
 export class ChatbotService implements ChatbotServiceInterface {
   constructor(
@@ -88,15 +96,16 @@ export class ChatbotService implements ChatbotServiceInterface {
         new Date(),
       );
 
-      const botResponseContent = await this.chatbotAIService.generateResponse(
+      const aiResult = await this.chatbotAIService.generateResponse(
         session.getMessages,
         request.message,
       );
 
       const botMessage = new ChatMessage(
         MessageRole.ASSISTANT,
-        botResponseContent,
+        aiResult.content,
         new Date(),
+        aiResult.action,
       );
 
       const updatedMessages = [
@@ -113,8 +122,9 @@ export class ChatbotService implements ChatbotServiceInterface {
       return {
         sessionId: sessionId,
         userMessage: request.message,
-        botResponse: botResponseContent,
+        botResponse: aiResult.content,
         timestamp: new Date(),
+        action: aiResult.action,
       };
     } catch (error: any) {
       this.logger.error('Error sending message: ' + error.message);
@@ -167,6 +177,27 @@ export class ChatbotService implements ChatbotServiceInterface {
     }
   }
 
+  async generateAdImage(prompt: string, userId?: string): Promise<string> {
+    try {
+      this.logger.log(`Generating ad image for user: ${userId ?? 'anon'}`);
+
+      if (AI_IMAGE_REQUIRES_SUBSCRIPTION) {
+        // TODO: cuando se active, validar acá que el plan/suscripción del usuario
+        // habilite la generación de imágenes con IA y lanzar un error si no.
+        // Ej: const allowed = await this.subscriptionService.canGenerateAiImage(userId);
+        //     if (!allowed) throw new Error('Tu plan no incluye generación de imágenes con IA');
+        this.logger.warn(
+          'AI_IMAGE_REQUIRES_SUBSCRIPTION está activo pero la validación de plan no está implementada',
+        );
+      }
+
+      return await this.chatbotAIService.generateImage(prompt);
+    } catch (error: any) {
+      this.logger.error('Error generating ad image: ' + error.message);
+      throw error;
+    }
+  }
+
   private mapSessionToResponse(session: ChatSession): ChatSessionResponse {
     return {
       sessionId: session.getSessionId,
@@ -183,6 +214,7 @@ export class ChatbotService implements ChatbotServiceInterface {
       role: message.getRole,
       content: message.getContent,
       timestamp: message.getTimestamp,
+      action: message.getAction,
     };
   }
 }

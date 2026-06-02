@@ -13,7 +13,7 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 
 
 const contactSellerModuleTesting = async (): Promise<TestingModule> => {
-    dotenv.config({ path: '.env.qa' });
+    dotenv.config({ path: '.env.test' });
 
 
     return Test.createTestingModule({

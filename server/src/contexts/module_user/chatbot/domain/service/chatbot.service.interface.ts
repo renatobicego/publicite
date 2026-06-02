@@ -10,5 +10,6 @@ export interface ChatbotServiceInterface {
   sendMessage(request: SendMessageRequest): Promise<SendMessageResponse>;
   getSessionHistory(sessionId: string, limit?: number, page?: number): Promise<GetSessionHistoryResponse>;
   deleteSession(sessionId: string): Promise<boolean>;
+  generateAdImage(prompt: string, userId?: string): Promise<string>;
 }
 

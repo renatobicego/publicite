@@ -50,5 +50,13 @@ export class ChatbotAdapter implements ChatbotAdapterInterface {
       throw error;
     }
   }
+
+  async generateAdImage(prompt: string, userId?: string): Promise<string> {
+    try {
+      return await this.chatbotService.generateAdImage(prompt, userId);
+    } catch (error: any) {
+      throw error;
+    }
+  }
 }
 

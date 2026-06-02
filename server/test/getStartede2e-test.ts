@@ -13,7 +13,7 @@ async function startServerForE2ETest(): Promise<{
     application: INestApplication<any>,
     server: any
 }> {
-    dotenv.config({ path: '.env.qa' });
+    dotenv.config({ path: '.env.test' });
     let SOCKET_SECRET = process.env.PUBLICITE_SOCKET_API_KEY!;
     let db = process.env.DATABASE_URI!;
     console.log(db)
