@@ -27,6 +27,7 @@ import { ContactSellerModule } from './contexts/module_user/contactSeller/infras
 import { EmmiterModule } from './contexts/module_shared/event-emmiter/emiter.module';
 import { ChatbotModule } from './contexts/module_user/chatbot/infrastructure/module/chatbot.module';
 import { NoveltyModule } from './contexts/module_novelty/novelty/infrastructure/module/novelty.module';
+import { WhatsAppModule } from './contexts/module_webhook/whatsapp/infrastructure/module/whatsapp.module';
 
 @Module({
   imports: [
@@ -60,6 +61,7 @@ import { NoveltyModule } from './contexts/module_novelty/novelty/infrastructure/
     ContactSellerModule,
     ChatbotModule,
     NoveltyModule,
+    WhatsAppModule,
   ],
   providers: [
     {

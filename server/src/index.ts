@@ -42,7 +42,8 @@ const initializeNestApp = async (): Promise<void> => {
     nestApp = await NestFactory.create<NestExpressApplication>(
       AppModule,
       new ExpressAdapter(expressServer),
-      { cors: true },
+      // rawBody: true expone req.rawBody para validar la firma del webhook de WhatsApp (Meta).
+      { cors: true, rawBody: true },
     );
     nestApp.useGlobalPipes(new ValidationPipe({ transform: true }));
 

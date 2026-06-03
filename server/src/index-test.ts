@@ -8,7 +8,8 @@ import * as dotenv from 'dotenv';
 // import { join } from 'path';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  // rawBody: true expone req.rawBody para validar la firma del webhook de WhatsApp (Meta).
+  const app = await NestFactory.create(AppModule, { rawBody: true });
   console.log('========================================');
   console.log(
     `🔵 Entorno actual (NODE_ENV): ${process.env.NODE_ENV || 'production (default)'}`,
