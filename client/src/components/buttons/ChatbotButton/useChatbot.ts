@@ -94,9 +94,28 @@ export function useChatbot() {
   };
 
   const handleStartCreateAd = useCallback(() => {
+    if (!user) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content:
+            "Para crear un anuncio necesitás iniciar sesión. Podés hacerlo desde el botón de arriba a la derecha.",
+          id: `${Date.now()}bot`,
+          parts: [
+            {
+              text: "Para crear un anuncio necesitás iniciar sesión. Podés hacerlo desde el botón de arriba a la derecha.",
+              type: "text",
+            },
+          ],
+        },
+      ]);
+      setShowCreateAdButton(false);
+      return;
+    }
     setShowCreateAdButton(false);
     wizard.startWizard();
-  }, [wizard]);
+  }, [wizard, user]);
 
   const handleSubmitAd = useCallback(async () => {
     setIsSubmittingAd(true);
