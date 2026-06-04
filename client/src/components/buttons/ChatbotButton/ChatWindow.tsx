@@ -239,8 +239,8 @@ export function ChatWindow({
                   >
                     <div
                       className={`max-w-xs px-4 py-2 rounded-xl ${message.role === "user"
-                          ? "bg-service text-white rounded-br-none"
-                          : "bg-white dark:bg-slate-700 text-gray-900 dark:text-white border border-gray-200 dark:border-slate-600 rounded-bl-none"
+                        ? "bg-service text-white rounded-br-none"
+                        : "bg-white dark:bg-slate-700 text-gray-900 dark:text-white border border-gray-200 dark:border-slate-600 rounded-bl-none"
                         }`}
                     >
                       {message.parts.map((part, idx) => {
@@ -267,7 +267,7 @@ export function ChatWindow({
                       onPress={onStartCreateAd}
                       className="mt-2"
                     >
-                      ✨ Crear anuncio aquí
+                      Crear anuncio aquí
                     </Button>
                   </div>
                 )}
@@ -282,8 +282,8 @@ export function ChatWindow({
                     >
                       <div
                         className={`max-w-xs px-4 py-2 rounded-xl ${msg.role === "user"
-                            ? "bg-service text-white rounded-br-none"
-                            : "bg-white dark:bg-slate-700 text-gray-900 dark:text-white border border-gray-200 dark:border-slate-600 rounded-bl-none"
+                          ? "bg-service text-white rounded-br-none"
+                          : "bg-white dark:bg-slate-700 text-gray-900 dark:text-white border border-gray-200 dark:border-slate-600 rounded-bl-none"
                           }`}
                       >
                         <div className="text-sm leading-relaxed">

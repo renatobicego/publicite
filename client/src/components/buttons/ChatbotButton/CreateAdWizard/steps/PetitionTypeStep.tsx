@@ -15,7 +15,7 @@ const PetitionTypeStep = ({ onSelect }: PetitionTypeStepProps) => {
                 onPress={() => onSelect("good")}
                 className="flex-1"
             >
-                🛍️ Bien
+                Bien
             </Button>
             <Button
                 size="sm"
@@ -24,7 +24,7 @@ const PetitionTypeStep = ({ onSelect }: PetitionTypeStepProps) => {
                 onPress={() => onSelect("service")}
                 className="flex-1"
             >
-                🔧 Servicio
+                Servicio
             </Button>
         </div>
     );

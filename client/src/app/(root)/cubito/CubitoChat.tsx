@@ -244,7 +244,7 @@ export default function CubitoChat() {
                                         onPress={handleStartCreateAd}
                                         className="mt-2"
                                     >
-                                        ✨ Crear anuncio aquí
+                                        Crear anuncio aquí
                                     </Button>
                                 </div>
                             )}

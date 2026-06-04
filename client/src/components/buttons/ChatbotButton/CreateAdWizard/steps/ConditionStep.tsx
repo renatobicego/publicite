@@ -15,7 +15,7 @@ const ConditionStep = ({ onSelect }: ConditionStepProps) => {
                 onPress={() => onSelect("new")}
                 className="flex-1"
             >
-                ✨ Nuevo
+                Nuevo
             </Button>
             <Button
                 size="sm"
@@ -24,7 +24,7 @@ const ConditionStep = ({ onSelect }: ConditionStepProps) => {
                 onPress={() => onSelect("used")}
                 className="flex-1"
             >
-                ♻️ Usado
+                Usado
             </Button>
         </div>
     );

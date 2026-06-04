@@ -1,5 +1,5 @@
 "use client";
-import { Button, Spinner } from "@nextui-org/react";
+import { Button } from "@nextui-org/react";
 import { WizardData } from "../types";
 
 interface SummaryStepProps {
@@ -33,7 +33,12 @@ const frequencyLabels: Record<string, string> = {
     year: "por año",
 };
 
-const SummaryStep = ({ data, onConfirm, onCancel, isSubmitting }: SummaryStepProps) => {
+const SummaryStep = ({
+    data,
+    onConfirm,
+    onCancel,
+    isSubmitting,
+}: SummaryStepProps) => {
     return (
         <div className="flex flex-col gap-2 mt-2">
             <div className="bg-gray-50 dark:bg-slate-700 rounded-lg p-3 text-xs space-y-1">
@@ -53,7 +58,10 @@ const SummaryStep = ({ data, onConfirm, onCancel, isSubmitting }: SummaryStepPro
                     />
                 )}
                 {data.condition && (
-                    <SummaryRow label="Condición" value={conditionLabels[data.condition]} />
+                    <SummaryRow
+                        label="Condición"
+                        value={conditionLabels[data.condition]}
+                    />
                 )}
                 {data.petitionType && (
                     <SummaryRow
@@ -62,7 +70,7 @@ const SummaryStep = ({ data, onConfirm, onCancel, isSubmitting }: SummaryStepPro
                     />
                 )}
                 <SummaryRow label="Categoría" value={data.categoryLabel!} />
-                <SummaryRow label="Ubicación" value={`📍 ${data.locationDescription}`} />
+                <SummaryRow label="Ubicación" value={data.locationDescription!} />
                 {data.images && (
                     <SummaryRow
                         label="Imágenes"
@@ -81,7 +89,7 @@ const SummaryStep = ({ data, onConfirm, onCancel, isSubmitting }: SummaryStepPro
                     isDisabled={isSubmitting}
                     className="flex-1"
                 >
-                    ✅ Publicar
+                    Publicar
                 </Button>
                 <Button
                     size="sm"
@@ -91,7 +99,7 @@ const SummaryStep = ({ data, onConfirm, onCancel, isSubmitting }: SummaryStepPro
                     isDisabled={isSubmitting}
                     className="flex-1"
                 >
-                    ❌ Cancelar
+                    Cancelar
                 </Button>
             </div>
         </div>

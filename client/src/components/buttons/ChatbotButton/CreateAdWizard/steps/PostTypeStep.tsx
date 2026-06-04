@@ -16,7 +16,7 @@ const PostTypeStep = ({ onSelect }: PostTypeStepProps) => {
                 onPress={() => onSelect("good")}
                 className="w-full"
             >
-                🛍️ Bien
+                Bien
             </Button>
             <Button
                 size="sm"
@@ -25,7 +25,7 @@ const PostTypeStep = ({ onSelect }: PostTypeStepProps) => {
                 onPress={() => onSelect("service")}
                 className="w-full"
             >
-                🔧 Servicio
+                Servicio
             </Button>
             <Button
                 size="sm"
@@ -34,7 +34,7 @@ const PostTypeStep = ({ onSelect }: PostTypeStepProps) => {
                 onPress={() => onSelect("petition")}
                 className="w-full"
             >
-                🔎 Necesidad
+                Necesidad
             </Button>
         </div>
     );

@@ -156,7 +156,7 @@ const LocationStep = ({ onSubmit }: LocationStepProps) => {
                                     />
                                 </div>
                                 {address && (
-                                    <p className="text-sm text-gray-600 mt-2">📍 {address}</p>
+                                    <p className="text-sm text-gray-600 mt-2">{address}</p>
                                 )}
                             </ModalBody>
                             <ModalFooter>

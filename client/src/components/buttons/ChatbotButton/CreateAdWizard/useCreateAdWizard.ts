@@ -29,7 +29,7 @@ export const useCreateAdWizard = () => {
     setData({});
     setMessages([]);
     addBotMessage(
-      "¡Genial! Te ayudo a crear tu publicación. ¿Qué tipo de publicación querés crear?",
+      "Te ayudo a crear tu publicación. ¿Qué tipo de publicación querés crear?",
       "postType"
     );
   }, [addBotMessage]);
@@ -183,7 +183,7 @@ export const useCreateAdWizard = () => {
       description: string;
       ratio: number;
     }) => {
-      addUserMessage(`📍 ${geoLocation.description}`);
+      addUserMessage(geoLocation.description);
       setData((prev) => ({
         ...prev,
         geoLocation: { ...geoLocation, userSetted: true },
@@ -194,13 +194,13 @@ export const useCreateAdWizard = () => {
       if (data.postType === "petition") {
         setStep("summary");
         addBotMessage(
-          "¡Perfecto! Revisá el resumen de tu publicación y confirmá para publicar.",
+          "Revisá el resumen de tu publicación y confirmá para publicar.",
           "summary"
         );
       } else {
         setStep("images");
         addBotMessage(
-          "Subí al menos una imagen para tu anuncio. Podés seleccionar varias.",
+          "Subí al menos una imagen para tu anuncio. Podés generar una con IA o subir las tuyas.",
           "images"
         );
       }
@@ -216,7 +216,7 @@ export const useCreateAdWizard = () => {
       setData((prev) => ({ ...prev, images: files }));
       setStep("summary");
       addBotMessage(
-        "¡Perfecto! Revisá el resumen de tu publicación y confirmá para publicar.",
+        "Revisá el resumen de tu publicación y confirmá para publicar.",
         "summary"
       );
     },
@@ -235,13 +235,13 @@ export const useCreateAdWizard = () => {
 
   const setDone = useCallback(() => {
     setStep("done");
-    addBotMessage("✅ ¡Tu publicación fue creada exitosamente!");
+    addBotMessage("Tu publicación fue creada exitosamente.");
   }, [addBotMessage]);
 
   const setError = useCallback(
     (errorMsg: string) => {
       setStep("error");
-      addBotMessage(`❌ Error: ${errorMsg}. Podés intentar de nuevo.`);
+      addBotMessage(`Error: ${errorMsg}. Podés intentar de nuevo.`);
     },
     [addBotMessage]
   );
