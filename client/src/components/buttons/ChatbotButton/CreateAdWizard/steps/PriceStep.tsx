@@ -14,6 +14,8 @@ interface PriceStepProps {
     }) => void;
 }
 
+const NEGOTIABLE_PRICE = 8613.10;
+
 const PriceStep = ({ postType, onSubmit }: PriceStepProps) => {
     const [price, setPrice] = useState("");
     const [toPrice, setToPrice] = useState("");
@@ -21,12 +23,18 @@ const PriceStep = ({ postType, onSubmit }: PriceStepProps) => {
         FrequencyPrice | undefined
     >();
     const [showRange, setShowRange] = useState(false);
+    const [isNegotiable, setIsNegotiable] = useState(false);
     const [error, setError] = useState("");
 
     const showFrequency = postType === "service" || postType === "petition";
     const showRangeOption = postType === "petition";
 
     const handleSubmit = () => {
+        if (isNegotiable) {
+            onSubmit({ price: NEGOTIABLE_PRICE });
+            return;
+        }
+
         const priceNum = price ? Number(price) : undefined;
         const toPriceNum = toPrice ? Number(toPrice) : undefined;
 
@@ -49,57 +57,76 @@ const PriceStep = ({ postType, onSubmit }: PriceStepProps) => {
 
     return (
         <div className="flex flex-col gap-2 mt-2">
-            <div className="flex gap-2">
-                <CustomInputWithoutFormik
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value.replace(/[^0-9]/g, ""))}
-                    placeholder={showRange ? "Precio desde" : "Precio"}
-                    type="text"
-                    inputMode="numeric"
-                />
-                {showRange && (
-                    <CustomInputWithoutFormik
-                        value={toPrice}
-                        onChange={(e) => setToPrice(e.target.value.replace(/[^0-9]/g, ""))}
-                        placeholder="Precio hasta"
-                        type="text"
-                        inputMode="numeric"
-                    />
-                )}
-            </div>
+            {!isNegotiable && (
+                <>
+                    <div className="flex gap-2">
+                        <CustomInputWithoutFormik
+                            value={price}
+                            onChange={(e) => setPrice(e.target.value.replace(/[^0-9]/g, ""))}
+                            placeholder={showRange ? "Precio desde" : "Precio"}
+                            type="text"
+                            inputMode="numeric"
+                        />
+                        {showRange && (
+                            <CustomInputWithoutFormik
+                                value={toPrice}
+                                onChange={(e) => setToPrice(e.target.value.replace(/[^0-9]/g, ""))}
+                                placeholder="Precio hasta"
+                                type="text"
+                                inputMode="numeric"
+                            />
+                        )}
+                    </div>
 
-            {showRangeOption && (
-                <Checkbox
-                    size="sm"
-                    isSelected={showRange}
-                    onChange={() => {
-                        setShowRange(!showRange);
-                        if (showRange) setToPrice("");
-                    }}
-                >
-                    <span className="text-xs">Agregar rango de precios</span>
-                </Checkbox>
+                    {showRangeOption && (
+                        <Checkbox
+                            size="sm"
+                            isSelected={showRange}
+                            onChange={() => {
+                                setShowRange(!showRange);
+                                if (showRange) setToPrice("");
+                            }}
+                        >
+                            <span className="text-xs">Agregar rango de precios</span>
+                        </Checkbox>
+                    )}
+
+                    {showFrequency && (
+                        <Select
+                            size="sm"
+                            variant="bordered"
+                            radius="lg"
+                            label="Frecuencia del precio"
+                            placeholder="Seleccionar frecuencia"
+                            selectedKeys={frequencyPrice ? [frequencyPrice] : []}
+                            onChange={(e) =>
+                                setFrequencyPrice(e.target.value as FrequencyPrice || undefined)
+                            }
+                        >
+                            {frequencyPriceItems.map((item) => (
+                                <SelectItem key={item.value} value={item.value}>
+                                    {item.label}
+                                </SelectItem>
+                            ))}
+                        </Select>
+                    )}
+                </>
             )}
 
-            {showFrequency && (
-                <Select
-                    size="sm"
-                    variant="bordered"
-                    radius="lg"
-                    label="Frecuencia del precio"
-                    placeholder="Seleccionar frecuencia"
-                    selectedKeys={frequencyPrice ? [frequencyPrice] : []}
-                    onChange={(e) =>
-                        setFrequencyPrice(e.target.value as FrequencyPrice || undefined)
+            <Checkbox
+                size="sm"
+                isSelected={isNegotiable}
+                onValueChange={(checked) => {
+                    setIsNegotiable(checked);
+                    if (checked) {
+                        setPrice("");
+                        setToPrice("");
+                        setShowRange(false);
                     }
-                >
-                    {frequencyPriceItems.map((item) => (
-                        <SelectItem key={item.value} value={item.value}>
-                            {item.label}
-                        </SelectItem>
-                    ))}
-                </Select>
-            )}
+                }}
+            >
+                <span className="text-xs">Negociable / a pactar</span>
+            </Checkbox>
 
             {error && <p className="text-danger text-xs">{error}</p>}
 
@@ -109,7 +136,7 @@ const PriceStep = ({ postType, onSubmit }: PriceStepProps) => {
                     variant="flat"
                     color="primary"
                     onPress={handleSubmit}
-                    isDisabled={!price}
+                    isDisabled={!price && !isNegotiable}
                     className="flex-1"
                 >
                     Confirmar precio

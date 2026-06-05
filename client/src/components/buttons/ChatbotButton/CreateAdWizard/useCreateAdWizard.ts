@@ -117,9 +117,13 @@ export const useCreateAdWizard = () => {
     }) => {
       const parts: string[] = [];
       if (priceData.price) {
-        parts.push(`$${priceData.price}`);
-        if (priceData.toPrice) parts.push(`- $${priceData.toPrice}`);
-        if (priceData.frequencyPrice) parts.push(`por ${priceData.frequencyPrice}`);
+        if (priceData.price === 8613.10) {
+          parts.push("Negociable / a pactar");
+        } else {
+          parts.push(`$${priceData.price}`);
+          if (priceData.toPrice) parts.push(`- $${priceData.toPrice}`);
+          if (priceData.frequencyPrice) parts.push(`por ${priceData.frequencyPrice}`);
+        }
       } else {
         parts.push("Sin precio");
       }

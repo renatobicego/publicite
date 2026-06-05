@@ -18,15 +18,19 @@ const PriceCategory = ({
   isService?: boolean;
 }) => {
   const { categories } = usePostCategories();
-  const { setFieldValue } = useFormikContext();
+  const { setFieldValue, values } = useFormikContext<GoodPostValues | ServicePostValues>();
   const [hidePrice, setHidePrice] = useState<
     "negotiable" | "no_price" | null
-  >(null);
+  >(() => {
+    if (values.price === 8613.10) return "negotiable";
+    return null;
+  });
 
   const handleCheckbox = (option: "negotiable" | "no_price") => {
     if (hidePrice === option) {
       // Uncheck
       setHidePrice(null);
+      setFieldValue("price", undefined)
     } else {
       setHidePrice(option);
       setFieldValue("price", option === "negotiable" ? 8613.10 : undefined);

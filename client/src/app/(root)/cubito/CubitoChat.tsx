@@ -28,7 +28,7 @@ export default function CubitoChat() {
     } = useChatbot();
 
     const [inputValue, setInputValue] = useState("");
-    const messagesEndRef = useRef<HTMLDivElement>(null);
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
 
     const isWizardActive =
         wizard.step !== "idle" &&
@@ -38,12 +38,29 @@ export default function CubitoChat() {
     const isLoading = status === "in_progress";
 
     const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        if (scrollContainerRef.current) {
+            scrollContainerRef.current.scrollTop =
+                scrollContainerRef.current.scrollHeight;
+        }
     };
+
+    // Only scroll to bottom when bot sends a message or wizard step changes
+    const prevMessagesLengthRef = useRef(messages.length);
+    useEffect(() => {
+        const lastMessage = messages[messages.length - 1];
+        const isNewBotMessage =
+            messages.length > prevMessagesLengthRef.current &&
+            lastMessage?.role === "assistant";
+        prevMessagesLengthRef.current = messages.length;
+
+        if (isNewBotMessage) {
+            scrollToBottom();
+        }
+    }, [messages]);
 
     useEffect(() => {
         scrollToBottom();
-    }, [messages, wizard.messages, wizard.step]);
+    }, [wizard.messages, wizard.step]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -188,7 +205,7 @@ export default function CubitoChat() {
 
             {/* Messages Container */}
             <CardBody className="flex-1 overflow-hidden p-0">
-                <ScrollShadow className="flex-1 overflow-y-auto p-6 space-y-4">
+                <ScrollShadow ref={scrollContainerRef} className="flex-1 overflow-y-auto p-6 space-y-4">
                     {messages.length === 0 && !isWizardActive ? (
                         <div className="flex flex-col items-center justify-center h-full text-center text-gray-500 dark:text-gray-400 gap-4">
                             <div className="w-20 h-20 opacity-50">
@@ -302,7 +319,6 @@ export default function CubitoChat() {
                             </div>
                         </div>
                     )}
-                    <div ref={messagesEndRef} />
                 </ScrollShadow>
             </CardBody>
 

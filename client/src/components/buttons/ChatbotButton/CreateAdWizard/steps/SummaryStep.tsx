@@ -54,7 +54,11 @@ const SummaryStep = ({
                 {data.price && (
                     <SummaryRow
                         label="Precio"
-                        value={`$${data.price}${data.toPrice ? ` - $${data.toPrice}` : ""}${data.frequencyPrice ? ` ${frequencyLabels[data.frequencyPrice]}` : ""}`}
+                        value={
+                            data.price === 8613.10
+                                ? "Negociable / a pactar"
+                                : `$${data.price}${data.toPrice ? ` - $${data.toPrice}` : ""}${data.frequencyPrice ? ` ${frequencyLabels[data.frequencyPrice]}` : ""}`
+                        }
                     />
                 )}
                 {data.condition && (
@@ -89,7 +93,7 @@ const SummaryStep = ({
                     isDisabled={isSubmitting}
                     className="flex-1"
                 >
-                    Publicar
+                    {isSubmitting ? "Publicando..." : "Publicar"}
                 </Button>
                 <Button
                     size="sm"

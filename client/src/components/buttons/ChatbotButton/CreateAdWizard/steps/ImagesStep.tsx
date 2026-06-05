@@ -1,7 +1,14 @@
 "use client";
-import { Button, Textarea } from "@nextui-org/react";
+import {
+    Button,
+    Modal,
+    ModalBody,
+    ModalContent,
+    Textarea,
+    useDisclosure,
+} from "@nextui-org/react";
 import { useRef, useState } from "react";
-import { FaImage, FaPaperPlane, FaWandMagicSparkles, FaPlus } from "react-icons/fa6";
+import { FaImage, FaPaperPlane, FaWandMagicSparkles } from "react-icons/fa6";
 import { generateAdImageWithAI } from "@/services/chatbotServices";
 import { toastifyError } from "@/utils/functions/toastify";
 
@@ -26,6 +33,8 @@ const ImagesStep = ({ onSubmit }: ImagesStepProps) => {
     const [prompt, setPrompt] = useState("");
     const [generating, setGenerating] = useState(false);
     const [showAiInput, setShowAiInput] = useState(false);
+    const [previewImage, setPreviewImage] = useState<string | null>(null);
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const inputRef = useRef<HTMLInputElement>(null);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -81,6 +90,11 @@ const ImagesStep = ({ onSubmit }: ImagesStepProps) => {
         setPreviews((prev) => prev.filter((_, i) => i !== index));
     };
 
+    const handlePreview = (src: string) => {
+        setPreviewImage(src);
+        onOpen();
+    };
+
     return (
         <div className="flex flex-col gap-2 mt-2">
             <input
@@ -105,7 +119,8 @@ const ImagesStep = ({ onSubmit }: ImagesStepProps) => {
                                 <img
                                     src={preview}
                                     alt={`Preview ${idx}`}
-                                    className="w-full h-full object-cover rounded-lg"
+                                    className="w-full h-full object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity"
+                                    onClick={() => handlePreview(preview)}
                                 />
                             )}
                             <button
@@ -198,11 +213,29 @@ const ImagesStep = ({ onSubmit }: ImagesStepProps) => {
                             startContent={<FaPaperPlane size={12} />}
                             className="w-full"
                         >
-                            Confirmar ({files.length} {files.length === 1 ? "imagen" : "imágenes"})
+                            Confirmar ({files.length}{" "}
+                            {files.length === 1 ? "imagen" : "imágenes"})
                         </Button>
                     )}
                 </div>
             )}
+
+            {/* Image preview modal */}
+            <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="lg" placement="center">
+                <ModalContent>
+                    {() => (
+                        <ModalBody className="p-2">
+                            {previewImage && (
+                                <img
+                                    src={previewImage}
+                                    alt="Preview"
+                                    className="w-full h-auto rounded-lg object-contain max-h-[70vh]"
+                                />
+                            )}
+                        </ModalBody>
+                    )}
+                </ModalContent>
+            </Modal>
         </div>
     );
 };
