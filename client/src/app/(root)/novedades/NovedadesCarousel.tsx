@@ -23,6 +23,7 @@ interface Props {
 export default function NovedadesCarousel({ novedades }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const [index, setIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
 
   const scrollTo = (i: number) => {
     if (!ref.current) return;
@@ -38,16 +39,24 @@ export default function NovedadesCarousel({ novedades }: Props) {
   };
 
   useEffect(() => {
-    // call scroll to each 5 seconds
+    if (paused) return;
+
     const interval = setInterval(() => {
       scrollTo((index + 1) % novedades.length);
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [index, novedades.length]);
+  }, [index, novedades.length, paused]);
 
   return (
-    <div className="w-full relative ">
+    <div
+      className="w-full relative"
+      onMouseDown={() => setPaused(true)}
+      onMouseUp={() => setPaused(false)}
+      onMouseLeave={() => setPaused(false)}
+      onTouchStart={() => setPaused(true)}
+      onTouchEnd={() => setPaused(false)}
+    >
       {/* slides */}
       <div
         ref={ref}
@@ -81,7 +90,7 @@ export default function NovedadesCarousel({ novedades }: Props) {
                     radius="none"
                     classNames={{
                       wrapper: "w-full h-full !max-w-full",
-                      img: "w-full h-full object-cover",
+                      img: "w-full h-full object-contain",
                     }}
                   />
 
@@ -124,9 +133,8 @@ export default function NovedadesCarousel({ novedades }: Props) {
           <button
             key={i}
             onClick={() => scrollTo(i)}
-            className={`h-[4px] w-14 rounded-full transition-all ${
-              i === index ? "bg-text-color" : "bg-text-color/10"
-            }`}
+            className={`h-[4px] w-14 rounded-full transition-all ${i === index ? "bg-text-color" : "bg-text-color/10"
+              }`}
           />
         ))}
       </div>
