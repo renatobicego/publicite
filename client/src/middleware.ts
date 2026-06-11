@@ -13,7 +13,8 @@ const isPublicRoute = createRouteMatcher([
   "/privacidad(.*)",
   "/crear",
   "/novedades",
-  "/cubito"
+  "/cubito",
+  "/sorteo"
 ]);
 
 const isPrivateRoute = createRouteMatcher(["/novedades/admin(.*)"]);
