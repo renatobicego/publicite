@@ -28,6 +28,7 @@ import { EmmiterModule } from './contexts/module_shared/event-emmiter/emiter.mod
 import { ChatbotModule } from './contexts/module_user/chatbot/infrastructure/module/chatbot.module';
 import { NoveltyModule } from './contexts/module_novelty/novelty/infrastructure/module/novelty.module';
 import { WhatsAppModule } from './contexts/module_webhook/whatsapp/infrastructure/module/whatsapp.module';
+import { GiveawayModule } from './contexts/module_giveaway/giveaway/infrastructure/module/giveaway.module';
 
 @Module({
   imports: [
@@ -62,6 +63,7 @@ import { WhatsAppModule } from './contexts/module_webhook/whatsapp/infrastructur
     ChatbotModule,
     NoveltyModule,
     WhatsAppModule,
+    GiveawayModule,
   ],
   providers: [
     {

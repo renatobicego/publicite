@@ -57,3 +57,588 @@ ApolloError: Error generating AI image: 400 Unknown parameter: 'response_format'
 }
 undefined
  POST / 200 in 13716ms
+ApolloError: Error generating AI image: 400 The model 'dall-e-2' does not exist.
+    at new ApolloError (webpack-internal:///(action-browser)/./node_modules/@apollo/client/errors/index.js:50:28)
+    at eval (webpack-internal:///(action-browser)/./node_modules/@apollo/client/core/QueryManager.js:155:47)
+    at both (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/asyncMap.js:27:31)
+    at eval (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/asyncMap.js:16:72)
+    at new Promise (<anonymous>)
+    at Object.then (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/asyncMap.js:16:24)
+    at Object.eval [as next] (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/asyncMap.js:29:49)
+    at notifySubscription (webpack-internal:///(action-browser)/./node_modules/zen-observable-ts/module.js:136:18)
+    at onNotify (webpack-internal:///(action-browser)/./node_modules/zen-observable-ts/module.js:180:3)
+    at SubscriptionObserver.next (webpack-internal:///(action-browser)/./node_modules/zen-observable-ts/module.js:229:5)
+    at eval (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/iteration.js:11:68)
+    at Array.forEach (<anonymous>)
+    at iterateObserversSafely (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/iteration.js:11:25)
+    at Object.next (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/Concast.js:69:90)
+    at notifySubscription (webpack-internal:///(action-browser)/./node_modules/zen-observable-ts/module.js:136:18)
+    at onNotify (webpack-internal:///(action-browser)/./node_modules/zen-observable-ts/module.js:180:3)
+    at SubscriptionObserver.next (webpack-internal:///(action-browser)/./node_modules/zen-observable-ts/module.js:229:5)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  graphQLErrors: [
+    {
+      message: "Error generating AI image: 400 The model 'dall-e-2' does not exist.",
+      locations: [Array],
+      path: [Array],
+      extensions: [Object]
+    }
+  ],
+  protocolErrors: [],
+  clientErrors: [],
+  networkError: null,
+  extraInfo: undefined,
+  cause: {
+    message: "Error generating AI image: 400 The model 'dall-e-2' does not exist.",
+    locations: [ [Object] ],
+    path: [ 'generateAdImage' ],
+    extensions: {
+      code: 'INTERNAL_SERVER_ERROR',
+      stacktrace: [Array],
+      status: 500,
+      originalError: [Object]
+    }
+  }
+}
+undefined
+ POST / 200 in 799ms
+ApolloError: Http Exception
+    at new ApolloError (webpack-internal:///(rsc)/./node_modules/@apollo/client/errors/index.js:50:28)
+    at eval (webpack-internal:///(rsc)/./node_modules/@apollo/client/core/QueryManager.js:787:47)
+    at both (webpack-internal:///(rsc)/./node_modules/@apollo/client/utilities/observables/asyncMap.js:27:31)
+    at eval (webpack-internal:///(rsc)/./node_modules/@apollo/client/utilities/observables/asyncMap.js:16:72)
+    at new Promise (<anonymous>)
+    at Object.then (webpack-internal:///(rsc)/./node_modules/@apollo/client/utilities/observables/asyncMap.js:16:24)
+    at Object.eval [as next] (webpack-internal:///(rsc)/./node_modules/@apollo/client/utilities/observables/asyncMap.js:29:49)
+    at notifySubscription (webpack-internal:///(rsc)/./node_modules/zen-observable-ts/module.js:136:18)
+    at onNotify (webpack-internal:///(rsc)/./node_modules/zen-observable-ts/module.js:180:3)
+    at SubscriptionObserver.next (webpack-internal:///(rsc)/./node_modules/zen-observable-ts/module.js:229:5)
+    at eval (webpack-internal:///(rsc)/./node_modules/@apollo/client/utilities/observables/iteration.js:11:68)
+    at Array.forEach (<anonymous>)
+    at iterateObserversSafely (webpack-internal:///(rsc)/./node_modules/@apollo/client/utilities/observables/iteration.js:11:25)
+    at Object.next (webpack-internal:///(rsc)/./node_modules/@apollo/client/utilities/observables/Concast.js:69:90)
+    at notifySubscription (webpack-internal:///(rsc)/./node_modules/zen-observable-ts/module.js:136:18)
+    at onNotify (webpack-internal:///(rsc)/./node_modules/zen-observable-ts/module.js:180:3)
+    at SubscriptionObserver.next (webpack-internal:///(rsc)/./node_modules/zen-observable-ts/module.js:229:5)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  graphQLErrors: [
+    {
+      message: 'Http Exception',
+      locations: [Array],
+      path: [Array],
+      extensions: [Object]
+    }
+  ],
+  protocolErrors: [],
+  clientErrors: [],
+  networkError: null,
+  extraInfo: undefined,
+  cause: {
+    message: 'Http Exception',
+    locations: [ [Object] ],
+    path: [ 'getAllNovelties' ],
+    extensions: { code: 'FORBIDDEN', stacktrace: [Array], originalError: [Object] }
+  }
+}
+undefined
+ GET / 200 in 1153ms
+ ⨯ ApolloError: Http Exception
+    at new Promise (<anonymous>)
+    at Array.forEach (<anonymous>)
+digest: "91124982"
+Cause: {
+  message: 'Http Exception',
+  locations: [ { line: 2, column: 3 } ],
+  path: [ 'getAllMagazinesByUserId' ],
+  extensions: {
+    code: 'FORBIDDEN',
+    stacktrace: [
+      'HttpException: Http Exception',
+      '    at AllExceptionsFilter.handleGraphQLException (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\src\\contexts\\module_shared\\exceptionFilter\\infrastructure\\exception.filter.ts:113:11)',
+      '    at AllExceptionsFilter.catch (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\src\\contexts\\module_shared\\exceptionFilter\\infrastructure\\exception.filter.ts:20:12)',
+      '    at ExternalExceptionsHandler.invokeCustomFilters (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\node_modules\\@nestjs\\core\\exceptions\\external-exceptions-handler.js:31:32)',
+      '    at ExternalExceptionsHandler.next (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\node_modules\\@nestjs\\core\\exceptions\\external-exceptions-handler.js:14:29)',
+      '    at Object.getAllMagazinesByUserId (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\node_modules\\@nestjs\\core\\helpers\\external-proxy.js:14:42)',
+      '    at processTicksAndRejections (node:internal/process/task_queues:105:5)'
+    ],
+    originalError: {
+      statusCode: 403,
+      message: [Object],
+      location: 'at ClerkAuthGuard.canActivate (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\src\\contexts\\module_shared\\auth\\clerk-auth\\clerk.auth.guard.ts:57:13)',
+      timestamp: '2026-06-02T20:44:01.721Z'
+    }
+  }
+}
+ POST / 500 in 398ms
+ApolloError: Http Exception
+    at new ApolloError (webpack-internal:///(action-browser)/./node_modules/@apollo/client/errors/index.js:50:28)
+    at eval (webpack-internal:///(action-browser)/./node_modules/@apollo/client/core/QueryManager.js:787:47)
+    at both (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/asyncMap.js:27:31)
+    at eval (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/asyncMap.js:16:72)
+    at new Promise (<anonymous>)
+    at Object.then (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/asyncMap.js:16:24)
+    at Object.eval [as next] (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/asyncMap.js:29:49)
+    at notifySubscription (webpack-internal:///(action-browser)/./node_modules/zen-observable-ts/module.js:136:18)
+    at onNotify (webpack-internal:///(action-browser)/./node_modules/zen-observable-ts/module.js:180:3)
+    at SubscriptionObserver.next (webpack-internal:///(action-browser)/./node_modules/zen-observable-ts/module.js:229:5)
+    at eval (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/iteration.js:11:68)
+    at Array.forEach (<anonymous>)
+    at iterateObserversSafely (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/iteration.js:11:25)
+    at Object.next (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/Concast.js:69:90)
+    at notifySubscription (webpack-internal:///(action-browser)/./node_modules/zen-observable-ts/module.js:136:18)
+    at onNotify (webpack-internal:///(action-browser)/./node_modules/zen-observable-ts/module.js:180:3)
+    at SubscriptionObserver.next (webpack-internal:///(action-browser)/./node_modules/zen-observable-ts/module.js:229:5)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  graphQLErrors: [
+    {
+      message: 'Http Exception',
+      locations: [Array],
+      path: [Array],
+      extensions: [Object]
+    }
+  ],
+  protocolErrors: [],
+  clientErrors: [],
+  networkError: null,
+  extraInfo: undefined,
+  cause: {
+    message: 'Http Exception',
+    locations: [ [Object] ],
+    path: [ 'getAllNotificationsFromUserById' ],
+    extensions: { code: 'FORBIDDEN', stacktrace: [Array], originalError: [Object] }
+  }
+}
+ POST / 200 in 420ms
+ApolloError: Http Exception
+    at new ApolloError (webpack-internal:///(action-browser)/./node_modules/@apollo/client/errors/index.js:50:28)
+    at eval (webpack-internal:///(action-browser)/./node_modules/@apollo/client/core/QueryManager.js:787:47)
+    at both (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/asyncMap.js:27:31)
+    at eval (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/asyncMap.js:16:72)
+    at new Promise (<anonymous>)
+    at Object.then (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/asyncMap.js:16:24)
+    at Object.eval [as next] (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/asyncMap.js:29:49)
+    at notifySubscription (webpack-internal:///(action-browser)/./node_modules/zen-observable-ts/module.js:136:18)
+    at onNotify (webpack-internal:///(action-browser)/./node_modules/zen-observable-ts/module.js:180:3)
+    at SubscriptionObserver.next (webpack-internal:///(action-browser)/./node_modules/zen-observable-ts/module.js:229:5)
+    at eval (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/iteration.js:11:68)
+    at Array.forEach (<anonymous>)
+    at iterateObserversSafely (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/iteration.js:11:25)
+    at Object.next (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/Concast.js:69:90)
+    at notifySubscription (webpack-internal:///(action-browser)/./node_modules/zen-observable-ts/module.js:136:18)
+    at onNotify (webpack-internal:///(action-browser)/./node_modules/zen-observable-ts/module.js:180:3)
+    at SubscriptionObserver.next (webpack-internal:///(action-browser)/./node_modules/zen-observable-ts/module.js:229:5)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  graphQLErrors: [
+    {
+      message: 'Http Exception',
+      locations: [Array],
+      path: [Array],
+      extensions: [Object]
+    }
+  ],
+  protocolErrors: [],
+  clientErrors: [],
+  networkError: null,
+  extraInfo: undefined,
+  cause: {
+    message: 'Http Exception',
+    locations: [ [Object] ],
+    path: [ 'getAllNotificationsFromUserById' ],
+    extensions: { code: 'FORBIDDEN', stacktrace: [Array], originalError: [Object] }
+  }
+}
+ POST / 200 in 408ms
+ ⨯ ApolloError: Http Exception
+    at new Promise (<anonymous>)
+    at Array.forEach (<anonymous>)
+digest: "91124982"
+Cause: {
+  message: 'Http Exception',
+  locations: [ { line: 2, column: 3 } ],
+  path: [ 'getAllMagazinesByUserId' ],
+  extensions: {
+    code: 'FORBIDDEN',
+    stacktrace: [
+      'HttpException: Http Exception',
+      '    at AllExceptionsFilter.handleGraphQLException (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\src\\contexts\\module_shared\\exceptionFilter\\infrastructure\\exception.filter.ts:113:11)',
+      '    at AllExceptionsFilter.catch (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\src\\contexts\\module_shared\\exceptionFilter\\infrastructure\\exception.filter.ts:20:12)',
+      '    at ExternalExceptionsHandler.invokeCustomFilters (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\node_modules\\@nestjs\\core\\exceptions\\external-exceptions-handler.js:31:32)',
+      '    at ExternalExceptionsHandler.next (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\node_modules\\@nestjs\\core\\exceptions\\external-exceptions-handler.js:14:29)',
+      '    at Object.getAllMagazinesByUserId (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\node_modules\\@nestjs\\core\\helpers\\external-proxy.js:14:42)',
+      '    at processTicksAndRejections (node:internal/process/task_queues:105:5)'
+    ],
+    originalError: {
+      statusCode: 403,
+      message: [Object],
+      location: 'at ClerkAuthGuard.canActivate (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\src\\contexts\\module_shared\\auth\\clerk-auth\\clerk.auth.guard.ts:57:13)',
+      timestamp: '2026-06-02T20:44:02.915Z'
+    }
+  }
+}
+ POST / 500 in 352ms
+ ⨯ ApolloError: Http Exception
+    at new Promise (<anonymous>)
+    at Array.forEach (<anonymous>)
+digest: "91124982"
+Cause: {
+  message: 'Http Exception',
+  locations: [ { line: 2, column: 3 } ],
+  path: [ 'getAllMagazinesByUserId' ],
+  extensions: {
+    code: 'FORBIDDEN',
+    stacktrace: [
+      'HttpException: Http Exception',
+      '    at AllExceptionsFilter.handleGraphQLException (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\src\\contexts\\module_shared\\exceptionFilter\\infrastructure\\exception.filter.ts:113:11)',
+      '    at AllExceptionsFilter.catch (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\src\\contexts\\module_shared\\exceptionFilter\\infrastructure\\exception.filter.ts:20:12)',
+      '    at ExternalExceptionsHandler.invokeCustomFilters (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\node_modules\\@nestjs\\core\\exceptions\\external-exceptions-handler.js:31:32)',
+      '    at ExternalExceptionsHandler.next (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\node_modules\\@nestjs\\core\\exceptions\\external-exceptions-handler.js:14:29)',
+      '    at Object.getAllMagazinesByUserId (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\node_modules\\@nestjs\\core\\helpers\\external-proxy.js:14:42)',
+      '    at processTicksAndRejections (node:internal/process/task_queues:105:5)'
+    ],
+    originalError: {
+      statusCode: 403,
+      message: [Object],
+      location: 'at ClerkAuthGuard.canActivate (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\src\\contexts\\module_shared\\auth\\clerk-auth\\clerk.auth.guard.ts:57:13)',
+      timestamp: '2026-06-02T20:44:03.341Z'
+    }
+  }
+}
+ POST / 500 in 411ms
+ ⨯ ApolloError: Http Exception
+    at new Promise (<anonymous>)
+    at Array.forEach (<anonymous>)
+digest: "91124982"
+Cause: {
+  message: 'Http Exception',
+  locations: [ { line: 2, column: 3 } ],
+  path: [ 'getAllMagazinesByUserId' ],
+  extensions: {
+    code: 'FORBIDDEN',
+    stacktrace: [
+      'HttpException: Http Exception',
+      '    at AllExceptionsFilter.handleGraphQLException (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\src\\contexts\\module_shared\\exceptionFilter\\infrastructure\\exception.filter.ts:113:11)',
+      '    at AllExceptionsFilter.catch (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\src\\contexts\\module_shared\\exceptionFilter\\infrastructure\\exception.filter.ts:20:12)',
+      '    at ExternalExceptionsHandler.invokeCustomFilters (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\node_modules\\@nestjs\\core\\exceptions\\external-exceptions-handler.js:31:32)',
+      '    at ExternalExceptionsHandler.next (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\node_modules\\@nestjs\\core\\exceptions\\external-exceptions-handler.js:14:29)',
+      '    at Object.getAllMagazinesByUserId (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\node_modules\\@nestjs\\core\\helpers\\external-proxy.js:14:42)',
+      '    at processTicksAndRejections (node:internal/process/task_queues:105:5)'
+    ],
+    originalError: {
+      statusCode: 403,
+      message: [Object],
+      location: 'at ClerkAuthGuard.canActivate (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\src\\contexts\\module_shared\\auth\\clerk-auth\\clerk.auth.guard.ts:57:13)',
+      timestamp: '2026-06-02T20:44:04.339Z'
+    }
+  }
+}
+ POST / 500 in 402ms
+ ⨯ ApolloError: Http Exception
+    at new Promise (<anonymous>)
+    at Array.forEach (<anonymous>)
+digest: "91124982"
+Cause: {
+  message: 'Http Exception',
+  locations: [ { line: 2, column: 3 } ],
+  path: [ 'getAllMagazinesByUserId' ],
+  extensions: {
+    code: 'FORBIDDEN',
+    stacktrace: [
+      'HttpException: Http Exception',
+      '    at AllExceptionsFilter.handleGraphQLException (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\src\\contexts\\module_shared\\exceptionFilter\\infrastructure\\exception.filter.ts:113:11)',
+      '    at AllExceptionsFilter.catch (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\src\\contexts\\module_shared\\exceptionFilter\\infrastructure\\exception.filter.ts:20:12)',
+      '    at ExternalExceptionsHandler.invokeCustomFilters (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\node_modules\\@nestjs\\core\\exceptions\\external-exceptions-handler.js:31:32)',
+      '    at ExternalExceptionsHandler.next (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\node_modules\\@nestjs\\core\\exceptions\\external-exceptions-handler.js:14:29)',
+      '    at Object.getAllMagazinesByUserId (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\node_modules\\@nestjs\\core\\helpers\\external-proxy.js:14:42)',
+      '    at processTicksAndRejections (node:internal/process/task_queues:105:5)'
+    ],
+    originalError: {
+      statusCode: 403,
+      message: [Object],
+      location: 'at ClerkAuthGuard.canActivate (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\src\\contexts\\module_shared\\auth\\clerk-auth\\clerk.auth.guard.ts:57:13)',
+      timestamp: '2026-06-02T20:44:05.700Z'
+    }
+  }
+}
+ POST / 500 in 356ms
+ POST / 200 in 455ms
+ POST / 200 in 308ms
+ POST / 200 in 318ms
+ POST / 200 in 313ms
+ POST / 200 in 318ms
+ POST / 200 in 304ms
+ POST / 200 in 1637ms
+ ⨯ ApolloError: Http Exception
+    at new Promise (<anonymous>)
+    at Array.forEach (<anonymous>)
+digest: "91124982"
+Cause: {
+  message: 'Http Exception',
+  locations: [ { line: 2, column: 3 } ],
+  path: [ 'getAllMagazinesByUserId' ],
+  extensions: {
+    code: 'FORBIDDEN',
+    stacktrace: [
+      'HttpException: Http Exception',
+      '    at AllExceptionsFilter.handleGraphQLException (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\src\\contexts\\module_shared\\exceptionFilter\\infrastructure\\exception.filter.ts:113:11)',
+      '    at AllExceptionsFilter.catch (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\src\\contexts\\module_shared\\exceptionFilter\\infrastructure\\exception.filter.ts:20:12)',
+      '    at ExternalExceptionsHandler.invokeCustomFilters (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\node_modules\\@nestjs\\core\\exceptions\\external-exceptions-handler.js:31:32)',
+      '    at ExternalExceptionsHandler.next (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\node_modules\\@nestjs\\core\\exceptions\\external-exceptions-handler.js:14:29)',
+      '    at Object.getAllMagazinesByUserId (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\node_modules\\@nestjs\\core\\helpers\\external-proxy.js:14:42)',
+      '    at processTicksAndRejections (node:internal/process/task_queues:105:5)'
+    ],
+    originalError: {
+      statusCode: 403,
+      message: [Object],
+      location: 'at ClerkAuthGuard.canActivate (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\src\\contexts\\module_shared\\auth\\clerk-auth\\clerk.auth.guard.ts:57:13)',
+      timestamp: '2026-06-02T20:44:09.733Z'
+    }
+  }
+}
+ POST / 500 in 309ms
+ POST / 200 in 298ms
+ POST / 200 in 304ms
+ POST / 200 in 302ms
+ ⨯ ApolloError: Http Exception
+    at new Promise (<anonymous>)
+    at Array.forEach (<anonymous>)
+digest: "91124982"
+Cause: {
+  message: 'Http Exception',
+  locations: [ { line: 2, column: 3 } ],
+  path: [ 'getAllMagazinesByUserId' ],
+  extensions: {
+    code: 'FORBIDDEN',
+    stacktrace: [
+      'HttpException: Http Exception',
+      '    at AllExceptionsFilter.handleGraphQLException (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\src\\contexts\\module_shared\\exceptionFilter\\infrastructure\\exception.filter.ts:113:11)',
+      '    at AllExceptionsFilter.catch (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\src\\contexts\\module_shared\\exceptionFilter\\infrastructure\\exception.filter.ts:20:12)',
+      '    at ExternalExceptionsHandler.invokeCustomFilters (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\node_modules\\@nestjs\\core\\exceptions\\external-exceptions-handler.js:31:32)',
+      '    at ExternalExceptionsHandler.next (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\node_modules\\@nestjs\\core\\exceptions\\external-exceptions-handler.js:14:29)',
+      '    at Object.getAllMagazinesByUserId (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\node_modules\\@nestjs\\core\\helpers\\external-proxy.js:14:42)',
+      '    at processTicksAndRejections (node:internal/process/task_queues:105:5)'
+    ],
+    originalError: {
+      statusCode: 403,
+      message: [Object],
+      location: 'at ClerkAuthGuard.canActivate (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\src\\contexts\\module_shared\\auth\\clerk-auth\\clerk.auth.guard.ts:57:13)',
+      timestamp: '2026-06-02T20:44:10.951Z'
+    }
+  }
+}
+ POST / 500 in 307ms
+ ⨯ ApolloError: Http Exception
+    at new Promise (<anonymous>)
+    at Array.forEach (<anonymous>)
+digest: "91124982"
+Cause: {
+  message: 'Http Exception',
+  locations: [ { line: 2, column: 3 } ],
+  path: [ 'getAllMagazinesByUserId' ],
+  extensions: {
+    code: 'FORBIDDEN',
+    stacktrace: [
+      'HttpException: Http Exception',
+      '    at AllExceptionsFilter.handleGraphQLException (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\src\\contexts\\module_shared\\exceptionFilter\\infrastructure\\exception.filter.ts:113:11)',
+      '    at AllExceptionsFilter.catch (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\src\\contexts\\module_shared\\exceptionFilter\\infrastructure\\exception.filter.ts:20:12)',
+      '    at ExternalExceptionsHandler.invokeCustomFilters (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\node_modules\\@nestjs\\core\\exceptions\\external-exceptions-handler.js:31:32)',
+      '    at ExternalExceptionsHandler.next (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\node_modules\\@nestjs\\core\\exceptions\\external-exceptions-handler.js:14:29)',
+      '    at Object.getAllMagazinesByUserId (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\node_modules\\@nestjs\\core\\helpers\\external-proxy.js:14:42)',
+      '    at processTicksAndRejections (node:internal/process/task_queues:105:5)'
+    ],
+    originalError: {
+      statusCode: 403,
+      message: [Object],
+      location: 'at ClerkAuthGuard.canActivate (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\src\\contexts\\module_shared\\auth\\clerk-auth\\clerk.auth.guard.ts:57:13)',
+      timestamp: '2026-06-02T20:44:14.045Z'
+    }
+  }
+}
+ POST / 500 in 303ms
+ ⨯ ApolloError: Http Exception
+    at new Promise (<anonymous>)
+    at Array.forEach (<anonymous>)
+digest: "91124982"
+Cause: {
+  message: 'Http Exception',
+  locations: [ { line: 2, column: 3 } ],
+  path: [ 'getAllMagazinesByUserId' ],
+  extensions: {
+    code: 'FORBIDDEN',
+    stacktrace: [
+      'HttpException: Http Exception',
+      '    at AllExceptionsFilter.handleGraphQLException (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\src\\contexts\\module_shared\\exceptionFilter\\infrastructure\\exception.filter.ts:113:11)',
+      '    at AllExceptionsFilter.catch (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\src\\contexts\\module_shared\\exceptionFilter\\infrastructure\\exception.filter.ts:20:12)',
+      '    at ExternalExceptionsHandler.invokeCustomFilters (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\node_modules\\@nestjs\\core\\exceptions\\external-exceptions-handler.js:31:32)',
+      '    at ExternalExceptionsHandler.next (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\node_modules\\@nestjs\\core\\exceptions\\external-exceptions-handler.js:14:29)',
+      '    at Object.getAllMagazinesByUserId (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\node_modules\\@nestjs\\core\\helpers\\external-proxy.js:14:42)',
+      '    at processTicksAndRejections (node:internal/process/task_queues:105:5)'
+    ],
+    originalError: {
+      statusCode: 403,
+      message: [Object],
+      location: 'at ClerkAuthGuard.canActivate (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\src\\contexts\\module_shared\\auth\\clerk-auth\\clerk.auth.guard.ts:57:13)',
+      timestamp: '2026-06-02T20:44:19.547Z'
+    }
+  }
+}
+ POST / 500 in 585ms
+ApolloError: Http Exception
+    at new ApolloError (webpack-internal:///(action-browser)/./node_modules/@apollo/client/errors/index.js:50:28)
+    at eval (webpack-internal:///(action-browser)/./node_modules/@apollo/client/core/QueryManager.js:787:47)
+    at both (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/asyncMap.js:27:31)
+    at eval (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/asyncMap.js:16:72)
+    at new Promise (<anonymous>)
+    at Object.then (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/asyncMap.js:16:24)
+    at Object.eval [as next] (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/asyncMap.js:29:49)
+    at notifySubscription (webpack-internal:///(action-browser)/./node_modules/zen-observable-ts/module.js:136:18)
+    at onNotify (webpack-internal:///(action-browser)/./node_modules/zen-observable-ts/module.js:180:3)
+    at SubscriptionObserver.next (webpack-internal:///(action-browser)/./node_modules/zen-observable-ts/module.js:229:5)
+    at eval (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/iteration.js:11:68)
+    at Array.forEach (<anonymous>)
+    at iterateObserversSafely (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/iteration.js:11:25)
+    at Object.next (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/Concast.js:69:90)
+    at notifySubscription (webpack-internal:///(action-browser)/./node_modules/zen-observable-ts/module.js:136:18)
+    at onNotify (webpack-internal:///(action-browser)/./node_modules/zen-observable-ts/module.js:180:3)
+    at SubscriptionObserver.next (webpack-internal:///(action-browser)/./node_modules/zen-observable-ts/module.js:229:5)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  graphQLErrors: [
+    {
+      message: 'Http Exception',
+      locations: [Array],
+      path: [Array],
+      extensions: [Object]
+    }
+  ],
+  protocolErrors: [],
+  clientErrors: [],
+  networkError: null,
+  extraInfo: undefined,
+  cause: {
+    message: 'Http Exception',
+    locations: [ [Object] ],
+    path: [ 'findUserById' ],
+    extensions: { code: 'FORBIDDEN', stacktrace: [Array], originalError: [Object] }
+  }
+}
+undefined
+ POST / 200 in 394ms
+ POST / 200 in 333ms
+ ⨯ ApolloError: Http Exception
+    at new Promise (<anonymous>)
+    at Array.forEach (<anonymous>)
+digest: "91124982"
+Cause: {
+  message: 'Http Exception',
+  locations: [ { line: 2, column: 3 } ],
+  path: [ 'getAllMagazinesByUserId' ],
+  extensions: {
+    code: 'FORBIDDEN',
+    stacktrace: [
+      'HttpException: Http Exception',
+      '    at AllExceptionsFilter.handleGraphQLException (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\src\\contexts\\module_shared\\exceptionFilter\\infrastructure\\exception.filter.ts:113:11)',
+      '    at AllExceptionsFilter.catch (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\src\\contexts\\module_shared\\exceptionFilter\\infrastructure\\exception.filter.ts:20:12)',
+      '    at ExternalExceptionsHandler.invokeCustomFilters (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\node_modules\\@nestjs\\core\\exceptions\\external-exceptions-handler.js:31:32)',
+      '    at ExternalExceptionsHandler.next (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\node_modules\\@nestjs\\core\\exceptions\\external-exceptions-handler.js:14:29)',
+      '    at Object.getAllMagazinesByUserId (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\node_modules\\@nestjs\\core\\helpers\\external-proxy.js:14:42)',
+      '    at processTicksAndRejections (node:internal/process/task_queues:105:5)'
+    ],
+    originalError: {
+      statusCode: 403,
+      message: [Object],
+      location: 'at ClerkAuthGuard.canActivate (C:\\Users\\Maxi\\Documents\\Clientes\\Publicite\\PROYECTO\\publicite\\server\\src\\contexts\\module_shared\\auth\\clerk-auth\\clerk.auth.guard.ts:57:13)',
+      timestamp: '2026-06-02T20:44:22.385Z'
+    }
+  }
+}
+ POST / 500 in 340ms
+ApolloError: Http Exception
+    at new ApolloError (webpack-internal:///(action-browser)/./node_modules/@apollo/client/errors/index.js:50:28)
+    at eval (webpack-internal:///(action-browser)/./node_modules/@apollo/client/core/QueryManager.js:787:47)
+    at both (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/asyncMap.js:27:31)
+    at eval (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/asyncMap.js:16:72)
+    at new Promise (<anonymous>)
+    at Object.then (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/asyncMap.js:16:24)
+    at Object.eval [as next] (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/asyncMap.js:29:49)
+    at notifySubscription (webpack-internal:///(action-browser)/./node_modules/zen-observable-ts/module.js:136:18)
+    at onNotify (webpack-internal:///(action-browser)/./node_modules/zen-observable-ts/module.js:180:3)
+    at SubscriptionObserver.next (webpack-internal:///(action-browser)/./node_modules/zen-observable-ts/module.js:229:5)
+    at eval (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/iteration.js:11:68)
+    at Array.forEach (<anonymous>)
+    at iterateObserversSafely (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/iteration.js:11:25)
+    at Object.next (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/Concast.js:69:90)
+    at notifySubscription (webpack-internal:///(action-browser)/./node_modules/zen-observable-ts/module.js:136:18)
+    at onNotify (webpack-internal:///(action-browser)/./node_modules/zen-observable-ts/module.js:180:3)
+    at SubscriptionObserver.next (webpack-internal:///(action-browser)/./node_modules/zen-observable-ts/module.js:229:5)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  graphQLErrors: [
+    {
+      message: 'Http Exception',
+      locations: [Array],
+      path: [Array],
+      extensions: [Object]
+    }
+  ],
+  protocolErrors: [],
+  clientErrors: [],
+  networkError: null,
+  extraInfo: undefined,
+  cause: {
+    message: 'Http Exception',
+    locations: [ [Object] ],
+    path: [ 'findUserById' ],
+    extensions: { code: 'FORBIDDEN', stacktrace: [Array], originalError: [Object] }
+  }
+}
+undefined
+ POST / 200 in 318ms
+ POST / 200 in 333ms
+ POST / 200 in 325ms
+ POST / 200 in 350ms
+ApolloError: Error generating AI image: 400 The model 'dall-e-2' does not exist.
+    at new ApolloError (webpack-internal:///(action-browser)/./node_modules/@apollo/client/errors/index.js:50:28)
+    at eval (webpack-internal:///(action-browser)/./node_modules/@apollo/client/core/QueryManager.js:155:47)
+    at both (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/asyncMap.js:27:31)
+    at eval (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/asyncMap.js:16:72)
+    at new Promise (<anonymous>)
+    at Object.then (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/asyncMap.js:16:24)
+    at Object.eval [as next] (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/asyncMap.js:29:49)
+    at notifySubscription (webpack-internal:///(action-browser)/./node_modules/zen-observable-ts/module.js:136:18)
+    at onNotify (webpack-internal:///(action-browser)/./node_modules/zen-observable-ts/module.js:180:3)
+    at SubscriptionObserver.next (webpack-internal:///(action-browser)/./node_modules/zen-observable-ts/module.js:229:5)
+    at eval (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/iteration.js:11:68)
+    at Array.forEach (<anonymous>)
+    at iterateObserversSafely (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/iteration.js:11:25)
+    at Object.next (webpack-internal:///(action-browser)/./node_modules/@apollo/client/utilities/observables/Concast.js:69:90)
+    at notifySubscription (webpack-internal:///(action-browser)/./node_modules/zen-observable-ts/module.js:136:18)
+    at onNotify (webpack-internal:///(action-browser)/./node_modules/zen-observable-ts/module.js:180:3)
+    at SubscriptionObserver.next (webpack-internal:///(action-browser)/./node_modules/zen-observable-ts/module.js:229:5)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  graphQLErrors: [
+    {
+      message: "Error generating AI image: 400 The model 'dall-e-2' does not exist.",
+      locations: [Array],
+      path: [Array],
+      extensions: [Object]
+    }
+  ],
+  protocolErrors: [],
+  clientErrors: [],
+  networkError: null,
+  extraInfo: undefined,
+  cause: {
+    message: "Error generating AI image: 400 The model 'dall-e-2' does not exist.",
+    locations: [ [Object] ],
+    path: [ 'generateAdImage' ],
+    extensions: {
+      code: 'INTERNAL_SERVER_ERROR',
+      stacktrace: [Array],
+      status: 500,
+      originalError: [Object]
+    }
+  }
+}
+undefined
+ POST / 200 in 726ms
+ POST / 200 in 12641ms
+ POST / 200 in 1080ms
+[?25h

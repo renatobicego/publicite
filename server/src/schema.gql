@@ -979,6 +979,20 @@ type NoveltyResponse {
   updatedAt: DateTime
 }
 
+type GiveawayWinnerResponse {
+  _id: String!
+  username: String!
+  profilePhotoUrl: String
+}
+
+type GiveawayResponse {
+  _id: String!
+  participants: [String!]!
+  winner: GiveawayWinnerResponse
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
 type Query {
   """Obtiene un usuario por su nombre de usuario """
   findUserById(_id: String!): User_Full_Grapql_Model
@@ -1073,6 +1087,9 @@ type Query {
 
   """Obtener todas las novedades"""
   getAllNovelties: [NoveltyResponse!]
+
+  """Obtener un sorteo con sus participantes y ganador"""
+  getParticipants(giveawayId: String!): GiveawayResponse
 }
 
 """Type of the post """
@@ -1273,6 +1290,12 @@ type Mutation {
 
   """Eliminar una novedad por su id"""
   deleteNoveltyById(id: String!): String
+
+  """Registrar un participante en un sorteo"""
+  registerParticipant(userId: String!, giveawayId: String!): GiveawayResponse!
+
+  """Elegir al azar un ganador entre los participantes del sorteo"""
+  getWinner(giveawayId: String!): GiveawayWinnerResponse!
 }
 
 input UpdateContactRequest {
