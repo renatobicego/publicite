@@ -97,6 +97,19 @@ export class MpInvoiceRepository
 
   }
 
-
+  async getInvoiceByIdForTicket(invoiceId: string): Promise<any> {
+    try {
+      return await this.invoiceModel
+        .findById(invoiceId)
+        .populate({ path: 'paymentId', model: 'Payment' })
+        .populate({
+          path: 'subscriptionId',
+          model: 'Subscription',
+          populate: { path: 'subscriptionPlan', model: 'SubscriptionPlan' },
+        });
+    } catch (error: any) {
+      throw error;
+    }
+  }
 
 }

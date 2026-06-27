@@ -1,14 +1,11 @@
 import {
   Controller,
-  Get,
   Post,
-  Query,
   Body,
   Headers,
   Req,
   HttpCode,
   HttpStatus,
-  ForbiddenException,
   UnauthorizedException,
   RawBodyRequest,
 } from '@nestjs/common';
@@ -21,13 +18,16 @@ import { WhatsAppService } from '../../application/service/whatsapp.service';
 import { WhatsAppWebhookPayload } from '../../domain/entity/whatsapp-webhook.payload';
 
 /**
- * Webhook de la WhatsApp Cloud API (Meta).
+ * Webhook de YCloud (BSP de WhatsApp).
  *
- * - GET  /webhook/whatsapp  → handshake de verificación (Meta valida la URL).
- * - POST /webhook/whatsapp  → recepción de mensajes entrantes (firmados con App Secret).
+ * - POST /webhook/whatsapp  → recepción de eventos (mensajes entrantes y otros).
  *
- * Requiere las env: WHATSAPP_VERIFY_TOKEN, WHATSAPP_APP_SECRET
- * (más las del sender: WHATSAPP_PHONE_NUMBER_ID, WHATSAPP_ACCESS_TOKEN, WHATSAPP_API_VERSION).
+ * YCloud NO usa handshake de verificación por GET (a diferencia de Meta): se configura
+ * la URL en la consola de YCloud y empieza a mandar eventos por POST directamente.
+ * Cada POST viene firmado en el header `YCloud-Signature`.
+ *
+ * Requiere las env: YCLOUD_WEBHOOK_SECRET (valida la firma),
+ * YCLOUD_API_KEY (envío) y opcionalmente YCLOUD_FROM_PHONE.
  */
 @Controller('webhook')
 export class WhatsAppController {
@@ -38,42 +38,15 @@ export class WhatsAppController {
   ) {}
 
   /**
-   * Verificación del webhook (una sola vez, al configurar la URL en Meta).
-   * Meta envía hub.mode=subscribe, hub.verify_token y hub.challenge.
-   * Si el token coincide, hay que devolver el challenge en texto plano.
-   */
-  @Get('/whatsapp')
-  verifyWebhook(@Query() query: Record<string, string>): string {
-    const mode = query['hub.mode'];
-    const token = query['hub.verify_token'];
-    const challenge = query['hub.challenge'];
-
-    const verifyToken = this.configService.get<string>(
-      'WHATSAPP_VERIFY_TOKEN',
-    );
-
-    if (mode === 'subscribe' && token && token === verifyToken) {
-      this.logger.log('Webhook de WhatsApp verificado correctamente');
-      return challenge;
-    }
-
-    this.logger.error(
-      'Verificación de webhook de WhatsApp fallida: token inválido',
-      'WhatsAppController',
-    );
-    throw new ForbiddenException('Verify token inválido');
-  }
-
-  /**
-   * Recepción de eventos. Devuelve 200 rápido (Meta reintenta si no).
-   * Valida la firma HMAC-SHA256 sobre el body crudo antes de procesar.
+   * Recepción de eventos. Devuelve 200 rápido (YCloud reintenta si no).
+   * Valida la firma HMAC-SHA256 sobre `{timestamp}.{body crudo}` antes de procesar.
    */
   @Post('/whatsapp')
   @HttpCode(HttpStatus.OK)
   async receiveWebhook(
     @Req() req: RawBodyRequest<Request>,
     @Body() payload: WhatsAppWebhookPayload,
-    @Headers('x-hub-signature-256') signature: string,
+    @Headers('ycloud-signature') signature: string,
   ): Promise<void> {
     this.assertValidSignature(req.rawBody, signature);
 
@@ -81,18 +54,24 @@ export class WhatsAppController {
     await this.whatsAppService.processWebhook(payload);
   }
 
+  /**
+   * Verifica la firma del webhook de YCloud.
+   * Header: `YCloud-Signature: t={timestamp},s={signature}`.
+   * Firma esperada: HMAC-SHA256( `${timestamp}.${rawBody}`, YCLOUD_WEBHOOK_SECRET ).
+   * Doc: https://docs.ycloud.com/reference/webhook-integration-guide
+   */
   private assertValidSignature(
     rawBody: Buffer | undefined,
-    signature: string | undefined,
+    signatureHeader: string | undefined,
   ): void {
-    const appSecret = this.configService.get<string>('WHATSAPP_APP_SECRET');
+    const secret = this.configService.get<string>('YCLOUD_WEBHOOK_SECRET');
 
-    if (!appSecret) {
+    if (!secret) {
       this.logger.error(
-        'Falta WHATSAPP_APP_SECRET en las variables de entorno',
+        'Falta YCLOUD_WEBHOOK_SECRET en las variables de entorno',
         'WhatsAppController',
       );
-      throw new Error('WhatsApp App Secret no configurado');
+      throw new Error('YCloud Webhook Secret no configurado');
     }
 
     if (!rawBody) {
@@ -103,28 +82,55 @@ export class WhatsAppController {
       throw new UnauthorizedException('Body inválido');
     }
 
-    if (!signature || !signature.startsWith('sha256=')) {
+    const { timestamp, signature } = this.parseSignatureHeader(signatureHeader);
+    if (!timestamp || !signature) {
       throw new UnauthorizedException('Firma ausente o con formato inválido');
     }
 
+    const signedPayload = `${timestamp}.${rawBody.toString('utf8')}`;
     const expected = crypto
-      .createHmac('sha256', appSecret)
-      .update(rawBody)
+      .createHmac('sha256', secret)
+      .update(signedPayload)
       .digest('hex');
-    const received = signature.slice('sha256='.length);
 
     const expectedBuf = Buffer.from(expected, 'hex');
-    const receivedBuf = Buffer.from(received, 'hex');
+    const receivedBuf = Buffer.from(signature, 'hex');
 
     if (
       expectedBuf.length !== receivedBuf.length ||
       !crypto.timingSafeEqual(expectedBuf, receivedBuf)
     ) {
       this.logger.error(
-        'Firma de webhook de WhatsApp inválida',
+        'Firma de webhook de YCloud inválida',
         'WhatsAppController',
       );
       throw new UnauthorizedException('Firma inválida');
     }
+  }
+
+  /**
+   * Parsea el header `t={timestamp},s={signature}` de forma tolerante al orden
+   * y a espacios entre los segmentos.
+   */
+  private parseSignatureHeader(header: string | undefined): {
+    timestamp?: string;
+    signature?: string;
+  } {
+    if (!header) {
+      return {};
+    }
+
+    const result: { timestamp?: string; signature?: string } = {};
+    for (const part of header.split(',')) {
+      const [key, value] = part.split('=');
+      const k = key?.trim();
+      const v = value?.trim();
+      if (k === 't') {
+        result.timestamp = v;
+      } else if (k === 's') {
+        result.signature = v;
+      }
+    }
+    return result;
   }
 }

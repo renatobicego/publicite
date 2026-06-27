@@ -19,6 +19,7 @@ import { SubscriptionAdapter } from 'src/contexts/module_webhook/mercadopago/inf
 import { MercadoPagoSubscriptionPlanAdapter } from 'src/contexts/module_webhook/mercadopago/infastructure/adapters/in/mp-subscriptionPlan.adapter';
 import { MpWebhookAdapter } from 'src/contexts/module_webhook/mercadopago/infastructure/adapters/in/mp-webhook.adapter';
 import { SubscriptionController } from 'src/contexts/module_webhook/mercadopago/infastructure/controllers/mp-subscription.controller';
+import { MpInvoiceController } from 'src/contexts/module_webhook/mercadopago/infastructure/controllers/mp-invoice.controller';
 import { MercadopagoSubscriptionPlanController } from 'src/contexts/module_webhook/mercadopago/infastructure/controllers/mp-subscriptionPlan.controller';
 import { MpPaymentResolver } from 'src/contexts/module_webhook/mercadopago/infastructure/resolver/mp-payment.resolver';
 import MercadoPagoEventsRepository from '../repository/mp-events.repository';
@@ -57,6 +58,7 @@ import { PaymentNotificationService } from '../adapters/handler/PaymentNotificat
         MercadopagoController,
         SubscriptionController,
         MercadopagoSubscriptionPlanController,
+        MpInvoiceController,
     ],
     providers: [
         WebhookService,

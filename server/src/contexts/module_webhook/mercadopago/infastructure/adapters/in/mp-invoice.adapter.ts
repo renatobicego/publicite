@@ -20,4 +20,18 @@ export class MpInvoiceAdapter implements InvoiceAdapterInterface {
       throw error;
     }
   }
+
+  async generateInvoiceTicket(
+    invoiceId: string,
+    userRequestId: string,
+  ): Promise<Buffer> {
+    try {
+      return await this.mpServiceInvoice.generateInvoiceTicket(
+        invoiceId,
+        userRequestId,
+      );
+    } catch (error: any) {
+      throw error;
+    }
+  }
 }

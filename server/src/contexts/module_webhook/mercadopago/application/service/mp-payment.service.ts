@@ -66,6 +66,22 @@ export class MpPaymentService implements MpPaymentServiceInterface {
     }
   }
 
+  async findApprovedPaymentByReference(
+    external_reference: string,
+    preapprovalId: string,
+    transactionAmount: number,
+  ): Promise<any> {
+    try {
+      return await this.mpPaymentRepository.findApprovedPaymentByReference(
+        external_reference,
+        preapprovalId,
+        transactionAmount,
+      );
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
   async updatePayment(payment: any): Promise<void> {
     try {
       this.logger.log("Mp-Payment-Service Updating payment with ID: " + payment.id);

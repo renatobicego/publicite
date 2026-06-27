@@ -8,7 +8,7 @@ import * as dotenv from 'dotenv';
 // import { join } from 'path';
 
 async function bootstrap() {
-  // rawBody: true expone req.rawBody para validar la firma del webhook de WhatsApp (Meta).
+  // rawBody: true expone req.rawBody para validar la firma del webhook de WhatsApp (YCloud).
   const app = await NestFactory.create(AppModule, { rawBody: true });
   console.log('========================================');
   console.log(

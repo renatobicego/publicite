@@ -1,5 +1,11 @@
-import { BadRequestException, Inject } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Inject,
+  NotFoundException,
+} from '@nestjs/common';
 import mongoose from 'mongoose';
+import PDFDocument from 'pdfkit';
 
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import Invoice from 'src/contexts/module_webhook/mercadopago/domain/entity/invoice.entity';
@@ -162,5 +168,212 @@ export class MpInvoiceService implements MpServiceInvoiceInterface {
     } catch (error: any) {
       throw error;
     }
+  }
+
+  async generateInvoiceTicket(
+    invoiceId: string,
+    userRequestId: string,
+  ): Promise<Buffer> {
+    this.logger.log('---INVOICE SERVICE GENERATE TICKET ---');
+
+    if (!mongoose.Types.ObjectId.isValid(invoiceId)) {
+      throw new BadRequestException('invoiceId inválido');
+    }
+
+    // 1. Buscar invoice con paymentId y subscriptionId.subscriptionPlan populados
+    const invoice =
+      await this.mpInvoiceRepository.getInvoiceByIdForTicket(invoiceId);
+
+    // 2. Validar que existe
+    if (!invoice) {
+      throw new NotFoundException('Invoice no encontrado');
+    }
+
+    // 3. Validar ownership (external_reference === userRequestId)
+    if (invoice.external_reference !== userRequestId) {
+      throw new ForbiddenException('No tienes acceso a este comprobante');
+    }
+
+    // 4. Validar que el pago está aprobado
+    if (invoice.paymentStatus !== 'approved') {
+      throw new BadRequestException(
+        'Solo se pueden generar tickets de pagos aprobados',
+      );
+    }
+
+    // 5. Resolver el payment. Si el invoice quedó con un paymentId placeholder
+    // (el payment no existía al crearse el invoice por orden de webhooks), el
+    // populate devuelve null: buscamos el payment real por sus referencias.
+    let payment = invoice.paymentId;
+    if (!payment) {
+      this.logger.warn(
+        `Invoice ${invoiceId} sin payment vinculado, buscando por referencias`,
+      );
+      payment = await this.paymentService.findApprovedPaymentByReference(
+        invoice.external_reference,
+        invoice.preapprovalId,
+        invoice.transactionAmount,
+      );
+    }
+
+    // 6. Generar PDF
+    return this.generatePdf(invoice, payment);
+  }
+
+  private generatePdf(invoice: any, paymentData: any): Promise<Buffer> {
+    const payment = paymentData ?? {};
+    const subscription = invoice.subscriptionId ?? {};
+
+    return new Promise<Buffer>((resolve, reject) => {
+      try {
+        const doc = new PDFDocument({ size: 'A4', margin: 50 });
+        const chunks: Buffer[] = [];
+
+        doc.on('data', (chunk: Buffer) => chunks.push(chunk));
+        doc.on('end', () => resolve(Buffer.concat(chunks)));
+        doc.on('error', (err: any) => reject(err));
+
+        // ----- Encabezado -----
+        doc
+          .fontSize(20)
+          .font('Helvetica-Bold')
+          .text('Comprobante de Pago', { align: 'center' });
+        doc.moveDown(0.3);
+        doc
+          .fontSize(10)
+          .font('Helvetica')
+          .fillColor('#555555')
+          .text(`N° de comprobante: ${invoice.invoice_id ?? invoice._id}`, {
+            align: 'center',
+          });
+        doc.fillColor('#000000');
+        doc.moveDown(1);
+        this.drawDivider(doc);
+        doc.moveDown(1);
+
+        // ----- Datos del pagador -----
+        this.drawSectionTitle(doc, 'Datos del pagador');
+        this.drawField(doc, 'Email', payment.payerEmail ?? '-');
+        this.drawField(doc, 'ID de pagador (MercadoPago)', payment.payerId ?? '-');
+        doc.moveDown(0.8);
+
+        // ----- Datos de la suscripción -----
+        this.drawSectionTitle(doc, 'Suscripción');
+        this.drawField(doc, 'Plan', invoice.reason ?? '-');
+        this.drawField(
+          doc,
+          'Período de facturación',
+          this.buildBillingPeriod(subscription),
+        );
+        doc.moveDown(0.8);
+
+        // ----- Detalle del pago -----
+        this.drawSectionTitle(doc, 'Detalle del pago');
+        this.drawField(
+          doc,
+          'Fecha de pago',
+          this.formatDate(invoice.timeOfUpdate),
+        );
+        this.drawField(
+          doc,
+          'Monto',
+          this.formatAmount(invoice.transactionAmount, invoice.currencyId),
+        );
+        this.drawField(doc, 'Moneda', invoice.currencyId ?? '-');
+        this.drawField(doc, 'Método de pago', payment.paymentMethodId ?? '-');
+        this.drawField(doc, 'Tipo de pago', payment.paymentTypeId ?? '-');
+        this.drawField(doc, 'Estado', 'Aprobado');
+        this.drawField(doc, 'Detalle de estado', payment.status_detail ?? '-');
+        this.drawField(doc, 'ID de pago MP', payment.mpPaymentId ?? '-');
+        doc.moveDown(1);
+        this.drawDivider(doc);
+        doc.moveDown(1);
+
+        // ----- Pie -----
+        doc
+          .fontSize(9)
+          .fillColor('#555555')
+          .text(`Fecha de emisión: ${this.formatDate(getTodayDateTime())}`);
+        doc.moveDown(0.5);
+        doc
+          .fontSize(8)
+          .text(
+            'Este comprobante no tiene valor fiscal. Es un resumen informativo de la transacción.',
+            { align: 'left' },
+          );
+        doc.fillColor('#000000');
+
+        doc.end();
+      } catch (error: any) {
+        reject(error);
+      }
+    });
+  }
+
+  private drawSectionTitle(doc: PDFKit.PDFDocument, title: string): void {
+    doc.fontSize(13).font('Helvetica-Bold').text(title);
+    doc.moveDown(0.3);
+    doc.font('Helvetica').fontSize(10);
+  }
+
+  private drawField(doc: PDFKit.PDFDocument, label: string, value: string): void {
+    doc.font('Helvetica-Bold').fontSize(10).text(`${label}: `, { continued: true });
+    doc.font('Helvetica').text(value ?? '-');
+  }
+
+  private drawDivider(doc: PDFKit.PDFDocument): void {
+    const y = doc.y;
+    doc
+      .strokeColor('#cccccc')
+      .lineWidth(1)
+      .moveTo(doc.page.margins.left, y)
+      .lineTo(doc.page.width - doc.page.margins.right, y)
+      .stroke()
+      .strokeColor('#000000');
+  }
+
+  private buildBillingPeriod(subscription: any): string {
+    const start = this.formatDateShort(subscription?.startDate);
+    const next = this.formatDateShort(subscription?.nextPaymentDate);
+    if (start === '-' && next === '-') return '-';
+    return `${start} - ${next}`;
+  }
+
+  private formatAmount(amount: number, currencyId: string): string {
+    const symbol = currencyId === 'USD' ? 'US$' : '$';
+    const value = typeof amount === 'number' ? amount : 0;
+    return `${symbol} ${value.toLocaleString('es-AR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}`;
+  }
+
+  // Parsea un string tipo ZonedDateTime ("...[America/...]") o ISO a DD/MM/YYYY HH:mm
+  private formatDate(value: string): string {
+    const date = this.parseToDate(value);
+    if (!date) return value ?? '-';
+    const dd = String(date.getDate()).padStart(2, '0');
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const yyyy = date.getFullYear();
+    const hh = String(date.getHours()).padStart(2, '0');
+    const min = String(date.getMinutes()).padStart(2, '0');
+    return `${dd}/${mm}/${yyyy} ${hh}:${min}`;
+  }
+
+  private formatDateShort(value: string): string {
+    const date = this.parseToDate(value);
+    if (!date) return value ? value.split('T')[0] : '-';
+    const dd = String(date.getDate()).padStart(2, '0');
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const yyyy = date.getFullYear();
+    return `${dd}/${mm}/${yyyy}`;
+  }
+
+  private parseToDate(value: string): Date | null {
+    if (!value) return null;
+    // Quitar sufijo de zona entre corchetes que Date no sabe parsear
+    const cleaned = value.replace(/\[.*\]$/, '');
+    const date = new Date(cleaned);
+    return isNaN(date.getTime()) ? null : date;
   }
 }

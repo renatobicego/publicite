@@ -3,12 +3,16 @@ import { ConfigService } from '@nestjs/config';
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { WhatsAppSenderInterface } from './whatsapp.sender.interface';
 
-// Límite de caracteres de un mensaje de texto en WhatsApp Cloud API.
+// Límite de caracteres de un mensaje de texto en WhatsApp.
 const WHATSAPP_TEXT_MAX_LENGTH = 4096;
 
+// Endpoint de envío de mensajes de YCloud (encola y devuelve el id del mensaje).
+const YCLOUD_MESSAGES_URL = 'https://api.ycloud.com/v2/whatsapp/messages';
+
 /**
- * Cliente HTTP hacia la Graph API de Meta para enviar mensajes de WhatsApp.
- * Usa el Phone Number ID y el Access Token (System User) configurados por env.
+ * Cliente HTTP hacia la API de YCloud para enviar mensajes de WhatsApp.
+ * Autentica con la API Key (header `X-API-Key`) configurada por env.
+ * Doc: https://docs.ycloud.com/reference/whatsapp_message-send
  */
 @Injectable()
 export class WhatsAppSender implements WhatsAppSenderInterface {
@@ -17,53 +21,63 @@ export class WhatsAppSender implements WhatsAppSenderInterface {
     private readonly logger: MyLoggerService,
   ) {}
 
-  async sendText(to: string, body: string): Promise<void> {
-    const apiVersion =
-      this.configService.get<string>('WHATSAPP_API_VERSION') ?? 'v21.0';
-    const phoneNumberId = this.configService.get<string>(
-      'WHATSAPP_PHONE_NUMBER_ID',
-    );
-    const accessToken = this.configService.get<string>('WHATSAPP_ACCESS_TOKEN');
+  async sendText(from: string, to: string, body: string): Promise<void> {
+    const apiKey = this.configService.get<string>('YCLOUD_API_KEY');
 
-    if (!phoneNumberId || !accessToken) {
+    if (!apiKey) {
       this.logger.error(
-        'Faltan WHATSAPP_PHONE_NUMBER_ID o WHATSAPP_ACCESS_TOKEN en las variables de entorno',
+        'Falta YCLOUD_API_KEY en las variables de entorno',
         'WhatsAppSender',
       );
-      throw new Error('WhatsApp Cloud API no está configurada correctamente');
+      throw new Error('YCloud no está configurado correctamente');
     }
 
-    const url = `https://graph.facebook.com/${apiVersion}/${phoneNumberId}/messages`;
+    if (!from) {
+      this.logger.error(
+        'No se pudo determinar el número del negocio (from) para responder por YCloud',
+        'WhatsAppSender',
+      );
+      throw new Error('Número de origen (from) no disponible');
+    }
+
     const text = (body ?? '').slice(0, WHATSAPP_TEXT_MAX_LENGTH);
 
     try {
-      const response = await fetch(url, {
+      const response = await fetch(YCLOUD_MESSAGES_URL, {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${accessToken}`,
+          'X-API-Key': apiKey,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          messaging_product: 'whatsapp',
-          recipient_type: 'individual',
-          to,
+          from: this.toE164(from),
+          to: this.toE164(to),
           type: 'text',
-          text: { preview_url: true, body: text },
+          text: { body: text, preview_url: true },
         }),
       });
 
       if (!response.ok) {
         const errorBody = await response.text();
         this.logger.error(
-          `Error enviando mensaje a WhatsApp (${response.status}): ${errorBody}`,
+          `Error enviando mensaje a YCloud (${response.status}): ${errorBody}`,
           'WhatsAppSender',
         );
       }
     } catch (error: any) {
       this.logger.error(
-        `Fallo de red enviando mensaje a WhatsApp: ${error.message}`,
+        `Fallo de red enviando mensaje a YCloud: ${error.message}`,
         'WhatsAppSender',
       );
     }
+  }
+
+  /**
+   * Normaliza un teléfono a E.164 (con `+`): saca espacios, guiones y paréntesis,
+   * y antepone `+` si falta. YCloud espera el formato E.164 en `from`/`to`.
+   */
+  private toE164(phone: string): string {
+    const cleaned = (phone ?? '').replace(/[\s\-()]/g, '');
+    return cleaned.startsWith('+') ? cleaned : `+${cleaned}`;
   }
 }

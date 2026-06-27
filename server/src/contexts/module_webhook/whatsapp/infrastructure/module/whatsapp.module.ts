@@ -8,7 +8,7 @@ import { WhatsAppSender } from '../../application/adapter/out/whatsapp.sender';
 import { WHATSAPP_SENDER } from '../../application/adapter/out/whatsapp.sender.interface';
 
 /**
- * Canal de WhatsApp para el agente del glosario.
+ * Canal de WhatsApp (vía YCloud) para el agente del glosario.
  * Importa ChatbotModule (que exporta 'ChatbotServiceInterface') y lo expone vía webhook.
  * MyLoggerService está disponible globalmente (LoggerModule es @Global()).
  */

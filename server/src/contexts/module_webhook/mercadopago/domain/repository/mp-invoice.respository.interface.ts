@@ -8,4 +8,6 @@ export interface MercadoPagoInvoiceRepositoryInterface {
   ): Promise<void>;
 
   getInvoicesByExternalReferenceId(id: string, page: number, limit: number): Promise<any>;
+
+  getInvoiceByIdForTicket(invoiceId: string): Promise<any>;
 }

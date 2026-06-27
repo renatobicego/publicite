@@ -35,6 +35,7 @@ Aquí podrás encontrar algunos conceptos y términos que usaremos en el sitio p
 📋 ÍNDICE DE CONTENIDOS
 ═══════════════════════════════════════════════════════════════
 
+0. ¿QUÉ ES PUBLICITE? Y ¿PARA QUÉ SIRVE?
 1. FORMAS DE USO
 2. REGISTRO E INICIO DE SESIÓN
 3. TU PERFIL Y CONFIGURACIÓN
@@ -49,6 +50,29 @@ Aquí podrás encontrar algunos conceptos y términos que usaremos en el sitio p
 12. ENLACES RÁPIDOS
 
 ═══════════════════════════════════════════════════════════════
+
+---
+
+## 0. ¿QUÉ ES PUBLICITE? Y ¿PARA QUÉ SIRVE? 🌟
+
+**Publicite es una plataforma que combina un sistema de anuncios (avisos) con una red de contactos.** En pocas palabras: te permite **publicar lo que ofrecés o lo que necesitás** (bienes y servicios) y **controlar quién lo ve**, ya sea por cercanía geográfica o dentro de tu red de contactos de confianza.
+
+### 🎯 ¿Para qué sirve?
+- **Publicar anuncios** de lo que vendés u ofrecés (un bien o un servicio) o de lo que estás buscando (una necesidad).
+- **Descubrir** ofertas y necesidades de otros usuarios, filtrando por ubicación y categoría.
+- **Conectarte** con personas y empresas como contactos, amigos o topamigos, y compartir anuncios según el nivel de relación.
+- **Organizar contenido** en revistas (colecciones de anuncios) y grupos (espacios colaborativos).
+
+### 🧭 ¿Cómo funciona la visibilidad? (lo más importante)
+Publicite tiene **dos formas de mostrar los anuncios**:
+- **Anuncios Libres** 🌐: se ven según la **ubicación** y el alcance geográfico que definas (ej: a la redonda de X km). Ideales para llegar a gente cercana que no conocés.
+- **Anuncios de Agenda** 📇: se ven **solo dentro de tu red** (contactos, amigos o topamigos), según el nivel de relación que elijas. Ideales para algo más privado o dirigido a tu círculo.
+
+### 👥 ¿A quién está dirigido?
+A **empresas y personas** que quieran ofrecer o encontrar bienes y servicios, tanto a nivel **local** (por geolocalización) como dentro de su **red de confianza**. Podés explorar como invitado o registrarte para publicar y acceder a todo.
+
+### 💡 En resumen
+Es como un **clasificado de avisos potenciado con una red social**: publicás, elegís quién lo ve (por zona o por vínculo) y armás tu comunidad con contactos, grupos y revistas.
 
 ---
 
@@ -629,11 +653,20 @@ Esperamos que disfrutes de la plataforma y encuentres todo lo que buscas.
     messages.push({
       role: 'system',
       content: `Eres un asistente virtual de Publicite, una plataforma de publicación y gestión de anuncios.
-Tu objetivo es ayudar a los usuarios a entender cómo funciona la plataforma y guiarlos paso a paso.
+Tu objetivo principal es ayudar a los usuarios a entender cómo funciona la plataforma y guiarlos paso a paso,
+pero también podés responder consultas generales de cualquier tema usando tu conocimiento, de forma útil y profesional.
 
-IMPORTANTE: Para preguntas informativas, solo debes responder en base a la información del siguiente glosario.
-Si te hacen una pregunta informativa que no está relacionada con Publicite o el glosario, debes indicar amablemente
-que solo puedes ayudar con preguntas sobre el funcionamiento de Publicite.
+IMPORTANTE — TEMAS DE PUBLICITE: Cuando te pregunten sobre Publicite, respondé usando como base el siguiente glosario.
+Podés explicar, resumir, inferir y conectar la información del glosario para responder preguntas conceptuales sobre la
+plataforma (qué es, para qué sirve, cómo funciona, a quién apunta, diferencias entre funciones, etc.), aunque la
+respuesta no esté escrita palabra por palabra. Lo que NO debés hacer es inventar datos puntuales que no figuren en el
+glosario (precios exactos, links que no aparezcan, fechas o políticas específicas de Publicite).
+
+TEMAS GENERALES: Además de Publicite, podés responder consultas de cualquier otro tema con tu conocimiento general
+(definiciones, cultura general, cálculos, redacción, recomendaciones, ayuda variada, etc.), siempre de forma útil,
+correcta y con un tono profesional y amable. Si no sabés algo o no estás seguro, admitilo con honestidad en lugar de
+inventar. Aunque ayudes con temas generales, mantené tu identidad de asistente de Publicite: si la persona muestra
+intención de publicar, vender, ofrecer o crear algo, guiala hacia la plataforma.
 
 EXCEPCIÓN — DETECCIÓN DE INTENCIÓN:
 Tenés a disposición la tool "${CREATE_AD_TOOL_NAME}". Debés invocarla SIEMPRE que el usuario exprese intención
@@ -670,7 +703,9 @@ INSTRUCCIONES PARA RESPONDER (cuando NO disparás la tool):
 
 6. **Contexto**: Si el usuario hace una pregunta de seguimiento, mantén el contexto de la conversación anterior.
 
-7. **Información no disponible**: Si la información no está en el glosario, indica amablemente:
+7. **Cuándo derivar a soporte**: Primero intentá responder con lo que sabés del glosario (incluida la sección
+   "¿Qué es Publicite?"). Derivá a soporte SOLO si es un caso puntual que no podés resolver con el glosario —por
+   ejemplo, un problema con una cuenta, un pago, un error técnico o datos específicos del usuario—. En ese caso indicá:
    "Para esa consulta específica, te recomiendo contactar directamente al soporte de Publicite en: publicite@soonpublicite.com"
 
 8. **Ejemplos prácticos**: Cuando sea posible, proporciona ejemplos concretos de uso.
@@ -682,8 +717,8 @@ INSTRUCCIONES PARA RESPONDER (cuando NO disparás la tool):
     - Para preguntas sobre "cómo hacer" algo: respuestas detalladas con todos los pasos
     - Siempre prioriza la claridad sobre la brevedad
 
-RECUERDA: Tu objetivo es que el usuario entienda perfectamente cómo usar Publicite y tenga enlaces
-directos para acceder a las funcionalidades que necesita.`,
+RECUERDA: Tu objetivo principal es que el usuario entienda cómo usar Publicite y tenga los enlaces directos que
+necesita; pero si te consulta cualquier otra cosa, ayudalo igual con la misma calidad y amabilidad.`,
     });
 
     const recentHistory = conversationHistory.slice(-10);

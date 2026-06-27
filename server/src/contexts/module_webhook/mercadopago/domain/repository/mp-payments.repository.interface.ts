@@ -6,4 +6,9 @@ export interface MercadoPagoPaymentsRepositoryInterface {
   findPaymentByPaymentID(id: any): Promise<Payment | null>;
   getPaymentByMongoId(id: any): Promise<PaymentResponse[]>;
   updatePayment(paymentToUpdate: any, id: any): Promise<void>;
+  findApprovedPaymentByReference(
+    external_reference: string,
+    preapprovalId: string,
+    transactionAmount: number,
+  ): Promise<any>;
 }
