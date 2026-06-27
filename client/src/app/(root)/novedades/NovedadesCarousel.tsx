@@ -83,7 +83,7 @@ export default function NovedadesCarousel({ novedades }: Props) {
                 shadow="none"
               >
                 {/* image */}
-                <div className="relative max-h-[60vh] lg:max-h-[75vh] overflow-hidden">
+                <div className="relative h-[60vh] lg:h-[75vh] overflow-hidden">
                   <Image
                     src={imageUrl}
                     alt={title}
