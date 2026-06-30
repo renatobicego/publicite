@@ -15,6 +15,7 @@ import { SubscriptionServiceInterface } from 'src/contexts/module_webhook/mercad
 import { MercadoPagoInvoiceRepositoryInterface } from '../../domain/repository/mp-invoice.respository.interface';
 import { getTodayDateTime } from 'src/contexts/module_shared/utils/functions/getTodayDateTime';
 import { authorized_payments } from '../../domain/entity_mp/authorized_payments';
+import { PUBLICITE_LOGO_BASE64 } from './assets/publicite-logo';
 
 export class MpInvoiceService implements MpServiceInvoiceInterface {
 
@@ -233,6 +234,19 @@ export class MpInvoiceService implements MpServiceInvoiceInterface {
         doc.on('end', () => resolve(Buffer.concat(chunks)));
         doc.on('error', (err: any) => reject(err));
 
+        // ----- Logo / branding -----
+        try {
+          const logoBuffer = Buffer.from(PUBLICITE_LOGO_BASE64, 'base64');
+          const logoWidth = 110;
+          const logoHeight = (logoWidth * 193) / 303; // proporción original 303x193
+          const logoX = (doc.page.width - logoWidth) / 2;
+          doc.image(logoBuffer, logoX, doc.y, { width: logoWidth });
+          doc.y = doc.y + logoHeight + 14;
+        } catch (logoError) {
+          // Si el logo falla por cualquier motivo, generamos el comprobante igual (sin branding).
+          this.logger.warn('No se pudo dibujar el logo en el comprobante');
+        }
+
         // ----- Encabezado -----
         doc
           .fontSize(20)
@@ -362,7 +376,9 @@ export class MpInvoiceService implements MpServiceInvoiceInterface {
 
   private formatDateShort(value: string): string {
     const date = this.parseToDate(value);
-    if (!date) return value ? value.split('T')[0] : '-';
+    // Si no es una fecha válida (ej. suscripción free: "free" / "FREE SUBSCRIPTION"),
+    // devolvemos "-" en vez de mostrar el valor crudo.
+    if (!date) return '-';
     const dd = String(date.getDate()).padStart(2, '0');
     const mm = String(date.getMonth() + 1).padStart(2, '0');
     const yyyy = date.getFullYear();

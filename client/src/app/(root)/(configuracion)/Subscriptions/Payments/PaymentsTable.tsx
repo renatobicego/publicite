@@ -17,6 +17,7 @@ import {
   parseAbsoluteToLocal,
   parseZonedDateTime,
 } from "@internationalized/date";
+import { FaDownload } from "react-icons/fa6";
 
 export default function PaymentsTable() {
   const [loadingState, setLoadingState] = useState<"loading" | "idle">("idle");
@@ -54,7 +55,7 @@ export default function PaymentsTable() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
-  const renderCell = useCallback((data: Invoice, columnKey: keyof Invoice) => {
+  const renderCell = useCallback((data: Invoice, columnKey: string) => {
     switch (columnKey) {
       case "timeOfUpdate":
         const date = parseZonedDateTime(data?.timeOfUpdate);
@@ -102,6 +103,21 @@ export default function PaymentsTable() {
         return (
           <p className="max-w-16">{`${nextRetryDay.hour}:${nextRetryDay.minute} ${nextRetryDay.day}/${nextRetryDay.month}/${nextRetryDay.year}`}</p>
         );
+      case "comprobante":
+        // Solo se puede descargar el comprobante de pagos aprobados.
+        if (data?.paymentStatus !== "approved") return "-";
+        return (
+          <a
+            href={`/api/invoices/${data._id}/ticket`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 text-secondary hover:underline whitespace-nowrap"
+            title="Descargar comprobante en PDF"
+          >
+            <FaDownload />
+            Descargar
+          </a>
+        );
       default:
         return;
     }
@@ -133,6 +149,7 @@ export default function PaymentsTable() {
         <TableColumn key="transactionAmount">Monto</TableColumn>
         <TableColumn key="retryAttempts">Intento de Cobro</TableColumn>
         <TableColumn key="nextRetryDay">Próximo Pago</TableColumn>
+        <TableColumn key="comprobante">Comprobante</TableColumn>
       </TableHeader>
       <TableBody
         items={items}
