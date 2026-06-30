@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import mongoose from 'mongoose';
-import PDFDocument from 'pdfkit';
+import PDFDocument = require('pdfkit');
 
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import Invoice from 'src/contexts/module_webhook/mercadopago/domain/entity/invoice.entity';

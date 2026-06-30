@@ -24,8 +24,20 @@ export async function GET(
     );
 
     if (!res.ok) {
+      // Reenviamos el error real del backend para poder diagnosticar
+      // (ej. 403 = el comprobante no pertenece al usuario logueado).
+      const detail = await res.text().catch(() => "");
+      console.error(
+        `Error al generar comprobante ${params.invoiceId}: backend respondió ${res.status} - ${detail}`
+      );
       return NextResponse.json(
-        { error: "No se pudo generar el comprobante" },
+        {
+          error:
+            res.status === 403
+              ? "No tenés acceso a este comprobante (debés estar logueado con la cuenta dueña del pago)."
+              : "No se pudo generar el comprobante",
+          status: res.status,
+        },
         { status: res.status }
       );
     }
