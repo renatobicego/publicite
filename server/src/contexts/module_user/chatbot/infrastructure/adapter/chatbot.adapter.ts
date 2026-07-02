@@ -6,6 +6,7 @@ import {
   ChatSessionResponse,
   SendMessageResponse,
   GetSessionHistoryResponse,
+  GetUserChatSessionsResponse,
 } from '../../application/dto/HTTP-RESPONSE/chatbot.response';
 
 @Injectable()
@@ -46,6 +47,18 @@ export class ChatbotAdapter implements ChatbotAdapterInterface {
   async deleteSession(sessionId: string): Promise<boolean> {
     try {
       return await this.chatbotService.deleteSession(sessionId);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  async getUserChatSessions(
+    userId: string,
+    limit?: number,
+    page?: number,
+  ): Promise<GetUserChatSessionsResponse> {
+    try {
+      return await this.chatbotService.getUserChatSessions(userId, limit, page);
     } catch (error: any) {
       throw error;
     }

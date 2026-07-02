@@ -10,6 +10,7 @@ import {
   ChatSessionResponse,
   SendMessageResponse,
   GetSessionHistoryResponse,
+  GetUserChatSessionsResponse,
   ChatMessageResponse,
 } from '../dto/HTTP-RESPONSE/chatbot.response';
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
@@ -173,6 +174,61 @@ export class ChatbotService implements ChatbotServiceInterface {
       return await this.chatbotRepository.deleteSession(sessionId);
     } catch (error: any) {
       this.logger.error('Error deleting session: ' + error.message);
+      throw error;
+    }
+  }
+
+  async getUserChatSessions(
+    userId: string,
+    limit: number = 20,
+    page: number = 1,
+  ): Promise<GetUserChatSessionsResponse> {
+    try {
+      this.logger.log(`Getting chat sessions for user: ${userId}`);
+
+      const sessions = await this.chatbotRepository.findSessionsByUserId(
+        userId,
+        limit,
+        page,
+      );
+
+      const sessionSummaries = sessions
+        .filter((session) => session.getMessages.length > 0)
+        .map((session) => {
+          const messages = session.getMessages;
+          const firstUserMessage = messages.find(
+            (msg) => msg.getRole === 'user',
+          );
+          const lastMessage = messages[messages.length - 1];
+
+          // Generar título a partir del primer mensaje del usuario
+          const title = firstUserMessage
+            ? firstUserMessage.getContent.length > 50
+              ? firstUserMessage.getContent.substring(0, 50) + '...'
+              : firstUserMessage.getContent
+            : 'Conversación sin título';
+
+          return {
+            sessionId: session.getSessionId,
+            title,
+            lastMessage: lastMessage ? lastMessage.getContent.substring(0, 100) : undefined,
+            lastMessageAt: session.getUpdatedAt,
+            messageCount: messages.length,
+            createdAt: session.getCreatedAt,
+          };
+        });
+
+      // Para totalCount necesitamos saber cuántas sesiones tiene el usuario en total
+      // Como findSessionsByUserId ya pagina, asumimos hasMore si devolvió exactamente limit
+      const hasMore = sessions.length === limit;
+
+      return {
+        sessions: sessionSummaries,
+        totalCount: sessionSummaries.length,
+        hasMore,
+      };
+    } catch (error: any) {
+      this.logger.error('Error getting user chat sessions: ' + error.message);
       throw error;
     }
   }

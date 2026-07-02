@@ -10,10 +10,12 @@ import {
     ScrollShadow,
 } from "@nextui-org/react";
 import { FaPaperPlane } from "react-icons/fa6";
+import { FaClockRotateLeft } from "react-icons/fa6";
 import { CustomInputWithoutFormik } from "@/components/inputs/CustomInputs";
 import { useChatbot } from "@/components/buttons/ChatbotButton/useChatbot";
 import { ActiveStepInput } from "@/components/buttons/ChatbotButton/CreateAdWizard/CreateAdWizard";
 import { OrangeCubeIcon } from "@/components/buttons/ChatbotButton/OrangeCubeIcon";
+import { ChatHistory } from "@/components/buttons/ChatbotButton/ChatHistory";
 
 export default function CubitoChat() {
     const {
@@ -25,6 +27,16 @@ export default function CubitoChat() {
         handleSendMessage,
         handleStartCreateAd,
         handleSubmitAd,
+        // Chat History
+        chatSessions,
+        activeSessionId,
+        isLoadingHistory,
+        showHistory,
+        setShowHistory,
+        loadChatHistory,
+        loadSessionMessages,
+        startNewChat,
+        deleteSession,
     } = useChatbot();
 
     const [inputValue, setInputValue] = useState("");
@@ -195,131 +207,158 @@ export default function CubitoChat() {
                 <div className="w-28 h-20">
                     <OrangeCubeIcon />
                 </div>
-                <div>
+                <div className="flex-1">
                     <h1 className="text-xl font-semibold">Cubito</h1>
                     <p className="text-xs text-orange-100">
                         Tu asistente de Publicite
                     </p>
                 </div>
+                <Button
+                    isIconOnly
+                    size="sm"
+                    variant="light"
+                    radius="full"
+                    onPress={() => {
+                        setShowHistory(!showHistory);
+                        if (!showHistory) loadChatHistory();
+                    }}
+                    className="text-white hover:bg-orange-700"
+                    aria-label="Ver historial de chats"
+                >
+                    <FaClockRotateLeft size={18} />
+                </Button>
             </CardHeader>
 
             {/* Messages Container */}
             <CardBody className="flex-1 overflow-hidden p-0">
-                <ScrollShadow ref={scrollContainerRef} className="flex-1 overflow-y-auto p-6 space-y-4">
-                    {messages.length === 0 && !isWizardActive ? (
-                        <div className="flex flex-col items-center justify-center h-full text-center text-gray-500 dark:text-gray-400 gap-4">
-                            <div className="w-20 h-20 opacity-50">
-                                <OrangeCubeIcon />
+                {showHistory ? (
+                    <ChatHistory
+                        sessions={chatSessions}
+                        isLoading={isLoadingHistory}
+                        activeSessionId={activeSessionId}
+                        onSelectSession={loadSessionMessages}
+                        onNewChat={startNewChat}
+                        onDeleteSession={deleteSession}
+                        onClose={() => setShowHistory(false)}
+                        variant="panel"
+                    />
+                ) : (
+                    <ScrollShadow ref={scrollContainerRef} className="flex-1 overflow-y-auto p-6 space-y-4">
+                        {messages.length === 0 && !isWizardActive ? (
+                            <div className="flex flex-col items-center justify-center h-full text-center text-gray-500 dark:text-gray-400 gap-4">
+                                <div className="w-20 h-20 opacity-50">
+                                    <OrangeCubeIcon />
+                                </div>
+                                <div>
+                                    <p className="text-lg font-medium">¡Hola! Soy Cubito</p>
+                                    <p className="text-sm mt-1">
+                                        Preguntame lo que quieras sobre Publicite o pedime que te
+                                        ayude a crear un anuncio.
+                                    </p>
+                                </div>
                             </div>
-                            <div>
-                                <p className="text-lg font-medium">¡Hola! Soy Cubito</p>
-                                <p className="text-sm mt-1">
-                                    Preguntame lo que quieras sobre Publicite o pedime que te
-                                    ayude a crear un anuncio.
-                                </p>
-                            </div>
-                        </div>
-                    ) : (
-                        <>
-                            {/* Regular chat messages */}
-                            {messages.map((message) => (
-                                <div
-                                    key={message.id}
-                                    className={`flex ${message.role === "user" ? "justify-end" : "justify-start"
-                                        }`}
-                                >
+                        ) : (
+                            <>
+                                {/* Regular chat messages */}
+                                {messages.map((message) => (
                                     <div
-                                        className={`max-w-lg px-5 py-3 rounded-2xl ${message.role === "user"
-                                            ? "bg-service text-white rounded-br-none"
-                                            : "bg-white dark:bg-slate-700 text-gray-900 dark:text-white border border-gray-200 dark:border-slate-600 rounded-bl-none shadow-sm"
+                                        key={message.id}
+                                        className={`flex ${message.role === "user" ? "justify-end" : "justify-start"
                                             }`}
                                     >
-                                        {message.parts.map((part, idx) => {
-                                            if (part.type === "text") {
-                                                return (
-                                                    <div
-                                                        key={idx}
-                                                        className="text-sm md:text-base leading-relaxed"
-                                                    >
-                                                        {parseAndRenderText(part.text)}
-                                                    </div>
-                                                );
-                                            }
-                                            return null;
-                                        })}
-                                    </div>
-                                </div>
-                            ))}
-
-                            {/* Create Ad Button */}
-                            {showCreateAdButton && (
-                                <div className="flex justify-start">
-                                    <Button
-                                        size="md"
-                                        color="primary"
-                                        variant="shadow"
-                                        onPress={handleStartCreateAd}
-                                        className="mt-2"
-                                    >
-                                        Crear anuncio aquí
-                                    </Button>
-                                </div>
-                            )}
-
-                            {/* Wizard messages */}
-                            {wizard.messages.map((msg) => (
-                                <div
-                                    key={msg.id}
-                                    className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"
-                                        }`}
-                                >
-                                    <div
-                                        className={`max-w-lg px-5 py-3 rounded-2xl ${msg.role === "user"
-                                            ? "bg-service text-white rounded-br-none"
-                                            : "bg-white dark:bg-slate-700 text-gray-900 dark:text-white border border-gray-200 dark:border-slate-600 rounded-bl-none shadow-sm"
-                                            }`}
-                                    >
-                                        <div className="text-sm md:text-base leading-relaxed">
-                                            {parseAndRenderText(msg.content)}
+                                        <div
+                                            className={`max-w-lg px-5 py-3 rounded-2xl ${message.role === "user"
+                                                ? "bg-service text-white rounded-br-none"
+                                                : "bg-white dark:bg-slate-700 text-gray-900 dark:text-white border border-gray-200 dark:border-slate-600 rounded-bl-none shadow-sm"
+                                                }`}
+                                        >
+                                            {message.parts.map((part, idx) => {
+                                                if (part.type === "text") {
+                                                    return (
+                                                        <div
+                                                            key={idx}
+                                                            className="text-sm md:text-base leading-relaxed"
+                                                        >
+                                                            {parseAndRenderText(part.text)}
+                                                        </div>
+                                                    );
+                                                }
+                                                return null;
+                                            })}
                                         </div>
                                     </div>
-                                </div>
-                            ))}
+                                ))}
 
-                            {/* Active wizard step input */}
-                            {isWizardActive && (
-                                <div className="flex justify-start w-full">
-                                    <div className="max-w-lg w-full">
-                                        <ActiveStepInput
-                                            step={wizard.step}
-                                            wizard={wizard}
-                                            onSubmitAd={handleSubmitAd}
-                                            isSubmitting={isSubmittingAd}
+                                {/* Create Ad Button */}
+                                {showCreateAdButton && (
+                                    <div className="flex justify-start">
+                                        <Button
+                                            size="md"
+                                            color="primary"
+                                            variant="shadow"
+                                            onPress={handleStartCreateAd}
+                                            className="mt-2"
+                                        >
+                                            Crear anuncio aquí
+                                        </Button>
+                                    </div>
+                                )}
+
+                                {/* Wizard messages */}
+                                {wizard.messages.map((msg) => (
+                                    <div
+                                        key={msg.id}
+                                        className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"
+                                            }`}
+                                    >
+                                        <div
+                                            className={`max-w-lg px-5 py-3 rounded-2xl ${msg.role === "user"
+                                                ? "bg-service text-white rounded-br-none"
+                                                : "bg-white dark:bg-slate-700 text-gray-900 dark:text-white border border-gray-200 dark:border-slate-600 rounded-bl-none shadow-sm"
+                                                }`}
+                                        >
+                                            <div className="text-sm md:text-base leading-relaxed">
+                                                {parseAndRenderText(msg.content)}
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+
+                                {/* Active wizard step input */}
+                                {isWizardActive && (
+                                    <div className="flex justify-start w-full">
+                                        <div className="max-w-lg w-full">
+                                            <ActiveStepInput
+                                                step={wizard.step}
+                                                wizard={wizard}
+                                                onSubmitAd={handleSubmitAd}
+                                                isSubmitting={isSubmittingAd}
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+                            </>
+                        )}
+
+                        {isLoading && (
+                            <div className="flex justify-start">
+                                <div className="bg-white dark:bg-slate-700 text-gray-900 dark:text-white border border-gray-200 dark:border-slate-600 px-5 py-3 rounded-2xl rounded-bl-none shadow-sm">
+                                    <div className="flex space-x-2">
+                                        <div className="w-2.5 h-2.5 bg-orange-500 rounded-full animate-bounce" />
+                                        <div
+                                            className="w-2.5 h-2.5 bg-orange-500 rounded-full animate-bounce"
+                                            style={{ animationDelay: "0.1s" }}
+                                        />
+                                        <div
+                                            className="w-2.5 h-2.5 bg-orange-500 rounded-full animate-bounce"
+                                            style={{ animationDelay: "0.2s" }}
                                         />
                                     </div>
                                 </div>
-                            )}
-                        </>
-                    )}
-
-                    {isLoading && (
-                        <div className="flex justify-start">
-                            <div className="bg-white dark:bg-slate-700 text-gray-900 dark:text-white border border-gray-200 dark:border-slate-600 px-5 py-3 rounded-2xl rounded-bl-none shadow-sm">
-                                <div className="flex space-x-2">
-                                    <div className="w-2.5 h-2.5 bg-orange-500 rounded-full animate-bounce" />
-                                    <div
-                                        className="w-2.5 h-2.5 bg-orange-500 rounded-full animate-bounce"
-                                        style={{ animationDelay: "0.1s" }}
-                                    />
-                                    <div
-                                        className="w-2.5 h-2.5 bg-orange-500 rounded-full animate-bounce"
-                                        style={{ animationDelay: "0.2s" }}
-                                    />
-                                </div>
                             </div>
-                        </div>
-                    )}
-                </ScrollShadow>
+                        )}
+                    </ScrollShadow>
+                )}
             </CardBody>
 
             {/* Input Form */}

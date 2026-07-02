@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { sendMessageToAI } from "@/services/chatbotServices";
+import { sendMessageToAI, getChatSessionHistory, deleteChatSessionService, getUserChatSessions } from "@/services/chatbotServices";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { UIMessage } from "ai";
 import { useCreateAdWizard } from "./CreateAdWizard/useCreateAdWizard";
@@ -13,6 +13,7 @@ import { useRouter } from "next-nprogress-bar";
 import { POSTS } from "@/utils/data/urls";
 import { useUser } from "@clerk/nextjs";
 import { getUserActivePostandActiveRelationsNumber } from "@/services/subscriptionServices";
+import { ChatSessionSummary } from "@/types/chatbotTypes";
 
 /**
  * Shared hook that encapsulates all chatbot logic.
@@ -25,6 +26,14 @@ export function useChatbot() {
   );
   const [showCreateAdButton, setShowCreateAdButton] = useState(false);
   const [isSubmittingAd, setIsSubmittingAd] = useState(false);
+
+  // ============================================================
+  // CHAT HISTORY STATE - Descomentar cuando el BE esté listo
+  // ============================================================
+  const [chatSessions, setChatSessions] = useState<ChatSessionSummary[]>([]);
+  const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
 
   const wizard = useCreateAdWizard();
   const router = useRouter();
@@ -239,6 +248,107 @@ export function useChatbot() {
     }
   }, [wizard, router, startUpload, user]);
 
+  // ============================================================
+  // CHAT HISTORY HANDLERS - Descomentar cuando el BE esté listo
+  // ============================================================
+
+  /**
+   * Carga la lista de sesiones de chat del usuario.
+   * USA: getUserChatSessions (implementado en BE)
+   */
+  const loadChatHistory = useCallback(async () => {
+    if (!user) return;
+    setIsLoadingHistory(true);
+    try {
+      const response = await getUserChatSessions(1, 20);
+      if (response && "error" in response) {
+        toastifyError("Error al cargar el historial de chats");
+        return;
+      }
+      setChatSessions(response.sessions);
+    } catch {
+      toastifyError("Error al cargar el historial de chats");
+    } finally {
+      setIsLoadingHistory(false);
+    }
+  }, [user]);
+
+  /**
+   * Carga los mensajes de una sesión específica y la setea como activa.
+   * USA: getChatSessionHistory (YA EXISTE en BE)
+   */
+  const loadSessionMessages = useCallback(
+    async (sessionId: string) => {
+      if (!user) return;
+      setIsLoadingHistory(true);
+      try {
+        const response = await getChatSessionHistory(sessionId);
+        if (response && "error" in response) {
+          toastifyError("Error al cargar la conversación");
+          return;
+        }
+
+        const loadedMessages: UIMessage[] = response.messages.map(
+          (msg: { role: string; content: string; timestamp: string }, idx: number) => ({
+            id: `${sessionId}-${idx}`,
+            role: msg.role as "user" | "assistant",
+            content: msg.content,
+            parts: [{ text: msg.content, type: "text" as const }],
+          })
+        );
+        setMessages(loadedMessages);
+        setActiveSessionId(sessionId);
+        sessionStorage.setItem("chatSessionId", sessionId);
+        setShowHistory(false);
+      } catch {
+        toastifyError("Error al cargar la conversación");
+      } finally {
+        setIsLoadingHistory(false);
+      }
+    },
+    [user]
+  );
+
+  /**
+   * Inicia un nuevo chat limpio.
+   */
+  const startNewChat = useCallback(() => {
+    setMessages([]);
+    setActiveSessionId(null);
+    setShowCreateAdButton(false);
+    sessionStorage.removeItem("chatSessionId");
+    wizard.cancelWizard();
+    setShowHistory(false);
+  }, [wizard]);
+
+  /**
+   * Elimina una sesión del historial.
+   * USA: deleteChatSession (YA EXISTE en BE)
+   */
+  const deleteSession = useCallback(
+    async (sessionId: string) => {
+      if (!user) return;
+      try {
+        const response = await deleteChatSessionService(sessionId);
+        if (response && "error" in response) {
+          toastifyError("Error al eliminar la conversación");
+          return;
+        }
+
+        setChatSessions((prev) =>
+          prev.filter((s) => s.sessionId !== sessionId)
+        );
+        if (activeSessionId === sessionId) {
+          startNewChat();
+        }
+        toastifySuccess("Conversación eliminada");
+      } catch {
+        toastifyError("Error al eliminar la conversación");
+      }
+    },
+    [user, activeSessionId, startNewChat]
+  );
+
   return {
     messages,
     status,
@@ -248,5 +358,22 @@ export function useChatbot() {
     handleSendMessage,
     handleStartCreateAd,
     handleSubmitAd,
+    // Chat History
+    chatSessions,
+    activeSessionId,
+    isLoadingHistory,
+    showHistory,
+    setShowHistory,
+    loadChatHistory,
+    loadSessionMessages,
+    startNewChat,
+    deleteSession,
   };
 }
+
+// ============================================================
+// CHAT HISTORY FUNCTIONS - Descomentar cuando el BE esté listo
+// ============================================================
+// Estas funciones están definidas dentro del hook arriba.
+// Descomentar el bloque correspondiente en el hook cuando
+// el backend tenga las rutas listas.

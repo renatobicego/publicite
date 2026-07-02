@@ -3,12 +3,14 @@ import {
   ChatSessionResponse,
   SendMessageResponse,
   GetSessionHistoryResponse,
+  GetUserChatSessionsResponse,
 } from '../dto/HTTP-RESPONSE/chatbot.response';
 
 export interface ChatbotAdapterInterface {
   createSession(userId?: string): Promise<ChatSessionResponse>;
   sendMessage(request: SendMessageRequest): Promise<SendMessageResponse>;
   getSessionHistory(sessionId: string, limit?: number, page?: number): Promise<GetSessionHistoryResponse>;
+  getUserChatSessions(userId: string, limit?: number, page?: number): Promise<GetUserChatSessionsResponse>;
   deleteSession(sessionId: string): Promise<boolean>;
   generateAdImage(prompt: string, userId?: string): Promise<string>;
 }

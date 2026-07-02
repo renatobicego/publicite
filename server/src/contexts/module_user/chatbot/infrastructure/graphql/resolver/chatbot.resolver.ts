@@ -10,6 +10,7 @@ import {
   ChatSessionResponse,
   SendMessageResponse,
   GetSessionHistoryResponse,
+  GetUserChatSessionsResponse,
   GenerateAdImageResponse,
 } from '../../../application/dto/HTTP-RESPONSE/chatbot.response';
 
@@ -119,6 +120,22 @@ export class ChatbotResolver {
   ): Promise<boolean> {
     try {
       return await this.chatbotAdapter.deleteSession(sessionId);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  @Query(() => GetUserChatSessionsResponse, {
+    nullable: false,
+    description: 'Obtener todas las sesiones de chat de un usuario',
+  })
+  async getUserChatSessions(
+    @Args('userId', { type: () => String }) userId: string,
+    @Args('limit', { type: () => Number, nullable: true }) limit?: number,
+    @Args('page', { type: () => Number, nullable: true }) page?: number,
+  ): Promise<GetUserChatSessionsResponse> {
+    try {
+      return await this.chatbotAdapter.getUserChatSessions(userId, limit, page);
     } catch (error: any) {
       throw error;
     }

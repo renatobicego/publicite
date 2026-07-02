@@ -961,6 +961,21 @@ type GetSessionHistoryResponse {
   totalMessages: Float!
 }
 
+type ChatSessionSummary {
+  sessionId: String!
+  title: String!
+  lastMessage: String
+  lastMessageAt: DateTime!
+  messageCount: Float!
+  createdAt: DateTime!
+}
+
+type GetUserChatSessionsResponse {
+  sessions: [ChatSessionSummary!]!
+  totalCount: Float!
+  hasMore: Boolean!
+}
+
 type NoveltyPropertyResponse {
   key: String!
   value: String!
@@ -1081,6 +1096,9 @@ type Query {
 
   """Obtener el historial de una sesión de chat"""
   getChatSessionHistory(sessionId: String!, limit: Float, page: Float): GetSessionHistoryResponse!
+
+  """Obtener todas las sesiones de chat de un usuario"""
+  getUserChatSessions(userId: String!, limit: Float, page: Float): GetUserChatSessionsResponse!
 
   """Obtener novedad por id"""
   getNoveltyById(id: String!): NoveltyResponse

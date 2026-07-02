@@ -1,5 +1,62 @@
 import gql from "graphql-tag";
 
+// ============================================================
+// CHAT HISTORY QUERIES
+// ============================================================
+
+/**
+ * Query que YA EXISTE en el BE.
+ * Trae los mensajes de una sesión específica.
+ * Args: sessionId (required), limit (optional), page (optional)
+ */
+export const getChatSessionHistoryQuery = gql`
+  query GetChatSessionHistory($sessionId: String!, $limit: Float, $page: Float) {
+    getChatSessionHistory(sessionId: $sessionId, limit: $limit, page: $page) {
+      sessionId
+      messages {
+        role
+        content
+        timestamp
+        action
+      }
+      totalMessages
+    }
+  }
+`;
+
+/**
+ * Mutation que YA EXISTE en el BE.
+ * Elimina una sesión de chat completa (sesión + todos los mensajes).
+ */
+export const deleteChatSessionMutation = gql`
+  mutation DeleteChatSession($sessionId: String!) {
+    deleteChatSession(sessionId: $sessionId)
+  }
+`;
+
+/**
+ * Query que ahora EXISTE en el BE.
+ * Lista todas las sesiones de chat de un usuario.
+ */
+export const getUserChatSessionsQuery = gql`
+  query GetUserChatSessions($userId: String!, $limit: Float, $page: Float) {
+    getUserChatSessions(userId: $userId, limit: $limit, page: $page) {
+      sessions {
+        sessionId
+        title
+        lastMessage
+        lastMessageAt
+        messageCount
+        createdAt
+      }
+      totalCount
+      hasMore
+    }
+  }
+`;
+
+// ============================================================
+
 export const createChatSessionMutation = gql`
   mutation CreateChatSession($createSessionRequest: CreateSessionRequest) {
     createChatSession(createSessionRequest: $createSessionRequest) {

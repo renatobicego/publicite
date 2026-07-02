@@ -10,10 +10,11 @@ import {
   Button,
   ScrollShadow,
 } from "@nextui-org/react";
-import { FaPaperPlane, FaX } from "react-icons/fa6";
+import { FaPaperPlane, FaX, FaClockRotateLeft } from "react-icons/fa6";
 import { CustomInputWithoutFormik } from "@/components/inputs/CustomInputs";
 import { useCreateAdWizard } from "./CreateAdWizard/useCreateAdWizard";
 import { ActiveStepInput } from "./CreateAdWizard/CreateAdWizard";
+import { ChatHistory } from "./ChatHistory";
 
 interface ChatWindowProps {
   messages: UIMessage[];
@@ -25,6 +26,15 @@ interface ChatWindowProps {
   wizard?: ReturnType<typeof useCreateAdWizard>;
   onSubmitAd?: () => void;
   isSubmittingAd?: boolean;
+  // Chat History props
+  chatSessions?: import("@/types/chatbotTypes").ChatSessionSummary[];
+  isLoadingHistory?: boolean;
+  activeSessionId?: string | null;
+  showHistory?: boolean;
+  onToggleHistory?: () => void;
+  onSelectSession?: (sessionId: string) => void;
+  onNewChat?: () => void;
+  onDeleteSession?: (sessionId: string) => void;
 }
 
 export function ChatWindow({
@@ -37,6 +47,14 @@ export function ChatWindow({
   wizard,
   onSubmitAd,
   isSubmittingAd,
+  chatSessions,
+  isLoadingHistory,
+  activeSessionId,
+  showHistory,
+  onToggleHistory,
+  onSelectSession,
+  onNewChat,
+  onDeleteSession,
 }: ChatWindowProps) {
   const [inputValue, setInputValue] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -208,126 +226,154 @@ export function ChatWindow({
         {/* Header */}
         <CardHeader className="flex items-center justify-between gap-3 border-b border-orange-200 dark:border-orange-900 bg-service text-white">
           <h2 className="text-lg font-semibold">Chatea con Cubito</h2>
-          <Button
-            isIconOnly
-            size="sm"
-            variant="light"
-            radius="full"
-            onClick={onClose}
-            className="text-white hover:bg-orange-700"
-            aria-label="Close chat"
-          >
-            <FaX size={20} />
-          </Button>
+          <div className="flex items-center gap-1">
+            {onToggleHistory && (
+              <Button
+                isIconOnly
+                size="sm"
+                variant="light"
+                radius="full"
+                onClick={onToggleHistory}
+                className="text-white hover:bg-orange-700"
+                aria-label="Ver historial de chats"
+              >
+                <FaClockRotateLeft size={14} />
+              </Button>
+            )}
+            <Button
+              isIconOnly
+              size="sm"
+              variant="light"
+              radius="full"
+              onClick={onClose}
+              className="text-white hover:bg-orange-700"
+              aria-label="Close chat"
+            >
+              <FaX size={20} />
+            </Button>
+          </div>
         </CardHeader>
 
         {/* Messages Container */}
         <CardBody className="flex-1 overflow-hidden p-0">
-          <ScrollShadow className="flex-1 overflow-y-auto p-4 space-y-3">
-            {messages.length === 0 && !isWizardActive ? (
-              <div className="flex items-center justify-center h-full text-center text-gray-500 dark:text-gray-400">
-                <p>Preguntale a Cubito lo que quieras</p>
-              </div>
-            ) : (
-              <>
-                {/* Regular chat messages */}
-                {messages.map((message) => (
-                  <div
-                    key={message.id}
-                    className={`flex ${message.role === "user" ? "justify-end" : "justify-start"
-                      }`}
-                  >
+          {showHistory && onSelectSession && onNewChat && onDeleteSession ? (
+            <ChatHistory
+              sessions={chatSessions || []}
+              isLoading={isLoadingHistory || false}
+              activeSessionId={activeSessionId || null}
+              onSelectSession={onSelectSession}
+              onNewChat={onNewChat}
+              onDeleteSession={onDeleteSession}
+              onClose={onToggleHistory}
+              variant="panel"
+            />
+          ) : (
+            <ScrollShadow className="flex-1 overflow-y-auto p-4 space-y-3">
+              {messages.length === 0 && !isWizardActive ? (
+                <div className="flex items-center justify-center h-full text-center text-gray-500 dark:text-gray-400">
+                  <p>Preguntale a Cubito lo que quieras</p>
+                </div>
+              ) : (
+                <>
+                  {/* Regular chat messages */}
+                  {messages.map((message) => (
                     <div
-                      className={`max-w-xs px-4 py-2 rounded-xl ${message.role === "user"
-                        ? "bg-service text-white rounded-br-none"
-                        : "bg-white dark:bg-slate-700 text-gray-900 dark:text-white border border-gray-200 dark:border-slate-600 rounded-bl-none"
-                        }`}
-                    >
-                      {message.parts.map((part, idx) => {
-                        if (part.type === "text") {
-                          return (
-                            <div key={idx} className="text-sm leading-relaxed">
-                              {parseAndRenderText(part.text)}
-                            </div>
-                          );
-                        }
-                        return null;
-                      })}
-                    </div>
-                  </div>
-                ))}
-
-                {/* Create Ad Button */}
-                {showCreateAdButton && onStartCreateAd && (
-                  <div className="flex justify-start">
-                    <Button
-                      size="sm"
-                      color="primary"
-                      variant="shadow"
-                      onPress={onStartCreateAd}
-                      className="mt-2"
-                    >
-                      Crear anuncio aquí
-                    </Button>
-                  </div>
-                )}
-
-                {/* Wizard messages */}
-                {wizard &&
-                  wizard.messages.map((msg) => (
-                    <div
-                      key={msg.id}
-                      className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"
+                      key={message.id}
+                      className={`flex ${message.role === "user" ? "justify-end" : "justify-start"
                         }`}
                     >
                       <div
-                        className={`max-w-xs px-4 py-2 rounded-xl ${msg.role === "user"
+                        className={`max-w-xs px-4 py-2 rounded-xl ${message.role === "user"
                           ? "bg-service text-white rounded-br-none"
                           : "bg-white dark:bg-slate-700 text-gray-900 dark:text-white border border-gray-200 dark:border-slate-600 rounded-bl-none"
                           }`}
                       >
-                        <div className="text-sm leading-relaxed">
-                          {parseAndRenderText(msg.content)}
-                        </div>
+                        {message.parts.map((part, idx) => {
+                          if (part.type === "text") {
+                            return (
+                              <div key={idx} className="text-sm leading-relaxed">
+                                {parseAndRenderText(part.text)}
+                              </div>
+                            );
+                          }
+                          return null;
+                        })}
                       </div>
                     </div>
                   ))}
 
-                {/* Active wizard step input */}
-                {isWizardActive && wizard && onSubmitAd && (
-                  <div className="flex justify-start w-full">
-                    <div className="max-w-xs w-full">
-                      <ActiveStepInput
-                        step={wizard.step}
-                        wizard={wizard}
-                        onSubmitAd={onSubmitAd}
-                        isSubmitting={isSubmittingAd || false}
+                  {/* Create Ad Button */}
+                  {showCreateAdButton && onStartCreateAd && (
+                    <div className="flex justify-start">
+                      <Button
+                        size="sm"
+                        color="primary"
+                        variant="shadow"
+                        onPress={onStartCreateAd}
+                        className="mt-2"
+                      >
+                        Crear anuncio aquí
+                      </Button>
+                    </div>
+                  )}
+
+                  {/* Wizard messages */}
+                  {wizard &&
+                    wizard.messages.map((msg) => (
+                      <div
+                        key={msg.id}
+                        className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"
+                          }`}
+                      >
+                        <div
+                          className={`max-w-xs px-4 py-2 rounded-xl ${msg.role === "user"
+                            ? "bg-service text-white rounded-br-none"
+                            : "bg-white dark:bg-slate-700 text-gray-900 dark:text-white border border-gray-200 dark:border-slate-600 rounded-bl-none"
+                            }`}
+                        >
+                          <div className="text-sm leading-relaxed">
+                            {parseAndRenderText(msg.content)}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+
+                  {/* Active wizard step input */}
+                  {isWizardActive && wizard && onSubmitAd && (
+                    <div className="flex justify-start w-full">
+                      <div className="max-w-xs w-full">
+                        <ActiveStepInput
+                          step={wizard.step}
+                          wizard={wizard}
+                          onSubmitAd={onSubmitAd}
+                          isSubmitting={isSubmittingAd || false}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+
+              {isLoading && (
+                <div className="flex justify-start">
+                  <div className="bg-white dark:bg-slate-700 text-gray-900 dark:text-white border border-gray-200 dark:border-slate-600 px-4 py-2 rounded-xl rounded-bl-none">
+                    <div className="flex space-x-2">
+                      <div className="w-2 h-2 bg-orange-500 rounded-full animate-bounce" />
+                      <div
+                        className="w-2 h-2 bg-orange-500 rounded-full animate-bounce"
+                        style={{ animationDelay: "0.1s" }}
+                      />
+                      <div
+                        className="w-2 h-2 bg-orange-500 rounded-full animate-bounce"
+                        style={{ animationDelay: "0.2s" }}
                       />
                     </div>
                   </div>
-                )}
-              </>
-            )}
-
-            {isLoading && (
-              <div className="flex justify-start">
-                <div className="bg-white dark:bg-slate-700 text-gray-900 dark:text-white border border-gray-200 dark:border-slate-600 px-4 py-2 rounded-xl rounded-bl-none">
-                  <div className="flex space-x-2">
-                    <div className="w-2 h-2 bg-orange-500 rounded-full animate-bounce" />
-                    <div
-                      className="w-2 h-2 bg-orange-500 rounded-full animate-bounce"
-                      style={{ animationDelay: "0.1s" }}
-                    />
-                    <div
-                      className="w-2 h-2 bg-orange-500 rounded-full animate-bounce"
-                      style={{ animationDelay: "0.2s" }}
-                    />
-                  </div>
                 </div>
-              </div>
-            )}
-            <div ref={messagesEndRef} />
-          </ScrollShadow>
+              )}
+              <div ref={messagesEndRef} />
+            </ScrollShadow>
+          )}
         </CardBody>
 
         {/* Input Form */}

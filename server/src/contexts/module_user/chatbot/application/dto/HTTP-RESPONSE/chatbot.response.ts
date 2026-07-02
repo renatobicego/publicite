@@ -74,3 +74,36 @@ export class GetSessionHistoryResponse {
   @Field(() => Number)
   totalMessages: number;
 }
+
+@ObjectType()
+export class ChatSessionSummary {
+  @Field(() => String)
+  sessionId: string;
+
+  @Field(() => String)
+  title: string;
+
+  @Field(() => String, { nullable: true })
+  lastMessage?: string;
+
+  @Field(() => Date)
+  lastMessageAt: Date;
+
+  @Field(() => Number)
+  messageCount: number;
+
+  @Field(() => Date)
+  createdAt: Date;
+}
+
+@ObjectType()
+export class GetUserChatSessionsResponse {
+  @Field(() => [ChatSessionSummary])
+  sessions: ChatSessionSummary[];
+
+  @Field(() => Number)
+  totalCount: number;
+
+  @Field(() => Boolean)
+  hasMore: boolean;
+}

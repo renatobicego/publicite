@@ -19,9 +19,24 @@ export function Chatbot() {
     handleSendMessage,
     handleStartCreateAd,
     handleSubmitAd,
+    // Chat History
+    chatSessions,
+    activeSessionId,
+    isLoadingHistory,
+    showHistory,
+    setShowHistory,
+    loadChatHistory,
+    loadSessionMessages,
+    startNewChat,
+    deleteSession,
   } = useChatbot();
 
   const hideButton = pathname.includes("/cubito")
+
+  const handleToggleHistory = () => {
+    setShowHistory(!showHistory);
+    if (!showHistory) loadChatHistory();
+  };
 
   return (
     <>
@@ -51,6 +66,14 @@ export function Chatbot() {
           wizard={wizard}
           onSubmitAd={handleSubmitAd}
           isSubmittingAd={isSubmittingAd}
+          chatSessions={chatSessions}
+          isLoadingHistory={isLoadingHistory}
+          activeSessionId={activeSessionId}
+          showHistory={showHistory}
+          onToggleHistory={handleToggleHistory}
+          onSelectSession={loadSessionMessages}
+          onNewChat={startNewChat}
+          onDeleteSession={deleteSession}
         />
       )}
     </>
