@@ -131,7 +131,7 @@ export const deleteChatSessionService = async (sessionId: string) => {
 export const getUserChatSessions = async (page = 1, limit = 20) => {
   try {
     const authData = auth();
-    const userId = authData.userId;
+    const userId = authData.sessionClaims?.metadata.mongoId;
     if (!userId) {
       return { error: "Usuario no autenticado" };
     }

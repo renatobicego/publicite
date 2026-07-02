@@ -261,12 +261,14 @@ export function useChatbot() {
     setIsLoadingHistory(true);
     try {
       const response = await getUserChatSessions(1, 20);
+      console.log("getUserChatSessions response:", response);
       if (response && "error" in response) {
         toastifyError("Error al cargar el historial de chats");
         return;
       }
       setChatSessions(response.sessions);
-    } catch {
+    } catch (err) {
+      console.error("Error loading chat history:", err);
       toastifyError("Error al cargar el historial de chats");
     } finally {
       setIsLoadingHistory(false);
