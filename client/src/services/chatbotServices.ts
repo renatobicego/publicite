@@ -34,12 +34,22 @@ export const sendMessageToAI = async (
   sendMessageRequest: SendMessageRequest
 ) => {
   try {
+    // Asociar la conversación al usuario logueado (mismo criterio que getUserChatSessions)
+    // para que la sesión quede guardada bajo su userId y aparezca luego en el historial.
+    // Si no está logueado, se envía sin userId (chat anónimo, sin historial).
+    const authData = auth();
+    const userId = authData.sessionClaims?.metadata.mongoId;
+
     const {
       data: { sendMessageToChatbot },
     } = await getClient()
       .mutate({
         mutation: sendMessageMutation,
-        variables: { sendMessageRequest },
+        variables: {
+          sendMessageRequest: userId
+            ? { ...sendMessageRequest, userId }
+            : sendMessageRequest,
+        },
       })
       .then((res) => res);
 

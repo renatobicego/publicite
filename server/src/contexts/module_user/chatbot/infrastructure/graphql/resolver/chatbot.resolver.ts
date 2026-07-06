@@ -53,14 +53,15 @@ export class ChatbotResolver {
     @Context() context?: { req: CustomContextRequestInterface },
   ): Promise<SendMessageResponse> {
     try {
+      // El userId (mongoId) llega en el request desde el server action del front
+      // (mismo criterio que getUserChatSessions). Si en el futuro se envía el token
+      // de Clerk y un guard resuelve el usuario, lo preferimos por ser más confiable.
       const userRequestId = context?.req?.userRequestId;
-
       if (userRequestId) {
-        sendMessageRequest.sessionId = userRequestId;
         sendMessageRequest.userId = userRequestId;
-      } else if (!sendMessageRequest.sessionId) {
-        sendMessageRequest.sessionId = undefined;
       }
+      // Importante: NO forzamos sessionId = userId. Cada conversación tiene su propio
+      // sessionId; si viene vacío, el service genera uno nuevo (conversación nueva).
 
       return await this.chatbotAdapter.sendMessage(sendMessageRequest);
     } catch (error: any) {
