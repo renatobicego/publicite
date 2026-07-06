@@ -7,6 +7,7 @@ import SecondaryButton from "../buttons/SecondaryButton";
 import DropdownItems from "./DropdownItems";
 import NextLink from "next/link";
 import { useUserData } from "@/app/(root)/providers/userDataProvider";
+import { OrangeCubeIcon } from "../buttons/ChatbotButton/OrangeCubeIcon";
 
 const MobileMenu = ({
   setIsMenuOpen,
@@ -24,6 +25,11 @@ const MobileMenu = ({
     {
       title: "Explorar",
       url: POSTS,
+    },
+    {
+      title: "Cubito",
+      url: "/cubito",
+      icon: true,
     },
     {
       title: "Publicar",
@@ -64,9 +70,14 @@ const MobileMenu = ({
           <NextLink href={item.url} passHref>
             <Link
               onClick={() => setIsMenuOpen(false)}
-              className={`w-full text-text-color`}
+              className={`w-full text-text-color flex items-center gap-1`}
               size="sm"
             >
+              {"icon" in item && item.icon && (
+                <span className="w-8 h-8 flex-shrink-0 [&>svg]:w-full [&>svg]:h-full mt-1">
+                  <OrangeCubeIcon />
+                </span>
+              )}
               {item.title}
             </Link>
           </NextLink>
