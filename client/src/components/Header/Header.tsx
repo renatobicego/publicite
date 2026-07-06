@@ -13,6 +13,7 @@ import MobileMenu from "./MobileMenu";
 import NavMenuItems from "./NavMenuItems";
 import UserNavItems from "./UserNavItems";
 import { POSTS } from "@/utils/data/urls";
+import { OrangeCubeIcon } from "../buttons/ChatbotButton/OrangeCubeIcon";
 
 const Header = ({ isSignedIn }: { isSignedIn: boolean }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -34,9 +35,8 @@ const Header = ({ isSignedIn }: { isSignedIn: boolean }) => {
       isBlurred={false}
     >
       <NavbarContent
-        className={`flex-1 max-md:gap-2 transition-all duration-300 ${
-          isFocused ? "w-full flex-shrink" : "w-auto"
-        }`}
+        className={`flex-1 max-md:gap-2 transition-all duration-300 ${isFocused ? "w-full flex-shrink" : "w-auto"
+          }`}
       >
         <NavbarBrand as={Link} href="/" className="max-w-fit">
           <Image
@@ -44,32 +44,37 @@ const Header = ({ isSignedIn }: { isSignedIn: boolean }) => {
             alt="Logo"
             width={60}
             height={40}
-            className={`w-10 md:w-12 lg:w-16 max-lg:object-contain !transition-all duration-300 ${
-              isFocused ? "!w-0 overflow-hidden" : ""
-            } hover:scale-[1.04]`}
+            className={`w-10 md:w-12 lg:w-16 max-lg:object-contain !transition-all duration-300 ${isFocused ? "!w-0 overflow-hidden" : ""
+              } hover:scale-[1.04]`}
           />
         </NavbarBrand>
         <NavbarItem
-          className={`w-auto !transition-all duration-300 ${
-            isFocused ? "!w-0 overflow-hidden" : ""
-          }`}
+          className={`w-auto !transition-all duration-300 ${isFocused ? "!w-0 overflow-hidden" : ""
+            }`}
         >
           <Link size="sm" className="text-text-color font-medium" href={POSTS}>
             Explorar
           </Link>
         </NavbarItem>
         <NavbarItem
-          className={`flex-1 !transition-all duration-300 ${
-            isFocused ? "w-full" : "w-auto"
-          }`}
+          className={`w-auto max-lg:hidden !transition-all duration-300 ${isFocused ? "!w-0 overflow-hidden" : ""
+            }`}
+        >
+          <Link size="sm" className="text-text-color font-medium flex items-center gap-1" href="/cubito">
+            <span className="w-10 h-10 flex-shrink-0 [&>svg]:w-full [&>svg]:h-full mt-2"><OrangeCubeIcon /></span>
+            Cubito
+          </Link>
+        </NavbarItem>
+        <NavbarItem
+          className={`flex-1 !transition-all duration-300 ${isFocused ? "w-full" : "w-auto"
+            }`}
           id="search"
         >
           <Search isFocused={isFocused} setIsFocused={setIsFocused} />
         </NavbarItem>
         <NavbarItem
-          className={`max-w-fit flex items-center gap-3 max-lg:hidden transition-all duration-300 ${
-            isFocused ? "flex-shrink" : ""
-          }`}
+          className={`max-w-fit flex items-center gap-3 max-lg:hidden transition-all duration-300 ${isFocused ? "flex-shrink" : ""
+            }`}
         >
           <NavMenuItems />
         </NavbarItem>
