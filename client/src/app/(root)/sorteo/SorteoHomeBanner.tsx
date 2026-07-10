@@ -51,17 +51,17 @@ export default function SorteoHomeBanner({
                         GRAN SORTEO
                     </span>
                     <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight">
-                        Anteojos oficiales de la Selección Argentina ⭐⭐⭐
+                        ¡Estos pueden ser tuyos! 🏆⚽
                     </h1>
                     <p className="text-lg text-gray-300">
-                        Colección Mundial 2026. ¡Participá y ganá!
+                        Álbum Panini 2026 + Sobres Adrenalyn + Corneta + Bandera Argentina + Reloj Despertador + Pelota de Fútbol + Anteojos de Sol. ¡Participá y ganá!
                     </p>
                     <Chip
                         className="mt-2 w-fit text-xs font-semibold"
                         color="warning"
                         variant="flat"
                     >
-                        COLECCIÓN MUNDIAL 2026
+                        SORTEO MUNDIAL 2026 🇦🇷
                     </Chip>
 
                     {/* Botón de acción */}
@@ -97,9 +97,9 @@ export default function SorteoHomeBanner({
                 {/* Imagen */}
                 <div className="lg:w-1/2 flex justify-center">
                     <Image
-                        src="/sorteo-lentes.png"
-                        alt="Premio del sorteo"
-                        className="object-contain max-h-[300px] lg:max-h-[400px]"
+                        src="/sorteo-mundial.png"
+                        alt="Premio del sorteo - Kit Mundial 2026"
+                        className="object-contain max-h-[300px] lg:max-h-[400px] rounded-lg"
                         removeWrapper
                     />
                 </div>
