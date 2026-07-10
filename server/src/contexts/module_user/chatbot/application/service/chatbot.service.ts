@@ -76,11 +76,14 @@ export class ChatbotService implements ChatbotServiceInterface {
 
       let session = await this.chatbotRepository.findSessionById(sessionId);
       
-      // Si no existe la sesión, crearla automáticamente
+      // Si no existe la sesión, crearla automáticamente asociada al usuario.
+      // Guardar el userId (mongoId) es lo que permite que la conversación aparezca
+      // luego en el historial (getUserChatSessions filtra por userId).
       if (!session) {
         this.logger.log('Session not found, creating new session automatically');
-        const newSessionResponse = await this.createSession(sessionId);
-        session = await this.chatbotRepository.findSessionById(newSessionResponse.sessionId);
+        const now = new Date();
+        const newSession = new ChatSession(sessionId, [], now, now, true, userId);
+        session = await this.chatbotRepository.createSession(newSession);
       }
 
       if (!session) {
