@@ -34,7 +34,7 @@ export default function SorteoHero({ title, subtitle, badge, image }: Props) {
                     <Image
                         src={image}
                         alt="Premio del sorteo"
-                        className="object-contain max-h-[300px] lg:max-h-[400px]"
+                        className="object-contain max-h-[300px] lg:max-h-[400px] rounded-lg"
                         removeWrapper
                     />
                 </div>
