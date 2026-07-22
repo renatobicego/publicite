@@ -8,6 +8,7 @@ import {
   GetSessionHistoryResponse,
   GetUserChatSessionsResponse,
 } from '../../application/dto/HTTP-RESPONSE/chatbot.response';
+import { ChatbotTokenStatusResponse } from '../../application/dto/HTTP-RESPONSE/chatbot.token.response';
 
 @Injectable()
 export class ChatbotAdapter implements ChatbotAdapterInterface {
@@ -67,6 +68,16 @@ export class ChatbotAdapter implements ChatbotAdapterInterface {
   async generateAdImage(prompt: string, userId?: string): Promise<string> {
     try {
       return await this.chatbotService.generateAdImage(prompt, userId);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  async getTokenStatusForUser(
+    userId: string,
+  ): Promise<ChatbotTokenStatusResponse> {
+    try {
+      return await this.chatbotService.getTokenStatusForUser(userId);
     } catch (error: any) {
       throw error;
     }

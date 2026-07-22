@@ -5,6 +5,7 @@ import {
   GetSessionHistoryResponse,
   GetUserChatSessionsResponse,
 } from '../dto/HTTP-RESPONSE/chatbot.response';
+import { ChatbotTokenStatusResponse } from '../dto/HTTP-RESPONSE/chatbot.token.response';
 
 export interface ChatbotAdapterInterface {
   createSession(userId?: string): Promise<ChatSessionResponse>;
@@ -13,5 +14,6 @@ export interface ChatbotAdapterInterface {
   getUserChatSessions(userId: string, limit?: number, page?: number): Promise<GetUserChatSessionsResponse>;
   deleteSession(sessionId: string): Promise<boolean>;
   generateAdImage(prompt: string, userId?: string): Promise<string>;
+  getTokenStatusForUser(userId: string): Promise<ChatbotTokenStatusResponse>;
 }
 

@@ -1,5 +1,5 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
 @InputType()
 export class GenerateAdImageRequest {
@@ -10,4 +10,13 @@ export class GenerateAdImageRequest {
     message: 'El prompt no puede superar los 200 caracteres',
   })
   prompt: string;
+
+  @Field(() => String, {
+    nullable: true,
+    description:
+      'mongoId del usuario (fallback si no viene token de Clerk; la generación de imágenes requiere usuario registrado)',
+  })
+  @IsOptional()
+  @IsString()
+  userId?: string;
 }

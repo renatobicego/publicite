@@ -16,7 +16,6 @@ import { UserAdapter } from '../adapters/user.adapter';
 import { UserResolver } from '../graphql/resolver/user.resolver';
 import { UserRelationModel } from '../schemas/user.relation.schema';
 import { MagazineModelSharedModule } from 'src/contexts/module_shared/sharedSchemas/magazine.model.schema';
-import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -40,7 +39,8 @@ import { ConfigModule } from '@nestjs/config';
     ContactModule,
     SectorModule,
     MagazineModelSharedModule,
-    ConfigModule.forRoot(),
+    // OJO: no agregar ConfigModule.forRoot() acá (carga `.env` de prod y pisa
+    // la config de QA); el ConfigModule global ya está en app.module.
   ],
   controllers: [UserController],
   providers: [

@@ -23,6 +23,12 @@ export class SubscriptionPlanResponse {
   readonly postsAgendaCount: number;
   readonly isPack: boolean;
 
+  /**
+   * Tokens Publicité de IA por mes que otorga el plan (valor neto, el que ve
+   * el usuario). Se calcula desde variables de entorno, no se persiste en DB.
+   */
+  readonly aiTokensPerMonth?: number;
+
   constructor(
     _id: ObjectId,
     mpPreapprovalPlanId: string,

@@ -1,5 +1,6 @@
 import { ObjectId } from 'mongoose';
 import { SubscriptionPlanResponse } from 'src/contexts/module_webhook/mercadopago/application/adapter/HTTP-RESPONSE/SubscriptionPlan.response';
+import { getPlanNetPubliciteTokens } from 'src/contexts/module_shared/chatbot-tokens/chatbot.tokens.config';
 
 export class SubscriptionPlan {
   private _id: ObjectId;
@@ -116,6 +117,13 @@ export class SubscriptionPlan {
       postsLibresCount: subscriptionPlan.getPostsLibresCount(),
       postsAgendaCount: subscriptionPlan.getPostsAgendaCount(),
       isPack: subscriptionPlan.getIsPack(),
+      // Tokens de IA por mes (neto visible): sale de env vars, no de la DB.
+      aiTokensPerMonth: getPlanNetPubliciteTokens({
+        mpPreapprovalPlanId: subscriptionPlan.getMpPreapprovalPlanId(),
+        reason: subscriptionPlan.getReason(),
+        isFree: subscriptionPlan.getIsFree(),
+        isPack: subscriptionPlan.getIsPack(),
+      }),
     };
   }
 }

@@ -1,5 +1,6 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { ChatbotAction } from '../../../domain/entity/enum/chatbot.action.enum';
+import { ChatbotTokenStatusResponse } from './chatbot.token.response';
 
 @ObjectType()
 export class ChatMessageResponse {
@@ -53,6 +54,19 @@ export class SendMessageResponse {
 
   @Field(() => ChatbotAction, { nullable: true })
   action?: ChatbotAction;
+
+  @Field(() => Boolean, {
+    nullable: true,
+    description:
+      'true si el mensaje fue rechazado por falta de tokens de IA (botResponse trae el aviso)',
+  })
+  limitReached?: boolean;
+
+  @Field(() => ChatbotTokenStatusResponse, {
+    nullable: true,
+    description: 'Estado de tokens Publicité de quien consulta, tras procesar el mensaje',
+  })
+  tokenStatus?: ChatbotTokenStatusResponse;
 }
 
 @ObjectType()

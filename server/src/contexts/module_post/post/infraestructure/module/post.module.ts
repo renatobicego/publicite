@@ -20,7 +20,6 @@ import { PostReviewRepository } from 'src/contexts/module_post/PostReview/infras
 import { PostReviewSchema } from 'src/contexts/module_post/PostReview/infrastructure/schemas/review.schema';
 import { PostReviewAdapter } from 'src/contexts/module_post/PostReview/infrastructure/adapter/postReview.adapter';
 import { PostController } from '../controller/post.controller';
-import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -42,7 +41,8 @@ import { ConfigModule } from '@nestjs/config';
       { name: 'PostComment', schema: PostCommentSchema },
       { name: 'PostReview', schema: PostReviewSchema },
     ]),
-    ConfigModule.forRoot(),
+    // OJO: no agregar ConfigModule.forRoot() acá (carga `.env` de prod y pisa
+    // la config de QA); el ConfigModule global ya está en app.module.
     UserModule,
   ],
   providers: [

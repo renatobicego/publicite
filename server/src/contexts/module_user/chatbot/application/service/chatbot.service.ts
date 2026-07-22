@@ -2,6 +2,13 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ChatbotServiceInterface } from '../../domain/service/chatbot.service.interface';
 import { ChatbotRepositoryInterface } from '../../domain/repository/chatbot.repository.interface';
 import { ChatbotAIServiceInterface } from '../../domain/service/chatbot.ai.service.interface';
+import { ChatbotTokenServiceInterface } from '../../domain/service/chatbot.token.service.interface';
+import {
+  AiUsage,
+  TokenBlockedReason,
+  TokenConsumerBucket,
+  TokenGateResult,
+} from '../../domain/entity/chatbot.token.types';
 import { ChatSession } from '../../domain/entity/chat.session.entity';
 import { ChatMessage } from '../../domain/entity/chat.message.entity';
 import { MessageRole } from '../../domain/entity/enum/message.role.enum';
@@ -13,16 +20,13 @@ import {
   GetUserChatSessionsResponse,
   ChatMessageResponse,
 } from '../dto/HTTP-RESPONSE/chatbot.response';
+import { ChatbotTokenStatusResponse } from '../dto/HTTP-RESPONSE/chatbot.token.response';
+import {
+  getImageFallbackPubliciteTokens,
+  publiciteToRealTokens,
+} from 'src/contexts/module_shared/chatbot-tokens/chatbot.tokens.config';
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { v4 as uuidv4 } from 'uuid';
-
-/**
- * Flag para exigir un plan/suscripción habilitado para generar imágenes con IA.
- * Por ahora en `false`: cualquier usuario logueado puede generar (no se revisa el plan).
- * Cuando se quiera atar la feature a la suscripción, poner en `true` e implementar
- * el chequeo del plan en `generateAdImage` (ver TODO más abajo).
- */
-const AI_IMAGE_REQUIRES_SUBSCRIPTION = false;
 
 @Injectable()
 export class ChatbotService implements ChatbotServiceInterface {
@@ -31,6 +35,8 @@ export class ChatbotService implements ChatbotServiceInterface {
     private readonly chatbotRepository: ChatbotRepositoryInterface,
     @Inject('ChatbotAIServiceInterface')
     private readonly chatbotAIService: ChatbotAIServiceInterface,
+    @Inject('ChatbotTokenServiceInterface')
+    private readonly chatbotTokenService: ChatbotTokenServiceInterface,
     private readonly logger: MyLoggerService,
   ) {}
 
@@ -71,11 +77,32 @@ export class ChatbotService implements ChatbotServiceInterface {
       // Si no hay sessionId, generar uno nuevo (usuario no autenticado sin sessionId)
       const sessionId = request.sessionId || uuidv4();
       const userId = request.userId;
-      
+
       this.logger.log(`Sending message to session: ${sessionId}`);
 
+      // Gate de tokens de IA: sin saldo (propio o comunitario) no se llama a OpenAI.
+      // La respuesta es un mensaje normal del bot con el aviso, así la web y
+      // WhatsApp lo muestran sin manejo especial de errores.
+      const tokenGate = await this.chatbotTokenService.resolveAndCheck(
+        userId,
+        sessionId,
+      );
+      if (!tokenGate.allowed) {
+        this.logger.warn(
+          `Chatbot bloqueado por tokens (${tokenGate.blockedReason}) para ${tokenGate.consumer.ownerType}:${tokenGate.consumer.ownerId}`,
+        );
+        return {
+          sessionId,
+          userMessage: request.message,
+          botResponse: this.chatbotTokenService.buildLimitMessage(tokenGate),
+          timestamp: new Date(),
+          limitReached: true,
+          tokenStatus: this.chatbotTokenService.buildStatusFromGate(tokenGate),
+        };
+      }
+
       let session = await this.chatbotRepository.findSessionById(sessionId);
-      
+
       // Si no existe la sesión, crearla automáticamente asociada al usuario.
       // Guardar el userId (mongoId) es lo que permite que la conversación aparezca
       // luego en el historial (getUserChatSessions filtra por userId).
@@ -123,12 +150,19 @@ export class ChatbotService implements ChatbotServiceInterface {
         updatedMessages,
       );
 
+      const tokenStatus = await this.chargeUsage(tokenGate, aiResult.usage, {
+        sessionId,
+        kind: 'chat',
+        model: aiResult.model ?? 'gpt-4o-mini',
+      });
+
       return {
         sessionId: sessionId,
         userMessage: request.message,
         botResponse: aiResult.content,
         timestamp: new Date(),
         action: aiResult.action,
+        tokenStatus,
       };
     } catch (error: any) {
       this.logger.error('Error sending message: ' + error.message);
@@ -240,21 +274,86 @@ export class ChatbotService implements ChatbotServiceInterface {
     try {
       this.logger.log(`Generating ad image for user: ${userId ?? 'anon'}`);
 
-      if (AI_IMAGE_REQUIRES_SUBSCRIPTION) {
-        // TODO: cuando se active, validar acá que el plan/suscripción del usuario
-        // habilite la generación de imágenes con IA y lanzar un error si no.
-        // Ej: const allowed = await this.subscriptionService.canGenerateAiImage(userId);
-        //     if (!allowed) throw new Error('Tu plan no incluye generación de imágenes con IA');
-        this.logger.warn(
-          'AI_IMAGE_REQUIRES_SUBSCRIPTION está activo pero la validación de plan no está implementada',
-        );
+      // Generar imágenes es caro: se exige identidad de usuario registrado
+      // (los anónimos no son limitables de forma confiable) y saldo de tokens.
+      const tokenGate = await this.chatbotTokenService.resolveAndCheck(
+        userId,
+        undefined,
+      );
+      if (tokenGate.consumer.bucket === TokenConsumerBucket.ANONYMOUS) {
+        tokenGate.allowed = false;
+        tokenGate.blockedReason = TokenBlockedReason.IDENTITY_REQUIRED;
+      }
+      if (!tokenGate.allowed) {
+        throw new Error(this.chatbotTokenService.buildLimitMessage(tokenGate));
       }
 
-      return await this.chatbotAIService.generateImage(prompt);
+      const result = await this.chatbotAIService.generateImage(prompt);
+
+      // gpt-image puede no informar usage: en ese caso se cobra un costo fijo
+      // configurable por env (CHATBOT_TOKENS_IMAGE_FALLBACK).
+      const usage: AiUsage = result.usage ?? {
+        promptTokens: 0,
+        completionTokens: publiciteToRealTokens(getImageFallbackPubliciteTokens()),
+        totalTokens: publiciteToRealTokens(getImageFallbackPubliciteTokens()),
+      };
+      await this.chargeUsage(tokenGate, usage, {
+        kind: 'image',
+        model: result.model ?? 'gpt-image-1-mini',
+      });
+
+      return result.imageBase64;
     } catch (error: any) {
       this.logger.error('Error generating ad image: ' + error.message);
       throw error;
     }
+  }
+
+  async getTokenStatusForUser(
+    userId: string,
+  ): Promise<ChatbotTokenStatusResponse> {
+    try {
+      return await this.chatbotTokenService.getStatusForUser(userId);
+    } catch (error: any) {
+      this.logger.error('Error getting chatbot token status: ' + error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Descuenta el usage de la cuota que corresponda y devuelve el estado de
+   * tokens ya actualizado para informarlo al front en la misma respuesta.
+   */
+  private async chargeUsage(
+    tokenGate: TokenGateResult,
+    usage: AiUsage | undefined,
+    meta: { sessionId?: string; kind: 'chat' | 'image'; model: string },
+  ): Promise<ChatbotTokenStatusResponse> {
+    const channel = meta.sessionId?.startsWith('whatsapp:')
+      ? 'whatsapp'
+      : 'web';
+    const effectiveUsage: AiUsage = usage ?? {
+      promptTokens: 0,
+      completionTokens: 0,
+      totalTokens: 0,
+    };
+
+    await this.chatbotTokenService.recordUsage(tokenGate, effectiveUsage, {
+      sessionId: meta.sessionId,
+      channel,
+      kind: meta.kind,
+      model: meta.model,
+    });
+
+    const usedAfter = tokenGate.usedRealTokens + effectiveUsage.totalTokens;
+    return this.chatbotTokenService.buildStatusFromGate({
+      ...tokenGate,
+      usedRealTokens: usedAfter,
+      remainingRealTokens: Math.max(
+        0,
+        tokenGate.consumer.allowanceRealTokens - usedAfter,
+      ),
+    });
   }
 
   private mapSessionToResponse(session: ChatSession): ChatSessionResponse {

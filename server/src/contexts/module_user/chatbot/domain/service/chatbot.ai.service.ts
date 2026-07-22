@@ -4,12 +4,16 @@ import OpenAI from 'openai';
 import {
   ChatbotAIResult,
   ChatbotAIServiceInterface,
+  GeneratedImageResult,
 } from './chatbot.ai.service.interface';
 import { ChatMessage } from '../entity/chat.message.entity';
 import { MessageRole } from '../entity/enum/message.role.enum';
 import { ChatbotAction } from '../entity/enum/chatbot.action.enum';
+import { AiUsage } from '../entity/chatbot.token.types';
 
 const CREATE_AD_TOOL_NAME = 'create_ad';
+
+const CHAT_MODEL = 'gpt-4o-mini';
 
 const CREATE_AD_RESPONSE_COPY =
   '¡Genial! Te ayudo a crear tu anuncio. Completá los datos a continuación 👇';
@@ -542,7 +546,7 @@ Esperamos que disfrutes de la plataforma y encuentres todo lo que buscas.
       const messages = this.buildOpenAIMessages(conversationHistory, userMessage);
 
       const completion = await this.openai.chat.completions.create({
-        model: 'gpt-4o-mini',
+        model: CHAT_MODEL,
         messages: messages,
         tools: this.buildTools(),
         tool_choice: 'auto',
@@ -551,6 +555,7 @@ Esperamos que disfrutes de la plataforma y encuentres todo lo que buscas.
       });
 
       const choice = completion.choices[0]?.message;
+      const usage = this.mapCompletionUsage(completion.usage);
 
       const createAdToolCall = choice?.tool_calls?.find(
         (tc) => tc.type === 'function' && tc.function?.name === CREATE_AD_TOOL_NAME,
@@ -560,20 +565,22 @@ Esperamos que disfrutes de la plataforma y encuentres todo lo que buscas.
         return {
           content: CREATE_AD_RESPONSE_COPY,
           action: ChatbotAction.CREATE_AD,
+          usage,
+          model: CHAT_MODEL,
         };
       }
 
       const content =
         choice?.content || 'Lo siento, no pude generar una respuesta en este momento.';
 
-      return { content };
+      return { content, usage, model: CHAT_MODEL };
     } catch (error: any) {
       console.error('Error calling OpenAI API:', error);
       throw new Error(`Error generating AI response: ${error.message}`);
     }
   }
 
-  async generateImage(prompt: string): Promise<string> {
+  async generateImage(prompt: string): Promise<GeneratedImageResult> {
     const cleanPrompt = (prompt || '').trim();
 
     if (!cleanPrompt) {
@@ -596,6 +603,7 @@ Esperamos que disfrutes de la plataforma y encuentres todo lo que buscas.
       });
 
       const image = result.data?.[0];
+      const usage = this.mapImageUsage(result.usage);
 
       if (!image) {
         throw new Error('OpenAI no devolvió ninguna imagen');
@@ -603,7 +611,11 @@ Esperamos que disfrutes de la plataforma y encuentres todo lo que buscas.
 
       // Según el modelo, OpenAI devuelve la imagen en base64 o como URL temporal.
       if (image.b64_json) {
-        return `data:image/png;base64,${image.b64_json}`;
+        return {
+          imageBase64: `data:image/png;base64,${image.b64_json}`,
+          usage,
+          model: IMAGE_GENERATION_MODEL,
+        };
       }
 
       if (image.url) {
@@ -611,7 +623,11 @@ Esperamos que disfrutes de la plataforma y encuentres todo lo que buscas.
         const arrayBuffer = await resp.arrayBuffer();
         const b64 = Buffer.from(arrayBuffer).toString('base64');
         const contentType = resp.headers.get('content-type') || 'image/png';
-        return `data:${contentType};base64,${b64}`;
+        return {
+          imageBase64: `data:${contentType};base64,${b64}`,
+          usage,
+          model: IMAGE_GENERATION_MODEL,
+        };
       }
 
       throw new Error('OpenAI no devolvió ninguna imagen');
@@ -619,6 +635,30 @@ Esperamos que disfrutes de la plataforma y encuentres todo lo que buscas.
       console.error('Error calling OpenAI Images API:', error);
       throw new Error(`Error generating AI image: ${error.message}`);
     }
+  }
+
+  private mapCompletionUsage(
+    usage: OpenAI.CompletionUsage | undefined,
+  ): AiUsage | undefined {
+    if (!usage) return undefined;
+    return {
+      promptTokens: usage.prompt_tokens ?? 0,
+      completionTokens: usage.completion_tokens ?? 0,
+      totalTokens:
+        usage.total_tokens ??
+        (usage.prompt_tokens ?? 0) + (usage.completion_tokens ?? 0),
+    };
+  }
+
+  private mapImageUsage(usage: any): AiUsage | undefined {
+    if (!usage) return undefined;
+    const promptTokens = usage.input_tokens ?? 0;
+    const completionTokens = usage.output_tokens ?? 0;
+    return {
+      promptTokens,
+      completionTokens,
+      totalTokens: usage.total_tokens ?? promptTokens + completionTokens,
+    };
   }
 
   private buildTools(): OpenAI.Chat.Completions.ChatCompletionTool[] {

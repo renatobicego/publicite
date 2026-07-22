@@ -919,6 +919,67 @@ type ContactSeller_getAll {
   hasMore: Boolean!
 }
 
+type ChatbotTokenStatusResponse {
+  """true si el usuario tiene un plan pago activo con tokens de IA"""
+  hasActivePaidPlan: Boolean!
+
+  """Origen de la cuota: 'plan' | 'free' | 'anonymous'"""
+  source: String!
+
+  """
+  Cuota de tokens Publicité del período (mensual, o diaria para anónimos)
+  """
+  allowance: Float!
+
+  """Tokens Publicité consumidos en el período"""
+  used: Float!
+
+  """Tokens Publicité restantes en el período"""
+  remaining: Float!
+
+  """
+  Para usuarios sin plan: si la plataforma tiene tokens comunitarios disponibles
+  """
+  communityTokensAvailable: Boolean!
+
+  """Cuándo se reinicia la cuota del período"""
+  resetsAt: DateTime!
+}
+
+type ChatbotUsageConsumerResponse {
+  """
+  mongoId del usuario, o identificador anónimo (sessionId / whatsapp:<tel>)
+  """
+  ownerId: String!
+
+  """'user' | 'anonymous'"""
+  ownerType: String!
+  username: String
+  email: String
+
+  """Tokens Publicité consumidos (total histórico)"""
+  publiciteTokensUsed: Float!
+  requestCount: Int!
+  lastUsedAt: DateTime!
+
+  """Canales usados: 'web' y/o 'whatsapp'"""
+  channels: [String!]!
+}
+
+type ChatbotUsageReportResponse {
+  """Saldo actual de la bolsa comunitaria"""
+  poolBalance: Float!
+
+  """Total histórico acreditado a la bolsa (base + share de planes + bonus)"""
+  poolTotalAccrued: Float!
+
+  """Total histórico consumido de la bolsa"""
+  poolTotalConsumed: Float!
+
+  """Consumidores ordenados por mayor consumo"""
+  consumers: [ChatbotUsageConsumerResponse!]!
+}
+
 type ChatMessageResponse {
   role: String!
   content: String!
@@ -948,6 +1009,14 @@ type SendMessageResponse {
   botResponse: String!
   timestamp: DateTime!
   action: ChatbotAction
+
+  """
+  true si el mensaje fue rechazado por falta de tokens de IA (botResponse trae el aviso)
+  """
+  limitReached: Boolean
+
+  """Estado de tokens Publicité de quien consulta, tras procesar el mensaje"""
+  tokenStatus: ChatbotTokenStatusResponse
 }
 
 type GenerateAdImageResponse {
@@ -1094,8 +1163,22 @@ type Query {
   """Obtiene las peticiones de contacto por post o por usuario"""
   getContactSellerById(contactSellerGetType: contactSellerGetType!, _id: String!, limit: Float!, page: Float!): ContactSeller_getAll
 
+  """Estado de tokens Publicité de IA del usuario logueado (para el perfil)"""
+  getMyChatbotTokenStatus: ChatbotTokenStatusResponse!
+
   """Obtener el historial de una sesión de chat"""
   getChatSessionHistory(sessionId: String!, limit: Float, page: Float): GetSessionHistoryResponse!
+
+  """
+  Reporte de consumo de tokens de IA por usuario + estado de la bolsa comunitaria. Protegido por CHATBOT_USAGE_REPORT_KEY (si la env no está definida, queda deshabilitado).
+  """
+  getChatbotUsageReport(
+    adminKey: String!
+
+    """Filtrar por origen del cobro: 'community' | 'plan'. Omitir = todo."""
+    chargedTo: String
+    limit: Float
+  ): ChatbotUsageReportResponse!
 
   """Obtener todas las sesiones de chat de un usuario"""
   getUserChatSessions(userId: String!, limit: Float, page: Float): GetUserChatSessionsResponse!
@@ -1566,6 +1649,11 @@ input SendMessageRequest {
 
 input GenerateAdImageRequest {
   prompt: String!
+
+  """
+  mongoId del usuario (fallback si no viene token de Clerk; la generación de imágenes requiere usuario registrado)
+  """
+  userId: String
 }
 
 input NoveltyRequest {
