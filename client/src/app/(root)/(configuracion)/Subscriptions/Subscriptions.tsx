@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import AccountType from "./AccountType/AccountType";
 import PaymentMethod from "./PaymentMethod/PaymentMethod";
 import LimitPosts from "./LimitPosts/LimitPosts";
+import AiTokensLimit from "./AiTokens/AiTokensLimit";
 import { AnimatePresence, motion } from "framer-motion";
 import PaymentsTable from "./Payments/PaymentsTable";
 import { FaChevronLeft } from "react-icons/fa6";
@@ -54,6 +55,8 @@ const Subscriptions = () => {
           >
             Ver Pagos Realizados
           </SecondaryButton>
+          <Divider />
+          <AiTokensLimit />
           <Divider />
           {showActivePosts ? (
             <LimitPosts />

@@ -11,6 +11,8 @@ export interface SubscriptionPlan {
   isPack: boolean;
   postsLibresCount: number;
   postsAgendaCount: number;
+  /** Tokens Publicité de IA por mes que otorga el plan (lo calcula el BE desde env) */
+  aiTokensPerMonth?: number;
 }
 
 export interface Subscription {

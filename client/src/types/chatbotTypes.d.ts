@@ -6,12 +6,29 @@ export interface SendMessageRequest {
 
 export type ChatbotAction = "CREATE_AD";
 
+/**
+ * Estado de tokens Publicité de IA de quien consulta.
+ * `source`: de dónde sale la cuota ('plan' | 'free' | 'anonymous').
+ */
+export interface ChatbotTokenStatus {
+  hasActivePaidPlan: boolean;
+  source: "plan" | "free" | "anonymous";
+  allowance: number;
+  used: number;
+  remaining: number;
+  communityTokensAvailable: boolean;
+  resetsAt: string;
+}
+
 export interface SendMessageResponse {
   botResponse: string;
   sessionId: string;
   timestamp: string;
   userMessage: string;
   action?: ChatbotAction | null;
+  /** true si el mensaje fue rechazado por falta de tokens (botResponse trae el aviso) */
+  limitReached?: boolean | null;
+  tokenStatus?: ChatbotTokenStatus | null;
 }
 
 // ============================================================

@@ -78,6 +78,34 @@ export const sendMessageMutation = gql`
       timestamp
       userMessage
       action
+      limitReached
+      tokenStatus {
+        hasActivePaidPlan
+        source
+        allowance
+        used
+        remaining
+        communityTokensAvailable
+        resetsAt
+      }
+    }
+  }
+`;
+
+/**
+ * Estado de tokens Publicité de IA del usuario logueado (para el perfil).
+ * Requiere token de Clerk (guard estricto en el BE).
+ */
+export const getMyChatbotTokenStatusQuery = gql`
+  query GetMyChatbotTokenStatus {
+    getMyChatbotTokenStatus {
+      hasActivePaidPlan
+      source
+      allowance
+      used
+      remaining
+      communityTokensAvailable
+      resetsAt
     }
   }
 `;
