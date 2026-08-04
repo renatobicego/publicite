@@ -41,6 +41,8 @@ export const ChatSessionSchema = new Schema(
   },
 );
 
-ChatSessionSchema.index({ sessionId: 1 });
+// OJO: no agregar acá un index({ sessionId: 1 }). El `unique: true` del campo ya
+// crea ese índice, y declararlo dos veces hace que Mongoose avise de índice
+// duplicado en cada arranque.
 ChatSessionSchema.index({ userId: 1, createdAt: -1 });
 ChatSessionSchema.index({ isActive: 1 });

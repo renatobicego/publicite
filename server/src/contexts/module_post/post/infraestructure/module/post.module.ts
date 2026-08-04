@@ -77,7 +77,9 @@ import { PostController } from '../controller/post.controller';
       useClass: PostReviewAdapter,
     },
   ],
-  exports: ['PostServiceInterface'],
+  // PostRepositoryInterface se exporta para que Match IA reutilice el filtro de
+  // visibilidad de findCandidatesForMatch en vez de reimplementarlo.
+  exports: ['PostServiceInterface', 'PostRepositoryInterface'],
   controllers: [PostController],
 })
 export class PostModule { }

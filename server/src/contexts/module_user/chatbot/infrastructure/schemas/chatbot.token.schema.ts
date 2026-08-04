@@ -81,7 +81,12 @@ export const ChatbotTokenAccrualSchema = new Schema(
 
 /**
  * Log de consumo por request a OpenAI: permite trackear cuántos tokens usa
- * cada usuario, por canal (web/WhatsApp) y por tipo (chat/imagen).
+ * cada usuario, por canal (web/WhatsApp) y por tipo (chat/imagen/valuación/match).
+ *
+ * OJO con `kind`: el enum tiene que incluir todos los valores de AiUsageKind.
+ * Si falta uno, Mongoose rechaza el documento y —como recordUsage() traga los
+ * errores para no romperle la respuesta al usuario— el consumo se pierde en
+ * silencio: la IA se usa pero no se descuenta de ninguna cuota.
  */
 export interface ChatbotUsageLogDocument extends Document {
   ownerType: string;
@@ -94,6 +99,8 @@ export interface ChatbotUsageLogDocument extends Document {
   promptTokens: number;
   completionTokens: number;
   totalRealTokens: number;
+  rawTotalTokens: number;
+  costMultiplier: number;
   chargedTo: string;
 }
 
@@ -103,11 +110,19 @@ export const ChatbotUsageLogSchema = new Schema(
     ownerId: { type: String, required: true },
     sessionId: { type: String },
     channel: { type: String, required: true, enum: ['web', 'whatsapp'] },
-    kind: { type: String, required: true, enum: ['chat', 'image'] },
+    kind: {
+      type: String,
+      required: true,
+      enum: ['chat', 'image', 'valuacion', 'match'],
+    },
     aiModel: { type: String, required: true },
     promptTokens: { type: Number, required: true, default: 0 },
     completionTokens: { type: Number, required: true, default: 0 },
+    // Lo que se descontó de la cuota (ya ponderado por el costo del modelo).
     totalRealTokens: { type: Number, required: true, default: 0 },
+    // Lo que OpenAI informó realmente, para auditar costo vs. cuota consumida.
+    rawTotalTokens: { type: Number, required: true, default: 0 },
+    costMultiplier: { type: Number, required: true, default: 1 },
     chargedTo: { type: String, required: true, enum: ['plan', 'community'] },
   },
   { timestamps: true },

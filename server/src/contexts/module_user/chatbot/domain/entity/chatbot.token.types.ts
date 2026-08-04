@@ -49,10 +49,13 @@ export interface AiUsage {
   totalTokens: number;
 }
 
+/** Tipo de operación de IA que se cobra. Debe coincidir con el enum del schema. */
+export type AiUsageKind = 'chat' | 'image' | 'valuacion' | 'match';
+
 export interface UsageMeta {
   sessionId?: string;
   channel: 'web' | 'whatsapp';
-  kind: 'chat' | 'image';
+  kind: AiUsageKind;
   model: string;
 }
 
@@ -61,7 +64,12 @@ export interface UsageLogEntry extends UsageMeta {
   ownerId: string;
   promptTokens: number;
   completionTokens: number;
+  /** Tokens efectivamente descontados de la cuota (reales × multiplicador del modelo). */
   totalRealTokens: number;
+  /** Tokens reales informados por OpenAI, sin ponderar. Para auditar el costo. */
+  rawTotalTokens: number;
+  /** Multiplicador de costo aplicado según el modelo usado. */
+  costMultiplier: number;
   chargedTo: 'plan' | 'community';
 }
 

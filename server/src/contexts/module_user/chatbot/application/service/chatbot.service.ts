@@ -5,6 +5,7 @@ import { ChatbotAIServiceInterface } from '../../domain/service/chatbot.ai.servi
 import { ChatbotTokenServiceInterface } from '../../domain/service/chatbot.token.service.interface';
 import {
   AiUsage,
+  AiUsageKind,
   TokenBlockedReason,
   TokenConsumerBucket,
   TokenGateResult,
@@ -130,6 +131,12 @@ export class ChatbotService implements ChatbotServiceInterface {
       const aiResult = await this.chatbotAIService.generateResponse(
         session.getMessages,
         request.message,
+        {
+          mode: request.mode,
+          rolePrompt: request.rolePrompt,
+          extraPrompt: request.extraPrompt,
+          imageUrls: request.imageUrls,
+        },
       );
 
       const botMessage = new ChatMessage(
@@ -323,37 +330,18 @@ export class ChatbotService implements ChatbotServiceInterface {
   /**
    * Descuenta el usage de la cuota que corresponda y devuelve el estado de
    * tokens ya actualizado para informarlo al front en la misma respuesta.
+   * La ponderación por costo de modelo vive en el token service.
    */
   private async chargeUsage(
     tokenGate: TokenGateResult,
     usage: AiUsage | undefined,
-    meta: { sessionId?: string; kind: 'chat' | 'image'; model: string },
+    meta: { sessionId?: string; kind: AiUsageKind; model: string },
   ): Promise<ChatbotTokenStatusResponse> {
-    const channel = meta.sessionId?.startsWith('whatsapp:')
-      ? 'whatsapp'
-      : 'web';
-    const effectiveUsage: AiUsage = usage ?? {
-      promptTokens: 0,
-      completionTokens: 0,
-      totalTokens: 0,
-    };
-
-    await this.chatbotTokenService.recordUsage(tokenGate, effectiveUsage, {
-      sessionId: meta.sessionId,
-      channel,
-      kind: meta.kind,
-      model: meta.model,
-    });
-
-    const usedAfter = tokenGate.usedRealTokens + effectiveUsage.totalTokens;
-    return this.chatbotTokenService.buildStatusFromGate({
-      ...tokenGate,
-      usedRealTokens: usedAfter,
-      remainingRealTokens: Math.max(
-        0,
-        tokenGate.consumer.allowanceRealTokens - usedAfter,
-      ),
-    });
+    return this.chatbotTokenService.chargeAndBuildStatus(
+      tokenGate,
+      usage,
+      meta,
+    );
   }
 
   private mapSessionToResponse(session: ChatSession): ChatSessionResponse {

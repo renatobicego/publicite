@@ -36,6 +36,12 @@
  * - CHATBOT_USAGE_REPORT_KEY: clave para consultar el reporte de consumo
  *   (query getChatbotUsageReport). Si no está definida, el reporte queda
  *   deshabilitado.
+ * - CHATBOT_TOKENS_MODEL_MULTIPLIERS: JSON opcional {modelo: factor} con el
+ *   costo relativo de cada modelo respecto de gpt-4o-mini. Se usa para que
+ *   modelos caros (gpt-4o con visión) descuenten cuota en proporción a lo que
+ *   realmente cuestan. Ej: {"gpt-4o": 10}. Default: ver DEFAULT_MODEL_MULTIPLIERS.
+ * - CHATBOT_TOKENS_MODEL_MULTIPLIER_DEFAULT: factor para modelos sin mapping
+ *   (default 1).
  */
 
 export interface PlanTokenRef {
@@ -78,6 +84,69 @@ function readPlanMap(): Record<string, number> {
 export function getChatbotTokensRatio(): number {
   const ratio = readPositiveNumber('CHATBOT_TOKENS_RATIO', 1000);
   return ratio > 0 ? ratio : 1000;
+}
+
+/**
+ * Multiplicadores de costo por modelo (ver getModelCostMultiplier).
+ * Los valores por defecto son la relación de precio aproximada respecto de
+ * gpt-4o-mini, que es la unidad de referencia del sistema.
+ */
+const DEFAULT_MODEL_MULTIPLIERS: Record<string, number> = {
+  'gpt-4o-mini': 1,
+  'gpt-4o': 10,
+  'gpt-image-1-mini': 1,
+};
+
+function readModelMultipliers(): Record<string, number> {
+  const raw = process.env.CHATBOT_TOKENS_MODEL_MULTIPLIERS;
+  if (!raw) return DEFAULT_MODEL_MULTIPLIERS;
+  try {
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object') return DEFAULT_MODEL_MULTIPLIERS;
+    const map: Record<string, number> = {};
+    for (const [key, value] of Object.entries(parsed)) {
+      const amount = Number(value);
+      if (Number.isFinite(amount) && amount > 0) {
+        map[key.toLowerCase().trim()] = amount;
+      }
+    }
+    return { ...DEFAULT_MODEL_MULTIPLIERS, ...map };
+  } catch {
+    console.warn(
+      'CHATBOT_TOKENS_MODEL_MULTIPLIERS no es un JSON válido; se usan los multiplicadores por defecto',
+    );
+    return DEFAULT_MODEL_MULTIPLIERS;
+  }
+}
+
+/**
+ * Multiplicador de costo del modelo usado en una request.
+ *
+ * El sistema contabiliza TOKENS, no dólares, pero los modelos no cuestan lo
+ * mismo por token: gpt-4o es ~10x más caro que gpt-4o-mini. Sin ponderar, una
+ * valuación con visión le descontaría al usuario lo mismo que un chat
+ * equivalente costando diez veces más, y la bolsa comunitaria se vaciaría mucho
+ * más rápido de lo que el modelo de costos previó.
+ *
+ * Se ajusta por env CHATBOT_TOKENS_MODEL_MULTIPLIERS (JSON {modelo: factor}).
+ */
+export function getModelCostMultiplier(model: string | undefined): number {
+  if (!model) return 1;
+  const normalized = model.toLowerCase().trim();
+  const multipliers = readModelMultipliers();
+
+  const exact = multipliers[normalized];
+  if (exact !== undefined) return exact;
+
+  // Match por prefijo del más específico al más general, para tolerar
+  // identificadores versionados ('gpt-4o-2024-08-06') sin que 'gpt-4o' le gane
+  // a 'gpt-4o-mini'.
+  const prefixes = Object.keys(multipliers).sort((a, b) => b.length - a.length);
+  for (const prefix of prefixes) {
+    if (normalized.startsWith(prefix)) return multipliers[prefix];
+  }
+
+  return readPositiveNumber('CHATBOT_TOKENS_MODEL_MULTIPLIER_DEFAULT', 1);
 }
 
 export function getCommunitySharePercent(): number {

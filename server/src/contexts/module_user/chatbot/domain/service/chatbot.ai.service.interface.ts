@@ -19,10 +19,23 @@ export interface GeneratedImageResult {
   model?: string;
 }
 
+/** Opciones de personalización de una respuesta del chat. */
+export interface ChatbotResponseOptions {
+  /** Modo/especialidad de Cubito (ver cubito-modes.ts). */
+  mode?: string;
+  /** Prompt libre de rol escrito por el usuario ("respondé como si fueras..."). */
+  rolePrompt?: string;
+  /** Prompt sugerido que se suma al fijo (modo Entrenamiento Publicitario). */
+  extraPrompt?: string;
+  /** Imágenes a analizar; si vienen, la respuesta usa el modelo con visión. */
+  imageUrls?: string[];
+}
+
 export interface ChatbotAIServiceInterface {
   generateResponse(
     conversationHistory: ChatMessage[],
     userMessage: string,
+    options?: ChatbotResponseOptions,
   ): Promise<ChatbotAIResult>;
 
   /**

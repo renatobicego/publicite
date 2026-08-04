@@ -1077,6 +1077,175 @@ type GiveawayResponse {
   updatedAt: DateTime
 }
 
+type PhotoScoresResponse {
+  estado: Int!
+  marca: Int!
+  mercado: Int!
+  rareza: Int!
+}
+
+type DescriptiveScoresResponse {
+  uso: Int!
+  vidaUtil: Int!
+  mantenimiento: Int!
+  documentacion: Int!
+}
+
+type PhotoAnalysisResponse {
+  description: String!
+  brand: String
+  model: String
+  condition: String!
+  components: [String!]!
+  damages: [String!]!
+  scores: PhotoScoresResponse!
+
+  """Confianza del análisis fotográfico (0-100)"""
+  confidence: Int!
+}
+
+type DescriptiveAnalysisResponse {
+  summary: String!
+  scores: DescriptiveScoresResponse!
+
+  """Confianza del análisis descriptivo (0-100)"""
+  confidence: Int!
+}
+
+type EstimatedValuesResponse {
+  liquidacion: Float
+  mercado: Float
+  premium: Float
+  currency: String!
+}
+
+type ValuacionDataSourceResponse {
+  field: String!
+
+  """fotografica | descriptiva | inferencia_ia"""
+  source: String!
+}
+
+type ValuacionImageResponse {
+  url: String!
+  uploadedAt: DateTime!
+  analysisNotes: String
+}
+
+type ValuacionBriefMessageResponse {
+  role: String!
+  content: String!
+  timestamp: DateTime!
+}
+
+type ValuacionResponse {
+  id: String!
+  userId: String!
+  sessionId: String
+  postId: String
+
+  """imagen | objeto | servicio | bien | otro"""
+  category: String!
+
+  """draft | processing | completed | saved | archived"""
+  status: String!
+  mode: String
+
+  """Capa de valuación alcanzada (1, 2 o 3)"""
+  layer: Int!
+
+  """Completitud del brief (0-100), calculada por el backend"""
+  completionPercent: Int!
+
+  """Confianza IA (0-100), acotada por la capa"""
+  confidencePercent: Int!
+
+  """Ejes del brief ya cubiertos"""
+  coveredFields: [String!]!
+  briefMessages: [ValuacionBriefMessageResponse!]!
+  images: [ValuacionImageResponse!]!
+  photoAnalysis: PhotoAnalysisResponse
+  descriptiveAnalysis: DescriptiveAnalysisResponse
+  estimatedValues: EstimatedValuesResponse
+
+  """Puntuación final: promedio de los 8 ejes del círculo de valoración"""
+  finalScore: Float
+  dataSources: [ValuacionDataSourceResponse!]!
+
+  """Cantidad de versiones anteriores del resultado"""
+  versionsCount: Int!
+  createdAt: DateTime
+  updatedAt: DateTime
+
+  """Estado de tokens luego de esta operación (para el indicador del front)"""
+  tokenStatus: ChatbotTokenStatusResponse
+}
+
+type ValuacionMessageResponse {
+  """Mensaje de Cubito para mostrar en el chat"""
+  reply: String!
+
+  """true cuando ya se puede generar el resultado final"""
+  briefComplete: Boolean!
+  valuacion: ValuacionResponse!
+
+  """true si la operación se bloqueó por falta de tokens"""
+  limitReached: Boolean
+}
+
+type ValuacionListResponse {
+  valuaciones: [ValuacionResponse!]!
+  total: Int!
+  hasMore: Boolean!
+}
+
+type ValuacionToPostDraftResponse {
+  title: String!
+  description: String!
+
+  """Precio sugerido (valor de mercado)"""
+  suggestedPrice: Float
+  imageUrls: [String!]!
+  brand: String
+  modelType: String
+  condition: String
+  valuacionId: String!
+}
+
+type MatchedPostResponse {
+  postId: String!
+  title: String!
+  description: String
+  price: Float
+  imageUrl: String
+  postType: String
+
+  """Relevancia 0-100 asignada por la IA"""
+  relevanceScore: Int!
+
+  """Explicación de por qué coincide"""
+  matchReason: String!
+}
+
+type MatchResponse {
+  matches: [MatchedPostResponse!]!
+
+  """Interpretación de la IA sobre lo que busca el usuario"""
+  interpretation: String
+
+  """Cantidad de anuncios evaluados antes del ranking"""
+  candidatesEvaluated: Int!
+
+  """Estado de tokens luego de la búsqueda"""
+  tokenStatus: ChatbotTokenStatusResponse
+
+  """true si la búsqueda se bloqueó por falta de tokens"""
+  limitReached: Boolean
+
+  """Mensaje para mostrar cuando no hay resultados o se bloqueó"""
+  message: String
+}
+
 type Query {
   """Obtiene un usuario por su nombre de usuario """
   findUserById(_id: String!): User_Full_Grapql_Model
@@ -1191,6 +1360,20 @@ type Query {
 
   """Obtener un sorteo con sus participantes y ganador"""
   getParticipants(giveawayId: String!): GiveawayResponse
+
+  """Historial de valuaciones del usuario logueado"""
+  getUserValuaciones(limit: Int, page: Int): ValuacionListResponse!
+
+  """Obtiene una valuación por id"""
+  getValuacion(valuacionId: String!): ValuacionResponse!
+
+  """Valuación asociada a un anuncio (para la página del anuncio)"""
+  getValuacionByPost(postId: String!): ValuacionResponse
+
+  """
+  Payload pre-cargado para abrir el wizard de creación de anuncio desde una valuación
+  """
+  getValuacionPostDraft(valuacionId: String!): ValuacionToPostDraftResponse!
 }
 
 """Type of the post """
@@ -1397,6 +1580,33 @@ type Mutation {
 
   """Elegir al azar un ganador entre los participantes del sorteo"""
   getWinner(giveawayId: String!): GiveawayWinnerResponse!
+
+  """Inicia una valuación IA y devuelve el primer mensaje de Cubito"""
+  startValuacion(input: StartValuacionRequest!): ValuacionMessageResponse!
+
+  """Envía una respuesta del brief de valuación"""
+  sendValuacionMessage(input: ValuacionMessageRequest!): ValuacionMessageResponse!
+
+  """Omite la pregunta actual del brief (baja la capa alcanzable)"""
+  skipValuacionBriefQuestion(valuacionId: String!): ValuacionMessageResponse!
+
+  """Genera el informe final de la valuación (sticker)"""
+  generateValuacionResult(valuacionId: String!): ValuacionResponse!
+
+  """Acepta el resultado y lo mueve al panel derecho"""
+  saveValuacionResult(valuacionId: String!): ValuacionResponse!
+
+  """Devuelve un resultado guardado al tablero central para editarlo"""
+  restoreValuacionToBoard(valuacionId: String!): ValuacionResponse!
+
+  """Asocia la valuación a un anuncio existente"""
+  linkValuacionToPost(valuacionId: String!, postId: String!): ValuacionResponse!
+
+  """Elimina una valuación (borrado lógico: conserva el registro)"""
+  deleteValuacion(valuacionId: String!): Boolean!
+
+  """Busca anuncios similares a partir de texto, imágenes o un anuncio"""
+  searchMatch(input: SearchMatchRequest!): MatchResponse!
 }
 
 input UpdateContactRequest {
@@ -1645,6 +1855,24 @@ input SendMessageRequest {
   sessionId: String
   message: String!
   userId: String
+
+  """
+  Modo/especialidad de Cubito: general | disenador_grafico | marketing | especialista_negocios | branch | cliente_b2b | consultor_ventas | analista_mercado | entrenamiento_publicitario
+  """
+  mode: String
+
+  """
+  Prompt libre de rol ("respondé como si fueras..."). Se suma como contexto de estilo.
+  """
+  rolePrompt: String
+
+  """
+  Prompt sugerido que se suma al prompt fijo del modo (Entrenamiento Publicitario).
+  """
+  extraPrompt: String
+
+  """Imágenes para que Cubito analice (sólo hosts de Publicité)"""
+  imageUrls: [String!]
 }
 
 input GenerateAdImageRequest {
@@ -1675,4 +1903,55 @@ input NoveltyUpdateRequest {
   _id: String!
   properties: [NoveltyPropertyRequest!]
   blocks: [NoveltyBlockRequest!]
+}
+
+input StartValuacionRequest {
+  """imagen | objeto | servicio | bien | otro"""
+  category: ValuacionCategory!
+
+  """URLs de imágenes ya subidas (sólo hosts de Publicité)"""
+  imageUrls: [String!]
+
+  """Descripción libre inicial de lo que se quiere valuar"""
+  description: String
+
+  """Modo de Cubito (general, marketing, analista_mercado, ...)"""
+  mode: String
+
+  """sessionId del chat del workspace, para correlacionar la conversación"""
+  sessionId: String
+}
+
+"""Categoría de lo que se valúa (imagen, objeto, servicio, bien, otro)"""
+enum ValuacionCategory {
+  imagen
+  objeto
+  servicio
+  bien
+  otro
+}
+
+input ValuacionMessageRequest {
+  valuacionId: String!
+  message: String!
+
+  """Imágenes adicionales que se suman a la valuación"""
+  imageUrls: [String!]
+}
+
+input SearchMatchRequest {
+  """Texto libre: una necesidad, un producto, un servicio"""
+  text: String
+
+  """URLs de imágenes ya subidas (sólo hosts de Publicité)"""
+  imageUrls: [String!]
+
+  """Id de un anuncio existente para buscar similares"""
+  postId: String
+
+  """Modo de Cubito aplicado a la búsqueda"""
+  mode: String
+
+  """sessionId del workspace, para el tracking de tokens"""
+  sessionId: String
 }

@@ -29,6 +29,8 @@ import { ChatbotModule } from './contexts/module_user/chatbot/infrastructure/mod
 import { NoveltyModule } from './contexts/module_novelty/novelty/infrastructure/module/novelty.module';
 import { WhatsAppModule } from './contexts/module_webhook/whatsapp/infrastructure/module/whatsapp.module';
 import { GiveawayModule } from './contexts/module_giveaway/giveaway/infrastructure/module/giveaway.module';
+import { ValuacionModule } from './contexts/module_user/valuacion/infrastructure/module/valuacion.module';
+import { MatchModule } from './contexts/module_user/match/infrastructure/module/match.module';
 
 @Module({
   imports: [
@@ -64,6 +66,8 @@ import { GiveawayModule } from './contexts/module_giveaway/giveaway/infrastructu
     NoveltyModule,
     WhatsAppModule,
     GiveawayModule,
+    ValuacionModule,
+    MatchModule,
   ],
   providers: [
     {

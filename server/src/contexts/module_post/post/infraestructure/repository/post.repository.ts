@@ -3,7 +3,11 @@ import { ClientSession, Connection, Model, Types } from 'mongoose';
 import { Date } from 'mongoose';
 
 import { Post } from '../../domain/entity/post.entity';
-import { PostRepositoryInterface } from '../../domain/repository/post.repository.interface';
+import {
+  MatchCandidate,
+  MatchCandidateCriteria,
+  PostRepositoryInterface,
+} from '../../domain/repository/post.repository.interface';
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { PostGood } from '../../domain/entity/post-types/post.good.entity';
 import {
@@ -42,7 +46,10 @@ import { EmitterService } from 'src/contexts/module_shared/event-emmiter/emmiter
 import { downgrade_plan_post_notification } from 'src/contexts/module_shared/event-emmiter/events';
 import { BadRequestException } from '@nestjs/common';
 import { PostReviewDocument } from 'src/contexts/module_post/PostReview/infrastructure/schemas/review.schema';
-import { Visibility_Of_Find } from '../../domain/entity/enum/post-visibility.enum';
+import {
+  Visibility,
+  Visibility_Of_Find,
+} from '../../domain/entity/enum/post-visibility.enum';
 
 export class PostRepository implements PostRepositoryInterface {
   constructor(
@@ -617,6 +624,145 @@ export class PostRepository implements PostRepositoryInterface {
       this.logger.error('Error fetching friend posts:', error.message);
       throw new Error('Unable to fetch friend posts. Please try again later.');
     }
+  }
+
+  /**
+   * Candidatos para Match IA.
+   *
+   * El filtro de visibilidad vive acá (y no en el módulo de match) para que haya
+   * una sola definición de "qué anuncio puede ver alguien que no es de la red
+   * del autor": públicos, de comportamiento libre, activos y sin vencer.
+   * Los anuncios de agenda quedan fuera a propósito: Match se pide sin contexto
+   * de relación, así que incluirlos expondría contenido privado.
+   */
+  async findCandidatesForMatch(
+    criteria: MatchCandidateCriteria,
+  ): Promise<MatchCandidate[]> {
+    try {
+      const today = new Date();
+      const limit = Math.min(Math.max(Math.floor(criteria.limit) || 20, 1), 50);
+
+      const query: any = {
+        isActive: true,
+        endDate: { $gte: today },
+        'visibility.post': Visibility.public,
+        postBehaviourType: PostBehaviourType.libre,
+      };
+
+      // Las keywords ya vienen normalizadas por el servicio de match, igual que
+      // searchTitle/searchDescription (sin acentos, sin emojis, minúsculas).
+      const keywords = (criteria.keywords ?? [])
+        .map((keyword) => keyword.trim())
+        .filter((keyword) => keyword.length >= 3)
+        .map((keyword) => keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+
+      if (keywords.length === 0) return [];
+
+      const keywordPattern = keywords.join('|');
+      query.$or = [
+        { searchTitle: { $regex: keywordPattern, $options: 'i' } },
+        { searchDescription: { $regex: keywordPattern, $options: 'i' } },
+      ];
+
+      if (criteria.categoryIds?.length) {
+        const validIds = criteria.categoryIds
+          .filter((id) => Types.ObjectId.isValid(id))
+          .map((id) => new Types.ObjectId(id));
+        if (validIds.length) query.category = { $in: validIds };
+      }
+
+      if (criteria.postType) query.postType = criteria.postType;
+
+      if (criteria.priceMin != null || criteria.priceMax != null) {
+        query.price = {};
+        if (criteria.priceMin != null) query.price.$gte = criteria.priceMin;
+        if (criteria.priceMax != null) query.price.$lte = criteria.priceMax;
+      }
+
+      if (criteria.excludeAuthorId && Types.ObjectId.isValid(criteria.excludeAuthorId)) {
+        query.author = { $ne: new Types.ObjectId(criteria.excludeAuthorId) };
+      }
+
+      const posts = await this.postDocument
+        .find(query)
+        .select(
+          '_id title description price postType imagesUrls attachedFiles category',
+        )
+        .populate({ path: 'category', model: 'PostCategory', select: 'label' })
+        .limit(limit)
+        .lean();
+
+      return posts.map((post: any) => ({
+        postId: post._id.toString(),
+        title: post.title ?? '',
+        description: post.description ?? '',
+        price: post.price ?? 0,
+        postType: post.postType ?? '',
+        // PostPetition no tiene imagesUrls: hay que degradar sin romper.
+        imageUrl:
+          post.imagesUrls?.[0] ?? post.attachedFiles?.[0]?.url ?? null,
+        categoryLabels: Array.isArray(post.category)
+          ? post.category
+              .map((category: any) => category?.label)
+              .filter(Boolean)
+          : [],
+      }));
+    } catch (error: any) {
+      this.logger.error('Error buscando candidatos para match:', error.message);
+      throw new Error('No se pudieron buscar anuncios similares.');
+    }
+  }
+
+  async findPostSummaryForMatch(postId: string): Promise<MatchCandidate | null> {
+    if (!Types.ObjectId.isValid(postId)) return null;
+
+    const post: any = await this.postDocument
+      .findById(postId)
+      .select('_id title description price postType imagesUrls attachedFiles category')
+      .populate({ path: 'category', model: 'PostCategory', select: 'label' })
+      .lean();
+
+    if (!post) return null;
+
+    return {
+      postId: post._id.toString(),
+      title: post.title ?? '',
+      description: post.description ?? '',
+      price: post.price ?? 0,
+      postType: post.postType ?? '',
+      imageUrl: post.imagesUrls?.[0] ?? post.attachedFiles?.[0]?.url ?? null,
+      categoryLabels: Array.isArray(post.category)
+        ? post.category.map((category: any) => category?.label).filter(Boolean)
+        : [],
+    };
+  }
+
+  async isPostAuthor(postId: string, userId: string): Promise<boolean> {
+    if (!Types.ObjectId.isValid(postId) || !Types.ObjectId.isValid(userId)) {
+      return false;
+    }
+    const post = await this.postDocument
+      .findOne({ _id: postId, author: new Types.ObjectId(userId) })
+      .select('_id')
+      .lean();
+    return post != null;
+  }
+
+  async findCategoryIdsByLabels(labels: string[]): Promise<string[]> {
+    const clean = (labels ?? [])
+      .map((label) => label?.trim())
+      .filter((label) => label && label.length >= 2)
+      .map((label) => label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+
+    if (clean.length === 0) return [];
+
+    const categories = await this.connection
+      .collection('postcategories')
+      .find({ label: { $regex: clean.join('|'), $options: 'i' } })
+      .limit(20)
+      .toArray();
+
+    return categories.map((category: any) => category._id.toString());
   }
 
   async findAllPostByPostType(

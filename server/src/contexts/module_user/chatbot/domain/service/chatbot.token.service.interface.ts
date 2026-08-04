@@ -4,6 +4,7 @@ import {
 } from '../../application/dto/HTTP-RESPONSE/chatbot.token.response';
 import {
   AiUsage,
+  AiUsageKind,
   TokenGateResult,
   UsageMeta,
 } from '../entity/chatbot.token.types';
@@ -23,12 +24,34 @@ export interface ChatbotTokenServiceInterface {
     sessionId: string | undefined,
   ): Promise<TokenGateResult>;
 
-  /** Descuenta el usage real de la cuota correspondiente y lo registra para tracking. */
+  /**
+   * Descuenta el usage de la cuota correspondiente y lo registra para tracking.
+   * El descuento se pondera por el costo relativo del modelo usado (gpt-4o vale
+   * ~10 tokens de gpt-4o-mini), así que lo cobrado no coincide con los tokens
+   * informados por OpenAI.
+   *
+   * @returns tokens reales efectivamente cobrados (ya ponderados). Devuelve el
+   *          valor calculado aunque falle la persistencia del log.
+   */
   recordUsage(
     gate: TokenGateResult,
     usage: AiUsage,
     meta: UsageMeta,
-  ): Promise<void>;
+  ): Promise<number>;
+
+  /**
+   * Cobra el usage y devuelve el estado de tokens ya actualizado, para poder
+   * informarlo al front en la misma respuesta. Es el camino que deben usar
+   * todos los servicios de IA (chat, imagen, valuación, match) en lugar de
+   * llamar a recordUsage() y recalcular el estado por su cuenta.
+   *
+   * El canal se infiere del sessionId ('whatsapp:' → whatsapp, resto → web).
+   */
+  chargeAndBuildStatus(
+    gate: TokenGateResult,
+    usage: AiUsage | undefined,
+    meta: { sessionId?: string; kind: AiUsageKind; model: string },
+  ): Promise<ChatbotTokenStatusResponse>;
 
   /** Estado de tokens para mostrar en el perfil del usuario logueado. */
   getStatusForUser(userId: string): Promise<ChatbotTokenStatusResponse>;

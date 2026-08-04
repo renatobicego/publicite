@@ -4,6 +4,7 @@ import { ChatbotTokenServiceInterface } from '../../domain/service/chatbot.token
 import { ChatbotTokenRepositoryInterface } from '../../domain/repository/chatbot.token.repository.interface';
 import {
   AiUsage,
+  AiUsageKind,
   TokenBlockedReason,
   TokenConsumer,
   TokenConsumerBucket,
@@ -19,6 +20,7 @@ import {
   getCommunityMonthlyBonusPubliciteTokens,
   getCommunitySeedPubliciteTokens,
   getFreeMonthlyPubliciteTokens,
+  getModelCostMultiplier,
   getPlanCommunityPubliciteTokens,
   getPlanNetPubliciteTokens,
   publiciteToRealTokens,
@@ -84,16 +86,21 @@ export class ChatbotTokenService implements ChatbotTokenServiceInterface {
     gate: TokenGateResult,
     usage: AiUsage,
     meta: UsageMeta,
-  ): Promise<void> {
+  ): Promise<number> {
+    // El cobro se calcula fuera del try: aunque falle la persistencia, quien
+    // llama necesita saber cuánto se consumió para informar el estado al front.
+    const rawTotalTokens = Math.max(
+      0,
+      Math.round(usage.totalTokens || usage.promptTokens + usage.completionTokens),
+    );
+    const costMultiplier = getModelCostMultiplier(meta.model);
+    const totalRealTokens = Math.round(rawTotalTokens * costMultiplier);
+
+    if (totalRealTokens === 0) return 0;
+
     // Nunca romper la respuesta al usuario por un fallo de contabilidad:
     // la llamada a OpenAI ya se hizo y se pagó.
     try {
-      const totalRealTokens = Math.max(
-        0,
-        Math.round(usage.totalTokens || usage.promptTokens + usage.completionTokens),
-      );
-      if (totalRealTokens === 0) return;
-
       const { consumer } = gate;
       await this.tokenRepository.addUsage(
         consumer.ownerType,
@@ -118,6 +125,8 @@ export class ChatbotTokenService implements ChatbotTokenServiceInterface {
         promptTokens: Math.round(usage.promptTokens || 0),
         completionTokens: Math.round(usage.completionTokens || 0),
         totalRealTokens,
+        rawTotalTokens,
+        costMultiplier,
         chargedTo,
       });
     } catch (error: any) {
@@ -125,6 +134,37 @@ export class ChatbotTokenService implements ChatbotTokenServiceInterface {
         'Error registrando consumo de tokens del chatbot: ' + error.message,
       );
     }
+
+    return totalRealTokens;
+  }
+
+  async chargeAndBuildStatus(
+    gate: TokenGateResult,
+    usage: AiUsage | undefined,
+    meta: { sessionId?: string; kind: AiUsageKind; model: string },
+  ): Promise<ChatbotTokenStatusResponse> {
+    const effectiveUsage: AiUsage = usage ?? {
+      promptTokens: 0,
+      completionTokens: 0,
+      totalTokens: 0,
+    };
+
+    const chargedRealTokens = await this.recordUsage(gate, effectiveUsage, {
+      sessionId: meta.sessionId,
+      channel: meta.sessionId?.startsWith('whatsapp:') ? 'whatsapp' : 'web',
+      kind: meta.kind,
+      model: meta.model,
+    });
+
+    const usedAfter = gate.usedRealTokens + chargedRealTokens;
+    return this.buildStatusFromGate({
+      ...gate,
+      usedRealTokens: usedAfter,
+      remainingRealTokens: Math.max(
+        0,
+        gate.consumer.allowanceRealTokens - usedAfter,
+      ),
+    });
   }
 
   async getStatusForUser(userId: string): Promise<ChatbotTokenStatusResponse> {

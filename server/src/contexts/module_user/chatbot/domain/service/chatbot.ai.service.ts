@@ -4,16 +4,25 @@ import OpenAI from 'openai';
 import {
   ChatbotAIResult,
   ChatbotAIServiceInterface,
+  ChatbotResponseOptions,
   GeneratedImageResult,
 } from './chatbot.ai.service.interface';
 import { ChatMessage } from '../entity/chat.message.entity';
 import { MessageRole } from '../entity/enum/message.role.enum';
 import { ChatbotAction } from '../entity/enum/chatbot.action.enum';
 import { AiUsage } from '../entity/chatbot.token.types';
+import { buildModeContext } from './cubito-modes';
+import {
+  getVisionModel,
+  sanitizeImageUrls,
+} from 'src/contexts/module_shared/ai/ai.config';
 
 const CREATE_AD_TOOL_NAME = 'create_ad';
 
 const CHAT_MODEL = 'gpt-4o-mini';
+
+/** Tope de imágenes por mensaje de chat (el chat no es el flujo de valuación). */
+const MAX_CHAT_IMAGES = 4;
 
 const CREATE_AD_RESPONSE_COPY =
   '¡Genial! Te ayudo a crear tu anuncio. Completá los datos a continuación 👇';
@@ -541,12 +550,22 @@ Esperamos que disfrutes de la plataforma y encuentres todo lo que buscas.
   async generateResponse(
     conversationHistory: ChatMessage[],
     userMessage: string,
+    options?: ChatbotResponseOptions,
   ): Promise<ChatbotAIResult> {
+    // Sólo se paga el modelo con visión cuando hay imágenes que analizar.
+    const imageUrls = sanitizeImageUrls(options?.imageUrls, MAX_CHAT_IMAGES);
+    const model = imageUrls.length > 0 ? getVisionModel() : CHAT_MODEL;
+
     try {
-      const messages = this.buildOpenAIMessages(conversationHistory, userMessage);
+      const messages = this.buildOpenAIMessages(
+        conversationHistory,
+        userMessage,
+        options,
+        imageUrls,
+      );
 
       const completion = await this.openai.chat.completions.create({
-        model: CHAT_MODEL,
+        model,
         messages: messages,
         tools: this.buildTools(),
         tool_choice: 'auto',
@@ -566,14 +585,14 @@ Esperamos que disfrutes de la plataforma y encuentres todo lo que buscas.
           content: CREATE_AD_RESPONSE_COPY,
           action: ChatbotAction.CREATE_AD,
           usage,
-          model: CHAT_MODEL,
+          model,
         };
       }
 
       const content =
         choice?.content || 'Lo siento, no pude generar una respuesta en este momento.';
 
-      return { content, usage, model: CHAT_MODEL };
+      return { content, usage, model };
     } catch (error: any) {
       console.error('Error calling OpenAI API:', error);
       throw new Error(`Error generating AI response: ${error.message}`);
@@ -687,8 +706,19 @@ Esperamos que disfrutes de la plataforma y encuentres todo lo que buscas.
   private buildOpenAIMessages(
     conversationHistory: ChatMessage[],
     userMessage: string,
+    options?: ChatbotResponseOptions,
+    imageUrls: string[] = [],
   ): Array<OpenAI.Chat.Completions.ChatCompletionMessageParam> {
     const messages: Array<OpenAI.Chat.Completions.ChatCompletionMessageParam> = [];
+
+    // Contexto del modo/especialidad + prompt libre de rol + prompt sugerido.
+    // Va como bloque adicional del system prompt: Cubito sigue siendo la misma
+    // IA, sólo cambia el enfoque de la respuesta.
+    const modeContext = buildModeContext({
+      mode: options?.mode,
+      rolePrompt: options?.rolePrompt,
+      extraPrompt: options?.extraPrompt,
+    });
 
     messages.push({
       role: 'system',
@@ -758,7 +788,14 @@ INSTRUCCIONES PARA RESPONDER (cuando NO disparás la tool):
     - Siempre prioriza la claridad sobre la brevedad
 
 RECUERDA: Tu objetivo principal es que el usuario entienda cómo usar Publicite y tenga los enlaces directos que
-necesita; pero si te consulta cualquier otra cosa, ayudalo igual con la misma calidad y amabilidad.`,
+necesita; pero si te consulta cualquier otra cosa, ayudalo igual con la misma calidad y amabilidad.${
+        modeContext
+          ? `\n\n═══════════════════════════════════════════════════════════════
+ENFOQUE SOLICITADO PARA ESTA CONVERSACIÓN:
+═══════════════════════════════════════════════════════════════
+${modeContext}`
+          : ''
+      }`,
     });
 
     const recentHistory = conversationHistory.slice(-10);
@@ -769,10 +806,20 @@ necesita; pero si te consulta cualquier otra cosa, ayudalo igual con la misma ca
       });
     }
 
-    messages.push({
-      role: 'user',
-      content: userMessage,
-    });
+    messages.push(
+      imageUrls.length > 0
+        ? {
+            role: 'user',
+            content: [
+              { type: 'text', text: userMessage },
+              ...imageUrls.map((url) => ({
+                type: 'image_url' as const,
+                image_url: { url, detail: 'low' as const },
+              })),
+            ],
+          }
+        : { role: 'user', content: userMessage },
+    );
 
     return messages;
   }
