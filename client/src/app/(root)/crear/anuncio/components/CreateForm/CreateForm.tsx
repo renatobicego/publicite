@@ -11,11 +11,11 @@ import { PostBehaviourType } from "@/types/postTypes";
 import SelectPostBehaviourType from "../SelectPostBehaviourType";
 import PostsLimitReached from "../PostsLimitReached";
 
-const CreateForm = ({ userId }: { userId?: string }) => {
-  const [type, setType] = useState<"good" | "service">();
+const CreateForm = ({ userId, prefill }: { userId?: string; prefill?: { title?: string; description?: string; price?: number; fromValuacion?: string } }) => {
+  const [type, setType] = useState<"good" | "service" | undefined>(prefill ? "good" : undefined);
   const [files, setFiles] = useState<File[]>([]);
   const [postBehaviourType, setPostBehaviourType] =
-    useState<PostBehaviourType>();
+    useState<PostBehaviourType | undefined>(prefill ? "libre" : undefined);
   const { userCanPublishPost, limit, numberOfPosts, loading } =
     useUserPostLimit(postBehaviourType);
   return (
@@ -69,6 +69,7 @@ const CreateForm = ({ userId }: { userId?: string }) => {
                   userCanPublishPost={userCanPublishPost}
                   userId={userId}
                   postBehaviourType={postBehaviourType}
+                  prefill={prefill}
                 />
               ) : (
                 type === "service" && (

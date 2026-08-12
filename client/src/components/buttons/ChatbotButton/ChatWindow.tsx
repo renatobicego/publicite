@@ -35,6 +35,7 @@ interface ChatWindowProps {
   onSelectSession?: (sessionId: string) => void;
   onNewChat?: () => void;
   onDeleteSession?: (sessionId: string) => void;
+  onGoToWorkspace?: () => void;
 }
 
 export function ChatWindow({
@@ -55,6 +56,7 @@ export function ChatWindow({
   onSelectSession,
   onNewChat,
   onDeleteSession,
+  onGoToWorkspace,
 }: ChatWindowProps) {
   const [inputValue, setInputValue] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -378,6 +380,17 @@ export function ChatWindow({
 
         {/* Input Form */}
         <div className="border-t border-gray-200 dark:border-slate-600 p-3 bg-white dark:bg-slate-800">
+          {onGoToWorkspace && (
+            <Button
+              size="sm"
+              variant="flat"
+              color="secondary"
+              className="w-full mb-2"
+              onPress={onGoToWorkspace}
+            >
+              Ir al Tablero de Trabajo
+            </Button>
+          )}
           <form onSubmit={handleSubmit} className="flex gap-2">
             <CustomInputWithoutFormik
               value={inputValue}
