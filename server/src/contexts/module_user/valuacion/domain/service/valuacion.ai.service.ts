@@ -70,7 +70,7 @@ export class ValuacionAIService implements ValuacionAIServiceInterface {
         }),
       },
       ...this.mapHistory(params.history),
-      this.buildUserMessage(params.userMessage, params.imageUrls),
+      await this.buildUserMessage(params.userMessage, params.imageUrls),
     ];
 
     try {
@@ -124,7 +124,7 @@ CATEGORÍA: ${params.category}
 ${params.modeContext ? `\nMODO ESPECIALISTA ACTIVO:\n${params.modeContext}` : ''}`,
       },
       ...this.mapHistory(params.history),
-      this.buildUserMessage(
+      await this.buildUserMessage(
         'Generá ahora el informe de valuación en JSON con toda la información de esta conversación.',
         params.imageUrls,
       ),
@@ -172,24 +172,45 @@ ${params.modeContext ? `\nMODO ESPECIALISTA ACTIVO:\n${params.modeContext}` : ''
     }));
   }
 
-  /** Arma el mensaje del usuario adjuntando las imágenes como content parts. */
-  private buildUserMessage(
+  /** Arma el mensaje del usuario adjuntando las imágenes como content parts.
+   * Descarga las imágenes y las convierte a base64 data URLs porque OpenAI
+   * no puede descargar directamente desde UploadThing (timeout).
+   */
+  private async buildUserMessage(
     text: string,
     imageUrls: string[],
-  ): OpenAI.Chat.Completions.ChatCompletionMessageParam {
+  ): Promise<OpenAI.Chat.Completions.ChatCompletionMessageParam> {
     if (imageUrls.length === 0) {
       return { role: 'user', content: text };
     }
 
+    const imageContents = await Promise.all(
+      imageUrls.map(async (url) => {
+        try {
+          const response = await fetch(url);
+          const arrayBuffer = await response.arrayBuffer();
+          const base64 = Buffer.from(arrayBuffer).toString('base64');
+          const contentType = response.headers.get('content-type') || 'image/jpeg';
+          return {
+            type: 'image_url' as const,
+            image_url: {
+              url: `data:${contentType};base64,${base64}`,
+              detail: 'low' as const,
+            },
+          };
+        } catch (err) {
+          console.warn(`No se pudo descargar imagen ${url}:`, err);
+          return {
+            type: 'image_url' as const,
+            image_url: { url, detail: 'low' as const },
+          };
+        }
+      }),
+    );
+
     return {
       role: 'user',
-      content: [
-        { type: 'text', text },
-        ...imageUrls.map((url) => ({
-          type: 'image_url' as const,
-          image_url: { url, detail: 'low' as const },
-        })),
-      ],
+      content: [{ type: 'text', text }, ...imageContents],
     };
   }
 
