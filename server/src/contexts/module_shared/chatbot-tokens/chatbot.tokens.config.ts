@@ -36,6 +36,9 @@
  * - CHATBOT_USAGE_REPORT_KEY: clave para consultar el reporte de consumo
  *   (query getChatbotUsageReport). Si no está definida, el reporte queda
  *   deshabilitado.
+ * - CHATBOT_TOKENS_UNLIMITED_IDS: identidades internas (desarrollo/QA) sin
+ *   límite práctico de tokens, separadas por coma. Acepta mongoId de usuario y
+ *   también identidades anónimas ('whatsapp:+549...'). Ver isUnlimitedIdentity.
  * - CHATBOT_TOKENS_MODEL_MULTIPLIERS: JSON opcional {modelo: factor} con el
  *   costo relativo de cada modelo respecto de gpt-4o-mini. Se usa para que
  *   modelos caros (gpt-4o con visión) descuenten cuota en proporción a lo que
@@ -210,6 +213,31 @@ export function getCommunityMonthlyBonusPubliciteTokens(): number {
  */
 export function getCommunitySeedPubliciteTokens(): number {
   return readPositiveNumber('CHATBOT_TOKENS_COMMUNITY_SEED', 0);
+}
+
+/**
+ * Cuota que se le asigna a una identidad ilimitada. No es Infinity a propósito:
+ * el valor viaja a GraphQL (Float) y se persiste en tokens reales, así que se usa
+ * un número finito enorme —1.000.000 de tokens Publicité ≈ 200.000 mensajes/mes—
+ * que en la práctica nunca se agota pero mantiene toda la aritmética sana.
+ */
+export const UNLIMITED_MONTHLY_PUBLICITE_TOKENS = 1_000_000;
+
+/**
+ * Identidades internas sin límite práctico de tokens (cuentas de desarrollo/QA).
+ *
+ * Se declaran en CHATBOT_TOKENS_UNLIMITED_IDS separadas por coma y admiten tanto
+ * el mongoId del usuario como una identidad anónima ('whatsapp:+549...'), para
+ * poder probar el bot por WhatsApp sin estar registrado.
+ */
+export function isUnlimitedIdentity(identity: string | undefined): boolean {
+  if (!identity) return false;
+  const raw = process.env.CHATBOT_TOKENS_UNLIMITED_IDS;
+  if (!raw) return false;
+  const normalized = identity.toLowerCase().trim();
+  return raw
+    .split(',')
+    .some((entry) => entry.toLowerCase().trim() === normalized && normalized.length > 0);
 }
 
 /** Clave del reporte de consumo; undefined = reporte deshabilitado. */

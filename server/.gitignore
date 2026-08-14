@@ -51,6 +51,10 @@ deploy-qa.sh
 .env.local
 .env.test
 .env.
+# Mismos archivos pero SIN punto (env, env.qa, env.publicite-*): tienen las
+# credenciales de prod y QA y no estaban cubiertos por los patrones de arriba.
+env
+env.*
 # temp directory
 .temp
 .tmp

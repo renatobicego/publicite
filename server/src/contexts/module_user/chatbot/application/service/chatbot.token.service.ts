@@ -23,8 +23,10 @@ import {
   getModelCostMultiplier,
   getPlanCommunityPubliciteTokens,
   getPlanNetPubliciteTokens,
+  isUnlimitedIdentity,
   publiciteToRealTokens,
   realToPubliciteTokens,
+  UNLIMITED_MONTHLY_PUBLICITE_TOKENS,
 } from 'src/contexts/module_shared/chatbot-tokens/chatbot.tokens.config';
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 
@@ -251,6 +253,7 @@ export class ChatbotTokenService implements ChatbotTokenServiceInterface {
 
   /**
    * Determina el bucket del consumidor:
+   * - identidad declarada en CHATBOT_TOKENS_UNLIMITED_IDS → PLAN sin límite práctico.
    * - mongoId de usuario existente con plan pago con tokens → PLAN (cuota mensual propia).
    * - mongoId de usuario existente sin plan pago → FREE (cuota mensual comunitaria).
    * - cualquier otra identidad (uuid de sesión, whatsapp:<tel>) → ANONYMOUS (cuota diaria comunitaria).
@@ -259,6 +262,25 @@ export class ChatbotTokenService implements ChatbotTokenServiceInterface {
     userId: string | undefined,
     sessionId: string | undefined,
   ): Promise<TokenConsumer> {
+    // Cuentas internas de prueba: cuota inagotable y bucket PLAN a propósito, para
+    // que el consumo se cargue a la cuenta propia y no vacíe la bolsa comunitaria
+    // (el uso igual queda en chatbotusagelogs, así el costo real sigue siendo visible).
+    const unlimitedId = [userId, sessionId].find((identity) =>
+      isUnlimitedIdentity(identity),
+    );
+    if (unlimitedId) {
+      const isRegistered = MONGO_ID_REGEX.test(unlimitedId);
+      return {
+        ownerType: isRegistered ? 'user' : 'anonymous',
+        ownerId: unlimitedId,
+        bucket: TokenConsumerBucket.PLAN,
+        period: this.monthPeriod(),
+        allowanceRealTokens: publiciteToRealTokens(
+          UNLIMITED_MONTHLY_PUBLICITE_TOKENS,
+        ),
+      };
+    }
+
     if (userId && MONGO_ID_REGEX.test(userId)) {
       const plans = await this.tokenRepository.getUserAuthorizedPlans(userId);
       if (plans !== null) {

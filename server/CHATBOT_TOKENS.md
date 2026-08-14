@@ -52,6 +52,7 @@ Implementado el 2026-07-20. Controla quién puede usar a Cubito (chat web + What
 | `CHATBOT_TOKENS_COMMUNITY_BONUS_MONTHLY` | `0` | Aporte mensual de la plataforma a la bolsa (para lanzar la feature sin suscriptores pagos) |
 | `CHATBOT_TOKENS_COMMUNITY_SEED` | `0` | **Base histórica acumulada** que la plataforma carga a la bolsa (el crédito comprado en OpenAI convertido a tokens Publicité). Idempotente e incremental: para "recargar", subir el número y se acredita sólo la diferencia |
 | `CHATBOT_USAGE_REPORT_KEY` | — | Clave de la query `getChatbotUsageReport`; sin definir, el reporte queda deshabilitado |
+| `CHATBOT_TOKENS_UNLIMITED_IDS` | — | Identidades internas sin límite (ver "Cuentas de prueba sin límite") |
 
 Con los defaults: un plan pago otorga 1000 brutos → el usuario ve y recibe
 **800 tokens Publicité/mes** (~100–200 mensajes) y 200 van a la bolsa.
@@ -109,6 +110,28 @@ mix real medido de Cubito ≈ 5.500 entrada + 200 salida por mensaje ⇒
 La bolsa es contabilidad interna: el gasto real en dólares lo corta el crédito
 de OpenAI. Cargando un número conservador, la bolsa se agota **antes** que el
 crédito real y el sistema corta a los usuarios gratuitos a tiempo.
+
+### Cuentas de prueba sin límite (desarrollo)
+
+`CHATBOT_TOKENS_UNLIMITED_IDS` acepta una lista separada por comas de identidades
+que nunca se quedan sin tokens (cuota sintética de 1.000.000 de tokens Publicité
+por mes, ~200.000 mensajes):
+
+```
+CHATBOT_TOKENS_UNLIMITED_IDS=68b3f1c2a4d5e6f708192a3b,whatsapp:+5491122334455
+```
+
+- Se aceptan **mongoIds de usuario** e identidades anónimas de WhatsApp
+  (`whatsapp:<tel>`), para poder probar el bot sin estar registrado.
+- Se resuelven como bucket `plan`: **no descuentan de la bolsa comunitaria** ni se
+  bloquean si la bolsa está en 0, así probar no le come los tokens a los usuarios
+  reales. El consumo **sí** queda en `chatbotusagelogs` (`chargedTo: 'plan'`), así
+  que el gasto real en OpenAI se sigue viendo en el reporte.
+- Aplica a todo lo que pasa por el gate: chat web, WhatsApp, imágenes, valuación y match.
+- Es sólo para cuentas internas: cualquier id que se agregue acá deja de pagar cuota.
+
+Para obtener el mongoId: el `ownerId` que devuelve `getChatbotUsageReport` para ese
+usuario, o directo en Mongo `db.users.findOne({ email: "<mail>" }, { _id: 1 })`.
 
 ### Reporte de consumo por usuario
 
