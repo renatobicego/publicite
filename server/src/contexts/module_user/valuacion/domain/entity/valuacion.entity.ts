@@ -87,6 +87,12 @@ export class ValuacionEntity {
   readonly completionPercent: number;
   readonly confidencePercent: number;
   readonly coveredFields: ValuacionBriefField[];
+  /**
+   * Ejes que NO aplican a lo que se está valuando (ej. mantenimiento en algo
+   * nuevo). Cuentan como resueltos para la completitud: no tener historial de
+   * mantenimiento no es información faltante si el objeto es 0km.
+   */
+  readonly notApplicableFields: ValuacionBriefField[];
   readonly briefMessages: ValuacionBriefMessage[];
   readonly briefAnswers: ValuacionBriefAnswer[];
   readonly images: ValuacionImage[];
@@ -112,6 +118,7 @@ export class ValuacionEntity {
     completionPercent: number;
     confidencePercent: number;
     coveredFields: ValuacionBriefField[];
+    notApplicableFields?: ValuacionBriefField[];
     briefMessages: ValuacionBriefMessage[];
     briefAnswers: ValuacionBriefAnswer[];
     images: ValuacionImage[];
@@ -136,6 +143,7 @@ export class ValuacionEntity {
     this.completionPercent = params.completionPercent;
     this.confidencePercent = params.confidencePercent;
     this.coveredFields = params.coveredFields;
+    this.notApplicableFields = params.notApplicableFields ?? [];
     this.briefMessages = params.briefMessages;
     this.briefAnswers = params.briefAnswers;
     this.images = params.images;

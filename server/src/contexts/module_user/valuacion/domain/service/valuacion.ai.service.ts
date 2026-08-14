@@ -11,10 +11,12 @@ import { AiUsage } from 'src/contexts/module_user/chatbot/domain/entity/chatbot.
 import {
   BriefTurnResult,
   ValuacionAIServiceInterface,
+  ValuacionComparable,
   ValuacionResultPayload,
 } from './valuacion.ai.service.interface';
 import {
   buildBriefSystemPrompt,
+  buildComparablesSection,
   VALUACION_RESULT_PROMPT,
 } from './valuacion.prompts';
 import {
@@ -51,6 +53,7 @@ export class ValuacionAIService implements ValuacionAIServiceInterface {
     category: ValuacionCategory;
     modeContext?: string;
     coveredFields: string[];
+    notApplicableFields?: string[];
     history: ValuacionBriefMessage[];
     userMessage: string;
     imageUrls: string[];
@@ -66,6 +69,7 @@ export class ValuacionAIService implements ValuacionAIServiceInterface {
           category: params.category,
           modeContext: params.modeContext,
           coveredFields: params.coveredFields,
+          notApplicableFields: params.notApplicableFields,
           hasImages,
         }),
       },
@@ -85,6 +89,7 @@ export class ValuacionAIService implements ValuacionAIServiceInterface {
       const parsed = parseJsonFromModel<{
         reply?: string;
         coveredFields?: string[];
+        notApplicableFields?: string[];
         briefComplete?: boolean;
       }>(completion.choices[0]?.message?.content);
 
@@ -94,6 +99,11 @@ export class ValuacionAIService implements ValuacionAIServiceInterface {
           'Contame un poco más sobre lo que querés valuar 🙂',
         coveredFields: Array.isArray(parsed.coveredFields)
           ? parsed.coveredFields.filter((field) => typeof field === 'string')
+          : [],
+        notApplicableFields: Array.isArray(parsed.notApplicableFields)
+          ? parsed.notApplicableFields.filter(
+              (field) => typeof field === 'string',
+            )
           : [],
         briefComplete: parsed.briefComplete === true,
         usage: this.mapUsage(completion.usage),
@@ -110,6 +120,7 @@ export class ValuacionAIService implements ValuacionAIServiceInterface {
     modeContext?: string;
     history: ValuacionBriefMessage[];
     imageUrls: string[];
+    comparables?: ValuacionComparable[];
   }): Promise<ValuacionResultPayload> {
     // El informe final siempre usa el modelo bueno: es la salida que el usuario
     // guarda, comparte y asocia a un anuncio.
@@ -121,7 +132,7 @@ export class ValuacionAIService implements ValuacionAIServiceInterface {
         content: `${VALUACION_RESULT_PROMPT}
 
 CATEGORÍA: ${params.category}
-${params.modeContext ? `\nMODO ESPECIALISTA ACTIVO:\n${params.modeContext}` : ''}`,
+${params.modeContext ? `\nMODO ESPECIALISTA ACTIVO:\n${params.modeContext}` : ''}${buildComparablesSection(params.comparables ?? [])}`,
       },
       ...this.mapHistory(params.history),
       this.buildUserMessage(

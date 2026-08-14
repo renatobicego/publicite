@@ -27,6 +27,8 @@ import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.servic
       useClass: MatchAIService,
     },
   ],
-  exports: ['MatchServiceInterface'],
+  // MatchAIServiceInterface se exporta para que Valuación reutilice la extracción
+  // de criterios de búsqueda en vez de tener su propio extractor duplicado.
+  exports: ['MatchServiceInterface', 'MatchAIServiceInterface'],
 })
 export class MatchModule {}
