@@ -13,9 +13,11 @@ interface ReferencesPanelProps {
     onAdd: (image: ReferenceImage) => void;
     onRemove: (id: string) => void;
     onUpdateUrl: (id: string, newUrl: string) => void;
+    activeModule?: string;
+    onImageUploadedForMatch?: (url: string) => void;
 }
 
-export default function ReferencesPanel({ references, onAdd, onRemove }: ReferencesPanelProps) {
+export default function ReferencesPanel({ references, onAdd, onRemove, activeModule, onImageUploadedForMatch }: ReferencesPanelProps) {
     const { startUpload, isUploading } = useUploadThing("fileUploader", {
         onUploadError: (e) => {
             toastifyError(`Error al subir imagen: ${e.message}`);
@@ -38,13 +40,20 @@ export default function ReferencesPanel({ references, onAdd, onRemove }: Referen
             const uploadRes = await startUpload(compressed);
             if (!uploadRes) return;
 
+            const uploadedUrls: string[] = [];
             uploadRes.forEach((file) => {
                 onAdd({
                     id: Math.random().toString(36).substring(2, 9),
                     url: file.url,
                     uploadedAt: new Date(),
                 });
+                uploadedUrls.push(file.url);
             });
+
+            // Auto-trigger match when uploading images in match mode
+            if (activeModule === "match" && onImageUploadedForMatch && uploadedUrls.length > 0) {
+                onImageUploadedForMatch(uploadedUrls[0]);
+            }
         } catch {
             toastifyError("Error al procesar las imágenes");
         }

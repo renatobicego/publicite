@@ -7,7 +7,6 @@ import { useWorkspace } from "./hooks/useWorkspace";
 import ReferencesPanel from "./panels/ReferencesPanel";
 import WorkboardPanel from "./panels/WorkboardPanel";
 import ResultsPanel from "./panels/ResultsPanel";
-import WorkspaceChat from "./WorkspaceChat";
 import TokenDisplay from "./shared/TokenDisplay";
 import ModeSelector from "./shared/ModeSelector";
 
@@ -42,9 +41,15 @@ export default function WorkspaceLayout() {
                             onAdd={workspace.addReference}
                             onRemove={workspace.removeReference}
                             onUpdateUrl={workspace.updateReferenceUrl}
+                            activeModule={workspace.activeModule}
+                            onImageUploadedForMatch={(url) => {
+                                if (workspace.activeModule === "match") {
+                                    workspace.handleSearchMatch(undefined, [url]);
+                                }
+                            }}
                         />
                     </div>
-                    <div className="overflow-y-auto">
+                    <div className="overflow-y-auto flex flex-col h-full">
                         <WorkboardPanel workspace={workspace} />
                     </div>
                     <div className="border-l border-divider overflow-y-auto">
@@ -68,6 +73,12 @@ export default function WorkspaceLayout() {
                                     onAdd={workspace.addReference}
                                     onRemove={workspace.removeReference}
                                     onUpdateUrl={workspace.updateReferenceUrl}
+                                    activeModule={workspace.activeModule}
+                                    onImageUploadedForMatch={(url) => {
+                                        if (workspace.activeModule === "match") {
+                                            workspace.handleSearchMatch(undefined, [url]);
+                                        }
+                                    }}
                                 />
                             </div>
                         </Tab>
@@ -84,9 +95,6 @@ export default function WorkspaceLayout() {
                     </Tabs>
                 </div>
             </div>
-
-            {/* Chat inferior */}
-            <WorkspaceChat workspace={workspace} />
         </div>
     );
 }

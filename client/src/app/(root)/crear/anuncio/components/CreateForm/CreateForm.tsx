@@ -11,13 +11,15 @@ import { PostBehaviourType } from "@/types/postTypes";
 import SelectPostBehaviourType from "../SelectPostBehaviourType";
 import PostsLimitReached from "../PostsLimitReached";
 
-const CreateForm = ({ userId, prefill }: { userId?: string; prefill?: { title?: string; description?: string; price?: number; fromValuacion?: string } }) => {
+const CreateForm = ({ userId, prefill }: { userId?: string; prefill?: { title?: string; description?: string; price?: number; fromValuacion?: string; imageUrls?: string[] } }) => {
   const [type, setType] = useState<"good" | "service" | undefined>(prefill ? "good" : undefined);
   const [files, setFiles] = useState<File[]>([]);
   const [postBehaviourType, setPostBehaviourType] =
     useState<PostBehaviourType | undefined>(prefill ? "libre" : undefined);
   const { userCanPublishPost, limit, numberOfPosts, loading } =
     useUserPostLimit(postBehaviourType);
+
+  const prefillImageUrls = prefill?.imageUrls || [];
   return (
     <section
       id="create-post"
@@ -28,6 +30,7 @@ const CreateForm = ({ userId, prefill }: { userId?: string; prefill?: { title?: 
         setFiles={setFiles}
         type={type}
         customClassname="max-md:hidden"
+        prefillImageUrls={prefillImageUrls}
       />
       <AttachedFilesProvider>
         <section
@@ -61,6 +64,7 @@ const CreateForm = ({ userId, prefill }: { userId?: string; prefill?: { title?: 
                   setFiles={setFiles}
                   type={type}
                   customClassname="md:hidden"
+                  prefillImageUrls={prefillImageUrls}
                 />
               )}
               {type === "good" ? (
@@ -70,6 +74,7 @@ const CreateForm = ({ userId, prefill }: { userId?: string; prefill?: { title?: 
                   userId={userId}
                   postBehaviourType={postBehaviourType}
                   prefill={prefill}
+                  prefillImageUrls={prefillImageUrls}
                 />
               ) : (
                 type === "service" && (

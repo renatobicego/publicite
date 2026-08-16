@@ -4,7 +4,7 @@ import CreateForm from "./components/CreateForm/CreateForm";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 
-export default function CreatePost({ searchParams }: { searchParams: { title?: string; description?: string; price?: string; fromValuacion?: string } }) {
+export default function CreatePost({ searchParams }: { searchParams: { title?: string; description?: string; price?: string; fromValuacion?: string; images?: string } }) {
   const breadcrumbsItems = [
     {
       label: "Inicio",
@@ -30,8 +30,11 @@ export default function CreatePost({ searchParams }: { searchParams: { title?: s
       description: searchParams.description || "",
       price: searchParams.price ? Number(searchParams.price) : undefined,
       fromValuacion: searchParams.fromValuacion || undefined,
+      imageUrls: searchParams.images ? searchParams.images.split(",") : [],
     }
     : undefined;
+
+  console.log(prefill?.imageUrls)
 
   return (
     <main className="flex min-h-screen flex-col items-start main-style gap-4 md:gap-6 lg:gap-8">
