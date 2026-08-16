@@ -41,13 +41,18 @@ export interface ValuacionCompletion {
 /**
  * Completitud = respuestas del brief (70%) + imágenes aportadas (30%).
  * Capa 1: 0-33% · Capa 2: 34-66% · Capa 3: 67-100%.
+ *
+ * Los ejes que no aplican al ítem cuentan igual que los cubiertos: si algo es
+ * nuevo, no tener historial de mantenimiento no es información faltante, y
+ * castigarlo empujaba al brief a preguntar cosas sin sentido para subir la capa.
  */
 export function computeCompletion(
   coveredFields: ValuacionBriefField[],
   imagesCount: number,
+  notApplicableFields: ValuacionBriefField[] = [],
 ): ValuacionCompletion {
   const uniqueFields = new Set(
-    (coveredFields ?? []).filter((field) =>
+    [...(coveredFields ?? []), ...(notApplicableFields ?? [])].filter((field) =>
       VALUACION_BRIEF_FIELDS.includes(field),
     ),
   );

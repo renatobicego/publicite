@@ -8,9 +8,14 @@ import {
 
 import { ValuacionServiceInterface } from '../../domain/service/valuacion.service.interface';
 import { ValuacionRepositoryInterface } from '../../domain/repository/valuacion.repository.interface';
-import { ValuacionAIServiceInterface } from '../../domain/service/valuacion.ai.service.interface';
+import {
+  ValuacionAIServiceInterface,
+  ValuacionComparable,
+} from '../../domain/service/valuacion.ai.service.interface';
 import { ChatbotTokenServiceInterface } from 'src/contexts/module_user/chatbot/domain/service/chatbot.token.service.interface';
 import { PostRepositoryInterface } from 'src/contexts/module_post/post/domain/repository/post.repository.interface';
+import { removeAccents_removeEmojisAndToLowerCase } from 'src/contexts/module_post/post/domain/utils/normalice.data';
+import { MatchAIServiceInterface } from 'src/contexts/module_user/match/domain/service/match.ai.service.interface';
 import { TokenGateResult } from 'src/contexts/module_user/chatbot/domain/entity/chatbot.token.types';
 import { buildModeContext } from 'src/contexts/module_user/chatbot/domain/service/cubito-modes';
 import {
@@ -47,6 +52,9 @@ import {
 const SALUDO_INICIAL =
   '¡Hola! ¡Comencemos! Contame qué querés valuar y te voy a hacer algunas preguntas para armar el informe 🙂';
 
+/** Cuántos anuncios de la plataforma se usan como referencia en el informe. */
+const COMPARABLES_LIMIT = 6;
+
 function getMaxValuacionesPerDay(): number {
   const raw = Number(process.env.VALUACION_MAX_PER_DAY);
   return Number.isFinite(raw) && raw > 0 ? Math.floor(raw) : 10;
@@ -63,6 +71,8 @@ export class ValuacionService implements ValuacionServiceInterface {
     private readonly tokenService: ChatbotTokenServiceInterface,
     @Inject('PostRepositoryInterface')
     private readonly postRepository: PostRepositoryInterface,
+    @Inject('MatchAIServiceInterface')
+    private readonly matchAIService: MatchAIServiceInterface,
     private readonly logger: MyLoggerService,
   ) {}
 
@@ -180,11 +190,13 @@ export class ValuacionService implements ValuacionServiceInterface {
 
     try {
       const imageUrls = valuacion.images.map((image) => image.url);
+      const comparables = await this.findComparables(valuacion, gate);
       const result = await this.valuacionAIService.generateResult({
         category: valuacion.category,
         modeContext: buildModeContext({ mode: valuacion.mode }),
         history: valuacion.briefMessages,
         imageUrls,
+        comparables: comparables.comparables,
       });
 
       // La capa y la completitud son del backend; la confianza que declaró la IA
@@ -192,6 +204,7 @@ export class ValuacionService implements ValuacionServiceInterface {
       const completion = computeCompletion(
         valuacion.coveredFields,
         valuacion.images.length,
+        valuacion.notApplicableFields,
       );
       const confidencePercent = capConfidenceByLayer(
         result.confidencePercent,
@@ -202,8 +215,13 @@ export class ValuacionService implements ValuacionServiceInterface {
         result.descriptiveAnalysis,
       );
 
+      // El gate se avanza con lo que ya consumió la búsqueda de comparables para
+      // que el estado que ve el usuario incluya las dos llamadas, no sólo el informe.
       const tokenStatus = await this.tokenService.chargeAndBuildStatus(
-        gate,
+        {
+          ...gate,
+          usedRealTokens: gate.usedRealTokens + comparables.chargedRealTokens,
+        },
         result.usage,
         {
           sessionId: valuacion.sessionId,
@@ -406,6 +424,7 @@ export class ValuacionService implements ValuacionServiceInterface {
       category: valuacion.category,
       modeContext: buildModeContext({ mode: valuacion.mode }),
       coveredFields: valuacion.coveredFields,
+      notApplicableFields: valuacion.notApplicableFields,
       history: valuacion.briefMessages,
       userMessage,
       imageUrls,
@@ -415,7 +434,17 @@ export class ValuacionService implements ValuacionServiceInterface {
       valuacion.coveredFields,
       turn.coveredFields,
     );
-    const completion = computeCompletion(coveredFields, valuacion.images.length);
+    // Un eje que el usuario terminó contestando deja de estar descartado: si dijo
+    // que era nuevo y después aclara que lo reparó, mantenimiento vuelve a contar.
+    const notApplicableFields = this.mergeCoveredFields(
+      valuacion.notApplicableFields,
+      turn.notApplicableFields,
+    ).filter((field) => !coveredFields.includes(field));
+    const completion = computeCompletion(
+      coveredFields,
+      valuacion.images.length,
+      notApplicableFields,
+    );
 
     const tokenStatus = await this.tokenService.chargeAndBuildStatus(
       gate,
@@ -431,6 +460,7 @@ export class ValuacionService implements ValuacionServiceInterface {
     const updated = await this.valuacionRepository.update(valuacion._id!, {
       $set: {
         coveredFields,
+        notApplicableFields,
         layer: completion.layer,
         completionPercent: completion.completionPercent,
       },
@@ -449,6 +479,88 @@ export class ValuacionService implements ValuacionServiceInterface {
       briefComplete: turn.briefComplete,
       valuacion: this.toResponse(updated ?? valuacion, tokenStatus),
     };
+  }
+
+  /**
+   * Busca anuncios reales de la plataforma parecidos a lo que se está valuando,
+   * para que el informe se apoye en el mercado propio en vez de estimar de memoria.
+   *
+   * Reutiliza el extractor de criterios de Match (modelo barato) en vez de duplicar
+   * la lógica. Nunca puede romper la generación del informe: ante cualquier fallo
+   * se sigue sin comparables, que es exactamente el comportamiento anterior.
+   *
+   * Devuelve también lo cobrado, porque la extracción es una llamada más a OpenAI
+   * y tiene que impactar en la cuota igual que las demás.
+   */
+  private async findComparables(
+    valuacion: ValuacionEntity,
+    gate: TokenGateResult,
+  ): Promise<{ comparables: ValuacionComparable[]; chargedRealTokens: number }> {
+    const empty = { comparables: [], chargedRealTokens: 0 };
+
+    const briefText = valuacion.briefMessages
+      .filter((message) => message.role === 'user')
+      .map((message) => message.content)
+      .join('. ')
+      .slice(0, 1500);
+
+    if (!briefText.trim()) return empty;
+
+    try {
+      const criteria = await this.matchAIService.extractCriteria({
+        text: briefText,
+        imageUrls: [],
+      });
+
+      const chargedRealTokens = criteria.usage
+        ? await this.tokenService.recordUsage(gate, criteria.usage, {
+            sessionId: valuacion.sessionId,
+            channel: 'web',
+            kind: 'valuacion',
+            model: criteria.model,
+          })
+        : 0;
+
+      const keywords = criteria.keywords
+        .map((keyword) => removeAccents_removeEmojisAndToLowerCase(keyword))
+        .filter(Boolean);
+
+      const categoryIds = criteria.categories.length
+        ? await this.postRepository.findCategoryIdsByLabels(criteria.categories)
+        : [];
+
+      const candidates = await this.postRepository.findCandidatesForMatch({
+        keywords,
+        categoryIds,
+        // Sin filtro de precio a propósito: el brief habla en la moneda que se le
+        // ocurra al usuario y los anuncios están en ARS; cruzarlos descartaría
+        // comparables buenos por una comparación entre unidades distintas.
+        priceMin: null,
+        priceMax: null,
+        postType: criteria.postType,
+        excludeAuthorId: valuacion.userId,
+        limit: COMPARABLES_LIMIT,
+      });
+
+      return {
+        // Los anuncios con precio 0 o negativo son borradores o placeholders:
+        // como referencia de mercado sólo aportarían ruido.
+        comparables: candidates
+          .filter((candidate) => candidate.price > 0)
+          .map((candidate) => ({
+            title: candidate.title,
+            price: candidate.price,
+            postType: candidate.postType,
+            categoryLabels: candidate.categoryLabels,
+          })),
+        chargedRealTokens,
+      };
+    } catch (error: any) {
+      this.logger.error(
+        `No se pudieron buscar comparables para la valuación ${valuacion._id}: ${error.message}`,
+      );
+      return empty;
+    }
   }
 
   private async appendMessages(

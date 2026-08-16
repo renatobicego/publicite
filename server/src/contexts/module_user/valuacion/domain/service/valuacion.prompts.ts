@@ -43,10 +43,13 @@ export function buildBriefSystemPrompt(params: {
   category: ValuacionCategory;
   modeContext?: string;
   coveredFields: string[];
+  notApplicableFields?: string[];
   hasImages: boolean;
 }): string {
+  const notApplicable = params.notApplicableFields ?? [];
+  const resolved = new Set([...params.coveredFields, ...notApplicable]);
   const pending = Object.keys(BRIEF_FIELD_DESCRIPTIONS).filter(
-    (field) => !params.coveredFields.includes(field),
+    (field) => !resolved.has(field),
   );
 
   return `Sos Cubito, el asistente de Publicité, actuando como experto valuador de bienes,
@@ -62,11 +65,23 @@ ${Object.entries(BRIEF_FIELD_DESCRIPTIONS)
   .join('\n')}
 
 EJES YA CUBIERTOS: ${params.coveredFields.length ? params.coveredFields.join(', ') : 'ninguno todavía'}
+EJES DESCARTADOS POR NO APLICAR: ${notApplicable.length ? notApplicable.join(', ') : 'ninguno'}
 EJES PENDIENTES: ${pending.length ? pending.join(', ') : 'ninguno, el brief está completo'}
 ${params.hasImages ? 'El usuario adjuntó imágenes: comentá brevemente lo que observás en ellas.' : ''}
 
 REGLAS:
-- Hacé UNA sola pregunta por mensaje, sobre el primer eje pendiente.
+- Hacé UNA sola pregunta por mensaje, sobre el eje pendiente MÁS RELEVANTE para lo que
+  el usuario está valuando. El orden de la lista es una referencia, no un guión: elegí
+  la pregunta que un experto haría a continuación en esta conversación concreta.
+- ANTES de preguntar, chequeá si el eje tiene sentido para este ítem. Si no aplica, NO
+  lo preguntes: ponelo en notApplicableFields y seguí con el siguiente. Ejemplos:
+  · algo nuevo o sin estrenar → mantenimiento, danos y antiguedad no aplican;
+  · un servicio → danos no aplica, y "antiguedad" es hace cuánto lo presta;
+  · una imagen o pieza digital → mantenimiento y danos no aplican.
+  Preguntar por el mantenimiento de unas zapatillas nuevas es exactamente lo que NO
+  hay que hacer: descartá el eje y no lo menciones.
+- Deducí de lo que YA dijo el usuario. Si contó que es nuevo, no vuelvas a preguntar el
+  estado: marcá el eje como cubierto y avanzá.
 - Si el usuario dice "omitir", "no sé" o similar, aceptalo sin insistir y pasá al siguiente eje.
 - Sé conversacional y breve (máximo 3 oraciones). No interrogues.
 - Si una respuesta cubre varios ejes a la vez, marcalos todos en coveredFields.
@@ -78,8 +93,50 @@ FORMATO DE RESPUESTA (JSON estricto, sin texto fuera del JSON):
 {
   "reply": "tu mensaje para el usuario",
   "coveredFields": ["ejes que quedaron cubiertos con el ÚLTIMO mensaje del usuario"],
+  "notApplicableFields": ["ejes que NO aplican a este ítem y no hay que preguntar"],
   "briefComplete": false
 }`;
+}
+
+/**
+ * Bloque de comparables reales de la plataforma para anclar el informe.
+ *
+ * Los precios de los anuncios son en PESOS ARGENTINOS y son precios PEDIDOS por
+ * el vendedor (no ventas cerradas), mientras que el informe se emite en USD. Por
+ * eso el prompt es explícito en que sirven para ubicar gama y posicionamiento
+ * relativo, y prohíbe copiar los números: sin esa aclaración el modelo tomaría
+ * "180000" como si fueran dólares.
+ */
+export function buildComparablesSection(
+  comparables: {
+    title: string;
+    price: number;
+    postType: string;
+    categoryLabels: string[];
+  }[],
+): string {
+  if (!comparables.length) return '';
+
+  const lines = comparables
+    .map(
+      (comparable) =>
+        `- "${comparable.title}" · ARS ${comparable.price} · ${comparable.postType}` +
+        `${comparable.categoryLabels.length ? ` · ${comparable.categoryLabels.join(', ')}` : ''}`,
+    )
+    .join('\n');
+
+  return `
+
+ANUNCIOS COMPARABLES PUBLICADOS EN LA PLATAFORMA:
+${lines}
+
+CÓMO USAR LOS COMPARABLES:
+- Son precios PEDIDOS en PESOS ARGENTINOS (ARS), no ventas cerradas ni dólares.
+- Usalos para ubicar gama y posicionamiento relativo (¿es más caro o más barato
+  que lo que se publica?), NUNCA los copies ni los conviertas como valor en USD.
+- Si ninguno se parece a lo que se está valuando, ignoralos por completo.
+- Si te apoyaste en ellos, marcá los campos correspondientes con la fuente
+  "descriptiva" en dataSources.`;
 }
 
 /**

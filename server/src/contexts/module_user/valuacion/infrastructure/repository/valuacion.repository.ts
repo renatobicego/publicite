@@ -113,6 +113,7 @@ export class ValuacionRepository implements ValuacionRepositoryInterface {
       completionPercent: doc.completionPercent ?? 0,
       confidencePercent: doc.confidencePercent ?? 0,
       coveredFields: doc.coveredFields ?? [],
+      notApplicableFields: doc.notApplicableFields ?? [],
       briefMessages: doc.briefMessages ?? [],
       briefAnswers: doc.briefAnswers ?? [],
       images: doc.images ?? [],
