@@ -38,6 +38,40 @@ describe('valuacion.scoring', () => {
       expect(diez).toEqual(tres);
     });
 
+    it('los ejes que no aplican cuentan igual que los cubiertos', () => {
+      // Zapatillas nuevas: mantenimiento, danos y antiguedad no aplican. No tener
+      // esa info no puede castigar la capa igual que si el usuario no contestara.
+      const cubiertos = [
+        ValuacionBriefField.identificacion,
+        ValuacionBriefField.estado,
+        ValuacionBriefField.mercado,
+        ValuacionBriefField.precioReferencia,
+        ValuacionBriefField.documentacion,
+      ];
+      const noAplican = [
+        ValuacionBriefField.mantenimiento,
+        ValuacionBriefField.danos,
+        ValuacionBriefField.antiguedad,
+      ];
+
+      expect(computeCompletion(cubiertos, 3, noAplican)).toEqual(
+        computeCompletion(ALL_FIELDS, 3),
+      );
+      // Y sin descartarlos, el mismo brief quedaba una capa abajo.
+      expect(computeCompletion(cubiertos, 0).layer).toBeLessThan(
+        computeCompletion(cubiertos, 0, noAplican).layer,
+      );
+    });
+
+    it('un eje contado en ambas listas no suma dos veces', () => {
+      const conRepetido = computeCompletion(
+        [ValuacionBriefField.estado],
+        0,
+        [ValuacionBriefField.estado],
+      );
+      expect(conRepetido).toEqual(computeCompletion([ValuacionBriefField.estado], 0));
+    });
+
     it('es determinístico: la misma información da siempre el mismo resultado', () => {
       const campos = [
         ValuacionBriefField.identificacion,

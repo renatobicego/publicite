@@ -11,9 +11,19 @@ import {
 export interface BriefTurnResult {
   reply: string;
   coveredFields: string[];
+  /** Ejes que la IA descartó por no aplicar al ítem (no se preguntan más). */
+  notApplicableFields: string[];
   briefComplete: boolean;
   usage?: AiUsage;
   model: string;
+}
+
+/** Anuncio real de la plataforma usado como referencia de mercado en el informe. */
+export interface ValuacionComparable {
+  title: string;
+  price: number;
+  postType: string;
+  categoryLabels: string[];
 }
 
 export interface ValuacionResultPayload {
@@ -32,6 +42,7 @@ export interface ValuacionAIServiceInterface {
     category: ValuacionCategory;
     modeContext?: string;
     coveredFields: string[];
+    notApplicableFields?: string[];
     history: ValuacionBriefMessage[];
     userMessage: string;
     imageUrls: string[];
@@ -43,5 +54,6 @@ export interface ValuacionAIServiceInterface {
     modeContext?: string;
     history: ValuacionBriefMessage[];
     imageUrls: string[];
+    comparables?: ValuacionComparable[];
   }): Promise<ValuacionResultPayload>;
 }

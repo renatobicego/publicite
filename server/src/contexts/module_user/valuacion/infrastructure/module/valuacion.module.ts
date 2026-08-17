@@ -9,6 +9,7 @@ import { ValuacionAIService } from '../../domain/service/valuacion.ai.service';
 import { ValuacionSchema } from '../schemas/valuacion.schema';
 import { ChatbotModule } from 'src/contexts/module_user/chatbot/infrastructure/module/chatbot.module';
 import { PostModule } from 'src/contexts/module_post/post/infraestructure/module/post.module';
+import { MatchModule } from 'src/contexts/module_user/match/infrastructure/module/match.module';
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 
 @Module({
@@ -17,9 +18,12 @@ import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.servic
     // Aporta ChatbotTokenServiceInterface: el gate y el cobro de tokens de IA
     // son los mismos que usa el chat, no se reimplementan acá.
     ChatbotModule,
-    // Aporta PostRepositoryInterface: se usa para validar que el anuncio al que
-    // se asocia una valuación sea del mismo usuario.
+    // Aporta PostRepositoryInterface: valida que el anuncio al que se asocia una
+    // valuación sea del mismo usuario, y busca los comparables del informe.
     PostModule,
+    // Aporta MatchAIServiceInterface: la extracción de criterios de búsqueda que
+    // usa Match sirve igual para encontrar comparables de una valuación.
+    MatchModule,
   ],
   providers: [
     MyLoggerService,

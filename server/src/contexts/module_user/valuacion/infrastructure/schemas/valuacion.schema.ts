@@ -17,6 +17,7 @@ export interface ValuacionDocument extends Document {
   completionPercent: number;
   confidencePercent: number;
   coveredFields: string[];
+  notApplicableFields: string[];
   briefMessages: {
     role: string;
     content: string;
@@ -128,6 +129,11 @@ export const ValuacionSchema = new Schema<ValuacionDocument>(
 
     /** Ejes del brief ya cubiertos; base del cálculo de completitud. */
     coveredFields: [
+      { type: String, enum: Object.values(ValuacionBriefField) },
+    ],
+
+    /** Ejes que no aplican a este ítem; cuentan como resueltos, no como faltantes. */
+    notApplicableFields: [
       { type: String, enum: Object.values(ValuacionBriefField) },
     ],
 

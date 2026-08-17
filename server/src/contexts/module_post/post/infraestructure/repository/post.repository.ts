@@ -651,25 +651,37 @@ export class PostRepository implements PostRepositoryInterface {
 
       // Las keywords ya vienen normalizadas por el servicio de match, igual que
       // searchTitle/searchDescription (sin acentos, sin emojis, minúsculas).
+      // El mínimo es 2 caracteres para no perder términos reales como "tv" o "pc".
       const keywords = (criteria.keywords ?? [])
         .map((keyword) => keyword.trim())
-        .filter((keyword) => keyword.length >= 3)
+        .filter((keyword) => keyword.length >= 2)
         .map((keyword) => keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
 
-      if (keywords.length === 0) return [];
+      const categoryIds = (criteria.categoryIds ?? [])
+        .filter((id) => Types.ObjectId.isValid(id))
+        .map((id) => new Types.ObjectId(id));
 
-      const keywordPattern = keywords.join('|');
-      query.$or = [
-        { searchTitle: { $regex: keywordPattern, $options: 'i' } },
-        { searchDescription: { $regex: keywordPattern, $options: 'i' } },
-      ];
-
-      if (criteria.categoryIds?.length) {
-        const validIds = criteria.categoryIds
-          .filter((id) => Types.ObjectId.isValid(id))
-          .map((id) => new Types.ObjectId(id));
-        if (validIds.length) query.category = { $in: validIds };
+      // Keywords y categorías se combinan con OR, no con AND: las categorías las
+      // infiere el modelo sin conocer el catálogo real, así que una categoría mal
+      // adivinada NO puede descartar un anuncio que coincide por título o
+      // descripción (era el motivo de que Match no devolviera nunca resultados).
+      // El ranking posterior de la IA se encarga de la precisión.
+      const relevanceFilters: any[] = [];
+      if (keywords.length) {
+        const keywordPattern = keywords.join('|');
+        relevanceFilters.push(
+          { searchTitle: { $regex: keywordPattern, $options: 'i' } },
+          { searchDescription: { $regex: keywordPattern, $options: 'i' } },
+        );
       }
+      if (categoryIds.length) {
+        relevanceFilters.push({ category: { $in: categoryIds } });
+      }
+
+      // Sin ninguna señal de relevancia devolver todo sería ruido puro.
+      if (relevanceFilters.length === 0) return [];
+
+      query.$or = relevanceFilters;
 
       if (criteria.postType) query.postType = criteria.postType;
 
