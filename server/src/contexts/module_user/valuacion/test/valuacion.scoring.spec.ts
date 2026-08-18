@@ -1,6 +1,7 @@
 import {
   capConfidenceByLayer,
   computeCompletion,
+  computeCompletionFromItems,
   computeFinalScore,
   layerForCompletion,
   normalizeScore,
@@ -17,6 +18,54 @@ import {
 const ALL_FIELDS = VALUACION_BRIEF_FIELDS;
 
 describe('valuacion.scoring', () => {
+  describe('computeCompletionFromItems', () => {
+    const item = (status: string) => ({ status });
+
+    it('sin ítems ni imágenes da 0% y capa 1', () => {
+      expect(computeCompletionFromItems([], 0)).toEqual({
+        completionPercent: 0,
+        layer: 1,
+      });
+    });
+
+    it('checklist completo con 3 imágenes da 100% y capa 3', () => {
+      const items = [
+        item('cubierto'),
+        item('cubierto'),
+        item('cubierto'),
+        item('no_aplica'),
+      ];
+      expect(computeCompletionFromItems(items, 3)).toEqual({
+        completionPercent: 100,
+        layer: 3,
+      });
+    });
+
+    it('no_aplica cuenta como resuelto; omitido y pendiente no', () => {
+      // 2 resueltos de 4 → 35% de brief + 30% de imágenes = 65 → capa 2.
+      const items = [
+        item('cubierto'),
+        item('no_aplica'),
+        item('omitido'),
+        item('pendiente'),
+      ];
+      expect(computeCompletionFromItems(items, 3)).toEqual({
+        completionPercent: 65,
+        layer: 2,
+      });
+    });
+
+    it('la completitud es proporcional al checklist propio de la valuación', () => {
+      // Un brief corto (4 ítems) y uno largo (8) llegan igual al 100%: el % es
+      // sobre SU checklist, no sobre una lista universal.
+      const corto = Array.from({ length: 4 }, () => item('cubierto'));
+      const largo = Array.from({ length: 8 }, () => item('cubierto'));
+      expect(computeCompletionFromItems(corto, 0)).toEqual(
+        computeCompletionFromItems(largo, 0),
+      );
+    });
+  });
+
   describe('computeCompletion', () => {
     it('sin brief ni imágenes da 0% y capa 1', () => {
       expect(computeCompletion([], 0)).toEqual({

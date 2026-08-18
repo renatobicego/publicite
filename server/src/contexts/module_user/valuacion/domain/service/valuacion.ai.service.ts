@@ -1,11 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import OpenAI from 'openai';
+import {
+  Agent,
+  AgentInputItem,
+  assistant,
+  run,
+  setDefaultOpenAIKey,
+  setTracingDisabled,
+  user,
+} from '@openai/agents';
+import { z } from 'zod';
 
 import {
-  AI_TEXT_MODEL,
-  getVisionModel,
-  parseJsonFromModel,
+  getValuacionBriefModel,
+  getValuacionResultModel,
 } from 'src/contexts/module_shared/ai/ai.config';
 import { AiUsage } from 'src/contexts/module_user/chatbot/domain/entity/chatbot.token.types';
 import {
@@ -19,94 +27,178 @@ import {
   buildComparablesSection,
   VALUACION_RESULT_PROMPT,
 } from './valuacion.prompts';
-import {
-  ValuacionCategory,
-  ValuacionDataSource,
-} from '../entity/enum/valuacion.enums';
+import { ValuacionCategory } from '../entity/enum/valuacion.enums';
 import {
   DescriptiveAnalysis,
   EstimatedValues,
   PhotoAnalysis,
+  ValuacionBriefItem,
   ValuacionBriefMessage,
   ValuacionDataSourceEntry,
 } from '../entity/valuacion.entity';
 import { normalizeScore } from './valuacion.scoring';
 
-const VALUACION_DATA_SOURCES: string[] = Object.values(ValuacionDataSource);
-
 /** Cuántos mensajes del brief se mandan como contexto. */
 const HISTORY_WINDOW = 20;
 
+/** Tope de ítems del checklist dinámico: más que esto es interrogatorio. */
+const MAX_BRIEF_ITEMS = 10;
+
+// ─────────────────────── Esquemas de salida (zod) ───────────────────────
+// El Agents SDK los convierte en JSON Schema estricto (Responses API): el
+// modelo no puede devolver otra forma, así que desaparece el parseo manual.
+
+const BriefItemSchema = z.object({
+  key: z.string(),
+  label: z.string(),
+  status: z.enum(['pendiente', 'cubierto', 'no_aplica', 'omitido']),
+});
+
+const BriefTurnOutputSchema = z.object({
+  reply: z.string(),
+  title: z.string().nullable(),
+  briefItems: z.array(BriefItemSchema),
+  briefComplete: z.boolean(),
+});
+
+const PhotoScoresSchema = z.object({
+  estado: z.number(),
+  marca: z.number(),
+  mercado: z.number(),
+  rareza: z.number(),
+});
+
+const PhotoAnalysisOutputSchema = z.object({
+  description: z.string(),
+  brand: z.string().nullable(),
+  model: z.string().nullable(),
+  condition: z.string(),
+  components: z.array(z.string()),
+  damages: z.array(z.string()),
+  scores: PhotoScoresSchema,
+  confidence: z.number(),
+});
+
+/**
+ * Los 4 ejes descriptivos van como slots fijos + label contextual: el slot
+ * mantiene el sticker comparable entre valuaciones, el label dice qué se evaluó
+ * de verdad ("mantenimiento" → "Consistencia del servicio" para un servicio).
+ */
+const DescriptiveAxisSchema = z.object({
+  slot: z.enum(['uso', 'vidaUtil', 'mantenimiento', 'documentacion']),
+  label: z.string(),
+  score: z.number(),
+});
+
+const DescriptiveAnalysisOutputSchema = z.object({
+  summary: z.string(),
+  axes: z.array(DescriptiveAxisSchema),
+  confidence: z.number(),
+});
+
+const EstimatedValuesOutputSchema = z.object({
+  liquidacion: z.number().nullable(),
+  mercado: z.number().nullable(),
+  premium: z.number().nullable(),
+});
+
+const ResultOutputSchema = z.object({
+  photoAnalysis: PhotoAnalysisOutputSchema.nullable(),
+  descriptiveAnalysis: DescriptiveAnalysisOutputSchema.nullable(),
+  estimatedValues: EstimatedValuesOutputSchema.nullable(),
+  pricingRationale: z.string().nullable(),
+  confidencePercent: z.number(),
+  dataSources: z.array(
+    z.object({
+      field: z.string(),
+      source: z.enum(['fotografica', 'descriptiva', 'inferencia_ia']),
+    }),
+  ),
+});
+
+const DESCRIPTIVE_SLOTS = [
+  'uso',
+  'vidaUtil',
+  'mantenimiento',
+  'documentacion',
+] as const;
+
+/** Labels por defecto cuando el modelo no renombró un eje. */
+const DEFAULT_AXIS_LABELS: Record<(typeof DESCRIPTIVE_SLOTS)[number], string> = {
+  uso: 'Uso',
+  vidaUtil: 'Vida Útil',
+  mantenimiento: 'Mantenimiento',
+  documentacion: 'Documentación',
+};
+
+/** Scores por defecto cuando el modelo no devolvió un slot (neutro = 3). */
+const DEFAULT_SCORES: Record<(typeof DESCRIPTIVE_SLOTS)[number], number> = {
+  uso: 3,
+  vidaUtil: 3,
+  mantenimiento: 3,
+  documentacion: 3,
+};
+
 @Injectable()
 export class ValuacionAIService implements ValuacionAIServiceInterface {
-  private openai: OpenAI;
-
   constructor(private configService: ConfigService) {
     const apiKey = this.configService.get<string>('OPENAI_API_KEY');
     if (!apiKey) {
       throw new Error('OPENAI_API_KEY is not defined in environment variables');
     }
-    this.openai = new OpenAI({ apiKey });
+    setDefaultOpenAIKey(apiKey);
+    // Sin tracing hacia el dashboard de OpenAI: mismo perfil de privacidad que
+    // tenía la implementación anterior con chat.completions.
+    setTracingDisabled(true);
   }
 
   async runBriefTurn(params: {
     category: ValuacionCategory;
     modeContext?: string;
-    coveredFields: string[];
-    notApplicableFields?: string[];
+    title: string | null;
+    briefItems: ValuacionBriefItem[];
     history: ValuacionBriefMessage[];
     userMessage: string;
     imageUrls: string[];
   }): Promise<BriefTurnResult> {
+    const model = getValuacionBriefModel();
     const hasImages = params.imageUrls.length > 0;
-    // Visión sólo cuando hace falta: gpt-4o cuesta ~10x más por token.
-    const model = hasImages ? getVisionModel() : AI_TEXT_MODEL;
 
-    const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
-      {
-        role: 'system',
-        content: buildBriefSystemPrompt({
-          category: params.category,
-          modeContext: params.modeContext,
-          coveredFields: params.coveredFields,
-          notApplicableFields: params.notApplicableFields,
-          hasImages,
-        }),
-      },
+    const agent = new Agent({
+      name: 'Cubito Valuador (brief)',
+      instructions: buildBriefSystemPrompt({
+        category: params.category,
+        modeContext: params.modeContext,
+        title: params.title,
+        briefItems: params.briefItems,
+        hasImages,
+      }),
+      model,
+      // Esfuerzo de razonamiento bajo: el chat tiene que responder rápido y
+      // alcanza para decidir qué ítems aplican. store:false = no persistir
+      // requests en OpenAI.
+      modelSettings: { reasoning: { effort: 'low' }, store: false },
+      outputType: BriefTurnOutputSchema,
+    });
+
+    const input: AgentInputItem[] = [
       ...this.mapHistory(params.history),
-      await this.buildUserMessage(params.userMessage, params.imageUrls),
+      await this.buildUserInput(params.userMessage, params.imageUrls),
     ];
 
     try {
-      const completion = await this.openai.chat.completions.create({
-        model,
-        messages,
-        temperature: 0.6,
-        max_tokens: 600,
-        response_format: { type: 'json_object' },
-      });
-
-      const parsed = parseJsonFromModel<{
-        reply?: string;
-        coveredFields?: string[];
-        notApplicableFields?: string[];
-        briefComplete?: boolean;
-      }>(completion.choices[0]?.message?.content);
+      const result = await run(agent, input);
+      const output = result.finalOutput;
+      if (!output) throw new Error('La IA no devolvió salida estructurada');
 
       return {
         reply:
-          parsed.reply?.trim() ||
+          output.reply?.trim() ||
           'Contame un poco más sobre lo que querés valuar 🙂',
-        coveredFields: Array.isArray(parsed.coveredFields)
-          ? parsed.coveredFields.filter((field) => typeof field === 'string')
-          : [],
-        notApplicableFields: Array.isArray(parsed.notApplicableFields)
-          ? parsed.notApplicableFields.filter(
-              (field) => typeof field === 'string',
-            )
-          : [],
-        briefComplete: parsed.briefComplete === true,
-        usage: this.mapUsage(completion.usage),
+        title: this.asNullableString(output.title),
+        briefItems: this.sanitizeBriefItems(output.briefItems),
+        briefComplete: output.briefComplete === true,
+        usage: this.collectUsage(result.rawResponses),
         model,
       };
     } catch (error: any) {
@@ -118,81 +210,87 @@ export class ValuacionAIService implements ValuacionAIServiceInterface {
   async generateResult(params: {
     category: ValuacionCategory;
     modeContext?: string;
+    title: string | null;
     history: ValuacionBriefMessage[];
     imageUrls: string[];
     comparables?: ValuacionComparable[];
   }): Promise<ValuacionResultPayload> {
-    // El informe final siempre usa el modelo bueno: es la salida que el usuario
-    // guarda, comparte y asocia a un anuncio.
-    const model = getVisionModel();
+    const model = getValuacionResultModel();
+    const hasImages = params.imageUrls.length > 0;
 
-    const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
-      {
-        role: 'system',
-        content: `${VALUACION_RESULT_PROMPT}
+    const agent = new Agent({
+      name: 'Cubito Valuador (informe)',
+      instructions: `${VALUACION_RESULT_PROMPT}
 
 CATEGORÍA: ${params.category}
+${params.title ? `ÍTEM VALUADO: ${params.title}` : ''}
 ${params.modeContext ? `\nMODO ESPECIALISTA ACTIVO:\n${params.modeContext}` : ''}${buildComparablesSection(params.comparables ?? [])}`,
-      },
+      model,
+      // El informe es la salida que el usuario guarda y publica: acá el modelo
+      // razona en serio (los valores estimados salen de esta llamada).
+      modelSettings: { reasoning: { effort: 'medium' }, store: false },
+      outputType: ResultOutputSchema,
+    });
+
+    const input: AgentInputItem[] = [
       ...this.mapHistory(params.history),
-      await this.buildUserMessage(
-        'Generá ahora el informe de valuación en JSON con toda la información de esta conversación.',
+      await this.buildUserInput(
+        'Generá ahora el informe de valuación con toda la información de esta conversación.',
         params.imageUrls,
       ),
     ];
 
     try {
-      const completion = await this.openai.chat.completions.create({
-        model,
-        messages,
-        temperature: 0.3,
-        max_tokens: 1600,
-        response_format: { type: 'json_object' },
-      });
-
-      const raw = parseJsonFromModel<any>(
-        completion.choices[0]?.message?.content,
-      );
+      const result = await run(agent, input);
+      const output = result.finalOutput;
+      if (!output) throw new Error('La IA no devolvió salida estructurada');
 
       return {
         photoAnalysis: this.normalizePhotoAnalysis(
-          raw?.photoAnalysis,
-          params.imageUrls.length > 0,
+          output.photoAnalysis,
+          hasImages,
         ),
         descriptiveAnalysis: this.normalizeDescriptiveAnalysis(
-          raw?.descriptiveAnalysis,
+          output.descriptiveAnalysis,
         ),
-        estimatedValues: this.normalizeEstimatedValues(raw?.estimatedValues),
-        confidencePercent: this.clampPercent(raw?.confidencePercent),
-        dataSources: this.normalizeDataSources(raw?.dataSources),
-        usage: this.mapUsage(completion.usage),
+        estimatedValues: this.normalizeEstimatedValues(output.estimatedValues),
+        pricingRationale: this.asNullableString(output.pricingRationale),
+        confidencePercent: this.clampPercent(output.confidencePercent),
+        dataSources: this.normalizeDataSources(output.dataSources),
+        usage: this.collectUsage(result.rawResponses),
         model,
       };
     } catch (error: any) {
       console.error('Error generando resultado de valuación:', error);
-      throw new Error(`Error generando el resultado de la valuación: ${error.message}`);
+      throw new Error(
+        `Error generando el resultado de la valuación: ${error.message}`,
+      );
     }
   }
 
-  private mapHistory(
-    history: ValuacionBriefMessage[],
-  ): OpenAI.Chat.Completions.ChatCompletionMessageParam[] {
-    return history.slice(-HISTORY_WINDOW).map((message) => ({
-      role: message.role === 'user' ? ('user' as const) : ('assistant' as const),
-      content: message.content,
-    }));
+  // ─────────────────────────── armado del input ───────────────────────────
+
+  private mapHistory(history: ValuacionBriefMessage[]): AgentInputItem[] {
+    return history
+      .slice(-HISTORY_WINDOW)
+      .map((message) =>
+        message.role === 'user'
+          ? user(message.content)
+          : assistant(message.content),
+      );
   }
 
-  /** Arma el mensaje del usuario adjuntando las imágenes como content parts.
-   * Descarga las imágenes y las convierte a base64 data URLs porque OpenAI
-   * no puede descargar directamente desde UploadThing (timeout).
+  /**
+   * Arma el mensaje del usuario adjuntando las imágenes como data URLs.
+   * Se descargan acá porque OpenAI no siempre puede bajar directo desde
+   * UploadThing (timeouts); si una descarga falla se manda la URL original.
    */
-  private async buildUserMessage(
+  private async buildUserInput(
     text: string,
     imageUrls: string[],
-  ): Promise<OpenAI.Chat.Completions.ChatCompletionMessageParam> {
+  ): Promise<AgentInputItem> {
     if (imageUrls.length === 0) {
-      return { role: 'user', content: text };
+      return user(text);
     }
 
     const imageContents = await Promise.all(
@@ -201,46 +299,52 @@ ${params.modeContext ? `\nMODO ESPECIALISTA ACTIVO:\n${params.modeContext}` : ''
           const response = await fetch(url);
           const arrayBuffer = await response.arrayBuffer();
           const base64 = Buffer.from(arrayBuffer).toString('base64');
-          const contentType = response.headers.get('content-type') || 'image/jpeg';
+          const contentType =
+            response.headers.get('content-type') || 'image/jpeg';
           return {
-            type: 'image_url' as const,
-            image_url: {
-              url: `data:${contentType};base64,${base64}`,
-              detail: 'low' as const,
-            },
+            type: 'input_image' as const,
+            image: `data:${contentType};base64,${base64}`,
           };
         } catch (err) {
           console.warn(`No se pudo descargar imagen ${url}:`, err);
-          return {
-            type: 'image_url' as const,
-            image_url: { url, detail: 'low' as const },
-          };
+          return { type: 'input_image' as const, image: url };
         }
       }),
     );
 
-    return {
-      role: 'user',
-      content: [{ type: 'text', text }, ...imageContents],
-    };
+    return user([{ type: 'input_text', text }, ...imageContents]);
+  }
+
+  // ─────────────────────────── normalización ───────────────────────────
+  // El esquema estricto garantiza la FORMA, pero los VALORES igual se acotan
+  // acá: rangos 1-5, orden liquidación <= mercado <= premium, etc.
+
+  private sanitizeBriefItems(raw: unknown): ValuacionBriefItem[] {
+    if (!Array.isArray(raw)) return [];
+    const seen = new Set<string>();
+    const items: ValuacionBriefItem[] = [];
+    for (const entry of raw) {
+      const key = typeof entry?.key === 'string' ? entry.key.trim() : '';
+      const label = typeof entry?.label === 'string' ? entry.label.trim() : '';
+      const status = entry?.status;
+      if (!key || !label || seen.has(key)) continue;
+      if (!['pendiente', 'cubierto', 'no_aplica', 'omitido'].includes(status)) {
+        continue;
+      }
+      seen.add(key);
+      items.push({ key, label: label.slice(0, 60), status });
+      if (items.length >= MAX_BRIEF_ITEMS) break;
+    }
+    return items;
   }
 
   private normalizePhotoAnalysis(
-    raw: any,
+    raw: z.infer<typeof PhotoAnalysisOutputSchema> | null,
     hasImages: boolean,
   ): PhotoAnalysis | null {
     // Sin imágenes no puede haber análisis fotográfico, por más que el modelo
     // lo haya inventado.
-    if (!hasImages || !raw || typeof raw !== 'object') return null;
-
-    const scores = raw.scores ?? {};
-    const normalized = {
-      estado: normalizeScore(scores.estado),
-      marca: normalizeScore(scores.marca),
-      mercado: normalizeScore(scores.mercado),
-      rareza: normalizeScore(scores.rareza),
-    };
-    if (Object.values(normalized).every((score) => score === null)) return null;
+    if (!hasImages || !raw) return null;
 
     return {
       description: this.asString(raw.description),
@@ -250,35 +354,33 @@ ${params.modeContext ? `\nMODO ESPECIALISTA ACTIVO:\n${params.modeContext}` : ''
       components: this.asStringArray(raw.components),
       damages: this.asStringArray(raw.damages),
       scores: {
-        estado: normalized.estado ?? 3,
-        marca: normalized.marca ?? 3,
-        mercado: normalized.mercado ?? 3,
-        rareza: normalized.rareza ?? 3,
+        estado: normalizeScore(raw.scores?.estado) ?? 3,
+        marca: normalizeScore(raw.scores?.marca) ?? 3,
+        mercado: normalizeScore(raw.scores?.mercado) ?? 3,
+        rareza: normalizeScore(raw.scores?.rareza) ?? 3,
       },
       confidence: this.clampPercent(raw.confidence),
     };
   }
 
-  private normalizeDescriptiveAnalysis(raw: any): DescriptiveAnalysis | null {
-    if (!raw || typeof raw !== 'object') return null;
+  private normalizeDescriptiveAnalysis(
+    raw: z.infer<typeof DescriptiveAnalysisOutputSchema> | null,
+  ): DescriptiveAnalysis | null {
+    if (!raw) return null;
 
-    const scores = raw.scores ?? {};
-    const normalized = {
-      uso: normalizeScore(scores.uso),
-      vidaUtil: normalizeScore(scores.vidaUtil),
-      mantenimiento: normalizeScore(scores.mantenimiento),
-      documentacion: normalizeScore(scores.documentacion),
-    };
-    if (Object.values(normalized).every((score) => score === null)) return null;
+    const scores = { ...DEFAULT_SCORES };
+    const axisLabels = { ...DEFAULT_AXIS_LABELS };
+    for (const axis of raw.axes ?? []) {
+      if (!DESCRIPTIVE_SLOTS.includes(axis.slot)) continue;
+      scores[axis.slot] = normalizeScore(axis.score) ?? 3;
+      const label = this.asString(axis.label);
+      if (label) axisLabels[axis.slot] = label.slice(0, 40);
+    }
 
     return {
       summary: this.asString(raw.summary),
-      scores: {
-        uso: normalized.uso ?? 3,
-        vidaUtil: normalized.vidaUtil ?? 3,
-        mantenimiento: normalized.mantenimiento ?? 3,
-        documentacion: normalized.documentacion ?? 3,
-      },
+      scores,
+      axisLabels,
       confidence: this.clampPercent(raw.confidence),
     };
   }
@@ -288,15 +390,14 @@ ${params.modeContext ? `\nMODO ESPECIALISTA ACTIVO:\n${params.modeContext}` : ''
    * Si el modelo los devuelve desordenados se reordenan en vez de descartarlos:
    * el orden es una regla del negocio, no una opinión del modelo.
    */
-  private normalizeEstimatedValues(raw: any): EstimatedValues | null {
-    if (!raw || typeof raw !== 'object') return null;
+  private normalizeEstimatedValues(
+    raw: z.infer<typeof EstimatedValuesOutputSchema> | null,
+  ): EstimatedValues | null {
+    if (!raw) return null;
 
     const values = [raw.liquidacion, raw.mercado, raw.premium]
       .map((value) => {
-        // Mismo cuidado que en normalizeScore: Number(null) es 0, y un valor
-        // ausente no puede terminar publicado como "vale USD 0".
-        if (value === null || value === undefined || value === '') return null;
-        if (typeof value !== 'number' && typeof value !== 'string') return null;
+        if (value === null || value === undefined) return null;
         const parsed = Number(value);
         return Number.isFinite(parsed) && parsed > 0 ? Math.round(parsed) : null;
       })
@@ -313,16 +414,42 @@ ${params.modeContext ? `\nMODO ESPECIALISTA ACTIVO:\n${params.modeContext}` : ''
     };
   }
 
-  private normalizeDataSources(raw: any): ValuacionDataSourceEntry[] {
+  private normalizeDataSources(
+    raw: { field: string; source: string }[],
+  ): ValuacionDataSourceEntry[] {
     if (!Array.isArray(raw)) return [];
     return raw
-      .filter(
-        (entry) =>
-          entry &&
-          typeof entry.field === 'string' &&
-          VALUACION_DATA_SOURCES.includes(entry.source),
-      )
-      .map((entry) => ({ field: entry.field, source: entry.source }));
+      .filter((entry) => entry && typeof entry.field === 'string')
+      .map((entry) => ({
+        field: entry.field,
+        source: entry.source as ValuacionDataSourceEntry['source'],
+      }));
+  }
+
+  private collectUsage(
+    responses: {
+      usage?: {
+        inputTokens?: number;
+        outputTokens?: number;
+        totalTokens?: number;
+      };
+    }[],
+  ): AiUsage | undefined {
+    let promptTokens = 0;
+    let completionTokens = 0;
+    let found = false;
+    for (const response of responses ?? []) {
+      if (!response?.usage) continue;
+      found = true;
+      promptTokens += response.usage.inputTokens ?? 0;
+      completionTokens += response.usage.outputTokens ?? 0;
+    }
+    if (!found) return undefined;
+    return {
+      promptTokens,
+      completionTokens,
+      totalTokens: promptTokens + completionTokens,
+    };
   }
 
   private clampPercent(value: any): number {
@@ -348,16 +475,5 @@ ${params.modeContext ? `\nMODO ESPECIALISTA ACTIVO:\n${params.modeContext}` : ''
       .filter((item) => typeof item === 'string')
       .map((item) => item.trim())
       .filter(Boolean);
-  }
-
-  private mapUsage(usage: OpenAI.CompletionUsage | undefined): AiUsage | undefined {
-    if (!usage) return undefined;
-    return {
-      promptTokens: usage.prompt_tokens ?? 0,
-      completionTokens: usage.completion_tokens ?? 0,
-      totalTokens:
-        usage.total_tokens ??
-        (usage.prompt_tokens ?? 0) + (usage.completion_tokens ?? 0),
-    };
   }
 }

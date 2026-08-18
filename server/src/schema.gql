@@ -1104,9 +1104,19 @@ type PhotoAnalysisResponse {
   confidence: Int!
 }
 
+type DescriptiveAxisLabelsResponse {
+  uso: String!
+  vidaUtil: String!
+  mantenimiento: String!
+  documentacion: String!
+}
+
 type DescriptiveAnalysisResponse {
   summary: String!
   scores: DescriptiveScoresResponse!
+
+  """Etiquetas contextuales de los ejes (null en valuaciones viejas)"""
+  axisLabels: DescriptiveAxisLabelsResponse
 
   """Confianza del análisis descriptivo (0-100)"""
   confidence: Int!
@@ -1138,6 +1148,16 @@ type ValuacionBriefMessageResponse {
   timestamp: DateTime!
 }
 
+type ValuacionBriefItemResponse {
+  key: String!
+
+  """Etiqueta corta para mostrar en la UI"""
+  label: String!
+
+  """pendiente | cubierto | no_aplica | omitido"""
+  status: String!
+}
+
 type ValuacionResponse {
   id: String!
   userId: String!
@@ -1151,6 +1171,9 @@ type ValuacionResponse {
   status: String!
   mode: String
 
+  """Identificación corta de lo que se valúa, generada por la IA"""
+  title: String
+
   """Capa de valuación alcanzada (1, 2 o 3)"""
   layer: Int!
 
@@ -1160,13 +1183,19 @@ type ValuacionResponse {
   """Confianza IA (0-100), acotada por la capa"""
   confidencePercent: Int!
 
-  """Ejes del brief ya cubiertos"""
+  """Ejes del brief ya cubiertos (legado)"""
   coveredFields: [String!]!
+
+  """Checklist dinámico del brief; vacío en valuaciones viejas"""
+  briefItems: [ValuacionBriefItemResponse!]!
   briefMessages: [ValuacionBriefMessageResponse!]!
   images: [ValuacionImageResponse!]!
   photoAnalysis: PhotoAnalysisResponse
   descriptiveAnalysis: DescriptiveAnalysisResponse
   estimatedValues: EstimatedValuesResponse
+
+  """En qué se basó la IA para los valores estimados (2-3 oraciones)"""
+  pricingRationale: String
 
   """Puntuación final: promedio de los 8 ejes del círculo de valoración"""
   finalScore: Float

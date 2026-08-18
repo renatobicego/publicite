@@ -80,6 +80,42 @@ export function layerForCompletion(completionPercent: number): 1 | 2 | 3 {
 }
 
 /**
+ * Completitud sobre el checklist DINÁMICO del brief (valuaciones nuevas).
+ *
+ * Misma rúbrica que computeCompletion (70% brief + 30% imágenes) pero la base
+ * es la lista de ítems que la IA armó para ESTE ítem: "cubierto" y "no_aplica"
+ * cuentan como resueltos, "omitido" y "pendiente" no (omitir baja la capa
+ * alcanzable, AC08). El % sigue siendo comparable entre valuaciones porque es
+ * proporcional a su propio brief, y la capa se deriva igual que siempre.
+ *
+ * Con checklist vacío (valuaciones viejas o brief recién arrancado) el caller
+ * debe caer a computeCompletion sobre los ejes fijos.
+ */
+export function computeCompletionFromItems(
+  items: { status: string }[],
+  imagesCount: number,
+): ValuacionCompletion {
+  const total = items?.length ?? 0;
+  const resolved = (items ?? []).filter(
+    (item) => item.status === 'cubierto' || item.status === 'no_aplica',
+  ).length;
+
+  const briefScore = total > 0 ? (resolved / total) * BRIEF_WEIGHT : 0;
+
+  const imagesScore =
+    (Math.min(Math.max(imagesCount, 0), IMAGES_FOR_FULL_SCORE) /
+      IMAGES_FOR_FULL_SCORE) *
+    IMAGES_WEIGHT;
+
+  const completionPercent = Math.round(briefScore + imagesScore);
+
+  return {
+    completionPercent,
+    layer: layerForCompletion(completionPercent),
+  };
+}
+
+/**
  * Acota la confianza que declaró la IA al techo de su capa. Sin esto el modelo
  * puede devolver 95% de confianza sobre una sola foto sin descripción, que es
  * justo lo que el sistema de capas existe para evitar.

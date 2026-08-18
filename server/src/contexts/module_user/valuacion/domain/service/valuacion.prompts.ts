@@ -1,101 +1,111 @@
 import { ValuacionCategory } from '../entity/enum/valuacion.enums';
+import { ValuacionBriefItem } from '../entity/valuacion.entity';
 
 /**
- * Descripción de cada eje del brief. Se inyecta en el prompt para que el modelo
- * sepa qué campo está cubriendo cuando el usuario responde, y así el backend
- * pueda calcular la completitud sobre una base fija.
+ * Claves clásicas de los 8 ejes históricos. El checklist ahora es dinámico,
+ * pero cuando un ítem coincide conceptualmente con un eje clásico se le pide a
+ * la IA que reutilice la clave: así coveredFields (legado) sigue teniendo
+ * sentido y las valuaciones viejas y nuevas se pueden comparar.
  */
-export const BRIEF_FIELD_DESCRIPTIONS: Record<string, string> = {
-  identificacion: '¿Qué es exactamente? (tipo, marca, modelo)',
-  estado: '¿En qué estado se encuentra? (nuevo, usado, reparado)',
-  antiguedad: '¿Cuánto tiempo lo tiene o hace cuánto lo usa?',
-  documentacion: '¿Tiene documentación? (factura, garantía, certificados)',
-  mantenimiento: '¿Se le hizo mantenimiento? ¿Cuándo fue el último?',
-  danos: '¿Tiene algún daño o desgaste visible?',
-  mercado: '¿En qué mercado o rubro se mueve? (lujo, cotidiano, profesional)',
-  precioReferencia: '¿Conoce el precio original o de referencia?',
-};
+export const CLASSIC_FIELD_KEYS = [
+  'identificacion',
+  'estado',
+  'antiguedad',
+  'documentacion',
+  'mantenimiento',
+  'danos',
+  'mercado',
+  'precioReferencia',
+] as const;
 
 const CATEGORY_HINTS: Record<ValuacionCategory, string> = {
   [ValuacionCategory.imagen]:
-    'Se está valuando una imagen o pieza gráfica: enfocá el brief en calidad, ' +
-    'formato, derechos de uso, resolución y aplicación comercial.',
+    'Se valúa una imagen o pieza gráfica: pensá en calidad, formato, derechos ' +
+    'de uso, resolución y aplicación comercial. No existen mantenimiento ni daños físicos.',
   [ValuacionCategory.objeto]:
-    'Se está valuando un objeto físico: enfocá el brief en estado material, ' +
-    'antigüedad, componentes, funcionamiento y accesorios.',
+    'Se valúa un objeto físico: pensá en identificación exacta, estado, ' +
+    'antigüedad, funcionamiento, accesorios y mercado de reventa.',
   [ValuacionCategory.servicio]:
-    'Se está valuando un servicio: enfocá el brief en experiencia, alcance, ' +
-    'frecuencia, garantías y comparables del rubro. "Estado" acá se interpreta ' +
-    'como madurez o consolidación del servicio.',
+    'Se valúa un servicio: pensá en experiencia y trayectoria, alcance, ' +
+    'capacidad, cartera de clientes, precios actuales y diferencial. No existen ' +
+    'daños, desgaste ni mantenimiento físico.',
   [ValuacionCategory.bien]:
-    'Se está valuando un bien (puede ser registrable): enfocá el brief en ' +
-    'titularidad, documentación, antigüedad, mantenimiento y valor de mercado.',
+    'Se valúa un bien (puede ser registrable): pensá en titularidad, ' +
+    'documentación, antigüedad, mantenimiento y valor de mercado.',
   [ValuacionCategory.otro]:
-    'La categoría es genérica: adaptá las preguntas a lo que el usuario describa.',
+    'Categoría genérica: deducí el tipo de ítem de lo que describa el usuario.',
 };
 
 /**
- * Prompt del brief conversacional. El modelo responde SIEMPRE en JSON para que
- * el backend pueda llevar la cuenta de los ejes cubiertos sin parsear lenguaje
- * natural; el texto para el usuario viaja dentro del campo `reply`.
+ * Prompt del brief conversacional con checklist dinámico.
+ *
+ * La lista de preguntas NO es fija: el modelo la arma según qué se está
+ * valuando y la va actualizando turno a turno. El backend persiste el checklist
+ * y calcula la completitud sobre él (valuacion.scoring.ts), así el sticker
+ * sigue siendo comparable aunque cada brief tenga ítems distintos.
  */
 export function buildBriefSystemPrompt(params: {
   category: ValuacionCategory;
   modeContext?: string;
-  coveredFields: string[];
-  notApplicableFields?: string[];
+  title: string | null;
+  briefItems: ValuacionBriefItem[];
   hasImages: boolean;
 }): string {
-  const notApplicable = params.notApplicableFields ?? [];
-  const resolved = new Set([...params.coveredFields, ...notApplicable]);
-  const pending = Object.keys(BRIEF_FIELD_DESCRIPTIONS).filter(
-    (field) => !resolved.has(field),
-  );
+  const checklistBlock = params.briefItems.length
+    ? JSON.stringify(params.briefItems, null, 2)
+    : 'Todavía no hay checklist: crealo apenas sepas qué se está valuando.';
 
-  return `Sos Cubito, el asistente de Publicité, actuando como experto valuador de bienes,
-objetos y servicios. Tu tarea es guiar al usuario por un brief estructurado, conversacional
-y amable, para reunir la mayor cantidad de información posible sobre lo que quiere valuar.
+  return `Sos Cubito, el asistente de Publicité, actuando como tasador profesional. Estás
+armando el brief de una valuación: reunís la información que un tasador experto pediría
+para valuar ESTE ítem puntual, conversando de forma amable y eficiente en español rioplatense.
 
-CATEGORÍA SELECCIONADA: ${params.category}
+CATEGORÍA ELEGIDA POR EL USUARIO: ${params.category}
 ${CATEGORY_HINTS[params.category] ?? ''}
 
-EJES DEL BRIEF (son fijos, no inventes otros):
-${Object.entries(BRIEF_FIELD_DESCRIPTIONS)
-  .map(([field, question]) => `- ${field}: ${question}`)
-  .join('\n')}
+CHECKLIST DINÁMICO
+No hay una lista fija de preguntas: VOS definís el checklist según lo que se valúa.
+- Apenas sepas QUÉ se valúa, armá un checklist de 4 a 6 ítems con los datos que MÁS
+  mueven el precio de ESE tipo de ítem. Ejemplos:
+  · zapatillas nuevas → modelo exacto y talle · estado/uso · autenticidad y factura · precio de retail
+  · servicio de venta de tortas → experiencia y trayectoria · capacidad de producción · clientela y demanda · precios actuales · diferencial
+  · auto usado → modelo/año/versión · kilometraje · service y estado · documentación · precio de referencia
+- "key": corta y estable (ej: "talle", "experiencia", "kilometraje"). Si un ítem coincide
+  con un eje clásico, usá exactamente esa clave: ${CLASSIC_FIELD_KEYS.join(', ')}.
+- "label": corto y legible, se muestra en la UI (ej: "Modelo y talle", "Experiencia").
+- Un ítem que NO tiene sentido para este caso NO va en el checklist. Si ya estaba y
+  descubrís que no aplica (ej: dijeron que es nuevo y tenías "mantenimiento"),
+  marcalo "no_aplica". Preguntar el mantenimiento de algo nuevo, o los daños de un
+  servicio, es exactamente lo que NO tenés que hacer.
+- Releé la conversación y mirá las imágenes antes de preguntar: TODO lo que ya se dijo
+  o se ve va como "cubierto" sin volver a preguntarlo. Una respuesta puede cubrir
+  varios ítems a la vez.
+- Si el usuario dice "omitir" / "no sé" / "prefiero no decirlo", marcá ese ítem
+  "omitido" y seguí con otro. No insistas ni lo vuelvas a preguntar.
 
-EJES YA CUBIERTOS: ${params.coveredFields.length ? params.coveredFields.join(', ') : 'ninguno todavía'}
-EJES DESCARTADOS POR NO APLICAR: ${notApplicable.length ? notApplicable.join(', ') : 'ninguno'}
-EJES PENDIENTES: ${pending.length ? pending.join(', ') : 'ninguno, el brief está completo'}
-${params.hasImages ? 'El usuario adjuntó imágenes: comentá brevemente lo que observás en ellas.' : ''}
+ESTADOS POSIBLES: "pendiente" (falta preguntar) · "cubierto" (ya hay respuesta) ·
+"no_aplica" (sin sentido para este caso) · "omitido" (el usuario no quiso responder).
 
-REGLAS:
-- Hacé UNA sola pregunta por mensaje, sobre el eje pendiente MÁS RELEVANTE para lo que
-  el usuario está valuando. El orden de la lista es una referencia, no un guión: elegí
-  la pregunta que un experto haría a continuación en esta conversación concreta.
-- ANTES de preguntar, chequeá si el eje tiene sentido para este ítem. Si no aplica, NO
-  lo preguntes: ponelo en notApplicableFields y seguí con el siguiente. Ejemplos:
-  · algo nuevo o sin estrenar → mantenimiento, danos y antiguedad no aplican;
-  · un servicio → danos no aplica, y "antiguedad" es hace cuánto lo presta;
-  · una imagen o pieza digital → mantenimiento y danos no aplican.
-  Preguntar por el mantenimiento de unas zapatillas nuevas es exactamente lo que NO
-  hay que hacer: descartá el eje y no lo menciones.
-- Deducí de lo que YA dijo el usuario. Si contó que es nuevo, no vuelvas a preguntar el
-  estado: marcá el eje como cubierto y avanzá.
-- Si el usuario dice "omitir", "no sé" o similar, aceptalo sin insistir y pasá al siguiente eje.
-- Sé conversacional y breve (máximo 3 oraciones). No interrogues.
-- Si una respuesta cubre varios ejes a la vez, marcalos todos en coveredFields.
-- Marcá briefComplete en true sólo cuando no queden ejes pendientes o el usuario diga
-  explícitamente que quiere el resultado ya ("listo", "generá el resultado", "dale así").
-${params.modeContext ? `\nMODO ESPECIALISTA ACTIVO:\n${params.modeContext}` : ''}
+CÓMO CONVERSÁS
+- UNA sola pregunta por mensaje: la pendiente que más afecte el precio.
+- Formulala para ESTE caso, nunca genérica ("¿Qué talle son y de qué colorway?" en vez
+  de "Describa las características del producto").
+- Breve y natural: máximo 2 o 3 oraciones. Nada de interrogatorio.
+${params.hasImages ? '- Hay imágenes adjuntas: comentá en una frase lo que ves y usalo para cubrir ítems.' : ''}
+- briefComplete = true cuando no queden ítems "pendiente", o cuando el usuario pida el
+  resultado ("listo", "generá", "dale así").
+- Cuando el brief se completa, tu reply es UNA confirmación breve (1-2 oraciones) tipo
+  "¡Listo! Ya tengo todo, generá el informe cuando quieras". NUNCA escribas el informe,
+  valores ni estimaciones en el chat: eso lo hace el paso siguiente, fuera del brief.
 
-FORMATO DE RESPUESTA (JSON estricto, sin texto fuera del JSON):
-{
-  "reply": "tu mensaje para el usuario",
-  "coveredFields": ["ejes que quedaron cubiertos con el ÚLTIMO mensaje del usuario"],
-  "notApplicableFields": ["ejes que NO aplican a este ítem y no hay que preguntar"],
-  "briefComplete": false
-}`;
+TÍTULO
+Mantené "title": identificación corta de lo que se valúa (máx 80 caracteres).
+Ej: "Zapatillas Nike Javelin Elite 4 (nuevas)" o "Servicio de venta de tortas artesanales".
+Actualizalo si aparece info nueva. Si todavía no se sabe qué se valúa, dejalo en null y
+tu única pregunta es qué quiere valuar.
+
+CHECKLIST ACTUAL (devolvé SIEMPRE el checklist completo y actualizado, no sólo los cambios):
+${checklistBlock}
+${params.modeContext ? `\nMODO ESPECIALISTA ACTIVO:\n${params.modeContext}` : ''}`;
 }
 
 /**
@@ -140,58 +150,53 @@ CÓMO USAR LOS COMPARABLES:
 }
 
 /**
- * Prompt de generación del resultado. Pide JSON estricto.
- * Ojo: acá NO se le pide layer ni completionPercent — los calcula el backend
- * (valuacion.scoring.ts) para que los stickers sean comparables entre sí.
+ * Prompt de generación del resultado. El formato lo garantiza el output
+ * estructurado del Agents SDK (zod), así que acá quedan sólo las reglas de
+ * negocio. La capa y el completionPercent NO los decide el modelo: los calcula
+ * el backend (valuacion.scoring.ts) para que los stickers sean comparables.
  */
-export const VALUACION_RESULT_PROMPT = `Con base en TODA la información recopilada
-(brief + imágenes), generá un informe de valuación en JSON estricto. No agregues texto
-fuera del JSON.
+export const VALUACION_RESULT_PROMPT = `Sos un tasador profesional. Con TODA la
+información del brief (conversación + imágenes) generá el informe de valuación.
+Escribí todos los textos en español rioplatense.
 
-{
-  "photoAnalysis": {
-    "description": "Descripción de lo observado en las imágenes",
-    "brand": "Marca identificada o null",
-    "model": "Modelo identificado o null",
-    "condition": "Estado visual general",
-    "components": ["componente1", "componente2"],
-    "damages": ["daño1"],
-    "scores": { "estado": 1-5, "marca": 1-5, "mercado": 1-5, "rareza": 1-5 },
-    "confidence": 0-100
-  },
-  "descriptiveAnalysis": {
-    "summary": "Resumen de la información aportada por el usuario",
-    "scores": { "uso": 1-5, "vidaUtil": 1-5, "mantenimiento": 1-5, "documentacion": 1-5 },
-    "confidence": 0-100
-  },
-  "estimatedValues": {
-    "liquidacion": número_en_USD,
-    "mercado": número_en_USD,
-    "premium": número_en_USD
-  },
-  "confidencePercent": 0-100,
-  "dataSources": [{ "field": "nombre_del_dato", "source": "fotografica|descriptiva|inferencia_ia" }]
-}
+VALORES ESTIMADOS (en USD):
+- liquidacion: venta rápida o urgente (70-80% del valor de mercado).
+- mercado: precio realista de venta HOY para este ítem concreto.
+- premium: máximo razonable en condiciones ideales de venta.
+- Debe cumplirse liquidacion <= mercado <= premium.
+- Estimá con tu conocimiento real del mercado del tipo de ítem (precio de retail
+  actual, mercado de usados, plataformas de reventa). Si falta un dato clave,
+  estimá igual y bajá la confianza; no inventes precisión que no tenés.
+- En "pricingRationale" explicá en 2-3 oraciones en qué te basaste (referencias
+  de mercado, estado, demanda). Se le muestra al usuario.
 
-REGLAS PARA VALORES ESTIMADOS (en USD):
-- liquidacion: precio de venta rápida o urgente (70-80% del valor de mercado).
-- mercado: precio promedio de mercado actual.
-- premium: precio máximo razonable en condiciones ideales de venta.
-- Se debe cumplir liquidacion <= mercado <= premium.
-- Si no hay información suficiente, estimá igual y bajá la confianza.
+SCORES (1 a 5): 5 Excelente · 4 Muy bueno · 3 Bueno · 2 Regular · 1 Deficiente.
+Calificá siempre EN RELACIÓN al tipo de ítem, no en abstracto.
 
-REGLAS PARA SCORES (1 a 5):
-5 = Excelente · 4 = Muy bueno · 3 = Bueno · 2 = Regular · 1 = Deficiente
+ANÁLISIS FOTOGRÁFICO:
+- Sólo si hay imágenes; si no hay, photoAnalysis = null (no inventes observaciones).
 
-REGLAS PARA FUENTES:
+ANÁLISIS DESCRIPTIVO — EJES CONTEXTUALES:
+Los 4 slots de score son fijos (uso, vidaUtil, mantenimiento, documentacion) pero
+lo que se evalúa en cada uno se ADAPTA al ítem, y el "label" de cada eje es lo que
+ve el usuario:
+- uso → intensidad/forma de uso. Para un servicio: demanda o nivel de actividad.
+- vidaUtil → valor que le queda a futuro. Para un servicio: proyección y vigencia.
+- mantenimiento → conservación/cuidado. Para un servicio: calidad y consistencia.
+- documentacion → respaldo formal (factura, garantía). Para un servicio:
+  formalidad, portfolio, reseñas.
+Renombrá el label a lo que realmente evaluaste (ej: para un servicio de tortas,
+mantenimiento → "Consistencia del producto"). Si en un slot no hay nada que
+evaluar para este ítem, poné score 5 y marcá ese eje en dataSources como
+"inferencia_ia" (que no aplique no es información faltante).
+
+CONFIANZA (confidencePercent): sé conservador. Brief incompleto o sin fotos ⇒ confianza baja.
+
+FUENTES (dataSources):
 - "fotografica": el dato sale de las imágenes.
 - "descriptiva": el dato lo aportó el usuario en el brief.
-- "inferencia_ia": el dato lo estimaste vos sin evidencia directa.
-- Etiquetá al menos los valores estimados y los ejes con score.
-
-IMPORTANTE:
-- Si NO hay imágenes, devolvé photoAnalysis en null (no inventes observaciones visuales).
-- Sé conservador con la confianza: si el brief quedó incompleto, bajala.`;
+- "inferencia_ia": lo estimaste sin evidencia directa.
+- Etiquetá al menos los valores estimados y los ejes con score.`;
 
 /** Prompt de análisis de una imagen suelta (para el panel de referencias). */
 export const IMAGE_ANALYSIS_PROMPT = `Describí en una o dos oraciones lo que observás en

@@ -13,11 +13,13 @@ export interface ValuacionDocument extends Document {
   category: string;
   status: string;
   mode?: string;
+  title?: string | null;
   layer: number;
   completionPercent: number;
   confidencePercent: number;
   coveredFields: string[];
   notApplicableFields: string[];
+  briefItems: { key: string; label: string; status: string }[];
   briefMessages: {
     role: string;
     content: string;
@@ -38,6 +40,7 @@ export interface ValuacionDocument extends Document {
   photoAnalysis?: any;
   descriptiveAnalysis?: any;
   estimatedValues?: any;
+  pricingRationale?: string | null;
   finalScore?: number;
   dataSources: { field: string; source: string }[];
   versions: any[];
@@ -73,6 +76,21 @@ const DescriptiveAnalysisSchema = new Schema(
       vidaUtil: ScoreField,
       mantenimiento: ScoreField,
       documentacion: ScoreField,
+    },
+    /**
+     * Etiquetas contextuales de los 4 slots (los slots son fijos para que el
+     * sticker sea comparable; el label es lo que realmente se evaluó, ej.
+     * "mantenimiento" → "Consistencia del servicio"). null en valuaciones viejas.
+     */
+    axisLabels: {
+      type: {
+        uso: { type: String },
+        vidaUtil: { type: String },
+        mantenimiento: { type: String },
+        documentacion: { type: String },
+      },
+      default: null,
+      _id: false,
     },
     confidence: { type: Number, min: 0, max: 100 },
   },
@@ -123,6 +141,9 @@ export const ValuacionSchema = new Schema<ValuacionDocument>(
     /** Modo de Cubito con el que se corre el brief (ver cubito-modes.ts). */
     mode: { type: String },
 
+    /** Identificación corta de lo que se valúa, generada por la IA en el brief. */
+    title: { type: String, default: null, maxlength: 120 },
+
     layer: { type: Number, enum: [1, 2, 3], default: 1 },
     completionPercent: { type: Number, default: 0, min: 0, max: 100 },
     confidencePercent: { type: Number, default: 0, min: 0, max: 100 },
@@ -135,6 +156,24 @@ export const ValuacionSchema = new Schema<ValuacionDocument>(
     /** Ejes que no aplican a este ítem; cuentan como resueltos, no como faltantes. */
     notApplicableFields: [
       { type: String, enum: Object.values(ValuacionBriefField) },
+    ],
+
+    /**
+     * Checklist dinámico del brief: la IA lo arma según QUÉ se valúa (talle
+     * para zapatillas, experiencia para un servicio). En valuaciones nuevas la
+     * completitud se calcula sobre esta lista; coveredFields queda como legado.
+     */
+    briefItems: [
+      {
+        key: { type: String, required: true },
+        label: { type: String, required: true },
+        status: {
+          type: String,
+          enum: ['pendiente', 'cubierto', 'no_aplica', 'omitido'],
+          default: 'pendiente',
+        },
+        _id: false,
+      },
     ],
 
     briefMessages: [
@@ -170,6 +209,9 @@ export const ValuacionSchema = new Schema<ValuacionDocument>(
     photoAnalysis: { type: PhotoAnalysisSchema, default: null },
     descriptiveAnalysis: { type: DescriptiveAnalysisSchema, default: null },
     estimatedValues: { type: EstimatedValuesSchema, default: null },
+
+    /** Justificación breve de los valores estimados (transparencia del precio). */
+    pricingRationale: { type: String, default: null, maxlength: 1000 },
 
     finalScore: { type: Number, min: 1, max: 5, default: null },
 
