@@ -404,7 +404,11 @@ export class ValuacionService implements ValuacionServiceInterface {
       title,
       description: descriptionParts.join('\n\n'),
       suggestedPrice: valuacion.estimatedValues?.mercado ?? null,
-      imageUrls: valuacion.images.map((image) => image.url),
+      imageUrls: valuacion.images.map((image) => {
+        // Extract the UploadThing key from the full URL (e.g. https://utfs.io/f/KEY → KEY)
+        const parts = image.url.split('/');
+        return parts[parts.length - 1];
+      }),
       brand: photo?.brand ?? null,
       modelType: photo?.model ?? null,
       condition: photo?.condition ?? null,

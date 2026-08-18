@@ -38,6 +38,11 @@ const AboutUs = () => {
         <ModalContent>
           <ModalHeader>Sobre Nosotros</ModalHeader>
           <ModalBody>
+            <div className="w-full flex items-center gap-4">
+              <Image src="/maarq.png" alt="Minimal Antropos Arquitectura" className="h-16" />
+              <Image src="/ee.png" alt="Encuentro Emprendedores" className="w-28" />
+            </div>
+
             <h5>¿Qué es Publicite?</h5>
             <p>
               Soonpublicite S.A. es un emprendimiento en desarrollo impulsado por un
