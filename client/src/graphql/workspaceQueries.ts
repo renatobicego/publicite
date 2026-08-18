@@ -14,7 +14,9 @@ export const startValuacionMutation = gql`
         status
         layer
         completionPercent
+        title
         coveredFields
+        briefItems { key label status }
         images { url }
         tokenStatus { hasActivePaidPlan source allowance used remaining communityTokensAvailable resetsAt }
       }
@@ -33,7 +35,9 @@ export const sendValuacionMessageMutation = gql`
         status
         layer
         completionPercent
+        title
         coveredFields
+        briefItems { key label status }
         images { url }
         tokenStatus { hasActivePaidPlan source allowance used remaining communityTokensAvailable resetsAt }
       }
@@ -52,7 +56,9 @@ export const skipValuacionBriefQuestionMutation = gql`
         status
         layer
         completionPercent
+        title
         coveredFields
+        briefItems { key label status }
         images { url }
         tokenStatus { hasActivePaidPlan source allowance used remaining communityTokensAvailable resetsAt }
       }
@@ -74,11 +80,14 @@ export const generateValuacionResultMutation = gql`
         description brand model condition components damages confidence
         scores { estado marca mercado rareza }
       }
+      title
       descriptiveAnalysis {
         summary confidence
         scores { uso vidaUtil mantenimiento documentacion }
+        axisLabels { uso vidaUtil mantenimiento documentacion }
       }
       estimatedValues { liquidacion mercado premium currency }
+      pricingRationale
       dataSources { field source }
       versionsCount
       coveredFields
@@ -113,11 +122,14 @@ export const restoreValuacionToBoardMutation = gql`
         description brand model condition components damages confidence
         scores { estado marca mercado rareza }
       }
+      title
       descriptiveAnalysis {
         summary confidence
         scores { uso vidaUtil mantenimiento documentacion }
+        axisLabels { uso vidaUtil mantenimiento documentacion }
       }
       estimatedValues { liquidacion mercado premium currency }
+      pricingRationale
       dataSources { field source }
       versionsCount
       coveredFields
@@ -149,6 +161,7 @@ export const getUserValuacionesQuery = gql`
     getUserValuaciones(limit: $limit, page: $page) {
       valuaciones {
         id
+        title
         category
         status
         layer

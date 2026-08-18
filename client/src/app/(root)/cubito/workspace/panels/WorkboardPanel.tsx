@@ -72,6 +72,8 @@ export default function WorkboardPanel({ workspace }: WorkboardPanelProps) {
                         layer={workspace.currentLayer}
                         completionPercent={workspace.completionPercent}
                         coveredFields={workspace.coveredFields}
+                        briefItems={workspace.briefItems}
+                        title={workspace.valuacionTitle}
                         briefComplete={workspace.briefComplete}
                     />
                 </div>

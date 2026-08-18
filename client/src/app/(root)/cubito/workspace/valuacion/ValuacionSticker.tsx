@@ -42,16 +42,29 @@ export default function ValuacionSticker({ result }: ValuacionStickerProps) {
             { label: "Rareza", value: photoAnalysis.scores.rareza },
         );
     }
+    const axisLabels = {
+        uso: descriptiveAnalysis.axisLabels?.uso || "Uso",
+        vidaUtil: descriptiveAnalysis.axisLabels?.vidaUtil || "Vida Útil",
+        mantenimiento: descriptiveAnalysis.axisLabels?.mantenimiento || "Mantenimiento",
+        documentacion: descriptiveAnalysis.axisLabels?.documentacion || "Documentación",
+    };
     radarData.push(
-        { label: "Uso", value: descriptiveAnalysis.scores.uso },
-        { label: "Vida Útil", value: descriptiveAnalysis.scores.vidaUtil },
-        { label: "Mantenimiento", value: descriptiveAnalysis.scores.mantenimiento },
-        { label: "Documentación", value: descriptiveAnalysis.scores.documentacion },
+        { label: axisLabels.uso, value: descriptiveAnalysis.scores.uso },
+        { label: axisLabels.vidaUtil, value: descriptiveAnalysis.scores.vidaUtil },
+        { label: axisLabels.mantenimiento, value: descriptiveAnalysis.scores.mantenimiento },
+        { label: axisLabels.documentacion, value: descriptiveAnalysis.scores.documentacion },
     );
 
     return (
         <Card className="shadow-lg border border-gray-200 dark:border-slate-600" id="valuacion-sticker">
             <CardBody className="p-5 space-y-4">
+                {/* Título del ítem valuado */}
+                {result.title && (
+                    <p className="text-sm font-semibold text-gray-800 dark:text-gray-100 text-center">
+                        {result.title}
+                    </p>
+                )}
+
                 {/* Header */}
                 <div className="flex items-center justify-between">
                     <Chip
@@ -111,17 +124,17 @@ export default function ValuacionSticker({ result }: ValuacionStickerProps) {
                     </h4>
                     <p className="text-xs text-gray-600 dark:text-gray-400">{descriptiveAnalysis.summary}</p>
                     <div className="grid grid-cols-2 gap-1 text-xs">
-                        <div className="flex justify-between items-center">
-                            <span>Uso</span><StarRating score={descriptiveAnalysis.scores.uso} />
+                        <div className="flex justify-between items-center gap-1">
+                            <span className="truncate">{axisLabels.uso}</span><StarRating score={descriptiveAnalysis.scores.uso} />
                         </div>
-                        <div className="flex justify-between items-center">
-                            <span>Vida Útil</span><StarRating score={descriptiveAnalysis.scores.vidaUtil} />
+                        <div className="flex justify-between items-center gap-1">
+                            <span className="truncate">{axisLabels.vidaUtil}</span><StarRating score={descriptiveAnalysis.scores.vidaUtil} />
                         </div>
-                        <div className="flex justify-between items-center">
-                            <span>Mantenimiento</span><StarRating score={descriptiveAnalysis.scores.mantenimiento} />
+                        <div className="flex justify-between items-center gap-1">
+                            <span className="truncate">{axisLabels.mantenimiento}</span><StarRating score={descriptiveAnalysis.scores.mantenimiento} />
                         </div>
-                        <div className="flex justify-between items-center">
-                            <span>Documentación</span><StarRating score={descriptiveAnalysis.scores.documentacion} />
+                        <div className="flex justify-between items-center gap-1">
+                            <span className="truncate">{axisLabels.documentacion}</span><StarRating score={descriptiveAnalysis.scores.documentacion} />
                         </div>
                     </div>
                 </div>
@@ -144,6 +157,11 @@ export default function ValuacionSticker({ result }: ValuacionStickerProps) {
                                 <p className="text-sm font-bold">{estimatedValues.premium ? `USD ${estimatedValues.premium}` : "—"}</p>
                             </div>
                         </div>
+                        {result.pricingRationale && (
+                            <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-2 leading-snug">
+                                {result.pricingRationale}
+                            </p>
+                        )}
                     </div>
                 )}
 

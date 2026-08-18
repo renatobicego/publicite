@@ -14,6 +14,7 @@ import {
   TokenStatus,
   ReferenceImage,
   WorkspaceMessage,
+  BriefItem,
 } from "@/types/workspaceTypes";
 import {
   startValuacion,
@@ -53,6 +54,8 @@ export function useWorkspace() {
   const [currentLayer, setCurrentLayer] = useState<1 | 2 | 3>(1);
   const [completionPercent, setCompletionPercent] = useState(0);
   const [coveredFields, setCoveredFields] = useState<string[]>([]);
+  const [briefItems, setBriefItems] = useState<BriefItem[]>([]);
+  const [valuacionTitle, setValuacionTitle] = useState<string | null>(null);
   const [valuacionResult, setValuacionResult] = useState<ValuacionResult | null>(null);
 
   // Saved results (panel derecho)
@@ -104,6 +107,8 @@ export function useWorkspace() {
     setCurrentLayer(v.layer);
     setCompletionPercent(v.completionPercent);
     setCoveredFields(v.coveredFields || []);
+    setBriefItems(v.briefItems || []);
+    if (v.title !== undefined) setValuacionTitle(v.title ?? null);
     setBriefComplete(res.briefComplete);
     updateTokens(v.tokenStatus);
     if (res.limitReached) {
@@ -346,6 +351,8 @@ export function useWorkspace() {
     setBriefComplete(false);
     setCompletionPercent(0);
     setCoveredFields([]);
+    setBriefItems([]);
+    setValuacionTitle(null);
     setMessages([]);
     setMatchStatus("idle");
     setMatchResults([]);
@@ -382,6 +389,8 @@ export function useWorkspace() {
     currentLayer,
     completionPercent,
     coveredFields,
+    briefItems,
+    valuacionTitle,
     valuacionResult,
     savedValuaciones,
     handleStartValuacion,

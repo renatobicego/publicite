@@ -50,6 +50,13 @@ export interface DescriptiveAnalysis {
   summary: string;
   confidence: number;
   scores: DescriptiveScores;
+  /** Etiquetas contextuales de los 4 ejes (null en valuaciones viejas). */
+  axisLabels?: {
+    uso: string;
+    vidaUtil: string;
+    mantenimiento: string;
+    documentacion: string;
+  } | null;
 }
 
 export interface EstimatedValues {
@@ -57,6 +64,15 @@ export interface EstimatedValues {
   mercado: number | null;
   premium: number | null;
   currency: string;
+}
+
+export type BriefItemStatus = "pendiente" | "cubierto" | "no_aplica" | "omitido";
+
+/** Ítem del checklist dinámico del brief (lo arma la IA según qué se valúa). */
+export interface BriefItem {
+  key: string;
+  label: string;
+  status: BriefItemStatus;
 }
 
 export interface DataSource {
@@ -78,6 +94,7 @@ export interface ValuacionResult {
   id: string;
   status: ValuacionStatus;
   category: ValuacionCategory;
+  title?: string | null;
   layer: 1 | 2 | 3;
   completionPercent: number;
   confidencePercent: number;
@@ -85,6 +102,7 @@ export interface ValuacionResult {
   photoAnalysis: PhotoAnalysis | null;
   descriptiveAnalysis: DescriptiveAnalysis;
   estimatedValues: EstimatedValues | null;
+  pricingRationale?: string | null;
   dataSources: DataSource[];
   versionsCount: number;
   coveredFields: string[];
@@ -103,7 +121,9 @@ export interface ValuacionMessageResponse {
     status: ValuacionStatus;
     layer: 1 | 2 | 3;
     completionPercent: number;
+    title?: string | null;
     coveredFields: string[];
+    briefItems: BriefItem[];
     images: { url: string }[];
     tokenStatus: TokenStatus | null;
   };
@@ -111,6 +131,7 @@ export interface ValuacionMessageResponse {
 
 export interface ValuacionListItem {
   id: string;
+  title?: string | null;
   category: ValuacionCategory;
   status: ValuacionStatus;
   layer: 1 | 2 | 3;
