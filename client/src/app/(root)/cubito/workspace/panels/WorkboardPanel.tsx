@@ -1,13 +1,14 @@
 "use client";
 
 import { Button } from "@nextui-org/react";
-import { FaWandMagicSparkles, FaMagnifyingGlass } from "react-icons/fa6";
+import { FaWandMagicSparkles, FaMagnifyingGlass, FaArrowLeft } from "react-icons/fa6";
 import { OrangeCubeIcon } from "@/components/buttons/ChatbotButton/OrangeCubeIcon";
 import type { useWorkspace } from "../hooks/useWorkspace";
 import CategorySelector from "../valuacion/CategorySelector";
 import BriefProgress from "../valuacion/BriefProgress";
 import ValuacionSticker from "../valuacion/ValuacionSticker";
 import MatchResults from "../match/MatchResults";
+import WorkspaceChat from "../WorkspaceChat";
 
 interface WorkboardPanelProps {
     workspace: ReturnType<typeof useWorkspace>;
@@ -53,79 +54,107 @@ export default function WorkboardPanel({ workspace }: WorkboardPanelProps) {
         );
     }
 
-    // === VALUACIÓN ===
-    if (activeModule === "valuacion") {
-        // Category selection (before starting)
-        if (valuacionStatus === "idle") {
-            return (
-                <div className="p-6">
-                    <CategorySelector onSelect={workspace.handleStartValuacion} />
-                </div>
-            );
-        }
+    // === Active module layout: back button + content + chat ===
+    return (
+        <div className="flex flex-col h-full">
+            {/* Back button */}
+            <div className="px-4 py-2 border-b border-divider flex items-center gap-2">
+                <Button
+                    size="sm"
+                    variant="light"
+                    startContent={<FaArrowLeft size={12} />}
+                    onPress={() => workspace.resetWorkspace()}
+                >
+                    Volver
+                </Button>
+                <span className="text-xs text-gray-500">
+                    {activeModule === "valuacion" ? "Valuación IA" : "Match IA"}
+                </span>
+            </div>
 
-        // Brief in progress
-        if (valuacionStatus === "draft") {
-            return (
-                <div className="p-6">
-                    <BriefProgress
-                        layer={workspace.currentLayer}
-                        completionPercent={workspace.completionPercent}
-                        coveredFields={workspace.coveredFields}
-                        briefItems={workspace.briefItems}
-                        title={workspace.valuacionTitle}
-                        briefComplete={workspace.briefComplete}
-                    />
-                </div>
-            );
-        }
-
-        // Processing
-        if (valuacionStatus === "processing" || isProcessing) {
-            return (
-                <div className="flex flex-col items-center justify-center h-full gap-4">
-                    <div className="w-16 h-16 animate-pulse">
-                        <OrangeCubeIcon />
+            {/* Main content area */}
+            <div className="flex-1 overflow-y-auto">
+                {activeModule === "valuacion" && renderValuacion(workspace, valuacionStatus, valuacionResult, isProcessing)}
+                {activeModule === "match" && (
+                    <div className="p-4">
+                        <MatchResults
+                            status={workspace.matchStatus}
+                            results={workspace.matchResults}
+                            interpretation={workspace.matchInterpretation}
+                            candidatesEvaluated={workspace.matchCandidatesEvaluated}
+                            message={workspace.matchMessage}
+                            savedPostIds={workspace.savedMatchPostIds}
+                            onSave={workspace.handleSaveMatch}
+                            isProcessing={workspace.isProcessing}
+                        />
                     </div>
-                    <p className="text-sm text-gray-500">Generando valuación...</p>
-                </div>
-            );
-        }
+                )}
+            </div>
 
-        // Result ready
-        if ((valuacionStatus === "completed" || valuacionStatus === "saved") && valuacionResult) {
-            return (
-                <div className="p-4">
-                    <ValuacionSticker result={valuacionResult} />
-                    {valuacionStatus === "completed" && (
-                        <div className="flex gap-2 mt-4 justify-center">
-                            <Button size="sm" color="success" variant="shadow" onPress={workspace.handleSaveResult}>
-                                Guardar
-                            </Button>
-                            <Button size="sm" color="danger" variant="flat" onPress={() => workspace.handleDeleteValuacion(valuacionResult.id)}>
-                                Descartar
-                            </Button>
-                        </div>
-                    )}
-                </div>
-            );
-        }
+            {/* Chat integrated in the panel */}
+            <WorkspaceChat workspace={workspace} />
+        </div>
+    );
+}
+
+function renderValuacion(
+    workspace: ReturnType<typeof useWorkspace>,
+    valuacionStatus: string,
+    valuacionResult: ReturnType<typeof useWorkspace>["valuacionResult"],
+    isProcessing: boolean
+) {
+    // Category selection
+    if (valuacionStatus === "idle") {
+        return (
+            <div className="p-6">
+                <CategorySelector onSelect={workspace.handleStartValuacion} />
+            </div>
+        );
     }
 
-    // === MATCH ===
-    if (activeModule === "match") {
+    // Brief in progress
+    if (valuacionStatus === "draft") {
+        return (
+            <div className="p-6">
+                <BriefProgress
+                    layer={workspace.currentLayer}
+                    completionPercent={workspace.completionPercent}
+                    coveredFields={workspace.coveredFields}
+                    briefItems={workspace.briefItems}
+                    title={workspace.valuacionTitle}
+                    briefComplete={workspace.briefComplete}
+                />
+            </div>
+        );
+    }
+
+    // Processing
+    if (valuacionStatus === "processing" || (isProcessing && valuacionStatus !== "completed")) {
+        return (
+            <div className="flex flex-col items-center justify-center h-full gap-4 py-12">
+                <div className="w-16 h-16 animate-pulse">
+                    <OrangeCubeIcon />
+                </div>
+                <p className="text-sm text-gray-500">Generando valuación...</p>
+            </div>
+        );
+    }
+
+    // Result ready
+    if ((valuacionStatus === "completed" || valuacionStatus === "saved") && valuacionResult) {
         return (
             <div className="p-4">
-                <MatchResults
-                    status={workspace.matchStatus}
-                    results={workspace.matchResults}
-                    interpretation={workspace.matchInterpretation}
-                    candidatesEvaluated={workspace.matchCandidatesEvaluated}
-                    message={workspace.matchMessage}
-                    savedPostIds={workspace.savedMatchPostIds}
-                    onSave={workspace.handleSaveMatch}
-                    isProcessing={workspace.isProcessing}
-                />
+                <ValuacionSticker result={valuacionResult} />
+                {valuacionStatus === "completed" && (
+                    <div className="flex gap-2 mt-4 justify-center">
+                        <Button size="sm" color="success" variant="shadow" onPress={workspace.handleSaveResult}>
+                            Guardar
+                        </Button>
+                        <Button size="sm" color="danger" variant="flat" onPress={() => workspace.handleDeleteValuacion(valuacionResult.id)}>
+                            Descartar
+                        </Button>
+                    </div>
+                )}
             </div>
         );
     }

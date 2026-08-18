@@ -60,6 +60,7 @@ export function useWorkspace() {
 
   // Saved results (panel derecho)
   const [savedValuaciones, setSavedValuaciones] = useState<ValuacionResult[]>([]);
+  const [isLoadingSaved, setIsLoadingSaved] = useState(true);
 
   // Match state
   const [matchStatus, setMatchStatus] = useState<"idle" | "searching" | "results">("idle");
@@ -68,23 +69,39 @@ export function useWorkspace() {
   const [matchCandidatesEvaluated, setMatchCandidatesEvaluated] = useState(0);
   const [matchMessage, setMatchMessage] = useState<string | null>(null);
   const [savedMatchPostIds, setSavedMatchPostIds] = useState<string[]>([]);
+  const [savedMatchPosts, setSavedMatchPosts] = useState<MatchedPost[]>([]);
 
   const { user } = useUser();
 
   const getSessionId = () => sessionStorage.getItem("workspaceSessionId") || "";
 
+  // --- Load saved match posts from localStorage on mount ---
+  useEffect(() => {
+    try {
+      const storedPosts = localStorage.getItem("savedMatchPosts");
+      if (storedPosts) {
+        const parsed: MatchedPost[] = JSON.parse(storedPosts);
+        setSavedMatchPosts(parsed);
+        setSavedMatchPostIds(parsed.map((p) => p.postId));
+      }
+    } catch {
+      // Silent fail — corrupted data
+    }
+  }, []);
+
   // --- Load saved valuaciones from BE on mount ---
   useEffect(() => {
     if (!user) return;
     const loadSaved = async () => {
+      setIsLoadingSaved(true);
       const res = await getUserValuaciones(20, 1);
       if (res && !("error" in res) && res.valuaciones) {
-        // Only show valuaciones with status "saved" in the right panel
         const saved = res.valuaciones.filter(
           (v: any) => v.status === "saved"
         );
         setSavedValuaciones(saved);
       }
+      setIsLoadingSaved(false);
     };
     loadSaved();
   }, [user]);
@@ -276,8 +293,8 @@ export function useWorkspace() {
 
   const handleDeleteValuacion = useCallback(async (id: string) => {
     const res = await deleteService(id);
-    if (res && "error" in res) {
-      toastifyError(res.error);
+    if (res === null || res === undefined || (typeof res === "object" && "error" in res)) {
+      toastifyError(typeof res === "object" && res !== null ? res.error : "Error al eliminar");
       return;
     }
     setSavedValuaciones((prev) => prev.filter((v) => v.id !== id));
@@ -332,11 +349,34 @@ export function useWorkspace() {
   }, [activeMode, addMessage, updateTokens]);
 
   const handleSaveMatch = useCallback((postId: string) => {
-    setSavedMatchPostIds((prev) => [...prev, postId]);
-  }, []);
+    setSavedMatchPostIds((prev) => {
+      const updated = [...prev, postId];
+      return updated;
+    });
+    setSavedMatchPosts((prev) => {
+      const post = matchResults.find((m) => m.postId === postId);
+      if (!post || prev.some((p) => p.postId === postId)) return prev;
+      const updated = [...prev, post];
+      try {
+        localStorage.setItem("savedMatchPosts", JSON.stringify(updated));
+      } catch {
+        // quota exceeded — silent
+      }
+      return updated;
+    });
+  }, [matchResults]);
 
   const handleRemoveSavedMatch = useCallback((postId: string) => {
     setSavedMatchPostIds((prev) => prev.filter((id) => id !== postId));
+    setSavedMatchPosts((prev) => {
+      const updated = prev.filter((p) => p.postId !== postId);
+      try {
+        localStorage.setItem("savedMatchPosts", JSON.stringify(updated));
+      } catch {
+        // silent
+      }
+      return updated;
+    });
   }, []);
 
   // ============================================================
@@ -393,6 +433,7 @@ export function useWorkspace() {
     valuacionTitle,
     valuacionResult,
     savedValuaciones,
+    isLoadingSaved,
     handleStartValuacion,
     handleSendValuacionMessage,
     handleSkipQuestion,
@@ -408,6 +449,7 @@ export function useWorkspace() {
     matchCandidatesEvaluated,
     matchMessage,
     savedMatchPostIds,
+    savedMatchPosts,
     handleSearchMatch,
     handleSaveMatch,
     handleRemoveSavedMatch,

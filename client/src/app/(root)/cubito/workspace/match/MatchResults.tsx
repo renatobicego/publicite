@@ -4,6 +4,7 @@ import { Button, Card, CardBody, Chip, Image } from "@nextui-org/react";
 import { FaBookmark, FaArrowUpRightFromSquare } from "react-icons/fa6";
 import { OrangeCubeIcon } from "@/components/buttons/ChatbotButton/OrangeCubeIcon";
 import { MatchedPost } from "@/types/workspaceTypes";
+import { FILE_URL } from "@/utils/data/urls";
 
 interface MatchResultsProps {
     status: "idle" | "searching" | "results";
@@ -90,7 +91,7 @@ export default function MatchResults({
                                 <div className="w-16 h-16 flex-shrink-0 rounded-md overflow-hidden bg-gray-100 dark:bg-slate-800">
                                     {match.imageUrl ? (
                                         <Image
-                                            src={match.imageUrl}
+                                            src={FILE_URL + match.imageUrl}
                                             alt={match.title}
                                             className="w-full h-full object-cover"
                                             radius="none"

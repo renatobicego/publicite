@@ -57,7 +57,7 @@ export default function WorkspaceChat({ workspace }: WorkspaceChatProps) {
         <div className="border-t border-divider bg-white dark:bg-slate-900">
             {/* Messages area */}
             {messages.length > 0 && (
-                <ScrollShadow ref={scrollRef} className="max-h-60 overflow-y-auto px-4 py-2 space-y-2">
+                <ScrollShadow ref={scrollRef} className="max-h-72 overflow-y-auto px-4 py-2 space-y-2">
                     {messages.map((msg) => (
                         <div
                             key={msg.id}

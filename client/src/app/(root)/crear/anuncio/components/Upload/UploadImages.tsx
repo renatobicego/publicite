@@ -10,6 +10,7 @@ import {
 import Dropzone from "./Dropzone";
 import FilePreview from "./FilePreview";
 import { toastifyError } from "@/utils/functions/toastify";
+import { FILE_URL } from "@/utils/data/urls";
 
 interface UploadImagesProps {
   allowVideos?: boolean;
@@ -19,6 +20,7 @@ interface UploadImagesProps {
   customClassname?: HTMLAttributes<HTMLDivElement>["className"];
   prevFilesCount?: number;
   isVideoUploaded?: boolean;
+  prefillImageUrls?: string[];
 }
 
 const UploadImages = ({
@@ -29,10 +31,11 @@ const UploadImages = ({
   customClassname,
   prevFilesCount = 0,
   isVideoUploaded = false,
+  prefillImageUrls = [],
 }: UploadImagesProps) => {
   const maxImageSize = 8 * 1024 * 1024; // 8MB for images
   const maxVideoSize = 32 * 1024 * 1024; // 32MB for videos
-  const maxTotalFiles = 10 - prevFilesCount;
+  const maxTotalFiles = 10 - prevFilesCount - prefillImageUrls.length;
   const maxVideoFiles = allowVideos ? (isVideoUploaded ? 0 : 1) : 0;
 
   // Handle file drop
@@ -102,6 +105,21 @@ const UploadImages = ({
         isDisabled={!type}
       />
       <div className="flex gap-4 mt-4 w-full flex-wrap max-md:flex-nowrap max-md:overflow-x-auto">
+        {prefillImageUrls.map((imageKey, index) => (
+          <div
+            key={`prefill-${index}`}
+            className="relative w-24 h-24 rounded-md overflow-hidden border border-primary shrink-0"
+          >
+            <img
+              src={FILE_URL + imageKey}
+              alt={`Imagen de valuación ${index + 1}`}
+              className="w-full h-full object-cover"
+            />
+            <span className="absolute bottom-0 left-0 right-0 bg-primary/80 text-white text-[10px] text-center py-0.5">
+              Valuación
+            </span>
+          </div>
+        ))}
         {files.map((file, index) => (
           <FilePreview
             key={file.name + index}

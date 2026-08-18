@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import { Button, Card, CardBody, Chip, Tooltip, Spinner } from "@nextui-org/react";
-import { FaArrowRotateLeft, FaTrash, FaDownload, FaNewspaper } from "react-icons/fa6";
-import { toastifyError } from "@/utils/functions/toastify";
+import { FaEye, FaTrash, FaDownload, FaNewspaper } from "react-icons/fa6";
+import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { getValuacionPostDraft } from "@/services/workspaceServices";
 import { useRouter } from "next-nprogress-bar";
+import { toPng } from "html-to-image";
 import type { useWorkspace } from "../hooks/useWorkspace";
 
 interface ResultsPanelProps {
@@ -13,12 +14,11 @@ interface ResultsPanelProps {
 }
 
 export default function ResultsPanel({ workspace }: ResultsPanelProps) {
-    const { savedValuaciones, savedMatchPostIds, matchResults, handleRestoreToBoard, handleDeleteValuacion, handleRemoveSavedMatch } = workspace;
+    const { savedValuaciones, savedMatchPosts, handleRestoreToBoard, handleDeleteValuacion, handleRemoveSavedMatch, isLoadingSaved } = workspace;
     const [loadingAction, setLoadingAction] = useState<string | null>(null);
     const router = useRouter();
 
-    const savedMatches = matchResults.filter((m) => savedMatchPostIds.includes(m.postId));
-    const hasResults = savedValuaciones.length > 0 || savedMatches.length > 0;
+    const hasResults = savedValuaciones.length > 0 || savedMatchPosts.length > 0;
 
     // Generate a title for a valuación based on available data
     const getValuacionTitle = (v: (typeof savedValuaciones)[0]) => {
@@ -67,9 +67,40 @@ export default function ResultsPanel({ workspace }: ResultsPanelProps) {
             if (draft.title) params.set("title", draft.title);
             if (draft.description) params.set("description", draft.description);
             if (draft.suggestedPrice) params.set("price", String(draft.suggestedPrice));
+            if (draft.imageUrls && draft.imageUrls.length > 0) {
+                params.set("images", draft.imageUrls.join(","));
+            }
             router.push(`/crear/anuncio?${params.toString()}`);
         } catch {
             toastifyError("Error al preparar el anuncio");
+        }
+        setLoadingAction(null);
+    };
+
+    const handleDownloadSticker = async (valuacionId: string) => {
+        setLoadingAction(`download-${valuacionId}`);
+        try {
+            // If the sticker is not currently rendered, open it first
+            let stickerEl = document.getElementById("valuacion-sticker");
+            if (!stickerEl) {
+                await handleRestoreToBoard(valuacionId);
+                // Wait for the DOM to render the sticker
+                await new Promise((resolve) => setTimeout(resolve, 300));
+                stickerEl = document.getElementById("valuacion-sticker");
+            }
+            if (!stickerEl) {
+                toastifyError("No se pudo cargar la valuación para descargar");
+                setLoadingAction(null);
+                return;
+            }
+            const dataUrl = await toPng(stickerEl, { quality: 0.95, pixelRatio: 2 });
+            const link = document.createElement("a");
+            link.download = `valuacion-${valuacionId}.png`;
+            link.href = dataUrl;
+            link.click();
+            toastifySuccess("Imagen descargada");
+        } catch {
+            toastifyError("Error al generar la imagen");
         }
         setLoadingAction(null);
     };
@@ -80,9 +111,15 @@ export default function ResultsPanel({ workspace }: ResultsPanelProps) {
                 Resultados Guardados
             </h3>
 
-            {!hasResults && (
+            {!hasResults && !isLoadingSaved && (
                 <div className="text-center py-8 text-gray-400">
                     <p className="text-xs">Los resultados guardados aparecen acá</p>
+                </div>
+            )}
+
+            {isLoadingSaved && (
+                <div className="flex justify-center py-8">
+                    <Spinner size="sm" color="warning" />
                 </div>
             )}
 
@@ -107,7 +144,7 @@ export default function ResultsPanel({ workspace }: ResultsPanelProps) {
                             </p>
                         )}
                         <div className="flex gap-1 flex-wrap">
-                            <Tooltip content="Volver a editar" size="sm">
+                            <Tooltip content="Ver informe" size="sm">
                                 <Button
                                     size="sm"
                                     variant="flat"
@@ -115,9 +152,9 @@ export default function ResultsPanel({ workspace }: ResultsPanelProps) {
                                     onPress={() => handleRestore(v.id)}
                                     isLoading={loadingAction === `restore-${v.id}`}
                                     isDisabled={!!loadingAction}
-                                    aria-label="Volver a editar"
+                                    aria-label="Ver informe"
                                 >
-                                    <FaArrowRotateLeft size={12} />
+                                    <FaEye size={12} />
                                 </Button>
                             </Tooltip>
                             <Tooltip content="Eliminar" size="sm" color="danger">
@@ -140,6 +177,8 @@ export default function ResultsPanel({ workspace }: ResultsPanelProps) {
                                     variant="flat"
                                     isIconOnly
                                     isDisabled={!!loadingAction}
+                                    isLoading={loadingAction === `download-${v.id}`}
+                                    onPress={() => handleDownloadSticker(v.id)}
                                     aria-label="Descargar como imagen"
                                 >
                                     <FaDownload size={12} />
@@ -165,12 +204,12 @@ export default function ResultsPanel({ workspace }: ResultsPanelProps) {
             ))}
 
             {/* Saved Matches */}
-            {savedMatches.length > 0 && (
+            {savedMatchPosts.length > 0 && (
                 <h4 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mt-4">
                     Matches guardados
                 </h4>
             )}
-            {savedMatches.map((m) => (
+            {savedMatchPosts.map((m) => (
                 <Card key={m.postId} className="shadow-sm">
                     <CardBody className="p-3">
                         <div className="flex items-center justify-between">

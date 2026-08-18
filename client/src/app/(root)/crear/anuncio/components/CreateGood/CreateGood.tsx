@@ -24,12 +24,14 @@ const CreateGood = ({
   userId,
   postBehaviourType,
   prefill,
+  prefillImageUrls = [],
 }: {
   files: File[];
   userCanPublishPost: boolean;
   userId?: string;
   postBehaviourType: PostBehaviourType;
-  prefill?: { title?: string; description?: string; price?: number; fromValuacion?: string };
+  prefill?: { title?: string; description?: string; price?: number; fromValuacion?: string; imageUrls?: string[] };
+  prefillImageUrls?: string[];
 }) => {
   const initialValues: GoodPostValues = {
     attachedFiles: [],
@@ -39,7 +41,7 @@ const CreateGood = ({
     category: "",
     author: userId || "",
     condition: undefined,
-    imagesUrls: [],
+    imagesUrls: prefillImageUrls,
     geoLocation: {
       lat: undefined,
       lng: undefined,
