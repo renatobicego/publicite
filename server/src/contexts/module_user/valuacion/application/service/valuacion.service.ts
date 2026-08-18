@@ -40,12 +40,14 @@ import {
   VALUACION_BRIEF_FIELDS,
 } from '../../domain/entity/enum/valuacion.enums';
 import {
+  ValuacionBriefItem,
   ValuacionBriefMessage,
   ValuacionEntity,
 } from '../../domain/entity/valuacion.entity';
 import {
   capConfidenceByLayer,
   computeCompletion,
+  computeCompletionFromItems,
   computeFinalScore,
 } from '../../domain/service/valuacion.scoring';
 
@@ -194,6 +196,7 @@ export class ValuacionService implements ValuacionServiceInterface {
       const result = await this.valuacionAIService.generateResult({
         category: valuacion.category,
         modeContext: buildModeContext({ mode: valuacion.mode }),
+        title: valuacion.title ?? null,
         history: valuacion.briefMessages,
         imageUrls,
         comparables: comparables.comparables,
@@ -201,11 +204,16 @@ export class ValuacionService implements ValuacionServiceInterface {
 
       // La capa y la completitud son del backend; la confianza que declaró la IA
       // se acota al techo de la capa alcanzada.
-      const completion = computeCompletion(
-        valuacion.coveredFields,
-        valuacion.images.length,
-        valuacion.notApplicableFields,
-      );
+      const completion = valuacion.briefItems.length
+        ? computeCompletionFromItems(
+            valuacion.briefItems,
+            valuacion.images.length,
+          )
+        : computeCompletion(
+            valuacion.coveredFields,
+            valuacion.images.length,
+            valuacion.notApplicableFields,
+          );
       const confidencePercent = capConfidenceByLayer(
         result.confidencePercent,
         completion.layer,
@@ -239,6 +247,7 @@ export class ValuacionService implements ValuacionServiceInterface {
           photoAnalysis: result.photoAnalysis,
           descriptiveAnalysis: result.descriptiveAnalysis,
           estimatedValues: result.estimatedValues,
+          pricingRationale: result.pricingRationale,
           finalScore,
           dataSources: result.dataSources,
         },
@@ -376,7 +385,10 @@ export class ValuacionService implements ValuacionServiceInterface {
     }
 
     const photo = valuacion.photoAnalysis;
+    // El título que armó la IA durante el brief identifica mejor el ítem que
+    // concatenar marca+modelo (cubre servicios y objetos sin marca).
     const title =
+      valuacion.title ||
       [photo?.brand, photo?.model].filter(Boolean).join(' ') ||
       photo?.description?.slice(0, 60) ||
       `Valuación ${valuacion.category}`;
@@ -407,8 +419,8 @@ export class ValuacionService implements ValuacionServiceInterface {
   // ─────────────────────────── internos ───────────────────────────
 
   /**
-   * Ejecuta un turno del brief: cobra tokens, llama a la IA, acumula los ejes
-   * cubiertos y recalcula capa y completitud.
+   * Ejecuta un turno del brief: cobra tokens, llama a la IA, actualiza el
+   * checklist dinámico y recalcula capa y completitud.
    */
   private async runBriefTurn(
     userId: string,
@@ -427,28 +439,36 @@ export class ValuacionService implements ValuacionServiceInterface {
     const turn = await this.valuacionAIService.runBriefTurn({
       category: valuacion.category,
       modeContext: buildModeContext({ mode: valuacion.mode }),
-      coveredFields: valuacion.coveredFields,
-      notApplicableFields: valuacion.notApplicableFields,
+      title: valuacion.title ?? null,
+      briefItems: valuacion.briefItems,
       history: valuacion.briefMessages,
       userMessage,
       imageUrls,
     });
 
+    const briefItems = this.mergeBriefItems(valuacion.briefItems, turn.briefItems);
+    // Los ejes fijos legados se siguen derivando del checklist para no romper
+    // consumidores viejos; la fuente de verdad ahora es briefItems.
     const coveredFields = this.mergeCoveredFields(
       valuacion.coveredFields,
-      turn.coveredFields,
+      briefItems
+        .filter((item) => item.status === 'cubierto')
+        .map((item) => item.key),
     );
-    // Un eje que el usuario terminó contestando deja de estar descartado: si dijo
-    // que era nuevo y después aclara que lo reparó, mantenimiento vuelve a contar.
     const notApplicableFields = this.mergeCoveredFields(
       valuacion.notApplicableFields,
-      turn.notApplicableFields,
+      briefItems
+        .filter((item) => item.status === 'no_aplica')
+        .map((item) => item.key),
     ).filter((field) => !coveredFields.includes(field));
-    const completion = computeCompletion(
-      coveredFields,
-      valuacion.images.length,
-      notApplicableFields,
-    );
+
+    const completion = briefItems.length
+      ? computeCompletionFromItems(briefItems, valuacion.images.length)
+      : computeCompletion(
+          coveredFields,
+          valuacion.images.length,
+          notApplicableFields,
+        );
 
     const tokenStatus = await this.tokenService.chargeAndBuildStatus(
       gate,
@@ -461,8 +481,9 @@ export class ValuacionService implements ValuacionServiceInterface {
     );
 
     const now = new Date();
-    const updated = await this.valuacionRepository.update(valuacion._id!, {
+    const changes: Record<string, any> = {
       $set: {
+        briefItems,
         coveredFields,
         notApplicableFields,
         layer: completion.layer,
@@ -476,13 +497,34 @@ export class ValuacionService implements ValuacionServiceInterface {
           ],
         },
       },
-    });
+    };
+    // El título nuevo no pisa uno existente con null: sólo se actualiza si vino.
+    if (turn.title) {
+      changes.$set.title = turn.title.slice(0, 120);
+    }
+
+    const updated = await this.valuacionRepository.update(valuacion._id!, changes);
 
     return {
       reply: turn.reply,
       briefComplete: turn.briefComplete,
       valuacion: this.toResponse(updated ?? valuacion, tokenStatus),
     };
+  }
+
+  /**
+   * Une el checklist guardado con el que devolvió la IA. El de la IA manda
+   * (trae los estados nuevos), pero un ítem guardado que la IA olvidó devolver
+   * no se pierde: se conserva con su último estado conocido.
+   */
+  private mergeBriefItems(
+    current: ValuacionBriefItem[],
+    incoming: ValuacionBriefItem[],
+  ): ValuacionBriefItem[] {
+    if (!incoming?.length) return current ?? [];
+    const seen = new Set(incoming.map((item) => item.key));
+    const missing = (current ?? []).filter((item) => !seen.has(item.key));
+    return [...incoming, ...missing];
   }
 
   /**
@@ -668,15 +710,18 @@ export class ValuacionService implements ValuacionServiceInterface {
       category: valuacion.category,
       status: valuacion.status,
       mode: valuacion.mode,
+      title: valuacion.title ?? null,
       layer: valuacion.layer,
       completionPercent: valuacion.completionPercent,
       confidencePercent: valuacion.confidencePercent,
       coveredFields: valuacion.coveredFields ?? [],
+      briefItems: valuacion.briefItems ?? [],
       briefMessages: valuacion.briefMessages ?? [],
       images: valuacion.images ?? [],
       photoAnalysis: (valuacion.photoAnalysis as any) ?? null,
       descriptiveAnalysis: (valuacion.descriptiveAnalysis as any) ?? null,
       estimatedValues: (valuacion.estimatedValues as any) ?? null,
+      pricingRationale: valuacion.pricingRationale ?? null,
       finalScore: valuacion.finalScore ?? null,
       dataSources: valuacion.dataSources ?? [],
       versionsCount: valuacion.versions?.length ?? 0,

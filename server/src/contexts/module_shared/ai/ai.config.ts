@@ -13,6 +13,22 @@ export function getVisionModel(): string {
 }
 
 /**
+ * Modelos de la Valuación IA (corre sobre el Agents SDK / Responses API).
+ * gpt-5-mini y gpt-5.1 aceptan imágenes, así que no hace falta cambiar de
+ * modelo cuando el brief trae fotos como pasaba con gpt-4o-mini/gpt-4o.
+ */
+export function getValuacionBriefModel(): string {
+  const model = process.env.VALUACION_BRIEF_MODEL;
+  return model && model.trim().length > 0 ? model.trim() : 'gpt-5-mini';
+}
+
+/** El informe final usa el modelo grande: es el número que el usuario publica. */
+export function getValuacionResultModel(): string {
+  const model = process.env.VALUACION_RESULT_MODEL;
+  return model && model.trim().length > 0 ? model.trim() : 'gpt-5.1';
+}
+
+/**
  * Hosts permitidos para las URLs de imágenes que se mandan a OpenAI.
  *
  * Sin allowlist, cualquiera podría pasar una URL arbitraria por la API y usar

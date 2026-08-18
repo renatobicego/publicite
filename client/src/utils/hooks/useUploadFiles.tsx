@@ -31,11 +31,13 @@ const useUploadFiles = (
       return values;
     }
     if (!files.length && !isPetition && !isEditing) {
-      actions.setFieldError(
-        "imagesUrls",
-        "Por favor agregue al menos una imagen"
-      );
-      return;
+      if (!values.imagesUrls || values.imagesUrls.length === 0) {
+        actions.setFieldError(
+          "imagesUrls",
+          "Por favor agregue al menos una imagen"
+        );
+        return;
+      }
     }
     let isVideoBeingUploaded = false;
     // Combine both files and attachedFiles into a single array for upload
@@ -76,6 +78,10 @@ const useUploadFiles = (
       res = await startUpload(combinedFiles as File[]);
     }
     if ((!res || !res.length) && !isEditing) {
+      // If no new files were uploaded but we already have imagesUrls (e.g. from valuación prefill), proceed
+      if (values.imagesUrls && values.imagesUrls.length > 0) {
+        return values;
+      }
       return;
     }
     // Separate URLs based on the origin of files
@@ -84,9 +90,9 @@ const useUploadFiles = (
       : [];
     const uploadedAttachedFileUrls = res
       ? res.slice(files.length).map((upload, index) => ({
-          url: upload.key,
-          label: attachedFiles[index].label,
-        }))
+        url: upload.key,
+        label: attachedFiles[index].label,
+      }))
       : [];
 
     // Append "video" to the last uploaded file if a video was uploaded
@@ -107,7 +113,7 @@ const useUploadFiles = (
       }
     } else {
       if (!isPetition) {
-        values.imagesUrls = uploadedFileUrls;
+        values.imagesUrls = [...(values.imagesUrls || []), ...uploadedFileUrls];
       }
       values.attachedFiles = uploadedAttachedFileUrls;
     }

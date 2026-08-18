@@ -30,10 +30,28 @@ export class PhotoAnalysisResponse {
   confidence: number;
 }
 
+/**
+ * Etiquetas contextuales de los 4 slots de score descriptivo: el slot es fijo
+ * (sticker comparable) pero el label dice qué se evaluó de verdad para este
+ * ítem (ej. "mantenimiento" → "Consistencia del servicio").
+ */
+@ObjectType()
+export class DescriptiveAxisLabelsResponse {
+  @Field(() => String) uso: string;
+  @Field(() => String) vidaUtil: string;
+  @Field(() => String) mantenimiento: string;
+  @Field(() => String) documentacion: string;
+}
+
 @ObjectType()
 export class DescriptiveAnalysisResponse {
   @Field(() => String) summary: string;
   @Field(() => DescriptiveScoresResponse) scores: DescriptiveScoresResponse;
+  @Field(() => DescriptiveAxisLabelsResponse, {
+    nullable: true,
+    description: 'Etiquetas contextuales de los ejes (null en valuaciones viejas)',
+  })
+  axisLabels?: DescriptiveAxisLabelsResponse | null;
   @Field(() => Int, { description: 'Confianza del análisis descriptivo (0-100)' })
   confidence: number;
 }
@@ -69,6 +87,18 @@ export class ValuacionBriefMessageResponse {
   @Field(() => Date) timestamp: Date;
 }
 
+/** Ítem del checklist dinámico del brief (lo arma la IA según qué se valúa). */
+@ObjectType()
+export class ValuacionBriefItemResponse {
+  @Field(() => String) key: string;
+  @Field(() => String, { description: 'Etiqueta corta para mostrar en la UI' })
+  label: string;
+  @Field(() => String, {
+    description: 'pendiente | cubierto | no_aplica | omitido',
+  })
+  status: string;
+}
+
 @ObjectType()
 export class ValuacionResponse {
   @Field(() => String) id: string;
@@ -86,6 +116,12 @@ export class ValuacionResponse {
 
   @Field(() => String, { nullable: true }) mode?: string;
 
+  @Field(() => String, {
+    nullable: true,
+    description: 'Identificación corta de lo que se valúa, generada por la IA',
+  })
+  title?: string | null;
+
   @Field(() => Int, { description: 'Capa de valuación alcanzada (1, 2 o 3)' })
   layer: number;
 
@@ -95,8 +131,13 @@ export class ValuacionResponse {
   @Field(() => Int, { description: 'Confianza IA (0-100), acotada por la capa' })
   confidencePercent: number;
 
-  @Field(() => [String], { description: 'Ejes del brief ya cubiertos' })
+  @Field(() => [String], { description: 'Ejes del brief ya cubiertos (legado)' })
   coveredFields: string[];
+
+  @Field(() => [ValuacionBriefItemResponse], {
+    description: 'Checklist dinámico del brief; vacío en valuaciones viejas',
+  })
+  briefItems: ValuacionBriefItemResponse[];
 
   @Field(() => [ValuacionBriefMessageResponse])
   briefMessages: ValuacionBriefMessageResponse[];
@@ -112,6 +153,12 @@ export class ValuacionResponse {
 
   @Field(() => EstimatedValuesResponse, { nullable: true })
   estimatedValues?: EstimatedValuesResponse | null;
+
+  @Field(() => String, {
+    nullable: true,
+    description: 'En qué se basó la IA para los valores estimados (2-3 oraciones)',
+  })
+  pricingRationale?: string | null;
 
   @Field(() => Float, {
     nullable: true,

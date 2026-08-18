@@ -6,6 +6,7 @@ import { OrangeCubeIcon } from "./OrangeCubeIcon";
 import { ChatWindow } from "./ChatWindow";
 import { useChatbot } from "./useChatbot";
 import { usePathname } from "next/navigation";
+import { useRouter } from "next-nprogress-bar";
 
 export function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
@@ -32,10 +33,16 @@ export function Chatbot() {
   } = useChatbot();
 
   const hideButton = pathname.includes("/cubito")
+  const router = useRouter();
 
   const handleToggleHistory = () => {
     setShowHistory(!showHistory);
     if (!showHistory) loadChatHistory();
+  };
+
+  const handleGoToWorkspace = () => {
+    setIsOpen(false);
+    router.push("/cubito?tab=tablero");
   };
 
   return (
@@ -74,6 +81,7 @@ export function Chatbot() {
           onSelectSession={loadSessionMessages}
           onNewChat={startNewChat}
           onDeleteSession={deleteSession}
+          onGoToWorkspace={handleGoToWorkspace}
         />
       )}
     </>

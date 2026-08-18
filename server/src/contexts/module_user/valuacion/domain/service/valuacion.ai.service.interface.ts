@@ -4,15 +4,17 @@ import {
   DescriptiveAnalysis,
   EstimatedValues,
   PhotoAnalysis,
+  ValuacionBriefItem,
   ValuacionBriefMessage,
   ValuacionDataSourceEntry,
 } from '../entity/valuacion.entity';
 
 export interface BriefTurnResult {
   reply: string;
-  coveredFields: string[];
-  /** Ejes que la IA descartó por no aplicar al ítem (no se preguntan más). */
-  notApplicableFields: string[];
+  /** Identificación corta de lo que se valúa (máx ~80 chars), o null si aún no se sabe. */
+  title: string | null;
+  /** Checklist dinámico completo y actualizado después de este turno. */
+  briefItems: ValuacionBriefItem[];
   briefComplete: boolean;
   usage?: AiUsage;
   model: string;
@@ -30,6 +32,8 @@ export interface ValuacionResultPayload {
   photoAnalysis: PhotoAnalysis | null;
   descriptiveAnalysis: DescriptiveAnalysis | null;
   estimatedValues: EstimatedValues | null;
+  /** En qué se basó la IA para los valores (2-3 oraciones, se muestra al usuario). */
+  pricingRationale: string | null;
   confidencePercent: number;
   dataSources: ValuacionDataSourceEntry[];
   usage?: AiUsage;
@@ -37,12 +41,12 @@ export interface ValuacionResultPayload {
 }
 
 export interface ValuacionAIServiceInterface {
-  /** Un turno del brief: devuelve la próxima pregunta y qué ejes quedaron cubiertos. */
+  /** Un turno del brief: devuelve la próxima pregunta y el checklist actualizado. */
   runBriefTurn(params: {
     category: ValuacionCategory;
     modeContext?: string;
-    coveredFields: string[];
-    notApplicableFields?: string[];
+    title: string | null;
+    briefItems: ValuacionBriefItem[];
     history: ValuacionBriefMessage[];
     userMessage: string;
     imageUrls: string[];
@@ -52,6 +56,7 @@ export interface ValuacionAIServiceInterface {
   generateResult(params: {
     category: ValuacionCategory;
     modeContext?: string;
+    title: string | null;
     history: ValuacionBriefMessage[];
     imageUrls: string[];
     comparables?: ValuacionComparable[];
