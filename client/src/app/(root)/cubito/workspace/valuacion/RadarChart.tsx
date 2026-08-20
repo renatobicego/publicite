@@ -10,11 +10,30 @@ interface RadarChartProps {
 }
 
 /**
+ * Splits a label into multiple lines, max ~18 chars per line.
+ */
+function splitLabel(label: string, maxChars = 18): string[] {
+    const words = label.split(" ");
+    const lines: string[] = [];
+    let current = "";
+    for (const word of words) {
+        if (current && (current + " " + word).length > maxChars) {
+            lines.push(current);
+            current = word;
+        } else {
+            current = current ? current + " " + word : word;
+        }
+    }
+    if (current) lines.push(current);
+    return lines;
+}
+
+/**
  * Simple radar/spider chart using SVG.
  * No external dependencies — renders a polygon for the values and axis lines.
  */
 export default function RadarChart({ data }: RadarChartProps) {
-    const size = 200;
+    const size = 300;
     const center = size / 2;
     const maxRadius = 80;
     const levels = 5;
@@ -68,19 +87,27 @@ export default function RadarChart({ data }: RadarChartProps) {
     const points = data.map((d, i) => getPoint(i, d.value));
     const polygonPoints = points.map((p) => `${p.x},${p.y}`).join(" ");
 
-    // Labels
+    // Labels with multiline support
     const labels = data.map((d, i) => {
-        const labelPos = getPoint(i, levels + 1.2);
+        const labelPos = getPoint(i, levels + 1.8);
+        const lines = splitLabel(d.label);
+        const lineHeight = 11;
+        const offsetY = -((lines.length - 1) * lineHeight) / 2;
+
         return (
             <text
                 key={i}
                 x={labelPos.x}
-                y={labelPos.y}
+                y={labelPos.y + offsetY}
                 textAnchor="middle"
                 dominantBaseline="middle"
                 className="text-[9px] fill-gray-600 dark:fill-gray-400"
             >
-                {d.label}
+                {lines.map((line, li) => (
+                    <tspan key={li} x={labelPos.x} dy={li === 0 ? 0 : lineHeight}>
+                        {line}
+                    </tspan>
+                ))}
             </text>
         );
     });
