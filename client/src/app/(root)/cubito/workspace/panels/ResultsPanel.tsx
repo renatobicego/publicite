@@ -22,6 +22,7 @@ export default function ResultsPanel({ workspace }: ResultsPanelProps) {
 
     // Generate a title for a valuación based on available data
     const getValuacionTitle = (v: (typeof savedValuaciones)[0]) => {
+        if (v.title) return v.title;
         if (v.photoAnalysis?.brand) {
             const brand = v.photoAnalysis.brand;
             const model = v.photoAnalysis.model;
@@ -40,6 +41,13 @@ export default function ResultsPanel({ workspace }: ResultsPanelProps) {
         return "Valuación";
     };
 
+    // Determine if the valuación represents a service
+    const isServicio = (v: (typeof savedValuaciones)[0]) => {
+        if (v.category === "servicio") return true;
+        if (v.title && /servicio/i.test(v.title)) return true;
+        return false;
+    };
+
     const handleRestore = async (id: string) => {
         setLoadingAction(`restore-${id}`);
         await handleRestoreToBoard(id);
@@ -52,7 +60,7 @@ export default function ResultsPanel({ workspace }: ResultsPanelProps) {
         setLoadingAction(null);
     };
 
-    const handlePublishAsAd = async (valuacionId: string) => {
+    const handlePublishAsAd = async (valuacionId: string, isService: boolean) => {
         setLoadingAction(`publish-${valuacionId}`);
         try {
             const draft = await getValuacionPostDraft(valuacionId);
@@ -69,6 +77,9 @@ export default function ResultsPanel({ workspace }: ResultsPanelProps) {
             if (draft.suggestedPrice) params.set("price", String(draft.suggestedPrice));
             if (draft.imageUrls && draft.imageUrls.length > 0) {
                 params.set("images", draft.imageUrls.join(","));
+            }
+            if (isService) {
+                params.set("type", "service");
             }
             router.push(`/crear/anuncio?${params.toString()}`);
         } catch {
@@ -184,16 +195,16 @@ export default function ResultsPanel({ workspace }: ResultsPanelProps) {
                                     <FaDownload size={12} />
                                 </Button>
                             </Tooltip>
-                            <Tooltip content="Publicar como anuncio" size="sm" color="primary">
+                            <Tooltip content={isServicio(v) ? "Publicar como servicio" : "Publicar como anuncio"} size="sm" color="primary">
                                 <Button
                                     size="sm"
                                     variant="flat"
                                     color="primary"
                                     isIconOnly
-                                    onPress={() => handlePublishAsAd(v.id)}
+                                    onPress={() => handlePublishAsAd(v.id, isServicio(v))}
                                     isLoading={loadingAction === `publish-${v.id}`}
                                     isDisabled={!!loadingAction}
-                                    aria-label="Publicar como anuncio"
+                                    aria-label={isServicio(v) ? "Publicar como servicio" : "Publicar como anuncio"}
                                 >
                                     <FaNewspaper size={12} />
                                 </Button>

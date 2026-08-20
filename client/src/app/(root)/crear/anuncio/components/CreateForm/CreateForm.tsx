@@ -11,8 +11,8 @@ import { PostBehaviourType } from "@/types/postTypes";
 import SelectPostBehaviourType from "../SelectPostBehaviourType";
 import PostsLimitReached from "../PostsLimitReached";
 
-const CreateForm = ({ userId, prefill }: { userId?: string; prefill?: { title?: string; description?: string; price?: number; fromValuacion?: string; imageUrls?: string[] } }) => {
-  const [type, setType] = useState<"good" | "service" | undefined>(prefill ? "good" : undefined);
+const CreateForm = ({ userId, prefill }: { userId?: string; prefill?: { title?: string; description?: string; price?: number; fromValuacion?: string; imageUrls?: string[]; type?: "good" | "service" } }) => {
+  const [type, setType] = useState<"good" | "service" | undefined>(prefill?.type || (prefill ? "good" : undefined));
   const [files, setFiles] = useState<File[]>([]);
   const [postBehaviourType, setPostBehaviourType] =
     useState<PostBehaviourType | undefined>(prefill ? "libre" : undefined);
