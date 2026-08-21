@@ -216,7 +216,7 @@ export default function CubitoChat() {
     };
 
     return (
-        <Card className="w-full max-w-3xl h-[calc(100vh-200px)] min-h-[500px] shadow-2xl bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800">
+        <Card className="w-full max-w-3xl h-[calc(100dvh-200px)] min-h-[400px] shadow-2xl bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800 flex flex-col overflow-hidden">
             {/* Header */}
             <CardHeader className="flex items-center gap-3 border-b border-orange-200 dark:border-orange-900 bg-service text-white px-6 py-4">
                 <div className="w-28 h-20">
@@ -245,7 +245,7 @@ export default function CubitoChat() {
             </CardHeader>
 
             {/* Messages Container */}
-            <CardBody className="flex-1 overflow-hidden p-0">
+            <CardBody className="flex-1 overflow-hidden p-0 min-h-0">
                 {showHistory ? (
                     <ChatHistory
                         sessions={chatSessions}
@@ -258,7 +258,7 @@ export default function CubitoChat() {
                         variant="panel"
                     />
                 ) : (
-                    <ScrollShadow ref={scrollContainerRef} className="flex-1 overflow-y-auto p-6 space-y-4">
+                    <ScrollShadow ref={scrollContainerRef} className="h-full overflow-y-auto p-6 space-y-4">
                         {messages.length === 0 && !isWizardActive ? (
                             <div className="flex flex-col items-center justify-center h-full text-center text-gray-500 dark:text-gray-400 gap-4">
                                 <div className="w-20 h-20 opacity-50">
@@ -380,7 +380,7 @@ export default function CubitoChat() {
             </CardBody>
 
             {/* Input Form */}
-            <div className="border-t border-gray-200 dark:border-slate-600 p-4 md:p-6 bg-white dark:bg-slate-800">
+            <div className="border-t border-gray-200 dark:border-slate-600 p-4 md:p-6 bg-white dark:bg-slate-800 shrink-0">
                 <form onSubmit={handleSubmit} className="flex gap-3">
                     <CustomInputWithoutFormik
                         value={inputValue}
