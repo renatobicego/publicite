@@ -884,6 +884,41 @@ type InvoiceGetAllResponse {
   hasMore: Boolean!
 }
 
+type AdminInvoice {
+  _id: ID!
+  paymentId: Payment
+  subscriptionId: Subscription
+  status: String!
+  paymentStatus: String!
+  external_reference: String!
+  timeOfUpdate: String
+  invoice_id: String!
+  transactionAmount: Float!
+  currencyId: String
+  reason: String
+  nextRetryDay: String
+  retryAttempts: Int
+  rejectionCode: String
+
+  """Nombre y apellido del usuario, o "-" si ya no existe"""
+  userName: String!
+  userEmail: String
+  userUsername: String
+  facturaUrl: String
+
+  """Fecha de carga de la factura en ISO"""
+  facturaUploadedAt: String
+  facturaUploadedBy: String
+}
+
+type AdminInvoiceGetAllResponse {
+  invoices: [AdminInvoice!]!
+  hasMore: Boolean!
+
+  """Total de tickets que matchean los filtros"""
+  total: Int!
+}
+
 type PostContactSeller_graphql {
   _id: String!
   title: String!
@@ -1043,6 +1078,18 @@ type GetUserChatSessionsResponse {
   sessions: [ChatSessionSummary!]!
   totalCount: Float!
   hasMore: Boolean!
+}
+
+type AvatarResponse {
+  _id: ID!
+  userId: String!
+  name: String!
+  context: String!
+
+  """Semilla para generar la imagen del avatar (Blobatar)"""
+  seed: String!
+  createdAt: DateTime
+  updatedAt: DateTime
 }
 
 type NoveltyPropertyResponse {
@@ -1288,6 +1335,11 @@ type Query {
   """Buscar los pagos por id de mongo"""
   getAllInvoicesByExternalReferenceId(limit: Float!, page: Float!): InvoiceGetAllResponse
 
+  """
+  Sólo admin: todos los tickets de todos los usuarios, paginados y filtrables
+  """
+  getAllInvoicesAdmin(page: Int!, limit: Int!, filters: AdminInvoiceFiltersInput): AdminInvoiceGetAllResponse!
+
   """Obtiene los posts totales del usuario y los limites segun su plan"""
   getPostAndContactLimit: PostLimitResponseGraphql
 
@@ -1381,6 +1433,9 @@ type Query {
   """Obtener todas las sesiones de chat de un usuario"""
   getUserChatSessions(userId: String!, limit: Float, page: Float): GetUserChatSessionsResponse!
 
+  """Avatares del usuario logueado"""
+  getUserAvatars: [AvatarResponse!]!
+
   """Obtener novedad por id"""
   getNoveltyById(id: String!): NoveltyResponse
 
@@ -1403,6 +1458,26 @@ type Query {
   Payload pre-cargado para abrir el wizard de creación de anuncio desde una valuación
   """
   getValuacionPostDraft(valuacionId: String!): ValuacionToPostDraftResponse!
+}
+
+input AdminInvoiceFiltersInput {
+  """mongoId exacto del usuario dueño del ticket"""
+  userId: String
+
+  """Búsqueda libre por nombre, apellido, usuario o email"""
+  userSearch: String
+
+  """approved | pending | rejected | authorized | cancelled"""
+  paymentStatus: String
+
+  """Desde (YYYY-MM-DD)"""
+  dateFrom: String
+
+  """Hasta (YYYY-MM-DD)"""
+  dateTo: String
+
+  """true = sólo con factura cargada, false = sólo sin factura"""
+  hasFactura: Boolean
 }
 
 """Type of the post """
@@ -1445,6 +1520,9 @@ type Mutation {
 
   """Actualizar los metodos de contacto de un usuario"""
   updateContactById(contactId: String!, updateRequest: UpdateContactRequest!): String
+
+  """Sólo admin: asocia una factura (archivo ya subido) a un ticket"""
+  attachFacturaToInvoice(input: AttachFacturaInput!): AdminInvoice!
 
   """Activar o desactivar un post"""
   activateOrDeactivatePost(_id: String!, author_id: String!, postBehaviourType: PostBehaviourType!, activate: Boolean!): String
@@ -1595,6 +1673,15 @@ type Mutation {
   """Eliminar una sesión de chat completa (sesión + todos los mensajes)"""
   deleteChatSession(sessionId: String!): Boolean!
 
+  """Crea un avatar"""
+  createAvatar(input: CreateAvatarRequest!): AvatarResponse!
+
+  """Edita un avatar propio"""
+  updateAvatar(input: UpdateAvatarRequest!): AvatarResponse!
+
+  """Elimina un avatar propio"""
+  deleteAvatar(avatarId: ID!): Boolean!
+
   """Crear una novedad"""
   createNewNovelty(noveltyDto: NoveltyRequest!): NoveltyResponse
 
@@ -1674,6 +1761,13 @@ input LinkItemInput {
   url: String
   label: String
   visibility: Visibility_Enum_Contact
+}
+
+input AttachFacturaInput {
+  invoiceId: ID!
+
+  """URL del PDF/imagen ya subido (UploadThing)"""
+  facturaUrl: String!
 }
 
 """Type of the post """
@@ -1900,6 +1994,11 @@ input SendMessageRequest {
   """
   extraPrompt: String
 
+  """
+  Avatar de IA a usar en esta consulta. Su contexto se inyecta como rolePrompt.
+  """
+  avatarId: ID
+
   """Imágenes para que Cubito analice (sólo hosts de Publicité)"""
   imageUrls: [String!]
 }
@@ -1911,6 +2010,20 @@ input GenerateAdImageRequest {
   mongoId del usuario (fallback si no viene token de Clerk; la generación de imágenes requiere usuario registrado)
   """
   userId: String
+}
+
+input CreateAvatarRequest {
+  """Nombre visible del avatar"""
+  name: String!
+
+  """Instrucciones de comportamiento del avatar"""
+  context: String!
+}
+
+input UpdateAvatarRequest {
+  avatarId: ID!
+  name: String
+  context: String
 }
 
 input NoveltyRequest {

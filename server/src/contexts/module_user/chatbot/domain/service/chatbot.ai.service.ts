@@ -718,6 +718,7 @@ Esperamos que disfrutes de la plataforma y encuentres todo lo que buscas.
       mode: options?.mode,
       rolePrompt: options?.rolePrompt,
       extraPrompt: options?.extraPrompt,
+      avatarContext: options?.avatarContext,
     });
 
     messages.push({

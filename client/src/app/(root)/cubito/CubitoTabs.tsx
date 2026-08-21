@@ -2,14 +2,17 @@
 
 import { useState } from "react";
 import { Tabs, Tab } from "@nextui-org/react";
-import { FaComments, FaTableColumns } from "react-icons/fa6";
+import { FaComments, FaTableColumns, FaUserAstronaut } from "react-icons/fa6";
 import CubitoChat from "./CubitoChat";
 import WorkspaceLayout from "./workspace/WorkspaceLayout";
+import AvatarsPanel from "./avatars/AvatarsPanel";
+import { AvatarsProvider } from "./avatars/AvatarsContext";
 
 export default function CubitoTabs({ defaultTab }: { defaultTab?: string }) {
     const [selected, setSelected] = useState(defaultTab || "chat");
 
     return (
+        <AvatarsProvider>
         <div className="w-full max-w-7xl mx-auto">
             <Tabs
                 selectedKey={selected}
@@ -17,6 +20,8 @@ export default function CubitoTabs({ defaultTab }: { defaultTab?: string }) {
                 aria-label="Cubito Tabs"
                 color="primary"
                 variant="underlined"
+                // Sin esto, ir a "Avatares" y volver borra la conversación en curso.
+                destroyInactiveTabPanel={false}
                 classNames={{
                     tabList: "gap-6 w-full relative rounded-none p-0 border-b border-divider",
                     cursor: "w-full bg-service",
@@ -50,7 +55,21 @@ export default function CubitoTabs({ defaultTab }: { defaultTab?: string }) {
                         <WorkspaceLayout />
                     </div>
                 </Tab>
+                <Tab
+                    key="avatares"
+                    title={
+                        <div className="flex items-center gap-2">
+                            <FaUserAstronaut size={16} />
+                            <span>Avatares</span>
+                        </div>
+                    }
+                >
+                    <div className="pt-4">
+                        <AvatarsPanel />
+                    </div>
+                </Tab>
             </Tabs>
         </div>
+        </AvatarsProvider>
     );
 }

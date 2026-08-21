@@ -8,6 +8,7 @@ import { SubscriptionSchema } from 'src/contexts/module_webhook/mercadopago/infa
 import { SubscriptionPlanSchema } from 'src/contexts/module_webhook/mercadopago/infastructure/schemas/subscriptionPlan.schema';
 import { MpInvoiceRepository } from 'src/contexts/module_webhook/mercadopago/infastructure/repository/mp-invoice.repository';
 import { MpInvoiceService } from 'src/contexts/module_webhook/mercadopago/application/service/mp-invoice.service';
+import { UserModel } from 'src/contexts/module_user/user/infrastructure/schemas/user.schema';
 
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
@@ -25,7 +26,9 @@ const CVETIC_ID = '67f9630ddcd2de495602d54d';
 
   const logger: any = { log: (m: any) => console.log('[log]', m), error: (m: any, e?: any) => console.log('[error]', m, e?.message ?? e), warn: (m: any) => console.log('[warn]', m) };
 
-  const repo = new MpInvoiceRepository(Invoice as any, logger);
+  const User = mongoose.models['User'] || UserModel;
+
+  const repo = new MpInvoiceRepository(Invoice as any, User as any, logger);
 
   // paymentService stub: si hiciera falta el fallback, lo veremos
   const paymentServiceStub: any = {

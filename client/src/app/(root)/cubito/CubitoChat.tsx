@@ -16,6 +16,7 @@ import { useChatbot } from "@/components/buttons/ChatbotButton/useChatbot";
 import { ActiveStepInput } from "@/components/buttons/ChatbotButton/CreateAdWizard/CreateAdWizard";
 import { OrangeCubeIcon } from "@/components/buttons/ChatbotButton/OrangeCubeIcon";
 import { ChatHistory } from "@/components/buttons/ChatbotButton/ChatHistory";
+import AvatarSelector from "./avatars/AvatarSelector";
 
 export default function CubitoChat() {
     const {
@@ -24,6 +25,8 @@ export default function CubitoChat() {
         showCreateAdButton,
         isSubmittingAd,
         wizard,
+        selectedAvatarId,
+        setSelectedAvatarId,
         handleSendMessage,
         handleStartCreateAd,
         handleSubmitAd,
@@ -381,6 +384,14 @@ export default function CubitoChat() {
 
             {/* Input Form */}
             <div className="border-t border-gray-200 dark:border-slate-600 p-4 md:p-6 bg-white dark:bg-slate-800">
+                {/* AvatarSelector se auto-oculta si el usuario no tiene avatares */}
+                <div className="flex items-center gap-2 mb-3">
+                    <AvatarSelector
+                        selectedAvatarId={selectedAvatarId}
+                        onSelect={setSelectedAvatarId}
+                        isDisabled={isLoading || isWizardActive}
+                    />
+                </div>
                 <form onSubmit={handleSubmit} className="flex gap-3">
                     <CustomInputWithoutFormik
                         value={inputValue}

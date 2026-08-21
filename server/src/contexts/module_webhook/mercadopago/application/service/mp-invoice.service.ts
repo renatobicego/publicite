@@ -12,7 +12,14 @@ import Invoice from 'src/contexts/module_webhook/mercadopago/domain/entity/invoi
 import { MpServiceInvoiceInterface } from 'src/contexts/module_webhook/mercadopago/domain/service/mp-invoice.service.interface';
 import { MpPaymentServiceInterface } from 'src/contexts/module_webhook/mercadopago/domain/service/mp-payments.service.interface';
 import { SubscriptionServiceInterface } from 'src/contexts/module_webhook/mercadopago/domain/service/mp-subscription.service.interface';
-import { MercadoPagoInvoiceRepositoryInterface } from '../../domain/repository/mp-invoice.respository.interface';
+import {
+  AdminInvoiceFilters,
+  MercadoPagoInvoiceRepositoryInterface,
+} from '../../domain/repository/mp-invoice.respository.interface';
+import {
+  AdminInvoice,
+  AdminInvoiceGetAllResponse,
+} from '../../domain/graphql_models/response/admin-invoice.model.graphql';
 import { getTodayDateTime } from 'src/contexts/module_shared/utils/functions/getTodayDateTime';
 import { authorized_payments } from '../../domain/entity_mp/authorized_payments';
 import { PUBLICITE_LOGO_BASE64 } from './assets/publicite-logo';
@@ -171,9 +178,109 @@ export class MpInvoiceService implements MpServiceInvoiceInterface {
     }
   }
 
+  // ============================================================
+  // PANEL ADMIN
+  // ============================================================
+
+  async getAllInvoicesAdmin(
+    page: number,
+    limit: number,
+    filters?: AdminInvoiceFilters,
+  ): Promise<AdminInvoiceGetAllResponse> {
+    this.logger.log('---INVOICE SERVICE GET ALL (ADMIN) ---');
+
+    const safePage = page <= 0 || !page ? 1 : Math.floor(page);
+    const safeLimit = limit <= 0 || !limit ? 20 : Math.min(Math.floor(limit), 100);
+
+    const { invoices, total, hasMore } =
+      await this.mpInvoiceRepository.getAllInvoicesPaginated(
+        safePage,
+        safeLimit,
+        filters,
+      );
+
+    return {
+      invoices: await this.withUserData(invoices),
+      total,
+      hasMore,
+    };
+  }
+
+  async attachFacturaToInvoice(
+    invoiceId: string,
+    facturaUrl: string,
+    adminId: string,
+  ): Promise<AdminInvoice> {
+    this.logger.log('---INVOICE SERVICE ATTACH FACTURA (ADMIN) ---');
+
+    if (!mongoose.Types.ObjectId.isValid(invoiceId)) {
+      throw new BadRequestException('invoiceId inválido');
+    }
+
+    const updated = await this.mpInvoiceRepository.attachFactura(
+      invoiceId,
+      facturaUrl,
+      adminId,
+    );
+
+    if (!updated) {
+      throw new NotFoundException('Invoice no encontrado');
+    }
+
+    const [withUser] = await this.withUserData([updated]);
+    return withUser;
+  }
+
+  /**
+   * Resuelve nombre/email de los dueños de los invoices en una sola query.
+   * El invoice guarda el mongoId del usuario en `external_reference`, no una
+   * referencia de Mongoose, así que no se puede populatear: se juntan los ids
+   * de la página y se traen todos juntos.
+   */
+  private async withUserData(invoices: any[]): Promise<AdminInvoice[]> {
+    if (invoices.length <= 0) return [];
+
+    const userIds = Array.from(
+      new Set(
+        invoices
+          .map((invoice) => invoice.external_reference)
+          .filter((id: string) => !!id),
+      ),
+    );
+
+    const users = await this.mpInvoiceRepository.getUsersByIds(userIds);
+    const usersById = new Map<string, any>(
+      users.map((user: any) => [user._id.toString(), user]),
+    );
+
+    return invoices.map((invoice) => {
+      const plain =
+        typeof invoice.toObject === 'function' ? invoice.toObject() : invoice;
+      const user = usersById.get(plain.external_reference);
+      const fullName = [user?.name, user?.lastName]
+        .filter(Boolean)
+        .join(' ')
+        .trim();
+
+      return {
+        ...plain,
+        _id: plain._id.toString(),
+        userName: fullName || user?.username || '-',
+        userEmail: user?.email ?? null,
+        userUsername: user?.username ?? null,
+        facturaUrl: plain.facturaUrl ?? null,
+        facturaUploadedAt: plain.facturaUploadedAt
+          ? new Date(plain.facturaUploadedAt).toISOString()
+          : null,
+        facturaUploadedBy: plain.facturaUploadedBy ?? null,
+      } as AdminInvoice;
+    });
+  }
+
   async generateInvoiceTicket(
     invoiceId: string,
     userRequestId: string,
+    isAdmin = false,
   ): Promise<Buffer> {
     this.logger.log('---INVOICE SERVICE GENERATE TICKET ---');
 
@@ -190,8 +297,10 @@ export class MpInvoiceService implements MpServiceInvoiceInterface {
       throw new NotFoundException('Invoice no encontrado');
     }
 
-    // 3. Validar ownership (external_reference === userRequestId)
-    if (invoice.external_reference !== userRequestId) {
+    // 3. Validar ownership (external_reference === userRequestId).
+    // Un admin descarga el comprobante de cualquier usuario: lo necesita para
+    // controlar los pagos desde el panel /admin.
+    if (!isAdmin && invoice.external_reference !== userRequestId) {
       throw new ForbiddenException('No tienes acceso a este comprobante');
     }
 

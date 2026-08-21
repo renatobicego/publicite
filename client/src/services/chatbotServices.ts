@@ -47,15 +47,21 @@ export const sendMessageToAI = async (
     // la request sigue funcionando como anónima).
     const { context } = await getApiContext();
 
+    const { avatarId, ...request } = sendMessageRequest;
+
     const {
       data: { sendMessageToChatbot },
     } = await getClient()
       .mutate({
         mutation: sendMessageMutation,
         variables: {
-          sendMessageRequest: userId
-            ? { ...sendMessageRequest, userId }
-            : sendMessageRequest,
+          sendMessageRequest: {
+            ...request,
+            ...(userId ? { userId } : {}),
+            // Sin avatar el campo no viaja: el input del BE lo espera ausente,
+            // no en null.
+            ...(avatarId ? { avatarId } : {}),
+          },
         },
         context,
       })

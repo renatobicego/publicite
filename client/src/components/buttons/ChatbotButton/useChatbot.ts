@@ -26,6 +26,8 @@ export function useChatbot() {
   );
   const [showCreateAdButton, setShowCreateAdButton] = useState(false);
   const [isSubmittingAd, setIsSubmittingAd] = useState(false);
+  // Avatar activo de la conversación. Null = Cubito general (modo actual).
+  const [selectedAvatarId, setSelectedAvatarId] = useState<string | null>(null);
 
   // ============================================================
   // CHAT HISTORY STATE - Descomentar cuando el BE esté listo
@@ -70,6 +72,7 @@ export function useChatbot() {
       const response = await sendMessageToAI({
         sessionId,
         message: text,
+        avatarId: selectedAvatarId,
       });
       if (!response || "botResponse" in response === false) {
         setStatus("error");
@@ -357,6 +360,8 @@ export function useChatbot() {
     showCreateAdButton,
     isSubmittingAd,
     wizard,
+    selectedAvatarId,
+    setSelectedAvatarId,
     handleSendMessage,
     handleStartCreateAd,
     handleSubmitAd,
