@@ -135,7 +135,14 @@ function renderValuacion(
                 <div className="w-16 h-16 animate-pulse">
                     <OrangeCubeIcon />
                 </div>
-                <p className="text-sm text-gray-500">Generando valuación...</p>
+                <p className="text-sm text-gray-500">
+                    {valuacionStatus === "processing" ? "Generando valuación..." : "Analizando imágenes y datos..."}
+                </p>
+                <div className="flex space-x-1.5">
+                    <div className="w-2 h-2 bg-orange-500 rounded-full animate-bounce" />
+                    <div className="w-2 h-2 bg-orange-500 rounded-full animate-bounce" style={{ animationDelay: "0.1s" }} />
+                    <div className="w-2 h-2 bg-orange-500 rounded-full animate-bounce" style={{ animationDelay: "0.2s" }} />
+                </div>
             </div>
         );
     }

@@ -42,7 +42,7 @@ export function Chatbot() {
 
   const handleGoToWorkspace = () => {
     setIsOpen(false);
-    router.push("/cubito?tab=tablero");
+    router.push("/cubito/tablerodetrabajo");
   };
 
   return (

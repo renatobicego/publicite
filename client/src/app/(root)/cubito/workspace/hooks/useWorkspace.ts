@@ -282,9 +282,7 @@ export function useWorkspace() {
       toastifyError(res.error);
       return;
     }
-    // Remove from saved panel
-    setSavedValuaciones((prev) => prev.filter((v) => v.id !== id));
-    // Load the full result into the board from the BE response
+    // Load the full result into the board from the BE response (keep it in saved panel)
     setActiveModule("valuacion");
     setValuacionId(id);
     setValuacionStatus("completed");

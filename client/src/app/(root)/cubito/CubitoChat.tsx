@@ -91,7 +91,8 @@ export default function CubitoChat() {
             );
         }
         const elements: React.ReactNode[] = [];
-        const regex = /(\[([^\]]+)\]\(([^)]+)\))|(\*\*([^*]+)\*\*)/g;
+        // Match: [text](url) | **bold** | plain URLs (https://...)
+        const regex = /(\[([^\]]+)\]\(([^)]+)\))|(\*\*([^*]+)\*\*)|(https?:\/\/[^\s),]+)/g;
         let lastIndex = 0;
         let match;
         let key = 0;
@@ -103,6 +104,7 @@ export default function CubitoChat() {
                 );
             }
             if (match[1]) {
+                // Markdown link [text](url)
                 elements.push(
                     <a
                         key={key++}
@@ -114,9 +116,22 @@ export default function CubitoChat() {
                         {match[2]}
                     </a>
                 );
-            }
-            if (match[4]) {
+            } else if (match[4]) {
+                // Bold **text**
                 elements.push(<strong key={key++}>{match[5]}</strong>);
+            } else if (match[6]) {
+                // Plain URL
+                elements.push(
+                    <a
+                        key={key++}
+                        href={match[6]}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 underline"
+                    >
+                        {match[6]}
+                    </a>
+                );
             }
             lastIndex = regex.lastIndex;
         }
@@ -343,16 +358,19 @@ export default function CubitoChat() {
                         {isLoading && (
                             <div className="flex justify-start">
                                 <div className="bg-white dark:bg-slate-700 text-gray-900 dark:text-white border border-gray-200 dark:border-slate-600 px-5 py-3 rounded-2xl rounded-bl-none shadow-sm">
-                                    <div className="flex space-x-2">
-                                        <div className="w-2.5 h-2.5 bg-orange-500 rounded-full animate-bounce" />
-                                        <div
-                                            className="w-2.5 h-2.5 bg-orange-500 rounded-full animate-bounce"
-                                            style={{ animationDelay: "0.1s" }}
-                                        />
-                                        <div
-                                            className="w-2.5 h-2.5 bg-orange-500 rounded-full animate-bounce"
-                                            style={{ animationDelay: "0.2s" }}
-                                        />
+                                    <div className="flex items-center gap-2">
+                                        <div className="flex space-x-1.5">
+                                            <div className="w-2.5 h-2.5 bg-orange-500 rounded-full animate-bounce" />
+                                            <div
+                                                className="w-2.5 h-2.5 bg-orange-500 rounded-full animate-bounce"
+                                                style={{ animationDelay: "0.1s" }}
+                                            />
+                                            <div
+                                                className="w-2.5 h-2.5 bg-orange-500 rounded-full animate-bounce"
+                                                style={{ animationDelay: "0.2s" }}
+                                            />
+                                        </div>
+                                        <span className="text-xs text-gray-500 dark:text-gray-400">Cubito está pensando...</span>
                                     </div>
                                 </div>
                             </div>

@@ -94,8 +94,8 @@ export function ChatWindow({
     }
     const elements: React.ReactNode[] = [];
 
-    // Primero links, luego bold
-    const regex = /(\[([^\]]+)\]\(([^)]+)\))|(\*\*([^*]+)\*\*)/g;
+    // Match: [text](url) | **bold** | plain URLs (https://...)
+    const regex = /(\[([^\]]+)\]\(([^)]+)\))|(\*\*([^*]+)\*\*)|(https?:\/\/[^\s),]+)/g;
 
     let lastIndex = 0;
     let match;
@@ -109,7 +109,7 @@ export function ChatWindow({
         );
       }
 
-      // Link
+      // Markdown link [text](url)
       if (match[1]) {
         elements.push(
           <a
@@ -122,11 +122,22 @@ export function ChatWindow({
             {match[2]}
           </a>
         );
-      }
-
-      // Bold
-      if (match[4]) {
+      } else if (match[4]) {
+        // Bold
         elements.push(<strong key={key++}>{match[5]}</strong>);
+      } else if (match[6]) {
+        // Plain URL
+        elements.push(
+          <a
+            key={key++}
+            href={match[6]}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 underline"
+          >
+            {match[6]}
+          </a>
+        );
       }
 
       lastIndex = regex.lastIndex;

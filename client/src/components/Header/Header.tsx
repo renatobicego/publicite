@@ -14,6 +14,7 @@ import NavMenuItems from "./NavMenuItems";
 import UserNavItems from "./UserNavItems";
 import { POSTS } from "@/utils/data/urls";
 import { OrangeCubeIcon } from "../buttons/ChatbotButton/OrangeCubeIcon";
+import { FaTableColumns } from "react-icons/fa6";
 
 const Header = ({ isSignedIn }: { isSignedIn: boolean }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -63,6 +64,15 @@ const Header = ({ isSignedIn }: { isSignedIn: boolean }) => {
           <Link size="sm" className="text-text-color font-medium flex items-center gap-1" href="/cubito">
             <span className="w-10 h-10 flex-shrink-0 [&>svg]:w-full [&>svg]:h-full mt-2"><OrangeCubeIcon /></span>
             Cubito
+          </Link>
+        </NavbarItem>
+        <NavbarItem
+          className={`w-auto max-lg:hidden !transition-all duration-300 ${isFocused ? "!w-0 overflow-hidden" : ""
+            }`}
+        >
+          <Link size="sm" className="text-text-color font-medium flex items-center gap-1.5" href="/cubito/tablerodetrabajo">
+            <FaTableColumns size={14} className="text-service" />
+            Tablero
           </Link>
         </NavbarItem>
         <NavbarItem
