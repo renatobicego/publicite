@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { Tabs, Tab } from "@nextui-org/react";
 import { FaComments, FaTableColumns, FaUserAstronaut } from "react-icons/fa6";
 import CubitoChat from "./CubitoChat";
@@ -8,20 +8,41 @@ import WorkspaceLayout from "./workspace/WorkspaceLayout";
 import AvatarsPanel from "./avatars/AvatarsPanel";
 import { AvatarsProvider } from "./avatars/AvatarsContext";
 
+const TAB_ROUTES: Record<string, string> = {
+    chat: "/cubito",
+    tablero: "/cubito/tablerodetrabajo",
+    avatares: "/cubito/avatares",
+};
+
+function getTabFromPathname(pathname: string): string {
+    if (pathname.includes("/tablerodetrabajo")) return "tablero";
+    if (pathname.includes("/avatares")) return "avatares";
+    return "chat";
+}
+
 export default function CubitoTabs({ defaultTab }: { defaultTab?: string }) {
-    const [selected, setSelected] = useState(defaultTab || "chat");
+    const pathname = usePathname();
+    const router = useRouter();
+
+    const selected = defaultTab || getTabFromPathname(pathname);
+
+    const handleSelectionChange = (key: React.Key) => {
+        const tab = key as string;
+        const route = TAB_ROUTES[tab];
+        if (route) {
+            router.push(route);
+        }
+    };
 
     return (
         <AvatarsProvider>
         <div className="w-full max-w-7xl mx-auto">
             <Tabs
                 selectedKey={selected}
-                onSelectionChange={(key) => setSelected(key as string)}
+                onSelectionChange={handleSelectionChange}
                 aria-label="Cubito Tabs"
                 color="primary"
                 variant="underlined"
-                // Sin esto, ir a "Avatares" y volver borra la conversación en curso.
-                destroyInactiveTabPanel={false}
                 classNames={{
                     tabList: "gap-6 w-full relative rounded-none p-0 border-b border-divider",
                     cursor: "w-full bg-service",
