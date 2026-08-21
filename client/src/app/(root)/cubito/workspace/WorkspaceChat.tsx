@@ -73,13 +73,43 @@ export default function WorkspaceChat({ workspace }: WorkspaceChatProps) {
                             </div>
                         </div>
                     ))}
+                    {isProcessing && (
+                        <div className="flex justify-start">
+                            <div className="max-w-md px-3 py-2 rounded-xl text-sm bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-white rounded-bl-none">
+                                <div className="flex items-center gap-2">
+                                    <div className="flex space-x-1">
+                                        <div className="w-2 h-2 bg-orange-500 rounded-full animate-bounce" />
+                                        <div className="w-2 h-2 bg-orange-500 rounded-full animate-bounce" style={{ animationDelay: "0.1s" }} />
+                                        <div className="w-2 h-2 bg-orange-500 rounded-full animate-bounce" style={{ animationDelay: "0.2s" }} />
+                                    </div>
+                                    <span className="text-xs text-gray-500">Analizando...</span>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </ScrollShadow>
             )}
 
             {/* Limit reached banner */}
             {limitReached && limitMessage && (
                 <div className="px-4 py-2 bg-warning-50 border-t border-warning-200">
-                    <p className="text-sm text-warning-700">{limitMessage}</p>
+                    <p className="text-sm text-warning-700">
+                        {limitMessage.split(/(https?:\/\/[^\s),]+)/).map((part, i) =>
+                            part.match(/^https?:\/\//) ? (
+                                <a
+                                    key={i}
+                                    href={part}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-blue-600 underline"
+                                >
+                                    {part}
+                                </a>
+                            ) : (
+                                <span key={i}>{part}</span>
+                            )
+                        )}
+                    </p>
                 </div>
             )}
 

@@ -223,26 +223,31 @@ export class ChatbotTokenService implements ChatbotTokenServiceInterface {
 
   buildLimitMessage(gate: TokenGateResult): string {
     const resetDate = this.formatDate(this.periodResetDate(gate.consumer));
+    const plansUrl = 'https://soonpublicite.com/suscripciones';
     switch (gate.blockedReason) {
       case TokenBlockedReason.PLAN_EXHAUSTED:
         return (
           `Te quedaste sin tokens Publicité este mes 😅. ` +
-          `Tu cuota se renueva el ${resetDate} con el próximo período de tu plan.`
+          `Tu cuota se renueva el ${resetDate} con el próximo período de tu plan. ` +
+          `Si necesitás más tokens, podés explorar otros planes acá: ${plansUrl}`
         );
       case TokenBlockedReason.FREE_EXHAUSTED:
         return (
           `Alcanzaste el límite gratuito de este mes 😅. ` +
-          `Suscribite a un plan de Publicité para seguir chateando conmigo 🚀`
+          `Suscribite a un plan de Publicité para seguir chateando conmigo 🚀 ` +
+          `Explorá los planes disponibles acá: ${plansUrl}`
         );
       case TokenBlockedReason.ANON_EXHAUSTED:
         return (
           `Alcanzaste el límite diario de consultas gratis 😅. ` +
-          `Podés volver mañana, o registrarte y suscribirte a un plan de Publicité para chatear sin esperas 🚀`
+          `Podés volver mañana, o registrarte y suscribirte a un plan de Publicité para chatear sin esperas 🚀 ` +
+          `Ver planes: ${plansUrl}`
         );
       case TokenBlockedReason.COMMUNITY_EMPTY:
         return (
           `Por ahora no quedan tokens comunitarios disponibles en Publicite 😔. ` +
-          `Suscribite a un plan para usar el asistente con tu propia cuota de tokens 🚀`
+          `Suscribite a un plan para usar el asistente con tu propia cuota de tokens 🚀 ` +
+          `Ver planes: ${plansUrl}`
         );
       case TokenBlockedReason.IDENTITY_REQUIRED:
         return 'Iniciá sesión para poder usar esta función de IA.';

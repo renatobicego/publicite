@@ -8,6 +8,7 @@ import DropdownItems from "./DropdownItems";
 import NextLink from "next/link";
 import { useUserData } from "@/app/(root)/providers/userDataProvider";
 import { OrangeCubeIcon } from "../buttons/ChatbotButton/OrangeCubeIcon";
+import { FaTableColumns } from "react-icons/fa6";
 
 const MobileMenu = ({
   setIsMenuOpen,
@@ -30,6 +31,11 @@ const MobileMenu = ({
       title: "Cubito",
       url: "/cubito",
       icon: true,
+    },
+    {
+      title: "Tablero",
+      url: "/cubito/tablerodetrabajo",
+      tableroIcon: true,
     },
     {
       title: "Publicar",
@@ -77,6 +83,9 @@ const MobileMenu = ({
                 <span className="w-8 h-8 flex-shrink-0 [&>svg]:w-full [&>svg]:h-full mt-1">
                   <OrangeCubeIcon />
                 </span>
+              )}
+              {"tableroIcon" in item && item.tableroIcon && (
+                <FaTableColumns size={14} className="text-service" />
               )}
               {item.title}
             </Link>
