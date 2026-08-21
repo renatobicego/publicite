@@ -38,7 +38,9 @@ import { ErrorService } from '../../application/service/error/error.service.inte
 import { ErrorRepository } from '../repository/error/error.repository';
 import { ErrorSchema } from '../schemas/error.schema';
 import { MpInvoiceResolver } from '../resolver/mp-invoice.resolver';
+import { AdminInvoiceResolver } from '../resolver/admin-invoice.resolver';
 import { PaymentNotificationService } from '../adapters/handler/PaymentNotificationService';
+import { UserModel } from 'src/contexts/module_user/user/infrastructure/schemas/user.schema';
 
 
 @Module({
@@ -50,6 +52,10 @@ import { PaymentNotificationService } from '../adapters/handler/PaymentNotificat
             { name: 'Payment', schema: PaymentSchema },
             { name: 'SubscriptionPlan', schema: SubscriptionPlanSchema },
             { name: 'Error', schema: ErrorSchema },
+            // El panel admin resuelve nombre/email del dueño de cada ticket a
+            // partir del `external_reference` (mongoId), que no es una ref de
+            // Mongoose y por eso no se puede populatear.
+            { name: UserModel.modelName, schema: UserModel.schema },
         ]),
         UserModule,
         LoggerModule,
@@ -65,6 +71,7 @@ import { PaymentNotificationService } from '../adapters/handler/PaymentNotificat
         MpWebhookAdapter,
         MpPaymentResolver,
         MpInvoiceResolver,
+        AdminInvoiceResolver,
         PaymentNotificationService,
         {
             provide: 'MpHandlerEventsInterface',

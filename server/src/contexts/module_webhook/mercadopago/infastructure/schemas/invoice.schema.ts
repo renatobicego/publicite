@@ -23,7 +23,15 @@ export const InvoiceSchema = new Schema({
   nextRetryDay: { type: String },
   retryAttempts: { type: Number },
   rejectionCode: { type: String },
+  // Factura fiscal cargada por un admin desde el panel (/admin). Es opcional:
+  // los invoices existentes y los que crea el webhook nacen sin factura.
+  facturaUrl: { type: String, default: null },
+  facturaUploadedAt: { type: Date, default: null },
+  facturaUploadedBy: { type: String, default: null },
 });
+
+InvoiceSchema.index({ timeOfUpdate: -1 });
+InvoiceSchema.index({ external_reference: 1 });
 
 export interface InvoiceDocument extends Document {
   paymentId: Types.ObjectId;
@@ -40,4 +48,7 @@ export interface InvoiceDocument extends Document {
   nextRetryDay: string;
   retryAttempts: number;
   rejectionCode: string;
+  facturaUrl: string | null;
+  facturaUploadedAt: Date | null;
+  facturaUploadedBy: string | null;
 }

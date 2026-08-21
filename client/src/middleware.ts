@@ -17,7 +17,10 @@ const isPublicRoute = createRouteMatcher([
   "/sorteo"
 ]);
 
-const isPrivateRoute = createRouteMatcher(["/novedades/admin(.*)"]);
+const isPrivateRoute = createRouteMatcher(["/novedades/admin(.*)", "/admin(.*)"]);
+
+// Sólo /admin: /novedades/admin ya resuelve el rol en su propio layout.
+const isAdminRoute = createRouteMatcher(["/admin(.*)"]);
 
 export default clerkMiddleware((auth, req: NextRequest) => {
   const { userId, sessionClaims, redirectToSignIn } = auth();
@@ -25,6 +28,12 @@ export default clerkMiddleware((auth, req: NextRequest) => {
   // Explicitly check private routes first (before public route fallback)
   if (!userId && isPrivateRoute(req)) {
     return redirectToSignIn({ returnBackUrl: req.url });
+  }
+
+  // Las rutas de admin exigen el rol, no sólo estar logueado. El backend igual
+  // valida el rol en cada query: esto sólo evita mostrar la pantalla.
+  if (userId && isAdminRoute(req) && sessionClaims?.metadata?.role !== "admin") {
+    return NextResponse.redirect(new URL("/", req.url));
   }
 
   // For /novedades/:id — allow public access (any path under /novedades that is NOT /admin)
@@ -64,6 +73,7 @@ export const config = {
     // Skip Next.js internals and all static files, unless found in search params
     "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
     "/novedades/admin(.*)",
+    "/admin(.*)",
     "/grupos(.*)",
     "/perfiles(.*)",
     "/pizarras(.*)",
