@@ -1,9 +1,11 @@
 /**
  * Prueba en vivo del servicio de IA de valuación (sin server ni auth).
  *
- * Simula dos briefs completos contra la API real de OpenAI:
+ * Simula briefs completos contra la API real de OpenAI:
  *   1. Zapatillas nuevas  → NO debe preguntar mantenimiento/daños/uso.
  *   2. Servicio de tortas → NO debe preguntar vida útil/daños; ejes contextuales.
+ *   3. Foto de una guitarra con categoría "imagen" (la mal elegida a propósito)
+ *      → debe valuar la GUITARRA, no la foto, y analizar la imagen UNA sola vez.
  *
  * Uso:  npx cross-env NODE_ENV=qa ts-node -r tsconfig-paths/register scripts/test-valuacion-ai.ts
  */
@@ -23,14 +25,39 @@ const fakeConfig = {
   get: (key: string) => process.env[key],
 } as any;
 
+/**
+ * Foto de referencia del caso 3. Es una guitarra: si el informe habla de
+ * resolución, encuadre o derechos de uso, la IA volvió a valuar la foto.
+ */
+const TEST_IMAGE_URL =
+  process.env.VALUACION_TEST_IMAGE_URL ||
+  'https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Fender_Stratocaster_004-2.jpg/960px-Fender_Stratocaster_004-2.jpg';
+
 async function runConversation(
   service: ValuacionAIService,
   category: ValuacionCategory,
   userTurns: string[],
+  imageUrls: string[] = [],
 ) {
   const history: ValuacionBriefMessage[] = [];
   let briefItems: ValuacionBriefItem[] = [];
   let title: string | null = null;
+
+  // Análisis único de las fotos: pasa una vez y de acá en más viajan como texto.
+  let imageNotes: string[] = [];
+  if (imageUrls.length > 0) {
+    const started = Date.now();
+    const analysis = await service.analyzeImages({
+      category,
+      title: null,
+      imageUrls,
+    });
+    imageNotes = analysis.notes.map((entry) => entry.notes);
+    console.log(
+      `\n📷 Análisis único de ${imageUrls.length} foto(s) (${((Date.now() - started) / 1000).toFixed(1)}s, ${analysis.usage?.totalTokens ?? '?'} tokens):`,
+    );
+    imageNotes.forEach((notes, index) => console.log(`   [${index + 1}] ${notes}`));
+  }
 
   for (const userMessage of userTurns) {
     const started = Date.now();
@@ -40,7 +67,7 @@ async function runConversation(
       briefItems,
       history,
       userMessage,
-      imageUrls: [],
+      imageNotes,
     });
     const seconds = ((Date.now() - started) / 1000).toFixed(1);
 
@@ -68,7 +95,7 @@ async function runConversation(
     category,
     title,
     history,
-    imageUrls: [],
+    imageNotes,
   });
   const seconds = ((Date.now() - started) / 1000).toFixed(1);
 
@@ -80,7 +107,24 @@ async function runConversation(
   );
   console.log(`   confianza IA: ${result.confidencePercent}%`);
   console.log(`   resumen: ${result.descriptiveAnalysis?.summary}`);
-  console.log(`   photoAnalysis (debe ser null sin fotos): ${result.photoAnalysis === null ? 'null ✓' : 'NO NULL ✗'}`);
+  if (imageNotes.length === 0) {
+    console.log(
+      `   photoAnalysis (debe ser null sin fotos): ${result.photoAnalysis === null ? 'null ✓' : 'NO NULL ✗'}`,
+    );
+  } else {
+    console.log(`   photoAnalysis: ${JSON.stringify(result.photoAnalysis)}`);
+    // Si alguna de estas palabras aparece, la IA valuó la FOTO y no el ítem.
+    const sobreLaFoto = /resoluci|megap|encuadre|ilumina|derechos de (uso|autor)|licencia|calidad de (la )?imagen|pixel/i;
+    const textos = [
+      title ?? '',
+      result.pricingRationale ?? '',
+      result.photoAnalysis?.description ?? '',
+      result.descriptiveAnalysis?.summary ?? '',
+    ].join(' ');
+    console.log(
+      `   valúa el ÍTEM y no la foto: ${sobreLaFoto.test(textos) ? 'NO ✗ (habla de la imagen)' : 'sí ✓'}`,
+    );
+  }
 }
 
 async function main() {
@@ -105,6 +149,20 @@ async function main() {
     'Trabajo por encargo con clientela fija de mi barrio, precios entre 15 y 40 mil pesos por torta',
     'Listo, generá el resultado',
   ]);
+
+  console.log('\n════════════════════════════════════════════════');
+  console.log('CASO 3 · Foto de guitarra con categoría "imagen" mal elegida');
+  console.log('════════════════════════════════════════════════');
+  await runConversation(
+    service,
+    ValuacionCategory.imagen,
+    [
+      'Subí esta foto, quiero saber cuánto vale',
+      'La tengo hace 3 años, la uso poco, está impecable',
+      'Listo, generá el resultado',
+    ],
+    [TEST_IMAGE_URL],
+  );
 }
 
 main().catch((error) => {

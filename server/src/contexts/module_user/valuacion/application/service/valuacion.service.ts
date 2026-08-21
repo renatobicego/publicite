@@ -124,8 +124,7 @@ export class ValuacionService implements ValuacionServiceInterface {
       userId,
       created,
       request.description?.trim() ||
-        'Adjunté imágenes de lo que quiero valuar. Analizalas y arrancá el brief.',
-      imageUrls,
+        'Adjunté fotos de lo que quiero valuar. Decime qué ítem identificaste y arrancá el brief.',
     );
   }
 
@@ -143,16 +142,18 @@ export class ValuacionService implements ValuacionServiceInterface {
 
     let current = valuacion;
     if (newImages.length > 0) {
-      const now = new Date();
-      const merged = this.mergeImages(valuacion, newImages, now);
-      current =
-        (await this.valuacionRepository.update(valuacion._id!, {
-          $set: { images: merged },
-        })) ?? valuacion;
+      const merged = this.mergeImages(valuacion, newImages, new Date());
+      // Sólo se persiste si de verdad hay fotos nuevas: el front reenvía todas
+      // las referencias en cada mensaje, y las repetidas ya se descartaron.
+      if (merged.length !== valuacion.images.length) {
+        current =
+          (await this.valuacionRepository.update(valuacion._id!, {
+            $set: { images: merged },
+          })) ?? valuacion;
+      }
     }
 
-    const allImages = current.images.map((image) => image.url);
-    return this.runBriefTurn(userId, current, request.message, allImages);
+    return this.runBriefTurn(userId, current, request.message);
   }
 
   async skipBriefQuestion(
@@ -168,7 +169,6 @@ export class ValuacionService implements ValuacionServiceInterface {
       userId,
       valuacion,
       'Prefiero omitir esa pregunta, pasemos a la siguiente.',
-      valuacion.images.map((image) => image.url),
     );
   }
 
@@ -191,14 +191,18 @@ export class ValuacionService implements ValuacionServiceInterface {
     });
 
     try {
-      const imageUrls = valuacion.images.map((image) => image.url);
-      const comparables = await this.findComparables(valuacion, gate);
+      // Red de seguridad: una valuación vieja (o una foto cuyo análisis falló)
+      // puede llegar acá sin notas. Se analiza ahora, una sola vez.
+      const analyzed = await this.ensureImagesAnalyzed(valuacion, gate);
+      const current = analyzed.valuacion;
+
+      const comparables = await this.findComparables(current, gate);
       const result = await this.valuacionAIService.generateResult({
-        category: valuacion.category,
-        modeContext: buildModeContext({ mode: valuacion.mode }),
-        title: valuacion.title ?? null,
-        history: valuacion.briefMessages,
-        imageUrls,
+        category: current.category,
+        modeContext: buildModeContext({ mode: current.mode }),
+        title: current.title ?? null,
+        history: current.briefMessages,
+        imageNotes: this.collectImageNotes(current),
         comparables: comparables.comparables,
       });
 
@@ -228,7 +232,10 @@ export class ValuacionService implements ValuacionServiceInterface {
       const tokenStatus = await this.tokenService.chargeAndBuildStatus(
         {
           ...gate,
-          usedRealTokens: gate.usedRealTokens + comparables.chargedRealTokens,
+          usedRealTokens:
+            gate.usedRealTokens +
+            analyzed.chargedRealTokens +
+            comparables.chargedRealTokens,
         },
         result.usage,
         {
@@ -426,7 +433,6 @@ export class ValuacionService implements ValuacionServiceInterface {
     userId: string,
     valuacion: ValuacionEntity,
     userMessage: string,
-    imageUrls: string[],
   ): Promise<ValuacionMessageResponse> {
     const gate = await this.tokenService.resolveAndCheck(
       userId,
@@ -436,14 +442,19 @@ export class ValuacionService implements ValuacionServiceInterface {
       return this.buildLimitResponse(valuacion, gate);
     }
 
+    // Las fotos nuevas se miran acá, una única vez. De este turno en adelante
+    // el modelo recibe las notas guardadas, no los píxeles.
+    const analyzed = await this.ensureImagesAnalyzed(valuacion, gate);
+    const current = analyzed.valuacion;
+
     const turn = await this.valuacionAIService.runBriefTurn({
-      category: valuacion.category,
-      modeContext: buildModeContext({ mode: valuacion.mode }),
-      title: valuacion.title ?? null,
-      briefItems: valuacion.briefItems,
-      history: valuacion.briefMessages,
+      category: current.category,
+      modeContext: buildModeContext({ mode: current.mode }),
+      title: current.title ?? null,
+      briefItems: current.briefItems,
+      history: current.briefMessages,
       userMessage,
-      imageUrls,
+      imageNotes: this.collectImageNotes(current),
     });
 
     const briefItems = this.mergeBriefItems(valuacion.briefItems, turn.briefItems);
@@ -471,7 +482,10 @@ export class ValuacionService implements ValuacionServiceInterface {
         );
 
     const tokenStatus = await this.tokenService.chargeAndBuildStatus(
-      gate,
+      {
+        ...gate,
+        usedRealTokens: gate.usedRealTokens + analyzed.chargedRealTokens,
+      },
       turn.usage,
       {
         sessionId: valuacion.sessionId,
@@ -525,6 +539,71 @@ export class ValuacionService implements ValuacionServiceInterface {
     const seen = new Set(incoming.map((item) => item.key));
     const missing = (current ?? []).filter((item) => !seen.has(item.key));
     return [...incoming, ...missing];
+  }
+
+  /**
+   * Analiza las fotos que todavía no tienen notas y las persiste.
+   *
+   * Es el corazón del "una sola vez": antes cada turno del brief re-adjuntaba
+   * TODAS las imágenes de la valuación, así que un brief de 8 preguntas con 3
+   * fotos pagaba 24 análisis visuales (más otros 3 en el informe) para mirar
+   * siempre las mismas fotos. Ahora los píxeles se miran una vez por imagen y lo
+   * que viaja después es el texto que quedó en images[].analysisNotes.
+   *
+   * Nunca puede romper el turno: si el análisis falla se sigue sin las notas de
+   * esas fotos, que es peor informe pero no una conversación caída.
+   */
+  private async ensureImagesAnalyzed(
+    valuacion: ValuacionEntity,
+    gate: TokenGateResult,
+  ): Promise<{ valuacion: ValuacionEntity; chargedRealTokens: number }> {
+    const pending = valuacion.images.filter(
+      (image) => !image.analysisNotes?.trim(),
+    );
+    if (pending.length === 0) return { valuacion, chargedRealTokens: 0 };
+
+    try {
+      const analysis = await this.valuacionAIService.analyzeImages({
+        category: valuacion.category,
+        title: valuacion.title ?? null,
+        imageUrls: pending.map((image) => image.url),
+      });
+
+      const notesByUrl = new Map(
+        analysis.notes.map((entry) => [entry.url, entry.notes]),
+      );
+      const images = valuacion.images.map((image) => {
+        const notes = notesByUrl.get(image.url);
+        return notes ? { ...image, analysisNotes: notes } : image;
+      });
+
+      const chargedRealTokens = analysis.usage
+        ? await this.tokenService.recordUsage(gate, analysis.usage, {
+            sessionId: valuacion.sessionId,
+            channel: 'web',
+            kind: 'valuacion',
+            model: analysis.model,
+          })
+        : 0;
+
+      const updated = await this.valuacionRepository.update(valuacion._id!, {
+        $set: { images },
+      });
+
+      return { valuacion: updated ?? valuacion, chargedRealTokens };
+    } catch (error: any) {
+      this.logger.error(
+        `No se pudieron analizar las fotos de la valuación ${valuacion._id}: ${error.message}`,
+      );
+      return { valuacion, chargedRealTokens: 0 };
+    }
+  }
+
+  /** Notas de las fotos ya analizadas, en el orden en que se cargaron. */
+  private collectImageNotes(valuacion: ValuacionEntity): string[] {
+    return valuacion.images
+      .map((image) => image.analysisNotes?.trim())
+      .filter((notes): notes is string => !!notes);
   }
 
   /**

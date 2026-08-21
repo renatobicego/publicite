@@ -20,6 +20,17 @@ export interface BriefTurnResult {
   model: string;
 }
 
+/**
+ * Resultado del análisis único de las fotos. Las notas se persisten en
+ * images[].analysisNotes y de ahí en más reemplazan a la imagen: ni el brief ni
+ * el informe vuelven a mandar los bytes a OpenAI.
+ */
+export interface ImageAnalysisResult {
+  notes: { url: string; notes: string }[];
+  usage?: AiUsage;
+  model: string;
+}
+
 /** Anuncio real de la plataforma usado como referencia de mercado en el informe. */
 export interface ValuacionComparable {
   title: string;
@@ -49,7 +60,8 @@ export interface ValuacionAIServiceInterface {
     briefItems: ValuacionBriefItem[];
     history: ValuacionBriefMessage[];
     userMessage: string;
-    imageUrls: string[];
+    /** Análisis ya hecho de cada foto, en texto. Las imágenes no se reenvían. */
+    imageNotes: string[];
   }): Promise<BriefTurnResult>;
 
   /** Genera el informe final a partir de todo el contexto acumulado. */
@@ -58,7 +70,19 @@ export interface ValuacionAIServiceInterface {
     modeContext?: string;
     title: string | null;
     history: ValuacionBriefMessage[];
-    imageUrls: string[];
+    /** Análisis ya hecho de cada foto, en texto. Las imágenes no se reenvían. */
+    imageNotes: string[];
     comparables?: ValuacionComparable[];
   }): Promise<ValuacionResultPayload>;
+
+  /**
+   * Mira las fotos y devuelve, por cada una, el texto que la va a representar
+   * durante toda la valuación. Corre una sola vez por imagen: el llamador
+   * persiste las notas y nunca vuelve a mandar los píxeles.
+   */
+  analyzeImages(params: {
+    category: ValuacionCategory;
+    title: string | null;
+    imageUrls: string[];
+  }): Promise<ImageAnalysisResult>;
 }

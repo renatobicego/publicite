@@ -18,6 +18,7 @@ import {
 import { AiUsage } from 'src/contexts/module_user/chatbot/domain/entity/chatbot.token.types';
 import {
   BriefTurnResult,
+  ImageAnalysisResult,
   ValuacionAIServiceInterface,
   ValuacionComparable,
   ValuacionResultPayload,
@@ -25,6 +26,8 @@ import {
 import {
   buildBriefSystemPrompt,
   buildComparablesSection,
+  buildImageNotesSection,
+  IMAGE_ANALYSIS_PROMPT,
   VALUACION_RESULT_PROMPT,
 } from './valuacion.prompts';
 import { ValuacionCategory } from '../entity/enum/valuacion.enums';
@@ -44,6 +47,20 @@ const HISTORY_WINDOW = 20;
 /** Tope de ítems del checklist dinámico: más que esto es interrogatorio. */
 const MAX_BRIEF_ITEMS = 10;
 
+/**
+ * Tope de las notas de cada foto. Viajan en el prompt de TODOS los turnos, así
+ * que un párrafo desbocado se paga muchas veces.
+ */
+const MAX_IMAGE_NOTES_LENGTH = 900;
+
+/**
+ * Nota que se persiste cuando el análisis de una foto falla. Se guarda igual
+ * (en vez de dejar la imagen sin notas) para no reintentarla en cada turno del
+ * brief: el reintento infinito costaría más que la foto perdida.
+ */
+const IMAGE_ANALYSIS_FALLBACK_NOTES =
+  'No se pudo analizar esta foto automáticamente; no hay observaciones visuales de ella.';
+
 // ─────────────────────── Esquemas de salida (zod) ───────────────────────
 // El Agents SDK los convierte en JSON Schema estricto (Responses API): el
 // modelo no puede devolver otra forma, así que desaparece el parseo manual.
@@ -59,6 +76,10 @@ const BriefTurnOutputSchema = z.object({
   title: z.string().nullable(),
   briefItems: z.array(BriefItemSchema),
   briefComplete: z.boolean(),
+});
+
+const ImageNotesOutputSchema = z.object({
+  notes: z.string(),
 });
 
 const PhotoScoresSchema = z.object({
@@ -159,10 +180,9 @@ export class ValuacionAIService implements ValuacionAIServiceInterface {
     briefItems: ValuacionBriefItem[];
     history: ValuacionBriefMessage[];
     userMessage: string;
-    imageUrls: string[];
+    imageNotes: string[];
   }): Promise<BriefTurnResult> {
     const model = getValuacionBriefModel();
-    const hasImages = params.imageUrls.length > 0;
 
     const agent = new Agent({
       name: 'Cubito Valuador (brief)',
@@ -171,7 +191,7 @@ export class ValuacionAIService implements ValuacionAIServiceInterface {
         modeContext: params.modeContext,
         title: params.title,
         briefItems: params.briefItems,
-        hasImages,
+        imageNotes: params.imageNotes,
       }),
       model,
       // Esfuerzo de razonamiento bajo: el chat tiene que responder rápido y
@@ -181,9 +201,11 @@ export class ValuacionAIService implements ValuacionAIServiceInterface {
       outputType: BriefTurnOutputSchema,
     });
 
+    // Las fotos NO se re-adjuntan: ya vienen analizadas dentro de las
+    // instrucciones (imageNotes). El turno del brief es texto puro.
     const input: AgentInputItem[] = [
       ...this.mapHistory(params.history),
-      await this.buildUserInput(params.userMessage, params.imageUrls),
+      user(params.userMessage),
     ];
 
     try {
@@ -212,11 +234,11 @@ export class ValuacionAIService implements ValuacionAIServiceInterface {
     modeContext?: string;
     title: string | null;
     history: ValuacionBriefMessage[];
-    imageUrls: string[];
+    imageNotes: string[];
     comparables?: ValuacionComparable[];
   }): Promise<ValuacionResultPayload> {
     const model = getValuacionResultModel();
-    const hasImages = params.imageUrls.length > 0;
+    const hasImages = params.imageNotes.length > 0;
 
     const agent = new Agent({
       name: 'Cubito Valuador (informe)',
@@ -224,7 +246,7 @@ export class ValuacionAIService implements ValuacionAIServiceInterface {
 
 CATEGORÍA: ${params.category}
 ${params.title ? `ÍTEM VALUADO: ${params.title}` : ''}
-${params.modeContext ? `\nMODO ESPECIALISTA ACTIVO:\n${params.modeContext}` : ''}${buildComparablesSection(params.comparables ?? [])}`,
+${params.modeContext ? `\nMODO ESPECIALISTA ACTIVO:\n${params.modeContext}` : ''}${buildImageNotesSection(params.imageNotes)}${buildComparablesSection(params.comparables ?? [])}`,
       model,
       // El informe es la salida que el usuario guarda y publica: acá el modelo
       // razona en serio (los valores estimados salen de esta llamada).
@@ -234,9 +256,8 @@ ${params.modeContext ? `\nMODO ESPECIALISTA ACTIVO:\n${params.modeContext}` : ''
 
     const input: AgentInputItem[] = [
       ...this.mapHistory(params.history),
-      await this.buildUserInput(
+      user(
         'Generá ahora el informe de valuación con toda la información de esta conversación.',
-        params.imageUrls,
       ),
     ];
 
@@ -268,6 +289,71 @@ ${params.modeContext ? `\nMODO ESPECIALISTA ACTIVO:\n${params.modeContext}` : ''
     }
   }
 
+  /**
+   * Analiza cada foto UNA sola vez y devuelve las notas que la representan de
+   * acá en más.
+   *
+   * Esto es lo que reemplaza al reenvío de imágenes: el brief y el informe
+   * consumen texto, y los píxeles se miran una única vez en la vida de la
+   * valuación. Por eso el prompt del perito pide detalle: nadie va a volver a
+   * abrir la foto para chequear un dato que quedó afuera.
+   *
+   * Una llamada por imagen y en paralelo: cada foto se describe sola, y si una
+   * falla no se lleva puestas a las demás.
+   */
+  async analyzeImages(params: {
+    category: ValuacionCategory;
+    title: string | null;
+    imageUrls: string[];
+  }): Promise<ImageAnalysisResult> {
+    const model = getValuacionBriefModel();
+    if (params.imageUrls.length === 0) return { notes: [], model };
+
+    const agent = new Agent({
+      name: 'Cubito Valuador (perito visual)',
+      instructions: `${IMAGE_ANALYSIS_PROMPT}
+
+CATEGORÍA ELEGIDA POR EL USUARIO: ${params.category}${
+        params.title ? `\nEL USUARIO DIJO QUE VALÚA: ${params.title}` : ''
+      }`,
+      model,
+      modelSettings: { reasoning: { effort: 'low' }, store: false },
+      outputType: ImageNotesOutputSchema,
+    });
+
+    const analyses = await Promise.all(
+      params.imageUrls.map(async (url) => {
+        try {
+          const input = [await this.buildUserInput('Analizá esta foto.', [url])];
+          const result = await run(agent, input);
+          const notes = this.asString(result.finalOutput?.notes);
+          return {
+            url,
+            notes: notes
+              ? this.trimImageNotes(notes)
+              : IMAGE_ANALYSIS_FALLBACK_NOTES,
+            usage: this.collectUsage(result.rawResponses),
+          };
+        } catch (error: any) {
+          console.error(`Error analizando la imagen ${url}:`, error?.message);
+          return {
+            url,
+            notes: IMAGE_ANALYSIS_FALLBACK_NOTES,
+            usage: undefined as AiUsage | undefined,
+          };
+        }
+      }),
+    );
+
+    return {
+      notes: analyses.map(({ url, notes }) => ({ url, notes })),
+      // Las N llamadas se cobran juntas: para la cuota es un solo evento
+      // "analicé las fotos de esta valuación".
+      usage: this.mergeUsage(analyses.map((analysis) => analysis.usage)),
+      model,
+    };
+  }
+
   // ─────────────────────────── armado del input ───────────────────────────
 
   private mapHistory(history: ValuacionBriefMessage[]): AgentInputItem[] {
@@ -284,6 +370,9 @@ ${params.modeContext ? `\nMODO ESPECIALISTA ACTIVO:\n${params.modeContext}` : ''
    * Arma el mensaje del usuario adjuntando las imágenes como data URLs.
    * Se descargan acá porque OpenAI no siempre puede bajar directo desde
    * UploadThing (timeouts); si una descarga falla se manda la URL original.
+   *
+   * Lo usa únicamente analyzeImages(): es el único punto del módulo donde los
+   * bytes de una foto viajan a OpenAI.
    */
   private async buildUserInput(
     text: string,
@@ -445,6 +534,38 @@ ${params.modeContext ? `\nMODO ESPECIALISTA ACTIVO:\n${params.modeContext}` : ''
       completionTokens += response.usage.outputTokens ?? 0;
     }
     if (!found) return undefined;
+    return {
+      promptTokens,
+      completionTokens,
+      totalTokens: promptTokens + completionTokens,
+    };
+  }
+
+  /**
+   * Recorta las notas de una foto sin partir una palabra al medio: se guardan
+   * una sola vez y se leen en todos los turnos, así que una frase cortada a la
+   * mitad se arrastra hasta el informe.
+   */
+  private trimImageNotes(notes: string): string {
+    if (notes.length <= MAX_IMAGE_NOTES_LENGTH) return notes;
+    const cut = notes.slice(0, MAX_IMAGE_NOTES_LENGTH);
+    const lastSpace = cut.lastIndexOf(' ');
+    const trimmed = lastSpace > MAX_IMAGE_NOTES_LENGTH * 0.8 ? cut.slice(0, lastSpace) : cut;
+    return `${trimmed.trimEnd()}…`;
+  }
+
+  /** Suma varios usages en uno solo; undefined si ninguna llamada lo informó. */
+  private mergeUsage(usages: (AiUsage | undefined)[]): AiUsage | undefined {
+    const present = usages.filter((usage): usage is AiUsage => !!usage);
+    if (present.length === 0) return undefined;
+    const promptTokens = present.reduce(
+      (total, usage) => total + usage.promptTokens,
+      0,
+    );
+    const completionTokens = present.reduce(
+      (total, usage) => total + usage.completionTokens,
+      0,
+    );
     return {
       promptTokens,
       completionTokens,
