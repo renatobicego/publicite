@@ -2,6 +2,8 @@ export interface SendMessageRequest {
   sessionId?: string;
   message: string;
   userId?: string | null;
+  /** Avatar activo: el BE usa su contexto como rol de Cubito en esta consulta. */
+  avatarId?: string | null;
 }
 
 export type ChatbotAction = "CREATE_AD";

@@ -9,6 +9,10 @@ import { ChatbotAIService } from '../../domain/service/chatbot.ai.service';
 import { ChatbotTokenService } from '../../application/service/chatbot.token.service';
 import { ChatbotTokenRepository } from '../repository/chatbot.token.repository';
 import { ChatSessionSchema } from '../schemas/chatbot.schema';
+import { AvatarSchema } from '../schemas/avatar.schema';
+import { AvatarResolver } from '../graphql/resolver/avatar.resolver';
+import { AvatarService } from '../../application/service/avatar.service';
+import { AvatarRepository } from '../repository/avatar.repository';
 import {
   ChatbotCommunityPoolSchema,
   ChatbotTokenAccountSchema,
@@ -27,6 +31,7 @@ import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.servic
         name: 'ChatSession',
         schema: ChatSessionSchema,
       },
+      { name: 'Avatar', schema: AvatarSchema },
       { name: 'ChatbotTokenAccount', schema: ChatbotTokenAccountSchema },
       { name: 'ChatbotCommunityPool', schema: ChatbotCommunityPoolSchema },
       { name: 'ChatbotTokenAccrual', schema: ChatbotTokenAccrualSchema },
@@ -44,6 +49,15 @@ import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.servic
   providers: [
     MyLoggerService,
     ChatbotResolver,
+    AvatarResolver,
+    {
+      provide: 'AvatarServiceInterface',
+      useClass: AvatarService,
+    },
+    {
+      provide: 'AvatarRepositoryInterface',
+      useClass: AvatarRepository,
+    },
     {
       provide: 'ChatbotAdapterInterface',
       useClass: ChatbotAdapter,
@@ -73,6 +87,7 @@ import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.servic
     'ChatbotServiceInterface',
     'ChatbotRepositoryInterface',
     'ChatbotTokenServiceInterface',
+    'AvatarServiceInterface',
   ],
 })
 export class ChatbotModule {}

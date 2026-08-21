@@ -1,4 +1,4 @@
-import { Field, InputType } from '@nestjs/graphql';
+import { Field, ID, InputType } from '@nestjs/graphql';
 import {
   IsNotEmpty,
   IsString,
@@ -54,6 +54,15 @@ export class SendMessageRequest {
   @IsString()
   @MaxLength(500)
   extraPrompt?: string;
+
+  @Field(() => ID, {
+    nullable: true,
+    description:
+      'Avatar de IA a usar en esta consulta. Su contexto se inyecta como rolePrompt.',
+  })
+  @IsOptional()
+  @IsString()
+  avatarId?: string;
 
   @Field(() => [String], {
     nullable: true,

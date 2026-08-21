@@ -93,6 +93,13 @@ export const DEFAULT_CUBITO_MODE = 'general';
 /** Máximo de caracteres de un prompt libre de rol enviado por el usuario. */
 const FREE_PROMPT_MAX_LENGTH = 500;
 
+/**
+ * Máximo del contexto de un Avatar. Es más largo que el prompt libre porque un
+ * avatar se escribe una vez y se reutiliza en muchas conversaciones: vale la
+ * pena poder describirlo bien. El límite duro vive en el schema de Mongo.
+ */
+const AVATAR_CONTEXT_MAX_LENGTH = 1000;
+
 export function getModeContext(mode?: string): string {
   if (!mode) return '';
   return CUBITO_MODES[mode.trim().toLowerCase()] ?? '';
@@ -105,9 +112,12 @@ export function getModeContext(mode?: string): string {
  * no una orden del sistema: sin eso, un usuario puede pedirle a Cubito que
  * ignore el glosario, revele el prompt o deje de ofrecer la creación de anuncios.
  */
-export function buildFreeRoleContext(rolePrompt?: string): string {
+export function buildFreeRoleContext(
+  rolePrompt?: string,
+  maxLength: number = FREE_PROMPT_MAX_LENGTH,
+): string {
   if (!rolePrompt) return '';
-  const clean = rolePrompt.trim().slice(0, FREE_PROMPT_MAX_LENGTH);
+  const clean = rolePrompt.trim().slice(0, maxLength);
   if (!clean) return '';
 
   return `
@@ -127,10 +137,14 @@ export function buildModeContext(params: {
   mode?: string;
   rolePrompt?: string;
   extraPrompt?: string;
+  /** Contexto de un Avatar elegido por el usuario; pisa al rolePrompt libre. */
+  avatarContext?: string;
 }): string {
   const parts = [
     getModeContext(params.mode),
-    buildFreeRoleContext(params.rolePrompt),
+    params.avatarContext
+      ? buildFreeRoleContext(params.avatarContext, AVATAR_CONTEXT_MAX_LENGTH)
+      : buildFreeRoleContext(params.rolePrompt),
     params.extraPrompt
       ? `\nIndicación adicional del usuario para esta consulta:\n${params.extraPrompt
           .trim()

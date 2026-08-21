@@ -3,6 +3,7 @@ import { ChatbotServiceInterface } from '../../domain/service/chatbot.service.in
 import { ChatbotRepositoryInterface } from '../../domain/repository/chatbot.repository.interface';
 import { ChatbotAIServiceInterface } from '../../domain/service/chatbot.ai.service.interface';
 import { ChatbotTokenServiceInterface } from '../../domain/service/chatbot.token.service.interface';
+import { AvatarServiceInterface } from '../../domain/service/avatar.service.interface';
 import {
   AiUsage,
   AiUsageKind,
@@ -38,6 +39,8 @@ export class ChatbotService implements ChatbotServiceInterface {
     private readonly chatbotAIService: ChatbotAIServiceInterface,
     @Inject('ChatbotTokenServiceInterface')
     private readonly chatbotTokenService: ChatbotTokenServiceInterface,
+    @Inject('AvatarServiceInterface')
+    private readonly avatarService: AvatarServiceInterface,
     private readonly logger: MyLoggerService,
   ) {}
 
@@ -128,6 +131,16 @@ export class ChatbotService implements ChatbotServiceInterface {
         new Date(),
       );
 
+      // Un avatar seleccionado manda sobre el rolePrompt libre: es una elección
+      // explícita del usuario para esta conversación. Si el avatar no existe o
+      // no es suyo, se ignora y el chat sigue con el rolePrompt que haya venido.
+      const avatarContext = request.avatarId
+        ? await this.avatarService.resolveContextForUser(
+            request.avatarId,
+            userId,
+          )
+        : undefined;
+
       const aiResult = await this.chatbotAIService.generateResponse(
         session.getMessages,
         request.message,
@@ -135,6 +148,7 @@ export class ChatbotService implements ChatbotServiceInterface {
           mode: request.mode,
           rolePrompt: request.rolePrompt,
           extraPrompt: request.extraPrompt,
+          avatarContext,
           imageUrls: request.imageUrls,
         },
       );

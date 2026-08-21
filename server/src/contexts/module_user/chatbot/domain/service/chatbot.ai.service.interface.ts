@@ -27,6 +27,8 @@ export interface ChatbotResponseOptions {
   rolePrompt?: string;
   /** Prompt sugerido que se suma al fijo (modo Entrenamiento Publicitario). */
   extraPrompt?: string;
+  /** Contexto del Avatar elegido por el usuario; tiene prioridad sobre rolePrompt. */
+  avatarContext?: string;
   /** Imágenes a analizar; si vienen, la respuesta usa el modelo con visión. */
   imageUrls?: string[];
 }
