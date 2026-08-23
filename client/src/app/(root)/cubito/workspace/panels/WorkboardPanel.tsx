@@ -1,8 +1,17 @@
 "use client";
 
-import { Button } from "@nextui-org/react";
-import { FaWandMagicSparkles, FaMagnifyingGlass, FaArrowLeft } from "react-icons/fa6";
+import { useState, useRef, useEffect } from "react";
+import { Button, Card, CardBody, ScrollShadow, Image } from "@nextui-org/react";
+import {
+    FaWandMagicSparkles,
+    FaMagnifyingGlass,
+    FaArrowLeft,
+    FaPaperPlane,
+    FaImage,
+} from "react-icons/fa6";
 import { OrangeCubeIcon } from "@/components/buttons/ChatbotButton/OrangeCubeIcon";
+import { CustomInputWithoutFormik } from "@/components/inputs/CustomInputs";
+import AvatarSelector from "../../avatars/AvatarSelector";
 import type { useWorkspace } from "../hooks/useWorkspace";
 import CategorySelector from "../valuacion/CategorySelector";
 import BriefProgress from "../valuacion/BriefProgress";
@@ -15,60 +24,228 @@ interface WorkboardPanelProps {
 }
 
 export default function WorkboardPanel({ workspace }: WorkboardPanelProps) {
-    const { activeModule, valuacionStatus, valuacionResult, isProcessing } = workspace;
+    const { activeModule } = workspace;
 
-    // === IDLE STATE ===
-    if (activeModule === "idle") {
-        return (
-            <div className="flex flex-col items-center justify-center h-full text-center gap-6 p-8">
-                <div className="w-20 h-20 opacity-50">
-                    <OrangeCubeIcon />
-                </div>
-                <div>
-                    <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
-                        Tablero de Trabajo
-                    </p>
-                    <p className="text-sm text-gray-500 mt-1">
-                        Elegí un módulo para empezar a trabajar con Cubito
-                    </p>
-                </div>
-                <div className="flex gap-3">
-                    <Button
-                        color="warning"
-                        variant="shadow"
-                        startContent={<FaWandMagicSparkles size={14} />}
-                        onPress={() => workspace.setActiveModule("valuacion")}
-                    >
-                        Valuación IA
-                    </Button>
-                    <Button
-                        color="secondary"
-                        variant="shadow"
-                        startContent={<FaMagnifyingGlass size={14} />}
-                        onPress={() => workspace.setActiveModule("match")}
-                    >
-                        Match IA
-                    </Button>
-                </div>
-            </div>
-        );
+    if (activeModule === "chat" || activeModule === "idle") {
+        return <FreeChatPanel workspace={workspace} />;
     }
 
-    // === Active module layout: back button + content + chat ===
+    return <ModulePanel workspace={workspace} />;
+}
+
+// =============================================================
+// CHAT LIBRE - Estado por defecto del tablero
+// =============================================================
+
+function FreeChatPanel({ workspace }: WorkboardPanelProps) {
+    const {
+        chatMessages,
+        isChatProcessing,
+        selectedAvatarId,
+        setSelectedAvatarId,
+        generatedImages,
+        isGeneratingImage,
+        handleSendChatMessage,
+        handleGenerateImage,
+        setActiveModule,
+    } = workspace;
+
+    const [inputValue, setInputValue] = useState("");
+    const [isImageMode, setIsImageMode] = useState(false);
+    const scrollRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (scrollRef.current) {
+            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+        }
+    }, [chatMessages]);
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!inputValue.trim() || isChatProcessing || isGeneratingImage) return;
+
+        if (isImageMode) {
+            handleGenerateImage(inputValue);
+        } else {
+            handleSendChatMessage(inputValue);
+        }
+        setInputValue("");
+    };
+
+    const getImageById = (id: string) => generatedImages.find((img) => img.id === id);
+
+    return (
+        <div className="flex flex-col h-full">
+            {/* ===== MÓDULOS DESTACADOS ===== */}
+            <div className="border-b border-divider bg-gradient-to-r from-orange-50 to-purple-50 dark:from-slate-800 dark:to-slate-800 px-4 py-3">
+                <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-wide">
+                    Herramientas IA
+                </p>
+                <div className="flex gap-3">
+                    <button
+                        onClick={() => setActiveModule("valuacion")}
+                        className="flex-1 flex items-center gap-3 p-3 rounded-xl bg-white dark:bg-slate-700 border-2 border-orange-200 dark:border-orange-800 hover:border-orange-400 dark:hover:border-orange-600 transition-all shadow-sm hover:shadow-md group"
+                    >
+                        <div className="w-9 h-9 rounded-lg bg-orange-100 dark:bg-orange-900/40 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <FaWandMagicSparkles size={16} className="text-orange-600" />
+                        </div>
+                        <div className="text-left">
+                            <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">Valuación IA</p>
+                            <p className="text-[11px] text-gray-500 dark:text-gray-400">Valuá objetos, servicios e imágenes</p>
+                        </div>
+                    </button>
+                    <button
+                        onClick={() => setActiveModule("match")}
+                        className="flex-1 flex items-center gap-3 p-3 rounded-xl bg-white dark:bg-slate-700 border-2 border-purple-200 dark:border-purple-800 hover:border-purple-400 dark:hover:border-purple-600 transition-all shadow-sm hover:shadow-md group"
+                    >
+                        <div className="w-9 h-9 rounded-lg bg-purple-100 dark:bg-purple-900/40 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <FaMagnifyingGlass size={16} className="text-purple-600" />
+                        </div>
+                        <div className="text-left">
+                            <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">Match IA</p>
+                            <p className="text-[11px] text-gray-500 dark:text-gray-400">Encontrá anuncios relevantes</p>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            {/* ===== ÁREA DE CHAT ===== */}
+            <ScrollShadow ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3">
+                {chatMessages.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center h-full text-center text-gray-400 gap-3 py-12">
+                        <div className="w-16 h-16 opacity-40">
+                            <OrangeCubeIcon />
+                        </div>
+                        <div>
+                            <p className="text-base font-medium text-gray-600 dark:text-gray-300">
+                                Chateá con Cubito
+                            </p>
+                            <p className="text-sm text-gray-400 mt-1 max-w-sm">
+                                Preguntame lo que quieras, pedí que genere imágenes, o usá las herramientas de Valuación y Match de arriba.
+                            </p>
+                        </div>
+                    </div>
+                ) : (
+                    chatMessages.map((msg) => {
+                        // Check if it's a generated image message
+                        const isImageMsg = msg.role === "assistant" && msg.content.startsWith("__IMAGE__");
+                        const imageId = isImageMsg ? msg.content.replace("__IMAGE__", "") : null;
+                        const imageData = imageId ? getImageById(imageId) : null;
+
+                        return (
+                            <div
+                                key={msg.id}
+                                className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+                            >
+                                <div
+                                    className={`max-w-[80%] px-4 py-2.5 rounded-2xl text-sm ${msg.role === "user"
+                                            ? "bg-service text-white rounded-br-none"
+                                            : "bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-white rounded-bl-none"
+                                        }`}
+                                >
+                                    {isImageMsg && imageData ? (
+                                        <div className="space-y-2">
+                                            <Image
+                                                src={`data:image/png;base64,${imageData.base64}`}
+                                                alt={imageData.prompt}
+                                                className="rounded-lg max-w-full max-h-64 object-contain"
+                                            />
+                                            <p className="text-xs opacity-70">"{imageData.prompt}"</p>
+                                        </div>
+                                    ) : (
+                                        <p className="whitespace-pre-wrap leading-relaxed">{msg.content}</p>
+                                    )}
+                                </div>
+                            </div>
+                        );
+                    })
+                )}
+
+                {/* Loading indicator */}
+                {(isChatProcessing || isGeneratingImage) && (
+                    <div className="flex justify-start">
+                        <div className="max-w-[80%] px-4 py-2.5 rounded-2xl text-sm bg-gray-100 dark:bg-slate-700 rounded-bl-none">
+                            <div className="flex items-center gap-2">
+                                <div className="flex space-x-1">
+                                    <div className="w-2 h-2 bg-orange-500 rounded-full animate-bounce" />
+                                    <div className="w-2 h-2 bg-orange-500 rounded-full animate-bounce" style={{ animationDelay: "0.1s" }} />
+                                    <div className="w-2 h-2 bg-orange-500 rounded-full animate-bounce" style={{ animationDelay: "0.2s" }} />
+                                </div>
+                                <span className="text-xs text-gray-500">
+                                    {isGeneratingImage ? "Generando imagen..." : "Cubito está pensando..."}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </ScrollShadow>
+
+            {/* ===== INPUT AREA ===== */}
+            <div className="border-t border-divider p-3 bg-white dark:bg-slate-900 shrink-0">
+                <div className="flex items-center gap-2 mb-2">
+                    <AvatarSelector
+                        selectedAvatarId={selectedAvatarId}
+                        onSelect={setSelectedAvatarId}
+                        isDisabled={isChatProcessing || isGeneratingImage}
+                    />
+                    <Button
+                        size="sm"
+                        variant={isImageMode ? "shadow" : "flat"}
+                        color={isImageMode ? "secondary" : "default"}
+                        startContent={<FaImage size={12} />}
+                        onPress={() => setIsImageMode(!isImageMode)}
+                        className="min-w-fit"
+                    >
+                        {isImageMode ? "Modo imagen" : "Generar imagen"}
+                    </Button>
+                </div>
+                <form onSubmit={handleSubmit} className="flex gap-2">
+                    <CustomInputWithoutFormik
+                        value={inputValue}
+                        onChange={(e) => setInputValue(e.target.value)}
+                        placeholder={
+                            isImageMode
+                                ? "Describí la imagen que querés generar..."
+                                : "Escribí tu mensaje a Cubito..."
+                        }
+                        disabled={isChatProcessing || isGeneratingImage}
+                    />
+                    <Button
+                        isIconOnly
+                        type="submit"
+                        radius="full"
+                        isDisabled={isChatProcessing || isGeneratingImage || !inputValue.trim()}
+                        className="text-white bg-service h-10 w-10"
+                    >
+                        <FaPaperPlane size={14} />
+                    </Button>
+                </form>
+            </div>
+        </div>
+    );
+}
+
+// =============================================================
+// PANEL DE MÓDULOS (Valuación / Match) - Cuando se selecciona uno
+// =============================================================
+
+function ModulePanel({ workspace }: WorkboardPanelProps) {
+    const { activeModule, valuacionStatus, valuacionResult, isProcessing } = workspace;
+
     return (
         <div className="flex flex-col h-full">
             {/* Back button */}
-            <div className="px-4 py-2 border-b border-divider flex items-center gap-2">
+            <div className="px-4 py-2 border-b border-divider flex items-center gap-2 bg-white dark:bg-slate-900">
                 <Button
                     size="sm"
                     variant="light"
                     startContent={<FaArrowLeft size={12} />}
                     onPress={() => workspace.resetWorkspace()}
                 >
-                    Volver
+                    Volver al chat
                 </Button>
-                <span className="text-xs text-gray-500">
-                    {activeModule === "valuacion" ? "Valuación IA" : "Match IA"}
+                <span className="text-xs font-medium text-gray-500">
+                    {activeModule === "valuacion" ? "⚡ Valuación IA" : "🔍 Match IA"}
                 </span>
             </div>
 

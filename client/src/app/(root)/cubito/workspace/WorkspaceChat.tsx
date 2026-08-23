@@ -43,7 +43,7 @@ export default function WorkspaceChat({ workspace }: WorkspaceChatProps) {
         if (activeModule === "valuacion" && valuacionStatus === "draft") {
             // Images come from references automatically inside the hook
             handleSendValuacionMessage(inputValue);
-        } else if (activeModule === "match" || activeModule === "idle") {
+        } else if (activeModule === "match" || activeModule === "idle" || activeModule === "chat") {
             const imageUrls = workspace.references.map((r) => r.url).filter(Boolean);
             handleSearchMatch(inputValue, imageUrls.length > 0 ? imageUrls : undefined);
         }

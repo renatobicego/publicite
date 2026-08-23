@@ -17,7 +17,7 @@ export type CubitoMode =
   | "analista_mercado"
   | "entrenamiento_publicitario";
 
-export type WorkspaceModule = "idle" | "valuacion" | "match";
+export type WorkspaceModule = "idle" | "chat" | "valuacion" | "match";
 
 // --- Valuación ---
 

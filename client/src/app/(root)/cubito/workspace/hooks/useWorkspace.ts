@@ -27,13 +27,14 @@ import {
   searchMatch,
   getUserValuaciones,
 } from "@/services/workspaceServices";
+import { sendMessageToAI, generateAdImageWithAI } from "@/services/chatbotServices";
 import { deleteFilesService } from "@/app/server/uploadThing";
 
 const generateId = () => Math.random().toString(36).substring(2, 9);
 
 export function useWorkspace() {
   // General state
-  const [activeModule, setActiveModule] = useState<WorkspaceModule>("idle");
+  const [activeModule, setActiveModule] = useState<WorkspaceModule>("chat");
   const [activeMode, setActiveMode] = useState<CubitoMode>("general");
   const [rolePrompt, setRolePrompt] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
@@ -43,6 +44,13 @@ export function useWorkspace() {
 
   // Chat messages
   const [messages, setMessages] = useState<WorkspaceMessage[]>([]);
+
+  // Free chat state (chat libre con Cubito)
+  const [chatMessages, setChatMessages] = useState<WorkspaceMessage[]>([]);
+  const [isChatProcessing, setIsChatProcessing] = useState(false);
+  const [selectedAvatarId, setSelectedAvatarId] = useState<string | null>(null);
+  const [generatedImages, setGeneratedImages] = useState<{ id: string; base64: string; prompt: string }[]>([]);
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
 
   // References panel
   const [references, setReferences] = useState<ReferenceImage[]>([]);
@@ -378,11 +386,93 @@ export function useWorkspace() {
   }, []);
 
   // ============================================================
+  // CHAT LIBRE (conversación general con Cubito en el tablero)
+  // ============================================================
+
+  const handleSendChatMessage = useCallback(async (text: string) => {
+    if (!text.trim()) return;
+    setChatMessages((prev) => [
+      ...prev,
+      { id: generateId(), role: "user", content: text, timestamp: new Date() },
+    ]);
+    setIsChatProcessing(true);
+
+    try {
+      const sessionId = sessionStorage.getItem("workspaceChatSessionId") || "";
+      const res = await sendMessageToAI({
+        sessionId,
+        message: text,
+        ...(selectedAvatarId ? { avatarId: selectedAvatarId } : {}),
+      });
+
+      if (!res || "error" in res) {
+        setChatMessages((prev) => [
+          ...prev,
+          { id: generateId(), role: "assistant", content: "Hubo un error al procesar tu mensaje. Intentá de nuevo.", timestamp: new Date() },
+        ]);
+        setIsChatProcessing(false);
+        return;
+      }
+
+      setChatMessages((prev) => [
+        ...prev,
+        { id: generateId(), role: "assistant", content: res.botResponse, timestamp: new Date() },
+      ]);
+
+      if (!sessionId && res.sessionId) {
+        sessionStorage.setItem("workspaceChatSessionId", res.sessionId);
+      }
+    } catch {
+      setChatMessages((prev) => [
+        ...prev,
+        { id: generateId(), role: "assistant", content: "Error inesperado. Intentá de nuevo.", timestamp: new Date() },
+      ]);
+    }
+
+    setIsChatProcessing(false);
+  }, [selectedAvatarId]);
+
+  const handleGenerateImage = useCallback(async (prompt: string) => {
+    if (!prompt.trim()) return;
+    setIsGeneratingImage(true);
+    setChatMessages((prev) => [
+      ...prev,
+      { id: generateId(), role: "user", content: `🎨 Generar imagen: ${prompt}`, timestamp: new Date() },
+    ]);
+
+    try {
+      const res = await generateAdImageWithAI(prompt);
+      if (!res || "error" in res) {
+        setChatMessages((prev) => [
+          ...prev,
+          { id: generateId(), role: "assistant", content: "No pude generar la imagen. Revisá tus tokens disponibles o intentá con otro prompt.", timestamp: new Date() },
+        ]);
+        setIsGeneratingImage(false);
+        return;
+      }
+
+      const newImage = { id: generateId(), base64: res.imageBase64, prompt };
+      setGeneratedImages((prev) => [...prev, newImage]);
+      setChatMessages((prev) => [
+        ...prev,
+        { id: generateId(), role: "assistant", content: `__IMAGE__${newImage.id}`, timestamp: new Date() },
+      ]);
+    } catch {
+      setChatMessages((prev) => [
+        ...prev,
+        { id: generateId(), role: "assistant", content: "Error al generar la imagen. Intentá de nuevo.", timestamp: new Date() },
+      ]);
+    }
+
+    setIsGeneratingImage(false);
+  }, []);
+
+  // ============================================================
   // GENERAL
   // ============================================================
 
   const resetWorkspace = useCallback(() => {
-    setActiveModule("idle");
+    setActiveModule("chat");
     setValuacionId(null);
     setValuacionStatus("idle");
     setValuacionResult(null);
@@ -419,6 +509,16 @@ export function useWorkspace() {
     addReference,
     removeReference,
     updateReferenceUrl,
+
+    // Chat libre
+    chatMessages,
+    isChatProcessing,
+    selectedAvatarId,
+    setSelectedAvatarId,
+    generatedImages,
+    isGeneratingImage,
+    handleSendChatMessage,
+    handleGenerateImage,
 
     // Valuación
     valuacionId,
