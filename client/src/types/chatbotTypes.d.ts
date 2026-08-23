@@ -4,6 +4,12 @@ export interface SendMessageRequest {
   userId?: string | null;
   /** Avatar activo: el BE usa su contexto como rol de Cubito en esta consulta. */
   avatarId?: string | null;
+  /** Modo/especialidad de Cubito (general, marketing, etc). */
+  mode?: string | null;
+  /** Prompt libre de rol. */
+  rolePrompt?: string | null;
+  /** URLs de imágenes para análisis. */
+  imageUrls?: string[] | null;
 }
 
 export type ChatbotAction = "CREATE_AD";

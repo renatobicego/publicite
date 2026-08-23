@@ -1,17 +1,19 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Button, Card, CardBody, ScrollShadow, Image } from "@nextui-org/react";
+import { Button, ScrollShadow } from "@nextui-org/react";
 import {
     FaWandMagicSparkles,
     FaMagnifyingGlass,
     FaArrowLeft,
     FaPaperPlane,
     FaImage,
+    FaDownload,
 } from "react-icons/fa6";
 import { OrangeCubeIcon } from "@/components/buttons/ChatbotButton/OrangeCubeIcon";
 import { CustomInputWithoutFormik } from "@/components/inputs/CustomInputs";
 import AvatarSelector from "../../avatars/AvatarSelector";
+import { parseMarkdown } from "../shared/parseMarkdown";
 import type { useWorkspace } from "../hooks/useWorkspace";
 import CategorySelector from "../valuacion/CategorySelector";
 import BriefProgress from "../valuacion/BriefProgress";
@@ -139,21 +141,36 @@ function FreeChatPanel({ workspace }: WorkboardPanelProps) {
                             >
                                 <div
                                     className={`max-w-[80%] px-4 py-2.5 rounded-2xl text-sm ${msg.role === "user"
-                                            ? "bg-service text-white rounded-br-none"
-                                            : "bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-white rounded-bl-none"
+                                        ? "bg-service text-white rounded-br-none"
+                                        : "bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-white rounded-bl-none"
                                         }`}
                                 >
                                     {isImageMsg && imageData ? (
                                         <div className="space-y-2">
-                                            <Image
-                                                src={`data:image/png;base64,${imageData.base64}`}
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                                            <img
+                                                src={imageData.base64.startsWith("data:") ? imageData.base64 : `data:image/png;base64,${imageData.base64}`}
                                                 alt={imageData.prompt}
-                                                className="rounded-lg max-w-full max-h-64 object-contain"
+                                                className="rounded-lg w-full max-w-sm object-contain"
                                             />
-                                            <p className="text-xs opacity-70">"{imageData.prompt}"</p>
+                                            <p className="text-xs opacity-70">&ldquo;{imageData.prompt}&rdquo;</p>
+                                            <button
+                                                onClick={() => {
+                                                    const link = document.createElement("a");
+                                                    link.href = imageData.base64.startsWith("data:") ? imageData.base64 : `data:image/png;base64,${imageData.base64}`;
+                                                    link.download = `cubito-${imageData.id}.png`;
+                                                    link.click();
+                                                }}
+                                                className="flex items-center gap-1.5 text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
+                                            >
+                                                <FaDownload size={11} />
+                                                Descargar imagen
+                                            </button>
                                         </div>
                                     ) : (
-                                        <p className="whitespace-pre-wrap leading-relaxed">{msg.content}</p>
+                                        <div className="text-sm md:text-base leading-relaxed">
+                                            {parseMarkdown(msg.content)}
+                                        </div>
                                     )}
                                 </div>
                             </div>

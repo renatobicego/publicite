@@ -403,6 +403,7 @@ export function useWorkspace() {
         sessionId,
         message: text,
         ...(selectedAvatarId ? { avatarId: selectedAvatarId } : {}),
+        ...(activeMode !== "general" ? { mode: activeMode } : {}),
       });
 
       if (!res || "error" in res) {
@@ -414,9 +415,17 @@ export function useWorkspace() {
         return;
       }
 
+      // Si el backend disparó la tool CREATE_AD (responde con texto de crear anuncio),
+      // la ignoramos y le pedimos que conteste normalmente — esto pasa porque el prompt
+      // del BE siempre tiene la tool disponible. En el workspace queremos chat libre.
+      const isCreateAdAction = res.action === "CREATE_AD";
+      const botText = isCreateAdAction
+        ? "¡Hola! Soy Cubito, tu asistente en el Tablero de Trabajo. Podés preguntarme lo que quieras, pedirme que genere imágenes, o usar las herramientas de Valuación y Match que tenés arriba. ¿En qué te puedo ayudar?"
+        : res.botResponse;
+
       setChatMessages((prev) => [
         ...prev,
-        { id: generateId(), role: "assistant", content: res.botResponse, timestamp: new Date() },
+        { id: generateId(), role: "assistant", content: botText, timestamp: new Date() },
       ]);
 
       if (!sessionId && res.sessionId) {
@@ -430,10 +439,17 @@ export function useWorkspace() {
     }
 
     setIsChatProcessing(false);
-  }, [selectedAvatarId]);
+  }, [selectedAvatarId, activeMode]);
 
   const handleGenerateImage = useCallback(async (prompt: string) => {
     if (!prompt.trim()) return;
+    if (!user) {
+      setChatMessages((prev) => [
+        ...prev,
+        { id: generateId(), role: "assistant", content: "Necesitás iniciar sesión para generar imágenes.", timestamp: new Date() },
+      ]);
+      return;
+    }
     setIsGeneratingImage(true);
     setChatMessages((prev) => [
       ...prev,
@@ -442,30 +458,39 @@ export function useWorkspace() {
 
     try {
       const res = await generateAdImageWithAI(prompt);
+      console.log("[WorkspaceChat] generateAdImageWithAI response:", {
+        hasRes: !!res,
+        type: typeof res,
+        keys: res ? Object.keys(res) : [],
+        hasError: res && "error" in res,
+        base64Length: res && "imageBase64" in res ? (res as any).imageBase64?.length : 0,
+        base64Start: res && "imageBase64" in res ? (res as any).imageBase64?.substring(0, 50) : null,
+      });
       if (!res || "error" in res) {
+        const errorMsg = (res && "error" in res) ? (res as any).error : "Error desconocido";
         setChatMessages((prev) => [
           ...prev,
-          { id: generateId(), role: "assistant", content: "No pude generar la imagen. Revisá tus tokens disponibles o intentá con otro prompt.", timestamp: new Date() },
+          { id: generateId(), role: "assistant", content: `No pude generar la imagen: ${errorMsg}`, timestamp: new Date() },
         ]);
         setIsGeneratingImage(false);
         return;
       }
 
-      const newImage = { id: generateId(), base64: res.imageBase64, prompt };
+      const newImage = { id: generateId(), base64: (res as any).imageBase64, prompt };
       setGeneratedImages((prev) => [...prev, newImage]);
       setChatMessages((prev) => [
         ...prev,
         { id: generateId(), role: "assistant", content: `__IMAGE__${newImage.id}`, timestamp: new Date() },
       ]);
-    } catch {
+    } catch (err: any) {
       setChatMessages((prev) => [
         ...prev,
-        { id: generateId(), role: "assistant", content: "Error al generar la imagen. Intentá de nuevo.", timestamp: new Date() },
+        { id: generateId(), role: "assistant", content: `Error al generar la imagen: ${err?.message || "Intentá de nuevo."}`, timestamp: new Date() },
       ]);
     }
 
     setIsGeneratingImage(false);
-  }, []);
+  }, [user]);
 
   // ============================================================
   // GENERAL

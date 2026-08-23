@@ -2,7 +2,7 @@
 
 import { useCallback } from "react";
 import { Button, Image } from "@nextui-org/react";
-import { FaPlus, FaTrash, FaPencil } from "react-icons/fa6";
+import { FaPlus, FaTrash } from "react-icons/fa6";
 import { useUploadThing } from "@/utils/uploadThing";
 import { toastifyError } from "@/utils/functions/toastify";
 import imageCompression from "browser-image-compression";
