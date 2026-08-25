@@ -9,6 +9,7 @@ import {
     FaPaperPlane,
     FaImage,
     FaDownload,
+    FaPenToSquare,
 } from "react-icons/fa6";
 import { OrangeCubeIcon } from "@/components/buttons/ChatbotButton/OrangeCubeIcon";
 import { CustomInputWithoutFormik } from "@/components/inputs/CustomInputs";
@@ -20,6 +21,7 @@ import BriefProgress from "../valuacion/BriefProgress";
 import ValuacionSticker from "../valuacion/ValuacionSticker";
 import MatchResults from "../match/MatchResults";
 import WorkspaceChat from "../WorkspaceChat";
+import ImageEditor from "./ImageEditor";
 
 interface WorkboardPanelProps {
     workspace: ReturnType<typeof useWorkspace>;
@@ -54,6 +56,7 @@ function FreeChatPanel({ workspace }: WorkboardPanelProps) {
 
     const [inputValue, setInputValue] = useState("");
     const [isImageMode, setIsImageMode] = useState(false);
+    const [editingImageUrl, setEditingImageUrl] = useState<string | null>(null);
     const scrollRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -154,18 +157,30 @@ function FreeChatPanel({ workspace }: WorkboardPanelProps) {
                                                 className="rounded-lg w-full max-w-sm object-contain"
                                             />
                                             <p className="text-xs opacity-70">&ldquo;{imageData.prompt}&rdquo;</p>
-                                            <button
-                                                onClick={() => {
-                                                    const link = document.createElement("a");
-                                                    link.href = imageData.base64.startsWith("data:") ? imageData.base64 : `data:image/png;base64,${imageData.base64}`;
-                                                    link.download = `cubito-${imageData.id}.png`;
-                                                    link.click();
-                                                }}
-                                                className="flex items-center gap-1.5 text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
-                                            >
-                                                <FaDownload size={11} />
-                                                Descargar imagen
-                                            </button>
+                                            <div className="flex items-center gap-3">
+                                                <button
+                                                    onClick={() => {
+                                                        const link = document.createElement("a");
+                                                        link.href = imageData.base64.startsWith("data:") ? imageData.base64 : `data:image/png;base64,${imageData.base64}`;
+                                                        link.download = `cubito-${imageData.id}.png`;
+                                                        link.click();
+                                                    }}
+                                                    className="flex items-center gap-1.5 text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
+                                                >
+                                                    <FaDownload size={11} />
+                                                    Descargar
+                                                </button>
+                                                <button
+                                                    onClick={() => {
+                                                        const src = imageData.base64.startsWith("data:") ? imageData.base64 : `data:image/png;base64,${imageData.base64}`;
+                                                        setEditingImageUrl(src);
+                                                    }}
+                                                    className="flex items-center gap-1.5 text-xs text-orange-600 hover:text-orange-800 dark:text-orange-400 dark:hover:text-orange-300 font-medium"
+                                                >
+                                                    <FaPenToSquare size={11} />
+                                                    Editar
+                                                </button>
+                                            </div>
                                         </div>
                                     ) : (
                                         <div className="text-sm md:text-base leading-relaxed">
@@ -238,6 +253,24 @@ function FreeChatPanel({ workspace }: WorkboardPanelProps) {
                     </Button>
                 </form>
             </div>
+
+            {/* Image Editor Modal for generated images */}
+            {editingImageUrl && (
+                <ImageEditor
+                    isOpen={!!editingImageUrl}
+                    onClose={() => setEditingImageUrl(null)}
+                    imageUrl={editingImageUrl}
+                    onSave={(editedUrl) => {
+                        // Download the edited image
+                        const link = document.createElement("a");
+                        link.href = editedUrl;
+                        link.download = `cubito-edited-${Date.now()}.png`;
+                        link.click();
+                        URL.revokeObjectURL(editedUrl);
+                        setEditingImageUrl(null);
+                    }}
+                />
+            )}
         </div>
     );
 }

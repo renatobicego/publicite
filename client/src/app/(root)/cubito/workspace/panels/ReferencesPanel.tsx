@@ -1,12 +1,13 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { Button, Image } from "@nextui-org/react";
-import { FaPlus, FaTrash } from "react-icons/fa6";
+import { FaPlus, FaTrash, FaPenToSquare } from "react-icons/fa6";
 import { useUploadThing } from "@/utils/uploadThing";
 import { toastifyError } from "@/utils/functions/toastify";
 import imageCompression from "browser-image-compression";
 import { ReferenceImage } from "@/types/workspaceTypes";
+import ImageEditor from "./ImageEditor";
 
 interface ReferencesPanelProps {
     references: ReferenceImage[];
@@ -17,7 +18,9 @@ interface ReferencesPanelProps {
     onImageUploadedForMatch?: (url: string) => void;
 }
 
-export default function ReferencesPanel({ references, onAdd, onRemove, activeModule, onImageUploadedForMatch }: ReferencesPanelProps) {
+export default function ReferencesPanel({ references, onAdd, onRemove, onUpdateUrl, activeModule, onImageUploadedForMatch }: ReferencesPanelProps) {
+    const [editingImage, setEditingImage] = useState<ReferenceImage | null>(null);
+
     const { startUpload, isUploading } = useUploadThing("fileUploader", {
         onUploadError: (e) => {
             toastifyError(`Error al subir imagen: ${e.message}`);
@@ -61,6 +64,36 @@ export default function ReferencesPanel({ references, onAdd, onRemove, activeMod
         // Reset input
         e.target.value = "";
     }, [references.length, startUpload, onAdd]);
+
+    const handleEditSave = useCallback(async (editedBlobUrl: string) => {
+        if (!editingImage) return;
+
+        try {
+            // Convert blob URL to File for re-upload
+            const response = await fetch(editedBlobUrl);
+            const blob = await response.blob();
+            const file = new File([blob], `edited-${editingImage.id}.png`, { type: "image/png" });
+
+            // Compress before uploading
+            const compressed = await imageCompression(file, {
+                maxSizeMB: 1,
+                maxWidthOrHeight: 1200,
+                useWebWorker: true,
+            });
+
+            const uploadRes = await startUpload([compressed]);
+            if (uploadRes && uploadRes.length > 0) {
+                onUpdateUrl(editingImage.id, uploadRes[0].url);
+            }
+
+            // Cleanup blob URL
+            URL.revokeObjectURL(editedBlobUrl);
+        } catch {
+            toastifyError("Error al guardar la imagen editada");
+        }
+
+        setEditingImage(null);
+    }, [editingImage, startUpload, onUpdateUrl]);
 
     return (
         <div className="p-3 space-y-3">
@@ -110,7 +143,16 @@ export default function ReferencesPanel({ references, onAdd, onRemove, activeMod
                                 className="w-full h-24 object-cover"
                                 radius="sm"
                             />
-                            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1">
+                            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1 z-10">
+                                <Button
+                                    isIconOnly
+                                    size="sm"
+                                    variant="flat"
+                                    className="bg-white/80 min-w-6 w-6 h-6"
+                                    onPress={() => setEditingImage(ref)}
+                                >
+                                    <FaPenToSquare size={10} className="text-primary" />
+                                </Button>
                                 <Button
                                     isIconOnly
                                     size="sm"
@@ -124,6 +166,16 @@ export default function ReferencesPanel({ references, onAdd, onRemove, activeMod
                         </div>
                     ))}
                 </div>
+            )}
+
+            {/* Image Editor Modal */}
+            {editingImage && (
+                <ImageEditor
+                    isOpen={!!editingImage}
+                    onClose={() => setEditingImage(null)}
+                    imageUrl={editingImage.url}
+                    onSave={handleEditSave}
+                />
             )}
         </div>
     );
