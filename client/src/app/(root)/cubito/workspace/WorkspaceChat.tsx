@@ -2,12 +2,61 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Button, ScrollShadow, Chip } from "@nextui-org/react";
-import { FaPaperPlane, FaWandMagicSparkles, FaMagnifyingGlass, FaForward } from "react-icons/fa6";
+import { FaPaperPlane, FaWandMagicSparkles, FaMagnifyingGlass, FaForward, FaRegCopy, FaCheck } from "react-icons/fa6";
 import { CustomInputWithoutFormik } from "@/components/inputs/CustomInputs";
 import type { useWorkspace } from "./hooks/useWorkspace";
 
 interface WorkspaceChatProps {
     workspace: ReturnType<typeof useWorkspace>;
+}
+
+function CopyMessageButton({
+    text,
+    variant = "bot",
+}: {
+    text: string;
+    variant?: "user" | "bot";
+}) {
+    const [copied, setCopied] = useState(false);
+
+    const handleCopy = async () => {
+        if (!text) return;
+        try {
+            if (navigator?.clipboard?.writeText) {
+                await navigator.clipboard.writeText(text);
+            } else {
+                const textarea = document.createElement("textarea");
+                textarea.value = text;
+                textarea.style.position = "fixed";
+                textarea.style.opacity = "0";
+                document.body.appendChild(textarea);
+                textarea.focus();
+                textarea.select();
+                document.execCommand("copy");
+                document.body.removeChild(textarea);
+            }
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        } catch (err) {
+            console.error("No se pudo copiar el mensaje", err);
+        }
+    };
+
+    return (
+        <button
+            type="button"
+            onClick={handleCopy}
+            aria-label={copied ? "Mensaje copiado" : "Copiar mensaje"}
+            title={copied ? "Copiado" : "Copiar mensaje"}
+            className={`mt-1 inline-flex items-center gap-1 text-xs transition-colors ${variant === "user"
+                ? "text-orange-100 hover:text-white"
+                : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                }`}
+        >
+            {copied ? <FaCheck size={11} /> : <FaRegCopy size={11} />}
+            <span>{copied ? "Copiado" : "Copiar"}</span>
+        </button>
+    );
 }
 
 export default function WorkspaceChat({ workspace }: WorkspaceChatProps) {
@@ -69,7 +118,11 @@ export default function WorkspaceChat({ workspace }: WorkspaceChatProps) {
                                     : "bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-white rounded-bl-none"
                                     }`}
                             >
-                                {msg.content}
+                                <div>{msg.content}</div>
+                                <CopyMessageButton
+                                    text={msg.content}
+                                    variant={msg.role === "user" ? "user" : "bot"}
+                                />
                             </div>
                         </div>
                     ))}

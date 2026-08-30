@@ -11,12 +11,63 @@ import {
 } from "@nextui-org/react";
 import { FaPaperPlane } from "react-icons/fa6";
 import { FaClockRotateLeft } from "react-icons/fa6";
+import { FaRegCopy, FaCheck } from "react-icons/fa6";
 import { CustomInputWithoutFormik } from "@/components/inputs/CustomInputs";
 import { useChatbot } from "@/components/buttons/ChatbotButton/useChatbot";
 import { ActiveStepInput } from "@/components/buttons/ChatbotButton/CreateAdWizard/CreateAdWizard";
 import { OrangeCubeIcon } from "@/components/buttons/ChatbotButton/OrangeCubeIcon";
 import { ChatHistory } from "@/components/buttons/ChatbotButton/ChatHistory";
 import AvatarSelector from "./avatars/AvatarSelector";
+
+function CopyMessageButton({
+    text,
+    variant = "bot",
+}: {
+    text: string;
+    variant?: "user" | "bot";
+}) {
+    const [copied, setCopied] = useState(false);
+
+    const handleCopy = async () => {
+        if (!text) return;
+        try {
+            if (navigator?.clipboard?.writeText) {
+                await navigator.clipboard.writeText(text);
+            } else {
+                // Fallback para navegadores/contextos sin Clipboard API
+                const textarea = document.createElement("textarea");
+                textarea.value = text;
+                textarea.style.position = "fixed";
+                textarea.style.opacity = "0";
+                document.body.appendChild(textarea);
+                textarea.focus();
+                textarea.select();
+                document.execCommand("copy");
+                document.body.removeChild(textarea);
+            }
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        } catch (err) {
+            console.error("No se pudo copiar el mensaje", err);
+        }
+    };
+
+    return (
+        <button
+            type="button"
+            onClick={handleCopy}
+            aria-label={copied ? "Mensaje copiado" : "Copiar mensaje"}
+            title={copied ? "Copiado" : "Copiar mensaje"}
+            className={`mt-2 inline-flex items-center gap-1 text-xs transition-colors ${variant === "user"
+                ? "text-orange-100 hover:text-white"
+                : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                }`}
+        >
+            {copied ? <FaCheck size={12} /> : <FaRegCopy size={12} />}
+            <span>{copied ? "Copiado" : "Copiar"}</span>
+        </button>
+    );
+}
 
 export default function CubitoChat() {
     const {
@@ -303,6 +354,13 @@ export default function CubitoChat() {
                                                 }
                                                 return null;
                                             })}
+                                            <CopyMessageButton
+                                                text={message.parts
+                                                    .filter((part) => part.type === "text")
+                                                    .map((part) => part.text)
+                                                    .join("\n")}
+                                                variant={message.role === "user" ? "user" : "bot"}
+                                            />
                                         </div>
                                     </div>
                                 ))}
@@ -338,6 +396,10 @@ export default function CubitoChat() {
                                             <div className="text-sm md:text-base leading-relaxed">
                                                 {parseAndRenderText(msg.content)}
                                             </div>
+                                            <CopyMessageButton
+                                                text={msg.content}
+                                                variant={msg.role === "user" ? "user" : "bot"}
+                                            />
                                         </div>
                                     </div>
                                 ))}
