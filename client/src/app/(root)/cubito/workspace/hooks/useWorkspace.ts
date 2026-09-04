@@ -290,10 +290,13 @@ export function useWorkspace() {
       toastifyError(res.error);
       return;
     }
-    // Load the full result into the board from the BE response (keep it in saved panel)
+    // Ver un informe guardado es sólo lectura: lo mostramos en el tablero pero
+    // mantenemos el estado "saved" (el BE ya no lo degrada). Así sigue en la
+    // lista de guardados y no aparecen los botones Guardar/Descartar, que darían
+    // a entender que el informe está sin guardar.
     setActiveModule("valuacion");
     setValuacionId(id);
-    setValuacionStatus("completed");
+    setValuacionStatus("saved");
     setValuacionResult(res);
   }, []);
 

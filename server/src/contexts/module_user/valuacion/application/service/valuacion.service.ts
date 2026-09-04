@@ -57,6 +57,15 @@ const SALUDO_INICIAL =
 /** Cuántos anuncios de la plataforma se usan como referencia en el informe. */
 const COMPARABLES_LIMIT = 6;
 
+/**
+ * Tope duro de preguntas del brief. El "briefComplete" lo decide la IA, pero si
+ * el modelo nunca lo marca (o sigue generando ítems "pendiente"), el brief
+ * quedaría en un loop infinito y el botón "Generar Resultado" nunca aparece.
+ * Pasado este número de respuestas del usuario, el backend fuerza el cierre del
+ * brief para que siempre se pueda avanzar al informe.
+ */
+const MAX_BRIEF_USER_TURNS = 8;
+
 function getMaxValuacionesPerDay(): number {
   const raw = Number(process.env.VALUACION_MAX_PER_DAY);
   return Number.isFinite(raw) && raw > 0 ? Math.floor(raw) : 10;
@@ -318,10 +327,12 @@ export class ValuacionService implements ValuacionServiceInterface {
         'Sólo se pueden devolver al tablero las valuaciones guardadas',
       );
     }
-    const updated = await this.valuacionRepository.update(valuacionId, {
-      $set: { status: ValuacionStatus.completed },
-    });
-    return this.toResponse(updated!);
+    // Ver un informe guardado es una acción de SÓLO LECTURA: no debe degradar el
+    // estado. Antes esto pasaba la valuación de "saved" a "completed", y si el
+    // usuario no volvía a guardar, desaparecía de la lista de guardadas (que
+    // filtra por status === "saved"): para el usuario, "se borraba". Ahora la
+    // devolvemos tal cual, sin tocar el status.
+    return this.toResponse(valuacion);
   }
 
   async linkToPost(
@@ -481,6 +492,24 @@ export class ValuacionService implements ValuacionServiceInterface {
           notApplicableFields,
         );
 
+    // El "briefComplete" no puede quedar sólo en manos de la IA: si el modelo
+    // nunca lo marca o sigue inventando ítems "pendiente", el brief entra en un
+    // loop infinito y el usuario nunca puede generar el informe. El backend lo
+    // fuerza de forma determinística cuando:
+    //  (a) hay un checklist y ningún ítem quedó "pendiente" (todos resueltos), o
+    //  (b) se alcanzó el tope de preguntas (MAX_BRIEF_USER_TURNS).
+    // Este turno agrega una respuesta más del usuario, por eso el +1.
+    const userTurns =
+      valuacion.briefMessages.filter((message) => message.role === 'user')
+        .length + 1;
+    const hasChecklist = briefItems.length > 0;
+    const noPendingItems =
+      hasChecklist &&
+      briefItems.every((item) => item.status !== 'pendiente');
+    const reachedTurnCap = userTurns >= MAX_BRIEF_USER_TURNS;
+    const briefComplete =
+      turn.briefComplete || noPendingItems || reachedTurnCap;
+
     const tokenStatus = await this.tokenService.chargeAndBuildStatus(
       {
         ...gate,
@@ -493,6 +522,14 @@ export class ValuacionService implements ValuacionServiceInterface {
         model: turn.model,
       },
     );
+
+    // Si el cierre lo forzó el backend (tope de turnos) pero la IA seguía
+    // preguntando, reemplazamos su reply por una confirmación de cierre para no
+    // mostrarle al usuario otra pregunta después de decirle que ya está listo.
+    const reply =
+      briefComplete && !turn.briefComplete && reachedTurnCap
+        ? 'Ya tengo suficiente información para armar tu informe. Generá el resultado cuando quieras 🙂'
+        : turn.reply;
 
     const now = new Date();
     const changes: Record<string, any> = {
@@ -507,7 +544,7 @@ export class ValuacionService implements ValuacionServiceInterface {
         briefMessages: {
           $each: [
             { role: 'user', content: userMessage, timestamp: now },
-            { role: 'assistant', content: turn.reply, timestamp: now },
+            { role: 'assistant', content: reply, timestamp: now },
           ],
         },
       },
@@ -520,8 +557,8 @@ export class ValuacionService implements ValuacionServiceInterface {
     const updated = await this.valuacionRepository.update(valuacion._id!, changes);
 
     return {
-      reply: turn.reply,
-      briefComplete: turn.briefComplete,
+      reply,
+      briefComplete,
       valuacion: this.toResponse(updated ?? valuacion, tokenStatus),
     };
   }
