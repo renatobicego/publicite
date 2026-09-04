@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import OpenAI from 'openai';
+import OpenAI, { toFile } from 'openai';
 import {
   ChatbotAIResult,
   ChatbotAIServiceInterface,
@@ -35,6 +35,8 @@ const IMAGE_GENERATION_SIZE = '1024x1024';
 const IMAGE_GENERATION_QUALITY = 'low';
 // Límite de caracteres del prompt (alineado con el límite del FE)
 const IMAGE_PROMPT_MAX_LENGTH = 200;
+// Tope de imágenes de referencia para la generación contextual (image-to-image).
+const MAX_REFERENCE_IMAGES = 4;
 
 @Injectable()
 export class ChatbotAIService implements ChatbotAIServiceInterface {
@@ -599,7 +601,10 @@ Esperamos que disfrutes de la plataforma y encuentres todo lo que buscas.
     }
   }
 
-  async generateImage(prompt: string): Promise<GeneratedImageResult> {
+  async generateImage(
+    prompt: string,
+    referenceImages?: string[],
+  ): Promise<GeneratedImageResult> {
     const cleanPrompt = (prompt || '').trim();
 
     if (!cleanPrompt) {
@@ -612,48 +617,115 @@ Esperamos que disfrutes de la plataforma y encuentres todo lo que buscas.
       );
     }
 
+    // Filtramos referencias válidas (data URLs base64). Si queda al menos una,
+    // usamos el flujo contextual (image-to-image) vía images.edit.
+    const validReferences = (referenceImages ?? [])
+      .filter((img) => typeof img === 'string' && img.trim().length > 0)
+      .slice(0, MAX_REFERENCE_IMAGES);
+
     try {
-      const result = await this.openai.images.generate({
-        model: IMAGE_GENERATION_MODEL,
-        prompt: cleanPrompt,
-        n: 1,
-        size: IMAGE_GENERATION_SIZE,
-        quality: IMAGE_GENERATION_QUALITY,
-      });
+      let result: OpenAI.Images.ImagesResponse;
 
-      const image = result.data?.[0];
-      const usage = this.mapImageUsage(result.usage);
+      if (validReferences.length > 0) {
+        // Generación contextual: la nueva imagen se edita a partir de las
+        // referencias (p. ej. "el mismo perro pero ahora con su dueño").
+        const imageFiles = await Promise.all(
+          validReferences.map((ref, idx) =>
+            this.dataUrlToFile(ref, `reference-${idx}.png`),
+          ),
+        );
 
-      if (!image) {
-        throw new Error('OpenAI no devolvió ninguna imagen');
-      }
-
-      // Según el modelo, OpenAI devuelve la imagen en base64 o como URL temporal.
-      if (image.b64_json) {
-        return {
-          imageBase64: `data:image/png;base64,${image.b64_json}`,
-          usage,
+        result = await this.openai.images.edit({
           model: IMAGE_GENERATION_MODEL,
-        };
-      }
-
-      if (image.url) {
-        const resp = await fetch(image.url);
-        const arrayBuffer = await resp.arrayBuffer();
-        const b64 = Buffer.from(arrayBuffer).toString('base64');
-        const contentType = resp.headers.get('content-type') || 'image/png';
-        return {
-          imageBase64: `data:${contentType};base64,${b64}`,
-          usage,
+          image: imageFiles,
+          prompt: cleanPrompt,
+          n: 1,
+          size: IMAGE_GENERATION_SIZE,
+          quality: IMAGE_GENERATION_QUALITY,
+        });
+      } else {
+        result = await this.openai.images.generate({
           model: IMAGE_GENERATION_MODEL,
-        };
+          prompt: cleanPrompt,
+          n: 1,
+          size: IMAGE_GENERATION_SIZE,
+          quality: IMAGE_GENERATION_QUALITY,
+        });
       }
 
-      throw new Error('OpenAI no devolvió ninguna imagen');
+      return await this.parseImageResult(result);
     } catch (error: any) {
       console.error('Error calling OpenAI Images API:', error);
       throw new Error(`Error generating AI image: ${error.message}`);
     }
+  }
+
+  /**
+   * Normaliza la respuesta de OpenAI (generate o edit) a un GeneratedImageResult.
+   * Según el modelo, la imagen viene en base64 o como URL temporal.
+   */
+  private async parseImageResult(
+    result: OpenAI.Images.ImagesResponse,
+  ): Promise<GeneratedImageResult> {
+    const image = result.data?.[0];
+    const usage = this.mapImageUsage(result.usage);
+
+    if (!image) {
+      throw new Error('OpenAI no devolvió ninguna imagen');
+    }
+
+    if (image.b64_json) {
+      return {
+        imageBase64: `data:image/png;base64,${image.b64_json}`,
+        usage,
+        model: IMAGE_GENERATION_MODEL,
+      };
+    }
+
+    if (image.url) {
+      const resp = await fetch(image.url);
+      const arrayBuffer = await resp.arrayBuffer();
+      const b64 = Buffer.from(arrayBuffer).toString('base64');
+      const contentType = resp.headers.get('content-type') || 'image/png';
+      return {
+        imageBase64: `data:${contentType};base64,${b64}`,
+        usage,
+        model: IMAGE_GENERATION_MODEL,
+      };
+    }
+
+    throw new Error('OpenAI no devolvió ninguna imagen');
+  }
+
+  /**
+   * Convierte una imagen (data URL base64 o URL http) en un File subible a la
+   * API de imágenes de OpenAI (images.edit).
+   */
+  private async dataUrlToFile(
+    source: string,
+    filename: string,
+  ): Promise<ReturnType<typeof toFile> extends Promise<infer T> ? T : never> {
+    const trimmed = source.trim();
+
+    // data URL base64: data:image/png;base64,XXXX
+    const dataUrlMatch = trimmed.match(/^data:([^;]+);base64,(.*)$/);
+    if (dataUrlMatch) {
+      const contentType = dataUrlMatch[1] || 'image/png';
+      const buffer = Buffer.from(dataUrlMatch[2], 'base64');
+      return toFile(buffer, filename, { type: contentType });
+    }
+
+    // URL remota: la descargamos.
+    if (/^https?:\/\//i.test(trimmed)) {
+      const resp = await fetch(trimmed);
+      const arrayBuffer = await resp.arrayBuffer();
+      const contentType = resp.headers.get('content-type') || 'image/png';
+      return toFile(Buffer.from(arrayBuffer), filename, { type: contentType });
+    }
+
+    // Base64 crudo (sin prefijo data URL).
+    const buffer = Buffer.from(trimmed, 'base64');
+    return toFile(buffer, filename, { type: 'image/png' });
   }
 
   private mapCompletionUsage(

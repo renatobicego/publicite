@@ -13,7 +13,11 @@ export interface ChatbotAdapterInterface {
   getSessionHistory(sessionId: string, limit?: number, page?: number): Promise<GetSessionHistoryResponse>;
   getUserChatSessions(userId: string, limit?: number, page?: number): Promise<GetUserChatSessionsResponse>;
   deleteSession(sessionId: string): Promise<boolean>;
-  generateAdImage(prompt: string, userId?: string): Promise<string>;
+  generateAdImage(
+    prompt: string,
+    userId?: string,
+    referenceImages?: string[],
+  ): Promise<string>;
   getTokenStatusForUser(userId: string): Promise<ChatbotTokenStatusResponse>;
 }
 

@@ -252,7 +252,7 @@ export default function CubitoChat() {
             }
 
             elements.push(
-                <p key={idx} className="text-sm md:text-base leading-relaxed">
+                <p key={idx} className="text-base md:text-base leading-relaxed">
                     {parseInline(trimmedLine)}
                 </p>
             );
@@ -319,8 +319,8 @@ export default function CubitoChat() {
                                     <OrangeCubeIcon />
                                 </div>
                                 <div>
-                                    <p className="text-lg font-medium">¡Hola! Soy Cubito</p>
-                                    <p className="text-sm mt-1">
+                                    <p className="text-xl md:text-lg font-medium">¡Hola! Soy Cubito</p>
+                                    <p className="text-base md:text-sm mt-1">
                                         Preguntame lo que quieras sobre Publicite o pedime que te
                                         ayude a crear un anuncio.
                                     </p>
@@ -346,7 +346,7 @@ export default function CubitoChat() {
                                                     return (
                                                         <div
                                                             key={idx}
-                                                            className="text-sm md:text-base leading-relaxed"
+                                                            className="text-base md:text-base leading-relaxed"
                                                         >
                                                             {parseAndRenderText(part.text)}
                                                         </div>
@@ -393,7 +393,7 @@ export default function CubitoChat() {
                                                 : "bg-white dark:bg-slate-700 text-gray-900 dark:text-white border border-gray-200 dark:border-slate-600 rounded-bl-none shadow-sm"
                                                 }`}
                                         >
-                                            <div className="text-sm md:text-base leading-relaxed">
+                                            <div className="text-base md:text-base leading-relaxed">
                                                 {parseAndRenderText(msg.content)}
                                             </div>
                                             <CopyMessageButton
@@ -464,6 +464,7 @@ export default function CubitoChat() {
                                 : "Escribí tu mensaje..."
                         }
                         disabled={isLoading || isWizardActive}
+                        classNames={{ input: "!text-base md:!text-[0.8125rem]" }}
                     />
                     <Button
                         isIconOnly

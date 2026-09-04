@@ -47,6 +47,13 @@ const initializeNestApp = async (): Promise<void> => {
     );
     nestApp.useGlobalPipes(new ValidationPipe({ transform: true }));
 
+    // Subimos el límite del body parser: la generación contextual de imágenes
+    // envía imágenes de referencia en base64 (una imagen de 1024x1024 supera
+    // holgadamente el límite por defecto de ~100kb). Registramos los parsers de
+    // express con un límite mayor antes de las rutas.
+    nestApp.use(express.json({ limit: '10mb' }));
+    nestApp.use(express.urlencoded({ limit: '10mb', extended: true }));
+
     nestApp.enableCors({
       origin: (origin, callback) => {
         const allowedOrigins = [

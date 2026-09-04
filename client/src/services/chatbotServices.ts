@@ -82,7 +82,10 @@ export const sendMessageToAI = async (
   }
 };
 
-export const generateAdImageWithAI = async (prompt: string) => {
+export const generateAdImageWithAI = async (
+  prompt: string,
+  referenceImages?: string[],
+) => {
   try {
     // La generación de imágenes requiere usuario registrado con tokens de IA:
     // mandamos token de Clerk y, como fallback, el mongoId en el body.
@@ -90,13 +93,22 @@ export const generateAdImageWithAI = async (prompt: string) => {
     const userId = authData.sessionClaims?.metadata.mongoId;
     const { context } = await getApiContext();
 
+    // referenceImages (data URLs base64 de imágenes previas) habilita la generación
+    // contextual en el BE: la nueva imagen se edita a partir de esas referencias.
+    const hasReferences =
+      Array.isArray(referenceImages) && referenceImages.length > 0;
+
     const {
       data: { generateAdImage },
     } = await getClient()
       .mutate({
         mutation: generateAdImageMutation,
         variables: {
-          generateAdImageRequest: userId ? { prompt, userId } : { prompt },
+          generateAdImageRequest: {
+            prompt,
+            ...(userId ? { userId } : {}),
+            ...(hasReferences ? { referenceImages } : {}),
+          },
         },
         context,
       })

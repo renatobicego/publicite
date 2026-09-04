@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Button, ScrollShadow } from "@nextui-org/react";
+import { Button, ScrollShadow, Modal, ModalContent, ModalBody } from "@nextui-org/react";
 import {
     FaWandMagicSparkles,
     FaMagnifyingGlass,
@@ -57,6 +57,7 @@ function FreeChatPanel({ workspace }: WorkboardPanelProps) {
     const [inputValue, setInputValue] = useState("");
     const [isImageMode, setIsImageMode] = useState(false);
     const [editingImageUrl, setEditingImageUrl] = useState<string | null>(null);
+    const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
     const scrollRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -154,7 +155,11 @@ function FreeChatPanel({ workspace }: WorkboardPanelProps) {
                                             <img
                                                 src={imageData.base64.startsWith("data:") ? imageData.base64 : `data:image/png;base64,${imageData.base64}`}
                                                 alt={imageData.prompt}
-                                                className="rounded-lg w-full max-w-sm object-contain"
+                                                onClick={() => {
+                                                    const src = imageData.base64.startsWith("data:") ? imageData.base64 : `data:image/png;base64,${imageData.base64}`;
+                                                    setPreviewImageUrl(src);
+                                                }}
+                                                className="rounded-lg w-full max-w-sm object-contain cursor-zoom-in transition-transform hover:scale-[1.02]"
                                             />
                                             <p className="text-xs opacity-70">&ldquo;{imageData.prompt}&rdquo;</p>
                                             <div className="flex items-center gap-3">
@@ -271,6 +276,28 @@ function FreeChatPanel({ workspace }: WorkboardPanelProps) {
                     }}
                 />
             )}
+
+            {/* Image Preview (lightbox) for generated images */}
+            <Modal
+                isOpen={!!previewImageUrl}
+                onClose={() => setPreviewImageUrl(null)}
+                size="4xl"
+                backdrop="blur"
+                classNames={{ base: "bg-transparent shadow-none", body: "p-0" }}
+            >
+                <ModalContent>
+                    <ModalBody>
+                        {previewImageUrl && (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                                src={previewImageUrl}
+                                alt="Vista previa"
+                                className="w-full max-h-[85vh] object-contain rounded-xl"
+                            />
+                        )}
+                    </ModalBody>
+                </ModalContent>
+            </Modal>
         </div>
     );
 }

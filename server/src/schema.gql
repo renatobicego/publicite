@@ -2010,6 +2010,11 @@ input GenerateAdImageRequest {
   mongoId del usuario (fallback si no viene token de Clerk; la generación de imágenes requiere usuario registrado)
   """
   userId: String
+
+  """
+  Imágenes de referencia (data URLs base64) para generar de forma contextual: la nueva imagen se edita a partir de estas en vez de crearse desde cero. Se usa para follow-ups tipo "el mismo perro pero ahora con su dueño".
+  """
+  referenceImages: [String!]
 }
 
 input CreateAvatarRequest {

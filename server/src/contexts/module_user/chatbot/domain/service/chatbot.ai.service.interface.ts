@@ -42,6 +42,14 @@ export interface ChatbotAIServiceInterface {
 
   /**
    * Genera una imagen a partir de un prompt usando OpenAI.
+   *
+   * @param referenceImages Imágenes de referencia (data URLs base64). Si vienen,
+   * la imagen se genera de forma contextual editando esas referencias (image-to-image)
+   * en lugar de crearse desde cero. Habilita follow-ups tipo
+   * "el mismo perro pero ahora con su dueño".
    */
-  generateImage(prompt: string): Promise<GeneratedImageResult>;
+  generateImage(
+    prompt: string,
+    referenceImages?: string[],
+  ): Promise<GeneratedImageResult>;
 }

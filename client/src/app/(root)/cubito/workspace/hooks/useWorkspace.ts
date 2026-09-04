@@ -456,8 +456,14 @@ export function useWorkspace() {
       { id: generateId(), role: "user", content: `🎨 Generar imagen: ${prompt}`, timestamp: new Date() },
     ]);
 
+    // Contexto para follow-ups: usamos la última imagen generada como referencia
+    // para que el BE la edite (p. ej. "el mismo perro pero ahora con su dueño").
+    // Si no hay ninguna, se genera desde cero.
+    const lastImage = generatedImages[generatedImages.length - 1];
+    const referenceImages = lastImage?.base64 ? [lastImage.base64] : undefined;
+
     try {
-      const res = await generateAdImageWithAI(prompt);
+      const res = await generateAdImageWithAI(prompt, referenceImages);
       console.log("[WorkspaceChat] generateAdImageWithAI response:", {
         hasRes: !!res,
         type: typeof res,
@@ -490,7 +496,7 @@ export function useWorkspace() {
     }
 
     setIsGeneratingImage(false);
-  }, [user]);
+  }, [user, generatedImages]);
 
   // ============================================================
   // GENERAL

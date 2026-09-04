@@ -291,7 +291,11 @@ export class ChatbotService implements ChatbotServiceInterface {
     }
   }
 
-  async generateAdImage(prompt: string, userId?: string): Promise<string> {
+  async generateAdImage(
+    prompt: string,
+    userId?: string,
+    referenceImages?: string[],
+  ): Promise<string> {
     try {
       this.logger.log(`Generating ad image for user: ${userId ?? 'anon'}`);
 
@@ -309,7 +313,10 @@ export class ChatbotService implements ChatbotServiceInterface {
         throw new Error(this.chatbotTokenService.buildLimitMessage(tokenGate));
       }
 
-      const result = await this.chatbotAIService.generateImage(prompt);
+      const result = await this.chatbotAIService.generateImage(
+        prompt,
+        referenceImages,
+      );
 
       // gpt-image puede no informar usage: en ese caso se cobra un costo fijo
       // configurable por env (CHATBOT_TOKENS_IMAGE_FALLBACK).

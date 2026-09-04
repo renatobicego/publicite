@@ -99,6 +99,7 @@ export class ChatbotResolver {
       const imageBase64 = await this.chatbotAdapter.generateAdImage(
         generateAdImageRequest.prompt,
         userRequestId,
+        generateAdImageRequest.referenceImages,
       );
       return { imageBase64 };
     } catch (error: any) {

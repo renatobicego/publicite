@@ -117,3 +117,5 @@ export const generateAdImageMutation = gql`
     }
   }
 `;
+// Nota: GenerateAdImageRequest acepta un campo opcional referenceImages: [String]
+// (data URLs base64 de imágenes previas) para generar de forma contextual.

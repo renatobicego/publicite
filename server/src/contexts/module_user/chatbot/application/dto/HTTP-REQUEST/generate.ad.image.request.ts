@@ -1,5 +1,12 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
+import {
+  ArrayMaxSize,
+  IsArray,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MaxLength,
+} from 'class-validator';
 
 @InputType()
 export class GenerateAdImageRequest {
@@ -19,4 +26,19 @@ export class GenerateAdImageRequest {
   @IsOptional()
   @IsString()
   userId?: string;
+
+  @Field(() => [String], {
+    nullable: true,
+    description:
+      'Imágenes de referencia (data URLs base64) para generar de forma contextual: ' +
+      'la nueva imagen se edita a partir de estas en vez de crearse desde cero. ' +
+      'Se usa para follow-ups tipo "el mismo perro pero ahora con su dueño".',
+  })
+  @IsOptional()
+  @IsArray()
+  @ArrayMaxSize(4, {
+    message: 'No se pueden enviar más de 4 imágenes de referencia',
+  })
+  @IsString({ each: true })
+  referenceImages?: string[];
 }
