@@ -61,7 +61,7 @@ export default function SorteoHomeBanner({
                         color="warning"
                         variant="flat"
                     >
-                        SORTEO MUNDIAL 2026 🇦🇷
+                        SORTEO 2026 🇦🇷
                     </Chip>
 
                     {/* Botón de acción */}
@@ -98,7 +98,7 @@ export default function SorteoHomeBanner({
                 <div className="lg:w-1/2 flex justify-center">
                     <Image
                         src="/sorteo-mundial.png"
-                        alt="Premio del sorteo - Kit Mundial 2026"
+                        alt="Premio del sorteo - Kit 2026"
                         className="object-contain max-h-[300px] lg:max-h-[400px] rounded-lg"
                         removeWrapper
                     />

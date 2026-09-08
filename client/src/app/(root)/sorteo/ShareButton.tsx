@@ -8,7 +8,7 @@ export default function ShareButton() {
     const handleShare = async () => {
         const shareData = {
             title: "Sorteo Anteojos Oficiales Selección Argentina - Publicité",
-            text: "Participá del sorteo de anteojos oficiales de la Selección Argentina ⭐⭐⭐ Colección Mundial 2026. Sorteo en vivo el 27 de Junio a las 22hs.",
+            text: "Participá del sorteo de anteojos oficiales de la Selección Argentina ⭐⭐⭐ Sorteo 2026. Sorteo en vivo el 27 de Junio a las 22hs.",
             url: `${window.location.origin}/sorteo`,
         };
 

@@ -13,17 +13,17 @@ import ShareButton from "./ShareButton";
 const SORTEO_CONFIG = {
     title: "¡ESTOS PUEDEN SER TUYOS!",
     subtitle: "Álbum Panini 2026 + Sobres Adrenalyn + Corneta + Bandera Argentina + Reloj Despertador + Pelota de Fútbol + Anteojos de Sol 🏆⚽",
-    badge: "SORTEO MUNDIAL 2026 🇦🇷",
+    badge: "SORTEO 2026 🇦🇷",
     image: "/sorteo-mundial.png", // poner la imagen en /public
     endDate: "2026-07-19T22:00:00", // Sábado 19 de Julio 2026, 22:00hs
 };
 
 export const metadata: Metadata = {
-    title: "Sorteo Kit Mundial 2026 - Publicité",
+    title: "Sorteo Kit 2026 - Publicité",
     description:
         "Participá del sorteo: Álbum Panini 2026, Sobres Adrenalyn, Corneta, Bandera Argentina, Reloj Despertador, Pelota de Fútbol y Anteojos de Sol. Sorteo en vivo el 19 de Julio a las 22hs.",
     openGraph: {
-        title: "Sorteo Kit Mundial 2026 - Publicité",
+        title: "Sorteo Kit 2026 - Publicité",
         description:
             "Participá del sorteo: Álbum Panini 2026, Sobres Adrenalyn, Corneta, Bandera Argentina, Reloj Despertador, Pelota de Fútbol y Anteojos de Sol. Sorteo en vivo el 19 de Julio a las 22hs.",
         images: [
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
                 url: "https://soonpublicite.com/sorteo-mundial.png",
                 width: 1200,
                 height: 630,
-                alt: "Sorteo Kit Mundial 2026 - Publicité",
+                alt: "Sorteo Kit 2026 - Publicité",
             },
         ],
         type: "website",
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: "summary_large_image",
-        title: "Sorteo Kit Mundial 2026 - Publicité",
+        title: "Sorteo Kit 2026 - Publicité",
         description:
             "Participá del sorteo: Álbum Panini 2026, Sobres Adrenalyn, Corneta, Bandera Argentina, Reloj Despertador, Pelota de Fútbol y Anteojos de Sol. Sorteo en vivo el 19 de Julio a las 22hs.",
         images: ["https://soonpublicite.com/sorteo-mundial.png"],
