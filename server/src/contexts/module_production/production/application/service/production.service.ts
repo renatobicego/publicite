@@ -62,6 +62,8 @@ import {
 } from '../functions/production.text';
 import { ProductionCascadeService } from './production.cascade.service';
 import { ProductionViewerScope } from './production.access.service';
+import { hashAccessKey } from '../functions/production.access-key';
+import { Visibility } from 'src/contexts/module_post/post/domain/entity/enum/post-visibility.enum';
 
 const DUPLICATE_KEY = 11000;
 const MAX_URL_ATTEMPTS = 3;
@@ -1012,5 +1014,84 @@ export class ProductionService implements ProductionServiceInterface {
 
   async getProductionLimits(userId: string): Promise<ProductionLimitsResponse> {
     return this.userService.getProductionLimitsFromUserByUserId(userId);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Alcance y clave (Fase 3)
+  // ---------------------------------------------------------------------------
+
+  /** Alcance por defecto del blog (VIS-01). */
+  async setProductionVisibility(
+    productionId: string,
+    visibility: Visibility,
+    userId: string,
+  ): Promise<ProductionResponse> {
+    const production = await this.getProductionOrFail(productionId);
+    await this.accessService.assertPermission(
+      production,
+      userId,
+      'canManageAccess',
+    );
+    await this.productionRepository.updateById(productionId, { visibility });
+    return this.findProductionById(productionId, userId);
+  }
+
+  /**
+   * Alcance propio de una carpeta o archivo (VIS-04). null = vuelve a heredar
+   * del padre (VIS-03).
+   */
+  async setProductionItemVisibility(
+    itemId: string,
+    visibility: Visibility | null,
+    userId: string,
+  ): Promise<ProductionItemResponse> {
+    const item = await this.getItemOrFail(itemId);
+    const production = await this.getProductionOrFail(item.getProduction);
+    const role = await this.accessService.assertPermission(
+      production,
+      userId,
+      'canManageAccess',
+    );
+    const updated = await this.itemRepository.updateById(itemId, {
+      visibility: visibility ?? null,
+    });
+    return this.buildItemView(production, updated!, role);
+  }
+
+  /**
+   * Configura o quita la clave del blog (INV-01, RNF-13). Cambiarla invalida
+   * los accesos otorgados con la clave anterior.
+   */
+  async setProductionAccessKey(
+    productionId: string,
+    accessKey: string | null,
+    userId: string,
+  ): Promise<ProductionResponse> {
+    const production = await this.getProductionOrFail(productionId);
+    await this.accessService.assertPermission(
+      production,
+      userId,
+      'canManageAccess',
+    );
+    const hash = accessKey ? await hashAccessKey(accessKey) : null;
+    await this.productionRepository.setAccessKeyHash(productionId, hash);
+    this.logger.log(
+      `Access key ${hash ? 'set' : 'removed'} for production ${productionId}`,
+    );
+    return this.findProductionById(productionId, userId);
+  }
+
+  /** El visitante ingresa la clave del blog (tipo Zoom). */
+  async unlockProductionWithKey(
+    productionId: string,
+    accessKey: string,
+    userId: string | undefined,
+  ): Promise<ProductionResponse> {
+    const production = await this.getProductionOrFail(productionId);
+    if (!production.hasAccessKey) {
+      return this.findProductionById(productionId, userId);
+    }
+    await this.accessService.unlockWithKey(production, userId, accessKey);
+    return this.findProductionById(productionId, userId);
   }
 }

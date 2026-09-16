@@ -18,6 +18,7 @@ import {
   ProductionItemKind,
   ProductionOwnerType,
 } from '../../domain/entity/enum/production.enums';
+import { Visibility } from 'src/contexts/module_post/post/domain/entity/enum/post-visibility.enum';
 
 @Injectable()
 export class ProductionAdapter implements ProductionAdapterInterface {
@@ -158,6 +159,54 @@ export class ProductionAdapter implements ProductionAdapterInterface {
     return this.productionService.setProductionFeatured(
       productionId,
       isFeatured,
+    );
+  }
+
+  setProductionVisibility(
+    productionId: string,
+    visibility: Visibility,
+    userId: string,
+  ) {
+    return this.productionService.setProductionVisibility(
+      productionId,
+      visibility,
+      userId,
+    );
+  }
+
+  setProductionItemVisibility(
+    itemId: string,
+    visibility: Visibility | null,
+    userId: string,
+  ) {
+    return this.productionService.setProductionItemVisibility(
+      itemId,
+      visibility,
+      userId,
+    );
+  }
+
+  setProductionAccessKey(
+    productionId: string,
+    accessKey: string | null,
+    userId: string,
+  ) {
+    return this.productionService.setProductionAccessKey(
+      productionId,
+      accessKey,
+      userId,
+    );
+  }
+
+  unlockProductionWithKey(
+    productionId: string,
+    accessKey: string,
+    userId: string | undefined,
+  ) {
+    return this.productionService.unlockProductionWithKey(
+      productionId,
+      accessKey,
+      userId,
     );
   }
 }

@@ -33,6 +33,7 @@ import {
   ProductionGqlContext,
   requireUserId,
 } from './production.context';
+import { Visibility } from 'src/contexts/module_post/post/domain/entity/enum/post-visibility.enum';
 
 /**
  * Mis Producciones: blog, carpetas, archivos y artículos (Fase 1).
@@ -193,6 +194,77 @@ export class ProductionResolver {
     @Context() context: ProductionGqlContext,
   ): Promise<ProductionLimitsResponse> {
     return this.productionAdapter.getProductionLimits(requireUserId(context));
+  }
+
+  // --- Alcance y clave (Fase 3) ----------------------------------------------
+
+  @Mutation(() => ProductionResponse, {
+    description: 'Alcance por defecto del blog (VIS-01)',
+  })
+  @UseGuards(ClerkAuthGuard)
+  async setProductionVisibility(
+    @Args('productionId', { type: () => ID }) productionId: string,
+    @Args('visibility', { type: () => Visibility }) visibility: Visibility,
+    @Context() context: ProductionGqlContext,
+  ): Promise<ProductionResponse> {
+    return this.productionAdapter.setProductionVisibility(
+      productionId,
+      visibility,
+      requireUserId(context),
+    );
+  }
+
+  @Mutation(() => ProductionItemResponse, {
+    description:
+      'Alcance propio de una carpeta o archivo (VIS-04). Sin visibility vuelve a heredar del padre (VIS-03)',
+  })
+  @UseGuards(ClerkAuthGuard)
+  async setProductionItemVisibility(
+    @Args('itemId', { type: () => ID }) itemId: string,
+    @Args('visibility', { type: () => Visibility, nullable: true })
+    visibility: Visibility | null,
+    @Context() context: ProductionGqlContext,
+  ): Promise<ProductionItemResponse> {
+    return this.productionAdapter.setProductionItemVisibility(
+      itemId,
+      visibility ?? null,
+      requireUserId(context),
+    );
+  }
+
+  @Mutation(() => ProductionResponse, {
+    description:
+      'Configura la clave del blog tipo Zoom (INV-01); sin accessKey la quita. Reemplaza al alcance',
+  })
+  @UseGuards(ClerkAuthGuard)
+  async setProductionAccessKey(
+    @Args('productionId', { type: () => ID }) productionId: string,
+    @Args('accessKey', { type: () => String, nullable: true })
+    accessKey: string | null,
+    @Context() context: ProductionGqlContext,
+  ): Promise<ProductionResponse> {
+    return this.productionAdapter.setProductionAccessKey(
+      productionId,
+      accessKey ?? null,
+      requireUserId(context),
+    );
+  }
+
+  @Mutation(() => ProductionResponse, {
+    description:
+      'El visitante ingresa la clave del blog; queda habilitado hasta que la clave cambie',
+  })
+  @UseGuards(ClerkAuthGuard)
+  async unlockProductionWithKey(
+    @Args('productionId', { type: () => ID }) productionId: string,
+    @Args('accessKey', { type: () => String }) accessKey: string,
+    @Context() context: ProductionGqlContext,
+  ): Promise<ProductionResponse> {
+    return this.productionAdapter.unlockProductionWithKey(
+      productionId,
+      accessKey,
+      requireUserId(context),
+    );
   }
 
   // --- Árbol -----------------------------------------------------------------

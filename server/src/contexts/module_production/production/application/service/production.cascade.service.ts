@@ -6,6 +6,7 @@ import { UserServiceInterface } from 'src/contexts/module_user/user/domain/servi
 import { Production } from '../../domain/entity/production.entity';
 import { ProductionRepositoryInterface } from '../../domain/repository/production.repository.interface';
 import { ProductionItemRepositoryInterface } from '../../domain/repository/production-item.repository.interface';
+import { ProductionAccessGrantRepositoryInterface } from '../../domain/repository/production-access-grant.repository.interface';
 
 export interface DeletedItemsResult {
   deletedIds: string[];
@@ -26,6 +27,8 @@ export class ProductionCascadeService {
     private readonly itemRepository: ProductionItemRepositoryInterface,
     @Inject('UserServiceInterface')
     private readonly userService: UserServiceInterface,
+    @Inject('ProductionAccessGrantRepositoryInterface')
+    private readonly grantRepository: ProductionAccessGrantRepositoryInterface,
   ) {}
 
   async deleteProduction(
@@ -41,6 +44,7 @@ export class ProductionCascadeService {
     this.logger.log(
       `Deleting production ${productionId}: ${deletedItems} items removed`,
     );
+    await this.grantRepository.deleteByProduction(productionId, session);
 
     // Libera el cupo de blogs del creator (User.productions[]).
     await this.userService.removeProductionFromUser(

@@ -1,4 +1,10 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Inject,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ClientSession, Types } from 'mongoose';
 
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
@@ -25,6 +31,11 @@ import {
   resolveProductionRole,
 } from '../functions/production.roles';
 import { verifyAccessKey } from '../functions/production.access-key';
+import { ProductionAccessGrantRepositoryInterface } from '../../domain/repository/production-access-grant.repository.interface';
+import {
+  getAccessKeyLockMinutes,
+  getAccessKeyMaxAttempts,
+} from 'src/contexts/module_shared/production-limits/production.limits.config';
 
 export type ProductionPermission = keyof typeof ProductionPermissions;
 
@@ -72,6 +83,8 @@ export class ProductionAccessService {
     private readonly productionRepository: ProductionRepositoryInterface,
     @Inject('UserServiceInterface')
     private readonly userService: UserServiceInterface,
+    @Inject('ProductionAccessGrantRepositoryInterface')
+    private readonly grantRepository: ProductionAccessGrantRepositoryInterface,
   ) {}
 
   // ---------------------------------------------------------------------------
@@ -270,16 +283,93 @@ export class ProductionAccessService {
   // ---------------------------------------------------------------------------
 
   /**
-   * Acceso por clave (INV-01/02). Sin clave configurada, el acceso es libre;
-   * con clave, se valida la que manda el visitante contra el hash guardado.
+   * Acceso por clave (INV-01/02). Sin clave configurada el acceso es libre.
+   * Con clave hace falta sesión: vale un acceso ya otorgado para la versión
+   * vigente de la clave, o la clave que manda el visitante (que queda
+   * registrada como acceso otorgado).
    */
   private async hasKeyAccess(
     production: Production,
-    _scope: ProductionViewerScope,
+    scope: ProductionViewerScope,
     accessKey?: string | null,
   ): Promise<boolean> {
     if (!production.hasAccessKey) return true;
-    return verifyAccessKey(accessKey, production.getAccessKeyHash);
+    if (!scope.userId) return false;
+
+    const grant = await this.grantRepository.find(
+      production.getId!,
+      scope.userId,
+    );
+    if (grant?.keyVersion === production.getAccessKeyVersion) return true;
+    if (!accessKey) return false;
+
+    const result = await this.tryAccessKey(production, scope.userId, accessKey);
+    return result === 'granted';
+  }
+
+  /**
+   * Valida una clave con límite de intentos por usuario y blog: tras
+   * PRODUCTION_ACCESS_KEY_MAX_ATTEMPTS fallos se bloquea un rato, para que la
+   * clave no se pueda adivinar por fuerza bruta.
+   */
+  private async tryAccessKey(
+    production: Production,
+    userId: string,
+    accessKey: string,
+  ): Promise<'granted' | 'invalid' | 'locked'> {
+    const productionId = production.getId!;
+    const grant = await this.grantRepository.find(productionId, userId);
+    if (grant?.lockedUntil && grant.lockedUntil.getTime() > Date.now()) {
+      return 'locked';
+    }
+
+    if (await verifyAccessKey(accessKey, production.getAccessKeyHash)) {
+      await this.grantRepository.grant(
+        productionId,
+        userId,
+        production.getAccessKeyVersion ?? 0,
+      );
+      return 'granted';
+    }
+
+    const lockUntil = new Date(
+      Date.now() + getAccessKeyLockMinutes() * 60 * 1000,
+    );
+    const state = await this.grantRepository.registerFailure(
+      productionId,
+      userId,
+      getAccessKeyMaxAttempts(),
+      lockUntil,
+    );
+    this.logger.warn(
+      `Clave incorrecta en la producción ${productionId} (usuario ${userId})`,
+    );
+    return state.lockedUntil && state.lockedUntil.getTime() > Date.now()
+      ? 'locked'
+      : 'invalid';
+  }
+
+  /** INV-01: el visitante ingresa la clave del blog. */
+  async unlockWithKey(
+    production: Production,
+    userId: string | undefined,
+    accessKey: string,
+  ): Promise<void> {
+    if (!production.hasAccessKey) return;
+    if (!userId) {
+      throw new UnauthorizedException(
+        'Tenés que iniciar sesión para ingresar la clave',
+      );
+    }
+    const result = await this.tryAccessKey(production, userId, accessKey);
+    if (result === 'locked') {
+      throw new ForbiddenException(
+        `Demasiados intentos. Probá de nuevo en ${getAccessKeyLockMinutes()} minutos.`,
+      );
+    }
+    if (result === 'invalid') {
+      throw new BadRequestException('La clave es incorrecta');
+    }
   }
 
   private async findActiveTicketIds(

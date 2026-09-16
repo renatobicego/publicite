@@ -16,6 +16,11 @@
  * - PRODUCTION_FREE_FILES_PER_BLOG: archivos por blog del plan gratuito (default 10).
  * - PRODUCTION_MAX_PERSONAL_BLOGS: tope duro de blogs personales para cualquier
  *   plan (default 1). PLN-02: el blog personal NO aumenta al mejorar de plan.
+ *
+ * Otros parámetros de MP:
+ * - PRODUCTION_ACCESS_KEY_MAX_ATTEMPTS: intentos fallidos de clave antes de
+ *   bloquear al usuario en ese blog (default 5).
+ * - PRODUCTION_ACCESS_KEY_LOCK_MINUTES: minutos de bloqueo (default 15).
  */
 
 function readPositiveNumber(envKey: string, defaultValue: number): number {
@@ -47,4 +52,14 @@ export function getFreeFilesPerBlogLimit(): number {
  */
 export function getMaxPersonalBlogsLimit(): number {
   return readPositiveNumber('PRODUCTION_MAX_PERSONAL_BLOGS', 1);
+}
+
+/** Intentos fallidos de clave antes del bloqueo temporal. */
+export function getAccessKeyMaxAttempts(): number {
+  return Math.max(1, readPositiveNumber('PRODUCTION_ACCESS_KEY_MAX_ATTEMPTS', 5));
+}
+
+/** Minutos de bloqueo tras agotar los intentos de clave. */
+export function getAccessKeyLockMinutes(): number {
+  return readPositiveNumber('PRODUCTION_ACCESS_KEY_LOCK_MINUTES', 15);
 }

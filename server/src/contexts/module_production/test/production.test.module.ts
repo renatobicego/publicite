@@ -18,6 +18,8 @@ import ProductionItemModel, {
 } from '../production/infraestructure/schemas/production-item.schema';
 import { ProductionRepository } from '../production/infraestructure/repository/production.repository';
 import { ProductionItemRepository } from '../production/infraestructure/repository/production-item.repository';
+import ProductionAccessGrantModel from '../production/infraestructure/schemas/production-access-grant.schema';
+import { ProductionAccessGrantRepository } from '../production/infraestructure/repository/production-access-grant.repository';
 import { ProductionService } from '../production/application/service/production.service';
 import { ProductionAccessService } from '../production/application/service/production.access.service';
 import { ProductionCascadeService } from '../production/application/service/production.cascade.service';
@@ -52,6 +54,10 @@ const production_testing_module = async (): Promise<TestingModule> => {
           schema: ProductionItemModel.schema,
           discriminators: PRODUCTION_ITEM_DISCRIMINATORS,
         },
+        {
+          name: ProductionAccessGrantModel.modelName,
+          schema: ProductionAccessGrantModel.schema,
+        },
         { name: 'User', schema: UserSchema },
         { name: 'Group', schema: GroupSchema },
         { name: 'SubscriptionPlan', schema: SubscriptionPlanSchema },
@@ -70,6 +76,10 @@ const production_testing_module = async (): Promise<TestingModule> => {
       {
         provide: 'ProductionItemRepositoryInterface',
         useClass: ProductionItemRepository,
+      },
+      {
+        provide: 'ProductionAccessGrantRepositoryInterface',
+        useClass: ProductionAccessGrantRepository,
       },
       {
         provide: 'ProductionServiceInterface',

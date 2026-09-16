@@ -11,6 +11,8 @@ import ProductionItemModel, {
 } from '../schemas/production-item.schema';
 import { ProductionRepository } from '../repository/production.repository';
 import { ProductionItemRepository } from '../repository/production-item.repository';
+import ProductionAccessGrantModel from '../schemas/production-access-grant.schema';
+import { ProductionAccessGrantRepository } from '../repository/production-access-grant.repository';
 import { ProductionService } from '../../application/service/production.service';
 import { ProductionAccessService } from '../../application/service/production.access.service';
 import { ProductionCascadeService } from '../../application/service/production.cascade.service';
@@ -33,6 +35,10 @@ import { ProductionAdminResolver } from '../graphql/resolver/production-admin.re
         // registrarlos dos veces en la misma conexión.
         discriminators: PRODUCTION_ITEM_DISCRIMINATORS,
       },
+      {
+        name: ProductionAccessGrantModel.modelName,
+        schema: ProductionAccessGrantModel.schema,
+      },
       { name: 'User', schema: UserSchema },
       { name: 'Group', schema: GroupSchema },
     ]),
@@ -53,6 +59,10 @@ import { ProductionAdminResolver } from '../graphql/resolver/production-admin.re
     {
       provide: 'ProductionItemRepositoryInterface',
       useClass: ProductionItemRepository,
+    },
+    {
+      provide: 'ProductionAccessGrantRepositoryInterface',
+      useClass: ProductionAccessGrantRepository,
     },
     {
       provide: 'ProductionServiceInterface',
