@@ -1,7 +1,10 @@
 import { ProductionServiceInterface } from '../../domain/service/production.service.interface';
+import { ProductionInsightsServiceInterface } from '../../domain/service/production-insights.service.interface';
 
 /**
- * Adapter entre el resolver y el service (el resolver nunca llama al service
- * directo). Expone las mismas operaciones que el service.
+ * Adapter entre el resolver y los services (el resolver nunca llama a un
+ * service directo). Expone las mismas operaciones que los services.
  */
-export type ProductionAdapterInterface = ProductionServiceInterface;
+export interface ProductionAdapterInterface
+  extends ProductionServiceInterface,
+    ProductionInsightsServiceInterface {}

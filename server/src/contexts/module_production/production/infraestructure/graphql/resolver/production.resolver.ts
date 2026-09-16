@@ -34,6 +34,7 @@ import {
   requireUserId,
 } from './production.context';
 import { Visibility } from 'src/contexts/module_post/post/domain/entity/enum/post-visibility.enum';
+import { ProductionConsumptionResponse } from '../../../domain/entity/models_graphql/HTTP-RESPONSE/production-consumption.response';
 
 /**
  * Mis Producciones: blog, carpetas, archivos y artículos (Fase 1).
@@ -194,6 +195,22 @@ export class ProductionResolver {
     @Context() context: ProductionGqlContext,
   ): Promise<ProductionLimitsResponse> {
     return this.productionAdapter.getProductionLimits(requireUserId(context));
+  }
+
+  @Query(() => ProductionConsumptionResponse, {
+    description:
+      'CONTROL Consumo (PC-05): tokens de IA y archivos usados vs. límite. Con productionId, sólo ese blog (staff)',
+  })
+  @UseGuards(ClerkAuthGuard)
+  async getProductionConsumption(
+    @Args('productionId', { type: () => ID, nullable: true })
+    productionId: string | undefined,
+    @Context() context: ProductionGqlContext,
+  ): Promise<ProductionConsumptionResponse> {
+    return this.productionAdapter.getProductionConsumption(
+      requireUserId(context),
+      productionId,
+    );
   }
 
   // --- Alcance y clave (Fase 3) ----------------------------------------------

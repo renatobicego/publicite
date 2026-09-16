@@ -24,6 +24,19 @@ import { ProductionService } from '../production/application/service/production.
 import { ProductionAccessService } from '../production/application/service/production.access.service';
 import { ProductionCascadeService } from '../production/application/service/production.cascade.service';
 import { ProductionAdapter } from '../production/infraestructure/adapter/production.adapter';
+import { ProductionInsightsService } from '../production/application/service/production.insights.service';
+
+export const mockTokenService = {
+  getStatusForUser: jest.fn(async () => ({
+    hasActivePaidPlan: false,
+    source: 'free',
+    allowance: 100,
+    used: 30,
+    remaining: 70,
+    communityTokensAvailable: true,
+    resetsAt: new Date('2030-01-01T00:00:00Z'),
+  })),
+};
 
 /**
  * Módulo de test de Mis Producciones. Usa `.env.test` (cluster QA, base
@@ -84,6 +97,15 @@ const production_testing_module = async (): Promise<TestingModule> => {
       {
         provide: 'ProductionServiceInterface',
         useClass: ProductionService,
+      },
+      {
+        provide: 'ProductionInsightsServiceInterface',
+        useClass: ProductionInsightsService,
+      },
+      {
+        // El token bucket real depende de la config de OpenAI: acá se simula.
+        provide: 'ChatbotTokenServiceInterface',
+        useValue: mockTokenService,
       },
       {
         provide: 'ProductionAdapterInterface',

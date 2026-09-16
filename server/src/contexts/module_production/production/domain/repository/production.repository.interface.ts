@@ -40,6 +40,8 @@ export interface ProductionRepositoryInterface {
   findById(id: string, session?: ClientSession): Promise<Production | null>;
   findByUrl(url: string): Promise<Production | null>;
   findByIds(ids: string[]): Promise<Production[]>;
+  /** Blogs creados por el usuario (personales y de grupo). */
+  findByCreator(userId: string): Promise<Production[]>;
   findOwnerInfo(
     ownerId: string,
     ownerType: ProductionOwnerType,

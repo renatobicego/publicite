@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 
 import { ProductionAdapterInterface } from '../../application/adapter/production.adapter.interface';
 import { ProductionServiceInterface } from '../../domain/service/production.service.interface';
+import { ProductionInsightsServiceInterface } from '../../domain/service/production-insights.service.interface';
 import {
   ProductionCreateRequest,
   ProductionUpdateRequest,
@@ -25,7 +26,13 @@ export class ProductionAdapter implements ProductionAdapterInterface {
   constructor(
     @Inject('ProductionServiceInterface')
     private readonly productionService: ProductionServiceInterface,
+    @Inject('ProductionInsightsServiceInterface')
+    private readonly insightsService: ProductionInsightsServiceInterface,
   ) {}
+
+  getProductionConsumption(userId: string, productionId?: string) {
+    return this.insightsService.getProductionConsumption(userId, productionId);
+  }
 
   createProduction(request: ProductionCreateRequest, userId: string) {
     return this.productionService.createProduction(request, userId);

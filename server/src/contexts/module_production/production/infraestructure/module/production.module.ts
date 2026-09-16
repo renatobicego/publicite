@@ -14,6 +14,8 @@ import { ProductionItemRepository } from '../repository/production-item.reposito
 import ProductionAccessGrantModel from '../schemas/production-access-grant.schema';
 import { ProductionAccessGrantRepository } from '../repository/production-access-grant.repository';
 import { ProductionService } from '../../application/service/production.service';
+import { ProductionInsightsService } from '../../application/service/production.insights.service';
+import { ChatbotModule } from 'src/contexts/module_user/chatbot/infrastructure/module/chatbot.module';
 import { ProductionAccessService } from '../../application/service/production.access.service';
 import { ProductionCascadeService } from '../../application/service/production.cascade.service';
 import { ProductionAdapter } from '../adapter/production.adapter';
@@ -45,6 +47,8 @@ import { ProductionAdminResolver } from '../graphql/resolver/production-admin.re
     // OJO: no agregar ConfigModule.forRoot() acá (carga `.env` de prod y pisa
     // la config de QA); el ConfigModule global ya está en app.module.
     UserModule,
+    // Token bucket de IA para CONTROL Consumo (PC-05).
+    ChatbotModule,
   ],
   providers: [
     MyLoggerService,
@@ -67,6 +71,10 @@ import { ProductionAdminResolver } from '../graphql/resolver/production-admin.re
     {
       provide: 'ProductionServiceInterface',
       useClass: ProductionService,
+    },
+    {
+      provide: 'ProductionInsightsServiceInterface',
+      useClass: ProductionInsightsService,
     },
     {
       provide: 'ProductionAdapterInterface',
