@@ -89,6 +89,15 @@ export class ProductionItemRepository
     return docs.map((doc) => ProductionItem.fromDocument(doc));
   }
 
+  async findManyByIds(ids: string[]): Promise<ProductionItem[]> {
+    const validIds = ids.filter((id) => Types.ObjectId.isValid(id));
+    if (validIds.length === 0) return [];
+    const docs = await this.itemModel
+      .find({ _id: { $in: validIds.map(toObjectId) } })
+      .lean();
+    return docs.map((doc) => ProductionItem.fromDocument(doc));
+  }
+
   async findChildren(
     productionId: string,
     parentId: string | null,

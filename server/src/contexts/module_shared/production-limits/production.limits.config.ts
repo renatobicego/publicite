@@ -27,6 +27,9 @@
  *   (default 24, TKT-03).
  * - PRODUCTION_TICKETS_TRANSFER_ALIAS / _CBU / _HOLDER / _BANK: datos de la
  *   cuenta de Soonpublicité a la que el visitante transfiere (TKT-05).
+ * - PRODUCTION_REPORTS_HIDE_THRESHOLD: denuncias pendientes que ocultan
+ *   automáticamente un contenido hasta que un admin lo revise (default 3,
+ *   DEN-02).
  */
 
 function readPositiveNumber(envKey: string, defaultValue: number): number {
@@ -81,6 +84,11 @@ export function getTicketCommissionPercent(): number {
 /** Duración mínima de un ticket en horas (TKT-03). */
 export function getTicketMinDurationHours(): number {
   return Math.max(1, readPositiveNumber('PRODUCTION_TICKET_MIN_DURATION_HOURS', 24));
+}
+
+/** Denuncias pendientes que ocultan un contenido (DEN-02). */
+export function getReportsHideThreshold(): number {
+  return Math.max(1, readPositiveNumber('PRODUCTION_REPORTS_HIDE_THRESHOLD', 3));
 }
 
 /** Datos de la cuenta de Soonpublicité para las transferencias (TKT-05). */

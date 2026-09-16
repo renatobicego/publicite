@@ -16,6 +16,14 @@ import {
   ProductionTicketPurchaseResponse,
 } from '../../../domain/entity/models_graphql/HTTP-RESPONSE/production-ticket.response';
 import { ProductionGqlContext, requireUserId } from './production.context';
+import { ProductionModerationAdapterInterface } from '../../../application/adapter/production-moderation.adapter.interface';
+import { ProductionModerationInput } from '../../../domain/entity/models_graphql/HTTP-REQUEST/production-report.request';
+import {
+  ProductionModerationResultResponse,
+  ProductionReportDetailResponse,
+  ProductionReportTargetListResponse,
+} from '../../../domain/entity/models_graphql/HTTP-RESPONSE/production-report.response';
+import { ProductionReportStatus } from '../../../domain/entity/enum/production-report.enums';
 
 /**
  * Operaciones de los admins de la plataforma sobre Mis Producciones.
@@ -30,7 +38,59 @@ export class ProductionAdminResolver {
     private readonly productionAdapter: ProductionAdapterInterface,
     @Inject('ProductionTicketAdapterInterface')
     private readonly ticketAdapter: ProductionTicketAdapterInterface,
+    @Inject('ProductionModerationAdapterInterface')
+    private readonly moderationAdapter: ProductionModerationAdapterInterface,
   ) {}
+
+  // --- Denuncias: revisión (DEN-03) --------------------------------------------
+
+  @Query(() => ProductionReportTargetListResponse, {
+    description:
+      'Sólo admin: contenidos denunciados agrupados, con su estado de moderación',
+  })
+  async getProductionReportTargetsAdmin(
+    @Args('status', {
+      type: () => ProductionReportStatus,
+      defaultValue: ProductionReportStatus.pending,
+    })
+    status: ProductionReportStatus,
+    @Args('page', { type: () => Int, defaultValue: 1 }) page: number,
+    @Args('limit', { type: () => Int, defaultValue: 20 }) limit: number,
+  ): Promise<ProductionReportTargetListResponse> {
+    return this.moderationAdapter.getProductionReportTargetsAdmin(
+      status,
+      page,
+      limit,
+    );
+  }
+
+  @Query(() => [ProductionReportDetailResponse], {
+    description: 'Sólo admin: denuncias de un blog o de un contenido',
+  })
+  async getProductionTargetReportsAdmin(
+    @Args('productionId', { type: () => ID }) productionId: string,
+    @Args('itemId', { type: () => ID, nullable: true }) itemId: string | undefined,
+  ): Promise<ProductionReportDetailResponse[]> {
+    return this.moderationAdapter.getProductionTargetReportsAdmin(
+      productionId,
+      itemId,
+    );
+  }
+
+  @Mutation(() => ProductionModerationResultResponse, {
+    description:
+      'Sólo admin: confirma el bloqueo o restaura el contenido denunciado',
+  })
+  async moderateProductionContent(
+    @Args('input', { type: () => ProductionModerationInput })
+    input: ProductionModerationInput,
+    @Context() context: ProductionGqlContext,
+  ): Promise<ProductionModerationResultResponse> {
+    return this.moderationAdapter.moderateProductionContent(
+      input,
+      requireUserId(context),
+    );
+  }
 
   @Mutation(() => ProductionResponse, {
     description: 'Sólo admin: fija o quita un blog de "Producciones destacadas"',

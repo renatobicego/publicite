@@ -28,6 +28,8 @@ export interface ProductionItemRepositoryInterface {
     ids: string[],
     session?: ClientSession,
   ): Promise<ProductionItem[]>;
+  /** Ítems de cualquier blog (panel de denuncias). */
+  findManyByIds(ids: string[]): Promise<ProductionItem[]>;
   findChildren(
     productionId: string,
     parentId: string | null,

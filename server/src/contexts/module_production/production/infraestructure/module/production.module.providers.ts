@@ -34,6 +34,10 @@ import {
 import { ProductionCommunityRepository } from '../repository/production-community.repository';
 import { ProductionCommunityService } from '../../application/service/production.community.service';
 import { ProductionCommunityAdapter } from '../adapter/production-community.adapter';
+import ProductionReportModel from '../schemas/production-report.schema';
+import { ProductionReportRepository } from '../repository/production-report.repository';
+import { ProductionModerationService } from '../../application/service/production.moderation.service';
+import { ProductionModerationAdapter } from '../adapter/production-moderation.adapter';
 
 /**
  * Modelos y providers de MP, compartidos por el módulo y por el módulo de
@@ -66,6 +70,7 @@ export const PRODUCTION_MODELS: ModelDefinition[] = [
     name: ProductionCommentModel.modelName,
     schema: ProductionCommentModel.schema,
   },
+  { name: ProductionReportModel.modelName, schema: ProductionReportModel.schema },
 ];
 
 export const PRODUCTION_PROVIDERS: Provider[] = [
@@ -96,6 +101,10 @@ export const PRODUCTION_PROVIDERS: Provider[] = [
     provide: 'ProductionCommunityRepositoryInterface',
     useClass: ProductionCommunityRepository,
   },
+  {
+    provide: 'ProductionReportRepositoryInterface',
+    useClass: ProductionReportRepository,
+  },
   { provide: 'ProductionServiceInterface', useClass: ProductionService },
   {
     provide: 'ProductionInsightsServiceInterface',
@@ -113,6 +122,10 @@ export const PRODUCTION_PROVIDERS: Provider[] = [
     provide: 'ProductionCommunityServiceInterface',
     useClass: ProductionCommunityService,
   },
+  {
+    provide: 'ProductionModerationServiceInterface',
+    useClass: ProductionModerationService,
+  },
   { provide: 'ProductionAdapterInterface', useClass: ProductionAdapter },
   {
     provide: 'ProductionTicketAdapterInterface',
@@ -125,5 +138,9 @@ export const PRODUCTION_PROVIDERS: Provider[] = [
   {
     provide: 'ProductionCommunityAdapterInterface',
     useClass: ProductionCommunityAdapter,
+  },
+  {
+    provide: 'ProductionModerationAdapterInterface',
+    useClass: ProductionModerationAdapter,
   },
 ];
