@@ -31,6 +31,7 @@ import { WhatsAppModule } from './contexts/module_webhook/whatsapp/infrastructur
 import { GiveawayModule } from './contexts/module_giveaway/giveaway/infrastructure/module/giveaway.module';
 import { ValuacionModule } from './contexts/module_user/valuacion/infrastructure/module/valuacion.module';
 import { MatchModule } from './contexts/module_user/match/infrastructure/module/match.module';
+import { ProductionModule } from './contexts/module_production/production/infraestructure/module/production.module';
 
 @Module({
   imports: [
@@ -68,6 +69,7 @@ import { MatchModule } from './contexts/module_user/match/infrastructure/module/
     GiveawayModule,
     ValuacionModule,
     MatchModule,
+    ProductionModule,
   ],
   providers: [
     {

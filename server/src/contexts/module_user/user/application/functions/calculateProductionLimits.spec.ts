@@ -112,6 +112,25 @@ describe('calculateProductionLimitsFromUser (Mis Producciones - RNF-06)', () => 
     expect(limits.totalGroupBlogLimit).toBe(4);
   });
 
+  it('sólo un plan pago activo habilita tickets pagos (PLN-02/03, TKT-10)', () => {
+    const free = { isFree: true, isPack: false };
+    const pack = { isFree: false, isPack: true };
+    const paid = { isFree: false, isPack: false };
+
+    expect(
+      calculateProductionLimitsFromUser(userWith([], []), logger)
+        .canSellPaidTickets,
+    ).toBe(false);
+    expect(
+      calculateProductionLimitsFromUser(userWith([], [free, pack]), logger)
+        .canSellPaidTickets,
+    ).toBe(false);
+    expect(
+      calculateProductionLimitsFromUser(userWith([], [free, paid]), logger)
+        .canSellPaidTickets,
+    ).toBe(true);
+  });
+
   it('el piso gratuito es configurable por variables de entorno', () => {
     process.env.PRODUCTION_FREE_GROUP_BLOGS = '2';
     process.env.PRODUCTION_FREE_FILES_PER_BLOG = '25';

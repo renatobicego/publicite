@@ -67,6 +67,7 @@ module_x/<submodulo>/
 | `module_magazine` | Revistas. |
 | `module_novelty` | Novedades. |
 | `module_giveaway` | Sorteos. |
+| `module_production` | **Mis Producciones** (`production/`): blogs con dueño polimórfico User\|Group, árbol de carpetas/archivos/artículos (colección `productionitems` con discriminator `kind`), visibilidad con herencia, clave de acceso, tickets, fans, reseñas, denuncias y SeudoBase. Ver §10. |
 | `module_socket` | WebSockets (socket.io). |
 | `module_shared` | Transversal: auth (Clerk guards + `PubliciteAuth`), logger, config de tokens, utilidades. |
 

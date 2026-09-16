@@ -1,0 +1,97 @@
+import {
+  ProductionIdResponse,
+  ProductionItemResponse,
+  ProductionItemsResponse,
+  ProductionLimitsResponse,
+  ProductionResponse,
+} from '../entity/models_graphql/HTTP-RESPONSE/production.response';
+import {
+  ProductionCreateRequest,
+  ProductionUpdateRequest,
+} from '../entity/models_graphql/HTTP-REQUEST/production.request';
+import {
+  ProductionArticleRequest,
+  ProductionArticleUpdateRequest,
+  ProductionFileRequest,
+  ProductionFileUpdateRequest,
+  ProductionFolderRequest,
+  ProductionFolderUpdateRequest,
+} from '../entity/models_graphql/HTTP-REQUEST/production-item.request';
+import {
+  ProductionItemKind,
+  ProductionOwnerType,
+} from '../entity/enum/production.enums';
+
+export interface ProductionServiceInterface {
+  createProduction(
+    request: ProductionCreateRequest,
+    userId: string,
+  ): Promise<ProductionIdResponse>;
+  updateProduction(
+    productionId: string,
+    request: ProductionUpdateRequest,
+    userId: string,
+  ): Promise<ProductionResponse>;
+  deleteProduction(productionId: string, userId: string): Promise<void>;
+
+  createFolder(
+    request: ProductionFolderRequest,
+    userId: string,
+  ): Promise<ProductionItemResponse>;
+  updateFolder(
+    itemId: string,
+    request: ProductionFolderUpdateRequest,
+    userId: string,
+  ): Promise<ProductionItemResponse>;
+  uploadFile(
+    request: ProductionFileRequest,
+    userId: string,
+  ): Promise<ProductionItemResponse>;
+  updateFile(
+    itemId: string,
+    request: ProductionFileUpdateRequest,
+    userId: string,
+  ): Promise<ProductionItemResponse>;
+  createArticle(
+    request: ProductionArticleRequest,
+    userId: string,
+  ): Promise<ProductionItemResponse>;
+  updateArticle(
+    itemId: string,
+    request: ProductionArticleUpdateRequest,
+    userId: string,
+  ): Promise<ProductionItemResponse>;
+  deleteItem(
+    itemId: string,
+    kind: ProductionItemKind,
+    userId: string,
+  ): Promise<void>;
+
+  findProductionById(
+    productionId: string,
+    userId?: string,
+    accessKey?: string,
+  ): Promise<ProductionResponse>;
+  findProductionByUrl(
+    url: string,
+    userId?: string,
+    accessKey?: string,
+  ): Promise<ProductionResponse>;
+  findProductionsByOwner(
+    ownerId: string,
+    ownerType: ProductionOwnerType | undefined,
+    userId?: string,
+  ): Promise<ProductionResponse[]>;
+  getProductionItems(
+    productionId: string,
+    parentId: string | undefined,
+    userId?: string,
+    accessKey?: string,
+  ): Promise<ProductionItemsResponse>;
+  getProductionItemById(
+    itemId: string,
+    userId?: string,
+    accessKey?: string,
+  ): Promise<ProductionItemResponse>;
+  getProductionLimits(userId: string): Promise<ProductionLimitsResponse>;
+}

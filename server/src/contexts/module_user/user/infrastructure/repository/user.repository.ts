@@ -390,7 +390,8 @@ export class UserRepository implements UserRepositoryInterface {
             match: { status: 'authorized' },
             populate: {
               path: 'subscriptionPlan',
-              select: 'personalBlogsCount groupBlogsCount filesPerBlogCount',
+              select:
+                'personalBlogsCount groupBlogsCount filesPerBlogCount isFree isPack',
             },
           },
         ])
@@ -1063,7 +1064,14 @@ export class UserRepository implements UserRepositoryInterface {
         { $pull: { productions: productionId } },
         options,
       );
-      checkIfanyDataWasModified(result);
+      // No se lanza error si no había nada que quitar: el borrado del blog
+      // tiene que poder completarse aunque el array esté desincronizado o el
+      // usuario ya no exista.
+      if (result.modifiedCount === 0) {
+        this.logger.warn(
+          `La producción ${productionId} no estaba en el usuario ${ownerId}`,
+        );
+      }
     } catch (error: any) {
       this.logger.error(
         'An error was occurred trying to remove a production from user array(catch)',

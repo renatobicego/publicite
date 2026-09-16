@@ -37,6 +37,8 @@ interface userWithProductionsAndSubscriptions {
         personalBlogsCount?: number;
         groupBlogsCount?: number;
         filesPerBlogCount?: number;
+        isFree?: boolean;
+        isPack?: boolean;
       };
     },
   ];
@@ -50,6 +52,11 @@ interface ProductionLimits {
   personalBlogsAvailable: number;
   groupBlogsAvailable: number;
   filesPerBlogLimit: number;
+  /**
+   * Tickets pagos (PLN-02/03, TKT-10): sólo con un plan pago activo. El plan
+   * gratuito y los packs de publicaciones no los habilitan.
+   */
+  canSellPaidTickets: boolean;
 }
 
 function calculateProductionLimitsFromUser(
@@ -112,6 +119,12 @@ function calculateProductionLimitsFromUser(
 
   const personalBlogsAvailable = totalPersonalBlogLimit - personalBlogCount;
   const groupBlogsAvailable = groupBlogLimit - groupBlogCount;
+  const canSellPaidTickets = subscriptions.some(
+    (subscription) =>
+      !!subscription?.subscriptionPlan &&
+      subscription.subscriptionPlan.isFree !== true &&
+      subscription.subscriptionPlan.isPack !== true,
+  );
 
   return {
     personalBlogCount,
@@ -121,6 +134,7 @@ function calculateProductionLimitsFromUser(
     personalBlogsAvailable,
     groupBlogsAvailable,
     filesPerBlogLimit,
+    canSellPaidTickets,
   };
 }
 

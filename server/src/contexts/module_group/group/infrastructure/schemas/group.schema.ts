@@ -22,6 +22,8 @@ const GroupSchema = new Schema({
   },
   userIdAndNotificationMap: { type: Map, of: String },
   groupNote: { type: String, default: 'Este grupo aun no tiene ninguna nota.' },
+  // Blog de "Mis Producciones" del grupo (RNF-11). Uno por grupo.
+  blog: { type: Schema.Types.ObjectId, ref: 'Production', default: null },
 });
 
 interface GroupDocument extends Document {
@@ -41,6 +43,7 @@ interface GroupDocument extends Document {
   };
   userIdAndNotificationMap: Map<string, string>;
   groupNote: string;
+  blog: string | null;
 }
 
 // Middleware para eliminar secciones asociadas antes de eliminar las revistas
