@@ -1,14 +1,26 @@
 import { Inject, UseGuards } from '@nestjs/common';
-import { Args, ID, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Context, ID, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 
 import { ClerkAuthGuard } from 'src/contexts/module_shared/auth/clerk-auth/clerk.auth.guard';
 import { AdminGuard } from 'src/contexts/module_shared/auth/clerk-auth/admin.guard';
 import { ProductionAdapterInterface } from '../../../application/adapter/production.adapter.interface';
+import { ProductionTicketAdapterInterface } from '../../../application/adapter/production-ticket.adapter.interface';
 import { ProductionResponse } from '../../../domain/entity/models_graphql/HTTP-RESPONSE/production.response';
+import {
+  AttachProductionTicketFacturaInput,
+  ProductionTicketPurchaseFilters,
+  ProductionTicketRejectInput,
+} from '../../../domain/entity/models_graphql/HTTP-REQUEST/production-ticket.request';
+import {
+  ProductionTicketPurchaseListResponse,
+  ProductionTicketPurchaseResponse,
+} from '../../../domain/entity/models_graphql/HTTP-RESPONSE/production-ticket.response';
+import { ProductionGqlContext, requireUserId } from './production.context';
 
 /**
  * Operaciones de los admins de la plataforma sobre Mis Producciones.
- * ClerkAuthGuard valida el token; AdminGuard exige el rol.
+ * ClerkAuthGuard valida el token y setea el userRequestId (queda registrado
+ * como autor de cada acción); AdminGuard exige el rol.
  */
 @Resolver()
 @UseGuards(ClerkAuthGuard, AdminGuard)
@@ -16,6 +28,8 @@ export class ProductionAdminResolver {
   constructor(
     @Inject('ProductionAdapterInterface')
     private readonly productionAdapter: ProductionAdapterInterface,
+    @Inject('ProductionTicketAdapterInterface')
+    private readonly ticketAdapter: ProductionTicketAdapterInterface,
   ) {}
 
   @Mutation(() => ProductionResponse, {
@@ -28,6 +42,98 @@ export class ProductionAdminResolver {
     return this.productionAdapter.setProductionFeatured(
       productionId,
       isFeatured,
+    );
+  }
+
+  // --- Tickets: panel admin/invoices (TKT-06, TKT-11) ----------------------------
+
+  @Query(() => ProductionTicketPurchaseListResponse, {
+    description:
+      'Sólo admin: compras de tickets de todos los blogs, con el alias/CBU del creador para liquidar',
+  })
+  async getProductionTicketPurchasesAdmin(
+    @Args('page', { type: () => Int }) page: number,
+    @Args('limit', { type: () => Int }) limit: number,
+    @Args('filters', { type: () => ProductionTicketPurchaseFilters, nullable: true })
+    filters: ProductionTicketPurchaseFilters | undefined,
+  ): Promise<ProductionTicketPurchaseListResponse> {
+    return this.ticketAdapter.getProductionTicketPurchasesAdmin(
+      filters,
+      page,
+      limit,
+    );
+  }
+
+  @Mutation(() => ProductionTicketPurchaseResponse, {
+    description:
+      'Sólo admin: confirma que llegó la transferencia. activate=true además habilita el acceso',
+  })
+  async confirmProductionTicketPurchase(
+    @Args('purchaseId', { type: () => ID }) purchaseId: string,
+    @Args('activate', { type: () => Boolean, defaultValue: false })
+    activate: boolean,
+    @Context() context: ProductionGqlContext,
+  ): Promise<ProductionTicketPurchaseResponse> {
+    return this.ticketAdapter.confirmProductionTicketPurchase(
+      purchaseId,
+      requireUserId(context),
+      activate,
+    );
+  }
+
+  @Mutation(() => ProductionTicketPurchaseResponse, {
+    description: 'Sólo admin: rechaza una compra (la transferencia no llegó)',
+  })
+  async rejectProductionTicketPurchase(
+    @Args('input', { type: () => ProductionTicketRejectInput })
+    input: ProductionTicketRejectInput,
+    @Context() context: ProductionGqlContext,
+  ): Promise<ProductionTicketPurchaseResponse> {
+    return this.ticketAdapter.rejectProductionTicketPurchase(
+      input.purchaseId,
+      input.reason,
+      requireUserId(context),
+    );
+  }
+
+  @Mutation(() => ProductionTicketPurchaseResponse, {
+    description: 'Sólo admin: habilita el acceso de una compra confirmada',
+  })
+  async activateProductionTicketPurchaseAsAdmin(
+    @Args('purchaseId', { type: () => ID }) purchaseId: string,
+    @Context() context: ProductionGqlContext,
+  ): Promise<ProductionTicketPurchaseResponse> {
+    return this.ticketAdapter.activateProductionTicketPurchaseAsAdmin(
+      purchaseId,
+      requireUserId(context),
+    );
+  }
+
+  @Mutation(() => ProductionTicketPurchaseResponse, {
+    description: 'Sólo admin: asocia la factura del 10% de comisión',
+  })
+  async attachFacturaToProductionTicketPurchase(
+    @Args('input', { type: () => AttachProductionTicketFacturaInput })
+    input: AttachProductionTicketFacturaInput,
+    @Context() context: ProductionGqlContext,
+  ): Promise<ProductionTicketPurchaseResponse> {
+    return this.ticketAdapter.attachFacturaToProductionTicketPurchase(
+      input.purchaseId,
+      input.facturaUrl,
+      requireUserId(context),
+    );
+  }
+
+  @Mutation(() => ProductionTicketPurchaseResponse, {
+    description: 'Sólo admin: marca como liquidado el 90% al creador',
+  })
+  async markProductionTicketPayoutDone(
+    @Args('purchaseId', { type: () => ID }) purchaseId: string,
+    @Context() context: ProductionGqlContext,
+  ): Promise<ProductionTicketPurchaseResponse> {
+    return this.ticketAdapter.markProductionTicketPayoutDone(
+      purchaseId,
+      requireUserId(context),
     );
   }
 }

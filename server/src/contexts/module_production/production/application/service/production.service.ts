@@ -48,7 +48,6 @@ import { ProductionFactory } from '../production-factory/production.factory';
 import { ProductionAccessService } from './production.access.service';
 import {
   AccessDecision,
-  evaluateItemAccess,
   resolveEffectiveVisibility,
   ProductionViewerContext,
   TicketRef,
@@ -977,20 +976,7 @@ export class ProductionService implements ProductionServiceInterface {
     tickets: TicketRef[],
     viewer: ProductionViewerContext,
   ): AccessDecision {
-    return evaluateItemAccess({
-      production: {
-        _id: production.getId!,
-        visibility: production.getVisibility!,
-        hasAccessKey: production.hasAccessKey,
-      },
-      chain: chain.map((node) => ({
-        _id: node.getId!,
-        visibility: node.getVisibility,
-        moderationStatus: node.getModerationStatus,
-      })),
-      tickets,
-      viewer,
-    });
+    return this.accessService.evaluateChain(production, chain, tickets, viewer);
   }
 
   private async toItemView(

@@ -136,6 +136,32 @@ export class ProductionRepository implements ProductionRepositoryInterface {
     return result;
   }
 
+  async findUsersInfo(
+    userIds: string[],
+  ): Promise<Map<string, ProductionOwnerInfo & { email?: string }>> {
+    const result = new Map<string, ProductionOwnerInfo & { email?: string }>();
+    const ids = Array.from(new Set(userIds))
+      .filter((id) => Types.ObjectId.isValid(id))
+      .map((id) => new Types.ObjectId(id));
+    if (ids.length === 0) return result;
+    const users: any[] = await this.userModel
+      .find({ _id: { $in: ids } })
+      .select('name lastName businessName username profilePhotoUrl email')
+      .lean();
+    users.forEach((user) =>
+      result.set(user._id.toString(), {
+        _id: user._id.toString(),
+        name: user.name,
+        lastName: user.lastName,
+        businessName: user.businessName,
+        username: user.username,
+        profilePhotoUrl: user.profilePhotoUrl,
+        email: user.email,
+      }),
+    );
+    return result;
+  }
+
   private buildListQuery(filter: ProductionListFilter) {
     const and: Record<string, any>[] = [];
 

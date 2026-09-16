@@ -7,15 +7,26 @@ import { Production } from '../../domain/entity/production.entity';
 import { ProductionRepositoryInterface } from '../../domain/repository/production.repository.interface';
 import { ProductionItemRepositoryInterface } from '../../domain/repository/production-item.repository.interface';
 import { ProductionAccessGrantRepositoryInterface } from '../../domain/repository/production-access-grant.repository.interface';
+import {
+  ProductionTicketPurchaseRepositoryInterface,
+  ProductionTicketRepositoryInterface,
+} from '../../domain/repository/production-ticket.repository.interface';
 
 export interface DeletedItemsResult {
   deletedIds: string[];
   freedQuota: number;
 }
 
+const BLOG_CLOSED_REASON = 'Se cerró el blog';
+const CONTENT_DELETED_REASON = 'Se borró el contenido del ticket';
+
 /**
  * Hard delete en cascada de MP (RNF-05, BLG-06): mismo criterio que Anuncios,
  * sin soft delete. Siempre corre dentro de la transacción de quien lo llama.
+ *
+ * Excepción deliberada: las compras de tickets no se borran porque son
+ * registros contables (factura del 10%, liquidación del 90%). Se cierran:
+ * las pendientes se cancelan y las activas vencen (TKT-08).
  */
 @Injectable()
 export class ProductionCascadeService {
@@ -29,6 +40,10 @@ export class ProductionCascadeService {
     private readonly userService: UserServiceInterface,
     @Inject('ProductionAccessGrantRepositoryInterface')
     private readonly grantRepository: ProductionAccessGrantRepositoryInterface,
+    @Inject('ProductionTicketRepositoryInterface')
+    private readonly ticketRepository: ProductionTicketRepositoryInterface,
+    @Inject('ProductionTicketPurchaseRepositoryInterface')
+    private readonly purchaseRepository: ProductionTicketPurchaseRepositoryInterface,
   ) {}
 
   async deleteProduction(
@@ -45,6 +60,13 @@ export class ProductionCascadeService {
       `Deleting production ${productionId}: ${deletedItems} items removed`,
     );
     await this.grantRepository.deleteByProduction(productionId, session);
+    await this.ticketRepository.deleteByProduction(productionId, session);
+    await this.purchaseRepository.closeByFilter(
+      { productionId },
+      BLOG_CLOSED_REASON,
+      new Date(),
+      session,
+    );
 
     // Libera el cupo de blogs del creator (User.productions[]).
     await this.userService.removeProductionFromUser(
@@ -71,6 +93,7 @@ export class ProductionCascadeService {
     itemIds: string[],
     session: ClientSession,
   ): Promise<DeletedItemsResult> {
+    const productionId = production.getId!;
     const ids = new Set<string>();
     const quotaIds = new Set<string>();
 
@@ -85,13 +108,25 @@ export class ProductionCascadeService {
 
     await this.itemRepository.deleteByIds(deletedIds, session);
     await this.productionRepository.decrementFilesCount(
-      production.getId!,
+      productionId,
       quotaIds.size,
       session,
     );
     await this.productionRepository.removeFromShowcase(
-      production.getId!,
+      productionId,
       deletedIds,
+      session,
+    );
+
+    const ticketIds = await this.ticketRepository.deleteByTargets(
+      productionId,
+      deletedIds,
+      session,
+    );
+    await this.purchaseRepository.closeByFilter(
+      { productionId, ticketIds },
+      CONTENT_DELETED_REASON,
+      new Date(),
       session,
     );
 

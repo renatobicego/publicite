@@ -49,6 +49,10 @@ export interface ProductionRepositoryInterface {
   findOwnersInfo(
     owners: { ownerId: string; ownerType: ProductionOwnerType }[],
   ): Promise<Map<string, ProductionOwnerInfo>>;
+  /** Nombre, usuario y email de usuarios (paneles de tickets y fans). */
+  findUsersInfo(
+    userIds: string[],
+  ): Promise<Map<string, ProductionOwnerInfo & { email?: string }>>;
   findList(
     filter: ProductionListFilter,
     page: number,

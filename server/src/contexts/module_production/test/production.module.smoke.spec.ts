@@ -14,6 +14,7 @@ import { LoggerModule } from 'src/contexts/module_shared/logger/logger.module';
 import { ProductionModule } from '../production/infraestructure/module/production.module';
 import { ProductionResolver } from '../production/infraestructure/graphql/resolver/production.resolver';
 import { ProductionAdminResolver } from '../production/infraestructure/graphql/resolver/production-admin.resolver';
+import { ProductionTicketResolver } from '../production/infraestructure/graphql/resolver/production-ticket.resolver';
 
 // El ChatbotModule (importado por ProductionModule) usa `uuid`, que en la
 // versión instalada es sólo ESM y Jest no lo transforma.
@@ -24,7 +25,11 @@ jest.mock('uuid', () => ({ v4: () => '00000000-0000-4000-8000-000000000000' }));
  * el schema GraphQL code-first; los dos fallan recién al levantar la app.
  */
 describe('Mis Producciones - módulo y schema GraphQL', () => {
-  const RESOLVERS = [ProductionResolver, ProductionAdminResolver];
+  const RESOLVERS = [
+    ProductionResolver,
+    ProductionAdminResolver,
+    ProductionTicketResolver,
+  ];
 
   it('genera el schema GraphQL con las operaciones del plan', async () => {
     const moduleRef = await Test.createTestingModule({
@@ -52,6 +57,11 @@ describe('Mis Producciones - módulo y schema GraphQL', () => {
       'findProductionById',
       'findAllProductionsByOwner',
       'getProductionConsumption',
+      'createProductionTicket',
+      'purchaseProductionTicket',
+      'getProductionTicketPurchasesAdmin',
+      'confirmProductionTicketPurchase',
+      'attachFacturaToProductionTicketPurchase',
     ]) {
       expect(sdl).toContain(`${operation}(`);
     }

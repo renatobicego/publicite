@@ -21,6 +21,12 @@
  * - PRODUCTION_ACCESS_KEY_MAX_ATTEMPTS: intentos fallidos de clave antes de
  *   bloquear al usuario en ese blog (default 5).
  * - PRODUCTION_ACCESS_KEY_LOCK_MINUTES: minutos de bloqueo (default 15).
+ * - PRODUCTION_TICKET_COMMISSION_PERCENT: comisión de Soonpublicité sobre los
+ *   tickets pagos (default 10). El resto se liquida al creador (TKT-06).
+ * - PRODUCTION_TICKET_MIN_DURATION_HOURS: duración mínima de un ticket
+ *   (default 24, TKT-03).
+ * - PRODUCTION_TICKETS_TRANSFER_ALIAS / _CBU / _HOLDER / _BANK: datos de la
+ *   cuenta de Soonpublicité a la que el visitante transfiere (TKT-05).
  */
 
 function readPositiveNumber(envKey: string, defaultValue: number): number {
@@ -62,4 +68,33 @@ export function getAccessKeyMaxAttempts(): number {
 /** Minutos de bloqueo tras agotar los intentos de clave. */
 export function getAccessKeyLockMinutes(): number {
   return readPositiveNumber('PRODUCTION_ACCESS_KEY_LOCK_MINUTES', 15);
+}
+
+/** Porcentaje de comisión de Soonpublicité sobre tickets pagos (0-100). */
+export function getTicketCommissionPercent(): number {
+  return Math.min(
+    100,
+    readPositiveNumber('PRODUCTION_TICKET_COMMISSION_PERCENT', 10),
+  );
+}
+
+/** Duración mínima de un ticket en horas (TKT-03). */
+export function getTicketMinDurationHours(): number {
+  return Math.max(1, readPositiveNumber('PRODUCTION_TICKET_MIN_DURATION_HOURS', 24));
+}
+
+/** Datos de la cuenta de Soonpublicité para las transferencias (TKT-05). */
+export function getTicketTransferInfo(): {
+  alias: string | null;
+  cbu: string | null;
+  holder: string | null;
+  bank: string | null;
+} {
+  const read = (envKey: string) => process.env[envKey]?.trim() || null;
+  return {
+    alias: read('PRODUCTION_TICKETS_TRANSFER_ALIAS'),
+    cbu: read('PRODUCTION_TICKETS_TRANSFER_CBU'),
+    holder: read('PRODUCTION_TICKETS_TRANSFER_HOLDER'),
+    bank: read('PRODUCTION_TICKETS_TRANSFER_BANK'),
+  };
 }

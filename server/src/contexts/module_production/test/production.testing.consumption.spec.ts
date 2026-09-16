@@ -18,6 +18,9 @@ import {
   ProductionRole,
 } from '../production/domain/entity/enum/production.enums';
 
+// Base remota de QA: cada test hace varias idas y vueltas.
+jest.setTimeout(60_000);
+
 describe('Mis Producciones - Fase 4: CONTROL Consumo (PC-05, SB-05)', () => {
   let moduleRef: TestingModule;
   let service: ProductionService;

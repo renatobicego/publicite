@@ -14,6 +14,9 @@ import { ProductionService } from '../production/application/service/production.
 import { ProductionModerationStatus, ProductionRole } from '../production/domain/entity/enum/production.enums';
 import { Visibility } from 'src/contexts/module_post/post/domain/entity/enum/post-visibility.enum';
 
+// Base remota de QA: cada test hace varias idas y vueltas.
+jest.setTimeout(60_000);
+
 describe('Mis Producciones - Fase 2: listado, búsqueda y destacadas', () => {
   let moduleRef: TestingModule;
   let service: ProductionService;

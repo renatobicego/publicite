@@ -32,6 +32,8 @@ export interface ProductionViewerContext {
   hasKeyAccess: boolean;
   /** Tickets con un acceso activo del visitante. */
   activeTicketIds: Set<string>;
+  /** ticketId → compras activas que lo habilitan (para registrar el uso). */
+  activePurchasesByTicket?: Map<string, string[]>;
   /** id de la producción con reseña pendiente que bloquea al visitante. */
   pendingReviewProductionId?: string | null;
 }

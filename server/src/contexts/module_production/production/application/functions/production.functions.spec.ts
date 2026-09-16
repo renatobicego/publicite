@@ -13,6 +13,12 @@ import { hashAccessKey, verifyAccessKey } from './production.access-key';
 import { buildProductionUrl, slugifyProductionTitle } from './production.url';
 import { buildProductionSearchRegex, normalizeFileName } from './production.text';
 import {
+  computeTicketExpiration,
+  computeTicketSplit,
+  normalizeAliasCbu,
+  validateTicketConfig,
+} from './production.tickets';
+import {
   ProductionLockReason,
   ProductionModerationStatus,
   ProductionOwnerType,
@@ -236,6 +242,58 @@ describe('Clave de acceso (RNF-13)', () => {
 
   it('rechaza claves muy cortas', async () => {
     await expect(hashAccessKey('abc')).rejects.toThrow();
+  });
+});
+
+describe('Tickets (TKT-02/03/06/11)', () => {
+  afterEach(() => {
+    delete process.env.PRODUCTION_TICKET_COMMISSION_PERCENT;
+  });
+
+  it('reparte 10% de comisión y 90% al creador, con centavos', () => {
+    expect(computeTicketSplit(1000)).toEqual({
+      commissionPercent: 10,
+      commissionAmount: 100,
+      creatorPayoutAmount: 900,
+    });
+    expect(computeTicketSplit(99.99)).toEqual({
+      commissionPercent: 10,
+      commissionAmount: 10,
+      creatorPayoutAmount: 89.99,
+    });
+    process.env.PRODUCTION_TICKET_COMMISSION_PERCENT = '15';
+    expect(computeTicketSplit(200).commissionAmount).toBe(30);
+  });
+
+  it('valida precio y duración', () => {
+    expect(validateTicketConfig({ isPaid: false, price: 500, durationHours: 24 })).toEqual({
+      isPaid: false,
+      price: 0,
+      durationHours: 24,
+      untilClose: false,
+    });
+    expect(
+      validateTicketConfig({ isPaid: true, price: 10.456, untilClose: true, durationHours: 1 }),
+    ).toEqual({ isPaid: true, price: 10.46, durationHours: null, untilClose: true });
+    expect(() => validateTicketConfig({ isPaid: true, price: 0, durationHours: 24 })).toThrow();
+    expect(() => validateTicketConfig({ isPaid: false, durationHours: 23 })).toThrow();
+    expect(() => validateTicketConfig({ isPaid: false })).toThrow();
+  });
+
+  it('calcula el vencimiento', () => {
+    const start = new Date('2026-01-01T00:00:00Z');
+    expect(computeTicketExpiration(start, 48, false)?.toISOString()).toBe(
+      '2026-01-03T00:00:00.000Z',
+    );
+    expect(computeTicketExpiration(start, 48, true)).toBeNull();
+  });
+
+  it('acepta alias o CBU/CVU', () => {
+    expect(normalizeAliasCbu(' mi.alias-1 ')).toBe('mi.alias-1');
+    expect(normalizeAliasCbu('0000003100000000000001')).toBe('0000003100000000000001');
+    expect(() => normalizeAliasCbu('corto')).toThrow();
+    expect(() => normalizeAliasCbu('000000310000000000000')).toThrow();
+    expect(() => normalizeAliasCbu('con espacio')).toThrow();
   });
 });
 

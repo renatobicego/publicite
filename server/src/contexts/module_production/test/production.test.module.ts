@@ -12,19 +12,10 @@ import { UserSchema } from 'src/contexts/module_user/user/infrastructure/schemas
 import { GroupSchema } from 'src/contexts/module_group/group/infrastructure/schemas/group.schema';
 import { SubscriptionPlanSchema } from 'src/contexts/module_webhook/mercadopago/infastructure/schemas/subscriptionPlan.schema';
 import { SubscriptionSchema } from 'src/contexts/module_webhook/mercadopago/infastructure/schemas/subscription.schema';
-import ProductionModel from '../production/infraestructure/schemas/production.schema';
-import ProductionItemModel, {
-  PRODUCTION_ITEM_DISCRIMINATORS,
-} from '../production/infraestructure/schemas/production-item.schema';
-import { ProductionRepository } from '../production/infraestructure/repository/production.repository';
-import { ProductionItemRepository } from '../production/infraestructure/repository/production-item.repository';
-import ProductionAccessGrantModel from '../production/infraestructure/schemas/production-access-grant.schema';
-import { ProductionAccessGrantRepository } from '../production/infraestructure/repository/production-access-grant.repository';
-import { ProductionService } from '../production/application/service/production.service';
-import { ProductionAccessService } from '../production/application/service/production.access.service';
-import { ProductionCascadeService } from '../production/application/service/production.cascade.service';
-import { ProductionAdapter } from '../production/infraestructure/adapter/production.adapter';
-import { ProductionInsightsService } from '../production/application/service/production.insights.service';
+import {
+  PRODUCTION_MODELS,
+  PRODUCTION_PROVIDERS,
+} from '../production/infraestructure/module/production.module.providers';
 
 export const mockTokenService = {
   getStatusForUser: jest.fn(async () => ({
@@ -40,7 +31,8 @@ export const mockTokenService = {
 
 /**
  * Módulo de test de Mis Producciones. Usa `.env.test` (cluster QA, base
- * descartable `automated_tests`); nunca `.env`.
+ * descartable `automated_tests`); nunca `.env`. Comparte modelos y providers
+ * con el ProductionModule real.
  */
 const production_testing_module = async (): Promise<TestingModule> => {
   dotenv.config({ path: '.env.test' });
@@ -61,16 +53,7 @@ const production_testing_module = async (): Promise<TestingModule> => {
         inject: [ConfigService],
       }),
       MongooseModule.forFeature([
-        { name: ProductionModel.modelName, schema: ProductionModel.schema },
-        {
-          name: ProductionItemModel.modelName,
-          schema: ProductionItemModel.schema,
-          discriminators: PRODUCTION_ITEM_DISCRIMINATORS,
-        },
-        {
-          name: ProductionAccessGrantModel.modelName,
-          schema: ProductionAccessGrantModel.schema,
-        },
+        ...PRODUCTION_MODELS,
         { name: 'User', schema: UserSchema },
         { name: 'Group', schema: GroupSchema },
         { name: 'SubscriptionPlan', schema: SubscriptionPlanSchema },
@@ -80,36 +63,11 @@ const production_testing_module = async (): Promise<TestingModule> => {
     ],
     providers: [
       MyLoggerService,
-      ProductionAccessService,
-      ProductionCascadeService,
-      {
-        provide: 'ProductionRepositoryInterface',
-        useClass: ProductionRepository,
-      },
-      {
-        provide: 'ProductionItemRepositoryInterface',
-        useClass: ProductionItemRepository,
-      },
-      {
-        provide: 'ProductionAccessGrantRepositoryInterface',
-        useClass: ProductionAccessGrantRepository,
-      },
-      {
-        provide: 'ProductionServiceInterface',
-        useClass: ProductionService,
-      },
-      {
-        provide: 'ProductionInsightsServiceInterface',
-        useClass: ProductionInsightsService,
-      },
+      ...PRODUCTION_PROVIDERS,
       {
         // El token bucket real depende de la config de OpenAI: acá se simula.
         provide: 'ChatbotTokenServiceInterface',
         useValue: mockTokenService,
-      },
-      {
-        provide: 'ProductionAdapterInterface',
-        useClass: ProductionAdapter,
       },
     ],
   }).compile();

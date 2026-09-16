@@ -22,10 +22,19 @@ import { ProductionRepositoryInterface } from '../../domain/repository/productio
 import { ProductionTicketSummaryResponse } from '../../domain/entity/models_graphql/HTTP-RESPONSE/production.response';
 import {
   AccessDecision,
+  evaluateItemAccess,
   evaluateProductionAccess,
   ProductionViewerContext,
   TicketRef,
 } from '../functions/production.access';
+import { ProductionItem } from '../../domain/entity/production-item.entity';
+import { ProductionTicket } from '../../domain/entity/production-ticket.entity';
+import { ProductionItemRepositoryInterface } from '../../domain/repository/production-item.repository.interface';
+import {
+  ProductionTicketPurchaseRepositoryInterface,
+  ProductionTicketRepositoryInterface,
+} from '../../domain/repository/production-ticket.repository.interface';
+import { toTicketSummary } from '../functions/production-ticket.view';
 import {
   ProductionPermissions,
   resolveProductionRole,
@@ -85,6 +94,12 @@ export class ProductionAccessService {
     private readonly userService: UserServiceInterface,
     @Inject('ProductionAccessGrantRepositoryInterface')
     private readonly grantRepository: ProductionAccessGrantRepositoryInterface,
+    @Inject('ProductionItemRepositoryInterface')
+    private readonly itemRepository: ProductionItemRepositoryInterface,
+    @Inject('ProductionTicketRepositoryInterface')
+    private readonly ticketRepository: ProductionTicketRepositoryInterface,
+    @Inject('ProductionTicketPurchaseRepositoryInterface')
+    private readonly purchaseRepository: ProductionTicketPurchaseRepositoryInterface,
   ) {}
 
   // ---------------------------------------------------------------------------
@@ -194,6 +209,10 @@ export class ProductionAccessService {
   ): Promise<ProductionViewerContext> {
     const role = this.roleFromScope(production, scope);
     const isVisitor = role === ProductionRole.visitor;
+    const ticketAccess =
+      isVisitor && options.includeTickets && scope.userId
+        ? await this.findTicketAccess(production, scope.userId)
+        : { activeTicketIds: new Set<string>(), purchasesByTicket: new Map() };
     return {
       userId: scope.userId,
       isRegistered: !!scope.userId,
@@ -208,12 +227,49 @@ export class ProductionAccessService {
         scope,
         options.accessKey,
       ),
-      activeTicketIds:
-        isVisitor && options.includeTickets
-          ? await this.findActiveTicketIds(production, scope)
-          : new Set<string>(),
+      activeTicketIds: ticketAccess.activeTicketIds,
+      activePurchasesByTicket: ticketAccess.purchasesByTicket,
       pendingReviewProductionId: scope.pendingReviewProductionId,
     };
+  }
+
+  /**
+   * Tickets vigentes que el visitante tiene comprados en el blog (TKT-07/08).
+   * Una compra habilita el ticket actual de su mismo destino, así que si el
+   * creador recrea el ticket de una carpeta el comprador no pierde el acceso.
+   * El vencimiento se evalúa acá mismo: lo vencido no habilita.
+   */
+  private async findTicketAccess(
+    production: Production,
+    userId: string,
+  ): Promise<{
+    activeTicketIds: Set<string>;
+    purchasesByTicket: Map<string, string[]>;
+  }> {
+    const activeTicketIds = new Set<string>();
+    const purchasesByTicket = new Map<string, string[]>();
+    const purchases = await this.purchaseRepository.findActiveByBuyer(
+      userId,
+      production.getId!,
+      new Date(),
+    );
+    if (purchases.length === 0) return { activeTicketIds, purchasesByTicket };
+
+    const tickets = await this.getTickets(production.getId!);
+    for (const ticket of tickets) {
+      const matching = purchases.filter(
+        (purchase) =>
+          purchase.ticket === ticket._id ||
+          (purchase.target ?? null) === (ticket.target ?? null),
+      );
+      if (matching.length === 0) continue;
+      activeTicketIds.add(ticket._id);
+      purchasesByTicket.set(
+        ticket._id,
+        matching.map((purchase) => purchase._id),
+      );
+    }
+    return { activeTicketIds, purchasesByTicket };
   }
 
   async buildViewerContext(
@@ -372,20 +428,57 @@ export class ProductionAccessService {
     }
   }
 
-  private async findActiveTicketIds(
-    _production: Production,
-    _scope: ProductionViewerScope,
-  ): Promise<Set<string>> {
-    return new Set<string>();
-  }
-
   private async findPendingReview(_userId: string): Promise<string | null> {
     return null;
   }
 
-  /** Tickets vigentes del blog. */
-  async getTickets(_productionId: string): Promise<TicketRef[]> {
-    return [];
+  /** Tickets del blog (TKT-01). */
+  async getTickets(productionId: string): Promise<ProductionTicket[]> {
+    return this.ticketRepository.findByProduction(productionId);
+  }
+
+  /**
+   * Evalúa un ítem para el visitante cargando sus ancestros (herencia de
+   * alcance y de ticket).
+   */
+  async evaluateItemById(
+    production: Production,
+    itemId: string,
+    viewer: ProductionViewerContext,
+  ): Promise<{ item: ProductionItem; decision: AccessDecision } | null> {
+    const item = await this.itemRepository.findById(itemId);
+    if (!item || item.getProduction !== production.getId) return null;
+    const ancestors = await this.itemRepository.findAncestors(itemId);
+    const decision = this.evaluateChain(
+      production,
+      [item, ...ancestors],
+      await this.getTickets(production.getId!),
+      viewer,
+    );
+    return { item, decision };
+  }
+
+  /** Decisión de acceso para un ítem y sus ancestros (del ítem a la raíz). */
+  evaluateChain(
+    production: Production,
+    chain: ProductionItem[],
+    tickets: TicketRef[],
+    viewer: ProductionViewerContext,
+  ): AccessDecision {
+    return evaluateItemAccess({
+      production: {
+        _id: production.getId!,
+        visibility: production.getVisibility!,
+        hasAccessKey: production.hasAccessKey,
+      },
+      chain: chain.map((node) => ({
+        _id: node.getId!,
+        visibility: node.getVisibility,
+        moderationStatus: node.getModerationStatus,
+      })),
+      tickets,
+      viewer,
+    });
   }
 
   /** Datos del visitante que dependen de otras capas (fans, reseñas). */
@@ -400,20 +493,34 @@ export class ProductionAccessService {
     return {};
   }
 
-  /** Registra que el visitante efectivamente usó su acceso al contenido. */
+  /**
+   * Registra que el visitante usó su ticket para ver contenido: desde ese
+   * momento, si el ticket era pago, la reseña pasa a ser obligatoria (TKT-09).
+   */
   async registerContentAccess(
-    _viewer: ProductionViewerContext,
-    _decision: AccessDecision,
+    viewer: ProductionViewerContext,
+    decision: AccessDecision,
   ): Promise<void> {
-    return;
+    if (!viewer.userId || !decision.ticketId) return;
+    const purchaseIds = viewer.activePurchasesByTicket?.get(decision.ticketId);
+    if (!purchaseIds?.length) return;
+    await this.purchaseRepository.markFirstAccess(
+      viewer.userId,
+      purchaseIds,
+      new Date(),
+    );
   }
 
   /** Resumen del ticket que habilita un ítem, para mostrar la compra. */
   toTicketSummary(
-    _ticketId: string | undefined,
-    _tickets: TicketRef[],
+    ticketId: string | undefined,
+    tickets: TicketRef[],
   ): ProductionTicketSummaryResponse | null {
-    return null;
+    if (!ticketId) return null;
+    const ticket = (tickets as ProductionTicket[]).find(
+      (candidate) => candidate._id === ticketId,
+    );
+    return ticket ? toTicketSummary(ticket) : null;
   }
 
   // ---------------------------------------------------------------------------
