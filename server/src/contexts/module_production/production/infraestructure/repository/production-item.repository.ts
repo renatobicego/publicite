@@ -127,6 +127,16 @@ export class ProductionItemRepository
       .map((doc) => ProductionItem.fromDocument(doc));
   }
 
+  async findAllFolders(productionId: string): Promise<ProductionItem[]> {
+    const docs = await this.itemModel
+      .find({
+        production: toObjectId(productionId),
+        kind: ProductionItemKind.folder,
+      })
+      .lean();
+    return docs.map((doc) => ProductionItem.fromDocument(doc));
+  }
+
   async existsFileName(
     productionId: string,
     parentId: string | null,

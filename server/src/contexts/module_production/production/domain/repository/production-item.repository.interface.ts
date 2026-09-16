@@ -34,6 +34,8 @@ export interface ProductionItemRepositoryInterface {
   ): Promise<ProductionItem[]>;
   /** Ancestros del ítem, del padre directo hacia la raíz. */
   findAncestors(itemId: string): Promise<ProductionItem[]>;
+  /** Todas las carpetas del blog (para resolver herencias en lote). */
+  findAllFolders(productionId: string): Promise<ProductionItem[]>;
   existsFileName(
     productionId: string,
     parentId: string | null,

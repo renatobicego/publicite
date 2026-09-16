@@ -16,6 +16,11 @@ export interface ProductionTicketRepositoryInterface {
   ): Promise<string>;
   findById(id: string): Promise<ProductionTicket | null>;
   findByProduction(productionId: string): Promise<ProductionTicket[]>;
+  /** Actualiza precios de varios tickets (SeudoBase, SB-02). */
+  setPrices(
+    updates: { ticketId: string; price: number }[],
+    session?: ClientSession,
+  ): Promise<void>;
   updateById(
     id: string,
     fields: Partial<ProductionTicket>,

@@ -11,6 +11,7 @@ import {
   ProductionTicketPurchaseRepositoryInterface,
   ProductionTicketRepositoryInterface,
 } from '../../domain/repository/production-ticket.repository.interface';
+import { ProductionAuditRepositoryInterface } from '../../domain/repository/production-audit.repository.interface';
 
 export interface DeletedItemsResult {
   deletedIds: string[];
@@ -44,6 +45,8 @@ export class ProductionCascadeService {
     private readonly ticketRepository: ProductionTicketRepositoryInterface,
     @Inject('ProductionTicketPurchaseRepositoryInterface')
     private readonly purchaseRepository: ProductionTicketPurchaseRepositoryInterface,
+    @Inject('ProductionAuditRepositoryInterface')
+    private readonly auditRepository: ProductionAuditRepositoryInterface,
   ) {}
 
   async deleteProduction(
@@ -60,6 +63,7 @@ export class ProductionCascadeService {
       `Deleting production ${productionId}: ${deletedItems} items removed`,
     );
     await this.grantRepository.deleteByProduction(productionId, session);
+    await this.auditRepository.deleteByProduction(productionId, session);
     await this.ticketRepository.deleteByProduction(productionId, session);
     await this.purchaseRepository.closeByFilter(
       { productionId },

@@ -22,6 +22,10 @@ import { ProductionInsightsService } from '../../application/service/production.
 import { ProductionTicketService } from '../../application/service/production.ticket.service';
 import { ProductionAdapter } from '../adapter/production.adapter';
 import { ProductionTicketAdapter } from '../adapter/production-ticket.adapter';
+import ProductionAuditLogModel from '../schemas/production-audit-log.schema';
+import { ProductionAuditRepository } from '../repository/production-audit.repository';
+import { ProductionSeudoBaseService } from '../../application/service/production.seudobase.service';
+import { ProductionSeudoBaseAdapter } from '../adapter/production-seudobase.adapter';
 
 /**
  * Modelos y providers de MP, compartidos por el módulo y por el módulo de
@@ -43,6 +47,10 @@ export const PRODUCTION_MODELS: ModelDefinition[] = [
   {
     name: ProductionTicketPurchaseModel.modelName,
     schema: ProductionTicketPurchaseModel.schema,
+  },
+  {
+    name: ProductionAuditLogModel.modelName,
+    schema: ProductionAuditLogModel.schema,
   },
 ];
 
@@ -66,6 +74,10 @@ export const PRODUCTION_PROVIDERS: Provider[] = [
     provide: 'ProductionTicketPurchaseRepositoryInterface',
     useClass: ProductionTicketPurchaseRepository,
   },
+  {
+    provide: 'ProductionAuditRepositoryInterface',
+    useClass: ProductionAuditRepository,
+  },
   { provide: 'ProductionServiceInterface', useClass: ProductionService },
   {
     provide: 'ProductionInsightsServiceInterface',
@@ -75,9 +87,17 @@ export const PRODUCTION_PROVIDERS: Provider[] = [
     provide: 'ProductionTicketServiceInterface',
     useClass: ProductionTicketService,
   },
+  {
+    provide: 'ProductionSeudoBaseServiceInterface',
+    useClass: ProductionSeudoBaseService,
+  },
   { provide: 'ProductionAdapterInterface', useClass: ProductionAdapter },
   {
     provide: 'ProductionTicketAdapterInterface',
     useClass: ProductionTicketAdapter,
+  },
+  {
+    provide: 'ProductionSeudoBaseAdapterInterface',
+    useClass: ProductionSeudoBaseAdapter,
   },
 ];

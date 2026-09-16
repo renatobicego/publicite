@@ -69,6 +69,22 @@ export class ProductionTicketRepository
     return docs.map(ticketFromDocument);
   }
 
+  async setPrices(
+    updates: { ticketId: string; price: number }[],
+    session?: ClientSession,
+  ): Promise<void> {
+    if (updates.length === 0) return;
+    await this.ticketModel.bulkWrite(
+      updates.map(({ ticketId, price }) => ({
+        updateOne: {
+          filter: { _id: oid(ticketId) },
+          update: { $set: { price } },
+        },
+      })),
+      { session },
+    );
+  }
+
   async updateById(
     id: string,
     fields: Partial<ProductionTicket>,
