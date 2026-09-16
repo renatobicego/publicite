@@ -1,4 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { OnEvent } from '@nestjs/event-emitter';
+
+import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
+import {
+  group_creator_changed,
+  group_deleted,
+} from 'src/contexts/module_shared/event-emmiter/events';
 
 import { ProductionAdapterInterface } from '../../application/adapter/production.adapter.interface';
 import { ProductionServiceInterface } from '../../domain/service/production.service.interface';
@@ -24,11 +31,58 @@ import { Visibility } from 'src/contexts/module_post/post/domain/entity/enum/pos
 @Injectable()
 export class ProductionAdapter implements ProductionAdapterInterface {
   constructor(
+    private readonly logger: MyLoggerService,
     @Inject('ProductionServiceInterface')
     private readonly productionService: ProductionServiceInterface,
     @Inject('ProductionInsightsServiceInterface')
     private readonly insightsService: ProductionInsightsServiceInterface,
   ) {}
+
+  // --- Eventos del módulo de grupos (GRP-01, RNF-05) ----------------------------
+  // Corren después de que el grupo ya cambió: un error acá se registra pero no
+  // debe hacer fallar la operación del grupo.
+
+  @OnEvent(group_deleted)
+  async onGroupDeleted(payload: { groupId: string }): Promise<void> {
+    try {
+      await this.productionService.deleteGroupBlog(payload.groupId);
+    } catch (error: any) {
+      this.logger.error(
+        `No se pudo borrar el blog del grupo ${payload?.groupId}: ${error?.message}`,
+      );
+    }
+  }
+
+  @OnEvent(group_creator_changed)
+  async onGroupCreatorChanged(payload: {
+    groupId: string;
+    previousCreator: string;
+    newCreator: string;
+  }): Promise<void> {
+    try {
+      await this.productionService.transferGroupBlog(
+        payload.groupId,
+        payload.previousCreator,
+        payload.newCreator,
+      );
+    } catch (error: any) {
+      this.logger.error(
+        `No se pudo transferir el blog del grupo ${payload?.groupId}: ${error?.message}`,
+      );
+    }
+  }
+
+  deleteGroupBlog(groupId: string) {
+    return this.productionService.deleteGroupBlog(groupId);
+  }
+
+  transferGroupBlog(groupId: string, previousCreator: string, newCreator: string) {
+    return this.productionService.transferGroupBlog(
+      groupId,
+      previousCreator,
+      newCreator,
+    );
+  }
 
   getProductionConsumption(userId: string, productionId?: string) {
     return this.insightsService.getProductionConsumption(userId, productionId);

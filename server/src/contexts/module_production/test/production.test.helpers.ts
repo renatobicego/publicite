@@ -2,8 +2,6 @@ import { getConnectionToken, getModelToken } from '@nestjs/mongoose';
 import { TestingModule } from '@nestjs/testing';
 import { Connection, Model, Types } from 'mongoose';
 
-import { createPersonalUser } from '../../../../test/functions_unit_testing/user/create.user';
-
 export interface ProductionTestModels {
   connection: Connection;
   user: Model<any>;
@@ -66,18 +64,30 @@ export async function cleanProductionTestData(models: ProductionTestModels) {
 
 let counter = 0;
 
+/**
+ * Usuario persona con todos los campos obligatorios del schema. No usa el
+ * helper compartido de test/ para no depender de sus defaults.
+ */
 export async function createTestUser(
   models: ProductionTestModels,
   overrides: { subscriptions?: Types.ObjectId[] } = {},
 ): Promise<string> {
   counter++;
   const _id = new Types.ObjectId();
-  await createPersonalUser(models.user, {
+  await models.user.create({
     _id,
+    clerkId: `clerk_mp_${_id}`,
     email: `mp-test-${counter}-${_id}@email.com`,
     username: `mp_test_${counter}_${_id}`,
+    name: 'Test',
+    lastName: `MP ${counter}`,
+    finder: `test mp ${counter}`,
     // Valor del discriminator de UserPerson (no el del enum UserType).
     userType: 'Person',
+    gender: 'X',
+    birthDate: '2000-01-01',
+    dni: '12345678',
+    addressPrivacy: 'all',
     subscriptions: overrides.subscriptions ?? [],
   });
   return _id.toString();

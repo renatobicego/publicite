@@ -132,4 +132,11 @@ export interface ProductionServiceInterface {
     accessKey: string,
     userId: string | undefined,
   ): Promise<ProductionResponse>;
+
+  deleteGroupBlog(groupId: string): Promise<void>;
+  transferGroupBlog(
+    groupId: string,
+    previousCreator: string,
+    newCreator: string,
+  ): Promise<void>;
 }

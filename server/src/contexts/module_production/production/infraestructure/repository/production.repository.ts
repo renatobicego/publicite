@@ -365,6 +365,17 @@ export class ProductionRepository implements ProductionRepositoryInterface {
     };
   }
 
+  async findGroupBlog(groupId: string): Promise<Production | null> {
+    if (!Types.ObjectId.isValid(groupId)) return null;
+    const doc = await this.productionModel
+      .findOne({
+        owner: new Types.ObjectId(groupId),
+        ownerType: ProductionOwnerType.Group,
+      })
+      .lean();
+    return doc ? Production.fromDocument(doc) : null;
+  }
+
   async findGroupRolesOfUser(
     userId: string,
   ): Promise<Map<string, 'creator' | 'admin' | 'member'>> {

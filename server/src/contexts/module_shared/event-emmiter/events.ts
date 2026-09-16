@@ -7,8 +7,13 @@ const downgrade_plan_post_notification = 'downgrade_plan_post_notification';
 const subscription_event = 'subscription_event';
 const set_OpinionRequested_TRUE = 'set_isOpinionRequested_TRUE';
 const new_review = 'new_review';
+// Grupos: los escucha Mis Producciones para mantener el blog del grupo.
+const group_deleted = 'group.deleted';
+const group_creator_changed = 'group.creator_changed';
 
 export {
+    group_deleted,
+    group_creator_changed,
     contact_seller_new_request,
     post_deleted,
     downgrade_plan_contact,

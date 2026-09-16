@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/mongoose';
-import { ClientSession, Connection } from 'mongoose';
+import { ClientSession, Connection, Types } from 'mongoose';
 
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { UserServiceInterface } from 'src/contexts/module_user/user/domain/service/user.service.interface';
@@ -1000,6 +1000,58 @@ export class ProductionService implements ProductionServiceInterface {
 
   async getProductionLimits(userId: string): Promise<ProductionLimitsResponse> {
     return this.userService.getProductionLimitsFromUserByUserId(userId);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Blogs de grupo: eventos del módulo de grupos (Fase 6)
+  // ---------------------------------------------------------------------------
+
+  /** Al borrarse un grupo se borra su blog (RNF-05). Acción del sistema. */
+  async deleteGroupBlog(groupId: string): Promise<void> {
+    const production = await this.productionRepository.findGroupBlog(groupId);
+    if (!production) return;
+    await this.inTransaction((session) =>
+      this.cascadeService.deleteProduction(production, session),
+    );
+    this.logger.log(
+      `Group blog ${production.getId} deleted with group ${groupId}`,
+    );
+  }
+
+  /**
+   * Cuando el creator del grupo cede el grupo, el blog pasa al nuevo creator:
+   * cuenta para su límite de blogs de grupo, usa su plan (GRP-08) y es quien
+   * cobra (GRP-05). El alias/CBU del creator anterior se borra para no
+   * liquidarle ventas de un blog que ya no administra.
+   */
+  async transferGroupBlog(
+    groupId: string,
+    previousCreator: string,
+    newCreator: string,
+  ): Promise<void> {
+    const production = await this.productionRepository.findGroupBlog(groupId);
+    if (!production || production.getCreator === newCreator) return;
+
+    await this.inTransaction(async (session) => {
+      await this.productionRepository.updateById(
+        production.getId!,
+        { creator: new Types.ObjectId(newCreator), aliasCbu: null },
+        session,
+      );
+      await this.userService.removeProductionFromUser(
+        production.getId!,
+        previousCreator,
+        { session },
+      );
+      await this.userService.saveNewProductionInUser(
+        production.getId!,
+        newCreator,
+        { session },
+      );
+    });
+    this.logger.log(
+      `Group blog ${production.getId} transferred from ${previousCreator} to ${newCreator}`,
+    );
   }
 
   // ---------------------------------------------------------------------------
