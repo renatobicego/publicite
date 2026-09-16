@@ -26,6 +26,9 @@ export class User {
   private magazines?: ObjectId[];
   private board?: ObjectId | undefined;
   private posts?: ObjectId[];
+  // Mis Producciones (RNF-06/RNF-09).
+  private productions?: ObjectId[];
+  private credentialId?: string;
   private userRelations?: ObjectId[];
   private userType?: UserType;
   private userPreferences?: UserPreferences;
@@ -59,6 +62,8 @@ export class User {
     notifications?: any[],
     friendRequests?: any[],
     activeRelations?: ObjectId[],
+    productions?: ObjectId[],
+    credentialId?: string,
   ) {
     this.clerkId = clerkId;
     this.email = email;
@@ -88,6 +93,8 @@ export class User {
     this.notifications = notifications ?? [];
     this.friendRequests = friendRequests ?? [];
     this.activeRelations = activeRelations ?? [];
+    this.productions = productions ?? [];
+    this.credentialId = credentialId;
   }
 
   setContact(contact: ObjectId) {
@@ -158,6 +165,14 @@ export class User {
 
   get getPost() {
     return this.posts;
+  }
+
+  get getProductions() {
+    return this.productions;
+  }
+
+  get getCredentialId() {
+    return this.credentialId;
   }
 
   get getUserRelations() {

@@ -15,6 +15,11 @@ export class SubscriptionPlan {
   private postsLibresCount: number;
   private postsAgendaCount: number;
   private isPack: boolean;
+  // Mis Producciones (RNF-06). Opcionales: los planes creados antes de MP no los
+  // tienen cargados y caen al piso gratuito (ver production.limits.config.ts).
+  private personalBlogsCount?: number;
+  private groupBlogsCount?: number;
+  private filesPerBlogCount?: number;
 
   constructor(
     _id: ObjectId,
@@ -29,6 +34,9 @@ export class SubscriptionPlan {
     postsLibresCount: number,
     postsAgendaCount: number,
     isPack: boolean,
+    personalBlogsCount?: number,
+    groupBlogsCount?: number,
+    filesPerBlogCount?: number,
   ) {
     this._id = _id;
     this.mpPreapprovalPlanId = mpPreapprovalPlanId;
@@ -42,6 +50,9 @@ export class SubscriptionPlan {
     this.postsLibresCount = postsLibresCount;
     this.postsAgendaCount = postsAgendaCount;
     this.isPack = isPack;
+    this.personalBlogsCount = personalBlogsCount;
+    this.groupBlogsCount = groupBlogsCount;
+    this.filesPerBlogCount = filesPerBlogCount;
   }
 
   public getId(): ObjectId {
@@ -84,6 +95,18 @@ export class SubscriptionPlan {
     return this.isPack;
   }
 
+  public getPersonalBlogsCount(): number | undefined {
+    return this.personalBlogsCount;
+  }
+
+  public getGroupBlogsCount(): number | undefined {
+    return this.groupBlogsCount;
+  }
+
+  public getFilesPerBlogCount(): number | undefined {
+    return this.filesPerBlogCount;
+  }
+
   static fromDocument(doc: any): SubscriptionPlan {
     return new SubscriptionPlan(
       doc._id ? doc._id : '',
@@ -98,6 +121,9 @@ export class SubscriptionPlan {
       doc.postsLibresCount,
       doc.postsAgendaCount,
       doc.isPack,
+      doc.personalBlogsCount,
+      doc.groupBlogsCount,
+      doc.filesPerBlogCount,
     );
   }
 
@@ -117,6 +143,9 @@ export class SubscriptionPlan {
       postsLibresCount: subscriptionPlan.getPostsLibresCount(),
       postsAgendaCount: subscriptionPlan.getPostsAgendaCount(),
       isPack: subscriptionPlan.getIsPack(),
+      personalBlogsCount: subscriptionPlan.getPersonalBlogsCount(),
+      groupBlogsCount: subscriptionPlan.getGroupBlogsCount(),
+      filesPerBlogCount: subscriptionPlan.getFilesPerBlogCount(),
       // Tokens de IA por mes (neto visible): sale de env vars, no de la DB.
       aiTokensPerMonth: getPlanNetPubliciteTokens({
         mpPreapprovalPlanId: subscriptionPlan.getMpPreapprovalPlanId(),

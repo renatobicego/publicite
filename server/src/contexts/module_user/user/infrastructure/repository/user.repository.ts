@@ -18,6 +18,7 @@ import { UserPersonalUpdateDto } from '../../domain/entity/dto/user.personal.upd
 import { UserPreferencesEntityDto } from '../../domain/entity/dto/user.preferences.update.dto';
 import { UP_clerkUpdateRequestDto } from 'src/contexts/module_webhook/clerk/application/dto/UP-clerk.update.request';
 import { fullNameNormalization } from '../../application/functions/fullNameNormalization';
+import { generateCredentialId } from '../../application/functions/generateCredentialId';
 import { SectorRepositoryInterface } from 'src/contexts/module_user/businessSector/domain/repository/sector.repository.interface';
 import { UserType } from '../../domain/entity/enum/user.enums';
 import {
@@ -126,7 +127,7 @@ export class UserRepository implements UserRepositoryInterface {
       const user = await this.user
         .findOne({ _id })
         .select(
-          '_id profilePhotoUrl username contact lastName name businessName countryRegion userType board description email suscriptions groups magazines posts friendRequests userRelations',
+          '_id profilePhotoUrl username contact lastName name businessName countryRegion userType board description email suscriptions groups magazines posts friendRequests userRelations credentialId',
         )
         .populate([
           { path: 'board' },
@@ -366,6 +367,83 @@ export class UserRepository implements UserRepositoryInterface {
     }
   }
 
+  /**
+   * Producciones del usuario + dimensiones de MP de sus planes activos.
+   * Espejo de `getPostAndLimitsFromUserByUserId` para "Mis Producciones".
+   */
+  async getProductionsAndLimitsFromUserByUserId(
+    ownerId: string,
+    session?: ClientSession,
+  ): Promise<any> {
+    try {
+      const user = await this.user
+        .findById(ownerId)
+        .select('productions subscriptions -_id')
+        .populate([
+          {
+            path: 'productions',
+            select: 'ownerType',
+          },
+          {
+            path: 'subscriptions',
+            select: 'subscriptionPlan status',
+            match: { status: 'authorized' },
+            populate: {
+              path: 'subscriptionPlan',
+              select: 'personalBlogsCount groupBlogsCount filesPerBlogCount',
+            },
+          },
+        ])
+        .session(session ?? null);
+      if (!user) {
+        this.logger.error('No se encontró el usuario.');
+        return null;
+      }
+      return user;
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  async getCredentialIdByUserId(userId: string): Promise<string | null> {
+    try {
+      const user = await this.user
+        .findById(userId)
+        .select('credentialId -_id')
+        .lean();
+      return user?.credentialId ?? null;
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  /**
+   * Asigna el ID decorativo de credencial sólo si el usuario todavía no tiene
+   * uno (RNF-09). El filtro por `credentialId: null` hace la escritura idempotente
+   * ante llamadas concurrentes; si otro proceso ganó la carrera, se devuelve el
+   * valor ya persistido.
+   */
+  async setCredentialId(
+    userId: string,
+    credentialId: string,
+  ): Promise<string | null> {
+    try {
+      const updated = await this.user
+        .findOneAndUpdate(
+          { _id: userId, credentialId: null },
+          { $set: { credentialId } },
+          { new: true },
+        )
+        .select('credentialId -_id')
+        .lean();
+
+      if (updated?.credentialId) return updated.credentialId;
+      return await this.getCredentialIdByUserId(userId);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
   async getLimitContactsFromUserByUserId(
     userRequestId: string,
     session?: any,
@@ -443,7 +521,7 @@ export class UserRepository implements UserRepositoryInterface {
         const user = await this.user
           .findOne({ _id })
           .select(
-            '_id profilePhotoUrl username contact lastName name businessName countryRegion userType board description email suscriptions groups magazines posts friendRequests userRelations',
+            '_id profilePhotoUrl username contact lastName name businessName countryRegion userType board description email suscriptions groups magazines posts friendRequests userRelations credentialId',
           )
           .populate([
             {
@@ -835,6 +913,9 @@ export class UserRepository implements UserRepositoryInterface {
         notifications: reqUser.getNotifications,
         friendRequests: reqUser.getFriendRequests,
         dni: reqUser.getDni,
+        // ID decorativo de credencial (RNF-09). Los usuarios anteriores a MP no
+        // lo tienen y lo reciben de forma perezosa vía `setCredentialId`.
+        credentialId: reqUser.getCredentialId ?? generateCredentialId(),
       };
 
       switch (reqUser.getUserType?.toLowerCase()) {
@@ -934,6 +1015,58 @@ export class UserRepository implements UserRepositoryInterface {
     } catch (error: any) {
       this.logger.error(
         'An error was occurred trying to save a new post in user array(catch)',
+        error,
+      );
+      throw error;
+    }
+  }
+
+  async saveNewProduction(
+    productionId: string,
+    ownerId: string,
+    options?: { session?: ClientSession },
+  ): Promise<any> {
+    try {
+      this.logger.log(
+        'Start process in the repository: ' + UserRepository.name,
+      );
+      const result = await this.user.updateOne(
+        { _id: ownerId },
+        { $addToSet: { productions: productionId } },
+        options,
+      );
+      checkIfanyDataWasModified(result);
+    } catch (error: any) {
+      this.logger.error(
+        'An error was occurred trying to save a new production in user array(catch)',
+        error,
+      );
+      throw error;
+    }
+  }
+
+  /**
+   * Quita la producción del array del usuario. Parte del hard delete en cascada
+   * de MP (RNF-05): al borrar el blog se libera cupo del plan.
+   */
+  async removeProductionFromUser(
+    productionId: string,
+    ownerId: string,
+    options?: { session?: ClientSession },
+  ): Promise<any> {
+    try {
+      this.logger.log(
+        'Start process in the repository: ' + UserRepository.name,
+      );
+      const result = await this.user.updateOne(
+        { _id: ownerId },
+        { $pull: { productions: productionId } },
+        options,
+      );
+      checkIfanyDataWasModified(result);
+    } catch (error: any) {
+      this.logger.error(
+        'An error was occurred trying to remove a production from user array(catch)',
         error,
       );
       throw error;

@@ -43,6 +43,8 @@ export class UserBusiness extends User {
       user.getNotifications,
       user.getFriendRequests,
       user.getActiveRelations,
+      user.getProductions,
+      user.getCredentialId,
     );
     this.sector = sector;
     this.businessName = businessName;

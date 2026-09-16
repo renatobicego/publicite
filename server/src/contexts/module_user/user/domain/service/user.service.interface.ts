@@ -8,6 +8,8 @@ import { UserPreferencesEntityDto } from '../entity/dto/user.preferences.update.
 import { UP_clerkUpdateRequestDto } from 'src/contexts/module_webhook/clerk/application/dto/UP-clerk.update.request';
 import { UserFindAllResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.response.dto';
 import { UserType } from '../entity/enum/user.enums';
+import { ProductionOwnerType } from 'src/contexts/module_shared/production-limits/production.owner-type.enum';
+import { ProductionLimits } from '../../application/functions/calculateProductionLimits';
 
 export interface UserServiceInterface {
   createContact(
@@ -40,6 +42,17 @@ export interface UserServiceInterface {
     author: string,
     postBehaviourType: string,
   ): Promise<boolean>;
+
+  isThisUserAllowedToCreateBlog(
+    ownerId: string,
+    ownerType: ProductionOwnerType,
+    session?: ClientSession,
+  ): Promise<boolean>;
+  getProductionLimitsFromUserByUserId(
+    ownerId: string,
+    session?: ClientSession,
+  ): Promise<ProductionLimits>;
+  getCredentialIdOfUser(userId: string): Promise<string | null>;
   getUserPreferencesByUsername(
     username: string,
   ): Promise<UserPreferences | null>;
@@ -94,6 +107,16 @@ export interface UserServiceInterface {
   saveNewPostInUser(
     postId: string,
     authorId: string,
+    options?: { session?: ClientSession },
+  ): Promise<any>;
+  saveNewProductionInUser(
+    productionId: string,
+    ownerId: string,
+    options?: { session?: ClientSession },
+  ): Promise<any>;
+  removeProductionFromUser(
+    productionId: string,
+    ownerId: string,
     options?: { session?: ClientSession },
   ): Promise<any>;
   setNewActiveUserRelations(
