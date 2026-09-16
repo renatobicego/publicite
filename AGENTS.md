@@ -201,6 +201,14 @@ Existen equivalentes para otras entidades: `boardActions.ts`, `groupActions.ts`,
 ## 10. Features / documentos en curso
 
 - **Mis Producciones (Desarrollo 3):** feature grande nueva. Requerimientos comerciales en `Presupuesto - Mis Producciones (Soonpublicite) V2.docx.md`; criterios de aceptación enriquecidos y anclados al código en `plan-feature-mis-producciones-ACs.md`. Puntos clave del diseño: entidad `Blog`/`Production` con **dueño polimórfico** (`User` | `Group`), blogs de grupo con **roles derivados del grupo** (`creator`→admin, `admins[]`→moderador, `members[]`→visión; sin roles nuevos), **acceso por clave** (tipo Zoom) que reemplaza el alcance por agenda, **tickets pagos** por transferencia + confirmación admin (10% comisión vía `admin/invoices`), y **límites por plan** nuevos (blogs personales=1, blogs de grupo=N configurable, archivos por blog). Borrado = hard delete (como Anuncios).
+  - **Backend implementado (fases 0–9)** en `server/src/contexts/module_production/production/`. Contrato para el front: `contrato-API-mis-producciones-FRONT.md`.
+  - **Autorización:** centralizada en `ProductionAccessService`. Las mutations no reciben `author_id`: el permiso se valida contra el dueño guardado (`PubliciteAuth` en blogs personales, listas del grupo en blogs de grupo). No clonar el patrón `authorize(userRequestId, author_id)` de Anuncios, que confía en un id que manda el cliente.
+  - **Árbol:** una sola colección `productionitems` con discriminator `kind` (`folder` | `file` | `article`); los discriminators se registran **una sola vez** por conexión (sólo en `ProductionModule` / `production.module.providers.ts`, que también usa el módulo de test).
+  - **Cupo de archivos:** contador `Production.filesCount` con `$inc` condicional dentro de la transacción (no contar documentos: dos subidas concurrentes se pasarían del límite). El límite es el del plan de `Production.creator`.
+  - **Tickets:** las compras (`productionticketpurchases`) son registros contables: no se borran con el blog, se cierran (pendientes → `cancelled`, activas → `expired`). El vencimiento se evalúa al leer (el server corre en Firebase Functions, sin scheduler).
+  - **Eventos:** `group.deleted` y `group.creator_changed` (emitidos por `GroupService`) borran o transfieren el blog del grupo.
+  - **Config:** parámetros por env vars en `module_shared/production-limits/production.limits.config.ts`.
+  - **Tests:** `server/src/contexts/module_production/test/` (integración contra la base QA `automated_tests`; correr con `--runInBand`).
 - **Valuación IA y Match IA (Desarrollo 2.4.2):** `Requerimientos Modulo IA Valuacion y Match Soonpublicite.docx.md` + `contrato-API-valuacion-match-FRONT.md`, `docs-plan-BE-valuacion-match.md`, `docs-plan-UI-valuacion-match.md`.
 - Otros planes en la raíz: `plan-feature-admin-facturas.md`, `plan-feature-avatares.md`, `docs-refactor-brief-inteligente-BE.md`.
 

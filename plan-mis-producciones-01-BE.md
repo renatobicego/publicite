@@ -7,6 +7,25 @@
 
 ---
 
+## ✅ Estado de implementación
+
+Fases 0 a 9 implementadas en la rama `mis-producciones`, con tests. El contrato para la UI
+está en `contrato-API-mis-producciones-FRONT.md`. Decisiones tomadas durante la implementación:
+
+- **Ubicación:** `server/src/contexts/module_production/production/` (la opción por defecto de este plan).
+- **Árbol:** carpetas, archivos y artículos en una colección (`productionitems`) con discriminator `kind`.
+- **Clave de acceso:** exige usuario registrado y limita los intentos fallidos (fuerza bruta).
+- **Tickets:** entidad `ProductionTicket` + `ProductionTicketPurchase` con su propio panel admin
+  (`getProductionTicketPurchasesAdmin`, `attachFacturaToProductionTicketPurchase`, etc.) en vez de
+  insertar en `invoices`, cuyo schema es exclusivo de las suscripciones de MercadoPago. Se agregaron los
+  estados `rejected` y `cancelled`, y la liquidación del 90% (`markProductionTicketPayoutDone`).
+- **Vencimiento de tickets:** se evalúa al leer; no hay scheduler en Firebase Functions.
+- **Blogs de grupo:** si el grupo se borra, se borra su blog; si el creator cede el grupo, el blog pasa al
+  nuevo creator (cupo, plan y cobro) y se limpia el alias/CBU anterior.
+- **Pendiente fuera del BE:** tipo audio en el FileRouter de UploadThing (cliente).
+
+---
+
 ## ⚠️ Decisión previa (confirmar con el equipo de BE antes de empezar)
 
 **Ubicación del módulo.** Este plan asume `server/src/contexts/module_production/production/` (módulo nuevo). La alternativa es `module_post/production/` (submódulo dentro de Post). **El equipo de BE decide** cuál usar; preguntarlo **antes de escribir código**. Si se elige `module_post/production/`, ajustar todos los paths de este documento, el registro en `app.module.ts` y los nombres de tokens de DI en consecuencia.
