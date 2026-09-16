@@ -16,6 +16,7 @@ import { ProductionResolver } from '../production/infraestructure/graphql/resolv
 import { ProductionAdminResolver } from '../production/infraestructure/graphql/resolver/production-admin.resolver';
 import { ProductionTicketResolver } from '../production/infraestructure/graphql/resolver/production-ticket.resolver';
 import { ProductionSeudoBaseResolver } from '../production/infraestructure/graphql/resolver/production-seudobase.resolver';
+import { ProductionCommunityResolver } from '../production/infraestructure/graphql/resolver/production-community.resolver';
 
 // El ChatbotModule (importado por ProductionModule) usa `uuid`, que en la
 // versión instalada es sólo ESM y Jest no lo transforma.
@@ -31,6 +32,7 @@ describe('Mis Producciones - módulo y schema GraphQL', () => {
     ProductionAdminResolver,
     ProductionTicketResolver,
     ProductionSeudoBaseResolver,
+    ProductionCommunityResolver,
   ];
 
   it('genera el schema GraphQL con las operaciones del plan', async () => {
@@ -68,8 +70,13 @@ describe('Mis Producciones - módulo y schema GraphQL', () => {
       'bulkUpdateProductionPrices',
       'bulkUpdateProductionVisibility',
       'bulkDeleteProductionItems',
+      'becomeProductionFan',
+      'createProductionReview',
+      'getMyPendingProductionReview',
+      'createProductionComment',
     ]) {
-      expect(sdl).toContain(`${operation}(`);
+      // Con argumentos se imprime `op(`; sin argumentos, `op:`.
+      expect(sdl).toMatch(new RegExp(`\\b${operation}[(:]`));
     }
     await moduleRef.close();
   });

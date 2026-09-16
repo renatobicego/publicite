@@ -133,6 +133,11 @@ export interface ProductionServiceInterface {
     userId: string | undefined,
   ): Promise<ProductionResponse>;
 
+  findProductionsByIds(
+    productionIds: string[],
+    userId?: string,
+  ): Promise<ProductionResponse[]>;
+
   deleteGroupBlog(groupId: string): Promise<void>;
   transferGroupBlog(
     groupId: string,

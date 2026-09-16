@@ -35,6 +35,7 @@ import {
   ProductionTicketRepositoryInterface,
 } from '../../domain/repository/production-ticket.repository.interface';
 import { toTicketSummary } from '../functions/production-ticket.view';
+import { ProductionCommunityRepositoryInterface } from '../../domain/repository/production-community.repository.interface';
 import {
   ProductionPermissions,
   resolveProductionRole,
@@ -100,6 +101,8 @@ export class ProductionAccessService {
     private readonly ticketRepository: ProductionTicketRepositoryInterface,
     @Inject('ProductionTicketPurchaseRepositoryInterface')
     private readonly purchaseRepository: ProductionTicketPurchaseRepositoryInterface,
+    @Inject('ProductionCommunityRepositoryInterface')
+    private readonly communityRepository: ProductionCommunityRepositoryInterface,
   ) {}
 
   // ---------------------------------------------------------------------------
@@ -428,8 +431,23 @@ export class ProductionAccessService {
     }
   }
 
-  private async findPendingReview(_userId: string): Promise<string | null> {
-    return null;
+  /**
+   * REV-02: producción con una reseña pendiente por un ticket pago ya usado.
+   * Mientras exista, el usuario no puede comprar tickets ni visitar otras
+   * producciones.
+   */
+  private async findPendingReview(userId: string): Promise<string | null> {
+    const pending = await this.purchaseRepository.findPendingReview(userId);
+    return pending?.production ?? null;
+  }
+
+  /** De estas producciones, en cuáles el usuario es fan (FAN-01). */
+  async findFanSet(
+    userId: string | undefined,
+    productionIds: string[],
+  ): Promise<Set<string>> {
+    if (!userId || productionIds.length === 0) return new Set();
+    return this.communityRepository.findFanProductionIds(userId, productionIds);
   }
 
   /** Tickets del blog (TKT-01). */
@@ -479,18 +497,6 @@ export class ProductionAccessService {
       tickets,
       viewer,
     });
-  }
-
-  /** Datos del visitante que dependen de otras capas (fans, reseñas). */
-  async getViewerExtras(
-    _production: Production,
-    _viewer: ProductionViewerContext,
-  ): Promise<{
-    isFan?: boolean;
-    rating?: number | null;
-    reviewsCount?: number | null;
-  }> {
-    return {};
   }
 
   /**

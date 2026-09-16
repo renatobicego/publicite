@@ -20,8 +20,6 @@ export interface ProductionViewExtras {
   filesPerBlogLimit?: number | null;
   isFan?: boolean;
   pendingReviewProductionId?: string | null;
-  rating?: number | null;
-  reviewsCount?: number | null;
 }
 
 /** Arma la respuesta del blog según el rol de quien consulta. */
@@ -54,8 +52,8 @@ export function toProductionResponse(
     filesCount: production.getFilesCount ?? 0,
     filesPerBlogLimit: isStaff ? extras.filesPerBlogLimit ?? null : null,
     fansCount: production.getFansCount ?? 0,
-    rating: extras.rating ?? null,
-    reviewsCount: extras.reviewsCount ?? null,
+    rating: production.getRating,
+    reviewsCount: production.getReviewsCount,
     isFeatured: production.getIsFeatured ?? false,
     moderationStatus: isStaff ? production.getModerationStatus : null,
     aliasCbu: canManagePayout ? production.getAliasCbu ?? null : null,

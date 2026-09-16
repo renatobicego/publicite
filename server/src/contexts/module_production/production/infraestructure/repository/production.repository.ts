@@ -338,6 +338,33 @@ export class ProductionRepository implements ProductionRepositoryInterface {
     );
   }
 
+  async incrementRating(
+    id: string,
+    ratingDelta: number,
+    countDelta: number,
+    session?: ClientSession,
+  ): Promise<void> {
+    await this.productionModel.updateOne(
+      { _id: id },
+      [
+        {
+          $set: {
+            ratingSum: {
+              $max: [0, { $add: [{ $ifNull: ['$ratingSum', 0] }, ratingDelta] }],
+            },
+            reviewsCount: {
+              $max: [
+                0,
+                { $add: [{ $ifNull: ['$reviewsCount', 0] }, countDelta] },
+              ],
+            },
+          },
+        },
+      ],
+      { session },
+    );
+  }
+
   async setModerationStatus(
     id: string,
     status: ProductionModerationStatus,

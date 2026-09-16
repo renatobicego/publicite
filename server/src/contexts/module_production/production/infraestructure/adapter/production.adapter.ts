@@ -72,6 +72,10 @@ export class ProductionAdapter implements ProductionAdapterInterface {
     }
   }
 
+  findProductionsByIds(productionIds: string[], userId?: string) {
+    return this.productionService.findProductionsByIds(productionIds, userId);
+  }
+
   deleteGroupBlog(groupId: string) {
     return this.productionService.deleteGroupBlog(groupId);
   }

@@ -32,6 +32,8 @@ export interface ProductionDocument extends Document {
   accessKeyVersion: number;
   filesCount: number;
   fansCount: number;
+  ratingSum: number;
+  reviewsCount: number;
   isFeatured: boolean;
   moderationStatus: ProductionModerationStatus;
   createdAt: Date;
@@ -90,6 +92,9 @@ export const ProductionSchema = new Schema<ProductionDocument>(
     // atómica (PLN-05).
     filesCount: { type: Number, default: 0, min: 0 },
     fansCount: { type: Number, default: 0, min: 0 },
+    // Promedio de reseñas = ratingSum / reviewsCount (REV-01).
+    ratingSum: { type: Number, default: 0, min: 0 },
+    reviewsCount: { type: Number, default: 0, min: 0 },
     isFeatured: { type: Boolean, default: false },
     moderationStatus: {
       type: String,

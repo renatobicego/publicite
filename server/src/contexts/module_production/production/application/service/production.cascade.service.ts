@@ -12,6 +12,7 @@ import {
   ProductionTicketRepositoryInterface,
 } from '../../domain/repository/production-ticket.repository.interface';
 import { ProductionAuditRepositoryInterface } from '../../domain/repository/production-audit.repository.interface';
+import { ProductionCommunityRepositoryInterface } from '../../domain/repository/production-community.repository.interface';
 
 export interface DeletedItemsResult {
   deletedIds: string[];
@@ -47,6 +48,8 @@ export class ProductionCascadeService {
     private readonly purchaseRepository: ProductionTicketPurchaseRepositoryInterface,
     @Inject('ProductionAuditRepositoryInterface')
     private readonly auditRepository: ProductionAuditRepositoryInterface,
+    @Inject('ProductionCommunityRepositoryInterface')
+    private readonly communityRepository: ProductionCommunityRepositoryInterface,
   ) {}
 
   async deleteProduction(
@@ -64,6 +67,7 @@ export class ProductionCascadeService {
     );
     await this.grantRepository.deleteByProduction(productionId, session);
     await this.auditRepository.deleteByProduction(productionId, session);
+    await this.communityRepository.deleteByProduction(productionId, session);
     await this.ticketRepository.deleteByProduction(productionId, session);
     await this.purchaseRepository.closeByFilter(
       { productionId },
@@ -117,6 +121,11 @@ export class ProductionCascadeService {
       session,
     );
     await this.productionRepository.removeFromShowcase(
+      productionId,
+      deletedIds,
+      session,
+    );
+    await this.communityRepository.deleteCommentsByItems(
       productionId,
       deletedIds,
       session,

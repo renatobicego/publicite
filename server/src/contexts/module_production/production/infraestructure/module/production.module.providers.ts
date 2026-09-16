@@ -26,6 +26,14 @@ import ProductionAuditLogModel from '../schemas/production-audit-log.schema';
 import { ProductionAuditRepository } from '../repository/production-audit.repository';
 import { ProductionSeudoBaseService } from '../../application/service/production.seudobase.service';
 import { ProductionSeudoBaseAdapter } from '../adapter/production-seudobase.adapter';
+import {
+  ProductionCommentModel,
+  ProductionFanModel,
+  ProductionReviewModel,
+} from '../schemas/production-community.schema';
+import { ProductionCommunityRepository } from '../repository/production-community.repository';
+import { ProductionCommunityService } from '../../application/service/production.community.service';
+import { ProductionCommunityAdapter } from '../adapter/production-community.adapter';
 
 /**
  * Modelos y providers de MP, compartidos por el módulo y por el módulo de
@@ -51,6 +59,12 @@ export const PRODUCTION_MODELS: ModelDefinition[] = [
   {
     name: ProductionAuditLogModel.modelName,
     schema: ProductionAuditLogModel.schema,
+  },
+  { name: ProductionFanModel.modelName, schema: ProductionFanModel.schema },
+  { name: ProductionReviewModel.modelName, schema: ProductionReviewModel.schema },
+  {
+    name: ProductionCommentModel.modelName,
+    schema: ProductionCommentModel.schema,
   },
 ];
 
@@ -78,6 +92,10 @@ export const PRODUCTION_PROVIDERS: Provider[] = [
     provide: 'ProductionAuditRepositoryInterface',
     useClass: ProductionAuditRepository,
   },
+  {
+    provide: 'ProductionCommunityRepositoryInterface',
+    useClass: ProductionCommunityRepository,
+  },
   { provide: 'ProductionServiceInterface', useClass: ProductionService },
   {
     provide: 'ProductionInsightsServiceInterface',
@@ -91,6 +109,10 @@ export const PRODUCTION_PROVIDERS: Provider[] = [
     provide: 'ProductionSeudoBaseServiceInterface',
     useClass: ProductionSeudoBaseService,
   },
+  {
+    provide: 'ProductionCommunityServiceInterface',
+    useClass: ProductionCommunityService,
+  },
   { provide: 'ProductionAdapterInterface', useClass: ProductionAdapter },
   {
     provide: 'ProductionTicketAdapterInterface',
@@ -99,5 +121,9 @@ export const PRODUCTION_PROVIDERS: Provider[] = [
   {
     provide: 'ProductionSeudoBaseAdapterInterface',
     useClass: ProductionSeudoBaseAdapter,
+  },
+  {
+    provide: 'ProductionCommunityAdapterInterface',
+    useClass: ProductionCommunityAdapter,
   },
 ];

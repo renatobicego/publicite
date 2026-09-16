@@ -31,6 +31,8 @@ export interface ProductionProps {
   accessKeyVersion?: number;
   filesCount?: number;
   fansCount?: number;
+  ratingSum?: number;
+  reviewsCount?: number;
   isFeatured?: boolean;
   moderationStatus?: ProductionModerationStatus;
   createdAt?: Date;
@@ -54,6 +56,8 @@ export class Production {
       accessKeyVersion: 0,
       filesCount: 0,
       fansCount: 0,
+      ratingSum: 0,
+      reviewsCount: 0,
       isFeatured: false,
       moderationStatus: ProductionModerationStatus.active,
       ...props,
@@ -114,6 +118,15 @@ export class Production {
   get getFansCount() {
     return this.props.fansCount;
   }
+  get getReviewsCount() {
+    return this.props.reviewsCount ?? 0;
+  }
+  /** Promedio de las calificaciones, con un decimal; null sin reseñas. */
+  get getRating(): number | null {
+    const count = this.props.reviewsCount ?? 0;
+    if (count <= 0) return null;
+    return Math.round(((this.props.ratingSum ?? 0) / count) * 10) / 10;
+  }
   get getIsFeatured() {
     return this.props.isFeatured;
   }
@@ -161,6 +174,8 @@ export class Production {
       accessKeyVersion: doc.accessKeyVersion ?? 0,
       filesCount: doc.filesCount ?? 0,
       fansCount: doc.fansCount ?? 0,
+      ratingSum: doc.ratingSum ?? 0,
+      reviewsCount: doc.reviewsCount ?? 0,
       isFeatured: doc.isFeatured ?? false,
       moderationStatus:
         doc.moderationStatus ?? ProductionModerationStatus.active,

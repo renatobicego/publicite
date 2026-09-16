@@ -14,6 +14,7 @@ import { ProductionResolver } from '../graphql/resolver/production.resolver';
 import { ProductionAdminResolver } from '../graphql/resolver/production-admin.resolver';
 import { ProductionTicketResolver } from '../graphql/resolver/production-ticket.resolver';
 import { ProductionSeudoBaseResolver } from '../graphql/resolver/production-seudobase.resolver';
+import { ProductionCommunityResolver } from '../graphql/resolver/production-community.resolver';
 
 /**
  * Mis Producciones (Desarrollo 3). Clona el patrón de module_post/post: DI por
@@ -38,6 +39,7 @@ import { ProductionSeudoBaseResolver } from '../graphql/resolver/production-seud
     ProductionAdminResolver,
     ProductionTicketResolver,
     ProductionSeudoBaseResolver,
+    ProductionCommunityResolver,
     ...PRODUCTION_PROVIDERS,
   ],
   exports: ['ProductionServiceInterface'],

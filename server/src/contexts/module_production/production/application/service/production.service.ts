@@ -639,7 +639,7 @@ export class ProductionService implements ProductionServiceInterface {
     viewer: ProductionViewerContext,
     decision: AccessDecision,
   ): Promise<ProductionResponse> {
-    const [ownerInfo, limits] = await Promise.all([
+    const [ownerInfo, limits, fanSet] = await Promise.all([
       this.productionRepository.findOwnerInfo(
         production.getOwner,
         production.getOwnerType,
@@ -647,13 +647,13 @@ export class ProductionService implements ProductionServiceInterface {
       this.accessService.canSeeInsights(viewer.role)
         ? this.accessService.getCreatorLimits(production)
         : Promise.resolve(null),
+      this.accessService.findFanSet(viewer.userId, [production.getId!]),
     ]);
-    const extras = await this.accessService.getViewerExtras(production, viewer);
     return toProductionResponse(production, viewer.role, decision, {
       ownerInfo,
       filesPerBlogLimit: limits?.filesPerBlogLimit ?? null,
       pendingReviewProductionId: viewer.pendingReviewProductionId,
-      ...extras,
+      isFan: fanSet.has(production.getId!),
     });
   }
 
@@ -710,12 +710,18 @@ export class ProductionService implements ProductionServiceInterface {
     productions: Production[],
     scope: ProductionViewerScope,
   ): Promise<ProductionResponse[]> {
-    const ownersInfo = await this.productionRepository.findOwnersInfo(
-      productions.map((production) => ({
-        ownerId: production.getOwner,
-        ownerType: production.getOwnerType,
-      })),
-    );
+    const [ownersInfo, fanSet] = await Promise.all([
+      this.productionRepository.findOwnersInfo(
+        productions.map((production) => ({
+          ownerId: production.getOwner,
+          ownerType: production.getOwnerType,
+        })),
+      ),
+      this.accessService.findFanSet(
+        scope.userId,
+        productions.map((production) => production.getId!),
+      ),
+    ]);
 
     const views: ProductionResponse[] = [];
     for (const production of productions) {
@@ -725,16 +731,12 @@ export class ProductionService implements ProductionServiceInterface {
       const limits = this.accessService.canSeeInsights(viewer.role)
         ? await this.accessService.getCreatorLimits(production)
         : null;
-      const extras = await this.accessService.getViewerExtras(
-        production,
-        viewer,
-      );
       views.push(
         toProductionResponse(production, viewer.role, decision, {
           ownerInfo: ownersInfo.get(production.getOwner) ?? null,
           filesPerBlogLimit: limits?.filesPerBlogLimit ?? null,
           pendingReviewProductionId: viewer.pendingReviewProductionId,
-          ...extras,
+          isFan: fanSet.has(production.getId!),
         }),
       );
     }
@@ -764,6 +766,25 @@ export class ProductionService implements ProductionServiceInterface {
       MAX_OWNER_PRODUCTIONS,
     );
     return this.buildListViews(productions, scope);
+  }
+
+  /**
+   * Tarjetas de un conjunto de blogs en el orden recibido, filtrando lo que
+   * el visitante no puede ver (ej. los blogs de los que es fan).
+   */
+  async findProductionsByIds(
+    productionIds: string[],
+    userId?: string,
+  ): Promise<ProductionResponse[]> {
+    const productions = await this.productionRepository.findByIds(productionIds);
+    const byId = new Map(productions.map((p) => [p.getId!, p]));
+    const ordered = productionIds
+      .map((id) => byId.get(id))
+      .filter((production): production is Production => !!production);
+    return this.buildListViews(
+      ordered,
+      await this.accessService.buildViewerScope(userId),
+    );
   }
 
   /** Listado público y buscador de producciones (NAV-02, NAV-05). */

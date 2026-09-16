@@ -99,6 +99,13 @@ export interface ProductionRepositoryInterface {
     amount: number,
     session?: ClientSession,
   ): Promise<void>;
+  /** Ajusta la suma de calificaciones y la cantidad de reseñas. */
+  incrementRating(
+    id: string,
+    ratingDelta: number,
+    countDelta: number,
+    session?: ClientSession,
+  ): Promise<void>;
   setModerationStatus(
     id: string,
     status: ProductionModerationStatus,
