@@ -46,6 +46,10 @@
 "staff" = admin o moderador del blog. Las mutations **no reciben `author_id`**:
 el usuario sale del token y el permiso se valida contra el dueño guardado.
 
+**Errores.** Llegan con HTTP 200 y `errors[0].message = "Http Exception"`. El texto para el
+usuario está en `errors[0].extensions.originalError.message.message` (un array en los errores de
+validación de inputs) y el código en `errors[0].extensions.originalError.statusCode`.
+
 ---
 
 ## 2. Conceptos
