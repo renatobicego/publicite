@@ -40,7 +40,9 @@ export class UserBusiness extends User {
         backgroundColor: undefined,
       },
       user.getId,
-      user.getActiveRelations
+      user.getNotifications,
+      user.getFriendRequests,
+      user.getActiveRelations,
     );
     this.sector = sector;
     this.businessName = businessName;
