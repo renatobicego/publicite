@@ -1,5 +1,5 @@
 import { Inject, UseGuards } from '@nestjs/common';
-import { Args, Context, ID, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Context, ID, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 
 import { ClerkAuthGuard } from 'src/contexts/module_shared/auth/clerk-auth/clerk.auth.guard';
 import { ClerkAuthGuardOptional } from 'src/contexts/module_shared/auth/clerk-auth/clerk.auth.guard.optional';
@@ -25,6 +25,7 @@ import {
   ProductionItemResponse,
   ProductionItemsResponse,
   ProductionLimitsResponse,
+  ProductionListResponse,
   ProductionResponse,
 } from '../../../domain/entity/models_graphql/HTTP-RESPONSE/production.response';
 import {
@@ -144,6 +145,42 @@ export class ProductionResolver {
     return this.productionAdapter.findProductionsByOwner(
       ownerId,
       ownerType,
+      optionalUserId(context),
+    );
+  }
+
+  @Query(() => ProductionListResponse, {
+    description:
+      'Listado público de producciones (NAV-02) y buscador (NAV-05). Sin token sólo lo público',
+  })
+  @UseGuards(ClerkAuthGuardOptional)
+  async findAllProductions(
+    @Args('page', { type: () => Int }) page: number,
+    @Args('limit', { type: () => Int }) limit: number,
+    @Args('searchTerm', { type: () => String, nullable: true })
+    searchTerm: string | undefined,
+    @Context() context: ProductionGqlContext,
+  ): Promise<ProductionListResponse> {
+    return this.productionAdapter.findAllProductions(
+      page,
+      limit,
+      optionalUserId(context),
+      searchTerm,
+    );
+  }
+
+  @Query(() => [ProductionResponse], {
+    description:
+      'Producciones destacadas para el home (NAV-03). Vacío = no mostrar la sección',
+  })
+  @UseGuards(ClerkAuthGuardOptional)
+  async findFeaturedProductions(
+    @Args('limit', { type: () => Int, nullable: true, defaultValue: 10 })
+    limit: number,
+    @Context() context: ProductionGqlContext,
+  ): Promise<ProductionResponse[]> {
+    return this.productionAdapter.findFeaturedProductions(
+      limit,
       optionalUserId(context),
     );
   }

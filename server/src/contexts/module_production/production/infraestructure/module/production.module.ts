@@ -16,6 +16,7 @@ import { ProductionAccessService } from '../../application/service/production.ac
 import { ProductionCascadeService } from '../../application/service/production.cascade.service';
 import { ProductionAdapter } from '../adapter/production.adapter';
 import { ProductionResolver } from '../graphql/resolver/production.resolver';
+import { ProductionAdminResolver } from '../graphql/resolver/production-admin.resolver';
 
 /**
  * Mis Producciones (Desarrollo 3). Clona el patrón de module_post/post: DI por
@@ -42,6 +43,7 @@ import { ProductionResolver } from '../graphql/resolver/production.resolver';
   providers: [
     MyLoggerService,
     ProductionResolver,
+    ProductionAdminResolver,
     ProductionAccessService,
     ProductionCascadeService,
     {

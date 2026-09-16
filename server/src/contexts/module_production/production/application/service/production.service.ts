@@ -38,6 +38,7 @@ import {
   ProductionItemResponse,
   ProductionItemsResponse,
   ProductionLimitsResponse,
+  ProductionListResponse,
   ProductionResponse,
 } from '../../domain/entity/models_graphql/HTTP-RESPONSE/production.response';
 import { ProductionRepositoryInterface } from '../../domain/repository/production.repository.interface';
@@ -54,14 +55,27 @@ import {
 } from '../functions/production.access';
 import { toItemResponse, toProductionResponse } from '../functions/production.view';
 import {
+  buildProductionSearchRegex,
   normalizeFileName,
   requireNonEmpty,
   toSearchText,
 } from '../functions/production.text';
 import { ProductionCascadeService } from './production.cascade.service';
+import { ProductionViewerScope } from './production.access.service';
 
 const DUPLICATE_KEY = 11000;
 const MAX_URL_ATTEMPTS = 3;
+const MAX_OWNER_PRODUCTIONS = 100;
+const MAX_PAGE_SIZE = 50;
+const DEFAULT_PAGE_SIZE = 10;
+
+const normalizePagination = (page: number, limit: number) => ({
+  safePage: Math.max(1, Math.floor(page) || 1),
+  safeLimit: Math.min(
+    MAX_PAGE_SIZE,
+    Math.max(1, Math.floor(limit) || DEFAULT_PAGE_SIZE),
+  ),
+});
 
 const isDuplicateKeyError = (error: any, field?: string) =>
   error?.code === DUPLICATE_KEY &&
@@ -687,37 +701,147 @@ export class ProductionService implements ProductionServiceInterface {
     return this.buildProductionView(production, viewer, decision);
   }
 
+  /**
+   * Arma las tarjetas de un listado: el alcance del visitante se calcula una
+   * sola vez y los dueños se traen en una sola consulta.
+   */
+  private async buildListViews(
+    productions: Production[],
+    scope: ProductionViewerScope,
+  ): Promise<ProductionResponse[]> {
+    const ownersInfo = await this.productionRepository.findOwnersInfo(
+      productions.map((production) => ({
+        ownerId: production.getOwner,
+        ownerType: production.getOwnerType,
+      })),
+    );
+
+    const views: ProductionResponse[] = [];
+    for (const production of productions) {
+      const viewer = await this.accessService.contextFor(production, scope);
+      const decision = this.accessService.evaluateProduction(production, viewer);
+      if (!decision.listed) continue;
+      const limits = this.accessService.canSeeInsights(viewer.role)
+        ? await this.accessService.getCreatorLimits(production)
+        : null;
+      const extras = await this.accessService.getViewerExtras(
+        production,
+        viewer,
+      );
+      views.push(
+        toProductionResponse(production, viewer.role, decision, {
+          ownerInfo: ownersInfo.get(production.getOwner) ?? null,
+          filesPerBlogLimit: limits?.filesPerBlogLimit ?? null,
+          pendingReviewProductionId: viewer.pendingReviewProductionId,
+          ...extras,
+        }),
+      );
+    }
+    return views;
+  }
+
   async findProductionsByOwner(
     ownerId: string,
     ownerType: ProductionOwnerType | undefined,
     userId?: string,
   ): Promise<ProductionResponse[]> {
+    const scope = await this.accessService.buildViewerScope(userId);
+    // En el cartel se muestran también los blogs con clave (para poder
+    // ingresarla) y los moderados sólo le llegan al staff (lo filtra el
+    // evaluador).
     const { productions } = await this.productionRepository.findList(
       {
         ownerId,
         ownerType,
-        visibilityConditions: [],
+        visibilityConditions: this.accessService.buildListVisibilityConditions(
+          scope,
+        ),
         includeKeyProtected: true,
         includeModerated: true,
       },
       1,
-      100,
+      MAX_OWNER_PRODUCTIONS,
     );
+    return this.buildListViews(productions, scope);
+  }
 
-    const views: ProductionResponse[] = [];
-    for (const production of productions) {
-      const viewer = await this.accessService.buildViewerContext(
+  /** Listado público y buscador de producciones (NAV-02, NAV-05). */
+  async findAllProductions(
+    page: number,
+    limit: number,
+    userId?: string,
+    searchTerm?: string,
+  ): Promise<ProductionListResponse> {
+    const { safePage, safeLimit } = normalizePagination(page, limit);
+    const searchRegex = buildProductionSearchRegex(searchTerm);
+    if (searchTerm && !searchRegex) return { productions: [], hasMore: false };
+
+    const scope = await this.accessService.buildViewerScope(userId);
+    const { productions, hasMore } = await this.productionRepository.findList(
+      {
+        visibilityConditions: this.accessService.buildListVisibilityConditions(
+          scope,
+        ),
+        searchRegex,
+        includeKeyProtected: false,
+        includeModerated: false,
+      },
+      safePage,
+      safeLimit,
+    );
+    return {
+      productions: await this.buildListViews(productions, scope),
+      hasMore,
+    };
+  }
+
+  /**
+   * "Producciones destacadas" del home (NAV-03): primero las marcadas por un
+   * admin y después las de más fans. Si no hay, la lista viene vacía y el front
+   * no muestra la sección.
+   */
+  async findFeaturedProductions(
+    limit: number,
+    userId?: string,
+  ): Promise<ProductionResponse[]> {
+    const { safeLimit } = normalizePagination(1, limit);
+    const scope = await this.accessService.buildViewerScope(userId);
+    const productions = await this.productionRepository.findFeatured(
+      {
+        visibilityConditions: this.accessService.buildListVisibilityConditions(
+          scope,
+        ),
+        includeKeyProtected: false,
+        includeModerated: false,
+      },
+      safeLimit,
+    );
+    return this.buildListViews(productions, scope);
+  }
+
+  /** Sólo admins de la plataforma: fija o quita un blog de destacados. */
+  async setProductionFeatured(
+    productionId: string,
+    isFeatured: boolean,
+  ): Promise<ProductionResponse> {
+    const production = await this.productionRepository.setFeatured(
+      productionId,
+      isFeatured,
+    );
+    if (!production) throw new NotFoundException('Producción no encontrada');
+    const [view] = await this.buildListViews(
+      [production],
+      await this.accessService.buildViewerScope(null),
+    );
+    return (
+      view ??
+      toProductionResponse(
         production,
-        userId,
-      );
-      const decision = this.accessService.evaluateProduction(
-        production,
-        viewer,
-      );
-      if (!decision.listed) continue;
-      views.push(await this.buildProductionView(production, viewer, decision));
-    }
-    return views;
+        ProductionRole.visitor,
+        { listed: true, canViewContent: false },
+        {},
+      )
+    );
   }
 
   async getProductionItems(

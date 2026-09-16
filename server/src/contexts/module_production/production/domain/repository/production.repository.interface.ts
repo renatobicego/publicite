@@ -100,6 +100,11 @@ export interface ProductionRepositoryInterface {
   ): Promise<void>;
 
   findGroupRoster(groupId: string): Promise<ProductionGroupRoster | null>;
+  /** Grupos donde el usuario es creator, admin o miembro, con ese rol. */
+  findGroupRolesOfUser(
+    userId: string,
+  ): Promise<Map<string, 'creator' | 'admin' | 'member'>>;
+  setFeatured(id: string, isFeatured: boolean): Promise<Production | null>;
   setGroupBlog(
     groupId: string,
     productionId: string | null,

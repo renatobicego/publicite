@@ -7,6 +7,7 @@ import { createPersonalUser } from '../../../../test/functions_unit_testing/user
 export interface ProductionTestModels {
   connection: Connection;
   user: Model<any>;
+  userRelation: Model<any>;
   group: Model<any>;
   plan: Model<any>;
   subscription: Model<any>;
@@ -20,6 +21,7 @@ export function getProductionTestModels(
   return {
     connection: moduleRef.get<Connection>(getConnectionToken()),
     user: moduleRef.get(getModelToken('User')),
+    userRelation: moduleRef.get(getModelToken('UserRelation')),
     group: moduleRef.get(getModelToken('Group')),
     plan: moduleRef.get(getModelToken('SubscriptionPlan')),
     subscription: moduleRef.get(getModelToken('Subscription')),
@@ -55,6 +57,7 @@ export async function cleanProductionTestData(models: ProductionTestModels) {
   );
   await Promise.all([
     models.user.deleteMany({}),
+    models.userRelation.deleteMany({}),
     models.group.deleteMany({}),
     models.plan.deleteMany({}),
     models.subscription.deleteMany({}),
@@ -132,6 +135,30 @@ export async function givePlanToUser(
   await models.user.updateOne(
     { _id: userId },
     { $push: { subscriptions: subscriptionId } },
+  );
+}
+
+/**
+ * Relación activa del visitante con el dueño (agenda de contactos), tal como
+ * la usa la visibilidad de Anuncios.
+ */
+export async function relateUsers(
+  models: ProductionTestModels,
+  viewerId: string,
+  ownerId: string,
+  type: 'contacts' | 'friends' | 'topfriends',
+): Promise<void> {
+  const relationId = new Types.ObjectId();
+  await models.userRelation.create({
+    _id: relationId,
+    userA: new Types.ObjectId(viewerId),
+    userB: new Types.ObjectId(ownerId),
+    typeRelationA: type,
+    typeRelationB: type,
+  });
+  await models.user.updateOne(
+    { _id: viewerId },
+    { $push: { activeRelations: relationId } },
   );
 }
 

@@ -330,6 +330,31 @@ export class ProductionRepository implements ProductionRepositoryInterface {
     };
   }
 
+  async findGroupRolesOfUser(
+    userId: string,
+  ): Promise<Map<string, 'creator' | 'admin' | 'member'>> {
+    const roles = new Map<string, 'creator' | 'admin' | 'member'>();
+    if (!Types.ObjectId.isValid(userId)) return roles;
+    const id = new Types.ObjectId(userId);
+    const [asCreator, asAdmin, asMember] = await Promise.all([
+      this.groupModel.find({ creator: id }).select('_id').lean(),
+      this.groupModel.find({ admins: id }).select('_id').lean(),
+      this.groupModel.find({ members: id }).select('_id').lean(),
+    ]);
+    // El rol más alto gana si el usuario figura en más de una lista.
+    (asMember as any[]).forEach((g) => roles.set(g._id.toString(), 'member'));
+    (asAdmin as any[]).forEach((g) => roles.set(g._id.toString(), 'admin'));
+    (asCreator as any[]).forEach((g) => roles.set(g._id.toString(), 'creator'));
+    return roles;
+  }
+
+  async setFeatured(id: string, isFeatured: boolean): Promise<Production | null> {
+    const doc = await this.productionModel
+      .findByIdAndUpdate(id, { $set: { isFeatured } }, { new: true })
+      .lean();
+    return doc ? Production.fromDocument(doc) : null;
+  }
+
   async setGroupBlog(
     groupId: string,
     productionId: string | null,

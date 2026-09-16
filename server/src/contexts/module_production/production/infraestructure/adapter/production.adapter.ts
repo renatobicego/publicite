@@ -135,4 +135,29 @@ export class ProductionAdapter implements ProductionAdapterInterface {
   getProductionLimits(userId: string) {
     return this.productionService.getProductionLimits(userId);
   }
+
+  findAllProductions(
+    page: number,
+    limit: number,
+    userId?: string,
+    searchTerm?: string,
+  ) {
+    return this.productionService.findAllProductions(
+      page,
+      limit,
+      userId,
+      searchTerm,
+    );
+  }
+
+  findFeaturedProductions(limit: number, userId?: string) {
+    return this.productionService.findFeaturedProductions(limit, userId);
+  }
+
+  setProductionFeatured(productionId: string, isFeatured: boolean) {
+    return this.productionService.setProductionFeatured(
+      productionId,
+      isFeatured,
+    );
+  }
 }

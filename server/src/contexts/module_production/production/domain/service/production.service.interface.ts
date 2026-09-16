@@ -3,6 +3,7 @@ import {
   ProductionItemResponse,
   ProductionItemsResponse,
   ProductionLimitsResponse,
+  ProductionListResponse,
   ProductionResponse,
 } from '../entity/models_graphql/HTTP-RESPONSE/production.response';
 import {
@@ -94,4 +95,19 @@ export interface ProductionServiceInterface {
     accessKey?: string,
   ): Promise<ProductionItemResponse>;
   getProductionLimits(userId: string): Promise<ProductionLimitsResponse>;
+
+  findAllProductions(
+    page: number,
+    limit: number,
+    userId?: string,
+    searchTerm?: string,
+  ): Promise<ProductionListResponse>;
+  findFeaturedProductions(
+    limit: number,
+    userId?: string,
+  ): Promise<ProductionResponse[]>;
+  setProductionFeatured(
+    productionId: string,
+    isFeatured: boolean,
+  ): Promise<ProductionResponse>;
 }
