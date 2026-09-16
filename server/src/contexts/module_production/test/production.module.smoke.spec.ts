@@ -84,7 +84,12 @@ describe('Mis Producciones - módulo y schema GraphQL', () => {
         }),
         ProductionModule,
       ],
-    }).compile();
+    })
+      // El cliente de OpenAI del ChatbotModule exige OPENAI_API_KEY al
+      // instanciarse; para validar la inyección no hace falta.
+      .overrideProvider('ChatbotAIServiceInterface')
+      .useValue({})
+      .compile();
 
     for (const resolver of RESOLVERS) {
       expect(moduleRef.get(resolver)).toBeDefined();
