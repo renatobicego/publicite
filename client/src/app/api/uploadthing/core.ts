@@ -11,6 +11,7 @@ export const ourFileRouter = {
     image: { maxFileSize: "8MB", maxFileCount: 10 },
     video: { maxFileSize: "32MB", maxFileCount: 1 },
     pdf: { maxFileSize: "8MB", maxFileCount: 3 },
+    audio: { maxFileSize: "16MB", maxFileCount: 1 },
   })
     // Set permissions and file types for this FileRoute
     .middleware(async ({ req }) => {
@@ -38,6 +39,7 @@ export const ourFileRouter = {
     image: { maxFileSize: "8MB", maxFileCount: 1 },
     video: { maxFileSize: "32MB", maxFileCount: 1 },
     pdf: { maxFileSize: "8MB", maxFileCount: 1 },
+    audio: { maxFileSize: "16MB", maxFileCount: 1 },
   }) // Set permissions and file types for this FileRoute
     .middleware(async ({ req }) => {
       const user = auth();

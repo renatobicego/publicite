@@ -24,9 +24,10 @@ import {
   useUserData,
 } from "@/app/(root)/providers/userDataProvider";
 import { IoMdMegaphone } from "react-icons/io";
-import { FaBookmark, FaUserPlus } from "react-icons/fa";
+import { FaBook, FaBookmark, FaUserPlus } from "react-icons/fa";
 import TabTitle from "./TabTitle";
 import { MdContacts } from "react-icons/md";
+import ProfileProductionsTab from "@/app/(root)/(explorar)/perfiles/[id]/(components)/ProfileProductionsTab";
 
 const UserSolapas = ({
   user,
@@ -100,6 +101,22 @@ const UserSolapas = ({
           )}
           <UserPosts isMyProfile={isMyProfile} posts={user.posts || []} />
         </>
+      ),
+    },
+    {
+      key: `${PROFILE_USERNAME}/producciones`,
+      title: <TabTitle title="Producciones" icon={<FaBook />} />,
+      component: (
+        <ProfileProductionsTab
+          userId={user._id}
+          isMyProfile={isMyProfile}
+          credentialId={(user as any).credentialId}
+          displayName={
+            (user as any).businessName ||
+            [user.name, user.lastName].filter(Boolean).join(" ") ||
+            user.username
+          }
+        />
       ),
     },
     {

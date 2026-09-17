@@ -26,6 +26,7 @@ const DropdownSolapas = ({
     pizarras: "Pizarras",
     perfiles: "Carteles de Usuario",
     grupos: "Grupos",
+    producciones: "Producciones",
   };
 
   // map the selected keys to the label, to be able to show the selected solapa in the dropdown text

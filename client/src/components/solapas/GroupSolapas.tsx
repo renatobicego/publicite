@@ -18,6 +18,8 @@ import SelectManualLocationModal from "../modals/SelectManualLocation/SelectManu
 import { useUserData } from "@/app/(root)/providers/userDataProvider";
 import TabTitle from "./TabTitle";
 import { IoMdMegaphone } from "react-icons/io";
+import { FaBook } from "react-icons/fa";
+import GroupProductionTab from "@/app/(root)/(explorar)/grupos/[id]/(components)/GroupProductionTab";
 const GroupSolapas = ({
   group,
   isAdmin,
@@ -58,6 +60,7 @@ const GroupSolapas = ({
   }, [pathname]);
 
   const GROUP_URL = `${GROUPS}/${group._id}`;
+  const isCreator = userIdLogged === group.creator._id;
 
   const usersMembers = useMemo(() => {
     return [
@@ -109,6 +112,13 @@ const GroupSolapas = ({
       ),
     },
     {
+      key: `${GROUP_URL}/produccion`,
+      title: <TabTitle title="Producción del Grupo" icon={<FaBook />} />,
+      component: (
+        <GroupProductionTab groupId={group._id} isCreator={isCreator} />
+      ),
+    },
+    {
       key: `${GROUP_URL}/miembros`,
       title: <TabTitle title="Administrar Miembros" icon={<FaUserGroup />} />,
       component: (
@@ -131,8 +141,8 @@ const GroupSolapas = ({
             <h3>Solicitudes de Ingreso</h3>
           </div>
           {!group.groupNotificationsRequest ||
-          !group.groupNotificationsRequest.joinRequests ||
-          group.groupNotificationsRequest.joinRequests.length === 0 ? (
+            !group.groupNotificationsRequest.joinRequests ||
+            group.groupNotificationsRequest.joinRequests.length === 0 ? (
             <p className="text-light-text">No hay solicitudes de ingreso</p>
           ) : (
             <UsersGrid

@@ -5,8 +5,10 @@ import {
   CREATE_MAGAZINE,
   CREATE_PETITION,
   CREATE_POST,
+  CREATE_PRODUCTION,
 } from "@/utils/data/urls";
 import { FaCamera, FaUserGroup } from "react-icons/fa6";
+import { FaBook } from "react-icons/fa";
 import { IoBook } from "react-icons/io5";
 import { MdQuestionAnswer } from "react-icons/md";
 import CreateCard, { PostType } from "./CreateCard";
@@ -42,6 +44,14 @@ export default function Create() {
       icon: MdQuestionAnswer,
       url: CREATE_PETITION,
       bg: "bg-petition",
+    },
+    {
+      label: "Crear Producción",
+      description:
+        "Crea un blog de Mis Producciones para organizar tu contenido.",
+      icon: FaBook,
+      url: CREATE_PRODUCTION,
+      bg: "bg-[#D6249F]",
     },
     {
       label: "Crear Revista",

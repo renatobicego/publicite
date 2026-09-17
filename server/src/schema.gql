@@ -356,6 +356,7 @@ type User_Full_Grapql_Model {
   isActive: String
   businessName: String
   addressPrivacy: String
+  credentialId: String
   contact: Contact
   createdTime: String
   magazines: [Magazines_Full_Graphql_Model]
@@ -1322,6 +1323,664 @@ type MatchResponse {
   message: String
 }
 
+type ProductionIdResponse {
+  _id: ID!
+}
+
+type ProductionShelfLinkResponse {
+  category: ProductionShelfCategory!
+  title: String!
+  link: String!
+  imageKey: String
+}
+
+"""Pelis, Libros, Sitios web, Youtube, Games, Places"""
+enum ProductionShelfCategory {
+  movies
+  books
+  websites
+  youtube
+  games
+  places
+}
+
+"""Datos públicos del dueño (usuario o grupo)"""
+type ProductionOwnerResponse {
+  _id: ID!
+  name: String
+  lastName: String
+  businessName: String
+
+  """Sólo usuarios"""
+  username: String
+
+  """Sólo grupos"""
+  alias: String
+  profilePhotoUrl: String
+}
+
+"""Qué puede hacer quien consulta el blog"""
+type ProductionViewerResponse {
+  role: ProductionRole!
+  canViewContent: Boolean!
+  lockReason: ProductionLockReason
+
+  """Editar header, carpetas y archivos"""
+  canEdit: Boolean!
+
+  """Gestionar tickets, alcance y clave"""
+  canManageAccess: Boolean!
+  canDelete: Boolean!
+
+  """Cargar el alias/CBU de cobro"""
+  canManagePayout: Boolean!
+  isFan: Boolean!
+
+  """Producción con una reseña pendiente que bloquea al visitante (REV-02)"""
+  pendingReviewProductionId: ID
+}
+
+"""
+admin (dueño o creator del grupo), moderator (admins del grupo), viewer (miembros del grupo), visitor (resto)
+"""
+enum ProductionRole {
+  admin
+  moderator
+  viewer
+  visitor
+}
+
+"""
+accessKey (falta la clave), visibility (fuera del alcance), ticket (requiere ticket), pendingReview (reseña pendiente), moderation (oculto o bloqueado)
+"""
+enum ProductionLockReason {
+  accessKey
+  visibility
+  ticket
+  pendingReview
+  moderation
+}
+
+type ProductionResponse {
+  _id: ID!
+  owner: ID!
+  ownerType: ProductionOwnerType!
+  ownerInfo: ProductionOwnerResponse
+
+  """Usuario contra cuyo plan cuentan los límites"""
+  creator: ID!
+  title: String!
+  description: String
+  headerPhotoKey: String
+  welcomeText: String
+  welcomeVideoKey: String
+
+  """URL autogenerada del blog (BLG-02)"""
+  url: String!
+  shelf: [ProductionShelfLinkResponse!]!
+  showcase: [ID!]!
+  visibility: Visibility_of_the_post!
+
+  """Si el blog pide clave (INV-01)"""
+  hasAccessKey: Boolean!
+
+  """Archivos + artículos del blog"""
+  filesCount: Int!
+
+  """Cupo de archivos por blog (sólo staff)"""
+  filesPerBlogLimit: Int
+  fansCount: Int!
+
+  """Promedio de calificaciones de las reseñas"""
+  rating: Float
+  reviewsCount: Int
+  isFeatured: Boolean!
+
+  """Sólo staff del blog"""
+  moderationStatus: ProductionModerationStatus
+
+  """Alias/CBU de cobro (sólo el admin del blog, TKT-11)"""
+  aliasCbu: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  viewer: ProductionViewerResponse!
+}
+
+"""Dueño del blog: usuario (blog personal) o grupo (blog de grupo)"""
+enum ProductionOwnerType {
+  User
+  Group
+}
+
+"""Visibility of the post """
+enum Visibility_of_the_post {
+  public
+  registered
+  contacts
+  friends
+  topfriends
+}
+
+"""
+active, hidden (oculto por denuncias, pendiente de revisión) o blocked (bloqueado por un admin)
+"""
+enum ProductionModerationStatus {
+  active
+  hidden
+  blocked
+}
+
+type ProductionListResponse {
+  productions: [ProductionResponse!]!
+  hasMore: Boolean!
+}
+
+type ProductionPostcardResponse {
+  latitude: Float
+  longitude: Float
+  authorship: String
+  dedication: String
+  description: String
+}
+
+type ProductionArticleBlockResponse {
+  type: String!
+  data: String!
+}
+
+"""Ticket que habilita el contenido (TKT-01..04)"""
+type ProductionTicketSummaryResponse {
+  _id: ID!
+  isPaid: Boolean!
+  price: Float!
+  currency: String!
+  durationHours: Int
+  untilClose: Boolean!
+}
+
+type ProductionItemAccessResponse {
+  canViewContent: Boolean!
+  lockReason: ProductionLockReason
+  ticket: ProductionTicketSummaryResponse
+}
+
+type ProductionItemResponse {
+  _id: ID!
+  production: ID!
+  parent: ID
+  kind: ProductionItemKind!
+
+  """Nombre de la carpeta o título del archivo/artículo"""
+  name: String!
+
+  """Alcance propio; null = hereda"""
+  visibility: Visibility_of_the_post
+
+  """Alcance que efectivamente aplica"""
+  effectiveVisibility: Visibility_of_the_post!
+
+  """ID editable (BLG-13)"""
+  fileName: String
+  fileType: ProductionFileType
+
+  """Key de UploadThing; null si el contenido está bloqueado"""
+  key: String
+  postcard: ProductionPostcardResponse
+  blocks: [ProductionArticleBlockResponse!]
+
+  """Sólo staff del blog"""
+  moderationStatus: ProductionModerationStatus
+  createdAt: DateTime
+  updatedAt: DateTime
+  access: ProductionItemAccessResponse!
+}
+
+"""Tipo de ítem del árbol de una producción"""
+enum ProductionItemKind {
+  folder
+  file
+  article
+}
+
+"""Foto (postal), video, escrito u audio"""
+enum ProductionFileType {
+  photo
+  video
+  writing
+  audio
+}
+
+type ProductionBreadcrumbResponse {
+  _id: ID!
+  name: String!
+}
+
+"""Grilla de un nivel del árbol (PC-06)"""
+type ProductionItemsResponse {
+  production: ProductionResponse!
+  parent: ProductionItemResponse
+
+  """Camino desde la raíz hasta la carpeta actual"""
+  breadcrumb: [ProductionBreadcrumbResponse!]!
+  items: [ProductionItemResponse!]!
+}
+
+"""Límites de Mis Producciones del usuario (RNF-06)"""
+type ProductionLimitsResponse {
+  personalBlogCount: Int!
+  groupBlogCount: Int!
+  totalPersonalBlogLimit: Int!
+  totalGroupBlogLimit: Int!
+  personalBlogsAvailable: Int!
+  groupBlogsAvailable: Int!
+
+  """Cupo de archivos por blog"""
+  filesPerBlogLimit: Int!
+
+  """Si el plan permite emitir tickets pagos (PLN-02/03)"""
+  canSellPaidTickets: Boolean!
+}
+
+"""Tokens Publicité de IA del usuario (token bucket)"""
+type ProductionTokenConsumptionResponse {
+  """'plan' | 'free' | 'anonymous'"""
+  source: String!
+  allowance: Float!
+  used: Float!
+  remaining: Float!
+  resetsAt: DateTime
+}
+
+"""Archivos usados vs. límite de un blog (PC-05, SB-05)"""
+type ProductionBlogConsumptionResponse {
+  productionId: ID!
+  title: String!
+  ownerType: ProductionOwnerType!
+  role: ProductionRole!
+  filesCount: Int!
+
+  """Límite del plan del creator del blog"""
+  filesPerBlogLimit: Int!
+  filesAvailable: Int!
+}
+
+"""CONTROL Consumo del Panel de Control"""
+type ProductionConsumptionResponse {
+  """null si no se pudo consultar el saldo de tokens"""
+  tokens: ProductionTokenConsumptionResponse
+  limits: ProductionLimitsResponse!
+  blogs: [ProductionBlogConsumptionResponse!]!
+}
+
+type ProductionTicketStatsResponse {
+  """Compras/visitas (sin rechazadas ni canceladas)"""
+  purchases: Int!
+
+  """Accesos vigentes"""
+  active: Int!
+
+  """Monto bruto de los tickets pagos confirmados"""
+  revenue: Float!
+}
+
+"""Ticket de una carpeta, archivo o blog (TKT-01..03)"""
+type ProductionTicketResponse {
+  _id: ID!
+  production: ID!
+
+  """null = todo el blog"""
+  target: ID
+  targetName: String
+  isPaid: Boolean!
+  price: Float!
+  currency: String!
+  durationHours: Int
+  untilClose: Boolean!
+
+  """Archivos y artículos que incluye (TKT-04)"""
+  filesCount: Int!
+
+  """Sólo staff del blog"""
+  stats: ProductionTicketStatsResponse
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+"""Cuenta de Soonpublicité para transferir (TKT-05)"""
+type ProductionTicketPaymentInstructionsResponse {
+  alias: String
+  cbu: String
+  holder: String
+  bank: String
+  amount: Float!
+  currency: String!
+
+  """Referencia a indicar en la transferencia (id de la compra)"""
+  reference: String
+}
+
+"""Datos públicos del comprador (admin y staff)"""
+type ProductionTicketBuyerResponse {
+  _id: ID!
+  name: String
+  lastName: String
+  username: String
+
+  """Sólo admin"""
+  email: String
+}
+
+"""Compra de un ticket (RNF-07)"""
+type ProductionTicketPurchaseResponse {
+  _id: ID!
+  ticket: ID!
+  production: ID!
+  productionTitle: String!
+  target: ID
+  targetName: String
+  buyer: ID!
+  buyerInfo: ProductionTicketBuyerResponse
+  creator: ID!
+  status: ProductionTicketPurchaseStatus!
+  statusReason: String
+  isPaid: Boolean!
+  amount: Float!
+  currency: String!
+
+  """Admin y staff"""
+  commissionPercent: Float
+
+  """Admin y staff"""
+  commissionAmount: Float
+
+  """Admin y staff"""
+  creatorPayoutAmount: Float
+  durationHours: Int
+  untilClose: Boolean!
+  filesCount: Int!
+  acceptedNoRefund: Boolean!
+  transferReference: String
+  confirmedAt: DateTime
+  activatedAt: DateTime
+  expiresAt: DateTime
+
+  """Alias/CBU del creador para liquidar el 90% (sólo admin, TKT-11)"""
+  payoutAliasCbu: String
+
+  """Admin y staff"""
+  payoutStatus: ProductionPayoutStatus
+  payoutAt: DateTime
+
+  """Sólo admin"""
+  facturaUrl: String
+  facturaUploadedAt: DateTime
+  reviewRequired: Boolean!
+  reviewedAt: DateTime
+
+  """Sólo para el comprador mientras la compra está pendiente"""
+  paymentInstructions: ProductionTicketPaymentInstructionsResponse
+  createdAt: DateTime
+}
+
+"""pending → confirmed → active → expired (+ rejected, cancelled)"""
+enum ProductionTicketPurchaseStatus {
+  pending
+  confirmed
+  active
+  expired
+  rejected
+  cancelled
+}
+
+"""
+notApplicable (ticket gratuito o compra no confirmada), pending (a liquidar), paid (liquidado)
+"""
+enum ProductionPayoutStatus {
+  notApplicable
+  pending
+  paid
+}
+
+type ProductionTicketPurchaseListResponse {
+  purchases: [ProductionTicketPurchaseResponse!]!
+  total: Int!
+  hasMore: Boolean!
+}
+
+"""Paso previo a la compra (TKT-04)"""
+type ProductionTicketCheckoutResponse {
+  ticket: ProductionTicketResponse!
+  productionTitle: String!
+
+  """Si hay que aceptar explícitamente la política sin devoluciones"""
+  requiresNoRefundAcceptance: Boolean!
+  noRefundWarning: String!
+  paymentInstructions: ProductionTicketPaymentInstructionsResponse
+
+  """Compra abierta del visitante para este ticket, si ya existe"""
+  existingPurchase: ProductionTicketPurchaseResponse
+}
+
+"""Denuncia registrada (DEN-01)"""
+type ProductionReportResponse {
+  _id: ID!
+  production: ID!
+  item: ID
+  reason: ProductionReportReason!
+  status: ProductionReportStatus!
+
+  """Si con esta denuncia el contenido quedó oculto (DEN-02)"""
+  contentHidden: Boolean!
+  createdAt: DateTime!
+}
+
+"""
+Contenido inapropiado, violencia, sexual, spam, derechos de autor u otro
+"""
+enum ProductionReportReason {
+  inappropriate
+  violence
+  sexual
+  spam
+  copyright
+  other
+}
+
+"""
+pending (sin revisar), upheld (el admin bloqueó el contenido), dismissed (el admin lo restauró)
+"""
+enum ProductionReportStatus {
+  pending
+  upheld
+  dismissed
+}
+
+"""Detalle de una denuncia para el admin"""
+type ProductionReportDetailResponse {
+  _id: ID!
+  reporter: ID!
+  reporterInfo: ProductionTicketBuyerResponse
+  reason: ProductionReportReason!
+  details: String
+  status: ProductionReportStatus!
+  reviewedAt: DateTime
+  reviewedBy: String
+  reviewNote: String
+  createdAt: DateTime!
+}
+
+"""Contenido denunciado, para el panel de revisión (DEN-03)"""
+type ProductionReportTargetResponse {
+  production: ID!
+  productionTitle: String
+  ownerInfo: ProductionOwnerResponse
+  item: ID
+  itemName: String
+  itemKind: ProductionItemKind
+  moderationStatus: ProductionModerationStatus
+  reports: Int!
+  reasons: [ProductionReportReason!]!
+  lastReportAt: DateTime!
+}
+
+type ProductionReportTargetListResponse {
+  targets: [ProductionReportTargetResponse!]!
+  total: Int!
+  hasMore: Boolean!
+}
+
+"""Resultado de la revisión del admin"""
+type ProductionModerationResultResponse {
+  production: ID!
+  item: ID
+  moderationStatus: ProductionModerationStatus!
+
+  """Denuncias pendientes que se cerraron"""
+  resolvedReports: Int!
+}
+
+"""Fila de la SeudoBase (Foto, Nº, Título, Precio, ...)"""
+type ProductionSeudoBaseRowResponse {
+  _id: ID!
+  kind: ProductionItemKind!
+
+  """Título"""
+  name: String!
+
+  """Nº / ID del archivo"""
+  fileName: String
+  fileType: ProductionFileType
+
+  """Key de UploadThing (foto)"""
+  key: String
+  parent: ID
+
+  """Camino de carpetas"""
+  path: String
+  visibility: Visibility_of_the_post
+  effectiveVisibility: Visibility_of_the_post!
+
+  """Ticket propio del ítem (el que edita el cambio de precio)"""
+  ownTicket: ProductionTicketSummaryResponse
+
+  """Ticket que aplica (propio o heredado)"""
+  effectiveTicket: ProductionTicketSummaryResponse
+
+  """Precio que aplica"""
+  price: Float
+  moderationStatus: ProductionModerationStatus!
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+type ProductionSeudoBaseResponse {
+  rows: [ProductionSeudoBaseRowResponse!]!
+  total: Int!
+  hasMore: Boolean!
+}
+
+"""Resultado de una operación masiva"""
+type ProductionBulkResultResponse {
+  action: ProductionBulkAction!
+  requested: Int!
+  affected: Int!
+
+  """Ítems que no se modificaron (ej. sin ticket pago propio)"""
+  skipped: [ID!]!
+  auditId: ID!
+}
+
+"""Edición masiva de precio, cambio de visibilidad o borrado"""
+enum ProductionBulkAction {
+  price
+  visibility
+  delete
+}
+
+"""Registro de auditoría (SB-03)"""
+type ProductionAuditEntryResponse {
+  _id: ID!
+  action: ProductionBulkAction!
+  actor: ID!
+  actorInfo: ProductionOwnerResponse
+  itemIds: [ID!]!
+  affectedCount: Int!
+
+  """JSON con parámetros y antes/después"""
+  details: String!
+  createdAt: DateTime!
+}
+
+type ProductionAuditLogResponse {
+  entries: [ProductionAuditEntryResponse!]!
+  total: Int!
+  hasMore: Boolean!
+}
+
+"""Fan de un blog (FAN-01)"""
+type ProductionFanResponse {
+  user: ID!
+  userInfo: ProductionOwnerResponse
+  createdAt: DateTime!
+}
+
+type ProductionFanListResponse {
+  fans: [ProductionFanResponse!]!
+  total: Int!
+  hasMore: Boolean!
+}
+
+"""Reseña de una producción (REV-01)"""
+type ProductionReviewResponse {
+  _id: ID!
+  production: ID!
+  author: ID!
+  authorInfo: ProductionOwnerResponse
+  review: String!
+  rating: Int!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type ProductionReviewListResponse {
+  reviews: [ProductionReviewResponse!]!
+  total: Int!
+  hasMore: Boolean!
+
+  """Promedio de calificaciones"""
+  rating: Float
+}
+
+"""Comentario con la respuesta del staff (patrón PostComment)"""
+type ProductionCommentResponse {
+  _id: ID!
+  production: ID!
+  item: ID
+  user: ID!
+  userInfo: ProductionOwnerResponse
+  comment: String!
+  isEdited: Boolean!
+  response: ProductionCommentResponse
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type ProductionCommentListResponse {
+  comments: [ProductionCommentResponse!]!
+  total: Int!
+  hasMore: Boolean!
+}
+
+"""
+Reseña pendiente que bloquea compras y visitas hasta completarla (REV-02)
+"""
+type ProductionPendingReviewResponse {
+  productionId: ID!
+  productionTitle: String!
+  purchaseId: ID!
+  firstAccessAt: DateTime
+}
+
 type Query {
   """Obtiene un usuario por su nombre de usuario """
   findUserById(_id: String!): User_Full_Grapql_Model
@@ -1458,6 +2117,97 @@ type Query {
   Payload pre-cargado para abrir el wizard de creación de anuncio desde una valuación
   """
   getValuacionPostDraft(valuacionId: String!): ValuacionToPostDraftResponse!
+
+  """Blog por id. accessKey: clave del blog si está protegido"""
+  findProductionById(productionId: ID!, accessKey: String): ProductionResponse!
+
+  """Blog por su URL autogenerada (BLG-02)"""
+  findProductionByUrl(url: String!, accessKey: String): ProductionResponse!
+
+  """
+  Blogs de un usuario o grupo, para el cartel (NAV-04). Incluye los protegidos por clave
+  """
+  findAllProductionsByOwner(ownerId: ID!, ownerType: ProductionOwnerType): [ProductionResponse!]!
+
+  """
+  Listado público de producciones (NAV-02) y buscador (NAV-05). Sin token sólo lo público
+  """
+  findAllProductions(page: Int!, limit: Int!, searchTerm: String): ProductionListResponse!
+
+  """
+  Producciones destacadas para el home (NAV-03). Vacío = no mostrar la sección
+  """
+  findFeaturedProductions(limit: Int = 10): [ProductionResponse!]!
+
+  """Blogs y archivos usados vs. límites del plan (RNF-06)"""
+  getProductionLimits: ProductionLimitsResponse!
+
+  """
+  CONTROL Consumo (PC-05): tokens de IA y archivos usados vs. límite. Con productionId, sólo ese blog (staff)
+  """
+  getProductionConsumption(productionId: ID): ProductionConsumptionResponse!
+
+  """Grilla de un nivel del blog: carpetas, archivos y artículos (PC-06)"""
+  getProductionItems(
+    productionId: ID!
+
+    """Carpeta a listar; vacío = raíz"""
+    parentId: ID
+    accessKey: String
+  ): ProductionItemsResponse!
+
+  """Detalle de un archivo, artículo o carpeta"""
+  getProductionItemById(itemId: ID!, accessKey: String): ProductionItemResponse!
+
+  """
+  Sólo admin: contenidos denunciados agrupados, con su estado de moderación
+  """
+  getProductionReportTargetsAdmin(status: ProductionReportStatus! = pending, page: Int! = 1, limit: Int! = 20): ProductionReportTargetListResponse!
+
+  """Sólo admin: denuncias de un blog o de un contenido"""
+  getProductionTargetReportsAdmin(productionId: ID!, itemId: ID): [ProductionReportDetailResponse!]!
+
+  """
+  Sólo admin: compras de tickets de todos los blogs, con el alias/CBU del creador para liquidar
+  """
+  getProductionTicketPurchasesAdmin(page: Int!, limit: Int!, filters: ProductionTicketPurchaseFilters): ProductionTicketPurchaseListResponse!
+
+  """Tickets del blog con sus métricas (staff)"""
+  getProductionTickets(productionId: ID!): [ProductionTicketResponse!]!
+
+  """Ventas de tickets del blog (staff)"""
+  getProductionTicketSales(productionId: ID!, status: ProductionTicketPurchaseStatus, page: Int! = 1, limit: Int! = 20): ProductionTicketPurchaseListResponse!
+
+  """
+  Datos previos a la compra: archivos incluidos, aviso sin devoluciones y datos de transferencia (TKT-04)
+  """
+  getProductionTicketCheckout(ticketId: ID!): ProductionTicketCheckoutResponse!
+
+  """Tickets comprados por el usuario"""
+  getMyProductionTicketPurchases(status: ProductionTicketPurchaseStatus, page: Int! = 1, limit: Int! = 20): ProductionTicketPurchaseListResponse!
+
+  """Tabla de gestión del blog con filtros y búsqueda (SB-01). Sólo staff"""
+  getProductionSeudoBase(productionId: ID!, filters: ProductionSeudoBaseFilters, page: Int! = 1, limit: Int! = 20): ProductionSeudoBaseResponse!
+
+  """Auditoría de las operaciones masivas del blog (SB-03)"""
+  getProductionAuditLog(productionId: ID!, page: Int! = 1, limit: Int! = 20): ProductionAuditLogResponse!
+
+  """Fans del blog para el Panel del propietario (staff)"""
+  getProductionFans(productionId: ID!, page: Int! = 1, limit: Int! = 20): ProductionFanListResponse!
+
+  """Blogs de los que el usuario es fan"""
+  getMyFanProductions(page: Int! = 1, limit: Int! = 20): ProductionListResponse!
+
+  """Reseñas de una producción"""
+  getProductionReviews(productionId: ID!, page: Int! = 1, limit: Int! = 20): ProductionReviewListResponse!
+
+  """
+  Reseña pendiente del usuario (REV-02). Mientras exista, no puede comprar tickets ni visitar otras producciones
+  """
+  getMyPendingProductionReview: ProductionPendingReviewResponse
+
+  """Comentarios de un blog o de un archivo"""
+  getProductionComments(productionId: ID!, itemId: ID, page: Int! = 1, limit: Int! = 20): ProductionCommentListResponse!
 }
 
 input AdminInvoiceFiltersInput {
@@ -1509,6 +2259,26 @@ input UserLocation_group {
 enum contactSellerGetType {
   post
   profile
+}
+
+input ProductionTicketPurchaseFilters {
+  status: ProductionTicketPurchaseStatus
+  productionId: ID
+  buyerId: ID
+  payoutStatus: ProductionPayoutStatus
+  hasFactura: Boolean
+  isPaid: Boolean
+}
+
+"""Filtros de la SeudoBase (SB-01)"""
+input ProductionSeudoBaseFilters {
+  kinds: [ProductionItemKind!]
+
+  """Sólo el contenido de esta carpeta"""
+  parentId: ID
+
+  """Busca por título o ID"""
+  searchTerm: String
 }
 
 type Mutation {
@@ -1723,6 +2493,158 @@ type Mutation {
 
   """Busca anuncios similares a partir de texto, imágenes o un anuncio"""
   searchMatch(input: SearchMatchRequest!): MatchResponse!
+
+  """Crear un blog de Mis Producciones (personal o de grupo)"""
+  createProduction(productionRequest: ProductionCreateRequest!): ProductionIdResponse!
+
+  """Editar header, estantería y muestrario del blog"""
+  updateProductionById(productionId: ID!, productionUpdate: ProductionUpdateRequest!): ProductionResponse!
+
+  """Borrar el blog con todo su contenido (hard delete)"""
+  deleteProductionById(productionId: ID!): String!
+
+  """Alcance por defecto del blog (VIS-01)"""
+  setProductionVisibility(productionId: ID!, visibility: Visibility_of_the_post!): ProductionResponse!
+
+  """
+  Alcance propio de una carpeta o archivo (VIS-04). Sin visibility vuelve a heredar del padre (VIS-03)
+  """
+  setProductionItemVisibility(itemId: ID!, visibility: Visibility_of_the_post): ProductionItemResponse!
+
+  """
+  Configura la clave del blog tipo Zoom (INV-01); sin accessKey la quita. Reemplaza al alcance
+  """
+  setProductionAccessKey(productionId: ID!, accessKey: String): ProductionResponse!
+
+  """
+  El visitante ingresa la clave del blog; queda habilitado hasta que la clave cambie
+  """
+  unlockProductionWithKey(productionId: ID!, accessKey: String!): ProductionResponse!
+
+  """Crear una carpeta"""
+  createFolder(folderRequest: ProductionFolderRequest!): ProductionItemResponse!
+
+  """Renombrar una carpeta"""
+  updateFolder(itemId: ID!, folderUpdate: ProductionFolderUpdateRequest!): ProductionItemResponse!
+
+  """Borrar una carpeta con todo su contenido"""
+  deleteFolder(itemId: ID!): String!
+
+  """
+  Registrar un archivo ya subido a UploadThing. Valida el cupo del plan antes de guardar
+  """
+  uploadFile(fileRequest: ProductionFileRequest!): ProductionItemResponse!
+
+  """Editar el ID, el título o el dorso de un archivo"""
+  updateFile(itemId: ID!, fileUpdate: ProductionFileUpdateRequest!): ProductionItemResponse!
+
+  """Borrar un archivo (libera cupo del plan)"""
+  deleteFile(itemId: ID!): String!
+
+  """Crear un artículo con bloques de Editor.js"""
+  createArticle(articleRequest: ProductionArticleRequest!): ProductionItemResponse!
+
+  """Editar un artículo"""
+  updateArticle(itemId: ID!, articleUpdate: ProductionArticleUpdateRequest!): ProductionItemResponse!
+
+  """Borrar un artículo (libera cupo del plan)"""
+  deleteArticle(itemId: ID!): String!
+
+  """Sólo admin: confirma el bloqueo o restaura el contenido denunciado"""
+  moderateProductionContent(input: ProductionModerationInput!): ProductionModerationResultResponse!
+
+  """
+  Sólo admin: fija o quita un blog de "Producciones destacadas"
+  """
+  setProductionFeatured(productionId: ID!, isFeatured: Boolean!): ProductionResponse!
+
+  """
+  Sólo admin: confirma que llegó la transferencia. activate=true además habilita el acceso
+  """
+  confirmProductionTicketPurchase(purchaseId: ID!, activate: Boolean! = false): ProductionTicketPurchaseResponse!
+
+  """Sólo admin: rechaza una compra (la transferencia no llegó)"""
+  rejectProductionTicketPurchase(input: ProductionTicketRejectInput!): ProductionTicketPurchaseResponse!
+
+  """Sólo admin: habilita el acceso de una compra confirmada"""
+  activateProductionTicketPurchaseAsAdmin(purchaseId: ID!): ProductionTicketPurchaseResponse!
+
+  """Sólo admin: asocia la factura del 10% de comisión"""
+  attachFacturaToProductionTicketPurchase(input: AttachProductionTicketFacturaInput!): ProductionTicketPurchaseResponse!
+
+  """Sólo admin: marca como liquidado el 90% al creador"""
+  markProductionTicketPayoutDone(purchaseId: ID!): ProductionTicketPurchaseResponse!
+
+  """Asigna un ticket a una carpeta, archivo o al blog entero (TKT-01..03)"""
+  createProductionTicket(ticketRequest: ProductionTicketCreateRequest!): ProductionTicketResponse!
+
+  """
+  Edita un ticket; isPaid es el toggle pago/gratuito de toda la carpeta (TKT-02)
+  """
+  updateProductionTicket(ticketId: ID!, ticketUpdate: ProductionTicketUpdateRequest!): ProductionTicketResponse!
+
+  """Quita el ticket de su contenido"""
+  deleteProductionTicket(ticketId: ID!): String!
+
+  """
+  El creador habilita el acceso de una compra con el pago confirmado (TKT-07)
+  """
+  activateProductionTicketPurchase(purchaseId: ID!): ProductionTicketPurchaseResponse!
+
+  """
+  Alias o CBU donde se liquida el 90% de los tickets (TKT-11). Sólo el admin del blog
+  """
+  setProductionPayoutAlias(productionId: ID!, aliasCbu: String!): ProductionResponse!
+
+  """
+  Compra un ticket: pago por transferencia pendiente de confirmación, o acceso inmediato si es gratuito (TKT-05)
+  """
+  purchaseProductionTicket(purchaseRequest: ProductionTicketPurchaseRequest!): ProductionTicketPurchaseResponse!
+
+  """
+  Edición masiva del precio de los tickets pagos propios de los ítems (SB-02)
+  """
+  bulkUpdateProductionPrices(input: ProductionBulkPriceInput!): ProductionBulkResultResponse!
+
+  """Cambio masivo de visibilidad (SB-02)"""
+  bulkUpdateProductionVisibility(input: ProductionBulkVisibilityInput!): ProductionBulkResultResponse!
+
+  """Borrado masivo con hard delete que libera cupo (SB-02/03)"""
+  bulkDeleteProductionItems(input: ProductionBulkDeleteInput!): ProductionBulkResultResponse!
+
+  """Hacerse fan de un blog"""
+  becomeProductionFan(productionId: ID!): ProductionResponse!
+
+  """Dejar de ser fan"""
+  stopBeingProductionFan(productionId: ID!): ProductionResponse!
+
+  """
+  Reseña y calificación de quien accedió con un ticket; libera el bloqueo por reseña pendiente
+  """
+  createProductionReview(input: ProductionReviewInput!): ProductionReviewResponse!
+
+  """Editar mi reseña"""
+  updateProductionReview(reviewId: ID!, input: ProductionReviewUpdateInput!): ProductionReviewResponse!
+
+  """Borrar mi reseña"""
+  deleteProductionReview(reviewId: ID!): String!
+
+  """Comentar un blog o un archivo que se puede ver"""
+  createProductionComment(input: ProductionCommentInput!): ProductionCommentResponse!
+
+  """Respuesta del staff del blog a un comentario"""
+  replyProductionComment(commentId: ID!, comment: String!): ProductionCommentResponse!
+
+  """Editar mi comentario"""
+  updateProductionComment(commentId: ID!, comment: String!): ProductionCommentResponse!
+
+  """Borrar un comentario (su autor o el staff del blog)"""
+  deleteProductionComment(commentId: ID!): String!
+
+  """
+  Denunciar un blog o un contenido (DEN-01). Al superar el umbral se oculta hasta la revisión (DEN-02)
+  """
+  reportProductionContent(input: ProductionReportInput!): ProductionReportResponse!
 }
 
 input UpdateContactRequest {
@@ -1802,15 +2724,6 @@ input PostRequest {
 input VisibilityOfPost {
   post: Visibility_of_the_post!
   socialMedia: Visibility_Of_Social_Media!
-}
-
-"""Visibility of the post """
-enum Visibility_of_the_post {
-  public
-  registered
-  contacts
-  friends
-  topfriends
 }
 
 """Visibility_Of_Social_Media """
@@ -2101,4 +3014,286 @@ input SearchMatchRequest {
 
   """sessionId del workspace, para el tracking de tokens"""
   sessionId: String
+}
+
+"""Alta de una producción / blog (BLG-01)"""
+input ProductionCreateRequest {
+  """Nombre del blog (obligatorio)"""
+  title: String!
+  description: String
+
+  """Key de UploadThing"""
+  headerPhotoKey: String
+  welcomeText: String
+
+  """Key de UploadThing"""
+  welcomeVideoKey: String
+  shelf: [ProductionShelfLinkInput!]
+
+  """Alcance por defecto del blog (VIS-01). Default: public"""
+  visibility: Visibility_of_the_post
+
+  """
+  Si se informa, crea el blog del grupo (sólo el creator del grupo, GRP-02)
+  """
+  groupId: ID
+}
+
+input ProductionShelfLinkInput {
+  category: ProductionShelfCategory!
+  title: String!
+
+  """Link externo (http/https)"""
+  link: String!
+
+  """Key de UploadThing"""
+  imageKey: String
+}
+
+"""Edición del header, estantería y muestrario"""
+input ProductionUpdateRequest {
+  title: String
+  description: String
+  headerPhotoKey: String
+  welcomeText: String
+  welcomeVideoKey: String
+  shelf: [ProductionShelfLinkInput!]
+
+  """Muestrario: archivos o artículos destacados del blog (BLG-04)"""
+  showcase: [ID!]
+}
+
+input ProductionFolderRequest {
+  productionId: ID!
+
+  """Carpeta padre; vacío = raíz"""
+  parentId: ID
+  name: String!
+
+  """Alcance propio; vacío = hereda del padre (VIS-03/04)"""
+  visibility: Visibility_of_the_post
+}
+
+input ProductionFolderUpdateRequest {
+  name: String!
+}
+
+"""Archivo ya subido a UploadThing (BLG-08..12)"""
+input ProductionFileRequest {
+  productionId: ID!
+
+  """Carpeta; vacío = raíz"""
+  parentId: ID
+  fileType: ProductionFileType!
+
+  """Key de UploadThing"""
+  key: String!
+
+  """
+  ID editable del archivo, único en su carpeta (BLG-13). Si se omite se genera
+  """
+  fileName: String
+
+  """Título visible"""
+  name: String
+  postcard: ProductionPostcardInput
+  visibility: Visibility_of_the_post
+}
+
+"""Dorso de la postal (BLG-08)"""
+input ProductionPostcardInput {
+  latitude: Float
+  longitude: Float
+  authorship: String
+  dedication: String
+
+  """Descripción guiada ("¿Qué sentiste este día?")"""
+  description: String
+}
+
+input ProductionFileUpdateRequest {
+  fileName: String
+  name: String
+  postcard: ProductionPostcardInput
+}
+
+"""Artículo de blog con editor de bloques (BLG-14..17)"""
+input ProductionArticleRequest {
+  productionId: ID!
+
+  """Carpeta; vacío = raíz"""
+  parentId: ID
+  title: String!
+  fileName: String
+  blocks: [ProductionArticleBlockInput!]!
+  visibility: Visibility_of_the_post
+}
+
+"""Bloque de Editor.js; data es el JSON stringificado"""
+input ProductionArticleBlockInput {
+  type: String!
+  data: String!
+}
+
+input ProductionArticleUpdateRequest {
+  title: String
+  fileName: String
+  blocks: [ProductionArticleBlockInput!]
+}
+
+"""Revisión del admin (DEN-03)"""
+input ProductionModerationInput {
+  productionId: ID!
+
+  """Vacío = el blog"""
+  itemId: ID
+  action: ProductionModerationAction!
+  note: String
+}
+
+"""block: confirma el bloqueo; restore: vuelve a mostrar el contenido"""
+enum ProductionModerationAction {
+  block
+  restore
+}
+
+input ProductionTicketRejectInput {
+  purchaseId: ID!
+  reason: String!
+}
+
+"""Factura del 10% de comisión (TKT-06)"""
+input AttachProductionTicketFacturaInput {
+  purchaseId: ID!
+
+  """URL del PDF/imagen ya subido"""
+  facturaUrl: String!
+}
+
+"""Page de Ticket: asignar un ticket (TKT-01..03)"""
+input ProductionTicketCreateRequest {
+  productionId: ID!
+
+  """Carpeta o archivo; vacío = todo el blog"""
+  targetId: ID
+
+  """Toggle pago / gratuito (TKT-02)"""
+  isPaid: Boolean!
+
+  """Obligatorio si es pago"""
+  price: Float
+
+  """Default ARS"""
+  currency: String
+
+  """Duración en horas (mínimo 24). Ignorada si untilClose"""
+  durationHours: Int
+
+  """El acceso dura hasta el cierre del blog"""
+  untilClose: Boolean
+}
+
+input ProductionTicketUpdateRequest {
+  """Toggle pago / gratuito"""
+  isPaid: Boolean
+  price: Float
+  currency: String
+  durationHours: Int
+  untilClose: Boolean
+}
+
+"""Compra de un ticket (TKT-04/05)"""
+input ProductionTicketPurchaseRequest {
+  ticketId: ID!
+
+  """
+  Aceptación explícita de que no hay devoluciones (obligatoria en tickets pagos)
+  """
+  acceptNoRefund: Boolean!
+
+  """Referencia o comprobante de la transferencia"""
+  transferReference: String
+}
+
+"""Edición masiva de precio (ej. +5%)"""
+input ProductionBulkPriceInput {
+  productionId: ID!
+  itemIds: [ID!]!
+
+  """
+  Confirmación explícita de la operación masiva (SB-02/03). Tiene que ser true
+  """
+  confirm: Boolean!
+  mode: ProductionPriceChangeMode!
+
+  """
+  percentage: porcentaje a sumar (negativo para bajar); fixed: precio nuevo
+  """
+  value: Float!
+}
+
+"""
+percentage: suma o resta un porcentaje (ej. 5 = +5%); fixed: fija el precio
+"""
+enum ProductionPriceChangeMode {
+  percentage
+  fixed
+}
+
+"""Cambio masivo de visibilidad"""
+input ProductionBulkVisibilityInput {
+  productionId: ID!
+  itemIds: [ID!]!
+
+  """
+  Confirmación explícita de la operación masiva (SB-02/03). Tiene que ser true
+  """
+  confirm: Boolean!
+
+  """Vacío = los ítems vuelven a heredar del padre"""
+  visibility: Visibility_of_the_post
+}
+
+"""Borrado masivo (hard delete, libera cupo)"""
+input ProductionBulkDeleteInput {
+  productionId: ID!
+  itemIds: [ID!]!
+
+  """
+  Confirmación explícita de la operación masiva (SB-02/03). Tiene que ser true
+  """
+  confirm: Boolean!
+}
+
+"""Reseña y calificación de una producción (REV-01)"""
+input ProductionReviewInput {
+  productionId: ID!
+
+  """Calificación de 1 a 5"""
+  rating: Int!
+  review: String!
+}
+
+input ProductionReviewUpdateInput {
+  rating: Int
+  review: String
+}
+
+"""Comentario en un blog o en un archivo (REV-01)"""
+input ProductionCommentInput {
+  productionId: ID!
+
+  """Archivo o artículo comentado; vacío = el blog"""
+  itemId: ID
+  comment: String!
+}
+
+"""Denuncia de un blog o de un contenido (DEN-01)"""
+input ProductionReportInput {
+  productionId: ID!
+
+  """Archivo, artículo o carpeta; vacío = el blog"""
+  itemId: ID
+  reason: ProductionReportReason!
+  details: String
 }

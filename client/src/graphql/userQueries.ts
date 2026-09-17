@@ -5,6 +5,7 @@ const getUserByIdQuery = gql`
     findUserById(_id: $id) {
       _id
       businessName
+      credentialId
       addressPrivacy
       contact {
         _id

@@ -27,6 +27,10 @@ const EDIT_GROUP = "/editar/grupo";
 const FILE_URL = process.env.NEXT_PUBLIC_UPLOADTHING_URL as string;
 const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL;
 const CUBITO = "/cubito";
+const PRODUCTIONS = "/producciones";
+const CREATE_PRODUCTION = "/crear/produccion";
+const EDIT_PRODUCTION = "/editar/produccion";
+const MY_PRODUCTION_TICKETS = "/producciones/mis-tickets";
 export {
   MAGAZINES,
   GROUPS,
@@ -57,4 +61,8 @@ export {
   NEEDS,
   POST_LIBRE,
   CUBITO,
+  PRODUCTIONS,
+  CREATE_PRODUCTION,
+  EDIT_PRODUCTION,
+  MY_PRODUCTION_TICKETS,
 };

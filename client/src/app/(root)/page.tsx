@@ -11,6 +11,8 @@ import SorteoHomeBanner from "./sorteo/SorteoHomeBanner";
 import { getGiveaway } from "@/services/sorteoService";
 import { CURRENT_GIVEAWAY_ID } from "@/utils/data/sorteoConfig";
 import { auth } from "@clerk/nextjs/server";
+import AppSwitcher from "@/components/AppSwitcher/AppSwitcher";
+import FeaturedProductions from "./(explorar)/producciones/components/FeaturedProductions";
 
 export default async function Home() {
   const loggedUser = auth();
@@ -40,7 +42,13 @@ export default async function Home() {
       id="home-grids"
       className="flex min-h-screen flex-col items-start main-style gap-8"
     >
+      <AppSwitcher defaultActive="anuncios" />
+
       {novedades && <NovedadesCarousel novedades={novedades as Novedad[]} />}
+
+      <Suspense fallback={null}>
+        <FeaturedProductions />
+      </Suspense>
 
       {/* Banner del sorteo */}
       {!("error" in giveawayData) && (
