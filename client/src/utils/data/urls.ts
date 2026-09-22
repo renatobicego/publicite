@@ -19,6 +19,7 @@ const POST_CONTACTS = `${POSTS}/contactos`;
 const POST_LIBRE = `${POSTS}/libres`;
 const POST_BEST = `${POSTS}/mejor-puntuados`;
 const POST_NEXT_TO_EXPIRE = `${POSTS}/proximos-a-vencer`;
+const POST_SEUDOBASE = `${POSTS}/seudobase`;
 const BOARDS = "/pizarras";
 const EDIT_POST = "/editar/anuncio";
 const EDIT_PETITION = "/editar/necesidad";
@@ -49,6 +50,7 @@ export {
   POST_RECENTS,
   POST_BEST,
   POST_NEXT_TO_EXPIRE,
+  POST_SEUDOBASE,
   BOARDS,
   EDIT_POST,
   EDIT_PETITION,

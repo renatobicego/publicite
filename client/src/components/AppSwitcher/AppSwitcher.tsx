@@ -69,14 +69,13 @@ const AppSwitcher = ({
           <Link
             key={app.key}
             href={app.href}
-            className={`flex-1 flex items-center justify-center gap-2 rounded-full border px-3 py-2 text-sm font-medium transition-colors ${
-              isActive
-                ? app.activeClass
-                : "border-default-200 text-default-600 hover:bg-default-100"
-            }`}
+            className={`flex-1 flex h-[20vh] items-center justify-center gap-2 rounded-xl border px-3 py-2 text-sm font-medium transition-colors ${isActive
+              ? app.activeClass
+              : "border-default-200 text-default-600 hover:bg-default-100"
+              }`}
           >
-            <Icon className="text-base" />
-            <span className="hidden sm:inline">{app.label}</span>
+            <Icon className="text-base md:text-lg xl:text-xl 3xl:text-2xl" />
+            <span className="hidden sm:inline font-bold text-base md:text-lg xl:text-xl 3xl:text-2xl">{app.label}</span>
           </Link>
         );
       })}

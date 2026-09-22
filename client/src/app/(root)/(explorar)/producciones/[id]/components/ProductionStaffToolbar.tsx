@@ -1,5 +1,6 @@
 "use client";
 import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Button,
   Input,
@@ -14,17 +15,13 @@ import { FaFolderPlus, FaUpload, FaFileMedical } from "react-icons/fa";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { useUploadThing } from "@/utils/uploadThing";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
-import BlockEditor, {
-  BlockEditorHandle,
-} from "@/components/BlockEditor/BlockEditor";
-import { serializeBlocks } from "@/components/BlockEditor/blockEditorFormat";
 import {
   createFolder,
-  createArticle,
   uploadFile,
 } from "@/app/server/productionActions";
 import { isProductionActionError } from "@/utils/functions/productionErrorHandler";
 import { ProductionFileType } from "@/types/productionTypes";
+import { PRODUCTIONS } from "@/utils/data/urls";
 
 interface Props {
   productionId: string;
@@ -47,13 +44,17 @@ const ProductionStaffToolbar = ({
   parentId,
   onCreated,
 }: Props) => {
+  const router = useRouter();
   const folderModal = useDisclosure();
-  const articleModal = useDisclosure();
   const [folderName, setFolderName] = useState("");
-  const [articleTitle, setArticleTitle] = useState("");
   const [busy, setBusy] = useState(false);
-  const editorRef = useRef<BlockEditorHandle>(null);
+  const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const goToCreateArticle = () => {
+    const query = parentId ? `?parentId=${parentId}` : "";
+    router.push(`${PRODUCTIONS}/${productionId}/crear-articulo${query}`);
+  };
 
   const { startUpload } = useUploadThing("fileUploader", {
     onUploadError: (e) => toastifyError(`Error al subir el archivo: ${e.name}`),
@@ -99,6 +100,7 @@ const ProductionStaffToolbar = ({
     }
 
     setBusy(true);
+    setUploading(true);
     try {
       const uploaded = await startUpload([file]);
       let key = uploaded?.[0]?.key;
@@ -125,37 +127,7 @@ const ProductionStaffToolbar = ({
       onCreated();
     } finally {
       setBusy(false);
-    }
-  };
-
-  const handleCreateArticle = async () => {
-    if (!articleTitle.trim()) {
-      toastifyError("El título del artículo es obligatorio");
-      return;
-    }
-    const content = await editorRef.current?.save();
-    if (!content || content.blocks.length === 0) {
-      toastifyError("El artículo necesita contenido");
-      return;
-    }
-    setBusy(true);
-    try {
-      const res = await createArticle({
-        productionId,
-        parentId,
-        title: articleTitle.trim(),
-        blocks: serializeBlocks(content),
-      });
-      if (isProductionActionError(res)) {
-        toastifyError(res.error);
-        return;
-      }
-      toastifySuccess("Artículo creado");
-      setArticleTitle("");
-      articleModal.onClose();
-      onCreated();
-    } finally {
-      setBusy(false);
+      setUploading(false);
     }
   };
 
@@ -171,17 +143,18 @@ const ProductionStaffToolbar = ({
           Nueva carpeta
         </Button>
         <Button
-          startContent={<FaUpload />}
+          startContent={uploading ? undefined : <FaUpload />}
           variant="flat"
           onPress={() => fileInputRef.current?.click()}
           isDisabled={busy}
+          isLoading={uploading}
         >
-          Subir archivo
+          {uploading ? "Subiendo…" : "Subir archivo"}
         </Button>
         <Button
           startContent={<FaFileMedical />}
           variant="flat"
-          onPress={articleModal.onOpen}
+          onPress={goToCreateArticle}
           isDisabled={busy}
         >
           Nuevo artículo
@@ -215,40 +188,6 @@ const ProductionStaffToolbar = ({
                 </Button>
                 <PrimaryButton onClick={handleCreateFolder} disabled={busy}>
                   {busy ? "Creando…" : "Crear"}
-                </PrimaryButton>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
-      </Modal>
-
-      {/* Modal crear artículo */}
-      <Modal
-        isOpen={articleModal.isOpen}
-        onOpenChange={articleModal.onOpenChange}
-        size="3xl"
-        scrollBehavior="inside"
-      >
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader>Nuevo artículo</ModalHeader>
-              <ModalBody>
-                <Input
-                  label="Título"
-                  value={articleTitle}
-                  onValueChange={setArticleTitle}
-                />
-                <div className="border rounded-lg p-2">
-                  <BlockEditor ref={editorRef} />
-                </div>
-              </ModalBody>
-              <ModalFooter>
-                <Button variant="light" onPress={onClose} isDisabled={busy}>
-                  Cancelar
-                </Button>
-                <PrimaryButton onClick={handleCreateArticle} disabled={busy}>
-                  {busy ? "Creando…" : "Crear artículo"}
                 </PrimaryButton>
               </ModalFooter>
             </>

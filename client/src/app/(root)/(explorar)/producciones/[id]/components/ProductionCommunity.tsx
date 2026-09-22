@@ -28,6 +28,11 @@ interface Props {
   productionId: string;
   /** Staff puede responder comentarios. */
   isStaff: boolean;
+  /**
+   * El usuario puede reseñar el blog. El dueño/staff no puede reseñarse a sí
+   * mismo, por eso el formulario de reseña se oculta cuando es `false`.
+   */
+  canReview: boolean;
 }
 
 const ownerName = (info: ProductionReview["authorInfo"]) =>
@@ -46,7 +51,7 @@ const Stars = ({ value }: { value: number }) => (
 );
 
 /** Reseñas y comentarios de un blog (REV-01). */
-const ProductionCommunity = ({ productionId, isStaff }: Props) => {
+const ProductionCommunity = ({ productionId, isStaff, canReview }: Props) => {
   const [reviews, setReviews] = useState<ProductionReview[]>([]);
   const [avgRating, setAvgRating] = useState<number | null>(null);
   const [comments, setComments] = useState<ProductionComment[]>([]);
@@ -136,7 +141,7 @@ const ProductionCommunity = ({ productionId, isStaff }: Props) => {
   };
 
   return (
-    <section className="w-full flex flex-col gap-6">
+    <section className="w-full max-w-3xl flex flex-col gap-6">
       {/* Reseñas */}
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-2">
@@ -148,36 +153,38 @@ const ProductionCommunity = ({ productionId, isStaff }: Props) => {
           )}
         </div>
 
-        <Card shadow="sm">
-          <CardBody className="gap-2">
-            <div className="flex items-center gap-1">
-              {[1, 2, 3, 4, 5].map((n) => (
-                <button
-                  key={n}
-                  type="button"
-                  onClick={() => setNewRating(n)}
-                  className="text-xl text-warning"
-                  aria-label={`Calificar ${n}`}
-                >
-                  {n <= newRating ? <FaStar /> : <FaRegStar />}
-                </button>
-              ))}
-            </div>
-            <Textarea
-              placeholder="Escribí tu reseña"
-              value={newReview}
-              onValueChange={setNewReview}
-              maxLength={2000}
-            />
-            <PrimaryButton
-              onClick={submitReview}
-              disabled={busy}
-              className="self-start"
-            >
-              Publicar reseña
-            </PrimaryButton>
-          </CardBody>
-        </Card>
+        {canReview && (
+          <Card shadow="sm">
+            <CardBody className="gap-2">
+              <div className="flex items-center gap-1">
+                {[1, 2, 3, 4, 5].map((n) => (
+                  <button
+                    key={n}
+                    type="button"
+                    onClick={() => setNewRating(n)}
+                    className="text-xl text-warning"
+                    aria-label={`Calificar ${n}`}
+                  >
+                    {n <= newRating ? <FaStar /> : <FaRegStar />}
+                  </button>
+                ))}
+              </div>
+              <Textarea
+                placeholder="Escribí tu reseña"
+                value={newReview}
+                onValueChange={setNewReview}
+                maxLength={2000}
+              />
+              <PrimaryButton
+                onClick={submitReview}
+                disabled={busy}
+                className="self-start"
+              >
+                Publicar reseña
+              </PrimaryButton>
+            </CardBody>
+          </Card>
+        )}
 
         {reviews.map((review) => (
           <Card key={review._id} shadow="sm">

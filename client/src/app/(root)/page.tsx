@@ -42,13 +42,8 @@ export default async function Home() {
       id="home-grids"
       className="flex min-h-screen flex-col items-start main-style gap-8"
     >
-      <AppSwitcher defaultActive="anuncios" />
 
       {novedades && <NovedadesCarousel novedades={novedades as Novedad[]} />}
-
-      <Suspense fallback={null}>
-        <FeaturedProductions />
-      </Suspense>
 
       {/* Banner del sorteo */}
       {!("error" in giveawayData) && (
@@ -59,6 +54,9 @@ export default async function Home() {
           giveawayId={CURRENT_GIVEAWAY_ID}
         />
       )}
+
+      <AppSwitcher defaultActive="anuncios" />
+
 
       <div className="text-xs lg:text-sm lg:max-w-[50%]">
         {/* <p>¡Hola!</p>
@@ -88,6 +86,9 @@ export default async function Home() {
           buttonText="Ver Más Anuncios"
           buttonHref={POSTS}
         />
+      </Suspense>
+      <Suspense fallback={<Spinner color="warning" />}>
+        <FeaturedProductions />
       </Suspense>
       <Suspense fallback={<Spinner color="warning" />}>
         <HomePostSection

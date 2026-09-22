@@ -20,6 +20,12 @@ import { PostReviewRepository } from 'src/contexts/module_post/PostReview/infras
 import { PostReviewSchema } from 'src/contexts/module_post/PostReview/infrastructure/schemas/review.schema';
 import { PostReviewAdapter } from 'src/contexts/module_post/PostReview/infrastructure/adapter/postReview.adapter';
 import { PostController } from '../controller/post.controller';
+import PostAuditLogModel from '../schemas/post-audit-log.schema';
+import { PostSeudoBaseResolver } from '../graphql/resolver/post-seudobase.resolver';
+import { PostSeudoBaseService } from '../../application/service/post-seudobase.service';
+import { PostSeudoBaseRepository } from '../repository/post-seudobase.repository';
+import { PostAuditRepository } from '../repository/post-audit.repository';
+import { PostSeudoBaseAdapter } from '../adapter/post-seudobase.adapter';
 
 @Module({
   imports: [
@@ -40,6 +46,7 @@ import { PostController } from '../controller/post.controller';
       { name: 'PostReaction', schema: PostReactionSchema },
       { name: 'PostComment', schema: PostCommentSchema },
       { name: 'PostReview', schema: PostReviewSchema },
+      { name: PostAuditLogModel.modelName, schema: PostAuditLogModel.schema },
     ]),
     // OJO: no agregar ConfigModule.forRoot() acá (carga `.env` de prod y pisa
     // la config de QA); el ConfigModule global ya está en app.module.
@@ -48,6 +55,23 @@ import { PostController } from '../controller/post.controller';
   providers: [
     MyLoggerService,
     PostResolver,
+    PostSeudoBaseResolver,
+    {
+      provide: 'PostSeudoBaseServiceInterface',
+      useClass: PostSeudoBaseService,
+    },
+    {
+      provide: 'PostSeudoBaseAdapterInterface',
+      useClass: PostSeudoBaseAdapter,
+    },
+    {
+      provide: 'PostSeudoBaseRepositoryInterface',
+      useClass: PostSeudoBaseRepository,
+    },
+    {
+      provide: 'PostAuditRepositoryInterface',
+      useClass: PostAuditRepository,
+    },
     {
       provide: 'PostMapperAdapterInterface',
       useClass: PostAdapterMapper,

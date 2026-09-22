@@ -150,13 +150,6 @@ const ProductionBlog = ({ initial }: Props) => {
               )}
               <SecondaryButton
                 onClick={() =>
-                  router.push(`${PRODUCTIONS}/${production._id}/seudobase`)
-                }
-              >
-                SeudoBase
-              </SecondaryButton>
-              <SecondaryButton
-                onClick={() =>
                   router.push(`${EDIT_PRODUCTION}/${production._id}`)
                 }
               >
@@ -244,10 +237,12 @@ const ProductionBlog = ({ initial }: Props) => {
         </div>
       )}
 
-      {/* Reseñas y comentarios */}
+      {/* Reseñas y comentarios. El staff (dueño/moderador) no reseña su
+          propio blog, sólo responde comentarios. */}
       <ProductionCommunity
         productionId={production._id}
         isStaff={!!canEdit}
+        canReview={!canEdit}
       />
 
       {/* Denuncia del blog */}

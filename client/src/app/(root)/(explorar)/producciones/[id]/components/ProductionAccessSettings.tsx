@@ -36,7 +36,7 @@ interface Props {
 }
 
 /**
- * Configuración de alcance por defecto del blog (VIS-01) y clave tipo Zoom
+ * Configuración de alcance por defecto del blog (VIS-01) y clave de acceso
  * (INV-01). La clave reemplaza al alcance. Sólo staff (`canManageAccess`).
  */
 const ProductionAccessSettings = ({
@@ -144,7 +144,13 @@ const ProductionAccessSettings = ({
               </div>
 
               <div>
-                <p className="text-sm font-medium mb-2">Clave tipo Zoom</p>
+                <p className="text-sm font-medium mb-1">Clave</p>
+                <p className="text-xs text-default-500 mb-3">
+                  Al activar una clave, cualquiera que la tenga puede ver el
+                  blog sin importar el alcance ni ser contacto. Compartís la
+                  clave con quien quieras darle acceso; mientras esté activa,
+                  reemplaza al alcance por defecto.
+                </p>
                 {production.hasAccessKey ? (
                   <div className="flex items-center justify-between gap-2">
                     <span className="text-sm text-default-600">

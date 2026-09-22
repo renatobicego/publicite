@@ -785,6 +785,90 @@ type Post_and_recomended_response_graphql_model {
   recomended: [post_response_recomended!]
 }
 
+"""Fila de la SeudoBase de Anuncios (Foto, Título, Precio, ...)"""
+type PostSeudoBaseRowResponse {
+  _id: ID!
+  postType: PostType!
+
+  """Título del anuncio"""
+  title: String!
+
+  """URL/key de la imagen de portada (si el tipo la tiene)"""
+  imageUrl: String
+
+  """Precio del anuncio"""
+  price: Float!
+  visibility: Visibility_of_the_post!
+
+  """Disponibilidad (isActive)"""
+  isActive: Boolean!
+
+  """Fecha de vencimiento"""
+  endDate: DateTime
+  createdAt: DateTime
+}
+
+"""Type of the post """
+enum PostType {
+  good
+  service
+  petition
+}
+
+"""Visibility of the post """
+enum Visibility_of_the_post {
+  public
+  registered
+  contacts
+  friends
+  topfriends
+}
+
+type PostSeudoBaseResponse {
+  rows: [PostSeudoBaseRowResponse!]!
+  total: Int!
+  hasMore: Boolean!
+}
+
+"""Resultado de una operación masiva de anuncios"""
+type PostBulkResultResponse {
+  action: PostBulkAction!
+  requested: Int!
+  affected: Int!
+
+  """
+  Anuncios que no se modificaron (ej. precio negociable en cambio porcentual)
+  """
+  skipped: [ID!]!
+  auditId: ID!
+}
+
+"""Operación masiva de la SeudoBase de Anuncios"""
+enum PostBulkAction {
+  price
+  visibility
+  delete
+}
+
+"""Entrada de auditoría de una operación masiva (SB-03)"""
+type PostAuditEntryResponse {
+  _id: ID!
+  action: PostBulkAction!
+  actor: ID!
+  postIds: [ID!]!
+  affectedCount: Int!
+
+  """JSON con parámetros y antes/después"""
+  details: String!
+  createdAt: DateTime!
+}
+
+type PostAuditLogResponse {
+  entries: [PostAuditEntryResponse!]!
+  total: Int!
+  hasMore: Boolean!
+}
+
 type PostCategoryResponse {
   label: String!
   _id: String!
@@ -1452,15 +1536,6 @@ enum ProductionOwnerType {
   Group
 }
 
-"""Visibility of the post """
-enum Visibility_of_the_post {
-  public
-  registered
-  contacts
-  friends
-  topfriends
-}
-
 """
 active, hidden (oculto por denuncias, pendiente de revisión) o blocked (bloqueado por un admin)
 """
@@ -2035,6 +2110,14 @@ type Query {
   """Encuentra todos los posts de mis amigos, segun el tipo de post"""
   findAllFriendsPosts(page: Float!, limit: Float!, visibility: Visibility_Of_Find!, searchTerm: String): PostFindAllResponse
 
+  """
+  Tabla de gestión de los anuncios del usuario con filtros y búsqueda (SB-01)
+  """
+  getPostSeudoBase(filters: PostSeudoBaseFilters, page: Int! = 1, limit: Int! = 20): PostSeudoBaseResponse!
+
+  """Auditoría de las operaciones masivas de anuncios (SB-03)"""
+  getPostAuditLog(page: Int! = 1, limit: Int! = 20): PostAuditLogResponse!
+
   """Obtener un board por anotaciones o palabras clave"""
   getBoardByAnnotationOrKeyword(board: String!, limit: Float!, page: Float!): BoardGetAllResponse
 
@@ -2230,13 +2313,6 @@ input AdminInvoiceFiltersInput {
   hasFactura: Boolean
 }
 
-"""Type of the post """
-enum PostType {
-  good
-  service
-  petition
-}
-
 input UserLocation {
   latitude: Float!
   longitude: Float!
@@ -2248,6 +2324,18 @@ enum Visibility_Of_Find {
   friends
   topfriends
   hierarchy
+}
+
+"""Filtros de la SeudoBase de Anuncios (SB-01)"""
+input PostSeudoBaseFilters {
+  """Filtrar por tipo de anuncio (good/service/petition)"""
+  postTypes: [PostType!]
+
+  """Filtrar por disponibilidad (isActive)"""
+  isActive: Boolean
+
+  """Busca por título"""
+  searchTerm: String
 }
 
 input UserLocation_group {
@@ -2334,6 +2422,15 @@ type Mutation {
 
   """Elimina una reaccion de un post mediante el Id de la reaccion"""
   removeReactionFromPost(_id: String!): String
+
+  """Edición masiva del precio de los anuncios propios (SB-02)"""
+  bulkUpdatePostPrices(input: PostBulkPriceInput!): PostBulkResultResponse!
+
+  """Cambio masivo de visibilidad de los anuncios propios (SB-02)"""
+  bulkUpdatePostVisibility(input: PostBulkVisibilityInput!): PostBulkResultResponse!
+
+  """Borrado masivo de anuncios propios (hard delete) (SB-02/03)"""
+  bulkDeletePosts(input: PostBulkDeleteInput!): PostBulkResultResponse!
 
   """Crear una pizarra"""
   createBoard(boardRequest: BoardRequest!): Board
@@ -2786,6 +2883,52 @@ enum FrequencyPrice {
   month
   year
   undefined
+}
+
+"""Edición masiva de precio de anuncios (ej. +5%)"""
+input PostBulkPriceInput {
+  """Anuncios a modificar (propios)"""
+  postIds: [ID!]!
+
+  """
+  Confirmación explícita de la operación masiva (SB-02/03). Tiene que ser true
+  """
+  confirm: Boolean!
+  mode: PostPriceChangeMode!
+
+  """
+  percentage: porcentaje a sumar (negativo para bajar); fixed: precio nuevo
+  """
+  value: Float!
+}
+
+"""Modo del cambio masivo de precio (porcentaje o fijo)"""
+enum PostPriceChangeMode {
+  percentage
+  fixed
+}
+
+"""Cambio masivo de visibilidad de anuncios"""
+input PostBulkVisibilityInput {
+  """Anuncios a modificar (propios)"""
+  postIds: [ID!]!
+
+  """
+  Confirmación explícita de la operación masiva (SB-02/03). Tiene que ser true
+  """
+  confirm: Boolean!
+  visibility: Visibility_of_the_post!
+}
+
+"""Borrado masivo de anuncios (hard delete en cascada)"""
+input PostBulkDeleteInput {
+  """Anuncios a modificar (propios)"""
+  postIds: [ID!]!
+
+  """
+  Confirmación explícita de la operación masiva (SB-02/03). Tiene que ser true
+  """
+  confirm: Boolean!
 }
 
 input BoardRequest {

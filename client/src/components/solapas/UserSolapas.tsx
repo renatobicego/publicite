@@ -7,14 +7,16 @@ import {
   CREATE,
   CREATE_MAGAZINE,
   CREATE_GROUP,
+  POST_SEUDOBASE,
 } from "@/utils/data/urls";
 import { GetUser, UserRelationNotification } from "@/types/userTypes";
-import { Link, Tab, Tabs } from "@nextui-org/react";
+import { Link, Tab, Tabs, useDisclosure } from "@nextui-org/react";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 import MagazinesGrid from "../grids/MagazinesGrid";
 import GroupsGrid from "@/app/(root)/(explorar)/grupos/GroupsGrid";
 import PrimaryButton from "../buttons/PrimaryButton";
+import SecondaryButton from "../buttons/SecondaryButton";
 import { FaPlus, FaUserGroup } from "react-icons/fa6";
 import UserPosts from "@/app/(root)/(explorar)/perfiles/[id]/(components)/UserPosts/UserPosts";
 import UserRelationRequestsGrid from "@/app/(root)/(explorar)/perfiles/[id]/(components)/UserRelations/UserRelationRequestsGrid";
@@ -24,10 +26,11 @@ import {
   useUserData,
 } from "@/app/(root)/providers/userDataProvider";
 import { IoMdMegaphone } from "react-icons/io";
-import { FaBook, FaBookmark, FaUserPlus } from "react-icons/fa";
+import { FaBook, FaBookmark, FaChartPie, FaTable, FaUserPlus, FaUsers } from "react-icons/fa";
 import TabTitle from "./TabTitle";
 import { MdContacts } from "react-icons/md";
 import ProfileProductionsTab from "@/app/(root)/(explorar)/perfiles/[id]/(components)/ProfileProductionsTab";
+import ConsumptionControlModal from "./ConsumptionControlModal";
 
 const UserSolapas = ({
   user,
@@ -42,6 +45,7 @@ const UserSolapas = ({
   const tabsRef = useRef<HTMLDivElement | null>(null);
   const { configData } = useConfigData();
   const { userIdLogged } = useUserData();
+  const consumptionModal = useDisclosure();
 
   const isActiveRelation =
     isMyProfile ||
@@ -83,44 +87,18 @@ const UserSolapas = ({
 
   const PROFILE_USERNAME = `${PROFILE}/${user._id}`;
 
-  const tabDefinitions = [
+  // Rutas de cada sección
+  const ANUNCIOS_KEY = `${PROFILE_USERNAME}`;
+  const PRODUCCIONES_KEY = `${PROFILE_USERNAME}/producciones`;
+  const REVISTAS_KEY = `${PROFILE_USERNAME}${MAGAZINES}`;
+  const CONTACTOS_KEY = `${PROFILE_USERNAME}/contactos`;
+  const GRUPOS_KEY = `${PROFILE_USERNAME}${GROUPS}`;
+  const SOLICITUDES_KEY = `${PROFILE_USERNAME}/solicitudes`;
+
+  // Sub-solapas de "Social": revistas, grupos, contactos y solicitudes.
+  const socialSubTabs = [
     {
-      key: `${PROFILE_USERNAME}`,
-      title: <TabTitle title="Anuncios" icon={<IoMdMegaphone />} />,
-      component: (
-        <>
-          {isMyProfile && (
-            <PrimaryButton
-              className="mb-2 md:self-start"
-              startContent={<FaPlus />}
-              as={Link}
-              href={CREATE}
-            >
-              Crear Anuncio
-            </PrimaryButton>
-          )}
-          <UserPosts isMyProfile={isMyProfile} posts={user.posts || []} />
-        </>
-      ),
-    },
-    {
-      key: `${PROFILE_USERNAME}/producciones`,
-      title: <TabTitle title="Producciones" icon={<FaBook />} />,
-      component: (
-        <ProfileProductionsTab
-          userId={user._id}
-          isMyProfile={isMyProfile}
-          credentialId={(user as any).credentialId}
-          displayName={
-            (user as any).businessName ||
-            [user.name, user.lastName].filter(Boolean).join(" ") ||
-            user.username
-          }
-        />
-      ),
-    },
-    {
-      key: `${PROFILE_USERNAME}${MAGAZINES}`,
+      key: REVISTAS_KEY,
       title: <TabTitle title="Revistas" icon={<FaBookmark />} />,
       component: (
         <>
@@ -139,17 +117,7 @@ const UserSolapas = ({
       ),
     },
     {
-      key: `${PROFILE_USERNAME}/contactos`,
-      title: <TabTitle title="Agenda de Contactos" icon={<MdContacts />} />,
-      component: (
-        <UserRelations
-          user={{ _id: user._id, userRelations: user.userRelations }}
-          isMyProfile={isMyProfile}
-        />
-      ),
-    },
-    {
-      key: `${PROFILE_USERNAME}${GROUPS}`,
+      key: GRUPOS_KEY,
       title: <TabTitle title="Grupos" icon={<FaUserGroup />} />,
       component: (
         <>
@@ -177,45 +145,154 @@ const UserSolapas = ({
       ),
     },
     {
-      key: `${PROFILE_USERNAME}/solicitudes`,
+      key: CONTACTOS_KEY,
+      title: <TabTitle title="Agenda de Contactos" icon={<MdContacts />} />,
+      component: (
+        <UserRelations
+          user={{ _id: user._id, userRelations: user.userRelations }}
+          isMyProfile={isMyProfile}
+        />
+      ),
+    },
+    {
+      key: SOLICITUDES_KEY,
       title: <TabTitle title="Administrar Solicitudes" icon={<FaUserPlus />} />,
       component: <UserRelationRequestsGrid items={friendRequests} />,
       requiredProfile: true,
     },
+  ].filter((tab) => !tab.requiredProfile || isMyProfile);
+
+  const socialKeys = socialSubTabs.map((tab) => tab.key);
+  const isSocialActive = socialKeys.includes(pathname);
+
+  // Solapa activa de "Social" (default: primera sub-solapa).
+  const activeSocialKey = isSocialActive ? pathname : REVISTAS_KEY;
+
+  // Solapas de nivel superior: Anuncios / Producciones / Social.
+  const topTabs = [
+    {
+      key: ANUNCIOS_KEY,
+      title: <TabTitle title="Anuncios" icon={<IoMdMegaphone />} />,
+      component: (
+        <>
+          {isMyProfile && (
+            <div className="mb-2 flex flex-wrap gap-2 md:self-start">
+              <PrimaryButton
+                startContent={<FaPlus />}
+                as={Link}
+                href={CREATE}
+              >
+                Crear Anuncio
+              </PrimaryButton>
+              <SecondaryButton
+                startContent={<FaTable />}
+                as={Link}
+                href={POST_SEUDOBASE}
+              >
+                SeudoBase
+              </SecondaryButton>
+            </div>
+          )}
+          <UserPosts isMyProfile={isMyProfile} posts={user.posts || []} />
+        </>
+      ),
+    },
+    {
+      key: PRODUCCIONES_KEY,
+      title: <TabTitle title="Producciones" icon={<FaBook />} />,
+      component: (
+        <ProfileProductionsTab userId={user._id} isMyProfile={isMyProfile} />
+      ),
+    },
+    {
+      // "Social" agrupa las sub-solapas. Navega a la sub-solapa activa.
+      key: activeSocialKey,
+      title: <TabTitle title="Social" icon={<FaUsers />} />,
+      component: (
+        <div className="w-full flex flex-col gap-4">
+          <Tabs
+            classNames={{
+              panel: "p-0",
+              tabList: "max-md:gap-0 p-0",
+              tab: "max-md:text-xs",
+              tabContent: "max-md:text-xs",
+              base: "max-w-full overflow-x-auto",
+            }}
+            aria-label="Social"
+            variant="solid"
+            color="secondary"
+            selectedKey={activeSocialKey}
+          >
+            {socialSubTabs.map((tab) => (
+              <Tab
+                className="w-full flex gap-4 flex-col"
+                key={tab.key}
+                title={tab.title}
+                href={tab.key}
+                data-key={tab.key}
+              >
+                {tab.component}
+              </Tab>
+            ))}
+          </Tabs>
+        </div>
+      ),
+    },
   ];
 
-  // Filter out tabs that require login if the user is not logged in
-  const filteredTabs = tabDefinitions.filter(
-    (tab) => !tab.requiredProfile || (tab.requiredProfile && isMyProfile)
-  );
+  // Clave de la solapa de nivel superior activa.
+  const activeTopKey = isSocialActive
+    ? activeSocialKey
+    : pathname === PRODUCCIONES_KEY
+      ? PRODUCCIONES_KEY
+      : ANUNCIOS_KEY;
 
   return (
-    <Tabs
-      classNames={{
-        panel: "p-0",
-        tabList: "max-md:gap-0 p-0",
-        tab: "max-md:text-xs",
-        tabContent: "max-md:text-xs",
-        base: "max-w-full overflow-x-auto", // Horizontal scroll enabled
-      }}
-      ref={tabsRef} // Ref for the entire tabs container
-      aria-label="Options"
-      variant="underlined"
-      selectedKey={pathname}
-      id="user-tabs"
-    >
-      {filteredTabs.map((tab) => (
-        <Tab
-          className="w-full flex gap-4 flex-col"
-          key={tab.key}
-          title={tab.title}
-          href={tab.key}
-          data-key={tab.key}
+    <div className="w-full flex flex-col gap-2">
+      {isMyProfile && (
+        <SecondaryButton
+          className="self-end"
+          startContent={<FaChartPie />}
+          onClick={consumptionModal.onOpen}
         >
-          {tab.component}
-        </Tab>
-      ))}
-    </Tabs>
+          Control de Consumo
+        </SecondaryButton>
+      )}
+
+      <Tabs
+        classNames={{
+          panel: "p-0",
+          tabList: "max-md:gap-0 p-0",
+          tab: "max-md:text-xs",
+          tabContent: "max-md:text-xs",
+          base: "max-w-full overflow-x-auto", // Horizontal scroll enabled
+        }}
+        ref={tabsRef} // Ref for the entire tabs container
+        aria-label="Options"
+        variant="underlined"
+        selectedKey={activeTopKey}
+        id="user-tabs"
+      >
+        {topTabs.map((tab) => (
+          <Tab
+            className="w-full flex gap-4 flex-col"
+            key={tab.key}
+            title={tab.title}
+            href={tab.key}
+            data-key={tab.key}
+          >
+            {tab.component}
+          </Tab>
+        ))}
+      </Tabs>
+
+      {isMyProfile && (
+        <ConsumptionControlModal
+          isOpen={consumptionModal.isOpen}
+          onOpenChange={consumptionModal.onOpenChange}
+        />
+      )}
+    </div>
   );
 };
 
