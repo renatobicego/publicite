@@ -8,15 +8,18 @@ import SecondaryButton from "@/components/buttons/SecondaryButton";
 import BlockEditor, {
   BlockEditorHandle,
 } from "@/components/BlockEditor/BlockEditor";
-import { serializeBlocks } from "@/components/BlockEditor/blockEditorFormat";
+import {
+  deserializeBlocks,
+  serializeBlocks,
+} from "@/components/BlockEditor/blockEditorFormat";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
-import { createArticle } from "@/app/server/productionActions";
+import { updateArticle } from "@/app/server/productionActions";
 import { isProductionActionError } from "@/utils/functions/productionErrorHandler";
+import { ProductionItemResponse } from "@/types/productionTypes";
 import { PRODUCTIONS } from "@/utils/data/urls";
 
 interface Props {
-  productionId: string;
-  parentId?: string;
+  item: ProductionItemResponse;
 }
 
 /** ¿El contenido del editor tiene al menos un bloque con datos? */
@@ -25,34 +28,32 @@ const hasContent = (content: OutputData | undefined): boolean =>
   content.blocks.some((block) => {
     const data = block.data as Record<string, unknown> | undefined;
     if (!data) return false;
-    // Bloques de texto: el string `text` no debe estar vacío.
     if (typeof data.text === "string") return data.text.trim().length > 0;
-    // Listas: al menos un ítem.
     if (Array.isArray((data as any).items))
       return (data as any).items.length > 0;
-    // Imágenes u otros bloques con datos propios cuentan como contenido.
     return Object.keys(data).length > 0;
   });
 
 /**
- * Formulario de alta de artículo en página propia. Reemplaza al modal:
- * el editor ya no vive dentro de un `Modal`, lo que evita que `save()`
- * devuelva vacío por remonte/desmonte del editor.
+ * Edición de un artículo existente. Reutiliza el `BlockEditor` sembrando el
+ * contenido actual (`deserializeBlocks`) y persiste con `updateArticle`.
  */
-const CreateArticleForm = ({ productionId, parentId }: Props) => {
+const EditArticleForm = ({ item }: Props) => {
   const router = useRouter();
-  const [title, setTitle] = useState("");
+  const [title, setTitle] = useState(item.name);
   const [busy, setBusy] = useState(false);
   const editorRef = useRef<BlockEditorHandle>(null);
+  // Contenido inicial del editor a partir de los bloques guardados.
+  const initialData = useRef<OutputData>(deserializeBlocks(item.blocks));
   // Respaldo del contenido en vivo por si `save()` puntual falla.
-  const latestContent = useRef<OutputData | undefined>(undefined);
+  const latestContent = useRef<OutputData | undefined>(initialData.current);
 
-  const backToBlog = () => {
-    router.push(`${PRODUCTIONS}/${productionId}`);
+  const backToItem = () => {
+    router.push(`${PRODUCTIONS}/${item.production}/item/${item._id}`);
     router.refresh();
   };
 
-  const handleCreate = async () => {
+  const handleSave = async () => {
     if (!title.trim()) {
       toastifyError("El título del artículo es obligatorio");
       return;
@@ -64,9 +65,7 @@ const CreateArticleForm = ({ productionId, parentId }: Props) => {
     }
     setBusy(true);
     try {
-      const res = await createArticle({
-        productionId,
-        parentId,
+      const res = await updateArticle(item._id, {
         title: title.trim(),
         blocks: serializeBlocks(content!),
       });
@@ -74,8 +73,8 @@ const CreateArticleForm = ({ productionId, parentId }: Props) => {
         toastifyError(res.error);
         return;
       }
-      toastifySuccess("Artículo creado");
-      backToBlog();
+      toastifySuccess("Artículo actualizado");
+      backToItem();
     } finally {
       setBusy(false);
     }
@@ -93,15 +92,16 @@ const CreateArticleForm = ({ productionId, parentId }: Props) => {
       />
       <BlockEditor
         ref={editorRef}
+        initialData={initialData.current}
         onChange={(data) => {
           latestContent.current = data;
         }}
       />
       <menu className="flex gap-4">
-        <PrimaryButton onClick={handleCreate} disabled={busy}>
-          {busy ? "Creando…" : "Crear artículo"}
+        <PrimaryButton onClick={handleSave} disabled={busy}>
+          {busy ? "Guardando…" : "Guardar cambios"}
         </PrimaryButton>
-        <SecondaryButton onClick={backToBlog} disabled={busy}>
+        <SecondaryButton onClick={backToItem} disabled={busy}>
           Cancelar
         </SecondaryButton>
       </menu>
@@ -109,4 +109,4 @@ const CreateArticleForm = ({ productionId, parentId }: Props) => {
   );
 };
 
-export default CreateArticleForm;
+export default EditArticleForm;

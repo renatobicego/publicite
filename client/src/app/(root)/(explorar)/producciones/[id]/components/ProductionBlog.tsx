@@ -224,12 +224,13 @@ const ProductionBlog = ({ initial }: Props) => {
           Esta carpeta está vacía.
         </p>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 gap-3 md:gap-4 md:grid-cols-3 xl:grid-cols-4 3xl:grid-cols-5 lg:gap-5 items-start">
           {data.items.map((item) => (
             <ProductionItemCard
               key={item._id}
               item={item}
               onOpen={handleOpen}
+              canEdit={canEdit}
               canManageAccess={canManageAccess}
               onItemChanged={() => loadLevel(currentParentId)}
             />

@@ -10,6 +10,7 @@ import {
 import { resolveProductionFileUrl } from "../../../../productionMedia";
 import { deserializeBlocks } from "@/components/BlockEditor/blockEditorFormat";
 import BlockRenderer from "@/components/BlockEditor/BlockRenderer";
+import ProductionItemDetailActions from "./ProductionItemDetailActions";
 
 const lockMessage: Record<string, string> = {
   [ProductionLockReason.ticket]:
@@ -21,7 +22,13 @@ const lockMessage: Record<string, string> = {
 };
 
 /** Detalle de un archivo (postal, video, escrito, audio) o artículo. */
-const ProductionItemDetail = ({ item }: { item: ProductionItemResponse }) => {
+const ProductionItemDetail = ({
+  item,
+  canEdit,
+}: {
+  item: ProductionItemResponse;
+  canEdit?: boolean;
+}) => {
   if (!item.access?.canViewContent) {
     return (
       <div className="w-full flex flex-col items-center gap-3 py-16">
@@ -38,7 +45,10 @@ const ProductionItemDetail = ({ item }: { item: ProductionItemResponse }) => {
     const output = deserializeBlocks(item.blocks);
     return (
       <article className="w-full max-w-3xl flex flex-col gap-3">
-        <h2>{item.name}</h2>
+        <div className="flex items-start justify-between gap-4 flex-wrap">
+          <h2>{item.name}</h2>
+          {canEdit && <ProductionItemDetailActions item={item} />}
+        </div>
         <BlockRenderer data={output} />
       </article>
     );
@@ -46,7 +56,10 @@ const ProductionItemDetail = ({ item }: { item: ProductionItemResponse }) => {
 
   return (
     <div className="w-full max-w-3xl flex flex-col gap-3">
-      <h2>{item.name}</h2>
+      <div className="flex items-start justify-between gap-4 flex-wrap">
+        <h2>{item.name}</h2>
+        {canEdit && <ProductionItemDetailActions item={item} />}
+      </div>
       {renderFile(item)}
       {item.postcard && renderPostcard(item.postcard)}
     </div>

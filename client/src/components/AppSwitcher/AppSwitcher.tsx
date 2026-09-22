@@ -11,10 +11,15 @@ interface AppButton {
   label: string;
   href: string;
   icon: React.ComponentType<{ className?: string }>;
-  /** Clases de color activo (naranja / magenta / celeste). */
-  activeClass: string;
+  /** Color de fondo de la card (naranja / magenta / celeste). */
+  color: string;
   matchPrefixes: string[];
 }
+
+// Naranja actual (color "service" del tema). Magenta y celeste según diseño.
+const ORANGE = "#F0931A";
+const MAGENTA = "#8B008B";
+const CYAN = "#1ACCF0";
 
 const APPS: AppButton[] = [
   {
@@ -22,7 +27,7 @@ const APPS: AppButton[] = [
     label: "Anuncios",
     href: POSTS,
     icon: FaBullhorn,
-    activeClass: "bg-primary text-white border-primary",
+    color: ORANGE,
     matchPrefixes: [POSTS],
   },
   {
@@ -30,7 +35,7 @@ const APPS: AppButton[] = [
     label: "Producciones",
     href: PRODUCTIONS,
     icon: FaBook,
-    activeClass: "bg-[#D6249F] text-white border-[#D6249F]",
+    color: MAGENTA,
     matchPrefixes: [PRODUCTIONS],
   },
   {
@@ -38,7 +43,7 @@ const APPS: AppButton[] = [
     label: "Social",
     href: PROFILE,
     icon: FaUsers,
-    activeClass: "bg-[#20A4F3] text-white border-[#20A4F3]",
+    color: CYAN,
     matchPrefixes: [PROFILE, "/revistas", "/grupos"],
   },
 ];
@@ -46,6 +51,7 @@ const APPS: AppButton[] = [
 /**
  * Botonera de 3 apps (NAV-01): Anuncios (naranja) / Producciones (magenta) /
  * Social (celeste). Anuncios es el default. Cada botón navega a su sección.
+ * Las cards se muestran siempre con su color; la activa lleva un subrayado.
  * `defaultActive` fuerza el resaltado cuando no hay match por ruta (ej. home).
  */
 const AppSwitcher = ({
@@ -61,22 +67,28 @@ const AppSwitcher = ({
     )?.key ?? defaultActive;
 
   return (
-    <nav className="flex w-full gap-2 sm:gap-3" aria-label="Aplicaciones">
+    <nav className="flex w-full gap-3 sm:gap-4" aria-label="Aplicaciones">
       {APPS.map((app) => {
         const Icon = app.icon;
         const isActive = app.key === activeKey;
         return (
-          <Link
-            key={app.key}
-            href={app.href}
-            className={`flex-1 flex h-[20vh] items-center justify-center gap-2 rounded-xl border px-3 py-2 text-sm font-medium transition-colors ${isActive
-              ? app.activeClass
-              : "border-default-200 text-default-600 hover:bg-default-100"
-              }`}
-          >
-            <Icon className="text-base md:text-lg xl:text-xl 3xl:text-2xl" />
-            <span className="hidden sm:inline font-bold text-base md:text-lg xl:text-xl 3xl:text-2xl">{app.label}</span>
-          </Link>
+          <div key={app.key} className="flex flex-1 flex-col gap-2">
+            <Link
+              href={app.href}
+              aria-current={isActive ? "page" : undefined}
+              style={{ backgroundColor: app.color }}
+              className="flex h-[20vh] flex-col justify-end rounded-2xl p-4 text-white transition-transform hover:scale-[1.02]"
+            >
+              <Icon className="mb-2 text-2xl md:text-3xl xl:text-4xl" />
+              <span className="text-base font-bold md:text-lg xl:text-xl 3xl:text-2xl">
+                {app.label}
+              </span>
+            </Link>
+            <span
+              className="h-1 rounded-full transition-colors"
+              style={{ backgroundColor: isActive ? app.color : "transparent" }}
+            />
+          </div>
         );
       })}
     </nav>

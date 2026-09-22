@@ -1,5 +1,5 @@
 "use client";
-import { Card, CardBody, CardFooter, Image } from "@nextui-org/react";
+import { Card, CardBody, CardHeader, Image } from "@nextui-org/react";
 import { useState } from "react";
 import { Button, useDisclosure } from "@nextui-org/react";
 import {
@@ -21,10 +21,13 @@ import { resolveProductionFileUrl } from "../../productionMedia";
 import ItemVisibilityControl from "./ItemVisibilityControl";
 import TicketCheckoutModal from "./TicketCheckoutModal";
 import TicketManagerModal from "./TicketManagerModal";
+import ProductionItemActions from "./ProductionItemActions";
 
 interface Props {
   item: ProductionItemResponse;
   onOpen: (item: ProductionItemResponse) => void;
+  /** Staff: puede renombrar/editar/borrar el ítem. */
+  canEdit?: boolean;
   /** Staff: muestra el control de alcance por ítem. */
   canManageAccess?: boolean;
   onItemChanged?: () => void;
@@ -37,6 +40,7 @@ interface Props {
 const ProductionItemCard = ({
   item,
   onOpen,
+  canEdit,
   canManageAccess,
   onItemChanged,
 }: Props) => {
@@ -51,22 +55,29 @@ const ProductionItemCard = ({
       <Card
         isPressable
         onPress={() => onOpen(item)}
-        className="w-full h-48"
-        shadow="sm"
+        shadow="none"
+        className="w-full gap-4 ease-in-out hover:shadow md:hover:shadow-md !transition-shadow duration-500 !opacity-100"
       >
-        <CardBody className="flex items-center justify-center overflow-hidden p-0">
+        <CardHeader className="relative w-full pb-0 max-md:px-1 md:px-2 lg:px-3">
           {renderPreview(item, locked)}
-        </CardBody>
-        <CardFooter className="flex-col items-start gap-0.5">
-          <span className="text-sm font-medium truncate w-full">
-            {item.name}
-          </span>
-          {item.fileName && (
-            <span className="text-xs text-default-500 truncate w-full">
-              {item.fileName}
-            </span>
+          {canEdit && onItemChanged && (
+            <div
+              className="absolute top-2 right-2 md:right-4 z-10"
+              // Evita que el click en las acciones dispare la navegación de la card.
+              onClick={(e) => e.stopPropagation()}
+            >
+              <ProductionItemActions item={item} onChanged={onItemChanged} />
+            </div>
           )}
-        </CardFooter>
+        </CardHeader>
+        <CardBody className="pt-0 flex flex-col gap-1 max-md:px-1 md:px-2 lg:px-3 pb-6">
+          <h6 className="line-clamp-1">{item.name}</h6>
+          {item.fileName && (
+            <p className="text-light-text text-xs lg:text-small 2xl:text-sm line-clamp-1">
+              {item.fileName}
+            </p>
+          )}
+        </CardBody>
       </Card>
 
       {/* Visitante: comprar acceso si el ítem está bloqueado por ticket */}
@@ -127,17 +138,38 @@ const ProductionItemCard = ({
   );
 };
 
+// Contenedor con el mismo recorte/borde que la imagen de PostCard, para que
+// las carpetas/archivos/artículos se vean como las tarjetas de Anuncios.
+const previewBox =
+  "w-full rounded-large bg-default-100 flex items-center justify-center max-md:max-h-[45vw] md:max-h-[25vw] lg:max-h-[22vw] xl:max-h-[17vw] 3xl:max-h-[14vw] aspect-[287/290]";
+
+const IconBox = ({ children }: { children: React.ReactNode }) => (
+  <div className={previewBox}>{children}</div>
+);
+
 const renderPreview = (item: ProductionItemResponse, locked: boolean) => {
   if (item.kind === ProductionItemKind.folder) {
-    return <FaFolder className="text-5xl text-warning" />;
+    return (
+      <IconBox>
+        <FaFolder className="text-5xl text-warning" />
+      </IconBox>
+    );
   }
 
   if (locked) {
-    return <FaLock className="text-4xl text-default-400" />;
+    return (
+      <IconBox>
+        <FaLock className="text-4xl text-default-400" />
+      </IconBox>
+    );
   }
 
   if (item.kind === ProductionItemKind.article) {
-    return <FaFileAlt className="text-5xl text-primary" />;
+    return (
+      <IconBox>
+        <FaFileAlt className="text-5xl text-primary" />
+      </IconBox>
+    );
   }
 
   // file
@@ -145,20 +177,40 @@ const renderPreview = (item: ProductionItemResponse, locked: boolean) => {
     case ProductionFileType.photo:
       return (
         <Image
-          removeWrapper
-          alt={item.name}
           src={resolveProductionFileUrl(item.key)}
-          className="w-full h-full object-cover"
+          classNames={{
+            wrapper: "!max-w-full w-full max-md:max-h-[45vw] md:max-lg:max-h-[25vw]",
+            img: "!max-w-full w-full object-cover max-md:max-h-[45vw] md:max-h-[25vw] lg:max-h-[22vw] xl:max-h-[17vw] 3xl:max-h-[14vw]",
+          }}
+          alt={item.name}
+          width={287}
+          height={290}
         />
       );
     case ProductionFileType.video:
-      return <FaVideo className="text-5xl text-secondary" />;
+      return (
+        <IconBox>
+          <FaVideo className="text-5xl text-secondary" />
+        </IconBox>
+      );
     case ProductionFileType.audio:
-      return <FaMusic className="text-5xl text-success" />;
+      return (
+        <IconBox>
+          <FaMusic className="text-5xl text-success" />
+        </IconBox>
+      );
     case ProductionFileType.writing:
-      return <FaFileAlt className="text-5xl text-default-600" />;
+      return (
+        <IconBox>
+          <FaFileAlt className="text-5xl text-default-600" />
+        </IconBox>
+      );
     default:
-      return <FaFileAlt className="text-5xl text-default-400" />;
+      return (
+        <IconBox>
+          <FaFileAlt className="text-5xl text-default-400" />
+        </IconBox>
+      );
   }
 };
 

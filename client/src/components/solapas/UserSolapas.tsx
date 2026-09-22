@@ -26,7 +26,8 @@ import {
   useUserData,
 } from "@/app/(root)/providers/userDataProvider";
 import { IoMdMegaphone } from "react-icons/io";
-import { FaBook, FaBookmark, FaChartPie, FaTable, FaUserPlus, FaUsers } from "react-icons/fa";
+import { FaBook, FaBookmark, FaBullhorn, FaChartPie, FaTable, FaUserPlus, FaUsers } from "react-icons/fa";
+import NextLink from "next/link";
 import TabTitle from "./TabTitle";
 import { MdContacts } from "react-icons/md";
 import ProfileProductionsTab from "@/app/(root)/(explorar)/perfiles/[id]/(components)/ProfileProductionsTab";
@@ -168,10 +169,18 @@ const UserSolapas = ({
   // Solapa activa de "Social" (default: primera sub-solapa).
   const activeSocialKey = isSocialActive ? pathname : REVISTAS_KEY;
 
+  // Colores de las cards de nivel superior.
+  const ORANGE = "#F0931A";
+  const MAGENTA = "#8B008B";
+  const CYAN = "#1ACCF0";
+
   // Solapas de nivel superior: Anuncios / Producciones / Social.
   const topTabs = [
     {
       key: ANUNCIOS_KEY,
+      label: "Mis Anuncios",
+      icon: FaBullhorn,
+      color: ORANGE,
       title: <TabTitle title="Anuncios" icon={<IoMdMegaphone />} />,
       component: (
         <>
@@ -199,6 +208,9 @@ const UserSolapas = ({
     },
     {
       key: PRODUCCIONES_KEY,
+      label: "Mis Producciones",
+      icon: FaBook,
+      color: MAGENTA,
       title: <TabTitle title="Producciones" icon={<FaBook />} />,
       component: (
         <ProfileProductionsTab userId={user._id} isMyProfile={isMyProfile} />
@@ -207,6 +219,9 @@ const UserSolapas = ({
     {
       // "Social" agrupa las sub-solapas. Navega a la sub-solapa activa.
       key: activeSocialKey,
+      label: "Social",
+      icon: FaUsers,
+      color: CYAN,
       title: <TabTitle title="Social" icon={<FaUsers />} />,
       component: (
         <div className="w-full flex flex-col gap-4">
@@ -219,8 +234,7 @@ const UserSolapas = ({
               base: "max-w-full overflow-x-auto",
             }}
             aria-label="Social"
-            variant="solid"
-            color="secondary"
+            variant="underlined"
             selectedKey={activeSocialKey}
           >
             {socialSubTabs.map((tab) => (
@@ -259,32 +273,46 @@ const UserSolapas = ({
         </SecondaryButton>
       )}
 
-      <Tabs
-        classNames={{
-          panel: "p-0",
-          tabList: "max-md:gap-0 p-0",
-          tab: "max-md:text-xs",
-          tabContent: "max-md:text-xs",
-          base: "max-w-full overflow-x-auto", // Horizontal scroll enabled
-        }}
-        ref={tabsRef} // Ref for the entire tabs container
+      {/* Botonera de 3 cards: Mis Anuncios / Mis Producciones / Social */}
+      <nav
+        ref={tabsRef}
+        className="flex w-full gap-3 sm:gap-4"
         aria-label="Options"
-        variant="underlined"
-        selectedKey={activeTopKey}
         id="user-tabs"
       >
-        {topTabs.map((tab) => (
-          <Tab
-            className="w-full flex gap-4 flex-col"
-            key={tab.key}
-            title={tab.title}
-            href={tab.key}
-            data-key={tab.key}
-          >
-            {tab.component}
-          </Tab>
-        ))}
-      </Tabs>
+        {topTabs.map((tab) => {
+          const Icon = tab.icon;
+          const isActive = tab.key === activeTopKey;
+          return (
+            <div key={tab.key} className="flex flex-1 flex-col gap-2">
+              <Link
+                as={NextLink}
+                href={tab.key}
+                data-key={tab.key}
+                aria-current={isActive ? "page" : undefined}
+                style={{ backgroundColor: tab.color }}
+                className="flex h-[18vh] flex-col justify-end rounded-2xl p-4 text-white transition-transform hover:scale-[1.02]"
+              >
+                <Icon className="mb-2 text-2xl md:text-3xl xl:text-4xl" />
+                <span className="text-base font-bold md:text-lg xl:text-xl 3xl:text-2xl">
+                  {tab.label}
+                </span>
+              </Link>
+              <span
+                className="h-1 rounded-full transition-colors"
+                style={{
+                  backgroundColor: isActive ? tab.color : "transparent",
+                }}
+              />
+            </div>
+          );
+        })}
+      </nav>
+
+      {/* Contenido de la solapa activa */}
+      <div className="w-full flex gap-4 flex-col">
+        {topTabs.find((tab) => tab.key === activeTopKey)?.component}
+      </div>
 
       {isMyProfile && (
         <ConsumptionControlModal

@@ -34,8 +34,10 @@ export default async function CreateArticlePage({
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-start main-style gap-4 md:gap-6 lg:gap-8">
-      <h2>Nuevo artículo · {production.title}</h2>
+    <main className="flex min-h-screen flex-col items-start main-style gap-6 md:gap-8 max-w-screen-lg py-8">
+      <h1 className="text-3xl md:text-[2.5rem] xl:text-5xl font-semibold">
+        Nuevo artículo · {production.title}
+      </h1>
       <CreateArticleForm
         productionId={params.id}
         parentId={searchParams.parentId}

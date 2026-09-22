@@ -34,25 +34,29 @@ const ProductionListCard = ({
       className="w-full gap-4 ease-in-out hover:shadow md:hover:shadow-md !transition-shadow duration-500 !opacity-100"
     >
       <CardHeader className="w-full pb-0 max-md:px-1 md:px-2 lg:px-3">
-        <div className="w-full overflow-hidden rounded-lg bg-default-100 flex items-center justify-center max-md:max-h-[45vw] md:max-h-[25vw] lg:max-h-[22vw] xl:max-h-[17vw] 3xl:max-h-[14vw] aspect-[287/200]">
-          {production.headerPhotoKey ? (
-            <Image
-              removeWrapper
-              alt={`Portada de ${production.title}`}
-              src={resolveProductionFileUrl(production.headerPhotoKey)}
-              className="w-full h-full object-cover"
-            />
-          ) : (
+        {production.headerPhotoKey ? (
+          <Image
+            src={resolveProductionFileUrl(production.headerPhotoKey)}
+            classNames={{
+              wrapper: "!max-w-full w-full max-md:max-h-[45vw] md:max-lg:max-h-[25vw]",
+              img: "!max-w-full w-full object-cover max-md:max-h-[45vw] md:max-h-[25vw] lg:max-h-[22vw] xl:max-h-[17vw] 3xl:max-h-[14vw]",
+            }}
+            alt={`Portada de ${production.title}`}
+            width={287}
+            height={290}
+          />
+        ) : (
+          <div className="w-full rounded-large bg-default-100 flex items-center justify-center max-md:max-h-[45vw] md:max-h-[25vw] lg:max-h-[22vw] xl:max-h-[17vw] 3xl:max-h-[14vw] aspect-[287/290]">
             <span className="text-default-400 text-sm">Sin portada</span>
-          )}
-        </div>
+          </div>
+        )}
       </CardHeader>
       <CardBody className="pt-0 flex flex-col gap-1 max-md:px-1 md:px-2 lg:px-3 pb-6">
         <div className="flex gap-1 w-full justify-between items-start">
           <h6 className="line-clamp-1">{production.title}</h6>
           {production.rating != null && (
             <div className="flex gap-1 items-center text-light-text text-sm shrink-0">
-              <FaStar className="size-3 md:size-4 text-warning" />
+              <FaStar className="size-3 md:size-4" />
               <span>{production.rating.toFixed(1)}</span>
             </div>
           )}

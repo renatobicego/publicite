@@ -30,7 +30,7 @@ export default async function ProductionsPage({
           Todavía no hay producciones para mostrar.
         </p>
       ) : (
-        <div className="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+        <div className="w-full grid grid-cols-2 gap-3 md:gap-4 md:grid-cols-3 xl:grid-cols-4 3xl:grid-cols-5 lg:gap-5 items-start">
           {result.productions.map((production) => (
             <ProductionListCard
               key={production._id}

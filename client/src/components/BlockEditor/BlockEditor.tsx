@@ -182,7 +182,6 @@ const BlockEditor = forwardRef<BlockEditorHandle, BlockEditorProps>(
       const editor = new EditorJS({
         holder: holderId,
         onReady: () => {
-          ejInstance.current = editor;
           // Semilla de claves de imágenes ya presentes (edición).
           const seed = new Set<string>();
           initialData?.blocks?.forEach((block) => {
@@ -240,6 +239,10 @@ const BlockEditor = forwardRef<BlockEditorHandle, BlockEditorProps>(
         },
         inlineToolbar: ["bold", "italic", "link"],
       });
+      // Guardamos la instancia de inmediato (no en el `onReady` async) para
+      // poder destruirla correctamente y evitar montajes duplicados.
+      ejInstance.current = editor;
+      return editor;
     }, [
       holderId,
       autofocus,
@@ -250,12 +253,26 @@ const BlockEditor = forwardRef<BlockEditorHandle, BlockEditorProps>(
     ]);
 
     useEffect(() => {
-      if (ejInstance.current === null) {
-        initEditor();
-      }
+      // En StrictMode (dev) el efecto corre montar → limpiar → montar en el
+      // mismo commit. `destroy()` de Editor.js es asíncrono, así que si sólo
+      // nos guiamos por el ref terminamos con DOS editores en el mismo holder.
+      // Solución: si el holder ya tiene contenido de un editor previo, lo
+      // vaciamos antes de crear el nuevo, garantizando un único editor visible.
+      const holder = document.getElementById(holderId);
+      if (holder) holder.innerHTML = "";
+
+      const editor = initEditor();
       return () => {
-        ejInstance.current?.destroy?.();
+        // Destruir la instancia y limpiar el DOM del holder de forma síncrona
+        // para que un remonte inmediato no herede un editor a medio destruir.
+        try {
+          editor?.destroy?.();
+        } catch {
+          // destroy puede rechazar si el editor aún no terminó de montar.
+        }
         ejInstance.current = null;
+        const node = document.getElementById(holderId);
+        if (node) node.innerHTML = "";
       };
       // Sólo montamos una vez; los callbacks se leen por closure estable.
       // eslint-disable-next-line react-hooks/exhaustive-deps
