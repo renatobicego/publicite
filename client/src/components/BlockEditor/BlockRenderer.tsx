@@ -2,6 +2,8 @@
 import { OutputData } from "@editorjs/editorjs";
 import { Image } from "@nextui-org/react";
 import { FaCheck, FaSquare } from "react-icons/fa6";
+import AudioPlayer from "@/components/MediaPlayers/AudioPlayer";
+import VideoPlayer from "@/components/MediaPlayers/VideoPlayer";
 
 interface ListItemObj {
   content: string;
@@ -52,13 +54,12 @@ const BlockRenderer = ({ data }: { data: OutputData }) => {
           )}
           {hasNested && (
             <ul
-              className={`mt-2 ml-6 ${
-                style === "ordered"
-                  ? "list-decimal"
-                  : style === "checklist"
+              className={`mt-2 ml-6 ${style === "ordered"
+                ? "list-decimal"
+                : style === "checklist"
                   ? "list-none"
                   : "list-disc"
-              } list-inside`}
+                } list-inside`}
             >
               {renderListItems(item.items!, style)}
             </ul>
@@ -101,9 +102,8 @@ const BlockRenderer = ({ data }: { data: OutputData }) => {
                 <Image
                   src={d.file?.url}
                   alt={d.caption || "Imagen"}
-                  className={`w-full ${
-                    d.stretched ? "max-w-full" : "max-w-3xl mx-auto"
-                  }`}
+                  className={`w-full ${d.stretched ? "max-w-full" : "max-w-3xl mx-auto"
+                    }`}
                   radius="lg"
                 />
                 {d.caption && (
@@ -127,12 +127,29 @@ const BlockRenderer = ({ data }: { data: OutputData }) => {
             return (
               <ListTag
                 key={index}
-                className={`${
-                  d.style === "ordered" ? "list-decimal" : "list-disc"
-                } list-inside mb-4`}
+                className={`${d.style === "ordered" ? "list-decimal" : "list-disc"
+                  } list-inside mb-4`}
               >
                 {renderListItems(d.items, d.style)}
               </ListTag>
+            );
+          }
+          case "audio": {
+            const d = block.data as { file?: { url: string }; title?: string };
+            if (!d.file?.url) return null;
+            return (
+              <div key={index} className="my-6">
+                <AudioPlayer src={d.file.url} title={d.title || "Audio"} />
+              </div>
+            );
+          }
+          case "video": {
+            const d = block.data as { file?: { url: string }; title?: string };
+            if (!d.file?.url) return null;
+            return (
+              <div key={index} className="my-6">
+                <VideoPlayer src={d.file.url} />
+              </div>
             );
           }
           case "linkTool":

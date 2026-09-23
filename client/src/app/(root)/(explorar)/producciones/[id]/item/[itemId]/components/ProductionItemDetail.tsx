@@ -10,6 +10,8 @@ import {
 import { resolveProductionFileUrl } from "../../../../productionMedia";
 import { deserializeBlocks } from "@/components/BlockEditor/blockEditorFormat";
 import BlockRenderer from "@/components/BlockEditor/BlockRenderer";
+import AudioPlayer from "@/components/MediaPlayers/AudioPlayer";
+import VideoPlayer from "@/components/MediaPlayers/VideoPlayer";
 import ProductionItemDetailActions from "./ProductionItemDetailActions";
 
 const lockMessage: Record<string, string> = {
@@ -78,18 +80,13 @@ const renderFile = (item: ProductionItemResponse) => {
       );
     case ProductionFileType.video:
       return (
-        <video
-          controls
-          className="w-full rounded-lg"
-          src={resolveProductionFileUrl(item.key, true)}
-        />
+        <VideoPlayer src={resolveProductionFileUrl(item.key, true)} />
       );
     case ProductionFileType.audio:
       return (
-        <audio
-          controls
-          className="w-full"
+        <AudioPlayer
           src={resolveProductionFileUrl(item.key)}
+          title={item.name}
         />
       );
     case ProductionFileType.writing:

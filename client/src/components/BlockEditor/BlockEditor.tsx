@@ -15,6 +15,8 @@ import {
 import { useUploadThing } from "@/utils/uploadThing";
 import { toastifyError } from "@/utils/functions/toastify";
 import { deleteFilesService } from "@/app/server/uploadThing";
+import { AudioBlockTool } from "./tools/AudioBlockTool";
+import { VideoBlockTool } from "./tools/VideoBlockTool";
 
 /**
  * Métodos imperativos que el componente padre puede invocar a través del `ref`.
@@ -82,6 +84,8 @@ const i18n = {
       Italic: "Cursiva",
       InlineCode: "C\u00f3digo en l\u00ednea",
       Image: "Imagen",
+      Audio: "Audio",
+      Video: "Video",
       "Unordered List": "Lista desordenada",
       "Ordered List": "Lista ordenada",
     },
@@ -149,7 +153,9 @@ const BlockEditor = forwardRef<BlockEditorHandle, BlockEditorProps>(
     ref
   ) => {
     const ejInstance = useRef<EditorJS | null | undefined>();
-    const previousImageKeys = useRef<Set<string>>(new Set());
+    // Claves de UploadThing de bloques con archivo (imagen, audio, video),
+    // para poder borrar del storage lo que se sacó del editor.
+    const previousMediaKeys = useRef<Set<string>>(new Set());
     // El editor se monta una sola vez, así que el `onChange` del padre se lee
     // desde un ref para no quedar congelado en el closure del primer render.
     const onChangeRef = useRef(onChange);
@@ -163,7 +169,7 @@ const BlockEditor = forwardRef<BlockEditorHandle, BlockEditorProps>(
 
     const { startUpload } = useUploadThing("fileUploader", {
       onUploadError: (e) => {
-        toastifyError(`Error al subir la imagen: ${e.name}`);
+        toastifyError(`Error al subir el archivo: ${e.name}`);
       },
     });
 
@@ -187,14 +193,18 @@ const BlockEditor = forwardRef<BlockEditorHandle, BlockEditorProps>(
         onReady: () => {
           // Registro de la instancia (igual que Novedades).
           ejInstance.current = editor;
-          // Semilla de claves de imágenes ya presentes (edición).
+          // Semilla de claves de archivos ya presentes (edición): imagen,
+          // audio y video comparten la forma `data.file.key`.
           const seed = new Set<string>();
           initialData?.blocks?.forEach((block) => {
-            if (block.type === "image" && block.data?.file?.key) {
+            if (
+              ["image", "audio", "video"].includes(block.type) &&
+              block.data?.file?.key
+            ) {
               seed.add(block.data.file.key);
             }
           });
-          previousImageKeys.current = seed;
+          previousMediaKeys.current = seed;
         },
         autofocus,
         data: initialData,
@@ -204,17 +214,26 @@ const BlockEditor = forwardRef<BlockEditorHandle, BlockEditorProps>(
           if (cleanupRemovedImages) {
             const currentKeys = new Set<string>();
             content?.blocks?.forEach((block) => {
-              if (block.type === "image" && block.data?.file?.key) {
+              if (
+                ["image", "audio", "video"].includes(block.type) &&
+                block.data?.file?.key
+              ) {
                 currentKeys.add(block.data.file.key);
               }
             });
-            // Borrar de UploadThing las imágenes que se sacaron del editor.
-            previousImageKeys.current.forEach((key) => {
+            // Borrar de UploadThing los archivos que se sacaron del editor.
+            // Los keys de video llevan el sufijo "video" (convención del
+            // proyecto); hay que quitarlo para que UploadThing reconozca el
+            // key real.
+            previousMediaKeys.current.forEach((key) => {
               if (!currentKeys.has(key)) {
-                deleteFilesService([key]);
+                const realKey = key.endsWith("video")
+                  ? key.replace("video", "")
+                  : key;
+                deleteFilesService([realKey]);
               }
             });
-            previousImageKeys.current = currentKeys;
+            previousMediaKeys.current = currentKeys;
           }
 
           onChangeRef.current?.(content);
@@ -250,6 +269,31 @@ const BlockEditor = forwardRef<BlockEditorHandle, BlockEditorProps>(
                   };
                 },
               },
+            },
+          },
+          audio: {
+            class: AudioBlockTool,
+            config: {
+              uploader: async (file: File) => {
+                const res = await startUpload([file]);
+                if (!res?.[0]) return undefined;
+                return { url: res[0].url, key: res[0].key };
+              },
+              onUploadError: (message: string) => toastifyError(message),
+            },
+          },
+          video: {
+            class: VideoBlockTool,
+            config: {
+              // Mismo convención que Anuncios/Producciones: se concatena el
+              // literal "video" al final del key para poder distinguirlo al
+              // resolver la URL (`resolveProductionFileUrl(key, true)`).
+              uploader: async (file: File) => {
+                const res = await startUpload([file]);
+                if (!res?.[0]) return undefined;
+                return { url: res[0].url, key: `${res[0].key}video` };
+              },
+              onUploadError: (message: string) => toastifyError(message),
             },
           },
         },

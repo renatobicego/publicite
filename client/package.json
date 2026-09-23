@@ -61,6 +61,7 @@
     "svix": "^1.32.0",
     "title-editorjs": "^1.0.2",
     "uploadthing": "^7.4.4",
+    "wavesurfer.js": "8.0.0",
     "yup": "^1.4.0"
   },
   "devDependencies": {

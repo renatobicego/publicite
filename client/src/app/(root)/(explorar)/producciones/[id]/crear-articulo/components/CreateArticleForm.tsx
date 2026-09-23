@@ -120,7 +120,7 @@ const CreateArticleForm = ({ productionId, parentId }: Props) => {
       </div>
 
       {/* Acciones */}
-      <menu className="sticky bottom-4 z-10 flex flex-wrap justify-end gap-3 rounded-2xl border border-default-200 bg-content1/90 p-3 shadow-sm backdrop-blur">
+      <menu className="sticky bottom-4 flex flex-wrap justify-end gap-3 rounded-2xl border border-default-200 bg-content1 p-3 shadow-md">
         <SecondaryButton variant="light" onClick={backToBlog} disabled={busy}>
           Cancelar
         </SecondaryButton>
