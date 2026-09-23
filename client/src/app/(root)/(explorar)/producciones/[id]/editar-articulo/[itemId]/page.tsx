@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { FaArrowLeft, FaRegFileAlt } from "react-icons/fa";
 import {
   findProduction,
   getProductionItemById,
@@ -5,6 +7,7 @@ import {
 import { isProductionActionError } from "@/utils/functions/productionErrorHandler";
 import ErrorCard from "@/components/ErrorCard";
 import { ProductionItemKind } from "@/types/productionTypes";
+import { PRODUCTIONS } from "@/utils/data/urls";
 import EditArticleForm from "../components/EditArticleForm";
 
 /**
@@ -55,10 +58,27 @@ export default async function EditArticlePage({
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-start main-style gap-6 md:gap-8 max-w-screen-lg py-8">
-      <h1 className="text-3xl md:text-[2.5rem] xl:text-5xl font-semibold">
-        Editar artículo · {production.title}
-      </h1>
+    <main className="flex min-h-screen flex-col items-start main-style gap-6 w-full max-w-screen-md py-8">
+      <div className="w-full">
+        <Link
+          href={`${PRODUCTIONS}/${params.id}/item/${params.itemId}`}
+          className="mb-3 inline-flex items-center gap-1.5 text-sm text-default-500 transition-colors hover:text-primary"
+        >
+          <FaArrowLeft size={12} />
+          Volver al artículo
+        </Link>
+        <div className="flex items-center gap-3">
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+            <FaRegFileAlt size={18} />
+          </span>
+          <div>
+            <h1 className="text-2xl font-semibold leading-tight md:text-3xl">
+              Editar artículo
+            </h1>
+            <p className="text-sm text-default-500">{production.title}</p>
+          </div>
+        </div>
+      </div>
       <EditArticleForm item={item} />
     </main>
   );

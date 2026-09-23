@@ -18,7 +18,7 @@ const FeaturedProductions = async ({ limit = 8 }: { limit?: number }) => {
 
   return (
     <section className="w-full flex flex-col gap-3">
-      <h3 className="text-lg font-semibold">Producciones destacadas</h3>
+      <h2>Producciones destacadas</h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
         {featured.map((production) => (
           <ProductionListCard key={production._id} production={production} />

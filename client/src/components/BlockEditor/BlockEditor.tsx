@@ -3,7 +3,6 @@ import EditorJS, { OutputData } from "@editorjs/editorjs";
 import Header from "@editorjs/header";
 import List from "@editorjs/list";
 import Image from "@editorjs/image";
-import LinkTool from "@editorjs/link";
 import {
   forwardRef,
   useCallback,
@@ -133,7 +132,7 @@ const i18n = {
 /**
  * Editor de bloques reutilizable basado en Editor.js.
  *
- * Encapsula la instancia de `EditorJS`, sus plugins (header, list, image, link),
+ * Encapsula la instancia de `EditorJS`, sus plugins (header, list, image),
  * la subida de imágenes a UploadThing y la internacionalización en español.
  * El contenido se obtiene de forma imperativa vía `ref` (`save()`), de modo que
  * el componente padre decide cuándo persistir. Es agnóstico de la entidad
@@ -149,8 +148,12 @@ const BlockEditor = forwardRef<BlockEditorHandle, BlockEditorProps>(
     },
     ref
   ) => {
-    const ejInstance = useRef<EditorJS | null>(null);
+    const ejInstance = useRef<EditorJS | null | undefined>();
     const previousImageKeys = useRef<Set<string>>(new Set());
+    // El editor se monta una sola vez, así que el `onChange` del padre se lee
+    // desde un ref para no quedar congelado en el closure del primer render.
+    const onChangeRef = useRef(onChange);
+    onChangeRef.current = onChange;
     // Holder único por instancia (permite montar varios editores en la misma página).
     const reactId = useId();
     const holderId = useMemo(
@@ -182,6 +185,8 @@ const BlockEditor = forwardRef<BlockEditorHandle, BlockEditorProps>(
       const editor = new EditorJS({
         holder: holderId,
         onReady: () => {
+          // Registro de la instancia (igual que Novedades).
+          ejInstance.current = editor;
           // Semilla de claves de imágenes ya presentes (edición).
           const seed = new Set<string>();
           initialData?.blocks?.forEach((block) => {
@@ -198,7 +203,7 @@ const BlockEditor = forwardRef<BlockEditorHandle, BlockEditorProps>(
 
           if (cleanupRemovedImages) {
             const currentKeys = new Set<string>();
-            content.blocks.forEach((block) => {
+            content?.blocks?.forEach((block) => {
               if (block.type === "image" && block.data?.file?.key) {
                 currentKeys.add(block.data.file.key);
               }
@@ -212,13 +217,24 @@ const BlockEditor = forwardRef<BlockEditorHandle, BlockEditorProps>(
             previousImageKeys.current = currentKeys;
           }
 
-          onChange?.(content);
+          onChangeRef.current?.(content);
         },
         i18n,
         tools: {
           header: Header,
           list: List,
-          link: LinkTool,
+          // No registramos el tool de bloque de enlaces (`@editorjs/link`):
+          // requiere un `endpoint` de backend para traer metadata y no existe
+          // en la app. Los hipervínculos se hacen con el inline tool interno
+          // `link` (ver `inlineToolbar`), que viene con EditorJS.
+          //
+          // OJO si algún día se vuelve a agregar: el nombre debe ser
+          // `linkTool`, NUNCA `link`. EditorJS mergea la config del usuario
+          // encima de sus tools internos (`{...internalTools, ...config.tools}`)
+          // y `link` es el nombre del inline tool interno. Registrar un tool de
+          // bloque como `link` lo sobreescribe y rompe la resolución de tools:
+          // el editor monta y dispara `onChange`, pero `saver.save()` resuelve
+          // `undefined` siempre.
           image: {
             class: Image,
             config: {
@@ -239,40 +255,30 @@ const BlockEditor = forwardRef<BlockEditorHandle, BlockEditorProps>(
         },
         inlineToolbar: ["bold", "italic", "link"],
       });
-      // Guardamos la instancia de inmediato (no en el `onReady` async) para
-      // poder destruirla correctamente y evitar montajes duplicados.
-      ejInstance.current = editor;
       return editor;
     }, [
       holderId,
       autofocus,
       initialData,
       cleanupRemovedImages,
-      onChange,
       startUpload,
     ]);
 
     useEffect(() => {
-      // En StrictMode (dev) el efecto corre montar → limpiar → montar en el
-      // mismo commit. `destroy()` de Editor.js es asíncrono, así que si sólo
-      // nos guiamos por el ref terminamos con DOS editores en el mismo holder.
-      // Solución: si el holder ya tiene contenido de un editor previo, lo
-      // vaciamos antes de crear el nuevo, garantizando un único editor visible.
-      const holder = document.getElementById(holderId);
-      if (holder) holder.innerHTML = "";
+      // Mismo mecanismo que `FormBlogPost` (Novedades), que funciona:
+      // el ref arranca en `undefined` y el cleanup lo deja en `null`.
+      // En StrictMode (dev) React hace montar → limpiar → montar en el mismo
+      // tick: el primer montaje crea el editor, el cleanup pasa el ref a
+      // `null`, y en el segundo montaje el guard `=== undefined` ya no se
+      // cumple, así que NO se crea una segunda instancia. Queda un único
+      // editor, y su `onChange` es el que está realmente cableado al DOM.
+      if (ejInstance.current === undefined) {
+        initEditor();
+      }
 
-      const editor = initEditor();
       return () => {
-        // Destruir la instancia y limpiar el DOM del holder de forma síncrona
-        // para que un remonte inmediato no herede un editor a medio destruir.
-        try {
-          editor?.destroy?.();
-        } catch {
-          // destroy puede rechazar si el editor aún no terminó de montar.
-        }
+        ejInstance.current?.destroy?.();
         ejInstance.current = null;
-        const node = document.getElementById(holderId);
-        if (node) node.innerHTML = "";
       };
       // Sólo montamos una vez; los callbacks se leen por closure estable.
       // eslint-disable-next-line react-hooks/exhaustive-deps

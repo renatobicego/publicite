@@ -59,6 +59,7 @@ const EditArticleForm = ({ item }: Props) => {
       return;
     }
     const content = (await editorRef.current?.save()) ?? latestContent.current;
+    console.log(content)
     if (!hasContent(content)) {
       toastifyError("El artículo necesita contenido");
       return;
@@ -81,29 +82,52 @@ const EditArticleForm = ({ item }: Props) => {
   };
 
   return (
-    <section className="w-full flex flex-col gap-6 md:gap-8">
-      <Input
-        isRequired
-        label="Título"
-        placeholder="Título del artículo"
-        value={title}
-        onValueChange={setTitle}
-        maxLength={200}
-      />
-      <BlockEditor
-        ref={editorRef}
-        initialData={initialData.current}
-        onChange={(data) => {
-          latestContent.current = data;
-        }}
-      />
-      <menu className="flex gap-4">
+    <section className="w-full flex flex-col gap-5">
+      {/* Título del artículo */}
+      <div className="rounded-2xl border border-default-200 bg-content1 p-4 shadow-sm sm:p-6">
+        <Input
+          isRequired
+          label="Título del artículo"
+          labelPlacement="outside"
+          placeholder="Escribí un título…"
+          value={title}
+          onValueChange={setTitle}
+          maxLength={200}
+          variant="bordered"
+          classNames={{
+            label: "text-sm font-medium text-default-700",
+            input: "text-lg font-medium",
+          }}
+        />
+      </div>
+
+      {/* Editor de contenido */}
+      <div className="rounded-2xl border border-default-200 bg-content1 shadow-sm">
+        <div className="border-b border-default-100 px-4 py-3 sm:px-6">
+          <h2 className="text-sm font-medium text-default-700">Contenido</h2>
+          <p className="text-xs text-default-400">
+            Escribí, agregá encabezados, listas, imágenes y enlaces.
+          </p>
+        </div>
+        <div className="px-4 py-4 sm:px-6 sm:py-6">
+          <BlockEditor
+            ref={editorRef}
+            initialData={initialData.current}
+            onChange={(data) => {
+              latestContent.current = data;
+            }}
+          />
+        </div>
+      </div>
+
+      {/* Acciones */}
+      <menu className="sticky bottom-4 z-10 flex flex-wrap justify-end gap-3 rounded-2xl border border-default-200 bg-content1/90 p-3 shadow-sm backdrop-blur">
+        <SecondaryButton variant="light" onClick={backToItem} disabled={busy}>
+          Cancelar
+        </SecondaryButton>
         <PrimaryButton onClick={handleSave} disabled={busy}>
           {busy ? "Guardando…" : "Guardar cambios"}
         </PrimaryButton>
-        <SecondaryButton onClick={backToItem} disabled={busy}>
-          Cancelar
-        </SecondaryButton>
       </menu>
     </section>
   );

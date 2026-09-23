@@ -117,77 +117,100 @@ const ProductionBlog = ({ initial }: Props) => {
     router.refresh();
   };
 
+  const blogInitial = production.title?.trim().charAt(0).toUpperCase() || "?";
+
   return (
     <div className="w-full flex flex-col gap-6">
-      {/* Header */}
-      <header className="w-full flex flex-col gap-3">
-        {production.headerPhotoKey && (
-          <Image
-            removeWrapper
-            alt={production.title}
-            src={resolveProductionFileUrl(production.headerPhotoKey)}
-            className="w-full max-h-60 object-cover rounded-lg"
-          />
-        )}
-        <div className="flex items-start justify-between gap-4 flex-wrap">
-          <div>
-            <h2>{production.title}</h2>
-            {production.description && (
-              <p className="text-sm text-default-600 mt-1">
-                {production.description}
-              </p>
+      {/* Header: tarjeta con portada cuadrada, título, acciones y estadísticas */}
+      <header className="w-full overflow-hidden rounded-2xl border border-default-200 bg-content1 shadow-sm">
+        <div className="flex flex-col gap-5 p-4 sm:flex-row sm:p-6">
+          {/* Portada cuadrada (respeta su relación de aspecto) */}
+          <div className="mx-auto aspect-square w-40 shrink-0 overflow-hidden rounded-xl border border-default-200 bg-gradient-to-br from-primary/10 via-secondary/5 to-default-100 shadow-sm sm:mx-0 sm:w-44">
+            {production.headerPhotoKey ? (
+              <Image
+                removeWrapper
+                alt={production.title}
+                src={resolveProductionFileUrl(production.headerPhotoKey)}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center text-6xl font-bold text-default-800">
+                {blogInitial}
+              </div>
             )}
           </div>
-          {canEdit && (
-            <div className="flex gap-2 flex-wrap">
-              {canManageAccess && (
-                <SecondaryButton
-                  startContent={<FaKey />}
-                  onClick={accessSettings.onOpen}
-                >
-                  Alcance y clave
-                </SecondaryButton>
-              )}
-              <SecondaryButton
-                onClick={() =>
-                  router.push(`${EDIT_PRODUCTION}/${production._id}`)
-                }
-              >
-                Editar blog
-              </SecondaryButton>
-              {production.viewer?.canDelete && (
-                <PrimaryButton variant="light" onClick={handleDeleteBlog}>
-                  Borrar blog
-                </PrimaryButton>
+
+          {/* Info + acciones */}
+          <div className="flex min-w-0 flex-1 flex-col">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div className="min-w-0">
+                <h2 className="text-xl font-semibold leading-tight sm:text-2xl">
+                  {production.title}
+                </h2>
+                {production.description && (
+                  <p className="mt-1 text-sm text-default-500">
+                    {production.description}
+                  </p>
+                )}
+              </div>
+
+              {/* Acciones de staff */}
+              {canEdit && (
+                <div className="flex flex-wrap gap-2">
+                  {canManageAccess && (
+                    <SecondaryButton
+                      startContent={<FaKey />}
+                      onClick={accessSettings.onOpen}
+                    >
+                      Alcance y clave
+                    </SecondaryButton>
+                  )}
+                  <SecondaryButton
+                    onClick={() =>
+                      router.push(`${EDIT_PRODUCTION}/${production._id}`)
+                    }
+                  >
+                    Editar blog
+                  </SecondaryButton>
+                  {production.viewer?.canDelete && (
+                    <PrimaryButton variant="light" onClick={handleDeleteBlog}>
+                      Borrar blog
+                    </PrimaryButton>
+                  )}
+                </div>
               )}
             </div>
-          )}
-        </div>
-        {production.welcomeText && (
-          <p className="text-sm italic text-default-500">
-            {production.welcomeText}
-          </p>
-        )}
-        {production.viewer?.role !== "admin" && (
-          <div className="flex items-center gap-2 flex-wrap">
-            <FanButton
-              productionId={production._id}
-              isFan={production.viewer?.isFan ?? false}
-              fansCount={production.fansCount}
-              onChanged={reloadBlog}
-            />
-            <SecondaryButton
-              startContent={<FaFlag />}
-              onClick={reportModal.onOpen}
-            >
-              Denunciar
-            </SecondaryButton>
+
+            {/* Texto de bienvenida */}
+            {production.welcomeText && (
+              <p className="mt-3 border-l-2 border-primary/40 pl-3 text-sm italic text-default-500">
+                {production.welcomeText}
+              </p>
+            )}
+
+            {/* Acciones de visitante (fan / denuncia) */}
+            {production.viewer?.role !== "admin" && (
+              <div className="mt-auto flex flex-wrap items-center gap-2 pt-4">
+                <FanButton
+                  productionId={production._id}
+                  isFan={production.viewer?.isFan ?? false}
+                  fansCount={production.fansCount}
+                  onChanged={reloadBlog}
+                />
+                <SecondaryButton
+                  startContent={<FaFlag />}
+                  onClick={reportModal.onOpen}
+                >
+                  Denunciar
+                </SecondaryButton>
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </header>
 
-      {/* Breadcrumb del árbol */}
-      <div className="flex items-center justify-between gap-4 flex-wrap">
+      {/* Breadcrumb del árbol + acciones de creación */}
+      <div className="flex items-center justify-between gap-4 flex-wrap rounded-xl border border-default-200 bg-content1 px-4 py-2.5">
         <Breadcrumbs>
           <BreadcrumbItem
             onPress={() => loadLevel(undefined)}
@@ -220,9 +243,18 @@ const ProductionBlog = ({ initial }: Props) => {
           <Spinner />
         </div>
       ) : data.items.length === 0 ? (
-        <p className="text-sm text-default-500 py-10 text-center">
-          Esta carpeta está vacía.
-        </p>
+        <div className="flex flex-col items-center gap-1 rounded-xl border border-dashed border-default-200 py-12 text-center">
+          <span className="text-3xl">📂</span>
+          <p className="text-sm font-medium text-default-600">
+            Esta carpeta está vacía.
+          </p>
+          {canEdit && (
+            <p className="text-xs text-default-400">
+              Creá una carpeta, subí un archivo o escribí un artículo para
+              empezar.
+            </p>
+          )}
+        </div>
       ) : (
         <div className="grid grid-cols-2 gap-3 md:gap-4 md:grid-cols-3 xl:grid-cols-4 3xl:grid-cols-5 lg:gap-5 items-start">
           {data.items.map((item) => (
