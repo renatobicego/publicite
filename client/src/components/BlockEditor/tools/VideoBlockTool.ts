@@ -36,8 +36,12 @@ export class VideoBlockTool extends MediaBlockTool {
     const video = document.createElement("video");
     video.controls = true;
     video.src = url;
+    // Preview acotado dentro del editor para que un video vertical no ocupe
+    // toda la pantalla; el render final usa `VideoPlayer`.
     video.style.width = "100%";
+    video.style.maxHeight = "360px";
     video.style.borderRadius = "8px";
+    video.style.background = "#000";
     container.appendChild(video);
     return container;
   }

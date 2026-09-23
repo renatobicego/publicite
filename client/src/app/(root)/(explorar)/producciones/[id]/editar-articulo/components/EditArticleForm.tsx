@@ -83,6 +83,27 @@ const EditArticleForm = ({ item }: Props) => {
 
   return (
     <section className="w-full flex flex-col gap-5">
+      {/* Barra de acciones: sticky ARRIBA (no flota sobre el contenido ni pelea
+          con el popover del editor, que se abre hacia abajo). En mobile los
+          botones ocupan el ancho completo. */}
+      <menu className="sticky top-2 z-30 flex flex-col-reverse gap-2 rounded-2xl border border-default-200 bg-content1 p-3 shadow-md sm:flex-row sm:items-center sm:justify-end sm:gap-3">
+        <SecondaryButton
+          variant="light"
+          onClick={backToItem}
+          disabled={busy}
+          className="w-full sm:w-auto"
+        >
+          Cancelar
+        </SecondaryButton>
+        <PrimaryButton
+          onClick={handleSave}
+          disabled={busy}
+          className="w-full sm:w-auto"
+        >
+          {busy ? "Guardando…" : "Guardar cambios"}
+        </PrimaryButton>
+      </menu>
+
       {/* Título del artículo */}
       <div className="rounded-2xl border border-default-200 bg-content1 p-4 shadow-sm sm:p-6">
         <Input
@@ -119,16 +140,6 @@ const EditArticleForm = ({ item }: Props) => {
           />
         </div>
       </div>
-
-      {/* Acciones */}
-      <menu className="sticky bottom-4 flex flex-wrap justify-end gap-3 rounded-2xl border border-default-200 bg-content1 p-3 shadow-md">
-        <SecondaryButton variant="light" onClick={backToItem} disabled={busy}>
-          Cancelar
-        </SecondaryButton>
-        <PrimaryButton onClick={handleSave} disabled={busy}>
-          {busy ? "Guardando…" : "Guardar cambios"}
-        </PrimaryButton>
-      </menu>
     </section>
   );
 };
