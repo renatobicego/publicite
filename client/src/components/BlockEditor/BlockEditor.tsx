@@ -17,6 +17,33 @@ import { toastifyError } from "@/utils/functions/toastify";
 import { deleteFilesService } from "@/app/server/uploadThing";
 import { AudioBlockTool } from "./tools/AudioBlockTool";
 import { VideoBlockTool } from "./tools/VideoBlockTool";
+import { PhotoGridBlockTool, PhotoGridImage } from "./tools/PhotoGridBlockTool";
+
+/**
+ * Extrae las claves de UploadThing de un bloque para el cleanup de archivos.
+ * - image/audio/video guardan una única `data.file.key`.
+ * - photoGrid guarda un array `data.images[].key`.
+ */
+const extractMediaKeys = (block: {
+  type: string;
+  data?: any;
+}): string[] => {
+  if (["image", "audio", "video"].includes(block.type) && block.data?.file?.key) {
+    return [block.data.file.key as string];
+  }
+  if (block.type === "photoGrid" && Array.isArray(block.data?.images)) {
+    return (block.data.images as PhotoGridImage[])
+      .map((img) => img?.key)
+      .filter((key): key is string => !!key);
+  }
+  return [];
+};
+
+/** Borra de UploadThing una key, respetando el sufijo "video" del proyecto. */
+const deleteMediaKey = (key: string) => {
+  const realKey = key.endsWith("video") ? key.replace("video", "") : key;
+  deleteFilesService([realKey]);
+};
 
 /**
  * Métodos imperativos que el componente padre puede invocar a través del `ref`.
@@ -86,6 +113,7 @@ const i18n = {
       Image: "Imagen",
       Audio: "Audio",
       Video: "Video",
+      "Photo Grid": "Grilla de fotos",
       "Unordered List": "Lista desordenada",
       "Ordered List": "Lista ordenada",
     },
@@ -194,15 +222,10 @@ const BlockEditor = forwardRef<BlockEditorHandle, BlockEditorProps>(
           // Registro de la instancia (igual que Novedades).
           ejInstance.current = editor;
           // Semilla de claves de archivos ya presentes (edición): imagen,
-          // audio y video comparten la forma `data.file.key`.
+          // audio, video y grilla de fotos.
           const seed = new Set<string>();
           initialData?.blocks?.forEach((block) => {
-            if (
-              ["image", "audio", "video"].includes(block.type) &&
-              block.data?.file?.key
-            ) {
-              seed.add(block.data.file.key);
-            }
+            extractMediaKeys(block).forEach((key) => seed.add(key));
           });
           previousMediaKeys.current = seed;
         },
@@ -214,24 +237,14 @@ const BlockEditor = forwardRef<BlockEditorHandle, BlockEditorProps>(
           if (cleanupRemovedImages) {
             const currentKeys = new Set<string>();
             content?.blocks?.forEach((block) => {
-              if (
-                ["image", "audio", "video"].includes(block.type) &&
-                block.data?.file?.key
-              ) {
-                currentKeys.add(block.data.file.key);
-              }
+              extractMediaKeys(block).forEach((key) => currentKeys.add(key));
             });
             // Borrar de UploadThing los archivos que se sacaron del editor.
             // Los keys de video llevan el sufijo "video" (convención del
             // proyecto); hay que quitarlo para que UploadThing reconozca el
             // key real.
             previousMediaKeys.current.forEach((key) => {
-              if (!currentKeys.has(key)) {
-                const realKey = key.endsWith("video")
-                  ? key.replace("video", "")
-                  : key;
-                deleteFilesService([realKey]);
-              }
+              if (!currentKeys.has(key)) deleteMediaKey(key);
             });
             previousMediaKeys.current = currentKeys;
           }
@@ -294,6 +307,22 @@ const BlockEditor = forwardRef<BlockEditorHandle, BlockEditorProps>(
                 return { url: res[0].url, key: `${res[0].key}video` };
               },
               onUploadError: (message: string) => toastifyError(message),
+            },
+          },
+          photoGrid: {
+            class: PhotoGridBlockTool,
+            config: {
+              // Sube cada foto a UploadThing y guarda `{ url, key }`.
+              uploader: async (file: File) => {
+                const res = await startUpload([file]);
+                if (!res?.[0]) return undefined;
+                return { url: res[0].url, key: res[0].key };
+              },
+              onUploadError: (message: string) => toastifyError(message),
+              // Al quitar una foto del grid, borrarla también de UploadThing.
+              onRemoveImage: (image: PhotoGridImage) => {
+                if (image?.key) deleteFilesService([image.key]);
+              },
             },
           },
         },

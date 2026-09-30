@@ -104,10 +104,10 @@ const BlockRenderer = ({ data }: { data: OutputData }) => {
                   alt={d.caption || "Imagen"}
                   className={`w-full ${d.stretched ? "max-w-full" : "max-w-3xl mx-auto"
                     }`}
-                  radius="lg"
+                  radius="none"
                 />
                 {d.caption && (
-                  <figcaption className="text-center text-sm text-default-500 mt-2">
+                  <figcaption className="text-left text-sm text-default-500 mt-2">
                     {d.caption}
                   </figcaption>
                 )}
@@ -149,6 +149,38 @@ const BlockRenderer = ({ data }: { data: OutputData }) => {
             return (
               <div key={index} className="my-6">
                 <VideoPlayer src={d.file.url} />
+              </div>
+            );
+          }
+          case "photoGrid": {
+            const d = block.data as {
+              images?: { url: string; key: string }[];
+              columns?: 2 | 3;
+            };
+            const images = (d.images ?? []).filter((img) => img?.url);
+            if (images.length === 0) return null;
+            // Mobile: una foto arriba de la otra (1 columna). Desde `sm`,
+            // 2 o 3 columnas según lo elegido. Las fotos conservan su
+            // relación de aspecto original (sin recorte).
+            const columnsClass =
+              d.columns === 3 ? "sm:grid-cols-3" : "sm:grid-cols-2";
+            return (
+              <div
+                key={index}
+                className={`my-6 grid grid-cols-1 gap-2 ${columnsClass}`}
+              >
+                {images.map((img, i) => (
+                  <Image
+                    key={i}
+                    src={img.url}
+                    alt={`Foto ${i + 1}`}
+                    radius="sm"
+                    classNames={{
+                      wrapper: "!max-w-full w-full",
+                      img: "w-full h-auto object-contain",
+                    }}
+                  />
+                ))}
               </div>
             );
           }

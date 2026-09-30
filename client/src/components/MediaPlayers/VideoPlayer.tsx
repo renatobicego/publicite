@@ -106,7 +106,7 @@ const VideoPlayer = ({ src, poster, className = "" }: VideoPlayerProps) => {
   return (
     <div
       ref={containerRef}
-      className={`group relative w-full overflow-hidden rounded-lg bg-black ${className}`}
+      className={`group relative w-full overflow-hidden rounded-sm bg-black ${className}`}
       onMouseMove={scheduleHideControls}
       onMouseLeave={() => isPlaying && setShowControls(false)}
     >
@@ -134,9 +134,8 @@ const VideoPlayer = ({ src, poster, className = "" }: VideoPlayerProps) => {
 
       {/* Barra de controles inferior. */}
       <div
-        className={`absolute inset-x-0 bottom-0 flex items-center gap-3 bg-gradient-to-t from-black/80 to-transparent px-3 py-2 transition-opacity ${
-          showControls || !isPlaying ? "opacity-100" : "opacity-0"
-        }`}
+        className={`absolute inset-x-0 bottom-0 flex items-center gap-3 bg-gradient-to-t from-black/80 to-transparent px-3 py-2 transition-opacity ${showControls || !isPlaying ? "opacity-100" : "opacity-0"
+          }`}
       >
         <button
           type="button"

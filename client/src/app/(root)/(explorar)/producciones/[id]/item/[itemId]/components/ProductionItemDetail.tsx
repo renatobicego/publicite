@@ -46,7 +46,7 @@ const ProductionItemDetail = ({
   if (item.kind === ProductionItemKind.article) {
     const output = deserializeBlocks(item.blocks);
     return (
-      <article className="w-full max-w-3xl flex flex-col gap-3">
+      <article className="w-full max-w-screen-lg flex flex-col gap-3 ">
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <h2>{item.name}</h2>
           {canEdit && <ProductionItemDetailActions item={item} />}
@@ -75,7 +75,7 @@ const renderFile = (item: ProductionItemResponse) => {
         <Image
           alt={item.name}
           src={resolveProductionFileUrl(item.key)}
-          className="w-full rounded-lg"
+          className="w-full rounded-sm"
         />
       );
     case ProductionFileType.video:
