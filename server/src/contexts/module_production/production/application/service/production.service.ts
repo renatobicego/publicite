@@ -843,7 +843,12 @@ export class ProductionService implements ProductionServiceInterface {
     );
   }
 
-  /** Listado público y buscador de producciones (NAV-02, NAV-05). */
+  /**
+   * Listado público y buscador de producciones (NAV-02, NAV-05).
+   * Los blogs con clave también se listan (se ve la tarjeta/header): el
+   * evaluador los marca `listed` pero con el contenido bloqueado hasta que el
+   * visitante ingrese la clave (VIS-05 / INV-02).
+   */
   async findAllProductions(
     page: number,
     limit: number,
@@ -861,7 +866,7 @@ export class ProductionService implements ProductionServiceInterface {
           scope,
         ),
         searchRegex,
-        includeKeyProtected: false,
+        includeKeyProtected: true,
         includeModerated: false,
       },
       safePage,

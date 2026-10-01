@@ -13,12 +13,12 @@ const UserRelationsGrid = ({
     <>
       <div className="grid grid-cols-2 lg:grid-cols-3 3xl:grid-cols-4 gap-4">
         {items &&
-          items.map((relation, index) => (
+          items.filter(relation => relation.userA && relation.userB).map((relation, index) => (
             <ProfileCard
               user={
-                relation.userA._id === userId
-                  ? relation.userB
-                  : relation.userA
+                relation.userA?._id === userId
+                  ? relation?.userB
+                  : relation?.userA
               }
               key={relation._id}
             />

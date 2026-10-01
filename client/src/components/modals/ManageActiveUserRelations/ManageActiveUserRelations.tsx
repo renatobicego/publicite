@@ -39,6 +39,7 @@ const ManageActiveUserRelations = ({
 
   const filteredRelations = useMemo(() => {
     return relations.filter((relation) => {
+      if (!relation.userA || !relation.userB) return
       const userToFilter =
         relation.userA._id === userId ? relation.userB : relation.userA;
       if (value && relation.typeRelationA !== value) {

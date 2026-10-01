@@ -90,7 +90,7 @@ describe('Mis Producciones - Fase 2: listado, búsqueda y destacadas', () => {
     expect(productions).toHaveLength(0);
   });
 
-  it('excluye los blogs con clave y los moderados del listado global', async () => {
+  it('lista los blogs con clave (bloqueados) pero excluye los moderados del listado global', async () => {
     const owner = await createTestUser(models);
     const other = await createTestUser(models);
     const withKey = await createBlog(owner, 'Con clave');
@@ -104,10 +104,15 @@ describe('Mis Producciones - Fase 2: listado, búsqueda y destacadas', () => {
       { $set: { moderationStatus: ProductionModerationStatus.hidden } },
     );
 
+    // El blog con clave aparece en el listado/búsqueda, pero con el contenido
+    // bloqueado hasta ingresar la clave (VIS-05). El moderado no se lista.
     const { productions } = await service.findAllProductions(1, 10);
-    expect(productions).toHaveLength(0);
+    expect(productions.map((p) => p.title)).toEqual(['Con clave']);
+    expect(productions[0].hasAccessKey).toBe(true);
+    expect(productions[0].viewer.canViewContent).toBe(false);
+    expect(productions[0].showcase).toEqual([]);
 
-    // En el cartel del dueño el blog con clave sí aparece, para ingresarla.
+    // En el cartel del dueño el blog con clave también aparece, para ingresarla.
     const onProfile = await service.findProductionsByOwner(owner, undefined);
     expect(onProfile.map((p) => p.title)).toEqual(['Con clave']);
     expect(onProfile[0].hasAccessKey).toBe(true);
