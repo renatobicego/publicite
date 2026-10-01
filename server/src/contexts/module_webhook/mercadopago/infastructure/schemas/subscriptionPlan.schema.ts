@@ -27,6 +27,12 @@ export const SubscriptionPlanSchema = new Schema({
   groupBlogsCount: { type: Number },
   // Cupo de archivos POR BLOG que habilita el plan (~10 en gratuito, sube por plan).
   filesPerBlogCount: { type: Number },
+  // Cupo de ALMACENAMIENTO POR USUARIO que habilita el plan, en BYTES. Suma de
+  // los archivos de todos los blogs del usuario. Acumulativo entre suscripciones
+  // activas (igual que filesPerBlogCount). Ej: 104857600 (100MB) gratuito,
+  // 1073741824 (1GB) premium. Sólo se aplica si el feature flag de storage está
+  // activo (PRODUCTION_STORAGE_LIMIT_ENABLED).
+  storageBytesLimit: { type: Number },
 });
 
 export interface SubscriptionPlanDocument extends Document {
@@ -45,6 +51,7 @@ export interface SubscriptionPlanDocument extends Document {
   personalBlogsCount?: number;
   groupBlogsCount?: number;
   filesPerBlogCount?: number;
+  storageBytesLimit?: number;
 }
 
 const SubscriptionPlanModel = model<SubscriptionPlanDocument>(

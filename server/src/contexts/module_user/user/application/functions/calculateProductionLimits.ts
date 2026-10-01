@@ -3,7 +3,10 @@ import {
   getFreeFilesPerBlogLimit,
   getFreeGroupBlogsLimit,
   getFreePersonalBlogsLimit,
+  getFreeStorageBytesLimit,
   getMaxPersonalBlogsLimit,
+  isBlogLimitEnabled,
+  isStorageLimitEnabled,
 } from 'src/contexts/module_shared/production-limits/production.limits.config';
 
 /**
@@ -37,6 +40,7 @@ interface userWithProductionsAndSubscriptions {
         personalBlogsCount?: number;
         groupBlogsCount?: number;
         filesPerBlogCount?: number;
+        storageBytesLimit?: number;
         isFree?: boolean;
         isPack?: boolean;
       };
@@ -53,6 +57,19 @@ interface ProductionLimits {
   groupBlogsAvailable: number;
   filesPerBlogLimit: number;
   /**
+   * Feature flag: ¿se aplica el límite de CANTIDAD de blogs por usuario? Si es
+   * false, `personalBlogsAvailable` / `groupBlogsAvailable` quedan "infinitos".
+   */
+  blogLimitEnabled: boolean;
+  /** Feature flag: ¿se aplica el límite de ALMACENAMIENTO por usuario? */
+  storageLimitEnabled: boolean;
+  /**
+   * Límite de almacenamiento POR USUARIO en bytes (suma de los archivos de todos
+   * sus blogs). Acumulativo entre suscripciones; piso gratuito si el plan no lo
+   * define. Sólo relevante si `storageLimitEnabled`.
+   */
+  storageBytesLimit: number;
+  /**
    * Tickets pagos (PLN-02/03, TKT-10): sólo con un plan pago activo. El plan
    * gratuito y los packs de publicaciones no los habilitan.
    */
@@ -66,21 +83,31 @@ function calculateProductionLimitsFromUser(
   const subscriptions = userWithProductionsAndSubscriptions.subscriptions ?? [];
   const productions = userWithProductionsAndSubscriptions.productions ?? [];
 
-  const { maxPersonalBlogs, totalGroupBlogLimit, totalFilesPerBlog } =
-    subscriptions.reduce(
-      (limits, subscription) => {
-        const plan = subscription?.subscriptionPlan;
-        if (!plan) return limits;
-        limits.maxPersonalBlogs = Math.max(
-          limits.maxPersonalBlogs,
-          plan.personalBlogsCount ?? 0,
-        );
-        limits.totalGroupBlogLimit += plan.groupBlogsCount ?? 0;
-        limits.totalFilesPerBlog += plan.filesPerBlogCount ?? 0;
-        return limits;
-      },
-      { maxPersonalBlogs: 0, totalGroupBlogLimit: 0, totalFilesPerBlog: 0 },
-    );
+  const {
+    maxPersonalBlogs,
+    totalGroupBlogLimit,
+    totalFilesPerBlog,
+    totalStorageBytes,
+  } = subscriptions.reduce(
+    (limits, subscription) => {
+      const plan = subscription?.subscriptionPlan;
+      if (!plan) return limits;
+      limits.maxPersonalBlogs = Math.max(
+        limits.maxPersonalBlogs,
+        plan.personalBlogsCount ?? 0,
+      );
+      limits.totalGroupBlogLimit += plan.groupBlogsCount ?? 0;
+      limits.totalFilesPerBlog += plan.filesPerBlogCount ?? 0;
+      limits.totalStorageBytes += plan.storageBytesLimit ?? 0;
+      return limits;
+    },
+    {
+      maxPersonalBlogs: 0,
+      totalGroupBlogLimit: 0,
+      totalFilesPerBlog: 0,
+      totalStorageBytes: 0,
+    },
+  );
 
   const { personalBlogCount, groupBlogCount } = productions.reduce(
     (counts, production) => {
@@ -100,6 +127,11 @@ function calculateProductionLimitsFromUser(
     totalGroupBlogLimit > 0 ? totalGroupBlogLimit : getFreeGroupBlogsLimit();
   const filesPerBlogLimit =
     totalFilesPerBlog > 0 ? totalFilesPerBlog : getFreeFilesPerBlogLimit();
+  const storageBytesLimit =
+    totalStorageBytes > 0 ? totalStorageBytes : getFreeStorageBytesLimit();
+
+  const blogLimitEnabled = isBlogLimitEnabled();
+  const storageLimitEnabled = isStorageLimitEnabled();
 
   logger.warn('Status of Limit productions of user: ');
   logger.log(
@@ -117,8 +149,14 @@ function calculateProductionLimitsFromUser(
       filesPerBlogLimit,
   );
 
-  const personalBlogsAvailable = totalPersonalBlogLimit - personalBlogCount;
-  const groupBlogsAvailable = groupBlogLimit - groupBlogCount;
+  // Con el flag de blogs apagado no se aplica tope de cantidad: la
+  // disponibilidad queda "infinita" (Infinity) para que los gates siempre pasen.
+  const personalBlogsAvailable = blogLimitEnabled
+    ? totalPersonalBlogLimit - personalBlogCount
+    : Infinity;
+  const groupBlogsAvailable = blogLimitEnabled
+    ? groupBlogLimit - groupBlogCount
+    : Infinity;
   const canSellPaidTickets = subscriptions.some(
     (subscription) =>
       !!subscription?.subscriptionPlan &&
@@ -134,6 +172,9 @@ function calculateProductionLimitsFromUser(
     personalBlogsAvailable,
     groupBlogsAvailable,
     filesPerBlogLimit,
+    blogLimitEnabled,
+    storageLimitEnabled,
+    storageBytesLimit,
     canSellPaidTickets,
   };
 }

@@ -28,19 +28,24 @@ import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { FILE_URL } from "@/utils/data/urls";
 import {
   bulkDeletePosts,
+  bulkUpdatePostFrequency,
   bulkUpdatePostPrices,
   bulkUpdatePostVisibility,
   getPostSeudoBase,
 } from "@/app/server/postSeudoBaseActions";
+import { updatePostActiveStatus } from "@/app/server/postActions";
 import {
   isPostSeudoBaseActionError,
   PostBulkResult,
   PostPriceChangeMode,
+  PostSeudoBaseFrequency,
   PostSeudoBaseRow,
+  PostSeudoBaseType,
   PostVisibility,
 } from "@/types/postSeudoBaseTypes";
+import { frequencyPriceItems } from "@/utils/data/selectData";
 
-type BulkKind = "price" | "visibility" | "delete";
+type BulkKind = "price" | "frequency" | "visibility" | "delete";
 
 const NEGOTIABLE_PRICE = 8613.1;
 
@@ -54,20 +59,51 @@ const visibilityLabel: Record<PostVisibility, string> = {
 
 const visibilityOptions = Object.values(PostVisibility);
 
-const formatPrice = (price: number) =>
-  price === NEGOTIABLE_PRICE ? "Negociable" : `$${price}`;
+const postTypeLabel: Record<PostSeudoBaseType, string> = {
+  [PostSeudoBaseType.good]: "Bien",
+  [PostSeudoBaseType.service]: "Servicio",
+  [PostSeudoBaseType.petition]: "Necesidad",
+};
+
+/** Texto en español de la frecuencia (reusa el catálogo de los formularios). */
+const frequencyText = (
+  frequency?: PostSeudoBaseFrequency | "undefined" | null
+) => {
+  if (!frequency || frequency === "undefined") return null;
+  return frequencyPriceItems.find((item) => item.value === frequency)?.text ?? null;
+};
+
+/**
+ * Arma el precio a mostrar según el tipo:
+ *  - Bien: `$X` (o "Negociable").
+ *  - Servicio: `$X por {frecuencia}`.
+ *  - Necesidad: `De $X a $Y por {frecuencia}` cuando hay rango.
+ */
+const formatRowPrice = (row: PostSeudoBaseRow) => {
+  if (row.price === NEGOTIABLE_PRICE) return "Negociable";
+
+  const base =
+    typeof row.toPrice === "number"
+      ? `De $${row.price} a $${row.toPrice}`
+      : `$${row.price}`;
+
+  const freq = frequencyText(row.frequencyPrice);
+  return freq ? `${base} por ${freq}` : base;
+};
 
 /**
  * SeudoBase de Anuncios: tabla tipo Excel de los anuncios del usuario, con
  * selección múltiple y las 3 operaciones masivas (precio, visibilidad,
  * borrado) con confirmación obligatoria (SB-01/02/03).
  */
-const PostsSeudoBaseTable = () => {
+const PostsSeudoBaseTable = ({ authorId }: { authorId: string }) => {
   const [loading, setLoading] = useState(true);
   const [rows, setRows] = useState<PostSeudoBaseRow[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [busy, setBusy] = useState(false);
+  // Id del anuncio cuyo toggle de "Activo" está en curso (loading por fila).
+  const [togglingId, setTogglingId] = useState<string | null>(null);
 
   const confirmModal = useDisclosure();
   const [bulkKind, setBulkKind] = useState<BulkKind>("price");
@@ -75,6 +111,8 @@ const PostsSeudoBaseTable = () => {
     PostPriceChangeMode.percentage
   );
   const [priceValue, setPriceValue] = useState("5");
+  const [bulkFrequency, setBulkFrequency] =
+    useState<PostSeudoBaseFrequency>("month");
   const [bulkVisibility, setBulkVisibility] = useState<PostVisibility>(
     PostVisibility.public
   );
@@ -100,6 +138,15 @@ const PostsSeudoBaseTable = () => {
 
   const selectedIds = useMemo(() => Array.from(selected), [selected]);
 
+  // Cuántos de los seleccionados son Bienes (se omiten en el cambio de frecuencia).
+  const selectedGoodsCount = useMemo(
+    () =>
+      rows.filter(
+        (r) => selected.has(r._id) && r.postType === PostSeudoBaseType.good
+      ).length,
+    [rows, selected]
+  );
+
   const openBulk = (kind: BulkKind) => {
     if (selectedIds.length === 0) {
       toastifyError("Seleccioná al menos un anuncio");
@@ -119,6 +166,12 @@ const PostsSeudoBaseTable = () => {
           confirm: true,
           mode: priceMode,
           value: Number(priceValue),
+        });
+      } else if (bulkKind === "frequency") {
+        res = await bulkUpdatePostFrequency({
+          postIds: selectedIds,
+          confirm: true,
+          frequencyPrice: bulkFrequency,
         });
       } else if (bulkKind === "visibility") {
         res = await bulkUpdatePostVisibility({
@@ -147,10 +200,52 @@ const PostsSeudoBaseTable = () => {
     }
   };
 
+  // Activa/desactiva un anuncio desde el toggle de la fila (no es masivo).
+  const handleToggleActive = async (row: PostSeudoBaseRow) => {
+    const next = !row.isActive;
+    setTogglingId(row._id);
+    // Optimista: reflejamos el cambio ya mismo y revertimos si falla.
+    setRows((prev) =>
+      prev.map((r) => (r._id === row._id ? { ...r, isActive: next } : r))
+    );
+    try {
+      const res = await updatePostActiveStatus(
+        row._id,
+        authorId,
+        row.postBehaviourType,
+        next
+      );
+      if ("error" in res) {
+        setRows((prev) =>
+          prev.map((r) =>
+            r._id === row._id ? { ...r, isActive: row.isActive } : r
+          )
+        );
+        toastifyError(res.error);
+        return;
+      }
+      toastifySuccess(
+        next ? "Anuncio activado" : "Anuncio desactivado"
+      );
+    } catch {
+      setRows((prev) =>
+        prev.map((r) =>
+          r._id === row._id ? { ...r, isActive: row.isActive } : r
+        )
+      );
+      toastifyError("No se pudo cambiar el estado del anuncio");
+    } finally {
+      setTogglingId(null);
+    }
+  };
+
   const confirmMessage = () => {
     const n = selectedIds.length;
     if (bulkKind === "price") {
-      return `Vas a cambiar el precio de ${n} anuncio(s). Los anuncios "Negociable" se omiten en cambios porcentuales.`;
+      return `Vas a cambiar el precio de ${n} anuncio(s). Los anuncios "Negociable" se omiten en cambios porcentuales. En cambios a precio fijo se descarta el rango de las Necesidades.`;
+    }
+    if (bulkKind === "frequency") {
+      return `Vas a cambiar la frecuencia del precio de ${n} anuncio(s). Sólo aplica a Servicios y Necesidades; los Bienes se omiten (no tienen frecuencia).`;
     }
     if (bulkKind === "visibility") {
       return `Vas a cambiar la visibilidad de ${n} anuncio(s).`;
@@ -187,6 +282,14 @@ const PostsSeudoBaseTable = () => {
           onPress={() => openBulk("price")}
         >
           Cambiar precio
+        </Button>
+        <Button
+          size="sm"
+          variant="flat"
+          isDisabled={selectedIds.length === 0}
+          onPress={() => openBulk("frequency")}
+        >
+          Cambiar frecuencia
         </Button>
         <Button
           size="sm"
@@ -248,15 +351,31 @@ const PostsSeudoBaseTable = () => {
                   )}
                 </TableCell>
                 <TableCell>{row.title}</TableCell>
-                <TableCell>{row.postType}</TableCell>
-                <TableCell>{formatPrice(row.price)}</TableCell>
+                <TableCell>
+                  {postTypeLabel[row.postType] ?? row.postType}
+                </TableCell>
+                <TableCell>{formatRowPrice(row)}</TableCell>
                 <TableCell>
                   <Chip size="sm" variant="flat">
                     {visibilityLabel[row.visibility]}
                   </Chip>
                 </TableCell>
                 <TableCell>
-                  <Switch size="sm" isSelected={row.isActive} isReadOnly />
+                  {/* El wrapper frena la propagación para que tocar el toggle
+                      no dispare la selección de la fila (selectionMode). */}
+                  <div
+                    className="inline-flex"
+                    onClick={(e) => e.stopPropagation()}
+                    onPointerDown={(e) => e.stopPropagation()}
+                    onMouseDown={(e) => e.stopPropagation()}
+                  >
+                    <Switch
+                      size="sm"
+                      isSelected={row.isActive}
+                      isDisabled={togglingId === row._id}
+                      onValueChange={() => handleToggleActive(row)}
+                    />
+                  </div>
                 </TableCell>
               </TableRow>
             ))}
@@ -304,6 +423,29 @@ const PostsSeudoBaseTable = () => {
                       onValueChange={setPriceValue}
                     />
                   </div>
+                )}
+
+                {bulkKind === "frequency" && (
+                  <Select
+                    label="Nueva frecuencia"
+                    selectedKeys={[bulkFrequency]}
+                    onChange={(e) =>
+                      setBulkFrequency(
+                        e.target.value as PostSeudoBaseFrequency
+                      )
+                    }
+                  >
+                    {frequencyPriceItems.map((item) => (
+                      <SelectItem key={item.value}>{item.label}</SelectItem>
+                    ))}
+                  </Select>
+                )}
+
+                {bulkKind === "frequency" && selectedGoodsCount > 0 && (
+                  <p className="text-xs text-warning">
+                    {selectedGoodsCount} Bien(es) de la selección se omitirán
+                    porque no tienen frecuencia.
+                  </p>
                 )}
 
                 {bulkKind === "visibility" && (

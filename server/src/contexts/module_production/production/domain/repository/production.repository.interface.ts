@@ -42,6 +42,11 @@ export interface ProductionRepositoryInterface {
   findByIds(ids: string[]): Promise<Production[]>;
   /** Blogs creados por el usuario (personales y de grupo). */
   findByCreator(userId: string): Promise<Production[]>;
+  /** IDs de los blogs creados por el usuario (para el cupo de storage por usuario). */
+  findIdsByCreator(
+    userId: string,
+    session?: ClientSession,
+  ): Promise<string[]>;
   findOwnerInfo(
     ownerId: string,
     ownerType: ProductionOwnerType,

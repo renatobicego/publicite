@@ -37,6 +37,7 @@ export interface ProductionFileProps extends ProductionItemBaseProps {
   fileName: string;
   fileType: ProductionFileType;
   key: string;
+  sizeBytes?: number;
   postcard?: ProductionPostcardBack;
 }
 
@@ -128,6 +129,7 @@ export abstract class ProductionItem {
           fileName: doc.fileName,
           fileType: doc.fileType,
           key: doc.key,
+          sizeBytes: doc.sizeBytes ?? 0,
           postcard: doc.postcard ?? undefined,
         });
       case ProductionItemKind.article:
@@ -160,9 +162,9 @@ export class ProductionFile extends ProductionItem {
   private readonly file: Omit<ProductionFileProps, keyof ProductionItemBaseProps>;
 
   constructor(props: ProductionFileProps) {
-    const { fileName, fileType, key, postcard, ...base } = props;
+    const { fileName, fileType, key, sizeBytes, postcard, ...base } = props;
     super(base);
-    this.file = { fileName, fileType, key, postcard };
+    this.file = { fileName, fileType, key, sizeBytes, postcard };
   }
 
   get getKind(): ProductionItemKind {
@@ -176,6 +178,9 @@ export class ProductionFile extends ProductionItem {
   }
   get getKey() {
     return this.file.key;
+  }
+  get getSizeBytes() {
+    return this.file.sizeBytes ?? 0;
   }
   get getPostcard() {
     return this.file.postcard;

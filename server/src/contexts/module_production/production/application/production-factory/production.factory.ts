@@ -73,6 +73,10 @@ export class ProductionFactory implements ProductionFactoryInterface {
       fileName,
       fileType: request.fileType,
       key: requireNonEmpty(request.key, 'La key del archivo'),
+      sizeBytes:
+        typeof request.sizeBytes === 'number' && request.sizeBytes > 0
+          ? Math.floor(request.sizeBytes)
+          : 0,
       postcard: request.postcard ? { ...request.postcard } : undefined,
     });
   }

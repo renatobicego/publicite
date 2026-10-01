@@ -19,7 +19,10 @@ import {
   ProductionRole,
 } from '../../domain/entity/enum/production.enums';
 import { ProductionRepositoryInterface } from '../../domain/repository/production.repository.interface';
-import { ProductionTicketSummaryResponse } from '../../domain/entity/models_graphql/HTTP-RESPONSE/production.response';
+import {
+  ProductionLimitsResponse,
+  ProductionTicketSummaryResponse,
+} from '../../domain/entity/models_graphql/HTTP-RESPONSE/production.response';
 import {
   AccessDecision,
   evaluateItemAccess,
@@ -542,5 +545,61 @@ export class ProductionAccessService {
       production.getCreator,
       session,
     );
+  }
+
+  /**
+   * Bytes de almacenamiento usados por el usuario = suma del peso de los archivos
+   * de TODOS sus blogs. Es el valor que se compara contra `storageBytesLimit`.
+   */
+  async getUserStorageUsedBytes(
+    userId: string,
+    session?: ClientSession,
+  ): Promise<number> {
+    const productionIds = await this.productionRepository.findIdsByCreator(
+      userId,
+      session,
+    );
+    return this.itemRepository.sumStorageBytesByProductions(
+      productionIds,
+      session,
+    );
+  }
+
+  /**
+   * Arma la respuesta de límites del usuario enriquecida con el consumo de
+   * almacenamiento (usado/disponible) y con las disponibilidades de blogs en un
+   * formato seguro para GraphQL (sin `Infinity` cuando el flag está apagado).
+   */
+  async buildUserLimitsResponse(
+    userId: string,
+  ): Promise<ProductionLimitsResponse> {
+    const limits = await this.userService.getProductionLimitsFromUserByUserId(
+      userId,
+    );
+    const storageUsedBytes = limits.storageLimitEnabled
+      ? await this.getUserStorageUsedBytes(userId)
+      : 0;
+    const storageAvailableBytes = Math.max(
+      0,
+      limits.storageBytesLimit - storageUsedBytes,
+    );
+    // `Infinity` (flag de blogs apagado) no es serializable como Int: se mapea a
+    // 0 y el cliente debe mirar `blogLimitEnabled` para saber que no hay tope.
+    const safeInt = (value: number) => (Number.isFinite(value) ? value : 0);
+    return {
+      personalBlogCount: limits.personalBlogCount,
+      groupBlogCount: limits.groupBlogCount,
+      totalPersonalBlogLimit: limits.totalPersonalBlogLimit,
+      totalGroupBlogLimit: limits.totalGroupBlogLimit,
+      personalBlogsAvailable: safeInt(limits.personalBlogsAvailable),
+      groupBlogsAvailable: safeInt(limits.groupBlogsAvailable),
+      filesPerBlogLimit: limits.filesPerBlogLimit,
+      canSellPaidTickets: limits.canSellPaidTickets,
+      blogLimitEnabled: limits.blogLimitEnabled,
+      storageLimitEnabled: limits.storageLimitEnabled,
+      storageBytesLimit: limits.storageBytesLimit,
+      storageUsedBytes,
+      storageAvailableBytes,
+    };
   }
 }

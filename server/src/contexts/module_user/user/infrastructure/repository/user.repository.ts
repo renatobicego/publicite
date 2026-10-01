@@ -391,7 +391,7 @@ export class UserRepository implements UserRepositoryInterface {
             populate: {
               path: 'subscriptionPlan',
               select:
-                'personalBlogsCount groupBlogsCount filesPerBlogCount isFree isPack',
+                'personalBlogsCount groupBlogsCount filesPerBlogCount storageBytesLimit isFree isPack',
             },
           },
         ])

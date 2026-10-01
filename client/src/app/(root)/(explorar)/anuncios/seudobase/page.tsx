@@ -11,6 +11,7 @@ export default function PostsSeudoBasePage() {
   if (!user.userId) {
     redirect("/iniciar-sesion");
   }
+  const authorId = user.sessionClaims?.metadata.mongoId as string;
 
   return (
     <main className="flex min-h-screen flex-col items-start main-style gap-4 md:gap-6 lg:gap-8">
@@ -19,7 +20,7 @@ export default function PostsSeudoBasePage() {
         Gestión masiva de tus anuncios como una tabla de Excel: cambiá el
         precio, la visibilidad o borralos en lote.
       </p>
-      <PostsSeudoBaseTable />
+      <PostsSeudoBaseTable authorId={authorId} />
     </main>
   );
 }

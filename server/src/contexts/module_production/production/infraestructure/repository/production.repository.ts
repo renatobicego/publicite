@@ -83,6 +83,19 @@ export class ProductionRepository implements ProductionRepositoryInterface {
     return docs.map((doc) => Production.fromDocument(doc));
   }
 
+  async findIdsByCreator(
+    userId: string,
+    session?: ClientSession,
+  ): Promise<string[]> {
+    if (!Types.ObjectId.isValid(userId)) return [];
+    const docs = await this.productionModel
+      .find({ creator: new Types.ObjectId(userId) })
+      .select('_id')
+      .session(session ?? null)
+      .lean();
+    return docs.map((doc) => String(doc._id));
+  }
+
   async findOwnerInfo(
     ownerId: string,
     ownerType: ProductionOwnerType,

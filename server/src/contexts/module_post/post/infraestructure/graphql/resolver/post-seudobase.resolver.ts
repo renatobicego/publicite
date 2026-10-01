@@ -6,6 +6,7 @@ import { CustomContextRequestInterface } from 'src/contexts/module_shared/auth/c
 import { PostSeudoBaseAdapterInterface } from '../../../application/adapter/post-seudobase.adapter.interface';
 import {
   PostBulkDeleteInput,
+  PostBulkFrequencyInput,
   PostBulkPriceInput,
   PostBulkVisibilityInput,
   PostSeudoBaseFilters,
@@ -57,6 +58,21 @@ export class PostSeudoBaseResolver {
     @Context() context: { req: CustomContextRequestInterface },
   ): Promise<PostBulkResultResponse> {
     return this.seudoBaseAdapter.bulkUpdatePostPrices(
+      input,
+      context.req.userRequestId,
+    );
+  }
+
+  @Mutation(() => PostBulkResultResponse, {
+    description:
+      'Cambio masivo de la frecuencia del precio (sólo Servicios y Necesidades) (SB-02)',
+  })
+  async bulkUpdatePostFrequency(
+    @Args('input', { type: () => PostBulkFrequencyInput })
+    input: PostBulkFrequencyInput,
+    @Context() context: { req: CustomContextRequestInterface },
+  ): Promise<PostBulkResultResponse> {
+    return this.seudoBaseAdapter.bulkUpdatePostFrequency(
       input,
       context.req.userRequestId,
     );

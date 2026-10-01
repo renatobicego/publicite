@@ -790,14 +790,25 @@ type PostSeudoBaseRowResponse {
   _id: ID!
   postType: PostType!
 
+  """
+  Comportamiento del anuncio (libre/agenda), necesario para (des)activarlo
+  """
+  postBehaviourType: PostBehaviourType!
+
   """Título del anuncio"""
   title: String!
 
   """URL/key de la imagen de portada (si el tipo la tiene)"""
   imageUrl: String
 
-  """Precio del anuncio"""
+  """Precio del anuncio (o inicio del rango en Necesidades)"""
   price: Float!
+
+  """Precio final del rango (sólo Necesidades con rango)"""
+  toPrice: Float
+
+  """Frecuencia del precio (sólo Servicios y Necesidades)"""
+  frequencyPrice: FrequencyPrice
   visibility: Visibility_of_the_post!
 
   """Disponibilidad (isActive)"""
@@ -813,6 +824,22 @@ enum PostType {
   good
   service
   petition
+}
+
+"""Type of the post """
+enum PostBehaviourType {
+  libre
+  agenda
+}
+
+"""Frecuencia """
+enum FrequencyPrice {
+  hour
+  day
+  week
+  month
+  year
+  undefined
 }
 
 """Visibility of the post """
@@ -846,6 +873,7 @@ type PostBulkResultResponse {
 """Operación masiva de la SeudoBase de Anuncios"""
 enum PostBulkAction {
   price
+  frequency
   visibility
   delete
 }
@@ -1654,6 +1682,21 @@ type ProductionLimitsResponse {
 
   """Si el plan permite emitir tickets pagos (PLN-02/03)"""
   canSellPaidTickets: Boolean!
+
+  """Feature flag: si se aplica el límite de cantidad de blogs"""
+  blogLimitEnabled: Boolean!
+
+  """Feature flag: si se aplica el límite de almacenamiento"""
+  storageLimitEnabled: Boolean!
+
+  """Límite de almacenamiento del usuario en bytes (suma de sus blogs)"""
+  storageBytesLimit: Float!
+
+  """Bytes de almacenamiento usados por el usuario (todos sus blogs)"""
+  storageUsedBytes: Float!
+
+  """Bytes de almacenamiento disponibles para el usuario"""
+  storageAvailableBytes: Float!
 }
 
 """Tokens Publicité de IA del usuario (token bucket)"""
@@ -2426,6 +2469,11 @@ type Mutation {
   """Edición masiva del precio de los anuncios propios (SB-02)"""
   bulkUpdatePostPrices(input: PostBulkPriceInput!): PostBulkResultResponse!
 
+  """
+  Cambio masivo de la frecuencia del precio (sólo Servicios y Necesidades) (SB-02)
+  """
+  bulkUpdatePostFrequency(input: PostBulkFrequencyInput!): PostBulkResultResponse!
+
   """Cambio masivo de visibilidad de los anuncios propios (SB-02)"""
   bulkUpdatePostVisibility(input: PostBulkVisibilityInput!): PostBulkResultResponse!
 
@@ -2789,12 +2837,6 @@ input AttachFacturaInput {
   facturaUrl: String!
 }
 
-"""Type of the post """
-enum PostBehaviourType {
-  libre
-  agenda
-}
-
 input PostRequest {
   title: String!
   author: String!
@@ -2875,16 +2917,6 @@ input AttachedFiles {
   label: String!
 }
 
-"""Frecuencia """
-enum FrequencyPrice {
-  hour
-  day
-  week
-  month
-  year
-  undefined
-}
-
 """Edición masiva de precio de anuncios (ej. +5%)"""
 input PostBulkPriceInput {
   """Anuncios a modificar (propios)"""
@@ -2906,6 +2938,20 @@ input PostBulkPriceInput {
 enum PostPriceChangeMode {
   percentage
   fixed
+}
+
+"""
+Cambio masivo de la frecuencia del precio. Sólo afecta Servicios y Necesidades (los Bienes se omiten)
+"""
+input PostBulkFrequencyInput {
+  """Anuncios a modificar (propios)"""
+  postIds: [ID!]!
+
+  """
+  Confirmación explícita de la operación masiva (SB-02/03). Tiene que ser true
+  """
+  confirm: Boolean!
+  frequencyPrice: FrequencyPrice!
 }
 
 """Cambio masivo de visibilidad de anuncios"""
@@ -3231,6 +3277,9 @@ input ProductionFileRequest {
 
   """Key de UploadThing"""
   key: String!
+
+  """Tamaño del archivo en bytes (cupo de almacenamiento por usuario)"""
+  sizeBytes: Int
 
   """
   ID editable del archivo, único en su carpeta (BLG-13). Si se omite se genera

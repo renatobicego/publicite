@@ -9,6 +9,7 @@ import {
   PostSeudoBaseSearchCriteria,
 } from '../../domain/repository/post-seudobase.repository.interface';
 import { PostType } from '../../domain/entity/enum/post-type.enum';
+import { FrequencyPrice } from '../../domain/entity/enum/post-service-freq-type.enum';
 import { Visibility } from '../../domain/entity/enum/post-visibility.enum';
 import { PostDocument } from '../schemas/post.schema';
 import {
@@ -22,6 +23,7 @@ import { PostReviewDocument } from 'src/contexts/module_post/PostReview/infrastr
 const toRow = (doc: any): PostSeudoBaseRow => ({
   _id: doc._id.toString(),
   postType: doc.postType,
+  postBehaviourType: doc.postBehaviourType,
   title: doc.title,
   // good/service guardan imagesUrls; petition no tiene portada.
   imageUrl:
@@ -29,6 +31,12 @@ const toRow = (doc: any): PostSeudoBaseRow => ({
       ? doc.imagesUrls[0]
       : null,
   price: doc.price,
+  // toPrice sólo existe en Necesidades con rango; frequencyPrice en service/petition.
+  toPrice: typeof doc.toPrice === 'number' ? doc.toPrice : null,
+  frequencyPrice:
+    doc.frequencyPrice && doc.frequencyPrice !== 'undefined'
+      ? doc.frequencyPrice
+      : null,
   visibility: doc.visibility?.post ?? Visibility.public,
   isActive: !!doc.isActive,
   endDate: doc.endDate ?? null,
@@ -111,17 +119,48 @@ export class PostSeudoBaseRepository
   }
 
   async bulkSetPrice(
-    updates: { postId: string; price: number }[],
+    updates: { postId: string; price: number; toPrice?: number | null }[],
     session?: ClientSession,
   ): Promise<void> {
     if (updates.length === 0) return;
-    const operations = updates.map((update) => ({
-      updateOne: {
-        filter: { _id: new Types.ObjectId(update.postId) },
-        update: { $set: { price: update.price } },
-      },
-    }));
+    const operations = updates.map((update) => {
+      const set: Record<string, number> = { price: update.price };
+      const unset: Record<string, 1> = {};
+      // toPrice: number => se escala; null => se limpia el rango; undefined => no se toca.
+      if (typeof update.toPrice === 'number') {
+        set.toPrice = update.toPrice;
+      } else if (update.toPrice === null) {
+        unset.toPrice = 1;
+      }
+      const updateDoc: Record<string, any> = { $set: set };
+      if (Object.keys(unset).length > 0) {
+        updateDoc.$unset = unset;
+      }
+      return {
+        updateOne: {
+          filter: { _id: new Types.ObjectId(update.postId) },
+          update: updateDoc,
+        },
+      };
+    });
     await this.postDocument.bulkWrite(operations, { session });
+  }
+
+  async bulkSetFrequency(
+    authorId: string,
+    postIds: string[],
+    frequencyPrice: FrequencyPrice,
+    session?: ClientSession,
+  ): Promise<void> {
+    if (postIds.length === 0) return;
+    await this.postDocument.updateMany(
+      {
+        _id: { $in: postIds.map((id) => new Types.ObjectId(id)) },
+        author: new Types.ObjectId(authorId),
+      },
+      { $set: { frequencyPrice } },
+      { session },
+    );
   }
 
   async bulkSetVisibility(

@@ -20,6 +20,9 @@ export interface ProductionItemDocument extends Document {
   fileName?: string;
   fileType?: ProductionFileType;
   key?: string;
+  // Tamaño del archivo en bytes (lo informa el cliente al subir a UploadThing).
+  // Se usa para el cupo de almacenamiento por usuario. Sólo en archivos.
+  sizeBytes?: number;
   postcard?: {
     latitude?: number;
     longitude?: number;
@@ -95,6 +98,8 @@ export const ProductionFileSchema = new Schema({
   },
   // Key de UploadThing (RNF-04). A los videos el cliente les concatena "video".
   key: { type: String, required: true },
+  // Tamaño en bytes informado por el cliente (cupo de almacenamiento por usuario).
+  sizeBytes: { type: Number, default: 0, min: 0 },
   postcard: {
     type: new Schema(
       {

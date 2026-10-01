@@ -221,25 +221,59 @@ export class ProductionItemRepository
         {
           $project: {
             kind: 1,
+            sizeBytes: 1,
             'descendants._id': 1,
             'descendants.kind': 1,
+            'descendants.sizeBytes': 1,
           },
         },
       ])
       .session(session ?? null);
 
-    if (!result) return { ids: [], quotaIds: [] };
+    if (!result) return { ids: [], quotaIds: [], quotaBytes: 0 };
 
     const nodes = [
-      { _id: result._id, kind: result.kind },
+      { _id: result._id, kind: result.kind, sizeBytes: result.sizeBytes },
       ...(result.descendants ?? []),
     ];
+    const quotaNodes = nodes.filter(
+      (node) => node.kind !== ProductionItemKind.folder,
+    );
     return {
       ids: nodes.map((node) => node._id.toString()),
-      quotaIds: nodes
-        .filter((node) => node.kind !== ProductionItemKind.folder)
-        .map((node) => node._id.toString()),
+      quotaIds: quotaNodes.map((node) => node._id.toString()),
+      quotaBytes: quotaNodes.reduce(
+        (sum, node) => sum + (Number(node.sizeBytes) || 0),
+        0,
+      ),
     };
+  }
+
+  async sumStorageBytesByProductions(
+    productionIds: string[],
+    session?: ClientSession,
+  ): Promise<number> {
+    const validIds = productionIds
+      .filter((id) => Types.ObjectId.isValid(id))
+      .map(toObjectId);
+    if (validIds.length === 0) return 0;
+    const [result] = await this.itemModel
+      .aggregate([
+        {
+          $match: {
+            production: { $in: validIds },
+            kind: ProductionItemKind.file,
+          },
+        },
+        {
+          $group: {
+            _id: null,
+            total: { $sum: { $ifNull: ['$sizeBytes', 0] } },
+          },
+        },
+      ])
+      .session(session ?? null);
+    return result?.total ?? 0;
   }
 
   async deleteByIds(ids: string[], session?: ClientSession): Promise<number> {

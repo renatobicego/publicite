@@ -1,6 +1,8 @@
 import { ClientSession } from 'mongoose';
 
 import { PostType } from '../entity/enum/post-type.enum';
+import { PostBehaviourType } from '../entity/enum/postBehaviourType.enum';
+import { FrequencyPrice } from '../entity/enum/post-service-freq-type.enum';
 import { Visibility } from '../entity/enum/post-visibility.enum';
 
 /** Filtros de la vista tipo Excel de anuncios del usuario. */
@@ -15,9 +17,12 @@ export interface PostSeudoBaseSearchCriteria {
 export interface PostSeudoBaseRow {
   _id: string;
   postType: PostType;
+  postBehaviourType: PostBehaviourType;
   title: string;
   imageUrl: string | null;
   price: number;
+  toPrice: number | null;
+  frequencyPrice: FrequencyPrice | null;
   visibility: Visibility;
   isActive: boolean;
   endDate: Date | null;
@@ -41,9 +46,20 @@ export interface PostSeudoBaseRepositoryInterface {
     postIds: string[],
   ): Promise<PostSeudoBaseRow[]>;
 
-  /** Setea un precio nuevo por anuncio (id → price). */
+  /**
+   * Setea un precio nuevo por anuncio (id → price). `toPrice` se incluye sólo
+   * para los anuncios que tienen rango (Necesidades), para mantenerlo coherente.
+   */
   bulkSetPrice(
-    updates: { postId: string; price: number }[],
+    updates: { postId: string; price: number; toPrice?: number | null }[],
+    session?: ClientSession,
+  ): Promise<void>;
+
+  /** Setea la frecuencia del precio en los anuncios indicados (service/petition). */
+  bulkSetFrequency(
+    authorId: string,
+    postIds: string[],
+    frequencyPrice: FrequencyPrice,
     session?: ClientSession,
   ): Promise<void>;
 

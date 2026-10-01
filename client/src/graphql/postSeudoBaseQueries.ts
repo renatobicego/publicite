@@ -4,9 +4,12 @@ const POST_SEUDOBASE_ROW_FIELDS = gql`
   fragment PostSeudoBaseRowFields on PostSeudoBaseRowResponse {
     _id
     postType
+    postBehaviourType
     title
     imageUrl
     price
+    toPrice
+    frequencyPrice
     visibility
     isActive
     endDate
@@ -45,6 +48,15 @@ export const bulkUpdatePostPricesMutation = gql`
   ${POST_BULK_RESULT_FIELDS}
   mutation BulkUpdatePostPrices($input: PostBulkPriceInput!) {
     bulkUpdatePostPrices(input: $input) {
+      ...PostBulkResultFields
+    }
+  }
+`;
+
+export const bulkUpdatePostFrequencyMutation = gql`
+  ${POST_BULK_RESULT_FIELDS}
+  mutation BulkUpdatePostFrequency($input: PostBulkFrequencyInput!) {
+    bulkUpdatePostFrequency(input: $input) {
       ...PostBulkResultFields
     }
   }

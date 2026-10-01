@@ -16,6 +16,7 @@ import {
 import { PostAuditRepositoryInterface } from '../../domain/repository/post-audit.repository.interface';
 import {
   PostBulkDeleteInput,
+  PostBulkFrequencyInput,
   PostBulkPriceInput,
   PostBulkVisibilityInput,
   PostSeudoBaseFilters,
@@ -27,6 +28,7 @@ import {
   PostSeudoBaseResponse,
 } from '../../domain/entity/models_graphql/HTTP-RESPONSE/post-seudobase.response';
 import { PostBulkAction, PostPriceChangeMode } from '../../domain/entity/enum/post-seudobase.enums';
+import { PostType } from '../../domain/entity/enum/post-type.enum';
 import { removeAccents_removeEmojisAndToLowerCase } from '../../domain/utils/normalice.data';
 
 const MAX_PAGE_SIZE = 100;
@@ -174,8 +176,18 @@ export class PostSeudoBaseService implements PostSeudoBaseServiceInterface {
       throw new BadRequestException('El porcentaje tiene que ser mayor a -100');
     }
 
-    const updates: { postId: string; price: number }[] = [];
-    const changes: { postId: string; before: number; after: number }[] = [];
+    const updates: {
+      postId: string;
+      price: number;
+      toPrice?: number | null;
+    }[] = [];
+    const changes: {
+      postId: string;
+      before: number;
+      after: number;
+      beforeToPrice?: number | null;
+      afterToPrice?: number | null;
+    }[] = [];
     const skipped: string[] = [];
 
     for (const post of posts) {
@@ -196,8 +208,33 @@ export class PostSeudoBaseService implements PostSeudoBaseServiceInterface {
           'El precio resultante tiene que ser mayor a 0',
         );
       }
-      updates.push({ postId: post._id, price });
-      changes.push({ postId: post._id, before: post.price, after: price });
+
+      // Si el anuncio tiene rango (Necesidad con toPrice), se mantiene coherente:
+      //  - porcentual: se escala toPrice con el mismo porcentaje;
+      //  - fijo: no se puede inferir el "hasta", así que se descarta el rango.
+      let toPrice: number | null | undefined;
+      if (typeof post.toPrice === 'number') {
+        if (input.mode === PostPriceChangeMode.percentage) {
+          const scaled = round2(post.toPrice * (1 + input.value / 100));
+          if (!(scaled > 0)) {
+            throw new BadRequestException(
+              'El precio final del rango resultante tiene que ser mayor a 0',
+            );
+          }
+          toPrice = scaled;
+        } else {
+          toPrice = null;
+        }
+      }
+
+      updates.push({ postId: post._id, price, toPrice });
+      changes.push({
+        postId: post._id,
+        before: post.price,
+        after: price,
+        beforeToPrice: post.toPrice,
+        afterToPrice: toPrice ?? null,
+      });
     }
 
     const auditId = await this.inTransaction(async (session) => {
@@ -226,6 +263,63 @@ export class PostSeudoBaseService implements PostSeudoBaseServiceInterface {
       action: PostBulkAction.price,
       requested: posts.length,
       affected: updates.length,
+      skipped,
+      auditId,
+    };
+  }
+
+  async bulkUpdatePostFrequency(
+    input: PostBulkFrequencyInput,
+    userId: string,
+  ): Promise<PostBulkResultResponse> {
+    const posts = await this.loadBulkTargets(
+      userId,
+      input.postIds,
+      input.confirm,
+    );
+
+    // La frecuencia sólo aplica a Servicios y Necesidades; los Bienes se omiten.
+    const targets = posts.filter(
+      (post) => post.postType !== PostType.good,
+    );
+    const skipped = posts
+      .filter((post) => post.postType === PostType.good)
+      .map((post) => post._id);
+    const ids = targets.map((post) => post._id);
+
+    const auditId = await this.inTransaction(async (session) => {
+      await this.seudoBaseRepository.bulkSetFrequency(
+        userId,
+        ids,
+        input.frequencyPrice,
+        session,
+      );
+      return this.auditRepository.create(
+        {
+          actor: userId,
+          action: PostBulkAction.frequency,
+          postIds: ids,
+          affectedCount: ids.length,
+          details: JSON.stringify({
+            frequencyPrice: input.frequencyPrice,
+            skipped,
+            before: targets.map((post) => ({
+              postId: post._id,
+              frequencyPrice: post.frequencyPrice,
+            })),
+          }),
+        },
+        session,
+      );
+    });
+
+    this.logger.log(
+      `Bulk frequency de anuncios: ${ids.length} anuncios del usuario ${userId}`,
+    );
+    return {
+      action: PostBulkAction.frequency,
+      requested: posts.length,
+      affected: ids.length,
       skipped,
       auditId,
     };

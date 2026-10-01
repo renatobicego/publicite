@@ -17,6 +17,19 @@
  * - PRODUCTION_MAX_PERSONAL_BLOGS: tope duro de blogs personales para cualquier
  *   plan (default 1). PLN-02: el blog personal NO aumenta al mejorar de plan.
  *
+ * Feature flags (para poder apagar límites nuevos si el cliente no los quiere):
+ * - PRODUCTION_BLOG_LIMIT_ENABLED: activa el límite de CANTIDAD de blogs por
+ *   usuario (personales y de grupo). Default: true. Si es false, no se aplica
+ *   ningún tope de cantidad de blogs.
+ * - PRODUCTION_STORAGE_LIMIT_ENABLED: activa el límite de ALMACENAMIENTO por
+ *   usuario (suma de bytes de los archivos de todos sus blogs). Default: false
+ *   (feature nueva, apagada por defecto). El límite en bytes se configura por
+ *   plan en `subscriptionPlan.storageBytesLimit` (acumulativo entre suscripciones
+ *   activas); el piso gratuito es `PRODUCTION_FREE_STORAGE_BYTES`.
+ * - PRODUCTION_FREE_STORAGE_BYTES: piso de almacenamiento del plan gratuito, en
+ *   BYTES (default 104857600 = 100 MB). Es el valor que recibe un usuario sin
+ *   suscripciones activas o cuyos planes no tienen `storageBytesLimit` cargado.
+ *
  * Otros parámetros de MP:
  * - PRODUCTION_ACCESS_KEY_MAX_ATTEMPTS: intentos fallidos de clave antes de
  *   bloquear al usuario en ese blog (default 5).
@@ -38,6 +51,55 @@ function readPositiveNumber(envKey: string, defaultValue: number): number {
   const parsed = Number(raw);
   if (!Number.isFinite(parsed) || parsed < 0) return defaultValue;
   return Math.floor(parsed);
+}
+
+/** Lee un flag booleano de env (`'true'`/`'false'`, case-insensitive). */
+function readBoolean(envKey: string, defaultValue: boolean): boolean {
+  const raw = process.env[envKey]?.trim().toLowerCase();
+  if (raw === undefined || raw === '') return defaultValue;
+  if (raw === 'true' || raw === '1') return true;
+  if (raw === 'false' || raw === '0') return false;
+  return defaultValue;
+}
+
+/** Default de bytes del piso gratuito de almacenamiento: 100 MB. */
+const DEFAULT_FREE_STORAGE_BYTES = 100 * 1024 * 1024;
+
+/**
+ * ¿Está activo el límite de CANTIDAD de blogs por usuario? Si es false, se
+ * habilita crear blogs sin tope (el gate de creación siempre permite).
+ */
+export function isBlogLimitEnabled(): boolean {
+  return readBoolean('PRODUCTION_BLOG_LIMIT_ENABLED', true);
+}
+
+/**
+ * ¿Está activo el límite de ALMACENAMIENTO (bytes) por usuario? Feature nueva,
+ * apagada por defecto. Si es false, las subidas no validan ni contabilizan bytes.
+ */
+export function isStorageLimitEnabled(): boolean {
+  return readBoolean('PRODUCTION_STORAGE_LIMIT_ENABLED', false);
+}
+
+/** Piso de almacenamiento del plan gratuito, en bytes (default 100 MB). */
+export function getFreeStorageBytesLimit(): number {
+  return readPositiveNumber(
+    'PRODUCTION_FREE_STORAGE_BYTES',
+    DEFAULT_FREE_STORAGE_BYTES,
+  );
+}
+
+/** Formatea bytes a una unidad legible (para mensajes de error/UI). */
+export function formatBytes(bytes: number): string {
+  if (!Number.isFinite(bytes) || bytes <= 0) return '0 MB';
+  const units = ['bytes', 'KB', 'MB', 'GB', 'TB'];
+  const exponent = Math.min(
+    Math.floor(Math.log(bytes) / Math.log(1024)),
+    units.length - 1,
+  );
+  const value = bytes / Math.pow(1024, exponent);
+  const rounded = exponent === 0 ? value : Math.round(value * 10) / 10;
+  return `${rounded} ${units[exponent]}`;
 }
 
 /** Blogs personales del plan gratuito. */

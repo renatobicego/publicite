@@ -367,4 +367,29 @@ export class ProductionLimitsResponse {
     description: 'Si el plan permite emitir tickets pagos (PLN-02/03)',
   })
   canSellPaidTickets: boolean;
+
+  @Field(() => Boolean, {
+    description: 'Feature flag: si se aplica el límite de cantidad de blogs',
+  })
+  blogLimitEnabled: boolean;
+
+  @Field(() => Boolean, {
+    description: 'Feature flag: si se aplica el límite de almacenamiento',
+  })
+  storageLimitEnabled: boolean;
+
+  @Field(() => Float, {
+    description: 'Límite de almacenamiento del usuario en bytes (suma de sus blogs)',
+  })
+  storageBytesLimit: number;
+
+  @Field(() => Float, {
+    description: 'Bytes de almacenamiento usados por el usuario (todos sus blogs)',
+  })
+  storageUsedBytes: number;
+
+  @Field(() => Float, {
+    description: 'Bytes de almacenamiento disponibles para el usuario',
+  })
+  storageAvailableBytes: number;
 }

@@ -1,9 +1,10 @@
-import { Field, Float, ID, InputType } from '@nestjs/graphql';
+import { Field, Float, ID, InputType, Int } from '@nestjs/graphql';
 import { Type } from 'class-transformer';
 import {
   ArrayMaxSize,
   IsArray,
   IsEnum,
+  IsInt,
   IsLatitude,
   IsLongitude,
   IsMongoId,
@@ -11,6 +12,7 @@ import {
   IsOptional,
   IsString,
   MaxLength,
+  Min,
   ValidateNested,
 } from 'class-validator';
 
@@ -120,6 +122,15 @@ export class ProductionFileRequest {
   @IsNotEmpty()
   @MaxLength(300)
   key: string;
+
+  @Field(() => Int, {
+    nullable: true,
+    description: 'Tamaño del archivo en bytes (cupo de almacenamiento por usuario)',
+  })
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  sizeBytes?: number;
 
   @Field(() => String, {
     nullable: true,

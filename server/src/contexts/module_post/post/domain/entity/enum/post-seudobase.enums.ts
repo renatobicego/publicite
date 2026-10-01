@@ -6,6 +6,7 @@ import { registerEnumType } from '@nestjs/graphql';
  */
 export enum PostBulkAction {
   price = 'price',
+  frequency = 'frequency',
   visibility = 'visibility',
   delete = 'delete',
 }

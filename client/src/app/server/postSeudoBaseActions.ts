@@ -7,11 +7,13 @@ import { ApolloError } from "@apollo/client";
 import {
   getPostSeudoBaseQuery,
   bulkUpdatePostPricesMutation,
+  bulkUpdatePostFrequencyMutation,
   bulkUpdatePostVisibilityMutation,
   bulkDeletePostsMutation,
 } from "@/graphql/postSeudoBaseQueries";
 import {
   PostBulkDeleteInput,
+  PostBulkFrequencyInput,
   PostBulkPriceInput,
   PostBulkResult,
   PostBulkVisibilityInput,
@@ -53,6 +55,23 @@ export const bulkUpdatePostPrices = async (
       context,
     });
     return data.bulkUpdatePostPrices;
+  } catch (error: ApolloError | any) {
+    return handleApolloError(error);
+  }
+};
+
+export const bulkUpdatePostFrequency = async (
+  input: PostBulkFrequencyInput
+): Promise<PostBulkResult | PostSeudoBaseActionError> => {
+  try {
+    const tokenCache = await getAuthToken();
+    const { context } = await getApiContext(false, tokenCache);
+    const { data } = await getClient().mutate({
+      mutation: bulkUpdatePostFrequencyMutation,
+      variables: { input },
+      context,
+    });
+    return data.bulkUpdatePostFrequency;
   } catch (error: ApolloError | any) {
     return handleApolloError(error);
   }

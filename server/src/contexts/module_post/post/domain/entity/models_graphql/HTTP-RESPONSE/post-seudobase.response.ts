@@ -2,6 +2,8 @@ import { Field, Float, ID, Int, ObjectType } from '@nestjs/graphql';
 
 import { PostType } from '../../enum/post-type.enum';
 import { Visibility } from '../../enum/post-visibility.enum';
+import { PostBehaviourType } from '../../enum/postBehaviourType.enum';
+import { FrequencyPrice } from '../../enum/post-service-freq-type.enum';
 import { PostBulkAction } from '../../enum/post-seudobase.enums';
 
 @ObjectType({
@@ -14,6 +16,11 @@ export class PostSeudoBaseRowResponse {
   @Field(() => PostType)
   postType: PostType;
 
+  @Field(() => PostBehaviourType, {
+    description: 'Comportamiento del anuncio (libre/agenda), necesario para (des)activarlo',
+  })
+  postBehaviourType: PostBehaviourType;
+
   @Field(() => String, { description: 'Título del anuncio' })
   title: string;
 
@@ -23,8 +30,20 @@ export class PostSeudoBaseRowResponse {
   })
   imageUrl?: string | null;
 
-  @Field(() => Float, { description: 'Precio del anuncio' })
+  @Field(() => Float, { description: 'Precio del anuncio (o inicio del rango en Necesidades)' })
   price: number;
+
+  @Field(() => Float, {
+    nullable: true,
+    description: 'Precio final del rango (sólo Necesidades con rango)',
+  })
+  toPrice?: number | null;
+
+  @Field(() => FrequencyPrice, {
+    nullable: true,
+    description: 'Frecuencia del precio (sólo Servicios y Necesidades)',
+  })
+  frequencyPrice?: FrequencyPrice | null;
 
   @Field(() => Visibility)
   visibility: Visibility;

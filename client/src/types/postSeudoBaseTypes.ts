@@ -2,9 +2,18 @@
 
 export enum PostBulkAction {
   price = "price",
+  frequency = "frequency",
   visibility = "visibility",
   delete = "delete",
 }
+
+/** Frecuencia del precio; coincide con FrequencyPrice del backend. */
+export type PostSeudoBaseFrequency =
+  | "hour"
+  | "day"
+  | "week"
+  | "month"
+  | "year";
 
 export enum PostPriceChangeMode {
   percentage = "percentage",
@@ -26,6 +35,9 @@ export enum PostSeudoBaseType {
   petition = "petition",
 }
 
+/** Comportamiento del anuncio; coincide con PostBehaviourType del backend. */
+export type PostSeudoBaseBehaviourType = "libre" | "agenda";
+
 export interface PostSeudoBaseFilters {
   postTypes?: PostSeudoBaseType[];
   isActive?: boolean;
@@ -35,9 +47,12 @@ export interface PostSeudoBaseFilters {
 export interface PostSeudoBaseRow {
   _id: string;
   postType: PostSeudoBaseType;
+  postBehaviourType: PostSeudoBaseBehaviourType;
   title: string;
   imageUrl?: string | null;
   price: number;
+  toPrice?: number | null;
+  frequencyPrice?: PostSeudoBaseFrequency | "undefined" | null;
   visibility: PostVisibility;
   isActive: boolean;
   endDate?: string | null;
@@ -69,6 +84,12 @@ export interface PostBulkVisibilityInput {
   postIds: string[];
   confirm: boolean;
   visibility: PostVisibility;
+}
+
+export interface PostBulkFrequencyInput {
+  postIds: string[];
+  confirm: boolean;
+  frequencyPrice: PostSeudoBaseFrequency;
 }
 
 export interface PostBulkDeleteInput {

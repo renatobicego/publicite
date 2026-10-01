@@ -8,6 +8,7 @@ import { InjectConnection } from '@nestjs/mongoose';
 import { ClientSession, Connection, Types } from 'mongoose';
 
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
+import { formatBytes } from 'src/contexts/module_shared/production-limits/production.limits.config';
 import { UserServiceInterface } from 'src/contexts/module_user/user/domain/service/user.service.interface';
 import { Production } from '../../domain/entity/production.entity';
 import {
@@ -225,6 +226,46 @@ export class ProductionService implements ProductionServiceInterface {
     if (!reserved) {
       throw new BadRequestException(
         `Alcanzaste el límite de ${filesPerBlogLimit} archivos de este blog según tu plan. Mejorá tu plan o comprá un pack para subir más.`,
+      );
+    }
+  }
+
+  /**
+   * Reserva el cupo de ALMACENAMIENTO del usuario (feature flag
+   * PRODUCTION_STORAGE_LIMIT_ENABLED). El límite es POR USUARIO: se suma el peso
+   * de los archivos de TODOS los blogs del `creator` del blog y se compara con el
+   * límite de su plan. A diferencia del cupo por cantidad (un `$inc` atómico sobre
+   * un único doc), acá el total vive en varios blogs, así que se calcula dentro de
+   * la transacción (lectura + chequeo) y el peso del nuevo archivo se persiste en
+   * el propio ítem (`sizeBytes`), que es lo que suma `sumStorageBytesByProductions`.
+   */
+  private async reserveStorage(
+    production: Production,
+    sizeBytes: number,
+    session: ClientSession,
+  ): Promise<void> {
+    const limits = await this.accessService.getCreatorLimits(
+      production,
+      session,
+    );
+    if (!limits.storageLimitEnabled) return;
+    if (sizeBytes <= 0) return;
+
+    const productionIds = await this.productionRepository.findIdsByCreator(
+      production.getCreator,
+      session,
+    );
+    const usedBytes = await this.itemRepository.sumStorageBytesByProductions(
+      productionIds,
+      session,
+    );
+    if (usedBytes + sizeBytes > limits.storageBytesLimit) {
+      const available = Math.max(0, limits.storageBytesLimit - usedBytes);
+      throw new BadRequestException(
+        `No tenés espacio suficiente. Tu plan permite ${formatBytes(
+          limits.storageBytesLimit,
+        )} de almacenamiento y te quedan ${formatBytes(available)}. ` +
+          `Este archivo pesa ${formatBytes(sizeBytes)}. Liberá espacio o mejorá tu plan.`,
       );
     }
   }
@@ -454,14 +495,25 @@ export class ProductionService implements ProductionServiceInterface {
     );
     await this.assertValidParent(production.getId!, request.parentId);
 
-    const id = await this.createCountedItem(production, (session) =>
-      this.resolveFileName(
-        production.getId!,
-        request.parentId ?? null,
-        request.fileName,
-        'archivo',
-        session,
-      ).then((fileName) => this.factory.createFile(request, fileName, userId)),
+    const sizeBytes =
+      typeof request.sizeBytes === 'number' && request.sizeBytes > 0
+        ? Math.floor(request.sizeBytes)
+        : 0;
+
+    const id = await this.createCountedItem(
+      production,
+      (session) =>
+        this.resolveFileName(
+          production.getId!,
+          request.parentId ?? null,
+          request.fileName,
+          'archivo',
+          session,
+        ).then((fileName) =>
+          this.factory.createFile(request, fileName, userId),
+        ),
+      // Sólo los archivos consumen almacenamiento (los artículos no, RNF).
+      (session) => this.reserveStorage(production, sizeBytes, session),
     );
     const created = await this.getItemOrFail(id);
     return this.buildItemView(production, created, role);
@@ -498,10 +550,14 @@ export class ProductionService implements ProductionServiceInterface {
   private async createCountedItem(
     production: Production,
     build: (session: ClientSession) => Promise<ProductionFile | ProductionArticle>,
+    reserveExtra?: (session: ClientSession) => Promise<void>,
   ): Promise<string> {
     try {
       return await this.inTransaction(async (session) => {
         await this.reserveFileSlot(production, session);
+        // Reserva adicional (ej. almacenamiento de archivos), dentro de la
+        // misma transacción para que un rechazo revierta también el cupo.
+        if (reserveExtra) await reserveExtra(session);
         const item = await build(session);
         return this.itemRepository.create(item, session);
       });
@@ -1020,7 +1076,7 @@ export class ProductionService implements ProductionServiceInterface {
   }
 
   async getProductionLimits(userId: string): Promise<ProductionLimitsResponse> {
-    return this.userService.getProductionLimitsFromUserByUserId(userId);
+    return this.accessService.buildUserLimitsResponse(userId);
   }
 
   // ---------------------------------------------------------------------------

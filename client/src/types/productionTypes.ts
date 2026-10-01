@@ -251,6 +251,16 @@ export interface ProductionLimits {
   groupBlogsAvailable: number;
   filesPerBlogLimit: number;
   canSellPaidTickets: boolean;
+  /** Feature flag: si se aplica el límite de cantidad de blogs por usuario. */
+  blogLimitEnabled: boolean;
+  /** Feature flag: si se aplica el límite de almacenamiento por usuario. */
+  storageLimitEnabled: boolean;
+  /** Límite de almacenamiento del usuario en bytes (suma de todos sus blogs). */
+  storageBytesLimit: number;
+  /** Bytes usados por el usuario (todos sus blogs). */
+  storageUsedBytes: number;
+  /** Bytes disponibles para el usuario. */
+  storageAvailableBytes: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -309,6 +319,8 @@ export interface ProductionFileRequest {
   parentId?: string;
   fileType: ProductionFileType;
   key: string;
+  /** Tamaño del archivo en bytes (cupo de almacenamiento por usuario). */
+  sizeBytes?: number;
   fileName?: string;
   name?: string;
   postcard?: ProductionPostcardInput;

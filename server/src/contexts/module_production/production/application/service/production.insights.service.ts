@@ -34,7 +34,7 @@ export class ProductionInsightsService
   ): Promise<ProductionConsumptionResponse> {
     const [tokens, limits] = await Promise.all([
       this.getTokens(userId),
-      this.userService.getProductionLimitsFromUserByUserId(userId),
+      this.accessService.buildUserLimitsResponse(userId),
     ]);
 
     let productions: Production[];

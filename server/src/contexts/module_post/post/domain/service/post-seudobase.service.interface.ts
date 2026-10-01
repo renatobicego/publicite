@@ -1,5 +1,6 @@
 import {
   PostBulkDeleteInput,
+  PostBulkFrequencyInput,
   PostBulkPriceInput,
   PostBulkVisibilityInput,
   PostSeudoBaseFilters,
@@ -20,6 +21,11 @@ export interface PostSeudoBaseServiceInterface {
 
   bulkUpdatePostPrices(
     input: PostBulkPriceInput,
+    userId: string,
+  ): Promise<PostBulkResultResponse>;
+
+  bulkUpdatePostFrequency(
+    input: PostBulkFrequencyInput,
     userId: string,
   ): Promise<PostBulkResultResponse>;
 

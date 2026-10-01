@@ -204,6 +204,11 @@ export const getProductionLimitsQuery = gql`
       groupBlogsAvailable
       filesPerBlogLimit
       canSellPaidTickets
+      blogLimitEnabled
+      storageLimitEnabled
+      storageBytesLimit
+      storageUsedBytes
+      storageAvailableBytes
     }
   }
 `;
@@ -227,6 +232,11 @@ export const getProductionConsumptionQuery = gql`
         groupBlogsAvailable
         filesPerBlogLimit
         canSellPaidTickets
+        blogLimitEnabled
+        storageLimitEnabled
+        storageBytesLimit
+        storageUsedBytes
+        storageAvailableBytes
       }
       blogs {
         productionId

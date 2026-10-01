@@ -19,6 +19,7 @@ import {
   createFolder,
   uploadFile,
 } from "@/app/server/productionActions";
+import { deleteFilesService } from "@/app/server/uploadThing";
 import { isProductionActionError } from "@/utils/functions/productionErrorHandler";
 import { ProductionFileType } from "@/types/productionTypes";
 import { PRODUCTIONS } from "@/utils/data/urls";
@@ -103,23 +104,28 @@ const ProductionStaffToolbar = ({
     setUploading(true);
     try {
       const uploaded = await startUpload([file]);
-      let key = uploaded?.[0]?.key;
-      if (!key) {
+      const rawKey = uploaded?.[0]?.key;
+      if (!rawKey) {
         toastifyError("No se pudo subir el archivo");
         return;
       }
       // Convención de Anuncios: al key de un video se le agrega "video".
-      if (fileType === ProductionFileType.video) {
-        key = `${key}video`;
-      }
+      const key =
+        fileType === ProductionFileType.video ? `${rawKey}video` : rawKey;
       const res = await uploadFile({
         productionId,
         parentId,
         fileType,
         key,
+        // Tamaño real del archivo para el cupo de almacenamiento por usuario.
+        sizeBytes: file.size,
         name: file.name,
       });
       if (isProductionActionError(res)) {
+        // El backend rechazó (p. ej. sin espacio). El archivo ya se subió a
+        // UploadThing, así que lo borramos para no dejar un huérfano que igual
+        // ocuparía storage real. Se borra con el key REAL (sin el sufijo "video").
+        deleteFilesService([rawKey]);
         toastifyError(res.error);
         return;
       }

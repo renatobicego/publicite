@@ -10,6 +10,8 @@ export interface ProductionSubtree {
   ids: string[];
   /** Los que cuentan para el cupo (archivos + artículos). */
   quotaIds: string[];
+  /** Suma de bytes de los archivos del subárbol (para liberar el cupo de storage). */
+  quotaBytes: number;
 }
 
 export interface ProductionItemSearchFilter {
@@ -57,6 +59,14 @@ export interface ProductionItemRepositoryInterface {
   ): Promise<ProductionItem | null>;
   /** El ítem y todos sus descendientes. */
   findSubtree(itemId: string, session?: ClientSession): Promise<ProductionSubtree>;
+  /**
+   * Suma de `sizeBytes` de todos los archivos (kind:file) de los blogs dados.
+   * Se usa para el cupo de almacenamiento POR USUARIO (suma entre sus blogs).
+   */
+  sumStorageBytesByProductions(
+    productionIds: string[],
+    session?: ClientSession,
+  ): Promise<number>;
   deleteByIds(ids: string[], session?: ClientSession): Promise<number>;
   deleteByProduction(
     productionId: string,

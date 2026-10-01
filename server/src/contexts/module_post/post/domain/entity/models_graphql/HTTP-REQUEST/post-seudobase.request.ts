@@ -14,6 +14,7 @@ import {
 
 import { PostType } from '../../enum/post-type.enum';
 import { Visibility } from '../../enum/post-visibility.enum';
+import { FrequencyPrice } from '../../enum/post-service-freq-type.enum';
 import { PostPriceChangeMode } from '../../enum/post-seudobase.enums';
 
 /** Tope de anuncios afectados por una operación masiva. */
@@ -77,6 +78,16 @@ export class PostBulkPriceInput extends PostBulkBaseInput {
   })
   @IsNumber()
   value: number;
+}
+
+@InputType({
+  description:
+    'Cambio masivo de la frecuencia del precio. Sólo afecta Servicios y Necesidades (los Bienes se omiten)',
+})
+export class PostBulkFrequencyInput extends PostBulkBaseInput {
+  @Field(() => FrequencyPrice)
+  @IsEnum(FrequencyPrice)
+  frequencyPrice: FrequencyPrice;
 }
 
 @InputType({ description: 'Cambio masivo de visibilidad de anuncios' })

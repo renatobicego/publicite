@@ -4,6 +4,7 @@ import { PostSeudoBaseAdapterInterface } from '../../application/adapter/post-se
 import { PostSeudoBaseServiceInterface } from '../../domain/service/post-seudobase.service.interface';
 import {
   PostBulkDeleteInput,
+  PostBulkFrequencyInput,
   PostBulkPriceInput,
   PostBulkVisibilityInput,
   PostSeudoBaseFilters,
@@ -27,6 +28,10 @@ export class PostSeudoBaseAdapter implements PostSeudoBaseAdapterInterface {
 
   bulkUpdatePostPrices(input: PostBulkPriceInput, userId: string) {
     return this.seudoBaseService.bulkUpdatePostPrices(input, userId);
+  }
+
+  bulkUpdatePostFrequency(input: PostBulkFrequencyInput, userId: string) {
+    return this.seudoBaseService.bulkUpdatePostFrequency(input, userId);
   }
 
   bulkUpdatePostVisibility(input: PostBulkVisibilityInput, userId: string) {
