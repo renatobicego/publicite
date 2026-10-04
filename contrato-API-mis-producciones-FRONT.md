@@ -203,7 +203,7 @@ mutation {
     price: 1500             # obligatorio si es pago
     durationHours: 48       # mínimo 24...
     untilClose: false       # ...o true = hasta el cierre del blog
-  }) { _id filesCount stats { purchases active revenue } }
+  }) { _id filesCount stats { purchases active revenue netRevenue commission paidOut } }
 }
 ```
 
@@ -233,7 +233,9 @@ pending ──(admin confirma)──► confirmed ──(admin o staff habilita)
 - El vencimiento se evalúa en cada lectura: un acceso vencido deja de habilitar sin
   esperar ningún proceso.
 - `getMyProductionTicketPurchases(status?)`: historial del comprador. El comprador no ve el reparto.
-- Staff: `getProductionTicketSales(productionId, status?)` (ve su 90%) y
+- Staff: `getProductionTicketSales(productionId, status?, page?, limit?, targetId?)` (ve su 90%, si ya fue
+  liquidado —`payoutStatus`/`payoutAt`— y la factura de la comisión —`facturaUrl`—; con `targetId` filtra las
+  ventas de una carpeta/archivo; se filtra por destino y no por ticket para no perder el historial si el ticket se quita y se recrea) y
   `activateProductionTicketPurchase(purchaseId)` para habilitar una compra `confirmed`.
 
 ### 6.3 Reseña obligatoria (REV-02)

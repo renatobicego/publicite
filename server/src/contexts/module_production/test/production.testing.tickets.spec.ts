@@ -163,6 +163,29 @@ describe('Mis Producciones - Fase 5: tickets por transferencia', () => {
         owner,
       );
       expect(withCbu.aliasCbu).toBe('0000003100000000000001');
+
+      // Un ticket pago necesita contenido para vender.
+      await expect(
+        tickets.createProductionTicket(
+          { productionId, isPaid: true, price: 500, untilClose: true },
+          owner,
+        ),
+      ).rejects.toThrow('todavía no tiene contenido');
+      const emptyFolder = await service.createFolder(
+        { productionId, name: 'Vacía' },
+        owner,
+      );
+      await expect(
+        tickets.createProductionTicket(
+          paidTicket(productionId, emptyFolder._id),
+          owner,
+        ),
+      ).rejects.toThrow('La carpeta está vacía');
+
+      await service.uploadFile(
+        { productionId, fileType: ProductionFileType.photo, key: 'key-alias' },
+        owner,
+      );
       await expect(
         tickets.createProductionTicket(
           { productionId, isPaid: true, price: 500, untilClose: true },
@@ -195,7 +218,14 @@ describe('Mis Producciones - Fase 5: tickets por transferencia', () => {
       );
       expect(created.filesCount).toBe(2);
       expect(created.targetName).toBe('Premium');
-      expect(created.stats).toEqual({ purchases: 0, active: 0, revenue: 0 });
+      expect(created.stats).toEqual({
+        purchases: 0,
+        active: 0,
+        revenue: 0,
+        netRevenue: 0,
+        commission: 0,
+        paidOut: 0,
+      });
 
       await expect(
         tickets.createProductionTicket(paidTicket(productionId, folder._id), owner),
@@ -333,9 +363,40 @@ describe('Mis Producciones - Fase 5: tickets por transferencia', () => {
         10,
       );
       expect(sales.purchases[0].creatorPayoutAmount).toBe(900);
-      expect(sales.purchases[0].facturaUrl).toBeNull();
+      // El staff ve la factura de la comisión que le cobró Soonpublicité.
+      expect(sales.purchases[0].facturaUrl).toBe(
+        'https://files.example.com/factura.pdf',
+      );
       const [withStats] = await tickets.getProductionTickets(productionId, owner);
-      expect(withStats.stats).toEqual({ purchases: 1, active: 1, revenue: 1000 });
+      // Lo recaudado descuenta la comisión del 10%.
+      expect(withStats.stats).toEqual({
+        purchases: 1,
+        active: 1,
+        revenue: 1000,
+        netRevenue: 900,
+        commission: 100,
+        paidOut: 900,
+      });
+
+// Quitar el ticket y volver a crearlo no pierde las ventas: los
+      // totales y el listado van por destino, no por id de ticket.
+      await tickets.deleteProductionTicket(withStats._id, owner);
+      const recreated = await tickets.createProductionTicket(
+        paidTicket(productionId, withStats.target!),
+        owner,
+      );
+      expect(recreated._id).not.toBe(withStats._id);
+      expect(recreated.stats).toEqual(withStats.stats);
+
+      const salesOfTarget = await tickets.getProductionTicketSales(
+        productionId,
+        owner,
+        undefined,
+        1,
+        10,
+        withStats.target!,
+      );
+      expect(salesOfTarget.total).toBe(1);
     });
 
     it('el acceso vence solo (TKT-08) y se puede volver a comprar', async () => {

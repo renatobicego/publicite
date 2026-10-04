@@ -16,7 +16,6 @@ import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import {
   setProductionVisibility,
   setProductionAccessKey,
-  setProductionPayoutAlias,
 } from "@/app/server/productionActions";
 import { isProductionActionError } from "@/utils/functions/productionErrorHandler";
 import {
@@ -33,6 +32,8 @@ interface Props {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   onChanged: () => void;
+  /** Abre el gestor de ticket de todo el blog. */
+  onOpenTicket?: () => void;
 }
 
 /**
@@ -44,36 +45,13 @@ const ProductionAccessSettings = ({
   isOpen,
   onOpenChange,
   onChanged,
+  onOpenTicket,
 }: Props) => {
   const [visibility, setVisibility] = useState<ProductionVisibility>(
     production.visibility
   );
   const [accessKey, setAccessKey] = useState("");
-  const [aliasCbu, setAliasCbu] = useState(production.aliasCbu ?? "");
   const [busy, setBusy] = useState(false);
-  const canManagePayout = production.viewer?.canManagePayout;
-
-  const handleSetPayout = async () => {
-    if (aliasCbu.trim().length < 6) {
-      toastifyError("Ingresá un alias (6-20) o CBU/CVU (22 dígitos) válido");
-      return;
-    }
-    setBusy(true);
-    try {
-      const res = await setProductionPayoutAlias(
-        production._id,
-        aliasCbu.trim()
-      );
-      if (isProductionActionError(res)) {
-        toastifyError(res.error);
-        return;
-      }
-      toastifySuccess("Alias/CBU de cobro guardado");
-      onChanged();
-    } finally {
-      setBusy(false);
-    }
-  };
 
   const handleVisibility = async (value: ProductionVisibility) => {
     setBusy(true);
@@ -187,24 +165,16 @@ const ProductionAccessSettings = ({
                 </p>
               </div>
 
-              {canManagePayout && (
+              {onOpenTicket && (
                 <div>
-                  <p className="text-sm font-medium mb-2">
-                    Alias / CBU de cobro (tickets pagos)
+                  <p className="text-sm font-medium mb-1">Ticket del blog</p>
+                  <p className="text-xs text-default-500 mb-3">
+                    Cobrá (o dejá gratis) el acceso a todo el blog. Las
+                    carpetas y archivos con ticket propio mantienen el suyo.
                   </p>
-                  <div className="flex items-end gap-2">
-                    <Input
-                      label="Alias o CBU/CVU"
-                      value={aliasCbu}
-                      onValueChange={setAliasCbu}
-                    />
-                    <PrimaryButton onClick={handleSetPayout} disabled={busy}>
-                      Guardar
-                    </PrimaryButton>
-                  </div>
-                  <p className="text-xs text-default-500 mt-1">
-                    Necesario para cobrar con tickets pagos. Se liquida el 90%.
-                  </p>
+                  <Button variant="flat" size="sm" onPress={onOpenTicket}>
+                    Configurar ticket del blog
+                  </Button>
                 </div>
               )}
             </ModalBody>

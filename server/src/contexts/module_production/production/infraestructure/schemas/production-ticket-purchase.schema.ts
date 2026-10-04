@@ -28,6 +28,7 @@ export interface ProductionTicketPurchaseDocument extends Document {
   acceptedNoRefund: boolean;
   acceptedAt: Date | null;
   transferReference: string | null;
+  transferReceiptKey: string | null;
   confirmedAt: Date | null;
   confirmedBy: string | null;
   activatedAt: Date | null;
@@ -94,6 +95,8 @@ export const ProductionTicketPurchaseSchema =
       acceptedNoRefund: { type: Boolean, default: false },
       acceptedAt: { type: Date, default: null },
       transferReference: { type: String, default: null },
+      // Key de UploadThing del comprobante de transferencia.
+      transferReceiptKey: { type: String, default: null },
       confirmedAt: { type: Date, default: null },
       confirmedBy: { type: String, default: null },
       activatedAt: { type: Date, default: null },

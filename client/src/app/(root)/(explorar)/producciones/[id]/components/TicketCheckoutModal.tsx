@@ -17,6 +17,8 @@ import {
   getProductionTicketCheckout,
   purchaseProductionTicket,
 } from "@/app/server/productionActions";
+import { useUploadThing } from "@/utils/uploadThing";
+import { deleteFilesService } from "@/app/server/uploadThing";
 import { isProductionActionError } from "@/utils/functions/productionErrorHandler";
 import {
   ProductionTicketCheckout,
@@ -43,10 +45,18 @@ const TicketCheckoutModal = ({
   );
   const [acceptNoRefund, setAcceptNoRefund] = useState(false);
   const [transferReference, setTransferReference] = useState("");
+  const [receipt, setReceipt] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
+  const { startUpload } = useUploadThing("uploadSingleFile", {
+    onUploadError: (e) => {
+      toastifyError(`Error al subir el comprobante: ${e.name}`);
+    },
+  });
 
   useEffect(() => {
     if (!isOpen) return;
+    setReceipt(null);
+    setAcceptNoRefund(false);
     let active = true;
     setLoading(true);
     (async () => {
@@ -70,14 +80,31 @@ const TicketCheckoutModal = ({
       toastifyError("Tenés que aceptar la política de no devoluciones");
       return;
     }
+    const isPaid = checkout.ticket.isPaid;
+    if (isPaid && !receipt) {
+      toastifyError("Subí el comprobante de la transferencia");
+      return;
+    }
     setBusy(true);
     try {
+      let transferReceiptKey: string | undefined;
+      if (isPaid && receipt) {
+        const uploaded = await startUpload([receipt]);
+        transferReceiptKey = uploaded?.[0]?.key;
+        if (!transferReceiptKey) {
+          toastifyError("No se pudo subir el comprobante");
+          return;
+        }
+      }
       const res = await purchaseProductionTicket({
         ticketId,
         acceptNoRefund,
         transferReference: transferReference.trim() || undefined,
+        transferReceiptKey,
       });
       if (isProductionActionError(res)) {
+        // La compra no se registró: no dejar el comprobante huérfano.
+        if (transferReceiptKey) deleteFilesService([transferReceiptKey]);
         toastifyError(res.error);
         return;
       }
@@ -97,6 +124,9 @@ const TicketCheckoutModal = ({
   const ticket = checkout?.ticket;
   const instructions = checkout?.paymentInstructions;
   const existing = checkout?.existingPurchase;
+  // Sin la cuenta de Soonpublicité cargada no hay a dónde transferir.
+  const missingAccount =
+    !!ticket?.isPaid && !instructions?.alias && !instructions?.cbu;
 
   return (
     <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="lg" scrollBehavior="inside">
@@ -148,9 +178,19 @@ const TicketCheckoutModal = ({
                     </p>
                   )}
 
-                  {ticket?.isPaid && instructions && (
+                  {missingAccount && (
+                    <p className="text-sm text-danger">
+                      La compra de tickets pagos no está disponible por el
+                      momento: falta configurar la cuenta para transferir.
+                    </p>
+                  )}
+
+                  {ticket?.isPaid && instructions && !missingAccount && (
                     <div className="rounded-lg border p-3 text-sm flex flex-col gap-1">
                       <span className="font-medium">Datos para transferir</span>
+                      <span className="text-xs text-default-500">
+                        La transferencia se hace a la cuenta de Soonpublicité.
+                      </span>
                       {instructions.alias && <span>Alias: {instructions.alias}</span>}
                       {instructions.cbu && <span>CBU/CVU: {instructions.cbu}</span>}
                       {instructions.holder && (
@@ -164,8 +204,33 @@ const TicketCheckoutModal = ({
                   )}
 
                   {ticket?.isPaid && (
+                    <div className="flex flex-col gap-1">
+                      <label
+                        htmlFor="transfer-receipt"
+                        className="text-sm font-medium"
+                      >
+                        Comprobante de transferencia
+                      </label>
+                      <input
+                        id="transfer-receipt"
+                        type="file"
+                        accept="image/*,application/pdf"
+                        disabled={busy}
+                        onChange={(e) =>
+                          setReceipt(e.target.files?.[0] ?? null)
+                        }
+                        className="text-sm"
+                      />
+                      <p className="text-xs text-default-500">
+                        Imagen o PDF, hasta 8 MB. Es obligatorio para
+                        confirmar la compra.
+                      </p>
+                    </div>
+                  )}
+
+                  {ticket?.isPaid && (
                     <Input
-                      label="Referencia / comprobante de transferencia"
+                      label="Referencia de la transferencia (opcional)"
                       value={transferReference}
                       onValueChange={setTransferReference}
                     />
@@ -186,7 +251,14 @@ const TicketCheckoutModal = ({
             <ModalFooter>
               <PrimaryButton
                 onClick={handlePurchase}
-                disabled={busy || loading || !checkout}
+                disabled={
+                  busy ||
+                  loading ||
+                  !checkout ||
+                  missingAccount ||
+                  (checkout.requiresNoRefundAcceptance && !acceptNoRefund) ||
+                  (!!ticket?.isPaid && !receipt)
+                }
               >
                 {busy
                   ? "Procesando…"

@@ -15,6 +15,17 @@ export class ProductionTicketStatsResponse {
 
   @Field(() => Float, { description: 'Monto bruto de los tickets pagos confirmados' })
   revenue: number;
+
+  @Field(() => Float, {
+    description: 'Recaudado neto: lo que le queda al creador descontada la comisión',
+  })
+  netRevenue: number;
+
+  @Field(() => Float, { description: 'Comisión de Soonpublicité sobre lo recaudado' })
+  commission: number;
+
+  @Field(() => Float, { description: 'Parte del neto ya liquidada al creador' })
+  paidOut: number;
 }
 
 @ObjectType({ description: 'Ticket de una carpeta, archivo o blog (TKT-01..03)' })
@@ -175,6 +186,12 @@ export class ProductionTicketPurchaseResponse {
   @Field(() => String, { nullable: true })
   transferReference?: string | null;
 
+  @Field(() => String, {
+    nullable: true,
+    description: 'Key de UploadThing del comprobante de transferencia',
+  })
+  transferReceiptKey?: string | null;
+
   @Field(() => Date, { nullable: true })
   confirmedAt?: Date | null;
 
@@ -196,7 +213,10 @@ export class ProductionTicketPurchaseResponse {
   @Field(() => Date, { nullable: true })
   payoutAt?: Date | null;
 
-  @Field(() => String, { nullable: true, description: 'Sólo admin' })
+  @Field(() => String, {
+    nullable: true,
+    description: 'Factura de la comisión (admin y staff)',
+  })
   facturaUrl?: string | null;
 
   @Field(() => Date, { nullable: true })

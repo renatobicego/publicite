@@ -20,6 +20,7 @@ export function toTicketSummary(
 ): ProductionTicketSummaryResponse {
   return {
     _id: ticket._id,
+    target: ticket.target ?? null,
     isPaid: ticket.isPaid,
     price: ticket.price,
     currency: ticket.currency,
@@ -63,7 +64,8 @@ export function buildPaymentInstructions(
 
 /**
  * Respuesta de una compra según quién la mira: el comprador no ve el reparto
- * ni el alias/CBU del creador; el staff ve su liquidación; el admin ve todo.
+ * ni el alias/CBU del creador; el staff ve su liquidación y la factura de la
+ * comisión; el admin ve todo.
  */
 export function toPurchaseResponse(
   purchase: ProductionTicketPurchase,
@@ -99,14 +101,15 @@ export function toPurchaseResponse(
     filesCount: purchase.filesCount,
     acceptedNoRefund: purchase.acceptedNoRefund,
     transferReference: purchase.transferReference,
+    transferReceiptKey: purchase.transferReceiptKey ?? null,
     confirmedAt: purchase.confirmedAt,
     activatedAt: purchase.activatedAt,
     expiresAt: purchase.expiresAt,
     payoutAliasCbu: isAdmin ? purchase.payoutAliasCbu : null,
     payoutStatus: seesSplit ? purchase.payoutStatus : null,
     payoutAt: seesSplit ? purchase.payoutAt : null,
-    facturaUrl: isAdmin ? purchase.facturaUrl : null,
-    facturaUploadedAt: isAdmin ? purchase.facturaUploadedAt : null,
+    facturaUrl: seesSplit ? purchase.facturaUrl : null,
+    facturaUploadedAt: seesSplit ? purchase.facturaUploadedAt : null,
     reviewRequired: purchase.reviewRequired,
     reviewedAt: purchase.reviewedAt,
     paymentInstructions:

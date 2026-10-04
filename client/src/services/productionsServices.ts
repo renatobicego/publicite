@@ -292,13 +292,14 @@ export const getProductionTicketSalesService = async (
   productionId: string,
   status?: ProductionTicketPurchaseStatus,
   page?: number,
-  limit?: number
+  limit?: number,
+  targetId?: string
 ): Promise<ProductionTicketPurchaseList> => {
   const tokenCache = await getAuthToken();
   const { context } = await getApiContext(false, tokenCache);
   const { data } = await query({
     query: getProductionTicketSalesQuery,
-    variables: { productionId, status, page, limit },
+    variables: { productionId, status, page, limit, targetId },
     context,
     fetchPolicy: "network-only",
   });

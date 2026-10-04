@@ -35,6 +35,7 @@ export interface ProductionTicketServiceInterface {
     status: ProductionTicketPurchaseStatus | undefined,
     page: number,
     limit: number,
+    targetId?: string,
   ): Promise<ProductionTicketPurchaseListResponse>;
   activateProductionTicketPurchase(
     purchaseId: string,

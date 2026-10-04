@@ -18,7 +18,6 @@ import {
   TableRow,
   useDisclosure,
 } from "@nextui-org/react";
-import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import {
   getProductionTicketPurchasesAdmin,
@@ -28,11 +27,32 @@ import {
   markProductionTicketPayoutDone,
 } from "@/app/server/productionActions";
 import { isProductionActionError } from "@/utils/functions/productionErrorHandler";
-import { ProductionTicketPurchase } from "@/types/productionTypes";
+import {
+  ProductionPayoutStatus,
+  ProductionTicketPurchase,
+  ProductionTicketPurchaseStatus,
+} from "@/types/productionTypes";
+import { useUploadThing } from "@/utils/uploadThing";
+import { resolveProductionFileUrl } from "@/app/(root)/(explorar)/producciones/productionMedia";
 import {
   purchaseStatusColor,
   purchaseStatusLabel,
 } from "@/app/(root)/(explorar)/producciones/productionTicketStatus";
+
+const FACTURA_ACCEPTED_TYPES = [
+  "application/pdf",
+  "image/png",
+  "image/jpeg",
+  "image/webp",
+];
+const FACTURA_MAX_SIZE_MB = 8;
+
+// El server sólo factura/liquida tickets pagos con el pago ya confirmado.
+const PAYMENT_CONFIRMED_STATUSES = [
+  ProductionTicketPurchaseStatus.confirmed,
+  ProductionTicketPurchaseStatus.active,
+  ProductionTicketPurchaseStatus.expired,
+];
 
 /**
  * Tabla de compras de tickets de Mis Producciones para el panel admin.
@@ -48,8 +68,14 @@ const AdminProductionTicketsTable = () => {
   const [selected, setSelected] = useState<ProductionTicketPurchase | null>(
     null
   );
-  const [facturaUrl, setFacturaUrl] = useState("");
+  const [facturaFile, setFacturaFile] = useState<File | null>(null);
+  const [isUploadingFactura, setIsUploadingFactura] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
+
+  const { startUpload } = useUploadThing("uploadSingleFile", {
+    onUploadError: (e) =>
+      toastifyError(`Error al subir la factura: ${e.message}`),
+  });
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -95,23 +121,48 @@ const AdminProductionTicketsTable = () => {
   const handlePayout = (p: ProductionTicketPurchase) =>
     run(p._id, () => markProductionTicketPayoutDone(p._id), "Liquidación marcada");
 
-  const submitFactura = async () => {
-    if (!selected) return;
-    if (!facturaUrl.trim()) {
-      toastifyError("Ingresá la URL de la factura");
+  const handleFacturaFileChange = (file: File | null) => {
+    if (!file) {
+      setFacturaFile(null);
       return;
     }
-    await run(
-      selected._id,
-      () =>
-        attachFacturaToProductionTicketPurchase({
-          purchaseId: selected._id,
-          facturaUrl: facturaUrl.trim(),
-        }),
-      "Factura adjuntada"
-    );
-    setFacturaUrl("");
-    facturaModal.onClose();
+    if (!FACTURA_ACCEPTED_TYPES.includes(file.type)) {
+      toastifyError("La factura tiene que ser un PDF o una imagen");
+      return;
+    }
+    if (file.size > FACTURA_MAX_SIZE_MB * 1024 * 1024) {
+      toastifyError(`El archivo no puede superar los ${FACTURA_MAX_SIZE_MB}MB`);
+      return;
+    }
+    setFacturaFile(file);
+  };
+
+  const submitFactura = async () => {
+    if (!selected || !facturaFile) return;
+    setIsUploadingFactura(true);
+    try {
+      const uploaded = await startUpload([facturaFile]);
+      const url = uploaded?.[0]?.ufsUrl ?? uploaded?.[0]?.url;
+      if (!url) {
+        toastifyError("No se pudo subir la factura. Intentá de nuevo.");
+        return;
+      }
+      await run(
+        selected._id,
+        () =>
+          attachFacturaToProductionTicketPurchase({
+            purchaseId: selected._id,
+            facturaUrl: url,
+          }),
+        "Factura adjuntada"
+      );
+      setFacturaFile(null);
+      facturaModal.onClose();
+    } catch {
+      toastifyError("Error al guardar la factura. Intentá de nuevo.");
+    } finally {
+      setIsUploadingFactura(false);
+    }
   };
 
   const submitReject = async () => {
@@ -163,11 +214,41 @@ const AdminProductionTicketsTable = () => {
               </TableCell>
               <TableCell>
                 {p.isPaid ? `${p.currency} ${p.amount}` : "Gratuito"}
+                {p.transferReceiptKey && (
+                  <a
+                    href={resolveProductionFileUrl(p.transferReceiptKey)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block text-xs text-primary underline"
+                  >
+                    Ver comprobante
+                  </a>
+                )}
               </TableCell>
               <TableCell>
                 {p.commissionAmount != null && p.creatorPayoutAmount != null
                   ? `${p.commissionAmount} / ${p.creatorPayoutAmount}`
                   : "-"}
+                {p.payoutAliasCbu && (
+                  <span className="block text-xs text-default-500">
+                    Alias/CBU: {p.payoutAliasCbu}
+                  </span>
+                )}
+                {p.payoutStatus === ProductionPayoutStatus.paid && (
+                  <span className="block text-xs text-success">
+                    90% liquidado
+                  </span>
+                )}
+                {p.facturaUrl && (
+                  <a
+                    href={p.facturaUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block text-xs text-primary underline"
+                  >
+                    Ver factura
+                  </a>
+                )}
               </TableCell>
               <TableCell>
                 <Chip
@@ -205,29 +286,33 @@ const AdminProductionTicketsTable = () => {
                       </Button>
                     </>
                   )}
-                  {p.isPaid && !p.facturaUrl && (
-                    <Button
-                      size="sm"
-                      variant="flat"
-                      isDisabled={busyId === p._id}
-                      onPress={() => {
-                        setSelected(p);
-                        facturaModal.onOpen();
-                      }}
-                    >
-                      Factura 10%
-                    </Button>
-                  )}
-                  {p.isPaid && p.payoutStatus !== "done" && (
-                    <Button
-                      size="sm"
-                      variant="flat"
-                      isDisabled={busyId === p._id}
-                      onPress={() => handlePayout(p)}
-                    >
-                      Liquidar 90%
-                    </Button>
-                  )}
+                  {p.isPaid &&
+                    PAYMENT_CONFIRMED_STATUSES.includes(p.status) && (
+                      <>
+                        <Button
+                          size="sm"
+                          variant="flat"
+                          isDisabled={busyId === p._id}
+                          onPress={() => {
+                            setSelected(p);
+                            setFacturaFile(null);
+                            facturaModal.onOpen();
+                          }}
+                        >
+                          {p.facturaUrl ? "Reemplazar factura" : "Factura 10%"}
+                        </Button>
+                        {p.payoutStatus !== ProductionPayoutStatus.paid && (
+                          <Button
+                            size="sm"
+                            variant="flat"
+                            isDisabled={busyId === p._id}
+                            onPress={() => handlePayout(p)}
+                          >
+                            Marcar 90% liquidado
+                          </Button>
+                        )}
+                      </>
+                    )}
                 </div>
               </TableCell>
             </TableRow>
@@ -235,23 +320,55 @@ const AdminProductionTicketsTable = () => {
         </TableBody>
       </Table>
 
-      <Modal isOpen={facturaModal.isOpen} onOpenChange={facturaModal.onOpenChange}>
+      <Modal
+        isOpen={facturaModal.isOpen}
+        onOpenChange={facturaModal.onOpenChange}
+        isDismissable={!isUploadingFactura}
+        hideCloseButton={isUploadingFactura}
+      >
         <ModalContent>
           {(onClose) => (
             <>
               <ModalHeader>Adjuntar factura del 10%</ModalHeader>
               <ModalBody>
-                <Input
-                  label="URL de la factura (PDF/imagen)"
-                  value={facturaUrl}
-                  onValueChange={setFacturaUrl}
+                <label
+                  htmlFor="production-ticket-factura-file"
+                  className="flex items-center gap-2 cursor-pointer text-sm border border-dashed rounded-lg p-3 hover:bg-default-100"
+                >
+                  {facturaFile
+                    ? "Cambiar archivo"
+                    : "Seleccionar archivo (PDF o imagen)"}
+                </label>
+                <input
+                  id="production-ticket-factura-file"
+                  type="file"
+                  accept=".pdf,image/png,image/jpeg,image/webp"
+                  className="hidden"
+                  onChange={(e) =>
+                    handleFacturaFileChange(e.target.files?.[0] ?? null)
+                  }
+                  disabled={isUploadingFactura}
                 />
+                {facturaFile && (
+                  <p className="text-sm text-default-600">{facturaFile.name}</p>
+                )}
               </ModalBody>
               <ModalFooter>
-                <Button variant="light" onPress={onClose}>
+                <Button
+                  variant="light"
+                  onPress={onClose}
+                  isDisabled={isUploadingFactura}
+                >
                   Cancelar
                 </Button>
-                <PrimaryButton onClick={submitFactura}>Guardar</PrimaryButton>
+                <Button
+                  color="primary"
+                  onPress={submitFactura}
+                  isDisabled={!facturaFile}
+                  isLoading={isUploadingFactura}
+                >
+                  Guardar
+                </Button>
               </ModalFooter>
             </>
           )}

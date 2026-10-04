@@ -695,7 +695,8 @@ export class ProductionService implements ProductionServiceInterface {
     viewer: ProductionViewerContext,
     decision: AccessDecision,
   ): Promise<ProductionResponse> {
-    const [ownerInfo, limits, fanSet] = await Promise.all([
+    const [ownerInfo, limits, fanSet, foldersCount, rootFilesCount] =
+      await Promise.all([
       this.productionRepository.findOwnerInfo(
         production.getOwner,
         production.getOwnerType,
@@ -704,9 +705,13 @@ export class ProductionService implements ProductionServiceInterface {
         ? this.accessService.getCreatorLimits(production)
         : Promise.resolve(null),
       this.accessService.findFanSet(viewer.userId, [production.getId!]),
+      this.itemRepository.countFolders(production.getId!),
+      this.itemRepository.countRootFiles(production.getId!),
     ]);
     return toProductionResponse(production, viewer.role, decision, {
       ownerInfo,
+      foldersCount,
+      rootFilesCount,
       filesPerBlogLimit: limits?.filesPerBlogLimit ?? null,
       pendingReviewProductionId: viewer.pendingReviewProductionId,
       isFan: fanSet.has(production.getId!),

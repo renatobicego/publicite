@@ -148,6 +148,15 @@ export function getTicketMinDurationHours(): number {
   return Math.max(1, readPositiveNumber('PRODUCTION_TICKET_MIN_DURATION_HOURS', 24));
 }
 
+/**
+ * Si está cargada la cuenta de Soonpublicité (alias o CBU). Sin ella no se
+ * pueden vender tickets pagos: el comprador no sabría a dónde transferir.
+ */
+export function hasTicketTransferAccount(): boolean {
+  const { alias, cbu } = getTicketTransferInfo();
+  return !!(alias || cbu);
+}
+
 /** Denuncias pendientes que ocultan un contenido (DEN-02). */
 export function getReportsHideThreshold(): number {
   return Math.max(1, readPositiveNumber('PRODUCTION_REPORTS_HIDE_THRESHOLD', 3));

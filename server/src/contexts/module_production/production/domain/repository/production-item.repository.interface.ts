@@ -40,6 +40,9 @@ export interface ProductionItemRepositoryInterface {
   findAncestors(itemId: string): Promise<ProductionItem[]>;
   /** Todas las carpetas del blog (para resolver herencias en lote). */
   findAllFolders(productionId: string): Promise<ProductionItem[]>;
+  countFolders(productionId: string): Promise<number>;
+  /** Archivos y artículos sueltos en la raíz del blog (fuera de carpetas). */
+  countRootFiles(productionId: string): Promise<number>;
   existsFileName(
     productionId: string,
     parentId: string | null,

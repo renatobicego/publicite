@@ -268,14 +268,16 @@ export const getProductionTicketSales = async (
   productionId: string,
   status?: ProductionTicketPurchaseStatus,
   page?: number,
-  limit?: number
+  limit?: number,
+  targetId?: string
 ): Promise<ProductionTicketPurchaseList | ProductionActionError> => {
   try {
     return await getProductionTicketSalesService(
       productionId,
       status,
       page,
-      limit
+      limit,
+      targetId
     );
   } catch (error) {
     return toActionError(error);

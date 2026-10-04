@@ -38,8 +38,32 @@ export interface ProductionTicketRepositoryInterface {
   ): Promise<string[]>;
 }
 
+/** Totales de un ticket: bruto, comisión, neto del creador y lo ya liquidado. */
+export interface ProductionTicketStats {
+  purchases: number;
+  active: number;
+  revenue: number;
+  netRevenue: number;
+  commission: number;
+  paidOut: number;
+}
+
+export const EMPTY_TICKET_STATS: ProductionTicketStats = {
+  purchases: 0,
+  active: 0,
+  revenue: 0,
+  netRevenue: 0,
+  commission: 0,
+  paidOut: 0,
+};
+
+/** Clave de `countByTargets` para el ticket de todo el blog (target null). */
+export const BLOG_TARGET_KEY = '';
+
 export interface ProductionPurchaseListFilter {
   ticketId?: string;
+  /** Destino de la compra (carpeta, archivo o artículo). */
+  targetId?: string;
   productionId?: string;
   productionIds?: string[];
   buyerId?: string;
@@ -88,9 +112,15 @@ export interface ProductionTicketPurchaseRepositoryInterface {
     page: number,
     limit: number,
   ): Promise<{ purchases: ProductionTicketPurchase[]; total: number }>;
-  countByTickets(ticketIds: string[]): Promise<
-    Map<string, { purchases: number; active: number; revenue: number }>
-  >;
+  /**
+   * Totales por destino (clave: id del ítem, o BLOG_TARGET_KEY para todo el
+   * blog). Se agrupa por destino y no por ticket: quitar un ticket y volver a
+   * crearlo le cambia el id, y las ventas anteriores no se tienen que perder.
+   */
+  countByTargets(
+    productionId: string,
+    targets: (string | null)[],
+  ): Promise<Map<string, ProductionTicketStats>>;
   /** Registra el primer uso del acceso (dispara la reseña obligatoria). */
   markFirstAccess(
     buyerId: string,

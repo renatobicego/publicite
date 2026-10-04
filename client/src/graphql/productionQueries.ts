@@ -49,6 +49,8 @@ const PRODUCTION_FIELDS = gql`
       profilePhotoUrl
     }
     filesCount
+    foldersCount
+    rootFilesCount
     filesPerBlogLimit
     fansCount
     rating
@@ -56,6 +58,7 @@ const PRODUCTION_FIELDS = gql`
     isFeatured
     hasAccessKey
     aliasCbu
+    ticketCommissionPercent
     moderationStatus
     createdAt
     updatedAt
@@ -96,6 +99,7 @@ const PRODUCTION_ITEM_FIELDS = gql`
       lockReason
       ticket {
         _id
+        target
         isPaid
         price
         currency
@@ -289,6 +293,9 @@ export const PRODUCTION_TICKET_FIELDS = gql`
       purchases
       active
       revenue
+      netRevenue
+      commission
+      paidOut
     }
     createdAt
     updatedAt
@@ -347,6 +354,7 @@ export const PRODUCTION_PURCHASE_FIELDS = gql`
     filesCount
     acceptedNoRefund
     transferReference
+    transferReceiptKey
     confirmedAt
     activatedAt
     expiresAt
@@ -402,12 +410,14 @@ export const getProductionTicketSalesQuery = gql`
     $status: ProductionTicketPurchaseStatus
     $page: Int
     $limit: Int
+    $targetId: ID
   ) {
     getProductionTicketSales(
       productionId: $productionId
       status: $status
       page: $page
       limit: $limit
+      targetId: $targetId
     ) {
       purchases {
         ...ProductionPurchaseFields
@@ -747,6 +757,7 @@ export const deleteArticleMutation = gql`
 const PRODUCTION_TICKET_SUMMARY_FIELDS = gql`
   fragment ProductionTicketSummaryFields on ProductionTicketSummaryResponse {
     _id
+    target
     isPaid
     price
     currency

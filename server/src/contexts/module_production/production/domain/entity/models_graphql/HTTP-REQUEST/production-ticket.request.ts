@@ -112,6 +112,15 @@ export class ProductionTicketPurchaseRequest {
   @IsString()
   @MaxLength(300)
   transferReference?: string;
+
+  @Field(() => String, {
+    nullable: true,
+    description: 'Key de UploadThing del archivo con el comprobante',
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(300)
+  transferReceiptKey?: string;
 }
 
 @InputType()

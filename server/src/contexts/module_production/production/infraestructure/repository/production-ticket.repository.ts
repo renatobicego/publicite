@@ -8,9 +8,14 @@ import {
   purchaseFromDocument,
   ticketFromDocument,
 } from '../../domain/entity/production-ticket.entity';
-import { ProductionTicketPurchaseStatus } from '../../domain/entity/enum/production-ticket.enums';
 import {
+  ProductionPayoutStatus,
+  ProductionTicketPurchaseStatus,
+} from '../../domain/entity/enum/production-ticket.enums';
+import {
+  BLOG_TARGET_KEY,
   ProductionPurchaseListFilter,
+  ProductionTicketStats,
   ProductionTicketPurchaseRepositoryInterface,
   ProductionTicketRepositoryInterface,
 } from '../../domain/repository/production-ticket.repository.interface';
@@ -142,6 +147,7 @@ export class ProductionTicketPurchaseRepository
   private buildQuery(filter: ProductionPurchaseListFilter) {
     const query: Record<string, any> = {};
     if (filter.ticketId) query.ticket = oid(filter.ticketId);
+    if (filter.targetId) query.target = oid(filter.targetId);
     if (filter.productionId) query.production = oid(filter.productionId);
     if (filter.productionIds) {
       query.production = { $in: validIds(filter.productionIds) };
@@ -274,27 +280,33 @@ export class ProductionTicketPurchaseRepository
     return { purchases: docs.map(purchaseFromDocument), total };
   }
 
-  async countByTickets(
-    ticketIds: string[],
-  ): Promise<Map<string, { purchases: number; active: number; revenue: number }>> {
-    const result = new Map<
-      string,
-      { purchases: number; active: number; revenue: number }
-    >();
-    const ids = validIds(ticketIds);
-    if (ids.length === 0) return result;
+  async countByTargets(
+    productionId: string,
+    targets: (string | null)[],
+  ): Promise<Map<string, ProductionTicketStats>> {
+    const result = new Map<string, ProductionTicketStats>();
+    if (targets.length === 0) return result;
+    const targetIds: (Types.ObjectId | null)[] = validIds(
+      targets.filter((target): target is string => !!target),
+    );
+    if (targets.some((target) => !target)) targetIds.push(null);
 
     const now = new Date();
+    // Sólo cuenta como recaudado un ticket pago con el pago ya confirmado.
+    const paidAndConfirmed = {
+      $and: ['$isPaid', { $in: ['$status', [confirmed, active, expired]] }],
+    };
     const rows = await this.purchaseModel.aggregate([
       {
         $match: {
-          ticket: { $in: ids },
+          production: oid(productionId),
+          target: { $in: targetIds },
           status: { $nin: [cancelled, rejected] },
         },
       },
       {
         $group: {
-          _id: '$ticket',
+          _id: '$target',
           purchases: { $sum: 1 },
           active: {
             $sum: {
@@ -315,16 +327,27 @@ export class ProductionTicketPurchaseRepository
               ],
             },
           },
-          revenue: {
+          revenue: { $sum: { $cond: [paidAndConfirmed, '$amount', 0] } },
+          netRevenue: {
+            $sum: {
+              $cond: [paidAndConfirmed, { $ifNull: ['$creatorPayoutAmount', 0] }, 0],
+            },
+          },
+          commission: {
+            $sum: {
+              $cond: [paidAndConfirmed, { $ifNull: ['$commissionAmount', 0] }, 0],
+            },
+          },
+          paidOut: {
             $sum: {
               $cond: [
                 {
                   $and: [
-                    '$isPaid',
-                    { $in: ['$status', [confirmed, active, expired]] },
+                    paidAndConfirmed,
+                    { $eq: ['$payoutStatus', ProductionPayoutStatus.paid] },
                   ],
                 },
-                '$amount',
+                { $ifNull: ['$creatorPayoutAmount', 0] },
                 0,
               ],
             },
@@ -333,10 +356,13 @@ export class ProductionTicketPurchaseRepository
       },
     ]);
     rows.forEach((row) =>
-      result.set(row._id.toString(), {
+      result.set(row._id ? row._id.toString() : BLOG_TARGET_KEY, {
         purchases: row.purchases,
         active: row.active,
         revenue: row.revenue,
+        netRevenue: row.netRevenue,
+        commission: row.commission,
+        paidOut: row.paidOut,
       }),
     );
     return result;

@@ -6,8 +6,10 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
+import { hasTicketTransferAccount } from 'src/contexts/module_shared/production-limits/production.limits.config';
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { Production } from '../../domain/entity/production.entity';
+import { ProductionArticle } from '../../domain/entity/production-item.entity';
 import {
   ProductionTicket,
   ProductionTicketPurchase,
@@ -36,6 +38,8 @@ import { ProductionResponse } from '../../domain/entity/models_graphql/HTTP-RESP
 import { ProductionRepositoryInterface } from '../../domain/repository/production.repository.interface';
 import { ProductionItemRepositoryInterface } from '../../domain/repository/production-item.repository.interface';
 import {
+  BLOG_TARGET_KEY,
+  EMPTY_TICKET_STATS,
   ProductionPurchaseListFilter,
   ProductionTicketPurchaseRepositoryInterface,
   ProductionTicketRepositoryInterface,
@@ -152,6 +156,38 @@ export class ProductionTicketService implements ProductionTicketServiceInterface
     }
   }
 
+  /**
+   * Un ticket pago sólo se puede poner sobre algo que tenga contenido para
+   * vender: el blog o la carpeta con al menos un archivo o artículo adentro, y
+   * el artículo con al menos un bloque.
+   */
+  private async assertTargetHasContent(
+    production: Production,
+    targetId: string | null,
+  ): Promise<void> {
+    if (!targetId) {
+      if ((production.getFilesCount ?? 0) > 0) return;
+      throw new BadRequestException(
+        'El blog todavía no tiene contenido. Subí al menos un archivo o artículo antes de ponerle un ticket pago.',
+      );
+    }
+    const [item, subtree] = await Promise.all([
+      this.itemRepository.findById(targetId),
+      this.itemRepository.findSubtree(targetId),
+    ]);
+    if (item instanceof ProductionArticle) {
+      if ((item.getBlocks ?? []).length > 0) return;
+      throw new BadRequestException(
+        'El artículo está vacío. Escribí su contenido antes de ponerle un ticket pago.',
+      );
+    }
+    if (subtree.quotaIds.length === 0) {
+      throw new BadRequestException(
+        'La carpeta está vacía. Agregale al menos un archivo o artículo antes de ponerle un ticket pago.',
+      );
+    }
+  }
+
   private async buildTicketView(
     production: Production,
     ticket: ProductionTicket,
@@ -160,13 +196,15 @@ export class ProductionTicketService implements ProductionTicketServiceInterface
     const [description, stats] = await Promise.all([
       this.describeTarget(production, ticket.target),
       withStats
-        ? this.purchaseRepository.countByTickets([ticket._id])
+        ? this.purchaseRepository.countByTargets(production.getId!, [
+            ticket.target ?? null,
+          ])
         : Promise.resolve(null),
     ]);
     return toTicketResponse(ticket, {
       ...description,
       stats: stats
-        ? stats.get(ticket._id) ?? { purchases: 0, active: 0, revenue: 0 }
+        ? stats.get(ticket.target ?? BLOG_TARGET_KEY) ?? EMPTY_TICKET_STATS
         : null,
     });
   }
@@ -255,7 +293,10 @@ export class ProductionTicketService implements ProductionTicketServiceInterface
     }
 
     const config = validateTicketConfig(request);
-    if (config.isPaid) await this.assertCanSellPaid(production);
+    if (config.isPaid) {
+      await this.assertCanSellPaid(production);
+      await this.assertTargetHasContent(production, targetId);
+    }
 
     try {
       const ticketId = await this.ticketRepository.create({
@@ -301,7 +342,14 @@ export class ProductionTicketService implements ProductionTicketServiceInterface
           : ticket.durationHours,
       untilClose: request.untilClose ?? ticket.untilClose,
     });
-    if (config.isPaid) await this.assertCanSellPaid(production);
+    if (config.isPaid) {
+      await this.assertCanSellPaid(production);
+      // Sólo al pasar a pago: un ticket que ya era pago se puede seguir
+      // editando aunque después se haya vaciado su contenido.
+      if (!ticket.isPaid) {
+        await this.assertTargetHasContent(production, ticket.target);
+      }
+    }
 
     const updated = await this.ticketRepository.updateById(ticketId, {
       ...config,
@@ -333,14 +381,16 @@ export class ProductionTicketService implements ProductionTicketServiceInterface
       'canManageAccess',
     );
     const tickets = await this.ticketRepository.findByProduction(productionId);
-    const stats = await this.purchaseRepository.countByTickets(
-      tickets.map((ticket) => ticket._id),
+    const stats = await this.purchaseRepository.countByTargets(
+      productionId,
+      tickets.map((ticket) => ticket.target ?? null),
     );
     return Promise.all(
       tickets.map(async (ticket) =>
         toTicketResponse(ticket, {
           ...(await this.describeTarget(production, ticket.target)),
-          stats: stats.get(ticket._id) ?? { purchases: 0, active: 0, revenue: 0 },
+          stats:
+            stats.get(ticket.target ?? BLOG_TARGET_KEY) ?? EMPTY_TICKET_STATS,
         }),
       ),
     );
@@ -352,6 +402,7 @@ export class ProductionTicketService implements ProductionTicketServiceInterface
     status: ProductionTicketPurchaseStatus | undefined,
     page: number,
     limit: number,
+    targetId?: string,
   ): Promise<ProductionTicketPurchaseListResponse> {
     const production = await this.getProductionOrFail(productionId);
     await this.accessService.assertPermission(
@@ -360,8 +411,11 @@ export class ProductionTicketService implements ProductionTicketServiceInterface
       'canViewInsights',
     );
     const paging = pagination(page, limit);
+    // Con targetId: sólo las ventas de ese contenido. Se filtra por destino y
+    // no por ticket para no perder las ventas de un ticket quitado y recreado.
     const filter: ProductionPurchaseListFilter = {
       productionId,
+      targetId: targetId || undefined,
       statuses: status ? [status] : undefined,
     };
     await this.purchaseRepository.expireOverdue(filter, new Date());
@@ -490,6 +544,13 @@ export class ProductionTicketService implements ProductionTicketServiceInterface
     const production = await this.getProductionOrFail(ticket.production);
     await this.assertCanBuy(production, ticket, userId);
 
+    // TKT-05: el pago se transfiere a la cuenta de Soonpublicité.
+    if (ticket.isPaid && !hasTicketTransferAccount()) {
+      throw new BadRequestException(
+        'La compra de tickets pagos no está disponible por el momento. Intentá más tarde.',
+      );
+    }
+
     // TKT-04: aceptación explícita de que no hay devoluciones.
     if (ticket.isPaid && request.acceptNoRefund !== true) {
       throw new BadRequestException(
@@ -540,6 +601,9 @@ export class ProductionTicketService implements ProductionTicketServiceInterface
         acceptedNoRefund: !!request.acceptNoRefund,
         acceptedAt: request.acceptNoRefund ? now : null,
         transferReference: request.transferReference?.trim() || null,
+        transferReceiptKey: ticket.isPaid
+          ? request.transferReceiptKey?.trim() || null
+          : null,
         confirmedAt: null,
         confirmedBy: null,
         activatedAt: ticket.isPaid ? null : now,

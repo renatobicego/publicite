@@ -8,7 +8,7 @@ import {
   Spinner,
   useDisclosure,
 } from "@nextui-org/react";
-import { FaKey } from "react-icons/fa";
+import { FaKey, FaLock, FaReceipt, FaShoppingCart } from "react-icons/fa";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import SecondaryButton from "@/components/buttons/SecondaryButton";
 import { toastifyError } from "@/utils/functions/toastify";
@@ -29,6 +29,9 @@ import ProductionItemCard from "./ProductionItemCard";
 import ProductionStaffToolbar from "./ProductionStaffToolbar";
 import AccessKeyModal from "./AccessKeyModal";
 import ProductionAccessSettings from "./ProductionAccessSettings";
+import TicketManagerModal from "./TicketManagerModal";
+import TicketCheckoutModal from "./TicketCheckoutModal";
+import TicketSalesModal from "./TicketSalesModal";
 import FanButton from "./FanButton";
 import ProductionCommunity from "./ProductionCommunity";
 import ReportModal from "./ReportModal";
@@ -38,6 +41,28 @@ interface Props {
   initial: ProductionItemsResult;
 }
 
+const plural = (count: number, one: string, many: string) =>
+  `${count} ${count === 1 ? one : many}`;
+
+// "Este blog tiene 3 archivos y tiene 2 carpetas con 5 archivos dentro."
+// Los artículos cuentan como archivos.
+const blogContentSummary = (
+  rootFiles: number,
+  folders: number,
+  filesInFolders: number,
+) => {
+  const loose = plural(rootFiles, "archivo", "archivos");
+  if (folders <= 0) return `Este blog tiene ${loose}.`;
+  const inFolders = `${plural(folders, "carpeta", "carpetas")} con ${plural(
+    filesInFolders,
+    "archivo",
+    "archivos",
+  )} dentro`;
+  return rootFiles > 0
+    ? `Este blog tiene ${loose} y tiene ${inFolders}.`
+    : `Este blog tiene ${inFolders}.`;
+};
+
 /**
  * Vista de un blog de Mis Producciones: header, navegación por carpetas
  * (breadcrumb + grilla) y controles de staff según `viewer`.
@@ -46,7 +71,7 @@ const ProductionBlog = ({ initial }: Props) => {
   const router = useRouter();
   const [data, setData] = useState<ProductionItemsResult>(initial);
   const [currentParentId, setCurrentParentId] = useState<string | undefined>(
-    undefined
+    undefined,
   );
   const [loading, setLoading] = useState(false);
 
@@ -56,7 +81,10 @@ const ProductionBlog = ({ initial }: Props) => {
 
   const accessKeyModal = useDisclosure();
   const accessSettings = useDisclosure();
+  const blogTicketModal = useDisclosure();
+  const salesModal = useDisclosure();
   const reportModal = useDisclosure();
+  const levelCheckout = useDisclosure();
 
   // Si el blog está bloqueado por clave, abrir el modal de ingreso.
   const lockedByKey =
@@ -83,7 +111,7 @@ const ProductionBlog = ({ initial }: Props) => {
         setLoading(false);
       }
     },
-    [production._id]
+    [production._id],
   );
 
   const reloadBlog = () => {
@@ -103,7 +131,7 @@ const ProductionBlog = ({ initial }: Props) => {
   const handleDeleteBlog = async () => {
     if (
       !confirm(
-        "¿Seguro que querés borrar el blog? Se borra todo su contenido y no se puede deshacer."
+        "¿Seguro que querés borrar el blog? Se borra todo su contenido y no se puede deshacer.",
       )
     ) {
       return;
@@ -116,6 +144,22 @@ const ProductionBlog = ({ initial }: Props) => {
     router.push(PRODUCTIONS);
     router.refresh();
   };
+
+  // Ítems de este nivel bloqueados por un ticket heredado (del blog o de la
+  // carpeta donde estamos): se compra una sola vez, desde el aviso del nivel.
+  const inheritedLocked = data.items.filter(
+    (item) =>
+      !item.access?.canViewContent &&
+      item.access?.lockReason === ProductionLockReason.ticket &&
+      !!item.access.ticket &&
+      item.access.ticket.target !== item._id,
+  );
+  const levelTicket = inheritedLocked[0]?.access.ticket ?? null;
+  const levelTicketIsBlog = !!levelTicket && !levelTicket.target;
+  const rootFilesCount = production.rootFilesCount ?? 0;
+  const lockedFolders = inheritedLocked.filter(
+    (item) => item.kind === ProductionItemKind.folder,
+  ).length;
 
   const blogInitial = production.title?.trim().charAt(0).toUpperCase() || "?";
 
@@ -163,6 +207,14 @@ const ProductionBlog = ({ initial }: Props) => {
                       onClick={accessSettings.onOpen}
                     >
                       Alcance y clave
+                    </SecondaryButton>
+                  )}
+                  {canManageAccess && (
+                    <SecondaryButton
+                      startContent={<FaReceipt />}
+                      onClick={salesModal.onOpen}
+                    >
+                      Ventas de tickets
                     </SecondaryButton>
                   )}
                   <SecondaryButton
@@ -237,6 +289,50 @@ const ProductionBlog = ({ initial }: Props) => {
         )}
       </div>
 
+      {/* Aviso de ticket del nivel (visitante sin acceso) */}
+      {!loading && levelTicket && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-warning-200 bg-warning-50 px-4 py-3">
+          <div className="flex items-start gap-3">
+            <FaLock className="mt-1 text-warning-600" />
+            <div>
+              <p className="text-sm font-medium">
+                {levelTicketIsBlog
+                  ? "Este blog requiere ticket"
+                  : "Esta carpeta requiere ticket"}
+              </p>
+              <p className="text-xs text-default-600">
+                {levelTicketIsBlog
+                  ? blogContentSummary(
+                      rootFilesCount,
+                      production.foldersCount ?? 0,
+                      Math.max(0, production.filesCount - rootFilesCount),
+                    )
+                  : `Esta carpeta tiene ${plural(
+                      inheritedLocked.length - lockedFolders,
+                      "archivo",
+                      "archivos",
+                    )}${
+                      lockedFolders > 0
+                        ? ` y ${plural(lockedFolders, "carpeta", "carpetas")}`
+                        : ""
+                    }.`}{" "}
+                {levelTicket.isPaid
+                  ? "Comprá el ticket para acceder a todo el contenido."
+                  : "Obtené el ticket gratuito para acceder a todo el contenido."}
+              </p>
+            </div>
+          </div>
+          <PrimaryButton
+            startContent={<FaShoppingCart />}
+            onClick={levelCheckout.onOpen}
+          >
+            {levelTicket.isPaid
+              ? `Comprar (${levelTicket.currency} ${levelTicket.price})`
+              : "Obtener acceso"}
+          </PrimaryButton>
+        </div>
+      )}
+
       {/* Grilla del nivel actual */}
       {loading ? (
         <div className="flex justify-center py-10">
@@ -265,6 +361,12 @@ const ProductionBlog = ({ initial }: Props) => {
               canEdit={canEdit}
               canManageAccess={canManageAccess}
               onItemChanged={() => loadLevel(currentParentId)}
+              aliasCbu={production.aliasCbu}
+              canManagePayout={production.viewer?.canManagePayout}
+              commissionPercent={production.ticketCommissionPercent}
+              hideCheckout={
+                !!levelTicket && item.access?.ticket?._id === levelTicket._id
+              }
             />
           ))}
         </div>
@@ -303,6 +405,47 @@ const ProductionBlog = ({ initial }: Props) => {
           isOpen={accessSettings.isOpen}
           onOpenChange={accessSettings.onOpenChange}
           onChanged={reloadBlog}
+          onOpenTicket={() => {
+            accessSettings.onClose();
+            blogTicketModal.onOpen();
+          }}
+        />
+      )}
+
+      {/* Compra del ticket heredado del nivel (visitante) */}
+      {levelTicket && (
+        <TicketCheckoutModal
+          ticketId={levelTicket._id}
+          isOpen={levelCheckout.isOpen}
+          onOpenChange={levelCheckout.onOpenChange}
+          onPurchased={() => {
+            levelCheckout.onClose();
+            reloadBlog();
+          }}
+        />
+      )}
+
+      {/* Ventas de tickets de todo el blog (staff) */}
+      {canManageAccess && (
+        <TicketSalesModal
+          productionId={production._id}
+          isOpen={salesModal.isOpen}
+          onOpenChange={salesModal.onOpenChange}
+        />
+      )}
+
+      {/* Ticket de todo el blog (staff) */}
+      {canManageAccess && (
+        <TicketManagerModal
+          productionId={production._id}
+          targetName={production.title}
+          isOpen={blogTicketModal.isOpen}
+          onOpenChange={blogTicketModal.onOpenChange}
+          onChanged={reloadBlog}
+          aliasCbu={production.aliasCbu}
+          canManagePayout={production.viewer?.canManagePayout}
+          commissionPercent={production.ticketCommissionPercent}
+          hasContent={production.filesCount > 0}
         />
       )}
     </div>

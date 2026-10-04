@@ -99,6 +99,12 @@ export class ProductionTicketResolver {
     status: ProductionTicketPurchaseStatus | undefined,
     @Args('page', { type: () => Int, defaultValue: 1 }) page: number,
     @Args('limit', { type: () => Int, defaultValue: 20 }) limit: number,
+    @Args('targetId', {
+      type: () => ID,
+      nullable: true,
+      description: 'Sólo las ventas de esta carpeta, archivo o artículo',
+    })
+    targetId: string | undefined,
     @Context() context: ProductionGqlContext,
   ): Promise<ProductionTicketPurchaseListResponse> {
     return this.ticketAdapter.getProductionTicketSales(
@@ -107,6 +113,7 @@ export class ProductionTicketResolver {
       status,
       page,
       limit,
+      targetId,
     );
   }
 

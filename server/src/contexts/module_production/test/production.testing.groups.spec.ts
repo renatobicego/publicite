@@ -273,6 +273,7 @@ describe('Mis Producciones - Fase 6: blogs de grupo y roles (GRP-01..08)', () =>
 
       const paid = await setupGroupBlog({ isFree: false });
       await tickets.setProductionPayoutAlias(paid.productionId, 'creador.alias', paid.creator);
+      await upload(paid.creator, paid.productionId);
       const ticket = await tickets.createProductionTicket(
         { productionId: paid.productionId, isPaid: true, price: 100, untilClose: true },
         paid.moderator,

@@ -1,6 +1,9 @@
 "use client";
-import { Image } from "@nextui-org/react";
-import { FaLock } from "react-icons/fa";
+import { Image, useDisclosure } from "@nextui-org/react";
+import { useRouter } from "next/navigation";
+import { FaLock, FaShoppingCart } from "react-icons/fa";
+import PrimaryButton from "@/components/buttons/PrimaryButton";
+import TicketCheckoutModal from "../../../components/TicketCheckoutModal";
 import {
   ProductionFileType,
   ProductionItemKind,
@@ -31,14 +34,43 @@ const ProductionItemDetail = ({
   item: ProductionItemResponse;
   canEdit?: boolean;
 }) => {
+  const router = useRouter();
+  const checkout = useDisclosure();
+
   if (!item.access?.canViewContent) {
+    const ticket =
+      item.access?.lockReason === ProductionLockReason.ticket
+        ? item.access.ticket
+        : null;
     return (
       <div className="w-full flex flex-col items-center gap-3 py-16">
         <FaLock className="text-4xl text-default-400" />
+        <h2 className="text-center">{item.name}</h2>
         <p className="text-sm text-center">
           {lockMessage[item.access?.lockReason ?? ""] ??
             "Este contenido no está disponible."}
         </p>
+        {ticket && (
+          <>
+            <PrimaryButton
+              startContent={<FaShoppingCart />}
+              onClick={checkout.onOpen}
+            >
+              {ticket.isPaid
+                ? `Comprar (${ticket.currency} ${ticket.price})`
+                : "Obtener acceso"}
+            </PrimaryButton>
+            <TicketCheckoutModal
+              ticketId={ticket._id}
+              isOpen={checkout.isOpen}
+              onOpenChange={checkout.onOpenChange}
+              onPurchased={() => {
+                checkout.onClose();
+                router.refresh();
+              }}
+            />
+          </>
+        )}
       </div>
     );
   }

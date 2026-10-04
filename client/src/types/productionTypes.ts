@@ -67,8 +67,9 @@ export enum ProductionTicketPurchaseStatus {
 }
 
 export enum ProductionPayoutStatus {
+  notApplicable = "notApplicable",
   pending = "pending",
-  done = "done",
+  paid = "paid",
 }
 
 export enum ProductionBulkAction {
@@ -163,6 +164,8 @@ export interface ProductionItemAccess {
 /** Resumen del ticket que bloquea un ítem (para el botón de compra). */
 export interface ProductionAccessTicketInfo {
   _id: string;
+  /** Carpeta o archivo al que aplica; null = todo el blog. */
+  target?: string | null;
   isPaid: boolean;
   price: number;
   currency: string;
@@ -190,6 +193,10 @@ export interface ProductionResponse {
   showcase: string[];
   ownerInfo?: ProductionOwnerInfo | null;
   filesCount: number;
+  /** Carpetas del blog; sólo viene al abrir el blog. */
+  foldersCount?: number | null;
+  /** Archivos y artículos sueltos en la raíz; sólo viene al abrir el blog. */
+  rootFilesCount?: number | null;
   filesPerBlogLimit?: number | null; // sólo staff
   fansCount: number;
   rating?: number | null;
@@ -197,6 +204,8 @@ export interface ProductionResponse {
   isFeatured: boolean;
   hasAccessKey: boolean;
   aliasCbu?: string | null; // sólo admin del blog
+  /** Comisión de Soonpublicité sobre los tickets pagos (0-100). */
+  ticketCommissionPercent?: number | null;
   moderationStatus?: string | null; // sólo staff
   createdAt?: string | null;
   updatedAt?: string | null;
@@ -402,7 +411,13 @@ export interface ProductionFanList {
 export interface ProductionTicketStats {
   purchases: number;
   active: number;
+  /** Bruto de los tickets pagos confirmados. */
   revenue: number;
+  /** Lo que le queda al creador, descontada la comisión. */
+  netRevenue: number;
+  commission: number;
+  /** Parte del neto que Soonpublicité ya liquidó. */
+  paidOut: number;
 }
 
 export interface ProductionTicket {
@@ -466,6 +481,8 @@ export interface ProductionTicketPurchase {
   filesCount: number;
   acceptedNoRefund: boolean;
   transferReference?: string | null;
+  /** Key de UploadThing del comprobante de transferencia. */
+  transferReceiptKey?: string | null;
   confirmedAt?: string | null;
   activatedAt?: string | null;
   expiresAt?: string | null;
@@ -521,6 +538,7 @@ export interface ProductionTicketPurchaseRequest {
   ticketId: string;
   acceptNoRefund: boolean;
   transferReference?: string;
+  transferReceiptKey?: string;
 }
 
 // ---------------------------------------------------------------------------

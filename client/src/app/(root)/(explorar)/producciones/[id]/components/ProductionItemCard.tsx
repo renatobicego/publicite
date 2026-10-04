@@ -6,10 +6,12 @@ import {
   FaFolder,
   FaLock,
   FaFileAlt,
+  FaImage,
   FaMusic,
   FaVideo,
   FaTicketAlt,
   FaShoppingCart,
+  FaReceipt,
 } from "react-icons/fa";
 import {
   ProductionFileType,
@@ -21,6 +23,7 @@ import { resolveProductionFileUrl } from "../../productionMedia";
 import ItemVisibilityControl from "./ItemVisibilityControl";
 import TicketCheckoutModal from "./TicketCheckoutModal";
 import TicketManagerModal from "./TicketManagerModal";
+import TicketSalesModal from "./TicketSalesModal";
 import ProductionItemActions from "./ProductionItemActions";
 
 interface Props {
@@ -31,6 +34,12 @@ interface Props {
   /** Staff: muestra el control de alcance por ítem. */
   canManageAccess?: boolean;
   onItemChanged?: () => void;
+  aliasCbu?: string | null;
+  canManagePayout?: boolean;
+  /** Comisión de Soonpublicité sobre tickets pagos (0-100). */
+  commissionPercent?: number | null;
+  /** La compra se ofrece en el aviso del nivel (ticket heredado). */
+  hideCheckout?: boolean;
 }
 
 /**
@@ -43,12 +52,17 @@ const ProductionItemCard = ({
   canEdit,
   canManageAccess,
   onItemChanged,
+  aliasCbu,
+  canManagePayout,
+  commissionPercent,
+  hideCheckout,
 }: Props) => {
   const locked = !item.access?.canViewContent;
   const lockedByTicket =
     locked && item.access?.lockReason === ProductionLockReason.ticket;
   const checkout = useDisclosure();
   const ticketManager = useDisclosure();
+  const sales = useDisclosure();
 
   return (
     <div className="flex flex-col gap-1">
@@ -81,7 +95,7 @@ const ProductionItemCard = ({
       </Card>
 
       {/* Visitante: comprar acceso si el ítem está bloqueado por ticket */}
-      {lockedByTicket && item.access?.ticket && (
+      {lockedByTicket && item.access?.ticket && !hideCheckout && (
         <Button
           size="sm"
           color="warning"
@@ -109,10 +123,19 @@ const ProductionItemCard = ({
           >
             Ticket
           </Button>
+          <Button
+            size="sm"
+            variant="flat"
+            startContent={<FaReceipt />}
+            className="text-xs"
+            onPress={sales.onOpen}
+          >
+            Ventas
+          </Button>
         </>
       )}
 
-      {lockedByTicket && item.access?.ticket && (
+      {lockedByTicket && item.access?.ticket && !hideCheckout && (
         <TicketCheckoutModal
           ticketId={item.access.ticket._id}
           isOpen={checkout.isOpen}
@@ -125,6 +148,16 @@ const ProductionItemCard = ({
       )}
 
       {canManageAccess && onItemChanged && (
+        <TicketSalesModal
+          productionId={item.production}
+          targetId={item._id}
+          targetName={item.name}
+          isOpen={sales.isOpen}
+          onOpenChange={sales.onOpenChange}
+        />
+      )}
+
+      {canManageAccess && onItemChanged && (
         <TicketManagerModal
           productionId={item.production}
           targetId={item._id}
@@ -132,6 +165,10 @@ const ProductionItemCard = ({
           isOpen={ticketManager.isOpen}
           onOpenChange={ticketManager.onOpenChange}
           onChanged={onItemChanged}
+          aliasCbu={aliasCbu}
+          canManagePayout={canManagePayout}
+          commissionPercent={commissionPercent}
+          hasContent={item.kind === ProductionItemKind.file ? true : undefined}
         />
       )}
     </div>
@@ -147,71 +184,75 @@ const IconBox = ({ children }: { children: React.ReactNode }) => (
   <div className={previewBox}>{children}</div>
 );
 
+// Con el contenido bloqueado no llega el archivo (ni key ni bloques): se
+// muestra el tipo de elemento difuminado con un candado encima.
+const LockedBox = ({ children }: { children: React.ReactNode }) => (
+  <div className={`${previewBox} relative overflow-hidden`}>
+    <div className="blur-sm opacity-50">{children}</div>
+    <div className="absolute inset-0 flex items-center justify-center">
+      <span className="rounded-full bg-content1/90 p-3 shadow">
+        <FaLock className="text-xl text-default-600" />
+      </span>
+    </div>
+  </div>
+);
+
+const kindIcon = (item: ProductionItemResponse) => {
+  if (item.kind === ProductionItemKind.article) {
+    return <FaFileAlt className="text-5xl text-primary" />;
+  }
+  switch (item.fileType) {
+    case ProductionFileType.photo:
+      return <FaImage className="text-5xl text-primary" />;
+    case ProductionFileType.video:
+      return <FaVideo className="text-5xl text-secondary" />;
+    case ProductionFileType.audio:
+      return <FaMusic className="text-5xl text-success" />;
+    case ProductionFileType.writing:
+      return <FaFileAlt className="text-5xl text-default-600" />;
+    default:
+      return <FaFileAlt className="text-5xl text-default-400" />;
+  }
+};
+
 const renderPreview = (item: ProductionItemResponse, locked: boolean) => {
   if (item.kind === ProductionItemKind.folder) {
     return (
-      <IconBox>
+      <div className={`${previewBox} relative`}>
         <FaFolder className="text-5xl text-warning" />
-      </IconBox>
+        {locked && (
+          <span className="absolute bottom-2 right-2 rounded-full bg-content1/90 p-2 shadow">
+            <FaLock className="text-sm text-default-600" />
+          </span>
+        )}
+      </div>
     );
   }
 
   if (locked) {
+    return <LockedBox>{kindIcon(item)}</LockedBox>;
+  }
+
+  if (
+    item.kind !== ProductionItemKind.article &&
+    item.fileType === ProductionFileType.photo
+  ) {
     return (
-      <IconBox>
-        <FaLock className="text-4xl text-default-400" />
-      </IconBox>
+      <Image
+        src={resolveProductionFileUrl(item.key)}
+        classNames={{
+          wrapper:
+            "!max-w-full w-full max-md:max-h-[45vw] md:max-lg:max-h-[25vw]",
+          img: "!max-w-full w-full object-cover max-md:max-h-[45vw] md:max-h-[25vw] lg:max-h-[22vw] xl:max-h-[17vw] 3xl:max-h-[14vw]",
+        }}
+        alt={item.name}
+        width={287}
+        height={290}
+      />
     );
   }
 
-  if (item.kind === ProductionItemKind.article) {
-    return (
-      <IconBox>
-        <FaFileAlt className="text-5xl text-primary" />
-      </IconBox>
-    );
-  }
-
-  // file
-  switch (item.fileType) {
-    case ProductionFileType.photo:
-      return (
-        <Image
-          src={resolveProductionFileUrl(item.key)}
-          classNames={{
-            wrapper: "!max-w-full w-full max-md:max-h-[45vw] md:max-lg:max-h-[25vw]",
-            img: "!max-w-full w-full object-cover max-md:max-h-[45vw] md:max-h-[25vw] lg:max-h-[22vw] xl:max-h-[17vw] 3xl:max-h-[14vw]",
-          }}
-          alt={item.name}
-          width={287}
-          height={290}
-        />
-      );
-    case ProductionFileType.video:
-      return (
-        <IconBox>
-          <FaVideo className="text-5xl text-secondary" />
-        </IconBox>
-      );
-    case ProductionFileType.audio:
-      return (
-        <IconBox>
-          <FaMusic className="text-5xl text-success" />
-        </IconBox>
-      );
-    case ProductionFileType.writing:
-      return (
-        <IconBox>
-          <FaFileAlt className="text-5xl text-default-600" />
-        </IconBox>
-      );
-    default:
-      return (
-        <IconBox>
-          <FaFileAlt className="text-5xl text-default-400" />
-        </IconBox>
-      );
-  }
+  return <IconBox>{kindIcon(item)}</IconBox>;
 };
 
 export default ProductionItemCard;

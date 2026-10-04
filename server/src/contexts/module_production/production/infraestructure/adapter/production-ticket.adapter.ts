@@ -43,6 +43,7 @@ export class ProductionTicketAdapter implements ProductionTicketAdapterInterface
     status: ProductionTicketPurchaseStatus | undefined,
     page: number,
     limit: number,
+    targetId?: string,
   ) {
     return this.ticketService.getProductionTicketSales(
       productionId,
@@ -50,6 +51,7 @@ export class ProductionTicketAdapter implements ProductionTicketAdapterInterface
       status,
       page,
       limit,
+      targetId,
     );
   }
 

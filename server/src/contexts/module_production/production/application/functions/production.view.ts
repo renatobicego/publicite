@@ -12,12 +12,15 @@ import {
   ProductionTicketSummaryResponse,
 } from '../../domain/entity/models_graphql/HTTP-RESPONSE/production.response';
 import { Visibility } from 'src/contexts/module_post/post/domain/entity/enum/post-visibility.enum';
+import { getTicketCommissionPercent } from 'src/contexts/module_shared/production-limits/production.limits.config';
 import { AccessDecision } from './production.access';
 import { ProductionPermissions } from './production.roles';
 
 export interface ProductionViewExtras {
   ownerInfo?: ProductionOwnerInfo | null;
   filesPerBlogLimit?: number | null;
+  foldersCount?: number | null;
+  rootFilesCount?: number | null;
   isFan?: boolean;
   pendingReviewProductionId?: string | null;
 }
@@ -50,6 +53,8 @@ export function toProductionResponse(
     visibility: (production.getVisibility ?? Visibility.public) as Visibility,
     hasAccessKey: production.hasAccessKey,
     filesCount: production.getFilesCount ?? 0,
+    foldersCount: extras.foldersCount ?? null,
+    rootFilesCount: extras.rootFilesCount ?? null,
     filesPerBlogLimit: isStaff ? extras.filesPerBlogLimit ?? null : null,
     fansCount: production.getFansCount ?? 0,
     rating: production.getRating,
@@ -57,6 +62,7 @@ export function toProductionResponse(
     isFeatured: production.getIsFeatured ?? false,
     moderationStatus: isStaff ? production.getModerationStatus : null,
     aliasCbu: canManagePayout ? production.getAliasCbu ?? null : null,
+    ticketCommissionPercent: getTicketCommissionPercent(),
     createdAt: production.getCreatedAt,
     updatedAt: production.getUpdatedAt,
     viewer: {

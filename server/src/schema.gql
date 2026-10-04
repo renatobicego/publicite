@@ -1539,6 +1539,14 @@ type ProductionResponse {
   """Archivos + artículos del blog"""
   filesCount: Int!
 
+  """Carpetas del blog. Sólo al abrir el blog (null en listados)"""
+  foldersCount: Int
+
+  """
+  Archivos + artículos sueltos en la raíz. Sólo al abrir el blog (null en listados)
+  """
+  rootFilesCount: Int
+
   """Cupo de archivos por blog (sólo staff)"""
   filesPerBlogLimit: Int
   fansCount: Int!
@@ -1553,6 +1561,9 @@ type ProductionResponse {
 
   """Alias/CBU de cobro (sólo el admin del blog, TKT-11)"""
   aliasCbu: String
+
+  """Comisión de Soonpublicité sobre los tickets pagos (0-100)"""
+  ticketCommissionPercent: Float!
   createdAt: DateTime
   updatedAt: DateTime
   viewer: ProductionViewerResponse!
@@ -1594,6 +1605,9 @@ type ProductionArticleBlockResponse {
 """Ticket que habilita el contenido (TKT-01..04)"""
 type ProductionTicketSummaryResponse {
   _id: ID!
+
+  """Carpeta o archivo al que aplica; null = todo el blog"""
+  target: ID
   isPaid: Boolean!
   price: Float!
   currency: String!
@@ -1739,6 +1753,15 @@ type ProductionTicketStatsResponse {
 
   """Monto bruto de los tickets pagos confirmados"""
   revenue: Float!
+
+  """Recaudado neto: lo que le queda al creador descontada la comisión"""
+  netRevenue: Float!
+
+  """Comisión de Soonpublicité sobre lo recaudado"""
+  commission: Float!
+
+  """Parte del neto ya liquidada al creador"""
+  paidOut: Float!
 }
 
 """Ticket de una carpeta, archivo o blog (TKT-01..03)"""
@@ -1818,6 +1841,9 @@ type ProductionTicketPurchaseResponse {
   filesCount: Int!
   acceptedNoRefund: Boolean!
   transferReference: String
+
+  """Key de UploadThing del comprobante de transferencia"""
+  transferReceiptKey: String
   confirmedAt: DateTime
   activatedAt: DateTime
   expiresAt: DateTime
@@ -1829,7 +1855,7 @@ type ProductionTicketPurchaseResponse {
   payoutStatus: ProductionPayoutStatus
   payoutAt: DateTime
 
-  """Sólo admin"""
+  """Factura de la comisión (admin y staff)"""
   facturaUrl: String
   facturaUploadedAt: DateTime
   reviewRequired: Boolean!
@@ -2302,7 +2328,15 @@ type Query {
   getProductionTickets(productionId: ID!): [ProductionTicketResponse!]!
 
   """Ventas de tickets del blog (staff)"""
-  getProductionTicketSales(productionId: ID!, status: ProductionTicketPurchaseStatus, page: Int! = 1, limit: Int! = 20): ProductionTicketPurchaseListResponse!
+  getProductionTicketSales(
+    productionId: ID!
+    status: ProductionTicketPurchaseStatus
+    page: Int! = 1
+    limit: Int! = 20
+
+    """Sólo las ventas de esta carpeta, archivo o artículo"""
+    targetId: ID
+  ): ProductionTicketPurchaseListResponse!
 
   """
   Datos previos a la compra: archivos incluidos, aviso sin devoluciones y datos de transferencia (TKT-04)
@@ -3405,6 +3439,9 @@ input ProductionTicketPurchaseRequest {
 
   """Referencia o comprobante de la transferencia"""
   transferReference: String
+
+  """Key de UploadThing del archivo con el comprobante"""
+  transferReceiptKey: String
 }
 
 """Edición masiva de precio (ej. +5%)"""

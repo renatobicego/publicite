@@ -142,6 +142,19 @@ export class ProductionResponse {
 
   @Field(() => Int, {
     nullable: true,
+    description: 'Carpetas del blog. Sólo al abrir el blog (null en listados)',
+  })
+  foldersCount?: number | null;
+
+  @Field(() => Int, {
+    nullable: true,
+    description:
+      'Archivos + artículos sueltos en la raíz. Sólo al abrir el blog (null en listados)',
+  })
+  rootFilesCount?: number | null;
+
+  @Field(() => Int, {
+    nullable: true,
     description: 'Cupo de archivos por blog (sólo staff)',
   })
   filesPerBlogLimit?: number | null;
@@ -172,6 +185,11 @@ export class ProductionResponse {
     description: 'Alias/CBU de cobro (sólo el admin del blog, TKT-11)',
   })
   aliasCbu?: string | null;
+
+  @Field(() => Float, {
+    description: 'Comisión de Soonpublicité sobre los tickets pagos (0-100)',
+  })
+  ticketCommissionPercent: number;
 
   @Field(() => Date, { nullable: true })
   createdAt?: Date;
@@ -223,6 +241,12 @@ export class ProductionArticleBlockResponse {
 export class ProductionTicketSummaryResponse {
   @Field(() => ID)
   _id: string;
+
+  @Field(() => ID, {
+    nullable: true,
+    description: 'Carpeta o archivo al que aplica; null = todo el blog',
+  })
+  target?: string | null;
 
   @Field(() => Boolean)
   isPaid: boolean;

@@ -113,6 +113,21 @@ export class ProductionItemRepository
     return docs.map((doc) => ProductionItem.fromDocument(doc));
   }
 
+  async countFolders(productionId: string): Promise<number> {
+    return this.itemModel.countDocuments({
+      production: toObjectId(productionId),
+      kind: ProductionItemKind.folder,
+    });
+  }
+
+  async countRootFiles(productionId: string): Promise<number> {
+    return this.itemModel.countDocuments({
+      production: toObjectId(productionId),
+      parent: null,
+      kind: { $ne: ProductionItemKind.folder },
+    });
+  }
+
   async findAncestors(itemId: string): Promise<ProductionItem[]> {
     if (!Types.ObjectId.isValid(itemId)) return [];
     const [result] = await this.itemModel.aggregate([

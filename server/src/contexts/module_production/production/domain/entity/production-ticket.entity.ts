@@ -43,6 +43,7 @@ export interface ProductionTicketPurchase {
   acceptedNoRefund: boolean;
   acceptedAt: Date | null;
   transferReference: string | null;
+  transferReceiptKey: string | null;
   confirmedAt: Date | null;
   confirmedBy: string | null;
   activatedAt: Date | null;
