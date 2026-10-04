@@ -65,7 +65,7 @@
     "yup": "^1.4.0"
   },
   "devDependencies": {
-    "@types/node": "^20",
+    "@types/node": "^24.19.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/redux-persist": "^4.3.1",
@@ -80,5 +80,8 @@
       "react": "$react",
       "react-dom": "$react-dom"
     }
+  },
+  "engines": {
+    "node": "24.x"
   }
 }

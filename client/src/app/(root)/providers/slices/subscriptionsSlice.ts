@@ -57,6 +57,16 @@ export const fetchSubscriptions = createAsyncThunk(
       );
       return rejectWithValue(error);
     }
+  },
+  {
+    // Se pide una sola vez por sesión: un usuario sin plan pago nunca tiene
+    // accountType, así que ese dato no sirve para saber si ya se consultó.
+    condition: (_, { getState }) => {
+      const { subscriptions } = getState() as {
+        subscriptions: SubscriptionsState;
+      };
+      return subscriptions.status === "idle";
+    },
   }
 );
 

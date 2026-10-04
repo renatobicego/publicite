@@ -4,11 +4,7 @@ import { useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { fetchMagazines } from "./slices/magazineSlice";
 import { fetchConfigData } from "./slices/configSlice";
-import {
-  useActiveSubscriptions,
-  useConfigData,
-  useMagazinesData,
-} from "./userDataProvider";
+import { useConfigData, useMagazinesData } from "./userDataProvider";
 import { fetchSubscriptions } from "./slices/subscriptionsSlice";
 
 const MAX_RETRIES = 3;
@@ -26,7 +22,6 @@ const DataInitializer = ({
   const dispatch = useDispatch();
   const { magazines } = useMagazinesData();
   const { configData } = useConfigData();
-  const { accountType } = useActiveSubscriptions();
   const retryCount = useRef(0);
 
   useEffect(() => {
@@ -41,9 +36,7 @@ const DataInitializer = ({
           if (!configData) {
             await dispatch(fetchConfigData({ username, userId }) as any);
           }
-          if (!accountType) {
-            await dispatch(fetchSubscriptions(userId as string) as any);
-          }
+          await dispatch(fetchSubscriptions(userId as string) as any);
           // Si llegó acá sin error, salimos del loop
           retryCount.current = 0;
           return;
