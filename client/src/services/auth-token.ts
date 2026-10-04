@@ -1,7 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 
 export async function getAuthToken(template = "testing"): Promise<string> {
-  const authData = auth();
+  const authData = await auth();
 
   if (!authData.userId) {
     return "";

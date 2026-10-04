@@ -180,7 +180,7 @@ const BlockEditor = forwardRef<BlockEditorHandle, BlockEditorProps>(
     },
     ref
   ) => {
-    const ejInstance = useRef<EditorJS | null | undefined>();
+    const ejInstance = useRef<EditorJS | null | undefined>(undefined);
     // Claves de UploadThing de bloques con archivo (imagen, audio, video),
     // para poder borrar del storage lo que se sacó del editor.
     const previousMediaKeys = useRef<Set<string>>(new Set());

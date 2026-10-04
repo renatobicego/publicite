@@ -6,8 +6,8 @@ import PostsSeudoBaseTable from "./components/PostsSeudoBaseTable";
  * SeudoBase de Anuncios: gestión masiva tipo Excel de los anuncios del usuario
  * logueado (precio, visibilidad, borrado). Requiere sesión.
  */
-export default function PostsSeudoBasePage() {
-  const user = auth();
+export default async function PostsSeudoBasePage() {
+  const user = await auth();
   if (!user.userId) {
     redirect("/iniciar-sesion");
   }

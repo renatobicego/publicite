@@ -24,7 +24,7 @@ const UserRelations = ({
     useState<UserRelationsType>("all");
   const { configData } = useConfigData();
 
-  const tabs: { key: UserRelationsType; label: JSX.Element }[] = [
+  const tabs: { key: UserRelationsType; label: React.JSX.Element }[] = [
     {
       key: "all",
       label: <TabTitle title="Todos" icon={<FaUserGroup />} />,

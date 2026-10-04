@@ -6,7 +6,7 @@ import {  UserBusinessFormValues, UserPersonFormValues } from "@/types/userTypes
 import { auth, clerkClient } from "@clerk/nextjs/server";
 
 export const completeOnboardingPerson = async (formData: UserPersonFormValues) => {
-  const { userId } = auth();
+  const { userId } = await auth();
 
   if (!userId) {
     return { error: "Usuario no autenticado. Por favor inicie sesión." };
@@ -17,7 +17,7 @@ export const completeOnboardingPerson = async (formData: UserPersonFormValues) =
     if(resApi.status !== 200 && resApi.status !== 201){
       return { error: "Error al completar el registro. Por favor intenta de nuevo. Error: " + resApi.data.message }
     }
-    const res = await clerkClient().users.updateUser(userId, {
+    const res = await (await clerkClient()).users.updateUser(userId, {
       publicMetadata: {
         onboardingComplete: true,
         userType: "Person",
@@ -32,7 +32,7 @@ export const completeOnboardingPerson = async (formData: UserPersonFormValues) =
 };
 
 export const completeOnboardingBusiness = async (formData: UserBusinessFormValues) => {
-  const { userId } = auth();
+  const { userId } = await auth();
   if (!userId) {
     return { error: "Usuario no autenticado. Por favor inicie sesión." };
   }
@@ -42,7 +42,7 @@ export const completeOnboardingBusiness = async (formData: UserBusinessFormValue
     if(resApi.status !== 200 && resApi.status !== 201){
       return { error: "Error al completar el registro. Por favor intenta de nuevo. Error: " + resApi.data.message }
     }
-    const res = await clerkClient().users.updateUser(userId, {
+    const res = await (await clerkClient()).users.updateUser(userId, {
       publicMetadata: {
         onboardingComplete: true,
         userType: "Business",

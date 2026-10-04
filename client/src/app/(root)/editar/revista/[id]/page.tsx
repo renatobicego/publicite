@@ -16,7 +16,7 @@ export default async function EditMagazinePage(props: {
   // get magazine data
   const magazineData: Magazine | { error: string } =
     await getMagazineWithoutPostsById(params.id);
-  const userLoggedId = auth().sessionClaims?.metadata.mongoId;
+  const userLoggedId = (await auth()).sessionClaims?.metadata.mongoId;
   // if there is an error, return error card
   if ("error" in magazineData) {
     return <ErrorCard message={magazineData.error} />;

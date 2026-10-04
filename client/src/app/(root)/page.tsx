@@ -15,7 +15,7 @@ import AppSwitcher from "@/components/AppSwitcher/AppSwitcher";
 import FeaturedProductions from "./(explorar)/producciones/components/FeaturedProductions";
 
 export default async function Home() {
-  const loggedUser = auth();
+  const loggedUser = await auth();
   const userId = loggedUser.userId;
 
   // Fetch novelties from backend

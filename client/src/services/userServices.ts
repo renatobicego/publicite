@@ -100,7 +100,7 @@ export const getUserProfileData = async (username: string) => {
       `${process.env.API_URL}/user/personal-data/${username}`,
       {
         headers: {
-          Authorization: `Bearer ${await auth().getToken({
+          Authorization: `Bearer ${await (await auth()).getToken({
             template: "testing",
           })}`,
         },
@@ -124,7 +124,7 @@ export const getUserProfileData = async (username: string) => {
 
 export const getFriendsOfUser = async (id: string) => {
   try {
-    const user = auth();
+    const user = await auth();
     const {
       data,
     }: { data: { findUserById: { userRelations: UserRelations[] } } } =
@@ -163,7 +163,7 @@ export const changeUserPreferences = async (
       userPreferences,
       {
         headers: {
-          Authorization: `Bearer ${await auth().getToken({
+          Authorization: `Bearer ${await (await auth()).getToken({
             template: "testing",
           })}`,
         },
@@ -193,7 +193,7 @@ export const getUserPreferences = async (
       {
         headers: {
           Authorization: `Bearer ${token ||
-            (await auth().getToken({
+            (await (await auth()).getToken({
               template: "testing",
             }))
             }`,
@@ -321,7 +321,7 @@ type ErrorResponse = {
 export const getNotifications = async (
   page: number
 ): Promise<GetNotificationsResponse | ErrorResponse> => {
-  const user = auth();
+  const user = await auth();
 
   if (!user.sessionId) {
     return {

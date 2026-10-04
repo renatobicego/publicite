@@ -18,7 +18,7 @@ export default async function GroupLayout(props: {
   params: Promise<{ id: string }>;
   children: React.ReactNode;
 }) {
-  const loggedUser = auth();
+  const loggedUser = await auth();
   if (!loggedUser) {
     redirect("/iniciar-sesion");
   }

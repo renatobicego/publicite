@@ -236,7 +236,7 @@ export const getAuthorizedPayments = async (subscriptionId: string) => {
   }
 };
 export const getPaymentMethod = async () => {
-  const user = auth();
+  const user = await auth();
   try {
     const { data } = await axios.get(
       "https://api.mercadopago.com/v1/payments/search?sort=date_created&criteria=desc&external_reference=" +

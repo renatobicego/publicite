@@ -15,7 +15,7 @@ export const ourFileRouter = {
   })
     // Set permissions and file types for this FileRoute
     .middleware(async ({ req }) => {
-      const user = auth();
+      const user = await auth();
 
       // Throw if user isn't signed in
       if (!user)
@@ -42,7 +42,7 @@ export const ourFileRouter = {
     audio: { maxFileSize: "16MB", maxFileCount: 1 },
   }) // Set permissions and file types for this FileRoute
     .middleware(async ({ req }) => {
-      const user = auth();
+      const user = await auth();
 
       // Throw if user isn't signed in
       if (!user)

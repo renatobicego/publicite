@@ -9,10 +9,11 @@ import {
 } from "@nextui-org/react";
 import { useState } from "react";
 import { IoIosHelp } from "react-icons/io";
-import Joyride, {
+import {
   ACTIONS,
-  CallBackProps,
+  EventData,
   EVENTS,
+  Joyride,
   ORIGIN,
   STATUS,
   TooltipRenderProps,
@@ -81,7 +82,7 @@ const HelpButton = () => {
     setRun(true);
   };
 
-  const handleJoyrideCallback = (data: CallBackProps) => {
+  const handleJoyrideCallback = (data: EventData) => {
     const { action, index, status, type } = data;
     if (action === ACTIONS.CLOSE) {
       setRun(false);
@@ -113,23 +114,21 @@ const HelpButton = () => {
         run={run}
         continuous
         scrollToFirstStep
-        callback={handleJoyrideCallback}
-        steps={steps}
+        onEvent={handleJoyrideCallback}
+        steps={steps ?? []}
         stepIndex={stepIndex}
         tooltipComponent={CustomTooltip}
-        styles={{
-          options: {
-            zIndex: 10000,
-            primaryColor: "#007bff", // Customize the primary color
-            textColor: "#333", // Customize the text color
-          },
+        options={{
+          zIndex: 10000,
+          primaryColor: "#007bff", // Customize the primary color
+          textColor: "#333", // Customize the text color
         }}
         locale={{
           back: "Atrás",
           close: "Cerrar",
           last: "Finalizar",
           next: "Siguiente",
-          nextLabelWithProgress: "Siguiente (%current% de %total%)",
+          nextWithProgress: "Siguiente ({current} de {total})",
           open: "Abrir",
           skip: "Omitir",
         }}

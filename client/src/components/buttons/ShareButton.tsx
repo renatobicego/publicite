@@ -24,7 +24,7 @@ import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { shareLink } from "@/utils/functions/utils";
 
 type ShareButtonProps = {
-  ButtonAction?: JSX.Element;
+  ButtonAction?: React.JSX.Element;
   customOpen?: (openModal: () => void) => void;
   data: Omit<ElementSharedData, "username">;
   shareType: ShareTypesEnum;

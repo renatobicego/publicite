@@ -6,12 +6,12 @@ import { redirect } from "next/navigation";
  * component), en el middleware, y en el resolver de GraphQL, que es la única
  * que realmente protege los datos.
  */
-export default function AdminLayoutGuard({
+export default async function AdminLayoutGuard({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const loggedUser = auth();
+  const loggedUser = await auth();
   if (!loggedUser.userId) {
     redirect("/iniciar-sesion");
   }

@@ -101,7 +101,7 @@ export const getCategories = async () => {
 export const postPost = async (
   values: GoodPostValues | PetitionPostValues | ServicePostValues
 ) => {
-  const authorId = auth().sessionClaims?.metadata.mongoId;
+  const authorId = (await auth()).sessionClaims?.metadata.mongoId;
   try {
     const { data } = await getClient().mutate({
       mutation: postPostMutation,
@@ -123,7 +123,7 @@ export const putPost = async (
   values: GoodPostValues | PetitionPostValues | ServicePostValues,
   id: string
 ) => {
-  const authorId = auth().sessionClaims?.metadata.mongoId;
+  const authorId = (await auth()).sessionClaims?.metadata.mongoId;
 
   try {
     const { data } = await getClient().mutate({
@@ -362,7 +362,7 @@ export const deletePostService = async (post: Post) => {
       mutation: deletePostMutation,
       variables: {
         deletePostByIdId: post._id,
-        authorId: auth().sessionClaims?.metadata.mongoId,
+        authorId: (await auth()).sessionClaims?.metadata.mongoId,
       },
       context: {
         headers: {

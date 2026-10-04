@@ -5,10 +5,8 @@ import { NextRequest, NextResponse } from "next/server";
 // El backend expone GET /invoices/:invoiceId/ticket protegido con Clerk.
 // Hacemos el fetch desde el server (donde tenemos API_URL y el token) y
 // devolvemos el PDF al navegador para que lo descargue.
-export async function GET(
-  _request: NextRequest,
-  { params }: { params: { invoiceId: string } }
-) {
+export async function GET(_request: NextRequest, props: { params: Promise<{ invoiceId: string }> }) {
+  const params = await props.params;
   try {
     const token = await getAuthToken();
     if (!token) {

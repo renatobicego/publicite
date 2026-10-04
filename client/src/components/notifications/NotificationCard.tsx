@@ -51,7 +51,8 @@ const NotificationBody = (props: HTMLNextUIProps<"div", never> & LinkProps) => {
   );
 };
 
-export interface NotificationOptionProps extends DropdownItemProps {
+export interface NotificationOptionProps
+  extends Omit<DropdownItemProps, "key"> {
   label: string;
   color?: "default" | "danger";
 }

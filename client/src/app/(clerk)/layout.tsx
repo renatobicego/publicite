@@ -2,12 +2,12 @@ import { auth } from "@clerk/nextjs/server";
 import { Image } from "@nextui-org/react";
 import { redirect } from "next/navigation";
 
-export default function OnboardingLayout({
+export default async function OnboardingLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  if (auth().sessionClaims?.metadata.onboardingComplete === true) {
+  if ((await auth()).sessionClaims?.metadata.onboardingComplete === true) {
     redirect("/");
   }
 

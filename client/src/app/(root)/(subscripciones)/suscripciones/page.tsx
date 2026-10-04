@@ -28,7 +28,7 @@ export default async function SubscriptionPlans() {
       href: SUBSCRIPTIONS,
     },
   ];
-  const { sessionClaims } = auth();
+  const { sessionClaims } = await auth();
 
   const subscriptions: SubscriptionPlan[] = await getSubscriptionsPlans();
   const subcriptionsOfUser = await getSubscriptionsOfUser(

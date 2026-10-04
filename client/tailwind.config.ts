@@ -1,12 +1,28 @@
 import type { Config } from "tailwindcss";
 import { nextui } from "@nextui-org/react";
-import { withUt } from "uploadthing/tw";
-const config: Config = withUt({
+import plugin from "tailwindcss/plugin";
+
+// Reemplaza a `withUt` de "uploadthing/tw": ese módulo hace un require.resolve
+// dinámico que con Turbopack arrastra todo @uploadthing/* al bundle y rompe el
+// build. Son las mismas variantes y el mismo content path, declarados a mano.
+const uploadthingPlugin = plugin(({ addVariant }) => {
+  addVariant("ut-button", '&>*[data-ut-element="button"]');
+  addVariant("ut-allowed-content", '&>*[data-ut-element="allowed-content"]');
+  addVariant("ut-label", '&>*[data-ut-element="label"]');
+  addVariant("ut-upload-icon", '&>*[data-ut-element="upload-icon"]');
+  addVariant("ut-clear-btn", '&>*[data-ut-element="clear-btn"]');
+  addVariant("ut-readying", '&[data-state="readying"]');
+  addVariant("ut-ready", '&[data-state="ready"]');
+  addVariant("ut-uploading", '&[data-state="uploading"]');
+});
+
+const config: Config = {
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
+    "./node_modules/@uploadthing/react/dist/**",
   ],
   safelist: [
     "!text-white",
@@ -60,6 +76,7 @@ const config: Config = withUt({
         },
       },
     }),
+    uploadthingPlugin,
   ],
-});
+};
 export default config;

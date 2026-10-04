@@ -14,7 +14,7 @@ import { auth } from "@clerk/nextjs/server";
 import { PostGroup } from "../(root)/crear/grupo/CreateGroupForm";
 
 export const createGroup = async (formData: PostGroup) => {
-  const user = auth();
+  const user = await auth();
 
   if (!user.sessionId) {
     return { error: "Usuario no autenticado. Por favor inicie sesión." };
@@ -41,7 +41,7 @@ export const editGroup = async (
   formData: EditGroupInterface,
   admins: string[]
 ) => {
-  const user = auth();
+  const user = await auth();
 
   if (!user.sessionId) {
     return { error: "Usuario no autenticado. Por favor inicie sesión." };

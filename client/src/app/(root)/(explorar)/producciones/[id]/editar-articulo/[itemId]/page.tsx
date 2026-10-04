@@ -15,11 +15,12 @@ import EditArticleForm from "../components/EditArticleForm";
  * `crear-articulo`). Sólo staff (`canEdit`). Se verifica que el ítem sea un
  * artículo antes de mostrar el editor.
  */
-export default async function EditArticlePage({
-  params,
-}: {
-  params: { id: string; itemId: string };
-}) {
+export default async function EditArticlePage(
+  props: {
+    params: Promise<{ id: string; itemId: string }>;
+  }
+) {
+  const params = await props.params;
   const [production, item] = await Promise.all([
     findProduction(params.id),
     getProductionItemById(params.itemId),

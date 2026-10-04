@@ -16,7 +16,7 @@ import { getApiContext } from "./apiContext";
 
 export const createChatWithAI = async () => {
   try {
-    const authData = auth();
+    const authData = await auth();
 
     const { data } = await getClient()
       .mutate({
@@ -39,7 +39,7 @@ export const sendMessageToAI = async (
     // Asociar la conversación al usuario logueado (mismo criterio que getUserChatSessions)
     // para que la sesión quede guardada bajo su userId y aparezca luego en el historial.
     // Si no está logueado, se envía sin userId (chat anónimo, sin historial).
-    const authData = auth();
+    const authData = await auth();
     const userId = authData.sessionClaims?.metadata.mongoId;
 
     // El token de Clerk permite que el BE identifique al usuario de forma
@@ -89,7 +89,7 @@ export const generateAdImageWithAI = async (
   try {
     // La generación de imágenes requiere usuario registrado con tokens de IA:
     // mandamos token de Clerk y, como fallback, el mongoId en el body.
-    const authData = auth();
+    const authData = await auth();
     const userId = authData.sessionClaims?.metadata.mongoId;
     const { context } = await getApiContext();
 
@@ -200,7 +200,7 @@ export const deleteChatSessionService = async (sessionId: string) => {
  */
 export const getUserChatSessions = async (page = 1, limit = 20) => {
   try {
-    const authData = auth();
+    const authData = await auth();
     const userId = authData.sessionClaims?.metadata.mongoId;
     if (!userId) {
       return { error: "Usuario no autenticado" };

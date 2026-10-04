@@ -11,13 +11,14 @@ import CreateArticleForm from "./components/CreateArticleForm";
  * `parentId` (opcional) llega por query string cuando el artículo se crea
  * dentro de una carpeta. Sólo staff (`canEdit`).
  */
-export default async function CreateArticlePage({
-  params,
-  searchParams,
-}: {
-  params: { id: string };
-  searchParams: { parentId?: string };
-}) {
+export default async function CreateArticlePage(
+  props: {
+    params: Promise<{ id: string }>;
+    searchParams: Promise<{ parentId?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const production = await findProduction(params.id);
 
   if (isProductionActionError(production)) {

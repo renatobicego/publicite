@@ -4,11 +4,12 @@ import ErrorCard from "@/components/ErrorCard";
 import SeudoBaseTable from "./components/SeudoBaseTable";
 
 /** SeudoBase (Fase 7): tabla de gestión masiva del blog. Sólo staff. */
-export default async function SeudoBasePage({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default async function SeudoBasePage(
+  props: {
+    params: Promise<{ id: string }>;
+  }
+) {
+  const params = await props.params;
   const production = await findProduction(params.id);
 
   if (isProductionActionError(production)) {

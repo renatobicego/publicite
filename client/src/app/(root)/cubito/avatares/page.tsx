@@ -7,8 +7,8 @@ export const metadata = {
     description: "Creá y gestioná tus avatares de IA para personalizar a Cubito",
 };
 
-export default function AvataresPage() {
-    const user = auth();
+export default async function AvataresPage() {
+    const user = await auth();
     if (!user) {
         redirect("/iniciar-sesion");
     }

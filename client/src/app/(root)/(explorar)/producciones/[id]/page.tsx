@@ -5,11 +5,12 @@ import BreadcrumbsAdmin from "@/components/BreadcrumbsAdmin";
 import { PRODUCTIONS } from "@/utils/data/urls";
 import ProductionBlog from "./components/ProductionBlog";
 
-export default async function ProductionPage({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default async function ProductionPage(
+  props: {
+    params: Promise<{ id: string }>;
+  }
+) {
+  const params = await props.params;
   const result = await getProductionItems(params.id);
 
   const breadcrumbsItems = [

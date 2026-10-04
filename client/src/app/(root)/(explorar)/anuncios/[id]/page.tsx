@@ -45,7 +45,7 @@ export default async function PostPage(props: {
   ];
 
   const { post, recomended } = postData;
-  const user = auth();
+  const user = await auth();
   const isAuthor = post.author._id === user?.sessionClaims?.metadata.mongoId;
   const isPetition = post.postType === "petition";
 

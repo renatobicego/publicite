@@ -74,7 +74,7 @@ const BlockRenderer = ({ data }: { data: OutputData }) => {
         switch (block.type) {
           case "header": {
             const d = block.data as { text: string; level: number };
-            const HeadingTag = `h${d.level}` as keyof JSX.IntrinsicElements;
+            const HeadingTag = `h${d.level}` as keyof React.JSX.IntrinsicElements;
             return (
               <HeadingTag key={index} className="font-bold mb-4">
                 {d.text}

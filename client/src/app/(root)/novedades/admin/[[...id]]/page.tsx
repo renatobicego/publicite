@@ -2,11 +2,12 @@ import FormBlogPost from "./FormBlogPost";
 import { getNoveltyById, parseNoveltyBlocks } from "@/services/noveltyService";
 import { notFound } from "next/navigation";
 
-export default async function CreateEditBlog({
-  params,
-}: {
-  params: { id?: string[] };
-}) {
+export default async function CreateEditBlog(
+  props: {
+    params: Promise<{ id?: string[] }>;
+  }
+) {
+  const params = await props.params;
   const id = params.id?.[0];
   let defaultData = undefined;
   let properties = undefined

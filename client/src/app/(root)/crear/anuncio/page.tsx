@@ -4,7 +4,10 @@ import CreateForm from "./components/CreateForm/CreateForm";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 
-export default function CreatePost({ searchParams }: { searchParams: { title?: string; description?: string; price?: string; fromValuacion?: string; images?: string; type?: string } }) {
+export default async function CreatePost(
+  props: { searchParams: Promise<{ title?: string; description?: string; price?: string; fromValuacion?: string; images?: string; type?: string }> }
+) {
+  const searchParams = await props.searchParams;
   const breadcrumbsItems = [
     {
       label: "Inicio",
@@ -19,7 +22,7 @@ export default function CreatePost({ searchParams }: { searchParams: { title?: s
       href: CREATE_POST,
     },
   ];
-  const user = auth();
+  const user = await auth();
   if (!user) {
     redirect("/iniciar-sesion");
   }

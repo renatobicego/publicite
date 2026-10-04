@@ -93,10 +93,12 @@ export default function RootLayout({
   return (
     <ClerkProvider localization={localization}>
       <html lang="es">
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
+        <head>
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          />
+        </head>
         <body
           className={` ${noto.className}  text-text-color overflow-x-hidden`}
         >

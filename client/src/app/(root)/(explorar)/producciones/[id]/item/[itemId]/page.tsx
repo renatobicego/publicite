@@ -9,11 +9,12 @@ import BreadcrumbsAdmin from "@/components/BreadcrumbsAdmin";
 import { PRODUCTIONS } from "@/utils/data/urls";
 import ProductionItemDetail from "./components/ProductionItemDetail";
 
-export default async function ProductionItemPage({
-  params,
-}: {
-  params: { id: string; itemId: string };
-}) {
+export default async function ProductionItemPage(
+  props: {
+    params: Promise<{ id: string; itemId: string }>;
+  }
+) {
+  const params = await props.params;
   const [item, production] = await Promise.all([
     getProductionItemById(params.itemId),
     findProduction(params.id),

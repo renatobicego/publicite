@@ -14,7 +14,7 @@ Plataforma que evoluciona de "sitio de anuncios" a un **ecosistema de APPs** (mo
 
 | Carpeta | Stack | Rol |
 |---------|-------|-----|
-| `client/` | Next.js 14 (App Router) + React 18 + NextUI + Tailwind + Apollo Client | Frontend |
+| `client/` | Next.js 16 (App Router) + React 19 + NextUI + Tailwind + Apollo Client | Frontend |
 | `server/` | NestJS 10 + GraphQL (Apollo) + Mongoose (MongoDB) + DDD | Backend |
 
 El server se despliega como **Firebase Functions** (`firebase-functions`), pero Firebase **no** se usa como base de datos ni como hosting de media (la DB es MongoDB y la media es UploadThing).
@@ -25,10 +25,13 @@ El server se despliega como **Firebase Functions** (`firebase-functions`), pero 
 
 ### client/
 ```bash
-npm run dev     # next dev (servidor de desarrollo — correr manualmente, es long-running)
-npm run build   # next build  ← usar para verificar cambios
-npm run lint    # next lint
+npm run dev     # next dev --webpack (servidor de desarrollo — correr manualmente, es long-running)
+npm run build   # next build --webpack  ← usar para verificar cambios
+npm run lint    # eslint . (flat config en eslint.config.mjs; `next lint` ya no existe en Next 16)
 ```
+
+> **Bundler:** el cliente compila con **webpack** (`--webpack`). Turbopack, el default de Next 16, falla hoy porque el barrel de `@nextui-org/react` evalúa contextos de react-aria al importarse desde Server Components. No quitar el flag sin resolver eso (p. ej. migrando a HeroUI).
+> En Next 16 `params`, `searchParams`, `cookies()` y `headers()` son **async**: siempre `await`.
 
 ### server/
 ```bash
@@ -213,8 +216,8 @@ Existen equivalentes para otras entidades: `boardActions.ts`, `groupActions.ts`,
 - **Feature en curso (Mis Producciones):** se agregará una **botonera de 3 apps** — Anuncios (default) / Producciones / Social (perfiles+revistas+grupos) — en el home y en el cartel (`/perfiles/:id`). Producciones es una **sección/ruta nueva** (`/producciones`) que clona el patrón de `/anuncios`. No es una botonera de 5 apps ni un "SuperButton contextual" (eso era del doc comercial; el alcance real es la botonera de 3).
 
 ### Auth cliente
-- `client/src/middleware.ts` (`clerkMiddleware`): define rutas públicas/privadas/admin y fuerza onboarding si falta `sessionClaims.metadata.onboardingComplete`.
-- Servidor: `auth()` / `currentUser()` de `@clerk/nextjs/server`. Token para GraphQL vía `getAuthToken()` en header `Authorization`.
+- `client/src/proxy.ts` (`clerkMiddleware`; en Next 16 el archivo `middleware.ts` pasó a llamarse `proxy.ts`): define rutas públicas/privadas/admin y fuerza onboarding si falta `sessionClaims.metadata.onboardingComplete`.
+- Servidor: `await auth()` / `currentUser()` de `@clerk/nextjs/server` (Clerk 6: `auth()` y `clerkClient()` son async). Token para GraphQL vía `getAuthToken()` en header `Authorization`.
 
 ---
 

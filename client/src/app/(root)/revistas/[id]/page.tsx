@@ -14,9 +14,9 @@ import MagazineActions from "./MagazineActions";
 import { GroupMagazine, Magazine, UserMagazine } from "@/types/magazineTypes";
 import MagazineSectionActions from "./Sections/MagazineSectionActions";
 
-export default async function MagazinePage(props: { params: { id: string } }) {
-  const params = props.params;
-  const authData = auth();
+export default async function MagazinePage(props: { params: Promise<{ id: string }> }) {
+  const params = (await props.params);
+  const authData = await auth();
   const magazine: Magazine | { error: string } = await getMagazineById(
     params.id
   );

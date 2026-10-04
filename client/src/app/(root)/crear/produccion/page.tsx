@@ -4,12 +4,13 @@ import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import CreateProductionForm from "./components/CreateProductionForm";
 
-export default function CreateProductionPage({
-  searchParams,
-}: {
-  searchParams: { groupId?: string };
-}) {
-  const user = auth();
+export default async function CreateProductionPage(
+  props: {
+    searchParams: Promise<{ groupId?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
+  const user = await auth();
   if (!user.userId) {
     redirect("/iniciar-sesion");
   }

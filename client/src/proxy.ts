@@ -22,8 +22,8 @@ const isPrivateRoute = createRouteMatcher(["/novedades/admin(.*)", "/admin(.*)"]
 // Sólo /admin: /novedades/admin ya resuelve el rol en su propio layout.
 const isAdminRoute = createRouteMatcher(["/admin(.*)"]);
 
-export default clerkMiddleware((auth, req: NextRequest) => {
-  const { userId, sessionClaims, redirectToSignIn } = auth();
+export default clerkMiddleware(async (auth, req: NextRequest) => {
+  const { userId, sessionClaims, redirectToSignIn } = await auth();
 
   // Explicitly check private routes first (before public route fallback)
   if (!userId && isPrivateRoute(req)) {

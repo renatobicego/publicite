@@ -1,4 +1,3 @@
-import dynamic from "next/dynamic";
 import Details from "../../Details";
 import {
   getSubscriptionPlanById,
@@ -9,9 +8,7 @@ import { redirect } from "next/navigation";
 import { checkIfUserIsSubscribed } from "@/utils/functions/utils";
 import ErrorCard from "@/components/ErrorCard";
 
-const Checkout = dynamic(() => import("../../Checkout"), {
-  ssr: false,
-});
+import Checkout from "../../CheckoutLoader";
 export default async function CheckoutChangePlanPage(props: {
   params: Promise<{ planId: string; previousSubscriptionId: string }>;
 }) {
@@ -19,7 +16,7 @@ export default async function CheckoutChangePlanPage(props: {
   if (!params.previousSubscriptionId) {
     redirect("/suscribirse/" + params.planId);
   }
-  const { sessionClaims } = auth();
+  const { sessionClaims } = await auth();
   const subscriptionsOfUser = await getSubscriptionsOfUser(
     sessionClaims?.metadata.mongoId as string
   );

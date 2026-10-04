@@ -21,7 +21,7 @@ export const getApiContext = async (
   if (!sendTokenNotRegistered) {
     authToken = await getAuthToken();
   } else {
-    const user = auth();
+    const user = await auth();
     if (user.userId) {
       authToken = await getAuthToken();
     } else {

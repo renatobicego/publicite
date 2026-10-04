@@ -13,7 +13,7 @@ import {
 import { auth } from "@clerk/nextjs/server";
 
 export const createMagazine = async (formData: any) => {
-  const user = auth();
+  const user = await auth();
 
   if (!user.sessionId) {
     return { error: "Usuario no autenticado. Por favor inicie sesión." };
@@ -35,7 +35,7 @@ export const createMagazine = async (formData: any) => {
 };
 
 export const editMagazine = async (formData: any, groupId?: string) => {
-  const user = auth();
+  const user = await auth();
 
   if (!user.sessionId) {
     return { error: "Usuario no autenticado. Por favor inicie sesión." };
@@ -63,7 +63,7 @@ export const createMagazineSection = async (
   magazineId: string,
   groupId?: string
 ) => {
-  const user = auth();
+  const user = await auth();
 
   if (!user.sessionId) {
     return { error: "Usuario no autenticado. Por favor inicie sesión." };
@@ -90,7 +90,7 @@ export const putMagazineSection = async (
   sectionId: string,
   ownerType: "user" | "group"
 ) => {
-  const user = auth();
+  const user = await auth();
 
   if (!user.sessionId) {
     return { error: "Usuario no autenticado. Por favor inicie sesión." };
@@ -112,7 +112,7 @@ export const deleteSection = async (
   magazineId: string,
   ownerType: "user" | "group"
 ) => {
-  const user = auth();
+  const user = await auth();
 
   if (!user.sessionId) {
     return { error: "Usuario no autenticado. Por favor inicie sesión." };

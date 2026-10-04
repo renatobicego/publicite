@@ -22,7 +22,8 @@ const NOT_ADMIN = { error: "No tenés permisos de administrador." };
  * Chequeo de rol del lado del server action. Es una segunda barrera, no la
  * única: el resolver del BE valida el rol contra Clerk en cada request.
  */
-const isAdmin = (): boolean => auth().sessionClaims?.metadata?.role === "admin";
+const isAdmin = async (): Promise<boolean> =>
+  (await auth()).sessionClaims?.metadata?.role === "admin";
 
 export const getAllInvoicesAdmin = async (
   page: number,
@@ -30,7 +31,7 @@ export const getAllInvoicesAdmin = async (
   filters?: AdminInvoiceFilters
 ): Promise<AdminInvoiceResponse | { error: string }> => {
   try {
-    if (!isAdmin()) return NOT_ADMIN;
+    if (!(await isAdmin())) return NOT_ADMIN;
 
     const token = await getAuthToken();
     const { context } = await getApiContext(false, token);
@@ -55,7 +56,7 @@ export const attachFacturaToInvoice = async (
   facturaUrl: string
 ): Promise<Partial<AdminInvoice> | { error: string }> => {
   try {
-    if (!isAdmin()) return NOT_ADMIN;
+    if (!(await isAdmin())) return NOT_ADMIN;
 
     const token = await getAuthToken();
     const { context } = await getApiContext(false, token);

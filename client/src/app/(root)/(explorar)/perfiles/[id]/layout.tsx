@@ -20,7 +20,7 @@ export default async function ProfileLayout(props: {
 
   const { children } = props;
 
-  const loggedUser = auth();
+  const loggedUser = await auth();
   if (!loggedUser) {
     redirect("/iniciar-sesion");
   }

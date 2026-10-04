@@ -3,7 +3,7 @@ import { CREATE, CREATE_PETITION } from "@/utils/data/urls";
 import CreatePetitionClient from "./CreatePetitionClient";
 import { auth } from "@clerk/nextjs/server";
 
-export default function CreatePost() {
+export default async function CreatePost() {
   const breadcrumbsItems = [
     {
       label: "Inicio",
@@ -18,7 +18,7 @@ export default function CreatePost() {
       href: CREATE_PETITION,
     },
   ];
-  const user = auth();
+  const user = await auth();
   const userId = user.sessionClaims?.metadata.mongoId;
   return (
     <main

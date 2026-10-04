@@ -158,7 +158,7 @@ export const deleteMagazineSection = async (
 };
 
 export const getMagazinesOfUser = async () => {
-  const authData = auth();
+  const authData = await auth();
   if (!authData.userId) {
     return [];
   }
@@ -182,7 +182,7 @@ export const putPostInMagazine = async (
 ) => {
   const tokenCache = await getAuthToken();
   const { context } = await getApiContext(false, tokenCache);
-  const magazineAdmin = auth().sessionClaims?.metadata.mongoId;
+  const magazineAdmin = (await auth()).sessionClaims?.metadata.mongoId;
   await getClient().mutate({
     mutation:
       ownerType === "user"
@@ -240,7 +240,7 @@ export const putExitMagazine = async (
 //   collaboratorsToDelete: string[],
 //   magazineId: string
 // ) => {
-//   const authData = auth();
+//   const authData = await auth();
 //   await getClient().mutate({
 //     mutation: deleteCollaboratorMutation,
 //     variables: {
@@ -260,7 +260,7 @@ export const putExitMagazine = async (
 //   allowedCollaboratorsToDelete: string[],
 //   magazineId: string
 // ) => {
-//   const authData = auth();
+//   const authData = await auth();
 //   await getClient().mutate({
 //     mutation: deleteAllowedCollaboratorMutation,
 //     variables: {

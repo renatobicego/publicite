@@ -123,7 +123,7 @@ export default function NoveltyContent({ novelty }: NoveltyContentProps) {
               if (!data) return null;
 
               const HeadingTag =
-                `h${data.level}` as keyof JSX.IntrinsicElements;
+                `h${data.level}` as keyof React.JSX.IntrinsicElements;
               return (
                 <HeadingTag
                   key={index}

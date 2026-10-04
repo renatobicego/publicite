@@ -27,7 +27,7 @@ const DeleteCollaborators = ({
   magazine,
 }: {
   customOpen?: (openModal: () => void) => void;
-  ButtonAction: JSX.Element;
+  ButtonAction: React.JSX.Element;
   collaborators: User[];
   ownerType: "user" | "group";
   magazine: Magazine;

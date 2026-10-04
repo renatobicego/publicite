@@ -7,7 +7,7 @@ import ErrorCard from "@/components/ErrorCard";
 import { Novedad } from "@/types/novedades";
 
 export default async function NovedadesPage() {
-  const loggedUser = auth();
+  const loggedUser = await auth();
   const role = loggedUser.sessionClaims?.metadata?.role;
   const isAdmin = role === "admin";
 

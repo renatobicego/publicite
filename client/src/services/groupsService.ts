@@ -242,7 +242,7 @@ export const groupAliasExists = async (alias: string) => {
 };
 
 export const putAdminGroup = async (groupId: string, userId: string) => {
-  const groupAdmin = auth().sessionClaims?.metadata.mongoId;
+  const groupAdmin = (await auth()).sessionClaims?.metadata.mongoId;
   try {
     await getClient().mutate({
       mutation: makeAdminMutation,
@@ -260,7 +260,7 @@ export const putAdminGroup = async (groupId: string, userId: string) => {
 };
 
 export const deleteMember = async (groupId: string, userIds: string[]) => {
-  const groupAdmin = auth().sessionClaims?.metadata.mongoId;
+  const groupAdmin = (await auth()).sessionClaims?.metadata.mongoId;
   try {
     await getClient()
       .mutate({
@@ -281,7 +281,7 @@ export const deleteMember = async (groupId: string, userIds: string[]) => {
 };
 
 export const deleteAdmin = async (groupId: string, userIds: string[]) => {
-  const groupCreator = auth().sessionClaims?.metadata.mongoId;
+  const groupCreator = (await auth()).sessionClaims?.metadata.mongoId;
   try {
     await getClient()
       .mutate({
@@ -308,7 +308,7 @@ export const deleteGroup = async (groupId: string) => {
         mutation: deleteGroupMutation,
         variables: {
           groupId,
-          groupCreator: auth().sessionClaims?.metadata.mongoId,
+          groupCreator: (await auth()).sessionClaims?.metadata.mongoId,
         },
         context: {
           headers: {
@@ -348,7 +348,7 @@ export const putMemberGroupByRequest = async (
   groupId: string,
   newMember: string
 ) => {
-  const userId = auth().sessionClaims?.metadata.mongoId;
+  const userId = (await auth()).sessionClaims?.metadata.mongoId;
   try {
     await getClient()
       .mutate({
@@ -376,7 +376,7 @@ export const putExitGroup = async (
   isCreator?: boolean,
   newCreator?: string
 ) => {
-  const userId = auth().sessionClaims?.metadata.mongoId;
+  const userId = (await auth()).sessionClaims?.metadata.mongoId;
   const variables: {
     groupId: string;
     member?: string;

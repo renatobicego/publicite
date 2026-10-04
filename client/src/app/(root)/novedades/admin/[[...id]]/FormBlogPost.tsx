@@ -35,7 +35,7 @@ const FormBlogPost = ({
   noveltyId?: string;
   properties?: NoveltyProperty[] | undefined;
 }) => {
-  const ejInstance = useRef<EditorJS | undefined | null>();
+  const ejInstance = useRef<EditorJS | undefined | null>(undefined);
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();

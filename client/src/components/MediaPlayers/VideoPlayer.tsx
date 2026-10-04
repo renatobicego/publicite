@@ -35,7 +35,7 @@ const VideoPlayer = ({ src, poster, className = "" }: VideoPlayerProps) => {
   const [progress, setProgress] = useState(0); // 0..1
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const hideControlsTimeout = useRef<ReturnType<typeof setTimeout>>();
+  const hideControlsTimeout = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   useEffect(() => {
     const video = videoRef.current;

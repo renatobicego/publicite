@@ -14,7 +14,7 @@ export default async function EditGroupPage(props: {
   const groupData: { group: Group } | { error: string } = await getGroupById(
     params.id
   );
-  const loggedUser = auth();
+  const loggedUser = await auth();
   const loggedUserId = loggedUser?.sessionClaims?.metadata.mongoId as string;
 
 

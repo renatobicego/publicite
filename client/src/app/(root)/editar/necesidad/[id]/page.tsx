@@ -11,7 +11,7 @@ export default async function EditPetitionPage(props: {
 }) {
   const params = await props.params;
   const postData: Petition | { error: string } = await getPostData(params.id);
-  const userLogged = auth();
+  const userLogged = await auth();
   if (
     !("error" in postData) &&
     userLogged?.sessionClaims?.metadata.mongoId !== postData.author._id

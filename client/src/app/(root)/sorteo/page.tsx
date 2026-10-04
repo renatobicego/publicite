@@ -48,7 +48,7 @@ export const metadata: Metadata = {
 };
 
 export default async function SorteoPage() {
-    const loggedUser = auth();
+    const loggedUser = await auth();
     const userId = loggedUser.userId;
 
     const giveawayData = await getGiveaway(CURRENT_GIVEAWAY_ID);

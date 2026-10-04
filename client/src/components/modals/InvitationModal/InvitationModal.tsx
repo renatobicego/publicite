@@ -23,7 +23,7 @@ interface InvitationModalProps {
   title: string;
   handleSubmit: (selectedUsers: string[]) => void;
   submitLabel?: string; // Optional, defaults to 'Invitar'
-  triggerElement: ReactElement;
+  triggerElement: ReactElement<{ onPress?: () => void }>;
   filterUsers?: string[];
   isGroupMembersInviteId?: string;
 }

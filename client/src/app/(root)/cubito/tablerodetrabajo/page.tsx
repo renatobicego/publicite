@@ -7,8 +7,8 @@ export const metadata = {
     description: "Tablero de Trabajo de Cubito con Valuación IA y Match IA",
 };
 
-export default function TableroDeTrabajoPage() {
-    const user = auth();
+export default async function TableroDeTrabajoPage() {
+    const user = await auth();
     if (!user) {
         redirect("/iniciar-sesion");
     }

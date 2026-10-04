@@ -4,11 +4,12 @@ import NoveltyContent from "./NoveltyContent";
 import ErrorCard from "@/components/ErrorCard";
 import { Novedad } from "@/types/novedades";
 
-export default async function NoveltyPage({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default async function NoveltyPage(
+  props: {
+    params: Promise<{ id: string }>;
+  }
+) {
+  const params = await props.params;
   const noveltyData = await getNoveltyById(params.id);
 
   if (!noveltyData) {

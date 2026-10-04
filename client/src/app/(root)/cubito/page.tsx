@@ -7,8 +7,9 @@ export const metadata = {
     description: "Chateá con Cubito, el asistente inteligente de Publicite",
 };
 
-export default function CubitoPage({ searchParams }: { searchParams: { tab?: string } }) {
-    const user = auth();
+export default async function CubitoPage(props: { searchParams: Promise<{ tab?: string }> }) {
+    const searchParams = await props.searchParams;
+    const user = await auth();
     if (!user) {
         redirect("/iniciar-sesion");
     }

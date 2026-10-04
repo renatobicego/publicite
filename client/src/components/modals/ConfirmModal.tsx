@@ -20,7 +20,7 @@ const ConfirmModal = ({
   customOpen,
   sideText,
 }: {
-  ButtonAction: JSX.Element;
+  ButtonAction: React.JSX.Element;
   message: string;
   tooltipMessage: string;
   confirmText: string;

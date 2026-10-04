@@ -7,12 +7,13 @@ import { isProductionActionError } from "@/utils/functions/productionErrorHandle
 import { PRODUCTIONS } from "@/utils/data/urls";
 import EditProductionForm from "./components/EditProductionForm";
 
-export default async function EditProductionPage({
-  params,
-}: {
-  params: { id: string };
-}) {
-  const user = auth();
+export default async function EditProductionPage(
+  props: {
+    params: Promise<{ id: string }>;
+  }
+) {
+  const params = await props.params;
+  const user = await auth();
   if (!user.userId) {
     redirect("/iniciar-sesion");
   }

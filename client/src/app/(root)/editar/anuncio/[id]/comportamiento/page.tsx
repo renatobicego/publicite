@@ -15,7 +15,7 @@ export default async function ModifyPostBehaviour(props: {
   const postData: Good | Service | { error: string } = await getPostData(
     params.id
   );
-  const userLogged = auth();
+  const userLogged = await auth();
   if (
     !("error" in postData) &&
     userLogged?.sessionClaims?.metadata.mongoId !== postData.author._id

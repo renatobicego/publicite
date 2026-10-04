@@ -3,7 +3,7 @@ import { postBoard, putBoard } from "@/services/boardServices";
 import { auth } from "@clerk/nextjs/server";
 
 export const createBoard = async (formData: any) => {
-  const user = auth();
+  const user = await auth();
 
   if (!user.sessionId) {
     return { error: "Usuario no autenticado. Por favor inicie sesión." };

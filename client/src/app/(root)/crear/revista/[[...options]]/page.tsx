@@ -59,7 +59,7 @@ export default async function CreateMagazine(props: {
     return <ErrorCard message={postData.error} />;
   }
 
-  const userId = auth().sessionClaims?.metadata.mongoId;
+  const userId = (await auth()).sessionClaims?.metadata.mongoId;
   return (
     <main
       id="create-magazine"

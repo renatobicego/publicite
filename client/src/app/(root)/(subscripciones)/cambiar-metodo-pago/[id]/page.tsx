@@ -4,12 +4,13 @@ import { getSubscriptionsOfUser } from "@/services/subscriptionServices";
 import ErrorCard from "@/components/ErrorCard";
 import ChangePaymentMethodCheckout from "./ChangePaymentMethodCheckout";
 
-export default async function ChangePaymentMethod({
-  params,
-}: {
-  params: { id: string };
-}) {
-  const { sessionClaims } = auth();
+export default async function ChangePaymentMethod(
+  props: {
+    params: Promise<{ id: string }>;
+  }
+) {
+  const params = await props.params;
+  const { sessionClaims } = await auth();
   const subscriptionsOfUser = await getSubscriptionsOfUser(
     sessionClaims?.metadata.mongoId as string
   );
