@@ -24,6 +24,8 @@ interface IUser extends Document {
   magazines: Schema.Types.ObjectId[];
   board: Schema.Types.ObjectId | undefined;
   posts: Schema.Types.ObjectId[];
+  productions: Schema.Types.ObjectId[];
+  credentialId: string | undefined;
   userRelations: Schema.Types.ObjectId[];
   userType: UserType;
   name: string;
@@ -54,6 +56,11 @@ const UserSchema = new Schema<IUser>(
     magazines: [{ type: Schema.Types.ObjectId, ref: 'Magazine' }],
     board: { type: Schema.Types.ObjectId, ref: 'Board' },
     posts: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
+    // Mis Producciones (RNF-06/RNF-09): blogs del usuario e ID decorativo de
+    // credencial. El credentialId es único pero sparse: los usuarios creados
+    // antes de MP no lo tienen y se completa de forma perezosa al leerlo.
+    productions: [{ type: Schema.Types.ObjectId, ref: 'Production' }],
+    credentialId: { type: String, unique: true, sparse: true },
     userRelations: [{ type: Schema.Types.ObjectId, ref: 'UserRelation' }],
     userType: { type: String, enum: Object.values(UserType), required: true },
     name: { type: String, required: true },

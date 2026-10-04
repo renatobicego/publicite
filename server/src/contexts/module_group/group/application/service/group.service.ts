@@ -18,6 +18,11 @@ import { UserLocation_group } from '../adapter/dto/HTTP-REQUEST/user.location.re
 import { PostServiceInterface } from 'src/contexts/module_post/post/domain/service/post.service.interface';
 import { PostsMemberGroupResponse } from 'src/contexts/module_shared/sharedGraphql/group.posts.member.response';
 import { GroupExitRequest } from '../adapter/dto/HTTP-REQUEST/group.exit.request';
+import { EmitterService } from 'src/contexts/module_shared/event-emmiter/emmiter';
+import {
+  group_creator_changed,
+  group_deleted,
+} from 'src/contexts/module_shared/event-emmiter/events';
 import { Types } from 'mongoose';
 
 interface UserRelation {
@@ -38,6 +43,7 @@ export class GroupService implements GroupServiceInterface {
     private readonly userService: UserServiceInterface,
     @Inject('PostServiceInterface')
     private readonly postService: PostServiceInterface,
+    private readonly emmiter: EmitterService,
   ) {}
 
   get getLogger() {
@@ -170,6 +176,8 @@ export class GroupService implements GroupServiceInterface {
     try {
       this.logger.log('Deleting group: ' + groupId);
       await this.groupRepository.deleteGroupById(groupId, groupCreator);
+      // Mis Producciones borra el blog del grupo (hard delete en cascada).
+      await this.emmiter.emitAsync(group_deleted, { groupId });
     } catch (error: any) {
       this.logger.error('An error was ocurred when deleting group by id: ');
       throw error;
@@ -186,6 +194,12 @@ export class GroupService implements GroupServiceInterface {
           newCreator,
           creator,
         );
+        // Mis Producciones pasa el blog del grupo al nuevo creator.
+        await this.emmiter.emitAsync(group_creator_changed, {
+          groupId,
+          previousCreator: creator,
+          newCreator,
+        });
       } else if (!creator && !newCreator && member) {
         this.logger.log('Exiting group member or admin');
         await this.groupRepository.exitMemberOrAdminGroupById(groupId, member);

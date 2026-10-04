@@ -18,6 +18,21 @@ export const SubscriptionPlanSchema = new Schema({
   postsAgendaCount: { type: Number },
   maxContacts: { type: Number },
   isPack: { type: Boolean },
+  // --- Mis Producciones (RNF-06). Límites por CANTIDAD, no por MB. ---
+  // Blogs personales que habilita el plan. Es 1 fijo en todos los planes
+  // (PLN-01/02): no se acumula entre suscripciones.
+  personalBlogsCount: { type: Number },
+  // Blogs de grupo que habilita el plan (1 en gratuito, N configurable en pagos).
+  // Acumulativo entre suscripciones activas, igual que los posts.
+  groupBlogsCount: { type: Number },
+  // Cupo de archivos POR BLOG que habilita el plan (~10 en gratuito, sube por plan).
+  filesPerBlogCount: { type: Number },
+  // Cupo de ALMACENAMIENTO POR USUARIO que habilita el plan, en BYTES. Suma de
+  // los archivos de todos los blogs del usuario. Acumulativo entre suscripciones
+  // activas (igual que filesPerBlogCount). Ej: 104857600 (100MB) gratuito,
+  // 1073741824 (1GB) premium. Sólo se aplica si el feature flag de storage está
+  // activo (PRODUCTION_STORAGE_LIMIT_ENABLED).
+  storageBytesLimit: { type: Number },
 });
 
 export interface SubscriptionPlanDocument extends Document {
@@ -33,6 +48,10 @@ export interface SubscriptionPlanDocument extends Document {
   postsAgendaCount: number;
   maxContacts: number;
   isPack: boolean;
+  personalBlogsCount?: number;
+  groupBlogsCount?: number;
+  filesPerBlogCount?: number;
+  storageBytesLimit?: number;
 }
 
 const SubscriptionPlanModel = model<SubscriptionPlanDocument>(

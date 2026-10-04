@@ -39,6 +39,15 @@ export interface UserRepositoryInterface {
   ): Promise<any>;
   getActiveRelationsOfUser(userRequestId: string, session?: any): Promise<any>;
   getPostAndContactLimitsFromUserByUserId(author: string): Promise<any>;
+  getProductionsAndLimitsFromUserByUserId(
+    ownerId: string,
+    session?: ClientSession,
+  ): Promise<any>;
+  getCredentialIdByUserId(userId: string): Promise<string | null>;
+  setCredentialId(
+    userId: string,
+    credentialId: string,
+  ): Promise<string | null>;
   getProfileUserByExternalUserById(
     _id: string,
     conditionOfVisibility: any,
@@ -70,6 +79,16 @@ export interface UserRepositoryInterface {
   saveNewPost(
     postId: string,
     authorId: string,
+    options?: { session?: ClientSession },
+  ): Promise<any>;
+  saveNewProduction(
+    productionId: string,
+    ownerId: string,
+    options?: { session?: ClientSession },
+  ): Promise<any>;
+  removeProductionFromUser(
+    productionId: string,
+    ownerId: string,
     options?: { session?: ClientSession },
   ): Promise<any>;
   setSubscriptionToUser(

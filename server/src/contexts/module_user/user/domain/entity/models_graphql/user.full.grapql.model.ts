@@ -246,6 +246,10 @@ export class User_Full_Grapql_Model {
   @Field(() => String, { nullable: true })
   addressPrivacy?: string;
 
+  /** ID decorativo de credencial (RNF-09). No reemplaza al `_id`. */
+  @Field(() => String, { nullable: true })
+  credentialId?: string;
+
   @Field(() => Contact, { nullable: true })
   contact?: Contact;
 

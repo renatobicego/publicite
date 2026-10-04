@@ -48,6 +48,9 @@ export class UserFactory implements UserFactoryInterface {
       userRequest.post,
       userRequest.userRelations,
       userRequest.userPreferences,
+      undefined, // _id: lo asigna Mongo al guardar
+      undefined, // notifications
+      undefined, // friendRequests
       userRequest.activeRelations ?? activeRelations,
     );
     switch (userType.toLowerCase()) {

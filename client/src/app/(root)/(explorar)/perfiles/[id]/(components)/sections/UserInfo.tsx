@@ -30,6 +30,7 @@ import {
 import AcceptRequestFriend from "./AcceptRequestFriend";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
+import CredentialQrShare from "../CredentialQrShare";
 
 const UserInfo = ({
   user,
@@ -206,6 +207,17 @@ const UserInfo = ({
               <span>{user.countryRegion}</span>
             </div>
           )}
+
+          <CredentialQrShare
+            userId={user._id}
+            credentialId={(user as any).credentialId}
+            displayName={
+              userType === "Business"
+                ? business.businessName
+                : [user.name, user.lastName].filter(Boolean).join(" ") ||
+                user.username
+            }
+          />
 
           <div className="mt-auto">{actionToShow()}</div>
         </div>

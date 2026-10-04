@@ -43,8 +43,12 @@ const useUploadFiles = (
     // Combine both files and attachedFiles into a single array for upload
     const compressedFiles = await Promise.all(
       files.map(async (file) => {
+        // Video and audio are not compressed (browser-image-compression only handles images).
         if (file.type.startsWith("video/")) {
           isVideoBeingUploaded = true;
+          return file;
+        }
+        if (file.type.startsWith("audio/")) {
           return file;
         }
         const options = {
@@ -56,15 +60,17 @@ const useUploadFiles = (
       })
     );
 
-    // Separate images and videos
+    // Separate images from non-images (video/audio) so the latter go at the end.
     const images = compressedFiles.filter(
-      (file) => !file.type.startsWith("video/")
+      (file) =>
+        !file.type.startsWith("video/") && !file.type.startsWith("audio/")
     );
-    const videos = compressedFiles.filter((file) =>
-      file.type.startsWith("video/")
+    const videos = compressedFiles.filter(
+      (file) =>
+        file.type.startsWith("video/") || file.type.startsWith("audio/")
     );
 
-    // Ensure videos are at the end
+    // Ensure non-image files (video/audio) are at the end
     const orderedCompressedFiles = [...images, ...videos];
 
     // Combine with attached files

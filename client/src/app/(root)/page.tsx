@@ -11,6 +11,8 @@ import SorteoHomeBanner from "./sorteo/SorteoHomeBanner";
 import { getGiveaway } from "@/services/sorteoService";
 import { CURRENT_GIVEAWAY_ID } from "@/utils/data/sorteoConfig";
 import { auth } from "@clerk/nextjs/server";
+import AppSwitcher from "@/components/AppSwitcher/AppSwitcher";
+import FeaturedProductions from "./(explorar)/producciones/components/FeaturedProductions";
 
 export default async function Home() {
   const loggedUser = auth();
@@ -40,6 +42,7 @@ export default async function Home() {
       id="home-grids"
       className="flex min-h-screen flex-col items-start main-style gap-8"
     >
+
       {novedades && <NovedadesCarousel novedades={novedades as Novedad[]} />}
 
       {/* Banner del sorteo */}
@@ -51,6 +54,9 @@ export default async function Home() {
           giveawayId={CURRENT_GIVEAWAY_ID}
         />
       )}
+
+      <AppSwitcher defaultActive="anuncios" />
+
 
       <div className="text-xs lg:text-sm lg:max-w-[50%]">
         {/* <p>¡Hola!</p>
@@ -80,6 +86,9 @@ export default async function Home() {
           buttonText="Ver Más Anuncios"
           buttonHref={POSTS}
         />
+      </Suspense>
+      <Suspense fallback={<Spinner color="warning" />}>
+        <FeaturedProductions />
       </Suspense>
       <Suspense fallback={<Spinner color="warning" />}>
         <HomePostSection

@@ -21,6 +21,13 @@ import {
   calculatePostLimitFromUser,
   userWithPostsAndSubscriptions,
 } from '../functions/calculatePostLimitAndContactLimit';
+import {
+  calculateProductionLimitsFromUser,
+  ProductionLimits,
+  userWithProductionsAndSubscriptions,
+} from '../functions/calculateProductionLimits';
+import { generateCredentialId } from '../functions/generateCredentialId';
+import { ProductionOwnerType } from 'src/contexts/module_shared/production-limits/production.owner-type.enum';
 import { ommitUndefinedValues } from './ommit-function';
 import { makeUserRelationMapWithoutHierarchy } from 'src/contexts/module_shared/utils/functions/makeUserRelationHierarchyMap';
 
@@ -171,10 +178,22 @@ export class UserService implements UserServiceInterface {
 
   async findUserByIdByOwnUser(_id: string): Promise<any> {
     try {
-      return await this.userRepository.findUserByIdByOwnUser(_id);
+      const user = await this.userRepository.findUserByIdByOwnUser(_id);
+      return await this.withCredentialId(user, _id);
     } catch (error: any) {
       throw error;
     }
+  }
+
+  /**
+   * Completa el ID decorativo de credencial (RNF-09) en un perfil ya leído. Los
+   * usuarios creados antes de MP no lo tienen: se genera la primera vez que se
+   * muestra su credencial.
+   */
+  private async withCredentialId(user: any, userId: string): Promise<any> {
+    if (!user || user.credentialId) return user;
+    user.credentialId = await this.getCredentialIdOfUser(userId);
+    return user;
   }
 
   async findProfileUserByExternalUserById(
@@ -267,7 +286,7 @@ export class UserService implements UserServiceInterface {
         }
       }
       console.log(JSON.stringify(user, null, 2));
-      return user;
+      return await this.withCredentialId(user, _id);
     } catch (error: any) {
       throw error;
     }
@@ -470,6 +489,97 @@ export class UserService implements UserServiceInterface {
     }
   }
 
+  /**
+   * Límites de Mis Producciones del usuario (RNF-06). Espejo de
+   * `getPostAndLimitsFromUserByUserId` para MP.
+   */
+  async getProductionLimitsFromUserByUserId(
+    ownerId: string,
+    session?: ClientSession,
+  ): Promise<ProductionLimits> {
+    try {
+      const userWithProductionsAndSubscriptions: userWithProductionsAndSubscriptions =
+        await this.userRepository.getProductionsAndLimitsFromUserByUserId(
+          ownerId,
+          session,
+        );
+
+      if (!userWithProductionsAndSubscriptions) {
+        this.logger.warn('User not found while calculating production limits');
+        throw new BadRequestException('Usuario no encontrado');
+      }
+
+      return calculateProductionLimitsFromUser(
+        userWithProductionsAndSubscriptions,
+        this.logger,
+      );
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  /**
+   * Gate de cupo de blogs (PLN-04). Se llama ANTES de persistir, dentro de la
+   * transacción de creación, igual que `isThisUserAllowedToPost`.
+   *
+   * En un blog de grupo el cupo se descuenta del plan del `creator` del grupo
+   * (GRP-08/RNF-14), por eso `ownerId` es siempre un usuario: quien crea el blog.
+   */
+  async isThisUserAllowedToCreateBlog(
+    ownerId: string,
+    ownerType: ProductionOwnerType,
+    session?: ClientSession,
+  ): Promise<boolean> {
+    try {
+      const { personalBlogsAvailable, groupBlogsAvailable } =
+        await this.getProductionLimitsFromUserByUserId(ownerId, session);
+
+      switch (ownerType) {
+        case ProductionOwnerType.Group:
+          if (groupBlogsAvailable <= 0) {
+            this.logger.warn('Group blog limit reached');
+            return false;
+          }
+          return true;
+        case ProductionOwnerType.User:
+          if (personalBlogsAvailable <= 0) {
+            this.logger.warn('Personal blog limit reached');
+            return false;
+          }
+          return true;
+        default:
+          this.logger.warn('Invalid production owner type specified');
+          return false;
+      }
+    } catch (error: any) {
+      this.logger.error(
+        'Error while verifying user blog creation permissions',
+        error,
+      );
+      throw error;
+    }
+  }
+
+  /**
+   * Devuelve el ID decorativo de credencial del usuario y lo genera si todavía
+   * no tiene uno (RNF-09), para cubrir a los usuarios creados antes de MP.
+   */
+  async getCredentialIdOfUser(userId: string): Promise<string | null> {
+    try {
+      const credentialId =
+        await this.userRepository.getCredentialIdByUserId(userId);
+      if (credentialId) return credentialId;
+
+      this.logger.log('Generating credential id for user: ' + userId);
+      return await this.userRepository.setCredentialId(
+        userId,
+        generateCredentialId(),
+      );
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
   async pushNotificationToUserArrayNotifications(
     notification: Types.ObjectId,
     userId: string,
@@ -595,6 +705,44 @@ export class UserService implements UserServiceInterface {
     try {
       this.logger.log('Creating post in the service: ' + UserService.name);
       return await this.userRepository.saveNewPost(postId, authorId, options);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  async saveNewProductionInUser(
+    productionId: string,
+    ownerId: string,
+    options?: { session?: ClientSession },
+  ): Promise<any> {
+    try {
+      this.logger.log(
+        'Creating production in the service: ' + UserService.name,
+      );
+      return await this.userRepository.saveNewProduction(
+        productionId,
+        ownerId,
+        options,
+      );
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  async removeProductionFromUser(
+    productionId: string,
+    ownerId: string,
+    options?: { session?: ClientSession },
+  ): Promise<any> {
+    try {
+      this.logger.log(
+        'Removing production in the service: ' + UserService.name,
+      );
+      return await this.userRepository.removeProductionFromUser(
+        productionId,
+        ownerId,
+        options,
+      );
     } catch (error: any) {
       throw error;
     }

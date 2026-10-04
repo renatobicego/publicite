@@ -19,6 +19,7 @@ const POST_CONTACTS = `${POSTS}/contactos`;
 const POST_LIBRE = `${POSTS}/libres`;
 const POST_BEST = `${POSTS}/mejor-puntuados`;
 const POST_NEXT_TO_EXPIRE = `${POSTS}/proximos-a-vencer`;
+const POST_SEUDOBASE = `${POSTS}/seudobase`;
 const BOARDS = "/pizarras";
 const EDIT_POST = "/editar/anuncio";
 const EDIT_PETITION = "/editar/necesidad";
@@ -27,6 +28,10 @@ const EDIT_GROUP = "/editar/grupo";
 const FILE_URL = process.env.NEXT_PUBLIC_UPLOADTHING_URL as string;
 const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL;
 const CUBITO = "/cubito";
+const PRODUCTIONS = "/producciones";
+const CREATE_PRODUCTION = "/crear/produccion";
+const EDIT_PRODUCTION = "/editar/produccion";
+const MY_PRODUCTION_TICKETS = "/producciones/mis-tickets";
 export {
   MAGAZINES,
   GROUPS,
@@ -45,6 +50,7 @@ export {
   POST_RECENTS,
   POST_BEST,
   POST_NEXT_TO_EXPIRE,
+  POST_SEUDOBASE,
   BOARDS,
   EDIT_POST,
   EDIT_PETITION,
@@ -57,4 +63,8 @@ export {
   NEEDS,
   POST_LIBRE,
   CUBITO,
+  PRODUCTIONS,
+  CREATE_PRODUCTION,
+  EDIT_PRODUCTION,
+  MY_PRODUCTION_TICKETS,
 };

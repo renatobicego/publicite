@@ -11,6 +11,7 @@ import {
   POST_NEXT_TO_EXPIRE,
   POST_RECENTS,
   POSTS,
+  PRODUCTIONS,
   PROFILE,
   SERVICES,
 } from "@/utils/data/urls";
@@ -28,6 +29,7 @@ export const keyToPath: { [key: string]: string } = {
   pizarras: BOARDS,
   perfiles: PROFILE,
   grupos: GROUPS,
+  producciones: PRODUCTIONS,
 };
 
 // this is the general search input on the header
@@ -95,7 +97,7 @@ const Search = ({
     if (pathname.split("/")[1]) {
       setSelectedKeys(
         Object.keys(keyToPath).find((key) => keyToPath[key] === pathname) ||
-          "recomendados"
+        "recomendados"
       );
     }
   }, [pathname]);
@@ -128,9 +130,8 @@ const Search = ({
           setIsFocused(false);
         }
       }}
-      className={`!transition-all duration-300 ${
-        isFocused ? "!w-full flex-grow" : "w-auto"
-      }`}
+      className={`!transition-all duration-300 ${isFocused ? "!w-full flex-grow" : "w-auto"
+        }`}
       classNames={{
         inputWrapper: `border-secondary border-[0.5px] bg-[#F1FFFA] !transition-all duration-300 pr-0 
               data-[hover=true]:bg-[#ECFFF8] data-[hover=true]:border-secondary focus-within:border-[0.5px]

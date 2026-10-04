@@ -58,6 +58,11 @@ const SelectSolapa = ({
       label: "Grupos",
       requiresLogin: true,
     },
+    {
+      key: "producciones",
+      label: "Producciones",
+      requiresLogin: false,
+    },
   ];
   // Filter out tabs that require login if the user is not logged in
   const filteredSolapas = solapasItems.filter(
@@ -84,10 +89,10 @@ const SelectSolapa = ({
       {["recomendados", "contactos", "hoy", "puntuados", "vencer"]?.includes(
         selectedKeys as string
       ) && (
-        <p className="text-sm font-semibold">
-          Por favor, seleccione un tipo de anuncio
-        </p>
-      )}
+          <p className="text-sm font-semibold">
+            Por favor, seleccione un tipo de anuncio
+          </p>
+        )}
     </>
   );
 };

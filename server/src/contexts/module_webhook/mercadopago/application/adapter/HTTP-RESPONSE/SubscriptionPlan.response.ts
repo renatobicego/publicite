@@ -24,6 +24,14 @@ export class SubscriptionPlanResponse {
   readonly isPack: boolean;
 
   /**
+   * Límites de Mis Producciones (RNF-06). Opcionales: los planes creados antes
+   * de MP no los tienen cargados y el usuario cae al piso gratuito.
+   */
+  readonly personalBlogsCount?: number;
+  readonly groupBlogsCount?: number;
+  readonly filesPerBlogCount?: number;
+
+  /**
    * Tokens Publicité de IA por mes que otorga el plan (valor neto, el que ve
    * el usuario). Se calcula desde variables de entorno, no se persiste en DB.
    */
@@ -42,6 +50,9 @@ export class SubscriptionPlanResponse {
     postsLibresCount: number,
     postsAgendaCount: number,
     isPack: boolean,
+    personalBlogsCount?: number,
+    groupBlogsCount?: number,
+    filesPerBlogCount?: number,
   ) {
     this._id = _id;
     this.mpPreapprovalPlanId = mpPreapprovalPlanId;
@@ -55,5 +66,8 @@ export class SubscriptionPlanResponse {
     this.postsLibresCount = postsLibresCount;
     this.postsAgendaCount = postsAgendaCount;
     this.isPack = isPack;
+    this.personalBlogsCount = personalBlogsCount;
+    this.groupBlogsCount = groupBlogsCount;
+    this.filesPerBlogCount = filesPerBlogCount;
   }
 }

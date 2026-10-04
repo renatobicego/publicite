@@ -67,6 +67,7 @@ module_x/<submodulo>/
 | `module_magazine` | Revistas. |
 | `module_novelty` | Novedades. |
 | `module_giveaway` | Sorteos. |
+| `module_production` | **Mis Producciones** (`production/`): blogs con dueño polimórfico User\|Group, árbol de carpetas/archivos/artículos (colección `productionitems` con discriminator `kind`), visibilidad con herencia, clave de acceso, tickets, fans, reseñas, denuncias y SeudoBase. Ver §10. |
 | `module_socket` | WebSockets (socket.io). |
 | `module_shared` | Transversal: auth (Clerk guards + `PubliciteAuth`), logger, config de tokens, utilidades. |
 
@@ -124,11 +125,55 @@ module_x/<submodulo>/
 ## 6. Planes, límites y pagos
 
 - **Plan de suscripción:** `module_webhook/mercadopago/infastructure/schemas/subscriptionPlan.schema.ts`. Campos: `isFree`, `postsLibresCount`, `postsAgendaCount`, `maxContacts`, `isPack`, `price`, `mpPreapprovalPlanId`.
-  - ⚠️ **Los límites son SOLO por cantidad** (posts libres, posts agenda, contactos). **No existe** ninguna dimensión de MB/almacenamiento.
+  - ⚠️ **Para Anuncios los límites son SOLO por cantidad** (posts libres, posts agenda, contactos). No hay MB en Anuncios.
   - Cálculo de límites: `module_user/user/application/functions/calculatePostLimitAndContactLimit.ts` (suma acumulativa de todas las suscripciones activas del usuario).
+  - **Mis Producciones** agrega dimensiones propias en el mismo plan: `personalBlogsCount`, `groupBlogsCount`, `filesPerBlogCount` (todas por cantidad) y **`storageBytesLimit`** (almacenamiento por usuario, en BYTES — la única dimensión de peso del sistema). Ver §6.1 y §10.
 - **Pagos de suscripciones:** MercadoPago **automático** vía webhooks (`module_webhook/mercadopago`).
 - **Invoices/facturas:** `invoice.schema.ts` (`facturaUrl`, `facturaUploadedAt`, `facturaUploadedBy`). Panel admin: `AdminInvoiceResolver` (`@UseGuards(ClerkAuthGuard, AdminGuard)`) con `getAllInvoicesAdmin` y `attachFacturaToInvoice`.
 - **Tokens de IA (chatbot):** `module_user/chatbot/application/service/chatbot.token.service.ts`. Buckets `TokenConsumerBucket` = PLAN / FREE / ANONYMOUS, cuota mensual (usuarios) o diaria (anónimos), bolsa comunitaria + logs de uso.
+
+### 6.1 Límite de almacenamiento de Mis Producciones (por usuario, en bytes)
+
+Mis Producciones tiene un cupo de **almacenamiento POR USUARIO**: la suma del peso
+(`sizeBytes`) de los **archivos** (sólo `kind:file`; los artículos no cuentan) de
+**todos** los blogs cuyo `creator` sea el usuario. Es la **única dimensión por peso**
+del sistema; todo lo demás es por cantidad.
+
+- **Configuración por plan (DB):** `subscriptionPlan.storageBytesLimit` en **bytes**.
+  Acumulativo entre suscripciones activas (igual que `filesPerBlogCount`). Valores
+  de referencia: `104857600` (100 MB) gratuito, `1073741824` (1 GB) premium. Si el
+  plan no lo define, se usa el piso gratuito por env var.
+- **Tamaño del archivo:** lo informa el **cliente** (`file.size` → `ProductionFileRequest.sizeBytes`),
+  se persiste en `ProductionFile.sizeBytes`. **Se confía en ese valor** (no se verifica
+  contra UploadThing). Si una feature necesita rigor, verificar el tamaño real en el server.
+- **Enforcement:** `ProductionService.reserveStorage()` dentro de la MISMA transacción que
+  el cupo por cantidad (`uploadFile`). Es **lectura + chequeo** (suma `sumStorageBytesByProductions`
+  sobre `findIdsByCreator`), no un `$inc` atómico de un solo doc, porque el total vive en varios
+  blogs. Mismo patrón que el gate de cantidad de blogs.
+- **Liberación:** NO hay contador que mantener. El uso se **agrega en vivo** desde
+  `productionitems`, así que borrar archivos (hard delete en cascada) libera espacio solo.
+  Los blogs viejos arrancan en 0 (no hay backfill).
+- **Huérfanos:** el archivo ya se subió a UploadThing antes de validar el cupo. Si el server
+  rechaza (p. ej. sin espacio), el cliente (`ProductionStaffToolbar`) borra el archivo de
+  UploadThing con el key real (sin el sufijo `"video"`).
+- **Respuesta/UI:** `ProductionLimitsResponse` expone `storageBytesLimit`, `storageUsedBytes`,
+  `storageAvailableBytes` (más los flags). El "Control de Consumo" (`ConsumptionControlModal`)
+  muestra una barra de almacenamiento sólo si el flag está activo.
+
+**Feature flags (env vars del server) — ambos límites nuevos son apagables:**
+
+- `PRODUCTION_STORAGE_LIMIT_ENABLED` (default **false**): activa el límite de almacenamiento.
+  Apagado = no se valida ni se contabiliza peso.
+- `PRODUCTION_BLOG_LIMIT_ENABLED` (default **true**): activa el tope de CANTIDAD de blogs por
+  usuario. Apagado = la disponibilidad de blogs queda "infinita" (se mapea a 0 en la respuesta;
+  el cliente debe mirar `blogLimitEnabled`, no el número).
+- `PRODUCTION_FREE_STORAGE_BYTES` (default `104857600` = 100 MB): piso gratuito de almacenamiento
+  para usuarios sin suscripción o con planes sin `storageBytesLimit`.
+
+Los flags y el piso viven en `module_shared/production-limits/production.limits.config.ts`
+(`isStorageLimitEnabled`, `isBlogLimitEnabled`, `getFreeStorageBytesLimit`, `formatBytes`).
+El cálculo de límites por usuario está en `calculateProductionLimits.ts` y se enriquece con el
+consumo real en `ProductionAccessService.buildUserLimitsResponse`.
 
 ---
 
@@ -200,6 +245,15 @@ Existen equivalentes para otras entidades: `boardActions.ts`, `groupActions.ts`,
 ## 10. Features / documentos en curso
 
 - **Mis Producciones (Desarrollo 3):** feature grande nueva. Requerimientos comerciales en `Presupuesto - Mis Producciones (Soonpublicite) V2.docx.md`; criterios de aceptación enriquecidos y anclados al código en `plan-feature-mis-producciones-ACs.md`. Puntos clave del diseño: entidad `Blog`/`Production` con **dueño polimórfico** (`User` | `Group`), blogs de grupo con **roles derivados del grupo** (`creator`→admin, `admins[]`→moderador, `members[]`→visión; sin roles nuevos), **acceso por clave** (tipo Zoom) que reemplaza el alcance por agenda, **tickets pagos** por transferencia + confirmación admin (10% comisión vía `admin/invoices`), y **límites por plan** nuevos (blogs personales=1, blogs de grupo=N configurable, archivos por blog). Borrado = hard delete (como Anuncios).
+  - **Backend implementado (fases 0–9)** en `server/src/contexts/module_production/production/`. Contrato para el front: `contrato-API-mis-producciones-FRONT.md`.
+  - **Autorización:** centralizada en `ProductionAccessService`. Las mutations no reciben `author_id`: el permiso se valida contra el dueño guardado (`PubliciteAuth` en blogs personales, listas del grupo en blogs de grupo). No clonar el patrón `authorize(userRequestId, author_id)` de Anuncios, que confía en un id que manda el cliente.
+  - **Árbol:** una sola colección `productionitems` con discriminator `kind` (`folder` | `file` | `article`); los discriminators se registran **una sola vez** por conexión (sólo en `ProductionModule` / `production.module.providers.ts`, que también usa el módulo de test).
+  - **Cupo de archivos (por blog, por cantidad):** contador `Production.filesCount` con `$inc` condicional dentro de la transacción (no contar documentos: dos subidas concurrentes se pasarían del límite). El límite es el del plan de `Production.creator`.
+  - **Cupo de almacenamiento (por usuario, por peso):** dimensión por MB/bytes, apagable por feature flag. Suma el `sizeBytes` de los archivos de todos los blogs del usuario y lo compara con `subscriptionPlan.storageBytesLimit`. Enforcement por lectura+chequeo en la transacción (no `$inc` atómico, porque el total vive en varios blogs). Ver **§6.1** para config, flags y detalle completo.
+  - **Tickets:** las compras (`productionticketpurchases`) son registros contables: no se borran con el blog, se cierran (pendientes → `cancelled`, activas → `expired`). El vencimiento se evalúa al leer (el server corre en Firebase Functions, sin scheduler).
+  - **Eventos:** `group.deleted` y `group.creator_changed` (emitidos por `GroupService`) borran o transfieren el blog del grupo.
+  - **Config:** parámetros por env vars en `module_shared/production-limits/production.limits.config.ts`, incluyendo los feature flags `PRODUCTION_STORAGE_LIMIT_ENABLED` (default off) y `PRODUCTION_BLOG_LIMIT_ENABLED` (default on) y el piso `PRODUCTION_FREE_STORAGE_BYTES` (ver §6.1).
+  - **Tests:** `server/src/contexts/module_production/test/` (integración contra la base QA `automated_tests`; correr con `--runInBand`).
 - **Valuación IA y Match IA (Desarrollo 2.4.2):** `Requerimientos Modulo IA Valuacion y Match Soonpublicite.docx.md` + `contrato-API-valuacion-match-FRONT.md`, `docs-plan-BE-valuacion-match.md`, `docs-plan-UI-valuacion-match.md`.
 - Otros planes en la raíz: `plan-feature-admin-facturas.md`, `plan-feature-avatares.md`, `docs-refactor-brief-inteligente-BE.md`.
 

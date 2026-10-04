@@ -1,9 +1,11 @@
 "use client";
 
 import { Tab, Tabs } from "@nextui-org/react";
-import { FaFileInvoiceDollar } from "react-icons/fa6";
+import { FaFileInvoiceDollar, FaTicket, FaFlag } from "react-icons/fa6";
 
 import AdminInvoicesTable from "./invoices/AdminInvoicesTable";
+import AdminProductionTicketsTable from "./production-tickets/AdminProductionTicketsTable";
+import AdminProductionReportsTable from "./production-reports/AdminProductionReportsTable";
 
 /**
  * Layout del panel admin. Está armado con tabs aunque hoy haya una sola
@@ -39,6 +41,32 @@ export default function AdminPanel() {
         >
           <div className="pt-4">
             <AdminInvoicesTable />
+          </div>
+        </Tab>
+        <Tab
+          key="production-tickets"
+          title={
+            <div className="flex items-center gap-2">
+              <FaTicket size={16} />
+              <span>Tickets de Producciones</span>
+            </div>
+          }
+        >
+          <div className="pt-4">
+            <AdminProductionTicketsTable />
+          </div>
+        </Tab>
+        <Tab
+          key="production-reports"
+          title={
+            <div className="flex items-center gap-2">
+              <FaFlag size={16} />
+              <span>Denuncias de Producciones</span>
+            </div>
+          }
+        >
+          <div className="pt-4">
+            <AdminProductionReportsTable />
           </div>
         </Tab>
       </Tabs>

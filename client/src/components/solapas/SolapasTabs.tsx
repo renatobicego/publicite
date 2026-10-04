@@ -1,6 +1,7 @@
 "use client";
 
 import PostsList from "@/app/(root)/(explorar)/anuncios/components/PostsList";
+import ProductionsLogic from "@/app/(root)/(explorar)/producciones/ProductionsLogic";
 import GroupsLogic from "@/app/(root)/(explorar)/grupos/GroupsLogic";
 import UsersLogic from "@/app/(root)/(explorar)/perfiles/UsersLogic";
 import BoardsLogic from "@/app/(root)/(explorar)/pizarras/BoardsLogic";
@@ -16,6 +17,7 @@ import {
   GROUPS,
   POST_CONTACTS,
   POST_LIBRE,
+  PRODUCTIONS,
 } from "@/utils/data/urls";
 import { Tab, Tabs } from "@nextui-org/react";
 import { usePathname } from "next/navigation";
@@ -23,7 +25,7 @@ import { useEffect, useRef } from "react";
 import TabTitle from "./TabTitle";
 import { FaLocationDot, FaUser, FaUserGroup } from "react-icons/fa6";
 import { IoMdMegaphone } from "react-icons/io";
-import { FaChalkboardTeacher } from "react-icons/fa";
+import { FaBook, FaChalkboardTeacher } from "react-icons/fa";
 
 const SolapasTabs = () => {
   const pathname = usePathname();
@@ -101,10 +103,10 @@ const SolapasTabs = () => {
       ? postTypeVisited.postType === "petition"
         ? "/necesidades"
         : postTypeVisited.postType === "service"
-        ? "/servicios"
-        : postTypeVisited.postType === "good"
-        ? "/bienes"
-        : ""
+          ? "/servicios"
+          : postTypeVisited.postType === "good"
+            ? "/bienes"
+            : ""
       : "";
 
   // Array of tab definitions
@@ -153,6 +155,11 @@ const SolapasTabs = () => {
       ),
       component: <PostsList postTypeVisited={postTypeVisited} hideMap />,
       requiresLogin: true,
+    },
+    {
+      key: PRODUCTIONS,
+      title: <TabTitle title="Producciones" icon={<FaBook />} />,
+      component: <ProductionsLogic />,
     },
     // {
     //   key: `${POST_RECENTS}${postTypeUrlVisited}`,

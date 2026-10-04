@@ -41,6 +41,8 @@ export class UserPerson extends User {
       user.getNotifications,
       user.getFriendRequests,
       user.getActiveRelations,
+      user.getProductions,
+      user.getCredentialId,
     );
     this.gender = gender;
     this.birthDate = birthDate;

@@ -58,11 +58,11 @@ export default async function ProfileLayout(props: {
     isMyContact =
       user.userRelations?.find(
         (relation) =>
-          relation.userA._id === loggedUser?.sessionClaims?.metadata.mongoId
+          relation.userA?._id === loggedUser?.sessionClaims?.metadata.mongoId
       ) ||
       user.userRelations?.find(
         (relation) =>
-          relation.userB._id === loggedUser?.sessionClaims?.metadata.mongoId
+          relation.userB?._id === loggedUser?.sessionClaims?.metadata.mongoId
       );
   }
 

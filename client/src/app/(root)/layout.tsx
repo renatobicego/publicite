@@ -10,6 +10,7 @@ import { SocketProvider } from "../socketProvider";
 import { UserDataProvider } from "./providers/userDataProvider";
 import { LocationProvider } from "./providers/LocationProvider";
 import { Chatbot } from "@/components/buttons/ChatbotButton/Chatbot";
+import PendingReviewBanner from "@/components/AppSwitcher/PendingReviewBanner";
 export default async function NavigationLayout({
   children,
 }: {
@@ -28,6 +29,11 @@ export default async function NavigationLayout({
         <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
         <BackgroundProvider username={user?.username}>
           <Header isSignedIn={!!user} />
+          {user && (
+            <div className="w-full px-4 md:px-6 lg:px-8 pt-2">
+              <PendingReviewBanner />
+            </div>
+          )}
           <LocationProvider>
             {children}
             <HelpButton />
