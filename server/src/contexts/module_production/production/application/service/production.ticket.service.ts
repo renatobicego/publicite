@@ -17,6 +17,7 @@ import {
 import {
   ProductionLockReason,
   ProductionRole,
+  ProductionOwnerType,
 } from '../../domain/entity/enum/production.enums';
 import {
   ProductionPayoutStatus,
@@ -60,6 +61,14 @@ import {
   toTicketResponse,
 } from '../functions/production-ticket.view';
 
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { production_ticket_notification } from 'src/contexts/module_shared/event-emmiter/events';
+import {
+  ProductionTicketNotificationAudience,
+  ProductionTicketNotificationEvent,
+  ProductionTicketNotificationPayload,
+} from 'src/contexts/module_user/notification/domain/entity/production-ticket.events';
+
 const DUPLICATE_KEY = 11000;
 const MAX_PAGE_SIZE = 50;
 
@@ -93,6 +102,7 @@ export class ProductionTicketService implements ProductionTicketServiceInterface
     @Inject('ProductionServiceInterface')
     private readonly productionService: ProductionServiceInterface,
     private readonly accessService: ProductionAccessService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   // ---------------------------------------------------------------------------
@@ -103,6 +113,84 @@ export class ProductionTicketService implements ProductionTicketServiceInterface
     const production = await this.productionRepository.findById(productionId);
     if (!production) throw new NotFoundException('Producción no encontrada');
     return production;
+  }
+
+  /** Staff del blog: el dueño, o el creador y los admins del grupo. */
+  private async getStaffIds(productionId: string): Promise<string[]> {
+    const production = await this.productionRepository.findById(productionId);
+    if (!production) return [];
+    if (production.getOwnerType !== ProductionOwnerType.Group) {
+      return [String(production.getOwner)];
+    }
+    const roster = await this.productionRepository.findGroupRoster(
+      production.getOwner,
+    );
+    const toId = (member: any) => String(member?._id ?? member);
+    return [roster?.creator, ...(roster?.admins ?? [])]
+      .filter(Boolean)
+      .map(toId);
+  }
+
+  /**
+   * Avisa de un paso de la venta a las audiencias indicadas. Cada usuario
+   * recibe una sola notificación (comprador > staff > admin) y quien hizo la
+   * acción no se notifica a sí mismo. Nunca lanza: un aviso que falla no tiene
+   * que romper la compra ni el cobro.
+   */
+  private async notifyPurchase(
+    event: ProductionTicketNotificationEvent,
+    purchase: ProductionTicketPurchase,
+    audiences: ProductionTicketNotificationAudience[],
+    actorId?: string,
+  ): Promise<void> {
+    try {
+      const byUser = new Map<string, ProductionTicketNotificationAudience>();
+      const add = (
+        userIds: string[],
+        audience: ProductionTicketNotificationAudience,
+      ) =>
+        userIds.forEach((userId) => {
+          if (userId && userId !== actorId && !byUser.has(userId)) {
+            byUser.set(userId, audience);
+          }
+        });
+
+      if (audiences.includes('buyer')) add([purchase.buyer], 'buyer');
+      if (audiences.includes('staff')) {
+        add(await this.getStaffIds(purchase.production), 'staff');
+      }
+      if (audiences.includes('admin')) {
+        add(await this.productionRepository.findAdminUserIds(), 'admin');
+      }
+      if (byUser.size === 0) return;
+
+      const payload: ProductionTicketNotificationPayload = {
+        event,
+        recipients: Array.from(byUser, ([userId, audience]) => ({
+          userId,
+          audience,
+        })),
+        data: {
+          purchaseId: purchase._id,
+          productionId: purchase.production,
+          productionTitle: purchase.productionTitle,
+          targetId: purchase.target ?? null,
+          targetName: purchase.targetName ?? null,
+          amount: purchase.amount,
+          currency: purchase.currency,
+          creatorPayoutAmount: purchase.creatorPayoutAmount ?? null,
+          commissionAmount: purchase.commissionAmount ?? null,
+          reason: purchase.statusReason ?? null,
+        },
+      };
+      // emitAsync: en Firebase Functions lo que queda corriendo después de
+      // responder se puede congelar.
+      await this.eventEmitter.emitAsync(production_ticket_notification, payload);
+    } catch (error: any) {
+      this.logger.error(
+        `Error notifying ${event} of purchase ${purchase._id}: ${error?.message}`,
+      );
+    }
   }
 
   private async getTicketOrFail(ticketId: string): Promise<ProductionTicket> {
@@ -266,6 +354,12 @@ export class ProductionTicketService implements ProductionTicketServiceInterface
       );
     }
     this.logger.log(`Ticket purchase ${purchase._id} activated by ${activatedBy}`);
+    await this.notifyPurchase(
+      ProductionTicketNotificationEvent.activated,
+      activated,
+      ['buyer', 'staff'],
+      activatedBy,
+    );
     return activated;
   }
 
@@ -629,10 +723,16 @@ export class ProductionTicketService implements ProductionTicketServiceInterface
       this.logger.log(
         `Ticket purchase ${purchaseId} created by ${userId} (${ticket.isPaid ? 'paid' : 'free'})`,
       );
-      return this.viewPurchase(
-        await this.getPurchaseOrFail(purchaseId),
-        'buyer',
-      );
+      const created = await this.getPurchaseOrFail(purchaseId);
+      // Los tickets gratuitos no avisan: son visitas, no ventas.
+      if (created.isPaid) {
+        await this.notifyPurchase(
+          ProductionTicketNotificationEvent.purchased,
+          created,
+          ['buyer', 'staff', 'admin'],
+        );
+      }
+      return this.viewPurchase(created, 'buyer');
     } catch (error: any) {
       if (error?.code === DUPLICATE_KEY) {
         throw new BadRequestException(
@@ -714,7 +814,17 @@ export class ProductionTicketService implements ProductionTicketServiceInterface
         'Sólo se puede confirmar una compra pendiente',
       );
     }
-    if (activate) updated = await this.activate(updated, adminId);
+    if (activate) {
+      // Confirmar + habilitar avisa una sola vez (acceso habilitado).
+      updated = await this.activate(updated, adminId);
+    } else {
+      await this.notifyPurchase(
+        ProductionTicketNotificationEvent.confirmed,
+        updated,
+        ['buyer', 'staff'],
+        adminId,
+      );
+    }
     return this.viewPurchase(updated, 'admin');
   }
 
@@ -742,6 +852,12 @@ export class ProductionTicketService implements ProductionTicketServiceInterface
         'Sólo se puede rechazar una compra pendiente o confirmada',
       );
     }
+    await this.notifyPurchase(
+      ProductionTicketNotificationEvent.rejected,
+      updated,
+      ['buyer', 'staff'],
+      adminId,
+    );
     return this.viewPurchase(updated, 'admin');
   }
 
@@ -770,6 +886,12 @@ export class ProductionTicketService implements ProductionTicketServiceInterface
       facturaUploadedAt: new Date(),
       facturaUploadedBy: adminId,
     });
+    await this.notifyPurchase(
+      ProductionTicketNotificationEvent.facturaAttached,
+      updated!,
+      ['staff'],
+      adminId,
+    );
     return this.viewPurchase(updated!, 'admin');
   }
 
@@ -795,6 +917,12 @@ export class ProductionTicketService implements ProductionTicketServiceInterface
         'Sólo se liquida un ticket pago con el pago confirmado',
       );
     }
+    await this.notifyPurchase(
+      ProductionTicketNotificationEvent.payoutDone,
+      updated,
+      ['staff'],
+      adminId,
+    );
     return this.viewPurchase(updated, 'admin');
   }
 }

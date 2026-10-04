@@ -35,6 +35,11 @@ import { NotificationPostCalification } from '../../domain/entity/notification.p
 import { NotificationShareServiceInterface } from '../../domain/service/notification.share.service.interface';
 import { NotificationShare } from '../../domain/entity/notification.share';
 import { NotificationSubscription } from '../../domain/entity/notification.subscription.entity';
+import { NotificationProductionTicket } from '../../domain/entity/notification.productionTicket.entity';
+import {
+  PRODUCTION_TICKET_NOTIFICATION_SENDER,
+  ProductionTicketNotificationPayload,
+} from '../../domain/entity/production-ticket.events';
 
 export class NotificationService
   implements NotificationHandlerServiceInterface, NotificationServiceInterface
@@ -198,6 +203,47 @@ export class NotificationService
       );
     } catch (error: any) {
       throw error;
+    }
+  }
+
+  /**
+   * Avisos de venta/cobro de tickets de Mis Producciones: una notificación por
+   * destinatario (comprador, staff del blog o admin de la plataforma).
+   */
+  async handleProductionTicketNotification(
+    payload: ProductionTicketNotificationPayload,
+  ): Promise<void> {
+    const factory = NotificationFactory.getInstance(this.logger);
+    for (const recipient of payload.recipients) {
+      try {
+        const notification: any = {
+          event: payload.event,
+          viewed: false,
+          user: recipient.userId,
+          backData: {
+            userIdTo: recipient.userId,
+            userIdFrom: PRODUCTION_TICKET_NOTIFICATION_SENDER,
+          },
+          socketJobId: 'This notification does not have a socketJobId',
+          type: typeOfNotification.production_ticket_notifications,
+          notificationEntityId: payload.data.purchaseId,
+          frontData: {
+            productionTicket: { ...payload.data, audience: recipient.audience },
+          },
+        };
+        const notificationProductionTicket = factory.createNotification(
+          typeOfNotification.production_ticket_notifications,
+          notification,
+        );
+        await this.notificationSubscriptionService.createNotificationProductionTicketAndSendToUser(
+          notificationProductionTicket as NotificationProductionTicket,
+        );
+      } catch (error: any) {
+        // Un destinatario que falla no corta los avisos de los demás.
+        this.logger.error(
+          `Error notifying ${recipient.userId} of ${payload.event}: ${error?.message}`,
+        );
+      }
     }
   }
 

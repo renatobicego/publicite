@@ -149,6 +149,14 @@ export class ProductionRepository implements ProductionRepositoryInterface {
     return result;
   }
 
+  async findAdminUserIds(): Promise<string[]> {
+    const admins: any[] = await this.userModel
+      .find({ isAdmin: true })
+      .select('_id')
+      .lean();
+    return admins.map((admin) => admin._id.toString());
+  }
+
   async findUsersInfo(
     userIds: string[],
   ): Promise<Map<string, ProductionOwnerInfo & { email?: string }>> {

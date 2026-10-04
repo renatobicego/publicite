@@ -28,6 +28,7 @@ import { NotificationPostCalificationModel } from '../schemas/notification.postC
 import { NotificationShareService } from '../../application/service/notification.share.service';
 import { NotificationShareModel } from '../schemas/notification.share.schema';
 import { NotificationSubscriptionModel } from '../schemas/notification.subscription.schema';
+import { NotificationProductionTicketModel } from '../schemas/notification.productionTicket.schema';
 import { NotificationController } from '../controller/notification.controller';
 
 @Module({
@@ -72,6 +73,10 @@ import { NotificationController } from '../controller/notification.controller';
           {
             name: NotificationSubscriptionModel.modelName,
             schema: NotificationSubscriptionModel.schema,
+          },
+          {
+            name: NotificationProductionTicketModel.modelName,
+            schema: NotificationProductionTicketModel.schema,
           },
         ],
       },

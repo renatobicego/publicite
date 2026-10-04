@@ -10,10 +10,13 @@ const new_review = 'new_review';
 // Grupos: los escucha Mis Producciones para mantener el blog del grupo.
 const group_deleted = 'group.deleted';
 const group_creator_changed = 'group.creator_changed';
+// Mis Producciones: avisos de venta/cobro de tickets. Los escucha Notificaciones.
+const production_ticket_notification = 'production.ticket_notification';
 
 export {
     group_deleted,
     group_creator_changed,
+    production_ticket_notification,
     contact_seller_new_request,
     post_deleted,
     downgrade_plan_contact,

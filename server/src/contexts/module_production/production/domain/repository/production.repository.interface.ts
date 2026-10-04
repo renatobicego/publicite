@@ -58,6 +58,8 @@ export interface ProductionRepositoryInterface {
   findUsersInfo(
     userIds: string[],
   ): Promise<Map<string, ProductionOwnerInfo & { email?: string }>>;
+  /** Ids de los admins de la plataforma (`User.isAdmin`), para notificarlos. */
+  findAdminUserIds(): Promise<string[]>;
   findList(
     filter: ProductionListFilter,
     page: number,

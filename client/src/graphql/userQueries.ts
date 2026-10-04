@@ -212,6 +212,19 @@ export const getAllNotificationsQuery = gql`
           subscription {
             event
           }
+          productionTicket {
+            audience
+            purchaseId
+            productionId
+            productionTitle
+            targetId
+            targetName
+            amount
+            currency
+            creatorPayoutAmount
+            commissionAmount
+            reason
+          }
           share {
             _id
             description

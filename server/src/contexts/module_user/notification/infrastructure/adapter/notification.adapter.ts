@@ -3,7 +3,8 @@ import { NotificationAdapterInterface } from "../../domain/adapter/notification.
 import { NotificationServiceInterface } from "../../domain/service/notification.service.interface";
 import { notification_graph_model_get_all } from "../../application/dtos/getAll.notification.dto";
 import { OnEvent } from "@nestjs/event-emitter";
-import { downgrade_plan_contact_notification, downgrade_plan_post_notification, subscription_event } from "src/contexts/module_shared/event-emmiter/events";
+import { downgrade_plan_contact_notification, downgrade_plan_post_notification, production_ticket_notification, subscription_event } from "src/contexts/module_shared/event-emmiter/events";
+import { ProductionTicketNotificationPayload } from "../../domain/entity/production-ticket.events";
 import { PaymentDataFromMeli } from "../../application/dtos/payment.data.meli";
 import { DOWNGRADE_PLAN_CONTACT_EVENT, DOWNGRADE_PLAN_POST_EVENT } from "../../domain/entity/downgrade.plan.events";
 
@@ -71,6 +72,17 @@ export class NotificationAdapter implements NotificationAdapterInterface {
             await this.notificationService.handleSubscriptionNotification(userId, DOWNGRADE_PLAN_POST_EVENT)
         } catch (error: any) {
             throw error;
+        }
+    }
+
+
+    @OnEvent(production_ticket_notification)
+    async production_ticket_notification(payload: ProductionTicketNotificationPayload): Promise<void> {
+        // No relanza: un aviso que falla no tiene que romper la compra o el cobro.
+        try {
+            await this.notificationService.handleProductionTicketNotification(payload)
+        } catch (error: any) {
+            console.error('Error en notificación de ticket de producción', error?.message)
         }
     }
 

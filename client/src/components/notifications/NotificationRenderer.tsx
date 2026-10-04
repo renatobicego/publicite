@@ -11,8 +11,10 @@ import ElementShared from "./sharedElements/ElementShared";
 import PaymentNotification from "./suscriptions/PaymentNotification";
 import UserRelationNotificationCard from "./users/UserRelationNotification";
 import SubscriptionDowngradeNotification from "./suscriptions/SubscriptionDowngradeNotification";
+import ProductionTicketNotification from "./productionTickets/ProductionTicketNotification";
 
 type NotificationType =
+  | "production_ticket"
   | "notification_group"
   | "magazine"
   | "notification_user"
@@ -26,6 +28,8 @@ type NotificationType =
   | "downgrade_plan";
 
 const notificationComponents = {
+  // Primero: sus eventos no deben caer en otro tipo por coincidencia parcial.
+  production_ticket: ProductionTicketNotification,
   notification_group: GroupNotificationCard,
   magazine: MagazineNotificationCard,
   notification_user: UserRelationNotificationCard,
@@ -41,7 +45,7 @@ const notificationComponents = {
 
 const getNotificationType = (event: string): NotificationType | null => {
   for (const type of Object.keys(
-    notificationComponents
+    notificationComponents,
   ) as NotificationType[]) {
     if (event.includes(type)) {
       return type;
@@ -61,7 +65,7 @@ const NotificationRenderer: React.FC<NotificationRendererProps> = ({
     //filter notifications by unique id
     const uniqueNotifications = notifications.filter(
       (notification, index, self) =>
-        index === self.findIndex((n) => n._id === notification._id)
+        index === self.findIndex((n) => n._id === notification._id),
     );
     return uniqueNotifications.map((notification) => {
       const type = getNotificationType(notification.event);

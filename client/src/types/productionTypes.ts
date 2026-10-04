@@ -779,3 +779,36 @@ export interface ProductionModerationInput {
   action: ProductionModerationAction;
   note?: string;
 }
+
+// ---------------------------------------------------------------------------
+// Notificaciones de venta/cobro de tickets
+// ---------------------------------------------------------------------------
+
+export type ProductionTicketNotificationEvent =
+  | "notification_production_ticket_purchased"
+  | "notification_production_ticket_confirmed"
+  | "notification_production_ticket_activated"
+  | "notification_production_ticket_rejected"
+  | "notification_production_ticket_payout_done"
+  | "notification_production_ticket_factura_attached";
+
+/** A quién le habla la notificación: cambia el texto y el link. */
+export type ProductionTicketNotificationAudience = "buyer" | "staff" | "admin";
+
+export interface ProductionTicketNotification extends BaseNotification {
+  frontData: {
+    productionTicket: {
+      audience: ProductionTicketNotificationAudience;
+      purchaseId: string;
+      productionId: string;
+      productionTitle: string;
+      targetId?: string | null;
+      targetName?: string | null;
+      amount?: number | null;
+      currency?: string | null;
+      creatorPayoutAmount?: number | null;
+      commissionAmount?: number | null;
+      reason?: string | null;
+    };
+  };
+}

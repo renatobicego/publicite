@@ -43,6 +43,8 @@ import { INotificationShare, NotificationShareModel } from '../schemas/notificat
 import { NotificationShare } from '../../domain/entity/notification.share';
 import { NotificationSubscription } from '../../domain/entity/notification.subscription.entity';
 import { INotificationSubscription, NotificationSubscriptionModel } from '../schemas/notification.subscription.schema';
+import { NotificationProductionTicket } from '../../domain/entity/notification.productionTicket.entity';
+import { INotificationProductionTicket, NotificationProductionTicketModel } from '../schemas/notification.productionTicket.schema';
 
 export class NotificationRepository implements NotificationRepositoryInterface {
   constructor(
@@ -76,6 +78,9 @@ export class NotificationRepository implements NotificationRepositoryInterface {
 
     @InjectModel(NotificationSubscriptionModel.modelName)
     private readonly notificationSubscriptionDocument: Model<INotificationSubscription>,
+
+    @InjectModel(NotificationProductionTicketModel.modelName)
+    private readonly notificationProductionTicketDocument: Model<INotificationProductionTicket>,
   ) { }
 
 
@@ -349,6 +354,27 @@ export class NotificationRepository implements NotificationRepositoryInterface {
     }
   }
 
+
+  async saveProductionTicketNotification(notification: NotificationProductionTicket, session?: any): Promise<Types.ObjectId> {
+    try {
+      this.logger.log('Saving notification production ticket in repository...');
+
+      const ticketNotification = new this.notificationProductionTicketDocument(
+        notification,
+      );
+      const ticketNotificationSaved = await ticketNotification.save({
+        session,
+      });
+      return ticketNotificationSaved._id;
+    } catch (error: any) {
+      this.logger.error(
+        'An error occurred while saving notification',
+        error.message,
+      );
+      this.logger.error(error);
+      throw error;
+    }
+  }
 
   async saveSubscriptionNotification(notification: NotificationSubscription, session?: any): Promise<Types.ObjectId> {
     try {

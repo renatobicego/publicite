@@ -615,6 +615,21 @@ type front_data_POSTCALIFICATION {
   review: postCalificationReview
 }
 
+type front_data_PRODUCTIONTICKET {
+  """buyer | staff | admin"""
+  audience: String!
+  purchaseId: String!
+  productionId: String!
+  productionTitle: String!
+  targetId: String
+  targetName: String
+  amount: Float
+  currency: String
+  creatorPayoutAmount: Float
+  commissionAmount: Float
+  reason: String
+}
+
 type frontData {
   group: front_data_GROUP
   magazine: front_data_MAGAZINE
@@ -625,6 +640,7 @@ type frontData {
   subscriptionPlan: front_data_SUBSCRIPTIONPLAN
   share: front_data_SHARE
   subscription: front_data_SUBSCRIPTION
+  productionTicket: front_data_PRODUCTIONTICKET
 }
 
 type backData {

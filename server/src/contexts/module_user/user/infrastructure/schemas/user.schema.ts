@@ -14,6 +14,7 @@ interface IUser extends Document {
   profilePhotoUrl: string;
   countryRegion: string;
   isActive: boolean;
+  isAdmin: boolean;
   dni: string;
   addressPrivacy: string;
   contact: Schema.Types.ObjectId;
@@ -46,6 +47,10 @@ const UserSchema = new Schema<IUser>(
     profilePhotoUrl: { type: String },
     countryRegion: { type: String },
     isActive: { type: Boolean, default: true },
+    // Se carga A MANO en la base. Sirve para saber en Mongo quién es admin
+    // (p. ej. a quién notificar); la AUTORIZACIÓN sigue siendo el rol de Clerk
+    // (AdminGuard), así que hay que mantener los dos a la par.
+    isAdmin: { type: Boolean, default: false },
     dni: { type: String, required: true },
     addressPrivacy: { type: String, required: true },
     contact: { type: Schema.Types.ObjectId, ref: 'Contact' },
@@ -80,6 +85,11 @@ const UserSchema = new Schema<IUser>(
 //Indices
 UserSchema.index({ name: 1 });
 UserSchema.index({ finder: 1 });
+// Parcial: sólo indexa a los admins, que son un puñado.
+UserSchema.index(
+  { isAdmin: 1 },
+  { partialFilterExpression: { isAdmin: true } },
+);
 
 const UserModel = model<IUser>('User', UserSchema);
 

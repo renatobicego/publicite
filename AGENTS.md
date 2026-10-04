@@ -118,6 +118,7 @@ module_x/<submodulo>/
   - `ClerkAuthGuardOptional` — para listados públicos (sin token muestra solo público; con token amplía visibilidad).
   - `AdminGuard` — exige rol admin.
 - **Ownership:** `PubliciteAuth.authorize(userRequestId, author_id)` (`module_shared/auth/publicite_auth/`) — lanza `UnauthorizedException` si no coinciden. Se llama en cada mutation que modifica recursos propios.
+- **`User.isAdmin` (Mongo)** se carga **a mano** en la base (no se sincroniza con Clerk). Sirve para saber en la base quién es admin (p. ej. a quién notificar); **no autoriza nada**: la autorización sigue siendo `AdminGuard` contra el rol de Clerk, así que al dar o quitar el rol hay que tocar los dos lados.
 - El `mongoId` del usuario viaja en el token de Clerk y se lee en el cliente como `sessionClaims.metadata.mongoId` / `publicMetadata.mongoId`.
 
 ---
@@ -251,6 +252,7 @@ Existen equivalentes para otras entidades: `boardActions.ts`, `groupActions.ts`,
   - **Cupo de archivos (por blog, por cantidad):** contador `Production.filesCount` con `$inc` condicional dentro de la transacción (no contar documentos: dos subidas concurrentes se pasarían del límite). El límite es el del plan de `Production.creator`.
   - **Cupo de almacenamiento (por usuario, por peso):** dimensión por MB/bytes, apagable por feature flag. Suma el `sizeBytes` de los archivos de todos los blogs del usuario y lo compara con `subscriptionPlan.storageBytesLimit`. Enforcement por lectura+chequeo en la transacción (no `$inc` atómico, porque el total vive en varios blogs). Ver **§6.1** para config, flags y detalle completo.
   - **Tickets:** las compras (`productionticketpurchases`) son registros contables: no se borran con el blog, se cierran (pendientes → `cancelled`, activas → `expired`). El vencimiento se evalúa al leer (el server corre en Firebase Functions, sin scheduler).
+  - **Notificaciones de tickets:** cada paso de una venta paga (compra, confirmación, habilitación, rechazo, liquidación del 90%, factura de la comisión) emite `production.ticket_notification` desde `ProductionTicketService.notifyPurchase`; lo escucha `NotificationAdapter` y crea una notificación por destinatario (discriminator `NotificationProductionTicket`, `frontData.productionTicket` con `audience` = `buyer` | `staff` | `admin`). Los tickets gratuitos no avisan. Staff = dueño del blog, o `creator` + `admins[]` del grupo. Los admins de la plataforma son los usuarios con `User.isAdmin` (ver §5). Un aviso que falla nunca rompe la compra ni el cobro. En el cliente: `components/notifications/productionTickets/`.
   - **Eventos:** `group.deleted` y `group.creator_changed` (emitidos por `GroupService`) borran o transfieren el blog del grupo.
   - **Config:** parámetros por env vars en `module_shared/production-limits/production.limits.config.ts`, incluyendo los feature flags `PRODUCTION_STORAGE_LIMIT_ENABLED` (default off) y `PRODUCTION_BLOG_LIMIT_ENABLED` (default on) y el piso `PRODUCTION_FREE_STORAGE_BYTES` (ver §6.1).
   - **Tests:** `server/src/contexts/module_production/test/` (integración contra la base QA `automated_tests`; correr con `--runInBand`).

@@ -1,5 +1,6 @@
 import { notification_graph_model_get_all } from "../../application/dtos/getAll.notification.dto";
 import { PaymentDataFromMeli } from "../../application/dtos/payment.data.meli";
+import { ProductionTicketNotificationPayload } from "../entity/production-ticket.events";
 
 export interface NotificationServiceInterface {
 
@@ -13,6 +14,7 @@ export interface NotificationServiceInterface {
     ): Promise<notification_graph_model_get_all>;
     handlePushSubscriptionNotification(paymentDataFromMeli: PaymentDataFromMeli): Promise<void>;
     handleSubscriptionNotification(userId: string, event: string): Promise<void>
+    handleProductionTicketNotification(payload: ProductionTicketNotificationPayload): Promise<void>
 
 
 }
