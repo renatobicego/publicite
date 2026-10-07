@@ -24,6 +24,7 @@ import {
   ProductionReportTargetListResponse,
 } from '../../../domain/entity/models_graphql/HTTP-RESPONSE/production-report.response';
 import { ProductionReportStatus } from '../../../domain/entity/enum/production-report.enums';
+import { ProductionCommissionStatus } from '../../../domain/entity/enum/production-ticket.enums';
 
 /**
  * Operaciones de los admins de la plataforma sobre Mis Producciones.
@@ -109,7 +110,7 @@ export class ProductionAdminResolver {
 
   @Query(() => ProductionTicketPurchaseListResponse, {
     description:
-      'Sólo admin: compras de tickets de todos los blogs, con el alias/CBU del creador para liquidar',
+      'Sólo admin: compras de tickets de todos los blogs, para controlar las comisiones',
   })
   async getProductionTicketPurchasesAdmin(
     @Args('page', { type: () => Int }) page: number,
@@ -126,30 +127,30 @@ export class ProductionAdminResolver {
 
   @Mutation(() => ProductionTicketPurchaseResponse, {
     description:
-      'Sólo admin: confirma que llegó la transferencia. activate=true además habilita el acceso',
+      'Sólo admin: marca la comisión como cobrada (paid) o impaga (unpaid). Impaga suspende el acceso hasta que se marque cobrada',
   })
-  async confirmProductionTicketPurchase(
+  async setProductionTicketCommissionStatus(
     @Args('purchaseId', { type: () => ID }) purchaseId: string,
-    @Args('activate', { type: () => Boolean, defaultValue: false })
-    activate: boolean,
+    @Args('status', { type: () => ProductionCommissionStatus })
+    status: ProductionCommissionStatus,
     @Context() context: ProductionGqlContext,
   ): Promise<ProductionTicketPurchaseResponse> {
-    return this.ticketAdapter.confirmProductionTicketPurchase(
+    return this.ticketAdapter.setProductionTicketCommissionStatus(
       purchaseId,
+      status,
       requireUserId(context),
-      activate,
     );
   }
 
   @Mutation(() => ProductionTicketPurchaseResponse, {
-    description: 'Sólo admin: rechaza una compra (la transferencia no llegó)',
+    description: 'Sólo admin: rechaza una compra pendiente',
   })
-  async rejectProductionTicketPurchase(
+  async rejectProductionTicketPurchaseAsAdmin(
     @Args('input', { type: () => ProductionTicketRejectInput })
     input: ProductionTicketRejectInput,
     @Context() context: ProductionGqlContext,
   ): Promise<ProductionTicketPurchaseResponse> {
-    return this.ticketAdapter.rejectProductionTicketPurchase(
+    return this.ticketAdapter.rejectProductionTicketPurchaseAsAdmin(
       input.purchaseId,
       input.reason,
       requireUserId(context),
@@ -157,20 +158,7 @@ export class ProductionAdminResolver {
   }
 
   @Mutation(() => ProductionTicketPurchaseResponse, {
-    description: 'Sólo admin: habilita el acceso de una compra confirmada',
-  })
-  async activateProductionTicketPurchaseAsAdmin(
-    @Args('purchaseId', { type: () => ID }) purchaseId: string,
-    @Context() context: ProductionGqlContext,
-  ): Promise<ProductionTicketPurchaseResponse> {
-    return this.ticketAdapter.activateProductionTicketPurchaseAsAdmin(
-      purchaseId,
-      requireUserId(context),
-    );
-  }
-
-  @Mutation(() => ProductionTicketPurchaseResponse, {
-    description: 'Sólo admin: asocia la factura del 10% de comisión',
+    description: 'Sólo admin: asocia la factura de la comisión, para el comprador',
   })
   async attachFacturaToProductionTicketPurchase(
     @Args('input', { type: () => AttachProductionTicketFacturaInput })
@@ -180,19 +168,6 @@ export class ProductionAdminResolver {
     return this.ticketAdapter.attachFacturaToProductionTicketPurchase(
       input.purchaseId,
       input.facturaUrl,
-      requireUserId(context),
-    );
-  }
-
-  @Mutation(() => ProductionTicketPurchaseResponse, {
-    description: 'Sólo admin: marca como liquidado el 90% al creador',
-  })
-  async markProductionTicketPayoutDone(
-    @Args('purchaseId', { type: () => ID }) purchaseId: string,
-    @Context() context: ProductionGqlContext,
-  ): Promise<ProductionTicketPurchaseResponse> {
-    return this.ticketAdapter.markProductionTicketPayoutDone(
-      purchaseId,
       requireUserId(context),
     );
   }

@@ -35,35 +35,37 @@ const messages: Record<
 > = {
   notification_production_ticket_purchased: {
     buyer: (d) =>
-      `Recibimos tu compra por ${money(d.currency, d.amount)}. Te avisamos cuando se confirme la transferencia.`,
+      `Recibimos tu compra por ${money(d.currency, d.amount)}. El acceso se habilita cuando el blog verifique tu transferencia.`,
     staff: (d) =>
-      `Vendiste un ticket por ${money(d.currency, d.amount)}. La transferencia está pendiente de confirmación por Soonpublicité.`,
+      `Vendiste un ticket por ${money(d.currency, d.amount)}. Verificá que te llegó la transferencia de ${money(d.currency, d.creatorPayoutAmount)} y habilitá el acceso.`,
     admin: (d) =>
-      `Nueva compra de ticket por ${money(d.currency, d.amount)}: hay una transferencia para confirmar.`,
-  },
-  notification_production_ticket_confirmed: {
-    buyer: () =>
-      "Confirmamos tu pago. El acceso se habilita cuando lo active el creador.",
-    staff: (d) =>
-      `Soonpublicité confirmó el pago de ${money(d.currency, d.amount)}. Falta habilitar el acceso del comprador.`,
+      `Nueva compra de ticket por ${money(d.currency, d.amount)}: hay una comisión de ${money(d.currency, d.commissionAmount)} para verificar.`,
   },
   notification_production_ticket_activated: {
     buyer: () => "Tu acceso ya está habilitado.",
     staff: (d) =>
-      `Se confirmó el pago de ${money(d.currency, d.amount)} y el acceso del comprador quedó habilitado.`,
+      `Se verificó la transferencia de ${money(d.currency, d.creatorPayoutAmount)} y el acceso del comprador quedó habilitado.`,
   },
   notification_production_ticket_rejected: {
     buyer: (d) => `Tu compra fue rechazada${d.reason ? `: ${d.reason}` : "."}`,
     staff: (d) =>
-      `Soonpublicité rechazó una compra de ${money(d.currency, d.amount)}${d.reason ? `: ${d.reason}` : "."}`,
+      `Se rechazó una compra de ${money(d.currency, d.amount)}${d.reason ? `: ${d.reason}` : "."}`,
   },
-  notification_production_ticket_payout_done: {
-    staff: (d) =>
-      `Soonpublicité te transfirió ${money(d.currency, d.creatorPayoutAmount)} por la venta de un ticket (ya descontada la comisión).`,
+  notification_production_ticket_suspended: {
+    buyer: (d) =>
+      `Tu acceso está suspendido: falta la comisión de ${money(d.currency, d.commissionAmount)} para Soonpublicité. Se restablece cuando la pagues.`,
+    staff: () =>
+      "Soonpublicité suspendió el acceso de un comprador porque no pagó la comisión.",
+  },
+  notification_production_ticket_restored: {
+    buyer: () =>
+      "Registramos el pago de la comisión: tu acceso volvió a estar habilitado.",
+    staff: () =>
+      "El comprador pagó la comisión de Soonpublicité y ya no está suspendido.",
   },
   notification_production_ticket_factura_attached: {
-    staff: (d) =>
-      `Ya está disponible la factura de la comisión de ${money(d.currency, d.commissionAmount)} por la venta de un ticket.`,
+    buyer: (d) =>
+      `Ya está disponible la factura de la comisión de ${money(d.currency, d.commissionAmount)} que pagaste por tu ticket.`,
   },
 };
 

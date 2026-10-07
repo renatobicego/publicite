@@ -59,17 +59,21 @@ export enum ProductionLockReason {
 
 export enum ProductionTicketPurchaseStatus {
   pending = "pending",
-  confirmed = "confirmed",
   active = "active",
   expired = "expired",
   rejected = "rejected",
   cancelled = "cancelled",
 }
 
-export enum ProductionPayoutStatus {
+/**
+ * Comisión que el comprador le transfiere a Soonpublicité. `unpaid` suspende
+ * el acceso hasta que el admin de la plataforma la marque cobrada.
+ */
+export enum ProductionCommissionStatus {
   notApplicable = "notApplicable",
   pending = "pending",
   paid = "paid",
+  unpaid = "unpaid",
 }
 
 export enum ProductionBulkAction {
@@ -411,13 +415,12 @@ export interface ProductionFanList {
 export interface ProductionTicketStats {
   purchases: number;
   active: number;
-  /** Bruto de los tickets pagos confirmados. */
+  /** Bruto de los tickets pagos habilitados. */
   revenue: number;
-  /** Lo que le queda al creador, descontada la comisión. */
+  /** Lo que los compradores le transfirieron al blog. */
   netRevenue: number;
+  /** Lo que los compradores le transfieren a Soonpublicité. */
   commission: number;
-  /** Parte del neto que Soonpublicité ya liquidó. */
-  paidOut: number;
 }
 
 export interface ProductionTicket {
@@ -481,19 +484,23 @@ export interface ProductionTicketPurchase {
   filesCount: number;
   acceptedNoRefund: boolean;
   transferReference?: string | null;
-  /** Key de UploadThing del comprobante de transferencia. */
+  /** Key de UploadThing del comprobante de la transferencia al blog. */
   transferReceiptKey?: string | null;
-  confirmedAt?: string | null;
+  /** Comprobante de la comisión (sólo comprador y admin). */
+  commissionReceiptKey?: string | null;
+  commissionStatus: ProductionCommissionStatus;
+  commissionUpdatedAt?: string | null;
   activatedAt?: string | null;
   expiresAt?: string | null;
   payoutAliasCbu?: string | null;
-  payoutStatus?: ProductionPayoutStatus | null;
-  payoutAt?: string | null;
   facturaUrl?: string | null;
   facturaUploadedAt?: string | null;
   reviewRequired: boolean;
   reviewedAt?: string | null;
-  paymentInstructions?: ProductionTicketPaymentInstructions | null;
+  /** Transferencia al blog (comprador, mientras está pendiente). */
+  creatorPaymentInstructions?: ProductionTicketPaymentInstructions | null;
+  /** Transferencia de la comisión (comprador: pendiente o comisión impaga). */
+  commissionPaymentInstructions?: ProductionTicketPaymentInstructions | null;
   createdAt?: string | null;
 }
 
@@ -508,7 +515,8 @@ export interface ProductionTicketCheckout {
   productionTitle: string;
   requiresNoRefundAcceptance: boolean;
   noRefundWarning: string;
-  paymentInstructions?: ProductionTicketPaymentInstructions | null;
+  creatorPaymentInstructions?: ProductionTicketPaymentInstructions | null;
+  commissionPaymentInstructions?: ProductionTicketPaymentInstructions | null;
   existingPurchase?: ProductionTicketPurchase | null;
 }
 
@@ -539,6 +547,7 @@ export interface ProductionTicketPurchaseRequest {
   acceptNoRefund: boolean;
   transferReference?: string;
   transferReceiptKey?: string;
+  commissionReceiptKey?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -549,7 +558,7 @@ export interface ProductionTicketPurchaseFilters {
   status?: ProductionTicketPurchaseStatus;
   productionId?: string;
   buyerId?: string;
-  payoutStatus?: ProductionPayoutStatus;
+  commissionStatus?: ProductionCommissionStatus;
   hasFactura?: boolean;
   isPaid?: boolean;
 }
@@ -786,10 +795,10 @@ export interface ProductionModerationInput {
 
 export type ProductionTicketNotificationEvent =
   | "notification_production_ticket_purchased"
-  | "notification_production_ticket_confirmed"
   | "notification_production_ticket_activated"
   | "notification_production_ticket_rejected"
-  | "notification_production_ticket_payout_done"
+  | "notification_production_ticket_suspended"
+  | "notification_production_ticket_restored"
   | "notification_production_ticket_factura_attached";
 
 /** A quién le habla la notificación: cambia el texto y el link. */

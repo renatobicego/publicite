@@ -5,7 +5,7 @@ import {
   ProductionTicketPurchase,
 } from '../entity/production-ticket.entity';
 import {
-  ProductionPayoutStatus,
+  ProductionCommissionStatus,
   ProductionTicketPurchaseStatus,
 } from '../entity/enum/production-ticket.enums';
 
@@ -38,14 +38,13 @@ export interface ProductionTicketRepositoryInterface {
   ): Promise<string[]>;
 }
 
-/** Totales de un ticket: bruto, comisión, neto del creador y lo ya liquidado. */
+/** Totales de un ticket: bruto, comisión de Soonpublicité y neto del creador. */
 export interface ProductionTicketStats {
   purchases: number;
   active: number;
   revenue: number;
   netRevenue: number;
   commission: number;
-  paidOut: number;
 }
 
 export const EMPTY_TICKET_STATS: ProductionTicketStats = {
@@ -54,7 +53,6 @@ export const EMPTY_TICKET_STATS: ProductionTicketStats = {
   revenue: 0,
   netRevenue: 0,
   commission: 0,
-  paidOut: 0,
 };
 
 /** Clave de `countByTargets` para el ticket de todo el blog (target null). */
@@ -68,7 +66,7 @@ export interface ProductionPurchaseListFilter {
   productionIds?: string[];
   buyerId?: string;
   statuses?: ProductionTicketPurchaseStatus[];
-  payoutStatus?: ProductionPayoutStatus;
+  commissionStatus?: ProductionCommissionStatus;
   hasFactura?: boolean;
   isPaid?: boolean;
 }
@@ -83,7 +81,10 @@ export interface ProductionTicketPurchaseRepositoryInterface {
     ticketId: string,
     buyerId: string,
   ): Promise<ProductionTicketPurchase | null>;
-  /** Compras activas y no vencidas del comprador en un blog. */
+  /**
+   * Compras del comprador que dan acceso a un blog: activas, no vencidas y sin
+   * la comisión impaga (una comisión impaga suspende el acceso).
+   */
   findActiveByBuyer(
     buyerId: string,
     productionId: string,

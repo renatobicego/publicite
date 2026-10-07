@@ -1,15 +1,15 @@
 /** Eventos de notificación de tickets de Mis Producciones. */
 export enum ProductionTicketNotificationEvent {
-  /** Compra de un ticket pago: la transferencia espera confirmación. */
+  /** Compra de un ticket pago: el staff tiene que verificar su transferencia. */
   purchased = 'notification_production_ticket_purchased',
-  /** El admin confirmó la transferencia; falta habilitar el acceso. */
-  confirmed = 'notification_production_ticket_confirmed',
-  /** Acceso habilitado. */
+  /** El staff del blog habilitó el acceso. */
   activated = 'notification_production_ticket_activated',
   rejected = 'notification_production_ticket_rejected',
-  /** Soonpublicité liquidó al creador su parte. */
-  payoutDone = 'notification_production_ticket_payout_done',
-  /** Se cargó la factura de la comisión. */
+  /** Comisión impaga: Soonpublicité suspendió el acceso. */
+  suspended = 'notification_production_ticket_suspended',
+  /** Comisión cobrada después de una suspensión: vuelve el acceso. */
+  restored = 'notification_production_ticket_restored',
+  /** Se cargó la factura de la comisión (para el comprador). */
   facturaAttached = 'notification_production_ticket_factura_attached',
 }
 

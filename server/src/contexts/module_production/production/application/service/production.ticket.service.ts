@@ -20,7 +20,7 @@ import {
   ProductionOwnerType,
 } from '../../domain/entity/enum/production.enums';
 import {
-  ProductionPayoutStatus,
+  ProductionCommissionStatus,
   ProductionTicketPurchaseStatus,
 } from '../../domain/entity/enum/production-ticket.enums';
 import {
@@ -55,7 +55,8 @@ import {
   validateTicketConfig,
 } from '../functions/production.tickets';
 import {
-  buildPaymentInstructions,
+  buildCommissionPaymentInstructions,
+  buildCreatorPaymentInstructions,
   PurchaseAudience,
   toPurchaseResponse,
   toTicketResponse,
@@ -73,9 +74,9 @@ const DUPLICATE_KEY = 11000;
 const MAX_PAGE_SIZE = 50;
 
 const NO_REFUND_WARNING =
-  'Los tickets no tienen devolución. Una vez confirmado el pago, el acceso se habilita por la duración indicada.';
+  'Los tickets no tienen devolución. Una vez que el blog verifica la transferencia, el acceso se habilita por la duración indicada.';
 
-const { pending, confirmed, active, expired, rejected } =
+const { pending, active, expired, rejected } =
   ProductionTicketPurchaseStatus;
 
 const pagination = (page: number, limit: number) => ({
@@ -84,8 +85,10 @@ const pagination = (page: number, limit: number) => ({
 });
 
 /**
- * Tickets de Mis Producciones (§4.2): configuración del creador, compra por
- * transferencia, confirmación manual del admin y liquidación (10% / 90%).
+ * Tickets de Mis Producciones (§4.2): configuración del creador y compra con
+ * dos transferencias. El comprador le transfiere su parte al blog (el staff
+ * la verifica y habilita el acceso) y la comisión a Soonpublicité (el admin
+ * de la plataforma la controla y puede suspender el acceso si está impaga).
  */
 @Injectable()
 export class ProductionTicketService implements ProductionTicketServiceInterface {
@@ -227,8 +230,8 @@ export class ProductionTicketService implements ProductionTicketServiceInterface
 
   /**
    * Un ticket pago exige plan pago del creator (PLN-03, TKT-10; en blogs de
-   * grupo, el plan del creator del grupo: GRP-08) y un alias/CBU donde
-   * liquidarle el 90% (TKT-11).
+   * grupo, el plan del creator del grupo: GRP-08) y un alias/CBU donde el
+   * comprador le transfiere su parte (TKT-11).
    */
   private async assertCanSellPaid(production: Production): Promise<void> {
     const limits = await this.accessService.getCreatorLimits(production);
@@ -333,10 +336,15 @@ export class ProductionTicketService implements ProductionTicketServiceInterface
     purchase: ProductionTicketPurchase,
     activatedBy: string,
   ): Promise<ProductionTicketPurchase> {
+    if (purchase.commissionStatus === ProductionCommissionStatus.unpaid) {
+      throw new ForbiddenException(
+        'Soonpublicité suspendió esta compra porque la comisión está impaga. Se va a poder habilitar cuando el comprador la pague.',
+      );
+    }
     const now = new Date();
     const activated = await this.purchaseRepository.transition(
       purchase._id,
-      [confirmed],
+      [pending],
       {
         status: active,
         activatedAt: now,
@@ -350,7 +358,7 @@ export class ProductionTicketService implements ProductionTicketServiceInterface
     );
     if (!activated) {
       throw new BadRequestException(
-        'Sólo se puede habilitar una compra con el pago confirmado',
+        'Sólo se puede habilitar una compra pendiente',
       );
     }
     this.logger.log(`Ticket purchase ${purchase._id} activated by ${activatedBy}`);
@@ -361,6 +369,38 @@ export class ProductionTicketService implements ProductionTicketServiceInterface
       activatedBy,
     );
     return activated;
+  }
+
+  private async reject(
+    purchase: ProductionTicketPurchase,
+    reason: string,
+    rejectedBy: string,
+  ): Promise<ProductionTicketPurchase> {
+    const updated = await this.purchaseRepository.transition(
+      purchase._id,
+      [pending],
+      {
+        status: rejected,
+        isOpen: false,
+        rejectedAt: new Date(),
+        rejectedBy,
+        statusReason: reason.trim(),
+        reviewRequired: false,
+      },
+    );
+    if (!updated) {
+      throw new BadRequestException(
+        'Sólo se puede rechazar una compra pendiente',
+      );
+    }
+    this.logger.log(`Ticket purchase ${purchase._id} rejected by ${rejectedBy}`);
+    await this.notifyPurchase(
+      ProductionTicketNotificationEvent.rejected,
+      updated,
+      ['buyer', 'staff'],
+      rejectedBy,
+    );
+    return updated;
   }
 
   // ---------------------------------------------------------------------------
@@ -521,7 +561,10 @@ export class ProductionTicketService implements ProductionTicketServiceInterface
     return this.toPurchaseList(result, paging.page, paging.limit, 'staff');
   }
 
-  /** TKT-07: el creador (o un moderador) habilita el acceso ya pagado. */
+  /**
+   * TKT-07: el creador (o un moderador) verificó que llegó la transferencia
+   * al blog y habilita el acceso.
+   */
   async activateProductionTicketPurchase(
     purchaseId: string,
     userId: string,
@@ -536,7 +579,29 @@ export class ProductionTicketService implements ProductionTicketServiceInterface
     return this.viewPurchase(await this.activate(purchase, userId), 'staff');
   }
 
-  /** TKT-11: alias/CBU donde se liquida el 90%. Sólo el admin del blog cobra. */
+  /** El staff rechaza una compra: la transferencia al blog no llegó. */
+  async rejectProductionTicketPurchase(
+    purchaseId: string,
+    reason: string,
+    userId: string,
+  ): Promise<ProductionTicketPurchaseResponse> {
+    const purchase = await this.getPurchaseOrFail(purchaseId);
+    const production = await this.getProductionOrFail(purchase.production);
+    await this.accessService.assertPermission(
+      production,
+      userId,
+      'canManageAccess',
+    );
+    return this.viewPurchase(
+      await this.reject(purchase, reason, userId),
+      'staff',
+    );
+  }
+
+  /**
+   * TKT-11: alias/CBU al que los compradores transfieren la parte del
+   * creador. Sólo el admin del blog cobra.
+   */
   async setProductionPayoutAlias(
     productionId: string,
     aliasCbu: string,
@@ -615,14 +680,25 @@ export class ProductionTicketService implements ProductionTicketServiceInterface
       new Date(),
     );
     const existing = await this.purchaseRepository.findOpen(ticketId, userId);
+    const split = computeTicketSplit(ticket.price);
 
     return {
       ticket: await this.buildTicketView(production, ticket, false),
       productionTitle: production.getTitle,
       requiresNoRefundAcceptance: ticket.isPaid,
       noRefundWarning: NO_REFUND_WARNING,
-      paymentInstructions: ticket.isPaid
-        ? buildPaymentInstructions(ticket.price, ticket.currency)
+      creatorPaymentInstructions: ticket.isPaid
+        ? buildCreatorPaymentInstructions(
+            production.getAliasCbu,
+            split.creatorPayoutAmount,
+            ticket.currency,
+          )
+        : null,
+      commissionPaymentInstructions: ticket.isPaid
+        ? buildCommissionPaymentInstructions(
+            split.commissionAmount,
+            ticket.currency,
+          )
         : null,
       existingPurchase: existing
         ? toPurchaseResponse(existing, 'buyer')
@@ -638,8 +714,11 @@ export class ProductionTicketService implements ProductionTicketServiceInterface
     const production = await this.getProductionOrFail(ticket.production);
     await this.assertCanBuy(production, ticket, userId);
 
-    // TKT-05: el pago se transfiere a la cuenta de Soonpublicité.
-    if (ticket.isPaid && !hasTicketTransferAccount()) {
+    // TKT-05: hacen falta las dos cuentas, la del blog y la de Soonpublicité.
+    if (
+      ticket.isPaid &&
+      (!hasTicketTransferAccount() || !production.getAliasCbu)
+    ) {
       throw new BadRequestException(
         'La compra de tickets pagos no está disponible por el momento. Intentá más tarde.',
       );
@@ -678,8 +757,9 @@ export class ProductionTicketService implements ProductionTicketServiceInterface
         target: ticket.target,
         buyer: userId,
         creator: production.getCreator,
-        // TKT-05: el pago queda pendiente de confirmación. Un ticket gratuito
-        // habilita el acceso en el momento (sirve para contar visitas).
+        // TKT-05: queda pendiente hasta que el staff verifique su
+        // transferencia. Un ticket gratuito habilita el acceso en el momento
+        // (sirve para contar visitas).
         status: ticket.isPaid ? pending : active,
         isOpen: true,
         isPaid: ticket.isPaid,
@@ -698,8 +778,14 @@ export class ProductionTicketService implements ProductionTicketServiceInterface
         transferReceiptKey: ticket.isPaid
           ? request.transferReceiptKey?.trim() || null
           : null,
-        confirmedAt: null,
-        confirmedBy: null,
+        commissionReceiptKey: ticket.isPaid
+          ? request.commissionReceiptKey?.trim() || null
+          : null,
+        commissionStatus: ticket.isPaid
+          ? ProductionCommissionStatus.pending
+          : ProductionCommissionStatus.notApplicable,
+        commissionUpdatedAt: null,
+        commissionUpdatedBy: null,
         activatedAt: ticket.isPaid ? null : now,
         activatedBy: ticket.isPaid ? null : 'system',
         expiresAt: ticket.isPaid
@@ -712,9 +798,6 @@ export class ProductionTicketService implements ProductionTicketServiceInterface
         facturaUrl: null,
         facturaUploadedAt: null,
         facturaUploadedBy: null,
-        payoutStatus: ProductionPayoutStatus.notApplicable,
-        payoutAt: null,
-        payoutBy: null,
         // TKT-09: el ticket pago obliga a reseñar.
         reviewRequired: ticket.isPaid,
         firstAccessAt: null,
@@ -777,7 +860,7 @@ export class ProductionTicketService implements ProductionTicketServiceInterface
       productionId: filters?.productionId,
       buyerId: filters?.buyerId,
       statuses: filters?.status ? [filters.status] : undefined,
-      payoutStatus: filters?.payoutStatus,
+      commissionStatus: filters?.commissionStatus,
       hasFactura: filters?.hasFactura,
       isPaid: filters?.isPaid,
     };
@@ -790,36 +873,54 @@ export class ProductionTicketService implements ProductionTicketServiceInterface
     return this.toPurchaseList(result, paging.page, paging.limit, 'admin');
   }
 
-  /** TKT-06: el admin verificó la transferencia. */
-  async confirmProductionTicketPurchase(
+  /**
+   * TKT-06: el admin controla la comisión que el comprador le transfirió a
+   * Soonpublicité. Marcarla impaga suspende el acceso (o impide habilitarlo)
+   * hasta que se marque cobrada; el vencimiento del ticket sigue corriendo.
+   */
+  async setProductionTicketCommissionStatus(
     purchaseId: string,
+    status: ProductionCommissionStatus,
     adminId: string,
-    activate: boolean,
   ): Promise<ProductionTicketPurchaseResponse> {
-    const purchase = await this.getPurchaseOrFail(purchaseId);
-    let updated = await this.purchaseRepository.transition(
-      purchaseId,
-      [pending],
-      {
-        status: confirmed,
-        confirmedAt: new Date(),
-        confirmedBy: adminId,
-        payoutStatus: purchase.isPaid
-          ? ProductionPayoutStatus.pending
-          : ProductionPayoutStatus.notApplicable,
-      },
-    );
-    if (!updated) {
+    if (
+      status !== ProductionCommissionStatus.paid &&
+      status !== ProductionCommissionStatus.unpaid
+    ) {
       throw new BadRequestException(
-        'Sólo se puede confirmar una compra pendiente',
+        'La comisión sólo se puede marcar como cobrada o impaga',
       );
     }
-    if (activate) {
-      // Confirmar + habilitar avisa una sola vez (acceso habilitado).
-      updated = await this.activate(updated, adminId);
-    } else {
+    const purchase = await this.getPurchaseOrFail(purchaseId);
+    const updated = purchase.isPaid
+      ? await this.purchaseRepository.transition(
+          purchaseId,
+          [pending, active, expired],
+          {
+            commissionStatus: status,
+            commissionUpdatedAt: new Date(),
+            commissionUpdatedBy: adminId,
+          },
+        )
+      : null;
+    if (!updated) {
+      throw new BadRequestException(
+        'Sólo se controla la comisión de un ticket pago que no fue rechazado ni cancelado',
+      );
+    }
+    this.logger.log(
+      `Ticket purchase ${purchaseId} commission set to ${status} by ${adminId}`,
+    );
+
+    // Sólo se avisa cuando cambia el acceso: se suspende o se restablece.
+    const wasUnpaid =
+      purchase.commissionStatus === ProductionCommissionStatus.unpaid;
+    const isUnpaid = status === ProductionCommissionStatus.unpaid;
+    if (updated.status !== expired && wasUnpaid !== isUnpaid) {
       await this.notifyPurchase(
-        ProductionTicketNotificationEvent.confirmed,
+        isUnpaid
+          ? ProductionTicketNotificationEvent.suspended
+          : ProductionTicketNotificationEvent.restored,
         updated,
         ['buyer', 'staff'],
         adminId,
@@ -828,57 +929,34 @@ export class ProductionTicketService implements ProductionTicketServiceInterface
     return this.viewPurchase(updated, 'admin');
   }
 
-  async rejectProductionTicketPurchase(
+  async rejectProductionTicketPurchaseAsAdmin(
     purchaseId: string,
     reason: string,
     adminId: string,
   ): Promise<ProductionTicketPurchaseResponse> {
-    await this.getPurchaseOrFail(purchaseId);
-    const updated = await this.purchaseRepository.transition(
-      purchaseId,
-      [pending, confirmed],
-      {
-        status: rejected,
-        isOpen: false,
-        rejectedAt: new Date(),
-        rejectedBy: adminId,
-        statusReason: reason.trim(),
-        payoutStatus: ProductionPayoutStatus.notApplicable,
-        reviewRequired: false,
-      },
-    );
-    if (!updated) {
-      throw new BadRequestException(
-        'Sólo se puede rechazar una compra pendiente o confirmada',
-      );
-    }
-    await this.notifyPurchase(
-      ProductionTicketNotificationEvent.rejected,
-      updated,
-      ['buyer', 'staff'],
-      adminId,
-    );
-    return this.viewPurchase(updated, 'admin');
-  }
-
-  async activateProductionTicketPurchaseAsAdmin(
-    purchaseId: string,
-    adminId: string,
-  ): Promise<ProductionTicketPurchaseResponse> {
     const purchase = await this.getPurchaseOrFail(purchaseId);
-    return this.viewPurchase(await this.activate(purchase, adminId), 'admin');
+    return this.viewPurchase(
+      await this.reject(purchase, reason, adminId),
+      'admin',
+    );
   }
 
-  /** Factura del 10% de comisión (patrón attachFacturaToInvoice). */
+  /**
+   * Factura de la comisión (patrón attachFacturaToInvoice). Es para el
+   * comprador, que es quien le paga la comisión a Soonpublicité.
+   */
   async attachFacturaToProductionTicketPurchase(
     purchaseId: string,
     facturaUrl: string,
     adminId: string,
   ): Promise<ProductionTicketPurchaseResponse> {
     const purchase = await this.getPurchaseOrFail(purchaseId);
-    if (!purchase.isPaid || ![confirmed, active, expired].includes(purchase.status)) {
+    if (
+      !purchase.isPaid ||
+      purchase.commissionStatus !== ProductionCommissionStatus.paid
+    ) {
       throw new BadRequestException(
-        'Sólo se factura un ticket pago con el pago confirmado',
+        'Sólo se factura un ticket pago con la comisión cobrada',
       );
     }
     const updated = await this.purchaseRepository.updateById(purchaseId, {
@@ -889,40 +967,9 @@ export class ProductionTicketService implements ProductionTicketServiceInterface
     await this.notifyPurchase(
       ProductionTicketNotificationEvent.facturaAttached,
       updated!,
-      ['staff'],
+      ['buyer'],
       adminId,
     );
     return this.viewPurchase(updated!, 'admin');
-  }
-
-  /** Liquidación del 90% al creador hecha (TKT-06). */
-  async markProductionTicketPayoutDone(
-    purchaseId: string,
-    adminId: string,
-  ): Promise<ProductionTicketPurchaseResponse> {
-    const purchase = await this.getPurchaseOrFail(purchaseId);
-    const updated = purchase.isPaid
-      ? await this.purchaseRepository.transition(
-          purchaseId,
-          [confirmed, active, expired],
-          {
-            payoutStatus: ProductionPayoutStatus.paid,
-            payoutAt: new Date(),
-            payoutBy: adminId,
-          },
-        )
-      : null;
-    if (!updated) {
-      throw new BadRequestException(
-        'Sólo se liquida un ticket pago con el pago confirmado',
-      );
-    }
-    await this.notifyPurchase(
-      ProductionTicketNotificationEvent.payoutDone,
-      updated,
-      ['staff'],
-      adminId,
-    );
-    return this.viewPurchase(updated, 'admin');
   }
 }

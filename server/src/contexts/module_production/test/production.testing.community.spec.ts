@@ -185,7 +185,6 @@ describe('Mis Producciones - Fase 8: fans, reseñas y comentarios (FAN-01, REV-0
     it('insiste y bloquea compras y visitas hasta reseñar', async () => {
       const owner = await createTestUser(models);
       const buyer = await createTestUser(models);
-      const admin = await createTestUser(models);
       await givePlanToUser(models, owner, { isFree: false });
       const paidBlog = await createBlog(owner, 'Pago');
       await tickets.setProductionPayoutAlias(paidBlog, 'creador.alias', owner);
@@ -207,7 +206,7 @@ describe('Mis Producciones - Fase 8: fans, reseñas y comentarios (FAN-01, REV-0
         { ticketId: paidTicket._id, acceptNoRefund: true },
         buyer,
       );
-      await tickets.confirmProductionTicketPurchase(purchase._id, admin, true);
+      await tickets.activateProductionTicketPurchase(purchase._id, owner);
 
       // Todavía no usó el ticket: no hay bloqueo.
       expect(await community.getMyPendingProductionReview(buyer)).toBeNull();

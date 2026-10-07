@@ -14,7 +14,7 @@ import {
 } from 'class-validator';
 
 import {
-  ProductionPayoutStatus,
+  ProductionCommissionStatus,
   ProductionTicketPurchaseStatus,
 } from '../../enum/production-ticket.enums';
 
@@ -106,7 +106,7 @@ export class ProductionTicketPurchaseRequest {
 
   @Field(() => String, {
     nullable: true,
-    description: 'Referencia o comprobante de la transferencia',
+    description: 'Referencia de las transferencias',
   })
   @IsOptional()
   @IsString()
@@ -115,12 +115,23 @@ export class ProductionTicketPurchaseRequest {
 
   @Field(() => String, {
     nullable: true,
-    description: 'Key de UploadThing del archivo con el comprobante',
+    description:
+      'Key de UploadThing del comprobante de la transferencia al blog',
   })
   @IsOptional()
   @IsString()
   @MaxLength(300)
   transferReceiptKey?: string;
+
+  @Field(() => String, {
+    nullable: true,
+    description:
+      'Key de UploadThing del comprobante de la comisión transferida a Soonpublicité',
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(300)
+  commissionReceiptKey?: string;
 }
 
 @InputType()
@@ -140,10 +151,10 @@ export class ProductionTicketPurchaseFilters {
   @IsMongoId()
   buyerId?: string;
 
-  @Field(() => ProductionPayoutStatus, { nullable: true })
+  @Field(() => ProductionCommissionStatus, { nullable: true })
   @IsOptional()
-  @IsEnum(ProductionPayoutStatus)
-  payoutStatus?: ProductionPayoutStatus;
+  @IsEnum(ProductionCommissionStatus)
+  commissionStatus?: ProductionCommissionStatus;
 
   @Field(() => Boolean, { nullable: true })
   @IsOptional()
@@ -156,7 +167,7 @@ export class ProductionTicketPurchaseFilters {
   isPaid?: boolean;
 }
 
-@InputType({ description: 'Factura del 10% de comisión (TKT-06)' })
+@InputType({ description: 'Factura de la comisión, para el comprador (TKT-06)' })
 export class AttachProductionTicketFacturaInput {
   @Field(() => ID)
   @IsMongoId()

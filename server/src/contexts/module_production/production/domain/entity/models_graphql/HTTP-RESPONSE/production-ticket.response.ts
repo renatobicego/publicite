@@ -1,7 +1,7 @@
 import { Field, Float, ID, Int, ObjectType } from '@nestjs/graphql';
 
 import {
-  ProductionPayoutStatus,
+  ProductionCommissionStatus,
   ProductionTicketPurchaseStatus,
 } from '../../enum/production-ticket.enums';
 
@@ -10,22 +10,19 @@ export class ProductionTicketStatsResponse {
   @Field(() => Int, { description: 'Compras/visitas (sin rechazadas ni canceladas)' })
   purchases: number;
 
-  @Field(() => Int, { description: 'Accesos vigentes' })
+  @Field(() => Int, { description: 'Accesos vigentes (sin los suspendidos)' })
   active: number;
 
-  @Field(() => Float, { description: 'Monto bruto de los tickets pagos confirmados' })
+  @Field(() => Float, { description: 'Monto bruto de los tickets pagos habilitados' })
   revenue: number;
 
   @Field(() => Float, {
-    description: 'Recaudado neto: lo que le queda al creador descontada la comisión',
+    description: 'Recaudado neto: lo que los compradores le transfirieron al blog',
   })
   netRevenue: number;
 
   @Field(() => Float, { description: 'Comisión de Soonpublicité sobre lo recaudado' })
   commission: number;
-
-  @Field(() => Float, { description: 'Parte del neto ya liquidada al creador' })
-  paidOut: number;
 }
 
 @ObjectType({ description: 'Ticket de una carpeta, archivo o blog (TKT-01..03)' })
@@ -73,7 +70,10 @@ export class ProductionTicketResponse {
   updatedAt?: Date;
 }
 
-@ObjectType({ description: 'Cuenta de Soonpublicité para transferir (TKT-05)' })
+@ObjectType({
+  description:
+    'Datos de una de las dos transferencias de la compra: al blog o a Soonpublicité (TKT-05)',
+})
 export class ProductionTicketPaymentInstructionsResponse {
   @Field(() => String, { nullable: true })
   alias?: string | null;
@@ -162,13 +162,19 @@ export class ProductionTicketPurchaseResponse {
   @Field(() => String)
   currency: string;
 
-  @Field(() => Float, { nullable: true, description: 'Admin y staff' })
+  @Field(() => Float, { nullable: true })
   commissionPercent?: number | null;
 
-  @Field(() => Float, { nullable: true, description: 'Admin y staff' })
+  @Field(() => Float, {
+    nullable: true,
+    description: 'Parte que se transfiere a Soonpublicité',
+  })
   commissionAmount?: number | null;
 
-  @Field(() => Float, { nullable: true, description: 'Admin y staff' })
+  @Field(() => Float, {
+    nullable: true,
+    description: 'Parte que se transfiere al blog',
+  })
   creatorPayoutAmount?: number | null;
 
   @Field(() => Int, { nullable: true })
@@ -188,12 +194,24 @@ export class ProductionTicketPurchaseResponse {
 
   @Field(() => String, {
     nullable: true,
-    description: 'Key de UploadThing del comprobante de transferencia',
+    description: 'Key de UploadThing del comprobante de la transferencia al blog',
   })
   transferReceiptKey?: string | null;
 
+  @Field(() => String, {
+    nullable: true,
+    description:
+      'Key de UploadThing del comprobante de la comisión (comprador y admin)',
+  })
+  commissionReceiptKey?: string | null;
+
+  @Field(() => ProductionCommissionStatus, {
+    description: 'unpaid = acceso suspendido hasta que se pague la comisión',
+  })
+  commissionStatus: ProductionCommissionStatus;
+
   @Field(() => Date, { nullable: true })
-  confirmedAt?: Date | null;
+  commissionUpdatedAt?: Date | null;
 
   @Field(() => Date, { nullable: true })
   activatedAt?: Date | null;
@@ -203,19 +221,14 @@ export class ProductionTicketPurchaseResponse {
 
   @Field(() => String, {
     nullable: true,
-    description: 'Alias/CBU del creador para liquidar el 90% (sólo admin, TKT-11)',
+    description:
+      'Alias/CBU del blog al que transfiere el comprador (admin y staff, TKT-11)',
   })
   payoutAliasCbu?: string | null;
 
-  @Field(() => ProductionPayoutStatus, { nullable: true, description: 'Admin y staff' })
-  payoutStatus?: ProductionPayoutStatus | null;
-
-  @Field(() => Date, { nullable: true })
-  payoutAt?: Date | null;
-
   @Field(() => String, {
     nullable: true,
-    description: 'Factura de la comisión (admin y staff)',
+    description: 'Factura de la comisión (comprador y admin)',
   })
   facturaUrl?: string | null;
 
@@ -230,9 +243,17 @@ export class ProductionTicketPurchaseResponse {
 
   @Field(() => ProductionTicketPaymentInstructionsResponse, {
     nullable: true,
-    description: 'Sólo para el comprador mientras la compra está pendiente',
+    description:
+      'Transferencia al blog. Sólo para el comprador mientras la compra está pendiente',
   })
-  paymentInstructions?: ProductionTicketPaymentInstructionsResponse | null;
+  creatorPaymentInstructions?: ProductionTicketPaymentInstructionsResponse | null;
+
+  @Field(() => ProductionTicketPaymentInstructionsResponse, {
+    nullable: true,
+    description:
+      'Transferencia de la comisión a Soonpublicité. Sólo para el comprador mientras la compra está pendiente o la comisión impaga',
+  })
+  commissionPaymentInstructions?: ProductionTicketPaymentInstructionsResponse | null;
 
   @Field(() => Date, { nullable: true })
   createdAt?: Date;
@@ -266,8 +287,17 @@ export class ProductionTicketCheckoutResponse {
   @Field(() => String)
   noRefundWarning: string;
 
-  @Field(() => ProductionTicketPaymentInstructionsResponse, { nullable: true })
-  paymentInstructions?: ProductionTicketPaymentInstructionsResponse | null;
+  @Field(() => ProductionTicketPaymentInstructionsResponse, {
+    nullable: true,
+    description: 'Transferencia al blog (la parte del creador)',
+  })
+  creatorPaymentInstructions?: ProductionTicketPaymentInstructionsResponse | null;
+
+  @Field(() => ProductionTicketPaymentInstructionsResponse, {
+    nullable: true,
+    description: 'Transferencia de la comisión a Soonpublicité',
+  })
+  commissionPaymentInstructions?: ProductionTicketPaymentInstructionsResponse | null;
 
   @Field(() => ProductionTicketPurchaseResponse, {
     nullable: true,

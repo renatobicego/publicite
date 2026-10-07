@@ -1764,20 +1764,17 @@ type ProductionTicketStatsResponse {
   """Compras/visitas (sin rechazadas ni canceladas)"""
   purchases: Int!
 
-  """Accesos vigentes"""
+  """Accesos vigentes (sin los suspendidos)"""
   active: Int!
 
-  """Monto bruto de los tickets pagos confirmados"""
+  """Monto bruto de los tickets pagos habilitados"""
   revenue: Float!
 
-  """Recaudado neto: lo que le queda al creador descontada la comisión"""
+  """Recaudado neto: lo que los compradores le transfirieron al blog"""
   netRevenue: Float!
 
   """Comisión de Soonpublicité sobre lo recaudado"""
   commission: Float!
-
-  """Parte del neto ya liquidada al creador"""
-  paidOut: Float!
 }
 
 """Ticket de una carpeta, archivo o blog (TKT-01..03)"""
@@ -1803,7 +1800,9 @@ type ProductionTicketResponse {
   updatedAt: DateTime
 }
 
-"""Cuenta de Soonpublicité para transferir (TKT-05)"""
+"""
+Datos de una de las dos transferencias de la compra: al blog o a Soonpublicité (TKT-05)
+"""
 type ProductionTicketPaymentInstructionsResponse {
   alias: String
   cbu: String
@@ -1843,14 +1842,12 @@ type ProductionTicketPurchaseResponse {
   isPaid: Boolean!
   amount: Float!
   currency: String!
-
-  """Admin y staff"""
   commissionPercent: Float
 
-  """Admin y staff"""
+  """Parte que se transfiere a Soonpublicité"""
   commissionAmount: Float
 
-  """Admin y staff"""
+  """Parte que se transfiere al blog"""
   creatorPayoutAmount: Float
   durationHours: Int
   untilClose: Boolean!
@@ -1858,34 +1855,44 @@ type ProductionTicketPurchaseResponse {
   acceptedNoRefund: Boolean!
   transferReference: String
 
-  """Key de UploadThing del comprobante de transferencia"""
+  """Key de UploadThing del comprobante de la transferencia al blog"""
   transferReceiptKey: String
-  confirmedAt: DateTime
+
+  """Key de UploadThing del comprobante de la comisión (comprador y admin)"""
+  commissionReceiptKey: String
+
+  """unpaid = acceso suspendido hasta que se pague la comisión"""
+  commissionStatus: ProductionCommissionStatus!
+  commissionUpdatedAt: DateTime
   activatedAt: DateTime
   expiresAt: DateTime
 
-  """Alias/CBU del creador para liquidar el 90% (sólo admin, TKT-11)"""
+  """
+  Alias/CBU del blog al que transfiere el comprador (admin y staff, TKT-11)
+  """
   payoutAliasCbu: String
 
-  """Admin y staff"""
-  payoutStatus: ProductionPayoutStatus
-  payoutAt: DateTime
-
-  """Factura de la comisión (admin y staff)"""
+  """Factura de la comisión (comprador y admin)"""
   facturaUrl: String
   facturaUploadedAt: DateTime
   reviewRequired: Boolean!
   reviewedAt: DateTime
 
-  """Sólo para el comprador mientras la compra está pendiente"""
-  paymentInstructions: ProductionTicketPaymentInstructionsResponse
+  """
+  Transferencia al blog. Sólo para el comprador mientras la compra está pendiente
+  """
+  creatorPaymentInstructions: ProductionTicketPaymentInstructionsResponse
+
+  """
+  Transferencia de la comisión a Soonpublicité. Sólo para el comprador mientras la compra está pendiente o la comisión impaga
+  """
+  commissionPaymentInstructions: ProductionTicketPaymentInstructionsResponse
   createdAt: DateTime
 }
 
-"""pending → confirmed → active → expired (+ rejected, cancelled)"""
+"""pending → active → expired (+ rejected, cancelled)"""
 enum ProductionTicketPurchaseStatus {
   pending
-  confirmed
   active
   expired
   rejected
@@ -1893,12 +1900,13 @@ enum ProductionTicketPurchaseStatus {
 }
 
 """
-notApplicable (ticket gratuito o compra no confirmada), pending (a liquidar), paid (liquidado)
+notApplicable (ticket gratuito), pending (a verificar), paid (cobrada), unpaid (impaga: el acceso queda suspendido)
 """
-enum ProductionPayoutStatus {
+enum ProductionCommissionStatus {
   notApplicable
   pending
   paid
+  unpaid
 }
 
 type ProductionTicketPurchaseListResponse {
@@ -1915,7 +1923,12 @@ type ProductionTicketCheckoutResponse {
   """Si hay que aceptar explícitamente la política sin devoluciones"""
   requiresNoRefundAcceptance: Boolean!
   noRefundWarning: String!
-  paymentInstructions: ProductionTicketPaymentInstructionsResponse
+
+  """Transferencia al blog (la parte del creador)"""
+  creatorPaymentInstructions: ProductionTicketPaymentInstructionsResponse
+
+  """Transferencia de la comisión a Soonpublicité"""
+  commissionPaymentInstructions: ProductionTicketPaymentInstructionsResponse
 
   """Compra abierta del visitante para este ticket, si ya existe"""
   existingPurchase: ProductionTicketPurchaseResponse
@@ -2336,7 +2349,7 @@ type Query {
   getProductionTargetReportsAdmin(productionId: ID!, itemId: ID): [ProductionReportDetailResponse!]!
 
   """
-  Sólo admin: compras de tickets de todos los blogs, con el alias/CBU del creador para liquidar
+  Sólo admin: compras de tickets de todos los blogs, para controlar las comisiones
   """
   getProductionTicketPurchasesAdmin(page: Int!, limit: Int!, filters: ProductionTicketPurchaseFilters): ProductionTicketPurchaseListResponse!
 
@@ -2446,7 +2459,7 @@ input ProductionTicketPurchaseFilters {
   status: ProductionTicketPurchaseStatus
   productionId: ID
   buyerId: ID
-  payoutStatus: ProductionPayoutStatus
+  commissionStatus: ProductionCommissionStatus
   hasFactura: Boolean
   isPaid: Boolean
 }
@@ -2754,21 +2767,15 @@ type Mutation {
   setProductionFeatured(productionId: ID!, isFeatured: Boolean!): ProductionResponse!
 
   """
-  Sólo admin: confirma que llegó la transferencia. activate=true además habilita el acceso
+  Sólo admin: marca la comisión como cobrada (paid) o impaga (unpaid). Impaga suspende el acceso hasta que se marque cobrada
   """
-  confirmProductionTicketPurchase(purchaseId: ID!, activate: Boolean! = false): ProductionTicketPurchaseResponse!
+  setProductionTicketCommissionStatus(purchaseId: ID!, status: ProductionCommissionStatus!): ProductionTicketPurchaseResponse!
 
-  """Sólo admin: rechaza una compra (la transferencia no llegó)"""
-  rejectProductionTicketPurchase(input: ProductionTicketRejectInput!): ProductionTicketPurchaseResponse!
+  """Sólo admin: rechaza una compra pendiente"""
+  rejectProductionTicketPurchaseAsAdmin(input: ProductionTicketRejectInput!): ProductionTicketPurchaseResponse!
 
-  """Sólo admin: habilita el acceso de una compra confirmada"""
-  activateProductionTicketPurchaseAsAdmin(purchaseId: ID!): ProductionTicketPurchaseResponse!
-
-  """Sólo admin: asocia la factura del 10% de comisión"""
+  """Sólo admin: asocia la factura de la comisión, para el comprador"""
   attachFacturaToProductionTicketPurchase(input: AttachProductionTicketFacturaInput!): ProductionTicketPurchaseResponse!
-
-  """Sólo admin: marca como liquidado el 90% al creador"""
-  markProductionTicketPayoutDone(purchaseId: ID!): ProductionTicketPurchaseResponse!
 
   """Asigna un ticket a una carpeta, archivo o al blog entero (TKT-01..03)"""
   createProductionTicket(ticketRequest: ProductionTicketCreateRequest!): ProductionTicketResponse!
@@ -2782,12 +2789,17 @@ type Mutation {
   deleteProductionTicket(ticketId: ID!): String!
 
   """
-  El creador habilita el acceso de una compra con el pago confirmado (TKT-07)
+  El staff verificó la transferencia al blog y habilita el acceso (TKT-07)
   """
   activateProductionTicketPurchase(purchaseId: ID!): ProductionTicketPurchaseResponse!
 
   """
-  Alias o CBU donde se liquida el 90% de los tickets (TKT-11). Sólo el admin del blog
+  El staff rechaza una compra pendiente: la transferencia al blog no llegó
+  """
+  rejectProductionTicketPurchase(input: ProductionTicketRejectInput!): ProductionTicketPurchaseResponse!
+
+  """
+  Alias o CBU al que los compradores transfieren la parte del creador (TKT-11). Sólo el admin del blog
   """
   setProductionPayoutAlias(productionId: ID!, aliasCbu: String!): ProductionResponse!
 
@@ -3404,7 +3416,7 @@ input ProductionTicketRejectInput {
   reason: String!
 }
 
-"""Factura del 10% de comisión (TKT-06)"""
+"""Factura de la comisión, para el comprador (TKT-06)"""
 input AttachProductionTicketFacturaInput {
   purchaseId: ID!
 
@@ -3453,11 +3465,16 @@ input ProductionTicketPurchaseRequest {
   """
   acceptNoRefund: Boolean!
 
-  """Referencia o comprobante de la transferencia"""
+  """Referencia de las transferencias"""
   transferReference: String
 
-  """Key de UploadThing del archivo con el comprobante"""
+  """Key de UploadThing del comprobante de la transferencia al blog"""
   transferReceiptKey: String
+
+  """
+  Key de UploadThing del comprobante de la comisión transferida a Soonpublicité
+  """
+  commissionReceiptKey: String
 }
 
 """Edición masiva de precio (ej. +5%)"""

@@ -1,5 +1,5 @@
 import {
-  ProductionPayoutStatus,
+  ProductionCommissionStatus,
   ProductionTicketPurchaseStatus,
 } from './enum/production-ticket.enums';
 
@@ -44,8 +44,10 @@ export interface ProductionTicketPurchase {
   acceptedAt: Date | null;
   transferReference: string | null;
   transferReceiptKey: string | null;
-  confirmedAt: Date | null;
-  confirmedBy: string | null;
+  commissionReceiptKey: string | null;
+  commissionStatus: ProductionCommissionStatus;
+  commissionUpdatedAt: Date | null;
+  commissionUpdatedBy: string | null;
   activatedAt: Date | null;
   activatedBy: string | null;
   expiresAt: Date | null;
@@ -56,9 +58,6 @@ export interface ProductionTicketPurchase {
   facturaUrl: string | null;
   facturaUploadedAt: Date | null;
   facturaUploadedBy: string | null;
-  payoutStatus: ProductionPayoutStatus;
-  payoutAt: Date | null;
-  payoutBy: string | null;
   reviewRequired: boolean;
   firstAccessAt: Date | null;
   reviewedAt: Date | null;

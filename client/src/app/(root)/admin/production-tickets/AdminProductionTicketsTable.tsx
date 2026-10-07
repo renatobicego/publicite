@@ -21,20 +21,22 @@ import {
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import {
   getProductionTicketPurchasesAdmin,
-  confirmProductionTicketPurchase,
-  rejectProductionTicketPurchase,
+  setProductionTicketCommissionStatus,
+  rejectProductionTicketPurchaseAsAdmin,
   attachFacturaToProductionTicketPurchase,
-  markProductionTicketPayoutDone,
 } from "@/app/server/productionActions";
 import { isProductionActionError } from "@/utils/functions/productionErrorHandler";
 import {
-  ProductionPayoutStatus,
+  ProductionCommissionStatus,
   ProductionTicketPurchase,
   ProductionTicketPurchaseStatus,
 } from "@/types/productionTypes";
 import { useUploadThing } from "@/utils/uploadThing";
 import { resolveProductionFileUrl } from "@/app/(root)/(explorar)/producciones/productionMedia";
 import {
+  commissionStatusColor,
+  commissionStatusLabel,
+  isAccessSuspended,
   purchaseStatusColor,
   purchaseStatusLabel,
 } from "@/app/(root)/(explorar)/producciones/productionTicketStatus";
@@ -47,16 +49,19 @@ const FACTURA_ACCEPTED_TYPES = [
 ];
 const FACTURA_MAX_SIZE_MB = 8;
 
-// El server sólo factura/liquida tickets pagos con el pago ya confirmado.
-const PAYMENT_CONFIRMED_STATUSES = [
-  ProductionTicketPurchaseStatus.confirmed,
+// El server sólo deja controlar la comisión de compras que no se cerraron
+// sin acceso (rechazadas o canceladas).
+const COMMISSION_STATUSES = [
+  ProductionTicketPurchaseStatus.pending,
   ProductionTicketPurchaseStatus.active,
   ProductionTicketPurchaseStatus.expired,
 ];
 
 /**
- * Tabla de compras de tickets de Mis Producciones para el panel admin.
- * Confirmar transferencia, rechazar, adjuntar factura del 10% y liquidar el 90%.
+ * Tabla de compras de tickets de Mis Producciones para el panel admin. El
+ * acceso lo habilita el blog; acá Soonpublicité controla la comisión que le
+ * transfirió el comprador: la marca cobrada o impaga (impaga suspende el
+ * acceso hasta que se pague) y le adjunta la factura.
  */
 const AdminProductionTicketsTable = () => {
   const [loading, setLoading] = useState(true);
@@ -111,15 +116,17 @@ const AdminProductionTicketsTable = () => {
     }
   };
 
-  const handleConfirm = (p: ProductionTicketPurchase, activate: boolean) =>
+  const handleCommission = (
+    p: ProductionTicketPurchase,
+    status: ProductionCommissionStatus
+  ) =>
     run(
       p._id,
-      () => confirmProductionTicketPurchase(p._id, activate),
-      activate ? "Confirmada y habilitada" : "Transferencia confirmada"
+      () => setProductionTicketCommissionStatus(p._id, status),
+      status === ProductionCommissionStatus.paid
+        ? "Comisión marcada como cobrada"
+        : "Comisión impaga: acceso suspendido"
     );
-
-  const handlePayout = (p: ProductionTicketPurchase) =>
-    run(p._id, () => markProductionTicketPayoutDone(p._id), "Liquidación marcada");
 
   const handleFacturaFileChange = (file: File | null) => {
     if (!file) {
@@ -174,7 +181,7 @@ const AdminProductionTicketsTable = () => {
     await run(
       selected._id,
       () =>
-        rejectProductionTicketPurchase({
+        rejectProductionTicketPurchaseAsAdmin({
           purchaseId: selected._id,
           reason: rejectReason.trim(),
         }),
@@ -198,8 +205,9 @@ const AdminProductionTicketsTable = () => {
         <TableHeader>
           <TableColumn>BLOG</TableColumn>
           <TableColumn>COMPRADOR</TableColumn>
-          <TableColumn>MONTO</TableColumn>
-          <TableColumn>10% / 90%</TableColumn>
+          <TableColumn>PRECIO</TableColumn>
+          <TableColumn>COMISIÓN (SOONPUBLICITÉ)</TableColumn>
+          <TableColumn>PARTE DEL BLOG</TableColumn>
           <TableColumn>ESTADO</TableColumn>
           <TableColumn>ACCIONES</TableColumn>
         </TableHeader>
@@ -214,30 +222,37 @@ const AdminProductionTicketsTable = () => {
               </TableCell>
               <TableCell>
                 {p.isPaid ? `${p.currency} ${p.amount}` : "Gratuito"}
-                {p.transferReceiptKey && (
+                {p.transferReference && (
+                  <span className="block text-xs text-default-500">
+                    Ref.: {p.transferReference}
+                  </span>
+                )}
+              </TableCell>
+              <TableCell>
+                {p.isPaid && p.commissionAmount != null ? (
+                  <>
+                    {p.currency} {p.commissionAmount}
+                    <Chip
+                      size="sm"
+                      variant="flat"
+                      className="ml-2"
+                      color={commissionStatusColor[p.commissionStatus]}
+                    >
+                      {commissionStatusLabel[p.commissionStatus]}
+                    </Chip>
+                  </>
+                ) : (
+                  "-"
+                )}
+                {p.commissionReceiptKey && (
                   <a
-                    href={resolveProductionFileUrl(p.transferReceiptKey)}
+                    href={resolveProductionFileUrl(p.commissionReceiptKey)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="block text-xs text-primary underline"
                   >
                     Ver comprobante
                   </a>
-                )}
-              </TableCell>
-              <TableCell>
-                {p.commissionAmount != null && p.creatorPayoutAmount != null
-                  ? `${p.commissionAmount} / ${p.creatorPayoutAmount}`
-                  : "-"}
-                {p.payoutAliasCbu && (
-                  <span className="block text-xs text-default-500">
-                    Alias/CBU: {p.payoutAliasCbu}
-                  </span>
-                )}
-                {p.payoutStatus === ProductionPayoutStatus.paid && (
-                  <span className="block text-xs text-success">
-                    90% liquidado
-                  </span>
                 )}
                 {p.facturaUrl && (
                   <a
@@ -251,6 +266,26 @@ const AdminProductionTicketsTable = () => {
                 )}
               </TableCell>
               <TableCell>
+                {p.isPaid && p.creatorPayoutAmount != null
+                  ? `${p.currency} ${p.creatorPayoutAmount}`
+                  : "-"}
+                {p.payoutAliasCbu && (
+                  <span className="block text-xs text-default-500">
+                    Alias/CBU: {p.payoutAliasCbu}
+                  </span>
+                )}
+                {p.transferReceiptKey && (
+                  <a
+                    href={resolveProductionFileUrl(p.transferReceiptKey)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block text-xs text-primary underline"
+                  >
+                    Ver comprobante
+                  </a>
+                )}
+              </TableCell>
+              <TableCell>
                 <Chip
                   size="sm"
                   variant="flat"
@@ -258,61 +293,82 @@ const AdminProductionTicketsTable = () => {
                 >
                   {purchaseStatusLabel[p.status]}
                 </Chip>
+                {isAccessSuspended(p) && (
+                  <span className="block text-xs text-danger mt-1">
+                    Acceso suspendido
+                  </span>
+                )}
               </TableCell>
               <TableCell>
                 <div className="flex flex-wrap gap-1">
-                  {p.status === "pending" && (
+                  {p.isPaid && COMMISSION_STATUSES.includes(p.status) && (
                     <>
+                      {p.commissionStatus !==
+                        ProductionCommissionStatus.paid && (
+                        <Button
+                          size="sm"
+                          color="success"
+                          variant="flat"
+                          isDisabled={busyId === p._id}
+                          onPress={() =>
+                            handleCommission(p, ProductionCommissionStatus.paid)
+                          }
+                        >
+                          {isAccessSuspended(p)
+                            ? "Comisión cobrada: restablecer acceso"
+                            : "Comisión cobrada"}
+                        </Button>
+                      )}
+                      {p.commissionStatus !==
+                        ProductionCommissionStatus.unpaid && (
+                        <Button
+                          size="sm"
+                          color="warning"
+                          variant="flat"
+                          isDisabled={busyId === p._id}
+                          onPress={() =>
+                            handleCommission(
+                              p,
+                              ProductionCommissionStatus.unpaid
+                            )
+                          }
+                        >
+                          Comisión impaga: suspender acceso
+                        </Button>
+                      )}
+                    </>
+                  )}
+                  {p.isPaid &&
+                    p.commissionStatus === ProductionCommissionStatus.paid && (
                       <Button
                         size="sm"
-                        color="success"
-                        variant="flat"
-                        isDisabled={busyId === p._id}
-                        onPress={() => handleConfirm(p, true)}
-                      >
-                        Confirmar + habilitar
-                      </Button>
-                      <Button
-                        size="sm"
-                        color="danger"
                         variant="flat"
                         isDisabled={busyId === p._id}
                         onPress={() => {
                           setSelected(p);
-                          rejectModal.onOpen();
+                          setFacturaFile(null);
+                          facturaModal.onOpen();
                         }}
                       >
-                        Rechazar
+                        {p.facturaUrl
+                          ? "Reemplazar factura"
+                          : "Factura de la comisión"}
                       </Button>
-                    </>
-                  )}
-                  {p.isPaid &&
-                    PAYMENT_CONFIRMED_STATUSES.includes(p.status) && (
-                      <>
-                        <Button
-                          size="sm"
-                          variant="flat"
-                          isDisabled={busyId === p._id}
-                          onPress={() => {
-                            setSelected(p);
-                            setFacturaFile(null);
-                            facturaModal.onOpen();
-                          }}
-                        >
-                          {p.facturaUrl ? "Reemplazar factura" : "Factura 10%"}
-                        </Button>
-                        {p.payoutStatus !== ProductionPayoutStatus.paid && (
-                          <Button
-                            size="sm"
-                            variant="flat"
-                            isDisabled={busyId === p._id}
-                            onPress={() => handlePayout(p)}
-                          >
-                            Marcar 90% liquidado
-                          </Button>
-                        )}
-                      </>
                     )}
+                  {p.status === ProductionTicketPurchaseStatus.pending && (
+                    <Button
+                      size="sm"
+                      color="danger"
+                      variant="flat"
+                      isDisabled={busyId === p._id}
+                      onPress={() => {
+                        setSelected(p);
+                        rejectModal.onOpen();
+                      }}
+                    >
+                      Rechazar
+                    </Button>
+                  )}
                 </div>
               </TableCell>
             </TableRow>
@@ -329,7 +385,7 @@ const AdminProductionTicketsTable = () => {
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader>Adjuntar factura del 10%</ModalHeader>
+              <ModalHeader>Factura de la comisión (para el comprador)</ModalHeader>
               <ModalBody>
                 <label
                   htmlFor="production-ticket-factura-file"

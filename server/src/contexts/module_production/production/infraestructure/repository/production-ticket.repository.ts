@@ -9,7 +9,7 @@ import {
   ticketFromDocument,
 } from '../../domain/entity/production-ticket.entity';
 import {
-  ProductionPayoutStatus,
+  ProductionCommissionStatus,
   ProductionTicketPurchaseStatus,
 } from '../../domain/entity/enum/production-ticket.enums';
 import {
@@ -30,7 +30,7 @@ const oid = (id: string) => new Types.ObjectId(id);
 const validIds = (ids: string[]) =>
   ids.filter((id) => Types.ObjectId.isValid(id)).map(oid);
 
-const { active, expired, pending, confirmed, cancelled, rejected } =
+const { active, expired, pending, cancelled, rejected } =
   ProductionTicketPurchaseStatus;
 
 @Injectable()
@@ -154,7 +154,9 @@ export class ProductionTicketPurchaseRepository
     }
     if (filter.buyerId) query.buyer = oid(filter.buyerId);
     if (filter.statuses?.length) query.status = { $in: filter.statuses };
-    if (filter.payoutStatus) query.payoutStatus = filter.payoutStatus;
+    if (filter.commissionStatus) {
+      query.commissionStatus = filter.commissionStatus;
+    }
     if (filter.isPaid !== undefined) query.isPaid = filter.isPaid;
     if (filter.hasFactura === true) query.facturaUrl = { $ne: null };
     if (filter.hasFactura === false) query.facturaUrl = null;
@@ -207,6 +209,7 @@ export class ProductionTicketPurchaseRepository
         buyer: oid(buyerId),
         production: oid(productionId),
         status: active,
+        commissionStatus: { $ne: ProductionCommissionStatus.unpaid },
         $or: [{ expiresAt: null }, { expiresAt: { $gt: now } }],
       })
       .lean();
@@ -292,9 +295,10 @@ export class ProductionTicketPurchaseRepository
     if (targets.some((target) => !target)) targetIds.push(null);
 
     const now = new Date();
-    // Sólo cuenta como recaudado un ticket pago con el pago ya confirmado.
+    // Sólo cuenta como recaudado un ticket pago que el staff ya habilitó
+    // (es decir, verificó que le llegó la transferencia).
     const paidAndConfirmed = {
-      $and: ['$isPaid', { $in: ['$status', [confirmed, active, expired]] }],
+      $and: ['$isPaid', { $in: ['$status', [active, expired]] }],
     };
     const rows = await this.purchaseModel.aggregate([
       {
@@ -314,6 +318,12 @@ export class ProductionTicketPurchaseRepository
                 {
                   $and: [
                     { $eq: ['$status', active] },
+                    {
+                      $ne: [
+                        '$commissionStatus',
+                        ProductionCommissionStatus.unpaid,
+                      ],
+                    },
                     {
                       $or: [
                         { $eq: ['$expiresAt', null] },
@@ -338,20 +348,6 @@ export class ProductionTicketPurchaseRepository
               $cond: [paidAndConfirmed, { $ifNull: ['$commissionAmount', 0] }, 0],
             },
           },
-          paidOut: {
-            $sum: {
-              $cond: [
-                {
-                  $and: [
-                    paidAndConfirmed,
-                    { $eq: ['$payoutStatus', ProductionPayoutStatus.paid] },
-                  ],
-                },
-                { $ifNull: ['$creatorPayoutAmount', 0] },
-                0,
-              ],
-            },
-          },
         },
       },
     ]);
@@ -362,7 +358,6 @@ export class ProductionTicketPurchaseRepository
         revenue: row.revenue,
         netRevenue: row.netRevenue,
         commission: row.commission,
-        paidOut: row.paidOut,
       }),
     );
     return result;
@@ -394,7 +389,7 @@ export class ProductionTicketPurchaseRepository
     }
 
     await this.purchaseModel.updateMany(
-      { ...base, status: { $in: [pending, confirmed] } },
+      { ...base, status: pending },
       {
         $set: {
           status: cancelled,

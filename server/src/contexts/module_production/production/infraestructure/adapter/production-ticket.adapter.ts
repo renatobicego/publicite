@@ -8,7 +8,10 @@ import {
   ProductionTicketPurchaseRequest,
   ProductionTicketUpdateRequest,
 } from '../../domain/entity/models_graphql/HTTP-REQUEST/production-ticket.request';
-import { ProductionTicketPurchaseStatus } from '../../domain/entity/enum/production-ticket.enums';
+import {
+  ProductionCommissionStatus,
+  ProductionTicketPurchaseStatus,
+} from '../../domain/entity/enum/production-ticket.enums';
 
 @Injectable()
 export class ProductionTicketAdapter implements ProductionTicketAdapterInterface {
@@ -62,6 +65,18 @@ export class ProductionTicketAdapter implements ProductionTicketAdapterInterface
     );
   }
 
+  rejectProductionTicketPurchase(
+    purchaseId: string,
+    reason: string,
+    userId: string,
+  ) {
+    return this.ticketService.rejectProductionTicketPurchase(
+      purchaseId,
+      reason,
+      userId,
+    );
+  }
+
   setProductionPayoutAlias(
     productionId: string,
     aliasCbu: string,
@@ -111,33 +126,26 @@ export class ProductionTicketAdapter implements ProductionTicketAdapterInterface
     );
   }
 
-  confirmProductionTicketPurchase(
+  setProductionTicketCommissionStatus(
     purchaseId: string,
+    status: ProductionCommissionStatus,
     adminId: string,
-    activate: boolean,
   ) {
-    return this.ticketService.confirmProductionTicketPurchase(
+    return this.ticketService.setProductionTicketCommissionStatus(
       purchaseId,
+      status,
       adminId,
-      activate,
     );
   }
 
-  rejectProductionTicketPurchase(
+  rejectProductionTicketPurchaseAsAdmin(
     purchaseId: string,
     reason: string,
     adminId: string,
   ) {
-    return this.ticketService.rejectProductionTicketPurchase(
+    return this.ticketService.rejectProductionTicketPurchaseAsAdmin(
       purchaseId,
       reason,
-      adminId,
-    );
-  }
-
-  activateProductionTicketPurchaseAsAdmin(purchaseId: string, adminId: string) {
-    return this.ticketService.activateProductionTicketPurchaseAsAdmin(
-      purchaseId,
       adminId,
     );
   }
@@ -150,13 +158,6 @@ export class ProductionTicketAdapter implements ProductionTicketAdapterInterface
     return this.ticketService.attachFacturaToProductionTicketPurchase(
       purchaseId,
       facturaUrl,
-      adminId,
-    );
-  }
-
-  markProductionTicketPayoutDone(purchaseId: string, adminId: string) {
-    return this.ticketService.markProductionTicketPayoutDone(
-      purchaseId,
       adminId,
     );
   }

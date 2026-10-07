@@ -33,7 +33,7 @@
 | Alias/CBU de cobro | `setProductionPayoutAlias` | admin del blog |
 | Comprar un ticket | `getProductionTicketCheckout` → `purchaseProductionTicket` | login |
 | Mis tickets | `getMyProductionTicketPurchases` | login |
-| Ventas del blog / habilitar compra confirmada | `getProductionTicketSales` / `activateProductionTicketPurchase` | staff |
+| Ventas del blog / habilitar o rechazar una compra | `getProductionTicketSales` / `activateProductionTicketPurchase` / `rejectProductionTicketPurchase` | staff |
 | SeudoBase | `getProductionSeudoBase` + `bulkUpdateProductionPrices` / `bulkUpdateProductionVisibility` / `bulkDeleteProductionItems` / `getProductionAuditLog` | staff |
 | Fans | `becomeProductionFan` / `stopBeingProductionFan` / `getProductionFans` / `getMyFanProductions` | login (listado: staff) |
 | Reseñas | `createProductionReview` / `updateProductionReview` / `deleteProductionReview` / `getProductionReviews` | login (listado: opcional) |
@@ -203,7 +203,7 @@ mutation {
     price: 1500             # obligatorio si es pago
     durationHours: 48       # mínimo 24...
     untilClose: false       # ...o true = hasta el cierre del blog
-  }) { _id filesCount stats { purchases active revenue netRevenue commission paidOut } }
+  }) { _id filesCount stats { purchases active revenue netRevenue commission } }
 }
 ```
 
@@ -211,32 +211,48 @@ mutation {
 - `updateProductionTicket(ticketId, { isPaid: false })` = el toggle que cambia toda la carpeta.
 - **Tickets pagos:** requieren plan pago del creator (si no: "Tu plan gratuito sólo permite tickets
   gratuitos. Mejorá tu plan para cobrar con tickets pagos.") **y** alias/CBU cargado con
-  `setProductionPayoutAlias` (alias de 6 a 20 caracteres o CBU/CVU de 22 dígitos).
+  `setProductionPayoutAlias` (alias de 6 a 20 caracteres o CBU/CVU de 22 dígitos): es la cuenta a la
+  que los compradores le transfieren su parte.
 
 ### 6.2 Compra
 
+Un ticket pago se paga con **dos transferencias** del comprador: la parte del creador
+(`creatorPayoutAmount`, el 90%) al alias/CBU del blog y la comisión (`commissionAmount`, el 10%)
+a la cuenta de Soonpublicité. El acceso lo habilita **el staff del blog** cuando verifica su
+transferencia; Soonpublicité controla la comisión aparte y puede suspender el acceso si está impaga.
+
 1. `getProductionTicketCheckout(ticketId)`: `ticket.filesCount`, `requiresNoRefundAcceptance`,
-   `noRefundWarning`, `paymentInstructions` (alias/CBU de Soonpublicité y monto) y
+   `noRefundWarning`, `creatorPaymentInstructions` (alias/CBU del blog y monto),
+   `commissionPaymentInstructions` (alias/CBU de Soonpublicité y monto) y
    `existingPurchase` si ya tiene una abierta.
-2. `purchaseProductionTicket(purchaseRequest: { ticketId, acceptNoRefund: true, transferReference })`.
-   - Pago: queda `pending` y trae `paymentInstructions.reference` (el id de la compra) para indicar en la transferencia.
-   - Gratuito: queda `active` en el momento.
+2. `purchaseProductionTicket(purchaseRequest: { ticketId, acceptNoRefund: true, transferReference,
+   transferReceiptKey, commissionReceiptKey })`: un comprobante por transferencia (keys de UploadThing).
+   - Pago: queda `pending` con `commissionStatus: pending`.
+   - Gratuito: queda `active` en el momento (`commissionStatus: notApplicable`).
 
 Estados (`ProductionTicketPurchaseStatus`):
 
 ```
-pending ──(admin confirma)──► confirmed ──(admin o staff habilita)──► active ──(vence)──► expired
-   │                              │
-   └──(admin rechaza)─────────────┴──► rejected        (blog cerrado antes de confirmar) ► cancelled
+pending ──(staff habilita)──► active ──(vence)──► expired
+   │
+   └──(staff o admin rechaza)──► rejected        (blog cerrado antes de habilitar) ► cancelled
 ```
 
+Comisión (`ProductionCommissionStatus`, independiente del estado de la compra):
+`notApplicable` (gratuito) · `pending` (a verificar) · `paid` (cobrada) · `unpaid` (impaga).
+
+- **`unpaid` suspende el acceso:** una compra `active` deja de habilitar el contenido y una `pending`
+  no se puede habilitar, hasta que el admin la marque `paid`. El vencimiento sigue corriendo.
 - El vencimiento se evalúa en cada lectura: un acceso vencido deja de habilitar sin
   esperar ningún proceso.
-- `getMyProductionTicketPurchases(status?)`: historial del comprador. El comprador no ve el reparto.
-- Staff: `getProductionTicketSales(productionId, status?, page?, limit?, targetId?)` (ve su 90%, si ya fue
-  liquidado —`payoutStatus`/`payoutAt`— y la factura de la comisión —`facturaUrl`—; con `targetId` filtra las
-  ventas de una carpeta/archivo; se filtra por destino y no por ticket para no perder el historial si el ticket se quita y se recrea) y
-  `activateProductionTicketPurchase(purchaseId)` para habilitar una compra `confirmed`.
+- `getMyProductionTicketPurchases(status?)`: historial del comprador, con `commissionStatus`, la factura
+  de la comisión (`facturaUrl`) y, si la comisión está impaga, `commissionPaymentInstructions` para pagarla.
+- Staff: `getProductionTicketSales(productionId, status?, page?, limit?, targetId?)` (ve lo que le
+  transfieren, su comprobante —`transferReceiptKey`— y el `commissionStatus`; no ve el comprobante ni la
+  factura de la comisión; con `targetId` filtra las ventas de una carpeta/archivo; se filtra por destino y
+  no por ticket para no perder el historial si el ticket se quita y se recrea),
+  `activateProductionTicketPurchase(purchaseId)` para habilitar una compra `pending` y
+  `rejectProductionTicketPurchase(input: { purchaseId, reason })` si la transferencia no llegó.
 
 ### 6.3 Reseña obligatoria (REV-02)
 
@@ -289,12 +305,10 @@ antes/después en `details` (JSON).
 
 | Operación | Uso |
 |---|---|
-| `getProductionTicketPurchasesAdmin(page, limit, filters)` | Transacciones de tickets para `admin/invoices`: monto, 10% (`commissionAmount`), 90% (`creatorPayoutAmount`), `payoutAliasCbu`, comprador con email, `transferReference`, factura y liquidación. Filtros: `status`, `productionId`, `buyerId`, `payoutStatus`, `hasFactura`, `isPaid`. |
-| `confirmProductionTicketPurchase(purchaseId, activate)` | La transferencia llegó; con `activate: true` además habilita el acceso |
-| `rejectProductionTicketPurchase(input: { purchaseId, reason })` | La transferencia no llegó |
-| `activateProductionTicketPurchaseAsAdmin(purchaseId)` | Habilita una compra confirmada |
-| `attachFacturaToProductionTicketPurchase(input: { purchaseId, facturaUrl })` | Factura del 10% (misma mecánica que `attachFacturaToInvoice`) |
-| `markProductionTicketPayoutDone(purchaseId)` | Se liquidó el 90% al creador |
+| `getProductionTicketPurchasesAdmin(page, limit, filters)` | Transacciones de tickets para controlar las comisiones: monto, 10% (`commissionAmount`), 90% (`creatorPayoutAmount`), `payoutAliasCbu`, comprador con email, `transferReference`, los dos comprobantes (`transferReceiptKey`, `commissionReceiptKey`), `commissionStatus` y factura. Filtros: `status`, `productionId`, `buyerId`, `commissionStatus`, `hasFactura`, `isPaid`. |
+| `setProductionTicketCommissionStatus(purchaseId, status)` | `paid` = comisión cobrada; `unpaid` = impaga, **suspende el acceso** hasta que se marque `paid`. Vale para compras `pending`, `active` o `expired` |
+| `rejectProductionTicketPurchaseAsAdmin(input: { purchaseId, reason })` | Rechaza una compra `pending` |
+| `attachFacturaToProductionTicketPurchase(input: { purchaseId, facturaUrl })` | Factura de la comisión, **para el comprador** (sólo con `commissionStatus: paid`; misma mecánica que `attachFacturaToInvoice`) |
 | `setProductionFeatured(productionId, isFeatured)` | Fijar en "Producciones destacadas" |
 | `getProductionReportTargetsAdmin(status, page, limit)` | Contenidos denunciados agrupados, con motivos y estado |
 | `getProductionTargetReportsAdmin(productionId, itemId?)` | Denuncias de un contenido, con los denunciantes |

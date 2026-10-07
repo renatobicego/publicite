@@ -2,18 +2,18 @@ import { registerEnumType } from '@nestjs/graphql';
 
 /**
  * Ciclo de vida de una compra de ticket (RNF-07):
- * pending → confirmed → active → expired.
+ * pending → active → expired.
  *
- * - pending: el visitante avisó que transfirió; falta que el admin lo verifique.
- * - confirmed: el admin verificó la transferencia (TKT-06).
- * - active: el admin o el creador habilitaron el acceso (TKT-07).
+ * - pending: el visitante avisó que hizo las dos transferencias (al blog y la
+ *   comisión a Soonpublicité); falta que el staff del blog verifique la suya.
+ * - active: el staff del blog verificó su transferencia y habilitó el acceso
+ *   (TKT-07).
  * - expired: venció la duración o se cerró el blog (TKT-08).
- * - rejected: el admin no encontró la transferencia.
- * - cancelled: el blog se cerró antes de confirmar el pago.
+ * - rejected: la transferencia al blog no llegó.
+ * - cancelled: el blog se cerró antes de habilitar el acceso.
  */
 export enum ProductionTicketPurchaseStatus {
   pending = 'pending',
-  confirmed = 'confirmed',
   active = 'active',
   expired = 'expired',
   rejected = 'rejected',
@@ -22,25 +22,29 @@ export enum ProductionTicketPurchaseStatus {
 
 registerEnumType(ProductionTicketPurchaseStatus, {
   name: 'ProductionTicketPurchaseStatus',
-  description: 'pending → confirmed → active → expired (+ rejected, cancelled)',
+  description: 'pending → active → expired (+ rejected, cancelled)',
 });
 
-/** Liquidación del 90% al creador (TKT-06/11). */
-export enum ProductionPayoutStatus {
+/**
+ * Comisión que el comprador le transfiere a Soonpublicité (TKT-06). La
+ * controla el admin de la plataforma, aparte del estado de la compra: una
+ * comisión impaga suspende el acceso aunque la compra esté activa.
+ */
+export enum ProductionCommissionStatus {
   notApplicable = 'notApplicable',
   pending = 'pending',
   paid = 'paid',
+  unpaid = 'unpaid',
 }
 
-registerEnumType(ProductionPayoutStatus, {
-  name: 'ProductionPayoutStatus',
+registerEnumType(ProductionCommissionStatus, {
+  name: 'ProductionCommissionStatus',
   description:
-    'notApplicable (ticket gratuito o compra no confirmada), pending (a liquidar), paid (liquidado)',
+    'notApplicable (ticket gratuito), pending (a verificar), paid (cobrada), unpaid (impaga: el acceso queda suspendido)',
 });
 
 /** Estados en los que la compra sigue abierta (no se puede duplicar). */
 export const OPEN_PURCHASE_STATUSES = [
   ProductionTicketPurchaseStatus.pending,
-  ProductionTicketPurchaseStatus.confirmed,
   ProductionTicketPurchaseStatus.active,
 ];

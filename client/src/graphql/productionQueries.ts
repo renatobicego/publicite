@@ -295,7 +295,6 @@ export const PRODUCTION_TICKET_FIELDS = gql`
       revenue
       netRevenue
       commission
-      paidOut
     }
     createdAt
     updatedAt
@@ -355,17 +354,20 @@ export const PRODUCTION_PURCHASE_FIELDS = gql`
     acceptedNoRefund
     transferReference
     transferReceiptKey
-    confirmedAt
+    commissionReceiptKey
+    commissionStatus
+    commissionUpdatedAt
     activatedAt
     expiresAt
     payoutAliasCbu
-    payoutStatus
-    payoutAt
     facturaUrl
     facturaUploadedAt
     reviewRequired
     reviewedAt
-    paymentInstructions {
+    creatorPaymentInstructions {
+      ...ProductionPaymentInstructionsFields
+    }
+    commissionPaymentInstructions {
       ...ProductionPaymentInstructionsFields
     }
     createdAt
@@ -437,6 +439,17 @@ export const activateProductionTicketPurchaseMutation = gql`
   }
 `;
 
+export const rejectProductionTicketPurchaseMutation = gql`
+  ${PRODUCTION_PURCHASE_FIELDS}
+  mutation RejectProductionTicketPurchase(
+    $input: ProductionTicketRejectInput!
+  ) {
+    rejectProductionTicketPurchase(input: $input) {
+      ...ProductionPurchaseFields
+    }
+  }
+`;
+
 export const setProductionPayoutAliasMutation = gql`
   ${PRODUCTION_FIELDS}
   mutation SetProductionPayoutAlias($productionId: ID!, $aliasCbu: String!) {
@@ -459,7 +472,10 @@ export const getProductionTicketCheckoutQuery = gql`
       productionTitle
       requiresNoRefundAcceptance
       noRefundWarning
-      paymentInstructions {
+      creatorPaymentInstructions {
+        ...ProductionPaymentInstructionsFields
+      }
+      commissionPaymentInstructions {
         ...ProductionPaymentInstructionsFields
       }
       existingPurchase {
@@ -520,36 +536,27 @@ export const getProductionTicketPurchasesAdminQuery = gql`
   }
 `;
 
-export const confirmProductionTicketPurchaseMutation = gql`
+export const setProductionTicketCommissionStatusMutation = gql`
   ${PRODUCTION_PURCHASE_FIELDS}
-  mutation ConfirmProductionTicketPurchase(
+  mutation SetProductionTicketCommissionStatus(
     $purchaseId: ID!
-    $activate: Boolean
+    $status: ProductionCommissionStatus!
   ) {
-    confirmProductionTicketPurchase(
+    setProductionTicketCommissionStatus(
       purchaseId: $purchaseId
-      activate: $activate
+      status: $status
     ) {
       ...ProductionPurchaseFields
     }
   }
 `;
 
-export const rejectProductionTicketPurchaseMutation = gql`
+export const rejectProductionTicketPurchaseAsAdminMutation = gql`
   ${PRODUCTION_PURCHASE_FIELDS}
-  mutation RejectProductionTicketPurchase(
+  mutation RejectProductionTicketPurchaseAsAdmin(
     $input: ProductionTicketRejectInput!
   ) {
-    rejectProductionTicketPurchase(input: $input) {
-      ...ProductionPurchaseFields
-    }
-  }
-`;
-
-export const activateProductionTicketPurchaseAsAdminMutation = gql`
-  ${PRODUCTION_PURCHASE_FIELDS}
-  mutation ActivateProductionTicketPurchaseAsAdmin($purchaseId: ID!) {
-    activateProductionTicketPurchaseAsAdmin(purchaseId: $purchaseId) {
+    rejectProductionTicketPurchaseAsAdmin(input: $input) {
       ...ProductionPurchaseFields
     }
   }
@@ -561,15 +568,6 @@ export const attachFacturaToProductionTicketPurchaseMutation = gql`
     $input: AttachProductionTicketFacturaInput!
   ) {
     attachFacturaToProductionTicketPurchase(input: $input) {
-      ...ProductionPurchaseFields
-    }
-  }
-`;
-
-export const markProductionTicketPayoutDoneMutation = gql`
-  ${PRODUCTION_PURCHASE_FIELDS}
-  mutation MarkProductionTicketPayoutDone($purchaseId: ID!) {
-    markProductionTicketPayoutDone(purchaseId: $purchaseId) {
       ...ProductionPurchaseFields
     }
   }

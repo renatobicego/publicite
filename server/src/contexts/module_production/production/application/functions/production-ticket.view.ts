@@ -2,7 +2,10 @@ import {
   ProductionTicket,
   ProductionTicketPurchase,
 } from '../../domain/entity/production-ticket.entity';
-import { ProductionTicketPurchaseStatus } from '../../domain/entity/enum/production-ticket.enums';
+import {
+  ProductionCommissionStatus,
+  ProductionTicketPurchaseStatus,
+} from '../../domain/entity/enum/production-ticket.enums';
 import {
   ProductionTicketBuyerResponse,
   ProductionTicketPaymentInstructionsResponse,
@@ -49,7 +52,8 @@ export function toTicketResponse(
   };
 }
 
-export function buildPaymentInstructions(
+/** Transferencia de la comisión a la cuenta de Soonpublicité. */
+export function buildCommissionPaymentInstructions(
   amount: number,
   currency: string,
   reference?: string | null,
@@ -62,10 +66,31 @@ export function buildPaymentInstructions(
   };
 }
 
+const CBU_REGEX = /^\d{22}$/;
+
+/** Transferencia de la parte del creador al alias/CBU del blog. */
+export function buildCreatorPaymentInstructions(
+  aliasCbu: string | null | undefined,
+  amount: number,
+  currency: string,
+  reference?: string | null,
+): ProductionTicketPaymentInstructionsResponse {
+  const isCbu = !!aliasCbu && CBU_REGEX.test(aliasCbu);
+  return {
+    alias: isCbu ? null : aliasCbu ?? null,
+    cbu: isCbu ? aliasCbu : null,
+    holder: null,
+    bank: null,
+    amount,
+    currency,
+    reference: reference ?? null,
+  };
+}
+
 /**
- * Respuesta de una compra según quién la mira: el comprador no ve el reparto
- * ni el alias/CBU del creador; el staff ve su liquidación y la factura de la
- * comisión; el admin ve todo.
+ * Respuesta de una compra según quién la mira: el staff ve sólo el
+ * comprobante de su transferencia; el comprobante y la factura de la comisión
+ * son del comprador y del admin; el admin ve todo.
  */
 export function toPurchaseResponse(
   purchase: ProductionTicketPurchase,
@@ -73,7 +98,9 @@ export function toPurchaseResponse(
   buyerInfo?: ProductionTicketBuyerResponse | null,
 ): ProductionTicketPurchaseResponse {
   const isAdmin = audience === 'admin';
-  const seesSplit = audience !== 'buyer';
+  const isBuyer = audience === 'buyer';
+  const seesCommission = audience !== 'staff';
+  const isPending = purchase.status === ProductionTicketPurchaseStatus.pending;
 
   return {
     _id: purchase._id,
@@ -93,31 +120,46 @@ export function toPurchaseResponse(
     isPaid: purchase.isPaid,
     amount: purchase.amount,
     currency: purchase.currency,
-    commissionPercent: seesSplit ? purchase.commissionPercent : null,
-    commissionAmount: seesSplit ? purchase.commissionAmount : null,
-    creatorPayoutAmount: seesSplit ? purchase.creatorPayoutAmount : null,
+    commissionPercent: purchase.commissionPercent,
+    commissionAmount: purchase.commissionAmount,
+    creatorPayoutAmount: purchase.creatorPayoutAmount,
     durationHours: purchase.durationHours,
     untilClose: purchase.untilClose,
     filesCount: purchase.filesCount,
     acceptedNoRefund: purchase.acceptedNoRefund,
     transferReference: purchase.transferReference,
     transferReceiptKey: purchase.transferReceiptKey ?? null,
-    confirmedAt: purchase.confirmedAt,
+    commissionReceiptKey: seesCommission
+      ? purchase.commissionReceiptKey ?? null
+      : null,
+    commissionStatus:
+      purchase.commissionStatus ?? ProductionCommissionStatus.notApplicable,
+    commissionUpdatedAt: purchase.commissionUpdatedAt ?? null,
     activatedAt: purchase.activatedAt,
     expiresAt: purchase.expiresAt,
-    payoutAliasCbu: isAdmin ? purchase.payoutAliasCbu : null,
-    payoutStatus: seesSplit ? purchase.payoutStatus : null,
-    payoutAt: seesSplit ? purchase.payoutAt : null,
-    facturaUrl: seesSplit ? purchase.facturaUrl : null,
-    facturaUploadedAt: seesSplit ? purchase.facturaUploadedAt : null,
+    payoutAliasCbu: isBuyer ? null : purchase.payoutAliasCbu,
+    facturaUrl: seesCommission ? purchase.facturaUrl : null,
+    facturaUploadedAt: seesCommission ? purchase.facturaUploadedAt : null,
     reviewRequired: purchase.reviewRequired,
     reviewedAt: purchase.reviewedAt,
-    paymentInstructions:
-      audience === 'buyer' &&
+    creatorPaymentInstructions:
+      isBuyer && purchase.isPaid && isPending
+        ? buildCreatorPaymentInstructions(
+            purchase.payoutAliasCbu,
+            purchase.creatorPayoutAmount,
+            purchase.currency,
+            purchase._id,
+          )
+        : null,
+    // Con la comisión impaga el comprador tiene que poder pagarla para
+    // recuperar el acceso.
+    commissionPaymentInstructions:
+      isBuyer &&
       purchase.isPaid &&
-      purchase.status === ProductionTicketPurchaseStatus.pending
-        ? buildPaymentInstructions(
-            purchase.amount,
+      (isPending ||
+        purchase.commissionStatus === ProductionCommissionStatus.unpaid)
+        ? buildCommissionPaymentInstructions(
+            purchase.commissionAmount,
             purchase.currency,
             purchase._id,
           )

@@ -16,9 +16,12 @@ const validDeleteNotification = new Set([
     'notification_post_new_comment_response', // han respondido tu comentario
     // Tickets de Mis Producciones: son avisos informativos, sin acciones.
     'notification_production_ticket_purchased',
-    'notification_production_ticket_confirmed',
     'notification_production_ticket_activated',
     'notification_production_ticket_rejected',
+    'notification_production_ticket_suspended',
+    'notification_production_ticket_restored',
+    // Eventos del flujo anterior: ya no se emiten, pero pueden quedar avisos viejos.
+    'notification_production_ticket_confirmed',
     'notification_production_ticket_payout_done',
     'notification_production_ticket_factura_attached',
 

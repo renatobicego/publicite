@@ -28,11 +28,10 @@ import {
   setProductionPayoutAliasService,
   purchaseProductionTicketService,
   getProductionTicketPurchasesAdminService,
-  confirmProductionTicketPurchaseService,
+  setProductionTicketCommissionStatusService,
   rejectProductionTicketPurchaseService,
-  activateProductionTicketPurchaseAsAdminService,
+  rejectProductionTicketPurchaseAsAdminService,
   attachFacturaToProductionTicketPurchaseService,
-  markProductionTicketPayoutDoneService,
   getProductionSeudoBaseService,
   bulkUpdateProductionPricesService,
   bulkUpdateProductionVisibilityService,
@@ -96,6 +95,7 @@ import {
   ProductionTicketPurchaseList,
   ProductionTicketCheckout,
   ProductionTicketPurchaseStatus,
+  ProductionCommissionStatus,
   ProductionTicketPurchaseFilters,
   AttachProductionTicketFacturaInput,
   ProductionTicketRejectInput,
@@ -347,6 +347,16 @@ export const activateProductionTicketPurchase = async (
   }
 };
 
+export const rejectProductionTicketPurchase = async (
+  input: ProductionTicketRejectInput
+): Promise<ProductionTicketPurchase | ProductionActionError> => {
+  try {
+    return await rejectProductionTicketPurchaseService(input);
+  } catch (error) {
+    return toActionError(error);
+  }
+};
+
 export const setProductionPayoutAlias = async (
   productionId: string,
   aliasCbu: string
@@ -384,32 +394,22 @@ export const getProductionTicketPurchasesAdmin = async (
   }
 };
 
-export const confirmProductionTicketPurchase = async (
+export const setProductionTicketCommissionStatus = async (
   purchaseId: string,
-  activate: boolean
+  status: ProductionCommissionStatus
 ): Promise<ProductionTicketPurchase | ProductionActionError> => {
   try {
-    return await confirmProductionTicketPurchaseService(purchaseId, activate);
+    return await setProductionTicketCommissionStatusService(purchaseId, status);
   } catch (error) {
     return toActionError(error);
   }
 };
 
-export const rejectProductionTicketPurchase = async (
+export const rejectProductionTicketPurchaseAsAdmin = async (
   input: ProductionTicketRejectInput
 ): Promise<ProductionTicketPurchase | ProductionActionError> => {
   try {
-    return await rejectProductionTicketPurchaseService(input);
-  } catch (error) {
-    return toActionError(error);
-  }
-};
-
-export const activateProductionTicketPurchaseAsAdmin = async (
-  purchaseId: string
-): Promise<ProductionTicketPurchase | ProductionActionError> => {
-  try {
-    return await activateProductionTicketPurchaseAsAdminService(purchaseId);
+    return await rejectProductionTicketPurchaseAsAdminService(input);
   } catch (error) {
     return toActionError(error);
   }
@@ -420,16 +420,6 @@ export const attachFacturaToProductionTicketPurchase = async (
 ): Promise<ProductionTicketPurchase | ProductionActionError> => {
   try {
     return await attachFacturaToProductionTicketPurchaseService(input);
-  } catch (error) {
-    return toActionError(error);
-  }
-};
-
-export const markProductionTicketPayoutDone = async (
-  purchaseId: string
-): Promise<ProductionTicketPurchase | ProductionActionError> => {
-  try {
-    return await markProductionTicketPayoutDoneService(purchaseId);
   } catch (error) {
     return toActionError(error);
   }

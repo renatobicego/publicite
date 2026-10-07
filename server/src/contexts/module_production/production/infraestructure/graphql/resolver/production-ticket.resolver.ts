@@ -6,6 +6,7 @@ import { ProductionTicketAdapterInterface } from '../../../application/adapter/p
 import {
   ProductionTicketCreateRequest,
   ProductionTicketPurchaseRequest,
+  ProductionTicketRejectInput,
   ProductionTicketUpdateRequest,
 } from '../../../domain/entity/models_graphql/HTTP-REQUEST/production-ticket.request';
 import {
@@ -19,8 +20,8 @@ import { ProductionTicketPurchaseStatus } from '../../../domain/entity/enum/prod
 import { ProductionGqlContext, requireUserId } from './production.context';
 
 /**
- * Tickets de Mis Producciones (Fase 5): Page de Ticket del staff y compra
- * por transferencia del visitante. Las operaciones del admin de la
+ * Tickets de Mis Producciones (Fase 5): Page de Ticket del staff (que
+ * habilita o rechaza las compras) y compra por transferencia del visitante. Las operaciones del admin de la
  * plataforma están en ProductionAdminResolver.
  */
 @Resolver()
@@ -119,7 +120,7 @@ export class ProductionTicketResolver {
 
   @Mutation(() => ProductionTicketPurchaseResponse, {
     description:
-      'El creador habilita el acceso de una compra con el pago confirmado (TKT-07)',
+      'El staff verificó la transferencia al blog y habilita el acceso (TKT-07)',
   })
   async activateProductionTicketPurchase(
     @Args('purchaseId', { type: () => ID }) purchaseId: string,
@@ -131,9 +132,25 @@ export class ProductionTicketResolver {
     );
   }
 
+  @Mutation(() => ProductionTicketPurchaseResponse, {
+    description:
+      'El staff rechaza una compra pendiente: la transferencia al blog no llegó',
+  })
+  async rejectProductionTicketPurchase(
+    @Args('input', { type: () => ProductionTicketRejectInput })
+    input: ProductionTicketRejectInput,
+    @Context() context: ProductionGqlContext,
+  ): Promise<ProductionTicketPurchaseResponse> {
+    return this.ticketAdapter.rejectProductionTicketPurchase(
+      input.purchaseId,
+      input.reason,
+      requireUserId(context),
+    );
+  }
+
   @Mutation(() => ProductionResponse, {
     description:
-      'Alias o CBU donde se liquida el 90% de los tickets (TKT-11). Sólo el admin del blog',
+      'Alias o CBU al que los compradores transfieren la parte del creador (TKT-11). Sólo el admin del blog',
   })
   async setProductionPayoutAlias(
     @Args('productionId', { type: () => ID }) productionId: string,

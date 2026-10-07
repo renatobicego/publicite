@@ -5,6 +5,7 @@ import { isProductionActionError } from "@/utils/functions/productionErrorHandle
 import ErrorCard from "@/components/ErrorCard";
 import { PRODUCTIONS } from "@/utils/data/urls";
 import {
+  isAccessSuspended,
   purchaseStatusColor,
   purchaseStatusLabel,
 } from "../productionTicketStatus";
@@ -46,6 +47,40 @@ export default async function MyProductionTicketsPage() {
                       Vence:{" "}
                       {new Date(purchase.expiresAt).toLocaleDateString("es-AR")}
                     </span>
+                  )}
+                  {purchase.status === "pending" &&
+                    !isAccessSuspended(purchase) && (
+                      <span className="text-xs text-default-500">
+                        El acceso se habilita cuando el blog verifique tu
+                        transferencia.
+                      </span>
+                    )}
+                  {isAccessSuspended(purchase) && (
+                    <span className="text-xs text-danger">
+                      Acceso suspendido: falta pagar la comisión de
+                      Soonpublicité
+                      {purchase.commissionPaymentInstructions && (
+                        <>
+                          {" "}
+                          ({purchase.commissionPaymentInstructions.currency}{" "}
+                          {purchase.commissionPaymentInstructions.amount} a{" "}
+                          {purchase.commissionPaymentInstructions.alias ||
+                            purchase.commissionPaymentInstructions.cbu}
+                          )
+                        </>
+                      )}
+                      . Se restablece cuando la pagues.
+                    </span>
+                  )}
+                  {purchase.facturaUrl && (
+                    <a
+                      href={purchase.facturaUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-primary underline"
+                    >
+                      Ver factura de la comisión
+                    </a>
                   )}
                   {purchase.reviewRequired && !purchase.reviewedAt && (
                     <span className="text-xs text-warning">

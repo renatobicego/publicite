@@ -11,7 +11,10 @@ import {
   ProductionTicketResponse,
 } from '../entity/models_graphql/HTTP-RESPONSE/production-ticket.response';
 import { ProductionResponse } from '../entity/models_graphql/HTTP-RESPONSE/production.response';
-import { ProductionTicketPurchaseStatus } from '../entity/enum/production-ticket.enums';
+import {
+  ProductionCommissionStatus,
+  ProductionTicketPurchaseStatus,
+} from '../entity/enum/production-ticket.enums';
 
 export interface ProductionTicketServiceInterface {
   // Staff del blog (Page de Ticket).
@@ -39,6 +42,11 @@ export interface ProductionTicketServiceInterface {
   ): Promise<ProductionTicketPurchaseListResponse>;
   activateProductionTicketPurchase(
     purchaseId: string,
+    userId: string,
+  ): Promise<ProductionTicketPurchaseResponse>;
+  rejectProductionTicketPurchase(
+    purchaseId: string,
+    reason: string,
     userId: string,
   ): Promise<ProductionTicketPurchaseResponse>;
   setProductionPayoutAlias(
@@ -69,27 +77,19 @@ export interface ProductionTicketServiceInterface {
     page: number,
     limit: number,
   ): Promise<ProductionTicketPurchaseListResponse>;
-  confirmProductionTicketPurchase(
+  setProductionTicketCommissionStatus(
     purchaseId: string,
+    status: ProductionCommissionStatus,
     adminId: string,
-    activate: boolean,
   ): Promise<ProductionTicketPurchaseResponse>;
-  rejectProductionTicketPurchase(
+  rejectProductionTicketPurchaseAsAdmin(
     purchaseId: string,
     reason: string,
-    adminId: string,
-  ): Promise<ProductionTicketPurchaseResponse>;
-  activateProductionTicketPurchaseAsAdmin(
-    purchaseId: string,
     adminId: string,
   ): Promise<ProductionTicketPurchaseResponse>;
   attachFacturaToProductionTicketPurchase(
     purchaseId: string,
     facturaUrl: string,
-    adminId: string,
-  ): Promise<ProductionTicketPurchaseResponse>;
-  markProductionTicketPayoutDone(
-    purchaseId: string,
     adminId: string,
   ): Promise<ProductionTicketPurchaseResponse>;
 }

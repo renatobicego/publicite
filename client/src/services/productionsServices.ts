@@ -27,11 +27,10 @@ import {
   setProductionPayoutAliasMutation,
   purchaseProductionTicketMutation,
   getProductionTicketPurchasesAdminQuery,
-  confirmProductionTicketPurchaseMutation,
+  setProductionTicketCommissionStatusMutation,
   rejectProductionTicketPurchaseMutation,
-  activateProductionTicketPurchaseAsAdminMutation,
+  rejectProductionTicketPurchaseAsAdminMutation,
   attachFacturaToProductionTicketPurchaseMutation,
-  markProductionTicketPayoutDoneMutation,
   getProductionSeudoBaseQuery,
   bulkUpdateProductionPricesMutation,
   bulkUpdateProductionVisibilityMutation,
@@ -95,6 +94,7 @@ import {
   ProductionTicketPurchaseList,
   ProductionTicketCheckout,
   ProductionTicketPurchaseStatus,
+  ProductionCommissionStatus,
   ProductionTicketPurchaseFilters,
   AttachProductionTicketFacturaInput,
   ProductionTicketRejectInput,
@@ -391,6 +391,19 @@ export const activateProductionTicketPurchaseService = async (
   return data.activateProductionTicketPurchase;
 };
 
+export const rejectProductionTicketPurchaseService = async (
+  input: ProductionTicketRejectInput
+): Promise<ProductionTicketPurchase> => {
+  const tokenCache = await getAuthToken();
+  const { context } = await getApiContext(false, tokenCache);
+  const { data } = await getClient().mutate({
+    mutation: rejectProductionTicketPurchaseMutation,
+    variables: { input },
+    context,
+  });
+  return data.rejectProductionTicketPurchase;
+};
+
 export const setProductionPayoutAliasService = async (
   productionId: string,
   aliasCbu: string
@@ -436,44 +449,31 @@ export const getProductionTicketPurchasesAdminService = async (
   return data.getProductionTicketPurchasesAdmin;
 };
 
-export const confirmProductionTicketPurchaseService = async (
+export const setProductionTicketCommissionStatusService = async (
   purchaseId: string,
-  activate: boolean
+  status: ProductionCommissionStatus
 ): Promise<ProductionTicketPurchase> => {
   const tokenCache = await getAuthToken();
   const { context } = await getApiContext(false, tokenCache);
   const { data } = await getClient().mutate({
-    mutation: confirmProductionTicketPurchaseMutation,
-    variables: { purchaseId, activate },
+    mutation: setProductionTicketCommissionStatusMutation,
+    variables: { purchaseId, status },
     context,
   });
-  return data.confirmProductionTicketPurchase;
+  return data.setProductionTicketCommissionStatus;
 };
 
-export const rejectProductionTicketPurchaseService = async (
+export const rejectProductionTicketPurchaseAsAdminService = async (
   input: ProductionTicketRejectInput
 ): Promise<ProductionTicketPurchase> => {
   const tokenCache = await getAuthToken();
   const { context } = await getApiContext(false, tokenCache);
   const { data } = await getClient().mutate({
-    mutation: rejectProductionTicketPurchaseMutation,
+    mutation: rejectProductionTicketPurchaseAsAdminMutation,
     variables: { input },
     context,
   });
-  return data.rejectProductionTicketPurchase;
-};
-
-export const activateProductionTicketPurchaseAsAdminService = async (
-  purchaseId: string
-): Promise<ProductionTicketPurchase> => {
-  const tokenCache = await getAuthToken();
-  const { context } = await getApiContext(false, tokenCache);
-  const { data } = await getClient().mutate({
-    mutation: activateProductionTicketPurchaseAsAdminMutation,
-    variables: { purchaseId },
-    context,
-  });
-  return data.activateProductionTicketPurchaseAsAdmin;
+  return data.rejectProductionTicketPurchaseAsAdmin;
 };
 
 export const attachFacturaToProductionTicketPurchaseService = async (
@@ -487,19 +487,6 @@ export const attachFacturaToProductionTicketPurchaseService = async (
     context,
   });
   return data.attachFacturaToProductionTicketPurchase;
-};
-
-export const markProductionTicketPayoutDoneService = async (
-  purchaseId: string
-): Promise<ProductionTicketPurchase> => {
-  const tokenCache = await getAuthToken();
-  const { context } = await getApiContext(false, tokenCache);
-  const { data } = await getClient().mutate({
-    mutation: markProductionTicketPayoutDoneMutation,
-    variables: { purchaseId },
-    context,
-  });
-  return data.markProductionTicketPayoutDone;
 };
 
 // ---------------------------------------------------------------------------

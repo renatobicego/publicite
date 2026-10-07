@@ -214,11 +214,9 @@ const TicketManagerModal = ({
                           {existing.isPaid && existing.stats.revenue > 0 && (
                             <p>
                               Vendido {existing.currency}{" "}
-                              {formatMoney(existing.stats.revenue)} − comisión{" "}
-                              {existing.currency}{" "}
-                              {formatMoney(existing.stats.commission)} · ya
-                              liquidado {existing.currency}{" "}
-                              {formatMoney(existing.stats.paidOut)}
+                              {formatMoney(existing.stats.revenue)} − comisión
+                              de Soonpublicité {existing.currency}{" "}
+                              {formatMoney(existing.stats.commission)}
                             </p>
                           )}
                         </div>
@@ -252,10 +250,11 @@ const TicketManagerModal = ({
                     {isPaid && (
                       <p className="text-xs text-default-500 -mt-2">
                         Soonpublicité cobra una comisión del {commission}% sobre
-                        cada ticket vendido
+                        cada ticket vendido, que el comprador le transfiere
+                        aparte
                         {Number(price) > 0 && (
                           <>
-                            : por cada venta recibís{" "}
+                            : por cada venta te transfieren{" "}
                             {formatMoney(
                               Math.round(Number(price) * (100 - commission)) /
                                 100,
@@ -264,7 +263,7 @@ const TicketManagerModal = ({
                             {formatMoney(
                               Math.round(Number(price) * commission) / 100,
                             )}{" "}
-                            quedan de comisión
+                            van a Soonpublicité
                           </>
                         )}
                         .
@@ -278,10 +277,11 @@ const TicketManagerModal = ({
                           onValueChange={setAliasCbu}
                         />
                         <p className="text-xs text-default-500 mt-1">
-                          Cuenta donde se liquida lo recaudado (el{" "}
-                          {100 - commission}%, ya descontada la comisión). Es
+                          Cuenta a la que los compradores te transfieren tu
+                          parte (el {100 - commission}% del precio). Es
                           necesaria para cobrar con tickets pagos y vale para
-                          todo el blog.
+                          todo el blog. Cuando te llegue la transferencia,
+                          habilitá el acceso desde las ventas del ticket.
                         </p>
                       </div>
                     )}

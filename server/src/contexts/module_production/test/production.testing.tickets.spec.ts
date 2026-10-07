@@ -23,7 +23,7 @@ import {
   ProductionLockReason,
 } from '../production/domain/entity/enum/production.enums';
 import {
-  ProductionPayoutStatus,
+  ProductionCommissionStatus,
   ProductionTicketPurchaseStatus,
 } from '../production/domain/entity/enum/production-ticket.enums';
 
@@ -237,7 +237,7 @@ describe('Mis Producciones - Fase 5: tickets por transferencia', () => {
   });
 
   describe('Compra por transferencia (TKT-04..08)', () => {
-    it('recorre pendiente → confirmado → activo, con reparto 10/90 y factura', async () => {
+    it('recorre pendiente → activo con dos transferencias (90% al blog, 10% a Soonpublicité) y factura', async () => {
       const { owner, productionId, folder, photo } = await setupPaidBlog();
       const buyer = await createTestUser(models);
       const admin = await createTestUser(models);
@@ -257,9 +257,14 @@ describe('Mis Producciones - Fase 5: tickets por transferencia', () => {
       const checkout = await tickets.getProductionTicketCheckout(ticket._id, buyer);
       expect(checkout.requiresNoRefundAcceptance).toBe(true);
       expect(checkout.ticket.filesCount).toBe(2);
-      expect(checkout.paymentInstructions).toMatchObject({
+      // Dos transferencias: la parte del creador al blog y la comisión.
+      expect(checkout.creatorPaymentInstructions).toMatchObject({
+        alias: 'creador.alias',
+        amount: 900,
+      });
+      expect(checkout.commissionPaymentInstructions).toMatchObject({
         alias: 'soonpublicite.mp',
-        amount: 1000,
+        amount: 100,
       });
 
       await expect(
@@ -269,15 +274,29 @@ describe('Mis Producciones - Fase 5: tickets por transferencia', () => {
         ),
       ).rejects.toThrow('no tienen devolución');
 
-      // TKT-05: queda pendiente de confirmación.
+      // TKT-05: queda pendiente hasta que el staff verifique su transferencia.
       const purchase = await tickets.purchaseProductionTicket(
-        { ticketId: ticket._id, acceptNoRefund: true, transferReference: 'OP-123' },
+        {
+          ticketId: ticket._id,
+          acceptNoRefund: true,
+          transferReference: 'OP-123',
+          transferReceiptKey: 'recibo-blog',
+          commissionReceiptKey: 'recibo-comision',
+        },
         buyer,
       );
       expect(purchase.status).toBe(ProductionTicketPurchaseStatus.pending);
-      expect(purchase.paymentInstructions?.reference).toBe(purchase._id);
-      expect(purchase.commissionAmount).toBeNull();
-      expect(purchase.payoutAliasCbu).toBeNull();
+      expect(purchase.commissionStatus).toBe(ProductionCommissionStatus.pending);
+      expect(purchase.creatorPaymentInstructions).toMatchObject({
+        alias: 'creador.alias',
+        amount: 900,
+        reference: purchase._id,
+      });
+      expect(purchase.commissionPaymentInstructions).toMatchObject({
+        alias: 'soonpublicite.mp',
+        amount: 100,
+      });
+      expect(purchase.commissionReceiptKey).toBe('recibo-comision');
 
       await expect(
         tickets.purchaseProductionTicket(
@@ -302,10 +321,12 @@ describe('Mis Producciones - Fase 5: tickets por transferencia', () => {
         creatorPayoutAmount: 900,
         payoutAliasCbu: 'creador.alias',
         transferReference: 'OP-123',
+        transferReceiptKey: 'recibo-blog',
+        commissionReceiptKey: 'recibo-comision',
       });
       expect(adminList.purchases[0].buyerInfo?.email).toBeTruthy();
 
-      // La factura sólo se asocia con el pago confirmado.
+      // La factura sólo se asocia con la comisión cobrada.
       await expect(
         tickets.attachFacturaToProductionTicketPurchase(
           purchase._id,
@@ -314,20 +335,13 @@ describe('Mis Producciones - Fase 5: tickets por transferencia', () => {
         ),
       ).rejects.toBeInstanceOf(BadRequestException);
 
-      // El creador no puede habilitar antes de la confirmación del pago.
+      // Sólo el staff del blog habilita.
       await expect(
-        tickets.activateProductionTicketPurchase(purchase._id, owner),
-      ).rejects.toThrow('pago confirmado');
+        tickets.activateProductionTicketPurchase(purchase._id, buyer),
+      ).rejects.toBeInstanceOf(UnauthorizedException);
 
-      const confirmed = await tickets.confirmProductionTicketPurchase(
-        purchase._id,
-        admin,
-        false,
-      );
-      expect(confirmed.status).toBe(ProductionTicketPurchaseStatus.confirmed);
-      expect(confirmed.payoutStatus).toBe(ProductionPayoutStatus.pending);
-
-      // TKT-07: el creador habilita el acceso.
+      // TKT-07: el creador verificó su transferencia y habilita el acceso,
+      // sin esperar a que Soonpublicité controle la comisión.
       const before = Date.now();
       const activated = await tickets.activateProductionTicketPurchase(
         purchase._id,
@@ -345,15 +359,19 @@ describe('Mis Producciones - Fase 5: tickets por transferencia', () => {
         .findOne({});
       expect(stored!.firstAccessAt).toBeInstanceOf(Date);
 
+      const commissionPaid = await tickets.setProductionTicketCommissionStatus(
+        purchase._id,
+        ProductionCommissionStatus.paid,
+        admin,
+      );
+      expect(commissionPaid.commissionStatus).toBe(ProductionCommissionStatus.paid);
+
       const withFactura = await tickets.attachFacturaToProductionTicketPurchase(
         purchase._id,
         'https://files.example.com/factura.pdf',
         admin,
       );
       expect(withFactura.facturaUrl).toBe('https://files.example.com/factura.pdf');
-
-      const paid = await tickets.markProductionTicketPayoutDone(purchase._id, admin);
-      expect(paid.payoutStatus).toBe(ProductionPayoutStatus.paid);
 
       const sales = await tickets.getProductionTicketSales(
         productionId,
@@ -363,19 +381,23 @@ describe('Mis Producciones - Fase 5: tickets por transferencia', () => {
         10,
       );
       expect(sales.purchases[0].creatorPayoutAmount).toBe(900);
-      // El staff ve la factura de la comisión que le cobró Soonpublicité.
-      expect(sales.purchases[0].facturaUrl).toBe(
+      // El staff ve su comprobante; el de la comisión y la factura son del
+      // comprador y de Soonpublicité.
+      expect(sales.purchases[0].transferReceiptKey).toBe('recibo-blog');
+      expect(sales.purchases[0].commissionReceiptKey).toBeNull();
+      expect(sales.purchases[0].facturaUrl).toBeNull();
+      const mine = await tickets.getMyProductionTicketPurchases(buyer, undefined, 1, 10);
+      expect(mine.purchases[0].facturaUrl).toBe(
         'https://files.example.com/factura.pdf',
       );
       const [withStats] = await tickets.getProductionTickets(productionId, owner);
-      // Lo recaudado descuenta la comisión del 10%.
+      // Lo recaudado por el blog no incluye la comisión del 10%.
       expect(withStats.stats).toEqual({
         purchases: 1,
         active: 1,
         revenue: 1000,
         netRevenue: 900,
         commission: 100,
-        paidOut: 900,
       });
 
 // Quitar el ticket y volver a crearlo no pierde las ventas: los
@@ -399,7 +421,7 @@ describe('Mis Producciones - Fase 5: tickets por transferencia', () => {
       expect(salesOfTarget.total).toBe(1);
     });
 
-    it('el acceso vence solo (TKT-08) y se puede volver a comprar', async () => {
+    it('la comisión impaga suspende el acceso hasta que se cobra', async () => {
       const { owner, productionId, folder, photo } = await setupPaidBlog();
       const buyer = await createTestUser(models);
       const admin = await createTestUser(models);
@@ -411,7 +433,83 @@ describe('Mis Producciones - Fase 5: tickets por transferencia', () => {
         { ticketId: ticket._id, acceptNoRefund: true },
         buyer,
       );
-      await tickets.confirmProductionTicketPurchase(purchase._id, admin, true);
+
+      await expect(
+        tickets.setProductionTicketCommissionStatus(
+          purchase._id,
+          ProductionCommissionStatus.pending,
+          admin,
+        ),
+      ).rejects.toBeInstanceOf(BadRequestException);
+
+      // Impaga antes de habilitar: el staff no puede dar el acceso.
+      await tickets.setProductionTicketCommissionStatus(
+        purchase._id,
+        ProductionCommissionStatus.unpaid,
+        admin,
+      );
+      await expect(
+        tickets.activateProductionTicketPurchase(purchase._id, owner),
+      ).rejects.toThrow('comisión está impaga');
+
+      await tickets.setProductionTicketCommissionStatus(
+        purchase._id,
+        ProductionCommissionStatus.paid,
+        admin,
+      );
+      const activated = await tickets.activateProductionTicketPurchase(
+        purchase._id,
+        owner,
+      );
+      expect((await service.getProductionItemById(photo._id, buyer)).key).toBe(
+        'key-premium',
+      );
+
+      // Impaga con el acceso habilitado: se suspende sin tocar el vencimiento.
+      const suspended = await tickets.setProductionTicketCommissionStatus(
+        purchase._id,
+        ProductionCommissionStatus.unpaid,
+        admin,
+      );
+      expect(suspended.status).toBe(ProductionTicketPurchaseStatus.active);
+      expect(suspended.expiresAt).toEqual(activated.expiresAt);
+      expect((await service.getProductionItemById(photo._id, buyer)).key).toBeNull();
+      const [withStats] = await tickets.getProductionTickets(productionId, owner);
+      expect(withStats.stats?.active).toBe(0);
+
+      // El comprador ve a dónde pagar la comisión para recuperar el acceso.
+      const mine = await tickets.getMyProductionTicketPurchases(buyer, undefined, 1, 10);
+      expect(mine.purchases[0].commissionStatus).toBe(
+        ProductionCommissionStatus.unpaid,
+      );
+      expect(mine.purchases[0].commissionPaymentInstructions).toMatchObject({
+        alias: 'soonpublicite.mp',
+        amount: 100,
+      });
+      expect(mine.purchases[0].creatorPaymentInstructions).toBeNull();
+
+      await tickets.setProductionTicketCommissionStatus(
+        purchase._id,
+        ProductionCommissionStatus.paid,
+        admin,
+      );
+      expect((await service.getProductionItemById(photo._id, buyer)).key).toBe(
+        'key-premium',
+      );
+    });
+
+    it('el acceso vence solo (TKT-08) y se puede volver a comprar', async () => {
+      const { owner, productionId, folder, photo } = await setupPaidBlog();
+      const buyer = await createTestUser(models);
+      const ticket = await tickets.createProductionTicket(
+        paidTicket(productionId, folder._id),
+        owner,
+      );
+      const purchase = await tickets.purchaseProductionTicket(
+        { ticketId: ticket._id, acceptNoRefund: true },
+        buyer,
+      );
+      await tickets.activateProductionTicketPurchase(purchase._id, owner);
       expect((await service.getProductionItemById(photo._id, buyer)).key).toBe(
         'key-premium',
       );
@@ -436,10 +534,9 @@ describe('Mis Producciones - Fase 5: tickets por transferencia', () => {
       ).resolves.toMatchObject({ status: ProductionTicketPurchaseStatus.pending });
     });
 
-    it('el admin rechaza una transferencia que no llegó', async () => {
+    it('el staff rechaza una transferencia que no llegó', async () => {
       const { owner, productionId, folder } = await setupPaidBlog();
       const buyer = await createTestUser(models);
-      const admin = await createTestUser(models);
       const ticket = await tickets.createProductionTicket(
         paidTicket(productionId, folder._id),
         owner,
@@ -449,15 +546,19 @@ describe('Mis Producciones - Fase 5: tickets por transferencia', () => {
         buyer,
       );
 
+      await expect(
+        tickets.rejectProductionTicketPurchase(purchase._id, 'No llegó', buyer),
+      ).rejects.toBeInstanceOf(UnauthorizedException);
+
       const rejected = await tickets.rejectProductionTicketPurchase(
         purchase._id,
         'No se encontró la transferencia',
-        admin,
+        owner,
       );
       expect(rejected.status).toBe(ProductionTicketPurchaseStatus.rejected);
       expect(rejected.statusReason).toBe('No se encontró la transferencia');
       await expect(
-        tickets.confirmProductionTicketPurchase(purchase._id, admin, true),
+        tickets.activateProductionTicketPurchase(purchase._id, owner),
       ).rejects.toBeInstanceOf(BadRequestException);
 
       await expect(
@@ -482,7 +583,10 @@ describe('Mis Producciones - Fase 5: tickets por transferencia', () => {
       );
       expect(purchase.status).toBe(ProductionTicketPurchaseStatus.active);
       expect(purchase.reviewRequired).toBe(false);
-      expect(purchase.paymentInstructions).toBeNull();
+      expect(purchase.commissionStatus).toBe(
+        ProductionCommissionStatus.notApplicable,
+      );
+      expect(purchase.commissionPaymentInstructions).toBeNull();
       expect((await service.getProductionItemById(photo._id, visitor)).key).toBe(
         'key-premium',
       );
@@ -605,7 +709,6 @@ describe('Mis Producciones - Fase 5: tickets por transferencia', () => {
       const { owner, productionId, folder, vip } = await setupPaidBlog();
       const pendingBuyer = await createTestUser(models);
       const activeBuyer = await createTestUser(models);
-      const admin = await createTestUser(models);
       const folderTicket = await tickets.createProductionTicket(
         paidTicket(productionId, folder._id),
         owner,
@@ -620,7 +723,7 @@ describe('Mis Producciones - Fase 5: tickets por transferencia', () => {
         { ticketId: folderTicket._id, acceptNoRefund: true },
         activeBuyer,
       );
-      await tickets.confirmProductionTicketPurchase(active._id, admin, true);
+      await tickets.activateProductionTicketPurchase(active._id, owner);
       await models.connection
         .collection('productionticketpurchases')
         .updateOne(

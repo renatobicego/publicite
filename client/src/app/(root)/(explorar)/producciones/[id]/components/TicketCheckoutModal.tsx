@@ -22,8 +22,13 @@ import { deleteFilesService } from "@/app/server/uploadThing";
 import { isProductionActionError } from "@/utils/functions/productionErrorHandler";
 import {
   ProductionTicketCheckout,
+  ProductionTicketPaymentInstructions,
   ProductionTicketPurchaseStatus,
 } from "@/types/productionTypes";
+import {
+  isAccessSuspended,
+  purchaseStatusLabel,
+} from "../../productionTicketStatus";
 
 interface Props {
   ticketId: string;
@@ -32,7 +37,59 @@ interface Props {
   onPurchased: () => void;
 }
 
-/** Flujo de compra de un ticket por transferencia (TKT-04/05). */
+const hasAccount = (
+  instructions?: ProductionTicketPaymentInstructions | null,
+) => !!instructions?.alias || !!instructions?.cbu;
+
+/** Datos de una de las dos transferencias, con su comprobante. */
+const TransferBlock = ({
+  title,
+  hint,
+  instructions,
+  inputId,
+  disabled,
+  onReceipt,
+}: {
+  title: string;
+  hint: string;
+  instructions: ProductionTicketPaymentInstructions;
+  inputId?: string;
+  disabled?: boolean;
+  onReceipt?: (file: File | null) => void;
+}) => (
+  <div className="rounded-lg border p-3 text-sm flex flex-col gap-1">
+    <span className="font-medium">{title}</span>
+    <span className="text-xs text-default-500">{hint}</span>
+    {instructions.alias && <span>Alias: {instructions.alias}</span>}
+    {instructions.cbu && <span>CBU/CVU: {instructions.cbu}</span>}
+    {instructions.holder && <span>Titular: {instructions.holder}</span>}
+    {instructions.bank && <span>Banco: {instructions.bank}</span>}
+    <span className="font-medium">
+      Monto: {instructions.currency} {instructions.amount}
+    </span>
+    {inputId && onReceipt && (
+      <>
+        <label htmlFor={inputId} className="text-xs font-medium mt-2">
+          Comprobante de esta transferencia
+        </label>
+        <input
+          id={inputId}
+          type="file"
+          accept="image/*,application/pdf"
+          disabled={disabled}
+          onChange={(e) => onReceipt(e.target.files?.[0] ?? null)}
+          className="text-sm"
+        />
+      </>
+    )}
+  </div>
+);
+
+/**
+ * Flujo de compra de un ticket (TKT-04/05). Un ticket pago se paga con dos
+ * transferencias: la parte del creador al blog y la comisión a Soonpublicité,
+ * cada una con su comprobante.
+ */
 const TicketCheckoutModal = ({
   ticketId,
   isOpen,
@@ -46,6 +103,9 @@ const TicketCheckoutModal = ({
   const [acceptNoRefund, setAcceptNoRefund] = useState(false);
   const [transferReference, setTransferReference] = useState("");
   const [receipt, setReceipt] = useState<File | null>(null);
+  const [commissionReceipt, setCommissionReceipt] = useState<File | null>(
+    null,
+  );
   const [busy, setBusy] = useState(false);
   const { startUpload } = useUploadThing("uploadSingleFile", {
     onUploadError: (e) => {
@@ -56,6 +116,7 @@ const TicketCheckoutModal = ({
   useEffect(() => {
     if (!isOpen) return;
     setReceipt(null);
+    setCommissionReceipt(null);
     setAcceptNoRefund(false);
     let active = true;
     setLoading(true);
@@ -81,30 +142,39 @@ const TicketCheckoutModal = ({
       return;
     }
     const isPaid = checkout.ticket.isPaid;
-    if (isPaid && !receipt) {
-      toastifyError("Subí el comprobante de la transferencia");
+    if (isPaid && (!receipt || !commissionReceipt)) {
+      toastifyError("Subí los comprobantes de las dos transferencias");
       return;
     }
     setBusy(true);
+    const uploadedKeys: string[] = [];
     try {
       let transferReceiptKey: string | undefined;
-      if (isPaid && receipt) {
-        const uploaded = await startUpload([receipt]);
-        transferReceiptKey = uploaded?.[0]?.key;
-        if (!transferReceiptKey) {
-          toastifyError("No se pudo subir el comprobante");
-          return;
+      let commissionReceiptKey: string | undefined;
+      if (isPaid && receipt && commissionReceipt) {
+        // Una subida por comprobante: la ruta acepta un archivo por vez.
+        for (const file of [receipt, commissionReceipt]) {
+          const uploaded = await startUpload([file]);
+          const key = uploaded?.[0]?.key;
+          if (!key) {
+            if (uploadedKeys.length) deleteFilesService(uploadedKeys);
+            toastifyError("No se pudieron subir los comprobantes");
+            return;
+          }
+          uploadedKeys.push(key);
         }
+        [transferReceiptKey, commissionReceiptKey] = uploadedKeys;
       }
       const res = await purchaseProductionTicket({
         ticketId,
         acceptNoRefund,
         transferReference: transferReference.trim() || undefined,
         transferReceiptKey,
+        commissionReceiptKey,
       });
       if (isProductionActionError(res)) {
-        // La compra no se registró: no dejar el comprobante huérfano.
-        if (transferReceiptKey) deleteFilesService([transferReceiptKey]);
+        // La compra no se registró: no dejar los comprobantes huérfanos.
+        if (uploadedKeys.length) deleteFilesService(uploadedKeys);
         toastifyError(res.error);
         return;
       }
@@ -112,7 +182,7 @@ const TicketCheckoutModal = ({
         toastifySuccess("¡Acceso habilitado!");
       } else {
         toastifySuccess(
-          "Compra registrada. Queda pendiente hasta confirmar la transferencia."
+          "Compra registrada. El acceso se habilita cuando el blog verifique tu transferencia."
         );
       }
       onPurchased();
@@ -122,11 +192,15 @@ const TicketCheckoutModal = ({
   };
 
   const ticket = checkout?.ticket;
-  const instructions = checkout?.paymentInstructions;
+  const creatorInstructions = checkout?.creatorPaymentInstructions;
+  const commissionInstructions = checkout?.commissionPaymentInstructions;
   const existing = checkout?.existingPurchase;
-  // Sin la cuenta de Soonpublicité cargada no hay a dónde transferir.
+  // Hacen falta las dos cuentas: la del blog y la de Soonpublicité.
   const missingAccount =
-    !!ticket?.isPaid && !instructions?.alias && !instructions?.cbu;
+    !!ticket?.isPaid &&
+    (!hasAccount(creatorInstructions) || !hasAccount(commissionInstructions));
+  // Con una compra abierta no se compra de nuevo: se muestra en qué está.
+  const showPaymentForm = !!ticket?.isPaid && !missingAccount && !existing;
 
   return (
     <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="lg" scrollBehavior="inside">
@@ -166,77 +240,87 @@ const TicketCheckoutModal = ({
                       : ""}
                   </p>
 
-                  {existing && (
-                    <p className="text-xs text-warning">
-                      Ya tenés una compra {existing.status} para este ticket.
+                  {existing && !isAccessSuspended(existing) && (
+                    <p className="text-sm text-warning">
+                      Ya tenés una compra de este ticket (
+                      {purchaseStatusLabel[existing.status].toLowerCase()}).
+                      {existing.status ===
+                        ProductionTicketPurchaseStatus.pending &&
+                        " El acceso se habilita cuando el blog verifique tu transferencia."}
                     </p>
                   )}
 
-                  {checkout.noRefundWarning && (
+                  {existing && isAccessSuspended(existing) && (
+                    <>
+                      <p className="text-sm text-danger">
+                        Tu acceso está suspendido: Soonpublicité no registró el
+                        pago de la comisión. Se restablece cuando la pagues.
+                      </p>
+                      {existing.commissionPaymentInstructions && (
+                        <TransferBlock
+                          title="Comisión de Soonpublicité"
+                          hint="Transferí la comisión a la cuenta de Soonpublicité."
+                          instructions={existing.commissionPaymentInstructions}
+                        />
+                      )}
+                    </>
+                  )}
+
+                  {!existing && checkout.noRefundWarning && (
                     <p className="text-xs text-default-500">
                       {checkout.noRefundWarning}
                     </p>
                   )}
 
-                  {missingAccount && (
+                  {missingAccount && !existing && (
                     <p className="text-sm text-danger">
                       La compra de tickets pagos no está disponible por el
                       momento: falta configurar la cuenta para transferir.
                     </p>
                   )}
 
-                  {ticket?.isPaid && instructions && !missingAccount && (
-                    <div className="rounded-lg border p-3 text-sm flex flex-col gap-1">
-                      <span className="font-medium">Datos para transferir</span>
-                      <span className="text-xs text-default-500">
-                        La transferencia se hace a la cuenta de Soonpublicité.
-                      </span>
-                      {instructions.alias && <span>Alias: {instructions.alias}</span>}
-                      {instructions.cbu && <span>CBU/CVU: {instructions.cbu}</span>}
-                      {instructions.holder && (
-                        <span>Titular: {instructions.holder}</span>
-                      )}
-                      {instructions.bank && <span>Banco: {instructions.bank}</span>}
-                      <span>
-                        Monto: {instructions.currency} {instructions.amount}
-                      </span>
-                    </div>
+                  {showPaymentForm && creatorInstructions && (
+                    <>
+                      <p className="text-sm">
+                        Este ticket se paga con{" "}
+                        <span className="font-medium">dos transferencias</span>
+                        : una al blog y otra a Soonpublicité. Hacé las dos y
+                        subí los dos comprobantes.
+                      </p>
+                      <TransferBlock
+                        title="1. Transferencia al blog"
+                        hint="Es la parte del creador. Cuando la verifique, habilita tu acceso."
+                        instructions={creatorInstructions}
+                        inputId="transfer-receipt"
+                        disabled={busy}
+                        onReceipt={setReceipt}
+                      />
+                    </>
                   )}
 
-                  {ticket?.isPaid && (
-                    <div className="flex flex-col gap-1">
-                      <label
-                        htmlFor="transfer-receipt"
-                        className="text-sm font-medium"
-                      >
-                        Comprobante de transferencia
-                      </label>
-                      <input
-                        id="transfer-receipt"
-                        type="file"
-                        accept="image/*,application/pdf"
+                  {showPaymentForm && commissionInstructions && (
+                    <>
+                      <TransferBlock
+                        title="2. Comisión de Soonpublicité"
+                        hint="Va a la cuenta de Soonpublicité. Si no se registra el pago, tu acceso se suspende hasta que la pagues."
+                        instructions={commissionInstructions}
+                        inputId="commission-receipt"
                         disabled={busy}
-                        onChange={(e) =>
-                          setReceipt(e.target.files?.[0] ?? null)
-                        }
-                        className="text-sm"
+                        onReceipt={setCommissionReceipt}
                       />
                       <p className="text-xs text-default-500">
-                        Imagen o PDF, hasta 8 MB. Es obligatorio para
-                        confirmar la compra.
+                        Comprobantes en imagen o PDF, hasta 8 MB cada uno. Los
+                        dos son obligatorios.
                       </p>
-                    </div>
+                      <Input
+                        label="Referencia de las transferencias (opcional)"
+                        value={transferReference}
+                        onValueChange={setTransferReference}
+                      />
+                    </>
                   )}
 
-                  {ticket?.isPaid && (
-                    <Input
-                      label="Referencia de la transferencia (opcional)"
-                      value={transferReference}
-                      onValueChange={setTransferReference}
-                    />
-                  )}
-
-                  {checkout.requiresNoRefundAcceptance && (
+                  {checkout.requiresNoRefundAcceptance && !existing && (
                     <Checkbox
                       isSelected={acceptNoRefund}
                       onValueChange={setAcceptNoRefund}
@@ -255,9 +339,10 @@ const TicketCheckoutModal = ({
                   busy ||
                   loading ||
                   !checkout ||
+                  !!existing ||
                   missingAccount ||
                   (checkout.requiresNoRefundAcceptance && !acceptNoRefund) ||
-                  (!!ticket?.isPaid && !receipt)
+                  (!!ticket?.isPaid && (!receipt || !commissionReceipt))
                 }
               >
                 {busy
