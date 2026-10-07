@@ -14,6 +14,11 @@ import {
 } from "react";
 import { useUploadThing } from "@/utils/uploadThing";
 import { toastifyError } from "@/utils/functions/toastify";
+import {
+  ALLOWED_IMAGE_ACCEPT,
+  INVALID_IMAGE_FORMAT_MESSAGE,
+  isAllowedImageFile,
+} from "@/utils/functions/imageFormats";
 import { deleteFilesService } from "@/app/server/uploadThing";
 import { AudioBlockTool } from "./tools/AudioBlockTool";
 import { VideoBlockTool } from "./tools/VideoBlockTool";
@@ -270,8 +275,14 @@ const BlockEditor = forwardRef<BlockEditorHandle, BlockEditorProps>(
           image: {
             class: Image,
             config: {
+              types: ALLOWED_IMAGE_ACCEPT,
               uploader: {
                 uploadByFile: async (file: File) => {
+                  // También cubre arrastrar/pegar, que no pasan por `accept`.
+                  if (!isAllowedImageFile(file)) {
+                    toastifyError(INVALID_IMAGE_FORMAT_MESSAGE);
+                    return { success: 0 };
+                  }
                   const res = await startUpload([file]);
                   return {
                     success: 1,

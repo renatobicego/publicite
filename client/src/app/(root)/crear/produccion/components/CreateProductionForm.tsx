@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@bprogress/next/app";
 import { Button, Image, Input, Textarea, Link, Spinner } from "@nextui-org/react";
 import { FaImage } from "react-icons/fa";
 import imageCompression from "browser-image-compression";
@@ -109,7 +109,6 @@ const CreateProductionForm = ({ groupId }: { groupId?: string }) => {
       }
       toastifySuccess("Blog creado con éxito");
       router.push(`${PRODUCTIONS}/${res._id}`);
-      router.refresh();
     } finally {
       setIsSubmitting(false);
     }

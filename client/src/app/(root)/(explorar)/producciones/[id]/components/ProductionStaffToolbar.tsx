@@ -23,6 +23,11 @@ import { deleteFilesService } from "@/app/server/uploadThing";
 import { isProductionActionError } from "@/utils/functions/productionErrorHandler";
 import { ProductionFileType } from "@/types/productionTypes";
 import { PRODUCTIONS } from "@/utils/data/urls";
+import {
+  ALLOWED_IMAGE_ACCEPT,
+  INVALID_IMAGE_FORMAT_MESSAGE,
+  isAllowedImageFile,
+} from "@/utils/functions/imageFormats";
 
 interface Props {
   productionId: string;
@@ -33,7 +38,9 @@ interface Props {
 
 /** Mapea el archivo del navegador al `ProductionFileType` del backend. */
 const detectFileType = (file: File): ProductionFileType | undefined => {
-  if (file.type.startsWith("image/")) return ProductionFileType.photo;
+  if (file.type.startsWith("image/")) {
+    return isAllowedImageFile(file) ? ProductionFileType.photo : undefined;
+  }
   if (file.type.startsWith("video/")) return ProductionFileType.video;
   if (file.type.startsWith("audio/")) return ProductionFileType.audio;
   if (file.type === "application/pdf") return ProductionFileType.writing;
@@ -96,7 +103,11 @@ const ProductionStaffToolbar = ({
 
     const fileType = detectFileType(file);
     if (!fileType) {
-      toastifyError("Tipo de archivo no soportado");
+      toastifyError(
+        file.type.startsWith("image/")
+          ? INVALID_IMAGE_FORMAT_MESSAGE
+          : "Tipo de archivo no soportado"
+      );
       return;
     }
 
@@ -168,7 +179,7 @@ const ProductionStaffToolbar = ({
         <input
           ref={fileInputRef}
           type="file"
-          accept="image/*,video/*,audio/*,application/pdf"
+          accept={`${ALLOWED_IMAGE_ACCEPT},video/*,audio/*,application/pdf`}
           className="hidden"
           onChange={handleFilePicked}
         />

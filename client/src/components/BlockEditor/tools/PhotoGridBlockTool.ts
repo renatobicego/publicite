@@ -4,6 +4,11 @@ import {
   BlockToolConstructorOptions,
 } from "@editorjs/editorjs";
 import { MenuConfig } from "@editorjs/editorjs/types/tools/menu-config";
+import {
+  ALLOWED_IMAGE_ACCEPT,
+  INVALID_IMAGE_FORMAT_MESSAGE,
+  isAllowedImageFile,
+} from "@/utils/functions/imageFormats";
 
 export interface PhotoGridImage {
   url: string;
@@ -134,7 +139,7 @@ export class PhotoGridBlockTool implements BlockTool {
 
     const input = document.createElement("input");
     input.type = "file";
-    input.accept = "image/*";
+    input.accept = ALLOWED_IMAGE_ACCEPT;
     input.multiple = true;
     input.style.display = "none";
     input.addEventListener("change", () => {
@@ -148,8 +153,15 @@ export class PhotoGridBlockTool implements BlockTool {
     return zone;
   }
 
-  private async handleUpload(files: File[]): Promise<void> {
+  private async handleUpload(selected: File[]): Promise<void> {
     if (!this.wrapper) return;
+
+    // `accept` no frena arrastrar/pegar ni "todos los archivos": se valida acá.
+    const files = selected.filter(isAllowedImageFile);
+    if (files.length < selected.length) {
+      this.config.onUploadError?.(INVALID_IMAGE_FORMAT_MESSAGE);
+    }
+    if (files.length === 0) return;
 
     // Zona de carga temporal mientras suben los archivos.
     const loading = document.createElement("div");
