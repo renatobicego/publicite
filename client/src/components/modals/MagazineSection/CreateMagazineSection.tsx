@@ -16,7 +16,7 @@ import { useState } from "react";
 import { CustomInputWithoutFormik } from "../../inputs/CustomInputs";
 import { createMagazineSection } from "@/app/server/magazineActions";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
-import { useRouter } from "next-nprogress-bar";
+import { useRouter } from "@bprogress/next/app";
 import { useMagazinesData } from "@/app/(root)/providers/userDataProvider";
 
 const CreateMagazineSection = ({

@@ -9,7 +9,7 @@ import { createPost } from "@/app/server/postActions";
 import { getLocalTimeZone, today } from "@internationalized/date";
 import { useUploadThing } from "@/utils/uploadThing";
 import imageCompression from "browser-image-compression";
-import { useRouter } from "next-nprogress-bar";
+import { useRouter } from "@bprogress/next/app";
 import { POSTS } from "@/utils/data/urls";
 import { useUser } from "@clerk/nextjs";
 import { getUserActivePostandActiveRelationsNumber } from "@/services/subscriptionServices";

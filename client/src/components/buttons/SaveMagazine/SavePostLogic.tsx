@@ -8,7 +8,7 @@ import { Link, Spinner } from "@nextui-org/react";
 import { Magazine } from "@/types/magazineTypes";
 import { useMagazinesData } from "@/app/(root)/providers/userDataProvider";
 import { usePathname } from "next/navigation";
-import { useRouter } from "next-nprogress-bar";
+import { useRouter } from "@bprogress/next/app";
 
 const SavePostLogic = ({
   titleProps,

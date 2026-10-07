@@ -9,7 +9,7 @@ import { createGroup } from "@/app/server/groupActions";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { GROUPS } from "@/utils/data/urls";
 import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
-import { useRouter } from "next-nprogress-bar";
+import { useRouter } from "@bprogress/next/app";
 import { groupValidation } from "./validation";
 import { Group } from "@/types/groupTypes";
 import { emitGroupNotification } from "@/components/notifications/groups/emitNotifications";

@@ -16,7 +16,7 @@ import DeleteCollaborators from "./DeleteCollaborators";
 import { User } from "@/types/userTypes";
 import { Magazine } from "@/types/magazineTypes";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
-import { useRouter } from "next-nprogress-bar";
+import { useRouter } from "@bprogress/next/app";
 import { removeMagazine } from "@/app/server/magazineActions";
 import {
   useMagazinesData,

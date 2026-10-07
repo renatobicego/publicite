@@ -4,7 +4,7 @@ import { deleteSection } from "@/app/server/magazineActions";
 import ConfirmModal from "@/components/modals/ConfirmModal";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { Button } from "@nextui-org/react";
-import { useRouter } from "next-nprogress-bar";
+import { useRouter } from "@bprogress/next/app";
 import { IoTrashOutline } from "react-icons/io5";
 
 const DeleteMagazineSection = ({

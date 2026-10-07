@@ -7,7 +7,7 @@ import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { useEffect, useState } from "react";
 import useUploadFiles from "@/utils/hooks/useUploadFiles";
 import { Button, Divider, Link } from "@nextui-org/react";
-import { useRouter } from "next-nprogress-bar";
+import { useRouter } from "@bprogress/next/app";
 import TitleDescription from "@/app/(root)/crear/anuncio/components/CreateForm/inputs/TitleDescription";
 import PriceCategory from "@/app/(root)/crear/anuncio/components/CreateForm/inputs/PriceCategory";
 import Condition from "@/app/(root)/crear/anuncio/components/CreateGood/Condition";

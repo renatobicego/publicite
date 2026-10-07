@@ -8,7 +8,7 @@ import {
 } from "@/types/userTypes";
 import { toastifySuccess } from "@/utils/functions/toastify";
 import { Button } from "@nextui-org/react";
-import { useRouter } from "next-nprogress-bar";
+import { useRouter } from "@bprogress/next/app";
 import { FaCheck, FaX } from "react-icons/fa6";
 
 const HandleUserRelationRequest = ({

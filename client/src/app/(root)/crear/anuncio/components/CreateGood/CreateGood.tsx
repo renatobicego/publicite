@@ -15,7 +15,7 @@ import { POSTS } from "@/utils/data/urls";
 import useUploadFiles from "@/utils/hooks/useUploadFiles";
 import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
 import { useAttachedFiles } from "../CreateForm/inputs/AccordionInputs/AttachedFIles/AttachedFilesContext";
-import { useRouter } from "next-nprogress-bar";
+import { useRouter } from "@bprogress/next/app";
 import { CustomDateInput } from "@/components/inputs/CustomInputs";
 
 const CreateGood = ({

@@ -11,7 +11,7 @@ import PriceRangeCategory from "./PriceRangeCategory";
 import Visibility from "../anuncio/components/CreateForm/inputs/AccordionInputs/Visibility";
 import { createPost } from "../../../server/postActions";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
-import { useRouter } from "next-nprogress-bar";
+import { useRouter } from "@bprogress/next/app";
 import { POSTS } from "@/utils/data/urls";
 import useUploadFiles from "@/utils/hooks/useUploadFiles";
 import AttachedFiles from "../anuncio/components/CreateForm/inputs/AccordionInputs/AttachedFIles/AttachedFiles";

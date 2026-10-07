@@ -3,7 +3,7 @@ import SecondaryButton from "../SecondaryButton";
 import { useState } from "react";
 import { putMemberGroup } from "@/services/groupsService";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
-import { useRouter } from "next-nprogress-bar";
+import { useRouter } from "@bprogress/next/app";
 
 const AcceptGroupInvitation = ({ groupId }: { groupId: string }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);

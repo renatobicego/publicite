@@ -6,7 +6,7 @@ import { OrangeCubeIcon } from "./OrangeCubeIcon";
 import { ChatWindow } from "./ChatWindow";
 import { useChatbot } from "./useChatbot";
 import { usePathname } from "next/navigation";
-import { useRouter } from "next-nprogress-bar";
+import { useRouter } from "@bprogress/next/app";
 
 export function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);

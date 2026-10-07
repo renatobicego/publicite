@@ -11,7 +11,7 @@ import {
 import { MAGAZINES } from "@/utils/data/urls";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { Form, Formik, FormikHelpers } from "formik";
-import { useRouter } from "next-nprogress-bar";
+import { useRouter } from "@bprogress/next/app";
 import EditMagazineInputs from "./EditMagazineInputs";
 import { editMagazine } from "@/app/server/magazineActions";
 import { Group } from "@/types/groupTypes";

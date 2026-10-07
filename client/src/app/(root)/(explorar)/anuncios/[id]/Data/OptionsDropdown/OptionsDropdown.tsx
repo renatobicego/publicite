@@ -12,7 +12,7 @@ import {
   DropdownTrigger,
   Spinner,
 } from "@nextui-org/react";
-import { useRouter } from "next-nprogress-bar";
+import { useRouter } from "@bprogress/next/app";
 import { lazy, Suspense, useRef, useState } from "react";
 import { FaChevronDown } from "react-icons/fa6";
 import useUserPostLimit from "@/utils/hooks/useUserPostLimit";

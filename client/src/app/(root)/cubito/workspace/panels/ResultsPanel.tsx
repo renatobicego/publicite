@@ -5,7 +5,7 @@ import { Button, Card, CardBody, Chip, Tooltip, Spinner } from "@nextui-org/reac
 import { FaEye, FaTrash, FaDownload, FaNewspaper } from "react-icons/fa6";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { getValuacionPostDraft } from "@/services/workspaceServices";
-import { useRouter } from "next-nprogress-bar";
+import { useRouter } from "@bprogress/next/app";
 import { toPng } from "html-to-image";
 import type { useWorkspace } from "../hooks/useWorkspace";
 

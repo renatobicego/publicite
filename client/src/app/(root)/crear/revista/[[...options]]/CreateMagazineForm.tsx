@@ -6,7 +6,7 @@ import {
   groupMagazine,
   userMagazine,
 } from "./initialValues";
-import { useRouter } from "next-nprogress-bar";
+import { useRouter } from "@bprogress/next/app";
 import { Form, Formik, FormikHelpers } from "formik";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { magazineValidation } from "./validation";

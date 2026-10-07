@@ -13,7 +13,7 @@ import { FaShareAlt } from "react-icons/fa";
 import { FaChevronDown } from "react-icons/fa6";
 
 const OptionsDropdown = ({ user }: { user: GetUser }) => {
-  const userShareRef = useRef<() => void>(() => {});
+  const userShareRef = useRef<() => void>(() => { });
   const handleShareOpenModal = () => {
     if (userShareRef.current) {
       userShareRef.current(); // Trigger custom open function to open the modal

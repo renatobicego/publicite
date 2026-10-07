@@ -1,9 +1,7 @@
-import Link from "next/link";
 import { findFeaturedProductions } from "@/app/server/productionActions";
 import { isProductionActionError } from "@/utils/functions/productionErrorHandler";
-import { PRODUCTIONS } from "@/utils/data/urls";
 import ProductionListCard from "./ProductionListCard";
-import SecondaryButton from "@/components/buttons/SecondaryButton";
+import ViewMoreProductionsButton from "./ViewMoreProductionsButton";
 
 /**
  * Sección "Producciones destacadas" del home (NAV-03).
@@ -24,9 +22,7 @@ const FeaturedProductions = async ({ limit = 8 }: { limit?: number }) => {
           <ProductionListCard key={production._id} production={production} />
         ))}
       </div>
-      <SecondaryButton as={Link} href={PRODUCTIONS} className="self-center mt-4">
-        Ver Más Producciones
-      </SecondaryButton>
+      <ViewMoreProductionsButton />
     </section>
   );
 };

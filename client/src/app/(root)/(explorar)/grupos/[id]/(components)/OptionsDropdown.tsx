@@ -12,7 +12,7 @@ import {
   DropdownTrigger,
   useDisclosure,
 } from "@nextui-org/react";
-import { useRouter } from "next-nprogress-bar";
+import { useRouter } from "@bprogress/next/app";
 import { lazy, Suspense, useRef } from "react";
 import { FaShareAlt } from "react-icons/fa";
 import { FaChevronDown } from "react-icons/fa6";

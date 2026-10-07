@@ -13,7 +13,7 @@ import InviteUsersGroup from "../modals/InvitationModal/InviteUsersGroup";
 import PrimaryButton from "../buttons/PrimaryButton";
 import { FaBookmark, FaPlus, FaUserGroup, FaUserPlus } from "react-icons/fa6";
 import { User } from "@/types/userTypes";
-import { useRouter } from "next-nprogress-bar";
+import { useRouter } from "@bprogress/next/app";
 import SelectManualLocationModal from "../modals/SelectManualLocation/SelectManualLocationModal";
 import { useUserData } from "@/app/(root)/providers/userDataProvider";
 import TabTitle from "./TabTitle";

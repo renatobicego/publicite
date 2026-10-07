@@ -3,7 +3,7 @@ import { CustomTextarea } from "@/components/inputs/CustomInputs";
 import { PostCalificationData, PostReview } from "@/types/postTypes";
 import { Button } from "@nextui-org/react";
 import { Form, Formik, Field, FormikHelpers } from "formik";
-import { useRouter } from "next-nprogress-bar";
+import { useRouter } from "@bprogress/next/app";
 import StarRating from "./StarRating";
 import { useUserData } from "@/app/(root)/providers/userDataProvider";
 import { emitPostCalificationNotification } from "@/components/notifications/postsCalification/emitNotifications";

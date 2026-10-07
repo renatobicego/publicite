@@ -16,7 +16,7 @@ import { CalendarDate, getLocalTimeZone, today } from "@internationalized/date";
 import useUploadFiles from "@/utils/hooks/useUploadFiles";
 import { createPost } from "../../../../../server/postActions";
 import { POSTS } from "@/utils/data/urls";
-import { useRouter } from "next-nprogress-bar";
+import { useRouter } from "@bprogress/next/app";
 import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
 import { useAttachedFiles } from "../CreateForm/inputs/AccordionInputs/AttachedFIles/AttachedFilesContext";
 import { deleteFilesService } from "@/app/server/uploadThing";

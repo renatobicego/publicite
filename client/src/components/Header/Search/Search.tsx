@@ -15,7 +15,7 @@ import {
   PROFILE,
   SERVICES,
 } from "@/utils/data/urls";
-import { useRouter } from "next-nprogress-bar";
+import { useRouter } from "@bprogress/next/app";
 import SearchButton from "./SearchButton";
 import DropdownSolapas from "./DropdownSolapas/DropdownSolapas";
 import { usePathname } from "next/navigation";

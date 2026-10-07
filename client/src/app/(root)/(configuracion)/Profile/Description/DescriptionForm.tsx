@@ -10,7 +10,7 @@ import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { putContactData } from "@/services/userServices";
 import { Contact } from "@/types/userTypes";
-import { useRouter } from "next-nprogress-bar";
+import { useRouter } from "@bprogress/next/app";
 import { visibilityItems } from "@/utils/data/selectData";
 
 const PROFESION_OPTIONS = [

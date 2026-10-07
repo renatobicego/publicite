@@ -1,7 +1,7 @@
 "use client";
 
 import { GROUPS } from "@/utils/data/urls";
-import { useRouter } from "next-nprogress-bar";
+import { useRouter } from "@bprogress/next/app";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { FaLock } from "react-icons/fa6";

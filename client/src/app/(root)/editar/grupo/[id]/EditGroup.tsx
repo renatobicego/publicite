@@ -11,7 +11,7 @@ import { GROUPS } from "@/utils/data/urls";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import useUploadImage from "@/utils/hooks/useUploadImage";
 import { Form, Formik, FormikHelpers } from "formik";
-import { useRouter } from "next-nprogress-bar";
+import { useRouter } from "@bprogress/next/app";
 import { useState } from "react";
 
 const EditGroup = ({ groupData }: { groupData: Group }) => {

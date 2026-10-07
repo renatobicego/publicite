@@ -4,7 +4,7 @@ import { exitMagazine } from "@/app/server/magazineActions";
 const ConfirmModal = lazy(() => import("@/components/modals/ConfirmModal"));
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { Button, Spinner } from "@nextui-org/react";
-import { useRouter } from "next-nprogress-bar";
+import { useRouter } from "@bprogress/next/app";
 import { lazy, Suspense } from "react";
 import { IoExitOutline } from "react-icons/io5";
 

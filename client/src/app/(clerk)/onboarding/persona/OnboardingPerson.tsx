@@ -1,5 +1,5 @@
 "use client";
-import { useRouter } from "next-nprogress-bar";
+import { useRouter } from "@bprogress/next/app";
 import { Form, Formik, FormikHelpers } from "formik";
 import { UserPersonFormValues } from "@/types/userTypes";
 import PrimaryButton from "@/components/buttons/PrimaryButton";

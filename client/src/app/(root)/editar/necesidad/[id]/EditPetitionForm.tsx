@@ -15,7 +15,7 @@ import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import useUploadFiles from "@/utils/hooks/useUploadFiles";
 import { today, getLocalTimeZone, CalendarDate } from "@internationalized/date";
 import { Field, Form, Formik, FormikHelpers } from "formik";
-import { useRouter } from "next-nprogress-bar";
+import { useRouter } from "@bprogress/next/app";
 import { useEffect } from "react";
 
 type EditPetitionFormValues = Omit<

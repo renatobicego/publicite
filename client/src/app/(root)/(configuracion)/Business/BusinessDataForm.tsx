@@ -1,6 +1,6 @@
 import { BusinessSector, EditBusinessProfileProps } from "@/types/userTypes";
 import { Form, Formik, FormikHelpers } from "formik";
-import { useRouter } from "next-nprogress-bar";
+import { useRouter } from "@bprogress/next/app";
 import { editProfile } from "../Profile/actions";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import FormCard from "../FormCard";
