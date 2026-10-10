@@ -72,33 +72,32 @@ const ProductionItemCard = ({
 
   return (
     <div className="flex flex-col gap-1">
-      <Card
-        isPressable
-        onPress={() => onOpen(item)}
-        shadow="none"
-        className="w-full gap-4 ease-in-out hover:shadow md:hover:shadow-md !transition-shadow duration-500 !opacity-100"
-      >
-        <CardHeader className="relative w-full pb-0 max-md:px-1 md:px-2 lg:px-3">
-          {renderPreview(item, locked)}
-          {canEdit && onItemChanged && (
-            <div
-              className="absolute top-2 right-2 md:right-4 z-10"
-              // Evita que el click en las acciones dispare la navegación de la card.
-              onClick={(e) => e.stopPropagation()}
-            >
-              <ProductionItemActions item={item} onChanged={onItemChanged} />
-            </div>
-          )}
-        </CardHeader>
-        <CardBody className="pt-0 flex flex-col gap-1 max-md:px-1 md:px-2 lg:px-3 pb-6">
-          <h6 className="line-clamp-1">{item.name}</h6>
-          {item.fileName && (
-            <p className="text-light-text text-xs lg:text-small 2xl:text-sm line-clamp-1">
-              {item.fileName}
-            </p>
-          )}
-        </CardBody>
-      </Card>
+      <div className="relative">
+        <Card
+          isPressable
+          onPress={() => onOpen(item)}
+          shadow="none"
+          className="w-full gap-4 ease-in-out hover:shadow md:hover:shadow-md !transition-shadow duration-500 !opacity-100"
+        >
+          <CardHeader className="w-full pb-0 max-md:px-1 md:px-2 lg:px-3">
+            {renderPreview(item, locked)}
+          </CardHeader>
+          <CardBody className="pt-0 flex flex-col gap-1 max-md:px-1 md:px-2 lg:px-3 pb-6">
+            <h6 className="line-clamp-1">{item.name}</h6>
+            {item.fileName && (
+              <p className="text-light-text text-xs lg:text-small 2xl:text-sm line-clamp-1">
+                {item.fileName}
+              </p>
+            )}
+          </CardBody>
+        </Card>
+        {/* Fuera de la Card: es un <button> (isPressable) y no puede anidar otro. */}
+        {canEdit && onItemChanged && (
+          <div className="absolute top-2 right-2 md:right-4 z-10">
+            <ProductionItemActions item={item} onChanged={onItemChanged} />
+          </div>
+        )}
+      </div>
 
       {/* Visitante: comprar acceso si el ítem está bloqueado por ticket */}
       {lockedByTicket && item.access?.ticket && !hideCheckout && (

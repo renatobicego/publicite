@@ -49,6 +49,8 @@ const ProductionStaffToolbar = ({
   const [uploadProgress, setUploadProgress] = useState<{
     current: number;
     total: number;
+    /** Porcentaje del archivo en curso (un video puede tardar minutos). */
+    percent: number;
   } | null>(null);
   const uploading = uploadProgress !== null;
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -61,6 +63,9 @@ const ProductionStaffToolbar = ({
   // `startUpload` no lanza: avisa por `onUploadError` y resuelve `undefined`.
   const uploadError = useRef<string | null>(null);
   const { startUpload } = useUploadThing("productionFileUploader", {
+    uploadProgressGranularity: "fine",
+    onUploadProgress: (percent) =>
+      setUploadProgress((progress) => progress && { ...progress, percent }),
     onUploadError: (e) => {
       uploadError.current =
         e.code === "TOO_LARGE" || e.message.includes("FileSizeMismatch")
@@ -143,7 +148,11 @@ const ProductionStaffToolbar = ({
       // De a uno: cada archivo valida su propio cupo en el backend, y si uno
       // falla los demás siguen.
       for (const [index, file] of files.entries()) {
-        setUploadProgress({ current: index + 1, total: files.length });
+        setUploadProgress({
+          current: index + 1,
+          total: files.length,
+          percent: 0,
+        });
         const error = await uploadOne(file);
         if (error) {
           toastifyError(files.length > 1 ? `${file.name}: ${error}` : error);
@@ -186,8 +195,8 @@ const ProductionStaffToolbar = ({
           {!uploadProgress
             ? "Subir archivos"
             : uploadProgress.total > 1
-              ? `Subiendo ${uploadProgress.current} de ${uploadProgress.total}…`
-              : "Subiendo…"}
+              ? `Subiendo ${uploadProgress.current} de ${uploadProgress.total} (${uploadProgress.percent}%)`
+              : `Subiendo… ${uploadProgress.percent}%`}
         </Button>
         <Button
           startContent={<FaFileMedical />}

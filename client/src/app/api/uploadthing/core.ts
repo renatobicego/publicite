@@ -66,37 +66,43 @@ export const ourFileRouter = {
   // acepta documentos de Office y OpenDocument. El cliente sube de a un archivo
   // por llamada (ver `ProductionStaffToolbar`), así que `maxFileCount` no limita
   // cuántos se pueden elegir a la vez.
-  productionFileUploader: f({
-    image: { maxFileSize: "8MB", maxFileCount: 1 },
-    video: { maxFileSize: "32MB", maxFileCount: 1 },
-    audio: { maxFileSize: "16MB", maxFileCount: 1 },
-    pdf: { maxFileSize: "16MB", maxFileCount: 1 },
-    "application/msword": { maxFileSize: "16MB", maxFileCount: 1 },
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": {
-      maxFileSize: "16MB",
-      maxFileCount: 1,
+  // `awaitServerData: false`: la subida termina apenas UploadThing guarda el
+  // archivo, sin esperar a que corra `onUploadComplete` (no devuelve nada que
+  // el cliente use). Si no, cada archivo queda esperando ese callback.
+  productionFileUploader: f(
+    {
+      image: { maxFileSize: "8MB", maxFileCount: 1 },
+      video: { maxFileSize: "32MB", maxFileCount: 1 },
+      audio: { maxFileSize: "16MB", maxFileCount: 1 },
+      pdf: { maxFileSize: "16MB", maxFileCount: 1 },
+      "application/msword": { maxFileSize: "16MB", maxFileCount: 1 },
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document": {
+        maxFileSize: "16MB",
+        maxFileCount: 1,
+      },
+      "application/vnd.ms-excel": { maxFileSize: "16MB", maxFileCount: 1 },
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {
+        maxFileSize: "16MB",
+        maxFileCount: 1,
+      },
+      "application/vnd.ms-powerpoint": { maxFileSize: "16MB", maxFileCount: 1 },
+      "application/vnd.openxmlformats-officedocument.presentationml.presentation":
+        { maxFileSize: "16MB", maxFileCount: 1 },
+      "application/vnd.oasis.opendocument.text": {
+        maxFileSize: "16MB",
+        maxFileCount: 1,
+      },
+      "application/vnd.oasis.opendocument.spreadsheet": {
+        maxFileSize: "16MB",
+        maxFileCount: 1,
+      },
+      "application/vnd.oasis.opendocument.presentation": {
+        maxFileSize: "16MB",
+        maxFileCount: 1,
+      },
     },
-    "application/vnd.ms-excel": { maxFileSize: "16MB", maxFileCount: 1 },
-    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {
-      maxFileSize: "16MB",
-      maxFileCount: 1,
-    },
-    "application/vnd.ms-powerpoint": { maxFileSize: "16MB", maxFileCount: 1 },
-    "application/vnd.openxmlformats-officedocument.presentationml.presentation":
-      { maxFileSize: "16MB", maxFileCount: 1 },
-    "application/vnd.oasis.opendocument.text": {
-      maxFileSize: "16MB",
-      maxFileCount: 1,
-    },
-    "application/vnd.oasis.opendocument.spreadsheet": {
-      maxFileSize: "16MB",
-      maxFileCount: 1,
-    },
-    "application/vnd.oasis.opendocument.presentation": {
-      maxFileSize: "16MB",
-      maxFileCount: 1,
-    },
-  })
+    { awaitServerData: false }
+  )
     .middleware(async () => {
       const user = await auth();
 
