@@ -31,7 +31,10 @@ import { isProductionActionError } from "@/utils/functions/productionErrorHandle
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { PRODUCTIONS } from "@/utils/data/urls";
-import { cleanupItemFiles } from "../../productionMediaCleanup";
+import {
+  cleanupItemFiles,
+  loadItemForCleanup,
+} from "../../productionMediaCleanup";
 
 interface Props {
   item: ProductionItemResponse;
@@ -105,6 +108,9 @@ const ProductionItemActions = ({ item, onChanged }: Props) => {
     }
     setBusy(true);
     try {
+      // La grilla no trae el contenido del artículo: se pide ahora, antes de
+      // borrarlo, para saber qué archivos embebidos hay que limpiar.
+      const itemToClean = isFolder ? item : await loadItemForCleanup(item);
       const res = isFolder
         ? await deleteFolder(item._id)
         : isArticle
@@ -117,7 +123,7 @@ const ProductionItemActions = ({ item, onChanged }: Props) => {
       // Limpieza de archivos en UploadThing (archivo/artículo). Las carpetas
       // se limpian en el backend por el borrado en cascada.
       if (!isFolder) {
-        await cleanupItemFiles(item);
+        await cleanupItemFiles(itemToClean);
       }
       toastifySuccess("Eliminado");
       onChanged();

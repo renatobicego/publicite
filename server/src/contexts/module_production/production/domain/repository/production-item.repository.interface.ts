@@ -32,10 +32,21 @@ export interface ProductionItemRepositoryInterface {
   ): Promise<ProductionItem[]>;
   /** Ítems de cualquier blog (panel de denuncias). */
   findManyByIds(ids: string[]): Promise<ProductionItem[]>;
+  /** Hijos directos de un nivel, sin los bloques de los artículos. */
   findChildren(
     productionId: string,
     parentId: string | null,
   ): Promise<ProductionItem[]>;
+  /**
+   * Primeros `limitPerParent` hijos de cada carpeta, en el mismo orden que
+   * `findChildren`, agrupados por carpeta. Para la vista previa: no trae los
+   * bloques de los artículos ni el dorso de las postales.
+   */
+  findChildrenPreview(
+    productionId: string,
+    parentIds: string[],
+    limitPerParent: number,
+  ): Promise<Map<string, ProductionItem[]>>;
   /** Ancestros del ítem, del padre directo hacia la raíz. */
   findAncestors(itemId: string): Promise<ProductionItem[]>;
   /** Todas las carpetas del blog (para resolver herencias en lote). */

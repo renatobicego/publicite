@@ -1,7 +1,6 @@
 import { Field, Float, ID, InputType, Int } from '@nestjs/graphql';
 import { Type } from 'class-transformer';
 import {
-  ArrayMaxSize,
   IsArray,
   IsEnum,
   IsInt,
@@ -61,9 +60,11 @@ export class ProductionArticleBlockInput {
   @MaxLength(50)
   type: string;
 
+  // Sin tope de largo: el texto de un artículo no tiene límite propio. El techo
+  // real es el body de la request (10mb en `index.ts`) y los 16MB por documento
+  // de Mongo.
   @Field(() => String)
   @IsString()
-  @MaxLength(100000)
   data: string;
 }
 
@@ -207,7 +208,6 @@ export class ProductionArticleRequest {
 
   @Field(() => [ProductionArticleBlockInput])
   @IsArray()
-  @ArrayMaxSize(500)
   @ValidateNested({ each: true })
   @Type(() => ProductionArticleBlockInput)
   blocks: ProductionArticleBlockInput[];
@@ -236,7 +236,6 @@ export class ProductionArticleUpdateRequest {
   @Field(() => [ProductionArticleBlockInput], { nullable: true })
   @IsOptional()
   @IsArray()
-  @ArrayMaxSize(500)
   @ValidateNested({ each: true })
   @Type(() => ProductionArticleBlockInput)
   blocks?: ProductionArticleBlockInput[];

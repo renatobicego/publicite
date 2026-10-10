@@ -376,6 +376,46 @@ describe('Mis Producciones - Fase 1: núcleo del blog', () => {
       expect(subLevel.breadcrumb.map((b) => b.name)).toEqual(['Viajes', 'Europa']);
     });
 
+    it('cada carpeta trae una vista previa de hasta 9 elementos de adentro', async () => {
+      process.env.PRODUCTION_FREE_FILES_PER_BLOG = '20';
+      const userId = await createTestUser(models);
+      const productionId = await createBlog(userId);
+      const folder = await service.createFolder({ productionId, name: 'Viajes' }, userId);
+      const empty = await service.createFolder({ productionId, name: 'Vacía' }, userId);
+      await service.createArticle(
+        { productionId, parentId: folder._id, title: 'Diario', blocks: ARTICLE_BLOCKS },
+        userId,
+      );
+      const photo = await uploadPhoto(userId, productionId, { parentId: folder._id });
+
+      const level = await service.getProductionItems(productionId, undefined, userId);
+      const preview = level.items.find((i) => i._id === folder._id)!.folderPreview!;
+      // Mismo orden que al abrir la carpeta; la key sólo viaja en las fotos.
+      expect(preview).toEqual([
+        {
+          _id: photo._id,
+          kind: ProductionItemKind.file,
+          fileType: ProductionFileType.photo,
+          key: photo.key,
+        },
+        expect.objectContaining({ kind: ProductionItemKind.article, key: null }),
+      ]);
+      expect(level.items.find((i) => i._id === empty._id)!.folderPreview).toEqual([]);
+
+      // La grilla no trae el contenido de los artículos; el detalle sí.
+      const inside = await service.getProductionItems(productionId, folder._id, userId);
+      const listed = inside.items.find((i) => i.kind === ProductionItemKind.article)!;
+      expect(listed.blocks).toBeNull();
+      const detail = await service.getProductionItemById(listed._id, userId);
+      expect(detail.blocks).toHaveLength(ARTICLE_BLOCKS.length);
+
+      for (let i = 0; i < 9; i++) {
+        await uploadPhoto(userId, productionId, { parentId: folder._id });
+      }
+      const full = await service.getProductionItems(productionId, undefined, userId);
+      expect(full.items.find((i) => i._id === folder._id)!.folderPreview).toHaveLength(9);
+    });
+
     it('rechaza una carpeta padre de otro blog o que no es carpeta', async () => {
       const userId = await createTestUser(models);
       const otherUserId = await createTestUser(models);

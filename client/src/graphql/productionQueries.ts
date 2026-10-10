@@ -85,10 +85,6 @@ const PRODUCTION_ITEM_FIELDS = gql`
       dedication
       description
     }
-    blocks {
-      type
-      data
-    }
     visibility
     effectiveVisibility
     moderationStatus
@@ -150,6 +146,12 @@ export const getProductionItemsQuery = gql`
       }
       items {
         ...ProductionItemFields
+        folderPreview {
+          _id
+          kind
+          fileType
+          key
+        }
       }
       breadcrumb {
         _id
@@ -167,6 +169,11 @@ export const getProductionItemByIdQuery = gql`
   query GetProductionItemById($itemId: ID!, $accessKey: String) {
     getProductionItemById(itemId: $itemId, accessKey: $accessKey) {
       ...ProductionItemFields
+      # El contenido del artículo sólo se pide acá: la grilla no lo trae.
+      blocks {
+        type
+        data
+      }
     }
   }
 `;

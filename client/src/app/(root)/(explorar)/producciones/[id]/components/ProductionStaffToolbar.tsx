@@ -23,11 +23,11 @@ import { deleteFilesService } from "@/app/server/uploadThing";
 import { isProductionActionError } from "@/utils/functions/productionErrorHandler";
 import { ProductionFileType } from "@/types/productionTypes";
 import { PRODUCTIONS } from "@/utils/data/urls";
+import { INVALID_IMAGE_FORMAT_MESSAGE } from "@/utils/functions/imageFormats";
 import {
-  ALLOWED_IMAGE_ACCEPT,
-  INVALID_IMAGE_FORMAT_MESSAGE,
-  isAllowedImageFile,
-} from "@/utils/functions/imageFormats";
+  detectProductionFileType,
+  PRODUCTION_FILE_ACCEPT,
+} from "../../productionFiles";
 
 interface Props {
   productionId: string;
@@ -35,17 +35,6 @@ interface Props {
   /** Se llama tras crear cualquier ítem para refrescar la grilla. */
   onCreated: () => void;
 }
-
-/** Mapea el archivo del navegador al `ProductionFileType` del backend. */
-const detectFileType = (file: File): ProductionFileType | undefined => {
-  if (file.type.startsWith("image/")) {
-    return isAllowedImageFile(file) ? ProductionFileType.photo : undefined;
-  }
-  if (file.type.startsWith("video/")) return ProductionFileType.video;
-  if (file.type.startsWith("audio/")) return ProductionFileType.audio;
-  if (file.type === "application/pdf") return ProductionFileType.writing;
-  return undefined;
-};
 
 const ProductionStaffToolbar = ({
   productionId,
@@ -56,7 +45,12 @@ const ProductionStaffToolbar = ({
   const folderModal = useDisclosure();
   const [folderName, setFolderName] = useState("");
   const [busy, setBusy] = useState(false);
-  const [uploading, setUploading] = useState(false);
+  // Avance de la subida en curso (se puede elegir más de un archivo a la vez).
+  const [uploadProgress, setUploadProgress] = useState<{
+    current: number;
+    total: number;
+  } | null>(null);
+  const uploading = uploadProgress !== null;
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const goToCreateArticle = () => {
@@ -64,8 +58,15 @@ const ProductionStaffToolbar = ({
     router.push(`${PRODUCTIONS}/${productionId}/crear-articulo${query}`);
   };
 
-  const { startUpload } = useUploadThing("fileUploader", {
-    onUploadError: (e) => toastifyError(`Error al subir el archivo: ${e.name}`),
+  // `startUpload` no lanza: avisa por `onUploadError` y resuelve `undefined`.
+  const uploadError = useRef<string | null>(null);
+  const { startUpload } = useUploadThing("productionFileUploader", {
+    onUploadError: (e) => {
+      uploadError.current =
+        e.code === "TOO_LARGE" || e.message.includes("FileSizeMismatch")
+          ? "El archivo supera el tamaño máximo permitido"
+          : "No se pudo subir el archivo";
+    },
   });
 
   const handleCreateFolder = async () => {
@@ -93,58 +94,74 @@ const ProductionStaffToolbar = ({
     }
   };
 
-  const handleFilePicked = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const file = event.target.files?.[0];
-    // Permitir volver a elegir el mismo archivo.
-    event.target.value = "";
-    if (!file) return;
-
-    const fileType = detectFileType(file);
+  /** Sube un archivo y lo registra en el blog. Devuelve el error, si hubo. */
+  const uploadOne = async (file: File): Promise<string | null> => {
+    const fileType = detectProductionFileType(file);
     if (!fileType) {
-      toastifyError(
-        file.type.startsWith("image/")
-          ? INVALID_IMAGE_FORMAT_MESSAGE
-          : "Tipo de archivo no soportado"
-      );
-      return;
+      return file.type.startsWith("image/")
+        ? INVALID_IMAGE_FORMAT_MESSAGE
+        : "Tipo de archivo no soportado";
     }
 
+    uploadError.current = null;
+    const rawKey = (await startUpload([file]))?.[0]?.key;
+    if (!rawKey) return uploadError.current ?? "No se pudo subir el archivo";
+
+    // Convención de Anuncios: al key de un video se le agrega "video".
+    const key =
+      fileType === ProductionFileType.video ? `${rawKey}video` : rawKey;
+    const res = await uploadFile({
+      productionId,
+      parentId,
+      fileType,
+      key,
+      // Tamaño real del archivo para el cupo de almacenamiento por usuario.
+      sizeBytes: file.size,
+      name: file.name,
+    });
+    if (isProductionActionError(res)) {
+      // El backend rechazó (p. ej. sin espacio). El archivo ya se subió a
+      // UploadThing, así que lo borramos para no dejar un huérfano que igual
+      // ocuparía storage real. Se borra con el key REAL (sin el sufijo "video").
+      deleteFilesService([rawKey]);
+      return res.error;
+    }
+    return null;
+  };
+
+  const handleFilesPicked = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const files = Array.from(event.target.files ?? []);
+    // Permitir volver a elegir los mismos archivos.
+    event.target.value = "";
+    if (files.length === 0) return;
+
     setBusy(true);
-    setUploading(true);
+    let uploadedCount = 0;
     try {
-      const uploaded = await startUpload([file]);
-      const rawKey = uploaded?.[0]?.key;
-      if (!rawKey) {
-        toastifyError("No se pudo subir el archivo");
-        return;
+      // De a uno: cada archivo valida su propio cupo en el backend, y si uno
+      // falla los demás siguen.
+      for (const [index, file] of files.entries()) {
+        setUploadProgress({ current: index + 1, total: files.length });
+        const error = await uploadOne(file);
+        if (error) {
+          toastifyError(files.length > 1 ? `${file.name}: ${error}` : error);
+        } else {
+          uploadedCount++;
+        }
       }
-      // Convención de Anuncios: al key de un video se le agrega "video".
-      const key =
-        fileType === ProductionFileType.video ? `${rawKey}video` : rawKey;
-      const res = await uploadFile({
-        productionId,
-        parentId,
-        fileType,
-        key,
-        // Tamaño real del archivo para el cupo de almacenamiento por usuario.
-        sizeBytes: file.size,
-        name: file.name,
-      });
-      if (isProductionActionError(res)) {
-        // El backend rechazó (p. ej. sin espacio). El archivo ya se subió a
-        // UploadThing, así que lo borramos para no dejar un huérfano que igual
-        // ocuparía storage real. Se borra con el key REAL (sin el sufijo "video").
-        deleteFilesService([rawKey]);
-        toastifyError(res.error);
-        return;
+      if (uploadedCount > 0) {
+        toastifySuccess(
+          uploadedCount === 1
+            ? "Archivo subido"
+            : `${uploadedCount} archivos subidos`
+        );
+        onCreated();
       }
-      toastifySuccess("Archivo subido");
-      onCreated();
     } finally {
       setBusy(false);
-      setUploading(false);
+      setUploadProgress(null);
     }
   };
 
@@ -166,7 +183,11 @@ const ProductionStaffToolbar = ({
           isDisabled={busy}
           isLoading={uploading}
         >
-          {uploading ? "Subiendo…" : "Subir archivo"}
+          {!uploadProgress
+            ? "Subir archivos"
+            : uploadProgress.total > 1
+              ? `Subiendo ${uploadProgress.current} de ${uploadProgress.total}…`
+              : "Subiendo…"}
         </Button>
         <Button
           startContent={<FaFileMedical />}
@@ -179,9 +200,10 @@ const ProductionStaffToolbar = ({
         <input
           ref={fileInputRef}
           type="file"
-          accept={`${ALLOWED_IMAGE_ACCEPT},video/*,audio/*,application/pdf`}
+          multiple
+          accept={PRODUCTION_FILE_ACCEPT}
           className="hidden"
-          onChange={handleFilePicked}
+          onChange={handleFilesPicked}
         />
       </div>
 

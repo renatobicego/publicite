@@ -1,5 +1,5 @@
 "use client";
-import EditorJS, { OutputData } from "@editorjs/editorjs";
+import EditorJS, { OutputData, ToolConstructable } from "@editorjs/editorjs";
 import Header from "@editorjs/header";
 import List from "@editorjs/list";
 import Image from "@editorjs/image";
@@ -23,6 +23,20 @@ import { deleteFilesService } from "@/app/server/uploadThing";
 import { AudioBlockTool } from "./tools/AudioBlockTool";
 import { VideoBlockTool } from "./tools/VideoBlockTool";
 import { PhotoGridBlockTool, PhotoGridImage } from "./tools/PhotoGridBlockTool";
+import {
+  ClearFormatInlineTool,
+  FontSizeInlineTool,
+  HighlightInlineTool,
+  StrikethroughInlineTool,
+  TextColorInlineTool,
+  UnderlineInlineTool,
+} from "./tools/inlineStyleTools";
+import { ALIGNMENT_TUNE, AlignmentBlockTune } from "./tools/AlignmentBlockTune";
+
+// Los tipos de Editor.js piden que el `render()` de una herramienta inline
+// devuelva un `HTMLElement`, pero la API vigente (la que usan sus propias
+// herramientas) devuelve un `MenuConfig`.
+const inlineTool = (tool: unknown) => tool as ToolConstructable;
 
 /**
  * Extrae las claves de UploadThing de un bloque para el cleanup de archivos.
@@ -258,8 +272,10 @@ const BlockEditor = forwardRef<BlockEditorHandle, BlockEditorProps>(
         },
         i18n,
         tools: {
-          header: Header,
-          list: List,
+          // `inlineToolbar: true` habilita el formato de texto (color,
+          // subrayado, etc.) también en encabezados y listas.
+          header: { class: Header, inlineToolbar: true },
+          list: { class: List, inlineToolbar: true },
           // No registramos el tool de bloque de enlaces (`@editorjs/link`):
           // requiere un `endpoint` de backend para traer metadata y no existe
           // en la app. Los hipervínculos se hacen con el inline tool interno
@@ -336,8 +352,27 @@ const BlockEditor = forwardRef<BlockEditorHandle, BlockEditorProps>(
               },
             },
           },
+          // Formato de texto al estilo de un procesador de texto.
+          underline: inlineTool(UnderlineInlineTool),
+          strikethrough: inlineTool(StrikethroughInlineTool),
+          textColor: inlineTool(TextColorInlineTool),
+          highlight: inlineTool(HighlightInlineTool),
+          fontSize: inlineTool(FontSizeInlineTool),
+          clearFormat: inlineTool(ClearFormatInlineTool),
+          [ALIGNMENT_TUNE]: AlignmentBlockTune,
         },
-        inlineToolbar: ["bold", "italic", "link"],
+        tunes: [ALIGNMENT_TUNE],
+        inlineToolbar: [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "textColor",
+          "highlight",
+          "fontSize",
+          "link",
+          "clearFormat",
+        ],
       });
       return editor;
     }, [

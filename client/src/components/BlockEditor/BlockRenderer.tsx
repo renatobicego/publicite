@@ -4,6 +4,14 @@ import { Image } from "@nextui-org/react";
 import { FaCheck, FaSquare } from "react-icons/fa6";
 import AudioPlayer from "@/components/MediaPlayers/AudioPlayer";
 import VideoPlayer from "@/components/MediaPlayers/VideoPlayer";
+import { ALIGNMENT_TUNE, BlockAlignment } from "./tools/AlignmentBlockTune";
+import {
+  sanitizeInlineHtml,
+  sanitizeUrl,
+} from "@/utils/functions/sanitizeBlocks";
+
+// Todo HTML de un bloque pasa por acá antes de insertarse en la página.
+const safeHtml = (html: unknown) => ({ __html: sanitizeInlineHtml(html) });
 
 interface ListItemObj {
   content: string;
@@ -18,6 +26,7 @@ interface ListData {
 
 /**
  * Renderiza los bloques de Editor.js (`OutputData`) a JSX de sólo lectura.
+ * El HTML de cada bloque se sanitiza acá, venga de donde venga.
  * Soporta header, paragraph, image, list (incluye checklist y anidadas) y link.
  * Reutilizable por artículos de Mis Producciones y cualquier contenido Editor.js.
  */
@@ -31,10 +40,10 @@ const BlockRenderer = ({ data }: { data: OutputData }) => {
         return style === "checklist" ? (
           <li key={i} className="flex items-start gap-2 mb-2">
             <FaSquare className="h-4 w-4 mt-1 flex-shrink-0" />
-            <span dangerouslySetInnerHTML={{ __html: item }} />
+            <span dangerouslySetInnerHTML={safeHtml(item)} />
           </li>
         ) : (
-          <li key={i} className="mb-2" dangerouslySetInnerHTML={{ __html: item }} />
+          <li key={i} className="mb-2" dangerouslySetInnerHTML={safeHtml(item)} />
         );
       }
       const hasNested = item.items && item.items.length > 0;
@@ -47,10 +56,10 @@ const BlockRenderer = ({ data }: { data: OutputData }) => {
               ) : (
                 <FaSquare className="h-4 w-4 mt-1 border rounded-sm flex-shrink-0" />
               )}
-              <span dangerouslySetInnerHTML={{ __html: item.content }} />
+              <span dangerouslySetInnerHTML={safeHtml(item.content)} />
             </div>
           ) : (
-            <span dangerouslySetInnerHTML={{ __html: item.content }} />
+            <span dangerouslySetInnerHTML={safeHtml(item.content)} />
           )}
           {hasNested && (
             <ul
@@ -71,14 +80,23 @@ const BlockRenderer = ({ data }: { data: OutputData }) => {
   return (
     <article className="w-full prose prose-lg max-w-none">
       {data.blocks.map((block, index) => {
+        // Alineación elegida en el editor (sólo bloques de texto).
+        const textAlign = block.tunes?.[ALIGNMENT_TUNE]?.alignment as
+          | BlockAlignment
+          | undefined;
+        const alignStyle = textAlign ? { textAlign } : undefined;
         switch (block.type) {
           case "header": {
             const d = block.data as { text: string; level: number };
             const HeadingTag = `h${d.level}` as keyof React.JSX.IntrinsicElements;
+            // El encabezado también admite formato (color, subrayado, etc.).
             return (
-              <HeadingTag key={index} className="font-bold mb-4">
-                {d.text}
-              </HeadingTag>
+              <HeadingTag
+                key={index}
+                className="font-bold mb-4 [&_a]:text-primary [&_a]:underline"
+                style={alignStyle}
+                dangerouslySetInnerHTML={safeHtml(d.text)}
+              />
             );
           }
           case "paragraph": {
@@ -86,8 +104,9 @@ const BlockRenderer = ({ data }: { data: OutputData }) => {
             return (
               <p
                 key={index}
-                className="leading-relaxed mb-4 [&>a]:text-primary [&>a]:underline"
-                dangerouslySetInnerHTML={{ __html: d.text }}
+                className="leading-relaxed mb-4 [&_a]:text-primary [&_a]:underline"
+                style={alignStyle}
+                dangerouslySetInnerHTML={safeHtml(d.text)}
               />
             );
           }
@@ -118,7 +137,7 @@ const BlockRenderer = ({ data }: { data: OutputData }) => {
             const d = block.data as ListData;
             if (d.style === "checklist") {
               return (
-                <ul key={index} className="list-none mb-4">
+                <ul key={index} className="list-none mb-4" style={alignStyle}>
                   {renderListItems(d.items, d.style)}
                 </ul>
               );
@@ -129,6 +148,7 @@ const BlockRenderer = ({ data }: { data: OutputData }) => {
                 key={index}
                 className={`${d.style === "ordered" ? "list-decimal" : "list-disc"
                   } list-inside mb-4`}
+                style={alignStyle}
               >
                 {renderListItems(d.items, d.style)}
               </ListTag>
@@ -193,7 +213,7 @@ const BlockRenderer = ({ data }: { data: OutputData }) => {
             return (
               <a
                 key={index}
-                href={d.link}
+                href={sanitizeUrl(d.link) || undefined}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block my-4 p-3 rounded-lg border hover:bg-default-100"

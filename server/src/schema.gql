@@ -1637,6 +1637,34 @@ type ProductionItemAccessResponse {
   ticket: ProductionTicketSummaryResponse
 }
 
+"""Miniatura de un elemento dentro de una carpeta (vista previa)"""
+type ProductionFolderPreviewResponse {
+  _id: ID!
+  kind: ProductionItemKind!
+  fileType: ProductionFileType
+
+  """
+  Key de UploadThing, sólo en fotos que el usuario puede ver; el resto se muestra con su ícono
+  """
+  key: String
+}
+
+"""Tipo de ítem del árbol de una producción"""
+enum ProductionItemKind {
+  folder
+  file
+  article
+}
+
+"""Foto (postal), video, escrito (PDF), audio o documento de Office"""
+enum ProductionFileType {
+  photo
+  video
+  writing
+  audio
+  document
+}
+
 type ProductionItemResponse {
   _id: ID!
   production: ID!
@@ -1661,26 +1689,16 @@ type ProductionItemResponse {
   postcard: ProductionPostcardResponse
   blocks: [ProductionArticleBlockResponse!]
 
+  """
+  Sólo carpetas, al listar un nivel: hasta 9 elementos de adentro para la vista previa
+  """
+  folderPreview: [ProductionFolderPreviewResponse!]
+
   """Sólo staff del blog"""
   moderationStatus: ProductionModerationStatus
   createdAt: DateTime
   updatedAt: DateTime
   access: ProductionItemAccessResponse!
-}
-
-"""Tipo de ítem del árbol de una producción"""
-enum ProductionItemKind {
-  folder
-  file
-  article
-}
-
-"""Foto (postal), video, escrito u audio"""
-enum ProductionFileType {
-  photo
-  video
-  writing
-  audio
 }
 
 type ProductionBreadcrumbResponse {

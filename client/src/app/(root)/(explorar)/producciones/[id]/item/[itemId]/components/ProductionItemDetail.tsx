@@ -1,7 +1,12 @@
 "use client";
 import { Image, useDisclosure } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
-import { FaLock, FaShoppingCart } from "react-icons/fa";
+import {
+  FaDownload,
+  FaFileAlt,
+  FaLock,
+  FaShoppingCart,
+} from "react-icons/fa";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import TicketCheckoutModal from "../../../components/TicketCheckoutModal";
 import {
@@ -128,6 +133,24 @@ const renderFile = (item: ProductionItemResponse) => {
           className="w-full h-[70vh] rounded-lg"
           src={resolveProductionFileUrl(item.key)}
         />
+      );
+    case ProductionFileType.document:
+      // El navegador no muestra archivos de Office: se ofrecen para descargar.
+      return (
+        <div className="flex flex-col items-center gap-4 rounded-lg border p-8">
+          <FaFileAlt className="text-5xl text-default-500" />
+          <p className="text-sm text-center break-all">{item.name}</p>
+          <a
+            href={resolveProductionFileUrl(item.key)}
+            target="_blank"
+            rel="noopener noreferrer"
+            download={item.name}
+            className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-[10px] text-sm font-medium text-white hover:opacity-80"
+          >
+            <FaDownload />
+            Descargar
+          </a>
+        </div>
       );
     default:
       return null;

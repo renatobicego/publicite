@@ -26,6 +26,7 @@ export enum ProductionFileType {
   video = "video",
   writing = "writing",
   audio = "audio",
+  document = "document",
 }
 
 export enum ProductionOwnerType {
@@ -216,6 +217,15 @@ export interface ProductionResponse {
   viewer: ProductionViewer;
 }
 
+/** Miniatura de un elemento dentro de una carpeta (vista previa). */
+export interface ProductionFolderPreviewItem {
+  _id: string;
+  kind: ProductionItemKind;
+  fileType?: ProductionFileType | null;
+  /** Sólo en fotos que el usuario puede ver. */
+  key?: string | null;
+}
+
 export interface ProductionItemResponse {
   _id: string;
   kind: ProductionItemKind;
@@ -227,8 +237,10 @@ export interface ProductionItemResponse {
   fileType?: ProductionFileType | null;
   key?: string | null;
   postcard?: ProductionPostcard | null;
-  // article
+  // article: sólo viene al pedir el ítem (`getProductionItemById`), no en la grilla
   blocks?: ProductionArticleBlock[] | null;
+  // folder: hasta 9 elementos de adentro (sólo al listar un nivel)
+  folderPreview?: ProductionFolderPreviewItem[] | null;
   // comunes
   visibility?: ProductionVisibility | null;
   effectiveVisibility: ProductionVisibility;

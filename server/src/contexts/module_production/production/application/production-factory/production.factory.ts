@@ -1,3 +1,4 @@
+import { sanitizeArticleBlocks } from '../functions/production.article-sanitize';
 import { Production } from '../../domain/entity/production.entity';
 import {
   ProductionArticle,
@@ -93,7 +94,7 @@ export class ProductionFactory implements ProductionFactoryInterface {
       visibility: request.visibility ?? null,
       createdBy: userId,
       fileName,
-      blocks: (request.blocks ?? []).map(({ type, data }) => ({ type, data })),
+      blocks: sanitizeArticleBlocks(request.blocks),
     });
   }
 }

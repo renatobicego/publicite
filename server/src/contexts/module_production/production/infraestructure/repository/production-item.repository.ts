@@ -107,10 +107,44 @@ export class ProductionItemRepository
         production: toObjectId(productionId),
         parent: parentId ? toObjectId(parentId) : null,
       })
+      // El listado no carga los bloques de los artículos.
+      .select('-blocks')
       // Carpetas primero, después el contenido más reciente.
       .sort({ kind: -1, createdAt: -1, _id: -1 })
       .lean();
     return docs.map((doc) => ProductionItem.fromDocument(doc));
+  }
+
+  async findChildrenPreview(
+    productionId: string,
+    parentIds: string[],
+    limitPerParent: number,
+  ): Promise<Map<string, ProductionItem[]>> {
+    const byParent = new Map<string, ProductionItem[]>();
+    if (parentIds.length === 0) return byParent;
+
+    const groups = await this.itemModel.aggregate<{
+      _id: Types.ObjectId;
+      items: any[];
+    }>([
+      {
+        $match: {
+          production: toObjectId(productionId),
+          parent: { $in: parentIds.map(toObjectId) },
+        },
+      },
+      { $sort: { kind: -1, createdAt: -1, _id: -1 } },
+      { $project: { blocks: 0, postcard: 0 } },
+      { $group: { _id: '$parent', items: { $push: '$$ROOT' } } },
+      { $project: { items: { $slice: ['$items', limitPerParent] } } },
+    ]);
+    for (const group of groups) {
+      byParent.set(
+        String(group._id),
+        group.items.map((doc) => ProductionItem.fromDocument(doc)),
+      );
+    }
+    return byParent;
   }
 
   async countFolders(productionId: string): Promise<number> {

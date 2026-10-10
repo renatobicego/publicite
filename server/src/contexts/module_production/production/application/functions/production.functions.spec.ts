@@ -11,6 +11,10 @@ import {
 import { ProductionPermissions, resolveProductionRole } from './production.roles';
 import { hashAccessKey, verifyAccessKey } from './production.access-key';
 import { buildProductionUrl, slugifyProductionTitle } from './production.url';
+import {
+  sanitizeArticleBlocks,
+  sanitizeInlineHtml,
+} from './production.article-sanitize';
 import { buildProductionSearchRegex, normalizeFileName } from './production.text';
 import {
   computeTicketExpiration,
@@ -318,5 +322,75 @@ describe('URL, búsqueda e ID de archivo', () => {
     expect(normalizeFileName('  FOTO   01 ')).toBe('FOTO 01');
     expect(() => normalizeFileName('   ')).toThrow();
     expect(() => normalizeFileName('x'.repeat(81))).toThrow();
+  });
+});
+
+describe('Sanitización de artículos', () => {
+  const sanitizeData = (type: string, data: unknown) =>
+    JSON.parse(
+      sanitizeArticleBlocks([{ type, data: JSON.stringify(data) }])[0].data,
+    );
+
+  it('conserva el formato de texto del editor', () => {
+    const html =
+      '<b>a</b> <i>b</i> <u>c</u> <strike>d</strike> ' +
+      '<span style="color: rgb(220, 38, 38);">e</span> ' +
+      '<span style="background-color: rgb(254, 240, 138); font-size: x-large;">f</span> ' +
+      '<a href="https://soonpublicite.com/x?a=1&amp;b=2">g</a> &nbsp;h<br>';
+    // Lo único que cambia es el espaciado dentro de `style`.
+    const clean = sanitizeInlineHtml(html);
+    expect(clean).toBe(html.replace(/(color|size): /g, '$1:'));
+    // Volver a pasar el filtro no cambia nada (el cliente lo aplica otra vez).
+    expect(sanitizeInlineHtml(clean)).toBe(clean);
+  });
+
+  it('quita scripts, manejadores de eventos y enlaces peligrosos', () => {
+    const dirty =
+      'hola<script>alert(1)</script><img src=x onerror=alert(1)>' +
+      '<a href="javascript:alert(1)" onclick="alert(1)">link</a>' +
+      '<span style="color:red;background:url(javascript:alert(1))" onmouseover="x()">t</span>' +
+      '<iframe src="https://evil.test"></iframe><svg onload=alert(1)>';
+    const clean = sanitizeInlineHtml(dirty);
+    expect(clean).not.toMatch(/<script|<img|<iframe|<svg|onerror|onclick|onmouseover|onload|javascript:|url\(/i);
+    expect(clean).toContain('hola');
+    // Un `style` con una declaración peligrosa se descarta entero.
+    expect(clean).toBe('hola<a href>link</a><span style>t</span>');
+  });
+
+  it('sanitiza todo el JSON del bloque, incluidas listas anidadas y URLs', () => {
+    const list = sanitizeData('list', {
+      style: 'unordered',
+      items: [
+        { content: 'uno<script>x</script>', items: [{ content: '<b onclick="x()">dos</b>', items: [] }] },
+      ],
+    });
+    expect(list.items[0].content).toBe('uno');
+    expect(list.items[0].items[0].content).toBe('<b>dos</b>');
+
+    const image = sanitizeData('image', {
+      file: { url: 'javascript:alert(1)', key: 'abc123' },
+      caption: '<img src=x onerror=alert(1)>pie',
+      stretched: true,
+    });
+    expect(image).toEqual({
+      file: { url: '', key: 'abc123' },
+      caption: 'pie',
+      stretched: true,
+    });
+
+    const media = sanitizeData('video', {
+      file: { url: 'https://utfs.io/f/abc', key: 'abcvideo' },
+    });
+    expect(media.file.url).toBe('https://utfs.io/f/abc');
+    expect(sanitizeData('linkTool', { link: 'data:text/html,x' }).link).toBe('');
+  });
+
+  it('un data que no es un objeto JSON se guarda vacío', () => {
+    expect(
+      sanitizeArticleBlocks([
+        { type: 'paragraph', data: 'no es json' },
+        { type: 'paragraph', data: '"<script>"' },
+      ]).map((block) => block.data),
+    ).toEqual(['{}', '{}']);
   });
 });

@@ -12,14 +12,20 @@ import {
   FaTicketAlt,
   FaShoppingCart,
   FaReceipt,
+  FaFilePdf,
+  FaFileWord,
+  FaFileExcel,
+  FaFilePowerpoint,
 } from "react-icons/fa";
 import {
   ProductionFileType,
+  ProductionFolderPreviewItem,
   ProductionItemKind,
   ProductionItemResponse,
   ProductionLockReason,
 } from "@/types/productionTypes";
 import { resolveProductionFileUrl } from "../../productionMedia";
+import { documentFamilyOf } from "../../productionFiles";
 import ItemVisibilityControl from "./ItemVisibilityControl";
 import TicketCheckoutModal from "./TicketCheckoutModal";
 import TicketManagerModal from "./TicketManagerModal";
@@ -197,29 +203,96 @@ const LockedBox = ({ children }: { children: React.ReactNode }) => (
   </div>
 );
 
-const kindIcon = (item: ProductionItemResponse) => {
+const documentIcons = {
+  word: <FaFileWord className="text-primary" />,
+  excel: <FaFileExcel className="text-success" />,
+  powerpoint: <FaFilePowerpoint className="text-warning" />,
+};
+
+/**
+ * Ícono del tipo de elemento. El tamaño lo hereda del contenedor, así sirve
+ * tanto para la tarjeta como para las miniaturas de la vista previa de carpeta.
+ */
+const kindIcon = (
+  item: Pick<ProductionFolderPreviewItem, "kind" | "fileType"> & {
+    name?: string;
+    fileName?: string | null;
+  }
+) => {
+  if (item.kind === ProductionItemKind.folder) {
+    return <FaFolder className="text-warning" />;
+  }
   if (item.kind === ProductionItemKind.article) {
-    return <FaFileAlt className="text-5xl text-primary" />;
+    return <FaFileAlt className="text-primary" />;
   }
   switch (item.fileType) {
     case ProductionFileType.photo:
-      return <FaImage className="text-5xl text-primary" />;
+      return <FaImage className="text-primary" />;
     case ProductionFileType.video:
-      return <FaVideo className="text-5xl text-secondary" />;
+      return <FaVideo className="text-secondary" />;
     case ProductionFileType.audio:
-      return <FaMusic className="text-5xl text-success" />;
+      return <FaMusic className="text-success" />;
     case ProductionFileType.writing:
-      return <FaFileAlt className="text-5xl text-default-600" />;
+      return <FaFilePdf className="text-danger" />;
+    case ProductionFileType.document: {
+      const family = documentFamilyOf(item.name, item.fileName);
+      return family ? (
+        documentIcons[family]
+      ) : (
+        <FaFileAlt className="text-default-600" />
+      );
+    }
     default:
-      return <FaFileAlt className="text-5xl text-default-400" />;
+      return <FaFileAlt className="text-default-400" />;
   }
 };
 
+/**
+ * Vista previa de una carpeta: hasta 9 elementos de adentro. Las fotos se
+ * muestran en miniatura; el resto, con el ícono de su tipo.
+ */
+const FolderPreview = ({ items }: { items: ProductionFolderPreviewItem[] }) => (
+  <div
+    className={`absolute inset-0 grid gap-1 p-2 md:gap-1.5 md:p-3 ${items.length <= 4 ? "grid-cols-2 grid-rows-2" : "grid-cols-3 grid-rows-3"
+      }`}
+  >
+    {items.map((child) => (
+      <div
+        key={child._id}
+        className={`flex min-h-0 min-w-0 items-center justify-center overflow-hidden rounded-medium bg-content1 ${items.length <= 4 ? "text-3xl" : "text-xl md:text-2xl"
+          }`}
+      >
+        {child.key ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={resolveProductionFileUrl(child.key)}
+            alt=""
+            loading="lazy"
+            className="h-full w-full object-cover"
+          />
+        ) : (
+          kindIcon(child)
+        )}
+      </div>
+    ))}
+  </div>
+);
+
 const renderPreview = (item: ProductionItemResponse, locked: boolean) => {
   if (item.kind === ProductionItemKind.folder) {
+    const preview = item.folderPreview ?? [];
     return (
-      <div className={`${previewBox} relative`}>
-        <FaFolder className="text-5xl text-warning" />
+      <div className={`${previewBox} relative overflow-hidden`}>
+        {preview.length > 0 ? (
+          <>
+            <FolderPreview items={preview} />
+            <span className="absolute bottom-2 left-2 rounded-full bg-content1/90 p-2 shadow">
+              <FaFolder className="text-sm text-warning" />
+            </span>
+          </>
+        ) : (
+          <FaFolder className="text-5xl text-warning" />
+        )}
         {locked && (
           <span className="absolute bottom-2 right-2 rounded-full bg-content1/90 p-2 shadow">
             <FaLock className="text-sm text-default-600" />
@@ -229,8 +302,10 @@ const renderPreview = (item: ProductionItemResponse, locked: boolean) => {
     );
   }
 
+  const icon = <span className="text-5xl">{kindIcon(item)}</span>;
+
   if (locked) {
-    return <LockedBox>{kindIcon(item)}</LockedBox>;
+    return <LockedBox>{icon}</LockedBox>;
   }
 
   if (
@@ -252,7 +327,7 @@ const renderPreview = (item: ProductionItemResponse, locked: boolean) => {
     );
   }
 
-  return <IconBox>{kindIcon(item)}</IconBox>;
+  return <IconBox>{icon}</IconBox>;
 };
 
 export default ProductionItemCard;

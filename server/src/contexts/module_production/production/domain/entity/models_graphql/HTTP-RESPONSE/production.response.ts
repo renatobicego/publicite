@@ -276,6 +276,27 @@ export class ProductionItemAccessResponse {
   ticket?: ProductionTicketSummaryResponse | null;
 }
 
+@ObjectType({
+  description: 'Miniatura de un elemento dentro de una carpeta (vista previa)',
+})
+export class ProductionFolderPreviewResponse {
+  @Field(() => ID)
+  _id: string;
+
+  @Field(() => ProductionItemKind)
+  kind: ProductionItemKind;
+
+  @Field(() => ProductionFileType, { nullable: true })
+  fileType?: ProductionFileType;
+
+  @Field(() => String, {
+    nullable: true,
+    description:
+      'Key de UploadThing, sólo en fotos que el usuario puede ver; el resto se muestra con su ícono',
+  })
+  key?: string | null;
+}
+
 @ObjectType()
 export class ProductionItemResponse {
   @Field(() => ID)
@@ -321,6 +342,13 @@ export class ProductionItemResponse {
 
   @Field(() => [ProductionArticleBlockResponse], { nullable: true })
   blocks?: ProductionArticleBlockResponse[] | null;
+
+  @Field(() => [ProductionFolderPreviewResponse], {
+    nullable: true,
+    description:
+      'Sólo carpetas, al listar un nivel: hasta 9 elementos de adentro para la vista previa',
+  })
+  folderPreview?: ProductionFolderPreviewResponse[] | null;
 
   @Field(() => ProductionModerationStatus, {
     nullable: true,

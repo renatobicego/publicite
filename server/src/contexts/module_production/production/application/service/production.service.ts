@@ -18,6 +18,7 @@ import {
   ProductionItem,
 } from '../../domain/entity/production-item.entity';
 import {
+  ProductionFileType,
   ProductionItemKind,
   ProductionOwnerType,
   ProductionRole,
@@ -35,6 +36,7 @@ import {
   ProductionFolderUpdateRequest,
 } from '../../domain/entity/models_graphql/HTTP-REQUEST/production-item.request';
 import {
+  ProductionFolderPreviewResponse,
   ProductionIdResponse,
   ProductionItemResponse,
   ProductionItemsResponse,
@@ -60,6 +62,7 @@ import {
   requireNonEmpty,
   toSearchText,
 } from '../functions/production.text';
+import { sanitizeArticleBlocks } from '../functions/production.article-sanitize';
 import { ProductionCascadeService } from './production.cascade.service';
 import { ProductionViewerScope } from './production.access.service';
 import { hashAccessKey } from '../functions/production.access-key';
@@ -69,6 +72,10 @@ const DUPLICATE_KEY = 11000;
 const MAX_URL_ATTEMPTS = 3;
 const MAX_OWNER_PRODUCTIONS = 100;
 const MAX_PAGE_SIZE = 50;
+// Vista previa de carpetas: se muestran hasta 9 elementos. Se traen algunos de
+// más por carpeta porque los que el usuario no puede listar se descartan.
+const FOLDER_PREVIEW_SIZE = 9;
+const FOLDER_PREVIEW_FETCH = 30;
 const DEFAULT_PAGE_SIZE = 10;
 
 const normalizePagination = (page: number, limit: number) => ({
@@ -636,7 +643,7 @@ export class ProductionService implements ProductionServiceInterface {
         fields.name = requireNonEmpty(request.title, 'El título del artículo');
       }
       if (request.blocks !== undefined) {
-        fields.blocks = request.blocks.map(({ type, data }) => ({ type, data }));
+        fields.blocks = sanitizeArticleBlocks(request.blocks);
       }
       return fields;
     });
@@ -996,21 +1003,39 @@ export class ProductionService implements ProductionServiceInterface {
       production.getId!,
       parentId ?? null,
     );
+    const previews = await this.itemRepository.findChildrenPreview(
+      production.getId!,
+      children
+        .filter((child) => child.getKind === ProductionItemKind.folder)
+        .map((child) => child.getId!),
+      FOLDER_PREVIEW_FETCH,
+    );
     const items: ProductionItemResponse[] = [];
     for (const child of children) {
       const chain = [child, ...parentChain];
       const childDecision = this.evaluateItem(production, chain, tickets, viewer);
       if (!childDecision.listed) continue;
-      items.push(
-        await this.toItemView(
-          production,
-          child,
-          chain,
-          childDecision,
-          viewer,
-          tickets,
-        ),
+      const view = await this.toItemView(
+        production,
+        child,
+        chain,
+        childDecision,
+        viewer,
+        tickets,
       );
+      // La grilla no trae el contenido de los artículos (puede pesar varios
+      // MB): se pide por ítem con `getProductionItemById`.
+      if (child.getKind === ProductionItemKind.article) view.blocks = null;
+      if (child.getKind === ProductionItemKind.folder) {
+        view.folderPreview = this.buildFolderPreview(
+          production,
+          previews.get(child.getId!) ?? [],
+          chain,
+          tickets,
+          viewer,
+        );
+      }
+      items.push(view);
     }
 
     return {
@@ -1055,6 +1080,44 @@ export class ProductionService implements ProductionServiceInterface {
       await this.accessService.registerContentAccess(viewer, itemDecision);
     }
     return view;
+  }
+
+  /**
+   * Vista previa de una carpeta: hasta FOLDER_PREVIEW_SIZE elementos de adentro.
+   * Cada uno pasa por la misma evaluación de acceso que al abrir la carpeta: lo
+   * que no se lista no aparece, y la key sólo viaja en fotos que el usuario
+   * puede ver (el resto se muestra con el ícono de su tipo).
+   */
+  private buildFolderPreview(
+    production: Production,
+    candidates: ProductionItem[],
+    folderChain: ProductionItem[],
+    tickets: TicketRef[],
+    viewer: ProductionViewerContext,
+  ): ProductionFolderPreviewResponse[] {
+    const preview: ProductionFolderPreviewResponse[] = [];
+    for (const candidate of candidates) {
+      if (preview.length >= FOLDER_PREVIEW_SIZE) break;
+      const decision = this.evaluateItem(
+        production,
+        [candidate, ...folderChain],
+        tickets,
+        viewer,
+      );
+      if (!decision.listed) continue;
+      const isFile = candidate instanceof ProductionFile;
+      const showsPhoto =
+        isFile &&
+        decision.canViewContent &&
+        candidate.getFileType === ProductionFileType.photo;
+      preview.push({
+        _id: candidate.getId!,
+        kind: candidate.getKind,
+        fileType: isFile ? candidate.getFileType : undefined,
+        key: showsPhoto ? candidate.getKey : null,
+      });
+    }
+    return preview;
   }
 
   private evaluateItem(

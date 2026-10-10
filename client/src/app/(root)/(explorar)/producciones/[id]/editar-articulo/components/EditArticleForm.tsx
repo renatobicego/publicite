@@ -127,7 +127,8 @@ const EditArticleForm = ({ item }: Props) => {
         <div className="border-b border-default-100 px-4 py-3 sm:px-6">
           <h2 className="text-sm font-medium text-default-700">Contenido</h2>
           <p className="text-xs text-default-400">
-            Escribí, agregá encabezados, listas, imágenes y enlaces.
+            Escribí, agregá encabezados, listas, imágenes y enlaces. Seleccioná
+            un texto para darle color, resaltado, tamaño o subrayado.
           </p>
         </div>
         <div className="px-4 py-4 sm:px-6 sm:py-6">

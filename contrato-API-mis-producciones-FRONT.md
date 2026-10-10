@@ -72,13 +72,21 @@ Cada `ProductionResponse` trae `viewer` con `role`, `canEdit`, `canManageAccess`
 `Production` → ítems (`ProductionItemResponse`) con `kind`:
 
 - `folder`: carpeta o subcarpeta (`parent` = carpeta padre; `null` = raíz).
-- `file`: `fileType` (`photo` | `video` | `writing` | `audio`), `key` de UploadThing,
+- `file`: `fileType` (`photo` | `video` | `writing` = PDF | `audio` | `document` = Office/OpenDocument, se descarga), `key` de UploadThing,
   `fileName` (el "Nº", editable y único por carpeta) y `postcard` (dorso de la postal).
 - `article`: `blocks` de Editor.js; cada bloque es `{ type, data }` con `data` = JSON stringificado
-  (mismo formato que Novedades).
+  (mismo formato que Novedades). Sin tope de largo ni de cantidad de bloques: el techo es el
+  body de la request (10mb). Los tunes del bloque (hoy, la alineación) viajan dentro de `data`
+  bajo la clave `_tunes`. El server sanitiza los bloques al guardar (lista blanca de etiquetas
+  y estilos de formato; URLs sólo http/https), así que lo que devuelve puede diferir de lo enviado.
 
 `getProductionItems(productionId, parentId?)` devuelve la grilla de un nivel:
-carpetas primero, `breadcrumb` desde la raíz y el `parent` actual.
+carpetas primero, `breadcrumb` desde la raíz y el `parent` actual. Cada carpeta trae
+`folderPreview`: hasta 9 elementos de adentro (`{ _id, kind, fileType, key }`), ya filtrados
+por acceso; `key` sólo viene en fotos que el usuario puede ver (el resto se dibuja con el
+ícono del tipo). El campo se pide aparte del fragment y sólo se completa en esta query.
+En esta query los artículos vienen con `blocks: null`: el contenido se pide con
+`getProductionItemById` (el fragment de ítem ya no incluye `blocks`).
 
 ### 2.3 Acceso: por qué algo no se ve
 
@@ -153,7 +161,7 @@ mutation {
   uploadFile(fileRequest: {
     productionId: "..."
     parentId: "..."          # carpeta; vacío = raíz
-    fileType: photo           # photo | video | writing | audio
+    fileType: photo           # photo | video | writing | audio | document
     key: "key-uploadthing"
     fileName: "FOTO-01"       # opcional; si no viene: archivo-1, archivo-2...
     name: "Atardecer"         # título visible; default = fileName

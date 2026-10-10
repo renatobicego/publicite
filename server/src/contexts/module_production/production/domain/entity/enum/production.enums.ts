@@ -21,17 +21,22 @@ registerEnumType(ProductionItemKind, {
   description: 'Tipo de ítem del árbol de una producción',
 });
 
-/** Tipo de archivo subido a UploadThing (BLG-08..11). */
+/**
+ * Tipo de archivo subido a UploadThing (BLG-08..11). `writing` es un PDF (se
+ * muestra embebido); `document` es un archivo de Office u OpenDocument, que el
+ * navegador no sabe mostrar y se ofrece para descargar.
+ */
 export enum ProductionFileType {
   photo = 'photo',
   video = 'video',
   writing = 'writing',
   audio = 'audio',
+  document = 'document',
 }
 
 registerEnumType(ProductionFileType, {
   name: 'ProductionFileType',
-  description: 'Foto (postal), video, escrito u audio',
+  description: 'Foto (postal), video, escrito (PDF), audio o documento de Office',
 });
 
 /** Categorías de la Estantería / Board de Links (BLG-03). */
