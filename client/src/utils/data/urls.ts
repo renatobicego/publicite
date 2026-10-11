@@ -32,6 +32,8 @@ const PRODUCTIONS = "/producciones";
 const CREATE_PRODUCTION = "/crear/produccion";
 const EDIT_PRODUCTION = "/editar/produccion";
 const MY_PRODUCTION_TICKETS = "/producciones/mis-tickets";
+const ADMIN = "/admin";
+const NOVELTIES = "/novedades";
 export {
   MAGAZINES,
   GROUPS,
@@ -67,4 +69,6 @@ export {
   CREATE_PRODUCTION,
   EDIT_PRODUCTION,
   MY_PRODUCTION_TICKETS,
+  ADMIN,
+  NOVELTIES,
 };

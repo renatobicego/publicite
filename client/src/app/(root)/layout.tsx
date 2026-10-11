@@ -28,7 +28,10 @@ export default async function NavigationLayout({
       >
         <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
         <BackgroundProvider username={user?.username}>
-          <Header isSignedIn={!!user} />
+          <Header
+            isSignedIn={!!user}
+            isAdmin={user?.publicMetadata.role === "admin"}
+          />
           {user && (
             <div className="w-full px-4 md:px-6 lg:px-8 pt-2">
               <PendingReviewBanner />

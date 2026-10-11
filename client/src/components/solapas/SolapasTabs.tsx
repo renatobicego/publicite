@@ -5,6 +5,7 @@ import ProductionsLogic from "@/app/(root)/(explorar)/producciones/ProductionsLo
 import GroupsLogic from "@/app/(root)/(explorar)/grupos/GroupsLogic";
 import UsersLogic from "@/app/(root)/(explorar)/perfiles/UsersLogic";
 import BoardsLogic from "@/app/(root)/(explorar)/pizarras/BoardsLogic";
+import MagazinesLogic from "@/app/(root)/(explorar)/revistas/MagazinesLogic";
 import { useUserData } from "@/app/(root)/providers/userDataProvider";
 import { PostsDataTypes } from "@/utils/data/fetchDataByType";
 import {
@@ -15,6 +16,7 @@ import {
   BOARDS,
   PROFILE,
   GROUPS,
+  MAGAZINES,
   POST_CONTACTS,
   POST_LIBRE,
   PRODUCTIONS,
@@ -27,6 +29,7 @@ import { FaLocationDot, FaUser, FaUserGroup } from "react-icons/fa6";
 import { IoMdMegaphone } from "react-icons/io";
 import {
   FaBook,
+  FaBookmark,
   FaBullhorn,
   FaChalkboardTeacher,
   FaUsers,
@@ -179,7 +182,7 @@ const SolapasTabs = () => {
     // },
   ];
 
-  // Sub-solapas de "Social": pizarras, carteles de usuario y grupos.
+  // Sub-solapas de "Social": pizarras, carteles de usuario, grupos y revistas.
   const socialSubTabs = [
     {
       key: BOARDS,
@@ -197,6 +200,12 @@ const SolapasTabs = () => {
       key: GROUPS,
       title: <TabTitle title="Grupos" icon={<FaUserGroup />} />,
       component: <GroupsLogic />,
+      requiresLogin: true,
+    },
+    {
+      key: MAGAZINES,
+      title: <TabTitle title="Revistas" icon={<FaBookmark />} />,
+      component: <MagazinesLogic />,
       requiresLogin: true,
     },
   ];

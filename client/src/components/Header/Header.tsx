@@ -11,12 +11,19 @@ import { useState } from "react";
 import Search from "./Search/Search";
 import MobileMenu from "./MobileMenu";
 import NavMenuItems from "./NavMenuItems";
+import AdminDropdown from "./AdminDropdown";
 import UserNavItems from "./UserNavItems";
 import { POSTS } from "@/utils/data/urls";
 import { OrangeCubeIcon } from "../buttons/ChatbotButton/OrangeCubeIcon";
 import { FaTableColumns } from "react-icons/fa6";
 
-const Header = ({ isSignedIn }: { isSignedIn: boolean }) => {
+const Header = ({
+  isSignedIn,
+  isAdmin = false,
+}: {
+  isSignedIn: boolean;
+  isAdmin?: boolean;
+}) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   return (
@@ -75,6 +82,14 @@ const Header = ({ isSignedIn }: { isSignedIn: boolean }) => {
             Tablero
           </Link>
         </NavbarItem>
+        {isAdmin && (
+          <NavbarItem
+            className={`w-auto max-lg:hidden !transition-all duration-300 ${isFocused ? "!w-0 overflow-hidden" : ""
+              }`}
+          >
+            <AdminDropdown />
+          </NavbarItem>
+        )}
         <NavbarItem
           className={`flex-1 !transition-all duration-300 ${isFocused ? "w-full" : "w-auto"
             }`}
@@ -100,7 +115,11 @@ const Header = ({ isSignedIn }: { isSignedIn: boolean }) => {
           setIsMenuOpen={setIsMenuOpen}
         />
       </NavbarContent>
-      <MobileMenu setIsMenuOpen={setIsMenuOpen} isSignedIn={isSignedIn} />
+      <MobileMenu
+        setIsMenuOpen={setIsMenuOpen}
+        isSignedIn={isSignedIn}
+        isAdmin={isAdmin}
+      />
     </Navbar>
   );
 };

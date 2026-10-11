@@ -1,4 +1,4 @@
-import { CREATE, POSTS, PROFILE } from "@/utils/data/urls";
+import { ADMIN, CREATE, NOVELTIES, POSTS, PROFILE } from "@/utils/data/urls";
 import { SignedIn, SignedOut } from "@clerk/nextjs";
 import { Link, NavbarMenu, NavbarMenuItem } from "@nextui-org/react";
 import { Variants } from "framer-motion";
@@ -13,9 +13,11 @@ import { FaTableColumns } from "react-icons/fa6";
 const MobileMenu = ({
   setIsMenuOpen,
   isSignedIn,
+  isAdmin = false,
 }: {
   setIsMenuOpen: Dispatch<SetStateAction<boolean>>;
   isSignedIn: boolean;
+  isAdmin?: boolean;
 }) => {
   const { userIdLogged } = useUserData();
   const menuItems = [
@@ -47,19 +49,33 @@ const MobileMenu = ({
       url: `${PROFILE}/${userIdLogged}`,
       isPrivate: true,
     },
+    {
+      title: "Admin: Facturación",
+      url: ADMIN,
+      isPrivate: true,
+      isAdminOnly: true,
+    },
+    {
+      title: "Admin: Novedades",
+      url: NOVELTIES,
+      isPrivate: true,
+      isAdminOnly: true,
+    },
   ];
   const variants: Variants = {
     visible: {
       transform: "translateY(0)",
-      height: isSignedIn ? "290px" : "190px",
+      height: !isSignedIn ? "190px" : isAdmin ? "350px" : "290px",
       opacity: 1,
     },
     hidden: { transform: "translateY(-50px)", height: "0px", opacity: 0 },
   };
 
-  const shownItems = isSignedIn
-    ? menuItems
-    : menuItems.filter((item) => !item.isPrivate);
+  const shownItems = menuItems.filter(
+    (item) =>
+      (isSignedIn || !item.isPrivate) &&
+      (isAdmin || !("isAdminOnly" in item && item.isAdminOnly))
+  );
   return (
     <NavbarMenu
       motionProps={{

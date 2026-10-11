@@ -28,6 +28,7 @@ export const getMagazinesQuery = gql`
         isFatherSection
         posts {
           _id
+          imagesUrls
         }
         title
       }
