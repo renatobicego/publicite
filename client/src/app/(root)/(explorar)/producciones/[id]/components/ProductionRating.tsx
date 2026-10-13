@@ -59,6 +59,11 @@ interface Props {
   canReview: boolean;
   /** Se llama al publicar o editar una reseña. */
   onReviewed: () => void;
+  /**
+   * Vista previa de visitante: la acción se muestra pero no se ejecuta; en su
+   * lugar se llama a esto (avisa que hay que volver a editar).
+   */
+  onBlocked?: () => void;
 }
 
 /**
@@ -72,6 +77,7 @@ const ProductionRating = ({
   reviewsCount,
   canReview,
   onReviewed,
+  onBlocked,
 }: Props) => {
   const { user } = useUser();
   const myId = user?.publicMetadata?.mongoId as string | undefined;
@@ -165,7 +171,7 @@ const ProductionRating = ({
         {canReview && (
           <PrimaryButton
             startContent={<FaStar />}
-            onClick={modal.onOpen}
+            onClick={onBlocked ?? modal.onOpen}
             className="ml-auto"
           >
             Reseñar este blog

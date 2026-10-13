@@ -42,7 +42,11 @@ import {
 } from "react-icons/fa";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import SecondaryButton from "@/components/buttons/SecondaryButton";
-import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
+import {
+  toastifyError,
+  toastifySuccess,
+  toastifyWarn,
+} from "@/utils/functions/toastify";
 import {
   ProductionItemKind,
   ProductionItemResponse,
@@ -427,6 +431,16 @@ const ProductionBlog = ({
     }
   };
 
+  // En vista previa las acciones de visitante (fan, reseñar, comentar,
+  // denunciar) se ven pero no se ejecutan: avisan que es una vista previa.
+  const previewBlocked = previewMode
+    ? () =>
+        toastifyWarn(
+          "Estás en vista de visitante: esta acción no está disponible. Tocá «Volver a editar» para salir.",
+          "production-preview-blocked",
+        )
+    : undefined;
+
   // Menú de opciones del blog. Lo de staff primero; "Denunciar" va al final y
   // sólo para quien no es parte del blog.
   const canReport = !isStaffViewer || previewMode;
@@ -500,7 +514,7 @@ const ProductionBlog = ({
             key: "report",
             label: "Denunciar",
             icon: <FaFlag />,
-            onAction: reportModal.onOpen,
+            onAction: previewBlocked ?? reportModal.onOpen,
           },
         ]
       : []),
@@ -553,7 +567,9 @@ const ProductionBlog = ({
                 Estás viendo el blog como un visitante
               </p>
               <p className="text-xs text-default-600">
-                Se ocultan tus controles de edición. El contenido con alcance
+                Se ocultan tus controles de edición y las acciones de visitante
+                (fan, reseñar, comentar, denunciar) no se ejecutan. El contenido
+                con alcance
                 restringido, clave o ticket se muestra abierto porque sos parte
                 del blog.
               </p>
@@ -647,8 +663,9 @@ const ProductionBlog = ({
             </div>
 
             {/* Fans: siempre a la vista, junto al título del blog */}
-            <div className={`mt-3 ${previewMode ? "pointer-events-none" : ""}`}>
+            <div className="mt-3">
               <FanButton
+                onBlocked={previewBlocked}
                 productionId={production._id}
                 isFan={production.viewer?.isFan ?? false}
                 fansCount={production.fansCount}
@@ -668,12 +685,9 @@ const ProductionBlog = ({
 
             {/* Puntaje del blog y botón para reseñar. El staff (dueño o
                 moderador) no reseña su propio blog. */}
-            <div
-              className={`mt-auto flex flex-col gap-3 pt-4 ${
-                previewMode ? "pointer-events-none" : ""
-              }`}
-            >
+            <div className="mt-auto flex flex-col gap-3 pt-4">
               <ProductionRating
+                onBlocked={previewBlocked}
                 productionId={production._id}
                 rating={production.rating}
                 reviewsCount={production.reviewsCount}
@@ -1083,6 +1097,7 @@ const ProductionBlog = ({
         key={communityVersion}
         productionId={production._id}
         isStaff={canEdit}
+        onBlocked={previewBlocked}
       />
 
       {/* Mover la selección (o un ítem) a otra carpeta (staff) */}

@@ -83,12 +83,16 @@ const ProductionItemDetail = ({
   if (item.kind === ProductionItemKind.article) {
     const output = deserializeBlocks(item.blocks);
     return (
-      <article className="mx-auto w-full max-w-screen-lg flex flex-col gap-3">
-        <div className="flex items-start justify-between gap-4 flex-wrap">
-          <h2>{item.name}</h2>
+      // Tarjeta que engloba el artículo: encabezado con el título y cuerpo con
+      // el contenido, igual que el resto de los recuadros del blog.
+      <article className="mx-auto w-full max-w-screen-lg overflow-hidden rounded-2xl border border-default-200 bg-content1 shadow-md">
+        <header className="flex flex-wrap items-start justify-between gap-4 border-b border-default-200 bg-default-50 px-4 py-4 sm:px-8 sm:py-5">
+          <h2 className="min-w-0 break-words">{item.name}</h2>
           {canEdit && <ProductionItemDetailActions item={item} />}
+        </header>
+        <div className="px-4 py-5 sm:px-8 sm:py-8">
+          <BlockRenderer data={output} />
         </div>
-        <BlockRenderer data={output} />
       </article>
     );
   }

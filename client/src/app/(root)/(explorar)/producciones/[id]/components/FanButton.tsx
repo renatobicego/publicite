@@ -15,6 +15,11 @@ interface Props {
   onChanged: () => void;
   /** Sólo el contador, sin el botón (staff del blog). */
   readOnly?: boolean;
+  /**
+   * Vista previa de visitante: la acción se muestra pero no se ejecuta; en su
+   * lugar se llama a esto (avisa que hay que volver a editar).
+   */
+  onBlocked?: () => void;
 }
 
 const fansLabel = (count: number) =>
@@ -31,6 +36,7 @@ const FanButton = ({
   fansCount,
   onChanged,
   readOnly = false,
+  onBlocked,
 }: Props) => {
   const [busy, setBusy] = useState(false);
 
@@ -67,7 +73,7 @@ const FanButton = ({
           radius="full"
           variant={isFan ? "flat" : "solid"}
           color="danger"
-          onPress={toggle}
+          onPress={onBlocked ?? toggle}
           isDisabled={busy}
           aria-pressed={isFan}
         >

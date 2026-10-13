@@ -33,6 +33,11 @@ interface Props {
   productionId: string;
   /** Staff puede responder y moderar (borrar) comentarios. */
   isStaff: boolean;
+  /**
+   * Vista previa de visitante: la acción se muestra pero no se ejecuta; en su
+   * lugar se llama a esto (avisa que hay que volver a editar).
+   */
+  onBlocked?: () => void;
 }
 
 const displayName = (info?: ProductionOwnerInfo | null) =>
@@ -96,7 +101,7 @@ const AuthorLink = ({
 };
 
 /** Reseñas y comentarios de un blog (REV-01). */
-const ProductionCommunity = ({ productionId, isStaff }: Props) => {
+const ProductionCommunity = ({ productionId, isStaff, onBlocked }: Props) => {
   const { user } = useUser();
   const myId = user?.publicMetadata?.mongoId as string | undefined;
 
@@ -125,6 +130,7 @@ const ProductionCommunity = ({ productionId, isStaff }: Props) => {
   }, [load]);
 
   const submitComment = async () => {
+    if (onBlocked) return onBlocked();
     if (!newComment.trim()) return;
     setBusy(true);
     try {
@@ -161,6 +167,7 @@ const ProductionCommunity = ({ productionId, isStaff }: Props) => {
   };
 
   const removeComment = async (commentId: string, isReply = false) => {
+    if (onBlocked) return onBlocked();
     if (
       !confirm(
         isReply
