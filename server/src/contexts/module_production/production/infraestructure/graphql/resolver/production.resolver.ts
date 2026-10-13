@@ -25,6 +25,7 @@ import {
   ProductionItemResponse,
   ProductionItemsResponse,
   ProductionLimitsResponse,
+  ProductionMapNodeResponse,
   ProductionListResponse,
   ProductionResponse,
 } from '../../../domain/entity/models_graphql/HTTP-RESPONSE/production.response';
@@ -311,6 +312,21 @@ export class ProductionResolver {
     );
   }
 
+  @Query(() => [ProductionMapNodeResponse], {
+    description:
+      'Mapa del blog: todo el árbol en una lista plana, sin contenido (staff)',
+  })
+  @UseGuards(ClerkAuthGuard)
+  async getProductionMap(
+    @Args('productionId', { type: () => ID }) productionId: string,
+    @Context() context: ProductionGqlContext,
+  ): Promise<ProductionMapNodeResponse[]> {
+    return this.productionAdapter.getProductionMap(
+      productionId,
+      requireUserId(context),
+    );
+  }
+
   @Query(() => ProductionItemResponse, {
     description: 'Detalle de un archivo, artículo o carpeta',
   })
@@ -464,5 +480,29 @@ export class ProductionResolver {
       requireUserId(context),
     );
     return 'Artículo eliminado con éxito';
+  }
+
+  @Mutation(() => Int, {
+    description:
+      'Mover carpetas, archivos y artículos a otra carpeta del mismo blog. Devuelve cuántos se movieron',
+  })
+  @UseGuards(ClerkAuthGuard)
+  async moveProductionItems(
+    @Args('productionId', { type: () => ID }) productionId: string,
+    @Args('itemIds', { type: () => [ID] }) itemIds: string[],
+    @Args('targetParentId', {
+      type: () => ID,
+      nullable: true,
+      description: 'Carpeta de destino; vacío = raíz del blog',
+    })
+    targetParentId: string | undefined,
+    @Context() context: ProductionGqlContext,
+  ): Promise<number> {
+    return this.productionAdapter.moveItems(
+      productionId,
+      itemIds,
+      targetParentId,
+      requireUserId(context),
+    );
   }
 }

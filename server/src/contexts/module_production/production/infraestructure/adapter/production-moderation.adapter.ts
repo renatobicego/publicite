@@ -21,6 +21,13 @@ export class ProductionModerationAdapter
     return this.moderationService.reportProductionContent(input, userId);
   }
 
+  getProductionReceivedReports(productionId: string, userId: string) {
+    return this.moderationService.getProductionReceivedReports(
+      productionId,
+      userId,
+    );
+  }
+
   getProductionReportTargetsAdmin(
     status: ProductionReportStatus,
     page: number,

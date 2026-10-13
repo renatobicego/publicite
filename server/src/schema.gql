@@ -1701,6 +1701,20 @@ type ProductionItemResponse {
   access: ProductionItemAccessResponse!
 }
 
+"""Nodo del mapa del blog: todo el árbol en una lista plana (sólo staff)"""
+type ProductionMapNodeResponse {
+  _id: ID!
+
+  """null = raíz del blog"""
+  parent: ID
+  kind: ProductionItemKind!
+  name: String!
+  fileType: ProductionFileType
+
+  """Alcance propio; null = hereda"""
+  visibility: Visibility_of_the_post
+}
+
 type ProductionBreadcrumbResponse {
   _id: ID!
   name: String!
@@ -1997,6 +2011,26 @@ type ProductionReportDetailResponse {
   reviewedAt: DateTime
   reviewedBy: String
   reviewNote: String
+  createdAt: DateTime!
+}
+
+"""
+Denuncia recibida, tal como la ve el staff del blog denunciado: qué se denunció y por qué, nunca quién
+"""
+type ProductionReceivedReportResponse {
+  _id: ID!
+
+  """null = el blog entero"""
+  item: ID
+  itemName: String
+  itemKind: ProductionItemKind
+  reason: ProductionReportReason!
+  details: String
+  status: ProductionReportStatus!
+
+  """Nota del admin al resolver la denuncia"""
+  reviewNote: String
+  reviewedAt: DateTime
   createdAt: DateTime!
 }
 
@@ -2355,6 +2389,9 @@ type Query {
     accessKey: String
   ): ProductionItemsResponse!
 
+  """Mapa del blog: todo el árbol en una lista plana, sin contenido (staff)"""
+  getProductionMap(productionId: ID!): [ProductionMapNodeResponse!]!
+
   """Detalle de un archivo, artículo o carpeta"""
   getProductionItemById(itemId: ID!, accessKey: String): ProductionItemResponse!
 
@@ -2415,6 +2452,11 @@ type Query {
 
   """Comentarios de un blog o de un archivo"""
   getProductionComments(productionId: ID!, itemId: ID, page: Int! = 1, limit: Int! = 20): ProductionCommentListResponse!
+
+  """
+  Denuncias que recibió el blog, para su staff: qué se denunció y por qué, sin revelar al denunciante
+  """
+  getProductionReceivedReports(productionId: ID!): [ProductionReceivedReportResponse!]!
 }
 
 input AdminInvoiceFiltersInput {
@@ -2775,6 +2817,17 @@ type Mutation {
 
   """Borrar un artículo (libera cupo del plan)"""
   deleteArticle(itemId: ID!): String!
+
+  """
+  Mover carpetas, archivos y artículos a otra carpeta del mismo blog. Devuelve cuántos se movieron
+  """
+  moveProductionItems(
+    productionId: ID!
+    itemIds: [ID!]!
+
+    """Carpeta de destino; vacío = raíz del blog"""
+    targetParentId: ID
+  ): Int!
 
   """Sólo admin: confirma el bloqueo o restaura el contenido denunciado"""
   moderateProductionContent(input: ProductionModerationInput!): ProductionModerationResultResponse!

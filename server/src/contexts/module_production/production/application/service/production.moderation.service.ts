@@ -23,6 +23,7 @@ import {
 } from '../../domain/entity/models_graphql/HTTP-REQUEST/production-report.request';
 import {
   ProductionModerationResultResponse,
+  ProductionReceivedReportResponse,
   ProductionReportDetailResponse,
   ProductionReportResponse,
   ProductionReportTargetListResponse,
@@ -149,6 +150,49 @@ export class ProductionModerationService
       contentHidden,
       createdAt: new Date(),
     };
+  }
+
+  /**
+   * El staff del blog denunciado ve qué se denunció y por qué, y cómo se
+   * resolvió. El sitio protege al denunciante: `reporter` no sale de acá.
+   */
+  async getProductionReceivedReports(
+    productionId: string,
+    userId: string,
+  ): Promise<ProductionReceivedReportResponse[]> {
+    const production = await this.productionRepository.findById(productionId);
+    if (!production) throw new NotFoundException('Producción no encontrada');
+    await this.accessService.assertPermission(
+      production,
+      userId,
+      'canManageAccess',
+    );
+
+    const reports = await this.reportRepository.listByProduction(
+      production.getId!,
+    );
+    const items = await this.itemRepository.findManyByIds([
+      ...new Set(
+        reports.map((report) => report.item).filter((id): id is string => !!id),
+      ),
+    ]);
+    const itemById = new Map(items.map((item) => [item.getId!, item]));
+
+    return reports.map((report) => {
+      const item = report.item ? itemById.get(report.item) : null;
+      return {
+        _id: report._id,
+        item: report.item,
+        itemName: item?.getName ?? null,
+        itemKind: item?.getKind ?? null,
+        reason: report.reason,
+        details: report.details,
+        status: report.status,
+        reviewNote: report.reviewNote,
+        reviewedAt: report.reviewedAt,
+        createdAt: report.createdAt,
+      };
+    });
   }
 
   async getProductionReportTargetsAdmin(

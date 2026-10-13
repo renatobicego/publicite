@@ -11,6 +11,7 @@ import {
   SelectItem,
   Textarea,
 } from "@nextui-org/react";
+import { FaUserShield } from "react-icons/fa";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { reportProductionContent } from "@/app/server/productionActions";
@@ -20,11 +21,15 @@ import { ProductionReportReason } from "@/types/productionTypes";
 interface Props {
   productionId: string;
   itemId?: string;
+  /** Qué se está denunciando, para que el usuario lo confirme antes de enviar. */
+  targetLabel: string;
+  /** Dueño del blog denunciado (nombre visible). */
+  ownerName?: string | null;
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-const reasonLabel: Record<ProductionReportReason, string> = {
+export const reportReasonLabel: Record<ProductionReportReason, string> = {
   [ProductionReportReason.inappropriate]: "Contenido inapropiado",
   [ProductionReportReason.violence]: "Violencia",
   [ProductionReportReason.sexual]: "Contenido sexual",
@@ -34,7 +39,14 @@ const reasonLabel: Record<ProductionReportReason, string> = {
 };
 
 /** Denuncia de un blog o contenido (DEN-01). */
-const ReportModal = ({ productionId, itemId, isOpen, onOpenChange }: Props) => {
+const ReportModal = ({
+  productionId,
+  itemId,
+  targetLabel,
+  ownerName,
+  isOpen,
+  onOpenChange,
+}: Props) => {
   const [reason, setReason] = useState<ProductionReportReason>(
     ProductionReportReason.inappropriate
   );
@@ -73,6 +85,13 @@ const ReportModal = ({ productionId, itemId, isOpen, onOpenChange }: Props) => {
           <>
             <ModalHeader>Denunciar</ModalHeader>
             <ModalBody className="gap-3">
+              <div className="rounded-xl border border-default-200 bg-default-50 px-3 py-2.5 text-sm">
+                <p className="text-xs text-default-500">Estás denunciando</p>
+                <p className="font-medium break-words">{targetLabel}</p>
+                {ownerName && (
+                  <p className="text-xs text-default-500">de {ownerName}</p>
+                )}
+              </div>
               <Select
                 label="Motivo"
                 selectedKeys={[reason]}
@@ -82,7 +101,7 @@ const ReportModal = ({ productionId, itemId, isOpen, onOpenChange }: Props) => {
               >
                 {Object.values(ProductionReportReason).map((r) => (
                   <SelectItem key={r} value={r}>
-                    {reasonLabel[r]}
+                    {reportReasonLabel[r]}
                   </SelectItem>
                 ))}
               </Select>
@@ -92,6 +111,11 @@ const ReportModal = ({ productionId, itemId, isOpen, onOpenChange }: Props) => {
                 onValueChange={setDetails}
                 maxLength={1000}
               />
+              <p className="flex items-start gap-2 text-xs text-default-500">
+                <FaUserShield className="mt-0.5 shrink-0" />
+                Tu identidad queda protegida: el dueño del blog ve el motivo de
+                la denuncia, pero no quién la hizo.
+              </p>
             </ModalBody>
             <ModalFooter>
               <Button variant="light" onPress={onClose} isDisabled={busy}>

@@ -466,6 +466,57 @@ describe('Mis Producciones - Fase 1: núcleo del blog', () => {
       expect(production.showcase.map(String)).toEqual([outside._id]);
     });
 
+    it('mueve archivos y carpetas entre carpetas sin tocar el cupo', async () => {
+      const userId = await createTestUser(models);
+      const otherUserId = await createTestUser(models);
+      const productionId = await createBlog(userId);
+      const one = await service.createFolder({ productionId, name: 'Uno' }, userId);
+      const two = await service.createFolder({ productionId, name: 'Dos' }, userId);
+      const sub = await service.createFolder(
+        { productionId, name: 'Sub', parentId: two._id },
+        userId,
+      );
+      const a = await uploadPhoto(userId, productionId, {
+        parentId: two._id,
+        fileName: 'foto',
+      });
+      const b = await uploadPhoto(userId, productionId, { parentId: two._id });
+      // Mismo ID en el destino: el movido recibe un sufijo.
+      await uploadPhoto(userId, productionId, {
+        parentId: one._id,
+        fileName: 'foto',
+      });
+
+      await expect(
+        service.moveItems(productionId, [a._id], one._id, otherUserId),
+      ).rejects.toBeInstanceOf(UnauthorizedException);
+      // Una carpeta no entra en sí misma ni en una subcarpeta suya.
+      await expect(
+        service.moveItems(productionId, [two._id], sub._id, userId),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      await expect(
+        service.moveItems(productionId, [two._id], two._id, userId),
+      ).rejects.toBeInstanceOf(BadRequestException);
+
+      expect(
+        await service.moveItems(productionId, [a._id, b._id, sub._id], one._id, userId),
+      ).toBe(3);
+
+      const levelOne = await service.getProductionItems(productionId, one._id, userId);
+      expect(levelOne.items).toHaveLength(4);
+      expect(levelOne.items.map((i) => i.fileName).filter(Boolean)).toEqual(
+        expect.arrayContaining(['foto', 'foto-2']),
+      );
+      const levelTwo = await service.getProductionItems(productionId, two._id, userId);
+      expect(levelTwo.items).toHaveLength(0);
+
+      // A la raíz, y mover algo que ya está en el destino no cuenta.
+      expect(await service.moveItems(productionId, [a._id], null, userId)).toBe(1);
+      expect(await service.moveItems(productionId, [a._id], undefined, userId)).toBe(0);
+      const production = await findDoc(models.production, productionId);
+      expect(production.filesCount).toBe(3);
+    });
+
     it('deleteFile no borra una carpeta (el tipo tiene que coincidir)', async () => {
       const userId = await createTestUser(models);
       const productionId = await createBlog(userId);

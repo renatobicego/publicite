@@ -1,10 +1,13 @@
 import { Inject, UseGuards } from '@nestjs/common';
-import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Context, ID, Mutation, Query, Resolver } from '@nestjs/graphql';
 
 import { ClerkAuthGuard } from 'src/contexts/module_shared/auth/clerk-auth/clerk.auth.guard';
 import { ProductionModerationAdapterInterface } from '../../../application/adapter/production-moderation.adapter.interface';
 import { ProductionReportInput } from '../../../domain/entity/models_graphql/HTTP-REQUEST/production-report.request';
-import { ProductionReportResponse } from '../../../domain/entity/models_graphql/HTTP-RESPONSE/production-report.response';
+import {
+  ProductionReceivedReportResponse,
+  ProductionReportResponse,
+} from '../../../domain/entity/models_graphql/HTTP-RESPONSE/production-report.response';
 import { ProductionGqlContext, requireUserId } from './production.context';
 
 /**
@@ -30,6 +33,21 @@ export class ProductionModerationResolver {
   ): Promise<ProductionReportResponse> {
     return this.moderationAdapter.reportProductionContent(
       input,
+      requireUserId(context),
+    );
+  }
+
+  @Query(() => [ProductionReceivedReportResponse], {
+    description:
+      'Denuncias que recibió el blog, para su staff: qué se denunció y por qué, sin revelar al denunciante',
+  })
+  @UseGuards(ClerkAuthGuard)
+  async getProductionReceivedReports(
+    @Args('productionId', { type: () => ID }) productionId: string,
+    @Context() context: ProductionGqlContext,
+  ): Promise<ProductionReceivedReportResponse[]> {
+    return this.moderationAdapter.getProductionReceivedReports(
+      productionId,
       requireUserId(context),
     );
   }

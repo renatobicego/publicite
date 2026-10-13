@@ -83,7 +83,7 @@ const ProductionItemDetail = ({
   if (item.kind === ProductionItemKind.article) {
     const output = deserializeBlocks(item.blocks);
     return (
-      <article className="w-full max-w-screen-lg flex flex-col gap-3 ">
+      <article className="mx-auto w-full max-w-screen-lg flex flex-col gap-3">
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <h2>{item.name}</h2>
           {canEdit && <ProductionItemDetailActions item={item} />}
@@ -94,7 +94,7 @@ const ProductionItemDetail = ({
   }
 
   return (
-    <div className="w-full max-w-3xl flex flex-col gap-3">
+    <div className="mx-auto w-full max-w-3xl flex flex-col gap-3">
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <h2>{item.name}</h2>
         {canEdit && <ProductionItemDetailActions item={item} />}
@@ -112,7 +112,8 @@ const renderFile = (item: ProductionItemResponse) => {
         <Image
           alt={item.name}
           src={resolveProductionFileUrl(item.key)}
-          className="w-full rounded-sm"
+          classNames={{ wrapper: "mx-auto !max-w-full" }}
+          className="max-h-[85vh] w-auto max-w-full rounded-sm object-contain"
         />
       );
     case ProductionFileType.video:

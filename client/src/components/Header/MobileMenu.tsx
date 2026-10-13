@@ -1,4 +1,12 @@
-import { ADMIN, CREATE, NOVELTIES, POSTS, PROFILE } from "@/utils/data/urls";
+import {
+  ADMIN_INVOICES,
+  ADMIN_PRODUCTION_REPORTS,
+  ADMIN_PRODUCTION_TICKETS,
+  CREATE,
+  NOVELTIES,
+  POSTS,
+  PROFILE,
+} from "@/utils/data/urls";
 import { SignedIn, SignedOut } from "@clerk/nextjs";
 import { Link, NavbarMenu, NavbarMenuItem } from "@nextui-org/react";
 import { Variants } from "framer-motion";
@@ -51,7 +59,19 @@ const MobileMenu = ({
     },
     {
       title: "Admin: Facturación",
-      url: ADMIN,
+      url: ADMIN_INVOICES,
+      isPrivate: true,
+      isAdminOnly: true,
+    },
+    {
+      title: "Admin: Tickets de Producciones",
+      url: ADMIN_PRODUCTION_TICKETS,
+      isPrivate: true,
+      isAdminOnly: true,
+    },
+    {
+      title: "Admin: Denuncias de Producciones",
+      url: ADMIN_PRODUCTION_REPORTS,
       isPrivate: true,
       isAdminOnly: true,
     },
@@ -65,7 +85,7 @@ const MobileMenu = ({
   const variants: Variants = {
     visible: {
       transform: "translateY(0)",
-      height: !isSignedIn ? "190px" : isAdmin ? "350px" : "290px",
+      height: !isSignedIn ? "190px" : isAdmin ? "410px" : "290px",
       opacity: 1,
     },
     hidden: { transform: "translateY(-50px)", height: "0px", opacity: 0 },

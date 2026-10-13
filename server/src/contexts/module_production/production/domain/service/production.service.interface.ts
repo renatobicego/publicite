@@ -3,6 +3,7 @@ import {
   ProductionItemResponse,
   ProductionItemsResponse,
   ProductionLimitsResponse,
+  ProductionMapNodeResponse,
   ProductionListResponse,
   ProductionResponse,
 } from '../entity/models_graphql/HTTP-RESPONSE/production.response';
@@ -68,6 +69,13 @@ export interface ProductionServiceInterface {
     kind: ProductionItemKind,
     userId: string,
   ): Promise<void>;
+  /** Mueve ítems a otra carpeta del blog (vacío = raíz). Devuelve cuántos movió. */
+  moveItems(
+    productionId: string,
+    itemIds: string[],
+    targetParentId: string | undefined | null,
+    userId: string,
+  ): Promise<number>;
 
   findProductionById(
     productionId: string,
@@ -95,6 +103,11 @@ export interface ProductionServiceInterface {
     userId?: string,
     accessKey?: string,
   ): Promise<ProductionItemResponse>;
+  /** Árbol completo del blog para el mapa de tickets y alcances (staff). */
+  getProductionMap(
+    productionId: string,
+    userId: string,
+  ): Promise<ProductionMapNodeResponse[]>;
   getProductionLimits(userId: string): Promise<ProductionLimitsResponse>;
 
   findAllProductions(

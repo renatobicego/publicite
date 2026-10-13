@@ -33,6 +33,9 @@ const CREATE_PRODUCTION = "/crear/produccion";
 const EDIT_PRODUCTION = "/editar/produccion";
 const MY_PRODUCTION_TICKETS = "/producciones/mis-tickets";
 const ADMIN = "/admin";
+const ADMIN_INVOICES = "/admin/facturas";
+const ADMIN_PRODUCTION_TICKETS = "/admin/tickets-producciones";
+const ADMIN_PRODUCTION_REPORTS = "/admin/denuncias-producciones";
 const NOVELTIES = "/novedades";
 export {
   MAGAZINES,
@@ -70,5 +73,8 @@ export {
   EDIT_PRODUCTION,
   MY_PRODUCTION_TICKETS,
   ADMIN,
+  ADMIN_INVOICES,
+  ADMIN_PRODUCTION_TICKETS,
+  ADMIN_PRODUCTION_REPORTS,
   NOVELTIES,
 };

@@ -1,4 +1,8 @@
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { TestingModule } from '@nestjs/testing';
 
 import mapModuleTesting from './production.test.module';
@@ -257,6 +261,28 @@ describe('Mis Producciones - Fase 9: denuncias (DEN-01..03)', () => {
     ).rejects.toBeInstanceOf(NotFoundException);
     const asOwner = await service.findProductionById(productionId, owner);
     expect(asOwner.moderationStatus).toBe(ProductionModerationStatus.hidden);
+  });
+
+  it('el staff del blog ve las denuncias recibidas sin el denunciante', async () => {
+    const { owner, productionId, photo } = await setup();
+    const reporter = await createTestUser(models);
+    await report(reporter, productionId, photo._id);
+    await report(reporter, productionId);
+
+    const received = await moderation.getProductionReceivedReports(
+      productionId,
+      owner,
+    );
+    expect(received).toHaveLength(2);
+    expect(received.map((r) => r.itemName ?? null).sort()).toEqual(
+      [null, photo.name].sort(),
+    );
+    // El sitio protege al denunciante.
+    expect(JSON.stringify(received)).not.toContain(reporter);
+
+    await expect(
+      moderation.getProductionReceivedReports(productionId, reporter),
+    ).rejects.toBeInstanceOf(UnauthorizedException);
   });
 
   it('borrar contenido o el blog borra sus denuncias', async () => {

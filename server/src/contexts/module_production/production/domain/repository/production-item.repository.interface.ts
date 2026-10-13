@@ -49,6 +49,8 @@ export interface ProductionItemRepositoryInterface {
   ): Promise<Map<string, ProductionItem[]>>;
   /** Ancestros del ítem, del padre directo hacia la raíz. */
   findAncestors(itemId: string): Promise<ProductionItem[]>;
+  /** Todo el árbol del blog, sin el contenido de los ítems (mapa del blog). */
+  findAllNodes(productionId: string): Promise<ProductionItem[]>;
   /** Todas las carpetas del blog (para resolver herencias en lote). */
   findAllFolders(productionId: string): Promise<ProductionItem[]>;
   countFolders(productionId: string): Promise<number>;

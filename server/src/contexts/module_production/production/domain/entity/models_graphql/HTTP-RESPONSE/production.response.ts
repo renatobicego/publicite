@@ -366,6 +366,33 @@ export class ProductionItemResponse {
   access: ProductionItemAccessResponse;
 }
 
+@ObjectType({
+  description:
+    'Nodo del mapa del blog: todo el árbol en una lista plana (sólo staff)',
+})
+export class ProductionMapNodeResponse {
+  @Field(() => ID)
+  _id: string;
+
+  @Field(() => ID, { nullable: true, description: 'null = raíz del blog' })
+  parent?: string | null;
+
+  @Field(() => ProductionItemKind)
+  kind: ProductionItemKind;
+
+  @Field(() => String)
+  name: string;
+
+  @Field(() => ProductionFileType, { nullable: true })
+  fileType?: ProductionFileType | null;
+
+  @Field(() => Visibility, {
+    nullable: true,
+    description: 'Alcance propio; null = hereda',
+  })
+  visibility?: Visibility | null;
+}
+
 @ObjectType()
 export class ProductionBreadcrumbResponse {
   @Field(() => ID)

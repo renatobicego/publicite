@@ -41,6 +41,7 @@ import {
   ProductionItemResponse,
   ProductionItemsResponse,
   ProductionLimitsResponse,
+  ProductionMapNodeResponse,
   ProductionListResponse,
   ProductionResponse,
 } from '../../domain/entity/models_graphql/HTTP-RESPONSE/production.response';
@@ -693,6 +694,113 @@ export class ProductionService implements ProductionServiceInterface {
     );
   }
 
+  /**
+   * Mueve carpetas, archivos y artículos a otra carpeta del mismo blog (o a la
+   * raíz si `targetParentId` viene vacío). No toca cupos: el contenido sigue en
+   * el blog. El alcance y los tickets heredados pasan a ser los del destino.
+   */
+  async moveItems(
+    productionId: string,
+    itemIds: string[],
+    targetParentId: string | undefined | null,
+    userId: string,
+  ): Promise<number> {
+    const production = await this.getProductionOrFail(productionId);
+    await this.accessService.assertPermission(
+      production,
+      userId,
+      'canEditContent',
+    );
+    const targetId = targetParentId || null;
+    await this.assertValidParent(production.getId!, targetId);
+
+    const uniqueIds = [...new Set(itemIds)];
+    if (uniqueIds.length === 0) {
+      throw new BadRequestException('Elegí al menos un elemento para mover');
+    }
+    const items = await this.itemRepository.findByIds(
+      production.getId!,
+      uniqueIds,
+    );
+    if (items.length !== uniqueIds.length) {
+      throw new NotFoundException('Elemento no encontrado');
+    }
+
+    // Una carpeta no puede terminar dentro de sí misma ni de una subcarpeta.
+    if (targetId) {
+      const targetChain = new Set([
+        targetId,
+        ...(await this.itemRepository.findAncestors(targetId)).map(
+          (ancestor) => ancestor.getId!,
+        ),
+      ]);
+      if (items.some((item) => targetChain.has(item.getId!))) {
+        throw new BadRequestException(
+          'No se puede mover una carpeta dentro de sí misma',
+        );
+      }
+    }
+
+    const toMove = items.filter((item) => (item.getParent ?? null) !== targetId);
+    if (toMove.length === 0) return 0;
+
+    try {
+      return await this.inTransaction(async (session) => {
+        for (const item of toMove) {
+          const fields: Record<string, any> = { parent: targetId };
+          if (
+            item instanceof ProductionFile ||
+            item instanceof ProductionArticle
+          ) {
+            // El ID `fileName` es único por carpeta (BLG-13): si en el destino
+            // ya existe, se le agrega un sufijo.
+            fields.fileName = await this.freeFileNameIn(
+              production.getId!,
+              targetId,
+              item.getFileName,
+              session,
+            );
+          }
+          const updated = await this.itemRepository.updateById(
+            item.getId!,
+            fields,
+            session,
+          );
+          if (!updated) throw new NotFoundException('Elemento no encontrado');
+        }
+        return toMove.length;
+      });
+    } catch (error: any) {
+      if (isDuplicateKeyError(error, 'fileName')) {
+        throw new BadRequestException(
+          'Ya existe un elemento con ese ID en la carpeta de destino',
+        );
+      }
+      throw error;
+    }
+  }
+
+  /** `fileName` libre en el contenedor: el pedido o el pedido con sufijo. */
+  private async freeFileNameIn(
+    productionId: string,
+    parentId: string | null,
+    fileName: string,
+    session: ClientSession,
+  ): Promise<string> {
+    let candidate = fileName;
+    for (let suffix = 2; ; suffix++) {
+      const exists = await this.itemRepository.existsFileName(
+        productionId,
+        parentId,
+        candidate,
+        undefined,
+        session,
+      );
+      if (!exists) return candidate;
+      candidate = `${fileName}-${suffix}`;
+    }
+  }
+
   // ---------------------------------------------------------------------------
   // Lectura
   // ---------------------------------------------------------------------------
@@ -1046,6 +1154,31 @@ export class ProductionService implements ProductionServiceInterface {
         .map((node) => ({ _id: node.getId!, name: node.getName })),
       items,
     };
+  }
+
+  /**
+   * Todo el árbol del blog en una lista plana, para el mapa donde el staff ve
+   * qué es gratuito y qué va con ticket. Sin contenido: sólo estructura.
+   */
+  async getProductionMap(
+    productionId: string,
+    userId: string,
+  ): Promise<ProductionMapNodeResponse[]> {
+    const production = await this.getProductionOrFail(productionId);
+    await this.accessService.assertPermission(
+      production,
+      userId,
+      'canManageAccess',
+    );
+    const nodes = await this.itemRepository.findAllNodes(production.getId!);
+    return nodes.map((node) => ({
+      _id: node.getId!,
+      parent: node.getParent ?? null,
+      kind: node.getKind,
+      name: node.getName,
+      fileType: node instanceof ProductionFile ? node.getFileType : null,
+      visibility: node.getVisibility ?? null,
+    }));
   }
 
   async getProductionItemById(

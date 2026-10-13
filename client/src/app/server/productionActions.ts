@@ -49,6 +49,9 @@ import {
   replyProductionCommentService,
   updateProductionCommentService,
   deleteProductionCommentService,
+  moveProductionItemsService,
+  getProductionMapService,
+  getProductionReceivedReportsService,
   getProductionCommentsService,
   reportProductionContentService,
   getProductionReportTargetsAdminService,
@@ -112,6 +115,8 @@ import {
   ProductionReviewUpdateInput,
   ProductionComment,
   ProductionCommentList,
+  ProductionMapNode,
+  ProductionReceivedReport,
   ProductionCommentInput,
   ProductionPendingReview,
   ProductionReport,
@@ -245,6 +250,28 @@ export const getProductionFans = async (
 ): Promise<ProductionFanList | ProductionActionError> => {
   try {
     return await getProductionFansService(productionId, page, limit);
+  } catch (error) {
+    return toActionError(error);
+  }
+};
+
+/** Árbol completo del blog (staff), para el mapa de tickets y alcances. */
+export const getProductionMap = async (
+  productionId: string
+): Promise<ProductionMapNode[] | ProductionActionError> => {
+  try {
+    return await getProductionMapService(productionId);
+  } catch (error) {
+    return toActionError(error);
+  }
+};
+
+/** Denuncias que recibió el blog (staff). No incluyen al denunciante. */
+export const getProductionReceivedReports = async (
+  productionId: string
+): Promise<ProductionReceivedReport[] | ProductionActionError> => {
+  try {
+    return await getProductionReceivedReportsService(productionId);
   } catch (error) {
     return toActionError(error);
   }
@@ -538,6 +565,23 @@ export const deleteFolder = async (
 ): Promise<string | ProductionActionError> => {
   try {
     return await deleteFolderService(itemId);
+  } catch (error) {
+    return toActionError(error);
+  }
+};
+
+/** Mueve ítems a otra carpeta del blog (sin `targetParentId` = raíz). */
+export const moveProductionItems = async (
+  productionId: string,
+  itemIds: string[],
+  targetParentId?: string
+): Promise<number | ProductionActionError> => {
+  try {
+    return await moveProductionItemsService(
+      productionId,
+      itemIds,
+      targetParentId
+    );
   } catch (error) {
     return toActionError(error);
   }

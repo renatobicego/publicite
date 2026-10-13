@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import { Button, Card, CardBody, Chip, Tooltip, Spinner } from "@nextui-org/react";
-import { FaEye, FaTrash, FaDownload, FaNewspaper } from "react-icons/fa6";
+import { FaEye, FaTrash, FaDownload, FaNewspaper, FaFolderOpen } from "react-icons/fa6";
+import SendToBlogModal from "@/app/(root)/(explorar)/producciones/components/SendToBlogModal";
+import { dataUrlToFile } from "../shared/dataUrlToFile";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { getValuacionPostDraft } from "@/services/workspaceServices";
 import { useRouter } from "@bprogress/next/app";
@@ -16,6 +18,8 @@ interface ResultsPanelProps {
 export default function ResultsPanel({ workspace }: ResultsPanelProps) {
     const { savedValuaciones, savedMatchPosts, handleRestoreToBoard, handleDeleteValuacion, handleRemoveSavedMatch, isLoadingSaved } = workspace;
     const [loadingAction, setLoadingAction] = useState<string | null>(null);
+    // Valuación que se está enviando a un blog de Mis Producciones.
+    const [valuacionForBlog, setValuacionForBlog] = useState<string | null>(null);
     const router = useRouter();
 
     const hasResults = savedValuaciones.length > 0 || savedMatchPosts.length > 0;
@@ -88,23 +92,28 @@ export default function ResultsPanel({ workspace }: ResultsPanelProps) {
         setLoadingAction(null);
     };
 
+    /**
+     * Informe de la valuación como PNG. Siempre la trae al tablero primero: el
+     * sticker que esté dibujado puede ser el de otra valuación.
+     */
+    const renderStickerPng = async (valuacionId: string): Promise<string | null> => {
+        await handleRestoreToBoard(valuacionId);
+        // Wait for the DOM to render the sticker
+        await new Promise((resolve) => setTimeout(resolve, 300));
+        const stickerEl = document.getElementById("valuacion-sticker");
+        if (!stickerEl) return null;
+        return toPng(stickerEl, { quality: 0.95, pixelRatio: 2 });
+    };
+
     const handleDownloadSticker = async (valuacionId: string) => {
         setLoadingAction(`download-${valuacionId}`);
         try {
-            // If the sticker is not currently rendered, open it first
-            let stickerEl = document.getElementById("valuacion-sticker");
-            if (!stickerEl) {
-                await handleRestoreToBoard(valuacionId);
-                // Wait for the DOM to render the sticker
-                await new Promise((resolve) => setTimeout(resolve, 300));
-                stickerEl = document.getElementById("valuacion-sticker");
-            }
-            if (!stickerEl) {
+            const dataUrl = await renderStickerPng(valuacionId);
+            if (!dataUrl) {
                 toastifyError("No se pudo cargar la valuación para descargar");
                 setLoadingAction(null);
                 return;
             }
-            const dataUrl = await toPng(stickerEl, { quality: 0.95, pixelRatio: 2 });
             const link = document.createElement("a");
             link.download = `valuacion-${valuacionId}.png`;
             link.href = dataUrl;
@@ -195,6 +204,19 @@ export default function ResultsPanel({ workspace }: ResultsPanelProps) {
                                     <FaDownload size={12} />
                                 </Button>
                             </Tooltip>
+                            <Tooltip content="Enviar a mi blog" size="sm" color="secondary">
+                                <Button
+                                    size="sm"
+                                    variant="flat"
+                                    color="secondary"
+                                    isIconOnly
+                                    isDisabled={!!loadingAction}
+                                    onPress={() => setValuacionForBlog(v.id)}
+                                    aria-label="Enviar a mi blog"
+                                >
+                                    <FaFolderOpen size={12} />
+                                </Button>
+                            </Tooltip>
                             <Tooltip content={isServicio(v) ? "Publicar como servicio" : "Publicar como anuncio"} size="sm" color="primary">
                                 <Button
                                     size="sm"
@@ -213,6 +235,18 @@ export default function ResultsPanel({ workspace }: ResultsPanelProps) {
                     </CardBody>
                 </Card>
             ))}
+
+            {/* Enviar el informe de una valuación (como imagen) a un blog */}
+            <SendToBlogModal
+                isOpen={!!valuacionForBlog}
+                onClose={() => setValuacionForBlog(null)}
+                subject="la valuación"
+                getFile={async () => {
+                    const dataUrl = await renderStickerPng(valuacionForBlog!);
+                    if (!dataUrl) throw new Error("sticker");
+                    return dataUrlToFile(dataUrl, `valuacion-${valuacionForBlog}.png`);
+                }}
+            />
 
             {/* Saved Matches */}
             {savedMatchPosts.length > 0 && (

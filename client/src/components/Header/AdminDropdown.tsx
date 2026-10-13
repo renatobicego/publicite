@@ -1,4 +1,9 @@
-import { ADMIN, NOVELTIES } from "@/utils/data/urls";
+import {
+  ADMIN_INVOICES,
+  ADMIN_PRODUCTION_REPORTS,
+  ADMIN_PRODUCTION_TICKETS,
+  NOVELTIES,
+} from "@/utils/data/urls";
 import {
   Button,
   Dropdown,
@@ -26,13 +31,31 @@ const AdminDropdown = () => {
       </DropdownTrigger>
       <DropdownMenu aria-label="Administración" className="bg-fondo">
         <DropdownItem
-          href={ADMIN}
+          href={ADMIN_INVOICES}
           className="rounded-full pl-4 text-text-color"
           key="facturacion"
           color="secondary"
           textValue="Facturación"
         >
           Facturación
+        </DropdownItem>
+        <DropdownItem
+          href={ADMIN_PRODUCTION_TICKETS}
+          className="rounded-full pl-4 text-text-color"
+          key="tickets-producciones"
+          color="secondary"
+          textValue="Tickets de Producciones"
+        >
+          Tickets de Producciones
+        </DropdownItem>
+        <DropdownItem
+          href={ADMIN_PRODUCTION_REPORTS}
+          className="rounded-full pl-4 text-text-color"
+          key="denuncias-producciones"
+          color="secondary"
+          textValue="Denuncias de Producciones"
+        >
+          Denuncias de Producciones
         </DropdownItem>
         <DropdownItem
           href={NOVELTIES}

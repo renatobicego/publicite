@@ -81,6 +81,14 @@ export class ProductionReportRepository
     return docs.map(toReport);
   }
 
+  async listByProduction(productionId: string): Promise<ProductionReport[]> {
+    const docs = await this.reportModel
+      .find({ production: oid(productionId) })
+      .sort({ createdAt: -1 })
+      .lean();
+    return docs.map(toReport);
+  }
+
   async listTargets(
     status: ProductionReportStatus,
     page: number,

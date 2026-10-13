@@ -20,6 +20,8 @@ import { visibilityLabel, visibilityOptions } from "../../productionVisibility";
 interface Props {
   item: ProductionItemResponse;
   onChanged: () => void;
+  /** Sólo el ícono (tarjetas chicas); el alcance va en el `title`. */
+  compact?: boolean;
 }
 
 const INHERIT_KEY = "__inherit__";
@@ -28,7 +30,7 @@ const INHERIT_KEY = "__inherit__";
  * Control de alcance de una carpeta o archivo (VIS-04). Permite elegir un
  * alcance propio o "Heredar" (VIS-03). Muestra el alcance efectivo.
  */
-const ItemVisibilityControl = ({ item, onChanged }: Props) => {
+const ItemVisibilityControl = ({ item, onChanged, compact }: Props) => {
   const [busy, setBusy] = useState(false);
 
   const currentKey = item.visibility ?? INHERIT_KEY;
@@ -50,20 +52,35 @@ const ItemVisibilityControl = ({ item, onChanged }: Props) => {
     }
   };
 
+  const scopeLabel = item.visibility
+    ? visibilityLabel[item.visibility]
+    : `Hereda (${visibilityLabel[item.effectiveVisibility]})`;
+
   return (
     <Dropdown>
       <DropdownTrigger>
-        <Button
-          size="sm"
-          variant="flat"
-          isDisabled={busy}
-          startContent={<FaEye />}
-          className="text-xs"
-        >
-          {item.visibility
-            ? visibilityLabel[item.visibility]
-            : `Hereda (${visibilityLabel[item.effectiveVisibility]})`}
-        </Button>
+        {compact ? (
+          <Button
+            size="sm"
+            variant="flat"
+            isIconOnly
+            isDisabled={busy}
+            aria-label={`Alcance: ${scopeLabel}`}
+            title={`Alcance: ${scopeLabel}`}
+          >
+            <FaEye />
+          </Button>
+        ) : (
+          <Button
+            size="sm"
+            variant="flat"
+            isDisabled={busy}
+            startContent={<FaEye />}
+            className="text-xs"
+          >
+            {scopeLabel}
+          </Button>
+        )}
       </DropdownTrigger>
       <DropdownMenu
         aria-label="Alcance del ítem"

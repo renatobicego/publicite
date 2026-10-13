@@ -13,7 +13,7 @@ import {
   NotificationImage,
 } from "../NotificationCard";
 
-const ADMIN_PANEL = "/admin";
+const ADMIN_PANEL = "/admin/tickets-producciones";
 
 type TicketData =
   ProductionTicketNotificationType["frontData"]["productionTicket"];

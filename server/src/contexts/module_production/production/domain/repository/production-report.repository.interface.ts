@@ -41,6 +41,8 @@ export interface ProductionReportRepositoryInterface {
     itemId: string | null,
     status?: ProductionReportStatus,
   ): Promise<ProductionReport[]>;
+  /** Todas las denuncias de un blog y de su contenido, la más nueva primero. */
+  listByProduction(productionId: string): Promise<ProductionReport[]>;
   listTargets(
     status: ProductionReportStatus,
     page: number,

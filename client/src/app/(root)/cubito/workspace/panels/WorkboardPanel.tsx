@@ -9,6 +9,7 @@ import {
     FaPaperPlane,
     FaImage,
     FaDownload,
+    FaFolderOpen,
     FaPenToSquare,
 } from "react-icons/fa6";
 import { OrangeCubeIcon } from "@/components/buttons/ChatbotButton/OrangeCubeIcon";
@@ -22,6 +23,8 @@ import ValuacionSticker from "../valuacion/ValuacionSticker";
 import MatchResults from "../match/MatchResults";
 import WorkspaceChat from "../WorkspaceChat";
 import ImageEditor from "./ImageEditor";
+import SendToBlogModal from "@/app/(root)/(explorar)/producciones/components/SendToBlogModal";
+import { dataUrlToFile } from "../shared/dataUrlToFile";
 
 interface WorkboardPanelProps {
     workspace: ReturnType<typeof useWorkspace>;
@@ -58,6 +61,8 @@ function FreeChatPanel({ workspace }: WorkboardPanelProps) {
     const [isImageMode, setIsImageMode] = useState(false);
     const [editingImageUrl, setEditingImageUrl] = useState<string | null>(null);
     const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
+    // Imagen generada que se está enviando a un blog de Mis Producciones.
+    const [imageForBlog, setImageForBlog] = useState<{ id: string; base64: string } | null>(null);
     const scrollRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -162,7 +167,7 @@ function FreeChatPanel({ workspace }: WorkboardPanelProps) {
                                                 className="rounded-lg w-full max-w-sm object-contain cursor-zoom-in transition-transform hover:scale-[1.02]"
                                             />
                                             <p className="text-xs opacity-70">&ldquo;{imageData.prompt}&rdquo;</p>
-                                            <div className="flex items-center gap-3">
+                                            <div className="flex flex-wrap items-center gap-3">
                                                 <button
                                                     onClick={() => {
                                                         const link = document.createElement("a");
@@ -184,6 +189,13 @@ function FreeChatPanel({ workspace }: WorkboardPanelProps) {
                                                 >
                                                     <FaPenToSquare size={11} />
                                                     Editar
+                                                </button>
+                                                <button
+                                                    onClick={() => setImageForBlog(imageData)}
+                                                    className="flex items-center gap-1.5 text-xs text-purple-600 hover:text-purple-800 dark:text-purple-400 dark:hover:text-purple-300 font-medium"
+                                                >
+                                                    <FaFolderOpen size={11} />
+                                                    Enviar a mi blog
                                                 </button>
                                             </div>
                                         </div>
@@ -276,6 +288,16 @@ function FreeChatPanel({ workspace }: WorkboardPanelProps) {
                     }}
                 />
             )}
+
+            {/* Enviar una imagen generada a un blog de Mis Producciones */}
+            <SendToBlogModal
+                isOpen={!!imageForBlog}
+                onClose={() => setImageForBlog(null)}
+                subject="la imagen"
+                getFile={() =>
+                    dataUrlToFile(imageForBlog!.base64, `cubito-${imageForBlog!.id}.png`)
+                }
+            />
 
             {/* Image Preview (lightbox) for generated images */}
             <Modal

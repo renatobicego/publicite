@@ -1,5 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
+import AdminPanel from "./AdminPanel";
 
 /**
  * Todo /admin exige rol admin. Es la primera de tres barreras: acá (server
@@ -18,5 +19,5 @@ export default async function AdminLayoutGuard({
   if (loggedUser.sessionClaims?.metadata?.role !== "admin") {
     redirect("/");
   }
-  return <>{children}</>;
+  return <AdminPanel>{children}</AdminPanel>;
 }

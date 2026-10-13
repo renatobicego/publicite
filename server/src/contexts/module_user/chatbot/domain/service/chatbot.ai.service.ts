@@ -63,6 +63,7 @@ Aquí podrás encontrar algunos conceptos y términos que usaremos en el sitio p
 10. GESTIÓN DE ANUNCIOS
 11. PLANES Y SUSCRIPCIONES
 12. ENLACES RÁPIDOS
+13. MIS PRODUCCIONES (BLOGS)
 
 ═══════════════════════════════════════════════════════════════
 
@@ -77,6 +78,7 @@ Aquí podrás encontrar algunos conceptos y términos que usaremos en el sitio p
 - **Descubrir** ofertas y necesidades de otros usuarios, filtrando por ubicación y categoría.
 - **Conectarte** con personas y empresas como contactos, amigos o topamigos, y compartir anuncios según el nivel de relación.
 - **Organizar contenido** en revistas (colecciones de anuncios) y grupos (espacios colaborativos).
+- **Publicar tus producciones** en un blog (fotos, videos, audios, escritos y artículos), personal o de un grupo. Ver sección 13.
 
 ### 🧭 ¿Cómo funciona la visibilidad? (lo más importante)
 Publicite tiene **dos formas de mostrar los anuncios**:
@@ -496,6 +498,7 @@ Si necesitas más anuncios pero no quieres cambiar de plan completo:
 • **Crear Necesidad**: https://soonpublicite.com/crear/necesidad
 • **Crear Revista**: https://soonpublicite.com/crear/revista
 • **Crear Grupo**: https://soonpublicite.com/crear/grupo
+• **Crear Producción (blog)**: https://soonpublicite.com/crear/produccion
 
 ### 🔍 Explorar:
 
@@ -505,6 +508,8 @@ Si necesitas más anuncios pero no quieres cambiar de plan completo:
 • **Perfiles**: https://soonpublicite.com/perfiles
 • **Grupos**: https://soonpublicite.com/grupos
 • **Pizarras**: https://soonpublicite.com/pizarras
+• **Producciones (blogs)**: https://soonpublicite.com/producciones
+• **Mis tickets de Producciones**: https://soonpublicite.com/producciones/mis-tickets
 
 ### ⚙️ Configuración:
 
@@ -516,6 +521,67 @@ Si necesitas más anuncios pero no quieres cambiar de plan completo:
 
 • **Registrarse**: https://soonpublicite.com/registrarse
 • **Iniciar Sesión**: https://soonpublicite.com/iniciar-sesion
+
+---
+
+## 13. MIS PRODUCCIONES (BLOGS) 🗂️
+
+### ¿Qué es?
+**Mis Producciones** es la app de Publicite para publicar contenido propio en un **blog**: fotos (postales), videos, audios, escritos en PDF, documentos de Office y **artículos** escritos en la misma plataforma. Un blog puede ser **personal** o **de un grupo**.
+
+### 📝 Crear un blog
+1. Ve a: https://soonpublicite.com/crear/produccion
+2. Completa el nombre, la descripción, la foto de portada y el texto de bienvenida
+3. Elige el **alcance** del blog: Público, Registrados, Contactos, Amigos o Top amigos
+4. ¡Listo! Entra al blog y empieza a cargar contenido
+
+La cantidad de blogs, de archivos por blog y el espacio de almacenamiento dependen de tu plan.
+
+### 📁 Organizar el contenido (como en un explorador de archivos)
+- **Carpetas y subcarpetas**: usa "Nueva carpeta". Cada carpeta muestra una vista previa de lo que tiene adentro.
+- **Subir archivos**: con el botón "Subir archivos" (puedes elegir varios a la vez) o **arrastrando los archivos desde tu computadora** y soltándolos sobre el blog o sobre una carpeta.
+- **Artículos**: con "Nuevo artículo" escribes un texto con formato, imágenes y otros bloques. Mientras escribes se muestra el **recuento de palabras y caracteres**.
+- **Mover**: marca uno o varios elementos con su casilla, toca **"Mover"** y elige la carpeta de destino. También puedes **arrastrar** un elemento y soltarlo sobre una carpeta, o usar "Mover a…" en el menú de los tres puntos de cada elemento. Lo movido deja de estar en la carpeta de origen y pasa a tomar el alcance de la carpeta de destino.
+- **Renombrar y borrar**: desde el menú de los tres puntos de cada elemento. Borrar una carpeta borra todo lo que tiene adentro.
+
+### 🧭 Navegar un blog
+- **Flechas Atrás / Adelante** y **Subir un nivel**, junto al camino de carpetas (Inicio › Carpeta › Subcarpeta).
+- Dentro de un archivo o artículo: botón para **volver a la carpeta** y flechas **Anterior / Siguiente** para recorrer los archivos de esa carpeta.
+- **Buscar** por nombre dentro de la carpeta abierta, **filtrar por tipo** (carpetas, fotos, videos, audios, escritos, documentos, artículos) y **ordenar** (más recientes, más antiguos, por nombre o por tipo).
+- **Vista de grilla o de lista**, a elección. En la grilla, un deslizador cambia el **tamaño de los íconos** (más chicos o más grandes), como en un explorador de archivos.
+
+### 👀 Ver como visitante
+El dueño o moderador del blog tiene el botón **"Ver como visitante"**: muestra el blog (o un archivo o artículo) sin los controles de edición, para revisar cómo quedó el trabajo. Con "Volver a editar" se regresa al modo normal.
+
+### 🔐 Alcance, clave y tickets
+- **Alcance**: cada carpeta o archivo puede heredar el alcance del blog o tener uno propio.
+- **Clave de acceso**: el blog puede pedir una clave para ver su contenido ("Alcance y clave").
+- **Mapa de tickets** (menú "Opciones" del blog): dibuja todo el blog en recuadros —carpetas que contienen carpetas y archivos— pintados por color: verde = gratis, azul = ticket gratuito, naranja = ticket pago (con su precio). El borde punteado indica que el ticket se hereda de la carpeta o del blog. Los interruptores de arriba resaltan u ocultan cada tipo, y al tocar un recuadro se configura su ticket.
+- **Tickets**: el dueño puede poner un ticket (gratuito o pago) al blog entero, a una carpeta o a un archivo. En los tickets pagos el comprador hace **dos transferencias**: una al alias/CBU del blog y otra, la comisión, a Soonpublicité; adjunta los comprobantes y el staff del blog habilita el acceso. Tus compras están en: https://soonpublicite.com/producciones/mis-tickets
+
+### ⭐ Fans, reseñas y comentarios
+- **Fans** 💖: el contador de fans está junto al título del blog. Con "Hacerme fan" sigues el blog; el dueño ve cuántos fans tiene.
+- **Reseñas**: el puntaje del blog se ve arriba, en el encabezado, junto al botón **"Reseñar este blog"** (estrellas del 1 al 5 y un texto). Pueden reseñar quienes accedieron al blog con un ticket; el dueño no reseña su propio blog. Si ya reseñaste, el mismo botón te deja editar tu reseña.
+- **Comentarios**: debajo del blog. Cada comentario muestra la foto y el @usuario de quien lo escribió, y al tocarlo se abre su cartel de usuario. **Quien escribió un comentario puede eliminarlo**; el staff del blog puede responder y también eliminar comentarios.
+- **Denunciar**: está en el menú de opciones del blog (botón "⋯" del encabezado), no a la vista directa. Antes de enviar se muestra qué blog se está denunciando y de quién es. **El sitio protege al denunciante**: el dueño del blog ve qué se denunció y el motivo, pero nunca quién lo hizo.
+- **Denuncias recibidas**: el dueño o moderador las consulta en "Opciones" → "Denuncias recibidas", con el contenido denunciado, el motivo y si Soonpublicité la está revisando, la confirmó o la desestimó.
+
+### ⚙️ Menú "Opciones" del blog
+El dueño encuentra en un solo menú: Mapa de tickets, Alcance y clave, Ventas de tickets, Editar blog, Denuncias recibidas y Eliminar blog.
+
+### 🎨 Enviar al blog desde el Tablero de trabajo
+En el Tablero de trabajo de Cubito (https://soonpublicite.com/cubito/tablerodetrabajo), cada **imagen generada** tiene "Enviar a mi blog", y cada **Valuación IA** guardada tiene el botón de carpeta "Enviar a mi blog" (se guarda el informe como imagen). Se elige el blog y dónde guardarlo: en el inicio, en una carpeta existente o en una carpeta nueva.
+
+### 🗑️ Eliminar un blog
+Con "Opciones" → "Eliminar blog" se abre una confirmación en la que hay que **escribir el nombre del blog**. Es definitivo: se borra todo su contenido.
+
+### 👥 Blogs de grupo
+El creador del grupo administra el blog, los administradores del grupo son moderadores (cargan y editan contenido) y los miembros pueden verlo.
+
+### 📍 Enlaces útiles:
+- Explorar blogs: https://soonpublicite.com/producciones
+- Crear un blog: https://soonpublicite.com/crear/produccion
+- Mis tickets: https://soonpublicite.com/producciones/mis-tickets
 
 ---
 

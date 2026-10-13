@@ -70,6 +70,45 @@ export class ProductionReportDetailResponse {
   createdAt: Date;
 }
 
+@ObjectType({
+  description:
+    'Denuncia recibida, tal como la ve el staff del blog denunciado: qué se denunció y por qué, nunca quién',
+})
+export class ProductionReceivedReportResponse {
+  @Field(() => ID)
+  _id: string;
+
+  @Field(() => ID, { nullable: true, description: 'null = el blog entero' })
+  item?: string | null;
+
+  @Field(() => String, { nullable: true })
+  itemName?: string | null;
+
+  @Field(() => ProductionItemKind, { nullable: true })
+  itemKind?: ProductionItemKind | null;
+
+  @Field(() => ProductionReportReason)
+  reason: ProductionReportReason;
+
+  @Field(() => String, { nullable: true })
+  details?: string | null;
+
+  @Field(() => ProductionReportStatus)
+  status: ProductionReportStatus;
+
+  @Field(() => String, {
+    nullable: true,
+    description: 'Nota del admin al resolver la denuncia',
+  })
+  reviewNote?: string | null;
+
+  @Field(() => Date, { nullable: true })
+  reviewedAt?: Date | null;
+
+  @Field(() => Date)
+  createdAt: Date;
+}
+
 @ObjectType({ description: 'Contenido denunciado, para el panel de revisión (DEN-03)' })
 export class ProductionReportTargetResponse {
   @Field(() => ID)

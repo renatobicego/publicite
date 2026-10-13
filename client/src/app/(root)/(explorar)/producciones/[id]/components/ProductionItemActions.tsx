@@ -15,7 +15,7 @@ import {
   Input,
   useDisclosure,
 } from "@nextui-org/react";
-import { FaEllipsisV, FaPen, FaTrash } from "react-icons/fa";
+import { FaEllipsisV, FaFolderOpen, FaPen, FaTrash } from "react-icons/fa";
 import {
   ProductionItemKind,
   ProductionItemResponse,
@@ -40,14 +40,16 @@ interface Props {
   item: ProductionItemResponse;
   /** Recargar el nivel actual del árbol luego de un cambio. */
   onChanged: () => void;
+  /** Abre el selector de carpeta de destino para mover el ítem. */
+  onMove: () => void;
 }
 
 /**
  * Acciones de staff sobre un ítem del árbol: renombrar (carpeta/archivo),
- * editar artículo y borrar (carpeta/archivo/artículo). Sólo se monta cuando
+ * editar artículo, mover a otra carpeta y borrar (carpeta/archivo/artículo). Sólo se monta cuando
  * el viewer tiene `canEdit`. El borrado es en cascada (hard delete).
  */
-const ProductionItemActions = ({ item, onChanged }: Props) => {
+const ProductionItemActions = ({ item, onChanged, onMove }: Props) => {
   const router = useRouter();
   const renameModal = useDisclosure();
   const [name, setName] = useState(item.name);
@@ -153,6 +155,13 @@ const ProductionItemActions = ({ item, onChanged }: Props) => {
             onPress={handleEdit}
           >
             {isArticle ? "Editar artículo" : "Renombrar"}
+          </DropdownItem>
+          <DropdownItem
+            key="move"
+            startContent={<FaFolderOpen />}
+            onPress={onMove}
+          >
+            Mover a…
           </DropdownItem>
           <DropdownItem
             key="delete"

@@ -13,45 +13,34 @@ import {
 } from "@nextui-org/react";
 import { FaFolderPlus, FaUpload, FaFileMedical } from "react-icons/fa";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
-import { useUploadThing } from "@/utils/uploadThing";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
-import {
-  createFolder,
-  uploadFile,
-} from "@/app/server/productionActions";
-import { deleteFilesService } from "@/app/server/uploadThing";
+import { createFolder } from "@/app/server/productionActions";
 import { isProductionActionError } from "@/utils/functions/productionErrorHandler";
-import { ProductionFileType } from "@/types/productionTypes";
 import { PRODUCTIONS } from "@/utils/data/urls";
-import { INVALID_IMAGE_FORMAT_MESSAGE } from "@/utils/functions/imageFormats";
-import {
-  detectProductionFileType,
-  PRODUCTION_FILE_ACCEPT,
-} from "../../productionFiles";
+import { PRODUCTION_FILE_ACCEPT } from "../../productionFiles";
+import { ProductionUploadProgress } from "./useProductionUpload";
 
 interface Props {
   productionId: string;
   parentId?: string;
   /** Se llama tras crear cualquier ítem para refrescar la grilla. */
   onCreated: () => void;
+  /** Subida compartida con el arrastre de archivos (`useProductionUpload`). */
+  uploadFiles: (files: File[], parentId?: string) => Promise<number>;
+  uploadProgress: ProductionUploadProgress | null;
 }
 
 const ProductionStaffToolbar = ({
   productionId,
   parentId,
   onCreated,
+  uploadFiles,
+  uploadProgress,
 }: Props) => {
   const router = useRouter();
   const folderModal = useDisclosure();
   const [folderName, setFolderName] = useState("");
   const [busy, setBusy] = useState(false);
-  // Avance de la subida en curso (se puede elegir más de un archivo a la vez).
-  const [uploadProgress, setUploadProgress] = useState<{
-    current: number;
-    total: number;
-    /** Porcentaje del archivo en curso (un video puede tardar minutos). */
-    percent: number;
-  } | null>(null);
   const uploading = uploadProgress !== null;
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -59,20 +48,6 @@ const ProductionStaffToolbar = ({
     const query = parentId ? `?parentId=${parentId}` : "";
     router.push(`${PRODUCTIONS}/${productionId}/crear-articulo${query}`);
   };
-
-  // `startUpload` no lanza: avisa por `onUploadError` y resuelve `undefined`.
-  const uploadError = useRef<string | null>(null);
-  const { startUpload } = useUploadThing("productionFileUploader", {
-    uploadProgressGranularity: "fine",
-    onUploadProgress: (percent) =>
-      setUploadProgress((progress) => progress && { ...progress, percent }),
-    onUploadError: (e) => {
-      uploadError.current =
-        e.code === "TOO_LARGE" || e.message.includes("FileSizeMismatch")
-          ? "El archivo supera el tamaño máximo permitido"
-          : "No se pudo subir el archivo";
-    },
-  });
 
   const handleCreateFolder = async () => {
     if (!folderName.trim()) {
@@ -99,79 +74,13 @@ const ProductionStaffToolbar = ({
     }
   };
 
-  /** Sube un archivo y lo registra en el blog. Devuelve el error, si hubo. */
-  const uploadOne = async (file: File): Promise<string | null> => {
-    const fileType = detectProductionFileType(file);
-    if (!fileType) {
-      return file.type.startsWith("image/")
-        ? INVALID_IMAGE_FORMAT_MESSAGE
-        : "Tipo de archivo no soportado";
-    }
-
-    uploadError.current = null;
-    const rawKey = (await startUpload([file]))?.[0]?.key;
-    if (!rawKey) return uploadError.current ?? "No se pudo subir el archivo";
-
-    // Convención de Anuncios: al key de un video se le agrega "video".
-    const key =
-      fileType === ProductionFileType.video ? `${rawKey}video` : rawKey;
-    const res = await uploadFile({
-      productionId,
-      parentId,
-      fileType,
-      key,
-      // Tamaño real del archivo para el cupo de almacenamiento por usuario.
-      sizeBytes: file.size,
-      name: file.name,
-    });
-    if (isProductionActionError(res)) {
-      // El backend rechazó (p. ej. sin espacio). El archivo ya se subió a
-      // UploadThing, así que lo borramos para no dejar un huérfano que igual
-      // ocuparía storage real. Se borra con el key REAL (sin el sufijo "video").
-      deleteFilesService([rawKey]);
-      return res.error;
-    }
-    return null;
-  };
-
   const handleFilesPicked = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const files = Array.from(event.target.files ?? []);
     // Permitir volver a elegir los mismos archivos.
     event.target.value = "";
-    if (files.length === 0) return;
-
-    setBusy(true);
-    let uploadedCount = 0;
-    try {
-      // De a uno: cada archivo valida su propio cupo en el backend, y si uno
-      // falla los demás siguen.
-      for (const [index, file] of files.entries()) {
-        setUploadProgress({
-          current: index + 1,
-          total: files.length,
-          percent: 0,
-        });
-        const error = await uploadOne(file);
-        if (error) {
-          toastifyError(files.length > 1 ? `${file.name}: ${error}` : error);
-        } else {
-          uploadedCount++;
-        }
-      }
-      if (uploadedCount > 0) {
-        toastifySuccess(
-          uploadedCount === 1
-            ? "Archivo subido"
-            : `${uploadedCount} archivos subidos`
-        );
-        onCreated();
-      }
-    } finally {
-      setBusy(false);
-      setUploadProgress(null);
-    }
+    if ((await uploadFiles(files, parentId)) > 0) onCreated();
   };
 
   return (
@@ -189,7 +98,7 @@ const ProductionStaffToolbar = ({
           startContent={uploading ? undefined : <FaUpload />}
           variant="flat"
           onPress={() => fileInputRef.current?.click()}
-          isDisabled={busy}
+          isDisabled={busy || uploading}
           isLoading={uploading}
         >
           {!uploadProgress

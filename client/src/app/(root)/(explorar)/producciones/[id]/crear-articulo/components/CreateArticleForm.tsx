@@ -10,6 +10,10 @@ import BlockEditor, {
 } from "@/components/BlockEditor/BlockEditor";
 import { serializeBlocks } from "@/components/BlockEditor/blockEditorFormat";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
+import {
+  countWords,
+  formatWordCount,
+} from "@/components/BlockEditor/countWords";
 import { createArticle } from "@/app/server/productionActions";
 import { isProductionActionError } from "@/utils/functions/productionErrorHandler";
 import { PRODUCTIONS } from "@/utils/data/urls";
@@ -46,6 +50,7 @@ const CreateArticleForm = ({ productionId, parentId }: Props) => {
   const editorRef = useRef<BlockEditorHandle>(null);
   // Respaldo del contenido en vivo por si `save()` puntual falla.
   const latestContent = useRef<OutputData | undefined>(undefined);
+  const [wordCount, setWordCount] = useState(() => countWords(undefined));
 
   const backToBlog = () => {
     router.push(`${PRODUCTIONS}/${productionId}`);
@@ -125,7 +130,15 @@ const CreateArticleForm = ({ productionId, parentId }: Props) => {
       {/* Editor de contenido */}
       <div className="rounded-2xl border border-default-200 bg-content1 shadow-sm">
         <div className="border-b border-default-100 px-4 py-3 sm:px-6">
-          <h2 className="text-sm font-medium text-default-700">Contenido</h2>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h2 className="text-sm font-medium text-default-700">Contenido</h2>
+            <span
+              className="rounded-full bg-default-100 px-3 py-1 text-xs font-medium text-default-600"
+              aria-live="polite"
+            >
+              {formatWordCount(wordCount)}
+            </span>
+          </div>
           <p className="text-xs text-default-400">
             Escribí, agregá encabezados, listas, imágenes y enlaces. Seleccioná
             un texto para darle color, resaltado, tamaño o subrayado.
@@ -136,6 +149,7 @@ const CreateArticleForm = ({ productionId, parentId }: Props) => {
             ref={editorRef}
             onChange={(data) => {
               latestContent.current = data;
+              setWordCount(countWords(data));
             }}
           />
         </div>

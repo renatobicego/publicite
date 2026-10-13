@@ -250,6 +250,36 @@ export interface ProductionItemResponse {
   access: ProductionItemAccess;
 }
 
+/** Nodo del mapa del blog: todo el árbol en una lista plana (sólo staff). */
+export interface ProductionMapNode {
+  _id: string;
+  /** null = raíz del blog. */
+  parent?: string | null;
+  kind: ProductionItemKind;
+  name: string;
+  fileType?: ProductionFileType | null;
+  /** Alcance propio; null = hereda. */
+  visibility?: ProductionVisibility | null;
+}
+
+/**
+ * Denuncia recibida, como la ve el staff del blog denunciado: qué se denunció
+ * y por qué. El denunciante nunca viaja al cliente.
+ */
+export interface ProductionReceivedReport {
+  _id: string;
+  /** null = el blog entero. */
+  item?: string | null;
+  itemName?: string | null;
+  itemKind?: ProductionItemKind | null;
+  reason: ProductionReportReason;
+  details?: string | null;
+  status: ProductionReportStatus;
+  reviewNote?: string | null;
+  reviewedAt?: string | null;
+  createdAt: string;
+}
+
 export interface ProductionBreadcrumbItem {
   _id: string;
   name: string;

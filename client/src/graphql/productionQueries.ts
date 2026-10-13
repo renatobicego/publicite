@@ -164,6 +164,36 @@ export const getProductionItemsQuery = gql`
   }
 `;
 
+export const getProductionMapQuery = gql`
+  query GetProductionMap($productionId: ID!) {
+    getProductionMap(productionId: $productionId) {
+      _id
+      parent
+      kind
+      name
+      fileType
+      visibility
+    }
+  }
+`;
+
+export const getProductionReceivedReportsQuery = gql`
+  query GetProductionReceivedReports($productionId: ID!) {
+    getProductionReceivedReports(productionId: $productionId) {
+      _id
+      item
+      itemName
+      itemKind
+      reason
+      details
+      status
+      reviewNote
+      reviewedAt
+      createdAt
+    }
+  }
+`;
+
 export const getProductionItemByIdQuery = gql`
   ${PRODUCTION_ITEM_FIELDS}
   query GetProductionItemById($itemId: ID!, $accessKey: String) {
@@ -690,6 +720,20 @@ export const updateFolderMutation = gql`
 export const deleteFolderMutation = gql`
   mutation DeleteFolder($itemId: ID!) {
     deleteFolder(itemId: $itemId)
+  }
+`;
+
+export const moveProductionItemsMutation = gql`
+  mutation MoveProductionItems(
+    $productionId: ID!
+    $itemIds: [ID!]!
+    $targetParentId: ID
+  ) {
+    moveProductionItems(
+      productionId: $productionId
+      itemIds: $itemIds
+      targetParentId: $targetParentId
+    )
   }
 `;
 

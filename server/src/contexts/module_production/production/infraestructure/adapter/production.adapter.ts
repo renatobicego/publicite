@@ -152,6 +152,20 @@ export class ProductionAdapter implements ProductionAdapterInterface {
     return this.productionService.deleteItem(itemId, kind, userId);
   }
 
+  moveItems(
+    productionId: string,
+    itemIds: string[],
+    targetParentId: string | undefined | null,
+    userId: string,
+  ) {
+    return this.productionService.moveItems(
+      productionId,
+      itemIds,
+      targetParentId,
+      userId,
+    );
+  }
+
   findProductionById(productionId: string, userId?: string, accessKey?: string) {
     return this.productionService.findProductionById(
       productionId,
@@ -188,6 +202,10 @@ export class ProductionAdapter implements ProductionAdapterInterface {
       userId,
       accessKey,
     );
+  }
+
+  getProductionMap(productionId: string, userId: string) {
+    return this.productionService.getProductionMap(productionId, userId);
   }
 
   getProductionItemById(itemId: string, userId?: string, accessKey?: string) {

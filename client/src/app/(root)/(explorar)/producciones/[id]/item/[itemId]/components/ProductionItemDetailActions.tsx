@@ -27,6 +27,7 @@ import PrimaryButton from "@/components/buttons/PrimaryButton";
 import SecondaryButton from "@/components/buttons/SecondaryButton";
 import { PRODUCTIONS } from "@/utils/data/urls";
 import { cleanupItemFiles } from "../../../../productionMediaCleanup";
+import { FOLDER_PARAM } from "../../../../productionBrowse";
 
 /**
  * Controles de staff en el detalle de un ítem (archivo o artículo): editar
@@ -95,7 +96,10 @@ const ProductionItemDetailActions = ({
       // Limpieza de los archivos del ítem en UploadThing.
       await cleanupItemFiles(item);
       toastifySuccess("Eliminado");
-      router.push(blogUrl);
+      // Vuelve a la carpeta donde estaba el ítem.
+      router.push(
+        item.parent ? `${blogUrl}?${FOLDER_PARAM}=${item.parent}` : blogUrl
+      );
       router.refresh();
     } finally {
       setBusy(false);

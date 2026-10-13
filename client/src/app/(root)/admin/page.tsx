@@ -1,14 +1,7 @@
-import AdminPanel from "./AdminPanel";
+import { redirect } from "next/navigation";
+import { ADMIN_INVOICES } from "@/utils/data/urls";
 
-export const metadata = {
-  title: "Panel Admin - Publicite",
-  description: "Gestión de tickets y facturas",
-};
-
+// /admin no tiene contenido propio: cada sección vive en su subruta.
 export default function AdminPage() {
-  return (
-    <main className="flex min-h-screen flex-col main-style px-4">
-      <AdminPanel />
-    </main>
-  );
+  redirect(ADMIN_INVOICES);
 }

@@ -22,6 +22,9 @@
 | Carpetas | `createFolder` / `updateFolder` / `deleteFolder` | staff |
 | Archivos (ya subidos a UploadThing) | `uploadFile` / `updateFile` / `deleteFile` | staff |
 | Artículos (Editor.js) | `createArticle` / `updateArticle` / `deleteArticle` | staff |
+| Mover carpetas, archivos o artículos a otra carpeta | `moveProductionItems` | staff |
+| Mapa del blog (todo el árbol, sin contenido) | `getProductionMap` | staff |
+| Denuncias recibidas por el blog (sin el denunciante) | `getProductionReceivedReports` | staff |
 | Listado `/producciones` y buscador | `findAllProductions` | opcional |
 | "Producciones destacadas" del home | `findFeaturedProductions` | opcional |
 | Blogs de un cartel (`/perfiles/:id`) o grupo | `findAllProductionsByOwner` | opcional |
@@ -177,6 +180,12 @@ mutation {
 - `fileName` repetido en la misma carpeta → "Ya existe un elemento con el ID "X" en esta carpeta".
 - Artículo: `createArticle(articleRequest: { productionId, parentId, title, fileName, blocks: [{ type, data }] })`.
   Las imágenes de los bloques se suben a UploadThing desde el editor, igual que en Novedades.
+- Mover: `moveProductionItems(productionId, itemIds: [ID!]!, targetParentId: ID): Int`. `targetParentId`
+  vacío = raíz del blog. Devuelve cuántos ítems movió (los que ya estaban en el destino no cuentan).
+  No consume ni libera cupo. Una carpeta no puede ir dentro de sí misma ni de una subcarpeta suya
+  ("No se puede mover una carpeta dentro de sí misma"). Si el `fileName` ya existe en el destino, al
+  movido se le agrega un sufijo (`foto` → `foto-2`). El alcance y los tickets heredados pasan a ser
+  los de la carpeta de destino.
 
 > ⚠️ **Audio:** el FileRouter de UploadThing (`client/src/app/api/uploadthing/core.ts`) todavía
 > no acepta audio (RNF-04). Es un cambio del cliente.

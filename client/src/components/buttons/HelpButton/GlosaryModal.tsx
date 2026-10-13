@@ -226,6 +226,69 @@ const GlosaryModal = ({ customButton }: { customButton?: React.ReactNode }) => {
             </p>
 
             <p>
+              <strong>Mis Producciones (blogs):</strong> <br />
+              Publica tu contenido propio en un blog, personal o de un grupo:
+              fotos, videos, audios, escritos, documentos y artículos.
+            </p>
+            <ul className="list-disc list-inside">
+              <li>
+                Organiza: crea carpetas y subcarpetas, sube varios archivos a la
+                vez o arrástralos desde tu computadora y suéltalos sobre el blog
+                o sobre una carpeta.
+              </li>
+              <li>
+                Mueve: selecciona uno o varios elementos y toca
+                &quot;Mover&quot; para elegir la carpeta de destino, o arrastra
+                el elemento y suéltalo sobre una carpeta.
+              </li>
+              <li>
+                Navega: usa las flechas Atrás y Adelante, busca por nombre,
+                filtra por tipo, ordena y elige entre vista de grilla o de
+                lista. En la grilla puedes agrandar o achicar los íconos.
+                Dentro de un archivo, pasa al anterior o al siguiente.
+              </li>
+              <li>
+                Ver como visitante: revisa cómo queda tu blog o tu artículo sin
+                los controles de edición.
+              </li>
+              <li>
+                Alcance, clave y tickets: define quién ve cada contenido, pide
+                una clave de acceso o crea tickets gratuitos o pagos.
+              </li>
+              <li>
+                Mapa de tickets (menú Opciones): todo el blog en recuadros de
+                colores. Verde es gratis, azul es ticket gratuito y naranja es
+                ticket pago. Toca un recuadro para configurar su ticket.
+              </li>
+              <li>
+                Fans: el contador está junto al título del blog. Toca
+                &quot;Hacerme fan&quot; para seguirlo.
+              </li>
+              <li>
+                Artículos: al escribir se muestra el recuento de palabras.
+              </li>
+              <li>
+                Tablero de trabajo: envía a tu blog las imágenes generadas y
+                las Valuaciones IA, a una carpeta nueva o existente.
+              </li>
+              <li>
+                Denuncias: se hacen desde el menú de opciones del blog. Tu
+                identidad queda protegida: el dueño ve qué se denunció y el
+                motivo, pero no quién lo hizo.
+              </li>
+              <li>
+                Reseñas y comentarios: el puntaje del blog y el botón para
+                reseñar están en su encabezado. En los comentarios, toca la foto
+                o el @usuario para ir a su cartel; quien escribió un comentario
+                puede eliminarlo.
+              </li>
+              <li>
+                Eliminar blog: para confirmar hay que escribir el nombre del
+                blog. Se borra todo su contenido.
+              </li>
+            </ul>
+
+            <p>
               <strong>Planes y ampliaciones.</strong> <br />
               Tienes planes para elegir y desde estos puedes crear ampliaciones
               dentro del plan. Conócelos y elige el tuyo!

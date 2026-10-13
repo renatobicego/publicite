@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import { Button } from "@nextui-org/react";
-import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { toastifyError } from "@/utils/functions/toastify";
 import {
   becomeProductionFan,
@@ -14,10 +13,25 @@ interface Props {
   isFan: boolean;
   fansCount: number;
   onChanged: () => void;
+  /** Sólo el contador, sin el botón (staff del blog). */
+  readOnly?: boolean;
 }
 
-/** Botón de fan (FAN-01). El dueño no puede ser fan (el backend lo valida). */
-const FanButton = ({ productionId, isFan, fansCount, onChanged }: Props) => {
+const fansLabel = (count: number) =>
+  count === 1 ? "1 fan" : `${count.toLocaleString("es-AR")} fans`;
+
+/**
+ * Fans del blog (FAN-01): el contador siempre visible junto al título y, para
+ * el visitante, el botón para hacerse fan. El dueño no puede ser fan (el
+ * backend lo valida), así que con `readOnly` sólo ve el contador.
+ */
+const FanButton = ({
+  productionId,
+  isFan,
+  fansCount,
+  onChanged,
+  readOnly = false,
+}: Props) => {
   const [busy, setBusy] = useState(false);
 
   const toggle = async () => {
@@ -37,15 +51,34 @@ const FanButton = ({ productionId, isFan, fansCount, onChanged }: Props) => {
   };
 
   return (
-    <Button
-      variant={isFan ? "solid" : "bordered"}
-      color="danger"
-      startContent={isFan ? <FaHeart /> : <FaRegHeart />}
-      onPress={toggle}
-      isDisabled={busy}
-    >
-      {isFan ? "Sos fan" : "Hacerme fan"} ({fansCount})
-    </Button>
+    <div className="flex flex-wrap items-center gap-2">
+      <span
+        className="inline-flex items-center gap-1.5 rounded-full border border-danger-200 bg-danger-50 px-3 py-1 text-sm font-semibold text-danger-700"
+        title="Fans del blog"
+      >
+        <span aria-hidden className="text-base leading-none">
+          {fansCount > 0 ? "💖" : "🤍"}
+        </span>
+        {fansCount > 0 ? fansLabel(fansCount) : "Todavía sin fans"}
+      </span>
+      {!readOnly && (
+        <Button
+          size="sm"
+          radius="full"
+          variant={isFan ? "flat" : "solid"}
+          color="danger"
+          onPress={toggle}
+          isDisabled={busy}
+          aria-pressed={isFan}
+        >
+          {isFan
+            ? "💖 Sos fan"
+            : fansCount > 0
+              ? "🤍 Hacerme fan"
+              : "✨ Sé el primer fan"}
+        </Button>
+      )}
+    </div>
   );
 };
 

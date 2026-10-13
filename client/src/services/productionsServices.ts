@@ -48,6 +48,9 @@ import {
   replyProductionCommentMutation,
   updateProductionCommentMutation,
   deleteProductionCommentMutation,
+  moveProductionItemsMutation,
+  getProductionMapQuery,
+  getProductionReceivedReportsQuery,
   getProductionCommentsQuery,
   reportProductionContentMutation,
   getProductionReportTargetsAdminQuery,
@@ -111,6 +114,8 @@ import {
   ProductionReviewUpdateInput,
   ProductionComment,
   ProductionCommentList,
+  ProductionMapNode,
+  ProductionReceivedReport,
   ProductionCommentInput,
   ProductionPendingReview,
   ProductionReport,
@@ -272,6 +277,34 @@ export const getProductionFansService = async (
     fetchPolicy: "network-only",
   });
   return data.getProductionFans;
+};
+
+export const getProductionMapService = async (
+  productionId: string
+): Promise<ProductionMapNode[]> => {
+  const tokenCache = await getAuthToken();
+  const { context } = await getApiContext(false, tokenCache);
+  const { data } = await query({
+    query: getProductionMapQuery,
+    variables: { productionId },
+    context,
+    fetchPolicy: "network-only",
+  });
+  return data.getProductionMap;
+};
+
+export const getProductionReceivedReportsService = async (
+  productionId: string
+): Promise<ProductionReceivedReport[]> => {
+  const tokenCache = await getAuthToken();
+  const { context } = await getApiContext(false, tokenCache);
+  const { data } = await query({
+    query: getProductionReceivedReportsQuery,
+    variables: { productionId },
+    context,
+    fetchPolicy: "network-only",
+  });
+  return data.getProductionReceivedReports;
 };
 
 export const getProductionTicketsService = async (
@@ -635,6 +668,21 @@ export const deleteFolderService = async (
     context,
   });
   return data.deleteFolder;
+};
+
+export const moveProductionItemsService = async (
+  productionId: string,
+  itemIds: string[],
+  targetParentId?: string
+): Promise<number> => {
+  const tokenCache = await getAuthToken();
+  const { context } = await getApiContext(false, tokenCache);
+  const { data } = await getClient().mutate({
+    mutation: moveProductionItemsMutation,
+    variables: { productionId, itemIds, targetParentId: targetParentId ?? null },
+    context,
+  });
+  return data.moveProductionItems;
 };
 
 // ---------------------------------------------------------------------------
