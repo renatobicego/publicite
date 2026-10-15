@@ -43,6 +43,7 @@ describe('Mis Producciones - Fase 1: núcleo del blog', () => {
 
   afterEach(async () => {
     delete process.env.PRODUCTION_FREE_FILES_PER_BLOG;
+    delete process.env.PRODUCTION_FILES_PER_BLOG_LIMIT_ENABLED;
     await cleanProductionTestData(models);
   });
 
@@ -223,6 +224,7 @@ describe('Mis Producciones - Fase 1: núcleo del blog', () => {
     });
 
     it('bloquea al llegar al cupo y lo libera al borrar (PLN-05, BLG-06)', async () => {
+      process.env.PRODUCTION_FILES_PER_BLOG_LIMIT_ENABLED = 'true';
       process.env.PRODUCTION_FREE_FILES_PER_BLOG = '2';
       const userId = await createTestUser(models);
       const productionId = await createBlog(userId);
@@ -241,6 +243,7 @@ describe('Mis Producciones - Fase 1: núcleo del blog', () => {
     });
 
     it('el cupo sale del plan del usuario', async () => {
+      process.env.PRODUCTION_FILES_PER_BLOG_LIMIT_ENABLED = 'true';
       const userId = await createTestUser(models);
       await givePlanToUser(models, userId, { filesPerBlogCount: 3 });
       const productionId = await createBlog(userId);
@@ -252,6 +255,7 @@ describe('Mis Producciones - Fase 1: núcleo del blog', () => {
     });
 
     it('subidas concurrentes no superan el cupo', async () => {
+      process.env.PRODUCTION_FILES_PER_BLOG_LIMIT_ENABLED = 'true';
       process.env.PRODUCTION_FREE_FILES_PER_BLOG = '2';
       const userId = await createTestUser(models);
       const productionId = await createBlog(userId);

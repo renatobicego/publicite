@@ -216,19 +216,19 @@ export class ProductionService implements ProductionServiceInterface {
 
   /**
    * Reserva un lugar en el cupo de archivos del blog (PLN-05, SB-04). El límite
-   * es el del plan del creator (GRP-08). Se valida ANTES de persistir.
+   * es el del plan del creator (GRP-08). Se valida ANTES de persistir. Con el
+   * flag PRODUCTION_FILES_PER_BLOG_LIMIT_ENABLED apagado se cuenta igual (el
+   * contador lo usan el consumo y los tickets) pero sin tope.
    */
   private async reserveFileSlot(
     production: Production,
     session: ClientSession,
   ): Promise<void> {
-    const { filesPerBlogLimit } = await this.accessService.getCreatorLimits(
-      production,
-      session,
-    );
+    const { filesPerBlogLimit, filesPerBlogLimitEnabled } =
+      await this.accessService.getCreatorLimits(production, session);
     const reserved = await this.productionRepository.tryIncrementFilesCount(
       production.getId!,
-      filesPerBlogLimit,
+      filesPerBlogLimitEnabled ? filesPerBlogLimit : Number.MAX_SAFE_INTEGER,
       session,
     );
     if (!reserved) {

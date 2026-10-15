@@ -596,6 +596,7 @@ export class ProductionAccessService {
       filesPerBlogLimit: limits.filesPerBlogLimit,
       canSellPaidTickets: limits.canSellPaidTickets,
       blogLimitEnabled: limits.blogLimitEnabled,
+      filesPerBlogLimitEnabled: limits.filesPerBlogLimitEnabled,
       storageLimitEnabled: limits.storageLimitEnabled,
       storageBytesLimit: limits.storageBytesLimit,
       storageUsedBytes,

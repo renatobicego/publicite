@@ -21,6 +21,10 @@
  * - PRODUCTION_BLOG_LIMIT_ENABLED: activa el límite de CANTIDAD de blogs por
  *   usuario (personales y de grupo). Default: true. Si es false, no se aplica
  *   ningún tope de cantidad de blogs.
+ * - PRODUCTION_FILES_PER_BLOG_LIMIT_ENABLED: activa el límite de CANTIDAD de
+ *   archivos/artículos por blog (`filesPerBlogCount`). Default: false. Si es
+ *   false, `Production.filesCount` se sigue contando pero no se rechaza ninguna
+ *   subida por cantidad; el tope real pasa a ser el almacenamiento.
  * - PRODUCTION_STORAGE_LIMIT_ENABLED: activa el límite de ALMACENAMIENTO por
  *   usuario (suma de bytes de los archivos de todos sus blogs). Default: false
  *   (feature nueva, apagada por defecto). El límite en bytes se configura por
@@ -71,6 +75,14 @@ const DEFAULT_FREE_STORAGE_BYTES = 100 * 1024 * 1024;
  */
 export function isBlogLimitEnabled(): boolean {
   return readBoolean('PRODUCTION_BLOG_LIMIT_ENABLED', true);
+}
+
+/**
+ * ¿Está activo el límite de CANTIDAD de archivos/artículos por blog? Apagado por
+ * defecto: el contador se mantiene, pero las subidas no se rechazan por cantidad.
+ */
+export function isFilesPerBlogLimitEnabled(): boolean {
+  return readBoolean('PRODUCTION_FILES_PER_BLOG_LIMIT_ENABLED', false);
 }
 
 /**

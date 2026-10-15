@@ -78,6 +78,7 @@ const SendToBlogModal = ({ isOpen, onClose, subject, getFile }: Props) => {
   const [newFolderName, setNewFolderName] = useState("");
   const [busy, setBusy] = useState(false);
   const [sentTo, setSentTo] = useState<string | null>(null);
+  const [filesLimitEnabled, setFilesLimitEnabled] = useState(false);
 
   const { uploadFiles, uploadProgress } = useProductionUpload(productionId);
 
@@ -97,6 +98,7 @@ const SendToBlogModal = ({ isOpen, onClose, subject, getFile }: Props) => {
         STAFF_ROLES.includes(blog.role)
       );
       setBlogs(editable);
+      setFilesLimitEnabled(!!res.limits?.filesPerBlogLimitEnabled);
       setProductionId((current) => current || editable[0]?.productionId || "");
     });
     return () => {
@@ -267,7 +269,9 @@ const SendToBlogModal = ({ isOpen, onClose, subject, getFile }: Props) => {
                 />
               )}
 
-              {selectedBlog && selectedBlog.filesAvailable <= 0 && (
+              {filesLimitEnabled &&
+                selectedBlog &&
+                selectedBlog.filesAvailable <= 0 && (
                 <p className="text-xs text-danger">
                   Este blog llegó al límite de archivos de tu plan.
                 </p>

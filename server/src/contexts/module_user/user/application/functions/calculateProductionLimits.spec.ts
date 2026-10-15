@@ -22,6 +22,7 @@ describe('calculateProductionLimitsFromUser (Mis Producciones - RNF-06)', () => 
     'PRODUCTION_FREE_GROUP_BLOGS',
     'PRODUCTION_FREE_FILES_PER_BLOG',
     'PRODUCTION_MAX_PERSONAL_BLOGS',
+    'PRODUCTION_FILES_PER_BLOG_LIMIT_ENABLED',
   ];
 
   afterEach(() => {
@@ -149,5 +150,18 @@ describe('calculateProductionLimitsFromUser (Mis Producciones - RNF-06)', () => 
 
     expect(limits.filesPerBlogLimit).toBe(10);
     expect(limits.totalGroupBlogLimit).toBe(1);
+  });
+
+  it('el límite de archivos por blog está apagado salvo que se active el flag', () => {
+    expect(
+      calculateProductionLimitsFromUser(userWith([], []), logger)
+        .filesPerBlogLimitEnabled,
+    ).toBe(false);
+
+    process.env.PRODUCTION_FILES_PER_BLOG_LIMIT_ENABLED = 'true';
+    expect(
+      calculateProductionLimitsFromUser(userWith([], []), logger)
+        .filesPerBlogLimitEnabled,
+    ).toBe(true);
   });
 });

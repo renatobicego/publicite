@@ -13,6 +13,11 @@ export interface SubscriptionPlan {
   postsAgendaCount: number;
   /** Tokens Publicité de IA por mes que otorga el plan (lo calcula el BE desde env) */
   aiTokensPerMonth?: number;
+  /**
+   * Almacenamiento de Mis Producciones en bytes (por usuario). Sólo viene si el
+   * límite de almacenamiento está activo en el BE.
+   */
+  storageBytesLimit?: number;
 }
 
 export interface Subscription {

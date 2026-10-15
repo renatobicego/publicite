@@ -308,6 +308,8 @@ export interface ProductionLimits {
   canSellPaidTickets: boolean;
   /** Feature flag: si se aplica el límite de cantidad de blogs por usuario. */
   blogLimitEnabled: boolean;
+  /** Feature flag: si se aplica el límite de cantidad de archivos por blog. */
+  filesPerBlogLimitEnabled: boolean;
   /** Feature flag: si se aplica el límite de almacenamiento por usuario. */
   storageLimitEnabled: boolean;
   /** Límite de almacenamiento del usuario en bytes (suma de todos sus blogs). */

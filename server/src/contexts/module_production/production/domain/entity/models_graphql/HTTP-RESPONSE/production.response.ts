@@ -453,6 +453,12 @@ export class ProductionLimitsResponse {
   blogLimitEnabled: boolean;
 
   @Field(() => Boolean, {
+    description:
+      'Feature flag: si se aplica el límite de cantidad de archivos por blog',
+  })
+  filesPerBlogLimitEnabled: boolean;
+
+  @Field(() => Boolean, {
     description: 'Feature flag: si se aplica el límite de almacenamiento',
   })
   storageLimitEnabled: boolean;

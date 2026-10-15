@@ -59,6 +59,7 @@ describe('Mis Producciones - Fase 6: blogs de grupo y roles (GRP-01..08)', () =>
   });
 
   afterEach(async () => {
+    delete process.env.PRODUCTION_FILES_PER_BLOG_LIMIT_ENABLED;
     await cleanProductionTestData(models);
   });
 
@@ -251,6 +252,7 @@ describe('Mis Producciones - Fase 6: blogs de grupo y roles (GRP-01..08)', () =>
 
   describe('Plan del creator (GRP-08, RNF-14)', () => {
     it('el cupo de archivos es el del plan del creator aunque suba un moderador', async () => {
+      process.env.PRODUCTION_FILES_PER_BLOG_LIMIT_ENABLED = 'true';
       const { moderator, productionId } = await setupGroupBlog({ filesPerBlogCount: 2 });
       await upload(moderator, productionId);
       await upload(moderator, productionId);

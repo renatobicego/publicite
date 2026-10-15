@@ -1,6 +1,10 @@
 import { ObjectId } from 'mongoose';
 import { SubscriptionPlanResponse } from 'src/contexts/module_webhook/mercadopago/application/adapter/HTTP-RESPONSE/SubscriptionPlan.response';
 import { getPlanNetPubliciteTokens } from 'src/contexts/module_shared/chatbot-tokens/chatbot.tokens.config';
+import {
+  getFreeStorageBytesLimit,
+  isStorageLimitEnabled,
+} from 'src/contexts/module_shared/production-limits/production.limits.config';
 
 export class SubscriptionPlan {
   private _id: ObjectId;
@@ -20,6 +24,7 @@ export class SubscriptionPlan {
   private personalBlogsCount?: number;
   private groupBlogsCount?: number;
   private filesPerBlogCount?: number;
+  private storageBytesLimit?: number;
 
   constructor(
     _id: ObjectId,
@@ -37,6 +42,7 @@ export class SubscriptionPlan {
     personalBlogsCount?: number,
     groupBlogsCount?: number,
     filesPerBlogCount?: number,
+    storageBytesLimit?: number,
   ) {
     this._id = _id;
     this.mpPreapprovalPlanId = mpPreapprovalPlanId;
@@ -53,6 +59,7 @@ export class SubscriptionPlan {
     this.personalBlogsCount = personalBlogsCount;
     this.groupBlogsCount = groupBlogsCount;
     this.filesPerBlogCount = filesPerBlogCount;
+    this.storageBytesLimit = storageBytesLimit;
   }
 
   public getId(): ObjectId {
@@ -107,6 +114,10 @@ export class SubscriptionPlan {
     return this.filesPerBlogCount;
   }
 
+  public getStorageBytesLimit(): number | undefined {
+    return this.storageBytesLimit;
+  }
+
   static fromDocument(doc: any): SubscriptionPlan {
     return new SubscriptionPlan(
       doc._id ? doc._id : '',
@@ -124,6 +135,7 @@ export class SubscriptionPlan {
       doc.personalBlogsCount,
       doc.groupBlogsCount,
       doc.filesPerBlogCount,
+      doc.storageBytesLimit,
     );
   }
 
@@ -146,6 +158,9 @@ export class SubscriptionPlan {
       personalBlogsCount: subscriptionPlan.getPersonalBlogsCount(),
       groupBlogsCount: subscriptionPlan.getGroupBlogsCount(),
       filesPerBlogCount: subscriptionPlan.getFilesPerBlogCount(),
+      storageBytesLimit: SubscriptionPlan.getVisibleStorageBytesLimit(
+        subscriptionPlan,
+      ),
       // Tokens de IA por mes (neto visible): sale de env vars, no de la DB.
       aiTokensPerMonth: getPlanNetPubliciteTokens({
         mpPreapprovalPlanId: subscriptionPlan.getMpPreapprovalPlanId(),
@@ -154,5 +169,21 @@ export class SubscriptionPlan {
         isPack: subscriptionPlan.getIsPack(),
       }),
     };
+  }
+
+  /**
+   * Almacenamiento de Mis Producciones que se muestra en la página de planes.
+   * Sólo con el flag PRODUCTION_STORAGE_LIMIT_ENABLED activo (si no, no hay
+   * límite que informar). Un plan sin `storageBytesLimit` cargado cae al piso
+   * gratuito, igual que en `calculateProductionLimits`; un pack sólo informa lo
+   * que suma.
+   */
+  private static getVisibleStorageBytesLimit(
+    subscriptionPlan: SubscriptionPlan,
+  ): number | undefined {
+    if (!isStorageLimitEnabled()) return undefined;
+    const planBytes = subscriptionPlan.getStorageBytesLimit() ?? 0;
+    if (subscriptionPlan.getIsPack()) return planBytes > 0 ? planBytes : undefined;
+    return planBytes > 0 ? planBytes : getFreeStorageBytesLimit();
   }
 }

@@ -246,6 +246,7 @@ export const getProductionLimitsQuery = gql`
       filesPerBlogLimit
       canSellPaidTickets
       blogLimitEnabled
+      filesPerBlogLimitEnabled
       storageLimitEnabled
       storageBytesLimit
       storageUsedBytes
@@ -274,6 +275,7 @@ export const getProductionConsumptionQuery = gql`
         filesPerBlogLimit
         canSellPaidTickets
         blogLimitEnabled
+        filesPerBlogLimitEnabled
         storageLimitEnabled
         storageBytesLimit
         storageUsedBytes

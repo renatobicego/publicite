@@ -6,6 +6,7 @@ import {
   getFreeStorageBytesLimit,
   getMaxPersonalBlogsLimit,
   isBlogLimitEnabled,
+  isFilesPerBlogLimitEnabled,
   isStorageLimitEnabled,
 } from 'src/contexts/module_shared/production-limits/production.limits.config';
 
@@ -61,6 +62,11 @@ interface ProductionLimits {
    * false, `personalBlogsAvailable` / `groupBlogsAvailable` quedan "infinitos".
    */
   blogLimitEnabled: boolean;
+  /**
+   * Feature flag: ¿se aplica el límite de CANTIDAD de archivos por blog? Si es
+   * false, `filesPerBlogLimit` es informativo y no se rechazan subidas.
+   */
+  filesPerBlogLimitEnabled: boolean;
   /** Feature flag: ¿se aplica el límite de ALMACENAMIENTO por usuario? */
   storageLimitEnabled: boolean;
   /**
@@ -131,6 +137,7 @@ function calculateProductionLimitsFromUser(
     totalStorageBytes > 0 ? totalStorageBytes : getFreeStorageBytesLimit();
 
   const blogLimitEnabled = isBlogLimitEnabled();
+  const filesPerBlogLimitEnabled = isFilesPerBlogLimitEnabled();
   const storageLimitEnabled = isStorageLimitEnabled();
 
   logger.warn('Status of Limit productions of user: ');
@@ -173,6 +180,7 @@ function calculateProductionLimitsFromUser(
     groupBlogsAvailable,
     filesPerBlogLimit,
     blogLimitEnabled,
+    filesPerBlogLimitEnabled,
     storageLimitEnabled,
     storageBytesLimit,
     canSellPaidTickets,

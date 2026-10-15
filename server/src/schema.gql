@@ -1748,6 +1748,9 @@ type ProductionLimitsResponse {
   """Feature flag: si se aplica el límite de cantidad de blogs"""
   blogLimitEnabled: Boolean!
 
+  """Feature flag: si se aplica el límite de cantidad de archivos por blog"""
+  filesPerBlogLimitEnabled: Boolean!
+
   """Feature flag: si se aplica el límite de almacenamiento"""
   storageLimitEnabled: Boolean!
 

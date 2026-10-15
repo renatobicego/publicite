@@ -32,6 +32,13 @@ export class SubscriptionPlanResponse {
   readonly filesPerBlogCount?: number;
 
   /**
+   * Almacenamiento de Mis Producciones en bytes (por usuario). Sólo viene con el
+   * flag PRODUCTION_STORAGE_LIMIT_ENABLED activo; sin `storageBytesLimit` en el
+   * plan, es el piso gratuito.
+   */
+  readonly storageBytesLimit?: number;
+
+  /**
    * Tokens Publicité de IA por mes que otorga el plan (valor neto, el que ve
    * el usuario). Se calcula desde variables de entorno, no se persiste en DB.
    */
@@ -53,6 +60,7 @@ export class SubscriptionPlanResponse {
     personalBlogsCount?: number,
     groupBlogsCount?: number,
     filesPerBlogCount?: number,
+    storageBytesLimit?: number,
   ) {
     this._id = _id;
     this.mpPreapprovalPlanId = mpPreapprovalPlanId;
@@ -69,5 +77,6 @@ export class SubscriptionPlanResponse {
     this.personalBlogsCount = personalBlogsCount;
     this.groupBlogsCount = groupBlogsCount;
     this.filesPerBlogCount = filesPerBlogCount;
+    this.storageBytesLimit = storageBytesLimit;
   }
 }
