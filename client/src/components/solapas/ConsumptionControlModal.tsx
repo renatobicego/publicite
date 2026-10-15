@@ -29,7 +29,8 @@ const tokenSourceLabel: Record<string, string> = {
 };
 
 /**
- * Control de Consumo del usuario (tokens de IA + cupo de archivos por blog).
+ * Control de Consumo del usuario (tokens de IA, almacenamiento y, si el límite
+ * está activo, cupo de archivos por blog).
  * Es información general del usuario, por eso se muestra como modal del cartel
  * y no dentro de la solapa Producciones. Sólo carga en el propio cartel.
  */
@@ -53,6 +54,8 @@ const ConsumptionControlModal = ({ isOpen, onOpenChange }: Props) => {
       active = false;
     };
   }, [isOpen]);
+
+  const filesLimitEnabled = !!consumption?.limits?.filesPerBlogLimitEnabled;
 
   return (
     <Modal
@@ -134,29 +137,26 @@ const ConsumptionControlModal = ({ isOpen, onOpenChange }: Props) => {
                       </CardBody>
                     </Card>
                   )}
-                  {consumption.blogs.length === 0 &&
+                  {(!filesLimitEnabled || consumption.blogs.length === 0) &&
                     !consumption.tokens &&
                     !consumption.limits?.storageLimitEnabled && (
                       <p className="text-sm text-default-500 py-4">
                         Todavía no tenés consumo para mostrar.
                       </p>
                     )}
-                  {consumption.blogs.map((blog) => (
-                    <Card key={blog.productionId} shadow="sm">
-                      <CardBody className="gap-2">
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="font-medium truncate">
-                            {blog.title}
-                          </span>
-                          <span className="text-default-500">
-                            {consumption.limits?.filesPerBlogLimitEnabled
-                              ? `${blog.filesCount} / ${blog.filesPerBlogLimit}`
-                              : `${blog.filesCount} ${
-                                  blog.filesCount === 1 ? "elemento" : "elementos"
-                                }`}
-                          </span>
-                        </div>
-                        {consumption.limits?.filesPerBlogLimitEnabled && (
+                  {/* El cupo por blog sólo se muestra con el límite activo. */}
+                  {filesLimitEnabled &&
+                    consumption.blogs.map((blog) => (
+                      <Card key={blog.productionId} shadow="sm">
+                        <CardBody className="gap-2">
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="font-medium truncate">
+                              {blog.title}
+                            </span>
+                            <span className="text-default-500">
+                              {blog.filesCount} / {blog.filesPerBlogLimit}
+                            </span>
+                          </div>
                           <Progress
                             aria-label={`Archivos de ${blog.title}`}
                             value={blog.filesCount}
@@ -166,10 +166,9 @@ const ConsumptionControlModal = ({ isOpen, onOpenChange }: Props) => {
                             }
                             size="sm"
                           />
-                        )}
-                      </CardBody>
-                    </Card>
-                  ))}
+                        </CardBody>
+                      </Card>
+                    ))}
                 </>
               )}
             </ModalBody>
