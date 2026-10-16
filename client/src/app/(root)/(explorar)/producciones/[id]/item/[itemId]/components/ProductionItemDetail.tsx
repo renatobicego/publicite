@@ -20,6 +20,9 @@ import { deserializeBlocks } from "@/components/BlockEditor/blockEditorFormat";
 import BlockRenderer from "@/components/BlockEditor/BlockRenderer";
 import AudioPlayer from "@/components/MediaPlayers/AudioPlayer";
 import VideoPlayer from "@/components/MediaPlayers/VideoPlayer";
+import PdfViewer from "@/components/DocumentViewers/PdfViewer";
+import DocxViewer from "@/components/DocumentViewers/DocxViewer";
+import { isDocxFile } from "../../../../productionFiles";
 import ProductionItemDetailActions from "./ProductionItemDetailActions";
 
 const lockMessage: Record<string, string> = {
@@ -133,14 +136,19 @@ const renderFile = (item: ProductionItemResponse) => {
       );
     case ProductionFileType.writing:
       return (
-        <iframe
-          title={item.name}
-          className="w-full h-[70vh] rounded-lg"
-          src={resolveProductionFileUrl(item.key)}
-        />
+        <PdfViewer title={item.name} src={resolveProductionFileUrl(item.key)} />
       );
     case ProductionFileType.document:
-      // El navegador no muestra archivos de Office: se ofrecen para descargar.
+      if (isDocxFile(item.fileName, item.name)) {
+        return (
+          <DocxViewer
+            title={item.name}
+            src={resolveProductionFileUrl(item.key)}
+          />
+        );
+      }
+      // El resto de los formatos de Office no se pueden mostrar: se ofrecen
+      // para descargar.
       return (
         <div className="flex flex-col items-center gap-4 rounded-lg border p-8">
           <FaFileAlt className="text-5xl text-default-500" />

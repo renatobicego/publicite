@@ -1,6 +1,7 @@
 "use client";
 import { Button, Link } from "@nextui-org/react";
 import { FaArrowLeft, FaArrowRight, FaEye, FaPen } from "react-icons/fa";
+import ShareLinkButton from "../../../../components/ShareLinkButton";
 
 interface Props {
   /** Carpeta (o raíz del blog) donde está el ítem. */
@@ -12,14 +13,16 @@ interface Props {
   position?: { current: number; total: number };
   isStaff: boolean;
   previewMode: boolean;
+  /** Link del ítem sin vista previa: también es el que se comparte. */
   itemHref: string;
+  itemName: string;
   previewHref: string;
 }
 
 /**
  * Navegación del detalle de un ítem: volver a su carpeta y pasar al archivo
- * anterior o siguiente sin salir al listado. El staff además alterna la vista
- * previa de visitante.
+ * anterior o siguiente sin salir al listado, y compartir el link directo al
+ * ítem. El staff además alterna la vista previa de visitante.
  */
 const ProductionItemNav = ({
   backHref,
@@ -30,6 +33,7 @@ const ProductionItemNav = ({
   isStaff,
   previewMode,
   itemHref,
+  itemName,
   previewHref,
 }: Props) => (
   <nav className="flex w-full flex-col gap-3">
@@ -64,6 +68,7 @@ const ProductionItemNav = ({
         <span className="truncate">Volver a {backLabel}</span>
       </Button>
       <div className="flex items-center gap-1">
+        <ShareLinkButton path={itemHref} title={itemName} />
         {isStaff && !previewMode && (
           <Button
             as={Link}

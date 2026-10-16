@@ -2,8 +2,8 @@ import {
   ProductionFileType,
   ProductionItemKind,
   ProductionModerationStatus,
+  ProductionVisibility,
 } from './enum/production.enums';
-import { Visibility } from 'src/contexts/module_post/post/domain/entity/enum/post-visibility.enum';
 
 /** Dorso de la postal (BLG-08). */
 export interface ProductionPostcardBack {
@@ -26,7 +26,7 @@ export interface ProductionItemBaseProps {
   parent?: string | null;
   name: string;
   // null/undefined = hereda la visibilidad del padre (VIS-03/04).
-  visibility?: Visibility | null;
+  visibility?: ProductionVisibility | null;
   moderationStatus?: ProductionModerationStatus;
   createdBy: string;
   createdAt?: Date;

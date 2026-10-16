@@ -66,3 +66,10 @@ export const documentFamilyOf = (
   }
   return undefined;
 };
+
+/**
+ * ¿Es un .docx? Es el único formato de Office que se puede mostrar en el
+ * navegador (el resto se descarga).
+ */
+export const isDocxFile = (...names: (string | null | undefined)[]) =>
+  names.some((name) => extensionOf(name) === "docx");

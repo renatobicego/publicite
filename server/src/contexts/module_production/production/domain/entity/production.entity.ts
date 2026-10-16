@@ -2,8 +2,8 @@ import {
   ProductionModerationStatus,
   ProductionOwnerType,
   ProductionShelfCategory,
+  ProductionVisibility,
 } from './enum/production.enums';
-import { Visibility } from 'src/contexts/module_post/post/domain/entity/enum/post-visibility.enum';
 
 export interface ProductionShelfLink {
   category: ProductionShelfCategory;
@@ -25,7 +25,7 @@ export interface ProductionProps {
   url: string;
   shelf?: ProductionShelfLink[];
   showcase?: string[];
-  visibility?: Visibility;
+  visibility?: ProductionVisibility;
   aliasCbu?: string;
   accessKeyHash?: string;
   accessKeyVersion?: number;
@@ -52,7 +52,7 @@ export class Production {
     this.props = {
       shelf: [],
       showcase: [],
-      visibility: Visibility.public,
+      visibility: ProductionVisibility.public,
       accessKeyVersion: 0,
       filesCount: 0,
       fansCount: 0,

@@ -2,8 +2,8 @@ import {
   ProductionLockReason,
   ProductionModerationStatus,
   ProductionRole,
+  ProductionVisibility,
 } from '../../domain/entity/enum/production.enums';
-import { Visibility } from 'src/contexts/module_post/post/domain/entity/enum/post-visibility.enum';
 import { ProductionPermissions } from './production.roles';
 
 /**
@@ -19,7 +19,9 @@ import { ProductionPermissions } from './production.roles';
  * 5. Ticket: capa aparte (INV-03). El ítem se lista, pero su contenido queda
  *    bloqueado hasta tener un ticket activo (TKT-07).
  *
- * El staff del blog y los miembros del grupo (GRP-04..07) ven todo.
+ * El staff del blog y los miembros del grupo (GRP-04..07) ven todo, salvo lo
+ * marcado "Sólo yo" (`onlyMe`), que se evalúa antes que todo lo demás: sólo lo
+ * ve el staff, aunque haya clave o el visitante sea miembro del grupo.
  */
 
 export interface ProductionViewerContext {
@@ -55,17 +57,17 @@ export interface AccessDecision {
 
 /** ¿El visitante está dentro de este alcance? (VIS-01) */
 export function isWithinVisibility(
-  visibility: Visibility | string | null | undefined,
+  visibility: ProductionVisibility | string | null | undefined,
   viewer: Pick<ProductionViewerContext, 'isRegistered' | 'relationVisibilities'>,
 ): boolean {
-  switch (visibility ?? Visibility.public) {
-    case Visibility.public:
+  switch (visibility ?? ProductionVisibility.public) {
+    case ProductionVisibility.public:
       return true;
-    case Visibility.registered:
+    case ProductionVisibility.registered:
       return viewer.isRegistered;
-    case Visibility.contacts:
-    case Visibility.friends:
-    case Visibility.topfriends:
+    case ProductionVisibility.contacts:
+    case ProductionVisibility.friends:
+    case ProductionVisibility.topfriends:
       return (
         viewer.isRegistered &&
         viewer.relationVisibilities.includes(visibility as string)
@@ -75,18 +77,35 @@ export function isWithinVisibility(
   }
 }
 
+/** ¿El blog o alguno de los nodos de la cadena es "Sólo yo"? */
+export function isOnlyMe(
+  ...visibilities: (ProductionVisibility | string | null | undefined)[]
+): boolean {
+  return visibilities.some((value) => value === ProductionVisibility.onlyMe);
+}
+
+const STAFF_ONLY: AccessDecision = {
+  listed: false,
+  canViewContent: false,
+  lockReason: ProductionLockReason.visibility,
+};
+
 /**
  * Visibilidad efectiva de un ítem (VIS-03/04): la primera definida subiendo
- * desde el ítem hasta la raíz; si ninguna está definida, la del blog.
+ * desde el ítem hasta la raíz; si ninguna está definida, la del blog. "Sólo
+ * yo" en cualquier punto de la cadena (o en el blog) gana siempre.
  *
  * @param chain visibilidades del ítem y sus ancestros, del ítem hacia la raíz.
  */
 export function resolveEffectiveVisibility(
-  chain: (Visibility | string | null | undefined)[],
-  productionVisibility: Visibility | string | null | undefined,
-): Visibility | string {
+  chain: (ProductionVisibility | string | null | undefined)[],
+  productionVisibility: ProductionVisibility | string | null | undefined,
+): ProductionVisibility | string {
+  if (isOnlyMe(productionVisibility, ...chain)) {
+    return ProductionVisibility.onlyMe;
+  }
   const own = chain.find((value) => value !== null && value !== undefined);
-  return own ?? productionVisibility ?? Visibility.public;
+  return own ?? productionVisibility ?? ProductionVisibility.public;
 }
 
 /**
@@ -117,11 +136,16 @@ export function evaluateProductionAccess(params: {
   productionId: string;
   moderationStatus?: ProductionModerationStatus | string;
   hasAccessKey: boolean;
-  visibility: Visibility | string;
+  visibility: ProductionVisibility | string;
   viewer: ProductionViewerContext;
 }): AccessDecision {
   const { viewer } = params;
 
+  if (isOnlyMe(params.visibility)) {
+    return ProductionPermissions.canEditContent(viewer.role)
+      ? { listed: true, canViewContent: true }
+      : { ...STAFF_ONLY };
+  }
   if (ProductionPermissions.canViewAll(viewer.role)) {
     return { listed: true, canViewContent: true };
   }
@@ -165,13 +189,13 @@ export function evaluateProductionAccess(params: {
 export function evaluateItemAccess(params: {
   production: {
     _id: string;
-    visibility: Visibility | string;
+    visibility: ProductionVisibility | string;
     hasAccessKey: boolean;
   };
   /** Ítem y ancestros, del ítem hacia la raíz. */
   chain: {
     _id: string;
-    visibility?: Visibility | string | null;
+    visibility?: ProductionVisibility | string | null;
     moderationStatus?: ProductionModerationStatus | string;
   }[];
   tickets: TicketRef[];
@@ -179,6 +203,12 @@ export function evaluateItemAccess(params: {
 }): AccessDecision {
   const { production, chain, tickets, viewer } = params;
 
+  if (
+    !ProductionPermissions.canEditContent(viewer.role) &&
+    isOnlyMe(production.visibility, ...chain.map((node) => node.visibility))
+  ) {
+    return { ...STAFF_ONLY };
+  }
   if (ProductionPermissions.canViewAll(viewer.role)) {
     return { listed: true, canViewContent: true };
   }

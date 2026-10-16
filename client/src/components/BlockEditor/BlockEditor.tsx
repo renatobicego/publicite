@@ -32,6 +32,7 @@ import {
   UnderlineInlineTool,
 } from "./tools/inlineStyleTools";
 import { ALIGNMENT_TUNE, AlignmentBlockTune } from "./tools/AlignmentBlockTune";
+import FormatToolbar from "./FormatToolbar";
 
 // Los tipos de Editor.js piden que el `render()` de una herramienta inline
 // devuelva un `HTMLElement`, pero la API vigente (la que usan sus propias
@@ -86,6 +87,13 @@ interface BlockEditorProps {
   cleanupRemovedImages?: boolean;
   /** Se dispara en cada cambio con el `OutputData` actual. */
   onChange?: (data: OutputData) => void;
+  /**
+   * Muestra la barra de formato fija arriba del editor (como un procesador de
+   * texto), además de la que aparece al seleccionar texto. Default: false.
+   */
+  showFormatToolbar?: boolean;
+  /** Distancia en px desde el borde superior a la que se pega la barra. */
+  formatToolbarOffset?: number;
 }
 
 const i18n = {
@@ -196,6 +204,8 @@ const BlockEditor = forwardRef<BlockEditorHandle, BlockEditorProps>(
       autofocus = true,
       cleanupRemovedImages = true,
       onChange,
+      showFormatToolbar = false,
+      formatToolbarOffset = 8,
     },
     ref
   ) => {
@@ -403,7 +413,19 @@ const BlockEditor = forwardRef<BlockEditorHandle, BlockEditorProps>(
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    return <div className="w-full" id={holderId} />;
+    if (!showFormatToolbar) return <div className="w-full" id={holderId} />;
+
+    return (
+      <div className="flex w-full flex-col gap-4">
+        <FormatToolbar
+          getEditor={() => ejInstance.current}
+          holderId={holderId}
+          className="sticky z-20"
+          style={{ top: formatToolbarOffset }}
+        />
+        <div className="w-full" id={holderId} />
+      </div>
+    );
   }
 );
 

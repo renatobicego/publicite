@@ -252,8 +252,18 @@ const GlosaryModal = ({ customButton }: { customButton?: React.ReactNode }) => {
                 los controles de edición.
               </li>
               <li>
+                Compartir: cada carpeta, archivo o artículo tiene su propio
+                link, que lleva directo a ese contenido y no al inicio del
+                blog.
+              </li>
+              <li>
                 Alcance, clave y tickets: define quién ve cada contenido, pide
                 una clave de acceso o crea tickets gratuitos o pagos.
+              </li>
+              <li>
+                Sólo yo: deja el blog, una carpeta, un archivo o un artículo
+                visible únicamente para ti, aunque otro tenga la clave o el
+                link.
               </li>
               <li>
                 Mapa de tickets (menú Opciones): todo el blog en recuadros de
@@ -265,7 +275,12 @@ const GlosaryModal = ({ customButton }: { customButton?: React.ReactNode }) => {
                 &quot;Hacerme fan&quot; para seguirlo.
               </li>
               <li>
-                Artículos: al escribir se muestra el recuento de palabras.
+                Artículos: al escribir se muestra el recuento de palabras y
+                tienes una barra de formato fija arriba del editor, como en
+                Word.
+              </li>
+              <li>
+                PDF y Word (.docx): se leen dentro del blog, sin descargarlos.
               </li>
               <li>
                 Tablero de trabajo: envía a tu blog las imágenes generadas y

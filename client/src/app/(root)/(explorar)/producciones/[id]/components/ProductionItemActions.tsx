@@ -15,7 +15,13 @@ import {
   Input,
   useDisclosure,
 } from "@nextui-org/react";
-import { FaEllipsisV, FaFolderOpen, FaPen, FaTrash } from "react-icons/fa";
+import {
+  FaEllipsisV,
+  FaFolderOpen,
+  FaPen,
+  FaShareAlt,
+  FaTrash,
+} from "react-icons/fa";
 import {
   ProductionItemKind,
   ProductionItemResponse,
@@ -31,6 +37,12 @@ import { isProductionActionError } from "@/utils/functions/productionErrorHandle
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { PRODUCTIONS } from "@/utils/data/urls";
+import { shareLink } from "@/utils/functions/utils";
+import {
+  absoluteUrl,
+  productionFolderPath,
+  productionItemPath,
+} from "../../productionShare";
 import {
   cleanupItemFiles,
   loadItemForCleanup,
@@ -46,7 +58,8 @@ interface Props {
 
 /**
  * Acciones de staff sobre un ítem del árbol: renombrar (carpeta/archivo),
- * editar artículo, mover a otra carpeta y borrar (carpeta/archivo/artículo). Sólo se monta cuando
+ * editar artículo, mover a otra carpeta, compartir su link y borrar
+ * (carpeta/archivo/artículo). Sólo se monta cuando
  * el viewer tiene `canEdit`. El borrado es en cascada (hard delete).
  */
 const ProductionItemActions = ({ item, onChanged, onMove }: Props) => {
@@ -64,6 +77,17 @@ const ProductionItemActions = ({ item, onChanged, onMove }: Props) => {
     : isArticle
       ? "el artículo"
       : "el archivo";
+
+  // El link lleva directo al ítem (o a la carpeta abierta), no al blog.
+  const handleShare = () =>
+    shareLink(
+      absoluteUrl(
+        isFolder
+          ? productionFolderPath(item.production, item._id)
+          : productionItemPath(item.production, item._id)
+      ),
+      item.name
+    );
 
   const handleEdit = () => {
     if (isArticle) {
@@ -162,6 +186,13 @@ const ProductionItemActions = ({ item, onChanged, onMove }: Props) => {
             onPress={onMove}
           >
             Mover a…
+          </DropdownItem>
+          <DropdownItem
+            key="share"
+            startContent={<FaShareAlt />}
+            onPress={handleShare}
+          >
+            Compartir link
           </DropdownItem>
           <DropdownItem
             key="delete"

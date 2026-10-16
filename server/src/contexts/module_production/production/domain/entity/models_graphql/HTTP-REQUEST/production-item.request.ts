@@ -15,8 +15,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 
-import { ProductionFileType } from '../../enum/production.enums';
-import { Visibility } from 'src/contexts/module_post/post/domain/entity/enum/post-visibility.enum';
+import { ProductionFileType, ProductionVisibility } from '../../enum/production.enums';
 
 @InputType({ description: 'Dorso de la postal (BLG-08)' })
 export class ProductionPostcardInput {
@@ -85,13 +84,13 @@ export class ProductionFolderRequest {
   @MaxLength(120)
   name: string;
 
-  @Field(() => Visibility, {
+  @Field(() => ProductionVisibility, {
     nullable: true,
     description: 'Alcance propio; vacío = hereda del padre (VIS-03/04)',
   })
   @IsOptional()
-  @IsEnum(Visibility)
-  visibility?: Visibility;
+  @IsEnum(ProductionVisibility)
+  visibility?: ProductionVisibility;
 }
 
 @InputType()
@@ -155,10 +154,10 @@ export class ProductionFileRequest {
   @Type(() => ProductionPostcardInput)
   postcard?: ProductionPostcardInput;
 
-  @Field(() => Visibility, { nullable: true })
+  @Field(() => ProductionVisibility, { nullable: true })
   @IsOptional()
-  @IsEnum(Visibility)
-  visibility?: Visibility;
+  @IsEnum(ProductionVisibility)
+  visibility?: ProductionVisibility;
 }
 
 @InputType()
@@ -212,10 +211,10 @@ export class ProductionArticleRequest {
   @Type(() => ProductionArticleBlockInput)
   blocks: ProductionArticleBlockInput[];
 
-  @Field(() => Visibility, { nullable: true })
+  @Field(() => ProductionVisibility, { nullable: true })
   @IsOptional()
-  @IsEnum(Visibility)
-  visibility?: Visibility;
+  @IsEnum(ProductionVisibility)
+  visibility?: ProductionVisibility;
 }
 
 @InputType()

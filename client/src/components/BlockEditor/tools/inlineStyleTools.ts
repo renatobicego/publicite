@@ -99,7 +99,7 @@ export class StrikethroughInlineTool extends InlineStyleTool {
   }
 }
 
-const TEXT_COLORS = [
+export const TEXT_COLORS = [
   { title: "Negro", value: "#18181b" },
   { title: "Gris", value: "#71717a" },
   { title: "Rojo", value: "#dc2626" },
@@ -134,7 +134,7 @@ export class TextColorInlineTool extends InlineStyleTool {
   }
 }
 
-const HIGHLIGHT_COLORS = [
+export const HIGHLIGHT_COLORS = [
   { title: "Amarillo", value: "#fef08a" },
   { title: "Verde", value: "#bbf7d0" },
   { title: "Celeste", value: "#bae6fd" },
@@ -167,7 +167,7 @@ export class HighlightInlineTool extends InlineStyleTool {
 }
 
 // `fontSize` de execCommand usa la escala 1-7 de HTML (3 = tamaño normal).
-const FONT_SIZES = [
+export const FONT_SIZES = [
   { title: "Chico", value: "2" },
   { title: "Normal", value: "3" },
   { title: "Grande", value: "5" },

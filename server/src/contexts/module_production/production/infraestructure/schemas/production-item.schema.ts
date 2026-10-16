@@ -4,8 +4,8 @@ import {
   ProductionFileType,
   ProductionItemKind,
   ProductionModerationStatus,
+  ProductionVisibility,
 } from '../../domain/entity/enum/production.enums';
-import { Visibility } from 'src/contexts/module_post/post/domain/entity/enum/post-visibility.enum';
 
 export interface ProductionItemDocument extends Document {
   production: Types.ObjectId;
@@ -13,7 +13,7 @@ export interface ProductionItemDocument extends Document {
   kind: ProductionItemKind;
   name: string;
   searchName: string;
-  visibility: Visibility | null;
+  visibility: ProductionVisibility | null;
   moderationStatus: ProductionModerationStatus;
   createdBy: Types.ObjectId;
   // Sólo archivos y artículos.
@@ -58,7 +58,7 @@ export const ProductionItemSchema = new Schema<ProductionItemDocument>(
     // Mongoose no valida el enum sobre null, así que null queda permitido.
     visibility: {
       type: String,
-      enum: Object.values(Visibility),
+      enum: Object.values(ProductionVisibility),
       default: null,
     },
     moderationStatus: {

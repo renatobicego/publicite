@@ -1,52 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FaBullhorn, FaBook, FaUsers } from "react-icons/fa";
-import { POSTS, PRODUCTIONS, PROFILE } from "@/utils/data/urls";
-
-type AppKey = "anuncios" | "producciones" | "social";
-
-interface AppButton {
-  key: AppKey;
-  label: string;
-  href: string;
-  icon: React.ComponentType<{ className?: string }>;
-  /** Color de fondo de la card (naranja / magenta / celeste). */
-  color: string;
-  matchPrefixes: string[];
-}
-
-// Naranja actual (color "service" del tema). Magenta y celeste según diseño.
-const ORANGE = "#F0931A";
-const MAGENTA = "#8B008B";
-const CYAN = "#1ACCF0";
-
-const APPS: AppButton[] = [
-  {
-    key: "anuncios",
-    label: "Anuncios",
-    href: POSTS,
-    icon: FaBullhorn,
-    color: ORANGE,
-    matchPrefixes: [POSTS],
-  },
-  {
-    key: "producciones",
-    label: "Producciones",
-    href: PRODUCTIONS,
-    icon: FaBook,
-    color: MAGENTA,
-    matchPrefixes: [PRODUCTIONS],
-  },
-  {
-    key: "social",
-    label: "Social",
-    href: PROFILE,
-    icon: FaUsers,
-    color: CYAN,
-    matchPrefixes: [PROFILE, "/revistas", "/grupos"],
-  },
-];
+import { AppKey, APPS, resolveActiveApp } from "./apps";
 
 /**
  * Botonera de 3 apps (NAV-01): Anuncios (naranja) / Producciones (magenta) /
@@ -61,10 +16,7 @@ const AppSwitcher = ({
 }) => {
   const pathname = usePathname() || "/";
 
-  const activeKey =
-    APPS.find((app) =>
-      app.matchPrefixes.some((prefix) => pathname.startsWith(prefix))
-    )?.key ?? defaultActive;
+  const activeKey = resolveActiveApp(pathname) ?? defaultActive;
 
   return (
     <nav className="flex w-full gap-3 sm:gap-4" aria-label="Aplicaciones">

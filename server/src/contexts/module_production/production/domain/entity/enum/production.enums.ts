@@ -9,6 +9,28 @@ registerEnumType(ProductionOwnerType, {
   description: 'Dueño del blog: usuario (blog personal) o grupo (blog de grupo)',
 });
 
+/**
+ * Alcance de un blog o de un ítem (VIS-01). Son los mismos niveles que el
+ * `Visibility` de Anuncios más `onlyMe` ("Sólo yo"): lo ve únicamente el
+ * staff del blog (el dueño, o creador y admins del grupo). `onlyMe` no se
+ * puede pisar desde abajo: si una carpeta es privada, todo lo que tiene
+ * adentro también.
+ */
+export enum ProductionVisibility {
+  public = 'public',
+  registered = 'registered',
+  contacts = 'contacts',
+  friends = 'friends',
+  topfriends = 'topfriends',
+  onlyMe = 'onlyMe',
+}
+
+registerEnumType(ProductionVisibility, {
+  name: 'ProductionVisibility',
+  description:
+    'Alcance de un blog o ítem: público, registrados, contactos, amigos, top amigos o sólo yo',
+});
+
 /** Tipo de nodo del árbol Blog → Carpetas → Subcarpetas → Archivos (BLG-07). */
 export enum ProductionItemKind {
   folder = 'folder',

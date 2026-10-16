@@ -22,8 +22,8 @@ import {
   ProductionFileType,
   ProductionItemKind,
   ProductionLockReason,
+  ProductionVisibility,
 } from '../production/domain/entity/enum/production.enums';
-import { Visibility } from 'src/contexts/module_post/post/domain/entity/enum/post-visibility.enum';
 
 // Base remota de QA: cada test hace varias idas y vueltas.
 jest.setTimeout(60_000);
@@ -123,7 +123,7 @@ describe('Mis Producciones - Fase 8: fans, reseñas y comentarios (FAN-01, REV-0
         community.becomeProductionFan(productionId, owner),
       ).rejects.toBeInstanceOf(BadRequestException);
 
-      await service.setProductionVisibility(productionId, Visibility.friends, owner);
+      await service.setProductionVisibility(productionId, ProductionVisibility.friends, owner);
       await expect(
         community.becomeProductionFan(productionId, stranger),
       ).rejects.toBeInstanceOf(NotFoundException);

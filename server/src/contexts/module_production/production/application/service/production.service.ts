@@ -22,6 +22,7 @@ import {
   ProductionItemKind,
   ProductionOwnerType,
   ProductionRole,
+  ProductionVisibility,
 } from '../../domain/entity/enum/production.enums';
 import {
   ProductionCreateRequest,
@@ -67,7 +68,6 @@ import { sanitizeArticleBlocks } from '../functions/production.article-sanitize'
 import { ProductionCascadeService } from './production.cascade.service';
 import { ProductionViewerScope } from './production.access.service';
 import { hashAccessKey } from '../functions/production.access-key';
-import { Visibility } from 'src/contexts/module_post/post/domain/entity/enum/post-visibility.enum';
 
 const DUPLICATE_KEY = 11000;
 const MAX_URL_ATTEMPTS = 3;
@@ -1344,7 +1344,7 @@ export class ProductionService implements ProductionServiceInterface {
   /** Alcance por defecto del blog (VIS-01). */
   async setProductionVisibility(
     productionId: string,
-    visibility: Visibility,
+    visibility: ProductionVisibility,
     userId: string,
   ): Promise<ProductionResponse> {
     const production = await this.getProductionOrFail(productionId);
@@ -1363,7 +1363,7 @@ export class ProductionService implements ProductionServiceInterface {
    */
   async setProductionItemVisibility(
     itemId: string,
-    visibility: Visibility | null,
+    visibility: ProductionVisibility | null,
     userId: string,
   ): Promise<ProductionItemResponse> {
     const item = await this.getItemOrFail(itemId);

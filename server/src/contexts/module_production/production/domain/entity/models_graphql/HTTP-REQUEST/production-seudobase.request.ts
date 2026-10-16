@@ -12,9 +12,8 @@ import {
   MaxLength,
 } from 'class-validator';
 
-import { ProductionItemKind } from '../../enum/production.enums';
+import { ProductionItemKind, ProductionVisibility } from '../../enum/production.enums';
 import { ProductionPriceChangeMode } from '../../enum/production-seudobase.enums';
-import { Visibility } from 'src/contexts/module_post/post/domain/entity/enum/post-visibility.enum';
 
 export const SEUDOBASE_MAX_ITEMS = 200;
 
@@ -74,13 +73,13 @@ export class ProductionBulkPriceInput extends ProductionBulkBaseInput {
 
 @InputType({ description: 'Cambio masivo de visibilidad' })
 export class ProductionBulkVisibilityInput extends ProductionBulkBaseInput {
-  @Field(() => Visibility, {
+  @Field(() => ProductionVisibility, {
     nullable: true,
     description: 'Vacío = los ítems vuelven a heredar del padre',
   })
   @IsOptional()
-  @IsEnum(Visibility)
-  visibility?: Visibility | null;
+  @IsEnum(ProductionVisibility)
+  visibility?: ProductionVisibility | null;
 }
 
 @InputType({ description: 'Borrado masivo (hard delete, libera cupo)' })

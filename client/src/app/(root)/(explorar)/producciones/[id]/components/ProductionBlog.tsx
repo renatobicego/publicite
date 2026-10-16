@@ -6,6 +6,7 @@ import {
   BreadcrumbItem,
   Button,
   ButtonGroup,
+  Chip,
   Dropdown,
   DropdownItem,
   DropdownMenu,
@@ -38,6 +39,7 @@ import {
   FaThLarge,
   FaTrash,
   FaUpload,
+  FaUserLock,
   FaUserShield,
 } from "react-icons/fa";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
@@ -75,6 +77,9 @@ import {
   ProductionViewMode,
 } from "../../productionBrowse";
 import { EDIT_PRODUCTION, PRODUCTIONS } from "@/utils/data/urls";
+import { isOnlyMe } from "../../productionVisibility";
+import { productionFolderPath } from "../../productionShare";
+import ShareLinkButton from "../../components/ShareLinkButton";
 import ProductionItemCard from "./ProductionItemCard";
 import ProductionStaffToolbar from "./ProductionStaffToolbar";
 import AccessKeyModal from "./AccessKeyModal";
@@ -465,6 +470,7 @@ const ProductionBlog = ({
           {
             key: "access",
             label: "Alcance y clave",
+            description: "Quién lo ve: público, contactos… o sólo yo",
             icon: <FaKey />,
             onAction: accessSettings.onOpen,
           },
@@ -605,6 +611,17 @@ const ProductionBlog = ({
                 <h2 className="text-xl font-semibold leading-tight sm:text-2xl">
                   {production.title}
                 </h2>
+                {isOnlyMe(production.visibility) && (
+                  <Chip
+                    size="sm"
+                    variant="flat"
+                    color="secondary"
+                    startContent={<FaUserLock className="ml-1" />}
+                    className="mt-1"
+                  >
+                    Sólo yo · privado
+                  </Chip>
+                )}
                 {production.description && (
                   <p className="mt-1 text-sm text-default-500">
                     {production.description}
@@ -758,6 +775,15 @@ const ProductionBlog = ({
               </BreadcrumbItem>
             ))}
           </Breadcrumbs>
+          {/* Link directo al nivel abierto (blog o carpeta). */}
+          <ShareLinkButton
+            iconOnly
+            path={productionFolderPath(production._id, currentParentId)}
+            title={data.breadcrumb.at(-1)?.name ?? production.title}
+            label={
+              currentParentId ? "Compartir esta carpeta" : "Compartir el blog"
+            }
+          />
         </div>
         {canEdit && (
           <ProductionStaffToolbar

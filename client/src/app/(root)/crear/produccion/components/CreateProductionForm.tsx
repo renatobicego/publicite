@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "@bprogress/next/app";
 import { Button, Image, Input, Textarea, Link, Spinner } from "@nextui-org/react";
-import { FaImage } from "react-icons/fa";
+import { FaBook, FaImage, FaPen, FaRegEdit } from "react-icons/fa";
 import imageCompression from "browser-image-compression";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import SecondaryButton from "@/components/buttons/SecondaryButton";
@@ -10,20 +10,36 @@ import { useUploadThing } from "@/utils/uploadThing";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import {
   createProduction,
-  getProductionLimits,
+  getProductionConsumption,
 } from "@/app/server/productionActions";
 import { isProductionActionError } from "@/utils/functions/productionErrorHandler";
-import { PRODUCTIONS, SUBSCRIPTIONS, PACKS, FILE_URL } from "@/utils/data/urls";
-import { ProductionVisibility } from "@/types/productionTypes";
+import {
+  EDIT_PRODUCTION,
+  PRODUCTIONS,
+  SUBSCRIPTIONS,
+  PACKS,
+  FILE_URL,
+} from "@/utils/data/urls";
+import {
+  ProductionBlogConsumption,
+  ProductionOwnerType,
+  ProductionRole,
+  ProductionVisibility,
+} from "@/types/productionTypes";
 
 /**
  * Alta de un blog de Mis Producciones (personal o de grupo).
- * Gate de plan: consulta `getProductionLimits` antes de mostrar el formulario.
+ * Gate de plan: consulta los límites antes de mostrar el formulario. Si ya no
+ * quedan blogs personales, en vez del formulario lleva al blog que ya tiene.
  */
 const CreateProductionForm = ({ groupId }: { groupId?: string }) => {
   const router = useRouter();
   const [loadingLimits, setLoadingLimits] = useState(true);
   const [canCreate, setCanCreate] = useState(false);
+  // Blog personal que ya tiene el usuario (cuando su plan permite uno solo).
+  const [ownBlog, setOwnBlog] = useState<ProductionBlogConsumption | null>(
+    null
+  );
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [welcomeText, setWelcomeText] = useState("");
@@ -70,16 +86,24 @@ const CreateProductionForm = ({ groupId }: { groupId?: string }) => {
   useEffect(() => {
     let active = true;
     (async () => {
-      const limits = await getProductionLimits();
+      const consumption = await getProductionConsumption();
       if (!active) return;
-      if (isProductionActionError(limits)) {
-        toastifyError(limits.error);
+      if (isProductionActionError(consumption)) {
+        toastifyError(consumption.error);
         setCanCreate(false);
       } else {
+        const { limits, blogs } = consumption;
         const available = groupId
           ? limits.groupBlogsAvailable
           : limits.personalBlogsAvailable;
         setCanCreate(available > 0);
+        setOwnBlog(
+          blogs.find(
+            (blog) =>
+              blog.ownerType === ProductionOwnerType.User &&
+              blog.role === ProductionRole.admin
+          ) ?? null
+        );
       }
       setLoadingLimits(false);
     })();
@@ -116,6 +140,58 @@ const CreateProductionForm = ({ groupId }: { groupId?: string }) => {
 
   if (loadingLimits) {
     return <p className="text-sm">Cargando…</p>;
+  }
+
+  if (!canCreate && !groupId && ownBlog) {
+    const blogUrl = `${PRODUCTIONS}/${ownBlog.productionId}`;
+    return (
+      <section className="w-full max-w-2xl flex flex-col gap-5 rounded-2xl border border-default-200 bg-content1 p-6 shadow-sm">
+        <div className="flex items-start gap-4">
+          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-xl text-primary">
+            <FaBook />
+          </span>
+          <div className="min-w-0">
+            <h4 className="break-words">
+              Ya tenés tu blog «{ownBlog.title}»
+            </h4>
+            <p className="mt-1 text-sm text-default-500">
+              Seguí trabajando en él: subí archivos, creá carpetas, escribí
+              artículos o cambiá su portada y descripción.
+            </p>
+          </div>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <PrimaryButton as={Link} href={blogUrl} startContent={<FaBook />}>
+            Ir a mi blog
+          </PrimaryButton>
+          <SecondaryButton
+            as={Link}
+            href={`${blogUrl}/crear-articulo`}
+            startContent={<FaPen />}
+          >
+            Escribir un artículo
+          </SecondaryButton>
+          <SecondaryButton
+            as={Link}
+            href={`${EDIT_PRODUCTION}/${ownBlog.productionId}`}
+            startContent={<FaRegEdit />}
+          >
+            Editar blog
+          </SecondaryButton>
+        </div>
+        <p className="border-t border-default-100 pt-4 text-xs text-default-500">
+          Tu plan permite un único blog personal. Si querés otro,{" "}
+          <Link href={SUBSCRIPTIONS} size="sm" className="text-xs">
+            cambiá de plan
+          </Link>{" "}
+          o{" "}
+          <Link href={PACKS} size="sm" className="text-xs">
+            comprá un pack
+          </Link>
+          .
+        </p>
+      </section>
+    );
   }
 
   if (!canCreate) {

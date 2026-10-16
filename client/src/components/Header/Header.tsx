@@ -16,6 +16,7 @@ import UserNavItems from "./UserNavItems";
 import { POSTS } from "@/utils/data/urls";
 import { OrangeCubeIcon } from "../buttons/ChatbotButton/OrangeCubeIcon";
 import { FaTableColumns } from "react-icons/fa6";
+import AppIndicatorTab from "../AppSwitcher/AppIndicatorTab";
 
 const Header = ({
   isSignedIn,
@@ -32,7 +33,7 @@ const Header = ({
       disableAnimation={false}
       disableScrollHandler={true}
       classNames={{
-        wrapper: `max-w-full header-spacing shadow-md mt-4 rounded-3xl md:rounded-[40px] lg:rounded-full max-md:gap-2 
+        wrapper: `relative max-w-full header-spacing shadow-md mt-4 rounded-3xl md:rounded-[40px] lg:rounded-full max-md:gap-2 
             px-6 md:px-8 lg:px-10 max-md:h-12 bg-white
              duration-500 items-start transition-all 
              ${isMenuOpen ? "rounded-b-none shadow-none" : ""}`,
@@ -115,6 +116,7 @@ const Header = ({
           setIsMenuOpen={setIsMenuOpen}
         />
       </NavbarContent>
+      <AppIndicatorTab hidden={isMenuOpen} />
       <MobileMenu
         setIsMenuOpen={setIsMenuOpen}
         isSignedIn={isSignedIn}

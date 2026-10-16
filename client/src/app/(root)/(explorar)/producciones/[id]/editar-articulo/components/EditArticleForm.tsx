@@ -21,6 +21,7 @@ import { updateArticle } from "@/app/server/productionActions";
 import { isProductionActionError } from "@/utils/functions/productionErrorHandler";
 import { ProductionItemResponse } from "@/types/productionTypes";
 import { PRODUCTIONS } from "@/utils/data/urls";
+import useElementHeight from "@/utils/hooks/useElementHeight";
 
 interface Props {
   item: ProductionItemResponse;
@@ -47,6 +48,9 @@ const EditArticleForm = ({ item }: Props) => {
   const [title, setTitle] = useState(item.name);
   const [busy, setBusy] = useState(false);
   const editorRef = useRef<BlockEditorHandle>(null);
+  // La barra de formato se pega justo debajo de la barra de acciones.
+  const actionsRef = useRef<HTMLMenuElement>(null);
+  const actionsHeight = useElementHeight(actionsRef);
   // Contenido inicial del editor a partir de los bloques guardados.
   const initialData = useRef<OutputData>(deserializeBlocks(item.blocks));
   // Respaldo del contenido en vivo por si `save()` puntual falla.
@@ -93,7 +97,9 @@ const EditArticleForm = ({ item }: Props) => {
       {/* Barra de acciones: sticky ARRIBA (no flota sobre el contenido ni pelea
           con el popover del editor, que se abre hacia abajo). En mobile los
           botones ocupan el ancho completo. */}
-      <menu className="sticky top-2 z-30 flex flex-col-reverse gap-2 rounded-2xl border border-default-200 bg-content1 p-3 shadow-md sm:flex-row sm:items-center sm:justify-end sm:gap-3">
+      <menu
+        ref={actionsRef}
+        className="sticky top-2 z-30 flex flex-col-reverse gap-2 rounded-2xl border border-default-200 bg-content1 p-3 shadow-md sm:flex-row sm:items-center sm:justify-end sm:gap-3">
         <SecondaryButton
           variant="light"
           onClick={backToItem}
@@ -142,13 +148,16 @@ const EditArticleForm = ({ item }: Props) => {
             </span>
           </div>
           <p className="text-xs text-default-400">
-            Escribí, agregá encabezados, listas, imágenes y enlaces. Seleccioná
-            un texto para darle color, resaltado, tamaño o subrayado.
+            Escribí, agregá encabezados, listas, imágenes y enlaces. Dale
+            formato con la barra de arriba o seleccionando el texto.
           </p>
         </div>
         <div className="px-4 py-4 sm:px-6 sm:py-6">
           <BlockEditor
             ref={editorRef}
+            showFormatToolbar
+            // top-2 de la barra de acciones + su alto + un respiro.
+            formatToolbarOffset={actionsHeight + 16}
             initialData={initialData.current}
             onChange={(data) => {
               latestContent.current = data;

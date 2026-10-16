@@ -27,8 +27,8 @@ import {
   ProductionModerationStatus,
   ProductionOwnerType,
   ProductionRole,
+  ProductionVisibility,
 } from '../../domain/entity/enum/production.enums';
-import { Visibility } from 'src/contexts/module_post/post/domain/entity/enum/post-visibility.enum';
 
 const viewer = (
   overrides: Partial<ProductionViewerContext> = {},
@@ -89,24 +89,78 @@ describe('Alcance y herencia (VIS-01..04)', () => {
     const anonymous = { isRegistered: false, relationVisibilities: [] };
     const friend = { isRegistered: true, relationVisibilities: ['friends', 'contacts'] };
 
-    expect(isWithinVisibility(Visibility.public, anonymous)).toBe(true);
-    expect(isWithinVisibility(Visibility.registered, anonymous)).toBe(false);
-    expect(isWithinVisibility(Visibility.registered, friend)).toBe(true);
-    expect(isWithinVisibility(Visibility.contacts, friend)).toBe(true);
-    expect(isWithinVisibility(Visibility.friends, friend)).toBe(true);
-    expect(isWithinVisibility(Visibility.topfriends, friend)).toBe(false);
+    expect(isWithinVisibility(ProductionVisibility.public, anonymous)).toBe(true);
+    expect(isWithinVisibility(ProductionVisibility.registered, anonymous)).toBe(false);
+    expect(isWithinVisibility(ProductionVisibility.registered, friend)).toBe(true);
+    expect(isWithinVisibility(ProductionVisibility.contacts, friend)).toBe(true);
+    expect(isWithinVisibility(ProductionVisibility.friends, friend)).toBe(true);
+    expect(isWithinVisibility(ProductionVisibility.topfriends, friend)).toBe(false);
   });
 
   it('hereda del ancestro más cercano y, si no hay, del blog', () => {
     expect(
-      resolveEffectiveVisibility([null, Visibility.friends, Visibility.public], Visibility.registered),
-    ).toBe(Visibility.friends);
-    expect(resolveEffectiveVisibility([Visibility.contacts, Visibility.friends], Visibility.public)).toBe(
-      Visibility.contacts,
+      resolveEffectiveVisibility([null, ProductionVisibility.friends, ProductionVisibility.public], ProductionVisibility.registered),
+    ).toBe(ProductionVisibility.friends);
+    expect(resolveEffectiveVisibility([ProductionVisibility.contacts, ProductionVisibility.friends], ProductionVisibility.public)).toBe(
+      ProductionVisibility.contacts,
     );
-    expect(resolveEffectiveVisibility([null, undefined], Visibility.registered)).toBe(
-      Visibility.registered,
+    expect(resolveEffectiveVisibility([null, undefined], ProductionVisibility.registered)).toBe(
+      ProductionVisibility.registered,
     );
+  });
+});
+
+describe('Sólo yo (onlyMe)', () => {
+  const { onlyMe, public: open } = ProductionVisibility;
+  const privateFolderChain = [
+    { _id: 'file', visibility: open },
+    { _id: 'folder', visibility: onlyMe },
+  ];
+
+  it('gana en la herencia aunque un hijo pida otro alcance', () => {
+    expect(resolveEffectiveVisibility([open, onlyMe], open)).toBe(onlyMe);
+    expect(resolveEffectiveVisibility([open], onlyMe)).toBe(onlyMe);
+  });
+
+  it('el staff ve el contenido privado', () => {
+    for (const role of [ProductionRole.admin, ProductionRole.moderator]) {
+      expect(
+        evaluateItemAccess({
+          production: { _id: 'p', visibility: open, hasAccessKey: false },
+          chain: privateFolderChain,
+          tickets: [],
+          viewer: viewer({ role }),
+        }),
+      ).toEqual({ listed: true, canViewContent: true });
+    }
+  });
+
+  it('no lo ven los miembros del grupo ni los visitantes, aunque tengan la clave', () => {
+    for (const role of [ProductionRole.viewer, ProductionRole.visitor]) {
+      const decision = evaluateItemAccess({
+        production: { _id: 'p', visibility: open, hasAccessKey: true },
+        chain: privateFolderChain,
+        tickets: [],
+        viewer: viewer({ role, hasKeyAccess: true }),
+      });
+      expect(decision.listed).toBe(false);
+      expect(decision.lockReason).toBe(ProductionLockReason.visibility);
+    }
+  });
+
+  it('un blog privado no se lista para quien no es staff', () => {
+    const params = {
+      productionId: 'p',
+      hasAccessKey: false,
+      visibility: onlyMe,
+    };
+    expect(
+      evaluateProductionAccess({ ...params, viewer: viewer({ role: ProductionRole.viewer }) })
+        .listed,
+    ).toBe(false);
+    expect(
+      evaluateProductionAccess({ ...params, viewer: viewer({ role: ProductionRole.admin }) }),
+    ).toEqual({ listed: true, canViewContent: true });
   });
 });
 
@@ -126,12 +180,12 @@ describe('Ticket efectivo (TKT-01)', () => {
 });
 
 describe('Evaluación de acceso', () => {
-  const production = { _id: 'p', visibility: Visibility.public, hasAccessKey: false };
+  const production = { _id: 'p', visibility: ProductionVisibility.public, hasAccessKey: false };
 
   it('el staff y los miembros ven todo', () => {
     const decision = evaluateItemAccess({
       production,
-      chain: [{ _id: 'i', visibility: Visibility.topfriends, moderationStatus: 'hidden' }],
+      chain: [{ _id: 'i', visibility: ProductionVisibility.topfriends, moderationStatus: 'hidden' }],
       tickets: [{ _id: 't', target: 'i' }],
       viewer: viewer({ role: ProductionRole.viewer }),
     });
@@ -155,7 +209,7 @@ describe('Evaluación de acceso', () => {
   it('lo que queda fuera del alcance no se lista', () => {
     const decision = evaluateItemAccess({
       production,
-      chain: [{ _id: 'i' }, { _id: 'folder', visibility: Visibility.friends }],
+      chain: [{ _id: 'i' }, { _id: 'folder', visibility: ProductionVisibility.friends }],
       tickets: [],
       viewer: viewer(),
     });
@@ -165,7 +219,7 @@ describe('Evaluación de acceso', () => {
   it('con clave, el alcance no se evalúa (VIS-05)', () => {
     const decision = evaluateItemAccess({
       production: { ...production, hasAccessKey: true },
-      chain: [{ _id: 'i', visibility: Visibility.topfriends }],
+      chain: [{ _id: 'i', visibility: ProductionVisibility.topfriends }],
       tickets: [],
       viewer: viewer(),
     });
@@ -197,7 +251,7 @@ describe('Evaluación de acceso', () => {
     const base = {
       productionId: 'p',
       hasAccessKey: false,
-      visibility: Visibility.public,
+      visibility: ProductionVisibility.public,
     };
     expect(
       evaluateProductionAccess({
@@ -222,7 +276,7 @@ describe('Evaluación de acceso', () => {
     expect(
       evaluateProductionAccess({
         ...base,
-        visibility: Visibility.registered,
+        visibility: ProductionVisibility.registered,
         viewer: viewer({ isRegistered: false, userId: undefined }),
       }).listed,
     ).toBe(false);

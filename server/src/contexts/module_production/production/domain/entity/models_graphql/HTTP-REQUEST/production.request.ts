@@ -13,8 +13,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 
-import { ProductionShelfCategory } from '../../enum/production.enums';
-import { Visibility } from 'src/contexts/module_post/post/domain/entity/enum/post-visibility.enum';
+import { ProductionShelfCategory, ProductionVisibility } from '../../enum/production.enums';
 
 @InputType()
 export class ProductionShelfLinkInput {
@@ -80,13 +79,13 @@ export class ProductionCreateRequest {
   @Type(() => ProductionShelfLinkInput)
   shelf?: ProductionShelfLinkInput[];
 
-  @Field(() => Visibility, {
+  @Field(() => ProductionVisibility, {
     nullable: true,
     description: 'Alcance por defecto del blog (VIS-01). Default: public',
   })
   @IsOptional()
-  @IsEnum(Visibility)
-  visibility?: Visibility;
+  @IsEnum(ProductionVisibility)
+  visibility?: ProductionVisibility;
 
   @Field(() => ID, {
     nullable: true,

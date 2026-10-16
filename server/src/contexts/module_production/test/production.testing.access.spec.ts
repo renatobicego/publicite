@@ -19,8 +19,8 @@ import { ProductionService } from '../production/application/service/production.
 import {
   ProductionFileType,
   ProductionLockReason,
+  ProductionVisibility,
 } from '../production/domain/entity/enum/production.enums';
-import { Visibility } from 'src/contexts/module_post/post/domain/entity/enum/post-visibility.enum';
 
 // Base remota de QA: cada test hace varias idas y vueltas.
 jest.setTimeout(60_000);
@@ -53,7 +53,7 @@ describe('Mis Producciones - Fase 3: visibilidad y acceso por clave', () => {
       ownerId,
     );
     const friendsFolder = await service.createFolder(
-      { productionId, name: 'Amigos', visibility: Visibility.friends },
+      { productionId, name: 'Amigos', visibility: ProductionVisibility.friends },
       ownerId,
     );
     const photo = await service.uploadFile(
@@ -70,7 +70,7 @@ describe('Mis Producciones - Fase 3: visibilidad y acceso por clave', () => {
         productionId,
         parentId: friendsFolder._id,
         name: 'Abierta',
-        visibility: Visibility.public,
+        visibility: ProductionVisibility.public,
       },
       ownerId,
     );
@@ -97,7 +97,7 @@ describe('Mis Producciones - Fase 3: visibilidad y acceso por clave', () => {
       ).rejects.toBeInstanceOf(NotFoundException);
       // La subcarpeta con alcance propio público sí es visible.
       const openFolder = await service.getProductionItemById(publicSub._id, stranger);
-      expect(openFolder.effectiveVisibility).toBe(Visibility.public);
+      expect(openFolder.effectiveVisibility).toBe(ProductionVisibility.public);
 
       // El amigo ve todo y la foto hereda "friends".
       const friendLevel = await service.getProductionItems(
@@ -107,7 +107,7 @@ describe('Mis Producciones - Fase 3: visibilidad y acceso por clave', () => {
       );
       const friendPhoto = friendLevel.items.find((i) => i._id === photo._id)!;
       expect(friendPhoto.visibility).toBeNull();
-      expect(friendPhoto.effectiveVisibility).toBe(Visibility.friends);
+      expect(friendPhoto.effectiveVisibility).toBe(ProductionVisibility.friends);
       expect(friendPhoto.key).toBe('key-amigos');
     });
 
@@ -122,7 +122,7 @@ describe('Mis Producciones - Fase 3: visibilidad y acceso por clave', () => {
         owner,
       );
       expect(updated.visibility).toBeNull();
-      expect(updated.effectiveVisibility).toBe(Visibility.friends);
+      expect(updated.effectiveVisibility).toBe(ProductionVisibility.friends);
       await expect(
         service.getProductionItemById(publicSub._id, stranger),
       ).rejects.toBeInstanceOf(NotFoundException);
@@ -140,14 +140,14 @@ describe('Mis Producciones - Fase 3: visibilidad y acceso por clave', () => {
         owner,
       );
 
-      await service.setProductionVisibility(productionId, Visibility.contacts, owner);
+      await service.setProductionVisibility(productionId, ProductionVisibility.contacts, owner);
 
       await expect(service.findProductionById(productionId, visitor)).rejects.toBeInstanceOf(
         NotFoundException,
       );
       await relateUsers(models, visitor, owner, 'contacts');
       const item = await service.getProductionItemById(photo._id, visitor);
-      expect(item.effectiveVisibility).toBe(Visibility.contacts);
+      expect(item.effectiveVisibility).toBe(ProductionVisibility.contacts);
     });
 
     it('sólo el staff cambia el alcance', async () => {
@@ -155,10 +155,10 @@ describe('Mis Producciones - Fase 3: visibilidad y acceso por clave', () => {
       const other = await createTestUser(models);
       const { productionId, photo } = await buildTree(owner);
       await expect(
-        service.setProductionVisibility(productionId, Visibility.public, other),
+        service.setProductionVisibility(productionId, ProductionVisibility.public, other),
       ).rejects.toBeInstanceOf(UnauthorizedException);
       await expect(
-        service.setProductionItemVisibility(photo._id, Visibility.public, other),
+        service.setProductionItemVisibility(photo._id, ProductionVisibility.public, other),
       ).rejects.toBeInstanceOf(UnauthorizedException);
     });
   });

@@ -11,8 +11,7 @@ import {
   relateUsers,
 } from './production.test.helpers';
 import { ProductionService } from '../production/application/service/production.service';
-import { ProductionModerationStatus, ProductionRole } from '../production/domain/entity/enum/production.enums';
-import { Visibility } from 'src/contexts/module_post/post/domain/entity/enum/post-visibility.enum';
+import { ProductionModerationStatus, ProductionRole, ProductionVisibility } from '../production/domain/entity/enum/production.enums';
 
 // Base remota de QA: cada test hace varias idas y vueltas.
 jest.setTimeout(60_000);
@@ -40,7 +39,7 @@ describe('Mis Producciones - Fase 2: listado, búsqueda y destacadas', () => {
   const createBlog = async (
     userId: string,
     title: string,
-    extra: { visibility?: Visibility; description?: string; groupId?: string } = {},
+    extra: { visibility?: ProductionVisibility; description?: string; groupId?: string } = {},
   ) => (await service.createProduction({ title, ...extra }, userId))._id;
 
   const titlesOf = (list: { title: string }[]) =>
@@ -50,7 +49,7 @@ describe('Mis Producciones - Fase 2: listado, búsqueda y destacadas', () => {
     const ownerA = await createTestUser(models);
     const ownerB = await createTestUser(models);
     await createBlog(ownerA, 'Público');
-    await createBlog(ownerB, 'Registrados', { visibility: Visibility.registered });
+    await createBlog(ownerB, 'Registrados', { visibility: ProductionVisibility.registered });
 
     const { productions } = await service.findAllProductions(1, 10);
     expect(titlesOf(productions)).toEqual(['Público']);
@@ -62,14 +61,14 @@ describe('Mis Producciones - Fase 2: listado, búsqueda y destacadas', () => {
     const stranger = await createTestUser(models);
     await relateUsers(models, viewer, friend, 'friends');
 
-    await createBlog(friend, 'De amigo', { visibility: Visibility.friends });
-    await createBlog(stranger, 'Top ajeno', { visibility: Visibility.topfriends });
+    await createBlog(friend, 'De amigo', { visibility: ProductionVisibility.friends });
+    await createBlog(stranger, 'Top ajeno', { visibility: ProductionVisibility.topfriends });
     await createBlog(viewer, 'Mío privado', {
-      visibility: Visibility.topfriends,
+      visibility: ProductionVisibility.topfriends,
     });
     const anotherOwner = await createTestUser(models);
     await createBlog(anotherOwner, 'Registrados', {
-      visibility: Visibility.registered,
+      visibility: ProductionVisibility.registered,
     });
 
     const { productions } = await service.findAllProductions(1, 10, viewer);
@@ -84,7 +83,7 @@ describe('Mis Producciones - Fase 2: listado, búsqueda y destacadas', () => {
     const viewer = await createTestUser(models);
     const owner = await createTestUser(models);
     await relateUsers(models, viewer, owner, 'contacts');
-    await createBlog(owner, 'Para amigos', { visibility: Visibility.friends });
+    await createBlog(owner, 'Para amigos', { visibility: ProductionVisibility.friends });
 
     const { productions } = await service.findAllProductions(1, 10, viewer);
     expect(productions).toHaveLength(0);
@@ -179,7 +178,7 @@ describe('Mis Producciones - Fase 2: listado, búsqueda y destacadas', () => {
     });
     await createBlog(creator, 'Blog del grupo', {
       groupId,
-      visibility: Visibility.topfriends,
+      visibility: ProductionVisibility.topfriends,
     });
 
     const asMember = await service.findAllProductions(1, 10, member);

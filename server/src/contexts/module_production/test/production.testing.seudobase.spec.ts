@@ -17,12 +17,12 @@ import { ProductionSeudoBaseService } from '../production/application/service/pr
 import {
   ProductionFileType,
   ProductionItemKind,
+  ProductionVisibility,
 } from '../production/domain/entity/enum/production.enums';
 import {
   ProductionBulkAction,
   ProductionPriceChangeMode,
 } from '../production/domain/entity/enum/production-seudobase.enums';
-import { Visibility } from 'src/contexts/module_post/post/domain/entity/enum/post-visibility.enum';
 
 // Base remota de QA: cada test hace varias idas y vueltas.
 jest.setTimeout(60_000);
@@ -65,7 +65,7 @@ describe('Mis Producciones - Fase 7: SeudoBase y gestión masiva (SB-01..05)', (
     );
     await tickets.setProductionPayoutAlias(productionId, 'creador.alias', owner);
     const album = await service.createFolder(
-      { productionId, name: 'Álbum', visibility: Visibility.registered },
+      { productionId, name: 'Álbum', visibility: ProductionVisibility.registered },
       owner,
     );
     const photoA = await service.uploadFile(
@@ -126,7 +126,7 @@ describe('Mis Producciones - Fase 7: SeudoBase y gestión masiva (SB-01..05)', (
         path: 'Álbum',
         price: 1000,
         ownTicket: null,
-        effectiveVisibility: Visibility.registered,
+        effectiveVisibility: ProductionVisibility.registered,
       });
       expect(byId.get(photoB._id)).toMatchObject({
         price: 500,
@@ -283,13 +283,13 @@ describe('Mis Producciones - Fase 7: SeudoBase y gestión masiva (SB-01..05)', (
         {
           productionId,
           itemIds: [photoA._id, article._id],
-          visibility: Visibility.friends,
+          visibility: ProductionVisibility.friends,
           confirm: true,
         },
         owner,
       );
-      expect((await findDoc(models.item, photoA._id)).visibility).toBe(Visibility.friends);
-      expect((await findDoc(models.item, article._id)).visibility).toBe(Visibility.friends);
+      expect((await findDoc(models.item, photoA._id)).visibility).toBe(ProductionVisibility.friends);
+      expect((await findDoc(models.item, article._id)).visibility).toBe(ProductionVisibility.friends);
 
       await seudoBase.bulkUpdateProductionVisibility(
         { productionId, itemIds: [photoA._id], visibility: null, confirm: true },

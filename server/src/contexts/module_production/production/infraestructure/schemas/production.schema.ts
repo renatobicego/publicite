@@ -4,8 +4,8 @@ import {
   ProductionModerationStatus,
   ProductionOwnerType,
   ProductionShelfCategory,
+  ProductionVisibility,
 } from '../../domain/entity/enum/production.enums';
-import { Visibility } from 'src/contexts/module_post/post/domain/entity/enum/post-visibility.enum';
 
 export interface ProductionDocument extends Document {
   owner: Types.ObjectId;
@@ -26,7 +26,7 @@ export interface ProductionDocument extends Document {
     imageKey?: string;
   }[];
   showcase: Types.ObjectId[];
-  visibility: Visibility;
+  visibility: ProductionVisibility;
   aliasCbu: string | null;
   accessKeyHash: string | null;
   accessKeyVersion: number;
@@ -77,8 +77,8 @@ export const ProductionSchema = new Schema<ProductionDocument>(
     showcase: [{ type: Schema.Types.ObjectId, ref: 'ProductionItem' }],
     visibility: {
       type: String,
-      enum: Object.values(Visibility),
-      default: Visibility.public,
+      enum: Object.values(ProductionVisibility),
+      default: ProductionVisibility.public,
     },
     // Alias/CBU para liquidar el 90% de los tickets (RNF-10). Sólo lo ven el
     // admin del blog y los admins de la plataforma.

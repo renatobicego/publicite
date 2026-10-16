@@ -7,6 +7,7 @@ import { ProductionAdapterInterface } from '../../../application/adapter/product
 import {
   ProductionItemKind,
   ProductionOwnerType,
+  ProductionVisibility,
 } from '../../../domain/entity/enum/production.enums';
 import {
   ProductionCreateRequest,
@@ -34,7 +35,6 @@ import {
   ProductionGqlContext,
   requireUserId,
 } from './production.context';
-import { Visibility } from 'src/contexts/module_post/post/domain/entity/enum/post-visibility.enum';
 import { ProductionConsumptionResponse } from '../../../domain/entity/models_graphql/HTTP-RESPONSE/production-consumption.response';
 
 /**
@@ -222,7 +222,7 @@ export class ProductionResolver {
   @UseGuards(ClerkAuthGuard)
   async setProductionVisibility(
     @Args('productionId', { type: () => ID }) productionId: string,
-    @Args('visibility', { type: () => Visibility }) visibility: Visibility,
+    @Args('visibility', { type: () => ProductionVisibility }) visibility: ProductionVisibility,
     @Context() context: ProductionGqlContext,
   ): Promise<ProductionResponse> {
     return this.productionAdapter.setProductionVisibility(
@@ -239,8 +239,8 @@ export class ProductionResolver {
   @UseGuards(ClerkAuthGuard)
   async setProductionItemVisibility(
     @Args('itemId', { type: () => ID }) itemId: string,
-    @Args('visibility', { type: () => Visibility, nullable: true })
-    visibility: Visibility | null,
+    @Args('visibility', { type: () => ProductionVisibility, nullable: true })
+    visibility: ProductionVisibility | null,
     @Context() context: ProductionGqlContext,
   ): Promise<ProductionItemResponse> {
     return this.productionAdapter.setProductionItemVisibility(

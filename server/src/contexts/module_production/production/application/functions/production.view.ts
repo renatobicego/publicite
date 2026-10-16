@@ -4,14 +4,13 @@ import {
   ProductionFile,
   ProductionItem,
 } from '../../domain/entity/production-item.entity';
-import { ProductionRole } from '../../domain/entity/enum/production.enums';
+import { ProductionRole, ProductionVisibility } from '../../domain/entity/enum/production.enums';
 import { ProductionOwnerInfo } from '../../domain/repository/production.repository.interface';
 import {
   ProductionItemResponse,
   ProductionResponse,
   ProductionTicketSummaryResponse,
 } from '../../domain/entity/models_graphql/HTTP-RESPONSE/production.response';
-import { Visibility } from 'src/contexts/module_post/post/domain/entity/enum/post-visibility.enum';
 import { getTicketCommissionPercent } from 'src/contexts/module_shared/production-limits/production.limits.config';
 import { AccessDecision } from './production.access';
 import { ProductionPermissions } from './production.roles';
@@ -50,7 +49,7 @@ export function toProductionResponse(
     shelf: production.getShelf ?? [],
     // El muestrario expone archivos: sólo si se puede ver el contenido.
     showcase: decision.canViewContent ? production.getShowcase ?? [] : [],
-    visibility: (production.getVisibility ?? Visibility.public) as Visibility,
+    visibility: (production.getVisibility ?? ProductionVisibility.public) as ProductionVisibility,
     hasAccessKey: production.hasAccessKey,
     filesCount: production.getFilesCount ?? 0,
     foldersCount: extras.foldersCount ?? null,
@@ -101,8 +100,8 @@ export function toItemResponse(
     parent: item.getParent,
     kind: item.getKind,
     name: item.getName,
-    visibility: (item.getVisibility as Visibility) ?? null,
-    effectiveVisibility: params.effectiveVisibility as Visibility,
+    visibility: (item.getVisibility as ProductionVisibility) ?? null,
+    effectiveVisibility: params.effectiveVisibility as ProductionVisibility,
     moderationStatus: ProductionPermissions.canEditContent(role)
       ? item.getModerationStatus
       : null,

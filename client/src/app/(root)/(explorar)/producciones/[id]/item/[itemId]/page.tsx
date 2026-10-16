@@ -105,6 +105,7 @@ export default async function ProductionItemPage(
             isStaff={isStaff}
             previewMode={previewMode}
             itemHref={`${blogHref}/item/${item._id}`}
+            itemName={item.name}
             previewHref={`${blogHref}/item/${item._id}?${PREVIEW_PARAM}=${PREVIEW_VALUE}`}
           />
           <ProductionItemDetail item={item} canEdit={isStaff && !previewMode} />

@@ -95,10 +95,15 @@ En esta query los artículos vienen con `blocks: null`: el contenido se pide con
 
 Se evalúa en este orden:
 
+0. **Sólo yo** (`visibility: onlyMe`, en el blog o en cualquier carpeta del camino): lo ve
+   únicamente el staff (dueño, o creador y admins del grupo). Va antes que todo: ni los
+   miembros del grupo ni quien tenga la clave lo ven, y no se puede pisar desde un hijo
+   (`effectiveVisibility` sale `onlyMe`).
 1. **Moderación:** lo `hidden` (oculto por denuncias) o `blocked` no aparece para visitantes. El staff lo ve con `moderationStatus`.
 2. **Reseña pendiente** (§6.3): bloquea entrar a otros blogs.
 3. **Clave:** si `hasAccessKey`, el alcance no se evalúa; hace falta la clave.
-4. **Alcance** (`visibility`: `public` | `registered` | `contacts` | `friends` | `topfriends`):
+4. **Alcance** (`visibility`, enum GraphQL `ProductionVisibility`: `public` | `registered` |
+   `contacts` | `friends` | `topfriends` | `onlyMe`):
    lo que queda fuera **no se lista**. Los ítems heredan de su carpeta (`visibility: null`)
    y `effectiveVisibility` dice cuál aplica.
 5. **Ticket:** el ítem **se lista** pero sin contenido hasta tener un ticket activo.
@@ -194,7 +199,9 @@ mutation {
 
 ## 5. Alcance y clave
 
-- `setProductionVisibility(productionId, visibility)`: alcance por defecto del blog.
+- `setProductionVisibility(productionId, visibility)`: alcance por defecto del blog. El tipo de
+  `visibility` es `ProductionVisibility` (antes se reutilizaba `Visibility_of_the_post` de
+  Anuncios; ahora es propio porque suma `onlyMe`).
 - `setProductionItemVisibility(itemId, visibility)`: alcance propio; **sin `visibility` vuelve a heredar**.
 - `setProductionAccessKey(productionId, accessKey)`: entre 4 y 128 caracteres; sin `accessKey` la quita.
   Cambiarla invalida los accesos anteriores. Nunca se devuelve la clave ni su hash.

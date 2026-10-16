@@ -532,15 +532,18 @@ Si necesitas más anuncios pero no quieres cambiar de plan completo:
 ### 📝 Crear un blog
 1. Ve a: https://soonpublicite.com/crear/produccion
 2. Completa el nombre, la descripción, la foto de portada y el texto de bienvenida
-3. Elige el **alcance** del blog: Público, Registrados, Contactos, Amigos o Top amigos
+3. Elige el **alcance** del blog: Público, Registrados, Contactos, Amigos, Top amigos o **Sólo yo**
 4. ¡Listo! Entra al blog y empieza a cargar contenido
+
+Si tu plan permite un solo blog personal y ya lo tienes, al ir a crear otro te muestra tu blog con accesos directos para entrar, escribir un artículo o editarlo.
 
 La cantidad de blogs, de archivos por blog y el espacio de almacenamiento dependen de tu plan.
 
 ### 📁 Organizar el contenido (como en un explorador de archivos)
 - **Carpetas y subcarpetas**: usa "Nueva carpeta". Cada carpeta muestra una vista previa de lo que tiene adentro.
 - **Subir archivos**: con el botón "Subir archivos" (puedes elegir varios a la vez) o **arrastrando los archivos desde tu computadora** y soltándolos sobre el blog o sobre una carpeta.
-- **Artículos**: con "Nuevo artículo" escribes un texto con formato, imágenes y otros bloques. Mientras escribes se muestra el **recuento de palabras y caracteres**.
+- **Artículos**: con "Nuevo artículo" escribes un texto con formato, imágenes y otros bloques. Arriba del editor hay una **barra de formato fija, como en Word** (estilo de párrafo, títulos, listas, negrita, cursiva, subrayado, tachado, color, resaltado, tamaño, enlace y alineación); también aparece al seleccionar un texto. Mientras escribes se muestra el **recuento de palabras y caracteres**.
+- **Ver PDF y Word**: los PDF y los documentos de Word (.docx) se leen dentro del blog, con su propio visor (con zoom en los PDF). Los demás documentos de Office se descargan.
 - **Mover**: marca uno o varios elementos con su casilla, toca **"Mover"** y elige la carpeta de destino. También puedes **arrastrar** un elemento y soltarlo sobre una carpeta, o usar "Mover a…" en el menú de los tres puntos de cada elemento. Lo movido deja de estar en la carpeta de origen y pasa a tomar el alcance de la carpeta de destino.
 - **Renombrar y borrar**: desde el menú de los tres puntos de cada elemento. Borrar una carpeta borra todo lo que tiene adentro.
 
@@ -549,12 +552,14 @@ La cantidad de blogs, de archivos por blog y el espacio de almacenamiento depend
 - Dentro de un archivo o artículo: botón para **volver a la carpeta** y flechas **Anterior / Siguiente** para recorrer los archivos de esa carpeta.
 - **Buscar** por nombre dentro de la carpeta abierta, **filtrar por tipo** (carpetas, fotos, videos, audios, escritos, documentos, artículos) y **ordenar** (más recientes, más antiguos, por nombre o por tipo).
 - **Vista de grilla o de lista**, a elección. En la grilla, un deslizador cambia el **tamaño de los íconos** (más chicos o más grandes), como en un explorador de archivos.
+- **Compartir**: cada carpeta, archivo o artículo tiene su propio link. El botón de compartir junto al camino de carpetas comparte la carpeta abierta, y dentro de un archivo o artículo el botón "Compartir" lleva directo a ese contenido (no al inicio del blog). El staff también tiene "Compartir link" en el menú de los tres puntos.
 
 ### 👀 Ver como visitante
 El dueño o moderador del blog tiene el botón **"Ver como visitante"**: muestra el blog (o un archivo o artículo) sin los controles de edición, para revisar cómo quedó el trabajo. Con "Volver a editar" se regresa al modo normal.
 
 ### 🔐 Alcance, clave y tickets
 - **Alcance**: cada carpeta o archivo puede heredar el alcance del blog o tener uno propio.
+- **Sólo yo** 🔒: el blog, una carpeta, un archivo o un artículo puede quedar privado, visible solo para ti (en un blog de grupo, para el creador y los administradores). Se elige en "Alcance y clave" (blog) o en el control de alcance de cada elemento. Lo privado no se muestra a nadie más, aunque tenga la clave o el link, y todo lo que está dentro de una carpeta privada también es privado.
 - **Clave de acceso**: el blog puede pedir una clave para ver su contenido ("Alcance y clave").
 - **Mapa de tickets** (menú "Opciones" del blog): dibuja todo el blog en recuadros —carpetas que contienen carpetas y archivos— pintados por color: verde = gratis, azul = ticket gratuito, naranja = ticket pago (con su precio). El borde punteado indica que el ticket se hereda de la carpeta o del blog. Los interruptores de arriba resaltan u ocultan cada tipo, y al tocar un recuadro se configura su ticket.
 - **Tickets**: el dueño puede poner un ticket (gratuito o pago) al blog entero, a una carpeta o a un archivo. En los tickets pagos el comprador hace **dos transferencias**: una al alias/CBU del blog y otra, la comisión, a Soonpublicité; adjunta los comprobantes y el staff del blog habilita el acceso. Tus compras están en: https://soonpublicite.com/producciones/mis-tickets

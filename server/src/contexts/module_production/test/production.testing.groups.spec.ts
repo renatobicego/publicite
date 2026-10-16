@@ -24,12 +24,12 @@ import {
   ProductionItemKind,
   ProductionOwnerType,
   ProductionRole,
+  ProductionVisibility,
 } from '../production/domain/entity/enum/production.enums';
 import {
   group_creator_changed,
   group_deleted,
 } from 'src/contexts/module_shared/event-emmiter/events';
-import { Visibility } from 'src/contexts/module_post/post/domain/entity/enum/post-visibility.enum';
 
 // Base remota de QA: cada test hace varias idas y vueltas.
 jest.setTimeout(60_000);
@@ -195,7 +195,7 @@ describe('Mis Producciones - Fase 6: blogs de grupo y roles (GRP-01..08)', () =>
       );
       const photo = await upload(moderator, productionId, folder._id);
       await service.updateFile(photo._id, { name: 'Renombrada' }, moderator);
-      await service.setProductionItemVisibility(folder._id, Visibility.registered, moderator);
+      await service.setProductionItemVisibility(folder._id, ProductionVisibility.registered, moderator);
       await service.setProductionAccessKey(productionId, 'clave-grupo', moderator);
       await service.setProductionAccessKey(productionId, null, moderator);
       await service.deleteItem(photo._id, ProductionItemKind.file, moderator);
@@ -215,7 +215,7 @@ describe('Mis Producciones - Fase 6: blogs de grupo y roles (GRP-01..08)', () =>
     it('el miembro sólo lee, incluso lo restringido y lo que tiene ticket (GRP-07)', async () => {
       const { creator, member, outsider, productionId } = await setupGroupBlog();
       const folder = await service.createFolder(
-        { productionId, name: 'Top', visibility: Visibility.topfriends },
+        { productionId, name: 'Top', visibility: ProductionVisibility.topfriends },
         creator,
       );
       const photo = await upload(creator, productionId, folder._id);

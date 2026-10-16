@@ -22,8 +22,8 @@ import {
 import {
   ProductionItemKind,
   ProductionOwnerType,
+  ProductionVisibility,
 } from '../entity/enum/production.enums';
-import { Visibility } from 'src/contexts/module_post/post/domain/entity/enum/post-visibility.enum';
 
 export interface ProductionServiceInterface {
   createProduction(
@@ -127,12 +127,12 @@ export interface ProductionServiceInterface {
 
   setProductionVisibility(
     productionId: string,
-    visibility: Visibility,
+    visibility: ProductionVisibility,
     userId: string,
   ): Promise<ProductionResponse>;
   setProductionItemVisibility(
     itemId: string,
-    visibility: Visibility | null,
+    visibility: ProductionVisibility | null,
     userId: string,
   ): Promise<ProductionItemResponse>;
   setProductionAccessKey(

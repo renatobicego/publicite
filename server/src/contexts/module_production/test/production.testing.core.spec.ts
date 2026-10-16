@@ -17,8 +17,8 @@ import {
   ProductionItemKind,
   ProductionOwnerType,
   ProductionRole,
+  ProductionVisibility,
 } from '../production/domain/entity/enum/production.enums';
-import { Visibility } from 'src/contexts/module_post/post/domain/entity/enum/post-visibility.enum';
 
 // Base remota de QA: cada test hace varias idas y vueltas.
 jest.setTimeout(60_000);
@@ -571,7 +571,7 @@ describe('Mis Producciones - Fase 1: núcleo del blog', () => {
       const ownerId = await createTestUser(models);
       const visitorId = await createTestUser(models);
       const { _id: productionId } = await service.createProduction(
-        { title: 'Privado', visibility: Visibility.registered },
+        { title: 'Privado', visibility: ProductionVisibility.registered },
         ownerId,
       );
 

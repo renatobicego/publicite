@@ -12,11 +12,11 @@ import { PubliciteAuth } from 'src/contexts/module_shared/auth/publicite_auth/pu
 import { UserServiceInterface } from 'src/contexts/module_user/user/domain/service/user.service.interface';
 import { ProductionLimits } from 'src/contexts/module_user/user/application/functions/calculateProductionLimits';
 import { makeUserRelationHierarchyMap } from 'src/contexts/module_shared/utils/functions/makeUserRelationHierarchyMap';
-import { Visibility } from 'src/contexts/module_post/post/domain/entity/enum/post-visibility.enum';
 import { Production } from '../../domain/entity/production.entity';
 import {
   ProductionOwnerType,
   ProductionRole,
+  ProductionVisibility,
 } from '../../domain/entity/enum/production.enums';
 import { ProductionRepositoryInterface } from '../../domain/repository/production.repository.interface';
 import {
@@ -297,10 +297,10 @@ export class ProductionAccessService {
   buildListVisibilityConditions(
     scope: ProductionViewerScope,
   ): Record<string, any>[] {
-    if (!scope.userId) return [{ visibility: Visibility.public }];
+    if (!scope.userId) return [{ visibility: ProductionVisibility.public }];
 
     const conditions: Record<string, any>[] = [
-      { visibility: { $in: [Visibility.public, Visibility.registered] } },
+      { visibility: { $in: [ProductionVisibility.public, ProductionVisibility.registered] } },
       {
         owner: new Types.ObjectId(scope.userId),
         ownerType: ProductionOwnerType.User,

@@ -653,7 +653,7 @@ export const setProductionVisibilityMutation = gql`
   ${PRODUCTION_FIELDS}
   mutation SetProductionVisibility(
     $productionId: ID!
-    $visibility: Visibility_of_the_post!
+    $visibility: ProductionVisibility!
   ) {
     setProductionVisibility(
       productionId: $productionId
@@ -668,7 +668,7 @@ export const setProductionItemVisibilityMutation = gql`
   ${PRODUCTION_ITEM_FIELDS}
   mutation SetProductionItemVisibility(
     $itemId: ID!
-    $visibility: Visibility_of_the_post
+    $visibility: ProductionVisibility
   ) {
     setProductionItemVisibility(itemId: $itemId, visibility: $visibility) {
       ...ProductionItemFields

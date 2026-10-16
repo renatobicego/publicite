@@ -6,13 +6,17 @@
 // Enums
 // ---------------------------------------------------------------------------
 
-/** Alcance/visibilidad. Se reutiliza el enum del backend `Visibility_of_the_post`. */
+/**
+ * Alcance/visibilidad (enum del backend `ProductionVisibility`). `onlyMe` es
+ * "Sólo yo": lo ve únicamente el staff del blog y lo hereda todo lo de adentro.
+ */
 export enum ProductionVisibility {
   public = "public",
   registered = "registered",
   contacts = "contacts",
   friends = "friends",
   topfriends = "topfriends",
+  onlyMe = "onlyMe",
 }
 
 export enum ProductionItemKind {

@@ -19,10 +19,12 @@ import {
 } from "@/app/server/productionActions";
 import { isProductionActionError } from "@/utils/functions/productionErrorHandler";
 import {
+  ProductionOwnerType,
   ProductionResponse,
   ProductionVisibility,
 } from "@/types/productionTypes";
 import {
+  isOnlyMe,
   visibilityLabel,
   visibilityOptions,
 } from "../../productionVisibility";
@@ -38,7 +40,8 @@ interface Props {
 
 /**
  * Configuración de alcance por defecto del blog (VIS-01) y clave de acceso
- * (INV-01). La clave reemplaza al alcance. Sólo staff (`canManageAccess`).
+ * (INV-01). La clave reemplaza al alcance, salvo "Sólo yo", que la pisa.
+ * Sólo staff (`canManageAccess`).
  */
 const ProductionAccessSettings = ({
   production,
@@ -103,21 +106,50 @@ const ProductionAccessSettings = ({
                 <Select
                   aria-label="Alcance del blog"
                   selectedKeys={[visibility]}
-                  isDisabled={busy || production.hasAccessKey}
+                  isDisabled={busy}
+                  // Con clave, el único alcance que se aplica es "Sólo yo".
+                  disabledKeys={
+                    production.hasAccessKey
+                      ? visibilityOptions.filter(
+                          (option) =>
+                            !isOnlyMe(option) && option !== visibility
+                        )
+                      : []
+                  }
                   onChange={(e) =>
+                    e.target.value &&
                     handleVisibility(e.target.value as ProductionVisibility)
                   }
                 >
                   {visibilityOptions.map((option) => (
-                    <SelectItem key={option} value={option}>
+                    <SelectItem
+                      key={option}
+                      value={option}
+                      description={
+                        isOnlyMe(option)
+                          ? production.ownerType === ProductionOwnerType.Group
+                            ? "Sólo lo ven el creador y los administradores del grupo"
+                            : "Nadie más que vos puede verlo"
+                          : undefined
+                      }
+                    >
                       {visibilityLabel[option]}
                     </SelectItem>
                   ))}
                 </Select>
-                {production.hasAccessKey && (
+                {isOnlyMe(visibility) ? (
                   <p className="text-xs text-default-500 mt-1">
-                    Con clave activa, el alcance no se aplica.
+                    El blog es privado: no aparece en listados ni en tu
+                    cartel, y nadie más puede abrirlo aunque tenga la clave o
+                    el link.
                   </p>
+                ) : (
+                  production.hasAccessKey && (
+                    <p className="text-xs text-default-500 mt-1">
+                      Con clave activa, el alcance no se aplica (salvo «Sólo
+                      yo», que deja el blog privado).
+                    </p>
+                  )
                 )}
               </div>
 

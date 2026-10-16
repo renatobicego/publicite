@@ -23,6 +23,7 @@ import {
   FaFileWord,
   FaFileExcel,
   FaFilePowerpoint,
+  FaUserLock,
 } from "react-icons/fa";
 import {
   ProductionFileType,
@@ -39,6 +40,7 @@ import {
   itemTypeLabel,
   ProductionViewMode,
 } from "../../productionBrowse";
+import { isOnlyMe } from "../../productionVisibility";
 import ItemVisibilityControl from "./ItemVisibilityControl";
 import TicketCheckoutModal from "./TicketCheckoutModal";
 import TicketManagerModal from "./TicketManagerModal";
@@ -113,6 +115,14 @@ const ProductionItemCard = ({
   onDropOnFolder,
 }: Props) => {
   const locked = !item.access?.canViewContent;
+  // "Sólo yo" (propio o heredado): sólo le llega al staff, que lo ve marcado.
+  const privateBadge = isOnlyMe(item.effectiveVisibility) && (
+    <FaUserLock
+      className="shrink-0 text-secondary"
+      title="Sólo yo: nadie más lo ve"
+      aria-label="Sólo yo"
+    />
+  );
   const lockedByTicket =
     locked && item.access?.lockReason === ProductionLockReason.ticket;
   const checkout = useDisclosure();
@@ -273,7 +283,10 @@ const ProductionItemCard = ({
               {renderThumb(item, locked)}
             </span>
             <span className="flex min-w-0 flex-1 flex-col">
-              <span className="truncate text-sm font-medium">{item.name}</span>
+              <span className="flex items-center gap-1.5 text-sm font-medium">
+                <span className="truncate">{item.name}</span>
+                {privateBadge}
+              </span>
               <span className="truncate text-xs text-default-500">
                 {itemTypeLabel(item)}
                 {item.fileName ? ` · ${item.fileName}` : ""}
@@ -304,8 +317,11 @@ const ProductionItemCard = ({
                 compact ? "pb-3" : "pb-6"
               }`}
             >
-              <h6 className={`line-clamp-1 ${compact ? "text-sm" : ""}`}>
-                {item.name}
+              <h6
+                className={`flex items-center gap-1.5 ${compact ? "text-sm" : ""}`}
+              >
+                <span className="line-clamp-1">{item.name}</span>
+                {privateBadge}
               </h6>
               {item.fileName && (
                 <p className="text-light-text text-xs lg:text-small 2xl:text-sm line-clamp-1">

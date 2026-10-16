@@ -25,8 +25,8 @@ import {
 import {
   ProductionItemKind,
   ProductionOwnerType,
+  ProductionVisibility,
 } from '../../domain/entity/enum/production.enums';
-import { Visibility } from 'src/contexts/module_post/post/domain/entity/enum/post-visibility.enum';
 
 @Injectable()
 export class ProductionAdapter implements ProductionAdapterInterface {
@@ -247,7 +247,7 @@ export class ProductionAdapter implements ProductionAdapterInterface {
 
   setProductionVisibility(
     productionId: string,
-    visibility: Visibility,
+    visibility: ProductionVisibility,
     userId: string,
   ) {
     return this.productionService.setProductionVisibility(
@@ -259,7 +259,7 @@ export class ProductionAdapter implements ProductionAdapterInterface {
 
   setProductionItemVisibility(
     itemId: string,
-    visibility: Visibility | null,
+    visibility: ProductionVisibility | null,
     userId: string,
   ) {
     return this.productionService.setProductionItemVisibility(

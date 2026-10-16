@@ -8,8 +8,8 @@ import {
   ProductionOwnerType,
   ProductionRole,
   ProductionShelfCategory,
+  ProductionVisibility,
 } from '../../enum/production.enums';
-import { Visibility } from 'src/contexts/module_post/post/domain/entity/enum/post-visibility.enum';
 
 @ObjectType()
 export class ProductionIdResponse {
@@ -131,8 +131,8 @@ export class ProductionResponse {
   @Field(() => [ID])
   showcase: string[];
 
-  @Field(() => Visibility)
-  visibility: Visibility;
+  @Field(() => ProductionVisibility)
+  visibility: ProductionVisibility;
 
   @Field(() => Boolean, { description: 'Si el blog pide clave (INV-01)' })
   hasAccessKey: boolean;
@@ -316,14 +316,14 @@ export class ProductionItemResponse {
   })
   name: string;
 
-  @Field(() => Visibility, {
+  @Field(() => ProductionVisibility, {
     nullable: true,
     description: 'Alcance propio; null = hereda',
   })
-  visibility?: Visibility | null;
+  visibility?: ProductionVisibility | null;
 
-  @Field(() => Visibility, { description: 'Alcance que efectivamente aplica' })
-  effectiveVisibility: Visibility;
+  @Field(() => ProductionVisibility, { description: 'Alcance que efectivamente aplica' })
+  effectiveVisibility: ProductionVisibility;
 
   @Field(() => String, { nullable: true, description: 'ID editable (BLG-13)' })
   fileName?: string;
@@ -386,11 +386,11 @@ export class ProductionMapNodeResponse {
   @Field(() => ProductionFileType, { nullable: true })
   fileType?: ProductionFileType | null;
 
-  @Field(() => Visibility, {
+  @Field(() => ProductionVisibility, {
     nullable: true,
     description: 'Alcance propio; null = hereda',
   })
-  visibility?: Visibility | null;
+  visibility?: ProductionVisibility | null;
 }
 
 @ObjectType()

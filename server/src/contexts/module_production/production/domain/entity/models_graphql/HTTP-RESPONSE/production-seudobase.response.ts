@@ -4,9 +4,9 @@ import {
   ProductionFileType,
   ProductionItemKind,
   ProductionModerationStatus,
+  ProductionVisibility,
 } from '../../enum/production.enums';
 import { ProductionBulkAction } from '../../enum/production-seudobase.enums';
-import { Visibility } from 'src/contexts/module_post/post/domain/entity/enum/post-visibility.enum';
 import {
   ProductionOwnerResponse,
   ProductionTicketSummaryResponse,
@@ -38,11 +38,11 @@ export class ProductionSeudoBaseRowResponse {
   @Field(() => String, { nullable: true, description: 'Camino de carpetas' })
   path?: string | null;
 
-  @Field(() => Visibility, { nullable: true })
-  visibility?: Visibility | null;
+  @Field(() => ProductionVisibility, { nullable: true })
+  visibility?: ProductionVisibility | null;
 
-  @Field(() => Visibility)
-  effectiveVisibility: Visibility;
+  @Field(() => ProductionVisibility)
+  effectiveVisibility: ProductionVisibility;
 
   @Field(() => ProductionTicketSummaryResponse, {
     nullable: true,

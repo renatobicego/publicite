@@ -1547,7 +1547,7 @@ type ProductionResponse {
   url: String!
   shelf: [ProductionShelfLinkResponse!]!
   showcase: [ID!]!
-  visibility: Visibility_of_the_post!
+  visibility: ProductionVisibility!
 
   """Si el blog pide clave (INV-01)"""
   hasAccessKey: Boolean!
@@ -1589,6 +1589,18 @@ type ProductionResponse {
 enum ProductionOwnerType {
   User
   Group
+}
+
+"""
+Alcance de un blog o ítem: público, registrados, contactos, amigos, top amigos o sólo yo
+"""
+enum ProductionVisibility {
+  public
+  registered
+  contacts
+  friends
+  topfriends
+  onlyMe
 }
 
 """
@@ -1675,10 +1687,10 @@ type ProductionItemResponse {
   name: String!
 
   """Alcance propio; null = hereda"""
-  visibility: Visibility_of_the_post
+  visibility: ProductionVisibility
 
   """Alcance que efectivamente aplica"""
-  effectiveVisibility: Visibility_of_the_post!
+  effectiveVisibility: ProductionVisibility!
 
   """ID editable (BLG-13)"""
   fileName: String
@@ -1712,7 +1724,7 @@ type ProductionMapNodeResponse {
   fileType: ProductionFileType
 
   """Alcance propio; null = hereda"""
-  visibility: Visibility_of_the_post
+  visibility: ProductionVisibility
 }
 
 type ProductionBreadcrumbResponse {
@@ -2085,8 +2097,8 @@ type ProductionSeudoBaseRowResponse {
 
   """Camino de carpetas"""
   path: String
-  visibility: Visibility_of_the_post
-  effectiveVisibility: Visibility_of_the_post!
+  visibility: ProductionVisibility
+  effectiveVisibility: ProductionVisibility!
 
   """Ticket propio del ítem (el que edita el cambio de precio)"""
   ownTicket: ProductionTicketSummaryResponse
@@ -2775,12 +2787,12 @@ type Mutation {
   deleteProductionById(productionId: ID!): String!
 
   """Alcance por defecto del blog (VIS-01)"""
-  setProductionVisibility(productionId: ID!, visibility: Visibility_of_the_post!): ProductionResponse!
+  setProductionVisibility(productionId: ID!, visibility: ProductionVisibility!): ProductionResponse!
 
   """
   Alcance propio de una carpeta o archivo (VIS-04). Sin visibility vuelve a heredar del padre (VIS-03)
   """
-  setProductionItemVisibility(itemId: ID!, visibility: Visibility_of_the_post): ProductionItemResponse!
+  setProductionItemVisibility(itemId: ID!, visibility: ProductionVisibility): ProductionItemResponse!
 
   """
   Configura la clave del blog tipo Zoom (INV-01); sin accessKey la quita. Reemplaza al alcance
@@ -3356,7 +3368,7 @@ input ProductionCreateRequest {
   shelf: [ProductionShelfLinkInput!]
 
   """Alcance por defecto del blog (VIS-01). Default: public"""
-  visibility: Visibility_of_the_post
+  visibility: ProductionVisibility
 
   """
   Si se informa, crea el blog del grupo (sólo el creator del grupo, GRP-02)
@@ -3396,7 +3408,7 @@ input ProductionFolderRequest {
   name: String!
 
   """Alcance propio; vacío = hereda del padre (VIS-03/04)"""
-  visibility: Visibility_of_the_post
+  visibility: ProductionVisibility
 }
 
 input ProductionFolderUpdateRequest {
@@ -3425,7 +3437,7 @@ input ProductionFileRequest {
   """Título visible"""
   name: String
   postcard: ProductionPostcardInput
-  visibility: Visibility_of_the_post
+  visibility: ProductionVisibility
 }
 
 """Dorso de la postal (BLG-08)"""
@@ -3454,7 +3466,7 @@ input ProductionArticleRequest {
   title: String!
   fileName: String
   blocks: [ProductionArticleBlockInput!]!
-  visibility: Visibility_of_the_post
+  visibility: ProductionVisibility
 }
 
 """Bloque de Editor.js; data es el JSON stringificado"""
@@ -3587,7 +3599,7 @@ input ProductionBulkVisibilityInput {
   confirm: Boolean!
 
   """Vacío = los ítems vuelven a heredar del padre"""
-  visibility: Visibility_of_the_post
+  visibility: ProductionVisibility
 }
 
 """Borrado masivo (hard delete, libera cupo)"""
