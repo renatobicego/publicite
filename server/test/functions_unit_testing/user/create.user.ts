@@ -22,12 +22,16 @@ export class PersonalAccountTestRequest {
     groups?: Types.ObjectId[];
     attributes?: Map<string, string>
     dni?: string
+    addressPrivacy?: string
 
 }
 async function createPersonalUser(
     userModel: any,
     personalAccountTestRequest: PersonalAccountTestRequest
 ) {
+    // Idempotente: los specs comparten base y usan _id fijos, así que una corrida
+    // anterior sin limpiar haría fallar el create por duplicado.
+    await userModel.deleteOne({ _id: personalAccountTestRequest._id });
     const USER = await userModel.create({
         _id: personalAccountTestRequest._id,
         clerkId: personalAccountTestRequest.clerkId ?? 'TEST_B',
@@ -47,7 +51,10 @@ async function createPersonalUser(
         magazines: personalAccountTestRequest.magazines ?? [],
         posts: personalAccountTestRequest.posts ?? [],
         groups: personalAccountTestRequest.groups ?? [],
-        dni: personalAccountTestRequest.dni ?? "123"
+        dni: personalAccountTestRequest.dni ?? "123",
+        // Requerido por el schema. 'all' es el valor por defecto que usa el alta real
+        // (ver user.factory.ts), así que el usuario de test queda igual que uno normal.
+        addressPrivacy: personalAccountTestRequest.addressPrivacy ?? "all"
     });
 
     return USER

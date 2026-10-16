@@ -49,6 +49,7 @@ describe('UserService - Update User by Clerk ID (Integration Test)', () => {
       profilePhotoUrl: 'original_url.jpg',
       userType: UserType.Person,
       dni: '12412412412412',
+      addressPrivacy: 'all',
     });
 
     const updateRequest: UP_clerkUpdateRequestDto = {
@@ -87,6 +88,7 @@ describe('UserService - Update User by Clerk ID (Integration Test)', () => {
       dni: '123456',
       gender: Gender.Male,
       birthDate: '1990-01-01',
+      addressPrivacy: 'all',
     });
 
     const updateRequest: personalAccountUpdateRequest = {

@@ -66,7 +66,11 @@ describe('Mis Producciones - módulo y schema GraphQL', () => {
       'createProductionTicket',
       'purchaseProductionTicket',
       'getProductionTicketPurchasesAdmin',
-      'confirmProductionTicketPurchase',
+      // El flujo de tickets cambió (commit "change flow tickets", 07/10/2026): ya no
+      // hay confirmación explícita de la compra. Ahora se pide el checkout y, si algo
+      // no cierra, se rechaza. El front no usa la confirmación vieja.
+      'getProductionTicketCheckout',
+      'rejectProductionTicketPurchase',
       'attachFacturaToProductionTicketPurchase',
       'getProductionSeudoBase',
       'bulkUpdateProductionPrices',

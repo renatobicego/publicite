@@ -8,6 +8,9 @@ async function createPayment(
     status: string,
     mpPaymentId: string
 ) {
+    // Idempotente: una corrida anterior cortada por --forceExit puede haber dejado
+    // este mismo _id sin limpiar, y el create fallaría por duplicado.
+    await paymentModel.deleteOne({ _id: paymentId });
     await paymentModel.create({
         _id: paymentId,
         mpPaymentId: mpPaymentId,
