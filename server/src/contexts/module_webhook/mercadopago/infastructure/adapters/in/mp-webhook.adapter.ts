@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Inject,
   Injectable,
   UnauthorizedException,
@@ -38,13 +37,14 @@ export class MpWebhookAdapter {
     );
 
     if (isHashValid) {
-      try {
-        this.logger.log('MpWebhookAdapter: Webhook origin is valid, processing webhook data');
-        this.processOperationType(body);
-        return Promise.resolve(true);
-      } catch (error: any) {
-        throw error;
-      }
+      this.logger.log('MpWebhookAdapter: Webhook origin is valid, processing webhook data');
+      /*
+      IMPORTANTE: hay que ESPERAR el procesamiento antes de devolverle la respuesta a Meli.
+      En Firebase Functions la instancia se congela apenas se responde, así que todo trabajo
+      async que haya quedado pendiente se corta a la mitad y se pierde sin dejar error.
+      Así se perdían altas de suscripción ya cobradas (el camino más largo del handler).
+      */
+      return await this.processOperationType(body);
     } else {
       return Promise.resolve(false);
     }
@@ -92,9 +92,17 @@ export class MpWebhookAdapter {
 
 
         default:
-          throw new BadRequestException(
-            'Invalid webhook headers - Action: ' + action + ' Type: ' + type,
+          /*
+          Meli manda tipos de evento que no procesamos. Se confirman con OK a propósito:
+          devolver error haría que los reintente indefinidamente, y no son un fallo nuestro.
+          */
+          this.logger.warn(
+            'Evento de Mercado Pago no soportado, se confirma sin procesar - Type: ' +
+            type +
+            ' Action: ' +
+            action,
           );
+          return Promise.resolve(true);
       }
     } catch (error: any) {
       throw error;
@@ -150,10 +158,11 @@ export class MpWebhookAdapter {
         return this.isThisResponseDataCompleted(response);
 
       default:
-        throw new BadRequestException(
-          'An error was ocurred in payment PAYMENT ACTION IS NOT VALID - ACTION: ' +
-          action,
+        // Action no soportada: se confirma para que Meli no la reintente indefinidamente.
+        this.logger.warn(
+          'Action de payment no soportada, se confirma sin procesar - ACTION: ' + action,
         );
+        return Promise.resolve(true);
     }
   }
 
@@ -179,12 +188,14 @@ export class MpWebhookAdapter {
           return this.isThisResponseDataCompleted(subscription_preapproval_response);
 
         default:
-          throw new BadRequestException(
-            'An error was ocurred in subscription_preaproval - ACTION: ' +
+          // Action no soportada: se confirma para que Meli no la reintente indefinidamente.
+          this.logger.warn(
+            'Action de subscription_preapproval no soportada, se confirma sin procesar - ACTION: ' +
             action +
-            'DATA ID: ' +
+            ' DATA ID: ' +
             dataID,
           );
+          return Promise.resolve(true);
       }
     } catch (error: any) {
       throw error;
@@ -214,12 +225,14 @@ export class MpWebhookAdapter {
         return this.isThisResponseDataCompleted(result);
 
       default:
-        throw new BadRequestException(
-          'An error was ocurred in subscription_authorized_payment INVALID - ACTION: ' +
+        // Action no soportada: se confirma para que Meli no la reintente indefinidamente.
+        this.logger.warn(
+          'Action de subscription_authorized_payment no soportada, se confirma sin procesar - ACTION: ' +
           action +
-          'DATA ID: ' +
+          ' DATA ID: ' +
           dataID,
         );
+        return Promise.resolve(true);
     }
   }
 

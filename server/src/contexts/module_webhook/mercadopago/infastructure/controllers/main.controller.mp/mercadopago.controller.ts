@@ -7,6 +7,7 @@ import {
   HttpStatus,
   Res,
   Req,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { Response } from 'express';
 
@@ -29,15 +30,39 @@ export class MercadopagoController {
     @Req() req: Request,
   ): Promise<Response> {
     try {
-      this.mpWebhookAdapter.validateRequestAndHandleTypeOfEvent(headers, req);
+      /*
+      Se espera a que el evento termine de procesarse ANTES de contestarle a Meli.
+      Sin el await, Firebase congela la instancia al responder y el procesamiento queda
+      trunco: así se perdieron altas de suscripción que ya estaban cobradas.
+      Si algo falla, se devuelve error a propósito para que Meli reintente el evento.
+      */
+      const processed =
+        await this.mpWebhookAdapter.validateRequestAndHandleTypeOfEvent(
+          headers,
+          req,
+        );
+
+      if (!processed) {
+        this.logger.error(
+          'Webhook MP - El evento no se pudo procesar - Class:WebhookController',
+        );
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send();
+      }
+
       this.logger.log(
         'Webhook MP OK - Credentials are valid - WEBHOOK_PROCESS: COMPLETE ---> sending response to Meli - Class:WebhookController 🚀',
       );
       return res.status(HttpStatus.OK).send();
     } catch (error) {
-      console.log(error);
+      // Origen inválido: no es un fallo nuestro, no tiene sentido que Meli reintente.
+      if (error instanceof UnauthorizedException) {
+        this.logger.error(
+          'Webhook MP - Origen inválido - Class:WebhookController',
+        );
+        return res.status(HttpStatus.UNAUTHORIZED).send();
+      }
       this.logger.error(error + 'Class:WebhookController');
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send(error);
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send();
     }
   }
 
