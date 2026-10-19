@@ -62,6 +62,8 @@ describe('UserService - Make relation between two users', () => {
             lastName: 'TEST_A',
             finder: 'TEST_A',
             profilePhotoUrl: 'TEST_A.jpg',
+            dni: '123',
+            addressPrivacy: 'all',
             userType: 'person',
             userRelations: []
         });
@@ -74,6 +76,8 @@ describe('UserService - Make relation between two users', () => {
             lastName: 'TEST_B',
             finder: 'TEST_B',
             profilePhotoUrl: 'TEST_B.jpg',
+            dni: '123',
+            addressPrivacy: 'all',
             userType: 'business',
             userRelations: []
         });
@@ -137,6 +141,8 @@ describe('UserService - Make relation between two users', () => {
             lastName: 'TEST_A',
             finder: 'TEST_A',
             profilePhotoUrl: 'TEST_A.jpg',
+            dni: '123',
+            addressPrivacy: 'all',
             userType: 'person',
             userRelations: []
         });
@@ -149,6 +155,8 @@ describe('UserService - Make relation between two users', () => {
             lastName: 'TEST_B',
             finder: 'TEST_B',
             profilePhotoUrl: 'TEST_B.jpg',
+            dni: '123',
+            addressPrivacy: 'all',
             userType: 'business',
             userRelations: []
         });
@@ -212,6 +220,8 @@ describe('UserService - Make relation between two users', () => {
             lastName: 'TEST_A',
             finder: 'TEST_A',
             profilePhotoUrl: 'TEST_A.jpg',
+            dni: '123',
+            addressPrivacy: 'all',
             userType: 'person',
             userRelations: []
         });
@@ -224,6 +234,8 @@ describe('UserService - Make relation between two users', () => {
             lastName: 'TEST_B',
             finder: 'TEST_B',
             profilePhotoUrl: 'TEST_B.jpg',
+            dni: '123',
+            addressPrivacy: 'all',
             userType: 'business',
             userRelations: []
         });
@@ -285,6 +297,8 @@ describe('UserService - Make relation between two users', () => {
             lastName: 'TEST_A',
             finder: 'TEST_A',
             profilePhotoUrl: 'TEST_A.jpg',
+            dni: '123',
+            addressPrivacy: 'all',
             userType: 'person',
             userRelations: []
         });
@@ -297,6 +311,8 @@ describe('UserService - Make relation between two users', () => {
             lastName: 'TEST_B',
             finder: 'TEST_B',
             profilePhotoUrl: 'TEST_B.jpg',
+            dni: '123',
+            addressPrivacy: 'all',
             userType: 'business',
             userRelations: []
         });
@@ -370,6 +386,8 @@ describe('UserService - Make relation between two users', () => {
             lastName: 'TEST_A',
             finder: 'TEST_A',
             profilePhotoUrl: 'TEST_A.jpg',
+            dni: '123',
+            addressPrivacy: 'all',
             userType: 'person',
             userRelations: [],
             subscriptions: new Types.ObjectId("67ad4c4bdb9283528cea83b9"),
@@ -386,6 +404,8 @@ describe('UserService - Make relation between two users', () => {
             lastName: 'TEST_B',
             finder: 'TEST_B',
             profilePhotoUrl: 'TEST_B.jpg',
+            dni: '123',
+            addressPrivacy: 'all',
             userType: 'business',
             userRelations: [],
             subscriptions: new Types.ObjectId("67ad4c4bdb9283528cea83b9"),
@@ -468,6 +488,8 @@ describe('UserService - Make relation between two users', () => {
             lastName: 'TEST_A',
             finder: 'TEST_A',
             profilePhotoUrl: 'TEST_A.jpg',
+            dni: '123',
+            addressPrivacy: 'all',
             userType: 'person',
             userRelations: [],
             subscriptions: new Types.ObjectId("67ad4c4bdb9283528cea83b9"),
@@ -484,6 +506,8 @@ describe('UserService - Make relation between two users', () => {
             lastName: 'TEST_B',
             finder: 'TEST_B',
             profilePhotoUrl: 'TEST_B.jpg',
+            dni: '123',
+            addressPrivacy: 'all',
             userType: 'business',
             userRelations: [],
             subscriptions: new Types.ObjectId("67ad4c4bdb9283528cea83b9"),
@@ -613,6 +637,8 @@ describe('UserService - Make relation between two users', () => {
             lastName: 'TEST_A',
             finder: 'TEST_A',
             profilePhotoUrl: 'TEST_A.jpg',
+            dni: '123',
+            addressPrivacy: 'all',
             userType: 'person',
             userRelations: [],
             subscriptions: [
@@ -633,6 +659,8 @@ describe('UserService - Make relation between two users', () => {
             lastName: 'TEST_B',
             finder: 'TEST_B',
             profilePhotoUrl: 'TEST_B.jpg',
+            dni: '123',
+            addressPrivacy: 'all',
             userType: 'business',
             userRelations: [],
         });
@@ -746,6 +774,8 @@ describe('UserService - Make relation between two users', () => {
             lastName: 'TEST_A',
             finder: 'TEST_A',
             profilePhotoUrl: 'TEST_A.jpg',
+            dni: '123',
+            addressPrivacy: 'all',
             userType: 'person',
             userRelations: [],
             subscriptions: [
@@ -766,6 +796,8 @@ describe('UserService - Make relation between two users', () => {
             lastName: 'TEST_B',
             finder: 'TEST_B',
             profilePhotoUrl: 'TEST_B.jpg',
+            dni: '123',
+            addressPrivacy: 'all',
             userType: 'business',
             userRelations: [],
         });
@@ -862,6 +894,8 @@ describe('UserService - Make relation between two users', () => {
             lastName: 'TEST_A',
             finder: 'TEST_A',
             profilePhotoUrl: 'TEST_A.jpg',
+            dni: '123',
+            addressPrivacy: 'all',
             userType: 'person',
             userRelations: [],
             subscriptions: new Types.ObjectId("67ad4c4bdb9283528cea83b9"),
@@ -878,6 +912,8 @@ describe('UserService - Make relation between two users', () => {
             lastName: 'TEST_B',
             finder: 'TEST_B',
             profilePhotoUrl: 'TEST_B.jpg',
+            dni: '123',
+            addressPrivacy: 'all',
             userType: 'business',
             userRelations: [],
         });

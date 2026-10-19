@@ -36,6 +36,9 @@ describe('Mis Producciones - Fase 8: fans, reseñas y comentarios (FAN-01, REV-0
   let models: ProductionTestModels;
 
   beforeAll(async () => {
+    // Sin la cuenta de transferencia cargada no se pueden comprar tickets pagos
+    // (TKT-05), y este spec los usa. Mismo setup que production.testing.tickets.
+    process.env.PRODUCTION_TICKETS_TRANSFER_ALIAS = 'soonpublicite.mp';
     moduleRef = await mapModuleTesting.get('production')!();
     service = moduleRef.get<ProductionService>('ProductionServiceInterface');
     tickets = moduleRef.get<ProductionTicketService>(
@@ -48,6 +51,7 @@ describe('Mis Producciones - Fase 8: fans, reseñas y comentarios (FAN-01, REV-0
   });
 
   afterAll(async () => {
+    delete process.env.PRODUCTION_TICKETS_TRANSFER_ALIAS;
     await cleanProductionTestData(models);
     await moduleRef.close();
   });

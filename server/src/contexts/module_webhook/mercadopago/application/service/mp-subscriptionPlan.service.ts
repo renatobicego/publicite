@@ -17,8 +17,9 @@ export class MercadoPagoSubscriptionPlanService
     id: string,
   ): Promise<SubscriptionPlan | null> {
     try {
+      // Sin el await, el chequeo de abajo evaluaba una Promise (siempre truthy) y nunca daba null.
       const subscriptionPlan =
-        this.subscriptionPlanRepository.findSubscriptionPlanByMeliID(id);
+        await this.subscriptionPlanRepository.findSubscriptionPlanByMeliID(id);
       if (!subscriptionPlan) return Promise.resolve(null);
       return subscriptionPlan;
     } catch (error: any) {

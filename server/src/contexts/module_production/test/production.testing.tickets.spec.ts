@@ -218,13 +218,13 @@ describe('Mis Producciones - Fase 5: tickets por transferencia', () => {
       );
       expect(created.filesCount).toBe(2);
       expect(created.targetName).toBe('Premium');
+      // paidOut salió de las métricas con el cambio de flujo de tickets (07/10/2026).
       expect(created.stats).toEqual({
         purchases: 0,
         active: 0,
         revenue: 0,
         netRevenue: 0,
         commission: 0,
-        paidOut: 0,
       });
 
       await expect(

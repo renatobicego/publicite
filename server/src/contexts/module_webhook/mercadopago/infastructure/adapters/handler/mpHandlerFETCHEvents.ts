@@ -336,15 +336,30 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
         );
 
         //Aca tengo que pausar la suscription
-        await this.subscriptionService.changeStatusOfSubscription(response_mp_subscription_authorized_payment.preapproval_id, statusOfSubscription.PAUSED)
+        await this.pause_subscription_if_exists(
+          response_mp_subscription_authorized_payment.preapproval_id,
+        );
 
         const invoiceUpdated: any = await this.mpInvoiceService.updateInvoice(
           response_mp_subscription_authorized_payment,
           response_mp_subscription_authorized_payment.id
         );
         const userId = response_mp_subscription_authorized_payment.external_reference
-        const result = await this.update_plan_user(userId, downgrade_plan_contact);
-        if (result) await this.update_plan_user(userId, downgrade_plan_post);
+
+        /*
+        Los límites de posts y contactos son ACUMULATIVOS entre las suscripciones activas
+        del usuario. Si después de pausar la rechazada le queda otra paga, sus límites no
+        bajaron y no corresponde tocarle ni los anuncios ni los contactos.
+        */
+        const hasOtherActive = await this.user_has_active_subscription(userId);
+        if (hasOtherActive) {
+          this.logger.warn(
+            `El usuario ${userId} conserva otra suscripción activa: no se aplica downgrade`,
+          );
+        } else {
+          const result = await this.update_plan_user(userId, downgrade_plan_contact);
+          if (result) await this.update_plan_user(userId, downgrade_plan_post);
+        }
 
         if (invoiceUpdated) {
           const data = {
@@ -441,6 +456,48 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
         error,
       );
       throw error;
+    }
+  }
+
+  /*
+  Pausa la suscripción rechazada. Si no está en nuestra DB se deja constancia del error
+  pero NO se corta el procesamiento: devolverle error a Meli sólo lograría que reintente
+  un evento que nunca va a poder procesar, y el resto (invoice y notificación) sí se puede
+  resolver. El caso aparece cuando el alta de la suscripción se perdió en su momento.
+  */
+  async pause_subscription_if_exists(preapproval_id: string): Promise<boolean> {
+    try {
+      await this.subscriptionService.changeStatusOfSubscription(
+        preapproval_id,
+        statusOfSubscription.PAUSED,
+      );
+      return true;
+    } catch (error: any) {
+      this.logger.error(
+        `No se pudo pausar la suscripción ${preapproval_id}, no está en nuestra base: ` +
+        error?.message,
+      );
+      return false;
+    }
+  }
+
+  /*
+  Indica si al usuario le queda alguna suscripción paga activa. La del plan gratuito no
+  cuenta: es un documento compartido cuyo external_reference no es el del usuario, así que
+  getActiveSubscriptions (que filtra por external_reference) no la devuelve.
+  Ante un error se asume que SÍ tiene una activa, para no bajarle el plan por las dudas.
+  */
+  async user_has_active_subscription(user_id: string): Promise<boolean> {
+    try {
+      const activeSubscriptions =
+        await this.subscriptionService.getActiveSubscriptions(user_id);
+      return (activeSubscriptions?.length ?? 0) > 0;
+    } catch (error: any) {
+      this.logger.error(
+        `No se pudieron verificar las suscripciones activas de ${user_id}, ` +
+        'se omite el downgrade por precaución: ' + error?.message,
+      );
+      return true;
     }
   }
 
