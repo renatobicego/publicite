@@ -13,13 +13,14 @@ import { ChatbotAction } from '../entity/enum/chatbot.action.enum';
 import { AiUsage } from '../entity/chatbot.token.types';
 import { buildModeContext } from './cubito-modes';
 import {
+  buildChatCompletionParams,
+  getImageGenerationModel,
+  getTextModel,
   getVisionModel,
   sanitizeImageUrls,
 } from 'src/contexts/module_shared/ai/ai.config';
 
 const CREATE_AD_TOOL_NAME = 'create_ad';
-
-const CHAT_MODEL = 'gpt-4o-mini';
 
 /** Tope de imágenes por mensaje de chat (el chat no es el flujo de valuación). */
 const MAX_CHAT_IMAGES = 4;
@@ -27,10 +28,9 @@ const MAX_CHAT_IMAGES = 4;
 const CREATE_AD_RESPONSE_COPY =
   '¡Genial! Te ayudo a crear tu anuncio. Completá los datos a continuación 👇';
 
-// Configuración de generación de imágenes con IA.
-// La cuenta no tiene acceso a dall-e; usamos la familia gpt-image (mini = más económico).
+// Configuración de generación de imágenes con IA (el modelo sale de
+// getImageGenerationModel: ver OPENAI_IMAGE_MODEL).
 // gpt-image solo soporta 1024x1024 / 1024x1536 / 1536x1024 / auto (no 512x512) y devuelve base64.
-const IMAGE_GENERATION_MODEL = 'gpt-image-1-mini';
 const IMAGE_GENERATION_SIZE = '1024x1024';
 const IMAGE_GENERATION_QUALITY = 'low';
 // Límite de caracteres del prompt (alineado con el límite del FE)
@@ -625,9 +625,10 @@ Esperamos que disfrutes de la plataforma y encuentres todo lo que buscas.
     userMessage: string,
     options?: ChatbotResponseOptions,
   ): Promise<ChatbotAIResult> {
-    // Sólo se paga el modelo con visión cuando hay imágenes que analizar.
+    // El modelo de visión se resuelve aparte para poder subirlo sin encarecer
+    // el chat de texto. Hoy ambos son gpt-6-luna (la familia gpt-6 ve imágenes).
     const imageUrls = sanitizeImageUrls(options?.imageUrls, MAX_CHAT_IMAGES);
-    const model = imageUrls.length > 0 ? getVisionModel() : CHAT_MODEL;
+    const model = imageUrls.length > 0 ? getVisionModel() : getTextModel();
 
     try {
       const messages = this.buildOpenAIMessages(
@@ -642,8 +643,7 @@ Esperamos que disfrutes de la plataforma y encuentres todo lo que buscas.
         messages: messages,
         tools: this.buildTools(),
         tool_choice: 'auto',
-        temperature: 0.7,
-        max_tokens: 800,
+        ...buildChatCompletionParams({ model, temperature: 0.7, maxTokens: 800 }),
       });
 
       const choice = completion.choices[0]?.message;
@@ -694,6 +694,8 @@ Esperamos que disfrutes de la plataforma y encuentres todo lo que buscas.
       .filter((img) => typeof img === 'string' && img.trim().length > 0)
       .slice(0, MAX_REFERENCE_IMAGES);
 
+    const model = getImageGenerationModel();
+
     try {
       let result: OpenAI.Images.ImagesResponse;
 
@@ -707,7 +709,7 @@ Esperamos que disfrutes de la plataforma y encuentres todo lo que buscas.
         );
 
         result = await this.openai.images.edit({
-          model: IMAGE_GENERATION_MODEL,
+          model,
           image: imageFiles,
           prompt: cleanPrompt,
           n: 1,
@@ -716,7 +718,7 @@ Esperamos que disfrutes de la plataforma y encuentres todo lo que buscas.
         });
       } else {
         result = await this.openai.images.generate({
-          model: IMAGE_GENERATION_MODEL,
+          model,
           prompt: cleanPrompt,
           n: 1,
           size: IMAGE_GENERATION_SIZE,
@@ -724,7 +726,7 @@ Esperamos que disfrutes de la plataforma y encuentres todo lo que buscas.
         });
       }
 
-      return await this.parseImageResult(result);
+      return await this.parseImageResult(result, model);
     } catch (error: any) {
       console.error('Error calling OpenAI Images API:', error);
       throw new Error(`Error generating AI image: ${error.message}`);
@@ -737,6 +739,7 @@ Esperamos que disfrutes de la plataforma y encuentres todo lo que buscas.
    */
   private async parseImageResult(
     result: OpenAI.Images.ImagesResponse,
+    model: string,
   ): Promise<GeneratedImageResult> {
     const image = result.data?.[0];
     const usage = this.mapImageUsage(result.usage);
@@ -749,7 +752,7 @@ Esperamos que disfrutes de la plataforma y encuentres todo lo que buscas.
       return {
         imageBase64: `data:image/png;base64,${image.b64_json}`,
         usage,
-        model: IMAGE_GENERATION_MODEL,
+        model,
       };
     }
 
@@ -761,7 +764,7 @@ Esperamos que disfrutes de la plataforma y encuentres todo lo que buscas.
       return {
         imageBase64: `data:${contentType};base64,${b64}`,
         usage,
-        model: IMAGE_GENERATION_MODEL,
+        model,
       };
     }
 

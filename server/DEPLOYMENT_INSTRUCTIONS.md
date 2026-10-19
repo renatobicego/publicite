@@ -405,17 +405,28 @@ Si solo necesitas el glosario anterior:
 ### Dependencias:
 
 El chatbot depende de:
-- OpenAI API (gpt-4o-mini)
+- OpenAI API (gpt-6-luna)
 - Firebase Functions
-- Variables de entorno: `OPENAI_API_KEY`
+- Variables de entorno: `OPENAI_API_KEY`. Opcionales, para cambiar de modelo sin
+  tocar código: `OPENAI_TEXT_MODEL`, `OPENAI_VISION_MODEL`, `OPENAI_IMAGE_MODEL`,
+  `VALUACION_BRIEF_MODEL`, `VALUACION_RESULT_MODEL`
 
 ### Configuración de OpenAI:
 
 ```typescript
-model: 'gpt-4o-mini'
-temperature: 0.7
-max_tokens: 800
+model: 'gpt-6-luna'          // texto y visión (OPENAI_TEXT_MODEL)
+max_completion_tokens: 800   // NO max_tokens: no está soportado
+reasoning_effort: 'none'     // obligatorio para function tools en chat.completions
+// temperature NO se manda: sólo admite el default (1)
 ```
+
+Imágenes: `gpt-image-2.5-sunburst`, 1024x1024, quality `low`.
+
+> Los modelos quedan centralizados en
+> `src/contexts/module_shared/ai/ai.config.ts`. Si se cambia un modelo por
+> variable de entorno, agregar su multiplicador de costo en
+> `chatbot.tokens.config.ts`: si no, el consumo se descuenta al factor 1 y la
+> bolsa comunitaria de tokens se vacía más rápido de lo previsto.
 
 ### No hay cambios en:
 - Base de datos

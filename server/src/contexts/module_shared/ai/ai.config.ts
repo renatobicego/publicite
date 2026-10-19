@@ -1,31 +1,105 @@
 /**
- * Configuración compartida de los servicios de IA (valuación y match).
- * El chatbot conserva sus constantes propias por compatibilidad.
+ * Configuración compartida de los servicios de IA (chatbot, valuación y match).
+ * Todos los modelos se pueden pisar por variable de entorno para poder cambiar
+ * de modelo sin redeployar código.
  */
 
-/** Modelo económico: texto sin imágenes. */
-export const AI_TEXT_MODEL = 'gpt-4o-mini';
+function readModel(envVar: string, fallback: string): string {
+  const model = process.env[envVar];
+  return model && model.trim().length > 0 ? model.trim() : fallback;
+}
 
-/** Modelo con capacidades de visión. Se usa sólo cuando hay imágenes o precisión crítica. */
+/**
+ * Modelo económico de texto (chatbot y match).
+ * gpt-6-luna sale más barato que gpt-4o-mini (US$0,10/US$0,50 por millón contra
+ * US$0,15/US$0,60) y además acepta imágenes, así que ya no hace falta saltar a
+ * un modelo con visión aparte.
+ */
+export function getTextModel(): string {
+  return readModel('OPENAI_TEXT_MODEL', 'gpt-6-luna');
+}
+
+/**
+ * Modelo para los flujos con imágenes. Hoy es el mismo que el de texto: la
+ * familia gpt-6 tiene visión nativa y no hay motivo para pagar un modelo más
+ * caro sólo porque el usuario adjuntó fotos. Se mantiene separado para poder
+ * subirlo (ej. gpt-6-sol) si la precisión visual lo justifica.
+ */
 export function getVisionModel(): string {
-  const model = process.env.OPENAI_VISION_MODEL;
-  return model && model.trim().length > 0 ? model.trim() : 'gpt-4o';
+  return readModel('OPENAI_VISION_MODEL', 'gpt-6-luna');
+}
+
+/** Modelo de generación y edición de imágenes del chatbot. */
+export function getImageGenerationModel(): string {
+  return readModel('OPENAI_IMAGE_MODEL', 'gpt-image-2.5-sunburst');
 }
 
 /**
  * Modelos de la Valuación IA (corre sobre el Agents SDK / Responses API).
- * gpt-5-mini y gpt-5.1 aceptan imágenes, así que no hace falta cambiar de
- * modelo cuando el brief trae fotos como pasaba con gpt-4o-mini/gpt-4o.
+ * La familia gpt-6 acepta imágenes, así que no hace falta cambiar de modelo
+ * cuando el brief trae fotos como pasaba con gpt-4o-mini/gpt-4o.
  */
 export function getValuacionBriefModel(): string {
-  const model = process.env.VALUACION_BRIEF_MODEL;
-  return model && model.trim().length > 0 ? model.trim() : 'gpt-5-mini';
+  return readModel('VALUACION_BRIEF_MODEL', 'gpt-6-luna');
 }
 
 /** El informe final usa el modelo grande: es el número que el usuario publica. */
 export function getValuacionResultModel(): string {
-  const model = process.env.VALUACION_RESULT_MODEL;
-  return model && model.trim().length > 0 ? model.trim() : 'gpt-5.1';
+  return readModel('VALUACION_RESULT_MODEL', 'gpt-6-sol');
+}
+
+/**
+ * Modelos que todavía aceptan la forma clásica de chat.completions
+ * (`temperature` libre + `max_tokens`): gpt-4 y gpt-3.5.
+ *
+ * Se listan los viejos en lugar de los nuevos a propósito: así, si mañana se
+ * apunta OPENAI_TEXT_MODEL a un modelo más nuevo por variable de entorno, se
+ * asume la forma de razonamiento (que es hacia donde va la API) y no hay que
+ * tocar código.
+ */
+function isLegacyChatModel(model: string): boolean {
+  return /^(gpt-4|gpt-3)/.test(model.trim().toLowerCase());
+}
+
+/**
+ * true si el modelo es de razonamiento (gpt-5, gpt-6, o-series y lo que venga).
+ * Estos modelos NO aceptan los parámetros clásicos de chat.completions.
+ */
+export function isReasoningModel(model: string): boolean {
+  return !isLegacyChatModel(model);
+}
+
+/**
+ * Normaliza los parámetros de `chat.completions` según el modelo.
+ *
+ * Los modelos de razonamiento rechazan la forma clásica (verificado contra la
+ * API):
+ *  - `max_tokens` → hay que mandar `max_completion_tokens`.
+ *  - `temperature` → sólo admiten el default (1); cualquier otro valor es un 400.
+ *  - function tools → en chat.completions sólo funcionan con
+ *    `reasoning_effort: 'none'` (si no, la API devuelve 400 y pide usar
+ *    /v1/responses).
+ *
+ * Se fuerza `reasoning_effort: 'none'` en todas las llamadas: estos flujos
+ * (chat del glosario, extracción de criterios, ranking) no necesitan cadena de
+ * razonamiento, que se cobra como tokens de salida y además se comería el tope
+ * de `max_completion_tokens` dejando la respuesta vacía.
+ */
+export function buildChatCompletionParams(params: {
+  model: string;
+  temperature: number;
+  maxTokens: number;
+}): Record<string, unknown> {
+  if (!isReasoningModel(params.model)) {
+    return { temperature: params.temperature, max_tokens: params.maxTokens };
+  }
+
+  return {
+    max_completion_tokens: params.maxTokens,
+    // El SDK (openai@6) todavía no tipa 'none' en ReasoningEffort aunque la API
+    // lo acepta. Se puede quitar el cast cuando se actualice la dependencia.
+    reasoning_effort: 'none' as any,
+  };
 }
 
 /**
