@@ -8,7 +8,6 @@ import {
   ModalFooter,
   ModalHeader,
   Textarea,
-  useDisclosure,
 } from "@nextui-org/react";
 import { useUser } from "@clerk/nextjs";
 import { FaRegStar, FaStar, FaStarHalfAlt } from "react-icons/fa";
@@ -51,60 +50,94 @@ export const RatingStars = ({
   </span>
 );
 
-interface Props {
+/**
+ * Estrellas para elegir puntaje. Al tocar una se llama a `onPick` con ese
+ * valor (en la sección de reseñas abre el modal ya calificado).
+ */
+export const PickRatingStars = ({
+  value = 0,
+  onPick,
+  size = "md",
+}: {
+  value?: number;
+  onPick: (stars: number) => void;
+  size?: "md" | "lg";
+}) => {
+  const [hovered, setHovered] = useState(0);
+  const shown = hovered || value;
+  return (
+    <div className="flex flex-col items-center gap-2">
+      <div className="flex gap-1" onMouseLeave={() => setHovered(0)}>
+        {[1, 2, 3, 4, 5].map((n) => (
+          <button
+            key={n}
+            type="button"
+            onClick={() => onPick(n)}
+            onMouseEnter={() => setHovered(n)}
+            className={`p-1 text-warning transition-transform hover:scale-110 ${
+              size === "lg" ? "text-4xl sm:text-5xl" : "text-2xl sm:text-3xl"
+            }`}
+            aria-label={`Calificar ${n} de 5`}
+            aria-pressed={value === n}
+          >
+            {n <= shown ? <FaStar /> : <FaRegStar />}
+          </button>
+        ))}
+      </div>
+      <span className="h-5 text-sm font-medium text-default-600">
+        {shown ? ratingLabels[shown] : "Elegí un puntaje"}
+      </span>
+    </div>
+  );
+};
+
+interface ReviewModalProps {
   productionId: string;
-  rating?: number | null;
-  reviewsCount?: number | null;
-  /** El staff no reseña su propio blog: sólo ve el puntaje. */
-  canReview: boolean;
+  isOpen: boolean;
+  onOpenChange: (isOpen: boolean) => void;
+  onClose: () => void;
+  /** Puntaje elegido antes de abrir (estrellas de la sección de reseñas). */
+  initialStars?: number;
   /** Se llama al publicar o editar una reseña. */
   onReviewed: () => void;
-  /**
-   * Vista previa de visitante: la acción se muestra pero no se ejecuta; en su
-   * lugar se llama a esto (avisa que hay que volver a editar).
-   */
-  onBlocked?: () => void;
 }
 
-/**
- * Puntaje del blog en el encabezado, con el botón para reseñar. La lista de
- * reseñas sigue abajo (`ProductionCommunity`); acá va lo que tiene que verse
- * apenas se entra al blog.
- */
-const ProductionRating = ({
+/** Modal para publicar o editar la reseña del usuario sobre el blog. */
+export const ProductionReviewModal = ({
   productionId,
-  rating,
-  reviewsCount,
-  canReview,
+  isOpen,
+  onOpenChange,
+  onClose,
+  initialStars,
   onReviewed,
-  onBlocked,
-}: Props) => {
+}: ReviewModalProps) => {
   const { user } = useUser();
   const myId = user?.publicMetadata?.mongoId as string | undefined;
-  const modal = useDisclosure();
 
   const [mine, setMine] = useState<ProductionReview | null>(null);
   const [stars, setStars] = useState(0);
-  const [hovered, setHovered] = useState(0);
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
 
   // Si el usuario ya reseñó, el modal edita su reseña en vez de crear otra.
+  // El puntaje elegido al abrir pisa el guardado.
   useEffect(() => {
-    if (!modal.isOpen || !myId) return;
+    if (!isOpen) return;
+    if (initialStars) setStars(initialStars);
+    if (!myId) return;
     let cancelled = false;
     getProductionReviews(productionId, 1, 50).then((res) => {
       if (cancelled || isProductionActionError(res)) return;
       const existing = res.reviews.find((review) => review.author === myId);
       if (!existing) return;
       setMine(existing);
-      setStars(existing.rating);
+      setStars(initialStars || existing.rating);
       setText(existing.review);
     });
     return () => {
       cancelled = true;
     };
-  }, [modal.isOpen, myId, productionId]);
+  }, [isOpen, myId, productionId, initialStars]);
 
   const submit = async () => {
     if (stars < 1) {
@@ -133,112 +166,117 @@ const ProductionRating = ({
       }
       toastifySuccess(mine ? "Reseña actualizada" : "Reseña publicada");
       setMine(res);
-      modal.onClose();
+      onClose();
       onReviewed();
     } finally {
       setBusy(false);
     }
   };
 
+  return (
+    <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <ModalContent>
+        {(close) => (
+          <>
+            <ModalHeader>
+              {mine ? "Editar tu reseña" : "Reseñar este blog"}
+            </ModalHeader>
+            <ModalBody className="gap-4">
+              <PickRatingStars value={stars} onPick={setStars} size="lg" />
+              <Textarea
+                label="Tu reseña"
+                placeholder="Contá qué te pareció el blog"
+                value={text}
+                onValueChange={setText}
+                maxLength={2000}
+                minRows={4}
+              />
+            </ModalBody>
+            <ModalFooter>
+              <Button variant="light" onPress={close} isDisabled={busy}>
+                Cancelar
+              </Button>
+              <PrimaryButton onClick={submit} isDisabled={busy}>
+                {busy
+                  ? "Guardando…"
+                  : mine
+                    ? "Guardar cambios"
+                    : "Publicar reseña"}
+              </PrimaryButton>
+            </ModalFooter>
+          </>
+        )}
+      </ModalContent>
+    </Modal>
+  );
+};
+
+interface Props {
+  rating?: number | null;
+  reviewsCount?: number | null;
+  /**
+   * Abre el modal de reseña. Sin esto (staff) el puntaje sólo lleva a la
+   * lista de reseñas.
+   */
+  onReview?: () => void;
+}
+
+/**
+ * Puntaje del blog en el encabezado, con el botón para reseñar. Tocar el
+ * puntaje también abre el modal. La lista de reseñas sigue abajo
+ * (`ProductionCommunity`).
+ */
+const ProductionRating = ({ rating, reviewsCount, onReview }: Props) => {
   const count = reviewsCount ?? 0;
-  const shown = hovered || stars;
+
+  const summary = (
+    <>
+      <span className="text-3xl font-bold leading-none">
+        {rating != null && count > 0 ? rating.toFixed(1) : "–"}
+      </span>
+      <span className="flex flex-col gap-1">
+        <RatingStars value={count > 0 ? (rating ?? 0) : 0} className="text-xl" />
+        <span className="text-xs text-default-500">
+          {count === 0
+            ? "Todavía sin reseñas"
+            : count === 1
+              ? "1 reseña"
+              : `${count} reseñas`}
+        </span>
+      </span>
+    </>
+  );
 
   return (
-    <>
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border border-default-200 bg-default-50 px-4 py-3">
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border border-default-200 bg-default-50 px-4 py-3">
+      {onReview ? (
+        <button
+          type="button"
+          onClick={onReview}
+          className="flex items-center gap-3 text-left hover:opacity-80"
+          title="Reseñar este blog"
+        >
+          {summary}
+        </button>
+      ) : (
         <a
           href={`#${PRODUCTION_REVIEWS_ANCHOR}`}
           className="flex items-center gap-3 hover:opacity-80"
           title="Ver reseñas"
         >
-          <span className="text-3xl font-bold leading-none">
-            {rating != null && count > 0 ? rating.toFixed(1) : "–"}
-          </span>
-          <span className="flex flex-col gap-1">
-            <RatingStars
-              value={count > 0 ? (rating ?? 0) : 0}
-              className="text-xl"
-            />
-            <span className="text-xs text-default-500">
-              {count === 0
-                ? "Todavía sin reseñas"
-                : count === 1
-                  ? "1 reseña"
-                  : `${count} reseñas`}
-            </span>
-          </span>
+          {summary}
         </a>
-        {canReview && (
-          <PrimaryButton
-            startContent={<FaStar />}
-            onClick={onBlocked ?? modal.onOpen}
-            className="ml-auto"
-          >
-            Reseñar este blog
-          </PrimaryButton>
-        )}
-      </div>
-
-      <Modal isOpen={modal.isOpen} onOpenChange={modal.onOpenChange}>
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader>
-                {mine ? "Editar tu reseña" : "Reseñar este blog"}
-              </ModalHeader>
-              <ModalBody className="gap-4">
-                <div className="flex flex-col items-center gap-2">
-                  <div
-                    className="flex gap-1"
-                    onMouseLeave={() => setHovered(0)}
-                  >
-                    {[1, 2, 3, 4, 5].map((n) => (
-                      <button
-                        key={n}
-                        type="button"
-                        onClick={() => setStars(n)}
-                        onMouseEnter={() => setHovered(n)}
-                        className="p-1 text-4xl text-warning transition-transform hover:scale-110 sm:text-5xl"
-                        aria-label={`Calificar ${n} de 5`}
-                        aria-pressed={stars === n}
-                      >
-                        {n <= shown ? <FaStar /> : <FaRegStar />}
-                      </button>
-                    ))}
-                  </div>
-                  <span className="h-5 text-sm font-medium text-default-600">
-                    {shown ? ratingLabels[shown] : "Elegí un puntaje"}
-                  </span>
-                </div>
-                <Textarea
-                  label="Tu reseña"
-                  placeholder="Contá qué te pareció el blog"
-                  value={text}
-                  onValueChange={setText}
-                  maxLength={2000}
-                  minRows={4}
-                />
-                <p className="text-xs text-default-500">
-                  Pueden reseñar quienes accedieron al blog con un ticket.
-                </p>
-              </ModalBody>
-              <ModalFooter>
-                <Button variant="light" onPress={onClose} isDisabled={busy}>
-                  Cancelar
-                </Button>
-                <PrimaryButton onClick={submit} isDisabled={busy}>
-                  {busy
-                    ? "Guardando…"
-                    : mine
-                      ? "Guardar cambios"
-                      : "Publicar reseña"}
-                </PrimaryButton>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
-      </Modal>
-    </>
+      )}
+      {onReview && (
+        <PrimaryButton
+          startContent={<FaStar />}
+          onClick={onReview}
+          className="ml-auto"
+        >
+          Reseñar este blog
+        </PrimaryButton>
+      )}
+    </div>
   );
 };
 

@@ -27,7 +27,11 @@ import {
   ProductionReview,
 } from "@/types/productionTypes";
 import { PROFILE } from "@/utils/data/urls";
-import { PRODUCTION_REVIEWS_ANCHOR, RatingStars } from "./ProductionRating";
+import {
+  PickRatingStars,
+  PRODUCTION_REVIEWS_ANCHOR,
+  RatingStars,
+} from "./ProductionRating";
 
 interface Props {
   productionId: string;
@@ -38,6 +42,11 @@ interface Props {
    * lugar se llama a esto (avisa que hay que volver a editar).
    */
   onBlocked?: () => void;
+  /**
+   * Abre el modal de reseña con el puntaje elegido. Sin esto (staff) no se
+   * muestran las estrellas para calificar.
+   */
+  onReview?: (stars: number) => void;
 }
 
 const displayName = (info?: ProductionOwnerInfo | null) =>
@@ -101,7 +110,12 @@ const AuthorLink = ({
 };
 
 /** Reseñas y comentarios de un blog (REV-01). */
-const ProductionCommunity = ({ productionId, isStaff, onBlocked }: Props) => {
+const ProductionCommunity = ({
+  productionId,
+  isStaff,
+  onBlocked,
+  onReview,
+}: Props) => {
   const { user } = useUser();
   const myId = user?.publicMetadata?.mongoId as string | undefined;
 
@@ -218,12 +232,22 @@ const ProductionCommunity = ({ productionId, isStaff, onBlocked }: Props) => {
 
   return (
     <section className="w-full max-w-3xl flex flex-col gap-6">
-      {/* Reseñas: se escriben desde el encabezado del blog (ProductionRating) */}
+      {/* Reseñas: las estrellas abren el mismo modal que el encabezado */}
       <div
         id={PRODUCTION_REVIEWS_ANCHOR}
         className="flex scroll-mt-24 flex-col gap-3"
       >
         <h3 className="text-lg font-semibold">Reseñas</h3>
+        {onReview && (
+          <Card shadow="sm">
+            <CardBody className="items-center gap-1 py-4">
+              <span className="text-sm text-default-600">
+                ¿Qué te pareció este blog?
+              </span>
+              <PickRatingStars onPick={onReview} />
+            </CardBody>
+          </Card>
+        )}
         {reviews.length === 0 && (
           <p className="text-sm text-default-500">
             Este blog todavía no tiene reseñas.

@@ -566,7 +566,7 @@ El dueño o moderador del blog tiene el botón **"Ver como visitante"**: muestra
 
 ### ⭐ Fans, reseñas y comentarios
 - **Fans** 💖: el contador de fans está junto al título del blog. Con "Hacerme fan" sigues el blog; el dueño ve cuántos fans tiene.
-- **Reseñas**: el puntaje del blog se ve arriba, en el encabezado, junto al botón **"Reseñar este blog"** (estrellas del 1 al 5 y un texto). Pueden reseñar quienes accedieron al blog con un ticket; el dueño no reseña su propio blog. Si ya reseñaste, el mismo botón te deja editar tu reseña.
+- **Reseñas**: el puntaje del blog se ve arriba, en el encabezado, junto al botón **"Reseñar este blog"** (estrellas del 1 al 5 y un texto). Tocar el puntaje o las estrellas de la sección de reseñas, más abajo, también abre la reseña. Un blog abierto lo puede reseñar cualquier visitante; si el blog completo tiene ticket, sólo quienes accedieron con él. El dueño no reseña su propio blog. Si ya reseñaste, el mismo botón te deja editar tu reseña.
 - **Comentarios**: debajo del blog. Cada comentario muestra la foto y el @usuario de quien lo escribió, y al tocarlo se abre su cartel de usuario. **Quien escribió un comentario puede eliminarlo**; el staff del blog puede responder y también eliminar comentarios.
 - **Denunciar**: está en el menú de opciones del blog (botón "⋯" del encabezado), no a la vista directa. Antes de enviar se muestra qué blog se está denunciando y de quién es. **El sitio protege al denunciante**: el dueño del blog ve qué se denunció y el motivo, pero nunca quién lo hizo.
 - **Denuncias recibidas**: el dueño o moderador las consulta en "Opciones" → "Denuncias recibidas", con el contenido denunciado, el motivo y si Soonpublicité la está revisando, la confirmó o la desestimó.

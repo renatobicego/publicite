@@ -179,6 +179,18 @@ describe('Mis Producciones - Fase 8: fans, reseñas y comentarios (FAN-01, REV-0
       view = await service.findProductionById(productionId, outsider);
       expect(view).toMatchObject({ rating: null, reviewsCount: 0 });
     });
+
+    it('un blog abierto sin ticket lo reseña cualquier visitante', async () => {
+      const owner = await createTestUser(models);
+      const visitor = await createTestUser(models);
+      const productionId = await createBlog(owner);
+
+      const review = await community.createProductionReview(
+        { productionId, rating: 5, review: 'Muy bueno' },
+        visitor,
+      );
+      expect(review).toMatchObject({ rating: 5, author: visitor });
+    });
   });
 
   describe('Reseña obligatoria en tickets pagos (REV-02, TKT-09, D10)', () => {

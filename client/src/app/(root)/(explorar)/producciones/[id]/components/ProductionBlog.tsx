@@ -89,7 +89,7 @@ import TicketCheckoutModal from "./TicketCheckoutModal";
 import TicketSalesModal from "./TicketSalesModal";
 import FanButton from "./FanButton";
 import ProductionCommunity from "./ProductionCommunity";
-import ProductionRating from "./ProductionRating";
+import ProductionRating, { ProductionReviewModal } from "./ProductionRating";
 import ReportModal from "./ReportModal";
 import MoveItemsModal from "./MoveItemsModal";
 import DeleteBlogModal from "./DeleteBlogModal";
@@ -242,6 +242,9 @@ const ProductionBlog = ({
 
   // Se incrementa al reseñar para que la lista de reseñas se vuelva a pedir.
   const [communityVersion, setCommunityVersion] = useState(0);
+  const reviewModal = useDisclosure();
+  // Puntaje elegido en las estrellas de la sección de reseñas.
+  const [reviewStars, setReviewStars] = useState<number | undefined>();
 
   const accessKeyModal = useDisclosure();
   const accessSettings = useDisclosure();
@@ -445,6 +448,15 @@ const ProductionBlog = ({
           "production-preview-blocked",
         )
     : undefined;
+
+  // El staff (dueño o moderador) no reseña su propio blog. Se abre desde el
+  // puntaje del encabezado o desde las estrellas de la sección de reseñas.
+  const canReview = !isStaffViewer || previewMode;
+  const openReview = (stars?: number) => {
+    if (previewBlocked) return previewBlocked();
+    setReviewStars(stars);
+    reviewModal.onOpen();
+  };
 
   // Menú de opciones del blog. Lo de staff primero; "Denunciar" va al final y
   // sólo para quien no es parte del blog.
@@ -704,15 +716,9 @@ const ProductionBlog = ({
                 moderador) no reseña su propio blog. */}
             <div className="mt-auto flex flex-col gap-3 pt-4">
               <ProductionRating
-                onBlocked={previewBlocked}
-                productionId={production._id}
                 rating={production.rating}
                 reviewsCount={production.reviewsCount}
-                canReview={!isStaffViewer || previewMode}
-                onReviewed={() => {
-                  setCommunityVersion((version) => version + 1);
-                  reloadBlog();
-                }}
+                onReview={canReview ? () => openReview() : undefined}
               />
             </div>
           </div>
@@ -1124,6 +1130,19 @@ const ProductionBlog = ({
         productionId={production._id}
         isStaff={canEdit}
         onBlocked={previewBlocked}
+        onReview={canReview ? openReview : undefined}
+      />
+
+      <ProductionReviewModal
+        productionId={production._id}
+        isOpen={reviewModal.isOpen}
+        onOpenChange={reviewModal.onOpenChange}
+        onClose={reviewModal.onClose}
+        initialStars={reviewStars}
+        onReviewed={() => {
+          setCommunityVersion((version) => version + 1);
+          reloadBlog();
+        }}
       />
 
       {/* Mover la selección (o un ítem) a otra carpeta (staff) */}

@@ -36,7 +36,10 @@ import {
   ProductionCommunityRepositoryInterface,
   ProductionReview,
 } from '../../domain/repository/production-community.repository.interface';
-import { ProductionTicketPurchaseRepositoryInterface } from '../../domain/repository/production-ticket.repository.interface';
+import {
+  ProductionTicketPurchaseRepositoryInterface,
+  ProductionTicketRepositoryInterface,
+} from '../../domain/repository/production-ticket.repository.interface';
 import { ProductionServiceInterface } from '../../domain/service/production.service.interface';
 import { ProductionCommunityServiceInterface } from '../../domain/service/production-community.service.interface';
 import { ProductionAccessService } from './production.access.service';
@@ -76,6 +79,8 @@ export class ProductionCommunityService
     private readonly communityRepository: ProductionCommunityRepositoryInterface,
     @Inject('ProductionTicketPurchaseRepositoryInterface')
     private readonly purchaseRepository: ProductionTicketPurchaseRepositoryInterface,
+    @Inject('ProductionTicketRepositoryInterface')
+    private readonly ticketRepository: ProductionTicketRepositoryInterface,
     @Inject('ProductionServiceInterface')
     private readonly productionService: ProductionServiceInterface,
     private readonly accessService: ProductionAccessService,
@@ -294,12 +299,20 @@ export class ProductionCommunityService
     if (viewer.role !== ProductionRole.visitor) {
       throw new BadRequestException('No podés reseñar un blog del que sos parte');
     }
-    // REV-01: reseña quien accedió mediante un ticket.
-    const hasTicket = await this.purchaseRepository.hasPurchaseForProduction(
-      userId,
+    // REV-01: en un blog con ticket de acceso a todo el blog, reseña sólo
+    // quien accedió con ese ticket. Un blog abierto lo reseña cualquier
+    // visitante que pueda ver su contenido (ya validado en openForViewer).
+    const tickets = await this.ticketRepository.findByProduction(
       production.getId!,
     );
-    if (!hasTicket) {
+    const isTicketedBlog = tickets.some((ticket) => ticket.target === null);
+    if (
+      isTicketedBlog &&
+      !(await this.purchaseRepository.hasPurchaseForProduction(
+        userId,
+        production.getId!,
+      ))
+    ) {
       throw new ForbiddenException(
         'Sólo quienes accedieron con un ticket pueden reseñar esta producción',
       );
