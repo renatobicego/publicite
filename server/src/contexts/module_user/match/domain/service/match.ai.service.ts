@@ -3,7 +3,8 @@ import { ConfigService } from '@nestjs/config';
 import OpenAI from 'openai';
 
 import {
-  AI_TEXT_MODEL,
+  buildChatCompletionParams,
+  getTextModel,
   getVisionModel,
   parseJsonFromModel,
 } from 'src/contexts/module_shared/ai/ai.config';
@@ -41,7 +42,7 @@ export class MatchAIService implements MatchAIServiceInterface {
     modeContext?: string;
   }): Promise<MatchCriteriaResult> {
     const hasImages = params.imageUrls.length > 0;
-    const model = hasImages ? getVisionModel() : AI_TEXT_MODEL;
+    const model = hasImages ? getVisionModel() : getTextModel();
 
     const userContent: any = hasImages
       ? [
@@ -67,9 +68,8 @@ export class MatchAIService implements MatchAIServiceInterface {
         },
         { role: 'user', content: userContent },
       ],
-      temperature: 0.3,
-      max_tokens: 500,
       response_format: { type: 'json_object' },
+      ...buildChatCompletionParams({ model, temperature: 0.3, maxTokens: 500 }),
     });
 
     const raw = parseJsonFromModel<any>(completion.choices[0]?.message?.content);
@@ -93,8 +93,9 @@ export class MatchAIService implements MatchAIServiceInterface {
     imageUrls: string[];
   }): Promise<MatchRankingResult> {
     const candidates = params.candidates.slice(0, MAX_CANDIDATES_TO_RANK);
-    // Comparar imágenes contra anuncios sólo justifica el modelo caro si hay imágenes.
-    const model = params.imageUrls.length > 0 ? getVisionModel() : AI_TEXT_MODEL;
+    // Separado del modelo de texto para poder subir sólo el de visión si hace
+    // falta más precisión comparando fotos contra anuncios.
+    const model = params.imageUrls.length > 0 ? getVisionModel() : getTextModel();
 
     const candidatesPayload = candidates.map((candidate) => ({
       postId: candidate.postId,
@@ -116,9 +117,8 @@ export class MatchAIService implements MatchAIServiceInterface {
           )}`,
         },
       ],
-      temperature: 0.2,
-      max_tokens: 1200,
       response_format: { type: 'json_object' },
+      ...buildChatCompletionParams({ model, temperature: 0.2, maxTokens: 1200 }),
     });
 
     const raw = parseJsonFromModel<any>(completion.choices[0]?.message?.content);

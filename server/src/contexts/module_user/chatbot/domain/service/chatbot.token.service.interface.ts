@@ -26,9 +26,9 @@ export interface ChatbotTokenServiceInterface {
 
   /**
    * Descuenta el usage de la cuota correspondiente y lo registra para tracking.
-   * El descuento se pondera por el costo relativo del modelo usado (gpt-4o vale
-   * ~10 tokens de gpt-4o-mini), así que lo cobrado no coincide con los tokens
-   * informados por OpenAI.
+   * El descuento se pondera por el costo relativo del modelo usado (un token de
+   * gpt-6-sol vale ~15 de gpt-6-luna), así que lo cobrado no coincide con los
+   * tokens informados por OpenAI.
    *
    * @returns tokens reales efectivamente cobrados (ya ponderados). Devuelve el
    *          valor calculado aunque falle la persistencia del log.

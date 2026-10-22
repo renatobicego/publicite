@@ -41,8 +41,9 @@
  *   también identidades anónimas ('whatsapp:+549...'). Ver isUnlimitedIdentity.
  * - CHATBOT_TOKENS_MODEL_MULTIPLIERS: JSON opcional {modelo: factor} con el
  *   costo relativo de cada modelo respecto de gpt-4o-mini. Se usa para que
- *   modelos caros (gpt-4o con visión) descuenten cuota en proporción a lo que
- *   realmente cuestan. Ej: {"gpt-4o": 10}. Default: ver DEFAULT_MODEL_MULTIPLIERS.
+ *   modelos caros (gpt-6-sol, gpt-image-2.5) descuenten cuota en proporción a lo
+ *   que realmente cuestan. Ej: {"gpt-6-sol": 15}. Default: ver
+ *   DEFAULT_MODEL_MULTIPLIERS.
  * - CHATBOT_TOKENS_MODEL_MULTIPLIER_DEFAULT: factor para modelos sin mapping
  *   (default 1).
  */
@@ -92,12 +93,32 @@ export function getChatbotTokensRatio(): number {
 /**
  * Multiplicadores de costo por modelo (ver getModelCostMultiplier).
  * Los valores por defecto son la relación de precio aproximada respecto de
- * gpt-4o-mini, que es la unidad de referencia del sistema.
+ * gpt-4o-mini (US$0,15/US$0,60 por millón), que sigue siendo la unidad de
+ * referencia del sistema aunque ya no sea el modelo en uso.
+ *
+ * Si se cambia un modelo por variable de entorno sin agregarlo acá, cae en el
+ * default (1) y se le descuenta al usuario menos de lo que cuesta.
  */
 const DEFAULT_MODEL_MULTIPLIERS: Record<string, number> = {
+  // Familia en uso. gpt-6-luna cuesta un poco MENOS que gpt-4o-mini
+  // (US$0,10/US$0,50), así que el 1 es levemente conservador a favor de la bolsa.
+  'gpt-6-luna': 1,
+  'gpt-6-sol': 15,
+  'gpt-6.1-sol': 15,
+  'gpt-6-astra': 75,
+  // Imagen: gpt-image-2.5 cobra US$30 por millón de tokens de salida contra los
+  // US$8 de gpt-image-1-mini, de ahí el 4.
+  'gpt-image-2.5-sunburst': 4,
+  'gpt-image-2.5-flare': 4,
+  'gpt-image-2': 4,
+  // Modelos anteriores: quedan para que revertir por env no subvalúe el consumo.
   'gpt-4o-mini': 1,
   'gpt-4o': 10,
+  'gpt-5-mini': 3,
+  'gpt-5.1': 12,
   'gpt-image-1-mini': 1,
+  'gpt-image-1.5': 4,
+  'gpt-image-1': 5,
 };
 
 function readModelMultipliers(): Record<string, number> {
@@ -126,10 +147,10 @@ function readModelMultipliers(): Record<string, number> {
  * Multiplicador de costo del modelo usado en una request.
  *
  * El sistema contabiliza TOKENS, no dólares, pero los modelos no cuestan lo
- * mismo por token: gpt-4o es ~10x más caro que gpt-4o-mini. Sin ponderar, una
- * valuación con visión le descontaría al usuario lo mismo que un chat
- * equivalente costando diez veces más, y la bolsa comunitaria se vaciaría mucho
- * más rápido de lo que el modelo de costos previó.
+ * mismo por token: gpt-6-sol es ~15x más caro que gpt-6-luna, y una imagen de
+ * gpt-image-2.5 ~4x. Sin ponderar, una valuación o una imagen le descontaría al
+ * usuario lo mismo que un chat equivalente costando varias veces más, y la bolsa
+ * comunitaria se vaciaría mucho más rápido de lo que el modelo de costos previó.
  *
  * Se ajusta por env CHATBOT_TOKENS_MODEL_MULTIPLIERS (JSON {modelo: factor}).
  */

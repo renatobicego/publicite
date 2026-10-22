@@ -27,6 +27,10 @@ import {
   getImageFallbackPubliciteTokens,
   publiciteToRealTokens,
 } from 'src/contexts/module_shared/chatbot-tokens/chatbot.tokens.config';
+import {
+  getImageGenerationModel,
+  getTextModel,
+} from 'src/contexts/module_shared/ai/ai.config';
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -174,7 +178,7 @@ export class ChatbotService implements ChatbotServiceInterface {
       const tokenStatus = await this.chargeUsage(tokenGate, aiResult.usage, {
         sessionId,
         kind: 'chat',
-        model: aiResult.model ?? 'gpt-4o-mini',
+        model: aiResult.model ?? getTextModel(),
       });
 
       return {
@@ -327,7 +331,7 @@ export class ChatbotService implements ChatbotServiceInterface {
       };
       await this.chargeUsage(tokenGate, usage, {
         kind: 'image',
-        model: result.model ?? 'gpt-image-1-mini',
+        model: result.model ?? getImageGenerationModel(),
       });
 
       return result.imageBase64;

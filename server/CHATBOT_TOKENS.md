@@ -103,6 +103,12 @@ Conversión de referencia (gpt-4o-mini: US$0,15/M entrada + US$0,60/M salida;
 mix real medido de Cubito ≈ 5.500 entrada + 200 salida por mensaje ⇒
 ~US$0,001/mensaje ≈ US$0,17 por millón de tokens reales):
 
+> **Nota:** gpt-4o-mini se mantiene como unidad de referencia de la contabilidad
+> (factor 1), pero el modelo en uso desde octubre 2026 es `gpt-6-luna`, que es
+> ~30% más barato (US$0,10/M entrada + US$0,50/M salida). O sea que la cuenta de
+> abajo quedó conservadora a favor de la plataforma. Lo que sí encareció es la
+> generación de imágenes (`gpt-image-2.5-sunburst`, factor 4).
+
 > **US$50 ≈ 285 millones de tokens reales ≈ 285.000 tokens Publicité.**
 > Recomendado cargar `CHATBOT_TOKENS_COMMUNITY_SEED=250000` (deja ~12% de
 > margen para imágenes —más caras por token— y variaciones de mix).

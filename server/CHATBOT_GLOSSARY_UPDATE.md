@@ -116,9 +116,13 @@ Una sección dedicada al final que agrupa todos los enlaces por categoría:
 
 ## 🔧 Configuración Técnica
 
-- **Modelo utilizado**: `gpt-4o-mini`
-- **Temperatura**: 0.7 (balance entre creatividad y precisión)
-- **Max tokens**: 800
+- **Modelo utilizado**: `gpt-6-luna` (pisable con `OPENAI_TEXT_MODEL`)
+- **Temperatura**: no se manda. Los modelos de razonamiento sólo aceptan el
+  default (1); cualquier otro valor devuelve 400
+- **Max tokens**: 800, enviados como `max_completion_tokens` (`max_tokens` no
+  está soportado en esta familia)
+- **Reasoning effort**: `none`. Es obligatorio para poder usar function tools
+  (`create_ad`) desde `chat.completions`, y evita pagar tokens de razonamiento
 - **Historial**: Últimos 10 mensajes de conversación
 
 ## 🚀 Cómo Probar

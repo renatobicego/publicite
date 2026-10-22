@@ -4,6 +4,7 @@ import AnimatedBox from "../../AnimatedBox";
 import DataBox, { CardDataItem, EditButton } from "../../DataBox";
 import { useActiveSubscriptions } from "@/app/(root)/providers/userDataProvider";
 import { parseIsoDate, showDate } from "@/utils/functions/dates";
+import { frequencyLabelFromDays } from "@/utils/functions/billingFrequency";
 
 const AccountType = () => {
   const { accountType: subscription } = useActiveSubscriptions();
@@ -34,7 +35,9 @@ const AccountType = () => {
               subtitle={`Próximo pago: ${showDate(
                 parseIsoDate(subscription.nextPaymentDate)
               )}`}
-              boldLabel={`$${subscription.subscriptionPlan.price} por mes`}
+              boldLabel={`$${subscription.subscriptionPlan.price} ${frequencyLabelFromDays(
+                subscription.subscriptionPlan.intervalTime
+              )}`.trim()}
             />
           ) : (
             <CardDataItem

@@ -16,9 +16,9 @@ import {
 } from '../../../application/dto/HTTP-RESPONSE/valuacion.response';
 
 /**
- * Toda la valuación exige usuario autenticado: usa gpt-4o con visión, que es la
- * operación de IA más cara de la plataforma, y los anónimos no son limitables
- * de forma confiable.
+ * Toda la valuación exige usuario autenticado: el informe corre con gpt-6-sol y
+ * razonamiento, que es la operación de IA más cara de la plataforma, y los
+ * anónimos no son limitables de forma confiable.
  */
 @Resolver()
 @UseGuards(ClerkAuthGuard)

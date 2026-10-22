@@ -410,11 +410,13 @@ Los usuarios que exploren anuncios pueden **cambiar su ubicación de búsqueda**
 
 Estos ejemplos muestran el **estilo y nivel de detalle** que el chatbot proporcionará con el glosario mejorado.
 
-El modelo de IA (gpt-4o-mini) utilizará el glosario y las instrucciones para generar respuestas similares a estos ejemplos, adaptándose al contexto específico de cada pregunta.
+El modelo de IA utilizará el glosario y las instrucciones para generar respuestas similares a estos ejemplos, adaptándose al contexto específico de cada pregunta.
 
 ---
 
 **Fecha**: Diciembre 16, 2025  
 **Versión del Glosario**: 2.0  
-**Modelo**: gpt-4o-mini (temperature: 0.7, max_tokens: 800)
+**Modelo**: gpt-6-luna (reasoning_effort: none, max_completion_tokens: 800).
+Estos ejemplos se escribieron con gpt-4o-mini (temperature 0.7); el estilo
+esperado no cambió con la migración.
 
