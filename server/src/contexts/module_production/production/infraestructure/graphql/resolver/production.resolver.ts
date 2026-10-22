@@ -5,14 +5,19 @@ import { ClerkAuthGuard } from 'src/contexts/module_shared/auth/clerk-auth/clerk
 import { ClerkAuthGuardOptional } from 'src/contexts/module_shared/auth/clerk-auth/clerk.auth.guard.optional';
 import { ProductionAdapterInterface } from '../../../application/adapter/production.adapter.interface';
 import {
+  ProductionAccessFilter,
+  ProductionBehaviourType,
   ProductionItemKind,
   ProductionOwnerType,
   ProductionVisibility,
 } from '../../../domain/entity/enum/production.enums';
 import {
   ProductionCreateRequest,
+  ProductionGeoLocationInput,
   ProductionUpdateRequest,
 } from '../../../domain/entity/models_graphql/HTTP-REQUEST/production.request';
+import { UserLocation } from 'src/contexts/module_post/post/domain/entity/models_graphql/HTTP-REQUEST/post.location.request';
+import { Visibility_Of_Find } from 'src/contexts/module_post/post/domain/entity/enum/post-visibility.enum';
 import {
   ProductionArticleRequest,
   ProductionArticleUpdateRequest,
@@ -154,7 +159,7 @@ export class ProductionResolver {
 
   @Query(() => ProductionListResponse, {
     description:
-      'Listado público de producciones (NAV-02) y buscador (NAV-05). Sin token sólo lo público',
+      'Explorar de producciones (NAV-02) y buscador (NAV-05). Sin behaviourType: todas; libre: blogs libres dentro del radio (sin los propios); agenda: blogs de agenda de tus contactos (requiere token, filtrable por relation). Con userLocation los blogs libres sólo aparecen dentro de su radio. Sin token sólo lo público',
   })
   @UseGuards(ClerkAuthGuardOptional)
   async findAllProductions(
@@ -163,12 +168,31 @@ export class ProductionResolver {
     @Args('searchTerm', { type: () => String, nullable: true })
     searchTerm: string | undefined,
     @Context() context: ProductionGqlContext,
+    @Args('behaviourType', { type: () => ProductionBehaviourType, nullable: true })
+    behaviourType?: ProductionBehaviourType,
+    @Args('userLocation', { type: () => UserLocation, nullable: true })
+    userLocation?: UserLocation,
+    @Args('relation', { type: () => Visibility_Of_Find, nullable: true })
+    relation?: Visibility_Of_Find,
+    @Args('access', {
+      type: () => ProductionAccessFilter,
+      nullable: true,
+      description:
+        'Sub-solapa por el ticket del blog completo: free (sin ticket), freeTicket o paidTicket',
+    })
+    access?: ProductionAccessFilter,
   ): Promise<ProductionListResponse> {
     return this.productionAdapter.findAllProductions(
       page,
       limit,
       optionalUserId(context),
       searchTerm,
+      {
+        behaviourType: behaviourType ?? undefined,
+        userLocation: userLocation ?? undefined,
+        relation: relation ?? undefined,
+        access: access ?? undefined,
+      },
     );
   }
 
@@ -228,6 +252,30 @@ export class ProductionResolver {
     return this.productionAdapter.setProductionVisibility(
       productionId,
       visibility,
+      requireUserId(context),
+    );
+  }
+
+  @Mutation(() => ProductionResponse, {
+    description:
+      'Cambia el comportamiento de un blog personal (libre ↔ agenda), como updateBehaviourType de Anuncios. Valida el cupo del plan; pasar a libre pide ubicación y radio si el blog no tenía',
+  })
+  @UseGuards(ClerkAuthGuard)
+  async updateProductionBehaviour(
+    @Args('productionId', { type: () => ID }) productionId: string,
+    @Args('behaviourType', { type: () => ProductionBehaviourType })
+    behaviourType: ProductionBehaviourType,
+    @Context() context: ProductionGqlContext,
+    @Args('visibility', { type: () => ProductionVisibility, nullable: true })
+    visibility?: ProductionVisibility,
+    @Args('geoLocation', { type: () => ProductionGeoLocationInput, nullable: true })
+    geoLocation?: ProductionGeoLocationInput,
+  ): Promise<ProductionResponse> {
+    return this.productionAdapter.updateProductionBehaviour(
+      productionId,
+      behaviourType,
+      visibility ?? undefined,
+      geoLocation ?? undefined,
       requireUserId(context),
     );
   }

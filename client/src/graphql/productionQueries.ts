@@ -32,6 +32,14 @@ const PRODUCTION_FIELDS = gql`
     welcomeText
     welcomeVideoKey
     visibility
+    behaviourType
+    geoLocation {
+      latitude
+      longitude
+      description
+      userSetted
+      ratio
+    }
     shelf {
       category
       title
@@ -219,8 +227,24 @@ export const findAllProductionsByOwnerQuery = gql`
 
 export const findAllProductionsQuery = gql`
   ${PRODUCTION_FIELDS}
-  query FindAllProductions($page: Int!, $limit: Int!, $searchTerm: String) {
-    findAllProductions(page: $page, limit: $limit, searchTerm: $searchTerm) {
+  query FindAllProductions(
+    $page: Int!
+    $limit: Int!
+    $searchTerm: String
+    $behaviourType: ProductionBehaviourType
+    $userLocation: UserLocation
+    $relation: Visibility_Of_Find
+    $access: ProductionAccessFilter
+  ) {
+    findAllProductions(
+      page: $page
+      limit: $limit
+      searchTerm: $searchTerm
+      behaviourType: $behaviourType
+      userLocation: $userLocation
+      relation: $relation
+      access: $access
+    ) {
       productions {
         ...ProductionFields
       }
@@ -243,6 +267,12 @@ export const getProductionLimitsQuery = gql`
     getProductionLimits {
       personalBlogsAvailable
       groupBlogsAvailable
+      libreBlogCount
+      agendaBlogCount
+      totalLibreBlogLimit
+      totalAgendaBlogLimit
+      libreBlogsAvailable
+      agendaBlogsAvailable
       filesPerBlogLimit
       canSellPaidTickets
       blogLimitEnabled
@@ -272,6 +302,12 @@ export const getProductionConsumptionQuery = gql`
         totalGroupBlogLimit
         personalBlogsAvailable
         groupBlogsAvailable
+        libreBlogCount
+        agendaBlogCount
+        totalLibreBlogLimit
+        totalAgendaBlogLimit
+        libreBlogsAvailable
+        agendaBlogsAvailable
         filesPerBlogLimit
         canSellPaidTickets
         blogLimitEnabled
@@ -658,6 +694,25 @@ export const setProductionVisibilityMutation = gql`
     setProductionVisibility(
       productionId: $productionId
       visibility: $visibility
+    ) {
+      ...ProductionFields
+    }
+  }
+`;
+
+export const updateProductionBehaviourMutation = gql`
+  ${PRODUCTION_FIELDS}
+  mutation UpdateProductionBehaviour(
+    $productionId: ID!
+    $behaviourType: ProductionBehaviourType!
+    $visibility: ProductionVisibility
+    $geoLocation: ProductionGeoLocationInput
+  ) {
+    updateProductionBehaviour(
+      productionId: $productionId
+      behaviourType: $behaviourType
+      visibility: $visibility
+      geoLocation: $geoLocation
     ) {
       ...ProductionFields
     }

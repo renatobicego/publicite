@@ -2,6 +2,51 @@ import { getConnectionToken, getModelToken } from '@nestjs/mongoose';
 import { TestingModule } from '@nestjs/testing';
 import { Connection, Model, Types } from 'mongoose';
 
+import {
+  ProductionBehaviourType,
+  ProductionVisibility,
+} from '../production/domain/entity/enum/production.enums';
+import { ProductionCreateRequest } from '../production/domain/entity/models_graphql/HTTP-REQUEST/production.request';
+
+/** Ubicación de prueba (Obelisco, radio de 5 km). */
+export const TEST_GEO = {
+  latitude: -34.6037,
+  longitude: -58.3816,
+  description: 'Obelisco',
+  userSetted: true,
+  ratio: 5000,
+};
+
+const AGENDA_LEVELS = [
+  ProductionVisibility.contacts,
+  ProductionVisibility.friends,
+  ProductionVisibility.topfriends,
+];
+
+/**
+ * Completa el alta de un blog como lo haría el front: un blog personal con
+ * alcance de agenda es de agenda; el resto, libre con ubicación. Los blogs de
+ * grupo no llevan comportamiento.
+ */
+export function blogRequest(
+  request: ProductionCreateRequest,
+): ProductionCreateRequest {
+  if (request.groupId) return request;
+  const behaviourType =
+    request.behaviourType ??
+    (request.visibility && AGENDA_LEVELS.includes(request.visibility)
+      ? ProductionBehaviourType.agenda
+      : ProductionBehaviourType.libre);
+  return {
+    ...request,
+    behaviourType,
+    geoLocation:
+      behaviourType === ProductionBehaviourType.libre
+        ? request.geoLocation ?? TEST_GEO
+        : request.geoLocation,
+  };
+}
+
 export interface ProductionTestModels {
   connection: Connection;
   user: Model<any>;
@@ -101,7 +146,8 @@ export async function givePlanToUser(
   models: ProductionTestModels,
   userId: string,
   plan: {
-    personalBlogsCount?: number;
+    personalBlogsLibreCount?: number;
+    personalBlogsAgendaCount?: number;
     groupBlogsCount?: number;
     filesPerBlogCount?: number;
     isFree?: boolean;
@@ -124,7 +170,8 @@ export async function givePlanToUser(
     postsLibresCount: 0,
     postsAgendaCount: 0,
     maxContacts: 0,
-    personalBlogsCount: plan.personalBlogsCount,
+    personalBlogsLibreCount: plan.personalBlogsLibreCount,
+    personalBlogsAgendaCount: plan.personalBlogsAgendaCount,
     groupBlogsCount: plan.groupBlogsCount,
     filesPerBlogCount: plan.filesPerBlogCount,
   });

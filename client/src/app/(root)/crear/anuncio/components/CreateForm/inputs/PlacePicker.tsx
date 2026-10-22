@@ -1,11 +1,6 @@
 import { memo, useEffect, useState } from "react";
 import CustomMap from "./CustomMap";
-import { FormikErrors } from "formik";
-import {
-  GoodPostValues,
-  PostLocationForm,
-  ServicePostValues,
-} from "@/types/postTypes";
+import { PostLocationForm } from "@/types/postTypes";
 import { toastifyError } from "@/utils/functions/toastify";
 import { Libraries } from "@react-google-maps/api";
 import { Status, Wrapper } from "@googlemaps/react-wrapper";
@@ -13,14 +8,12 @@ import { Slider, Spinner } from "@nextui-org/react";
 const libraries: Libraries = ["places"];
 const INITIAL_LOCATION = { lat: -34.6115643483578, lng: -58.38901999245833 };
 
+// También lo usan los blogs libres de Producciones (fuera de Formik): sólo
+// necesita algo con la forma de `setFieldValue`.
 interface PlacePickerProps {
   location: PostLocationForm;
-  setFieldValue: (
-    field: string,
-    value: any,
-    shouldValidate?: boolean
-  ) => Promise<void | FormikErrors<GoodPostValues | ServicePostValues>>;
-  error: FormikErrors<PostLocationForm> | undefined;
+  setFieldValue: (field: string, value: any, shouldValidate?: boolean) => unknown;
+  error: unknown;
 }
 
 const PlacePickerWrapper = ({
@@ -52,7 +45,7 @@ const PlacePicker = ({ location, setFieldValue, error }: PlacePickerProps) => {
 
   const handleRatioChange = (newRatio: number | number[]) => {
     setRatio(newRatio as number);
-    setFieldValue("geoLocation.ratio", ratio);
+    setFieldValue("geoLocation.ratio", newRatio as number);
   };
   // Function to handle location and zoom updates
   const handleChangeLocation = (
@@ -105,6 +98,8 @@ const PlacePicker = ({ location, setFieldValue, error }: PlacePickerProps) => {
   };
 
   useEffect(() => {
+    // Si ya viene una ubicación guardada (edición), no se pisa con la del dispositivo.
+    if (location.lat && location.lng) return;
     handleActivateGeolocation();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -146,7 +141,7 @@ const PlacePicker = ({ location, setFieldValue, error }: PlacePickerProps) => {
         formatOptions={{ style: "unit", unit: "kilometer" }}
         onChange={handleRatioChange}
       />
-      {error && (
+      {!!error && (
         <p className="text-danger text-small">
           Por favor, busque y/o seleccione una ubicación en el mapa
         </p>

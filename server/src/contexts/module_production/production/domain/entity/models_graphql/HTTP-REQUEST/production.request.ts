@@ -1,11 +1,13 @@
-import { Field, ID, InputType } from '@nestjs/graphql';
+import { Field, Float, ID, InputType } from '@nestjs/graphql';
 import { Type } from 'class-transformer';
 import {
   ArrayMaxSize,
   IsArray,
+  IsBoolean,
   IsEnum,
   IsMongoId,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
   IsUrl,
@@ -13,7 +15,43 @@ import {
   ValidateNested,
 } from 'class-validator';
 
-import { ProductionShelfCategory, ProductionVisibility } from '../../enum/production.enums';
+import {
+  ProductionBehaviourType,
+  ProductionShelfCategory,
+  ProductionVisibility,
+} from '../../enum/production.enums';
+
+@InputType({
+  description:
+    'Ubicación y radio de alcance de un blog libre (igual que en Anuncios)',
+})
+export class ProductionGeoLocationInput {
+  @Field(() => Float)
+  @IsNumber()
+  latitude: number;
+
+  @Field(() => Float)
+  @IsNumber()
+  longitude: number;
+
+  @Field(() => String, { nullable: true, description: 'Dirección legible' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(500)
+  description?: string;
+
+  @Field(() => Boolean, {
+    nullable: true,
+    description: 'Si el usuario eligió la ubicación a mano',
+  })
+  @IsOptional()
+  @IsBoolean()
+  userSetted?: boolean;
+
+  @Field(() => Float, { description: 'Radio de alcance en metros (1000 a 200000)' })
+  @IsNumber()
+  ratio: number;
+}
 
 @InputType()
 export class ProductionShelfLinkInput {
@@ -87,6 +125,24 @@ export class ProductionCreateRequest {
   @IsEnum(ProductionVisibility)
   visibility?: ProductionVisibility;
 
+  @Field(() => ProductionBehaviourType, {
+    nullable: true,
+    description:
+      'Sólo blogs personales: libre o agenda (como Anuncios). Default: libre. Se ignora en blogs de grupo',
+  })
+  @IsOptional()
+  @IsEnum(ProductionBehaviourType)
+  behaviourType?: ProductionBehaviourType;
+
+  @Field(() => ProductionGeoLocationInput, {
+    nullable: true,
+    description: 'Obligatorio en blogs libres: ubicación y radio de alcance',
+  })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => ProductionGeoLocationInput)
+  geoLocation?: ProductionGeoLocationInput;
+
   @Field(() => ID, {
     nullable: true,
     description:
@@ -137,6 +193,15 @@ export class ProductionUpdateRequest {
   @ValidateNested({ each: true })
   @Type(() => ProductionShelfLinkInput)
   shelf?: ProductionShelfLinkInput[];
+
+  @Field(() => ProductionGeoLocationInput, {
+    nullable: true,
+    description: 'Ubicación y radio de un blog libre',
+  })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => ProductionGeoLocationInput)
+  geoLocation?: ProductionGeoLocationInput;
 
   @Field(() => [ID], {
     nullable: true,

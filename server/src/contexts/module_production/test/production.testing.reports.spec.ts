@@ -11,6 +11,7 @@ import {
   createTestUser,
   getProductionTestModels,
   ProductionTestModels,
+  blogRequest,
 } from './production.test.helpers';
 import { ProductionService } from '../production/application/service/production.service';
 import { ProductionModerationService } from '../production/application/service/production.moderation.service';
@@ -69,7 +70,7 @@ describe('Mis Producciones - Fase 9: denuncias (DEN-01..03)', () => {
   const setup = async () => {
     const owner = await createTestUser(models);
     const { _id: productionId } = await service.createProduction(
-      { title: 'Blog denunciable' },
+      blogRequest({ title: 'Blog denunciable' }),
       owner,
     );
     const folder = await service.createFolder(

@@ -16,6 +16,11 @@ export interface ProductionTicketRepositoryInterface {
   ): Promise<string>;
   findById(id: string): Promise<ProductionTicket | null>;
   findByProduction(productionId: string): Promise<ProductionTicket[]>;
+  /**
+   * Blogs que tienen ticket del blog completo (`target: null`). Con `isPaid`
+   * se queda sólo con los pagos o sólo con los gratuitos.
+   */
+  findProductionIdsWithBlogTicket(isPaid?: boolean): Promise<string[]>;
   /** Actualiza precios de varios tickets (SeudoBase, SB-02). */
   setPrices(
     updates: { ticketId: string; price: number }[],

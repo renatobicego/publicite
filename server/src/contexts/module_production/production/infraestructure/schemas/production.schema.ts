@@ -1,6 +1,7 @@
 import { Document, model, Schema, Types } from 'mongoose';
 
 import {
+  ProductionBehaviourType,
   ProductionModerationStatus,
   ProductionOwnerType,
   ProductionShelfCategory,
@@ -27,6 +28,13 @@ export interface ProductionDocument extends Document {
   }[];
   showcase: Types.ObjectId[];
   visibility: ProductionVisibility;
+  behaviourType: ProductionBehaviourType | null;
+  geoLocation?: {
+    location: { type: string; coordinates: [number, number] };
+    userSetted: boolean;
+    description: string;
+    ratio: number;
+  } | null;
   aliasCbu: string | null;
   accessKeyHash: string | null;
   accessKeyVersion: number;
@@ -39,6 +47,21 @@ export interface ProductionDocument extends Document {
   createdAt: Date;
   updatedAt: Date;
 }
+
+// Ubicación + radio de un blog libre. Mismo formato que `Post.geoLocation`
+// (GeoJSON Point [lng, lat] y radio en metros).
+const ProductionGeoLocationSchema = new Schema(
+  {
+    location: {
+      type: { type: String, enum: ['Point'], required: true },
+      coordinates: { type: [Number], required: true },
+    },
+    userSetted: { type: Boolean, default: false },
+    description: { type: String, default: '' },
+    ratio: { type: Number, required: true },
+  },
+  { _id: false },
+);
 
 const ProductionShelfLinkSchema = new Schema(
   {
@@ -80,6 +103,15 @@ export const ProductionSchema = new Schema<ProductionDocument>(
       enum: Object.values(ProductionVisibility),
       default: ProductionVisibility.public,
     },
+    // Blogs personales: libre (público, por radio de ubicación) o agenda (sólo
+    // la agenda de contactos), como Anuncios. null en blogs de grupo.
+    behaviourType: {
+      type: String,
+      enum: [...Object.values(ProductionBehaviourType), null],
+      default: null,
+    },
+    // Sólo blogs libres.
+    geoLocation: { type: ProductionGeoLocationSchema, default: null },
     // Alias/CBU para liquidar el 90% de los tickets (RNF-10). Sólo lo ven el
     // admin del blog y los admins de la plataforma.
     aliasCbu: { type: String, default: null },
@@ -107,6 +139,7 @@ export const ProductionSchema = new Schema<ProductionDocument>(
 
 ProductionSchema.index({ owner: 1, ownerType: 1 });
 ProductionSchema.index({ creator: 1 });
+ProductionSchema.index({ ownerType: 1, behaviourType: 1, updatedAt: -1 });
 ProductionSchema.index({ searchTitle: 1, searchDescription: 1 });
 ProductionSchema.index({ isFeatured: -1, fansCount: -1, updatedAt: -1 });
 // Un grupo tiene un único blog (Group.blog).

@@ -8,10 +8,14 @@ import {
 } from 'src/contexts/module_shared/event-emmiter/events';
 
 import { ProductionAdapterInterface } from '../../application/adapter/production.adapter.interface';
-import { ProductionServiceInterface } from '../../domain/service/production.service.interface';
+import {
+  ProductionExploreOptions,
+  ProductionServiceInterface,
+} from '../../domain/service/production.service.interface';
 import { ProductionInsightsServiceInterface } from '../../domain/service/production-insights.service.interface';
 import {
   ProductionCreateRequest,
+  ProductionGeoLocationInput,
   ProductionUpdateRequest,
 } from '../../domain/entity/models_graphql/HTTP-REQUEST/production.request';
 import {
@@ -23,6 +27,7 @@ import {
   ProductionFolderUpdateRequest,
 } from '../../domain/entity/models_graphql/HTTP-REQUEST/production-item.request';
 import {
+  ProductionBehaviourType,
   ProductionItemKind,
   ProductionOwnerType,
   ProductionVisibility,
@@ -225,12 +230,14 @@ export class ProductionAdapter implements ProductionAdapterInterface {
     limit: number,
     userId?: string,
     searchTerm?: string,
+    options?: ProductionExploreOptions,
   ) {
     return this.productionService.findAllProductions(
       page,
       limit,
       userId,
       searchTerm,
+      options,
     );
   }
 
@@ -253,6 +260,22 @@ export class ProductionAdapter implements ProductionAdapterInterface {
     return this.productionService.setProductionVisibility(
       productionId,
       visibility,
+      userId,
+    );
+  }
+
+  updateProductionBehaviour(
+    productionId: string,
+    behaviourType: ProductionBehaviourType,
+    visibility: ProductionVisibility | undefined,
+    geoLocation: ProductionGeoLocationInput | undefined,
+    userId: string,
+  ) {
+    return this.productionService.updateProductionBehaviour(
+      productionId,
+      behaviourType,
+      visibility,
+      geoLocation,
       userId,
     );
   }

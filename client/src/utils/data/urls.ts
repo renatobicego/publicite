@@ -29,6 +29,9 @@ const FILE_URL = process.env.NEXT_PUBLIC_UPLOADTHING_URL as string;
 const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL;
 const CUBITO = "/cubito";
 const PRODUCTIONS = "/producciones";
+// Solapas del explorar de Producciones (como Anuncios Libres / Agenda).
+const PRODUCTIONS_LIBRE = "/producciones/libres";
+const PRODUCTIONS_CONTACTS = "/producciones/contactos";
 const CREATE_PRODUCTION = "/crear/produccion";
 const EDIT_PRODUCTION = "/editar/produccion";
 const MY_PRODUCTION_TICKETS = "/producciones/mis-tickets";
@@ -69,6 +72,8 @@ export {
   POST_LIBRE,
   CUBITO,
   PRODUCTIONS,
+  PRODUCTIONS_LIBRE,
+  PRODUCTIONS_CONTACTS,
   CREATE_PRODUCTION,
   EDIT_PRODUCTION,
   MY_PRODUCTION_TICKETS,

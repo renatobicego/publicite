@@ -348,10 +348,10 @@ antes/después en `details` (JSON).
 
 | Variable | Default | Qué controla |
 |---|---|---|
-| `PRODUCTION_FREE_PERSONAL_BLOGS` | 1 | Blogs personales sin plan |
+| `PRODUCTION_FREE_LIBRE_BLOGS` | 1 | Blogs personales libres sin plan |
+| `PRODUCTION_FREE_AGENDA_BLOGS` | 1 | Blogs personales de agenda sin plan |
 | `PRODUCTION_FREE_GROUP_BLOGS` | 1 | Blogs de grupo sin plan |
 | `PRODUCTION_FREE_FILES_PER_BLOG` | 10 | Archivos por blog sin plan |
-| `PRODUCTION_MAX_PERSONAL_BLOGS` | 1 | Tope de blogs personales en cualquier plan |
 | `PRODUCTION_ACCESS_KEY_MAX_ATTEMPTS` | 5 | Intentos de clave antes del bloqueo |
 | `PRODUCTION_ACCESS_KEY_LOCK_MINUTES` | 15 | Minutos de bloqueo |
 | `PRODUCTION_TICKET_COMMISSION_PERCENT` | 10 | Comisión de Soonpublicité |
@@ -359,8 +359,32 @@ antes/después en `details` (JSON).
 | `PRODUCTION_TICKETS_TRANSFER_ALIAS` / `_CBU` / `_HOLDER` / `_BANK` | — | Cuenta para las transferencias |
 | `PRODUCTION_REPORTS_HIDE_THRESHOLD` | 3 | Denuncias que ocultan un contenido |
 
-Los límites reales por plan están en `SubscriptionPlan`: `personalBlogsCount`,
+Los límites reales por plan están en `SubscriptionPlan`: `personalBlogsLibreCount`,
+`personalBlogsAgendaCount` (acumulativos entre suscripciones, como los anuncios),
 `groupBlogsCount` y `filesPerBlogCount`. Los planes que no los tengan cargados dan el
 cupo gratuito. Se exponen también en `GET /subscriptionplans`.
 
 Además, `findUserById` devuelve `credentialId` (ID decorativo `SP-XXXX-XXXX` para la credencial).
+
+---
+
+## Comportamiento libre / agenda de los blogs personales
+
+Igual que `postBehaviourType` de Anuncios.
+
+- `ProductionResponse.behaviourType`: `libre` | `agenda` (null en blogs de grupo) y
+  `geoLocation { latitude longitude description userSetted ratio }` (ratio en metros).
+- `createProduction(productionRequest)`: `behaviourType` (default `libre`) y
+  `geoLocation` (obligatorio en libres, radio 1000–200000 m). Libre admite
+  `public` / `registered` / `onlyMe`; agenda, `contacts` / `friends` / `topfriends` / `onlyMe`.
+- `updateProductionById`: acepta `geoLocation` en blogs libres.
+- `updateProductionBehaviour(productionId, behaviourType, visibility?, geoLocation?)`:
+  cambia el comportamiento validando el cupo del nuevo.
+- `findAllProductions(page, limit, searchTerm?, behaviourType?, userLocation?, relation?)`:
+  sin `behaviourType` = todas; `libre` = libres de otros dentro del radio; `agenda` =
+  agenda de tus contactos (requiere token; `relation`: hierarchy/contacts/friends/topfriends).
+  `access` (opcional): `free` (blog sin ticket), `freeTicket` o `paidTicket`, según el
+  ticket del blog completo.
+- `getProductionLimits` / `getProductionConsumption.limits`: `libreBlogCount`,
+  `agendaBlogCount`, `totalLibreBlogLimit`, `totalAgendaBlogLimit`,
+  `libreBlogsAvailable`, `agendaBlogsAvailable` (los `personal*` son la suma).

@@ -382,7 +382,7 @@ export class UserRepository implements UserRepositoryInterface {
         .populate([
           {
             path: 'productions',
-            select: 'ownerType',
+            select: 'ownerType behaviourType visibility',
           },
           {
             path: 'subscriptions',
@@ -391,7 +391,7 @@ export class UserRepository implements UserRepositoryInterface {
             populate: {
               path: 'subscriptionPlan',
               select:
-                'personalBlogsCount groupBlogsCount filesPerBlogCount storageBytesLimit isFree isPack',
+                'personalBlogsLibreCount personalBlogsAgendaCount groupBlogsCount filesPerBlogCount storageBytesLimit isFree isPack',
             },
           },
         ])

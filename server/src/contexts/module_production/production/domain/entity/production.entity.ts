@@ -1,4 +1,5 @@
 import {
+  ProductionBehaviourType,
   ProductionModerationStatus,
   ProductionOwnerType,
   ProductionShelfCategory,
@@ -10,6 +11,15 @@ export interface ProductionShelfLink {
   title: string;
   link: string;
   imageKey?: string;
+}
+
+/** Ubicación + radio de alcance de un blog libre (igual que `Post.geoLocation`). */
+export interface ProductionGeoLocation {
+  location: { type: 'Point'; coordinates: [number, number] };
+  description: string;
+  userSetted: boolean;
+  /** Radio de alcance en metros. */
+  ratio: number;
 }
 
 export interface ProductionProps {
@@ -26,6 +36,10 @@ export interface ProductionProps {
   shelf?: ProductionShelfLink[];
   showcase?: string[];
   visibility?: ProductionVisibility;
+  /** Sólo blogs personales: libre o agenda. null en blogs de grupo. */
+  behaviourType?: ProductionBehaviourType | null;
+  /** Sólo blogs libres: ubicación y radio en el que se listan. */
+  geoLocation?: ProductionGeoLocation | null;
   aliasCbu?: string;
   accessKeyHash?: string;
   accessKeyVersion?: number;
@@ -103,6 +117,24 @@ export class Production {
   get getVisibility() {
     return this.props.visibility;
   }
+  /**
+   * Comportamiento efectivo: null en blogs de grupo; en blogs personales
+   * anteriores al comportamiento se deduce del alcance.
+   */
+  get getBehaviourType(): ProductionBehaviourType | null {
+    if (this.props.ownerType === ProductionOwnerType.Group) return null;
+    if (this.props.behaviourType) return this.props.behaviourType;
+    return [
+      ProductionVisibility.contacts,
+      ProductionVisibility.friends,
+      ProductionVisibility.topfriends,
+    ].includes(this.props.visibility as ProductionVisibility)
+      ? ProductionBehaviourType.agenda
+      : ProductionBehaviourType.libre;
+  }
+  get getGeoLocation() {
+    return this.props.geoLocation ?? null;
+  }
   get getAliasCbu() {
     return this.props.aliasCbu;
   }
@@ -169,6 +201,21 @@ export class Production {
       shelf: doc.shelf ?? [],
       showcase: (doc.showcase ?? []).map((id: any) => id.toString()),
       visibility: doc.visibility,
+      behaviourType: doc.behaviourType ?? null,
+      geoLocation: doc.geoLocation?.location?.coordinates?.length
+        ? {
+            location: {
+              type: 'Point',
+              coordinates: [
+                doc.geoLocation.location.coordinates[0],
+                doc.geoLocation.location.coordinates[1],
+              ],
+            },
+            description: doc.geoLocation.description ?? '',
+            userSetted: !!doc.geoLocation.userSetted,
+            ratio: doc.geoLocation.ratio,
+          }
+        : null,
       aliasCbu: doc.aliasCbu,
       accessKeyHash: doc.accessKeyHash,
       accessKeyVersion: doc.accessKeyVersion ?? 0,

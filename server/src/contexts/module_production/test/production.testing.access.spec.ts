@@ -14,11 +14,13 @@ import {
   getProductionTestModels,
   ProductionTestModels,
   relateUsers,
+  blogRequest,
 } from './production.test.helpers';
 import { ProductionService } from '../production/application/service/production.service';
 import {
   ProductionFileType,
   ProductionLockReason,
+  ProductionBehaviourType,
   ProductionVisibility,
 } from '../production/domain/entity/enum/production.enums';
 
@@ -49,7 +51,7 @@ describe('Mis Producciones - Fase 3: visibilidad y acceso por clave', () => {
   /** Blog con carpeta "Amigos" (friends) que contiene una foto y una subcarpeta pública. */
   const buildTree = async (ownerId: string) => {
     const { _id: productionId } = await service.createProduction(
-      { title: 'Blog con alcance' },
+      blogRequest({ title: 'Blog con alcance' }),
       ownerId,
     );
     const friendsFolder = await service.createFolder(
@@ -132,7 +134,7 @@ describe('Mis Producciones - Fase 3: visibilidad y acceso por clave', () => {
       const owner = await createTestUser(models);
       const visitor = await createTestUser(models);
       const { _id: productionId } = await service.createProduction(
-        { title: 'Blog' },
+        blogRequest({ title: 'Blog' }),
         owner,
       );
       const photo = await service.uploadFile(
@@ -140,7 +142,17 @@ describe('Mis Producciones - Fase 3: visibilidad y acceso por clave', () => {
         owner,
       );
 
-      await service.setProductionVisibility(productionId, ProductionVisibility.contacts, owner);
+      // Un blog libre no puede quedar sólo para la agenda: pasa a ser de agenda.
+      await expect(
+        service.setProductionVisibility(productionId, ProductionVisibility.contacts, owner),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      await service.updateProductionBehaviour(
+        productionId,
+        ProductionBehaviourType.agenda,
+        ProductionVisibility.contacts,
+        undefined,
+        owner,
+      );
 
       await expect(service.findProductionById(productionId, visitor)).rejects.toBeInstanceOf(
         NotFoundException,

@@ -9,6 +9,7 @@ import {
 } from '../entity/models_graphql/HTTP-RESPONSE/production.response';
 import {
   ProductionCreateRequest,
+  ProductionGeoLocationInput,
   ProductionUpdateRequest,
 } from '../entity/models_graphql/HTTP-REQUEST/production.request';
 import {
@@ -20,10 +21,25 @@ import {
   ProductionFolderUpdateRequest,
 } from '../entity/models_graphql/HTTP-REQUEST/production-item.request';
 import {
+  ProductionAccessFilter,
+  ProductionBehaviourType,
   ProductionItemKind,
   ProductionOwnerType,
   ProductionVisibility,
 } from '../entity/enum/production.enums';
+import { Visibility_Of_Find } from 'src/contexts/module_post/post/domain/entity/enum/post-visibility.enum';
+
+/** Solapa y filtros del explorar de Producciones (como Anuncios). */
+export interface ProductionExploreOptions {
+  /** Sin valor: "Todas". libre: solapa Libres. agenda: Agenda de contactos. */
+  behaviourType?: ProductionBehaviourType;
+  /** Ubicación del visitante, para el radio de los blogs libres. */
+  userLocation?: { latitude: number; longitude: number };
+  /** Agenda: tipo de relación a mostrar (hierarchy = todas). */
+  relation?: Visibility_Of_Find;
+  /** Sub-solapa por el ticket del blog completo (sin valor = todos). */
+  access?: ProductionAccessFilter;
+}
 
 export interface ProductionServiceInterface {
   createProduction(
@@ -115,6 +131,7 @@ export interface ProductionServiceInterface {
     limit: number,
     userId?: string,
     searchTerm?: string,
+    options?: ProductionExploreOptions,
   ): Promise<ProductionListResponse>;
   findFeaturedProductions(
     limit: number,
@@ -128,6 +145,13 @@ export interface ProductionServiceInterface {
   setProductionVisibility(
     productionId: string,
     visibility: ProductionVisibility,
+    userId: string,
+  ): Promise<ProductionResponse>;
+  updateProductionBehaviour(
+    productionId: string,
+    behaviourType: ProductionBehaviourType,
+    visibility: ProductionVisibility | undefined,
+    geoLocation: ProductionGeoLocationInput | undefined,
     userId: string,
   ): Promise<ProductionResponse>;
   setProductionItemVisibility(

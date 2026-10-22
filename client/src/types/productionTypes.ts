@@ -38,6 +38,44 @@ export enum ProductionOwnerType {
   Group = "Group",
 }
 
+/**
+ * Comportamiento de un blog personal, igual que en Anuncios: libre (público,
+ * dentro del radio de su ubicación) o agenda (sólo tu agenda de contactos).
+ * Los blogs de grupo no tienen (null).
+ */
+export enum ProductionBehaviourType {
+  libre = "libre",
+  agenda = "agenda",
+}
+
+/** Solapa y filtros del explorar de Producciones (como Anuncios). */
+export interface ProductionExploreFilters {
+  /** Sin valor: "Todas". */
+  behaviourType?: ProductionBehaviourType;
+  /** Ubicación del visitante para el radio de los blogs libres. */
+  userLocation?: { latitude: number; longitude: number } | null;
+  /** Agenda: tipo de relación (hierarchy = todas). */
+  relation?: "hierarchy" | "contacts" | "friends" | "topfriends";
+  /** Sub-solapa por el ticket del blog completo (sin valor = todos). */
+  access?: ProductionAccessFilter;
+}
+
+/** Cómo se entra al blog completo: sin ticket, ticket gratis o ticket pago. */
+export enum ProductionAccessFilter {
+  free = "free",
+  freeTicket = "freeTicket",
+  paidTicket = "paidTicket",
+}
+
+/** Ubicación y radio de un blog libre. `ratio` en metros. */
+export interface ProductionGeoLocation {
+  latitude: number;
+  longitude: number;
+  description?: string | null;
+  userSetted?: boolean | null;
+  ratio: number;
+}
+
 export enum ProductionShelfCategory {
   movies = "movies",
   books = "books",
@@ -198,6 +236,10 @@ export interface ProductionResponse {
   welcomeText?: string | null;
   welcomeVideoKey?: string | null;
   visibility: ProductionVisibility;
+  /** Sólo blogs personales; null en blogs de grupo. */
+  behaviourType?: ProductionBehaviourType | null;
+  /** Sólo blogs libres. */
+  geoLocation?: ProductionGeoLocation | null;
   shelf: ProductionShelfLink[];
   showcase: string[];
   ownerInfo?: ProductionOwnerInfo | null;
@@ -308,6 +350,13 @@ export interface ProductionLimits {
   totalGroupBlogLimit: number;
   personalBlogsAvailable: number;
   groupBlogsAvailable: number;
+  /** Cupos separados de blogs personales, como los anuncios. */
+  libreBlogCount: number;
+  agendaBlogCount: number;
+  totalLibreBlogLimit: number;
+  totalAgendaBlogLimit: number;
+  libreBlogsAvailable: number;
+  agendaBlogsAvailable: number;
   filesPerBlogLimit: number;
   canSellPaidTickets: boolean;
   /** Feature flag: si se aplica el límite de cantidad de blogs por usuario. */
@@ -341,6 +390,10 @@ export interface ProductionCreateRequest {
   welcomeText?: string;
   welcomeVideoKey?: string;
   visibility?: ProductionVisibility;
+  /** Sólo blogs personales. */
+  behaviourType?: ProductionBehaviourType;
+  /** Obligatorio en blogs libres. */
+  geoLocation?: ProductionGeoLocation;
   shelf?: ProductionShelfLinkInput[];
   groupId?: string;
 }
@@ -353,6 +406,8 @@ export interface ProductionUpdateRequest {
   welcomeVideoKey?: string;
   shelf?: ProductionShelfLinkInput[];
   showcase?: string[];
+  /** Sólo blogs libres. */
+  geoLocation?: ProductionGeoLocation;
 }
 
 export interface ProductionFolderRequest {

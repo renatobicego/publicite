@@ -232,6 +232,22 @@ const GlosaryModal = ({ customButton }: { customButton?: React.ReactNode }) => {
             </p>
             <ul className="list-disc list-inside">
               <li>
+                Blog libre o de agenda: como un anuncio, un blog personal es
+                libre (público o para registrados, visible para quien esté
+                dentro del radio de su ubicación) o de agenda (visible sólo
+                para tus contactos, amigos o top amigos). Tu plan tiene un
+                cupo de cada tipo. Se cambia desde Editar blog → Editar
+                Comportamiento.
+              </li>
+              <li>
+                Explorar: en Producciones están las solapas Producciones
+                (todo lo que puedes ver), Producciones Libres (cerca tuyo) y
+                Agenda de Contactos (por contactos, amigos o top amigos), con
+                buscador. En Libres y Agenda puedes filtrar por cómo se entra
+                al blog: gratuitos (sin ticket), ticket gratis o ticket
+                pago.
+              </li>
+              <li>
                 Organiza: crea carpetas y subcarpetas, sube varios archivos a la
                 vez o arrástralos desde tu computadora y suéltalos sobre el blog
                 o sobre una carpeta.

@@ -10,6 +10,8 @@ import {
   getProductionTestModels,
   givePlanToUser,
   ProductionTestModels,
+  blogRequest,
+  TEST_GEO,
 } from './production.test.helpers';
 import { ProductionService } from '../production/application/service/production.service';
 import {
@@ -17,6 +19,7 @@ import {
   ProductionItemKind,
   ProductionOwnerType,
   ProductionRole,
+  ProductionBehaviourType,
   ProductionVisibility,
 } from '../production/domain/entity/enum/production.enums';
 
@@ -48,7 +51,7 @@ describe('Mis Producciones - Fase 1: núcleo del blog', () => {
   });
 
   const createBlog = async (userId: string, title = 'Mi blog') =>
-    (await service.createProduction({ title }, userId))._id;
+    (await service.createProduction(blogRequest({ title }), userId))._id;
 
   const uploadPhoto = (
     userId: string,
@@ -85,39 +88,115 @@ describe('Mis Producciones - Fase 1: núcleo del blog', () => {
     it('exige el nombre del blog', async () => {
       const userId = await createTestUser(models);
       await expect(
-        service.createProduction({ title: '   ' }, userId),
+        service.createProduction(blogRequest({ title: '   ' }), userId),
       ).rejects.toBeInstanceOf(BadRequestException);
       expect(await models.production.countDocuments()).toBe(0);
     });
 
-    it('bloquea un segundo blog personal (PLN-04) sin dejar datos a medias', async () => {
+    it('bloquea un segundo blog libre (PLN-04) sin dejar datos a medias', async () => {
       const userId = await createTestUser(models);
       await createBlog(userId);
 
       await expect(createBlog(userId, 'Otro')).rejects.toThrow(
-        'Tu plan permite un único blog personal',
+        'límite de blogs libres',
       );
       expect(await models.production.countDocuments()).toBe(1);
       const user = await findDoc(models.user, userId);
       expect(user.productions).toHaveLength(1);
     });
 
-    it('un plan pago tampoco habilita un segundo blog personal (PLN-02)', async () => {
+    it('los cupos de blogs libres y de agenda son separados, como los anuncios', async () => {
       const userId = await createTestUser(models);
-      await givePlanToUser(models, userId, {
-        personalBlogsCount: 1,
-        groupBlogsCount: 5,
-        filesPerBlogCount: 50,
-      });
-      await givePlanToUser(models, userId, {
-        personalBlogsCount: 1,
-        groupBlogsCount: 5,
-        filesPerBlogCount: 50,
-      });
+      await createBlog(userId, 'Libre');
+      const { _id: agendaId } = await service.createProduction(
+        blogRequest({
+          title: 'Agenda',
+          behaviourType: ProductionBehaviourType.agenda,
+        }),
+        userId,
+      );
+      const agenda = await findDoc(models.production, agendaId);
+      expect(agenda.behaviourType).toBe(ProductionBehaviourType.agenda);
+      expect(agenda.visibility).toBe(ProductionVisibility.contacts);
+      expect(agenda.geoLocation).toBeNull();
+
+      await expect(
+        service.createProduction(
+          blogRequest({
+            title: 'Otra agenda',
+            behaviourType: ProductionBehaviourType.agenda,
+          }),
+          userId,
+        ),
+      ).rejects.toThrow('límite de blogs de agenda');
+    });
+
+    it('los cupos de blogs personales se acumulan entre suscripciones', async () => {
+      const userId = await createTestUser(models);
+      await givePlanToUser(models, userId, { personalBlogsLibreCount: 1 });
+      await givePlanToUser(models, userId, { personalBlogsLibreCount: 1 });
       await createBlog(userId);
-      await expect(createBlog(userId, 'Otro')).rejects.toBeInstanceOf(
+      await createBlog(userId, 'Segundo');
+      await expect(createBlog(userId, 'Tercero')).rejects.toBeInstanceOf(
         BadRequestException,
       );
+    });
+
+    it('un blog libre exige ubicación y un alcance público o para registrados', async () => {
+      const userId = await createTestUser(models);
+      await expect(
+        service.createProduction({ title: 'Sin ubicación' }, userId),
+      ).rejects.toThrow('ubicación');
+      await expect(
+        service.createProduction(
+          blogRequest({
+            title: 'Libre para amigos',
+            behaviourType: ProductionBehaviourType.libre,
+            visibility: ProductionVisibility.friends,
+          }),
+          userId,
+        ),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      await expect(
+        service.createProduction(
+          blogRequest({ title: 'Radio enorme', geoLocation: { ...TEST_GEO, ratio: 500000 } }),
+          userId,
+        ),
+      ).rejects.toThrow('radio');
+      expect(await models.production.countDocuments()).toBe(0);
+    });
+
+    it('cambia el comportamiento validando el cupo y el alcance (como Anuncios)', async () => {
+      const userId = await createTestUser(models);
+      const libreId = await createBlog(userId, 'Libre');
+
+      const asAgenda = await service.updateProductionBehaviour(
+        libreId,
+        ProductionBehaviourType.agenda,
+        undefined,
+        undefined,
+        userId,
+      );
+      expect(asAgenda.behaviourType).toBe(ProductionBehaviourType.agenda);
+      expect(asAgenda.visibility).toBe(ProductionVisibility.contacts);
+      // Conserva la ubicación por si vuelve a ser libre.
+      expect(asAgenda.geoLocation?.ratio).toBe(TEST_GEO.ratio);
+
+      // El cupo de agenda ya está ocupado por este mismo blog.
+      const secondId = await createBlog(userId, 'Otro libre');
+      await expect(
+        service.updateProductionBehaviour(
+          secondId,
+          ProductionBehaviourType.agenda,
+          undefined,
+          undefined,
+          userId,
+        ),
+      ).rejects.toThrow('límite de blogs de agenda');
+
+      await expect(
+        service.setProductionVisibility(libreId, ProductionVisibility.public, userId),
+      ).rejects.toBeInstanceOf(BadRequestException);
     });
 
     it('sólo el dueño edita el blog (BLG-05) y la edición actualiza la búsqueda', async () => {
@@ -571,7 +650,7 @@ describe('Mis Producciones - Fase 1: núcleo del blog', () => {
       const ownerId = await createTestUser(models);
       const visitorId = await createTestUser(models);
       const { _id: productionId } = await service.createProduction(
-        { title: 'Privado', visibility: ProductionVisibility.registered },
+        blogRequest({ title: 'Privado', visibility: ProductionVisibility.registered }),
         ownerId,
       );
 

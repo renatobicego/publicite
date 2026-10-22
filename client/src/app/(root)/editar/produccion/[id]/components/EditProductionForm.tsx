@@ -1,7 +1,7 @@
 "use client";
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button, Image, Input, Spinner, Textarea } from "@nextui-org/react";
+import { Button, Image, Input, Link, Spinner, Textarea } from "@nextui-org/react";
 import { FaImage } from "react-icons/fa";
 import imageCompression from "browser-image-compression";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
@@ -9,8 +9,14 @@ import { useUploadThing } from "@/utils/uploadThing";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { updateProduction } from "@/app/server/productionActions";
 import { isProductionActionError } from "@/utils/functions/productionErrorHandler";
-import { PRODUCTIONS, FILE_URL } from "@/utils/data/urls";
-import { ProductionResponse } from "@/types/productionTypes";
+import { PRODUCTIONS, FILE_URL, EDIT_PRODUCTION } from "@/utils/data/urls";
+import {
+  ProductionBehaviourType,
+  ProductionOwnerType,
+  ProductionResponse,
+} from "@/types/productionTypes";
+import { behaviourLabel } from "@/app/(root)/(explorar)/producciones/productionBehaviour";
+import { visibilityLabel } from "@/app/(root)/(explorar)/producciones/productionVisibility";
 
 /** Edición del header del blog (portada, título, descripción, bienvenida). */
 const EditProductionForm = ({
@@ -151,7 +157,52 @@ const EditProductionForm = ({
       >
         {isSubmitting ? "Guardando…" : "Guardar cambios"}
       </PrimaryButton>
+
+      {/* Comportamiento libre / agenda (sólo blogs personales), como Anuncios */}
+      {production.ownerType === ProductionOwnerType.User &&
+        production.viewer?.canManageAccess && (
+          <BehaviourSummary production={production} />
+        )}
     </section>
+  );
+};
+
+const BehaviourSummary = ({ production }: { production: ProductionResponse }) => {
+  const behaviour = production.behaviourType ?? ProductionBehaviourType.libre;
+  const other =
+    behaviour === ProductionBehaviourType.libre
+      ? ProductionBehaviourType.agenda
+      : ProductionBehaviourType.libre;
+  const geo = production.geoLocation;
+  return (
+    <div
+      id="production-behaviour"
+      className="flex flex-col gap-2 items-start border-t pt-4"
+    >
+      <p className="text-sm">
+        Comportamiento: <strong>{behaviourLabel[behaviour]}</strong> ·{" "}
+        {visibilityLabel[production.visibility]}
+      </p>
+      {behaviour === ProductionBehaviourType.libre && (
+        <p className="text-xs text-default-500">
+          {geo
+            ? `Ubicación: ${geo.description || "sin dirección"} · radio de ${Math.round(geo.ratio / 1000)} km`
+            : "Todavía no tiene ubicación: elegila para que aparezca por cercanía."}
+        </p>
+      )}
+      <PrimaryButton
+        as={Link}
+        href={`${EDIT_PRODUCTION}/${production._id}/comportamiento`}
+      >
+        Editar Comportamiento
+      </PrimaryButton>
+      <small>
+        Cambiar de {behaviourLabel[behaviour]} a {behaviourLabel[other]}
+        {behaviour === ProductionBehaviourType.libre
+          ? ", o cambiar la ubicación y el radio de alcance"
+          : ""}
+      </small>
+    </div>
   );
 };
 

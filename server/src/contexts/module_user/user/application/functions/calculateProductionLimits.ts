@@ -1,10 +1,11 @@
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
+import { ProductionBehaviourType } from 'src/contexts/module_shared/production-limits/production.behaviour-type.enum';
 import {
+  getFreeAgendaBlogsLimit,
   getFreeFilesPerBlogLimit,
   getFreeGroupBlogsLimit,
-  getFreePersonalBlogsLimit,
+  getFreeLibreBlogsLimit,
   getFreeStorageBytesLimit,
-  getMaxPersonalBlogsLimit,
   isBlogLimitEnabled,
   isFilesPerBlogLimitEnabled,
   isStorageLimitEnabled,
@@ -17,10 +18,11 @@ import {
  * las dimensiones de todas las suscripciones activas del usuario. Diferencias
  * propias de MP:
  *
- * - **Blogs personales:** NO se acumulan. El blog personal es 1 fijo en todos los
- *   planes (PLN-02: mejorar de plan no aumenta el blog personal), así que se toma
- *   el máximo entre planes y se clampea al tope duro del sistema.
- * - **Blogs de grupo / archivos por blog:** sí se acumulan entre suscripciones.
+ * - **Blogs personales:** separados por comportamiento (libre / agenda) igual que
+ *   los anuncios, y acumulativos entre suscripciones. Un blog personal guardado
+ *   antes del comportamiento cuenta como agenda si su alcance es de la agenda
+ *   de contactos, y como libre en cualquier otro caso.
+ * - **Blogs de grupo / archivos por blog:** también se acumulan.
  * - **Piso gratuito:** si el usuario no tiene suscripciones activas, o sus planes
  *   son anteriores a MP y no tienen las dimensiones cargadas, el total da 0 y se
  *   aplica el piso del plan gratuito. Es un default seguro: nunca otorga más que
@@ -33,12 +35,15 @@ interface userWithProductionsAndSubscriptions {
   productions: [
     {
       ownerType: string; // 'User' (blog personal) o 'Group' (blog de grupo)
+      behaviourType?: string | null; // 'libre' | 'agenda' (sólo personales)
+      visibility?: string | null;
     },
   ];
   subscriptions: [
     {
       subscriptionPlan: {
-        personalBlogsCount?: number;
+        personalBlogsLibreCount?: number;
+        personalBlogsAgendaCount?: number;
         groupBlogsCount?: number;
         filesPerBlogCount?: number;
         storageBytesLimit?: number;
@@ -50,7 +55,14 @@ interface userWithProductionsAndSubscriptions {
 }
 
 interface ProductionLimits {
+  /** Blogs personales (libres + agenda). */
   personalBlogCount: number;
+  libreBlogCount: number;
+  agendaBlogCount: number;
+  totalLibreBlogLimit: number;
+  totalAgendaBlogLimit: number;
+  libreBlogsAvailable: number;
+  agendaBlogsAvailable: number;
   groupBlogCount: number;
   totalPersonalBlogLimit: number;
   totalGroupBlogLimit: number;
@@ -82,6 +94,24 @@ interface ProductionLimits {
   canSellPaidTickets: boolean;
 }
 
+const AGENDA_VISIBILITIES = ['contacts', 'friends', 'topfriends'];
+
+/** Comportamiento de un blog personal (deducido del alcance si es anterior). */
+function personalBlogBehaviour(production: {
+  behaviourType?: string | null;
+  visibility?: string | null;
+}): ProductionBehaviourType {
+  if (production.behaviourType === ProductionBehaviourType.agenda) {
+    return ProductionBehaviourType.agenda;
+  }
+  if (production.behaviourType === ProductionBehaviourType.libre) {
+    return ProductionBehaviourType.libre;
+  }
+  return AGENDA_VISIBILITIES.includes(production.visibility ?? '')
+    ? ProductionBehaviourType.agenda
+    : ProductionBehaviourType.libre;
+}
+
 function calculateProductionLimitsFromUser(
   userWithProductionsAndSubscriptions: userWithProductionsAndSubscriptions,
   logger: MyLoggerService,
@@ -90,7 +120,8 @@ function calculateProductionLimitsFromUser(
   const productions = userWithProductionsAndSubscriptions.productions ?? [];
 
   const {
-    maxPersonalBlogs,
+    totalLibreBlogs,
+    totalAgendaBlogs,
     totalGroupBlogLimit,
     totalFilesPerBlog,
     totalStorageBytes,
@@ -98,37 +129,43 @@ function calculateProductionLimitsFromUser(
     (limits, subscription) => {
       const plan = subscription?.subscriptionPlan;
       if (!plan) return limits;
-      limits.maxPersonalBlogs = Math.max(
-        limits.maxPersonalBlogs,
-        plan.personalBlogsCount ?? 0,
-      );
+      limits.totalLibreBlogs += plan.personalBlogsLibreCount ?? 0;
+      limits.totalAgendaBlogs += plan.personalBlogsAgendaCount ?? 0;
       limits.totalGroupBlogLimit += plan.groupBlogsCount ?? 0;
       limits.totalFilesPerBlog += plan.filesPerBlogCount ?? 0;
       limits.totalStorageBytes += plan.storageBytesLimit ?? 0;
       return limits;
     },
     {
-      maxPersonalBlogs: 0,
+      totalLibreBlogs: 0,
+      totalAgendaBlogs: 0,
       totalGroupBlogLimit: 0,
       totalFilesPerBlog: 0,
       totalStorageBytes: 0,
     },
   );
 
-  const { personalBlogCount, groupBlogCount } = productions.reduce(
+  const { libreBlogCount, agendaBlogCount, groupBlogCount } = productions.reduce(
     (counts, production) => {
-      if (production?.ownerType === 'Group') counts.groupBlogCount++;
-      else counts.personalBlogCount++;
+      if (!production) return counts;
+      if (production.ownerType === 'Group') counts.groupBlogCount++;
+      else if (
+        personalBlogBehaviour(production) === ProductionBehaviourType.agenda
+      ) {
+        counts.agendaBlogCount++;
+      } else counts.libreBlogCount++;
       return counts;
     },
-    { personalBlogCount: 0, groupBlogCount: 0 },
+    { libreBlogCount: 0, agendaBlogCount: 0, groupBlogCount: 0 },
   );
+  const personalBlogCount = libreBlogCount + agendaBlogCount;
 
   // Piso gratuito cuando el plan no define la dimensión (default seguro).
-  const totalPersonalBlogLimit = Math.min(
-    maxPersonalBlogs > 0 ? maxPersonalBlogs : getFreePersonalBlogsLimit(),
-    getMaxPersonalBlogsLimit(),
-  );
+  const totalLibreBlogLimit =
+    totalLibreBlogs > 0 ? totalLibreBlogs : getFreeLibreBlogsLimit();
+  const totalAgendaBlogLimit =
+    totalAgendaBlogs > 0 ? totalAgendaBlogs : getFreeAgendaBlogsLimit();
+  const totalPersonalBlogLimit = totalLibreBlogLimit + totalAgendaBlogLimit;
   const groupBlogLimit =
     totalGroupBlogLimit > 0 ? totalGroupBlogLimit : getFreeGroupBlogsLimit();
   const filesPerBlogLimit =
@@ -142,14 +179,18 @@ function calculateProductionLimitsFromUser(
 
   logger.warn('Status of Limit productions of user: ');
   logger.log(
-    'User has personal blogs: ' +
-      personalBlogCount +
+    'User has libre blogs: ' +
+      libreBlogCount +
+      ' |--| User has agenda blogs: ' +
+      agendaBlogCount +
       ' |--| User has group blogs: ' +
       groupBlogCount,
   );
   logger.log(
-    'Total personal blog limit: ' +
-      totalPersonalBlogLimit +
+    'Total libre blog limit: ' +
+      totalLibreBlogLimit +
+      ' - Total agenda blog limit: ' +
+      totalAgendaBlogLimit +
       ' - Total group blog limit: ' +
       groupBlogLimit +
       ' - Files per blog limit: ' +
@@ -158,8 +199,14 @@ function calculateProductionLimitsFromUser(
 
   // Con el flag de blogs apagado no se aplica tope de cantidad: la
   // disponibilidad queda "infinita" (Infinity) para que los gates siempre pasen.
+  const libreBlogsAvailable = blogLimitEnabled
+    ? totalLibreBlogLimit - libreBlogCount
+    : Infinity;
+  const agendaBlogsAvailable = blogLimitEnabled
+    ? totalAgendaBlogLimit - agendaBlogCount
+    : Infinity;
   const personalBlogsAvailable = blogLimitEnabled
-    ? totalPersonalBlogLimit - personalBlogCount
+    ? Math.max(0, libreBlogsAvailable) + Math.max(0, agendaBlogsAvailable)
     : Infinity;
   const groupBlogsAvailable = blogLimitEnabled
     ? groupBlogLimit - groupBlogCount
@@ -173,6 +220,12 @@ function calculateProductionLimitsFromUser(
 
   return {
     personalBlogCount,
+    libreBlogCount,
+    agendaBlogCount,
+    totalLibreBlogLimit,
+    totalAgendaBlogLimit,
+    libreBlogsAvailable,
+    agendaBlogsAvailable,
     groupBlogCount,
     totalPersonalBlogLimit,
     totalGroupBlogLimit: groupBlogLimit,

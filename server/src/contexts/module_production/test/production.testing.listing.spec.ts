@@ -1,4 +1,5 @@
 import { TestingModule } from '@nestjs/testing';
+import { Types } from 'mongoose';
 
 import mapModuleTesting from './production.test.module';
 import {
@@ -9,9 +10,18 @@ import {
   givePlanToUser,
   ProductionTestModels,
   relateUsers,
+  blogRequest,
+  TEST_GEO,
 } from './production.test.helpers';
 import { ProductionService } from '../production/application/service/production.service';
-import { ProductionModerationStatus, ProductionRole, ProductionVisibility } from '../production/domain/entity/enum/production.enums';
+import {
+  ProductionAccessFilter,
+  ProductionBehaviourType,
+  ProductionModerationStatus,
+  ProductionRole,
+  ProductionVisibility,
+} from '../production/domain/entity/enum/production.enums';
+import { Visibility_Of_Find } from '../../module_post/post/domain/entity/enum/post-visibility.enum';
 
 // Base remota de QA: cada test hace varias idas y vueltas.
 jest.setTimeout(60_000);
@@ -39,8 +49,13 @@ describe('Mis Producciones - Fase 2: listado, búsqueda y destacadas', () => {
   const createBlog = async (
     userId: string,
     title: string,
-    extra: { visibility?: ProductionVisibility; description?: string; groupId?: string } = {},
-  ) => (await service.createProduction({ title, ...extra }, userId))._id;
+    extra: {
+      visibility?: ProductionVisibility;
+      description?: string;
+      groupId?: string;
+      geoLocation?: typeof TEST_GEO;
+    } = {},
+  ) => (await service.createProduction(blogRequest({ title, ...extra }), userId))._id;
 
   const titlesOf = (list: { title: string }[]) =>
     list.map((p) => p.title).sort();
@@ -187,5 +202,139 @@ describe('Mis Producciones - Fase 2: listado, búsqueda y destacadas', () => {
 
     const asOutsider = await service.findAllProductions(1, 10, outsider);
     expect(asOutsider.productions).toHaveLength(0);
+  });
+
+  describe('Solapas del explorar: Todas / Libres / Agenda (como Anuncios)', () => {
+    // A ~400 km del Obelisco (Mar del Plata): fuera del radio de 5 km.
+    const FAR = { latitude: -38.0055, longitude: -57.5426 };
+    const NEAR = { latitude: TEST_GEO.latitude, longitude: TEST_GEO.longitude };
+
+    it('Libres: blogs libres de otros, públicos y dentro del radio', async () => {
+      const viewer = await createTestUser(models);
+      const other = await createTestUser(models);
+      const friend = await createTestUser(models);
+      await relateUsers(models, viewer, friend, 'friends');
+      await createBlog(other, 'Libre cerca');
+      await createBlog(viewer, 'Mío libre');
+      await createBlog(friend, 'Agenda de amigo', {
+        visibility: ProductionVisibility.friends,
+      });
+
+      const near = await service.findAllProductions(1, 10, viewer, undefined, {
+        behaviourType: ProductionBehaviourType.libre,
+        userLocation: NEAR,
+      });
+      expect(titlesOf(near.productions)).toEqual(['Libre cerca']);
+      expect(near.productions[0].behaviourType).toBe(ProductionBehaviourType.libre);
+
+      const far = await service.findAllProductions(1, 10, viewer, undefined, {
+        behaviourType: ProductionBehaviourType.libre,
+        userLocation: FAR,
+      });
+      expect(far.productions).toHaveLength(0);
+    });
+
+    it('Agenda: sólo blogs de agenda de los contactos, filtrables por relación', async () => {
+      const viewer = await createTestUser(models);
+      const friend = await createTestUser(models);
+      const contact = await createTestUser(models);
+      const stranger = await createTestUser(models);
+      await relateUsers(models, viewer, friend, 'friends');
+      await relateUsers(models, viewer, contact, 'contacts');
+      await createBlog(friend, 'Agenda de amigo', {
+        visibility: ProductionVisibility.contacts,
+      });
+      await createBlog(contact, 'Agenda de contacto', {
+        visibility: ProductionVisibility.contacts,
+      });
+      await createBlog(contact, 'Libre de contacto');
+      await createBlog(stranger, 'Agenda ajena', {
+        visibility: ProductionVisibility.contacts,
+      });
+
+      const all = await service.findAllProductions(1, 10, viewer, undefined, {
+        behaviourType: ProductionBehaviourType.agenda,
+        userLocation: FAR,
+      });
+      expect(titlesOf(all.productions)).toEqual([
+        'Agenda de amigo',
+        'Agenda de contacto',
+      ]);
+
+      const onlyFriends = await service.findAllProductions(1, 10, viewer, undefined, {
+        behaviourType: ProductionBehaviourType.agenda,
+        relation: Visibility_Of_Find.friends,
+      });
+      expect(titlesOf(onlyFriends.productions)).toEqual(['Agenda de amigo']);
+
+      const anonymous = await service.findAllProductions(1, 10, undefined, undefined, {
+        behaviourType: ProductionBehaviourType.agenda,
+      });
+      expect(anonymous.productions).toHaveLength(0);
+    });
+
+    it('sub-solapas por ticket del blog: gratuitos, ticket gratis y ticket pago', async () => {
+      const viewer = await createTestUser(models);
+      const owner = await createTestUser(models);
+      await givePlanToUser(models, owner, { personalBlogsLibreCount: 3 });
+      await createBlog(owner, 'Sin ticket');
+      const freeTicket = await createBlog(owner, 'Ticket gratis');
+      const paidTicket = await createBlog(owner, 'Ticket pago');
+      const tickets = models.connection.collection('productiontickets');
+      const ticketOf = (production: string, isPaid: boolean) => ({
+        production: new Types.ObjectId(production),
+        target: null,
+        isPaid,
+        price: isPaid ? 1000 : 0,
+        createdBy: new Types.ObjectId(owner),
+      });
+      await tickets.insertMany([
+        ticketOf(freeTicket, false),
+        ticketOf(paidTicket, true),
+        // Un ticket de una carpeta no cambia cómo se entra al blog.
+        { ...ticketOf(freeTicket, true), target: new Types.ObjectId() },
+      ]);
+
+      const list = async (access?: ProductionAccessFilter) =>
+        titlesOf(
+          (
+            await service.findAllProductions(1, 10, viewer, undefined, {
+              behaviourType: ProductionBehaviourType.libre,
+              access,
+            })
+          ).productions,
+        );
+
+      expect(await list()).toEqual(['Sin ticket', 'Ticket gratis', 'Ticket pago']);
+      expect(await list(ProductionAccessFilter.free)).toEqual(['Sin ticket']);
+      expect(await list(ProductionAccessFilter.freeTicket)).toEqual(['Ticket gratis']);
+      expect(await list(ProductionAccessFilter.paidTicket)).toEqual(['Ticket pago']);
+    });
+
+    it('Todas: el radio filtra los libres ajenos, no la agenda ni los propios', async () => {
+      const viewer = await createTestUser(models);
+      const friend = await createTestUser(models);
+      const other = await createTestUser(models);
+      await relateUsers(models, viewer, friend, 'friends');
+      await createBlog(other, 'Libre lejos');
+      await createBlog(viewer, 'Mío libre');
+      await createBlog(friend, 'Agenda de amigo', {
+        visibility: ProductionVisibility.friends,
+      });
+
+      const far = await service.findAllProductions(1, 10, viewer, undefined, {
+        userLocation: FAR,
+      });
+      expect(titlesOf(far.productions)).toEqual(['Agenda de amigo', 'Mío libre']);
+
+      const near = await service.findAllProductions(1, 10, viewer, undefined, {
+        userLocation: NEAR,
+      });
+      expect(titlesOf(near.productions)).toEqual([
+        'Agenda de amigo',
+        'Libre lejos',
+        'Mío libre',
+      ]);
+    });
   });
 });

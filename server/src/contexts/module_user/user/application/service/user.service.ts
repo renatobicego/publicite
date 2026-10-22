@@ -27,6 +27,7 @@ import {
   userWithProductionsAndSubscriptions,
 } from '../functions/calculateProductionLimits';
 import { generateCredentialId } from '../functions/generateCredentialId';
+import { ProductionBehaviourType } from 'src/contexts/module_shared/production-limits/production.behaviour-type.enum';
 import { ProductionOwnerType } from 'src/contexts/module_shared/production-limits/production.owner-type.enum';
 import { ommitUndefinedValues } from './ommit-function';
 import { makeUserRelationMapWithoutHierarchy } from 'src/contexts/module_shared/utils/functions/makeUserRelationHierarchyMap';
@@ -529,9 +530,10 @@ export class UserService implements UserServiceInterface {
     ownerId: string,
     ownerType: ProductionOwnerType,
     session?: ClientSession,
+    behaviourType: ProductionBehaviourType = ProductionBehaviourType.libre,
   ): Promise<boolean> {
     try {
-      const { personalBlogsAvailable, groupBlogsAvailable } =
+      const { libreBlogsAvailable, agendaBlogsAvailable, groupBlogsAvailable } =
         await this.getProductionLimitsFromUserByUserId(ownerId, session);
 
       switch (ownerType) {
@@ -541,12 +543,18 @@ export class UserService implements UserServiceInterface {
             return false;
           }
           return true;
-        case ProductionOwnerType.User:
-          if (personalBlogsAvailable <= 0) {
-            this.logger.warn('Personal blog limit reached');
+        case ProductionOwnerType.User: {
+          // Cupo separado por comportamiento, como los anuncios.
+          const available =
+            behaviourType === ProductionBehaviourType.agenda
+              ? agendaBlogsAvailable
+              : libreBlogsAvailable;
+          if (available <= 0) {
+            this.logger.warn(`Personal ${behaviourType} blog limit reached`);
             return false;
           }
           return true;
+        }
         default:
           this.logger.warn('Invalid production owner type specified');
           return false;

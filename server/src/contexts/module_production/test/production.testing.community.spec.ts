@@ -14,6 +14,7 @@ import {
   getProductionTestModels,
   givePlanToUser,
   ProductionTestModels,
+  blogRequest,
 } from './production.test.helpers';
 import { ProductionService } from '../production/application/service/production.service';
 import { ProductionTicketService } from '../production/application/service/production.ticket.service';
@@ -22,6 +23,7 @@ import {
   ProductionFileType,
   ProductionItemKind,
   ProductionLockReason,
+  ProductionBehaviourType,
   ProductionVisibility,
 } from '../production/domain/entity/enum/production.enums';
 
@@ -61,7 +63,7 @@ describe('Mis Producciones - Fase 8: fans, reseñas y comentarios (FAN-01, REV-0
   });
 
   const createBlog = async (owner: string, title = 'Blog') => {
-    const { _id } = await service.createProduction({ title }, owner);
+    const { _id } = await service.createProduction(blogRequest({ title }), owner);
     return _id;
   };
 
@@ -127,7 +129,13 @@ describe('Mis Producciones - Fase 8: fans, reseñas y comentarios (FAN-01, REV-0
         community.becomeProductionFan(productionId, owner),
       ).rejects.toBeInstanceOf(BadRequestException);
 
-      await service.setProductionVisibility(productionId, ProductionVisibility.friends, owner);
+      await service.updateProductionBehaviour(
+        productionId,
+        ProductionBehaviourType.agenda,
+        ProductionVisibility.friends,
+        undefined,
+        owner,
+      );
       await expect(
         community.becomeProductionFan(productionId, stranger),
       ).rejects.toBeInstanceOf(NotFoundException);

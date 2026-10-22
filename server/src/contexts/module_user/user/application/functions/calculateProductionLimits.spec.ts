@@ -9,19 +9,21 @@ const logger = {
   error: () => undefined,
 } as unknown as MyLoggerService;
 
-function userWith(productions: string[], plans: any[]): any {
+function userWith(productions: (string | object)[], plans: any[]): any {
   return {
-    productions: productions.map((ownerType) => ({ ownerType })),
+    productions: productions.map((production) =>
+      typeof production === 'string' ? { ownerType: production } : production,
+    ),
     subscriptions: plans.map((subscriptionPlan) => ({ subscriptionPlan })),
   };
 }
 
 describe('calculateProductionLimitsFromUser (Mis Producciones - RNF-06)', () => {
   const ENV_KEYS = [
-    'PRODUCTION_FREE_PERSONAL_BLOGS',
+    'PRODUCTION_FREE_LIBRE_BLOGS',
+    'PRODUCTION_FREE_AGENDA_BLOGS',
     'PRODUCTION_FREE_GROUP_BLOGS',
     'PRODUCTION_FREE_FILES_PER_BLOG',
-    'PRODUCTION_MAX_PERSONAL_BLOGS',
     'PRODUCTION_FILES_PER_BLOG_LIMIT_ENABLED',
   ];
 
@@ -29,13 +31,16 @@ describe('calculateProductionLimitsFromUser (Mis Producciones - RNF-06)', () => 
     ENV_KEYS.forEach((key) => delete process.env[key]);
   });
 
-  it('sin suscripciones aplica el piso del plan gratuito (1 + 1 + 10)', () => {
+  it('sin suscripciones aplica el piso del plan gratuito (1 libre + 1 agenda + 1 grupo + 10)', () => {
     const limits = calculateProductionLimitsFromUser(userWith([], []), logger);
 
-    expect(limits.totalPersonalBlogLimit).toBe(1);
+    expect(limits.totalLibreBlogLimit).toBe(1);
+    expect(limits.totalAgendaBlogLimit).toBe(1);
+    expect(limits.totalPersonalBlogLimit).toBe(2);
     expect(limits.totalGroupBlogLimit).toBe(1);
     expect(limits.filesPerBlogLimit).toBe(10);
-    expect(limits.personalBlogsAvailable).toBe(1);
+    expect(limits.libreBlogsAvailable).toBe(1);
+    expect(limits.agendaBlogsAvailable).toBe(1);
     expect(limits.groupBlogsAvailable).toBe(1);
   });
 
@@ -46,7 +51,8 @@ describe('calculateProductionLimitsFromUser (Mis Producciones - RNF-06)', () => 
       logger,
     );
 
-    expect(limits.totalPersonalBlogLimit).toBe(1);
+    expect(limits.totalLibreBlogLimit).toBe(1);
+    expect(limits.totalAgendaBlogLimit).toBe(1);
     expect(limits.totalGroupBlogLimit).toBe(1);
     expect(limits.filesPerBlogLimit).toBe(10);
   });
@@ -56,8 +62,8 @@ describe('calculateProductionLimitsFromUser (Mis Producciones - RNF-06)', () => 
       userWith(
         [],
         [
-          { personalBlogsCount: 1, groupBlogsCount: 3, filesPerBlogCount: 50 },
-          { personalBlogsCount: 1, groupBlogsCount: 2, filesPerBlogCount: 25 },
+          { groupBlogsCount: 3, filesPerBlogCount: 50 },
+          { groupBlogsCount: 2, filesPerBlogCount: 25 },
         ],
       ),
       logger,
@@ -67,35 +73,79 @@ describe('calculateProductionLimitsFromUser (Mis Producciones - RNF-06)', () => 
     expect(limits.filesPerBlogLimit).toBe(75);
   });
 
-  it('el blog personal no se acumula: es 1 fijo aunque haya varios planes', () => {
+  it('acumula los cupos de blogs libres y de agenda entre suscripciones, como los anuncios', () => {
     const limits = calculateProductionLimitsFromUser(
       userWith(
         [],
         [
-          { personalBlogsCount: 1, groupBlogsCount: 1, filesPerBlogCount: 10 },
-          { personalBlogsCount: 1, groupBlogsCount: 1, filesPerBlogCount: 10 },
-          { personalBlogsCount: 3, groupBlogsCount: 1, filesPerBlogCount: 10 },
+          { personalBlogsLibreCount: 2, personalBlogsAgendaCount: 1 },
+          { personalBlogsLibreCount: 3, personalBlogsAgendaCount: 4 },
         ],
       ),
       logger,
     );
 
-    expect(limits.totalPersonalBlogLimit).toBe(1);
+    expect(limits.totalLibreBlogLimit).toBe(5);
+    expect(limits.totalAgendaBlogLimit).toBe(5);
+    expect(limits.totalPersonalBlogLimit).toBe(10);
   });
 
-  it('cuenta blogs personales y de grupo por separado y calcula el disponible (PLN-04)', () => {
+  it('cuenta blogs libres, de agenda y de grupo por separado (PLN-04)', () => {
     const limits = calculateProductionLimitsFromUser(
       userWith(
-        ['User', 'Group', 'Group'],
-        [{ personalBlogsCount: 1, groupBlogsCount: 3, filesPerBlogCount: 10 }],
+        [
+          { ownerType: 'User', behaviourType: 'libre' },
+          { ownerType: 'User', behaviourType: 'agenda' },
+          'Group',
+          'Group',
+        ],
+        [
+          {
+            personalBlogsLibreCount: 1,
+            personalBlogsAgendaCount: 2,
+            groupBlogsCount: 3,
+          },
+        ],
       ),
       logger,
     );
 
-    expect(limits.personalBlogCount).toBe(1);
+    expect(limits.libreBlogCount).toBe(1);
+    expect(limits.agendaBlogCount).toBe(1);
+    expect(limits.personalBlogCount).toBe(2);
     expect(limits.groupBlogCount).toBe(2);
-    expect(limits.personalBlogsAvailable).toBe(0);
+    expect(limits.libreBlogsAvailable).toBe(0);
+    expect(limits.agendaBlogsAvailable).toBe(1);
+    expect(limits.personalBlogsAvailable).toBe(1);
     expect(limits.groupBlogsAvailable).toBe(1);
+  });
+
+  it('un blog personal sin comportamiento cuenta según su alcance', () => {
+    const limits = calculateProductionLimitsFromUser(
+      userWith(
+        [
+          { ownerType: 'User', visibility: 'friends' },
+          { ownerType: 'User', visibility: 'public' },
+          { ownerType: 'User' },
+        ],
+        [],
+      ),
+      logger,
+    );
+
+    expect(limits.agendaBlogCount).toBe(1);
+    expect(limits.libreBlogCount).toBe(2);
+  });
+
+  it('los pisos gratuitos de blogs libres y de agenda se configuran por env', () => {
+    process.env.PRODUCTION_FREE_LIBRE_BLOGS = '3';
+    process.env.PRODUCTION_FREE_AGENDA_BLOGS = '0';
+
+    const limits = calculateProductionLimitsFromUser(userWith([], []), logger);
+
+    expect(limits.totalLibreBlogLimit).toBe(3);
+    expect(limits.totalAgendaBlogLimit).toBe(0);
+    expect(limits.agendaBlogsAvailable).toBe(0);
   });
 
   it('ignora suscripciones sin plan populado (plan borrado)', () => {

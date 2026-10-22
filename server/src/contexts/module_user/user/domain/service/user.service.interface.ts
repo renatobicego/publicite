@@ -8,6 +8,7 @@ import { UserPreferencesEntityDto } from '../entity/dto/user.preferences.update.
 import { UP_clerkUpdateRequestDto } from 'src/contexts/module_webhook/clerk/application/dto/UP-clerk.update.request';
 import { UserFindAllResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.response.dto';
 import { UserType } from '../entity/enum/user.enums';
+import { ProductionBehaviourType } from 'src/contexts/module_shared/production-limits/production.behaviour-type.enum';
 import { ProductionOwnerType } from 'src/contexts/module_shared/production-limits/production.owner-type.enum';
 import { ProductionLimits } from '../../application/functions/calculateProductionLimits';
 
@@ -47,6 +48,7 @@ export interface UserServiceInterface {
     ownerId: string,
     ownerType: ProductionOwnerType,
     session?: ClientSession,
+    behaviourType?: ProductionBehaviourType,
   ): Promise<boolean>;
   getProductionLimitsFromUserByUserId(
     ownerId: string,

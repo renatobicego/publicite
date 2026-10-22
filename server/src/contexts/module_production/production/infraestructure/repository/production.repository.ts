@@ -5,8 +5,10 @@ import { ClientSession, Model, Types } from 'mongoose';
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { Production } from '../../domain/entity/production.entity';
 import {
+  ProductionBehaviourType,
   ProductionModerationStatus,
   ProductionOwnerType,
+  ProductionVisibility,
 } from '../../domain/entity/enum/production.enums';
 import {
   ProductionGroupRoster,
@@ -16,6 +18,16 @@ import {
 } from '../../domain/repository/production.repository.interface';
 import ProductionModel, { ProductionDocument } from '../schemas/production.schema';
 import { toSearchText } from '../../application/functions/production.text';
+import { buildDistanceMetersExpr } from '../../application/functions/production.behaviour';
+
+const AGENDA_LEVELS = [
+  ProductionVisibility.contacts,
+  ProductionVisibility.friends,
+  ProductionVisibility.topfriends,
+];
+
+const toObjectIds = (ids: string[]) =>
+  ids.filter((id) => Types.ObjectId.isValid(id)).map((id) => new Types.ObjectId(id));
 
 @Injectable()
 export class ProductionRepository implements ProductionRepositoryInterface {
@@ -194,6 +206,59 @@ export class ProductionRepository implements ProductionRepositoryInterface {
     }
     if (filter.ownerType) {
       and.push({ ownerType: filter.ownerType });
+    }
+    if (filter.ownerIds) {
+      and.push({ owner: { $in: toObjectIds(filter.ownerIds) } });
+    }
+    if (filter.productionIds) {
+      and.push({ _id: { $in: toObjectIds(filter.productionIds) } });
+    }
+    if (filter.excludeProductionIds?.length) {
+      and.push({ _id: { $nin: toObjectIds(filter.excludeProductionIds) } });
+    }
+    if (filter.excludeOwnerId && Types.ObjectId.isValid(filter.excludeOwnerId)) {
+      and.push({ owner: { $ne: new Types.ObjectId(filter.excludeOwnerId) } });
+    }
+
+    // Los blogs personales anteriores al comportamiento no lo tienen guardado:
+    // cuentan como agenda si su alcance es de la agenda y como libres si no.
+    if (filter.behaviourType === ProductionBehaviourType.agenda) {
+      and.push({
+        ownerType: ProductionOwnerType.User,
+        $or: [
+          { behaviourType: ProductionBehaviourType.agenda },
+          { behaviourType: null, visibility: { $in: AGENDA_LEVELS } },
+        ],
+      });
+    } else if (filter.behaviourType === ProductionBehaviourType.libre) {
+      and.push({
+        ownerType: ProductionOwnerType.User,
+        $or: [
+          { behaviourType: ProductionBehaviourType.libre },
+          { behaviourType: null, visibility: { $nin: AGENDA_LEVELS } },
+        ],
+      });
+    }
+
+    // Radio de alcance de los blogs libres (como Anuncios). Los de grupo, los
+    // de agenda y los que no tienen ubicación no se filtran por distancia.
+    if (filter.geo) {
+      and.push({
+        $or: [
+          { ownerType: ProductionOwnerType.Group },
+          { behaviourType: ProductionBehaviourType.agenda },
+          { geoLocation: null },
+          { owner: { $in: toObjectIds(filter.geo.bypassOwnerIds) } },
+          {
+            $expr: {
+              $lte: [
+                buildDistanceMetersExpr(filter.geo.latitude, filter.geo.longitude),
+                '$geoLocation.ratio',
+              ],
+            },
+          },
+        ],
+      });
     }
 
     // Con clave, el alcance no aplica (VIS-05): se listan sólo donde se pide

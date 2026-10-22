@@ -27,7 +27,8 @@ export class SubscriptionPlanResponse {
    * Límites de Mis Producciones (RNF-06). Opcionales: los planes creados antes
    * de MP no los tienen cargados y el usuario cae al piso gratuito.
    */
-  readonly personalBlogsCount?: number;
+  readonly personalBlogsLibreCount?: number;
+  readonly personalBlogsAgendaCount?: number;
   readonly groupBlogsCount?: number;
   readonly filesPerBlogCount?: number;
 
@@ -57,7 +58,8 @@ export class SubscriptionPlanResponse {
     postsLibresCount: number,
     postsAgendaCount: number,
     isPack: boolean,
-    personalBlogsCount?: number,
+    personalBlogsLibreCount?: number,
+    personalBlogsAgendaCount?: number,
     groupBlogsCount?: number,
     filesPerBlogCount?: number,
     storageBytesLimit?: number,
@@ -74,7 +76,8 @@ export class SubscriptionPlanResponse {
     this.postsLibresCount = postsLibresCount;
     this.postsAgendaCount = postsAgendaCount;
     this.isPack = isPack;
-    this.personalBlogsCount = personalBlogsCount;
+    this.personalBlogsLibreCount = personalBlogsLibreCount;
+    this.personalBlogsAgendaCount = personalBlogsAgendaCount;
     this.groupBlogsCount = groupBlogsCount;
     this.filesPerBlogCount = filesPerBlogCount;
     this.storageBytesLimit = storageBytesLimit;

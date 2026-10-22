@@ -59,6 +59,7 @@ import {
   moderateProductionContentService,
   setProductionFeaturedService,
   setProductionVisibilityService,
+  updateProductionBehaviourService,
   setProductionItemVisibilityService,
   setProductionAccessKeyService,
   unlockProductionWithKeyService,
@@ -88,6 +89,9 @@ import {
   ProductionResponse,
   ProductionUpdateRequest,
   ProductionVisibility,
+  ProductionBehaviourType,
+  ProductionGeoLocation,
+  ProductionExploreFilters,
   ProductionConsumption,
   ProductionFanList,
   ProductionTicket,
@@ -170,10 +174,11 @@ export const findProductionByUrl = async (
 export const findAllProductions = async (
   page: number,
   limit: number,
-  searchTerm?: string
+  searchTerm?: string,
+  filters?: ProductionExploreFilters
 ): Promise<ProductionListResult | ProductionActionError> => {
   try {
-    return await findAllProductionsService(page, limit, searchTerm);
+    return await findAllProductionsService(page, limit, searchTerm, filters);
   } catch (error) {
     return toActionError(error);
   }
@@ -497,6 +502,25 @@ export const setProductionVisibility = async (
 ): Promise<ProductionResponse | ProductionActionError> => {
   try {
     return await setProductionVisibilityService(productionId, visibility);
+  } catch (error) {
+    return toActionError(error);
+  }
+};
+
+/** Cambia el blog personal entre libre y agenda (como Anuncios). */
+export const updateProductionBehaviour = async (
+  productionId: string,
+  behaviourType: ProductionBehaviourType,
+  visibility?: ProductionVisibility,
+  geoLocation?: ProductionGeoLocation
+): Promise<ProductionResponse | ProductionActionError> => {
+  try {
+    return await updateProductionBehaviourService(
+      productionId,
+      behaviourType,
+      visibility,
+      geoLocation
+    );
   } catch (error) {
     return toActionError(error);
   }

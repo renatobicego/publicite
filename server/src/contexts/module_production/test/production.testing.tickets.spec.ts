@@ -14,6 +14,7 @@ import {
   getProductionTestModels,
   givePlanToUser,
   ProductionTestModels,
+  blogRequest,
 } from './production.test.helpers';
 import { ProductionService } from '../production/application/service/production.service';
 import { ProductionTicketService } from '../production/application/service/production.ticket.service';
@@ -77,7 +78,7 @@ describe('Mis Producciones - Fase 5: tickets por transferencia', () => {
     const owner = await createTestUser(models);
     await givePlanToUser(models, owner, { isFree: false, filesPerBlogCount: 20 });
     const { _id: productionId } = await service.createProduction(
-      { title: 'Blog pago' },
+      blogRequest({ title: 'Blog pago' }),
       owner,
     );
     await tickets.setProductionPayoutAlias(productionId, 'creador.alias', owner);
@@ -117,7 +118,7 @@ describe('Mis Producciones - Fase 5: tickets por transferencia', () => {
     it('el plan gratuito sólo permite tickets gratuitos', async () => {
       const owner = await createTestUser(models);
       const { _id: productionId } = await service.createProduction(
-        { title: 'Gratis' },
+        blogRequest({ title: 'Gratis' }),
         owner,
       );
       const folder = await service.createFolder({ productionId, name: 'A' }, owner);
@@ -138,7 +139,7 @@ describe('Mis Producciones - Fase 5: tickets por transferencia', () => {
       const owner = await createTestUser(models);
       await givePlanToUser(models, owner, { isFree: false });
       const { _id: productionId } = await service.createProduction(
-        { title: 'Sin alias' },
+        blogRequest({ title: 'Sin alias' }),
         owner,
       );
 

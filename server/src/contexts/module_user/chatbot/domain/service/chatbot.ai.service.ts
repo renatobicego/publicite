@@ -509,6 +509,8 @@ Si necesitas más anuncios pero no quieres cambiar de plan completo:
 • **Grupos**: https://soonpublicite.com/grupos
 • **Pizarras**: https://soonpublicite.com/pizarras
 • **Producciones (blogs)**: https://soonpublicite.com/producciones
+• **Producciones Libres**: https://soonpublicite.com/producciones/libres
+• **Producciones de Contactos**: https://soonpublicite.com/producciones/contactos
 • **Mis tickets de Producciones**: https://soonpublicite.com/producciones/mis-tickets
 
 ### ⚙️ Configuración:
@@ -531,13 +533,25 @@ Si necesitas más anuncios pero no quieres cambiar de plan completo:
 
 ### 📝 Crear un blog
 1. Ve a: https://soonpublicite.com/crear/produccion
-2. Completa el nombre, la descripción, la foto de portada y el texto de bienvenida
-3. Elige el **alcance** del blog: Público, Registrados, Contactos, Amigos, Top amigos o **Sólo yo**
-4. ¡Listo! Entra al blog y empieza a cargar contenido
+2. Si es un blog personal, elige su **comportamiento**, igual que en los anuncios:
+   - **Blog Libre**: público (o sólo para usuarios registrados) y visible para quien esté dentro del **radio de alcance** de su ubicación. Al crearlo eliges la ubicación en el mapa y el radio (de 1 a 200 km).
+   - **Blog de Agenda**: visible sólo para tu agenda de contactos (Contactos, Amigos o Top amigos), sin importar dónde estén.
+   Los blogs de grupo no tienen comportamiento: los ven los miembros del grupo según su alcance.
+3. Completa el nombre, la descripción, la foto de portada y el texto de bienvenida
+4. Elige el **alcance**: en un blog libre, Público o Registrados; en uno de agenda, Contactos, Amigos o Top amigos. En los dos puedes elegir **Sólo yo**
+5. ¡Listo! Entra al blog y empieza a cargar contenido
 
-Si tu plan permite un solo blog personal y ya lo tienes, al ir a crear otro te muestra tu blog con accesos directos para entrar, escribir un artículo o editarlo.
+**Cambiar el comportamiento**: en "Editar blog" → "Editar Comportamiento" pasas un blog de libre a agenda (o al revés) y cambias la ubicación y el radio de un blog libre.
 
-La cantidad de blogs, de archivos por blog y el espacio de almacenamiento dependen de tu plan.
+**Cupos**: como con los anuncios, tu plan tiene un cupo de **blogs libres** y otro de **blogs de agenda** (se suman entre tus suscripciones y packs). Si se termina el de un tipo, puedes crear del otro, cambiar de plan o comprar un pack. La cantidad de blogs de grupo, de archivos por blog y el espacio de almacenamiento también dependen de tu plan.
+
+### 🔍 Explorar producciones
+En https://soonpublicite.com/producciones hay tres solapas, como en Anuncios:
+- **Producciones**: todo lo que puedes ver. Los blogs libres aparecen sólo si estás dentro de su radio.
+- **Producciones Libres**: blogs libres de otros usuarios cerca tuyo (dentro de su radio). Se filtran por cómo se entra al blog: Todos, Gratuitos (sin ticket), Ticket gratis o Ticket pago.
+- **Agenda de Contactos**: blogs de agenda de tus contactos, con sub-solapas Todos, Contactos, Amigos y Top Amigos, y dentro de cada una el mismo filtro Todos / Gratuitos / Ticket gratis / Ticket pago.
+El filtro de ticket mira el ticket del blog completo: un blog que se entra libre cuenta como Gratuito aunque tenga carpetas o archivos con ticket.
+Puedes buscar por nombre o descripción y cambiar tu ubicación con "Seleccionar ubicación".
 
 ### 📁 Organizar el contenido (como en un explorador de archivos)
 - **Carpetas y subcarpetas**: usa "Nueva carpeta". Cada carpeta muestra una vista previa de lo que tiene adentro.

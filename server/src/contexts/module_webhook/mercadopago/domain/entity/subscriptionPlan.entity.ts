@@ -21,7 +21,8 @@ export class SubscriptionPlan {
   private isPack: boolean;
   // Mis Producciones (RNF-06). Opcionales: los planes creados antes de MP no los
   // tienen cargados y caen al piso gratuito (ver production.limits.config.ts).
-  private personalBlogsCount?: number;
+  private personalBlogsLibreCount?: number;
+  private personalBlogsAgendaCount?: number;
   private groupBlogsCount?: number;
   private filesPerBlogCount?: number;
   private storageBytesLimit?: number;
@@ -39,7 +40,8 @@ export class SubscriptionPlan {
     postsLibresCount: number,
     postsAgendaCount: number,
     isPack: boolean,
-    personalBlogsCount?: number,
+    personalBlogsLibreCount?: number,
+    personalBlogsAgendaCount?: number,
     groupBlogsCount?: number,
     filesPerBlogCount?: number,
     storageBytesLimit?: number,
@@ -56,7 +58,8 @@ export class SubscriptionPlan {
     this.postsLibresCount = postsLibresCount;
     this.postsAgendaCount = postsAgendaCount;
     this.isPack = isPack;
-    this.personalBlogsCount = personalBlogsCount;
+    this.personalBlogsLibreCount = personalBlogsLibreCount;
+    this.personalBlogsAgendaCount = personalBlogsAgendaCount;
     this.groupBlogsCount = groupBlogsCount;
     this.filesPerBlogCount = filesPerBlogCount;
     this.storageBytesLimit = storageBytesLimit;
@@ -102,8 +105,12 @@ export class SubscriptionPlan {
     return this.isPack;
   }
 
-  public getPersonalBlogsCount(): number | undefined {
-    return this.personalBlogsCount;
+  public getPersonalBlogsLibreCount(): number | undefined {
+    return this.personalBlogsLibreCount;
+  }
+
+  public getPersonalBlogsAgendaCount(): number | undefined {
+    return this.personalBlogsAgendaCount;
   }
 
   public getGroupBlogsCount(): number | undefined {
@@ -132,7 +139,8 @@ export class SubscriptionPlan {
       doc.postsLibresCount,
       doc.postsAgendaCount,
       doc.isPack,
-      doc.personalBlogsCount,
+      doc.personalBlogsLibreCount,
+      doc.personalBlogsAgendaCount,
       doc.groupBlogsCount,
       doc.filesPerBlogCount,
       doc.storageBytesLimit,
@@ -155,7 +163,8 @@ export class SubscriptionPlan {
       postsLibresCount: subscriptionPlan.getPostsLibresCount(),
       postsAgendaCount: subscriptionPlan.getPostsAgendaCount(),
       isPack: subscriptionPlan.getIsPack(),
-      personalBlogsCount: subscriptionPlan.getPersonalBlogsCount(),
+      personalBlogsLibreCount: subscriptionPlan.getPersonalBlogsLibreCount(),
+      personalBlogsAgendaCount: subscriptionPlan.getPersonalBlogsAgendaCount(),
       groupBlogsCount: subscriptionPlan.getGroupBlogsCount(),
       filesPerBlogCount: subscriptionPlan.getFilesPerBlogCount(),
       storageBytesLimit: SubscriptionPlan.getVisibleStorageBytesLimit(

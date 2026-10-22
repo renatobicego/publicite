@@ -1,6 +1,7 @@
 import { Field, Float, ID, Int, ObjectType } from '@nestjs/graphql';
 
 import {
+  ProductionBehaviourType,
   ProductionFileType,
   ProductionItemKind,
   ProductionLockReason,
@@ -30,6 +31,24 @@ export class ProductionShelfLinkResponse {
 
   @Field(() => String, { nullable: true })
   imageKey?: string;
+}
+
+@ObjectType({ description: 'Ubicación y radio de alcance de un blog libre' })
+export class ProductionGeoLocationResponse {
+  @Field(() => Float)
+  latitude: number;
+
+  @Field(() => Float)
+  longitude: number;
+
+  @Field(() => String)
+  description: string;
+
+  @Field(() => Boolean)
+  userSetted: boolean;
+
+  @Field(() => Float, { description: 'Radio de alcance en metros' })
+  ratio: number;
 }
 
 @ObjectType({ description: 'Datos públicos del dueño (usuario o grupo)' })
@@ -133,6 +152,18 @@ export class ProductionResponse {
 
   @Field(() => ProductionVisibility)
   visibility: ProductionVisibility;
+
+  @Field(() => ProductionBehaviourType, {
+    nullable: true,
+    description: 'Blogs personales: libre o agenda. null en blogs de grupo',
+  })
+  behaviourType: ProductionBehaviourType | null;
+
+  @Field(() => ProductionGeoLocationResponse, {
+    nullable: true,
+    description: 'Ubicación y radio (sólo blogs libres)',
+  })
+  geoLocation: ProductionGeoLocationResponse | null;
 
   @Field(() => Boolean, { description: 'Si el blog pide clave (INV-01)' })
   hasAccessKey: boolean;
@@ -435,6 +466,24 @@ export class ProductionLimitsResponse {
 
   @Field(() => Int)
   personalBlogsAvailable: number;
+
+  @Field(() => Int, { description: 'Blogs personales libres del usuario' })
+  libreBlogCount: number;
+
+  @Field(() => Int, { description: 'Blogs personales de agenda del usuario' })
+  agendaBlogCount: number;
+
+  @Field(() => Int, { description: 'Cupo de blogs libres del plan' })
+  totalLibreBlogLimit: number;
+
+  @Field(() => Int, { description: 'Cupo de blogs de agenda del plan' })
+  totalAgendaBlogLimit: number;
+
+  @Field(() => Int)
+  libreBlogsAvailable: number;
+
+  @Field(() => Int)
+  agendaBlogsAvailable: number;
 
   @Field(() => Int)
   groupBlogsAvailable: number;

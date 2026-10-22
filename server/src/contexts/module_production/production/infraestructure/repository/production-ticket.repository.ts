@@ -74,6 +74,14 @@ export class ProductionTicketRepository
     return docs.map(ticketFromDocument);
   }
 
+  async findProductionIdsWithBlogTicket(isPaid?: boolean): Promise<string[]> {
+    const ids = await this.ticketModel.distinct('production', {
+      target: null,
+      ...(isPaid === undefined ? {} : { isPaid }),
+    });
+    return ids.map((id: any) => id.toString());
+  }
+
   async setPrices(
     updates: { ticketId: string; price: number }[],
     session?: ClientSession,

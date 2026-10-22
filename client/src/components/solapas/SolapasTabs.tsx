@@ -20,7 +20,10 @@ import {
   POST_CONTACTS,
   POST_LIBRE,
   PRODUCTIONS,
+  PRODUCTIONS_LIBRE,
+  PRODUCTIONS_CONTACTS,
 } from "@/utils/data/urls";
+import { ProductionBehaviourType } from "@/types/productionTypes";
 import { Tab, Tabs } from "@nextui-org/react";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
@@ -182,6 +185,51 @@ const SolapasTabs = () => {
     // },
   ];
 
+  // Sub-solapas de "Producciones", como las de Anuncios: todas, libres y
+  // agenda de contactos.
+  const productionsSubTabs = [
+    {
+      key: PRODUCTIONS,
+      title: <TabTitle title="Producciones" icon={<FaBook />} />,
+      component: <ProductionsLogic />,
+    },
+    {
+      key: PRODUCTIONS_LIBRE,
+      title: (
+        <TabTitle
+          title="Producciones Libres"
+          icon={
+            <>
+              <FaLocationDot className="size-5 md:size-6 " />{" "}
+              <FaBook className="size-5 md:size-6 " />
+            </>
+          }
+        />
+      ),
+      component: (
+        <ProductionsLogic behaviourType={ProductionBehaviourType.libre} />
+      ),
+    },
+    {
+      key: PRODUCTIONS_CONTACTS,
+      title: (
+        <TabTitle
+          title="Agenda de Contactos"
+          icon={
+            <>
+              <FaUser className="size-5 md:size-6 " />{" "}
+              <FaBook className="size-5 md:size-6 " />
+            </>
+          }
+        />
+      ),
+      component: (
+        <ProductionsLogic behaviourType={ProductionBehaviourType.agenda} />
+      ),
+      requiresLogin: true,
+    },
+  ];
+
   // Sub-solapas de "Social": pizarras, carteles de usuario, grupos y revistas.
   const socialSubTabs = [
     {
@@ -245,9 +293,12 @@ const SolapasTabs = () => {
   );
 
   const visiblePostsSubTabs = filterByLogin(postsSubTabs);
+  const visibleProductionsSubTabs = filterByLogin(productionsSubTabs);
   const visibleSocialSubTabs = filterByLogin(socialSubTabs);
 
-  const isProductionsActive = pathname === PRODUCTIONS;
+  const isProductionsActive = productionsSubTabs.some(
+    (tab) => tab.key === pathname
+  );
   const isSocialActive = visibleSocialSubTabs.some(
     (tab) => tab.key === pathname
   );
@@ -271,12 +322,13 @@ const SolapasTabs = () => {
     },
     {
       id: "producciones",
-      href: PRODUCTIONS,
+      // Si ya estamos en Producciones, la card mantiene la sub-solapa activa.
+      href: isProductionsActive ? pathname : PRODUCTIONS,
       label: "Producciones",
       icon: FaBook,
       color: MAGENTA,
       isActive: isProductionsActive,
-      component: <ProductionsLogic />,
+      component: renderSubTabs(visibleProductionsSubTabs, "Producciones"),
     },
     {
       // "Social" agrupa las sub-solapas. Navega a la sub-solapa activa.

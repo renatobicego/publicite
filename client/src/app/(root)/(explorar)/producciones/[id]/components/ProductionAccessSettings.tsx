@@ -3,6 +3,7 @@ import { useState } from "react";
 import {
   Button,
   Input,
+  Link,
   Modal,
   ModalBody,
   ModalContent,
@@ -26,8 +27,13 @@ import {
 import {
   isOnlyMe,
   visibilityLabel,
-  visibilityOptions,
+  visibilityOptions as allVisibilityOptions,
 } from "../../productionVisibility";
+import {
+  behaviourLabel,
+  behaviourVisibilities,
+} from "../../productionBehaviour";
+import { EDIT_PRODUCTION } from "@/utils/data/urls";
 
 interface Props {
   production: ProductionResponse;
@@ -55,6 +61,12 @@ const ProductionAccessSettings = ({
   );
   const [accessKey, setAccessKey] = useState("");
   const [busy, setBusy] = useState(false);
+  // Un blog personal sólo admite los alcances de su comportamiento (libre:
+  // público o registrados; agenda: contactos, amigos o top amigos).
+  const behaviour = production.behaviourType ?? null;
+  const visibilityOptions = behaviour
+    ? behaviourVisibilities[behaviour]
+    : allVisibilityOptions;
 
   const handleVisibility = async (value: ProductionVisibility) => {
     setBusy(true);
@@ -137,6 +149,20 @@ const ProductionAccessSettings = ({
                     </SelectItem>
                   ))}
                 </Select>
+                {behaviour && (
+                  <p className="text-xs text-default-500 mt-1">
+                    Es un {behaviourLabel[behaviour].toLowerCase()}. Para
+                    cambiarlo,{" "}
+                    <Link
+                      href={`${EDIT_PRODUCTION}/${production._id}/comportamiento`}
+                      size="sm"
+                      className="text-xs"
+                    >
+                      editá su comportamiento
+                    </Link>
+                    .
+                  </p>
+                )}
                 {isOnlyMe(visibility) ? (
                   <p className="text-xs text-default-500 mt-1">
                     El blog es privado: no aparece en listados ni en tu

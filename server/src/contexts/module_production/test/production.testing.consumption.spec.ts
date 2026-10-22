@@ -9,6 +9,7 @@ import {
   getProductionTestModels,
   givePlanToUser,
   ProductionTestModels,
+  blogRequest,
 } from './production.test.helpers';
 import { ProductionService } from '../production/application/service/production.service';
 import { ProductionInsightsService } from '../production/application/service/production.insights.service';
@@ -54,10 +55,10 @@ describe('Mis Producciones - Fase 4: CONTROL Consumo (PC-05, SB-05)', () => {
   it('muestra tokens, límites y archivos usados de los blogs del usuario', async () => {
     const userId = await createTestUser(models);
     await givePlanToUser(models, userId, { groupBlogsCount: 2, filesPerBlogCount: 20 });
-    const { _id: personal } = await service.createProduction({ title: 'Personal' }, userId);
+    const { _id: personal } = await service.createProduction(blogRequest({ title: 'Personal' }), userId);
     const groupId = await createTestGroup(models, { creator: userId });
     const { _id: groupBlog } = await service.createProduction(
-      { title: 'Del grupo', groupId },
+      blogRequest({ title: 'Del grupo', groupId }),
       userId,
     );
     await upload(userId, personal);
@@ -103,7 +104,7 @@ describe('Mis Producciones - Fase 4: CONTROL Consumo (PC-05, SB-05)', () => {
       members: [member],
     });
     const { _id: groupBlog } = await service.createProduction(
-      { title: 'Del grupo', groupId },
+      blogRequest({ title: 'Del grupo', groupId }),
       creator,
     );
 

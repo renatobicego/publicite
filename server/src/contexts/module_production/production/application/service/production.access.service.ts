@@ -11,9 +11,14 @@ import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.servic
 import { PubliciteAuth } from 'src/contexts/module_shared/auth/publicite_auth/publicite_auth';
 import { UserServiceInterface } from 'src/contexts/module_user/user/domain/service/user.service.interface';
 import { ProductionLimits } from 'src/contexts/module_user/user/application/functions/calculateProductionLimits';
-import { makeUserRelationHierarchyMap } from 'src/contexts/module_shared/utils/functions/makeUserRelationHierarchyMap';
+import {
+  makeUserRelationHierarchyMap,
+  makeUserRelationMapWithoutHierarchy,
+} from 'src/contexts/module_shared/utils/functions/makeUserRelationHierarchyMap';
+import { Visibility_Of_Find } from 'src/contexts/module_post/post/domain/entity/enum/post-visibility.enum';
 import { Production } from '../../domain/entity/production.entity';
 import {
+  ProductionAccessFilter,
   ProductionOwnerType,
   ProductionRole,
   ProductionVisibility,
@@ -306,14 +311,11 @@ export class ProductionAccessService {
         ownerType: ProductionOwnerType.User,
       },
     ];
-    scope.relationMap.forEach((levels, ownerId) => {
-      if (levels.length === 0 || !Types.ObjectId.isValid(ownerId)) return;
-      conditions.push({
-        owner: new Types.ObjectId(ownerId),
-        ownerType: ProductionOwnerType.User,
-        visibility: { $in: levels },
-      });
-    });
+    if (scope.relationMap.size > 0) {
+      conditions.push(
+        ...this.buildRelationVisibilityConditions(scope.relationMap),
+      );
+    }
     if (scope.groupRoles.size > 0) {
       conditions.push({
         owner: {
@@ -325,6 +327,70 @@ export class ProductionAccessService {
       });
     }
     return conditions;
+  }
+
+  /**
+   * Agenda de contactos del usuario: dueño → niveles que la relación habilita.
+   * Con `relation` (contactos, amigos o top amigos) se queda sólo con las
+   * relaciones de ese tipo, como la Agenda de Contactos de Anuncios.
+   */
+  async buildRelationMap(
+    userId: string,
+    relation?: Visibility_Of_Find,
+  ): Promise<Map<string, string[]>> {
+    const activeRelations =
+      await this.userService.getActiveRelationOfUser(userId);
+    if (!activeRelations || activeRelations.length === 0) return new Map();
+    return relation && relation !== Visibility_Of_Find.hierarchy
+      ? makeUserRelationMapWithoutHierarchy(activeRelations, userId, relation)
+      : makeUserRelationHierarchyMap(activeRelations, userId);
+  }
+
+  /**
+   * Filtro del explorar por el ticket del blog completo: ids a incluir (con
+   * ticket gratuito o pago) o a excluir (sin ticket).
+   */
+  async buildAccessFilter(
+    access?: ProductionAccessFilter,
+  ): Promise<{ productionIds?: string[]; excludeProductionIds?: string[] }> {
+    switch (access) {
+      case ProductionAccessFilter.free:
+        return {
+          excludeProductionIds:
+            await this.ticketRepository.findProductionIdsWithBlogTicket(),
+        };
+      case ProductionAccessFilter.freeTicket:
+        return {
+          productionIds:
+            await this.ticketRepository.findProductionIdsWithBlogTicket(false),
+        };
+      case ProductionAccessFilter.paidTicket:
+        return {
+          productionIds:
+            await this.ticketRepository.findProductionIdsWithBlogTicket(true),
+        };
+      default:
+        return {};
+    }
+  }
+
+  /** Condiciones de alcance sólo por agenda (solapa Agenda de contactos). */
+  buildRelationVisibilityConditions(
+    relationMap: Map<string, string[]>,
+  ): Record<string, any>[] {
+    const conditions: Record<string, any>[] = [];
+    relationMap.forEach((levels, ownerId) => {
+      if (levels.length === 0 || !Types.ObjectId.isValid(ownerId)) return;
+      conditions.push({
+        owner: new Types.ObjectId(ownerId),
+        ownerType: ProductionOwnerType.User,
+        visibility: { $in: levels },
+      });
+    });
+    // Sin niveles válidos no se lista nada (nunca un $or vacío = "todo").
+    return conditions.length
+      ? conditions
+      : [{ _id: { $exists: false } }];
   }
 
   evaluateProduction(
@@ -593,6 +659,12 @@ export class ProductionAccessService {
       totalGroupBlogLimit: limits.totalGroupBlogLimit,
       personalBlogsAvailable: safeInt(limits.personalBlogsAvailable),
       groupBlogsAvailable: safeInt(limits.groupBlogsAvailable),
+      libreBlogCount: limits.libreBlogCount,
+      agendaBlogCount: limits.agendaBlogCount,
+      totalLibreBlogLimit: limits.totalLibreBlogLimit,
+      totalAgendaBlogLimit: limits.totalAgendaBlogLimit,
+      libreBlogsAvailable: safeInt(limits.libreBlogsAvailable),
+      agendaBlogsAvailable: safeInt(limits.agendaBlogsAvailable),
       filesPerBlogLimit: limits.filesPerBlogLimit,
       canSellPaidTickets: limits.canSellPaidTickets,
       blogLimitEnabled: limits.blogLimitEnabled,

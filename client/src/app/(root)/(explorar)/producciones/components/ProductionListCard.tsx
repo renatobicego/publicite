@@ -1,8 +1,11 @@
 "use client";
 import Link from "next/link";
-import { Card, CardBody, CardHeader, Image } from "@nextui-org/react";
+import { Card, CardBody, CardHeader, Chip, Image } from "@nextui-org/react";
 import { FaStar, FaUsers } from "react-icons/fa";
-import { ProductionResponse } from "@/types/productionTypes";
+import {
+  ProductionBehaviourType,
+  ProductionResponse,
+} from "@/types/productionTypes";
 import { resolveProductionFileUrl } from "../productionMedia";
 import { PRODUCTIONS } from "@/utils/data/urls";
 
@@ -75,6 +78,21 @@ const ProductionListCard = ({
           <span className="flex items-center gap-1">
             <FaUsers /> {production.fansCount}
           </span>
+          {production.behaviourType && (
+            <Chip
+              size="sm"
+              variant="flat"
+              color={
+                production.behaviourType === ProductionBehaviourType.agenda
+                  ? "warning"
+                  : "primary"
+              }
+            >
+              {production.behaviourType === ProductionBehaviourType.agenda
+                ? "Agenda"
+                : "Libre"}
+            </Chip>
+          )}
         </div>
       </CardBody>
     </Card>

@@ -5,7 +5,10 @@ import {
   ProductionFile,
   ProductionFolder,
 } from '../../domain/entity/production-item.entity';
-import { ProductionOwnerType } from '../../domain/entity/enum/production.enums';
+import {
+  ProductionBehaviourType,
+  ProductionOwnerType,
+} from '../../domain/entity/enum/production.enums';
 import { ProductionCreateRequest } from '../../domain/entity/models_graphql/HTTP-REQUEST/production.request';
 import {
   ProductionArticleRequest,
@@ -15,6 +18,11 @@ import {
 import { ProductionFactoryInterface } from '../../domain/production-factory/production.factory.interface';
 import { buildProductionUrl } from '../functions/production.url';
 import { requireNonEmpty } from '../functions/production.text';
+import {
+  assertVisibilityMatchesBehaviour,
+  defaultVisibilityFor,
+  normalizeGeoLocation,
+} from '../functions/production.behaviour';
 
 /**
  * Arma las entidades de MP a partir de los requests (patrón PostFactory: un
@@ -35,6 +43,23 @@ export class ProductionFactory implements ProductionFactoryInterface {
     owner: { ownerId: string; ownerType: ProductionOwnerType; creatorId: string },
   ): Production {
     const title = requireNonEmpty(request.title, 'El nombre del blog');
+
+    // Comportamiento libre/agenda: sólo blogs personales, como Anuncios.
+    const isPersonal = owner.ownerType === ProductionOwnerType.User;
+    const behaviourType = isPersonal
+      ? request.behaviourType ?? ProductionBehaviourType.libre
+      : null;
+    const visibility =
+      request.visibility ??
+      (behaviourType ? defaultVisibilityFor(behaviourType) : undefined);
+    if (behaviourType && visibility) {
+      assertVisibilityMatchesBehaviour(behaviourType, visibility);
+    }
+    const geoLocation =
+      behaviourType === ProductionBehaviourType.libre
+        ? normalizeGeoLocation(request.geoLocation)
+        : null;
+
     return new Production({
       owner: owner.ownerId,
       ownerType: owner.ownerType,
@@ -46,7 +71,9 @@ export class ProductionFactory implements ProductionFactoryInterface {
       welcomeVideoKey: request.welcomeVideoKey,
       url: buildProductionUrl(title),
       shelf: request.shelf ?? [],
-      visibility: request.visibility,
+      visibility,
+      behaviourType,
+      geoLocation,
     });
   }
 

@@ -25,6 +25,19 @@ export interface ProductionViewExtras {
 }
 
 /** Arma la respuesta del blog según el rol de quien consulta. */
+function toGeoLocationResponse(production: Production) {
+  const geo = production.getGeoLocation;
+  if (!geo) return null;
+  const [longitude, latitude] = geo.location.coordinates;
+  return {
+    latitude,
+    longitude,
+    description: geo.description,
+    userSetted: geo.userSetted,
+    ratio: geo.ratio,
+  };
+}
+
 export function toProductionResponse(
   production: Production,
   role: ProductionRole,
@@ -50,6 +63,8 @@ export function toProductionResponse(
     // El muestrario expone archivos: sólo si se puede ver el contenido.
     showcase: decision.canViewContent ? production.getShowcase ?? [] : [],
     visibility: (production.getVisibility ?? ProductionVisibility.public) as ProductionVisibility,
+    behaviourType: production.getBehaviourType,
+    geoLocation: toGeoLocationResponse(production),
     hasAccessKey: production.hasAccessKey,
     filesCount: production.getFilesCount ?? 0,
     foldersCount: extras.foldersCount ?? null,

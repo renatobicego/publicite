@@ -18,6 +18,7 @@ import {
   ProductionItem,
 } from '../../domain/entity/production-item.entity';
 import {
+  ProductionBehaviourType,
   ProductionFileType,
   ProductionItemKind,
   ProductionOwnerType,
@@ -26,6 +27,7 @@ import {
 } from '../../domain/entity/enum/production.enums';
 import {
   ProductionCreateRequest,
+  ProductionGeoLocationInput,
   ProductionUpdateRequest,
 } from '../../domain/entity/models_graphql/HTTP-REQUEST/production.request';
 import {
@@ -46,9 +48,15 @@ import {
   ProductionListResponse,
   ProductionResponse,
 } from '../../domain/entity/models_graphql/HTTP-RESPONSE/production.response';
-import { ProductionRepositoryInterface } from '../../domain/repository/production.repository.interface';
+import {
+  ProductionListFilter,
+  ProductionRepositoryInterface,
+} from '../../domain/repository/production.repository.interface';
 import { ProductionItemRepositoryInterface } from '../../domain/repository/production-item.repository.interface';
-import { ProductionServiceInterface } from '../../domain/service/production.service.interface';
+import {
+  ProductionExploreOptions,
+  ProductionServiceInterface,
+} from '../../domain/service/production.service.interface';
 import { ProductionFactory } from '../production-factory/production.factory';
 import { ProductionAccessService } from './production.access.service';
 import {
@@ -68,6 +76,11 @@ import { sanitizeArticleBlocks } from '../functions/production.article-sanitize'
 import { ProductionCascadeService } from './production.cascade.service';
 import { ProductionViewerScope } from './production.access.service';
 import { hashAccessKey } from '../functions/production.access-key';
+import {
+  assertVisibilityMatchesBehaviour,
+  defaultVisibilityFor,
+  normalizeGeoLocation,
+} from '../functions/production.behaviour';
 
 const DUPLICATE_KEY = 11000;
 const MAX_URL_ATTEMPTS = 3;
@@ -90,6 +103,19 @@ const normalizePagination = (page: number, limit: number) => ({
 const isDuplicateKeyError = (error: any, field?: string) =>
   error?.code === DUPLICATE_KEY &&
   (!field || JSON.stringify(error?.keyPattern ?? {}).includes(field));
+
+/** Mensaje al quedarse sin cupo de blogs (por tipo de dueño y comportamiento). */
+const blogLimitMessage = (
+  ownerType: ProductionOwnerType,
+  behaviourType: ProductionBehaviourType | null,
+) => {
+  if (ownerType === ProductionOwnerType.Group) {
+    return 'Alcanzaste el límite de blogs de grupo de tu plan. Mejorá tu plan para crear más.';
+  }
+  return behaviourType === ProductionBehaviourType.agenda
+    ? 'Alcanzaste el límite de blogs de agenda de tu plan. Mejorá tu plan o comprá un pack para crear más.'
+    : 'Alcanzaste el límite de blogs libres de tu plan. Mejorá tu plan o comprá un pack para crear más.';
+};
 
 @Injectable()
 export class ProductionService implements ProductionServiceInterface {
@@ -335,26 +361,28 @@ export class ProductionService implements ProductionServiceInterface {
     for (let attempt = 1; ; attempt++) {
       try {
         const productionId = await this.inTransaction(async (session) => {
-          // PLN-04: se valida el cupo del plan antes de persistir. El blog de
-          // grupo se descuenta del plan del creator (RNF-14).
-          const allowed = await this.userService.isThisUserAllowedToCreateBlog(
-            userId,
-            ownerType,
-            session,
-          );
-          if (!allowed) {
-            throw new BadRequestException(
-              ownerType === ProductionOwnerType.Group
-                ? 'Alcanzaste el límite de blogs de grupo de tu plan. Mejorá tu plan para crear más.'
-                : 'Ya tenés tu blog personal. Tu plan permite un único blog personal.',
-            );
-          }
-
           const production = this.factory.createProduction(request, {
             ownerId,
             ownerType,
             creatorId: userId,
           });
+          const behaviourType = production.getBehaviourType;
+
+          // PLN-04: se valida el cupo del plan antes de persistir. El blog de
+          // grupo se descuenta del plan del creator (RNF-14); el personal, del
+          // cupo de su comportamiento (libre o agenda), como los anuncios.
+          const allowed = await this.userService.isThisUserAllowedToCreateBlog(
+            userId,
+            ownerType,
+            session,
+            behaviourType ?? undefined,
+          );
+          if (!allowed) {
+            throw new BadRequestException(
+              blogLimitMessage(ownerType, behaviourType),
+            );
+          }
+
           const id = await this.productionRepository.create(production, session);
           await this.userService.saveNewProductionInUser(id, userId, {
             session,
@@ -410,6 +438,14 @@ export class ProductionService implements ProductionServiceInterface {
     }
     if (request.shelf !== undefined) {
       fields.shelf = this.mapShelf(request);
+    }
+    if (request.geoLocation !== undefined && request.geoLocation !== null) {
+      if (production.getBehaviourType !== ProductionBehaviourType.libre) {
+        throw new BadRequestException(
+          'Sólo los blogs libres tienen ubicación y radio de alcance',
+        );
+      }
+      fields.geoLocation = normalizeGeoLocation(request.geoLocation);
     }
     if (request.showcase !== undefined) {
       const uniqueIds = Array.from(new Set(request.showcase));
@@ -964,7 +1000,20 @@ export class ProductionService implements ProductionServiceInterface {
   }
 
   /**
-   * Listado público y buscador de producciones (NAV-02, NAV-05).
+   * Listado y buscador del explorar de Producciones (NAV-02, NAV-05), con las
+   * mismas solapas que Anuncios:
+   *
+   * - Todas (sin `behaviourType`): todo lo que el visitante puede ver. Los
+   *   blogs libres sólo aparecen si está dentro de su radio (salvo los propios
+   *   y los de su agenda), como `findAllPostsGlobal`.
+   * - Libres: blogs personales libres, públicos (o para registrados) y dentro
+   *   del radio. No muestra los propios, como `findAllPosts`.
+   * - Agenda: blogs personales de agenda de sus contactos, filtrables por tipo
+   *   de relación (`relation`), como `findAllFriendsPosts`. Requiere sesión.
+   *
+   * `access` filtra por el ticket del blog completo (sin ticket, ticket
+   * gratuito o pago): las sub-solapas de Libres y de Agenda.
+   *
    * Los blogs con clave también se listan (se ve la tarjeta/header): el
    * evaluador los marca `listed` pero con el contenido bloqueado hasta que el
    * visitante ingrese la clave (VIS-05 / INV-02).
@@ -974,21 +1023,78 @@ export class ProductionService implements ProductionServiceInterface {
     limit: number,
     userId?: string,
     searchTerm?: string,
+    options: ProductionExploreOptions = {},
   ): Promise<ProductionListResponse> {
     const { safePage, safeLimit } = normalizePagination(page, limit);
     const searchRegex = buildProductionSearchRegex(searchTerm);
     if (searchTerm && !searchRegex) return { productions: [], hasMore: false };
 
-    const scope = await this.accessService.buildViewerScope(userId);
-    const { productions, hasMore } = await this.productionRepository.findList(
-      {
+    const { behaviourType, userLocation, relation, access } = options;
+    const [scope, accessFilter] = await Promise.all([
+      this.accessService.buildViewerScope(userId),
+      this.accessService.buildAccessFilter(access),
+    ]);
+    const geo = userLocation
+      ? {
+          latitude: userLocation.latitude,
+          longitude: userLocation.longitude,
+          bypassOwnerIds: [
+            ...(scope.userId ? [scope.userId] : []),
+            ...Array.from(scope.relationMap.keys()),
+          ],
+        }
+      : undefined;
+
+    let filter: ProductionListFilter;
+    if (behaviourType === ProductionBehaviourType.agenda) {
+      if (!scope.userId) return { productions: [], hasMore: false };
+      const relationMap = await this.accessService.buildRelationMap(
+        scope.userId,
+        relation,
+      );
+      if (relationMap.size === 0) return { productions: [], hasMore: false };
+      filter = {
+        behaviourType,
+        ownerIds: Array.from(relationMap.keys()),
+        visibilityConditions:
+          this.accessService.buildRelationVisibilityConditions(relationMap),
+        searchRegex,
+        includeKeyProtected: true,
+        includeModerated: false,
+      };
+    } else if (behaviourType === ProductionBehaviourType.libre) {
+      filter = {
+        behaviourType,
+        excludeOwnerId: scope.userId,
+        visibilityConditions: [
+          {
+            visibility: {
+              $in: scope.userId
+                ? [ProductionVisibility.public, ProductionVisibility.registered]
+                : [ProductionVisibility.public],
+            },
+          },
+        ],
+        searchRegex,
+        includeKeyProtected: true,
+        includeModerated: false,
+        // En Libres el radio se respeta siempre, también para la agenda.
+        geo: geo && { ...geo, bypassOwnerIds: [] },
+      };
+    } else {
+      filter = {
         visibilityConditions: this.accessService.buildListVisibilityConditions(
           scope,
         ),
         searchRegex,
         includeKeyProtected: true,
         includeModerated: false,
-      },
+        geo,
+      };
+    }
+
+    const { productions, hasMore } = await this.productionRepository.findList(
+      { ...filter, ...accessFilter },
       safePage,
       safeLimit,
     );
@@ -1353,7 +1459,68 @@ export class ProductionService implements ProductionServiceInterface {
       userId,
       'canManageAccess',
     );
+    // Un blog libre es público o para registrados; uno de agenda, para la
+    // agenda de contactos (en los dos se puede dejar "Sólo yo").
+    assertVisibilityMatchesBehaviour(production.getBehaviourType, visibility);
     await this.productionRepository.updateById(productionId, { visibility });
+    return this.findProductionById(productionId, userId);
+  }
+
+  /**
+   * Cambia el comportamiento de un blog personal (libre ↔ agenda), como
+   * `updateBehaviourType` de Anuncios: valida el cupo del comportamiento nuevo
+   * y ajusta el alcance. Pasar a libre exige ubicación y radio.
+   */
+  async updateProductionBehaviour(
+    productionId: string,
+    behaviourType: ProductionBehaviourType,
+    visibility: ProductionVisibility | undefined,
+    geoLocation: ProductionGeoLocationInput | undefined,
+    userId: string,
+  ): Promise<ProductionResponse> {
+    const production = await this.getProductionOrFail(productionId);
+    await this.accessService.assertPermission(
+      production,
+      userId,
+      'canManageAccess',
+    );
+    if (production.isGroupBlog) {
+      throw new BadRequestException(
+        'Los blogs de grupo no tienen comportamiento libre o agenda',
+      );
+    }
+
+    const nextVisibility = visibility ?? defaultVisibilityFor(behaviourType);
+    assertVisibilityMatchesBehaviour(behaviourType, nextVisibility);
+    const fields: Record<string, any> = {
+      behaviourType,
+      visibility: nextVisibility,
+    };
+    if (behaviourType === ProductionBehaviourType.libre) {
+      fields.geoLocation =
+        geoLocation || !production.getGeoLocation
+          ? normalizeGeoLocation(geoLocation)
+          : production.getGeoLocation;
+    }
+
+    await this.inTransaction(async (session) => {
+      if (production.getBehaviourType !== behaviourType) {
+        // El blog todavía cuenta en su comportamiento actual, así que el cupo
+        // del nuevo tiene que tener lugar para uno más.
+        const allowed = await this.userService.isThisUserAllowedToCreateBlog(
+          production.getCreator,
+          ProductionOwnerType.User,
+          session,
+          behaviourType,
+        );
+        if (!allowed) {
+          throw new BadRequestException(
+            blogLimitMessage(ProductionOwnerType.User, behaviourType),
+          );
+        }
+      }
+      await this.productionRepository.updateById(productionId, fields, session);
+    });
     return this.findProductionById(productionId, userId);
   }
 

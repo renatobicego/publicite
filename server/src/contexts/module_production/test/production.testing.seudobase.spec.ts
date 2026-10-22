@@ -10,6 +10,7 @@ import {
   getProductionTestModels,
   givePlanToUser,
   ProductionTestModels,
+  blogRequest,
 } from './production.test.helpers';
 import { ProductionService } from '../production/application/service/production.service';
 import { ProductionTicketService } from '../production/application/service/production.ticket.service';
@@ -60,7 +61,7 @@ describe('Mis Producciones - Fase 7: SeudoBase y gestión masiva (SB-01..05)', (
     const owner = await createTestUser(models);
     await givePlanToUser(models, owner, { isFree: false, filesPerBlogCount: 50 });
     const { _id: productionId } = await service.createProduction(
-      { title: 'Blog SeudoBase' },
+      blogRequest({ title: 'Blog SeudoBase' }),
       owner,
     );
     await tickets.setProductionPayoutAlias(productionId, 'creador.alias', owner);
@@ -169,7 +170,7 @@ describe('Mis Producciones - Fase 7: SeudoBase y gestión masiva (SB-01..05)', (
       const { owner, productionId, photoA } = await setup();
       const other = await createTestUser(models);
       const { _id: otherProduction } = await service.createProduction(
-        { title: 'Otro' },
+        blogRequest({ title: 'Otro' }),
         other,
       );
       const foreign = await service.uploadFile(
@@ -328,7 +329,7 @@ describe('Mis Producciones - Fase 7: SeudoBase y gestión masiva (SB-01..05)', (
         members: [member],
       });
       const { _id: productionId } = await service.createProduction(
-        { title: 'Grupo', groupId },
+        blogRequest({ title: 'Grupo', groupId }),
         creator,
       );
       const photo = await service.uploadFile(

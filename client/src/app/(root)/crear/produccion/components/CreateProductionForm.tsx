@@ -2,10 +2,9 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "@bprogress/next/app";
 import { Button, Image, Input, Textarea, Link, Spinner } from "@nextui-org/react";
-import { FaBook, FaImage, FaPen, FaRegEdit } from "react-icons/fa";
+import { FaImage } from "react-icons/fa";
 import imageCompression from "browser-image-compression";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
-import SecondaryButton from "@/components/buttons/SecondaryButton";
 import { useUploadThing } from "@/utils/uploadThing";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import {
@@ -16,26 +15,45 @@ import { isProductionActionError } from "@/utils/functions/productionErrorHandle
 import {
   EDIT_PRODUCTION,
   PRODUCTIONS,
-  SUBSCRIPTIONS,
-  PACKS,
   FILE_URL,
 } from "@/utils/data/urls";
 import {
+  ProductionBehaviourType,
   ProductionBlogConsumption,
+  ProductionLimits,
   ProductionOwnerType,
   ProductionRole,
   ProductionVisibility,
 } from "@/types/productionTypes";
+import { PostLocationForm } from "@/types/postTypes";
+import SelectProductionBehaviour from "@/app/(root)/(explorar)/producciones/components/SelectProductionBehaviour";
+import BlogLimitReached from "@/app/(root)/(explorar)/producciones/components/BlogLimitReached";
+import BlogBehaviourFields from "@/app/(root)/(explorar)/producciones/components/BlogBehaviourFields";
+import {
+  canCreateBlogOf,
+  defaultVisibilityFor,
+  toGeoLocationInput,
+  toLocationForm,
+} from "@/app/(root)/(explorar)/producciones/productionBehaviour";
 
 /**
  * Alta de un blog de Mis Producciones (personal o de grupo).
- * Gate de plan: consulta los límites antes de mostrar el formulario. Si ya no
- * quedan blogs personales, en vez del formulario lleva al blog que ya tiene.
+ * Un blog personal es libre o de agenda, como un anuncio: primero se elige el
+ * comportamiento y se valida su cupo del plan; un blog libre además pide
+ * ubicación y radio. Los blogs de grupo no tienen comportamiento.
  */
 const CreateProductionForm = ({ groupId }: { groupId?: string }) => {
   const router = useRouter();
   const [loadingLimits, setLoadingLimits] = useState(true);
-  const [canCreate, setCanCreate] = useState(false);
+  const [limits, setLimits] = useState<ProductionLimits | null>(null);
+  const [behaviourType, setBehaviourType] = useState<
+    ProductionBehaviourType | undefined
+  >(undefined);
+  const [visibility, setVisibility] = useState<ProductionVisibility>(
+    ProductionVisibility.public
+  );
+  const [location, setLocation] = useState<PostLocationForm>(toLocationForm());
+  const [showLocationError, setShowLocationError] = useState(false);
   // Blog personal que ya tiene el usuario (cuando su plan permite uno solo).
   const [ownBlog, setOwnBlog] = useState<ProductionBlogConsumption | null>(
     null
@@ -90,13 +108,10 @@ const CreateProductionForm = ({ groupId }: { groupId?: string }) => {
       if (!active) return;
       if (isProductionActionError(consumption)) {
         toastifyError(consumption.error);
-        setCanCreate(false);
+        setLimits(null);
       } else {
         const { limits, blogs } = consumption;
-        const available = groupId
-          ? limits.groupBlogsAvailable
-          : limits.personalBlogsAvailable;
-        setCanCreate(available > 0);
+        setLimits(limits);
         setOwnBlog(
           blogs.find(
             (blog) =>
@@ -112,9 +127,23 @@ const CreateProductionForm = ({ groupId }: { groupId?: string }) => {
     };
   }, [groupId]);
 
+  const handleSelectBehaviour = (type: ProductionBehaviourType) => {
+    setBehaviourType(type);
+    setVisibility(defaultVisibilityFor(type));
+  };
+
   const handleSubmit = async () => {
     if (!title.trim()) {
       toastifyError("El título del blog es obligatorio");
+      return;
+    }
+    const geoLocation =
+      behaviourType === ProductionBehaviourType.libre
+        ? toGeoLocationInput(location)
+        : null;
+    if (behaviourType === ProductionBehaviourType.libre && !geoLocation) {
+      setShowLocationError(true);
+      toastifyError("Elegí la ubicación del blog en el mapa");
       return;
     }
     setIsSubmitting(true);
@@ -124,8 +153,14 @@ const CreateProductionForm = ({ groupId }: { groupId?: string }) => {
         description: description.trim() || undefined,
         welcomeText: welcomeText.trim() || undefined,
         headerPhotoKey,
-        visibility: ProductionVisibility.public,
         groupId,
+        ...(groupId
+          ? { visibility: ProductionVisibility.public }
+          : {
+              behaviourType,
+              visibility,
+              geoLocation: geoLocation ?? undefined,
+            }),
       });
       if (isProductionActionError(res)) {
         toastifyError(res.error);
@@ -142,84 +177,76 @@ const CreateProductionForm = ({ groupId }: { groupId?: string }) => {
     return <p className="text-sm">Cargando…</p>;
   }
 
-  if (!canCreate && !groupId && ownBlog) {
-    const blogUrl = `${PRODUCTIONS}/${ownBlog.productionId}`;
+  if (!limits) {
     return (
-      <section className="w-full max-w-2xl flex flex-col gap-5 rounded-2xl border border-default-200 bg-content1 p-6 shadow-sm">
-        <div className="flex items-start gap-4">
-          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-xl text-primary">
-            <FaBook />
-          </span>
-          <div className="min-w-0">
-            <h4 className="break-words">
-              Ya tenés tu blog «{ownBlog.title}»
-            </h4>
-            <p className="mt-1 text-sm text-default-500">
-              Seguí trabajando en él: subí archivos, creá carpetas, escribí
-              artículos o cambiá su portada y descripción.
-            </p>
-          </div>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <PrimaryButton as={Link} href={blogUrl} startContent={<FaBook />}>
-            Ir a mi blog
-          </PrimaryButton>
-          <SecondaryButton
-            as={Link}
-            href={`${blogUrl}/crear-articulo`}
-            startContent={<FaPen />}
-          >
-            Escribir un artículo
-          </SecondaryButton>
-          <SecondaryButton
-            as={Link}
-            href={`${EDIT_PRODUCTION}/${ownBlog.productionId}`}
-            startContent={<FaRegEdit />}
-          >
-            Editar blog
-          </SecondaryButton>
-        </div>
-        <p className="border-t border-default-100 pt-4 text-xs text-default-500">
-          Tu plan permite un único blog personal. Si querés otro,{" "}
-          <Link href={SUBSCRIPTIONS} size="sm" className="text-xs">
-            cambiá de plan
-          </Link>{" "}
-          o{" "}
-          <Link href={PACKS} size="sm" className="text-xs">
-            comprá un pack
-          </Link>
-          .
-        </p>
-      </section>
+      <p className="text-sm text-danger">
+        No se pudieron cargar los límites de tu plan. Probá de nuevo más tarde.
+      </p>
     );
   }
 
-  if (!canCreate) {
+  // Blog de grupo: cupo de blogs de grupo, sin comportamiento.
+  if (groupId) {
+    if (limits.blogLimitEnabled && limits.groupBlogsAvailable <= 0) {
+      return (
+        <BlogLimitReached
+          count={limits.groupBlogCount}
+          limit={limits.totalGroupBlogLimit}
+        />
+      );
+    }
+  } else if (!behaviourType) {
     return (
-      <section className="w-full flex flex-col items-center gap-4 rounded-lg border p-6">
-        <h4 className="text-center">
-          {groupId
-            ? "Alcanzaste el límite de blogs de grupo de tu plan."
-            : "Ya tenés tu blog personal. Tu plan permite un único blog personal."}
-        </h4>
-        <p className="text-sm text-center md:max-w-[60%]">
-          Para crear un nuevo blog, cambiá de plan o comprá un pack de
-          publicaciones.
-        </p>
-        <div className="flex gap-2 items-center">
-          <PrimaryButton as={Link} href={SUBSCRIPTIONS}>
-            Cambiar Plan
-          </PrimaryButton>
-          <SecondaryButton as={Link} href={PACKS}>
-            Comprar Packs
-          </SecondaryButton>
-        </div>
+      <section className="w-full flex flex-col gap-4 max-w-2xl">
+        <SelectProductionBehaviour
+          type={behaviourType}
+          setType={handleSelectBehaviour}
+        />
+        {ownBlog && (
+          <p className="text-xs text-default-500">
+            Ya tenés el blog «{ownBlog.title}».{" "}
+            <Link
+              href={`${PRODUCTIONS}/${ownBlog.productionId}`}
+              size="sm"
+              className="text-xs"
+            >
+              Ir a mi blog
+            </Link>{" "}
+            ·{" "}
+            <Link
+              href={`${EDIT_PRODUCTION}/${ownBlog.productionId}`}
+              size="sm"
+              className="text-xs"
+            >
+              Editar blog
+            </Link>
+          </p>
+        )}
       </section>
+    );
+  } else if (!canCreateBlogOf(limits, behaviourType)) {
+    const isAgenda = behaviourType === ProductionBehaviourType.agenda;
+    return (
+      <BlogLimitReached
+        behaviourType={behaviourType}
+        count={isAgenda ? limits.agendaBlogCount : limits.libreBlogCount}
+        limit={
+          isAgenda ? limits.totalAgendaBlogLimit : limits.totalLibreBlogLimit
+        }
+        onBack={() => setBehaviourType(undefined)}
+      />
     );
   }
 
   return (
     <section className="w-full flex flex-col gap-4 max-w-2xl">
+      {!groupId && (
+        <SelectProductionBehaviour
+          type={behaviourType}
+          setType={handleSelectBehaviour}
+          isDisabled={isSubmitting}
+        />
+      )}
       {/* Portada del blog */}
       <div className="flex flex-col gap-2">
         <span className="text-sm font-medium">Portada (opcional)</span>
@@ -288,6 +315,17 @@ const CreateProductionForm = ({ groupId }: { groupId?: string }) => {
         onValueChange={setWelcomeText}
         maxLength={500}
       />
+      {!groupId && behaviourType && (
+        <BlogBehaviourFields
+          behaviourType={behaviourType}
+          visibility={visibility}
+          setVisibility={setVisibility}
+          location={location}
+          setLocation={setLocation}
+          showLocationError={showLocationError}
+          isDisabled={isSubmitting}
+        />
+      )}
       <PrimaryButton
         onClick={handleSubmit}
         disabled={isSubmitting || uploadingCover}

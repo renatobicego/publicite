@@ -2,6 +2,7 @@ import { ClientSession } from 'mongoose';
 
 import { Production } from '../entity/production.entity';
 import {
+  ProductionBehaviourType,
   ProductionModerationStatus,
   ProductionOwnerType,
 } from '../entity/enum/production.enums';
@@ -33,6 +34,26 @@ export interface ProductionListFilter {
   includeKeyProtected: boolean;
   /** Incluir blogs ocultos/bloqueados (sólo staff). */
   includeModerated: boolean;
+  /** Sólo blogs personales con ese comportamiento (solapas Libres / Agenda). */
+  behaviourType?: ProductionBehaviourType;
+  /** Restringe a estos dueños (agenda: los contactos del visitante). */
+  ownerIds?: string[];
+  /** Sólo estos blogs (sub-solapas por ticket). */
+  productionIds?: string[];
+  /** Deja afuera estos blogs (sub-solapa "Gratuitos": los que no tienen ticket). */
+  excludeProductionIds?: string[];
+  /** Deja afuera los blogs de este dueño (Libres no muestra los propios). */
+  excludeOwnerId?: string;
+  /**
+   * Ubicación del visitante: los blogs libres con ubicación sólo se listan si
+   * el visitante está dentro de su radio, salvo los de `geoBypassOwnerIds`
+   * (el propio visitante y su agenda), como en Anuncios.
+   */
+  geo?: {
+    latitude: number;
+    longitude: number;
+    bypassOwnerIds: string[];
+  };
 }
 
 export interface ProductionRepositoryInterface {

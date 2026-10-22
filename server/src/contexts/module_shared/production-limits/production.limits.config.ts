@@ -2,7 +2,8 @@
  * Configuración de los límites de "Mis Producciones" (MP).
  *
  * Los límites reales viven en el plan de suscripción (`subscriptionPlan.schema.ts`:
- * `personalBlogsCount`, `groupBlogsCount`, `filesPerBlogCount`) y son editables por
+ * `personalBlogsLibreCount`, `personalBlogsAgendaCount`, `groupBlogsCount`,
+ * `filesPerBlogCount`) y son editables por
  * plan desde la DB (RNF-06). Este archivo define únicamente el **piso gratuito**:
  * lo que recibe un usuario sin suscripciones activas, o cuyos planes todavía no
  * tienen configuradas las dimensiones nuevas (planes creados antes de MP).
@@ -11,11 +12,10 @@
  * tenga las dimensiones cargadas, manda la DB.
  *
  * Variables de entorno (opcionales, todas con default):
- * - PRODUCTION_FREE_PERSONAL_BLOGS: blogs personales del plan gratuito (default 1).
+ * - PRODUCTION_FREE_LIBRE_BLOGS: blogs personales libres del plan gratuito (default 1).
+ * - PRODUCTION_FREE_AGENDA_BLOGS: blogs personales de agenda del plan gratuito (default 1).
  * - PRODUCTION_FREE_GROUP_BLOGS: blogs de grupo del plan gratuito (default 1).
  * - PRODUCTION_FREE_FILES_PER_BLOG: archivos por blog del plan gratuito (default 10).
- * - PRODUCTION_MAX_PERSONAL_BLOGS: tope duro de blogs personales para cualquier
- *   plan (default 1). PLN-02: el blog personal NO aumenta al mejorar de plan.
  *
  * Feature flags (para poder apagar límites nuevos si el cliente no los quiere):
  * - PRODUCTION_BLOG_LIMIT_ENABLED: activa el límite de CANTIDAD de blogs por
@@ -114,9 +114,14 @@ export function formatBytes(bytes: number): string {
   return `${rounded} ${units[exponent]}`;
 }
 
-/** Blogs personales del plan gratuito. */
-export function getFreePersonalBlogsLimit(): number {
-  return readPositiveNumber('PRODUCTION_FREE_PERSONAL_BLOGS', 1);
+/** Blogs personales libres del plan gratuito. */
+export function getFreeLibreBlogsLimit(): number {
+  return readPositiveNumber('PRODUCTION_FREE_LIBRE_BLOGS', 1);
+}
+
+/** Blogs personales de agenda del plan gratuito. */
+export function getFreeAgendaBlogsLimit(): number {
+  return readPositiveNumber('PRODUCTION_FREE_AGENDA_BLOGS', 1);
 }
 
 /** Blogs de grupo del plan gratuito. */
@@ -127,14 +132,6 @@ export function getFreeGroupBlogsLimit(): number {
 /** Archivos por blog del plan gratuito. */
 export function getFreeFilesPerBlogLimit(): number {
   return readPositiveNumber('PRODUCTION_FREE_FILES_PER_BLOG', 10);
-}
-
-/**
- * Tope duro de blogs personales. El blog personal es 1 fijo en todos los planes
- * (PLN-01/PLN-02), así que el límite nunca se acumula entre suscripciones.
- */
-export function getMaxPersonalBlogsLimit(): number {
-  return readPositiveNumber('PRODUCTION_MAX_PERSONAL_BLOGS', 1);
 }
 
 /** Intentos fallidos de clave antes del bloqueo temporal. */

@@ -1,12 +1,36 @@
 import { registerEnumType } from '@nestjs/graphql';
 
 import { ProductionOwnerType } from 'src/contexts/module_shared/production-limits/production.owner-type.enum';
+import { ProductionBehaviourType } from 'src/contexts/module_shared/production-limits/production.behaviour-type.enum';
 
-export { ProductionOwnerType };
+export { ProductionOwnerType, ProductionBehaviourType };
 
 registerEnumType(ProductionOwnerType, {
   name: 'ProductionOwnerType',
   description: 'Dueño del blog: usuario (blog personal) o grupo (blog de grupo)',
+});
+
+registerEnumType(ProductionBehaviourType, {
+  name: 'ProductionBehaviourType',
+  description:
+    'Comportamiento de un blog personal (como Anuncios): libre (público, por radio de ubicación) o agenda (sólo tu agenda de contactos)',
+});
+
+/**
+ * Sub-solapas del explorar por cómo se entra al blog completo: sin ticket,
+ * con ticket gratuito o con ticket pago. Sólo cuenta el ticket del blog
+ * (`target: null`); los de carpetas o archivos no lo cambian.
+ */
+export enum ProductionAccessFilter {
+  free = 'free',
+  freeTicket = 'freeTicket',
+  paidTicket = 'paidTicket',
+}
+
+registerEnumType(ProductionAccessFilter, {
+  name: 'ProductionAccessFilter',
+  description:
+    'Acceso al blog completo: free (sin ticket), freeTicket (ticket gratuito) o paidTicket (ticket pago)',
 });
 
 /**

@@ -16,6 +16,7 @@ import {
   getProductionTestModels,
   givePlanToUser,
   ProductionTestModels,
+  blogRequest,
 } from './production.test.helpers';
 import { ProductionService } from '../production/application/service/production.service';
 import { ProductionTicketService } from '../production/application/service/production.ticket.service';
@@ -80,7 +81,7 @@ describe('Mis Producciones - Fase 6: blogs de grupo y roles (GRP-01..08)', () =>
       members: [member],
     });
     const { _id: productionId } = await service.createProduction(
-      { title: 'Blog del grupo', groupId },
+      blogRequest({ title: 'Blog del grupo', groupId }),
       creator,
     );
     return { creator, moderator, member, outsider, groupId, productionId };
@@ -114,7 +115,7 @@ describe('Mis Producciones - Fase 6: blogs de grupo y roles (GRP-01..08)', () =>
 
       // PLN-01: el gratuito además permite su blog personal.
       await expect(
-        service.createProduction({ title: 'Personal' }, creator),
+        service.createProduction(blogRequest({ title: 'Personal' }), creator),
       ).resolves.toBeDefined();
     });
 
@@ -130,18 +131,18 @@ describe('Mis Producciones - Fase 6: blogs de grupo y roles (GRP-01..08)', () =>
 
       for (const userId of [moderator, member]) {
         await expect(
-          service.createProduction({ title: 'Intento', groupId }, userId),
+          service.createProduction(blogRequest({ title: 'Intento', groupId }), userId),
         ).rejects.toThrow('Sólo el creador del grupo');
       }
       await expect(
-        service.createProduction({ title: 'x', groupId: '64b000000000000000000000' }, creator),
+        service.createProduction(blogRequest({ title: 'x', groupId: '64b000000000000000000000' }), creator),
       ).rejects.toBeInstanceOf(NotFoundException);
     });
 
     it('un grupo tiene un único blog', async () => {
       const { creator, groupId } = await setupGroupBlog({ groupBlogsCount: 5 });
       await expect(
-        service.createProduction({ title: 'Segundo', groupId }, creator),
+        service.createProduction(blogRequest({ title: 'Segundo', groupId }), creator),
       ).rejects.toBeInstanceOf(BadRequestException);
     });
 
@@ -150,14 +151,14 @@ describe('Mis Producciones - Fase 6: blogs de grupo y roles (GRP-01..08)', () =>
       const groupA = await createTestGroup(models, { creator });
       const groupB = await createTestGroup(models, { creator });
 
-      await service.createProduction({ title: 'A', groupId: groupA }, creator);
+      await service.createProduction(blogRequest({ title: 'A', groupId: groupA }), creator);
       await expect(
-        service.createProduction({ title: 'B', groupId: groupB }, creator),
+        service.createProduction(blogRequest({ title: 'B', groupId: groupB }), creator),
       ).rejects.toThrow('límite de blogs de grupo');
 
       await givePlanToUser(models, creator, { groupBlogsCount: 3 });
       await expect(
-        service.createProduction({ title: 'B', groupId: groupB }, creator),
+        service.createProduction(blogRequest({ title: 'B', groupId: groupB }), creator),
       ).resolves.toBeDefined();
     });
   });

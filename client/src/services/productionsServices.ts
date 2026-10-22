@@ -58,6 +58,7 @@ import {
   moderateProductionContentMutation,
   setProductionFeaturedMutation,
   setProductionVisibilityMutation,
+  updateProductionBehaviourMutation,
   setProductionItemVisibilityMutation,
   setProductionAccessKeyMutation,
   unlockProductionWithKeyMutation,
@@ -87,6 +88,9 @@ import {
   ProductionResponse,
   ProductionUpdateRequest,
   ProductionVisibility,
+  ProductionBehaviourType,
+  ProductionGeoLocation,
+  ProductionExploreFilters,
   ProductionConsumption,
   ProductionFanList,
   ProductionTicket,
@@ -134,13 +138,22 @@ import {
 export const findAllProductionsService = async (
   page: number,
   limit: number,
-  searchTerm?: string
+  searchTerm?: string,
+  filters: ProductionExploreFilters = {}
 ): Promise<ProductionListResult> => {
   const tokenCache = await getAuthToken();
   const { context } = await getApiContext(true, tokenCache);
   const { data } = await query({
     query: findAllProductionsQuery,
-    variables: { page, limit, searchTerm },
+    variables: {
+      page,
+      limit,
+      searchTerm,
+      behaviourType: filters.behaviourType ?? null,
+      userLocation: filters.userLocation ?? null,
+      relation: filters.relation ?? null,
+      access: filters.access ?? null,
+    },
     context,
     fetchPolicy: "network-only",
   });
@@ -582,6 +595,22 @@ export const setProductionVisibilityService = async (
     context,
   });
   return data.setProductionVisibility;
+};
+
+export const updateProductionBehaviourService = async (
+  productionId: string,
+  behaviourType: ProductionBehaviourType,
+  visibility?: ProductionVisibility,
+  geoLocation?: ProductionGeoLocation
+): Promise<ProductionResponse> => {
+  const tokenCache = await getAuthToken();
+  const { context } = await getApiContext(false, tokenCache);
+  const { data } = await getClient().mutate({
+    mutation: updateProductionBehaviourMutation,
+    variables: { productionId, behaviourType, visibility, geoLocation },
+    context,
+  });
+  return data.updateProductionBehaviour;
 };
 
 export const setProductionItemVisibilityService = async (
