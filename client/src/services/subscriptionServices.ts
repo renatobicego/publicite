@@ -176,6 +176,13 @@ export const getSubscriptionPlanById = async (id: string) => {
           "Error al traer los datos del plan de suscripción. Por favor intenta de nuevo.",
       };
     }
+    // Un plan cancelado en MercadoPago vuelve sin monto y no se puede cobrar.
+    if (data.status !== "active" || !data.auto_recurring?.transaction_amount) {
+      return {
+        error:
+          "Este plan de suscripción ya no está disponible. Por favor elegí otro plan.",
+      };
+    }
     return data;
   } catch (error) {
     return {
