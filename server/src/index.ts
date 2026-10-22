@@ -102,7 +102,17 @@ const memory = defineInt('MEMORY', {
   input: params.select({ micro: 256, '1GIB': 1024, '2GIB': 2048 }),
 });
 
-export const api = onRequest({ memory: memory }, async (request, response) => {
-  await initializeNestApp();
-  expressServer(request, response);
+// Instancias que quedan siempre prendidas (evita el arranque en frío de Nest).
+// 0 = vuelve a hibernar. Cada instancia mínima se cobra aunque no reciba tráfico.
+const minInstances = defineInt('MIN_INSTANCES', {
+  description: 'Instancias que quedan siempre prendidas (0 = hiberna)',
+  default: 1,
 });
+
+export const api = onRequest(
+  { memory: memory, minInstances: minInstances },
+  async (request, response) => {
+    await initializeNestApp();
+    expressServer(request, response);
+  },
+);
