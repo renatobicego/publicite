@@ -35,6 +35,7 @@ import {
   FaReceipt,
   FaSearch,
   FaShoppingCart,
+  FaTicketAlt,
   FaSitemap,
   FaThLarge,
   FaTrash,
@@ -78,6 +79,10 @@ import {
 } from "../../productionBrowse";
 import { EDIT_PRODUCTION, PRODUCTIONS } from "@/utils/data/urls";
 import { isOnlyMe } from "../../productionVisibility";
+import {
+  formatTicketDuration,
+  ticketActionLabel,
+} from "../../productionTicketCopy";
 import { productionFolderPath } from "../../productionShare";
 import ShareLinkButton from "../../components/ShareLinkButton";
 import ProductionItemCard from "./ProductionItemCard";
@@ -937,14 +942,28 @@ const ProductionBlog = ({
 
       {/* Aviso de ticket del nivel (visitante sin acceso) */}
       {!loading && levelTicket && (
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-warning-200 bg-warning-50 px-4 py-3">
+        <div
+          className={`flex flex-wrap items-center justify-between gap-3 rounded-xl border-2 border-dashed px-4 py-3 ${
+            levelTicket.isPaid
+              ? "border-warning-300 bg-warning-50"
+              : "border-primary-300 bg-primary-50"
+          }`}
+        >
           <div className="flex items-start gap-3">
-            <FaLock className="mt-1 text-warning-600" />
+            <FaTicketAlt
+              className={`mt-1 text-xl ${
+                levelTicket.isPaid ? "text-warning-600" : "text-primary-600"
+              }`}
+            />
             <div>
-              <p className="text-sm font-medium">
-                {levelTicketIsBlog
-                  ? "Este blog requiere ticket"
-                  : "Esta carpeta requiere ticket"}
+              <p className="text-sm font-semibold">
+                {levelTicket.isPaid
+                  ? levelTicketIsBlog
+                    ? "Para ver este blog necesitás un ticket"
+                    : "Para ver esta carpeta necesitás un ticket"
+                  : levelTicketIsBlog
+                    ? "Este blog es gratis: sacá tu ticket y entrá"
+                    : "Esta carpeta es gratis: sacá tu ticket y entrá"}
               </p>
               <p className="text-xs text-default-600">
                 {levelTicketIsBlog
@@ -963,18 +982,18 @@ const ProductionBlog = ({
                         : ""
                     }.`}{" "}
                 {levelTicket.isPaid
-                  ? "Comprá el ticket para acceder a todo el contenido."
-                  : "Obtené el ticket gratuito para acceder a todo el contenido."}
+                  ? `Con el ticket accedés a todo ${formatTicketDuration(levelTicket)}.`
+                  : `No cuesta nada: con un clic accedés a todo ${formatTicketDuration(levelTicket)}.`}
               </p>
             </div>
           </div>
           <PrimaryButton
-            startContent={<FaShoppingCart />}
+            startContent={
+              levelTicket.isPaid ? <FaShoppingCart /> : <FaTicketAlt />
+            }
             onClick={levelCheckout.onOpen}
           >
-            {levelTicket.isPaid
-              ? `Comprar (${levelTicket.currency} ${levelTicket.price})`
-              : "Obtener acceso"}
+            {ticketActionLabel(levelTicket)}
           </PrimaryButton>
         </div>
       )}

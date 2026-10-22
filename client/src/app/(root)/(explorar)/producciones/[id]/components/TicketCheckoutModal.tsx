@@ -25,10 +25,13 @@ import {
   ProductionTicketPaymentInstructions,
   ProductionTicketPurchaseStatus,
 } from "@/types/productionTypes";
+import { FaCopy, FaTicketAlt } from "react-icons/fa";
+import { isAccessSuspended } from "../../productionTicketStatus";
 import {
-  isAccessSuspended,
-  purchaseStatusLabel,
-} from "../../productionTicketStatus";
+  formatTicketDuration,
+  formatTicketPrice,
+  ticketActionLabel,
+} from "../../productionTicketCopy";
 
 interface Props {
   ticketId: string;
@@ -40,6 +43,29 @@ interface Props {
 const hasAccount = (
   instructions?: ProductionTicketPaymentInstructions | null,
 ) => !!instructions?.alias || !!instructions?.cbu;
+
+/** Dato de la cuenta con botón para copiarlo. */
+const CopyLine = ({ label, value }: { label: string; value: string }) => (
+  <span className="flex items-center gap-2">
+    <span>
+      {label}: <span className="font-mono">{value}</span>
+    </span>
+    <button
+      type="button"
+      className="text-default-500 hover:text-default-800"
+      aria-label={`Copiar ${label}`}
+      title="Copiar"
+      onClick={() => {
+        navigator.clipboard
+          ?.writeText(value)
+          .then(() => toastifySuccess(`${label} copiado`))
+          .catch(() => undefined);
+      }}
+    >
+      <FaCopy />
+    </button>
+  </span>
+);
 
 /** Datos de una de las dos transferencias, con su comprobante. */
 const TransferBlock = ({
@@ -60,12 +86,17 @@ const TransferBlock = ({
   <div className="rounded-lg border p-3 text-sm flex flex-col gap-1">
     <span className="font-medium">{title}</span>
     <span className="text-xs text-default-500">{hint}</span>
-    {instructions.alias && <span>Alias: {instructions.alias}</span>}
-    {instructions.cbu && <span>CBU/CVU: {instructions.cbu}</span>}
+    {instructions.alias && (
+      <CopyLine label="Alias" value={instructions.alias} />
+    )}
+    {instructions.cbu && <CopyLine label="CBU/CVU" value={instructions.cbu} />}
     {instructions.holder && <span>Titular: {instructions.holder}</span>}
     {instructions.bank && <span>Banco: {instructions.bank}</span>}
-    <span className="font-medium">
-      Monto: {instructions.currency} {instructions.amount}
+    <span className="font-semibold">
+      Monto: {formatTicketPrice({
+        price: instructions.amount,
+        currency: instructions.currency,
+      })}
     </span>
     {inputId && onReceipt && (
       <>
@@ -179,10 +210,10 @@ const TicketCheckoutModal = ({
         return;
       }
       if (res.status === ProductionTicketPurchaseStatus.active) {
-        toastifySuccess("¡Acceso habilitado!");
+        toastifySuccess("¡Listo! Ya tenés tu ticket, podés entrar.");
       } else {
         toastifySuccess(
-          "Compra registrada. El acceso se habilita cuando el blog verifique tu transferencia."
+          "¡Listo! Le avisamos al blog. Cuando confirme tu transferencia te habilita el acceso y te llega una notificación.",
         );
       }
       onPurchased();
@@ -202,155 +233,207 @@ const TicketCheckoutModal = ({
   // Con una compra abierta no se compra de nuevo: se muestra en qué está.
   const showPaymentForm = !!ticket?.isPaid && !missingAccount && !existing;
 
+  const isPaid = !!ticket?.isPaid;
+  const suspended = !!existing && isAccessSuspended(existing);
+  const isPending =
+    existing?.status === ProductionTicketPurchaseStatus.pending;
+
   return (
-    <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="lg" scrollBehavior="inside">
+    <Modal
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
+      size="lg"
+      scrollBehavior="inside"
+    >
       <ModalContent>
         {(onClose) => (
           <>
-            <ModalHeader>Comprar acceso</ModalHeader>
-            <ModalBody className="gap-3">
+            <ModalHeader>
+              {loading || !ticket
+                ? "Ticket"
+                : isPaid
+                  ? "Comprar ticket"
+                  : "Sacá tu ticket gratis"}
+            </ModalHeader>
+            <ModalBody className="gap-4">
               {loading ? (
                 <div className="flex justify-center py-8">
                   <Spinner />
                 </div>
-              ) : !checkout ? (
+              ) : !checkout || !ticket ? (
                 <p className="text-sm text-danger">
-                  No se pudo cargar el checkout.
+                  No se pudo cargar el ticket. Probá de nuevo en un rato.
                 </p>
               ) : (
                 <>
-                  <div className="flex items-center justify-between">
-                    <span className="font-medium">{checkout.productionTitle}</span>
-                    {ticket?.isPaid ? (
-                      <Chip color="warning" variant="flat">
-                        {ticket.currency} {ticket.price}
-                      </Chip>
-                    ) : (
-                      <Chip color="success" variant="flat">
-                        Gratuito
-                      </Chip>
-                    )}
+                  {/* Qué incluye */}
+                  <div
+                    className={`flex items-center gap-3 rounded-xl border-2 border-dashed p-3 ${
+                      isPaid
+                        ? "border-warning-300 bg-warning-50"
+                        : "border-primary-300 bg-primary-50"
+                    }`}
+                  >
+                    <FaTicketAlt
+                      className={`shrink-0 text-2xl ${
+                        isPaid ? "text-warning-600" : "text-primary-600"
+                      }`}
+                    />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate font-semibold">
+                        {checkout.productionTitle}
+                      </p>
+                      <p className="text-xs text-default-600">
+                        {ticket.filesCount}{" "}
+                        {ticket.filesCount === 1 ? "archivo" : "archivos"} ·
+                        acceso {formatTicketDuration(ticket)}
+                      </p>
+                    </div>
+                    <Chip color={isPaid ? "warning" : "primary"} variant="flat">
+                      {isPaid ? formatTicketPrice(ticket) : "Gratis"}
+                    </Chip>
                   </div>
-                  <p className="text-sm text-default-600">
-                    Incluye {ticket?.filesCount ?? 0} archivo(s).{" "}
-                    {ticket?.untilClose
-                      ? "Acceso hasta el cierre del blog."
-                      : ticket?.durationHours
-                      ? `Acceso por ${ticket.durationHours} horas.`
-                      : ""}
-                  </p>
 
-                  {existing && !isAccessSuspended(existing) && (
-                    <p className="text-sm text-warning">
-                      Ya tenés una compra de este ticket (
-                      {purchaseStatusLabel[existing.status].toLowerCase()}).
-                      {existing.status ===
-                        ProductionTicketPurchaseStatus.pending &&
-                        " El acceso se habilita cuando el blog verifique tu transferencia."}
+                  {/* Ya tiene una compra */}
+                  {existing && !suspended && (
+                    <p
+                      className={`rounded-lg px-3 py-2 text-sm ${
+                        isPending
+                          ? "bg-warning-50 text-warning-800"
+                          : "bg-success-50 text-success-800"
+                      }`}
+                    >
+                      {isPending
+                        ? "Ya enviaste el pago. El blog está revisando tu transferencia; cuando la confirme te llega una notificación y podés entrar."
+                        : "Ya tenés este ticket."}
                     </p>
                   )}
 
-                  {existing && isAccessSuspended(existing) && (
+                  {suspended && existing && (
                     <>
-                      <p className="text-sm text-danger">
-                        Tu acceso está suspendido: Soonpublicité no registró el
-                        pago de la comisión. Se restablece cuando la pagues.
+                      <p className="rounded-lg bg-danger-50 px-3 py-2 text-sm text-danger-800">
+                        Tu acceso está en pausa: Soonpublicité no registró el
+                        pago de la comisión. Transferila y se restablece.
                       </p>
                       {existing.commissionPaymentInstructions && (
                         <TransferBlock
                           title="Comisión de Soonpublicité"
-                          hint="Transferí la comisión a la cuenta de Soonpublicité."
+                          hint="Transferí este monto a la cuenta de Soonpublicité."
                           instructions={existing.commissionPaymentInstructions}
                         />
                       )}
                     </>
                   )}
 
-                  {!existing && checkout.noRefundWarning && (
-                    <p className="text-xs text-default-500">
-                      {checkout.noRefundWarning}
+                  {/* Ticket gratuito: un clic */}
+                  {!existing && !isPaid && (
+                    <p className="text-sm text-default-700">
+                      No tenés que pagar nada. Tocá{" "}
+                      <span className="font-medium">
+                        &quot;Sacar ticket gratis&quot;
+                      </span>{" "}
+                      y entrás al instante.
                     </p>
                   )}
 
                   {missingAccount && !existing && (
                     <p className="text-sm text-danger">
-                      La compra de tickets pagos no está disponible por el
-                      momento: falta configurar la cuenta para transferir.
+                      Por ahora no se puede comprar este ticket: el blog todavía
+                      no cargó su cuenta para recibir transferencias.
                     </p>
                   )}
 
-                  {showPaymentForm && creatorInstructions && (
-                    <>
-                      <p className="text-sm">
-                        Este ticket se paga con{" "}
-                        <span className="font-medium">dos transferencias</span>
-                        : una al blog y otra a Soonpublicité. Hacé las dos y
-                        subí los dos comprobantes.
-                      </p>
-                      <TransferBlock
-                        title="1. Transferencia al blog"
-                        hint="Es la parte del creador. Cuando la verifique, habilita tu acceso."
-                        instructions={creatorInstructions}
-                        inputId="transfer-receipt"
-                        disabled={busy}
-                        onReceipt={setReceipt}
-                      />
-                    </>
-                  )}
+                  {/* Ticket pago: pasos */}
+                  {showPaymentForm &&
+                    creatorInstructions &&
+                    commissionInstructions && (
+                      <>
+                        <p className="text-sm">
+                          Se paga con{" "}
+                          <span className="font-semibold">
+                            dos transferencias
+                          </span>{" "}
+                          (una al blog y otra a Soonpublicité). Hacelas desde
+                          tu banco o billetera y subí el comprobante de cada
+                          una.
+                        </p>
+                        <TransferBlock
+                          title="Paso 1 · Transferencia al blog"
+                          hint="Es el pago al creador del blog."
+                          instructions={creatorInstructions}
+                          inputId="transfer-receipt"
+                          disabled={busy}
+                          onReceipt={setReceipt}
+                        />
+                        <TransferBlock
+                          title="Paso 2 · Comisión de Soonpublicité"
+                          hint="Si no se registra, tu acceso queda en pausa hasta que la pagues."
+                          instructions={commissionInstructions}
+                          inputId="commission-receipt"
+                          disabled={busy}
+                          onReceipt={setCommissionReceipt}
+                        />
+                        <p className="text-xs text-default-500">
+                          Comprobantes en imagen o PDF, hasta 8 MB cada uno.
+                        </p>
+                        <Input
+                          label="Referencia de las transferencias (opcional)"
+                          value={transferReference}
+                          onValueChange={setTransferReference}
+                        />
+                        <div className="rounded-lg bg-default-100 px-3 py-2 text-xs text-default-600">
+                          <span className="font-medium">
+                            Paso 3 · Confirmá.
+                          </span>{" "}
+                          El blog revisa tu transferencia y te habilita el
+                          acceso. Te avisamos con una notificación; también lo
+                          ves en &quot;Mis tickets&quot;.
+                        </div>
+                        {checkout.noRefundWarning && (
+                          <p className="text-xs text-default-500">
+                            {checkout.noRefundWarning}
+                          </p>
+                        )}
+                      </>
+                    )}
 
-                  {showPaymentForm && commissionInstructions && (
-                    <>
-                      <TransferBlock
-                        title="2. Comisión de Soonpublicité"
-                        hint="Va a la cuenta de Soonpublicité. Si no se registra el pago, tu acceso se suspende hasta que la pagues."
-                        instructions={commissionInstructions}
-                        inputId="commission-receipt"
-                        disabled={busy}
-                        onReceipt={setCommissionReceipt}
-                      />
-                      <p className="text-xs text-default-500">
-                        Comprobantes en imagen o PDF, hasta 8 MB cada uno. Los
-                        dos son obligatorios.
-                      </p>
-                      <Input
-                        label="Referencia de las transferencias (opcional)"
-                        value={transferReference}
-                        onValueChange={setTransferReference}
-                      />
-                    </>
-                  )}
-
-                  {checkout.requiresNoRefundAcceptance && !existing && (
-                    <Checkbox
-                      isSelected={acceptNoRefund}
-                      onValueChange={setAcceptNoRefund}
-                      size="sm"
-                    >
-                      Acepto que la compra no tiene devoluciones
-                    </Checkbox>
-                  )}
+                  {checkout.requiresNoRefundAcceptance &&
+                    !existing &&
+                    !missingAccount && (
+                      <Checkbox
+                        isSelected={acceptNoRefund}
+                        onValueChange={setAcceptNoRefund}
+                        size="sm"
+                      >
+                        Acepto que la compra no tiene devoluciones
+                      </Checkbox>
+                    )}
                 </>
               )}
             </ModalBody>
             <ModalFooter>
-              <PrimaryButton
-                onClick={handlePurchase}
-                disabled={
-                  busy ||
-                  loading ||
-                  !checkout ||
-                  !!existing ||
-                  missingAccount ||
-                  (checkout.requiresNoRefundAcceptance && !acceptNoRefund) ||
-                  (!!ticket?.isPaid && (!receipt || !commissionReceipt))
-                }
-              >
-                {busy
-                  ? "Procesando…"
-                  : ticket?.isPaid
-                  ? "Confirmar compra"
-                  : "Obtener acceso"}
-              </PrimaryButton>
+              {existing || missingAccount ? (
+                <PrimaryButton onClick={onClose}>Cerrar</PrimaryButton>
+              ) : (
+                <PrimaryButton
+                  onClick={handlePurchase}
+                  disabled={
+                    busy ||
+                    loading ||
+                    !checkout ||
+                    (checkout.requiresNoRefundAcceptance && !acceptNoRefund) ||
+                    (isPaid && (!receipt || !commissionReceipt))
+                  }
+                >
+                  {busy
+                    ? "Procesando…"
+                    : isPaid
+                      ? "Ya transferí, confirmar"
+                      : ticket
+                        ? ticketActionLabel(ticket)
+                        : "Continuar"}
+                </PrimaryButton>
+              )}
             </ModalFooter>
           </>
         )}

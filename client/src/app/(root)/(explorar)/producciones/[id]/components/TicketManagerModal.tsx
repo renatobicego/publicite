@@ -9,8 +9,13 @@ import {
   ModalFooter,
   ModalHeader,
   Spinner,
-  Switch,
 } from "@nextui-org/react";
+import {
+  FaCheckCircle,
+  FaLockOpen,
+  FaMoneyBillWave,
+  FaTicketAlt,
+} from "react-icons/fa";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import {
@@ -22,6 +27,12 @@ import {
 } from "@/app/server/productionActions";
 import { isProductionActionError } from "@/utils/functions/productionErrorHandler";
 import { ProductionTicket } from "@/types/productionTypes";
+import {
+  TicketAccessType,
+  formatTicketHours,
+  ticketAccessOptions,
+  ticketDurationPresets,
+} from "../../productionTicketCopy";
 
 interface Props {
   productionId: string;
@@ -50,9 +61,42 @@ const DEFAULT_COMMISSION_PERCENT = 10;
 const formatMoney = (value: number) =>
   value.toLocaleString("es-AR", { maximumFractionDigits: 2 });
 
+// Mismos colores que el Mapa de tickets: verde libre, azul gratuito, naranja pago.
+const optionStyle: Record<
+  TicketAccessType,
+  { icon: React.ReactNode; selected: string }
+> = {
+  free: {
+    icon: <FaLockOpen className="text-success-600" />,
+    selected: "border-success-400 bg-success-50",
+  },
+  freeTicket: {
+    icon: <FaTicketAlt className="text-primary-600" />,
+    selected: "border-primary-400 bg-primary-50",
+  },
+  paid: {
+    icon: <FaMoneyBillWave className="text-warning-600" />,
+    selected: "border-warning-400 bg-warning-50",
+  },
+};
+
+/** "Hasta el cierre" o una cantidad de horas. */
+type DurationChoice = number | "untilClose" | "custom";
+
+const durationChoiceOf = (
+  untilClose: boolean,
+  hours?: number | null,
+): DurationChoice => {
+  if (untilClose) return "untilClose";
+  if (hours && ticketDurationPresets.some((p) => p.hours === hours)) {
+    return hours;
+  }
+  return hours ? "custom" : 24;
+};
+
 /**
- * Page de Ticket (staff): asigna/edita/quita el ticket de un destino
- * (carpeta, archivo o blog). Toggle pago/gratuito, precio y duración.
+ * Page de Ticket (staff): elige cómo se entra a un destino (carpeta, archivo
+ * o blog): libre, con ticket gratuito o con ticket pago, y por cuánto tiempo.
  */
 const TicketManagerModal = ({
   productionId,
@@ -70,14 +114,17 @@ const TicketManagerModal = ({
   const [aliasCbu, setAliasCbu] = useState(currentAlias ?? "");
   const [loading, setLoading] = useState(true);
   const [existing, setExisting] = useState<ProductionTicket | null>(null);
-  const [isPaid, setIsPaid] = useState(false);
+  const [accessType, setAccessType] = useState<TicketAccessType>("free");
   const [price, setPrice] = useState("");
-  const [durationHours, setDurationHours] = useState("24");
-  const [untilClose, setUntilClose] = useState(false);
+  const [duration, setDuration] = useState<DurationChoice>(24);
+  const [customHours, setCustomHours] = useState("48");
   const [busy, setBusy] = useState(false);
   // Sin contenido no se puede pasar a pago (un ticket que ya es pago se puede
   // seguir editando).
   const paidBlocked = hasContent === false && !existing?.isPaid;
+  const isPaid = accessType === "paid";
+  const hasTicket = accessType !== "free";
+  const where = targetId ? "este elemento" : "el blog";
 
   useEffect(() => {
     if (!isOpen) return;
@@ -91,17 +138,11 @@ const TicketManagerModal = ({
         const own = res.find((t) =>
           targetId ? t.target === targetId : !t.target,
         );
-        if (own) {
-          setExisting(own);
-          setIsPaid(own.isPaid);
-          setPrice(own.price ? String(own.price) : "");
-          setDurationHours(
-            own.durationHours ? String(own.durationHours) : "24",
-          );
-          setUntilClose(own.untilClose);
-        } else {
-          setExisting(null);
-        }
+        setExisting(own ?? null);
+        setAccessType(own ? (own.isPaid ? "paid" : "freeTicket") : "free");
+        setPrice(own?.price ? String(own.price) : "");
+        setDuration(durationChoiceOf(!!own?.untilClose, own?.durationHours));
+        setCustomHours(own?.durationHours ? String(own.durationHours) : "48");
       }
       setLoading(false);
     })();
@@ -114,9 +155,43 @@ const TicketManagerModal = ({
     if (isOpen) setAliasCbu(currentAlias ?? "");
   }, [isOpen, currentAlias]);
 
+  const removeTicket = async () => {
+    if (!existing) return true;
+    const res = await deleteProductionTicket(existing._id);
+    if (isProductionActionError(res)) {
+      toastifyError(res.error);
+      return false;
+    }
+    toastifySuccess(`Listo: ${where} quedó libre, sin ticket`);
+    return true;
+  };
+
   const handleSave = async () => {
+    if (!hasTicket) {
+      setBusy(true);
+      try {
+        if (await removeTicket()) {
+          if (existing) onChanged();
+          onOpenChange(false);
+        }
+      } finally {
+        setBusy(false);
+      }
+      return;
+    }
+
     if (isPaid && (!price || Number(price) <= 0)) {
-      toastifyError("Ingresá un precio válido para un ticket pago");
+      toastifyError("Poné un precio mayor a 0 para el ticket pago");
+      return;
+    }
+    const hours =
+      duration === "untilClose"
+        ? undefined
+        : duration === "custom"
+          ? Number(customHours)
+          : duration;
+    if (hours !== undefined && !(hours >= 24)) {
+      toastifyError("El acceso tiene que durar al menos 24 horas");
       return;
     }
     const aliasChanged =
@@ -137,28 +212,24 @@ const TicketManagerModal = ({
           return;
         }
       }
-      const priceNum = isPaid ? Number(price) : undefined;
-      const duration = untilClose ? undefined : Number(durationHours);
+      const config = {
+        isPaid,
+        price: isPaid ? Number(price) : undefined,
+        durationHours: hours,
+        untilClose: duration === "untilClose",
+      };
       const res = existing
-        ? await updateProductionTicket(existing._id, {
-            isPaid,
-            price: priceNum,
-            durationHours: duration,
-            untilClose,
-          })
-        : await createProductionTicket({
-            productionId,
-            targetId,
-            isPaid,
-            price: priceNum,
-            durationHours: duration,
-            untilClose,
-          });
+        ? await updateProductionTicket(existing._id, config)
+        : await createProductionTicket({ productionId, targetId, ...config });
       if (isProductionActionError(res)) {
         toastifyError(res.error);
         return;
       }
-      toastifySuccess(existing ? "Ticket actualizado" : "Ticket creado");
+      toastifySuccess(
+        isPaid
+          ? "Listo: para entrar hay que comprar el ticket"
+          : "Listo: para entrar hay que sacar el ticket gratuito",
+      );
       onChanged();
       onOpenChange(false);
     } finally {
@@ -166,185 +237,257 @@ const TicketManagerModal = ({
     }
   };
 
-  const handleDelete = async () => {
-    if (!existing) return;
-    setBusy(true);
-    try {
-      const res = await deleteProductionTicket(existing._id);
-      if (isProductionActionError(res)) {
-        toastifyError(res.error);
-        return;
-      }
-      toastifySuccess("Ticket quitado");
-      onChanged();
-      onOpenChange(false);
-    } finally {
-      setBusy(false);
-    }
-  };
+  const priceNum = Number(price);
+  const creatorShare = Math.round(priceNum * (100 - commission)) / 100;
+  const commissionShare = Math.round(priceNum * commission) / 100;
+  const stats = existing?.stats;
 
   return (
-    <>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="lg">
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader>Ticket · {targetName || "Todo el blog"}</ModalHeader>
-              <ModalBody className="gap-4">
-                {loading ? (
-                  <div className="flex justify-center py-6">
-                    <Spinner />
-                  </div>
-                ) : (
-                  <>
-                    {existing && existing.stats && (
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="text-xs text-default-500">
-                          <p>
-                            {existing.stats.purchases} compras ·{" "}
-                            {existing.stats.active} activas
-                            {existing.isPaid && (
-                              <>
-                                {" "}
-                                · recaudado {existing.currency}{" "}
-                                {formatMoney(existing.stats.netRevenue)}
-                              </>
-                            )}
-                          </p>
-                          {existing.isPaid && existing.stats.revenue > 0 && (
-                            <p>
-                              Vendido {existing.currency}{" "}
-                              {formatMoney(existing.stats.revenue)} − comisión
-                              de Soonpublicité {existing.currency}{" "}
-                              {formatMoney(existing.stats.commission)}
-                            </p>
+    <Modal
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
+      size="lg"
+      scrollBehavior="inside"
+    >
+      <ModalContent>
+        {(onClose) => (
+          <>
+            <ModalHeader className="flex flex-col gap-1">
+              <span>¿Cómo se entra?</span>
+              <span className="text-sm font-normal text-default-500">
+                {targetName || "Todo el blog"}
+              </span>
+            </ModalHeader>
+            <ModalBody className="gap-5">
+              {loading ? (
+                <div className="flex justify-center py-6">
+                  <Spinner />
+                </div>
+              ) : (
+                <>
+                  {/* Cuánta gente sacó el ticket actual */}
+                  {existing && stats && (
+                    <div className="rounded-lg bg-default-100 px-3 py-2 text-sm">
+                      <p>
+                        <span className="font-semibold">
+                          {stats.purchases}{" "}
+                          {stats.purchases === 1 ? "persona" : "personas"}
+                        </span>{" "}
+                        {existing.isPaid
+                          ? stats.purchases === 1
+                            ? "compró este ticket"
+                            : "compraron este ticket"
+                          : stats.purchases === 1
+                            ? "sacó este ticket"
+                            : "sacaron este ticket"}{" "}
+                        · {stats.active} con acceso vigente
+                      </p>
+                      {existing.isPaid && stats.revenue > 0 && (
+                        <p className="text-xs text-default-500">
+                          Te quedaron {existing.currency}{" "}
+                          {formatMoney(stats.netRevenue)} (vendido{" "}
+                          {formatMoney(stats.revenue)} − comisión{" "}
+                          {formatMoney(stats.commission)})
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* 1. Tipo de acceso */}
+                  <div
+                    role="radiogroup"
+                    aria-label="Tipo de acceso"
+                    className="flex flex-col gap-2"
+                  >
+                    {ticketAccessOptions.map((option) => {
+                      const selected = accessType === option.key;
+                      const disabled = option.key === "paid" && paidBlocked;
+                      return (
+                        <button
+                          key={option.key}
+                          type="button"
+                          role="radio"
+                          aria-checked={selected}
+                          disabled={disabled}
+                          onClick={() => setAccessType(option.key)}
+                          className={`flex items-start gap-3 rounded-xl border-2 p-3 text-left transition-colors ${
+                            selected
+                              ? optionStyle[option.key].selected
+                              : "border-default-200 hover:border-default-400"
+                          } ${disabled ? "cursor-not-allowed opacity-50" : ""}`}
+                        >
+                          <span className="mt-1 text-lg">
+                            {optionStyle[option.key].icon}
+                          </span>
+                          <span className="flex-1">
+                            <span className="block text-sm font-semibold">
+                              {option.label}
+                            </span>
+                            <span className="block text-xs text-default-600">
+                              {option.description}
+                            </span>
+                          </span>
+                          {selected && (
+                            <FaCheckCircle className="mt-1 text-default-700" />
                           )}
-                        </div>
-                      </div>
-                    )}
-                    <Switch
-                      isSelected={isPaid}
-                      onValueChange={setIsPaid}
-                      isDisabled={paidBlocked}
-                    >
-                      Ticket pago
-                    </Switch>
+                        </button>
+                      );
+                    })}
                     {paidBlocked && (
-                      <p className="text-xs text-warning -mt-2">
-                        {targetId
-                          ? "Este elemento todavía no tiene contenido."
-                          : "El blog todavía no tiene contenido."}{" "}
-                        Agregá al menos un archivo o artículo para poder cobrar
-                        con ticket pago.
+                      <p className="text-xs text-warning-700">
+                        Para cobrar, primero subí al menos un archivo o artículo
+                        a {where}.
                       </p>
                     )}
-                    {isPaid && (
+                    {!hasTicket && targetId && (
+                      <p className="text-xs text-default-500">
+                        Si la carpeta que lo contiene o el blog tienen ticket,
+                        se usa ese.
+                      </p>
+                    )}
+                    {hasTicket && targetId && (
+                      <p className="text-xs text-default-500">
+                        Si es una carpeta, todo lo que tiene adentro usa este
+                        ticket, salvo lo que tenga uno propio.
+                      </p>
+                    )}
+                  </div>
+
+                  {/* 2. Precio y cobro (sólo pago) */}
+                  {isPaid && (
+                    <div className="flex flex-col gap-3">
                       <Input
                         type="number"
-                        label="Precio"
+                        label="Precio del ticket"
+                        startContent={
+                          <span className="text-sm text-default-500">$</span>
+                        }
                         value={price}
                         onValueChange={setPrice}
                         min={0}
                       />
-                    )}
-                    {isPaid && (
-                      <p className="text-xs text-default-500 -mt-2">
-                        Soonpublicité cobra una comisión del {commission}% sobre
-                        cada ticket vendido, que el comprador le transfiere
-                        aparte
-                        {Number(price) > 0 && (
-                          <>
-                            : por cada venta te transfieren{" "}
-                            {formatMoney(
-                              Math.round(Number(price) * (100 - commission)) /
-                                100,
-                            )}{" "}
-                            y{" "}
-                            {formatMoney(
-                              Math.round(Number(price) * commission) / 100,
-                            )}{" "}
-                            van a Soonpublicité
-                          </>
-                        )}
-                        .
-                      </p>
-                    )}
-                    {isPaid && canManagePayout && (
-                      <div>
+                      {priceNum > 0 && (
+                        <div className="rounded-lg border border-default-200 p-3 text-sm">
+                          <p className="mb-1 font-medium">
+                            Cada venta se paga con dos transferencias del
+                            comprador:
+                          </p>
+                          <p>
+                            · ${formatMoney(creatorShare)} a vos (
+                            {100 - commission}%)
+                          </p>
+                          <p>
+                            · ${formatMoney(commissionShare)} a Soonpublicité (
+                            {commission}% de comisión)
+                          </p>
+                        </div>
+                      )}
+                      {canManagePayout ? (
                         <Input
-                          label="Alias o CBU/CVU de cobro"
+                          label="Tu alias o CBU/CVU"
+                          description="Donde te transfieren tu parte. Vale para todos los tickets del blog."
                           value={aliasCbu}
                           onValueChange={setAliasCbu}
                         />
-                        <p className="text-xs text-default-500 mt-1">
-                          Cuenta a la que los compradores te transfieren tu
-                          parte (el {100 - commission}% del precio). Es
-                          necesaria para cobrar con tickets pagos y vale para
-                          todo el blog. Cuando te llegue la transferencia,
-                          habilitá el acceso desde las ventas del ticket.
-                        </p>
-                      </div>
-                    )}
-                    {isPaid && !canManagePayout && !currentAlias && (
-                      <p className="text-xs text-warning">
-                        Falta cargar el alias/CBU de cobro; sólo el admin del
-                        blog puede hacerlo.
+                      ) : (
+                        !currentAlias && (
+                          <p className="text-xs text-warning-700">
+                            Falta el alias/CBU de cobro; sólo el admin del blog
+                            puede cargarlo.
+                          </p>
+                        )
+                      )}
+                      <p className="text-xs text-default-500">
+                        Cuando te llegue la transferencia, habilitá el acceso
+                        desde &quot;Ventas de tickets&quot;.
                       </p>
-                    )}
-                    <Switch
-                      isSelected={untilClose}
-                      onValueChange={setUntilClose}
-                    >
-                      Acceso hasta el cierre del blog
-                    </Switch>
-                    <p className="text-xs text-default-500 -mt-2">
-                      {untilClose
-                        ? "El acceso no vence: quien consiga el ticket puede entrar mientras el blog exista."
-                        : "Por defecto el acceso vence pasado un tiempo. Activá esta opción si querés que no venza."}
-                    </p>
-                    {!untilClose && (
-                      <div>
+                    </div>
+                  )}
+
+                  {/* 3. Duración (cualquier ticket) */}
+                  {hasTicket && (
+                    <div className="flex flex-col gap-2">
+                      <p className="text-sm font-medium">
+                        ¿Cuánto dura el acceso de cada persona?
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {ticketDurationPresets.map((preset) => (
+                          <Button
+                            key={preset.hours}
+                            size="sm"
+                            radius="full"
+                            variant={
+                              duration === preset.hours ? "solid" : "bordered"
+                            }
+                            color={
+                              duration === preset.hours ? "primary" : "default"
+                            }
+                            onPress={() => setDuration(preset.hours)}
+                          >
+                            {preset.label}
+                          </Button>
+                        ))}
+                        <Button
+                          size="sm"
+                          radius="full"
+                          variant={
+                            duration === "untilClose" ? "solid" : "bordered"
+                          }
+                          color={
+                            duration === "untilClose" ? "primary" : "default"
+                          }
+                          onPress={() => setDuration("untilClose")}
+                        >
+                          Sin vencimiento
+                        </Button>
+                        <Button
+                          size="sm"
+                          radius="full"
+                          variant={duration === "custom" ? "solid" : "bordered"}
+                          color={duration === "custom" ? "primary" : "default"}
+                          onPress={() => setDuration("custom")}
+                        >
+                          Otro
+                        </Button>
+                      </div>
+                      {duration === "custom" && (
                         <Input
                           type="number"
-                          label="Duración (horas, mínimo 24)"
-                          value={durationHours}
-                          onValueChange={setDurationHours}
+                          label="Horas (mínimo 24)"
+                          value={customHours}
+                          onValueChange={setCustomHours}
                           min={24}
+                          description={
+                            Number(customHours) >= 24
+                              ? `= ${formatTicketHours(Number(customHours))}`
+                              : undefined
+                          }
                         />
-                        <p className="text-xs text-default-500 mt-1">
-                          Es el tiempo que dura el acceso de cada persona,
-                          contado desde que se activa su ticket
-                          {isPaid ? " (al confirmarse el pago)" : ""}. Por
-                          ejemplo, 24 = un día, 168 = una semana, 720 = un mes.
-                          Al vencer, deberá conseguir un ticket nuevo.
-                        </p>
-                      </div>
-                    )}
-                  </>
-                )}
-              </ModalBody>
-              <ModalFooter className="justify-between">
-                {existing ? (
-                  <Button
-                    color="danger"
-                    variant="flat"
-                    onPress={handleDelete}
-                    isDisabled={busy}
-                  >
-                    Quitar ticket
-                  </Button>
-                ) : (
-                  <span />
-                )}
-                <PrimaryButton onClick={handleSave} disabled={busy || loading}>
-                  {busy ? "Guardando…" : existing ? "Guardar" : "Crear ticket"}
-                </PrimaryButton>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
-      </Modal>
-    </>
+                      )}
+                      <p className="text-xs text-default-500">
+                        {duration === "untilClose"
+                          ? "El acceso no vence mientras el blog exista."
+                          : `Se cuenta desde que ${
+                              isPaid ? "habilitás el pago" : "saca el ticket"
+                            }. Cuando vence, tiene que sacar uno nuevo.`}
+                      </p>
+                    </div>
+                  )}
+                </>
+              )}
+            </ModalBody>
+            <ModalFooter>
+              <Button variant="light" onPress={onClose} isDisabled={busy}>
+                Cancelar
+              </Button>
+              <PrimaryButton onClick={handleSave} disabled={busy || loading}>
+                {busy ? "Guardando…" : "Guardar"}
+              </PrimaryButton>
+            </ModalFooter>
+          </>
+        )}
+      </ModalContent>
+    </Modal>
   );
 };
 

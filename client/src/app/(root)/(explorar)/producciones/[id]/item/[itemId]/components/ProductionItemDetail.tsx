@@ -6,7 +6,13 @@ import {
   FaFileAlt,
   FaLock,
   FaShoppingCart,
+  FaTicketAlt,
 } from "react-icons/fa";
+import {
+  formatTicketDuration,
+  formatTicketPrice,
+  ticketActionLabel,
+} from "../../../../productionTicketCopy";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import TicketCheckoutModal from "../../../components/TicketCheckoutModal";
 import {
@@ -55,18 +61,20 @@ const ProductionItemDetail = ({
         <FaLock className="text-4xl text-default-400" />
         <h2 className="text-center">{item.name}</h2>
         <p className="text-sm text-center">
-          {lockMessage[item.access?.lockReason ?? ""] ??
-            "Este contenido no está disponible."}
+          {ticket
+            ? ticket.isPaid
+              ? `Necesitás un ticket para verlo (${formatTicketPrice(ticket)}, acceso ${formatTicketDuration(ticket)}).`
+              : `Es gratis: sacá tu ticket y lo ves al instante (acceso ${formatTicketDuration(ticket)}).`
+            : (lockMessage[item.access?.lockReason ?? ""] ??
+              "Este contenido no está disponible.")}
         </p>
         {ticket && (
           <>
             <PrimaryButton
-              startContent={<FaShoppingCart />}
+              startContent={ticket.isPaid ? <FaShoppingCart /> : <FaTicketAlt />}
               onClick={checkout.onOpen}
             >
-              {ticket.isPaid
-                ? `Comprar (${ticket.currency} ${ticket.price})`
-                : "Obtener acceso"}
+              {ticketActionLabel(ticket)}
             </PrimaryButton>
             <TicketCheckoutModal
               ticketId={ticket._id}

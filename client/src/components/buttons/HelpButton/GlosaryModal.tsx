@@ -258,7 +258,9 @@ const GlosaryModal = ({ customButton }: { customButton?: React.ReactNode }) => {
               </li>
               <li>
                 Alcance, clave y tickets: define quién ve cada contenido, pide
-                una clave de acceso o crea tickets gratuitos o pagos.
+                una clave de acceso o elige cómo se entra a cada cosa: libre
+                (sin ticket), con ticket gratuito (el visitante lo saca con un
+                clic y vos sabés cuánta gente entra) o con ticket pago.
               </li>
               <li>
                 Sólo yo: deja el blog, una carpeta, un archivo o un artículo

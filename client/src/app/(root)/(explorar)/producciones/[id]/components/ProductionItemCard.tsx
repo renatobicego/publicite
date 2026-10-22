@@ -41,6 +41,7 @@ import {
   ProductionViewMode,
 } from "../../productionBrowse";
 import { isOnlyMe } from "../../productionVisibility";
+import { ticketActionLabel } from "../../productionTicketCopy";
 import ItemVisibilityControl from "./ItemVisibilityControl";
 import TicketCheckoutModal from "./TicketCheckoutModal";
 import TicketManagerModal from "./TicketManagerModal";
@@ -188,15 +189,15 @@ const ProductionItemCard = ({
     !hideCheckout && (
       <Button
         size="sm"
-        color="warning"
+        color={item.access.ticket.isPaid ? "warning" : "primary"}
         variant="flat"
-        startContent={<FaShoppingCart />}
+        startContent={
+          item.access.ticket.isPaid ? <FaShoppingCart /> : <FaTicketAlt />
+        }
         className="text-xs"
         onPress={checkout.onOpen}
       >
-        {item.access.ticket.isPaid
-          ? `Comprar (${item.access.ticket.currency} ${item.access.ticket.price})`
-          : "Obtener acceso"}
+        {ticketActionLabel(item.access.ticket)}
       </Button>
     );
 
