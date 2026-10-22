@@ -1,5 +1,6 @@
 import BackButton from "@/components/buttons/BackButton";
 import { Divider, Image, Link } from "@nextui-org/react";
+import { frequencyLabelFromMP } from "@/utils/functions/billingFrequency";
 
 const Details = ({
   subscriptionPlan,
@@ -8,6 +9,11 @@ const Details = ({
   subscriptionPlan: any;
   isChangingPlan?: boolean;
 }) => {
+  // El plan viene de MercadoPago: la frecuencia real del cobro está en
+  // auto_recurring (el anual dice «cada 1 years»). Se muestra en dos renglones
+  // al lado del precio: «por» / «año», «cada» / «3 meses».
+  const periodo = frequencyLabelFromMP(subscriptionPlan.auto_recurring);
+  const corte = periodo.indexOf(" ");
   return (
     <div
       className="flex-1 flex flex-col justify-start items-start gap-4
@@ -41,10 +47,12 @@ const Details = ({
         <span className="text-4xl font-semibold text-text-color">
           ${subscriptionPlan.auto_recurring.transaction_amount}
         </span>
-        <div className="flex flex-col">
-          <p className="text-sm">por</p>
-          <p className="text-sm">mes</p>
-        </div>
+        {periodo && (
+          <div className="flex flex-col">
+            <p className="text-sm">{periodo.slice(0, corte)}</p>
+            <p className="text-sm">{periodo.slice(corte + 1)}</p>
+          </div>
+        )}
       </div>
       <div className="flex gap-4 lg:pr-16">
         <Image
