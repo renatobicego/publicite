@@ -77,3 +77,34 @@ export function formatDate(dateString: string): string {
     day: "numeric",
   });
 }
+
+const HTML_ENTITIES: Record<string, string> = {
+  nbsp: " ",
+  amp: "&",
+  lt: "<",
+  gt: ">",
+  quot: '"',
+  apos: "'",
+};
+
+/**
+ * Texto plano de un texto de Editor.js (que trae HTML: `<b>`, `<a>`,
+ * `&nbsp;`…). Para atributos como `alt`, donde no se puede mostrar formato.
+ */
+export function htmlToPlainText(html: string): string {
+  return html
+    .replace(/<br\s*\/?>/gi, " ")
+    .replace(/<[^>]*>/g, "")
+    .replace(/&(#x?[0-9a-f]+|[a-z]+);/gi, (match, code: string) => {
+      if (code[0] === "#") {
+        const num =
+          code[1]?.toLowerCase() === "x"
+            ? parseInt(code.slice(2), 16)
+            : parseInt(code.slice(1), 10);
+        return Number.isFinite(num) ? String.fromCodePoint(num) : match;
+      }
+      return HTML_ENTITIES[code.toLowerCase()] ?? match;
+    })
+    .replace(/\s+/g, " ")
+    .trim();
+}

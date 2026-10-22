@@ -6,7 +6,7 @@ import {
   findFirstHeader,
   findFirstParagraph,
   findFirstImage,
-  truncateText,
+  htmlToPlainText,
   formatDate,
 } from "@/utils/functions/editorjs-parser";
 import {
@@ -19,6 +19,7 @@ import {
 } from "@nextui-org/react";
 import Link from "next/link";
 import { FaPencil } from "react-icons/fa6";
+import NovedadInlineText from "./NovedadInlineText";
 
 interface NovedadCardProps {
   novedad: Novedad;
@@ -31,7 +32,7 @@ export function NovedadCard({ novedad, isAdmin }: NovedadCardProps) {
   const image = findFirstImage(novedad.content);
 
   const title = header?.text || "Sin título";
-  const excerpt = paragraph ? truncateText(paragraph, 150) : "Sin descripción";
+  const excerpt = paragraph || "Sin descripción";
   const imageUrl =
     image?.url ||
     "https://images.unsplash.com/photo-1557683316-973673baf926?w=800&h=400&fit=crop";
@@ -45,7 +46,7 @@ export function NovedadCard({ novedad, isAdmin }: NovedadCardProps) {
       <div className="relative aspect-video overflow-hidden">
         <Image
           src={imageUrl}
-          alt={title}
+          alt={htmlToPlainText(title)}
           classNames={{
             wrapper: "w-full h-full !max-w-full",
             img: "w-full h-full object-cover transition-transform duration-500 group-hover:scale-105",
@@ -84,14 +85,17 @@ export function NovedadCard({ novedad, isAdmin }: NovedadCardProps) {
 
       <CardBody className="gap-3 p-5">
         {/* Title */}
-        <h3 className="line-clamp-2 text-lg font-semibold leading-tight text-text-color">
-          {title}
-        </h3>
+        <NovedadInlineText
+          as="h3"
+          html={title}
+          className="line-clamp-2 text-lg font-semibold leading-tight text-text-color"
+        />
 
         {/* Excerpt - 3 lines */}
-        <p className="line-clamp-3 text-sm leading-relaxed text-muted-foreground">
-          {excerpt}
-        </p>
+        <NovedadInlineText
+          html={excerpt}
+          className="line-clamp-3 text-sm leading-relaxed text-muted-foreground"
+        />
       </CardBody>
 
       <CardFooter className="px-5 pb-5 pt-0">

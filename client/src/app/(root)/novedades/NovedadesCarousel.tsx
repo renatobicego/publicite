@@ -7,7 +7,7 @@ import {
   findFirstHeader,
   findFirstParagraph,
   findFirstImage,
-  truncateText,
+  htmlToPlainText,
   formatDate,
 } from "@/utils/functions/editorjs-parser";
 
@@ -15,6 +15,7 @@ import { Card, CardBody, CardFooter, Image, Chip } from "@nextui-org/react";
 
 import SecondaryButton from "@/components/buttons/SecondaryButton";
 import Link from "next/link";
+import NovedadInlineText from "./NovedadInlineText";
 
 interface Props {
   novedades: Novedad[];
@@ -68,9 +69,7 @@ export default function NovedadesCarousel({ novedades }: Props) {
           const image = findFirstImage(novedad.content);
 
           const title = header?.text || "Sin título";
-          const excerpt = paragraph
-            ? truncateText(paragraph, 150)
-            : "Sin descripción";
+          const excerpt = paragraph || "Sin descripción";
 
           const imageUrl =
             image?.url ||
@@ -86,7 +85,7 @@ export default function NovedadesCarousel({ novedades }: Props) {
                 <div className="relative h-[60vh] lg:h-[75vh] overflow-hidden">
                   <Image
                     src={imageUrl}
-                    alt={title}
+                    alt={htmlToPlainText(title)}
                     radius="none"
                     classNames={{
                       wrapper: "w-full h-full !max-w-full",
@@ -107,13 +106,16 @@ export default function NovedadesCarousel({ novedades }: Props) {
 
                 {/* text */}
                 <CardBody className="gap-3 p-5">
-                  <h3 className="text-lg font-semibold leading-tight">
-                    {title}
-                  </h3>
+                  <NovedadInlineText
+                    as="h3"
+                    html={title}
+                    className="text-lg font-semibold leading-tight"
+                  />
 
-                  <p className="text-sm text-muted-foreground line-clamp-3">
-                    {excerpt}
-                  </p>
+                  <NovedadInlineText
+                    html={excerpt}
+                    className="text-sm text-muted-foreground line-clamp-3"
+                  />
                 </CardBody>
 
                 <CardFooter className="px-5 pb-5 pt-0">
