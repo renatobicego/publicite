@@ -481,3 +481,118 @@ describe('Mercadopago - MpHandlerEvents - Subscription  -> Update', () => {
 
 
 });
+
+/*
+Regresión del 22/10/2026 (y del incidente del 15/10): en producción Meli no manda el
+evento "created" de subscription_preapproval; el primer aviso de una suscripción nueva
+es un "updated" (authorized). Antes el handler sólo actualizaba y fallaba con
+"Subscription not found", así que el usuario pagaba y nunca se le registraba el plan.
+*/
+describe('Mercadopago - MpHandlerEvents - Subscription -> Update sin alta previa', () => {
+    let connection: Connection;
+    let mpHandlerEvents: MpHandlerEvents;
+    let subscriptionModel: Model<SubscriptionDocument>;
+    let subscriptionPlanModel: Model<SubscriptionPlanDocument>
+    let userModel: Model<IUser>;
+    let mockFetchToMpAdapter: any;
+
+    const subcriptionPlanMeli_id = "2c93808494b8c5eb0194be9f312902f9"
+    const external_reference = new Types.ObjectId("67420686b02bdd1f9f0ef459")
+    const subscriptionPlan_id = new Types.ObjectId("67420686b02bdd1f9f0ef455")
+
+    beforeAll(async () => {
+        connection = mongoose.connection;
+        const moduleRef: TestingModule = await mpTestingModule.get("mp_testing_module")();
+        subscriptionModel = moduleRef.get<Model<SubscriptionDocument>>(getModelToken('Subscription'));
+        subscriptionPlanModel = moduleRef.get<Model<SubscriptionPlanDocument>>(getModelToken('SubscriptionPlan'));
+        userModel = moduleRef.get<Model<IUser>>(getModelToken(UserModel.modelName));
+        mpHandlerEvents = moduleRef.get<MpHandlerEvents>('MpHandlerEventsInterface');
+        mockFetchToMpAdapter = { getDataFromMp_fetch: jest.fn() };
+        (mpHandlerEvents as any).fetchToMpAdapter = mockFetchToMpAdapter;
+
+        await subscriptionPlanModel.create({
+            _id: subscriptionPlan_id,
+            mpPreapprovalPlanId: subcriptionPlanMeli_id,
+            isActive: true,
+            reason: "Publicité Premium TEST",
+            description: "Publicité Premium TEST",
+            features: ["TEST"],
+            intervalTime: 0,
+            price: 0,
+            isFree: false,
+            postsLibresCount: 0,
+            postsAgendaCount: 0,
+            maxContacts: 0,
+            isPack: false
+        });
+    });
+
+    beforeEach(async () => {
+        await subscriptionModel.deleteMany({});
+        await userModel.deleteMany({});
+        await createPersonalUser(userModel, { _id: external_reference });
+    });
+
+    afterAll(async () => {
+        await subscriptionModel.deleteMany({});
+        await subscriptionPlanModel.deleteMany({ _id: subscriptionPlan_id });
+        await userModel.deleteMany({});
+        await connection.close();
+    });
+
+    it('registra la suscripción cuando llega un "updated" authorized y no existe en la base', async () => {
+        const preapproval = get_subscription_preapproval(external_reference.toString(), subcriptionPlanMeli_id, false);
+        preapproval.status = "authorized";
+        mockFetchToMpAdapter.getDataFromMp_fetch.mockResolvedValue(preapproval);
+
+        const result = await mpHandlerEvents.update_subscription_preapproval(preapproval.id);
+
+        expect(result).toBe(true);
+        const subscriptionSaved = await subscriptionModel.findOne({ mpPreapprovalId: preapproval.id });
+        if (subscriptionSaved === null) throw new Error("La suscripción no se registró");
+        expect(subscriptionSaved.status).toBe("authorized");
+        expect(subscriptionSaved.subscriptionPlan).toEqual(subscriptionPlan_id);
+        expect(subscriptionSaved.external_reference).toBe(external_reference.toString());
+        expect(subscriptionSaved.payerId).toBe(preapproval.payer_id.toString());
+        expect(subscriptionSaved.cardId).toBe(preapproval.card_id);
+
+        // Queda asociada al usuario, igual que en el alta por "created"
+        const user: any = await userModel.findById(external_reference).select("subscriptions");
+        expect(user.subscriptions.map((s: any) => s.toString())).toContain(subscriptionSaved._id.toString());
+    });
+
+    it('no crea nada y responde OK cuando llega un "updated" cancelled de una suscripción que nunca se registró', async () => {
+        const preapproval = get_subscription_preapproval(external_reference.toString(), subcriptionPlanMeli_id, false);
+        preapproval.status = "cancelled";
+        mockFetchToMpAdapter.getDataFromMp_fetch.mockResolvedValue(preapproval);
+
+        // Antes tiraba "Subscription with id X not found" y Meli reintentaba el evento sin fin
+        await expect(mpHandlerEvents.update_subscription_preapproval(preapproval.id)).resolves.toBe(true);
+
+        expect(await subscriptionModel.countDocuments({ mpPreapprovalId: preapproval.id })).toBe(0);
+        const user: any = await userModel.findById(external_reference).select("subscriptions");
+        expect(user.subscriptions).toHaveLength(0);
+    });
+
+    it('sigue actualizando normalmente cuando la suscripción ya existe', async () => {
+        const preapproval = get_subscription_preapproval(external_reference.toString(), subcriptionPlanMeli_id, false);
+        preapproval.status = "cancelled";
+        mockFetchToMpAdapter.getDataFromMp_fetch.mockResolvedValue(preapproval);
+        await subscriptionModel.create({
+            mpPreapprovalId: preapproval.id,
+            payerId: preapproval.payer_id.toString(),
+            status: "authorized",
+            subscriptionPlan: subscriptionPlan_id,
+            startDate: "2026-10-01",
+            endDate: "2026-11-01",
+            external_reference: external_reference.toString(),
+        });
+
+        await expect(mpHandlerEvents.update_subscription_preapproval(preapproval.id)).resolves.toBe(true);
+
+        const subscriptionSaved = await subscriptionModel.findOne({ mpPreapprovalId: preapproval.id });
+        expect(subscriptionSaved?.status).toBe("cancelled");
+        expect(await subscriptionModel.countDocuments({ mpPreapprovalId: preapproval.id })).toBe(1);
+    });
+});
+

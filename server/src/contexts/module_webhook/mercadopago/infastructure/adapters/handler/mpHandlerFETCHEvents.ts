@@ -167,20 +167,7 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
       console.log('Meli fetch response suscription:');
       console.log(subscription_preapproval);
 
-
-
-
-      const { free_trial } = subscription_preapproval.auto_recurring;
-      if (free_trial) {
-        this.logger.log("Sending free trial payment notification");
-        this.sendFreeTrialPaymentNotification(subscription_preapproval);
-      }
-
-
-
-      await this.subscriptionService.createSubscription_preapproval(
-        subscription_preapproval,
-      );
+      await this.registerSubscription(subscription_preapproval);
       return Promise.resolve(true);
     } catch (error: any) {
       this.logger.error(
@@ -189,6 +176,27 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
       );
       throw new Error(error);
     }
+  }
+
+  /*
+  Alta de la suscripción en nuestra base a partir del preapproval de Meli.
+  Lo comparten el evento "created" y el "updated" sin alta previa (ver
+  update_subscription_preapproval): en producción Meli no está mandando el
+  "created", así que el primer aviso que recibimos de una suscripción nueva
+  suele ser un "updated".
+  */
+  private async registerSubscription(
+    subscription_preapproval: Subscription_preapproval,
+  ): Promise<void> {
+    const { free_trial } = subscription_preapproval.auto_recurring;
+    if (free_trial) {
+      this.logger.log("Sending free trial payment notification");
+      this.sendFreeTrialPaymentNotification(subscription_preapproval);
+    }
+
+    await this.subscriptionService.createSubscription_preapproval(
+      subscription_preapproval,
+    );
   }
 
 
@@ -224,8 +232,25 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
       console.log('Meli fetch response suscription_preapproval_updated:');
       console.log(subscription_preapproval_update);
 
+      const { id, status } = subscription_preapproval_update;
+      const alreadyRegistered =
+        await this.subscriptionService.findSubscriptionByPreapprovalId(id);
 
-
+      if (!alreadyRegistered) {
+        if (status === 'cancelled') {
+          // Nunca registramos el alta y Meli ya la dio de baja: no hay nada que
+          // cancelar. Se responde OK para que Meli deje de reintentar el evento.
+          this.logger.warn(
+            `Llegó la cancelación de la suscripción ${id} pero nunca se registró su alta. No hay nada que cancelar.`,
+          );
+          return Promise.resolve(true);
+        }
+        this.logger.warn(
+          `Llegó un "updated" (${status}) de la suscripción ${id} sin alta previa (Meli no mandó el "created"). Se registra la suscripción desde este evento.`,
+        );
+        await this.registerSubscription(subscription_preapproval_update);
+        return Promise.resolve(true);
+      }
 
       await this.subscriptionService.updateSubscription_preapproval(
         subscription_preapproval_update,
