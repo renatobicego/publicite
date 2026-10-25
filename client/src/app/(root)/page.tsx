@@ -13,6 +13,7 @@ import { CURRENT_GIVEAWAY_ID } from "@/utils/data/sorteoConfig";
 import { auth } from "@clerk/nextjs/server";
 import AppSwitcher from "@/components/AppSwitcher/AppSwitcher";
 import FeaturedProductions from "./(explorar)/producciones/components/FeaturedProductions";
+import OfficialProductionBanner from "./(explorar)/producciones/components/OfficialProductionBanner";
 
 export default async function Home() {
   const loggedUser = await auth();
@@ -56,6 +57,10 @@ export default async function Home() {
       )}
 
       <AppSwitcher defaultActive="anuncios" />
+
+      <Suspense fallback={null}>
+        <OfficialProductionBanner />
+      </Suspense>
 
 
       <div className="text-xs lg:text-sm lg:max-w-[50%]">

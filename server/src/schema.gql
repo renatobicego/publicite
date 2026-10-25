@@ -1472,6 +1472,17 @@ enum ProductionShelfCategory {
   places
 }
 
+"""Ubicación y radio de alcance de un blog libre"""
+type ProductionGeoLocationResponse {
+  latitude: Float!
+  longitude: Float!
+  description: String!
+  userSetted: Boolean!
+
+  """Radio de alcance en metros"""
+  ratio: Float!
+}
+
 """Datos públicos del dueño (usuario o grupo)"""
 type ProductionOwnerResponse {
   _id: ID!
@@ -1549,6 +1560,12 @@ type ProductionResponse {
   showcase: [ID!]!
   visibility: ProductionVisibility!
 
+  """Blogs personales: libre o agenda. null en blogs de grupo"""
+  behaviourType: ProductionBehaviourType
+
+  """Ubicación y radio (sólo blogs libres)"""
+  geoLocation: ProductionGeoLocationResponse
+
   """Si el blog pide clave (INV-01)"""
   hasAccessKey: Boolean!
 
@@ -1601,6 +1618,14 @@ enum ProductionVisibility {
   friends
   topfriends
   onlyMe
+}
+
+"""
+Comportamiento de un blog personal (como Anuncios): libre (público, por radio de ubicación) o agenda (sólo tu agenda de contactos)
+"""
+enum ProductionBehaviourType {
+  libre
+  agenda
 }
 
 """
@@ -1749,6 +1774,20 @@ type ProductionLimitsResponse {
   totalPersonalBlogLimit: Int!
   totalGroupBlogLimit: Int!
   personalBlogsAvailable: Int!
+
+  """Blogs personales libres del usuario"""
+  libreBlogCount: Int!
+
+  """Blogs personales de agenda del usuario"""
+  agendaBlogCount: Int!
+
+  """Cupo de blogs libres del plan"""
+  totalLibreBlogLimit: Int!
+
+  """Cupo de blogs de agenda del plan"""
+  totalAgendaBlogLimit: Int!
+  libreBlogsAvailable: Int!
+  agendaBlogsAvailable: Int!
   groupBlogsAvailable: Int!
 
   """Cupo de archivos por blog"""
@@ -2378,9 +2417,21 @@ type Query {
   findAllProductionsByOwner(ownerId: ID!, ownerType: ProductionOwnerType): [ProductionResponse!]!
 
   """
-  Listado público de producciones (NAV-02) y buscador (NAV-05). Sin token sólo lo público
+  Explorar de producciones (NAV-02) y buscador (NAV-05). Sin behaviourType: todas; libre: blogs libres dentro del radio (sin los propios); agenda: blogs de agenda de tus contactos (requiere token, filtrable por relation). Con userLocation los blogs libres sólo aparecen dentro de su radio. Sin token sólo lo público
   """
-  findAllProductions(page: Int!, limit: Int!, searchTerm: String): ProductionListResponse!
+  findAllProductions(
+    page: Int!
+    limit: Int!
+    searchTerm: String
+    behaviourType: ProductionBehaviourType
+    userLocation: UserLocation
+    relation: Visibility_Of_Find
+
+    """
+    Sub-solapa por el ticket del blog completo: free (sin ticket), freeTicket o paidTicket
+    """
+    access: ProductionAccessFilter
+  ): ProductionListResponse!
 
   """
   Producciones destacadas para el home (NAV-03). Vacío = no mostrar la sección
@@ -2528,6 +2579,15 @@ input UserLocation_group {
 enum contactSellerGetType {
   post
   profile
+}
+
+"""
+Acceso al blog completo: free (sin ticket), freeTicket (ticket gratuito) o paidTicket (ticket pago)
+"""
+enum ProductionAccessFilter {
+  free
+  freeTicket
+  paidTicket
 }
 
 input ProductionTicketPurchaseFilters {
@@ -2788,6 +2848,11 @@ type Mutation {
 
   """Alcance por defecto del blog (VIS-01)"""
   setProductionVisibility(productionId: ID!, visibility: ProductionVisibility!): ProductionResponse!
+
+  """
+  Cambia el comportamiento de un blog personal (libre ↔ agenda), como updateBehaviourType de Anuncios. Valida el cupo del plan; pasar a libre pide ubicación y radio si el blog no tenía
+  """
+  updateProductionBehaviour(productionId: ID!, behaviourType: ProductionBehaviourType!, visibility: ProductionVisibility, geoLocation: ProductionGeoLocationInput): ProductionResponse!
 
   """
   Alcance propio de una carpeta o archivo (VIS-04). Sin visibility vuelve a heredar del padre (VIS-03)
@@ -3371,6 +3436,14 @@ input ProductionCreateRequest {
   visibility: ProductionVisibility
 
   """
+  Sólo blogs personales: libre o agenda (como Anuncios). Default: libre. Se ignora en blogs de grupo
+  """
+  behaviourType: ProductionBehaviourType
+
+  """Obligatorio en blogs libres: ubicación y radio de alcance"""
+  geoLocation: ProductionGeoLocationInput
+
+  """
   Si se informa, crea el blog del grupo (sólo el creator del grupo, GRP-02)
   """
   groupId: ID
@@ -3387,6 +3460,21 @@ input ProductionShelfLinkInput {
   imageKey: String
 }
 
+"""Ubicación y radio de alcance de un blog libre (igual que en Anuncios)"""
+input ProductionGeoLocationInput {
+  latitude: Float!
+  longitude: Float!
+
+  """Dirección legible"""
+  description: String
+
+  """Si el usuario eligió la ubicación a mano"""
+  userSetted: Boolean
+
+  """Radio de alcance en metros (1000 a 200000)"""
+  ratio: Float!
+}
+
 """Edición del header, estantería y muestrario"""
 input ProductionUpdateRequest {
   title: String
@@ -3395,6 +3483,9 @@ input ProductionUpdateRequest {
   welcomeText: String
   welcomeVideoKey: String
   shelf: [ProductionShelfLinkInput!]
+
+  """Ubicación y radio de un blog libre"""
+  geoLocation: ProductionGeoLocationInput
 
   """Muestrario: archivos o artículos destacados del blog (BLG-04)"""
   showcase: [ID!]
