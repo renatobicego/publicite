@@ -29,6 +29,7 @@ import {
 } from "@/services/workspaceServices";
 import { sendMessageToAI, generateAdImageWithAI } from "@/services/chatbotServices";
 import { deleteFilesService } from "@/app/server/uploadThing";
+import { compressDataUrl } from "@/utils/functions/compressDataUrl";
 
 const generateId = () => Math.random().toString(36).substring(2, 9);
 
@@ -463,9 +464,13 @@ export function useWorkspace() {
     // para que el BE la edite (p. ej. "el mismo perro pero ahora con su dueño").
     // Si no hay ninguna, se genera desde cero.
     const lastImage = generatedImages[generatedImages.length - 1];
-    const referenceImages = lastImage?.base64 ? [lastImage.base64] : undefined;
 
     try {
+      // Se manda comprimida: el PNG original en base64 pesa varios MB y hacía
+      // fallar el server action en la segunda generación.
+      const referenceImages = lastImage?.base64
+        ? [await compressDataUrl(lastImage.base64)]
+        : undefined;
       const res = await generateAdImageWithAI(prompt, referenceImages);
       console.log("[WorkspaceChat] generateAdImageWithAI response:", {
         hasRes: !!res,
