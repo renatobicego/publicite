@@ -268,8 +268,11 @@ export class ProductionResolver {
     @Context() context: ProductionGqlContext,
     @Args('visibility', { type: () => ProductionVisibility, nullable: true })
     visibility?: ProductionVisibility,
+    // El tipo `| null` es a propósito: con una clase sola, el ValidationPipe
+    // global convierte el argumento ausente en `{}` y lo rechaza (pasar a
+    // agenda no manda ubicación). La valida `normalizeGeoLocation` al pasar a libre.
     @Args('geoLocation', { type: () => ProductionGeoLocationInput, nullable: true })
-    geoLocation?: ProductionGeoLocationInput,
+    geoLocation?: ProductionGeoLocationInput | null,
   ): Promise<ProductionResponse> {
     return this.productionAdapter.updateProductionBehaviour(
       productionId,
