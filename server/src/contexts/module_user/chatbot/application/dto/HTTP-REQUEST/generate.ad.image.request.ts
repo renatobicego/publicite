@@ -7,14 +7,15 @@ import {
   IsString,
   MaxLength,
 } from 'class-validator';
+import { IMAGE_PROMPT_MAX_LENGTH } from 'src/contexts/module_shared/ai/ai.config';
 
 @InputType()
 export class GenerateAdImageRequest {
   @Field(() => String)
   @IsNotEmpty()
   @IsString()
-  @MaxLength(200, {
-    message: 'El prompt no puede superar los 200 caracteres',
+  @MaxLength(IMAGE_PROMPT_MAX_LENGTH, {
+    message: `El prompt no puede superar los ${IMAGE_PROMPT_MAX_LENGTH} caracteres`,
   })
   prompt: string;
 

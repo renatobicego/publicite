@@ -11,8 +11,7 @@ import { useRef, useState } from "react";
 import { FaImage, FaPaperPlane, FaWandMagicSparkles } from "react-icons/fa6";
 import { generateAdImageWithAI } from "@/services/chatbotServices";
 import { toastifyError } from "@/utils/functions/toastify";
-
-const PROMPT_MAX_LENGTH = 200;
+import { IMAGE_PROMPT_MAX_LENGTH as PROMPT_MAX_LENGTH } from "@/utils/data/aiLimits";
 
 interface ImagesStepProps {
     onSubmit: (files: File[]) => void;
