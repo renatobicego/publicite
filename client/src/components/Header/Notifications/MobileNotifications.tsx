@@ -1,5 +1,4 @@
 import {
-  useDisclosure,
   Button,
   Badge,
   Modal,
@@ -17,7 +16,6 @@ import { requestNotificationPermission } from "@/utils/notifications/browserNoti
 
 const MobileNotifications = () => {
   const { isOpen, setIsOpen } = useNotificationsIsOpen();
-  const { isOpen: modalIsOpen } = useDisclosure({ isOpen });
   const { newNotifications: newNotificationsReceived, setNewNotifications } =
     useSocket();
 
@@ -27,6 +25,16 @@ const MobileNotifications = () => {
     newNotificationsFromServer,
     setNewNotificationsFromServer,
   } = useNotificationsContext();
+
+  const handleClose = () => {
+    setNewNotifications(false);
+    setNewNotificationsFromServer(false);
+    setIsOpen(false);
+    const unviewedIds = notifications
+      .filter((notification) => !notification.viewed)
+      .map((notification) => notification._id);
+    if (unviewedIds.length) putNotificationStatus(unviewedIds);
+  };
 
   return (
     <>
@@ -56,9 +64,11 @@ const MobileNotifications = () => {
         }}
         placement="center"
         className="max-md:px-4"
-        isOpen={modalIsOpen}
+        isOpen={isOpen}
+        // NextUI le inyecta a la cruz su propio cierre (state.close), que
+        // termina acá: todo cierre (cruz, tocar afuera, Escape) pasa por este handler.
         onOpenChange={(open) => {
-          setIsOpen(!open);
+          if (!open) handleClose();
         }}
         closeButton={
           <Button
@@ -66,16 +76,6 @@ const MobileNotifications = () => {
             variant="light"
             isIconOnly
             aria-label="cerrar modal de notificaciones"
-            onPress={async () => {
-              setNewNotifications(false);
-              setNewNotificationsFromServer(false);
-              setIsOpen(false);
-              putNotificationStatus(
-                notifications
-                  .filter((notification) => !notification.viewed)
-                  .map((notification) => notification._id)
-              );
-            }}
           >
             <FaX />
           </Button>
