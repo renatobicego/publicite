@@ -35,6 +35,13 @@ export function getImageGenerationModel(): string {
 }
 
 /**
+ * Tope de caracteres del prompt de generación de imágenes. Lo usan el DTO y el
+ * servicio; el cliente tiene el mismo valor en IMAGE_PROMPT_MAX_LENGTH
+ * (client/src/utils/data/aiLimits.ts).
+ */
+export const IMAGE_PROMPT_MAX_LENGTH = 2000;
+
+/**
  * Modelos de la Valuación IA (corre sobre el Agents SDK / Responses API).
  * La familia gpt-6 acepta imágenes, así que no hace falta cambiar de modelo
  * cuando el brief trae fotos como pasaba con gpt-4o-mini/gpt-4o.

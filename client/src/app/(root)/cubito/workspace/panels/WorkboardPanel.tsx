@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Button, ScrollShadow, Modal, ModalContent, ModalBody } from "@nextui-org/react";
+import { Button, ScrollShadow, Modal, ModalContent, ModalBody, Textarea } from "@nextui-org/react";
 import {
     FaWandMagicSparkles,
     FaMagnifyingGlass,
@@ -14,6 +14,7 @@ import {
 } from "react-icons/fa6";
 import { OrangeCubeIcon } from "@/components/buttons/ChatbotButton/OrangeCubeIcon";
 import { CustomInputWithoutFormik } from "@/components/inputs/CustomInputs";
+import { IMAGE_PROMPT_MAX_LENGTH } from "@/utils/data/aiLimits";
 import AvatarSelector from "../../avatars/AvatarSelector";
 import { parseMarkdown } from "../shared/parseMarkdown";
 import type { useWorkspace } from "../hooks/useWorkspace";
@@ -71,9 +72,13 @@ function FreeChatPanel({ workspace }: WorkboardPanelProps) {
         }
     }, [chatMessages]);
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!inputValue.trim() || isChatProcessing || isGeneratingImage) return;
+    // Al pasar de chat a modo imagen puede quedar un texto más largo que el tope.
+    const isImagePromptTooLong = isImageMode && inputValue.length > IMAGE_PROMPT_MAX_LENGTH;
+    const canSubmit =
+        !!inputValue.trim() && !isChatProcessing && !isGeneratingImage && !isImagePromptTooLong;
+
+    const submitInput = () => {
+        if (!canSubmit) return;
 
         if (isImageMode) {
             handleGenerateImage(inputValue);
@@ -81,6 +86,11 @@ function FreeChatPanel({ workspace }: WorkboardPanelProps) {
             handleSendChatMessage(inputValue);
         }
         setInputValue("");
+    };
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        submitInput();
     };
 
     const getImageById = (id: string) => generatedImages.find((img) => img.id === id);
@@ -248,22 +258,41 @@ function FreeChatPanel({ workspace }: WorkboardPanelProps) {
                         {isImageMode ? "Modo imagen" : "Generar imagen"}
                     </Button>
                 </div>
-                <form onSubmit={handleSubmit} className="flex gap-2">
-                    <CustomInputWithoutFormik
-                        value={inputValue}
-                        onChange={(e) => setInputValue(e.target.value)}
-                        placeholder={
-                            isImageMode
-                                ? "Describí la imagen que querés generar..."
-                                : "Escribí tu mensaje a Cubito..."
-                        }
-                        disabled={isChatProcessing || isGeneratingImage}
-                    />
+                <form onSubmit={handleSubmit} className="flex items-start gap-2">
+                    {isImageMode ? (
+                        // El prompt de imagen admite varias oraciones: textarea que crece,
+                        // con contador. Enter envía y Shift+Enter hace salto de línea.
+                        <Textarea
+                            value={inputValue}
+                            onValueChange={setInputValue}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter" && !e.shiftKey) {
+                                    e.preventDefault();
+                                    submitInput();
+                                }
+                            }}
+                            maxLength={IMAGE_PROMPT_MAX_LENGTH}
+                            minRows={1}
+                            maxRows={6}
+                            variant="bordered"
+                            placeholder="Describí la imagen que querés generar..."
+                            isDisabled={isChatProcessing || isGeneratingImage}
+                            isInvalid={isImagePromptTooLong}
+                            description={`${inputValue.length}/${IMAGE_PROMPT_MAX_LENGTH}`}
+                        />
+                    ) : (
+                        <CustomInputWithoutFormik
+                            value={inputValue}
+                            onChange={(e) => setInputValue(e.target.value)}
+                            placeholder="Escribí tu mensaje a Cubito..."
+                            disabled={isChatProcessing || isGeneratingImage}
+                        />
+                    )}
                     <Button
                         isIconOnly
                         type="submit"
                         radius="full"
-                        isDisabled={isChatProcessing || isGeneratingImage || !inputValue.trim()}
+                        isDisabled={!canSubmit}
                         className="text-white bg-service h-10 w-10"
                     >
                         <FaPaperPlane size={14} />

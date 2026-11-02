@@ -17,6 +17,7 @@ import {
   getImageGenerationModel,
   getTextModel,
   getVisionModel,
+  IMAGE_PROMPT_MAX_LENGTH,
   sanitizeImageUrls,
 } from 'src/contexts/module_shared/ai/ai.config';
 
@@ -33,8 +34,6 @@ const CREATE_AD_RESPONSE_COPY =
 // gpt-image solo soporta 1024x1024 / 1024x1536 / 1536x1024 / auto (no 512x512) y devuelve base64.
 const IMAGE_GENERATION_SIZE = '1024x1024';
 const IMAGE_GENERATION_QUALITY = 'low';
-// Límite de caracteres del prompt (alineado con el límite del FE)
-const IMAGE_PROMPT_MAX_LENGTH = 200;
 // Tope de imágenes de referencia para la generación contextual (image-to-image).
 const MAX_REFERENCE_IMAGES = 4;
 
