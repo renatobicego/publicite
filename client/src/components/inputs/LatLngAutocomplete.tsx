@@ -1,6 +1,10 @@
 import { Autocomplete, AutocompleteItem } from "@nextui-org/react";
-import usePlacesService from "react-google-autocomplete/lib/usePlacesAutocompleteService";
 import { FaLocationDot } from "react-icons/fa6";
+import usePlacePredictions, {
+  loadPlacesLibrary,
+} from "@/utils/hooks/usePlacePredictions";
+
+const PLACE_OPTIONS = { types: ["geocode"] };
 
 const LatLngAutocomplete = ({
   handleLocationChange,
@@ -17,19 +21,14 @@ const LatLngAutocomplete = ({
   createMarker: (lat?: number, lng?: number) => Promise<void>;
 }) => {
   const { placePredictions, getPlacePredictions, isPlacePredictionsLoading } =
-    usePlacesService({
-      apiKey: process.env.NEXT_PUBLIC_MAPS_API_KEY,
-      options: {
-        types: ["geocode"],
-        input: "",
-      },
-    });
+    usePlacePredictions(PLACE_OPTIONS);
 
-  const handleSelectPlace = (placeId: string) => {
+  const handleSelectPlace = async (placeId: string) => {
     if (map && placeId) {
-      const service = new google.maps.places.PlacesService(map);
+      const { PlacesService, PlacesServiceStatus } = await loadPlacesLibrary();
+      const service = new PlacesService(map);
       service.getDetails({ placeId: placeId }, (result, status) => {
-        if (status === google.maps.places.PlacesServiceStatus.OK && result) {
+        if (status === PlacesServiceStatus.OK && result) {
           const location = result.geometry?.location;
           if (location) {
             const lat = location.lat();

@@ -2,29 +2,21 @@ import { Autocomplete, AutocompleteItem } from "@nextui-org/react";
 import { FieldInputProps } from "formik";
 import { Key, useEffect, useState } from "react";
 import { FaLocationDot } from "react-icons/fa6";
-import { Libraries, useLoadScript } from "@react-google-maps/api";
-import usePlacesService from "react-google-autocomplete/lib/usePlacesAutocompleteService";
+import usePlacePredictions from "@/utils/hooks/usePlacePredictions";
 
-const libraries: Libraries = ["places"];
+const PLACE_OPTIONS = { types: ["geocode"] };
 // Combine FieldInputProps with any additional props required by Autocomplete
 interface PlaceAutocompleteProps extends FieldInputProps<string> {
   onSelectionChange: ((key: Key | null) => void) | undefined;
 }
 
 const PlaceAutocomplete = (props: PlaceAutocompleteProps) => {
-  const { isLoaded } = useLoadScript({
-    googleMapsApiKey: process.env.NEXT_PUBLIC_MAPS_API_KEY as string,
-    libraries,
-  });
-
-  const { placePredictions, getPlacePredictions, isPlacePredictionsLoading } =
-    usePlacesService({
-      apiKey: process.env.NEXT_PUBLIC_MAPS_API_KEY,
-      options: {
-        types: ["geocode"],
-        input: props.value,
-      },
-    });
+  const {
+    isLoaded,
+    placePredictions,
+    getPlacePredictions,
+    isPlacePredictionsLoading,
+  } = usePlacePredictions(PLACE_OPTIONS);
 
   useEffect(() => {
     if (props.value && isLoaded) {
