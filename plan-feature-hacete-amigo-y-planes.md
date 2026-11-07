@@ -6,6 +6,9 @@
 >
 > Ítems del presupuesto que cubre: **Planes (cambio de plan, packs)** 10 h, **Hacete amigo** 35 h,
 > **Regalo de planes** 10 h.
+>
+> **Branch:** todos los cambios de este plan (las fases 0 a 6) se hacen en la branch
+> `feature/hacete-amigo`, creada desde `main`. No se commitea directo a `main`; se integra con un PR.
 
 ---
 
