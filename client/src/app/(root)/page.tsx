@@ -1,7 +1,9 @@
 import UserAmountChips from "@/components/chips/UserAmountChips";
 import HomePostSection from "@/components/grids/HomePostSection";
 import SelectManualLocationModal from "@/components/modals/SelectManualLocation/SelectManualLocationModal";
-import { POSTS } from "@/utils/data/urls";
+import { POSTS, SUBSCRIPTIONS } from "@/utils/data/urls";
+import Link from "next/link";
+import NextImage from "next/image";
 import { Spinner } from "@nextui-org/react";
 import { Suspense } from "react";
 import NovedadesCarousel from "./novedades/NovedadesCarousel";
@@ -45,6 +47,22 @@ export default async function Home() {
     >
 
       {novedades && <NovedadesCarousel novedades={novedades as Novedad[]} />}
+
+      {/* Destacado: planes */}
+      <Link
+        href={SUBSCRIPTIONS}
+        aria-label="Sumate a un plan: conocé los planes"
+        className="block w-full overflow-hidden rounded-xl transition-opacity hover:opacity-90"
+      >
+        <NextImage
+          src="/sumate-a-un-plan.jpeg"
+          alt="Sumate a un plan. Conocé los planes de Soonpublicite"
+          width={1600}
+          height={900}
+          sizes="(max-width: 1280px) 100vw, 1280px"
+          className="h-auto w-full"
+        />
+      </Link>
 
       {/* Banner del sorteo */}
       {!("error" in giveawayData) && (
