@@ -17,8 +17,8 @@ const PostsLimitReached = ({
   setPostBehaviourTypeToPrevious: () => void;
 }) => {
   const postBehaviourTypeLabel: Record<PostBehaviourType, string> = {
-    agenda: "Agenda",
-    libre: "Libre",
+    agenda: "de agenda",
+    libre: "geolocalizados",
   };
   return (
     <section
@@ -43,8 +43,8 @@ const PostsLimitReached = ({
         ¡Ups! Has alcanzado el límite de publicaciones activas.
       </h4>
       <h5 className="text-center">
-        {numberOfPosts} / {limit} publicaciones de comportamiento{" "}
-        <em>{postBehaviourTypeLabel[postBehaviourType]}</em> activas
+        {numberOfPosts} / {limit} anuncios{" "}
+        <em>{postBehaviourTypeLabel[postBehaviourType]}</em> activos
       </h5>
       <p className="text-sm 2xl:text-base md:max-w-[50%] 2xl:max-w-[50%] 3xl:max-w-[30%] text-center">
         Para crear un nuevo anuncio, puedes cambiar de tipo de suscripción o

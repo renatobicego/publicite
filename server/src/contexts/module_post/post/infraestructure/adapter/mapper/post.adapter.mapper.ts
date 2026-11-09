@@ -31,6 +31,7 @@ export class PostAdapterMapper implements PostMapperAdapterInterface {
       category: postUpdateRequest.category,
       attachedFiles: postUpdateRequest.attachedFiles,
       imagesUrls: postUpdateRequest.imagesUrls,
+      mediaSizes: postUpdateRequest.mediaSizes,
       year: postUpdateRequest.year,
       brand: postUpdateRequest.brand,
       modelType: postUpdateRequest.modelType,

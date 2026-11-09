@@ -19,6 +19,7 @@ import {
 import ProductionModel, { ProductionDocument } from '../schemas/production.schema';
 import { toSearchText } from '../../application/functions/production.text';
 import { buildDistanceMetersExpr } from '../../application/functions/production.behaviour';
+import { buildScheduleQuery } from '../../application/functions/production.schedule';
 
 const AGENDA_LEVELS = [
   ProductionVisibility.contacts,
@@ -215,6 +216,9 @@ export class ProductionRepository implements ProductionRepositoryInterface {
     }
     if (filter.excludeProductionIds?.length) {
       and.push({ _id: { $nin: toObjectIds(filter.excludeProductionIds) } });
+    }
+    if (filter.activeAt) {
+      and.push(buildScheduleQuery(filter.activeAt));
     }
     if (filter.excludeOwnerId && Types.ObjectId.isValid(filter.excludeOwnerId)) {
       and.push({ owner: { $ne: new Types.ObjectId(filter.excludeOwnerId) } });

@@ -89,8 +89,8 @@ const ProductionListCard = ({
               }
             >
               {production.behaviourType === ProductionBehaviourType.agenda
-                ? "Agenda"
-                : "Libre"}
+                ? "De mi agenda"
+                : "Geolocalizada"}
             </Chip>
           )}
         </div>

@@ -1,5 +1,5 @@
 import { BadRequestException, Inject } from '@nestjs/common';
-import { Connection } from 'mongoose';
+import { ClientSession, Connection } from 'mongoose';
 import { InjectConnection } from '@nestjs/mongoose';
 import { Date } from 'mongoose';
 
@@ -27,6 +27,12 @@ import { PostBehaviourType } from '../../domain/entity/enum/postBehaviourType.en
 import { Visibility_Of_Find } from '../../domain/entity/enum/post-visibility.enum';
 import { VisibilityEnum } from '../../domain/entity/models_graphql/HTTP-REQUEST/post.update.request';
 import { PostComment } from '../../domain/entity/postComment.entity';
+import {
+  mergePostMediaSizes,
+  sumMediaSizes,
+  USER_STORAGE_USAGE_SERVICE,
+  UserStorageUsageService,
+} from 'src/contexts/module_shared/storage/user-storage.usage.service';
 
 export class PostService implements PostServiceInterface {
   constructor(
@@ -36,7 +42,38 @@ export class PostService implements PostServiceInterface {
     private readonly logger: MyLoggerService,
     @Inject('UserServiceInterface')
     private readonly userService: UserServiceInterface,
+    @Inject(USER_STORAGE_USAGE_SERVICE)
+    private readonly storageUsage: UserStorageUsageService,
   ) {}
+
+  /**
+   * Cupo de almacenamiento del usuario (blogs + fotos y videos de anuncios).
+   * Sólo con `PRODUCTION_STORAGE_LIMIT_ENABLED`. `excludePostId` deja afuera el
+   * anuncio que se está editando, que se cuenta con `newBytes`.
+   */
+  private async assertStorageFits(
+    userId: string,
+    newBytes: number,
+    session?: ClientSession,
+    excludePostId?: string,
+  ): Promise<void> {
+    if (newBytes <= 0) return;
+    const limits = await this.userService.getProductionLimitsFromUserByUserId(
+      userId,
+      session,
+    );
+    if (!limits.storageLimitEnabled) return;
+    const [productionBytes, otherPostsBytes] = await Promise.all([
+      this.storageUsage.getProductionBytes(userId, session),
+      this.storageUsage.getPostMediaBytes(userId, session, excludePostId),
+    ]);
+    this.storageUsage.assertFits(
+      limits.storageBytesLimit,
+      productionBytes + otherPostsBytes,
+      newBytes,
+      'Las fotos y videos de este anuncio',
+    );
+  }
 
   async activateOrDeactivatePost(
     _id: string,
@@ -92,12 +129,23 @@ export class PostService implements PostServiceInterface {
             'No es posible crear el post, agostaste el limite de posts según tu plan',
           );
 
+        // Fotos y videos: suman al almacenamiento del plan (con los blogs).
+        const mediaSizes = mergePostMediaSizes(
+          (post as any).imagesUrls,
+          [],
+          post.mediaSizes,
+        );
+        await this.assertStorageFits(author, sumMediaSizes(mediaSizes), session);
+
         //Post to save
         newPostId = await this.postRepository.create(postMapped, {
           session,
         });
         if (!newPostId) {
           throw new Error('Error al crear el post');
+        }
+        if (mediaSizes.length > 0) {
+          await this.postRepository.setMediaSizes(newPostId, mediaSizes, session);
         }
 
         //Post to save in user
@@ -491,11 +539,30 @@ export class PostService implements PostServiceInterface {
     id: string,
     postType: string,
   ): Promise<any> {
-    try {
-      return await this.postRepository.updatePostById(postUpdate, id, postType);
-    } catch (error: any) {
-      throw error;
+    const { mediaSizes: incoming, ...fields } = postUpdate;
+    // Sin cambios en las fotos, el peso guardado queda igual.
+    if (fields.imagesUrls === undefined) {
+      return await this.postRepository.updatePostById(fields, id, postType);
     }
+
+    const current = await this.postRepository.findMediaInfo(id);
+    if (!current) throw new BadRequestException('Anuncio no encontrado');
+    const mediaSizes = mergePostMediaSizes(
+      fields.imagesUrls,
+      current.mediaSizes,
+      incoming,
+    );
+    const newTotal = sumMediaSizes(mediaSizes);
+
+    // Sólo se valida si el anuncio pesa más que antes (quitar fotos libera).
+    if (newTotal > sumMediaSizes(current.mediaSizes)) {
+      await this.assertStorageFits(current.author, newTotal, undefined, id);
+    }
+    return await this.postRepository.updatePostById(
+      { ...fields, mediaSizes },
+      id,
+      postType,
+    );
   }
 
   async updateEndDateFromPostById(

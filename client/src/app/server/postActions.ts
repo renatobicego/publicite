@@ -9,6 +9,13 @@ import {
   putPostBehavior,
 } from "@/services/postsServices";
 import { Post, PostBehaviourType } from "@/types/postTypes";
+import { getProductionErrorMessage } from "@/utils/functions/productionErrorHandler";
+
+/** Mensaje del server cuando no hay espacio de almacenamiento, para mostrarlo tal cual. */
+const storageErrorMessage = (err: unknown): string | null => {
+  const message = getProductionErrorMessage(err);
+  return message?.includes("No tenés espacio suficiente") ? message : null;
+};
 
 export const createPost = async (
   formData: any,
@@ -26,7 +33,9 @@ export const createPost = async (
     return { message: "Anuncio creado exitosamente", id: resApi };
   } catch (err) {
     return {
-      error: "Error al crear el anuncio. Por favor intenta de nuevo.",
+      error:
+        storageErrorMessage(err) ??
+        "Error al crear el anuncio. Por favor intenta de nuevo.",
     };
   }
 };
@@ -47,7 +56,9 @@ export const editPost = async (
     return { message: "Anuncio editado exitosamente", id: resApi };
   } catch (err) {
     return {
-      error: "Error al editar el anuncio. Por favor intenta de nuevo.",
+      error:
+        storageErrorMessage(err) ??
+        "Error al editar el anuncio. Por favor intenta de nuevo.",
     };
   }
 };

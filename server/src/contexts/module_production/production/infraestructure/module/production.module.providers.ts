@@ -1,6 +1,11 @@
 import { Provider } from '@nestjs/common';
 import { ModelDefinition } from '@nestjs/mongoose';
 
+import {
+  USER_STORAGE_USAGE_SERVICE,
+  UserStorageUsageService,
+} from 'src/contexts/module_shared/storage/user-storage.usage.service';
+
 import ProductionModel from '../schemas/production.schema';
 import ProductionItemModel, {
   PRODUCTION_ITEM_DISCRIMINATORS,
@@ -75,6 +80,8 @@ export const PRODUCTION_MODELS: ModelDefinition[] = [
 
 export const PRODUCTION_PROVIDERS: Provider[] = [
   ProductionAccessService,
+  // Cupo de almacenamiento por usuario (blogs + anuncios), compartido con Anuncios.
+  { provide: USER_STORAGE_USAGE_SERVICE, useClass: UserStorageUsageService },
   ProductionCascadeService,
   { provide: 'ProductionRepositoryInterface', useClass: ProductionRepository },
   {

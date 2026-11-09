@@ -18,8 +18,8 @@ const DropdownSolapas = ({
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   // map the selected keys to the label
   const keyToLabel: { [key: string]: string } = {
-    recomendados: "Anuncios Libres",
-    contactos: "Anuncios de Agenda de Contactos",
+    recomendados: "Anuncios geolocalizados",
+    contactos: "Anuncios de agenda de contactos",
     // hoy: "Anuncios de Hoy",
     // puntuados: "Mejor Puntuados",
     // vencer: "Próximos a Vencer",
@@ -38,8 +38,8 @@ const DropdownSolapas = ({
 
   // Check if the selected value is "Post" (for example "Grupos" is not a post)
   const postSolapas = [
-    "Anuncios Libres",
-    "Anuncios de Agenda de Contactos",
+    "Anuncios geolocalizados",
+    "Anuncios de agenda de contactos",
     // "Anuncios de Hoy",
     // "Mejor Puntuados",
     // "Próximos a Vencer",

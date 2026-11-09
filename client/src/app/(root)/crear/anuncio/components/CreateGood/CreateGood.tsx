@@ -64,7 +64,10 @@ const CreateGood = ({
   const router = useRouter();
   const { attachedFiles } = useAttachedFiles();
 
-  const { progress, submitFiles } = useUploadFiles(files, attachedFiles);
+  const { progress, submitFiles, discardUploaded } = useUploadFiles(
+    files,
+    attachedFiles
+  );
 
   const handleSubmit = async (
     values: GoodPostValues,
@@ -119,6 +122,8 @@ const CreateGood = ({
       userCanPublishPost
     );
     if (resApi.error) {
+      // El server lo rechazó (ej. sin espacio): no dejar archivos huérfanos.
+      await discardUploaded();
       toastifyError(resApi.error);
       return;
     }

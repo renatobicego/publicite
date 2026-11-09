@@ -110,14 +110,16 @@ const GlosaryModal = ({ customButton }: { customButton?: React.ReactNode }) => {
                 servicios) o de necesidad.
               </li>
               <li>
-                Anuncios Libres: están determinados por una localización y rango
-                de alcance. ¡Todos aquellos usuarios que coincidan con estos
-                factores podrán ver tus anuncios, configúralos!
+                Anuncios geolocalizados: están determinados por una localización
+                y rango de alcance. ¡Todos aquellos usuarios que coincidan con
+                estos factores podrán ver tus anuncios, configúralos! Se ven en
+                Anuncios digitales en Soon › Geolocalizados.
               </li>
               <li>
                 Anuncios de agenda: están relacionados únicamente a tu agenda de
                 contactos. ¡Quiere decir que este tipo de anuncio será
-                únicamente para tus contactos, configúralos!
+                únicamente para tus contactos, configúralos! Se ven en Anuncios
+                digitales en Soon › Agenda de contactos.
               </li>
               <li>
                 Revistas: Podrás crear revistas, propias o compartidas, y desde
@@ -155,9 +157,9 @@ const GlosaryModal = ({ customButton }: { customButton?: React.ReactNode }) => {
               </li>
             </ul>
             <p>
-              Para los anuncios libres, dependerá el rango de alcance y
+              Para los anuncios geolocalizados, dependerá el rango de alcance y
               localización del anuncio. Esto determina quienes verán tus
-              anuncios libres. Recuerda que puedes configurar dicha
+              anuncios geolocalizados. Recuerda que puedes configurar dicha
               localización. Además, al buscar, se otorga el poder de alterar la
               ubicación a voluntad.
             </p>
@@ -187,22 +189,29 @@ const GlosaryModal = ({ customButton }: { customButton?: React.ReactNode }) => {
 
             <p>
               <strong>Explorar:</strong> <br />
-              ¡En esta sección es donde sucede la acción! Puedes elegir las
-              solapas en las que quieres buscar anuncios. Lo importante aquí es
-              que distingamos dos clases de solapas principales:
+              ¡En esta sección es donde sucede la acción! Los anuncios están en
+              la solapa <strong>Anuncios digitales en Soon</strong>, que tiene
+              tres solapas:
             </p>
             <ul className="list-disc list-inside">
-              <li>Solapa de anuncios libres</li>
-              <li>Solapa de anuncios de agenda</li>
+              <li>Todos: todo lo que puedes ver</li>
+              <li>
+                Geolocalizados: los anuncios públicos cerca tuyo, del más
+                cercano al más lejano
+              </li>
+              <li>
+                Agenda de contactos: los anuncios de tus contactos (top amigos,
+                amigos y contactos)
+              </li>
             </ul>
 
             <p>
-              En la solapa de anuncios libres encontrarás todos los anuncios
-              libres que los usuarios publiquen según localización. Puedes
+              En la solapa Geolocalizados encontrarás todos los anuncios
+              geolocalizados que los usuarios publiquen según localización. Puedes
               configurar la ubicación de manera sencilla. Es decir, el alcance y
               localización del anuncio puede variar, pero puedes ajustar la
               ubicación. Si esto coincide o se integran entonces lo
-              visualizaras. En la solapa de anuncios de agenda encontraras los
+              visualizaras. En la solapa Agenda de contactos encontraras los
               anuncios de tus contactos de agenda. Esto significa que, según
               como tu usuario-contacto, con relación establecida, configure la
               visibilidad del anuncio, lo encontraras en esta solapa. Ya sabes,
@@ -232,8 +241,8 @@ const GlosaryModal = ({ customButton }: { customButton?: React.ReactNode }) => {
             </p>
             <ul className="list-disc list-inside">
               <li>
-                Blog libre o de agenda: como un anuncio, un blog personal es
-                libre (público o para registrados, visible para quien esté
+                Blog geolocalizado o de mi agenda: como un anuncio, un blog
+                personal es geolocalizado (público o para registrados, visible para quien esté
                 dentro del radio de su ubicación) o de agenda (visible sólo
                 para tus contactos, amigos o top amigos). Tu plan tiene un
                 cupo de cada tipo. Se cambia desde Editar blog → Editar
@@ -241,11 +250,38 @@ const GlosaryModal = ({ customButton }: { customButton?: React.ReactNode }) => {
               </li>
               <li>
                 Explorar: en Producciones están las solapas Producciones
-                (todo lo que puedes ver), Producciones Libres (cerca tuyo) y
-                Agenda de Contactos (por contactos, amigos o top amigos), con
-                buscador. En Libres y Agenda puedes filtrar por cómo se entra
+                (todo lo que puedes ver), Producciones geolocalizadas (cerca
+                tuyo) y Producciones de mi agenda (por contactos, amigos o top
+                amigos), con buscador. En geolocalizadas y de mi agenda puedes
+                filtrar por cómo se entra
                 al blog: gratuitos (sin ticket), ticket gratis o ticket
                 pago.
+              </li>
+              <li>
+                Súper botón Crear (+ Crear, abajo a la derecha): primero
+                &quot;Crear nuevo blog&quot;; dentro de tu blog, crear ahí
+                mismo una carpeta, un artículo, un álbum de fotos o subir
+                archivos.
+              </li>
+              <li>
+                Almacenamiento: el espacio de tu plan es uno solo y suma los
+                archivos de tus blogs y las fotos y videos de tus anuncios. Lo
+                ves en Control de Consumo.
+              </li>
+              <li>
+                Fechas de vigencia: el blog se ve sólo entre la fecha de inicio
+                (obligatoria) y la de cierre (opcional). Fuera de ese rango no
+                aparece en Explorar y quien entra por link ve un aviso; no se
+                borra nada.
+              </li>
+              <li>
+                Estantería: debajo del encabezado del blog, un estante con tus
+                recomendaciones (libros, películas, podcasts, música, links,
+                imágenes…). Tócalas para ver su ficha.
+              </li>
+              <li>
+                Videos de YouTube: en un artículo, el bloque YouTube embebe el
+                video con sólo pegar su link.
               </li>
               <li>
                 Organiza: crea carpetas y subcarpetas, sube varios archivos a la
@@ -259,8 +295,8 @@ const GlosaryModal = ({ customButton }: { customButton?: React.ReactNode }) => {
               </li>
               <li>
                 Navega: usa las flechas Atrás y Adelante, busca por nombre,
-                filtra por tipo, ordena y elige entre vista de grilla o de
-                lista. En la grilla puedes agrandar o achicar los íconos.
+                filtra por tipo, ordena y elige entre cuadrícula ordenada (todos
+                los recuadros iguales), cuadrícula libre o lista. En la grilla puedes agrandar o achicar los íconos.
                 Dentro de un archivo, pasa al anterior o al siguiente.
               </li>
               <li>
@@ -303,6 +339,14 @@ const GlosaryModal = ({ customButton }: { customButton?: React.ReactNode }) => {
               <li>
                 Tablero de trabajo: envía a tu blog las imágenes generadas y
                 las Valuaciones IA, a una carpeta nueva o existente.
+              </li>
+              <li>
+                Memoria del Tablero de trabajo: al volver, retomás tu última
+                conversación con Cubito. Con &quot;Historial&quot; ves y retomás
+                las anteriores, y con &quot;Nueva&quot; empezás otra. Enter
+                envía y Shift+Enter agrega un renglón. Las imágenes generadas
+                no se guardan en la conversación: descargalas o envialas a tu
+                blog.
               </li>
               <li>
                 Denuncias: se hacen desde el menú de opciones del blog. Tu

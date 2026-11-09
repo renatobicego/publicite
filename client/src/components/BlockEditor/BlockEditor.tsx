@@ -22,6 +22,7 @@ import {
 import { deleteFilesService } from "@/app/server/uploadThing";
 import { AudioBlockTool } from "./tools/AudioBlockTool";
 import { VideoBlockTool } from "./tools/VideoBlockTool";
+import { YouTubeBlockTool } from "./tools/YouTubeBlockTool";
 import { PhotoGridBlockTool, PhotoGridImage } from "./tools/PhotoGridBlockTool";
 import {
   ClearFormatInlineTool,
@@ -140,6 +141,7 @@ const i18n = {
       Image: "Imagen",
       Audio: "Audio",
       Video: "Video",
+      YouTube: "Video de YouTube",
       "Photo Grid": "Grilla de fotos",
       "Unordered List": "Lista desordenada",
       "Ordered List": "Lista ordenada",
@@ -346,6 +348,8 @@ const BlockEditor = forwardRef<BlockEditorHandle, BlockEditorProps>(
               onUploadError: (message: string) => toastifyError(message),
             },
           },
+          // Video de YouTube embebido: sólo guarda el link y el id del video.
+          youtube: YouTubeBlockTool,
           photoGrid: {
             class: PhotoGridBlockTool,
             config: {

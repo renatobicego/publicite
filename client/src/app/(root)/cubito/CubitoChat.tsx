@@ -282,19 +282,20 @@ export default function CubitoChat() {
                         Tu asistente de Publicite
                     </p>
                 </div>
+                {/* Con borde y texto para que se entienda que es el historial. */}
                 <Button
-                    isIconOnly
                     size="sm"
-                    variant="light"
+                    variant="bordered"
                     radius="full"
                     onPress={() => {
                         setShowHistory(!showHistory);
                         if (!showHistory) loadChatHistory();
                     }}
-                    className="text-white hover:bg-orange-700"
+                    className="border-white/70 text-white hover:bg-orange-700"
                     aria-label="Ver historial de chats"
+                    startContent={<FaClockRotateLeft size={14} />}
                 >
-                    <FaClockRotateLeft size={18} />
+                    Historial
                 </Button>
             </CardHeader>
 

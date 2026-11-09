@@ -127,7 +127,7 @@ const AboutUs = () => {
 
             <p>
               Si quieres dedicar la app a que sea pública, usarás los anuncios
-              de localización (anuncios libres) para publicar. De esta manera,
+              de localización (anuncios geolocalizados) para publicar. De esta manera,
               puedes configurarlos según sus límites geográficos o posibilidades
               del anuncio, permitiendo que cualquier usuario guest o registrado
               los visualice.

@@ -23,8 +23,8 @@ const BlogLimitReached = ({
   const typeLabel = !behaviourType
     ? "blogs de grupo"
     : behaviourType === ProductionBehaviourType.agenda
-      ? "blogs de agenda"
-      : "blogs libres";
+      ? "blogs de mi agenda"
+      : "blogs geolocalizados";
   return (
     <section className="w-full max-w-2xl flex flex-col items-center gap-4 rounded-lg border p-6">
       {onBack && (

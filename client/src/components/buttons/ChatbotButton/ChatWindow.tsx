@@ -242,15 +242,15 @@ export function ChatWindow({
           <div className="flex items-center gap-1">
             {onToggleHistory && (
               <Button
-                isIconOnly
                 size="sm"
-                variant="light"
+                variant="bordered"
                 radius="full"
                 onClick={onToggleHistory}
-                className="text-white hover:bg-orange-700"
+                className="border-white/70 text-white hover:bg-orange-700 min-w-0 px-3"
                 aria-label="Ver historial de chats"
+                startContent={<FaClockRotateLeft size={12} />}
               >
-                <FaClockRotateLeft size={14} />
+                Historial
               </Button>
             )}
             <Button

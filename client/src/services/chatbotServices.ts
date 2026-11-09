@@ -164,6 +164,8 @@ export const getChatSessionHistory = async (
         query: getChatSessionHistoryQuery,
         variables: { sessionId, limit, page },
         fetchPolicy: "no-cache",
+        // El BE sólo devuelve conversaciones del usuario logueado.
+        context: (await getApiContext()).context,
       })
       .then((res) => res);
 
@@ -185,6 +187,7 @@ export const deleteChatSessionService = async (sessionId: string) => {
       .mutate({
         mutation: deleteChatSessionMutation,
         variables: { sessionId },
+        context: (await getApiContext()).context,
       })
       .then((res) => res);
 
@@ -213,6 +216,7 @@ export const getUserChatSessions = async (page = 1, limit = 20) => {
         query: getUserChatSessionsQuery,
         variables: { userId, limit, page },
         fetchPolicy: "no-cache",
+        context: (await getApiContext()).context,
       })
       .then((res) => res);
 

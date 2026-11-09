@@ -26,6 +26,10 @@ import { PostSeudoBaseService } from '../../application/service/post-seudobase.s
 import { PostSeudoBaseRepository } from '../repository/post-seudobase.repository';
 import { PostAuditRepository } from '../repository/post-audit.repository';
 import { PostSeudoBaseAdapter } from '../adapter/post-seudobase.adapter';
+import {
+  USER_STORAGE_USAGE_SERVICE,
+  UserStorageUsageService,
+} from 'src/contexts/module_shared/storage/user-storage.usage.service';
 
 @Module({
   imports: [
@@ -54,6 +58,8 @@ import { PostSeudoBaseAdapter } from '../adapter/post-seudobase.adapter';
   ],
   providers: [
     MyLoggerService,
+    // Cupo de almacenamiento por usuario (blogs + fotos y videos de anuncios).
+    { provide: USER_STORAGE_USAGE_SERVICE, useClass: UserStorageUsageService },
     PostResolver,
     PostSeudoBaseResolver,
     {

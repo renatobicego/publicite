@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ChatbotServiceInterface } from '../../domain/service/chatbot.service.interface';
 import { ChatbotRepositoryInterface } from '../../domain/repository/chatbot.repository.interface';
 import { ChatbotAIServiceInterface } from '../../domain/service/chatbot.ai.service.interface';
@@ -197,6 +197,7 @@ export class ChatbotService implements ChatbotServiceInterface {
 
   async getSessionHistory(
     sessionId: string,
+    requesterId: string,
     limit?: number,
     page?: number,
   ): Promise<GetSessionHistoryResponse> {
@@ -204,9 +205,11 @@ export class ChatbotService implements ChatbotServiceInterface {
       this.logger.log(`Getting session history for: ${sessionId}`);
 
       const session = await this.chatbotRepository.findSessionById(sessionId);
-      
-      if (!session) {
-        throw new Error('Session not found');
+
+      // Sólo el dueño lee su conversación. Una ajena (o anónima) responde igual
+      // que una inexistente, para no revelar que existe.
+      if (!session || !session.getUserId || session.getUserId !== requesterId) {
+        throw new NotFoundException('Conversación no encontrada');
       }
 
       const messages = session.getMessages;
@@ -230,9 +233,13 @@ export class ChatbotService implements ChatbotServiceInterface {
     }
   }
 
-  async deleteSession(sessionId: string): Promise<boolean> {
+  async deleteSession(sessionId: string, requesterId: string): Promise<boolean> {
     try {
       this.logger.log(`Deleting session: ${sessionId}`);
+      const session = await this.chatbotRepository.findSessionById(sessionId);
+      if (!session || !session.getUserId || session.getUserId !== requesterId) {
+        throw new NotFoundException('Conversación no encontrada');
+      }
       return await this.chatbotRepository.deleteSession(sessionId);
     } catch (error: any) {
       this.logger.error('Error deleting session: ' + error.message);

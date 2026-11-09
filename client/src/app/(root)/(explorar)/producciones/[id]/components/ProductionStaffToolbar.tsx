@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState } from "react";
+import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Button,
@@ -11,7 +11,12 @@ import {
   ModalHeader,
   useDisclosure,
 } from "@nextui-org/react";
-import { FaFolderPlus, FaUpload, FaFileMedical } from "react-icons/fa";
+import {
+  FaFolderPlus,
+  FaUpload,
+  FaFileMedical,
+  FaImages,
+} from "react-icons/fa";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { createFolder } from "@/app/server/productionActions";
@@ -28,18 +33,32 @@ interface Props {
   /** Subida compartida con el arrastre de archivos (`useProductionUpload`). */
   uploadFiles: (files: File[], parentId?: string) => Promise<number>;
   uploadProgress: ProductionUploadProgress | null;
+  /** Tras crear un álbum, abre su carpeta. */
+  onOpenFolder?: (folderId: string) => void;
 }
 
-const ProductionStaffToolbar = ({
-  productionId,
-  parentId,
-  onCreated,
-  uploadFiles,
-  uploadProgress,
-}: Props) => {
+/** Acciones de creación, también disponibles desde el súper botón Crear. */
+export interface ProductionStaffToolbarHandle {
+  openFolder: () => void;
+  openAlbum: () => void;
+  pickFiles: () => void;
+  createArticle: () => void;
+}
+
+const ProductionStaffToolbar = forwardRef<
+  ProductionStaffToolbarHandle,
+  Props
+>(function ProductionStaffToolbar(
+  { productionId, parentId, onCreated, uploadFiles, uploadProgress, onOpenFolder },
+  ref
+) {
   const router = useRouter();
   const folderModal = useDisclosure();
+  const albumModal = useDisclosure();
   const [folderName, setFolderName] = useState("");
+  const [albumName, setAlbumName] = useState("");
+  const [albumPhotos, setAlbumPhotos] = useState<File[]>([]);
+  const albumInputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const uploading = uploadProgress !== null;
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -47,6 +66,48 @@ const ProductionStaffToolbar = ({
   const goToCreateArticle = () => {
     const query = parentId ? `?parentId=${parentId}` : "";
     router.push(`${PRODUCTIONS}/${productionId}/crear-articulo${query}`);
+  };
+
+  useImperativeHandle(ref, () => ({
+    openFolder: folderModal.onOpen,
+    openAlbum: albumModal.onOpen,
+    pickFiles: () => fileInputRef.current?.click(),
+    createArticle: goToCreateArticle,
+  }));
+
+  /** Álbum = carpeta nueva con las fotos elegidas adentro. */
+  const handleCreateAlbum = async () => {
+    if (!albumName.trim()) {
+      toastifyError("El nombre del álbum es obligatorio");
+      return;
+    }
+    if (albumPhotos.length === 0) {
+      toastifyError("Elegí al menos una foto");
+      return;
+    }
+    setBusy(true);
+    try {
+      const folder = await createFolder({
+        productionId,
+        parentId,
+        name: albumName.trim(),
+      });
+      if (isProductionActionError(folder)) {
+        toastifyError(folder.error);
+        return;
+      }
+      const photos = albumPhotos;
+      setAlbumName("");
+      setAlbumPhotos([]);
+      albumModal.onClose();
+      onCreated();
+      // La subida muestra su progreso en el botón "Subir archivos".
+      await uploadFiles(photos, folder._id);
+      if (onOpenFolder) onOpenFolder(folder._id);
+      else onCreated();
+    } finally {
+      setBusy(false);
+    }
   };
 
   const handleCreateFolder = async () => {
@@ -115,6 +176,14 @@ const ProductionStaffToolbar = ({
         >
           Nuevo artículo
         </Button>
+        <Button
+          startContent={<FaImages />}
+          variant="flat"
+          onPress={albumModal.onOpen}
+          isDisabled={busy || uploading}
+        >
+          Nuevo álbum
+        </Button>
         <input
           ref={fileInputRef}
           type="file"
@@ -151,8 +220,69 @@ const ProductionStaffToolbar = ({
           )}
         </ModalContent>
       </Modal>
+
+      {/* Modal crear álbum: carpeta + fotos */}
+      <Modal
+        isOpen={albumModal.isOpen}
+        onOpenChange={albumModal.onOpenChange}
+        onClose={() => setAlbumPhotos([])}
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                Nuevo álbum
+                <span className="text-xs font-normal text-default-500">
+                  Se crea una carpeta con las fotos que elijas.
+                </span>
+              </ModalHeader>
+              <ModalBody>
+                <Input
+                  autoFocus
+                  label="Nombre del álbum"
+                  value={albumName}
+                  onValueChange={setAlbumName}
+                />
+                <Button
+                  variant="bordered"
+                  startContent={<FaImages />}
+                  onPress={() => albumInputRef.current?.click()}
+                  isDisabled={busy}
+                >
+                  {albumPhotos.length > 0
+                    ? `${albumPhotos.length} ${
+                        albumPhotos.length === 1
+                          ? "foto elegida"
+                          : "fotos elegidas"
+                      } · cambiar`
+                    : "Elegir fotos"}
+                </Button>
+                <input
+                  ref={albumInputRef}
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(event) => {
+                    setAlbumPhotos(Array.from(event.target.files ?? []));
+                    event.target.value = "";
+                  }}
+                />
+              </ModalBody>
+              <ModalFooter>
+                <Button variant="light" onPress={onClose} isDisabled={busy}>
+                  Cancelar
+                </Button>
+                <PrimaryButton onClick={handleCreateAlbum} disabled={busy}>
+                  {busy ? "Creando…" : "Crear álbum"}
+                </PrimaryButton>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </>
   );
-};
+});
 
 export default ProductionStaffToolbar;

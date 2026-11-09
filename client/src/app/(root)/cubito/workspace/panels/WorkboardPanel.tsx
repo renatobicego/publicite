@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Button, ScrollShadow, Modal, ModalContent, ModalBody, Textarea } from "@nextui-org/react";
+import { Button, ScrollShadow, Modal, ModalContent, ModalBody } from "@nextui-org/react";
 import {
     FaWandMagicSparkles,
     FaMagnifyingGlass,
@@ -11,9 +11,12 @@ import {
     FaDownload,
     FaFolderOpen,
     FaPenToSquare,
+    FaClockRotateLeft,
+    FaPlus,
 } from "react-icons/fa6";
+import ChatTextarea from "@/components/inputs/ChatTextarea";
+import { ChatHistory } from "@/components/buttons/ChatbotButton/ChatHistory";
 import { OrangeCubeIcon } from "@/components/buttons/ChatbotButton/OrangeCubeIcon";
-import { CustomInputWithoutFormik } from "@/components/inputs/CustomInputs";
 import { IMAGE_PROMPT_MAX_LENGTH } from "@/utils/data/aiLimits";
 import AvatarSelector from "../../avatars/AvatarSelector";
 import { parseMarkdown } from "../shared/parseMarkdown";
@@ -56,7 +59,15 @@ function FreeChatPanel({ workspace }: WorkboardPanelProps) {
         handleSendChatMessage,
         handleGenerateImage,
         setActiveModule,
+        activeChatSessionId,
+        chatSessions,
+        isLoadingChatHistory,
+        loadChatSessions,
+        openChatSession,
+        startNewChat,
+        deleteChatSession,
     } = workspace;
+    const [showHistory, setShowHistory] = useState(false);
 
     const [inputValue, setInputValue] = useState("");
     const [isImageMode, setIsImageMode] = useState(false);
@@ -130,6 +141,62 @@ function FreeChatPanel({ workspace }: WorkboardPanelProps) {
                 </div>
             </div>
 
+            {/* ===== CONVERSACIÓN: historial y nueva ===== */}
+            <div className="flex items-center justify-between gap-2 px-4 py-2 border-b border-divider bg-white dark:bg-slate-900">
+                <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                    {showHistory ? "Tus conversaciones" : "Conversación con Cubito"}
+                </span>
+                <div className="flex items-center gap-2">
+                    <Button
+                        size="sm"
+                        variant="bordered"
+                        radius="full"
+                        startContent={<FaPlus size={11} />}
+                        onPress={() => {
+                            startNewChat();
+                            setShowHistory(false);
+                        }}
+                        isDisabled={isChatProcessing || isGeneratingImage}
+                    >
+                        Nueva
+                    </Button>
+                    <Button
+                        size="sm"
+                        variant={showHistory ? "solid" : "bordered"}
+                        color={showHistory ? "warning" : "default"}
+                        radius="full"
+                        startContent={<FaClockRotateLeft size={12} />}
+                        aria-label="Historial de conversaciones"
+                        onPress={() => {
+                            const next = !showHistory;
+                            setShowHistory(next);
+                            if (next) loadChatSessions();
+                        }}
+                    >
+                        Historial
+                    </Button>
+                </div>
+            </div>
+
+            {showHistory ? (
+                <div className="flex-1 overflow-hidden">
+                    <ChatHistory
+                        sessions={chatSessions}
+                        isLoading={isLoadingChatHistory}
+                        activeSessionId={activeChatSessionId}
+                        onSelectSession={async (sessionId) => {
+                            if (await openChatSession(sessionId)) setShowHistory(false);
+                        }}
+                        onNewChat={() => {
+                            startNewChat();
+                            setShowHistory(false);
+                        }}
+                        onDeleteSession={deleteChatSession}
+                        onClose={() => setShowHistory(false)}
+                    />
+                </div>
+            ) : (
+            <>
             {/* ===== ÁREA DE CHAT ===== */}
             <ScrollShadow ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3">
                 {chatMessages.length === 0 ? (
@@ -238,6 +305,8 @@ function FreeChatPanel({ workspace }: WorkboardPanelProps) {
                     </div>
                 )}
             </ScrollShadow>
+            </>
+            )}
 
             {/* ===== INPUT AREA ===== */}
             <div className="border-t border-divider p-3 bg-white dark:bg-slate-900 shrink-0">
@@ -259,33 +328,26 @@ function FreeChatPanel({ workspace }: WorkboardPanelProps) {
                     </Button>
                 </div>
                 <form onSubmit={handleSubmit} className="flex items-start gap-2">
+                    {/* 3 renglones que crecen. Enter envía y Shift+Enter hace
+                        un renglón nuevo (en celular, Enter es renglón). */}
                     {isImageMode ? (
-                        // El prompt de imagen admite varias oraciones: textarea que crece,
-                        // con contador. Enter envía y Shift+Enter hace salto de línea.
-                        <Textarea
+                        <ChatTextarea
                             value={inputValue}
                             onValueChange={setInputValue}
-                            onKeyDown={(e) => {
-                                if (e.key === "Enter" && !e.shiftKey) {
-                                    e.preventDefault();
-                                    submitInput();
-                                }
-                            }}
+                            onSend={submitInput}
                             maxLength={IMAGE_PROMPT_MAX_LENGTH}
-                            minRows={1}
-                            maxRows={6}
-                            variant="bordered"
                             placeholder="Describí la imagen que querés generar..."
                             isDisabled={isChatProcessing || isGeneratingImage}
                             isInvalid={isImagePromptTooLong}
-                            description={`${inputValue.length}/${IMAGE_PROMPT_MAX_LENGTH}`}
+                            description={`${inputValue.length}/${IMAGE_PROMPT_MAX_LENGTH} · Enter para enviar · Shift+Enter para un renglón nuevo`}
                         />
                     ) : (
-                        <CustomInputWithoutFormik
+                        <ChatTextarea
                             value={inputValue}
-                            onChange={(e) => setInputValue(e.target.value)}
+                            onValueChange={setInputValue}
+                            onSend={submitInput}
                             placeholder="Escribí tu mensaje a Cubito..."
-                            disabled={isChatProcessing || isGeneratingImage}
+                            isDisabled={isChatProcessing || isGeneratingImage}
                         />
                     )}
                     <Button

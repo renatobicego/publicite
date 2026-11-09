@@ -126,16 +126,19 @@ export class ChatbotResolver {
 
   @Query(() => GetSessionHistoryResponse, {
     nullable: false,
-    description: 'Obtener el historial de una sesión de chat',
+    description: 'Obtener el historial de una sesión de chat (sólo las propias)',
   })
+  @UseGuards(ClerkAuthGuard)
   async getChatSessionHistory(
     @Args('sessionId', { type: () => String }) sessionId: string,
     @Args('limit', { type: () => Number, nullable: true }) limit?: number,
     @Args('page', { type: () => Number, nullable: true }) page?: number,
+    @Context() context?: { req: CustomContextRequestInterface },
   ): Promise<GetSessionHistoryResponse> {
     try {
       return await this.chatbotAdapter.getSessionHistory(
         sessionId,
+        context!.req.userRequestId,
         limit,
         page,
       );
@@ -147,13 +150,18 @@ export class ChatbotResolver {
   @Mutation(() => Boolean, {
     nullable: false,
     description:
-      'Eliminar una sesión de chat completa (sesión + todos los mensajes)',
+      'Eliminar una sesión de chat completa (sesión + todos los mensajes). Sólo las propias',
   })
+  @UseGuards(ClerkAuthGuard)
   async deleteChatSession(
     @Args('sessionId', { type: () => String }) sessionId: string,
+    @Context() context?: { req: CustomContextRequestInterface },
   ): Promise<boolean> {
     try {
-      return await this.chatbotAdapter.deleteSession(sessionId);
+      return await this.chatbotAdapter.deleteSession(
+        sessionId,
+        context!.req.userRequestId,
+      );
     } catch (error: any) {
       throw error;
     }
@@ -189,15 +197,26 @@ export class ChatbotResolver {
 
   @Query(() => GetUserChatSessionsResponse, {
     nullable: false,
-    description: 'Obtener todas las sesiones de chat de un usuario',
+    description:
+      'Obtener todas las sesiones de chat del usuario logueado (userId tiene que ser el propio)',
   })
+  @UseGuards(ClerkAuthGuard)
   async getUserChatSessions(
     @Args('userId', { type: () => String }) userId: string,
     @Args('limit', { type: () => Number, nullable: true }) limit?: number,
     @Args('page', { type: () => Number, nullable: true }) page?: number,
+    @Context() context?: { req: CustomContextRequestInterface },
   ): Promise<GetUserChatSessionsResponse> {
     try {
-      return await this.chatbotAdapter.getUserChatSessions(userId, limit, page);
+      const userRequestId = context!.req.userRequestId;
+      if (userId !== userRequestId) {
+        throw new UnauthorizedException('Sólo podés ver tus conversaciones');
+      }
+      return await this.chatbotAdapter.getUserChatSessions(
+        userRequestId,
+        limit,
+        page,
+      );
     } catch (error: any) {
       throw error;
     }

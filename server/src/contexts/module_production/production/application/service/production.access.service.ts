@@ -54,6 +54,10 @@ import {
   getAccessKeyLockMinutes,
   getAccessKeyMaxAttempts,
 } from 'src/contexts/module_shared/production-limits/production.limits.config';
+import {
+  USER_STORAGE_USAGE_SERVICE,
+  UserStorageUsageService,
+} from 'src/contexts/module_shared/storage/user-storage.usage.service';
 
 export type ProductionPermission = keyof typeof ProductionPermissions;
 
@@ -111,6 +115,8 @@ export class ProductionAccessService {
     private readonly purchaseRepository: ProductionTicketPurchaseRepositoryInterface,
     @Inject('ProductionCommunityRepositoryInterface')
     private readonly communityRepository: ProductionCommunityRepositoryInterface,
+    @Inject(USER_STORAGE_USAGE_SERVICE)
+    private readonly storageUsage: UserStorageUsageService,
   ) {}
 
   // ---------------------------------------------------------------------------
@@ -402,6 +408,10 @@ export class ProductionAccessService {
       moderationStatus: production.getModerationStatus,
       hasAccessKey: production.hasAccessKey,
       visibility: production.getVisibility!,
+      schedule: {
+        activeFrom: production.getActiveFrom,
+        activeUntil: production.getActiveUntil,
+      },
       viewer,
     });
   }
@@ -614,21 +624,15 @@ export class ProductionAccessService {
   }
 
   /**
-   * Bytes de almacenamiento usados por el usuario = suma del peso de los archivos
-   * de TODOS sus blogs. Es el valor que se compara contra `storageBytesLimit`.
+   * Bytes de almacenamiento usados por el usuario = archivos de TODOS sus blogs
+   * + fotos y videos de sus anuncios. Es lo que se compara contra
+   * `storageBytesLimit`.
    */
   async getUserStorageUsedBytes(
     userId: string,
     session?: ClientSession,
   ): Promise<number> {
-    const productionIds = await this.productionRepository.findIdsByCreator(
-      userId,
-      session,
-    );
-    return this.itemRepository.sumStorageBytesByProductions(
-      productionIds,
-      session,
-    );
+    return this.storageUsage.getUsedBytes(userId, session);
   }
 
   /**

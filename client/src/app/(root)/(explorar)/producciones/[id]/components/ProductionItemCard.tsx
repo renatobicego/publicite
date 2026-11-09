@@ -66,6 +66,11 @@ interface Props {
   layout?: ProductionViewMode;
   /** Grilla con íconos chicos: los controles de staff van sólo con ícono. */
   compact?: boolean;
+  /**
+   * Cuadrícula ordenada: todos los recuadros del mismo tamaño (cuadrados y con
+   * la misma altura de texto). Sin esto cada foto conserva su alto.
+   */
+  uniform?: boolean;
   /** Staff: selección múltiple para mover. */
   selected?: boolean;
   onToggleSelect?: (item: ProductionItemResponse) => void;
@@ -107,6 +112,7 @@ const ProductionItemCard = ({
   hideCheckout,
   layout = "grid",
   compact = false,
+  uniform = false,
   selected = false,
   onToggleSelect,
   onMove,
@@ -259,7 +265,7 @@ const ProductionItemCard = ({
       className={
         layout === "list"
           ? `flex flex-col gap-2 rounded-xl border border-default-200 bg-content1 px-2 py-2 transition-shadow sm:px-3 ${dropRing} ${selectedRing}`
-          : `flex flex-col gap-1 transition-shadow ${dropRing}`
+          : `flex flex-col gap-1 transition-shadow ${uniform ? "h-full" : ""} ${dropRing}`
       }
       {...dropProps}
     >
@@ -301,17 +307,17 @@ const ProductionItemCard = ({
           {itemActions}
         </div>
       ) : (
-        <div className={`relative ${selectedRing}`}>
+        <div className={`relative ${uniform ? "flex-1" : ""} ${selectedRing}`}>
           <Card
             as="div"
             isPressable
             onPress={() => onOpen(item)}
             shadow="none"
             {...dragSourceProps}
-            className={`w-full ${compact ? "gap-2" : "gap-4"} ease-in-out hover:shadow md:hover:shadow-md !transition-shadow duration-500 !opacity-100`}
+            className={`w-full ${uniform ? "h-full" : ""} ${compact ? "gap-2" : "gap-4"} ease-in-out hover:shadow md:hover:shadow-md !transition-shadow duration-500 !opacity-100`}
           >
             <CardHeader className="w-full pb-0 max-md:px-1 md:px-2 lg:px-3">
-              {renderPreview(item, locked)}
+              {renderPreview(item, locked, uniform)}
             </CardHeader>
             <CardBody
               className={`pt-0 flex flex-col gap-1 max-md:px-1 md:px-2 lg:px-3 ${
@@ -324,8 +330,8 @@ const ProductionItemCard = ({
                 <span className="line-clamp-1">{item.name}</span>
                 {privateBadge}
               </h6>
-              {item.fileName && (
-                <p className="text-light-text text-xs lg:text-small 2xl:text-sm line-clamp-1">
+              {(item.fileName || uniform) && (
+                <p className="text-light-text text-xs lg:text-small 2xl:text-sm line-clamp-1 min-h-[1lh]">
                   {item.fileName}
                 </p>
               )}
@@ -405,14 +411,30 @@ const ProductionItemCard = ({
 const previewBox =
   "w-full rounded-large bg-default-100 flex items-center justify-center max-md:max-h-[45vw] md:max-h-[25vw] lg:max-h-[22vw] xl:max-h-[17vw] 3xl:max-h-[14vw] aspect-[287/290]";
 
-const IconBox = ({ children }: { children: React.ReactNode }) => (
-  <div className={previewBox}>{children}</div>
-);
+// Cuadrícula ordenada: recuadro cuadrado sin topes de alto, igual para todos.
+const uniformBox =
+  "w-full aspect-square rounded-large bg-default-100 flex items-center justify-center overflow-hidden";
+
+const boxClass = (uniform: boolean) => (uniform ? uniformBox : previewBox);
+
+const IconBox = ({
+  children,
+  uniform = false,
+}: {
+  children: React.ReactNode;
+  uniform?: boolean;
+}) => <div className={boxClass(uniform)}>{children}</div>;
 
 // Con el contenido bloqueado no llega el archivo (ni key ni bloques): se
 // muestra el tipo de elemento difuminado con un candado encima.
-const LockedBox = ({ children }: { children: React.ReactNode }) => (
-  <div className={`${previewBox} relative overflow-hidden`}>
+const LockedBox = ({
+  children,
+  uniform = false,
+}: {
+  children: React.ReactNode;
+  uniform?: boolean;
+}) => (
+  <div className={`${boxClass(uniform)} relative overflow-hidden`}>
     <div className="blur-sm opacity-50">{children}</div>
     <div className="absolute inset-0 flex items-center justify-center">
       <span className="rounded-full bg-content1/90 p-3 shadow">
@@ -518,11 +540,15 @@ const renderThumb = (item: ProductionItemResponse, locked: boolean) => {
   return kindIcon(item);
 };
 
-const renderPreview = (item: ProductionItemResponse, locked: boolean) => {
+const renderPreview = (
+  item: ProductionItemResponse,
+  locked: boolean,
+  uniform = false,
+) => {
   if (item.kind === ProductionItemKind.folder) {
     const preview = item.folderPreview ?? [];
     return (
-      <div className={`${previewBox} relative overflow-hidden`}>
+      <div className={`${boxClass(uniform)} relative overflow-hidden`}>
         {preview.length > 0 ? (
           <>
             <FolderPreview items={preview} />
@@ -545,13 +571,26 @@ const renderPreview = (item: ProductionItemResponse, locked: boolean) => {
   const icon = <span className="text-5xl">{kindIcon(item)}</span>;
 
   if (locked) {
-    return <LockedBox>{icon}</LockedBox>;
+    return <LockedBox uniform={uniform}>{icon}</LockedBox>;
   }
 
   if (
     item.kind !== ProductionItemKind.article &&
     item.fileType === ProductionFileType.photo
   ) {
+    if (uniform) {
+      return (
+        <div className={uniformBox}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={resolveProductionFileUrl(item.key)}
+            alt={item.name}
+            loading="lazy"
+            className="h-full w-full object-cover"
+          />
+        </div>
+      );
+    }
     return (
       <Image
         src={resolveProductionFileUrl(item.key)}
@@ -567,7 +606,7 @@ const renderPreview = (item: ProductionItemResponse, locked: boolean) => {
     );
   }
 
-  return <IconBox>{icon}</IconBox>;
+  return <IconBox uniform={uniform}>{icon}</IconBox>;
 };
 
 export default ProductionItemCard;

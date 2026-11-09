@@ -35,19 +35,25 @@ export class ChatbotAdapter implements ChatbotAdapterInterface {
 
   async getSessionHistory(
     sessionId: string,
+    requesterId: string,
     limit?: number,
     page?: number,
   ): Promise<GetSessionHistoryResponse> {
     try {
-      return await this.chatbotService.getSessionHistory(sessionId, limit, page);
+      return await this.chatbotService.getSessionHistory(
+        sessionId,
+        requesterId,
+        limit,
+        page,
+      );
     } catch (error: any) {
       throw error;
     }
   }
 
-  async deleteSession(sessionId: string): Promise<boolean> {
+  async deleteSession(sessionId: string, requesterId: string): Promise<boolean> {
     try {
-      return await this.chatbotService.deleteSession(sessionId);
+      return await this.chatbotService.deleteSession(sessionId, requesterId);
     } catch (error: any) {
       throw error;
     }

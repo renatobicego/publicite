@@ -111,6 +111,9 @@ module_x/<submodulo>/
 ### Categorías
 `PostCategory` **no es un enum**: es una colección Mongo (`{ label }`) referenciada por `Post.category[]`. Enums fijos que sí existen: `PostType` (good/service/petition), `PostBehaviourType` (libre/agenda), `Visibility`.
 
+### "Libre" es un nombre interno
+`libre` sigue siendo el valor en base, API, enums y URLs (`/anuncios/libres`, `/producciones/libres`), pero **al usuario nunca se le dice "libre"**: es **geolocalizado** (anuncio geolocalizado, Producciones geolocalizadas) y el de agenda es "de agenda" / "Producciones de mi agenda". Los textos de pantalla salen de `client/src/utils/data/behaviourLabels.ts` (incluye dónde se publica cada uno). En Explorar, Anuncios tiene la solapa global **"Anuncios digitales en Soon"** con Todos / Geolocalizados / Agenda de contactos (`SolapasTabs`). Geolocalizados (`findAllPosts`, `findAllPostByPostType`) se ordena por distancia (`$sort: { distance: 1 }` después del `$geoNear`); Todos (`findAllPostsGlobal`) sigue por más reciente. (No confundir con el acceso "Libre" de los tickets de Producciones, que significa "sin ticket".)
+
 ---
 
 ## 5. Auth y ownership
@@ -136,14 +139,29 @@ module_x/<submodulo>/
 - **Invoices/facturas:** `invoice.schema.ts` (`facturaUrl`, `facturaUploadedAt`, `facturaUploadedBy`). Panel admin: `AdminInvoiceResolver` (`@UseGuards(ClerkAuthGuard, AdminGuard)`) con `getAllInvoicesAdmin` y `attachFacturaToInvoice`.
 - **Glosario de Cubito:** el texto que usa el chatbot para responder sobre la plataforma es la constante `GLOSSARY` de `module_user/chatbot/domain/service/chatbot.ai.service.ts`; el glosario que ve el usuario es `client/src/components/buttons/HelpButton/GlosaryModal.tsx`. Son dos textos separados: una funcionalidad nueva se documenta en **los dos**.
 - **Prompt de generación de imágenes:** tope de caracteres en `IMAGE_PROMPT_MAX_LENGTH` (2000), duplicado a propósito en `module_shared/ai/ai.config.ts` (lo valida el DTO y `ChatbotAIService.generateImage`) y en `client/src/utils/data/aiLimits.ts` (contador del Tablero de trabajo y del asistente de crear anuncio). Se cambian juntos.
+- **Historial de chats de Cubito:** `getChatSessionHistory`, `deleteChatSession` y `getUserChatSessions` exigen `ClerkAuthGuard` y sólo operan sobre conversaciones del usuario logueado (una ajena responde como inexistente). El cliente manda el token con `getApiContext()`. El Tablero de trabajo guarda el id de su conversación en `localStorage` (`cubito-workspace-chat:<mongoId>`) y la retoma al entrar (`useWorkspace`); las imágenes generadas no se guardan en la conversación.
 - **Tokens de IA (chatbot):** `module_user/chatbot/application/service/chatbot.token.service.ts`. Buckets `TokenConsumerBucket` = PLAN / FREE / ANONYMOUS, cuota mensual (usuarios) o diaria (anónimos), bolsa comunitaria + logs de uso.
 
-### 6.1 Límite de almacenamiento de Mis Producciones (por usuario, en bytes)
+### 6.1 Límite de almacenamiento (por usuario, en bytes): blogs + anuncios
 
-Mis Producciones tiene un cupo de **almacenamiento POR USUARIO**: la suma del peso
+Hay un cupo de **almacenamiento POR USUARIO** que suma: el peso
 (`sizeBytes`) de los **archivos** (sólo `kind:file`; los artículos no cuentan) de
-**todos** los blogs cuyo `creator` sea el usuario. Es la **única dimensión por peso**
-del sistema; todo lo demás es por cantidad.
+**todos** los blogs cuyo `creator` sea el usuario **+ las fotos y videos de sus anuncios**
+(`Post.mediaSizes`, `{ key, sizeBytes }` por cada key de `imagesUrls`; los adjuntos y las
+necesidades no cuentan). Es la **única dimensión por peso** del sistema; todo lo demás es por cantidad.
+
+- **Cálculo compartido:** `module_shared/storage/user-storage.usage.service.ts`
+  (`UserStorageUsageService`, token `USER_STORAGE_USAGE_SERVICE`, registrado en `PostModule`,
+  en `PRODUCTION_PROVIDERS` y en el módulo de test de posts). Lee las colecciones `productions`,
+  `productionitems` y `posts` directo de la conexión para que Anuncios y Producciones no dependan
+  uno del otro.
+- **Anuncios:** el cliente manda `mediaSizes` con el tamaño real que devuelve UploadThing
+  (`useUploadFiles`, asistente de Cubito). `PostService.create` valida el cupo antes de crear;
+  `updatePostById` arma los pesos con `mergePostMediaSizes` (conserva los guardados, que no se
+  pueden reescribir; suma los nuevos; descarta los quitados) y sólo valida si el anuncio pesa más
+  que antes. Si el server rechaza, el cliente borra de UploadThing lo recién subido
+  (`discardUploaded`), y en la edición las fotos quitadas se borran recién después de guardar.
+  Los anuncios anteriores no tienen `mediaSizes` (cuentan 0, sin backfill).
 
 - **Configuración por plan (DB):** `subscriptionPlan.storageBytesLimit` en **bytes**.
   Acumulativo entre suscripciones activas (igual que `filesPerBlogCount`). Valores
@@ -153,9 +171,9 @@ del sistema; todo lo demás es por cantidad.
   se persiste en `ProductionFile.sizeBytes`. **Se confía en ese valor** (no se verifica
   contra UploadThing). Si una feature necesita rigor, verificar el tamaño real en el server.
 - **Enforcement:** `ProductionService.reserveStorage()` dentro de la MISMA transacción que
-  el cupo por cantidad (`uploadFile`). Es **lectura + chequeo** (suma `sumStorageBytesByProductions`
-  sobre `findIdsByCreator`), no un `$inc` atómico de un solo doc, porque el total vive en varios
-  blogs. Mismo patrón que el gate de cantidad de blogs.
+  el cupo por cantidad (`uploadFile`). Es **lectura + chequeo** (`getUserStorageUsedBytes` →
+  `UserStorageUsageService.getUsedBytes`, blogs + anuncios), no un `$inc` atómico de un solo doc,
+  porque el total vive en varios documentos. Mismo patrón que el gate de cantidad de blogs.
 - **Liberación:** NO hay contador que mantener. El uso se **agrega en vivo** desde
   `productionitems`, así que borrar archivos (hard delete en cascada) libera espacio solo.
   Los blogs viejos arrancan en 0 (no hay backfill).
@@ -268,6 +286,11 @@ Existen equivalentes para otras entidades: `boardActions.ts`, `groupActions.ts`,
   - **Links para compartir:** cada carpeta, archivo o artículo tiene su URL (`producciones/productionShare.ts`): un ítem abre `/producciones/:id/item/:itemId` (el breadcrumb arma el camino de carpetas) y una carpeta `/producciones/:id?carpeta=<id>`. Se comparten con `ShareLinkButton` (junto al breadcrumb del blog y en `ProductionItemNav`) y con "Compartir link" del menú de cada ítem; nunca llevan `?vista=visitante`.
   - **Visores de documentos:** los PDF (`writing`) se dibujan con pdf.js (`components/DocumentViewers/PdfViewer`, worker empaquetado por webpack con `new URL(..., import.meta.url)`; si falla, cae al iframe del navegador) y los `.docx` con `docx-preview` (`DocxViewer`, sin `altChunks` y con los links filtrados a http/https/mailto). El resto de Office se descarga. Leen el archivo directo de UploadThing, así que dependen del CORS de su CDN.
   - **Mapa del blog:** `getProductionMap(productionId)` (staff, `canManageAccess`) devuelve todo el árbol en una lista plana sin contenido (`ProductionMapNodeResponse`). El cliente (`ProductionMapModal`) lo cruza con `getProductionTickets` y resuelve la herencia de tickets (propio › carpeta más cercana › blog) para pintar cada recuadro como gratis, ticket gratuito o ticket pago; tocar un recuadro abre `TicketManagerModal`. La misma consulta alimenta el selector de carpetas de `SendToBlogModal`.
+  - **Fechas de vigencia:** `Production.activeFrom` (obligatoria en el formulario; si no llega, el server usa "ahora") y `activeUntil` (opcional, no anterior). El cliente manda inicio del día y final del día locales (`producciones/productionSchedule.ts`); el server compara contra el instante (`application/functions/production.schedule.ts`). Fuera de rango: `findAllProductions` y destacados filtran en la query (`ProductionListFilter.activeAt`), `buildListViews` descarta lo bloqueado (cartel) y `evaluateProductionAccess` devuelve `listed: true, canViewContent: false, lockReason: schedule` (se abre por link sólo con el aviso, sin estante). El staff lo ve igual. Blogs sin fechas = siempre vigentes (sin migración).
+  - **Estantería (`Production.shelf`):** objetos cortos debajo del encabezado (`ProductionShelf` + `ShelfEditorModal`): `category` (`ProductionShelfCategory`, ahora con `podcasts`, `music`, `images`), `title`, `subtitle` y `link`/`imageKey` opcionales. Se guarda entero con `updateProduction({ shelf })`; las imágenes van a UploadThing y el editor borra las que se quitan.
+  - **Cuadrícula ordenada / libre:** preferencia de cada visitante en `localStorage` (`production-grid-style`); la ordenada pasa `uniform` a `ProductionItemCard` (recuadro cuadrado fijo).
+  - **Súper botón Crear (`HelpButton`):** "Crear nuevo blog" primero. Una pantalla suma sus opciones con `useRegisterCreateActions` (`components/buttons/HelpButton/createActions.tsx`, provider en `(root)/layout.tsx`); el blog registra Carpeta / Artículo / Álbum / Subir archivos, que llaman al `ref` de `ProductionStaffToolbar`. "Álbum" = carpeta nueva + subida de las fotos elegidas.
+  - **YouTube en artículos:** bloque `youtube` de Editor.js (`BlockEditor/tools/YouTubeBlockTool.ts`) que guarda `{ url, videoId, start, caption }`; `BlockRenderer` lo muestra con `MediaPlayers/YouTubeEmbed` (iframe de youtube-nocookie armado sólo desde el id validado, `utils/functions/youtube.ts`). No ocupa almacenamiento ni toca la sanitización (es genérica).
   - **Encabezado del blog:** las acciones viven en un único menú "Opciones" (`blogOptions` en `ProductionBlog`): lo de staff primero y "Denunciar" al final, sólo para quien no es parte del blog. Los fans van siempre junto al título (`FanButton`, `readOnly` para el dueño). La grilla escala con un deslizador (`ICON_SIZE`, ancho mínimo de tarjeta en px, guardado en `localStorage`); por debajo de `ICON_SIZE.compact` los controles de staff de cada tarjeta son sólo ícono.
   - **Enviar al blog desde el Tablero de trabajo:** `producciones/components/SendToBlogModal` recibe un `getFile()` (imagen generada o informe de Valuación IA renderizado a PNG), lista los blogs donde el usuario es staff (`getProductionConsumption`) y sube con `useProductionUpload` a la raíz, una carpeta existente o una nueva. Cuenta para el cupo como cualquier archivo.
   - **Archivos:** `ProductionFileType` = `photo` | `video` | `audio` | `writing` (PDF, se muestra embebido) | `document` (Office/OpenDocument, se descarga). El cliente detecta el tipo en `producciones/productionFiles.ts` y sube **de a un archivo por llamada** aunque se elijan varios (`ProductionStaffToolbar`): cada uno valida su cupo y, si el server lo rechaza, se borra de UploadThing.

@@ -6,6 +6,7 @@ import {
   Visibility_Of_Social_Media,
 } from '../../enum/post-visibility.enum';
 import { PostBehaviourType } from '../../enum/postBehaviourType.enum';
+import { PostMediaSizeInput } from './post.media-size.request';
 
 @InputType()
 class VisibilityOfPost {
@@ -89,6 +90,12 @@ export class PostRequest {
   // attributes of good
   @Field(() => [String], { nullable: true })
   imagesUrls: string[];
+
+  @Field(() => [PostMediaSizeInput], {
+    nullable: true,
+    description: 'Peso de las fotos y videos subidos (almacenamiento del plan)',
+  })
+  mediaSizes?: PostMediaSizeInput[];
 
   @Field(() => Number, { nullable: true })
   year: number;

@@ -21,7 +21,7 @@ import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { POSTS } from "@/utils/data/urls";
 import { goodEditValidation } from "@/app/(root)/crear/anuncio/components/CreateGood/goodValidation";
 import { serviceEditValidation } from "@/app/(root)/crear/anuncio/components/CreateService/serviceValidation";
-import { handleFileSubmission } from "./handleFileSubmission";
+import { handleFileSubmission, removedFileKeys } from "./handleFileSubmission";
 import ChangeBehaviourLink from "./ChangeBehaviourLink";
 import { CalendarDate, getLocalTimeZone, today } from "@internationalized/date";
 import { CustomDateInput } from "@/components/inputs/CustomInputs";
@@ -37,7 +37,7 @@ const EditPostForm = ({ postData }: { postData: Good | Service }) => {
     setPrevAttachedFiles(postData.attachedFiles);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const { progress, submitFiles, deleteFiles } = useUploadFiles(
+  const { progress, submitFiles, deleteFiles, discardUploaded } = useUploadFiles(
     newImages,
     attachedFiles,
     false,
@@ -78,7 +78,6 @@ const EditPostForm = ({ postData }: { postData: Good | Service }) => {
       deletedImages,
       values,
       actions,
-      deleteFiles,
       prevAttachedFilesDeleted,
       submitFiles
     );
@@ -102,9 +101,14 @@ const EditPostForm = ({ postData }: { postData: Good | Service }) => {
       postData.author.username
     );
     if (resApi.error) {
+      // El server lo rechazó (ej. sin espacio): no dejar archivos huérfanos.
+      await discardUploaded();
       toastifyError(resApi.error);
       return;
     }
+    // Recién ahora, con la edición guardada, se borra lo que se quitó.
+    const removed = removedFileKeys(deletedImages, prevAttachedFilesDeleted);
+    if (removed.length > 0) await deleteFiles(removed);
     actions.resetForm();
     toastifySuccess("Anuncio editado exitosamente");
     router.refresh();

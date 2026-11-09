@@ -9,7 +9,10 @@ import {
 export interface ProductionShelfLink {
   category: ProductionShelfCategory;
   title: string;
-  link: string;
+  /** Autor, director, conductor… pocos caracteres. */
+  subtitle?: string;
+  /** Link externo opcional (una imagen puede ir sin link). */
+  link?: string;
   imageKey?: string;
 }
 
@@ -40,6 +43,10 @@ export interface ProductionProps {
   behaviourType?: ProductionBehaviourType | null;
   /** Sólo blogs libres: ubicación y radio en el que se listan. */
   geoLocation?: ProductionGeoLocation | null;
+  /** Vigencia: desde cuándo el blog está visible para los visitantes. */
+  activeFrom?: Date | null;
+  /** Vigencia: hasta cuándo (opcional). Sin fecha, no vence. */
+  activeUntil?: Date | null;
   aliasCbu?: string;
   accessKeyHash?: string;
   accessKeyVersion?: number;
@@ -135,6 +142,12 @@ export class Production {
   get getGeoLocation() {
     return this.props.geoLocation ?? null;
   }
+  get getActiveFrom() {
+    return this.props.activeFrom ?? null;
+  }
+  get getActiveUntil() {
+    return this.props.activeUntil ?? null;
+  }
   get getAliasCbu() {
     return this.props.aliasCbu;
   }
@@ -216,6 +229,8 @@ export class Production {
             ratio: doc.geoLocation.ratio,
           }
         : null,
+      activeFrom: doc.activeFrom ?? null,
+      activeUntil: doc.activeUntil ?? null,
       aliasCbu: doc.aliasCbu,
       accessKeyHash: doc.accessKeyHash,
       accessKeyVersion: doc.accessKeyVersion ?? 0,

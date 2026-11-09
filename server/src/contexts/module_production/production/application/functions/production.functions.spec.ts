@@ -16,6 +16,7 @@ import {
   sanitizeInlineHtml,
 } from './production.article-sanitize';
 import { buildProductionSearchRegex, normalizeFileName } from './production.text';
+import { isWithinSchedule, normalizeSchedule } from './production.schedule';
 import {
   computeTicketExpiration,
   computeTicketSplit,
@@ -446,5 +447,50 @@ describe('Sanitización de artículos', () => {
         { type: 'paragraph', data: '"<script>"' },
       ]).map((block) => block.data),
     ).toEqual(['{}', '{}']);
+  });
+});
+
+describe('Fechas de vigencia del blog', () => {
+  const day = 24 * 60 * 60 * 1000;
+  const now = new Date('2026-06-15T12:00:00Z');
+
+  it('sin fechas el blog está siempre vigente', () => {
+    expect(isWithinSchedule({}, now)).toBe(true);
+    expect(isWithinSchedule({ activeFrom: null, activeUntil: null }, now)).toBe(true);
+  });
+
+  it('respeta el inicio y el cierre (inclusive)', () => {
+    const from = new Date(now.getTime() - day);
+    const until = new Date(now.getTime() + day);
+    expect(isWithinSchedule({ activeFrom: from, activeUntil: until }, now)).toBe(true);
+    expect(isWithinSchedule({ activeFrom: now, activeUntil: now }, now)).toBe(true);
+    expect(isWithinSchedule({ activeFrom: until }, now)).toBe(false);
+    expect(isWithinSchedule({ activeFrom: from, activeUntil: from }, now)).toBe(false);
+  });
+
+  it('rechaza un cierre anterior al inicio', () => {
+    expect(() =>
+      normalizeSchedule('2026-06-10T00:00:00Z', '2026-06-09T23:59:59Z'),
+    ).toThrow('anterior');
+    expect(normalizeSchedule('2026-06-10T00:00:00Z', null).activeUntil).toBeNull();
+  });
+
+  it('fuera de vigencia el visitante abre el blog pero sin contenido; el staff lo ve', () => {
+    const params = {
+      productionId: 'p',
+      hasAccessKey: false,
+      visibility: ProductionVisibility.public,
+      schedule: { activeFrom: new Date(Date.now() + day) },
+    };
+    const visitor = evaluateProductionAccess({ ...params, viewer: viewer() });
+    expect(visitor.listed).toBe(true);
+    expect(visitor.canViewContent).toBe(false);
+    expect(visitor.lockReason).toBe(ProductionLockReason.schedule);
+
+    const staff = evaluateProductionAccess({
+      ...params,
+      viewer: viewer({ role: ProductionRole.admin }),
+    });
+    expect(staff.canViewContent).toBe(true);
   });
 });

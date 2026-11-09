@@ -98,7 +98,7 @@ describe('Mis Producciones - Fase 1: núcleo del blog', () => {
       await createBlog(userId);
 
       await expect(createBlog(userId, 'Otro')).rejects.toThrow(
-        'límite de blogs libres',
+        'límite de blogs geolocalizados',
       );
       expect(await models.production.countDocuments()).toBe(1);
       const user = await findDoc(models.user, userId);
@@ -128,7 +128,7 @@ describe('Mis Producciones - Fase 1: núcleo del blog', () => {
           }),
           userId,
         ),
-      ).rejects.toThrow('límite de blogs de agenda');
+      ).rejects.toThrow('límite de blogs de mi agenda');
     });
 
     it('los cupos de blogs personales se acumulan entre suscripciones', async () => {
@@ -192,7 +192,7 @@ describe('Mis Producciones - Fase 1: núcleo del blog', () => {
           undefined,
           userId,
         ),
-      ).rejects.toThrow('límite de blogs de agenda');
+      ).rejects.toThrow('límite de blogs de mi agenda');
 
       await expect(
         service.setProductionVisibility(libreId, ProductionVisibility.public, userId),

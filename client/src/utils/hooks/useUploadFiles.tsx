@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useUploadThing } from "../uploadThing";
 import { toastifyError } from "../functions/toastify";
 import { AttachedFileValues } from "@/types/postTypes";
 import { FormikHelpers } from "formik";
 import { deleteFilesService } from "@/app/server/uploadThing";
 import imageCompression from "browser-image-compression";
+import { getProductionLimits } from "@/app/server/productionActions";
+import { isProductionActionError } from "../functions/productionErrorHandler";
+import { formatBytes } from "../functions/formatBytes";
 
 const useUploadFiles = (
   files: File[],
@@ -13,6 +16,9 @@ const useUploadFiles = (
   isEditing?: boolean
 ) => {
   const [progress, setProgress] = useState(0);
+  // Keys subidas en el último envío: si el server rechaza el anuncio (ej. sin
+  // espacio), se borran de UploadThing con `discardUploaded`.
+  const lastUploadedKeys = useRef<string[]>([]);
   const { startUpload } = useUploadThing("fileUploader", {
     onUploadError: (e) => {
       toastifyError(`Error al subir el archivo/imagen: ${e.name}`);
@@ -73,6 +79,31 @@ const useUploadFiles = (
     // Ensure non-image files (video/audio) are at the end
     const orderedCompressedFiles = [...images, ...videos];
 
+    // Las fotos y videos suman al almacenamiento del plan (con los blogs). Al
+    // crear se avisa antes de subir; al editar decide el server, porque las
+    // fotos que se quitan liberan espacio.
+    const mediaBytes = orderedCompressedFiles.reduce(
+      (total, file) => total + file.size,
+      0
+    );
+    if (!isEditing && !isPetition && mediaBytes > 0) {
+      const limits = await getProductionLimits();
+      if (
+        !isProductionActionError(limits) &&
+        limits.storageLimitEnabled &&
+        mediaBytes > limits.storageAvailableBytes
+      ) {
+        const message = `No tenés espacio suficiente: las fotos y videos pesan ${formatBytes(
+          mediaBytes
+        )} y te quedan ${formatBytes(
+          limits.storageAvailableBytes
+        )} (el espacio se comparte con tus blogs). Liberá espacio o mejorá tu plan.`;
+        toastifyError(message);
+        actions.setFieldError("imagesUrls", message);
+        return;
+      }
+    }
+
     // Combine with attached files
     const combinedFiles = [
       ...orderedCompressedFiles,
@@ -80,8 +111,10 @@ const useUploadFiles = (
     ];
     // Start the upload
     let res;
+    lastUploadedKeys.current = [];
     if (combinedFiles.length > 0) {
       res = await startUpload(combinedFiles as File[]);
+      lastUploadedKeys.current = (res ?? []).map((upload) => upload.key);
     }
     if ((!res || !res.length) && !isEditing) {
       // If no new files were uploaded but we already have imagesUrls (e.g. from valuación prefill), proceed
@@ -106,6 +139,15 @@ const useUploadFiles = (
       uploadedFileUrls[uploadedFileUrls.length - 1] += "video";
     }
 
+    // Peso real de cada foto/video subido (por key, con el sufijo "video").
+    const mediaSizes = res
+      ? res.slice(0, files.length).map((upload, index) => ({
+          key: uploadedFileUrls[index],
+          sizeBytes: upload.size,
+        }))
+      : [];
+    if (!isPetition) values.mediaSizes = mediaSizes;
+
     // Assign URLs to their respective fields in the form values
     if (isEditing) {
       if (!isPetition) {
@@ -124,6 +166,13 @@ const useUploadFiles = (
       values.attachedFiles = uploadedAttachedFileUrls;
     }
     return values;
+  };
+
+  /** Borra de UploadThing lo subido en el último envío (anuncio rechazado). */
+  const discardUploaded = async () => {
+    const keys = lastUploadedKeys.current;
+    lastUploadedKeys.current = [];
+    if (keys.length > 0) await deleteFilesService(keys).catch(() => undefined);
   };
 
   const deleteFiles = async (urls: string[]) => {
@@ -152,6 +201,7 @@ const useUploadFiles = (
 
   return {
     submitFiles,
+    discardUploaded,
     progress,
     deleteFiles,
     uploadCurriculum,

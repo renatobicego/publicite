@@ -21,6 +21,7 @@ import {
   ProductionBehaviourType,
   ProductionFileType,
   ProductionItemKind,
+  ProductionLockReason,
   ProductionOwnerType,
   ProductionRole,
   ProductionVisibility,
@@ -76,6 +77,7 @@ import { sanitizeArticleBlocks } from '../functions/production.article-sanitize'
 import { ProductionCascadeService } from './production.cascade.service';
 import { ProductionViewerScope } from './production.access.service';
 import { hashAccessKey } from '../functions/production.access-key';
+import { normalizeSchedule } from '../functions/production.schedule';
 import {
   assertVisibilityMatchesBehaviour,
   defaultVisibilityFor,
@@ -113,8 +115,8 @@ const blogLimitMessage = (
     return 'Alcanzaste el límite de blogs de grupo de tu plan. Mejorá tu plan para crear más.';
   }
   return behaviourType === ProductionBehaviourType.agenda
-    ? 'Alcanzaste el límite de blogs de agenda de tu plan. Mejorá tu plan o comprá un pack para crear más.'
-    : 'Alcanzaste el límite de blogs libres de tu plan. Mejorá tu plan o comprá un pack para crear más.';
+    ? 'Alcanzaste el límite de blogs de mi agenda de tu plan. Mejorá tu plan o comprá un pack para crear más.'
+    : 'Alcanzaste el límite de blogs geolocalizados de tu plan. Mejorá tu plan o comprá un pack para crear más.';
 };
 
 @Injectable()
@@ -285,12 +287,9 @@ export class ProductionService implements ProductionServiceInterface {
     if (!limits.storageLimitEnabled) return;
     if (sizeBytes <= 0) return;
 
-    const productionIds = await this.productionRepository.findIdsByCreator(
+    // El cupo es del usuario: blogs + fotos y videos de sus anuncios.
+    const usedBytes = await this.accessService.getUserStorageUsedBytes(
       production.getCreator,
-      session,
-    );
-    const usedBytes = await this.itemRepository.sumStorageBytesByProductions(
-      productionIds,
       session,
     );
     if (usedBytes + sizeBytes > limits.storageBytesLimit) {
@@ -298,7 +297,7 @@ export class ProductionService implements ProductionServiceInterface {
       throw new BadRequestException(
         `No tenés espacio suficiente. Tu plan permite ${formatBytes(
           limits.storageBytesLimit,
-        )} de almacenamiento y te quedan ${formatBytes(available)}. ` +
+        )} de almacenamiento (blogs y fotos y videos de anuncios) y te quedan ${formatBytes(available)}. ` +
           `Este archivo pesa ${formatBytes(sizeBytes)}. Liberá espacio o mejorá tu plan.`,
       );
     }
@@ -322,12 +321,15 @@ export class ProductionService implements ProductionServiceInterface {
   }
 
   private mapShelf(request: { shelf?: any[] }) {
-    return request.shelf?.map(({ category, title, link, imageKey }) => ({
-      category,
-      title: title.trim(),
-      link,
-      imageKey,
-    }));
+    return request.shelf?.map(
+      ({ category, title, subtitle, link, imageKey }) => ({
+        category,
+        title: title.trim(),
+        subtitle: subtitle?.trim() || undefined,
+        link: link?.trim() || undefined,
+        imageKey: imageKey || undefined,
+      }),
+    );
   }
 
   // ---------------------------------------------------------------------------
@@ -439,10 +441,25 @@ export class ProductionService implements ProductionServiceInterface {
     if (request.shelf !== undefined) {
       fields.shelf = this.mapShelf(request);
     }
+    if (request.activeFrom !== undefined || request.activeUntil !== undefined) {
+      // La fecha de inicio es obligatoria: si no viene se conserva la actual
+      // (o la de creación en blogs anteriores a la vigencia).
+      const schedule = normalizeSchedule(
+        request.activeFrom ??
+          production.getActiveFrom ??
+          production.getCreatedAt ??
+          new Date(),
+        request.activeUntil !== undefined
+          ? request.activeUntil
+          : production.getActiveUntil,
+      );
+      fields.activeFrom = schedule.activeFrom;
+      fields.activeUntil = schedule.activeUntil;
+    }
     if (request.geoLocation !== undefined && request.geoLocation !== null) {
       if (production.getBehaviourType !== ProductionBehaviourType.libre) {
         throw new BadRequestException(
-          'Sólo los blogs libres tienen ubicación y radio de alcance',
+          'Sólo los blogs geolocalizados tienen ubicación y radio de alcance',
         );
       }
       fields.geoLocation = normalizeGeoLocation(request.geoLocation);
@@ -939,7 +956,13 @@ export class ProductionService implements ProductionServiceInterface {
     for (const production of productions) {
       const viewer = await this.accessService.contextFor(production, scope);
       const decision = this.accessService.evaluateProduction(production, viewer);
-      if (!decision.listed) continue;
+      // Fuera de vigencia no se lista (sí se abre por link, con el aviso).
+      if (
+        !decision.listed ||
+        decision.lockReason === ProductionLockReason.schedule
+      ) {
+        continue;
+      }
       const limits = this.accessService.canSeeInsights(viewer.role)
         ? await this.accessService.getCreatorLimits(production)
         : null;
@@ -1094,7 +1117,7 @@ export class ProductionService implements ProductionServiceInterface {
     }
 
     const { productions, hasMore } = await this.productionRepository.findList(
-      { ...filter, ...accessFilter },
+      { ...filter, ...accessFilter, activeAt: new Date() },
       safePage,
       safeLimit,
     );
@@ -1122,6 +1145,7 @@ export class ProductionService implements ProductionServiceInterface {
         ),
         includeKeyProtected: false,
         includeModerated: false,
+        activeAt: new Date(),
       },
       safeLimit,
     );
@@ -1486,7 +1510,7 @@ export class ProductionService implements ProductionServiceInterface {
     );
     if (production.isGroupBlog) {
       throw new BadRequestException(
-        'Los blogs de grupo no tienen comportamiento libre o agenda',
+        'Los blogs de grupo no son geolocalizados ni de agenda',
       );
     }
 

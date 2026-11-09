@@ -1,22 +1,29 @@
 import { PostAttachedFile } from "@/types/postTypes";
 import { FormikHelpers } from "formik";
 
+/** Keys de UploadThing de lo que el usuario quitó (sin el sufijo "video"). */
+export const removedFileKeys = (
+  deletedImages: string[],
+  prevAttachedFilesDeleted: PostAttachedFile[]
+) => [
+  ...deletedImages.map((url) =>
+    url.includes("video") ? url.replace("video", "") : url
+  ),
+  ...prevAttachedFilesDeleted.map((file) => file.url),
+];
+
+/**
+ * Sube lo nuevo y arma los valores finales. Lo quitado NO se borra acá: se
+ * borra recién cuando el server acepta la edición (si la rechaza, por ejemplo
+ * por falta de espacio, el anuncio sigue usando esos archivos).
+ */
 export const handleFileSubmission = async (
   deletedImages: string[],
   values: any,
   actions: FormikHelpers<any>,
-  deleteFiles: (urls: string[]) => Promise<void>,
   prevAttachedFilesDeleted: PostAttachedFile[],
   submitFiles: (values: any, actions: FormikHelpers<any>) => Promise<any>
 ) => {
-  // delete files
-  await deleteFiles([
-    ...deletedImages.map((url) =>
-      url.includes("video") ? url.replace("video", "") : url
-    ),
-    ...prevAttachedFilesDeleted.map((file) => file.url),
-  ]);
-
   // upload new files
   const newValuesWithUrlFiles = await submitFiles(values, actions);
   if (!newValuesWithUrlFiles) {

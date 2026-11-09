@@ -4,7 +4,11 @@ import {
   ProductionFile,
   ProductionItem,
 } from '../../domain/entity/production-item.entity';
-import { ProductionRole, ProductionVisibility } from '../../domain/entity/enum/production.enums';
+import {
+  ProductionLockReason,
+  ProductionRole,
+  ProductionVisibility,
+} from '../../domain/entity/enum/production.enums';
 import { ProductionOwnerInfo } from '../../domain/repository/production.repository.interface';
 import {
   ProductionItemResponse,
@@ -59,12 +63,18 @@ export function toProductionResponse(
     welcomeText: production.getWelcomeText ?? null,
     welcomeVideoKey: production.getWelcomeVideoKey ?? null,
     url: production.getUrl,
-    shelf: production.getShelf ?? [],
+    // Fuera de vigencia el visitante ve sólo el aviso, sin estantería.
+    shelf:
+      decision.lockReason === ProductionLockReason.schedule
+        ? []
+        : production.getShelf ?? [],
     // El muestrario expone archivos: sólo si se puede ver el contenido.
     showcase: decision.canViewContent ? production.getShowcase ?? [] : [],
     visibility: (production.getVisibility ?? ProductionVisibility.public) as ProductionVisibility,
     behaviourType: production.getBehaviourType,
     geoLocation: toGeoLocationResponse(production),
+    activeFrom: production.getActiveFrom,
+    activeUntil: production.getActiveUntil,
     hasAccessKey: production.hasAccessKey,
     filesCount: production.getFilesCount ?? 0,
     foldersCount: extras.foldersCount ?? null,

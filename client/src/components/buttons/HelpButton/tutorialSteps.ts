@@ -35,7 +35,7 @@ export const explorePostsSteps = [
   {
     target: "body",
     content:
-      "Aquí podrás encontrar anuncios de tipo Bien, Servicio y Necesidad, y filtrarlos según tu necesidad. Es importante que sepas que en la solapa Recomendados te aparecerán anuncios de tipo Libre (consultar glosario).",
+      "Aquí podrás encontrar anuncios de tipo Bien, Servicio y Necesidad, y filtrarlos según tu necesidad. Los anuncios están en la solapa Anuncios digitales en Soon: Todos, Geolocalizados (cerca tuyo, del más cercano al más lejano) y Agenda de contactos (consultar glosario).",
     skipBeacon: true,
   },
   {
@@ -123,7 +123,7 @@ export const createPostSteps = [
   {
     target: "#post-behaviour",
     content:
-      "Debes seleccionar si el anuncio es de tipo Libre o Agenda (ver glosario para una explicación detallada).",
+      "Elegí dónde se publica: anuncio geolocalizado (Anuncios digitales en Soon › Geolocalizados) o de agenda (Anuncios digitales en Soon › Agenda de contactos). Ver glosario para más detalle.",
     skipBeacon: true,
   },
   {
@@ -385,7 +385,7 @@ export const changeBehaviourSteps = [
   {
     target: "body",
     content:
-      "Aquí podrás cambiar el comportamiento del anuncio. El anuncio de Agenda lo verán solo tu agenda de contactos, y los anuncios Libres lo verá cualquier usuario que se encuentre dentro del rango geográfico (ver glosario para una explicación detallada).",
+      "Aquí podrás cambiar el comportamiento del anuncio. El anuncio de Agenda lo verán solo tu agenda de contactos, y los anuncios geolocalizados lo verá cualquier usuario que se encuentre dentro del rango geográfico (ver glosario para una explicación detallada).",
     skipBeacon: true,
   },
 ];

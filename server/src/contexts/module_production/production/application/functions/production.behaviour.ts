@@ -57,7 +57,7 @@ export function assertVisibilityMatchesBehaviour(
   throw new BadRequestException(
     behaviourType === ProductionBehaviourType.agenda
       ? 'Un blog de agenda sólo puede verlo tu agenda de contactos (contactos, amigos o top amigos) o sólo vos'
-      : 'Un blog libre sólo puede ser público, para registrados o sólo para vos',
+      : 'Un blog geolocalizado sólo puede ser público, para registrados o sólo para vos',
   );
 }
 
@@ -76,7 +76,7 @@ export function normalizeGeoLocation(
 ): ProductionGeoLocation {
   if (!geo) {
     throw new BadRequestException(
-      'Un blog libre necesita una ubicación y un radio de alcance',
+      'Un blog geolocalizado necesita una ubicación y un radio de alcance',
     );
   }
   const { latitude, longitude, ratio } = geo;

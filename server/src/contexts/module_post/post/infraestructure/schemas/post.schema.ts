@@ -41,6 +41,7 @@ export interface PostDocument extends Document {
   reactions: Schema.Types.ObjectId[];
   postBehaviourType: string;
   isActive: boolean;
+  mediaSizes: { key: string; sizeBytes: number }[];
 }
 
 const addDays = (date: any, days: any) => {
@@ -127,6 +128,18 @@ export const PostSchema = new Schema<PostDocument>(
       required: true,
     },
     isActive: { type: Boolean, required: true },
+    // Peso de cada foto/video (por key de imagesUrls): suma al almacenamiento
+    // del plan junto con los blogs. Los anuncios anteriores no lo tienen (0).
+    mediaSizes: {
+      type: [
+        {
+          _id: false,
+          key: { type: String, required: true },
+          sizeBytes: { type: Number, required: true, min: 0 },
+        },
+      ],
+      default: [],
+    },
   },
   {
     discriminatorKey: 'kind',

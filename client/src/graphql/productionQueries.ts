@@ -43,10 +43,13 @@ const PRODUCTION_FIELDS = gql`
     shelf {
       category
       title
+      subtitle
       link
       imageKey
     }
     showcase
+    activeFrom
+    activeUntil
     ownerInfo {
       _id
       name
