@@ -3,4 +3,4 @@
  * banner horizontal (`OfficialProductionBanner`). Si el blog no existe o el
  * visitante no puede verlo, el banner no se muestra.
  */
-export const OFFICIAL_PRODUCTION_ID = "6ad18d7ad1b2818b8844f27b";
+export const OFFICIAL_PRODUCTION_ID = "6ade9ac4b9b0e082234b05f2";
