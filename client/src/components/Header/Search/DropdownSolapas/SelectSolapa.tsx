@@ -20,12 +20,12 @@ const SelectSolapa = ({
   const solapasItems = [
     {
       key: "recomendados",
-      label: "Anuncios Libres",
+      label: "Anuncios geolocalizados",
       requiresLogin: false,
     },
     {
       key: "contactos",
-      label: "Anuncios de Agenda de Contactos",
+      label: "Anuncios de agenda de contactos",
       requiresLogin: true,
     },
     // {

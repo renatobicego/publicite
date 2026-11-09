@@ -111,6 +111,9 @@ module_x/<submodulo>/
 ### Categorías
 `PostCategory` **no es un enum**: es una colección Mongo (`{ label }`) referenciada por `Post.category[]`. Enums fijos que sí existen: `PostType` (good/service/petition), `PostBehaviourType` (libre/agenda), `Visibility`.
 
+### "Libre" es un nombre interno
+`libre` sigue siendo el valor en base, API, enums y URLs (`/anuncios/libres`, `/producciones/libres`), pero **al usuario nunca se le dice "libre"**: es **geolocalizado** (anuncio geolocalizado, Producciones geolocalizadas) y el de agenda es "de agenda" / "Producciones de mi agenda". Los textos de pantalla salen de `client/src/utils/data/behaviourLabels.ts` (incluye dónde se publica cada uno). En Explorar, Anuncios tiene la solapa global **"Anuncios digitales en Soon"** con Todos / Geolocalizados / Agenda de contactos (`SolapasTabs`). Geolocalizados (`findAllPosts`, `findAllPostByPostType`) se ordena por distancia (`$sort: { distance: 1 }` después del `$geoNear`); Todos (`findAllPostsGlobal`) sigue por más reciente. (No confundir con el acceso "Libre" de los tickets de Producciones, que significa "sin ticket".)
+
 ---
 
 ## 5. Auth y ownership
@@ -138,12 +141,26 @@ module_x/<submodulo>/
 - **Prompt de generación de imágenes:** tope de caracteres en `IMAGE_PROMPT_MAX_LENGTH` (2000), duplicado a propósito en `module_shared/ai/ai.config.ts` (lo valida el DTO y `ChatbotAIService.generateImage`) y en `client/src/utils/data/aiLimits.ts` (contador del Tablero de trabajo y del asistente de crear anuncio). Se cambian juntos.
 - **Tokens de IA (chatbot):** `module_user/chatbot/application/service/chatbot.token.service.ts`. Buckets `TokenConsumerBucket` = PLAN / FREE / ANONYMOUS, cuota mensual (usuarios) o diaria (anónimos), bolsa comunitaria + logs de uso.
 
-### 6.1 Límite de almacenamiento de Mis Producciones (por usuario, en bytes)
+### 6.1 Límite de almacenamiento (por usuario, en bytes): blogs + anuncios
 
-Mis Producciones tiene un cupo de **almacenamiento POR USUARIO**: la suma del peso
+Hay un cupo de **almacenamiento POR USUARIO** que suma: el peso
 (`sizeBytes`) de los **archivos** (sólo `kind:file`; los artículos no cuentan) de
-**todos** los blogs cuyo `creator` sea el usuario. Es la **única dimensión por peso**
-del sistema; todo lo demás es por cantidad.
+**todos** los blogs cuyo `creator` sea el usuario **+ las fotos y videos de sus anuncios**
+(`Post.mediaSizes`, `{ key, sizeBytes }` por cada key de `imagesUrls`; los adjuntos y las
+necesidades no cuentan). Es la **única dimensión por peso** del sistema; todo lo demás es por cantidad.
+
+- **Cálculo compartido:** `module_shared/storage/user-storage.usage.service.ts`
+  (`UserStorageUsageService`, token `USER_STORAGE_USAGE_SERVICE`, registrado en `PostModule`,
+  en `PRODUCTION_PROVIDERS` y en el módulo de test de posts). Lee las colecciones `productions`,
+  `productionitems` y `posts` directo de la conexión para que Anuncios y Producciones no dependan
+  uno del otro.
+- **Anuncios:** el cliente manda `mediaSizes` con el tamaño real que devuelve UploadThing
+  (`useUploadFiles`, asistente de Cubito). `PostService.create` valida el cupo antes de crear;
+  `updatePostById` arma los pesos con `mergePostMediaSizes` (conserva los guardados, que no se
+  pueden reescribir; suma los nuevos; descarta los quitados) y sólo valida si el anuncio pesa más
+  que antes. Si el server rechaza, el cliente borra de UploadThing lo recién subido
+  (`discardUploaded`), y en la edición las fotos quitadas se borran recién después de guardar.
+  Los anuncios anteriores no tienen `mediaSizes` (cuentan 0, sin backfill).
 
 - **Configuración por plan (DB):** `subscriptionPlan.storageBytesLimit` en **bytes**.
   Acumulativo entre suscripciones activas (igual que `filesPerBlogCount`). Valores
@@ -153,9 +170,9 @@ del sistema; todo lo demás es por cantidad.
   se persiste en `ProductionFile.sizeBytes`. **Se confía en ese valor** (no se verifica
   contra UploadThing). Si una feature necesita rigor, verificar el tamaño real en el server.
 - **Enforcement:** `ProductionService.reserveStorage()` dentro de la MISMA transacción que
-  el cupo por cantidad (`uploadFile`). Es **lectura + chequeo** (suma `sumStorageBytesByProductions`
-  sobre `findIdsByCreator`), no un `$inc` atómico de un solo doc, porque el total vive en varios
-  blogs. Mismo patrón que el gate de cantidad de blogs.
+  el cupo por cantidad (`uploadFile`). Es **lectura + chequeo** (`getUserStorageUsedBytes` →
+  `UserStorageUsageService.getUsedBytes`, blogs + anuncios), no un `$inc` atómico de un solo doc,
+  porque el total vive en varios documentos. Mismo patrón que el gate de cantidad de blogs.
 - **Liberación:** NO hay contador que mantener. El uso se **agrega en vivo** desde
   `productionitems`, así que borrar archivos (hard delete en cascada) libera espacio solo.
   Los blogs viejos arrancan en 0 (no hay backfill).

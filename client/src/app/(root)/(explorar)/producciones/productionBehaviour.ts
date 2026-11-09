@@ -11,9 +11,10 @@ import { PostLocationForm } from "@/types/postTypes";
  * Anuncios. Mismas reglas que el server (`production.behaviour.ts`).
  */
 
+// "libre" es el nombre interno: en pantalla, "geolocalizado".
 export const behaviourLabel: Record<ProductionBehaviourType, string> = {
-  [ProductionBehaviourType.libre]: "Blog Libre",
-  [ProductionBehaviourType.agenda]: "Blog de Agenda",
+  [ProductionBehaviourType.libre]: "Blog geolocalizado",
+  [ProductionBehaviourType.agenda]: "Blog de mi agenda",
 };
 
 /** Alcances que admite cada comportamiento (más "Sólo yo" en los dos). */

@@ -14,6 +14,7 @@ import { POSTS } from "@/utils/data/urls";
 import { useUser } from "@clerk/nextjs";
 import { getUserActivePostandActiveRelationsNumber } from "@/services/subscriptionServices";
 import { ChatSessionSummary } from "@/types/chatbotTypes";
+import { deleteFilesService } from "@/app/server/uploadThing";
 
 /**
  * Shared hook that encapsulates all chatbot logic.
@@ -169,6 +170,8 @@ export function useChatbot() {
 
       // Upload images if any (for good/service)
       let imagesUrls: string[] = [];
+      // Peso de cada foto: suma al almacenamiento del plan (con los blogs).
+      let mediaSizes: { key: string; sizeBytes: number }[] = [];
       if (files.length > 0) {
         const compressedFiles = await Promise.all(
           files.map(async (file) => {
@@ -188,6 +191,10 @@ export function useChatbot() {
           return;
         }
         imagesUrls = uploadRes.map((file) => file.key);
+        mediaSizes = uploadRes.map((file) => ({
+          key: file.key,
+          sizeBytes: file.size,
+        }));
       }
 
       // Build the post data
@@ -216,6 +223,7 @@ export function useChatbot() {
         createAt: today(getLocalTimeZone()).toString(),
         endDate: today(getLocalTimeZone()).add({ days: 14 }).toString(),
         imagesUrls,
+        mediaSizes,
       };
 
       // Add type-specific fields
@@ -233,6 +241,10 @@ export function useChatbot() {
 
       const resApi = await createPost(postData, userCanPublishPost);
       if (resApi.error) {
+        // Rechazado (ej. sin espacio): no dejar las fotos huérfanas.
+        if (imagesUrls.length > 0) {
+          deleteFilesService(imagesUrls).catch(() => undefined);
+        }
         wizard.setError(resApi.error);
         setIsSubmittingAd(false);
         return;

@@ -121,13 +121,14 @@ const SolapasTabs = () => {
             : ""
       : "";
 
-  // Sub-solapas de "Anuncios": anuncios, anuncios libres y agenda de contactos.
+  // Sub-solapas de "Anuncios digitales en Soon": todos, geolocalizados (los
+  // "libres" del código; nombre interno) y agenda de contactos.
   const postsSubTabs = [
     {
       key: `${POSTS}${postTypeUrlVisited}`,
       title: (
         <TabTitle
-          title="Anuncios"
+          title="Todos"
           icon={
             <>
               <IoMdMegaphone className="size-5 md:size-6 " />
@@ -141,7 +142,7 @@ const SolapasTabs = () => {
       key: `${POST_LIBRE}${postTypeUrlVisited}`,
       title: (
         <TabTitle
-          title="Anuncios Libres"
+          title="Geolocalizados"
           icon={
             <>
               <FaLocationDot className="size-5 md:size-6 " />{" "}
@@ -156,7 +157,7 @@ const SolapasTabs = () => {
       key: `${POST_CONTACTS}${postTypeUrlVisited}`,
       title: (
         <TabTitle
-          title="Agenda de Contactos"
+          title="Agenda de contactos"
           icon={
             <>
               <FaUser className="size-5 md:size-6 " />{" "}
@@ -197,7 +198,7 @@ const SolapasTabs = () => {
       key: PRODUCTIONS_LIBRE,
       title: (
         <TabTitle
-          title="Producciones Libres"
+          title="Producciones geolocalizadas"
           icon={
             <>
               <FaLocationDot className="size-5 md:size-6 " />{" "}
@@ -214,7 +215,7 @@ const SolapasTabs = () => {
       key: PRODUCTIONS_CONTACTS,
       title: (
         <TabTitle
-          title="Agenda de Contactos"
+          title="Producciones de mi agenda"
           icon={
             <>
               <FaUser className="size-5 md:size-6 " />{" "}
@@ -318,7 +319,35 @@ const SolapasTabs = () => {
       icon: FaBullhorn,
       color: ORANGE,
       isActive: !isProductionsActive && !isSocialActive,
-      component: renderSubTabs(visiblePostsSubTabs, "Anuncios"),
+      component: (
+        // Solapa global: deja claro dónde se publican los anuncios. Adentro,
+        // Todos / Geolocalizados / Agenda de contactos.
+        <Tabs
+          aria-label="Anuncios"
+          variant="solid"
+          color="warning"
+          radius="full"
+          selectedKey="digitales"
+          classNames={{
+            panel: "p-0 pt-2",
+            base: "max-w-full overflow-x-auto",
+            cursor: "bg-[#F0931A]",
+            tabContent: "group-data-[selected=true]:text-white font-semibold",
+          }}
+        >
+          <Tab
+            key="digitales"
+            title={
+              <span className="flex items-center gap-2">
+                <IoMdMegaphone className="size-4 md:size-5" />
+                Anuncios digitales en Soon
+              </span>
+            }
+          >
+            {renderSubTabs(visiblePostsSubTabs, "Anuncios digitales en Soon")}
+          </Tab>
+        </Tabs>
+      ),
     },
     {
       id: "producciones",

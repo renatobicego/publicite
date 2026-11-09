@@ -115,8 +115,8 @@ const blogLimitMessage = (
     return 'Alcanzaste el límite de blogs de grupo de tu plan. Mejorá tu plan para crear más.';
   }
   return behaviourType === ProductionBehaviourType.agenda
-    ? 'Alcanzaste el límite de blogs de agenda de tu plan. Mejorá tu plan o comprá un pack para crear más.'
-    : 'Alcanzaste el límite de blogs libres de tu plan. Mejorá tu plan o comprá un pack para crear más.';
+    ? 'Alcanzaste el límite de blogs de mi agenda de tu plan. Mejorá tu plan o comprá un pack para crear más.'
+    : 'Alcanzaste el límite de blogs geolocalizados de tu plan. Mejorá tu plan o comprá un pack para crear más.';
 };
 
 @Injectable()
@@ -287,12 +287,9 @@ export class ProductionService implements ProductionServiceInterface {
     if (!limits.storageLimitEnabled) return;
     if (sizeBytes <= 0) return;
 
-    const productionIds = await this.productionRepository.findIdsByCreator(
+    // El cupo es del usuario: blogs + fotos y videos de sus anuncios.
+    const usedBytes = await this.accessService.getUserStorageUsedBytes(
       production.getCreator,
-      session,
-    );
-    const usedBytes = await this.itemRepository.sumStorageBytesByProductions(
-      productionIds,
       session,
     );
     if (usedBytes + sizeBytes > limits.storageBytesLimit) {
@@ -300,7 +297,7 @@ export class ProductionService implements ProductionServiceInterface {
       throw new BadRequestException(
         `No tenés espacio suficiente. Tu plan permite ${formatBytes(
           limits.storageBytesLimit,
-        )} de almacenamiento y te quedan ${formatBytes(available)}. ` +
+        )} de almacenamiento (blogs y fotos y videos de anuncios) y te quedan ${formatBytes(available)}. ` +
           `Este archivo pesa ${formatBytes(sizeBytes)}. Liberá espacio o mejorá tu plan.`,
       );
     }
@@ -462,7 +459,7 @@ export class ProductionService implements ProductionServiceInterface {
     if (request.geoLocation !== undefined && request.geoLocation !== null) {
       if (production.getBehaviourType !== ProductionBehaviourType.libre) {
         throw new BadRequestException(
-          'Sólo los blogs libres tienen ubicación y radio de alcance',
+          'Sólo los blogs geolocalizados tienen ubicación y radio de alcance',
         );
       }
       fields.geoLocation = normalizeGeoLocation(request.geoLocation);
@@ -1513,7 +1510,7 @@ export class ProductionService implements ProductionServiceInterface {
     );
     if (production.isGroupBlog) {
       throw new BadRequestException(
-        'Los blogs de grupo no tienen comportamiento libre o agenda',
+        'Los blogs de grupo no son geolocalizados ni de agenda',
       );
     }
 

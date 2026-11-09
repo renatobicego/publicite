@@ -2,6 +2,7 @@ import { Field, Float, InputType, Int } from '@nestjs/graphql';
 import { ObjectId } from 'mongoose';
 import { FrequencyPrice } from 'src/contexts/module_post/post/domain/entity/enum/post-service-freq-type.enum';
 import { PostType } from 'src/contexts/module_post/post/domain/entity/enum/post-type.enum';
+import { PostMediaSizeInput } from './post.media-size.request';
 import {
   Visibility,
   Visibility_Of_Social_Media,
@@ -51,6 +52,12 @@ export class PostUpdateRequest {
   //POST GOOD Y SERVICE
   @Field(() => [String], { nullable: true })
   imagesUrls?: string[];
+
+  @Field(() => [PostMediaSizeInput], {
+    nullable: true,
+    description: 'Peso de las fotos y videos NUEVOS de esta edición',
+  })
+  mediaSizes?: PostMediaSizeInput[];
 
   //POST GOOD
   @Field(() => Int, { nullable: true })

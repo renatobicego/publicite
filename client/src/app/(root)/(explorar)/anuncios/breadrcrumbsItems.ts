@@ -1,6 +1,7 @@
 import {
   POST_BEST,
   POST_CONTACTS,
+  POST_LIBRE,
   POST_NEXT_TO_EXPIRE,
   POST_RECENTS,
   POSTS,
@@ -12,7 +13,7 @@ export const postsBaseBreadcrumbsItems = [
     href: "/",
   },
   {
-    label: "Anuncios",
+    label: "Anuncios digitales en Soon",
     href: POSTS,
   },
 ];
@@ -35,8 +36,17 @@ export const petitionBreadcrumbsItems = {
 export const contactPostBreadcrumbsItems = [
   ...postsBaseBreadcrumbsItems,
   {
-    label: "Anuncios de Contactos",
+    label: "Agenda de contactos",
     href: `${POST_CONTACTS}`,
+  },
+];
+
+// "Libre" es el nombre interno: al usuario se le muestra "Geolocalizados".
+export const librePostBreadcrumbsItems = [
+  ...postsBaseBreadcrumbsItems,
+  {
+    label: "Geolocalizados",
+    href: `${POST_LIBRE}`,
   },
 ];
 

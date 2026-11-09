@@ -15,6 +15,8 @@ export class PostUpdateDto {
     label: string;
   }>;
   imagesUrls?: string[];
+  /** Pesos de las fotos y videos (los nuevos al llegar; el service arma el total). */
+  mediaSizes?: Array<{ key: string; sizeBytes: number }>;
   year?: number;
   brand?: string;
   modelType?: string;

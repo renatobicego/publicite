@@ -45,8 +45,7 @@ const CreateForm = ({ userId, prefill }: { userId?: string; prefill?: { title?: 
 
           {!postBehaviourType && (
             <p className="text-red-500 text-center max-lg:text-sm">
-              Por favor, seleccione si el comportamiento del anuncio es libre o
-              agenda.
+              Por favor, elegí si el anuncio es geolocalizado o de agenda.
             </p>
           )}
           {postBehaviourType && userCanPublishPost && (

@@ -3077,6 +3077,9 @@ input PostRequest {
   postBehaviourType: PostBehaviourType!
   endDate: DateTime
   imagesUrls: [String!]
+
+  """Peso de las fotos y videos subidos (almacenamiento del plan)"""
+  mediaSizes: [PostMediaSizeInput!]
   year: Float
   brand: String
   modelType: String
@@ -3114,6 +3117,19 @@ input AttachedFilesRequest {
   label: String!
 }
 
+"""
+Peso de una foto o video subido al anuncio (cuenta para el almacenamiento del plan)
+"""
+input PostMediaSizeInput {
+  """
+  Key tal como se guarda en imagesUrls (con el sufijo "video" si es video)
+  """
+  key: String!
+
+  """Tamaño en bytes"""
+  sizeBytes: Float!
+}
+
 input VisibilityEnum {
   post: Visibility_of_the_post!
   socialMedia: Visibility_Of_Social_Media!
@@ -3128,6 +3144,9 @@ input PostUpdateRequest {
   category: [String!]
   attachedFiles: [AttachedFiles!]
   imagesUrls: [String!]
+
+  """Peso de las fotos y videos NUEVOS de esta edición"""
+  mediaSizes: [PostMediaSizeInput!]
   year: Int
   brand: String
   modelType: String

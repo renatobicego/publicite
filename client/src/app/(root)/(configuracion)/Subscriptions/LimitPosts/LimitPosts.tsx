@@ -18,26 +18,26 @@ const LimitPosts = () => {
     >
       <div className="flex flex-col gap-2 flex-1 my-2.5">
         <DataItem className="font-normal">
-          Publicaciones de {"Agenda"} activas:{" "}
+          Anuncios de agenda activos:{" "}
           <em className="font-semibold">
             {numberOfPosts.agenda} / {limit.agenda} Disponibles
           </em>
         </DataItem>
         <DataItem className="font-normal">
-          Publicaciones {"Libres"} activas:{" "}
+          Anuncios geolocalizados activos:{" "}
           <em className="font-semibold">
             {numberOfPosts.libre} / {limit.libre} Disponibles
           </em>
         </DataItem>
         <CardDataItem
-          title={`${accountType?.subscriptionPlan.postsAgendaCount} publicaciones de Agenda.
-           ${accountType?.subscriptionPlan.postsLibresCount} publicaciones Libres.`}
+          title={`${accountType?.subscriptionPlan.postsAgendaCount} anuncios de agenda.
+           ${accountType?.subscriptionPlan.postsLibresCount} anuncios geolocalizados.`}
           subtitle={accountType?.subscriptionPlan.reason || "Gratuita"}
         />
         {postsPacks?.map((subscription: Subscription) => (
           <CardDataItem
             key={subscription.subscriptionPlan.reason}
-            title={`${subscription.subscriptionPlan.postsAgendaCount} publicaciones de Agenda. ${subscription.subscriptionPlan.postsLibresCount} publicaciones Libres.`}
+            title={`${subscription.subscriptionPlan.postsAgendaCount} anuncios de agenda. ${subscription.subscriptionPlan.postsLibresCount} anuncios geolocalizados.`}
             subtitle={subscription.subscriptionPlan.reason}
             boldLabel={`Disponible hasta ${subscription.endDate}`}
           />

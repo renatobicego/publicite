@@ -918,6 +918,8 @@ export class PostRepository implements PostRepositoryInterface {
           },
         },
         // Paginación optimizada
+        // Geolocalizados: del más cercano al más lejano (el más lejano, último).
+        { $sort: { distance: 1, _id: 1 } },
         { $skip: (page - 1) * limit },
         { $limit: limit + 1 },
       ]);
@@ -1273,6 +1275,8 @@ export class PostRepository implements PostRepositoryInterface {
             },
           },
           // Paginación optimizada
+          // Geolocalizados: del más cercano al más lejano (el más lejano, último).
+          { $sort: { distance: 1, _id: 1 } },
           { $skip: (page - 1) * limit },
           { $limit: limit + 1 },
         ]);
@@ -1569,6 +1573,35 @@ export class PostRepository implements PostRepositoryInterface {
     } catch (error: any) {
       throw error;
     }
+  }
+
+  async findMediaInfo(id: string): Promise<{
+    author: string;
+    imagesUrls: string[];
+    mediaSizes: { key: string; sizeBytes: number }[];
+  } | null> {
+    const doc: any = await this.postDocument
+      .findById(id)
+      .select('author imagesUrls mediaSizes')
+      .lean();
+    if (!doc) return null;
+    return {
+      author: doc.author?.toString(),
+      imagesUrls: doc.imagesUrls ?? [],
+      mediaSizes: doc.mediaSizes ?? [],
+    };
+  }
+
+  async setMediaSizes(
+    id: string,
+    mediaSizes: { key: string; sizeBytes: number }[],
+    session?: any,
+  ): Promise<void> {
+    await this.postDocument.updateOne(
+      { _id: id },
+      { $set: { mediaSizes } },
+      { session },
+    );
   }
 
   async updatePostById(

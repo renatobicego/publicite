@@ -32,7 +32,7 @@ export default async function EditProductionBehaviourPage(props: {
   if (production.ownerType === ProductionOwnerType.Group) {
     return (
       <main className="flex min-h-screen flex-col items-start main-style gap-4">
-        <ErrorCard message="Los blogs de grupo no tienen comportamiento libre o agenda." />
+        <ErrorCard message="Los blogs de grupo no son geolocalizados ni de agenda." />
       </main>
     );
   }

@@ -81,8 +81,8 @@ Aquí podrás encontrar algunos conceptos y términos que usaremos en el sitio p
 
 ### 🧭 ¿Cómo funciona la visibilidad? (lo más importante)
 Publicite tiene **dos formas de mostrar los anuncios**:
-- **Anuncios Libres** 🌐: se ven según la **ubicación** y el alcance geográfico que definas (ej: a la redonda de X km). Ideales para llegar a gente cercana que no conocés.
-- **Anuncios de Agenda** 📇: se ven **solo dentro de tu red** (contactos, amigos o topamigos), según el nivel de relación que elijas. Ideales para algo más privado o dirigido a tu círculo.
+- **Anuncios geolocalizados** 🌐 (antes "libres"): se ven según la **ubicación** y el alcance geográfico que definas (ej: a la redonda de X km). Ideales para llegar a gente cercana que no conocés. Están en **Anuncios digitales en Soon › Geolocalizados**, del más cercano al más lejano.
+- **Anuncios de Agenda** 📇: se ven **solo dentro de tu red** (contactos, amigos o topamigos), según el nivel de relación que elijas. Ideales para algo más privado o dirigido a tu círculo. Están en **Anuncios digitales en Soon › Agenda de contactos** (top amigos, amigos y contactos).
 
 ### 👥 ¿A quién está dirigido?
 A **empresas y personas** que quieran ofrecer o encontrar bienes y servicios, tanto a nivel **local** (por geolocalización) como dentro de su **red de confianza**. Podés explorar como invitado o registrarte para publicar y acceder a todo.
@@ -152,9 +152,10 @@ Tu cartel es tu perfil público donde otros usuarios pueden ver tu información.
    - Ve a: https://soonpublicite.com/crear
    - Selecciona "Crear Anuncio": https://soonpublicite.com/crear/anuncio
 
-**2. Elige el tipo de comportamiento del anuncio**
-   - **Anuncio Libre**: Visible según localización y alcance geográfico
-   - **Anuncio de Agenda**: Solo visible para tus contactos/amigos
+**2. Elige dónde se publica el anuncio**
+   - **Anuncio geolocalizado**: público, visible según localización y alcance geográfico. Se ve en **Anuncios digitales en Soon › Geolocalizados**
+   - **Anuncio de agenda**: sólo visible para tus contactos/amigos. Se ve en **Anuncios digitales en Soon › Agenda de contactos**
+   (Si el usuario dice "anuncio libre", es el nombre viejo del anuncio geolocalizado.)
 
 **3. Selecciona si es un Bien o Servicio**
    - Bien: Productos físicos (ej: celular, muebles, ropa)
@@ -170,7 +171,7 @@ Tu cartel es tu perfil público donde otros usuarios pueden ver tu información.
    - Sube fotos de calidad (mínimo 1, recomendado 3-5)
    - Las imágenes ayudan a que tu anuncio sea más atractivo
 
-**6. Configura la localización (para Anuncios Libres)**
+**6. Configura la localización (para anuncios geolocalizados)**
    - Selecciona tu ubicación
    - Define el **rango de alcance** (¿a cuántos kilómetros quieres que se vea?)
    - Ejemplo: Si pones 10km, tu anuncio será visible para usuarios en ese radio
@@ -348,8 +349,9 @@ La sección principal donde descubres contenido: https://soonpublicite.com/anunc
 
 ### 📑 Solapas disponibles:
 
-**A) Anuncios Libres** 🌐
+**A) Anuncios digitales en Soon** 🌐 (solapas Todos, Geolocalizados y Agenda de contactos)
 - Ver todos los anuncios: https://soonpublicite.com/anuncios
+- Geolocalizados (del más cercano al más lejano): https://soonpublicite.com/anuncios/libres
 - Filtrar por localización y distancia
 - Buscar por categorías
 - Ordenar por:
@@ -375,9 +377,9 @@ La sección principal donde descubres contenido: https://soonpublicite.com/anunc
 - Explorar grupos: https://soonpublicite.com/grupos
 - Únete a comunidades de tu interés
 
-### 🔍 Configurar búsqueda de Anuncios Libres:
+### 🔍 Configurar búsqueda de anuncios geolocalizados:
 
-1. En la página de anuncios libres
+1. En Anuncios digitales en Soon › Geolocalizados (https://soonpublicite.com/anuncios/libres), ordenados del más cercano al más lejano
 2. Usa el selector de ubicación
 3. Ajusta el rango de búsqueda (km)
 4. Los anuncios que coincidan con tu ubicación ± rango aparecerán
@@ -501,15 +503,16 @@ Si necesitas más anuncios pero no quieres cambiar de plan completo:
 
 ### 🔍 Explorar:
 
-• **Anuncios**: https://soonpublicite.com/anuncios
-• **Anuncios de Contactos**: https://soonpublicite.com/anuncios/contactos
+• **Anuncios digitales en Soon** (solapa Todos): https://soonpublicite.com/anuncios
+• **Anuncios geolocalizados**: https://soonpublicite.com/anuncios/libres
+• **Agenda de contactos (anuncios)**: https://soonpublicite.com/anuncios/contactos
 • **Anuncios Recientes**: https://soonpublicite.com/anuncios/recientes
 • **Perfiles**: https://soonpublicite.com/perfiles
 • **Grupos**: https://soonpublicite.com/grupos
 • **Pizarras**: https://soonpublicite.com/pizarras
 • **Producciones (blogs)**: https://soonpublicite.com/producciones
-• **Producciones Libres**: https://soonpublicite.com/producciones/libres
-• **Producciones de Contactos**: https://soonpublicite.com/producciones/contactos
+• **Producciones geolocalizadas**: https://soonpublicite.com/producciones/libres
+• **Producciones de mi agenda**: https://soonpublicite.com/producciones/contactos
 • **Mis tickets de Producciones**: https://soonpublicite.com/producciones/mis-tickets
 
 ### ⚙️ Configuración:
@@ -533,23 +536,23 @@ Si necesitas más anuncios pero no quieres cambiar de plan completo:
 ### 📝 Crear un blog
 1. Ve a: https://soonpublicite.com/crear/produccion
 2. Si es un blog personal, elige su **comportamiento**, igual que en los anuncios:
-   - **Blog Libre**: público (o sólo para usuarios registrados) y visible para quien esté dentro del **radio de alcance** de su ubicación. Al crearlo eliges la ubicación en el mapa y el radio (de 1 a 200 km).
-   - **Blog de Agenda**: visible sólo para tu agenda de contactos (Contactos, Amigos o Top amigos), sin importar dónde estén.
+   - **Blog geolocalizado**: público (o sólo para usuarios registrados) y visible para quien esté dentro del **radio de alcance** de su ubicación. Al crearlo eliges la ubicación en el mapa y el radio (de 1 a 200 km).
+   - **Blog de mi agenda**: visible sólo para tu agenda de contactos (Contactos, Amigos o Top amigos), sin importar dónde estén.
    Los blogs de grupo no tienen comportamiento: los ven los miembros del grupo según su alcance.
 3. Completa el nombre, la descripción, la foto de portada y el texto de bienvenida
    - **Fechas de vigencia**: "Vigente desde" (obligatoria) y "Vigente hasta" (opcional, no puede ser anterior). Fuera de esas fechas el blog no aparece en Explorar ni en el cartel, y quien entra por link ve sólo un aviso con las fechas. No se borra nada: el dueño lo sigue viendo y las cambia desde "Editar blog".
-4. Elige el **alcance**: en un blog libre, Público o Registrados; en uno de agenda, Contactos, Amigos o Top amigos. En los dos puedes elegir **Sólo yo**
+4. Elige el **alcance**: en un blog geolocalizado, Público o Registrados; en uno de agenda, Contactos, Amigos o Top amigos. En los dos puedes elegir **Sólo yo**
 5. ¡Listo! Entra al blog y empieza a cargar contenido
 
-**Cambiar el comportamiento**: en "Editar blog" → "Editar Comportamiento" pasas un blog de libre a agenda (o al revés) y cambias la ubicación y el radio de un blog libre.
+**Cambiar el comportamiento**: en "Editar blog" → "Editar Comportamiento" pasas un blog de geolocalizado a agenda (o al revés) y cambias la ubicación y el radio de un blog geolocalizado.
 
-**Cupos**: como con los anuncios, tu plan tiene un cupo de **blogs libres** y otro de **blogs de agenda** (se suman entre tus suscripciones y packs). Si se termina el de un tipo, puedes crear del otro, cambiar de plan o comprar un pack. La cantidad de blogs de grupo, de archivos por blog y el espacio de almacenamiento también dependen de tu plan.
+**Cupos**: como con los anuncios, tu plan tiene un cupo de **blogs geolocalizados** y otro de **blogs de mi agenda** (se suman entre tus suscripciones y packs). Si se termina el de un tipo, puedes crear del otro, cambiar de plan o comprar un pack. La cantidad de blogs de grupo, de archivos por blog y el espacio de almacenamiento también dependen de tu plan. El **espacio de almacenamiento es uno solo** y suma los archivos de tus blogs y las fotos y videos de tus anuncios; se ve en "Control de Consumo".
 
 ### 🔍 Explorar producciones
 En https://soonpublicite.com/producciones hay tres solapas, como en Anuncios:
-- **Producciones**: todo lo que puedes ver. Los blogs libres aparecen sólo si estás dentro de su radio.
-- **Producciones Libres**: blogs libres de otros usuarios cerca tuyo (dentro de su radio). Se filtran por cómo se entra al blog: Todos, Gratuitos (sin ticket), Ticket gratis o Ticket pago.
-- **Agenda de Contactos**: blogs de agenda de tus contactos, con sub-solapas Todos, Contactos, Amigos y Top Amigos, y dentro de cada una el mismo filtro Todos / Gratuitos / Ticket gratis / Ticket pago.
+- **Producciones**: todo lo que puedes ver. Los blogs geolocalizados aparecen sólo si estás dentro de su radio.
+- **Producciones geolocalizadas**: blogs geolocalizados de otros usuarios cerca tuyo (dentro de su radio). Se filtran por cómo se entra al blog: Todos, Gratuitos (sin ticket), Ticket gratis o Ticket pago.
+- **Producciones de mi agenda**: blogs de agenda de tus contactos, con sub-solapas Todos, Contactos, Amigos y Top Amigos, y dentro de cada una el mismo filtro Todos / Gratuitos / Ticket gratis / Ticket pago.
 El filtro de ticket mira el ticket del blog completo: un blog que se entra libre cuenta como Gratuito aunque tenga carpetas o archivos con ticket.
 Puedes buscar por nombre o descripción y cambiar tu ubicación con "Seleccionar ubicación".
 

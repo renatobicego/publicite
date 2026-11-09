@@ -129,6 +129,17 @@ export interface PostRepositoryInterface {
     id: string,
     postType: string,
   ): Promise<any>;
+  /** Autor, fotos/videos y sus pesos (para el cupo de almacenamiento). */
+  findMediaInfo(id: string): Promise<{
+    author: string;
+    imagesUrls: string[];
+    mediaSizes: { key: string; sizeBytes: number }[];
+  } | null>;
+  setMediaSizes(
+    id: string,
+    mediaSizes: { key: string; sizeBytes: number }[],
+    session?: any,
+  ): Promise<void>;
   updateEndDateFromPostById(
     postId: string,
     userRequestId: string,

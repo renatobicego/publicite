@@ -132,7 +132,8 @@ const ConsumptionControlModal = ({ isOpen, onOpenChange }: Props) => {
                           {formatBytes(
                             consumption.limits.storageAvailableBytes
                           )}{" "}
-                          libres (total de todos tus blogs).
+                          disponibles (suma tus blogs y las fotos y videos de
+                          tus anuncios).
                         </span>
                       </CardBody>
                     </Card>

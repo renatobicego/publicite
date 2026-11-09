@@ -1,6 +1,7 @@
 import { Button } from "@nextui-org/react";
 import { ProductionBehaviourType } from "@/types/productionTypes";
 import { behaviourLabel } from "../productionBehaviour";
+import { PRODUCTION_BEHAVIOUR_DESTINATION } from "@/utils/data/behaviourLabels";
 
 /** Elección libre / agenda de un blog personal, igual que en Anuncios. */
 const SelectProductionBehaviour = ({
@@ -13,7 +14,7 @@ const SelectProductionBehaviour = ({
   isDisabled?: boolean;
 }) => (
   <div id="production-behaviour" className="flex-col flex gap-1 justify-start">
-    <h2 className="text-lg font-medium">Comportamiento del Blog</h2>
+    <h2 className="text-lg font-medium">¿Dónde se publica tu blog?</h2>
     <div className="flex gap-4 w-full">
       <Button
         variant={type === ProductionBehaviourType.libre ? "solid" : "flat"}
@@ -34,12 +35,20 @@ const SelectProductionBehaviour = ({
         {behaviourLabel[ProductionBehaviourType.agenda]}
       </Button>
     </div>
-    <aside className="text-sm">
-      Seleccione si el comportamiento del blog es libre o agenda. Los{" "}
-      <em>blogs libres</em> serán públicos y visibles por el alcance de la
-      localización. Los <em>blogs de agenda</em> serán visibles solo para tu
-      agenda de contactos.
-    </aside>
+    {type ? (
+      <p className="text-sm rounded-lg bg-default-100 px-3 py-2">
+        Se publica en: <strong>{PRODUCTION_BEHAVIOUR_DESTINATION[type]}</strong>
+      </p>
+    ) : (
+      <aside className="text-sm">
+        Los <em>blogs geolocalizados</em> son públicos y se ven en{" "}
+        <strong>{PRODUCTION_BEHAVIOUR_DESTINATION.libre}</strong>, para quien
+        esté dentro del alcance de su ubicación. Los{" "}
+        <em>blogs de mi agenda</em> se ven en{" "}
+        <strong>{PRODUCTION_BEHAVIOUR_DESTINATION.agenda}</strong>, sólo para tu
+        agenda de contactos.
+      </aside>
+    )}
   </div>
 );
 

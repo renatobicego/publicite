@@ -16,7 +16,7 @@ const BehaviourTypeStep = ({ onSelect }: BehaviourTypeStepProps) => {
                 onPress={() => onSelect("libre")}
                 className="w-full"
             >
-                Libre
+                Geolocalizado (público, cerca tuyo)
             </Button>
             <Button
                 size="sm"
@@ -25,7 +25,7 @@ const BehaviourTypeStep = ({ onSelect }: BehaviourTypeStepProps) => {
                 onPress={() => onSelect("agenda")}
                 className="w-full"
             >
-                Agenda
+                De agenda (sólo tus contactos)
             </Button>
         </div>
     );

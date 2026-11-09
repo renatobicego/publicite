@@ -10,6 +10,7 @@ import {
   ServicePostValues,
 } from "@/types/postTypes";
 import { getClient, query } from "@/lib/client";
+import { getProductionErrorMessage } from "@/utils/functions/productionErrorHandler";
 import {
   changePostBehaviourTypeMutation,
   deleteCommentMutation,
@@ -137,6 +138,11 @@ export const putPost = async (
     });
     return data.updatePostById;
   } catch (error) {
+    // Sin espacio de almacenamiento: se muestra el mensaje del server.
+    const message = getProductionErrorMessage(error);
+    if (message?.includes("No tenés espacio suficiente")) {
+      return { error: message };
+    }
     return handleApolloError(error);
   }
 };

@@ -12,6 +12,11 @@ import { PostPetitionModel } from "../post/infraestructure/schemas/post-types-sc
 import { PostServiceModel } from "../post/infraestructure/schemas/post-types-schemas/post.service.schema";
 import PostModel from "../post/infraestructure/schemas/post.schema";
 import { PostService } from "../post/application/service/post.service";
+import ProductionModel from "src/contexts/module_production/production/infraestructure/schemas/production.schema";
+import {
+    USER_STORAGE_USAGE_SERVICE,
+    UserStorageUsageService,
+} from "src/contexts/module_shared/storage/user-storage.usage.service";
 import { PostRepository } from "../post/infraestructure/repository/post.repository";
 import { UserModel } from "src/contexts/module_user/user/infrastructure/schemas/user.schema";
 import { EmmiterModule } from "src/contexts/module_shared/event-emmiter/emiter.module";
@@ -64,11 +69,17 @@ const post_testing_module = async (): Promise<TestingModule> => {
                 { name: PostCommentModel.modelName, schema: PostCommentModel.schema },
                 { name: PostReviewModel.modelName, schema: PostReviewModel.schema },
                 { name: PostReactionModel.modelName, schema: PostReactionModel.schema },
+                // Los límites del plan (almacenamiento) cuentan los blogs del usuario.
+                { name: ProductionModel.modelName, schema: ProductionModel.schema },
             ]),
 
         ],
         providers: [
             MyLoggerService,
+            {
+                provide: USER_STORAGE_USAGE_SERVICE,
+                useClass: UserStorageUsageService,
+            },
             {
                 provide: 'PostRepositoryInterface',
                 useClass: PostRepository,
