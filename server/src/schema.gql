@@ -1458,11 +1458,14 @@ type ProductionIdResponse {
 type ProductionShelfLinkResponse {
   category: ProductionShelfCategory!
   title: String!
-  link: String!
+  subtitle: String
+  link: String
   imageKey: String
 }
 
-"""Pelis, Libros, Sitios web, Youtube, Games, Places"""
+"""
+Pelis, Libros, Sitios web, Youtube, Games, Places, Podcasts, Música, Imágenes
+"""
 enum ProductionShelfCategory {
   movies
   books
@@ -1470,6 +1473,9 @@ enum ProductionShelfCategory {
   youtube
   games
   places
+  podcasts
+  music
+  images
 }
 
 """Ubicación y radio de alcance de un blog libre"""
@@ -1530,7 +1536,7 @@ enum ProductionRole {
 }
 
 """
-accessKey (falta la clave), visibility (fuera del alcance), ticket (requiere ticket), pendingReview (reseña pendiente), moderation (oculto o bloqueado)
+accessKey (falta la clave), visibility (fuera del alcance), ticket (requiere ticket), pendingReview (reseña pendiente), moderation (oculto o bloqueado), schedule (fuera de las fechas de vigencia)
 """
 enum ProductionLockReason {
   accessKey
@@ -1538,6 +1544,7 @@ enum ProductionLockReason {
   ticket
   pendingReview
   moderation
+  schedule
 }
 
 type ProductionResponse {
@@ -1565,6 +1572,12 @@ type ProductionResponse {
 
   """Ubicación y radio (sólo blogs libres)"""
   geoLocation: ProductionGeoLocationResponse
+
+  """Vigencia: desde cuándo se ve el blog (null = siempre)"""
+  activeFrom: DateTime
+
+  """Vigencia: hasta cuándo se ve el blog (null = sin vencimiento)"""
+  activeUntil: DateTime
 
   """Si el blog pide clave (INV-01)"""
   hasAccessKey: Boolean!
@@ -3432,6 +3445,16 @@ input ProductionCreateRequest {
   welcomeVideoKey: String
   shelf: [ProductionShelfLinkInput!]
 
+  """
+  Vigencia: desde cuándo se ve el blog (inicio del día). Si no llega, rige desde hoy
+  """
+  activeFrom: DateTime
+
+  """
+  Vigencia: hasta cuándo se ve el blog (final del día). Opcional; no puede ser anterior a activeFrom
+  """
+  activeUntil: DateTime
+
   """Alcance por defecto del blog (VIS-01). Default: public"""
   visibility: ProductionVisibility
 
@@ -3453,8 +3476,11 @@ input ProductionShelfLinkInput {
   category: ProductionShelfCategory!
   title: String!
 
-  """Link externo (http/https)"""
-  link: String!
+  """Autor, director, conductor… (pocos caracteres)"""
+  subtitle: String
+
+  """Link externo (http/https). Opcional"""
+  link: String
 
   """Key de UploadThing"""
   imageKey: String
@@ -3483,6 +3509,16 @@ input ProductionUpdateRequest {
   welcomeText: String
   welcomeVideoKey: String
   shelf: [ProductionShelfLinkInput!]
+
+  """
+  Vigencia: desde cuándo se ve el blog (inicio del día). Si no llega, rige desde hoy
+  """
+  activeFrom: DateTime
+
+  """
+  Vigencia: hasta cuándo se ve el blog (final del día). null la quita; no puede ser anterior a activeFrom
+  """
+  activeUntil: DateTime
 
   """Ubicación y radio de un blog libre"""
   geoLocation: ProductionGeoLocationInput

@@ -17,6 +17,13 @@ import {
 } from "@/types/productionTypes";
 import { behaviourLabel } from "@/app/(root)/(explorar)/producciones/productionBehaviour";
 import { visibilityLabel } from "@/app/(root)/(explorar)/producciones/productionVisibility";
+import BlogScheduleFields from "@/app/(root)/(explorar)/producciones/components/BlogScheduleFields";
+import {
+  endOfDayIso,
+  startOfDayIso,
+  toDateInput,
+  validateSchedule,
+} from "@/app/(root)/(explorar)/producciones/productionSchedule";
 
 /** Edición del header del blog (portada, título, descripción, bienvenida). */
 const EditProductionForm = ({
@@ -28,6 +35,14 @@ const EditProductionForm = ({
   const [title, setTitle] = useState(production.title);
   const [description, setDescription] = useState(production.description ?? "");
   const [welcomeText, setWelcomeText] = useState(production.welcomeText ?? "");
+  // Blogs anteriores a la vigencia: rigen desde que se crearon.
+  const [activeFrom, setActiveFrom] = useState(
+    toDateInput(production.activeFrom ?? production.createdAt ?? new Date())
+  );
+  const [activeUntil, setActiveUntil] = useState(
+    toDateInput(production.activeUntil)
+  );
+  const [showScheduleError, setShowScheduleError] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [headerPhotoKey, setHeaderPhotoKey] = useState<string | undefined>(
     production.headerPhotoKey ?? undefined
@@ -73,6 +88,12 @@ const EditProductionForm = ({
       toastifyError("El título del blog es obligatorio");
       return;
     }
+    const scheduleError = validateSchedule(activeFrom, activeUntil);
+    if (scheduleError) {
+      setShowScheduleError(true);
+      toastifyError(scheduleError);
+      return;
+    }
     setIsSubmitting(true);
     try {
       const res = await updateProduction(production._id, {
@@ -80,6 +101,8 @@ const EditProductionForm = ({
         description: description.trim(),
         welcomeText: welcomeText.trim(),
         headerPhotoKey,
+        activeFrom: startOfDayIso(activeFrom),
+        activeUntil: activeUntil ? endOfDayIso(activeUntil) : null,
       });
       if (isProductionActionError(res)) {
         toastifyError(res.error);
@@ -150,6 +173,14 @@ const EditProductionForm = ({
         value={welcomeText}
         onValueChange={setWelcomeText}
         maxLength={500}
+      />
+      <BlogScheduleFields
+        from={activeFrom}
+        until={activeUntil}
+        setFrom={setActiveFrom}
+        setUntil={setActiveUntil}
+        isDisabled={isSubmitting}
+        showErrors={showScheduleError}
       />
       <PrimaryButton
         onClick={handleSubmit}

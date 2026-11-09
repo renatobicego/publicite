@@ -11,6 +11,7 @@ import { UserDataProvider } from "./providers/userDataProvider";
 import { LocationProvider } from "./providers/LocationProvider";
 import { Chatbot } from "@/components/buttons/ChatbotButton/Chatbot";
 import PendingReviewBanner from "@/components/AppSwitcher/PendingReviewBanner";
+import { CreateActionsProvider } from "@/components/buttons/HelpButton/createActions";
 export default async function NavigationLayout({
   children,
 }: {
@@ -38,8 +39,11 @@ export default async function NavigationLayout({
             </div>
           )}
           <LocationProvider>
-            {children}
-            <HelpButton />
+            {/* Las pantallas suman sus opciones al súper botón Crear. */}
+            <CreateActionsProvider>
+              {children}
+              <HelpButton />
+            </CreateActionsProvider>
             <Chatbot />
           </LocationProvider>
           <Footer id={user?.publicMetadata.mongoId} />

@@ -23,11 +23,15 @@ import {
   FaArrowLeft,
   FaArrowRight,
   FaArrowUp,
+  FaCalendarAlt,
   FaCog,
   FaEllipsisH,
   FaEye,
   FaFlag,
+  FaFileMedical,
   FaFolderOpen,
+  FaFolderPlus,
+  FaImages,
   FaKey,
   FaList,
   FaLock,
@@ -38,11 +42,13 @@ import {
   FaTicketAlt,
   FaSitemap,
   FaThLarge,
+  FaTh,
   FaTrash,
   FaUpload,
   FaUserLock,
   FaUserShield,
 } from "react-icons/fa";
+import { BsGrid1X2Fill } from "react-icons/bs";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import SecondaryButton from "@/components/buttons/SecondaryButton";
 import {
@@ -86,7 +92,15 @@ import {
 import { productionFolderPath } from "../../productionShare";
 import ShareLinkButton from "../../components/ShareLinkButton";
 import ProductionItemCard from "./ProductionItemCard";
-import ProductionStaffToolbar from "./ProductionStaffToolbar";
+import ProductionStaffToolbar, {
+  ProductionStaffToolbarHandle,
+} from "./ProductionStaffToolbar";
+import ProductionShelf from "./ProductionShelf";
+import { useRegisterCreateActions } from "@/components/buttons/HelpButton/createActions";
+import {
+  formatScheduleRange,
+  getScheduleStatus,
+} from "../../productionSchedule";
 import AccessKeyModal from "./AccessKeyModal";
 import ProductionAccessSettings from "./ProductionAccessSettings";
 import TicketManagerModal from "./TicketManagerModal";
@@ -103,6 +117,10 @@ import ReceivedReportsModal from "./ReceivedReportsModal";
 import useProductionUpload from "./useProductionUpload";
 
 const VIEW_MODE_STORAGE_KEY = "production-view-mode";
+// Cuadrícula ordenada (todos los recuadros iguales) o libre (cada foto con su
+// alto). Preferencia de cada visitante, guardada en su navegador.
+const GRID_STYLE_STORAGE_KEY = "production-grid-style";
+type GridStyle = "ordered" | "free";
 const ICON_SIZE_STORAGE_KEY = "production-icon-size";
 // Escala de la grilla: de íconos chicos a tarjetas grandes. Por debajo de
 // `compact` los controles de staff de cada tarjeta se muestran sólo con ícono.
@@ -211,9 +229,17 @@ const ProductionBlog = ({
   const [typeFilter, setTypeFilter] = useState<ProductionTypeFilter>("all");
   const [sort, setSort] = useState<ProductionSort>("recent");
   const [viewMode, setViewMode] = useState<ProductionViewMode>("grid");
+  const [gridStyle, setGridStyle] = useState<GridStyle>("free");
   useEffect(() => {
-    if (localStorage.getItem(VIEW_MODE_STORAGE_KEY) === "list") {
-      setViewMode("list");
+    try {
+      if (localStorage.getItem(VIEW_MODE_STORAGE_KEY) === "list") {
+        setViewMode("list");
+      }
+      if (localStorage.getItem(GRID_STYLE_STORAGE_KEY) === "ordered") {
+        setGridStyle("ordered");
+      }
+    } catch {
+      // Sin acceso al almacenamiento: quedan los valores por defecto.
     }
   }, []);
   // Tamaño de los íconos de la grilla (ancho mínimo de cada tarjeta, en px).
@@ -232,6 +258,17 @@ const ProductionBlog = ({
     setViewMode(mode);
     localStorage.setItem(VIEW_MODE_STORAGE_KEY, mode);
   };
+  const changeGrid = (style: GridStyle) => {
+    setViewMode("grid");
+    setGridStyle(style);
+    try {
+      localStorage.setItem(VIEW_MODE_STORAGE_KEY, "grid");
+      localStorage.setItem(GRID_STYLE_STORAGE_KEY, style);
+    } catch {
+      // Sin acceso al almacenamiento: vale sólo para esta visita.
+    }
+  };
+  const orderedGrid = viewMode === "grid" && gridStyle === "ordered";
 
   // Selección múltiple (staff) y destino del "Mover".
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -543,6 +580,56 @@ const ProductionBlog = ({
       : []),
   ];
 
+  // Súper botón Crear: dentro del blog ofrece crear en la carpeta abierta.
+  const toolbarRef = useRef<ProductionStaffToolbarHandle>(null);
+  const currentFolderName = data.breadcrumb.at(-1)?.name;
+  useRegisterCreateActions(
+    canEdit
+      ? {
+          title: currentParentId
+            ? `Crear en «${currentFolderName ?? "esta carpeta"}»`
+            : `Crear en «${production.title}»`,
+          actions: [
+            {
+              key: "folder",
+              label: "Carpeta",
+              description: "Para ordenar tus producciones",
+              icon: <FaFolderPlus />,
+              onAction: () => toolbarRef.current?.openFolder(),
+            },
+            {
+              key: "article",
+              label: "Artículo",
+              description: "Texto con fotos, audio y videos de YouTube",
+              icon: <FaFileMedical />,
+              onAction: () => toolbarRef.current?.createArticle(),
+            },
+            {
+              key: "album",
+              label: "Álbum de fotos",
+              description: "Una carpeta con las fotos que elijas",
+              icon: <FaImages />,
+              onAction: () => toolbarRef.current?.openAlbum(),
+            },
+            {
+              key: "upload",
+              label: "Subir archivos",
+              description: "Fotos, videos, audios, PDF y documentos",
+              icon: <FaUpload />,
+              onAction: () => toolbarRef.current?.pickFiles(),
+            },
+          ],
+        }
+      : null,
+  );
+
+  // Fechas de vigencia: el visitante fuera de rango ve sólo un aviso; el staff
+  // ve el blog con un recordatorio de que no está visible.
+  const lockedBySchedule =
+    production.viewer?.lockReason === ProductionLockReason.schedule;
+  const scheduleStatus = getScheduleStatus(production);
+  const scheduleRange = formatScheduleRange(production);
+
   const ownerName =
     production.ownerInfo?.businessName ||
     [production.ownerInfo?.name, production.ownerInfo?.lastName]
@@ -730,6 +817,58 @@ const ProductionBlog = ({
         </div>
       </header>
 
+      {/* Fuera de vigencia (staff): el blog está oculto para los demás */}
+      {isStaffViewer && scheduleStatus !== "active" && (
+        <div className="flex items-start gap-3 rounded-xl border border-warning-300 bg-warning-50 px-4 py-3">
+          <FaCalendarAlt className="mt-1 text-warning-600" />
+          <div className="flex-1">
+            <p className="text-sm font-medium">
+              {scheduleStatus === "upcoming"
+                ? "Este blog todavía no está vigente"
+                : "La vigencia de este blog terminó"}
+            </p>
+            <p className="text-xs text-default-600">
+              Vigente {scheduleRange}. Mientras tanto no aparece en Explorar ni
+              en tu cartel, y quien entre por link ve sólo un aviso. Vos lo
+              seguís viendo y editando.
+            </p>
+          </div>
+          {canEdit && (
+            <Button
+              size="sm"
+              variant="flat"
+              onPress={() => router.push(`${EDIT_PRODUCTION}/${production._id}`)}
+            >
+              Cambiar fechas
+            </Button>
+          )}
+        </div>
+      )}
+
+      {lockedBySchedule ? (
+        // Fuera de vigencia (visitante): sólo el aviso con las fechas.
+        <div className="flex flex-col items-center gap-2 rounded-2xl border border-dashed border-default-300 px-4 py-12 text-center">
+          <FaCalendarAlt className="text-3xl text-default-400" />
+          <p className="text-base font-semibold">
+            {scheduleStatus === "upcoming"
+              ? "Este blog todavía no abrió"
+              : "Este blog ya no está vigente"}
+          </p>
+          <p className="max-w-md text-sm text-default-500">
+            Está disponible {scheduleRange}.
+            {scheduleStatus === "upcoming" ? " ¡Volvé en esas fechas!" : ""}
+          </p>
+        </div>
+      ) : (
+      <>
+      {/* Estantería: recomendaciones cortas debajo del encabezado */}
+      <ProductionShelf
+        productionId={production._id}
+        shelf={production.shelf ?? []}
+        canEdit={canEdit}
+        onChanged={reloadBlog}
+      />
+
       {/* Navegación del árbol (flechas + breadcrumb) y acciones de creación */}
       <div className="flex items-center justify-between gap-4 flex-wrap rounded-xl border border-default-200 bg-content1 px-4 py-2.5">
         <div className="flex min-w-0 items-center gap-1">
@@ -798,6 +937,8 @@ const ProductionBlog = ({
         </div>
         {canEdit && (
           <ProductionStaffToolbar
+            ref={toolbarRef}
+            onOpenFolder={openLevel}
             productionId={production._id}
             parentId={currentParentId}
             onCreated={refreshLevel}
@@ -879,13 +1020,23 @@ const ProductionBlog = ({
         >
           <Button
             isIconOnly
-            aria-label="Ver como grilla"
-            title="Grilla"
-            variant={viewMode === "grid" ? "solid" : "flat"}
-            color={viewMode === "grid" ? "primary" : "default"}
-            onPress={() => changeViewMode("grid")}
+            aria-label="Cuadrícula ordenada: todos los recuadros iguales"
+            title="Cuadrícula ordenada"
+            variant={orderedGrid ? "solid" : "flat"}
+            color={orderedGrid ? "primary" : "default"}
+            onPress={() => changeGrid("ordered")}
           >
-            <FaThLarge />
+            <FaTh />
+          </Button>
+          <Button
+            isIconOnly
+            aria-label="Cuadrícula libre: cada foto con su tamaño"
+            title="Cuadrícula libre"
+            variant={viewMode === "grid" && !orderedGrid ? "solid" : "flat"}
+            color={viewMode === "grid" && !orderedGrid ? "primary" : "default"}
+            onPress={() => changeGrid("free")}
+          >
+            <BsGrid1X2Fill />
           </Button>
           <Button
             isIconOnly
@@ -1074,7 +1225,7 @@ const ProductionBlog = ({
             className={
               viewMode === "list"
                 ? "flex flex-col gap-2"
-                : "grid gap-3 md:gap-4 items-start"
+                : `grid gap-3 md:gap-4 ${orderedGrid ? "items-stretch" : "items-start"}`
             }
             style={
               viewMode === "grid"
@@ -1090,6 +1241,7 @@ const ProductionBlog = ({
                 key={item._id}
                 item={item}
                 layout={viewMode}
+                uniform={orderedGrid}
                 compact={iconSize < ICON_SIZE.compact}
                 onOpen={handleOpen}
                 canEdit={canEdit}
@@ -1151,6 +1303,8 @@ const ProductionBlog = ({
         onBlocked={previewBlocked}
         onReview={canReview ? openReview : undefined}
       />
+      </>
+      )}
 
       <ProductionReviewModal
         productionId={production._id}

@@ -4,6 +4,7 @@ import {
   ArrayMaxSize,
   IsArray,
   IsBoolean,
+  IsDate,
   IsEnum,
   IsMongoId,
   IsNotEmpty,
@@ -65,10 +66,23 @@ export class ProductionShelfLinkInput {
   @MaxLength(120)
   title: string;
 
-  @Field(() => String, { description: 'Link externo (http/https)' })
+  @Field(() => String, {
+    nullable: true,
+    description: 'Autor, director, conductor… (pocos caracteres)',
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(80)
+  subtitle?: string;
+
+  @Field(() => String, {
+    nullable: true,
+    description: 'Link externo (http/https). Opcional',
+  })
+  @IsOptional()
   @IsUrl({ require_protocol: true }, { message: 'link debe ser una URL válida' })
   @MaxLength(1000)
-  link: string;
+  link?: string;
 
   @Field(() => String, { nullable: true, description: 'Key de UploadThing' })
   @IsOptional()
@@ -116,6 +130,26 @@ export class ProductionCreateRequest {
   @ValidateNested({ each: true })
   @Type(() => ProductionShelfLinkInput)
   shelf?: ProductionShelfLinkInput[];
+
+  @Field(() => Date, {
+    nullable: true,
+    description:
+      'Vigencia: desde cuándo se ve el blog (inicio del día). Si no llega, rige desde hoy',
+  })
+  @IsOptional()
+  @Type(() => Date)
+  @IsDate()
+  activeFrom?: Date;
+
+  @Field(() => Date, {
+    nullable: true,
+    description:
+      'Vigencia: hasta cuándo se ve el blog (final del día). Opcional; no puede ser anterior a activeFrom',
+  })
+  @IsOptional()
+  @Type(() => Date)
+  @IsDate()
+  activeUntil?: Date | null;
 
   @Field(() => ProductionVisibility, {
     nullable: true,
@@ -193,6 +227,26 @@ export class ProductionUpdateRequest {
   @ValidateNested({ each: true })
   @Type(() => ProductionShelfLinkInput)
   shelf?: ProductionShelfLinkInput[];
+
+  @Field(() => Date, {
+    nullable: true,
+    description:
+      'Vigencia: desde cuándo se ve el blog (inicio del día). Si no llega, rige desde hoy',
+  })
+  @IsOptional()
+  @Type(() => Date)
+  @IsDate()
+  activeFrom?: Date;
+
+  @Field(() => Date, {
+    nullable: true,
+    description:
+      'Vigencia: hasta cuándo se ve el blog (final del día). null la quita; no puede ser anterior a activeFrom',
+  })
+  @IsOptional()
+  @Type(() => Date)
+  @IsDate()
+  activeUntil?: Date | null;
 
   @Field(() => ProductionGeoLocationInput, {
     nullable: true,

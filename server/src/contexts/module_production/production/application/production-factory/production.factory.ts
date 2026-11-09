@@ -23,6 +23,7 @@ import {
   defaultVisibilityFor,
   normalizeGeoLocation,
 } from '../functions/production.behaviour';
+import { normalizeSchedule } from '../functions/production.schedule';
 
 /**
  * Arma las entidades de MP a partir de los requests (patrón PostFactory: un
@@ -59,6 +60,11 @@ export class ProductionFactory implements ProductionFactoryInterface {
       behaviourType === ProductionBehaviourType.libre
         ? normalizeGeoLocation(request.geoLocation)
         : null;
+    // Vigencia: la fecha de inicio es obligatoria; si no llega, rige desde hoy.
+    const schedule = normalizeSchedule(
+      request.activeFrom ?? new Date(),
+      request.activeUntil,
+    );
 
     return new Production({
       owner: owner.ownerId,
@@ -70,7 +76,15 @@ export class ProductionFactory implements ProductionFactoryInterface {
       welcomeText: request.welcomeText,
       welcomeVideoKey: request.welcomeVideoKey,
       url: buildProductionUrl(title),
-      shelf: request.shelf ?? [],
+      shelf: (request.shelf ?? []).map((link) => ({
+        category: link.category,
+        title: link.title.trim(),
+        subtitle: link.subtitle?.trim() || undefined,
+        link: link.link?.trim() || undefined,
+        imageKey: link.imageKey || undefined,
+      })),
+      activeFrom: schedule.activeFrom,
+      activeUntil: schedule.activeUntil,
       visibility,
       behaviourType,
       geoLocation,

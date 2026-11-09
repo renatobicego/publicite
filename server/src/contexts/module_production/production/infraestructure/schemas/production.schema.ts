@@ -23,7 +23,8 @@ export interface ProductionDocument extends Document {
   shelf: {
     category: ProductionShelfCategory;
     title: string;
-    link: string;
+    subtitle?: string;
+    link?: string;
     imageKey?: string;
   }[];
   showcase: Types.ObjectId[];
@@ -35,6 +36,8 @@ export interface ProductionDocument extends Document {
     description: string;
     ratio: number;
   } | null;
+  activeFrom: Date | null;
+  activeUntil: Date | null;
   aliasCbu: string | null;
   accessKeyHash: string | null;
   accessKeyVersion: number;
@@ -71,7 +74,8 @@ const ProductionShelfLinkSchema = new Schema(
       required: true,
     },
     title: { type: String, required: true },
-    link: { type: String, required: true },
+    subtitle: { type: String },
+    link: { type: String },
     imageKey: { type: String },
   },
   { _id: false },
@@ -112,6 +116,11 @@ export const ProductionSchema = new Schema<ProductionDocument>(
     },
     // Sólo blogs libres.
     geoLocation: { type: ProductionGeoLocationSchema, default: null },
+    // Fechas de vigencia: fuera del rango el blog no se lista y los visitantes
+    // ven sólo un aviso (el staff lo ve igual). null = sin límite; los blogs
+    // anteriores no tienen fechas y quedan siempre vigentes.
+    activeFrom: { type: Date, default: null },
+    activeUntil: { type: Date, default: null },
     // Alias/CBU para liquidar el 90% de los tickets (RNF-10). Sólo lo ven el
     // admin del blog y los admins de la plataforma.
     aliasCbu: { type: String, default: null },

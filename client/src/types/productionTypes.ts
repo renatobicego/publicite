@@ -83,6 +83,9 @@ export enum ProductionShelfCategory {
   youtube = "youtube",
   games = "games",
   places = "places",
+  podcasts = "podcasts",
+  music = "music",
+  images = "images",
 }
 
 export enum ProductionRole {
@@ -98,6 +101,8 @@ export enum ProductionLockReason {
   pendingReview = "pendingReview",
   visibility = "visibility",
   moderation = "moderation",
+  /** Fuera de las fechas de vigencia del blog. */
+  schedule = "schedule",
 }
 
 export enum ProductionTicketPurchaseStatus {
@@ -167,7 +172,9 @@ export interface ProductionArticleBlock {
 export interface ProductionShelfLink {
   category: ProductionShelfCategory;
   title: string;
-  link: string;
+  /** Autor, director, conductor… */
+  subtitle?: string | null;
+  link?: string | null;
   imageKey?: string | null;
 }
 
@@ -242,6 +249,10 @@ export interface ProductionResponse {
   geoLocation?: ProductionGeoLocation | null;
   shelf: ProductionShelfLink[];
   showcase: string[];
+  /** Vigencia: desde cuándo se ve el blog (ISO). null = siempre. */
+  activeFrom?: string | null;
+  /** Vigencia: hasta cuándo (ISO). null = sin vencimiento. */
+  activeUntil?: string | null;
   ownerInfo?: ProductionOwnerInfo | null;
   filesCount: number;
   /** Carpetas del blog; sólo viene al abrir el blog. */
@@ -380,7 +391,9 @@ export interface ProductionLimits {
 export interface ProductionShelfLinkInput {
   category: ProductionShelfCategory;
   title: string;
-  link: string;
+  subtitle?: string;
+  link?: string;
+  imageKey?: string;
 }
 
 export interface ProductionCreateRequest {
@@ -395,6 +408,10 @@ export interface ProductionCreateRequest {
   /** Obligatorio en blogs libres. */
   geoLocation?: ProductionGeoLocation;
   shelf?: ProductionShelfLinkInput[];
+  /** Vigencia (ISO): inicio del día elegido. */
+  activeFrom?: string;
+  /** Vigencia (ISO): final del día de cierre. Opcional. */
+  activeUntil?: string | null;
   groupId?: string;
 }
 
@@ -406,6 +423,9 @@ export interface ProductionUpdateRequest {
   welcomeVideoKey?: string;
   shelf?: ProductionShelfLinkInput[];
   showcase?: string[];
+  activeFrom?: string;
+  /** null quita la fecha de cierre. */
+  activeUntil?: string | null;
   /** Sólo blogs libres. */
   geoLocation?: ProductionGeoLocation;
 }

@@ -248,6 +248,27 @@ const GlosaryModal = ({ customButton }: { customButton?: React.ReactNode }) => {
                 pago.
               </li>
               <li>
+                Súper botón Crear (+ Crear, abajo a la derecha): primero
+                &quot;Crear nuevo blog&quot;; dentro de tu blog, crear ahí
+                mismo una carpeta, un artículo, un álbum de fotos o subir
+                archivos.
+              </li>
+              <li>
+                Fechas de vigencia: el blog se ve sólo entre la fecha de inicio
+                (obligatoria) y la de cierre (opcional). Fuera de ese rango no
+                aparece en Explorar y quien entra por link ve un aviso; no se
+                borra nada.
+              </li>
+              <li>
+                Estantería: debajo del encabezado del blog, un estante con tus
+                recomendaciones (libros, películas, podcasts, música, links,
+                imágenes…). Tócalas para ver su ficha.
+              </li>
+              <li>
+                Videos de YouTube: en un artículo, el bloque YouTube embebe el
+                video con sólo pegar su link.
+              </li>
+              <li>
                 Organiza: crea carpetas y subcarpetas, sube varios archivos a la
                 vez o arrástralos desde tu computadora y suéltalos sobre el blog
                 o sobre una carpeta.
@@ -259,8 +280,8 @@ const GlosaryModal = ({ customButton }: { customButton?: React.ReactNode }) => {
               </li>
               <li>
                 Navega: usa las flechas Atrás y Adelante, busca por nombre,
-                filtra por tipo, ordena y elige entre vista de grilla o de
-                lista. En la grilla puedes agrandar o achicar los íconos.
+                filtra por tipo, ordena y elige entre cuadrícula ordenada (todos
+                los recuadros iguales), cuadrícula libre o lista. En la grilla puedes agrandar o achicar los íconos.
                 Dentro de un archivo, pasa al anterior o al siguiente.
               </li>
               <li>

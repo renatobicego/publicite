@@ -5,12 +5,14 @@ import {
   ProductionVisibility,
 } from '../../domain/entity/enum/production.enums';
 import { ProductionPermissions } from './production.roles';
+import { isWithinSchedule, ProductionSchedule } from './production.schedule';
 
 /**
  * Evaluación de acceso de un visitante a un blog y a sus ítems.
  *
  * Capas, en orden (§4 de los ACs):
  * 1. Moderación: lo oculto o bloqueado no se muestra a quien no es staff (DEN-02).
+ *    Fuera de las fechas de vigencia el blog se abre sólo con un aviso.
  * 2. Reseña pendiente: bloquea visitar otras producciones (REV-02 / D10).
  * 3. Clave: si el blog tiene clave, REEMPLAZA al alcance (VIS-05 / INV-02).
  * 4. Alcance: Público / Registrados / Contactos / Amigos / Top amigos, con
@@ -137,6 +139,7 @@ export function evaluateProductionAccess(params: {
   moderationStatus?: ProductionModerationStatus | string;
   hasAccessKey: boolean;
   visibility: ProductionVisibility | string;
+  schedule?: ProductionSchedule;
   viewer: ProductionViewerContext;
 }): AccessDecision {
   const { viewer } = params;
@@ -154,6 +157,15 @@ export function evaluateProductionAccess(params: {
       listed: false,
       canViewContent: false,
       lockReason: ProductionLockReason.moderation,
+    };
+  }
+  // Fuera de vigencia: se puede abrir por link (para ver el aviso con las
+  // fechas), pero sin contenido. Los listados lo dejan afuera.
+  if (params.schedule && !isWithinSchedule(params.schedule)) {
+    return {
+      listed: true,
+      canViewContent: false,
+      lockReason: ProductionLockReason.schedule,
     };
   }
   if (

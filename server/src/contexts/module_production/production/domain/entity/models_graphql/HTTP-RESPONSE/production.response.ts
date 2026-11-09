@@ -26,8 +26,11 @@ export class ProductionShelfLinkResponse {
   @Field(() => String)
   title: string;
 
-  @Field(() => String)
-  link: string;
+  @Field(() => String, { nullable: true })
+  subtitle?: string | null;
+
+  @Field(() => String, { nullable: true })
+  link?: string | null;
 
   @Field(() => String, { nullable: true })
   imageKey?: string;
@@ -164,6 +167,18 @@ export class ProductionResponse {
     description: 'Ubicación y radio (sólo blogs libres)',
   })
   geoLocation: ProductionGeoLocationResponse | null;
+
+  @Field(() => Date, {
+    nullable: true,
+    description: 'Vigencia: desde cuándo se ve el blog (null = siempre)',
+  })
+  activeFrom?: Date | null;
+
+  @Field(() => Date, {
+    nullable: true,
+    description: 'Vigencia: hasta cuándo se ve el blog (null = sin vencimiento)',
+  })
+  activeUntil?: Date | null;
 
   @Field(() => Boolean, { description: 'Si el blog pide clave (INV-01)' })
   hasAccessKey: boolean;

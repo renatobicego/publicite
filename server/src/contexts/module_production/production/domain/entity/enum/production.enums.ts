@@ -93,11 +93,15 @@ export enum ProductionShelfCategory {
   youtube = 'youtube',
   games = 'games',
   places = 'places',
+  podcasts = 'podcasts',
+  music = 'music',
+  images = 'images',
 }
 
 registerEnumType(ProductionShelfCategory, {
   name: 'ProductionShelfCategory',
-  description: 'Pelis, Libros, Sitios web, Youtube, Games, Places',
+  description:
+    'Pelis, Libros, Sitios web, Youtube, Games, Places, Podcasts, Música, Imágenes',
 });
 
 /**
@@ -138,10 +142,11 @@ export enum ProductionLockReason {
   ticket = 'ticket',
   pendingReview = 'pendingReview',
   moderation = 'moderation',
+  schedule = 'schedule',
 }
 
 registerEnumType(ProductionLockReason, {
   name: 'ProductionLockReason',
   description:
-    'accessKey (falta la clave), visibility (fuera del alcance), ticket (requiere ticket), pendingReview (reseña pendiente), moderation (oculto o bloqueado)',
+    'accessKey (falta la clave), visibility (fuera del alcance), ticket (requiere ticket), pendingReview (reseña pendiente), moderation (oculto o bloqueado), schedule (fuera de las fechas de vigencia)',
 });

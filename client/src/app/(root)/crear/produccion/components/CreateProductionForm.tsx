@@ -29,6 +29,13 @@ import { PostLocationForm } from "@/types/postTypes";
 import SelectProductionBehaviour from "@/app/(root)/(explorar)/producciones/components/SelectProductionBehaviour";
 import BlogLimitReached from "@/app/(root)/(explorar)/producciones/components/BlogLimitReached";
 import BlogBehaviourFields from "@/app/(root)/(explorar)/producciones/components/BlogBehaviourFields";
+import BlogScheduleFields from "@/app/(root)/(explorar)/producciones/components/BlogScheduleFields";
+import {
+  endOfDayIso,
+  startOfDayIso,
+  todayInput,
+  validateSchedule,
+} from "@/app/(root)/(explorar)/producciones/productionSchedule";
 import {
   canCreateBlogOf,
   defaultVisibilityFor,
@@ -61,6 +68,9 @@ const CreateProductionForm = ({ groupId }: { groupId?: string }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [welcomeText, setWelcomeText] = useState("");
+  const [activeFrom, setActiveFrom] = useState(todayInput);
+  const [activeUntil, setActiveUntil] = useState("");
+  const [showScheduleError, setShowScheduleError] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [headerPhotoKey, setHeaderPhotoKey] = useState<string | undefined>(
     undefined
@@ -137,6 +147,12 @@ const CreateProductionForm = ({ groupId }: { groupId?: string }) => {
       toastifyError("El título del blog es obligatorio");
       return;
     }
+    const scheduleError = validateSchedule(activeFrom, activeUntil);
+    if (scheduleError) {
+      setShowScheduleError(true);
+      toastifyError(scheduleError);
+      return;
+    }
     const geoLocation =
       behaviourType === ProductionBehaviourType.libre
         ? toGeoLocationInput(location)
@@ -154,6 +170,8 @@ const CreateProductionForm = ({ groupId }: { groupId?: string }) => {
         welcomeText: welcomeText.trim() || undefined,
         headerPhotoKey,
         groupId,
+        activeFrom: startOfDayIso(activeFrom),
+        activeUntil: activeUntil ? endOfDayIso(activeUntil) : undefined,
         ...(groupId
           ? { visibility: ProductionVisibility.public }
           : {
@@ -314,6 +332,14 @@ const CreateProductionForm = ({ groupId }: { groupId?: string }) => {
         value={welcomeText}
         onValueChange={setWelcomeText}
         maxLength={500}
+      />
+      <BlogScheduleFields
+        from={activeFrom}
+        until={activeUntil}
+        setFrom={setActiveFrom}
+        setUntil={setActiveUntil}
+        isDisabled={isSubmitting}
+        showErrors={showScheduleError}
       />
       {!groupId && behaviourType && (
         <BlogBehaviourFields

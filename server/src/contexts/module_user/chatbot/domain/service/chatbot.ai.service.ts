@@ -537,6 +537,7 @@ Si necesitas más anuncios pero no quieres cambiar de plan completo:
    - **Blog de Agenda**: visible sólo para tu agenda de contactos (Contactos, Amigos o Top amigos), sin importar dónde estén.
    Los blogs de grupo no tienen comportamiento: los ven los miembros del grupo según su alcance.
 3. Completa el nombre, la descripción, la foto de portada y el texto de bienvenida
+   - **Fechas de vigencia**: "Vigente desde" (obligatoria) y "Vigente hasta" (opcional, no puede ser anterior). Fuera de esas fechas el blog no aparece en Explorar ni en el cartel, y quien entra por link ve sólo un aviso con las fechas. No se borra nada: el dueño lo sigue viendo y las cambia desde "Editar blog".
 4. Elige el **alcance**: en un blog libre, Público o Registrados; en uno de agenda, Contactos, Amigos o Top amigos. En los dos puedes elegir **Sólo yo**
 5. ¡Listo! Entra al blog y empieza a cargar contenido
 
@@ -554,8 +555,11 @@ Puedes buscar por nombre o descripción y cambiar tu ubicación con "Seleccionar
 
 ### 📁 Organizar el contenido (como en un explorador de archivos)
 - **Carpetas y subcarpetas**: usa "Nueva carpeta". Cada carpeta muestra una vista previa de lo que tiene adentro.
+- **Súper botón Crear** (el botón "+ Crear" fijo abajo a la derecha): primero ofrece **Crear nuevo blog**; dentro de tu blog suma arriba de todo las opciones para crear en la carpeta abierta: Carpeta, Artículo, Álbum de fotos y Subir archivos.
+- **Álbum de fotos**: "Nuevo álbum" crea una carpeta con las fotos que elijas, todo de una vez.
+- **Estantería** 📚: debajo del encabezado del blog hay un estante con recomendaciones cortas: libros, películas o series, podcasts, música, videos de YouTube, links, imágenes, juegos o lugares. Cada objeto tiene tipo, título corto y, opcionales, un detalle (autor, director…), un link y una imagen. Con imagen se ve de frente; sin imagen, como el lomo de un libro. Al tocarlo se abre su ficha. El dueño lo arma con "Armar estante" / "Editar estante".
 - **Subir archivos**: con el botón "Subir archivos" (puedes elegir varios a la vez) o **arrastrando los archivos desde tu computadora** y soltándolos sobre el blog o sobre una carpeta.
-- **Artículos**: con "Nuevo artículo" escribes un texto con formato, imágenes y otros bloques. Arriba del editor hay una **barra de formato fija, como en Word** (estilo de párrafo, títulos, listas, negrita, cursiva, subrayado, tachado, color, resaltado, tamaño, enlace y alineación); también aparece al seleccionar un texto. Mientras escribes se muestra el **recuento de palabras y caracteres**.
+- **Artículos**: con "Nuevo artículo" escribes un texto con formato, imágenes y otros bloques. Arriba del editor hay una **barra de formato fija, como en Word** (estilo de párrafo, títulos, listas, negrita, cursiva, subrayado, tachado, color, resaltado, tamaño, enlace y alineación); también aparece al seleccionar un texto. Mientras escribes se muestra el **recuento de palabras y caracteres**. Con el bloque **YouTube** pegas el link de un video y queda el reproductor dentro del artículo (no ocupa espacio de almacenamiento).
 - **Ver PDF y Word**: los PDF y los documentos de Word (.docx) se leen dentro del blog, con su propio visor (con zoom en los PDF). Los demás documentos de Office se descargan.
 - **Mover**: marca uno o varios elementos con su casilla, toca **"Mover"** y elige la carpeta de destino. También puedes **arrastrar** un elemento y soltarlo sobre una carpeta, o usar "Mover a…" en el menú de los tres puntos de cada elemento. Lo movido deja de estar en la carpeta de origen y pasa a tomar el alcance de la carpeta de destino.
 - **Renombrar y borrar**: desde el menú de los tres puntos de cada elemento. Borrar una carpeta borra todo lo que tiene adentro.
@@ -564,7 +568,7 @@ Puedes buscar por nombre o descripción y cambiar tu ubicación con "Seleccionar
 - **Flechas Atrás / Adelante** y **Subir un nivel**, junto al camino de carpetas (Inicio › Carpeta › Subcarpeta).
 - Dentro de un archivo o artículo: botón para **volver a la carpeta** y flechas **Anterior / Siguiente** para recorrer los archivos de esa carpeta.
 - **Buscar** por nombre dentro de la carpeta abierta, **filtrar por tipo** (carpetas, fotos, videos, audios, escritos, documentos, artículos) y **ordenar** (más recientes, más antiguos, por nombre o por tipo).
-- **Vista de grilla o de lista**, a elección. En la grilla, un deslizador cambia el **tamaño de los íconos** (más chicos o más grandes), como en un explorador de archivos.
+- **Vista de cuadrícula ordenada, cuadrícula libre o lista**, a elección de cada uno (se recuerda en tu navegador). La ordenada muestra todos los recuadros del mismo tamaño; la libre deja cada foto con su alto. En la cuadrícula, un deslizador cambia el **tamaño de los íconos** (más chicos o más grandes), como en un explorador de archivos.
 - **Compartir**: cada carpeta, archivo o artículo tiene su propio link. El botón de compartir junto al camino de carpetas comparte la carpeta abierta, y dentro de un archivo o artículo el botón "Compartir" lleva directo a ese contenido (no al inicio del blog). El staff también tiene "Compartir link" en el menú de los tres puntos.
 
 ### 👀 Ver como visitante

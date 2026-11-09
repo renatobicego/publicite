@@ -4,6 +4,7 @@ import { Image } from "@nextui-org/react";
 import { FaCheck, FaSquare } from "react-icons/fa6";
 import AudioPlayer from "@/components/MediaPlayers/AudioPlayer";
 import VideoPlayer from "@/components/MediaPlayers/VideoPlayer";
+import YouTubeEmbed from "@/components/MediaPlayers/YouTubeEmbed";
 import { ALIGNMENT_TUNE, BlockAlignment } from "./tools/AlignmentBlockTune";
 import {
   sanitizeInlineHtml,
@@ -170,6 +171,29 @@ const BlockRenderer = ({ data }: { data: OutputData }) => {
               <div key={index} className="my-6">
                 <VideoPlayer src={d.file.url} />
               </div>
+            );
+          }
+          case "youtube": {
+            const d = block.data as {
+              videoId?: string;
+              start?: number;
+              caption?: string;
+            };
+            if (!d.videoId) return null;
+            return (
+              <figure key={index} className="my-6">
+                <YouTubeEmbed
+                  video={d.videoId}
+                  start={Number(d.start) || 0}
+                  title={d.caption || "Video de YouTube"}
+                />
+                {d.caption && (
+                  <figcaption
+                    className="text-left text-sm text-default-500 mt-2"
+                    dangerouslySetInnerHTML={safeHtml(d.caption)}
+                  />
+                )}
+              </figure>
             );
           }
           case "photoGrid": {

@@ -21,6 +21,7 @@ import {
   ProductionBehaviourType,
   ProductionFileType,
   ProductionItemKind,
+  ProductionLockReason,
   ProductionOwnerType,
   ProductionRole,
   ProductionVisibility,
@@ -76,6 +77,7 @@ import { sanitizeArticleBlocks } from '../functions/production.article-sanitize'
 import { ProductionCascadeService } from './production.cascade.service';
 import { ProductionViewerScope } from './production.access.service';
 import { hashAccessKey } from '../functions/production.access-key';
+import { normalizeSchedule } from '../functions/production.schedule';
 import {
   assertVisibilityMatchesBehaviour,
   defaultVisibilityFor,
@@ -322,12 +324,15 @@ export class ProductionService implements ProductionServiceInterface {
   }
 
   private mapShelf(request: { shelf?: any[] }) {
-    return request.shelf?.map(({ category, title, link, imageKey }) => ({
-      category,
-      title: title.trim(),
-      link,
-      imageKey,
-    }));
+    return request.shelf?.map(
+      ({ category, title, subtitle, link, imageKey }) => ({
+        category,
+        title: title.trim(),
+        subtitle: subtitle?.trim() || undefined,
+        link: link?.trim() || undefined,
+        imageKey: imageKey || undefined,
+      }),
+    );
   }
 
   // ---------------------------------------------------------------------------
@@ -438,6 +443,21 @@ export class ProductionService implements ProductionServiceInterface {
     }
     if (request.shelf !== undefined) {
       fields.shelf = this.mapShelf(request);
+    }
+    if (request.activeFrom !== undefined || request.activeUntil !== undefined) {
+      // La fecha de inicio es obligatoria: si no viene se conserva la actual
+      // (o la de creación en blogs anteriores a la vigencia).
+      const schedule = normalizeSchedule(
+        request.activeFrom ??
+          production.getActiveFrom ??
+          production.getCreatedAt ??
+          new Date(),
+        request.activeUntil !== undefined
+          ? request.activeUntil
+          : production.getActiveUntil,
+      );
+      fields.activeFrom = schedule.activeFrom;
+      fields.activeUntil = schedule.activeUntil;
     }
     if (request.geoLocation !== undefined && request.geoLocation !== null) {
       if (production.getBehaviourType !== ProductionBehaviourType.libre) {
@@ -939,7 +959,13 @@ export class ProductionService implements ProductionServiceInterface {
     for (const production of productions) {
       const viewer = await this.accessService.contextFor(production, scope);
       const decision = this.accessService.evaluateProduction(production, viewer);
-      if (!decision.listed) continue;
+      // Fuera de vigencia no se lista (sí se abre por link, con el aviso).
+      if (
+        !decision.listed ||
+        decision.lockReason === ProductionLockReason.schedule
+      ) {
+        continue;
+      }
       const limits = this.accessService.canSeeInsights(viewer.role)
         ? await this.accessService.getCreatorLimits(production)
         : null;
@@ -1094,7 +1120,7 @@ export class ProductionService implements ProductionServiceInterface {
     }
 
     const { productions, hasMore } = await this.productionRepository.findList(
-      { ...filter, ...accessFilter },
+      { ...filter, ...accessFilter, activeAt: new Date() },
       safePage,
       safeLimit,
     );
@@ -1122,6 +1148,7 @@ export class ProductionService implements ProductionServiceInterface {
         ),
         includeKeyProtected: false,
         includeModerated: false,
+        activeAt: new Date(),
       },
       safeLimit,
     );

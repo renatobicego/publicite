@@ -402,6 +402,10 @@ export class ProductionAccessService {
       moderationStatus: production.getModerationStatus,
       hasAccessKey: production.hasAccessKey,
       visibility: production.getVisibility!,
+      schedule: {
+        activeFrom: production.getActiveFrom,
+        activeUntil: production.getActiveUntil,
+      },
       viewer,
     });
   }

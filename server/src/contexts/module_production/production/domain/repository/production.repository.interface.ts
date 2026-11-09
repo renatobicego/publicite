@@ -44,6 +44,8 @@ export interface ProductionListFilter {
   excludeProductionIds?: string[];
   /** Deja afuera los blogs de este dueño (Libres no muestra los propios). */
   excludeOwnerId?: string;
+  /** Sólo blogs vigentes en este instante (Explorar y destacados). */
+  activeAt?: Date;
   /**
    * Ubicación del visitante: los blogs libres con ubicación sólo se listan si
    * el visitante está dentro de su radio, salvo los de `geoBypassOwnerIds`
