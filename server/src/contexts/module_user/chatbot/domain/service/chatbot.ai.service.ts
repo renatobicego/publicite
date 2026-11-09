@@ -594,6 +594,9 @@ El dueño o moderador del blog tiene el botón **"Ver como visitante"**: muestra
 ### ⚙️ Menú "Opciones" del blog
 El dueño encuentra en un solo menú: Mapa de tickets, Alcance y clave, Ventas de tickets, Editar blog, Denuncias recibidas y Eliminar blog.
 
+### 🧠 Memoria del Tablero de trabajo
+Al volver al Tablero de trabajo se retoma la última conversación con Cubito. El botón **"Historial"** muestra las conversaciones anteriores (para retomarlas o borrarlas) y **"Nueva"** empieza otra. En el campo de texto, **Enter envía** y **Shift+Enter** agrega un renglón. Las imágenes generadas no quedan guardadas en la conversación: hay que descargarlas o enviarlas al blog.
+
 ### 🎨 Enviar al blog desde el Tablero de trabajo
 En el Tablero de trabajo de Cubito (https://soonpublicite.com/cubito/tablerodetrabajo), cada **imagen generada** tiene "Enviar a mi blog", y cada **Valuación IA** guardada tiene el botón de carpeta "Enviar a mi blog" (se guarda el informe como imagen). Se elige el blog y dónde guardarlo: en el inicio, en una carpeta existente o en una carpeta nueva.
 

@@ -2375,7 +2375,7 @@ type Query {
   """Estado de tokens Publicité de IA del usuario logueado (para el perfil)"""
   getMyChatbotTokenStatus: ChatbotTokenStatusResponse!
 
-  """Obtener el historial de una sesión de chat"""
+  """Obtener el historial de una sesión de chat (sólo las propias)"""
   getChatSessionHistory(sessionId: String!, limit: Float, page: Float): GetSessionHistoryResponse!
 
   """
@@ -2389,7 +2389,9 @@ type Query {
     limit: Float
   ): ChatbotUsageReportResponse!
 
-  """Obtener todas las sesiones de chat de un usuario"""
+  """
+  Obtener todas las sesiones de chat del usuario logueado (userId tiene que ser el propio)
+  """
   getUserChatSessions(userId: String!, limit: Float, page: Float): GetUserChatSessionsResponse!
 
   """Avatares del usuario logueado"""
@@ -2796,7 +2798,9 @@ type Mutation {
   """
   generateAdImage(generateAdImageRequest: GenerateAdImageRequest!): GenerateAdImageResponse!
 
-  """Eliminar una sesión de chat completa (sesión + todos los mensajes)"""
+  """
+  Eliminar una sesión de chat completa (sesión + todos los mensajes). Sólo las propias
+  """
   deleteChatSession(sessionId: String!): Boolean!
 
   """Crea un avatar"""

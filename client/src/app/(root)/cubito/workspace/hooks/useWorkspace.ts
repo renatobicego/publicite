@@ -27,7 +27,14 @@ import {
   searchMatch,
   getUserValuaciones,
 } from "@/services/workspaceServices";
-import { sendMessageToAI, generateAdImageWithAI } from "@/services/chatbotServices";
+import {
+  sendMessageToAI,
+  generateAdImageWithAI,
+  getChatSessionHistory,
+  getUserChatSessions,
+  deleteChatSessionService,
+} from "@/services/chatbotServices";
+import { ChatSessionSummary } from "@/types/chatbotTypes";
 import { deleteFilesService } from "@/app/server/uploadThing";
 import { compressDataUrl } from "@/utils/functions/compressDataUrl";
 
@@ -83,6 +90,109 @@ export function useWorkspace() {
   const { user } = useUser();
 
   const getSessionId = () => sessionStorage.getItem("workspaceSessionId") || "";
+
+  // --- Memoria del chat: la conversación queda guardada en el BE y se retoma
+  // al volver. El id vive en localStorage, separado por usuario (así otra
+  // cuenta en el mismo navegador no intenta abrir una conversación ajena).
+  const mongoId = (user?.publicMetadata?.mongoId as string | undefined) ?? null;
+  const chatSessionStorageKey = mongoId ? `cubito-workspace-chat:${mongoId}` : null;
+  const readChatSessionId = useCallback(() => {
+    if (!chatSessionStorageKey) return null;
+    try {
+      return localStorage.getItem(chatSessionStorageKey);
+    } catch {
+      return null;
+    }
+  }, [chatSessionStorageKey]);
+  const writeChatSessionId = useCallback(
+    (sessionId: string | null) => {
+      if (!chatSessionStorageKey) return;
+      try {
+        if (sessionId) localStorage.setItem(chatSessionStorageKey, sessionId);
+        else localStorage.removeItem(chatSessionStorageKey);
+      } catch {
+        // Sin almacenamiento: la conversación sigue, pero no se retoma al volver.
+      }
+    },
+    [chatSessionStorageKey]
+  );
+  const [activeChatSessionId, setActiveChatSessionId] = useState<string | null>(null);
+  const [chatSessions, setChatSessions] = useState<ChatSessionSummary[]>([]);
+  const [isLoadingChatHistory, setIsLoadingChatHistory] = useState(false);
+
+  /** Abre una conversación guardada en el tablero. Devuelve si se pudo. */
+  const openChatSession = useCallback(
+    async (sessionId: string): Promise<boolean> => {
+      setIsLoadingChatHistory(true);
+      try {
+        const res = await getChatSessionHistory(sessionId);
+        if (!res || "error" in res) return false;
+        setChatMessages(
+          (res.messages ?? []).map(
+            (msg: { role: string; content: string; timestamp: string }, index: number) => ({
+              id: `${sessionId}-${index}`,
+              role: msg.role === "user" ? "user" : "assistant",
+              content: msg.content,
+              timestamp: new Date(msg.timestamp),
+            })
+          )
+        );
+        // Las imágenes generadas no se guardan en la conversación.
+        setGeneratedImages([]);
+        setActiveChatSessionId(sessionId);
+        writeChatSessionId(sessionId);
+        return true;
+      } finally {
+        setIsLoadingChatHistory(false);
+      }
+    },
+    [writeChatSessionId]
+  );
+
+  // Al entrar al tablero se retoma la última conversación.
+  useEffect(() => {
+    const stored = readChatSessionId();
+    if (!stored) return;
+    openChatSession(stored).then((ok) => {
+      // Se borró o ya no existe: arranca una nueva.
+      if (!ok) writeChatSessionId(null);
+    });
+  }, [readChatSessionId, openChatSession, writeChatSessionId]);
+
+  const loadChatSessions = useCallback(async () => {
+    setIsLoadingChatHistory(true);
+    try {
+      const res = await getUserChatSessions(1, 20);
+      if (!res || "error" in res) {
+        toastifyError("No se pudo cargar el historial de conversaciones");
+        return;
+      }
+      setChatSessions(res.sessions ?? []);
+    } finally {
+      setIsLoadingChatHistory(false);
+    }
+  }, []);
+
+  const startNewChat = useCallback(() => {
+    setChatMessages([]);
+    setGeneratedImages([]);
+    setActiveChatSessionId(null);
+    writeChatSessionId(null);
+  }, [writeChatSessionId]);
+
+  const deleteChatSession = useCallback(
+    async (sessionId: string) => {
+      const res = await deleteChatSessionService(sessionId);
+      if (!res || "error" in res) {
+        toastifyError("No se pudo eliminar la conversación");
+        return;
+      }
+      setChatSessions((prev) => prev.filter((session) => session.sessionId !== sessionId));
+      if (sessionId === activeChatSessionId) startNewChat();
+      toastifySuccess("Conversación eliminada");
+    },
+    [activeChatSessionId, startNewChat]
+  );
 
   // --- Load saved match posts from localStorage on mount ---
   useEffect(() => {
@@ -402,7 +512,13 @@ export function useWorkspace() {
     setIsChatProcessing(true);
 
     try {
-      const sessionId = sessionStorage.getItem("workspaceChatSessionId") || "";
+      // Primera vez: se crea el id y se guarda para retomarla después.
+      let sessionId = activeChatSessionId;
+      if (!sessionId) {
+        sessionId = crypto.randomUUID();
+        setActiveChatSessionId(sessionId);
+        writeChatSessionId(sessionId);
+      }
       const res = await sendMessageToAI({
         sessionId,
         message: text,
@@ -432,8 +548,9 @@ export function useWorkspace() {
         { id: generateId(), role: "assistant", content: botText, timestamp: new Date() },
       ]);
 
-      if (!sessionId && res.sessionId) {
-        sessionStorage.setItem("workspaceChatSessionId", res.sessionId);
+      if (res.sessionId && res.sessionId !== sessionId) {
+        setActiveChatSessionId(res.sessionId);
+        writeChatSessionId(res.sessionId);
       }
     } catch {
       setChatMessages((prev) => [
@@ -443,7 +560,7 @@ export function useWorkspace() {
     }
 
     setIsChatProcessing(false);
-  }, [selectedAvatarId, activeMode]);
+  }, [selectedAvatarId, activeMode, activeChatSessionId, writeChatSessionId]);
 
   const handleGenerateImage = useCallback(async (prompt: string) => {
     if (!prompt.trim()) return;
@@ -558,6 +675,14 @@ export function useWorkspace() {
     isGeneratingImage,
     handleSendChatMessage,
     handleGenerateImage,
+    // Memoria del chat (conversaciones guardadas)
+    activeChatSessionId,
+    chatSessions,
+    isLoadingChatHistory,
+    loadChatSessions,
+    openChatSession,
+    startNewChat,
+    deleteChatSession,
 
     // Valuación
     valuacionId,

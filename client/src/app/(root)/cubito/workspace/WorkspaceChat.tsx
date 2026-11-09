@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Button, ScrollShadow, Chip } from "@nextui-org/react";
 import { FaPaperPlane, FaWandMagicSparkles, FaMagnifyingGlass, FaForward, FaRegCopy, FaCheck } from "react-icons/fa6";
-import { CustomInputWithoutFormik } from "@/components/inputs/CustomInputs";
+import ChatTextarea from "@/components/inputs/ChatTextarea";
 import type { useWorkspace } from "./hooks/useWorkspace";
 
 interface WorkspaceChatProps {
@@ -87,6 +87,10 @@ export default function WorkspaceChat({ workspace }: WorkspaceChatProps) {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        submit();
+    };
+
+    const submit = () => {
         if (!inputValue.trim() || isProcessing) return;
 
         if (activeModule === "valuacion" && valuacionStatus === "draft") {
@@ -222,10 +226,11 @@ export default function WorkspaceChat({ workspace }: WorkspaceChatProps) {
                 </div>
 
                 {/* Input form */}
-                <form onSubmit={handleSubmit} className="flex gap-2">
-                    <CustomInputWithoutFormik
+                <form onSubmit={handleSubmit} className="flex items-start gap-2">
+                    <ChatTextarea
                         value={inputValue}
-                        onChange={(e) => setInputValue(e.target.value)}
+                        onValueChange={setInputValue}
+                        onSend={() => submit()}
                         placeholder={
                             activeModule === "valuacion" && valuacionStatus === "draft"
                                 ? "Respondé la pregunta de Cubito..."
@@ -233,7 +238,7 @@ export default function WorkspaceChat({ workspace }: WorkspaceChatProps) {
                                     ? "Describí qué buscás..."
                                     : "Escribí tu mensaje..."
                         }
-                        disabled={isInputDisabled}
+                        isDisabled={isInputDisabled}
                     />
                     <Button
                         isIconOnly

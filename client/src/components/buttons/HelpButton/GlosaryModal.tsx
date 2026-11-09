@@ -341,6 +341,14 @@ const GlosaryModal = ({ customButton }: { customButton?: React.ReactNode }) => {
                 las Valuaciones IA, a una carpeta nueva o existente.
               </li>
               <li>
+                Memoria del Tablero de trabajo: al volver, retomás tu última
+                conversación con Cubito. Con &quot;Historial&quot; ves y retomás
+                las anteriores, y con &quot;Nueva&quot; empezás otra. Enter
+                envía y Shift+Enter agrega un renglón. Las imágenes generadas
+                no se guardan en la conversación: descargalas o envialas a tu
+                blog.
+              </li>
+              <li>
                 Denuncias: se hacen desde el menú de opciones del blog. Tu
                 identidad queda protegida: el dueño ve qué se denunció y el
                 motivo, pero no quién lo hizo.

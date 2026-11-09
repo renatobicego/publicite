@@ -18,15 +18,14 @@ export default function WorkspaceLayout() {
         if (!sessionStorage.getItem("workspaceSessionId")) {
             sessionStorage.setItem("workspaceSessionId", crypto.randomUUID());
         }
-        if (!sessionStorage.getItem("workspaceChatSessionId")) {
-            sessionStorage.setItem("workspaceChatSessionId", crypto.randomUUID());
-        }
+        // El id del chat libre lo maneja useWorkspace (memoria por usuario).
     }, []);
 
     const isInModule = workspace.activeModule === "valuacion" || workspace.activeModule === "match";
 
     return (
-        <div className="flex flex-col h-[calc(100vh-220px)] min-h-[600px]">
+        // Marco del tablero: sin borde se fundía con el fondo de la página.
+        <div className="flex flex-col h-[calc(100vh-220px)] min-h-[600px] overflow-hidden rounded-2xl border-2 border-default-300 dark:border-slate-600 bg-white dark:bg-slate-900 shadow-md">
             {/* Top bar: Mode selector + Token display */}
             <div className="flex items-center justify-between px-4 py-2 border-b border-divider bg-white dark:bg-slate-900">
                 <ModeSelector
