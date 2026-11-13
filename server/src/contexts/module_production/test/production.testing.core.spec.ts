@@ -98,7 +98,7 @@ describe('Mis Producciones - Fase 1: núcleo del blog', () => {
       await createBlog(userId);
 
       await expect(createBlog(userId, 'Otro')).rejects.toThrow(
-        'límite de blogs geolocalizados',
+        /límite de \d+ blogs? geolocalizados?/,
       );
       expect(await models.production.countDocuments()).toBe(1);
       const user = await findDoc(models.user, userId);
@@ -128,7 +128,7 @@ describe('Mis Producciones - Fase 1: núcleo del blog', () => {
           }),
           userId,
         ),
-      ).rejects.toThrow('límite de blogs de mi agenda');
+      ).rejects.toThrow(/límite de \d+ blogs? de mi agenda/);
     });
 
     it('los cupos de blogs personales se acumulan entre suscripciones', async () => {
@@ -192,7 +192,7 @@ describe('Mis Producciones - Fase 1: núcleo del blog', () => {
           undefined,
           userId,
         ),
-      ).rejects.toThrow('límite de blogs de mi agenda');
+      ).rejects.toThrow(/límite de \d+ blogs? de mi agenda/);
 
       await expect(
         service.setProductionVisibility(libreId, ProductionVisibility.public, userId),
@@ -683,9 +683,10 @@ describe('Mis Producciones - Fase 1: núcleo del blog', () => {
       const userId = await createTestUser(models);
       await createBlog(userId);
       const limits = await service.getProductionLimits(userId);
+      // Piso gratuito: 1 blog geolocalizado + 1 de agenda. Con uno creado queda el otro.
       expect(limits).toMatchObject({
         personalBlogCount: 1,
-        personalBlogsAvailable: 0,
+        personalBlogsAvailable: 1,
         groupBlogsAvailable: 1,
         filesPerBlogLimit: 10,
         canSellPaidTickets: false,

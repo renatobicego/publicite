@@ -154,7 +154,7 @@ describe('Mis Producciones - Fase 6: blogs de grupo y roles (GRP-01..08)', () =>
       await service.createProduction(blogRequest({ title: 'A', groupId: groupA }), creator);
       await expect(
         service.createProduction(blogRequest({ title: 'B', groupId: groupB }), creator),
-      ).rejects.toThrow('límite de blogs de grupo');
+      ).rejects.toThrow(/límite de \d+ blogs? de grupo/);
 
       await givePlanToUser(models, creator, { groupBlogsCount: 3 });
       await expect(
