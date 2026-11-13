@@ -9,7 +9,7 @@ import PaymentsTable from "./Payments/PaymentsTable";
 import { FaChevronLeft } from "react-icons/fa6";
 import SecondaryButton from "@/components/buttons/SecondaryButton";
 import DataBox, { DataItem } from "../DataBox";
-import { GIFT_PLAN, MY_PLAN_GIFTS } from "@/utils/data/urls";
+import { FRIEND_PLAN, GIFT_PLAN, MY_PLAN_GIFTS } from "@/utils/data/urls";
 
 const Subscriptions = () => {
   const [arePaymentsShown, setArePaymentsShown] = useState(false);
@@ -57,6 +57,13 @@ const Subscriptions = () => {
             Ver Pagos Realizados
           </SecondaryButton>
           <Divider />
+          <DataBox labelText="Hacete Amigo">
+            <DataItem asDiv>
+              <Link href={FRIEND_PLAN} size="sm">
+                Mi grupo e invitaciones
+              </Link>
+            </DataItem>
+          </DataBox>
           <DataBox labelText="Regalos de planes">
             <DataItem asDiv className="flex-wrap gap-x-4">
               <Link href={MY_PLAN_GIFTS} size="sm">

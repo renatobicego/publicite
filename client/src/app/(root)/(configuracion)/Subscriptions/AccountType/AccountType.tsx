@@ -6,11 +6,17 @@ import { useActiveSubscriptions } from "@/app/(root)/providers/userDataProvider"
 import { parseIsoDate, showDate } from "@/utils/functions/dates";
 import { frequencyLabelFromDays } from "@/utils/functions/billingFrequency";
 import { formatPaymentDate } from "@/utils/functions/packs";
+import { Link } from "@nextui-org/react";
+import { FRIEND_PLAN, MY_PLAN_GIFTS } from "@/utils/data/urls";
 
 const AccountType = () => {
   const { accountType: subscription, carryovers } = useActiveSubscriptions();
 
   const [isFormVisible, setIsFormVisible] = useState(false);
+  // El plan de Hacete Amigo se maneja desde el grupo y el regalo vence solo:
+  // ninguno se cancela ni se cambia desde acá.
+  const isShared = subscription?.kind === "friendGroup";
+  const isGift = subscription?.kind === "gift";
   return (
     <AnimatedBox
       isVisible={isFormVisible}
@@ -30,7 +36,21 @@ const AccountType = () => {
           labelText="Tipo de Cuenta"
           labelClassname="md:w-1/4 md:mt-2.5"
         >
-          {subscription && !subscription.subscriptionPlan.isFree ? (
+          {subscription && isShared ? (
+            <CardDataItem
+              title={`${subscription.subscriptionPlan.reason} (Hacete Amigo)`}
+              subtitle="Plan compartido con tu grupo"
+            />
+          ) : subscription && isGift ? (
+            <CardDataItem
+              title={`${subscription.subscriptionPlan.reason} (regalo)`}
+              subtitle={
+                formatPaymentDate(subscription.expiresAt)
+                  ? `Vence el ${formatPaymentDate(subscription.expiresAt)}`
+                  : "Plan regalado"
+              }
+            />
+          ) : subscription && !subscription.subscriptionPlan.isFree ? (
             <CardDataItem
               title={subscription.subscriptionPlan.reason}
               subtitle={`Próximo pago: ${showDate(
@@ -58,6 +78,11 @@ const AccountType = () => {
               />
             );
           })}
+          {isShared || isGift ? (
+            <Link href={isShared ? FRIEND_PLAN : MY_PLAN_GIFTS} size="sm" className="md:mt-2.5">
+              {isShared ? "Ver mi grupo" : "Mis regalos"}
+            </Link>
+          ) : (
           <EditButton
             text={
               <>
@@ -67,6 +92,7 @@ const AccountType = () => {
             }
             onPress={() => setIsFormVisible(true)}
           />
+          )}
         </DataBox>
       )}
     </AnimatedBox>

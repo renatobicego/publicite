@@ -49,6 +49,7 @@ const MY_PLAN_GIFTS = "/regalar/mis-regalos";
 // Hacete Amigo: el grupo del plan compartido y el link de invitación.
 const FRIEND_PLAN = "/hacete-amigo";
 const FRIEND_PLAN_JOIN = "/hacete-amigo/unirse";
+const FRIEND_PLAN_INFO = "/suscripciones/hacete-amigo";
 const NOVELTIES = "/novedades";
 export {
   MAGAZINES,
@@ -98,5 +99,6 @@ export {
   MY_PLAN_GIFTS,
   FRIEND_PLAN,
   FRIEND_PLAN_JOIN,
+  FRIEND_PLAN_INFO,
   NOVELTIES,
 };
