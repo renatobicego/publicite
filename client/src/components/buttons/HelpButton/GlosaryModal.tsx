@@ -370,6 +370,33 @@ const GlosaryModal = ({ customButton }: { customButton?: React.ReactNode }) => {
               Tienes planes para elegir y desde estos puedes crear ampliaciones
               dentro del plan. Conócelos y elige el tuyo!
             </p>
+            <ul className="list-disc pl-5 flex flex-col gap-1">
+              <li>
+                Packs: se suman a tu plan (también al Gratis) y se renuevan cada
+                mes. Hay packs de publicaciones y, cuando estén a la venta, de
+                tokens de IA y de almacenamiento. Puedes tener uno de cada uno.
+              </li>
+              <li>
+                Cambiar de plan: conservas los límites de tu plan anterior hasta
+                su próxima fecha de cobro, por el tiempo que ya pagaste. Si
+                después te sobran anuncios, quedan activos, pero no puedes crear
+                nuevos hasta estar por debajo del límite.
+              </li>
+              <li>
+                Hacete Amigo: armá tu grupo y pagá menos. Uno paga por todos con
+                débito automático y el descuento es para siempre (2 → 15 %, 3 →
+                20 %, 4 → 25 %, 5 o más → 30 %). Para pagar, cada uno tiene que
+                haber publicado un anuncio o una producción, y es para quien no
+                tiene un plan pago. Una vez pagado el grupo queda fijo: si alguien
+                se baja, se cancela el plan para todos.
+              </li>
+              <li>
+                Regalar un plan: regalá 1, 2, 3 o 5 meses de un plan con un solo
+                pago, a alguien con cuenta o a un email. Los meses cuentan desde
+                que la persona lo activa. No se le puede regalar a quien ya tiene
+                un plan pago.
+              </li>
+            </ul>
 
             <p>
               ¡Eso es todo! ¡Así de sencillo! Si tienes preguntas del

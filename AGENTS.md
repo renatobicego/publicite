@@ -71,6 +71,7 @@ module_x/<submodulo>/
 | `module_novelty` | Novedades. |
 | `module_giveaway` | Sorteos. |
 | `module_production` | **Mis Producciones** (`production/`): blogs con dueño polimórfico User\|Group, árbol de carpetas/archivos/artículos (colección `productionitems` con discriminator `kind`), visibilidad con herencia, clave de acceso, tickets, fans, reseñas, denuncias y SeudoBase. Ver §10. |
+| `module_friend_plan` | Planes compartidos: **regalo de planes** (`planGift/`, colección `plangifts`) y **Hacete Amigo** (`friendGroup/`, colección `friendgroups`). Cobra con lo que exporta `MercadoPagoModule`; el webhook de MP le avisa por eventos. Ver §6.2. |
 | `module_socket` | WebSockets (socket.io). |
 | `module_shared` | Transversal: auth (Clerk guards + `PubliciteAuth`), logger, config de tokens, utilidades. |
 
@@ -160,6 +161,9 @@ module_x/<submodulo>/
   - El historial `GET /subscription/:id` usa el usuario del token.
   - Plan de reglas y fases: `plan-feature-hacete-amigo-y-planes.md`.
 - **Tokens por plan:** `SubscriptionPlan.tokensCount` (brutos por mes, también en packs). Se lee antes que `CHATBOT_TOKENS_PLAN_MAP`, que queda de respaldo. Un plan o pack que no trae un campo de límite cuenta 0 en esa dimensión.
+- **Packs:** planes `isPack` que se cobran por suscripción de MP, igual que antes. Se suman al plan (también al gratuito), uno de cada uno a la vez, y se renuevan cada mes. La página `/packs-publicaciones` los agrupa por categoría (publicaciones, tokens, almacenamiento) con `client/src/utils/functions/packs.ts`.
+- **Cambio de plan (extra temporal):** al cambiar de plan, `MpCheckoutService.cancelPrevious` da de baja el anterior y crea una suscripción interna `carryover` que apunta al plan viejo hasta su `nextPaymentDate`, así se conservan todos los límites por el tiempo ya pagado. Al vencer, los límites bajan solos (sin downgrade): los anuncios de más quedan activos y los mensajes de límite (`limitMessages.ts`) dicen cuántos sobran.
+- **Página de pruebas de MP (Fase 0):** `/admin/prueba-mp` (`MpTestService`, `mp-test.resolver.ts`, sólo admin) prueba preapprovals sin plan y pagos únicos con `external_reference: mptest:`; el webhook los guarda en `mptestevents` sin tocar usuarios. Se borra al terminar las pruebas.
 - **Invoices/facturas:** `invoice.schema.ts` (`facturaUrl`, `facturaUploadedAt`, `facturaUploadedBy`). Panel admin: `AdminInvoiceResolver` (`@UseGuards(ClerkAuthGuard, AdminGuard)`) con `getAllInvoicesAdmin` y `attachFacturaToInvoice`.
 - **Glosario de Cubito:** el texto que usa el chatbot para responder sobre la plataforma es la constante `GLOSSARY` de `module_user/chatbot/domain/service/chatbot.ai.service.ts`; el glosario que ve el usuario es `client/src/components/buttons/HelpButton/GlosaryModal.tsx`. Son dos textos separados: una funcionalidad nueva se documenta en **los dos**.
 - **Prompt de generación de imágenes:** tope de caracteres en `IMAGE_PROMPT_MAX_LENGTH` (2000), duplicado a propósito en `module_shared/ai/ai.config.ts` (lo valida el DTO y `ChatbotAIService.generateImage`) y en `client/src/utils/data/aiLimits.ts` (contador del Tablero de trabajo y del asistente de crear anuncio). Se cambian juntos.
@@ -227,6 +231,45 @@ Los flags y el piso viven en `module_shared/production-limits/production.limits.
 El cálculo de límites por usuario está en `calculateProductionLimits.ts` y se enriquece con el
 consumo real en `ProductionAccessService.buildUserLimitsResponse`.
 
+### 6.2 Regalo de planes y Hacete Amigo (`module_friend_plan`)
+
+Plan y decisiones: `plan-feature-hacete-amigo-y-planes.md` (Fases 4 y 5). Configuración por env vars en
+`module_shared/friend-plan/friend.plan.config.ts`: `PLAN_GIFT_MONTH_OPTIONS` (default `1,2,3,5`),
+`FRIEND_PLAN_DISCOUNT_TIERS` (default `{"2":15,"3":20,"4":25,"5":30}`), `FRIEND_PLAN_MAX_DISCOUNT` (30),
+`FRIEND_PLAN_MIN_MEMBERS` (2), `FRIEND_PLAN_MAX_MEMBERS` (0 = sin tope) y `FRIEND_PLAN_PAYMENT_FAILED_DAYS` (10).
+Sólo se usan planes pagos mensuales (no packs, no gratuito, no anuales); el precio sale siempre del plan en MP.
+Ningún cobro puede ser de $50 o menos (`MIN_CHARGE_AMOUNT`): el webhook los toma como validación de tarjeta.
+
+- **Regalo (`planGift/`):** quien regala elige plan y meses y paga **una vez** (`FetchToMp.createPayment`,
+  `POST /v1/payments` con clave de idempotencia = id del regalo, `external_reference: gift:<id>`). El regalo va a
+  una cuenta o a un email; al registrarse con ese email (evento `user_created`, que emite `UserService.createUser`)
+  se asigna a la cuenta. El destinatario lo activa: suscripción interna `kind: gift` con `expiresAt` (sin
+  preapproval). Nunca a uno mismo ni a quien `hasPaidPlan`. El webhook de `payment` con `gift:` emite
+  `mp_gift_payment`; una devolución (`refunded`/`charged_back`) cancela el plan. La factura es a nombre de quien
+  regala (`saveOneTimePaymentInvoice`). Cliente: `/regalar`, `/regalar/mis-regalos`, `/canjear/[code]` (pública),
+  `/admin/regalos`.
+- **Hacete Amigo (`friendGroup/`):** grupo propio (no el `Group` de la app), `forming → paying → active ⇄
+  paymentFailed → cancelled`. Invitaciones por buscador (notificación) y por link (`inviteCode`, regenerable). Para
+  pagar: mínimo de miembros aceptados y cada uno con un anuncio o una producción (`User.posts`/`User.productions`,
+  se calcula al leer). Uno paga por todos: `payFriendGroup` toma el grupo (`forming → paying`) y crea un preapproval
+  **sin plan** por el total con `external_reference: friendGroup:<id>`; se registra una sola `Subscription`
+  (`kind: friendGroup`, `payerUser` = quien paga) en `User.subscriptions` de cada miembro. Desde ahí el grupo queda
+  fijo. El webhook avisa con `mp_friend_group_preapproval` (alta perdida, monto que no coincide → cancela,
+  `authorized` activa, `cancelled` cancela), `mp_friend_group_charge_failed` (pausa, downgrade a cada miembro sin
+  otro plan pago, aviso; pasado `PAYMENT_FAILED_DAYS` se cancela al leer) y `mp_friend_group_charge_recovered`.
+  Si alguien se baja o borra su cuenta (`user_deleting`, que emite `SubscriptionAdapter.deleteSubscription`), se
+  cancela el débito y el grupo para todos, sin downgrade. Estando en un grupo, `MpCheckoutService` no deja
+  contratar un plan propio (los packs sí). Cliente: `/suscripciones/hacete-amigo`, `/hacete-amigo`,
+  `/hacete-amigo/unirse/[code]` (pública).
+- **Notificaciones:** un solo tipo para los dos (`plan_notifications`, discriminator `NotificationPlan`, eventos
+  `notification_plan_*` en `notification/domain/entity/plan.events.ts`, `frontData.plan`). En el cliente,
+  `components/notifications/plans/PlanNotification.tsx` va primero en `NotificationRenderer`.
+- **Links públicos y registro:** `/canjear/*` y `/hacete-amigo/unirse/*` son públicas en `proxy.ts`. Para volver al
+  link después del onboarding se usa la cookie `soon_after_onboarding` (7 días,
+  `client/src/utils/functions/afterOnboarding.ts`): la guarda la página o el proxy al mandar a `/onboarding`, y
+  `(clerk)/layout.tsx` redirige ahí al completar el onboarding.
+- **Tests:** `server/src/contexts/module_friend_plan/test/` (contra la base de tests, `--runInBand`).
+
 ---
 
 ## 7. Arquitectura del cliente (Next.js App Router)
@@ -254,8 +297,9 @@ Existen equivalentes para otras entidades: `boardActions.ts`, `groupActions.ts`,
 - `(root)/editar/anuncio/[id]/` — edición.
 - `(root)/(configuracion)/` — panel de cuenta (perfil/cartel, suscripción, privacidad, preferencias).
 - `(root)/(explorar)/perfiles/[id]/` — cartel público del usuario.
-- `(root)/(subscripciones)/` — `/suscripciones`, `/packs-publicaciones`, cambiar método de pago.
-- `(root)/admin/` — panel de administración. `layout.tsx` valida el rol y envuelve en `AdminPanel` (título + tabs); cada tab es una subruta: `/admin/facturas`, `/admin/tickets-producciones`, `/admin/denuncias-producciones` (`/admin` redirige a la primera). Los links están en `AdminDropdown` y `MobileMenu`. Una sección nueva = carpeta con `page.tsx` + entrada en `sections` de `AdminPanel` + link en los dos menús.
+- `(root)/(subscripciones)/` — `/suscripciones`, `/suscripciones/hacete-amigo`, `/packs-publicaciones`, `/regalar` (+ `/regalar/mis-regalos`), cambiar método de pago.
+- `(root)/hacete-amigo/` — panel del grupo de Hacete Amigo y `/hacete-amigo/unirse/[code]` (pública). `(root)/canjear/[code]` — link de un regalo (pública). Ver §6.2.
+- `(root)/admin/` — panel de administración. `layout.tsx` valida el rol y envuelve en `AdminPanel` (título + tabs); cada tab es una subruta: `/admin/facturas`, `/admin/tickets-producciones`, `/admin/denuncias-producciones`, `/admin/regalos`, `/admin/prueba-mp` (`/admin` redirige a la primera). Los links están en `AdminDropdown` y `MobileMenu`. Una sección nueva = carpeta con `page.tsx` + entrada en `sections` de `AdminPanel` + link en los dos menús.
 - `(clerk)/` — `iniciar-sesion`, `registrarse`, `onboarding`.
 - URLs centralizadas en `client/src/utils/data/urls.ts`.
 

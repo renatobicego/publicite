@@ -466,12 +466,35 @@ https://soonpublicite.com/suscripciones
 - Funcionalidades adicionales
 - Opciones de destacado
 
-### 🔝 Ampliaciones:
+### 🔝 Ampliaciones (packs):
 
-Si necesitas más anuncios pero no quieres cambiar de plan completo:
-- Compra packs de publicaciones adicionales
+Si necesitas más pero no quieres cambiar de plan:
+- Compra un pack: hay packs de publicaciones y, cuando estén a la venta, de tokens Publicité de IA y de almacenamiento
 - Ver packs: https://soonpublicite.com/packs-publicaciones
-- Se suman a tu plan actual
+- Se suman a tu plan actual (también al plan Gratis) y se renuevan cada mes. Puedes tener uno de cada uno a la vez
+
+### 🔄 Cambiar de plan:
+
+Cuando cambias de plan (para subir o para bajar), conservas los límites de tu plan anterior hasta su próxima fecha de cobro, por el tiempo que ya pagaste. Ejemplo: si te quedaban 4 anuncios y pasas a un plan de 10, hasta esa fecha tienes 14 y después 10. Si después te sobran anuncios, quedan activos, pero no puedes crear nuevos hasta estar por debajo del límite.
+
+### 🤝 Hacete Amigo (plan compartido con descuento):
+
+"Armá tu grupo y pagá menos. De a 4, pagan 3 y rinden 4. Uno paga por todos con débito automático y se olvidan de los vencimientos."
+- Un grupo de amigos comparte un plan pago mensual y **uno paga por todos** con débito automático
+- El descuento es para siempre y depende de cuántos son: 2 → 15 %, 3 → 20 %, 4 → 25 %, 5 o más → 30 %
+- Para pagar tienen que ser al menos 2 y cada uno tiene que haber publicado un anuncio o una producción
+- Es para quien no tiene un plan pago: si tienes uno, primero cancélalo
+- Se invita con el buscador de usuarios o con un link (sirve aunque la persona no tenga cuenta)
+- Una vez pagado, el grupo queda fijo: si alguien se baja, se cancela el plan para todos. Si la tarjeta es rechazada, el grupo vuelve al plan gratuito hasta que se logre cobrar
+- Ver cómo funciona: https://soonpublicite.com/suscripciones/hacete-amigo · Mi grupo: https://soonpublicite.com/hacete-amigo
+
+### 🎁 Regalar un plan:
+
+- Puedes regalarle a alguien 1, 2, 3 o 5 meses de un plan pago. Se paga **una sola vez** (no se renueva solo)
+- Se regala a alguien que ya tiene cuenta (lo buscas por su nombre o @usuario) o a un email, si todavía no tiene cuenta: te damos un link para mandarle y, cuando se registra con ese email, el regalo aparece en su cuenta
+- Los meses empiezan a contar cuando la persona lo activa. Al terminar, vuelve al plan gratuito
+- No se le puede regalar a quien ya tiene un plan pago
+- Regalar: https://soonpublicite.com/regalar · Mis regalos: https://soonpublicite.com/regalar/mis-regalos
 
 ### 💳 Gestionar suscripción:
 
@@ -487,7 +510,8 @@ Si necesitas más anuncios pero no quieres cambiar de plan completo:
 **Importante**:
 - Los planes se renuevan automáticamente
 - Puedes cancelar en cualquier momento
-- Al cancelar, mantienes el acceso hasta el fin del período pagado
+- Al cancelar, tus límites vuelven en el momento a los del plan gratuito; tus anuncios no se desactivan
+- El plan de Hacete Amigo se maneja desde tu grupo y un plan regalado vence solo: ninguno se cancela desde Configuración
 
 ---
 
@@ -520,6 +544,8 @@ Si necesitas más anuncios pero no quieres cambiar de plan completo:
 • **Tu Perfil/Configuración**: https://soonpublicite.com/configuracion
 • **Suscripciones**: https://soonpublicite.com/suscripciones
 • **Packs de Publicaciones**: https://soonpublicite.com/packs-publicaciones
+• **Hacete Amigo**: https://soonpublicite.com/suscripciones/hacete-amigo
+• **Regalar un plan**: https://soonpublicite.com/regalar
 
 ### 👤 Cuenta:
 
