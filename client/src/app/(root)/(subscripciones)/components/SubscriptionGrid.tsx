@@ -1,11 +1,19 @@
 "use client";
-import { useEffect, useState } from "react";
-import { Skeleton } from "@nextui-org/react";
+import { useEffect, useMemo, useState } from "react";
+import { Skeleton, Tab, Tabs } from "@nextui-org/react";
 import PackCard from "./PackCard";
 import SubscriptionPlanCard from "./SuscriptionPlanCard/SubscriptionPlanCard";
 import FrequencyButtons from "./FrequencyButtons";
 import type { Subscription, SubscriptionPlan } from "@/types/subscriptions";
 import { checkIfUserIsSubscribed } from "@/utils/functions/utils";
+import {
+  PACK_CATEGORY_LABELS,
+  PACK_CATEGORY_ORDER,
+  PackCategory,
+  packAmountOf,
+  packCategoryOf,
+  userHasPack,
+} from "@/utils/functions/packs";
 
 const SubscriptionGrid = ({
   type,
@@ -22,11 +30,29 @@ const SubscriptionGrid = ({
   >([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Packs: anuncios, tokens de IA y almacenamiento, sólo las categorías que existen.
+  const packCategories = useMemo(
+    () =>
+      type === "packs"
+        ? PACK_CATEGORY_ORDER.filter((category) =>
+            subscriptions.some((plan) => packCategoryOf(plan) === category)
+          )
+        : [],
+    [subscriptions, type]
+  );
+  const [packCategory, setPackCategory] = useState<PackCategory>("anuncios");
+  const activePackCategory = packCategories.includes(packCategory)
+    ? packCategory
+    : packCategories[0];
+
   useEffect(() => {
     setIsLoading(true);
 
     // Filter subscriptions based on frequency
     let filtered = subscriptions.filter((plan) => {
+      if (type === "packs" && packCategoryOf(plan) !== activePackCategory) {
+        return false;
+      }
       if (frequency === 0) {
         return (
           plan.intervalTime === 7 || plan.intervalTime === 30 || plan.isFree
@@ -47,7 +73,7 @@ const SubscriptionGrid = ({
 
     setFilteredSubscriptions(filtered);
     setIsLoading(false);
-  }, [frequency, subscriptions, type]);
+  }, [frequency, subscriptions, type, activePackCategory]);
 
   // Function to sort subscription plans in the desired order
   const sortSubscriptionPlans = (
@@ -82,24 +108,31 @@ const SubscriptionGrid = ({
     return sortedPlans;
   };
 
-  // Add a new function to sort pack plans by postsLibresCount
-  const sortPackPlans = (plans: SubscriptionPlan[]): SubscriptionPlan[] => {
-    // Create a copy to avoid mutating the original array
-    return [...plans].sort((a, b) => {
-      // Then sort by postsLibresCount in ascending order (smaller packages first)
-      // If postsLibresCount doesn't exist, use 0 as default
-      const aCount = a.postsLibresCount || 0;
-      const bCount = b.postsLibresCount || 0;
-      return aCount - bCount;
-    });
-  };
+  // Packs de menor a mayor según lo que suman (anuncios, tokens o bytes).
+  const sortPackPlans = (plans: SubscriptionPlan[]): SubscriptionPlan[] =>
+    [...plans].sort((a, b) => packAmountOf(a) - packAmountOf(b));
 
   const containerGridStyle =
     "grid grid-cols-1 md:max-lg:flex flex-wrap lg:grid-cols-3 lg:w-full xl:w-11/12 2xl:w-5/6 3xl:w-3/4 gap-4 justify-center";
 
+  const packCategoryTabs =
+    type === "packs" && packCategories.length > 1 ? (
+      <Tabs
+        aria-label="Tipo de pack"
+        radius="full"
+        selectedKey={activePackCategory}
+        onSelectionChange={(key) => setPackCategory(key as PackCategory)}
+      >
+        {packCategories.map((category) => (
+          <Tab key={category} title={PACK_CATEGORY_LABELS[category]} />
+        ))}
+      </Tabs>
+    ) : null;
+
   if (isLoading) {
     return (
       <>
+        {packCategoryTabs}
         <FrequencyButtons
           frequency={frequency}
           setFrequency={setFrequency}
@@ -116,11 +149,18 @@ const SubscriptionGrid = ({
 
   return (
     <>
+      {packCategoryTabs}
       <FrequencyButtons
         frequency={frequency}
         setFrequency={setFrequency}
         type={type}
       />
+      {type === "packs" && filteredSubscriptions.length === 0 && (
+        <p className="text-sm text-light-text">
+          No hay packs {frequency === 0 ? "mensuales" : "trimestrales"} de este
+          tipo.
+        </p>
+      )}
       <div className={containerGridStyle}>
         {type === "packs"
           ? // Render pack cards
@@ -129,6 +169,7 @@ const SubscriptionGrid = ({
                 key={plan._id}
                 subscriptionPlan={plan}
                 isPopular={plan.reason === "+ 20 Publicaciones Activas"}
+                alreadyHasIt={userHasPack(plan, subscriptionsOfUser)}
               />
             ))
           : // Render subscription plan cards

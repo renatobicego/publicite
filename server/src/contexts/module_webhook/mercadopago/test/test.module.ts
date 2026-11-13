@@ -33,6 +33,7 @@ import { ErrorService } from "../application/service/error/error.service.interfa
 import { ErrorRepository } from "../infastructure/repository/error/error.repository";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { MpCheckoutService } from "../application/service/mp-checkout.service";
+import { PostSchema } from "src/contexts/module_post/post/infraestructure/schemas/post.schema";
 
 
 
@@ -67,6 +68,8 @@ const mercadopago_testing_module = async (): Promise<TestingModule> => {
                 { name: 'SubscriptionPlan', schema: SubscriptionPlanSchema },
                 { name: 'Error', schema: ErrorSchema },
                 { name: NotificationModel.modelName, schema: NotificationModel.schema },
+                // Los límites de anuncios populan User.posts.
+                { name: 'Post', schema: PostSchema },
 
             ]),
             UserModule,

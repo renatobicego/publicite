@@ -1,14 +1,19 @@
 import BackButton from "@/components/buttons/BackButton";
 import { Divider, Image, Link } from "@nextui-org/react";
 import { frequencyLabelFromMP } from "@/utils/functions/billingFrequency";
+import { formatPaymentDate } from "@/utils/functions/packs";
 
 const Details = ({
   subscriptionPlan,
   isChangingPlan,
+  keepLimitsUntil,
 }: {
   subscriptionPlan: any;
   isChangingPlan?: boolean;
+  /** En un cambio de plan: próximo cobro del plan actual (hasta ahí conserva sus límites). */
+  keepLimitsUntil?: string | null;
 }) => {
+  const keepUntil = formatPaymentDate(keepLimitsUntil);
   // El plan viene de MercadoPago: la frecuencia real del cobro está en
   // auto_recurring (el anual dice «cada 1 years»). Se muestra en dos renglones
   // al lado del precio: «por» / «año», «cada» / «3 meses».
@@ -41,6 +46,15 @@ const Details = ({
           Cambiá tu plan a <em>{subscriptionPlan.reason}</em>. Cuando se
           confirme el pago, damos de baja tu plan actual para que no se te
           cobre más.
+          {keepUntil && (
+            <>
+              {" "}
+              <strong>
+                Conservás los límites de tu plan actual hasta el {keepUntil}
+              </strong>
+              , por el tiempo que ya pagaste.
+            </>
+          )}
         </p>
       )}
       <div className="flex gap-1 items-center">

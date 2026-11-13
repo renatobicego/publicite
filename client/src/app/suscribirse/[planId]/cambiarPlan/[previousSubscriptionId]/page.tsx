@@ -46,9 +46,20 @@ export default async function CheckoutChangePlanPage(props: {
   if (subscriptionPlan.error)
     return <ErrorCard message={subscriptionPlan.error} />;
 
+  // El server valida que sea del usuario; acá sólo se usa para mostrar hasta
+  // cuándo conserva los límites del plan actual.
+  const previousSubscription = subscriptionsOfUser.find(
+    (subscription) =>
+      subscription.mpPreapprovalId === params.previousSubscriptionId
+  );
+
   return (
     <main className="w-screen min-h-screen flex-col lg:flex-row flex gap-8">
-      <Details subscriptionPlan={subscriptionPlan} isChangingPlan />
+      <Details
+        subscriptionPlan={subscriptionPlan}
+        isChangingPlan
+        keepLimitsUntil={previousSubscription?.nextPaymentDate}
+      />
       <div
         className="flex items-start bg-white lg:shadow-xl rounded-t-[40px] 
       lg:rounded-l-[40px] flex-1 px-4 md:px-8 pt-8 lg:pt-20 2xl:pt-32

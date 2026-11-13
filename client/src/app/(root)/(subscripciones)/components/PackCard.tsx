@@ -1,15 +1,23 @@
 import BWButton from "@/components/buttons/BWButton";
 import SecondaryButton from "@/components/buttons/SecondaryButton";
 import { SubscriptionPlan } from "@/types/subscriptions";
-import { Button, Card, CardBody, Chip } from "@nextui-org/react";
+import { SUSCRIBE } from "@/utils/data/urls";
+import { describePack, packFrequencyLabel } from "@/utils/functions/packs";
+import { Card, CardBody, Chip, Link } from "@nextui-org/react";
 
 const PackCard = ({
   subscriptionPlan,
   isPopular,
+  alreadyHasIt,
 }: {
   subscriptionPlan: SubscriptionPlan;
   isPopular?: boolean;
+  /** Se puede tener cada pack una sola vez al mismo tiempo. */
+  alreadyHasIt?: boolean;
 }) => {
+  const lines = describePack(subscriptionPlan);
+  const href = `${SUSCRIBE}/${subscriptionPlan.mpPreapprovalPlanId}`;
+  const label = alreadyHasIt ? "Ya tenés este pack" : "Aumentá el límite";
   return (
     <Card
       className={`w-full pt-6 pb-10 lg:pt-8 lg:pb-12 px-4 lg:px-6 flex flex-col gap-4 justify-between ${
@@ -29,20 +37,34 @@ const PackCard = ({
             </Chip>
           )}
           <h3>{subscriptionPlan.reason}</h3>
-          {subscriptionPlan.isFree ? (
-            <p className="text-sm">{subscriptionPlan.description}</p>
-          ) : (
-            <>
-              <h6 className="text-lg xl:text-xl">${subscriptionPlan.price} </h6>
-              <p className="text-xs">{subscriptionPlan.description}</p>
-            </>
-          )}
+          <h6 className="text-lg xl:text-xl">
+            ${subscriptionPlan.price.toLocaleString("es-AR")}{" "}
+            <span className="font-medium">
+              {packFrequencyLabel(subscriptionPlan)}
+            </span>
+          </h6>
+          {lines.map((line) => (
+            <p key={line} className="text-sm font-semibold">
+              {line}
+            </p>
+          ))}
+          <p className="text-xs">{subscriptionPlan.description}</p>
+          <p className="text-xs">
+            Se suma a tu plan mientras esté activo. Lo das de baja cuando
+            quieras.
+          </p>
         </div>
         <div className="mt-auto">
-          {isPopular ? (
-            <BWButton blackOrWhite="white">Aumenta el Límite</BWButton>
+          {alreadyHasIt ? (
+            <SecondaryButton isDisabled>{label}</SecondaryButton>
+          ) : isPopular ? (
+            <BWButton blackOrWhite="white" as={Link} href={href}>
+              {label}
+            </BWButton>
           ) : (
-            <SecondaryButton>Aumenta el Límite</SecondaryButton>
+            <SecondaryButton as={Link} href={href}>
+              {label}
+            </SecondaryButton>
           )}
         </div>
       </CardBody>

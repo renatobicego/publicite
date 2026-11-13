@@ -19,6 +19,12 @@ export class SubscriptionCheckoutResponse {
   })
   previousSubscriptionCancelled: boolean | null;
 
+  @Field(() => String, {
+    nullable: true,
+    description: 'En un cambio de plan: hasta cuándo conserva los límites del plan anterior (ISO)',
+  })
+  previousLimitsUntil: string | null;
+
   @Field(() => String, { nullable: true, description: 'Aviso para mostrar al usuario' })
   warning: string | null;
 }

@@ -43,6 +43,12 @@ export interface UserServiceInterface {
     author: string,
     postBehaviourType: string,
   ): Promise<boolean>;
+  /** Mensaje de "no hay cupo" con cuántos anuncios tiene y cuántos tiene que desactivar. */
+  getPostLimitMessage(
+    userId: string,
+    postBehaviourType: string,
+    action: 'publicar uno nuevo' | 'activar este',
+  ): Promise<string>;
 
   isThisUserAllowedToCreateBlog(
     ownerId: string,
@@ -69,6 +75,11 @@ export interface UserServiceInterface {
     contactLimit: number;
     contactCount: number;
     contactAvailable: number;
+    /** Extra temporal de cambio de plan: hasta cuándo y cómo quedan los límites sin él. */
+    carryoverExpiresAt?: string | null;
+    totalAgendaPostLimitAfterCarryover?: number | null;
+    totalLibrePostLimitAfterCarryover?: number | null;
+    contactLimitAfterCarryover?: number | null;
   }>;
   getPostAndLimitsFromUserByUserId(author: string): Promise<any>;
   getLimitContactsFromUserByUserId(

@@ -22,6 +22,11 @@ import {
   userWithPostsAndSubscriptions,
 } from '../functions/calculatePostLimitAndContactLimit';
 import {
+  buildContactLimitMessage,
+  buildPostLimitMessage,
+} from '../functions/limitMessages';
+import { SubscriptionKind } from 'src/contexts/module_shared/subscriptions/subscription.kind';
+import {
   calculateProductionLimitsFromUser,
   ProductionLimits,
   userWithProductionsAndSubscriptions,
@@ -358,6 +363,10 @@ export class UserService implements UserServiceInterface {
     contactLimit: number;
     contactCount: number;
     contactAvailable: number;
+    carryoverExpiresAt?: string | null;
+    totalAgendaPostLimitAfterCarryover?: number | null;
+    totalLibrePostLimitAfterCarryover?: number | null;
+    contactLimitAfterCarryover?: number | null;
   }> {
     try {
       const userWithSubscriptionsAndPosts: userWithPostsAndSubscriptions =
@@ -404,10 +413,74 @@ export class UserService implements UserServiceInterface {
         contactLimit,
         contactCount,
         contactAvailable,
+        ...this.limitsAfterCarryover(userWithSubscriptionsAndPosts),
       };
     } catch (error: any) {
       throw error;
     }
+  }
+
+  /*
+  Si el usuario tiene un extra temporal de cambio de plan, hasta cuándo dura (el
+  que vence primero) y cómo quedan los límites de anuncios y contactos sin él.
+  */
+  private limitsAfterCarryover(user: any): {
+    carryoverExpiresAt: string | null;
+    totalAgendaPostLimitAfterCarryover: number | null;
+    totalLibrePostLimitAfterCarryover: number | null;
+    contactLimitAfterCarryover: number | null;
+  } {
+    const none = {
+      carryoverExpiresAt: null,
+      totalAgendaPostLimitAfterCarryover: null,
+      totalLibrePostLimitAfterCarryover: null,
+      contactLimitAfterCarryover: null,
+    };
+    const subscriptions: any[] = user?.subscriptions ?? [];
+    const carryoverDates = subscriptions
+      .filter((s) => s?.kind === SubscriptionKind.CARRYOVER && s?.expiresAt)
+      .map((s) => new Date(s.expiresAt).getTime());
+    if (carryoverDates.length === 0) return none;
+
+    const earliest = Math.min(...carryoverDates);
+    const remaining = {
+      ...user,
+      subscriptions: subscriptions.filter(
+        (s) =>
+          !(
+            s?.kind === SubscriptionKind.CARRYOVER &&
+            s?.expiresAt &&
+            new Date(s.expiresAt).getTime() === earliest
+          ),
+      ),
+    };
+    const posts = calculatePostLimitFromUser(remaining, this.logger);
+    const contacts = calculateContactLimitFromUser(remaining, this.logger);
+    return {
+      carryoverExpiresAt: new Date(earliest).toISOString(),
+      totalAgendaPostLimitAfterCarryover: posts.totalAgendaPostLimit,
+      totalLibrePostLimitAfterCarryover: posts.totalLibrePostLimit,
+      contactLimitAfterCarryover: contacts.contactLimit,
+    };
+  }
+
+  /**
+   * Mensaje de "no hay cupo" para un anuncio, con cuántos tiene y cuántos tiene
+   * que desactivar (los límites pueden haber bajado con lo publicado activo).
+   */
+  async getPostLimitMessage(
+    userId: string,
+    postBehaviourType: string,
+    action: 'publicar uno nuevo' | 'activar este',
+  ): Promise<string> {
+    const limits = await this.getPostAndContactLimit(userId);
+    const isAgenda = postBehaviourType === 'agenda';
+    return buildPostLimitMessage(
+      postBehaviourType,
+      isAgenda ? limits.agendaPostCount : limits.librePostCount,
+      isAgenda ? limits.totalAgendaPostLimit : limits.totalLibrePostLimit,
+      action,
+    );
   }
 
   async getLimitContactsFromUserByUserId(
@@ -788,9 +861,7 @@ export class UserService implements UserServiceInterface {
 
       if (newActiveRelationLength > limitAvailableOfUser) {
         throw new BadRequestException(
-          'El usuario no puede tener mas de ' +
-            limitAvailableOfUser +
-            ' contactos activos',
+          buildContactLimitMessage(newActiveRelationLength, limitAvailableOfUser),
         );
       }
 

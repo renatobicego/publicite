@@ -6,6 +6,7 @@ import {
   toastifySuccess,
   toastifyWarn,
 } from "@/utils/functions/toastify";
+import { formatPaymentDate } from "@/utils/functions/packs";
 import { useUser } from "@clerk/nextjs";
 import { CardPayment, initMercadoPago } from "@mercadopago/sdk-react";
 import { ICardPaymentBrickPayer } from "@mercadopago/sdk-react/bricks/cardPayment/type";
@@ -52,7 +53,12 @@ const Checkout = ({
     if (result.warning) toastifyWarn(result.warning);
     if (previousSubscriptionId) {
       if (result.previousSubscriptionCancelled) {
-        toastifySuccess("Cambiaste de plan con éxito");
+        const until = formatPaymentDate(result.previousLimitsUntil);
+        toastifySuccess(
+          until
+            ? `Cambiaste de plan con éxito. Conservás los límites de tu plan anterior hasta el ${until}.`
+            : "Cambiaste de plan con éxito"
+        );
       }
       router.replace("/suscribirse/suscripcion-actualizada");
     } else {

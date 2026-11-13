@@ -14,6 +14,11 @@ import {
   calculatePostLimitFromUser,
 } from 'src/contexts/module_user/user/application/functions/calculatePostLimitAndContactLimit';
 import makeReponsePlanFunction from '../application/service/function/makeResponsePlan';
+import {
+  buildBlogLimitMessage,
+  buildContactLimitMessage,
+  buildPostLimitMessage,
+} from 'src/contexts/module_user/user/application/functions/limitMessages';
 
 /*
 Base común de Hacete Amigo, cambio de plan, packs y regalos (Fase 1 del plan):
@@ -157,6 +162,36 @@ describe('Límites con packs que sólo traen lo que suman', () => {
     const contacts = calculateContactLimitFromUser(user, loggerMock);
     expect(contacts.contactLimit).toBe(20);
     expect(contacts.contactAvailable).toBe(18);
+  });
+});
+
+describe('Mensajes de "no hay cupo" con cuántos sobran', () => {
+  it('anuncios: dice cuántos tiene, el límite y cuántos desactivar', () => {
+    expect(buildPostLimitMessage('libre', 26, 21, 'publicar uno nuevo')).toBe(
+      'Tenés 26 anuncios geolocalizados activos y tu límite es 21. Desactivá 6 para publicar uno nuevo, o sumá un pack o mejorá tu plan.',
+    );
+    expect(buildPostLimitMessage('agenda', 1, 1, 'activar este')).toBe(
+      'Tenés 1 anuncio de agenda activo y tu límite es 1. Desactivá 1 para activar este, o sumá un pack o mejorá tu plan.',
+    );
+  });
+
+  it('nunca le dice "libres" al usuario', () => {
+    expect(buildPostLimitMessage('libre', 3, 2, 'publicar uno nuevo')).not.toMatch(/libre/i);
+  });
+
+  it('contactos y blogs', () => {
+    expect(buildContactLimitMessage(25, 20)).toBe(
+      'Elegiste 25 contactos activos y tu límite es 20. Quitá 5 para guardar, o mejorá tu plan.',
+    );
+    expect(buildBlogLimitMessage('agenda', 3, 1)).toBe(
+      'Tenés 3 blogs de mi agenda y tu límite es 1. Para crear otro, borrá 3 o sumá un pack o mejorá tu plan.',
+    );
+    expect(buildBlogLimitMessage('libre', 1, 1)).toBe(
+      'Alcanzaste el límite de 1 blog geolocalizado de tu plan. Para crear más, sumá un pack o mejorá tu plan.',
+    );
+    expect(buildBlogLimitMessage('group', 2, 2)).toBe(
+      'Alcanzaste el límite de 2 blogs de grupo de tu plan. Para crear más, mejorá tu plan.',
+    );
   });
 });
 

@@ -23,6 +23,14 @@ const useUserPostLimit = (postBehaviourType?: PostBehaviourType) => {
     limit: 0,
   });
 
+  // Extra temporal de un cambio de plan: hasta cuándo dura y cómo quedan los límites.
+  const [carryover, setCarryover] = useState<{
+    until: string;
+    agenda: number;
+    libre: number;
+    contacts: number;
+  } | null>(null);
+
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -46,6 +54,16 @@ const useUserPostLimit = (postBehaviourType?: PostBehaviourType) => {
         count: res.contactCount,
         limit: res.contactLimit,
       });
+      setCarryover(
+        res.carryoverExpiresAt
+          ? {
+              until: res.carryoverExpiresAt,
+              agenda: res.totalAgendaPostLimitAfterCarryover ?? 0,
+              libre: res.totalLibrePostLimitAfterCarryover ?? 0,
+              contacts: res.contactLimitAfterCarryover ?? 0,
+            }
+          : null
+      );
       setLoading(false);
     };
 
@@ -60,6 +78,7 @@ const useUserPostLimit = (postBehaviourType?: PostBehaviourType) => {
     numberOfPosts,
     loading,
     activeRelations,
+    carryover,
   };
 };
 

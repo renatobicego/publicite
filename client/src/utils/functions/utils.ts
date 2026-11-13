@@ -10,6 +10,9 @@ export const checkIfUserIsSubscribed = (
 ) => {
   // Check if user is subscribed
   return subscriptionsOfUser.some((subscription) => {
+    // El extra temporal de un cambio de plan apunta al plan viejo pero no es una
+    // suscripción: no tiene que mostrarlo como "ya suscripto" ni bloquear volver a ese plan.
+    if (subscription.kind === "carryover") return false;
     const isSameId = byMpId
       ? subscription.subscriptionPlan.mpPreapprovalPlanId == subscriptionPlan
       : subscription.subscriptionPlan._id ==

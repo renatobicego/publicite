@@ -138,8 +138,13 @@ export const getSubscriptions = async (userId: string) => {
       subscriptions?.filter(
         (subscription: Subscription) => subscription.subscriptionPlan.isPack
       ) || [];
+    // Límites del plan anterior que conserva hasta su próximo cobro.
+    const carryovers =
+      subscriptions?.filter(
+        (subscription: Subscription) => subscription.kind === "carryover"
+      ) || [];
 
-    return { accountType, postsPacks };
+    return { accountType, postsPacks, carryovers };
   } catch (error) {
     throw error;
   }

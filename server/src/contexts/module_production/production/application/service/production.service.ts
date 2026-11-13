@@ -10,6 +10,7 @@ import { ClientSession, Connection, Types } from 'mongoose';
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { formatBytes } from 'src/contexts/module_shared/production-limits/production.limits.config';
 import { UserServiceInterface } from 'src/contexts/module_user/user/domain/service/user.service.interface';
+import { buildBlogLimitMessage } from 'src/contexts/module_user/user/application/functions/limitMessages';
 import { Production } from '../../domain/entity/production.entity';
 import {
   ProductionArticle,
@@ -106,17 +107,41 @@ const isDuplicateKeyError = (error: any, field?: string) =>
   error?.code === DUPLICATE_KEY &&
   (!field || JSON.stringify(error?.keyPattern ?? {}).includes(field));
 
-/** Mensaje al quedarse sin cupo de blogs (por tipo de dueño y comportamiento). */
+/**
+ * Mensaje al quedarse sin cupo de blogs (por tipo de dueño y comportamiento),
+ * con cuántos tiene y cuál es su límite: si el plan bajó, los blogs que ya
+ * tenía siguen y se le dice cuántos sobran.
+ */
 const blogLimitMessage = (
   ownerType: ProductionOwnerType,
   behaviourType: ProductionBehaviourType | null,
+  limits?: {
+    libreBlogCount: number;
+    agendaBlogCount: number;
+    groupBlogCount: number;
+    totalLibreBlogLimit: number;
+    totalAgendaBlogLimit: number;
+    totalGroupBlogLimit: number;
+  } | null,
 ) => {
   if (ownerType === ProductionOwnerType.Group) {
-    return 'Alcanzaste el límite de blogs de grupo de tu plan. Mejorá tu plan para crear más.';
+    return buildBlogLimitMessage(
+      'group',
+      limits?.groupBlogCount ?? 0,
+      limits?.totalGroupBlogLimit ?? 0,
+    );
   }
   return behaviourType === ProductionBehaviourType.agenda
-    ? 'Alcanzaste el límite de blogs de mi agenda de tu plan. Mejorá tu plan o comprá un pack para crear más.'
-    : 'Alcanzaste el límite de blogs geolocalizados de tu plan. Mejorá tu plan o comprá un pack para crear más.';
+    ? buildBlogLimitMessage(
+        'agenda',
+        limits?.agendaBlogCount ?? 0,
+        limits?.totalAgendaBlogLimit ?? 0,
+      )
+    : buildBlogLimitMessage(
+        'libre',
+        limits?.libreBlogCount ?? 0,
+        limits?.totalLibreBlogLimit ?? 0,
+      );
 };
 
 @Injectable()
@@ -381,7 +406,13 @@ export class ProductionService implements ProductionServiceInterface {
           );
           if (!allowed) {
             throw new BadRequestException(
-              blogLimitMessage(ownerType, behaviourType),
+              blogLimitMessage(
+                ownerType,
+                behaviourType,
+                await this.userService
+                  .getProductionLimitsFromUserByUserId(userId, session)
+                  .catch(() => null),
+              ),
             );
           }
 
@@ -1539,7 +1570,13 @@ export class ProductionService implements ProductionServiceInterface {
         );
         if (!allowed) {
           throw new BadRequestException(
-            blogLimitMessage(ProductionOwnerType.User, behaviourType),
+            blogLimitMessage(
+              ProductionOwnerType.User,
+              behaviourType,
+              await this.userService
+                .getProductionLimitsFromUserByUserId(production.getCreator, session)
+                .catch(() => null),
+            ),
           );
         }
       }

@@ -15,6 +15,8 @@ export interface SubscriptionCheckoutResult {
   registered: boolean;
   /** En un cambio de plan: si se pudo cancelar el anterior. null si no hubo cambio. */
   previousSubscriptionCancelled: boolean | null;
+  /** En un cambio de plan: hasta cuándo conserva los límites del plan anterior (ISO). */
+  previousLimitsUntil: string | null;
   /** Aviso para el usuario cuando el alta salió bien pero algo quedó pendiente. */
   warning: string | null;
 }

@@ -128,7 +128,7 @@ export class MpCheckoutService implements MpCheckoutServiceInterface {
       throw this.toUserError(error);
     }
 
-    const mpPreapprovalId: string | undefined = created?.id;
+    const mpPreapprovalId: string = created?.id;
     if (!mpPreapprovalId) {
       this.logger.error(
         `MercadoPago aceptó el alta del usuario ${userId} pero no devolvió el id del preapproval: ${JSON.stringify(created)}`,
@@ -146,12 +146,12 @@ export class MpCheckoutService implements MpCheckoutServiceInterface {
     );
 
     let previousSubscriptionCancelled: boolean | null = null;
+    let previousLimitsUntil: Date | null = null;
     let warning: string | null = null;
     if (previous) {
-      previousSubscriptionCancelled = await this.cancelPrevious(
-        previous.mpPreapprovalId,
-        userId,
-      );
+      const outcome = await this.cancelPrevious(previous, userId);
+      previousSubscriptionCancelled = outcome.cancelled;
+      previousLimitsUntil = outcome.limitsUntil;
       if (!previousSubscriptionCancelled) warning = PREVIOUS_NOT_CANCELLED;
     }
 
@@ -160,6 +160,7 @@ export class MpCheckoutService implements MpCheckoutServiceInterface {
       status,
       registered,
       previousSubscriptionCancelled,
+      previousLimitsUntil: previousLimitsUntil ? previousLimitsUntil.toISOString() : null,
       warning,
     };
   }
@@ -304,8 +305,14 @@ export class MpCheckoutService implements MpCheckoutServiceInterface {
   Cambio de plan: el nuevo ya está cobrado, así que el viejo se tiene que dar de
   baja. Se intenta dos veces; si MP no responde se deja un error para el admin y
   el usuario recibe el aviso (nunca se muestra "listo" con dos planes cobrándose).
+  Si se canceló, el usuario conserva los límites del plan viejo hasta su próximo
+  cobro (extra temporal `carryover`).
   */
-  private async cancelPrevious(mpPreapprovalId: string, userId: string): Promise<boolean> {
+  private async cancelPrevious(
+    previous: any,
+    userId: string,
+  ): Promise<{ cancelled: boolean; limitsUntil: Date | null }> {
+    const mpPreapprovalId: string = previous.mpPreapprovalId;
     for (let attempt = 1; attempt <= 2; attempt++) {
       try {
         await this.fetchToMp.changeSubscriptionStatusInMercadopago_fetch(
@@ -313,16 +320,17 @@ export class MpCheckoutService implements MpCheckoutServiceInterface {
           mpPreapprovalId,
           'cancelled',
         );
+        let limitsUntil: Date | null = null;
         try {
-          await this.subscriptionService.cancelSubscriptionInDb(mpPreapprovalId);
+          limitsUntil = await this.subscriptionService.cancelForPlanChange(previous, userId);
         } catch (error: any) {
           // En MP ya está cancelada: el webhook "cancelled" la va a marcar igual.
           this.logger.error(
-            `La suscripción ${mpPreapprovalId} se canceló en MP pero no en la base: ` +
+            `La suscripción ${mpPreapprovalId} se canceló en MP pero no se pudo cerrar en la base ni crear el extra temporal: ` +
               (error?.message ?? error),
           );
         }
-        return true;
+        return { cancelled: true, limitsUntil };
       } catch (error: any) {
         this.logger.error(
           `Intento ${attempt} de cancelar el plan anterior ${mpPreapprovalId} del usuario ${userId}: ` +
@@ -341,7 +349,7 @@ export class MpCheckoutService implements MpCheckoutServiceInterface {
     } catch (error: any) {
       this.logger.error('No se pudo registrar el error del cambio de plan: ' + (error?.message ?? error));
     }
-    return false;
+    return { cancelled: false, limitsUntil: null };
   }
 
   private clientUrl(): string {

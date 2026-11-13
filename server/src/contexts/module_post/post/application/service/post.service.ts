@@ -91,7 +91,11 @@ export class PostService implements PostServiceInterface {
 
         if (!isAllowedToActivate) {
           throw new BadRequestException(
-            'No es posible activar el post, agostaste el limite de posts según tu plan',
+            await this.userService.getPostLimitMessage(
+              userRequestId,
+              postBehaviourType,
+              'activar este',
+            ),
           );
         }
         await this.postRepository.activateOrDeactivatePost(_id, true);
@@ -126,7 +130,11 @@ export class PostService implements PostServiceInterface {
 
         if (!isThisUserAllowedToPost)
           throw new BadRequestException(
-            'No es posible crear el post, agostaste el limite de posts según tu plan',
+            await this.userService.getPostLimitMessage(
+              author,
+              postBehaviourType,
+              'publicar uno nuevo',
+            ),
           );
 
         // Fotos y videos: suman al almacenamiento del plan (con los blogs).

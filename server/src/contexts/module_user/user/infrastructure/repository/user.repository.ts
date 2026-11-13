@@ -350,7 +350,8 @@ export class UserRepository implements UserRepositoryInterface {
           },
           {
             path: 'subscriptions',
-            select: 'subscriptionPlan status',
+            // kind y expiresAt: para avisar cómo quedan los límites cuando vence el extra temporal.
+            select: 'subscriptionPlan status kind expiresAt',
             match: activeSubscriptionMatch(),
             populate: {
               path: 'subscriptionPlan',

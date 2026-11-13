@@ -6,6 +6,8 @@ import { toastifyError } from "@/utils/functions/toastify";
 export interface SubscriptionsState {
   accountType?: Subscription;
   postsPacks: Subscription[];
+  /** Extra temporal de un cambio de plan: límites del plan anterior hasta su vencimiento. */
+  carryovers: Subscription[];
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
 }
@@ -13,6 +15,7 @@ export interface SubscriptionsState {
 const initialState: SubscriptionsState = {
   accountType: undefined,
   postsPacks: [],
+  carryovers: [],
   status: "idle",
   error: null,
 };
@@ -100,12 +103,14 @@ const subscriptions = createSlice({
         state.status = "succeeded";
         state.accountType = action.payload?.accountType;
         state.postsPacks = action.payload?.postsPacks || [];
+        state.carryovers = action.payload?.carryovers || [];
       })
       .addCase(refreshSubscriptions.fulfilled, (state, action) => {
         if (!action.payload) return;
         state.status = "succeeded";
         state.accountType = action.payload.accountType;
         state.postsPacks = action.payload.postsPacks || [];
+        state.carryovers = action.payload.carryovers || [];
       })
       .addCase(fetchSubscriptions.rejected, (state, action) => {
         state.status = "failed";

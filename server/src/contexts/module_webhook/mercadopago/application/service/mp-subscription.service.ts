@@ -16,7 +16,14 @@ import makeReponsePlanFunction from './function/makeResponsePlan';
 import parseTimeX from './function/parse_time';
 import { resolveExternalReference } from 'src/contexts/module_shared/subscriptions/external-reference';
 import { isPaidPlanSubscription } from 'src/contexts/module_shared/subscriptions/active-subscription.match';
-import { SubscriptionKind } from 'src/contexts/module_shared/subscriptions/subscription.kind';
+import {
+  SubscriptionKind,
+  subscriptionKindOf,
+} from 'src/contexts/module_shared/subscriptions/subscription.kind';
+
+/** id propio del extra temporal, para no chocar con el índice único de mpPreapprovalId. */
+export const carryoverIdFor = (previousPreapprovalId: string) =>
+  `carryover:${previousPreapprovalId}`;
 
 export class MpSubscriptionService implements SubscriptionServiceInterface {
   constructor(
@@ -214,6 +221,74 @@ export class MpSubscriptionService implements SubscriptionServiceInterface {
 
   async cancelSubscriptionInDb(mpPreapprovalId: string): Promise<void> {
     await this.subscriptionRepository.cancelSubscription(mpPreapprovalId);
+  }
+
+  /*
+  Cambio de plan: el plan viejo ya se canceló en MP. En una transacción se marca
+  cancelado y, si todavía le quedaba tiempo pago (nextPaymentDate futura), se crea
+  el extra temporal: una suscripción interna `carryover` que apunta al plan viejo,
+  sin cobro ni preapproval, hasta esa fecha. Así conserva todos sus límites
+  (anuncios, contactos, blogs, MB y tokens) por el tiempo que ya pagó.
+  Sólo una suscripción `mp` genera extra: no se encadenan temporales.
+  Devuelve la fecha de vencimiento del extra, o null si no correspondía.
+  */
+  async cancelForPlanChange(
+    previous: any,
+    userId: string,
+    now: Date = new Date(),
+  ): Promise<Date | null> {
+    const expiresAt = previous?.nextPaymentDate
+      ? new Date(previous.nextPaymentDate)
+      : null;
+    const createsCarryover =
+      subscriptionKindOf(previous) === SubscriptionKind.MP &&
+      !!expiresAt &&
+      !Number.isNaN(expiresAt.getTime()) &&
+      expiresAt.getTime() > now.getTime();
+
+    const session = await this.connection.startSession();
+    try {
+      await session.withTransaction(async () => {
+        await this.subscriptionRepository.cancelSubscription(
+          previous.mpPreapprovalId,
+          session,
+        );
+        if (!createsCarryover) return;
+
+        const existing = await this.subscriptionRepository.findSubscriptionByPreapprovalId(
+          carryoverIdFor(previous.mpPreapprovalId),
+        );
+        if (existing) return;
+
+        const carryover = new Subscription(
+          carryoverIdFor(previous.mpPreapprovalId),
+          previous.payerId || '-',
+          statusOfSubscription.AUTHORIZED,
+          previous.subscriptionPlan?._id ?? previous.subscriptionPlan,
+          now.toISOString().split('T')[0],
+          (expiresAt as Date).toISOString().split('T')[0],
+          userId,
+          getTodayDateTime(),
+          previous.nextPaymentDate,
+          '',
+          '',
+          undefined,
+          {
+            kind: SubscriptionKind.CARRYOVER,
+            expiresAt: expiresAt as Date,
+            payerUser: userId,
+          },
+        );
+        const carryoverId = await this.subscriptionRepository.saveSubPreapproval(
+          carryover,
+          session,
+        );
+        await this.userService.setSubscriptionToUser(userId, carryoverId, session);
+      });
+    } finally {
+      await session.endSession();
+    }
+    return createsCarryover ? expiresAt : null;
   }
 
   async updateSubscription_preapproval(

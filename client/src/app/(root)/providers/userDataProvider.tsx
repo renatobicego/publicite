@@ -120,11 +120,11 @@ export const useConfigData = () => {
 
 export const useActiveSubscriptions = () => {
   const dispatch = useDispatch();
-  const { postsPacks, accountType } = useSelector(
+  const { postsPacks, accountType, carryovers } = useSelector(
     (state: RootState) => state.subscriptions
   );
   /** Vuelve a pedir las suscripciones (después de cancelar o cambiar de plan). */
   const refreshActiveSubscriptions = (userId: string) =>
     dispatch(refreshSubscriptions(userId) as any);
-  return { postsPacks, accountType, refreshActiveSubscriptions };
+  return { postsPacks, accountType, carryovers, refreshActiveSubscriptions };
 };

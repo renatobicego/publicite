@@ -105,7 +105,9 @@ describe('Fase 1 - base común de suscripciones', () => {
   });
 
   afterEach(async () => {
-    await subscriptionModel.deleteMany({ mpPreapprovalId: /^fase1_/ });
+    await subscriptionModel.deleteMany({
+      $or: [{ mpPreapprovalId: /^fase1_/ }, { mpPreapprovalId: /^carryover:fase1_/ }],
+    });
     await errorModel.deleteMany({ user: uid });
     await userModel.deleteOne({ _id: userId });
   });
@@ -260,6 +262,7 @@ describe('Fase 1 - base común de suscripciones', () => {
         status: 'authorized',
         registered: true,
         previousSubscriptionCancelled: null,
+        previousLimitsUntil: null,
         warning: null,
       });
       const body = fetchMock.createPreapproval.mock.calls[0][0];
@@ -383,6 +386,82 @@ describe('Fase 1 - base común de suscripciones', () => {
       expect(fetchMock.createPreapproval).not.toHaveBeenCalled();
       expect(fetchMock.changeSubscriptionStatusInMercadopago_fetch).not.toHaveBeenCalled();
       expect(fetchMock.updatePreapproval).not.toHaveBeenCalled();
+    });
+
+    it('cambio de plan: conserva los límites del plan anterior hasta su próximo cobro', async () => {
+      await addFree(); // 1 + 1 anuncios, 5 contactos
+      const nextPayment = new Date(Date.now() + 15 * 24 * 60 * 60 * 1000);
+      const previous = await addSubscription('premium', {
+        nextPaymentDate: nextPayment.toISOString(),
+      }); // 5 + 5, 20 contactos
+      mockMp(PLAN_MP.gold, 'fase1_pre_carryover'); // 20 + 20, 50 contactos
+      fetchMock.changeSubscriptionStatusInMercadopago_fetch.mockResolvedValue({});
+
+      const result = await checkout.startSubscriptionCheckout(
+        uid,
+        command(PLAN_MP.gold, previous.mpPreapprovalId),
+      );
+
+      expect(result.previousSubscriptionCancelled).toBe(true);
+      expect(new Date(result.previousLimitsUntil as string).getTime()).toBe(nextPayment.getTime());
+
+      const carryover: any = await subscriptionModel
+        .findOne({ mpPreapprovalId: `carryover:${previous.mpPreapprovalId}` })
+        .lean();
+      expect(carryover.kind).toBe('carryover');
+      expect(carryover.status).toBe('authorized');
+      expect(carryover.subscriptionPlan.toString()).toBe(planIds.premium.toString());
+      expect(new Date(carryover.expiresAt).getTime()).toBe(nextPayment.getTime());
+      const user: any = await userModel.findById(userId).select('subscriptions').lean();
+      expect(user.subscriptions.map((id: any) => id.toString())).toContain(carryover._id.toString());
+
+      // Gratis + Gold + extra del Premium hasta el próximo cobro
+      const limits = await userService.getPostAndContactLimit(uid);
+      expect(limits.totalLibrePostLimit).toBe(1 + 20 + 5);
+      expect(limits.contactLimit).toBe(5 + 50 + 20);
+      expect(new Date(limits.carryoverExpiresAt).getTime()).toBe(nextPayment.getTime());
+      expect(limits.totalLibrePostLimitAfterCarryover).toBe(1 + 20);
+      expect(limits.contactLimitAfterCarryover).toBe(5 + 50);
+
+      // El extra no cuenta como "plan pago" ni se puede cancelar desde la cuenta
+      await expect(
+        checkout.cancelMySubscription(uid, carryover.mpPreapprovalId),
+      ).rejects.toThrow('Esta suscripción no se cancela desde acá.');
+    });
+
+    it('cambio de plan sin tiempo pago restante: no crea extra temporal', async () => {
+      const previous = await addSubscription('premium', {
+        nextPaymentDate: PAST.toISOString(),
+      });
+      mockMp(PLAN_MP.gold, 'fase1_pre_sin_carryover');
+      fetchMock.changeSubscriptionStatusInMercadopago_fetch.mockResolvedValue({});
+
+      const result = await checkout.startSubscriptionCheckout(
+        uid,
+        command(PLAN_MP.gold, previous.mpPreapprovalId),
+      );
+
+      expect(result.previousSubscriptionCancelled).toBe(true);
+      expect(result.previousLimitsUntil).toBeNull();
+      expect(
+        await subscriptionModel.countDocuments({
+          mpPreapprovalId: `carryover:${previous.mpPreapprovalId}`,
+        }),
+      ).toBe(0);
+    });
+
+    it('con el extra temporal vivo se puede volver a cambiar de plan', async () => {
+      await addSubscription('gold');
+      await addSubscription('premium', { kind: 'carryover', expiresAt: FUTURE });
+      const gold: any = await subscriptionModel
+        .findOne({ subscriptionPlan: planIds.gold, mpPreapprovalId: /^fase1_/ })
+        .lean();
+      mockMp(PLAN_MP.premium, 'fase1_pre_vuelta');
+      fetchMock.changeSubscriptionStatusInMercadopago_fetch.mockResolvedValue({});
+
+      await expect(
+        checkout.startSubscriptionCheckout(uid, command(PLAN_MP.premium, gold.mpPreapprovalId)),
+      ).resolves.toMatchObject({ previousSubscriptionCancelled: true });
     });
 
     it('cancela una suscripción propia en MP y en la base', async () => {

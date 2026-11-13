@@ -19,7 +19,7 @@ export class SubscriptionRepository implements SubscriptionRepositoryInterface {
     private readonly userModel: Model<IUser>,
   ) {}
 
-  async cancelSubscription(id: string): Promise<void> {
+  async cancelSubscription(id: string, session?: any): Promise<void> {
     try {
       this.logger.log('Cancel subscription in repository: ' + id);
       this.logger.log(
@@ -34,7 +34,7 @@ export class SubscriptionRepository implements SubscriptionRepositoryInterface {
             status: 'cancelled',
             timeOfUpdate: timeOfUpdate,
           },
-          { new: true },
+          { new: true, session: session ?? undefined },
         )
         .lean();
       if (!result) {

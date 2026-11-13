@@ -31,6 +31,7 @@ export const startSubscriptionCheckoutMutation = gql`
       status
       registered
       previousSubscriptionCancelled
+      previousLimitsUntil
       warning
     }
   }
@@ -66,6 +67,10 @@ export const getPostNumbersOfUserQuery = gql`
       agendaPostCount
       contactAvailable
       agendaAvailable
+      carryoverExpiresAt
+      totalAgendaPostLimitAfterCarryover
+      totalLibrePostLimitAfterCarryover
+      contactLimitAfterCarryover
     }
   }
 `;

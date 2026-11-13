@@ -5,9 +5,10 @@ import DataBox, { CardDataItem, EditButton } from "../../DataBox";
 import { useActiveSubscriptions } from "@/app/(root)/providers/userDataProvider";
 import { parseIsoDate, showDate } from "@/utils/functions/dates";
 import { frequencyLabelFromDays } from "@/utils/functions/billingFrequency";
+import { formatPaymentDate } from "@/utils/functions/packs";
 
 const AccountType = () => {
-  const { accountType: subscription } = useActiveSubscriptions();
+  const { accountType: subscription, carryovers } = useActiveSubscriptions();
 
   const [isFormVisible, setIsFormVisible] = useState(false);
   return (
@@ -45,6 +46,18 @@ const AccountType = () => {
               subtitle="Tu plan actual es el plan gratuito"
             />
           )}
+          {/* Extra temporal de un cambio de plan: no se cancela ni se cambia desde acá. */}
+          {carryovers?.map((carryover) => {
+            const until = formatPaymentDate(carryover.expiresAt);
+            return (
+              <CardDataItem
+                key={carryover.mpPreapprovalId}
+                title={`Límites de tu plan anterior (${carryover.subscriptionPlan.reason})`}
+                subtitle="Por el tiempo que ya pagaste antes de cambiar de plan"
+                boldLabel={until ? `Hasta el ${until}` : undefined}
+              />
+            );
+          })}
           <EditButton
             text={
               <>

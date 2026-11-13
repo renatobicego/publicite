@@ -17,6 +17,11 @@ export interface SubscriptionServiceInterface {
   /** Activas con preapproval en MP que paga el usuario (para el borrado de cuenta). */
   getActiveMpSubscriptionsPaidBy(userId: string): Promise<any[]>;
   cancelSubscriptionInDb(mpPreapprovalId: string): Promise<void>;
+  /**
+   * Cambio de plan: marca cancelado el plan viejo (ya cancelado en MP) y crea el
+   * extra temporal con sus límites hasta su próximo cobro. Devuelve hasta cuándo.
+   */
+  cancelForPlanChange(previous: any, userId: string, now?: Date): Promise<Date | null>;
   findSubscriptionByPreapprovalId(id: string): Promise<any>;
   createSubscription_preapproval(subscription_preapproval: any): Promise<void>;
   updateSubscription_preapproval(

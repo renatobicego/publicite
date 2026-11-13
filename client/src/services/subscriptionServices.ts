@@ -161,6 +161,11 @@ export const getUserActivePostandActiveRelationsNumber = async (): Promise<
       contactAvailable: number;
       contactCount: number;
       contactLimit: number;
+      /** Extra temporal de un cambio de plan: hasta cuándo y cómo quedan los límites sin él. */
+      carryoverExpiresAt?: string | null;
+      totalAgendaPostLimitAfterCarryover?: number | null;
+      totalLibrePostLimitAfterCarryover?: number | null;
+      contactLimitAfterCarryover?: number | null;
     }
   | { error: string }
 > => {

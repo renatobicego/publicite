@@ -4,6 +4,7 @@ import { Button, Link } from "@nextui-org/react";
 import useUserPostLimit from "@/utils/hooks/useUserPostLimit";
 import { useActiveSubscriptions } from "@/app/(root)/providers/userDataProvider";
 import { PACKS } from "@/utils/data/urls";
+import { describePack, formatPaymentDate } from "@/utils/functions/packs";
 
 const LimitPosts = () => {
   const { numberOfPosts, limit } = useUserPostLimit();
@@ -34,14 +35,18 @@ const LimitPosts = () => {
            ${accountType?.subscriptionPlan.postsLibresCount} anuncios geolocalizados.`}
           subtitle={accountType?.subscriptionPlan.reason || "Gratuita"}
         />
-        {postsPacks?.map((subscription: Subscription) => (
-          <CardDataItem
-            key={subscription.subscriptionPlan.reason}
-            title={`${subscription.subscriptionPlan.postsAgendaCount} anuncios de agenda. ${subscription.subscriptionPlan.postsLibresCount} anuncios geolocalizados.`}
-            subtitle={subscription.subscriptionPlan.reason}
-            boldLabel={`Disponible hasta ${subscription.endDate}`}
-          />
-        ))}
+        {postsPacks?.map((subscription: Subscription) => {
+          // `endDate` no sirve (suma días, no meses): la fecha real es el próximo cobro.
+          const renewal = formatPaymentDate(subscription.nextPaymentDate);
+          return (
+            <CardDataItem
+              key={subscription._id?.toString() ?? subscription.mpPreapprovalId}
+              title={describePack(subscription.subscriptionPlan).join(". ")}
+              subtitle={subscription.subscriptionPlan.reason}
+              boldLabel={renewal ? `Se renueva el ${renewal}` : undefined}
+            />
+          );
+        })}
       </div>
       <Button
         color="secondary"
