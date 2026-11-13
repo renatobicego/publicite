@@ -1,6 +1,11 @@
 import { auth } from "@clerk/nextjs/server";
 import { Image } from "@nextui-org/react";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import {
+  AFTER_ONBOARDING_COOKIE,
+  safeAfterOnboardingPath,
+} from "@/utils/functions/afterOnboarding";
 
 export default async function OnboardingLayout({
   children,
@@ -8,7 +13,12 @@ export default async function OnboardingLayout({
   children: React.ReactNode;
 }) {
   if ((await auth()).sessionClaims?.metadata.onboardingComplete === true) {
-    redirect("/");
+    // Vuelve al link de regalo o de Hacete Amigo desde el que se registró (la
+    // pantalla de destino borra la cookie).
+    const returnPath = safeAfterOnboardingPath(
+      (await cookies()).get(AFTER_ONBOARDING_COOKIE)?.value
+    );
+    redirect(returnPath ?? "/");
   }
 
   return (

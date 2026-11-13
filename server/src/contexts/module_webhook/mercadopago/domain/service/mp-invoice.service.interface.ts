@@ -6,6 +6,8 @@ import { AdminInvoiceFilters } from '../repository/mp-invoice.respository.interf
 
 export interface MpServiceInvoiceInterface {
   saveInvoice(subscription_authorized_payment: any): Promise<{ payment: any, subscription: any, paymentReady: boolean } | null>;
+  /** Factura de un pago único (regalo de plan) a nombre de quien pagó. */
+  saveOneTimePaymentInvoice(payment: any, payerUserId: string, reason: string): Promise<void>;
   updateInvoice(
     subscription_authorized_payment_to_update: any,
     id: string,

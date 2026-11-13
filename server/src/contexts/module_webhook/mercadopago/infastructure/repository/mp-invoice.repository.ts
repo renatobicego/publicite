@@ -44,6 +44,39 @@ export class MpInvoiceRepository
     }
   }
 
+  /*
+  Factura de un pago único (un regalo de plan): no hay suscripción ni registro de
+  Payment, así que esos campos van con un id de relleno (el populate da null y el
+  panel lo muestra sin plan). Upsert por invoice_id: los reintentos del webhook y
+  la confirmación del checkout no duplican.
+  */
+  async upsertOneTimePaymentInvoice(fields: {
+    invoice_id: string;
+    status: string;
+    paymentStatus: string;
+    preapprovalId: string;
+    external_reference: string;
+    transactionAmount: number;
+    currencyId: string;
+    reason: string;
+    rejectionCode: string;
+    timeOfUpdate: string;
+  }): Promise<any> {
+    return this.invoiceModel.findOneAndUpdate(
+      { invoice_id: fields.invoice_id },
+      {
+        $set: fields,
+        $setOnInsert: {
+          paymentId: new mongoose.Types.ObjectId('0001abcd0000000000000000'),
+          subscriptionId: new mongoose.Types.ObjectId('0002abcd0000000000000000'),
+          nextRetryDay: 'No aplica (pago único)',
+          retryAttempts: 0,
+        },
+      },
+      { upsert: true, new: true },
+    );
+  }
+
   async saveInvoice(invoice: Invoice): Promise<void> {
     try {
       this.logger.log(

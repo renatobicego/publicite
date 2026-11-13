@@ -20,6 +20,7 @@ import { NotificationShareModel } from "../infrastructure/schemas/notification.s
 import { NotificationUserModel } from "../infrastructure/schemas/notification.user.schema";
 import { NotificationGroupModel } from "../infrastructure/schemas/notification.group.schema";
 import { NotificationProductionTicketModel } from "../infrastructure/schemas/notification.productionTicket.schema";
+import { NotificationPlanModel } from "../infrastructure/schemas/notification.plan.schema";
 import { EmitterService } from "src/contexts/module_shared/event-emmiter/emmiter";
 import { UserPersonModel } from "../../user/infrastructure/schemas/userPerson.schema";
 import { UserRelationModel } from "../../user/infrastructure/schemas/user.relation.schema";
@@ -98,6 +99,7 @@ const downgradePlan_module = async (): Promise<TestingModule> => {
             // Lo pide NotificationRepository desde Mis Producciones. Este test no lo usa,
             // pero sin el stub Nest no puede construir el repositorio.
             { provide: getModelToken(NotificationProductionTicketModel.modelName), useValue: {} },
+            { provide: getModelToken(NotificationPlanModel.modelName), useValue: {} },
             { provide: getModelToken(UserPersonModel.modelName), useValue: {} },
             { provide: getModelToken(UserBusinessModel.modelName), useValue: {} },
 

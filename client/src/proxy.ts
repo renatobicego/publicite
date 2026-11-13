@@ -1,7 +1,15 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
+import {
+  AFTER_ONBOARDING_COOKIE,
+  AFTER_ONBOARDING_MAX_AGE,
+  safeAfterOnboardingPath,
+} from "./utils/functions/afterOnboarding";
 
 const isPublicRoute = createRouteMatcher([
+  // Links de regalos y de Hacete Amigo: se ven sin cuenta.
+  "/canjear(.*)",
+  "/hacete-amigo/unirse(.*)",
   "/iniciar-sesion(.*)",
   "/registrarse(.*)",
   "/",
@@ -57,7 +65,17 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
     !req.nextUrl.pathname.includes("/onboarding")
   ) {
     const onboardingUrl = new URL("/onboarding", req.url);
-    return NextResponse.redirect(onboardingUrl);
+    const response = NextResponse.redirect(onboardingUrl);
+    // Si venía de un link de regalo o de Hacete Amigo, vuelve ahí al terminar.
+    const returnPath = safeAfterOnboardingPath(req.nextUrl.pathname);
+    if (returnPath) {
+      response.cookies.set(AFTER_ONBOARDING_COOKIE, encodeURIComponent(returnPath), {
+        path: "/",
+        maxAge: AFTER_ONBOARDING_MAX_AGE,
+        sameSite: "lax",
+      });
+    }
+    return response;
   }
 
   // If the user is logged in and the route is protected, let them view.

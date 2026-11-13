@@ -6,6 +6,7 @@ import { NotificationSubscriptionServiceInterface } from "../../domain/service/N
 import { NotificationPayment } from "../../domain/entity/notification.payment";
 import { NotificationSubscription } from "../../domain/entity/notification.subscription.entity";
 import { NotificationProductionTicket } from "../../domain/entity/notification.productionTicket.entity";
+import { NotificationPlan } from "../../domain/entity/notification.plan.entity";
 
 export class NotificationSubscriptionService implements NotificationSubscriptionServiceInterface {
 
@@ -43,6 +44,13 @@ export class NotificationSubscriptionService implements NotificationSubscription
         } catch (error: any) {
             throw error;
         }
+    }
+
+    async createNotificationPlanAndSendToUser(notificationPlan: NotificationPlan): Promise<void> {
+        const notificationId = await this.notificationRepository.savePlanNotification(notificationPlan);
+        const userIdFrom = notificationPlan.getbackData.userIdFrom;
+        const userIdTo = notificationPlan.getbackData.userIdTo;
+        return await this.userService.pushNotificationToUserArrayNotifications(notificationId, userIdTo, userIdFrom);
     }
 
     async createNotificationPaymentAndSendToUser(notificationPayment: NotificationPayment): Promise<void> {

@@ -86,7 +86,9 @@ enum typeOfNotification {
     post_calification_notifications = 'post_calification_notifications',
     share_notifications = 'share_notifications',
     subscription_notifications = 'subscription_notifications',
-    production_ticket_notifications = 'production_ticket_notifications'
+    production_ticket_notifications = 'production_ticket_notifications',
+    // Regalos de planes y Hacete Amigo (ver plan.events.ts).
+    plan_notifications = 'plan_notifications'
 
 }
 

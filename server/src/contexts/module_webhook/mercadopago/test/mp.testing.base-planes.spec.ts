@@ -300,6 +300,24 @@ describe('Fase 1 - base común de suscripciones', () => {
       expect(fetchMock.createPreapproval).toHaveBeenCalledTimes(1);
     });
 
+    it('en un grupo de Hacete Amigo no se contrata un plan propio (ni cambiando el del grupo)', async () => {
+      const shared = await addSubscription('premium', {
+        kind: 'friendGroup',
+        external_reference: 'friendGroup:fase1_grupo',
+      });
+      mockMp(PLAN_MP.gold, 'fase1_pre_gold');
+      await expect(
+        checkout.startSubscriptionCheckout(uid, command(PLAN_MP.gold)),
+      ).rejects.toThrow(/salí del grupo/);
+      await expect(
+        checkout.startSubscriptionCheckout(uid, {
+          ...command(PLAN_MP.gold),
+          replacesSubscriptionId: shared.mpPreapprovalId,
+        }),
+      ).rejects.toThrow(/salí del grupo/);
+      expect(fetchMock.createPreapproval).not.toHaveBeenCalled();
+    });
+
     it('un plan dado de baja en MP no se puede contratar', async () => {
       fetchMock.getDataFromMp_fetch.mockResolvedValue({ status: 'cancelled' });
       await expect(

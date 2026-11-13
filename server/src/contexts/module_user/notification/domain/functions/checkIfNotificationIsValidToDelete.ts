@@ -24,6 +24,18 @@ const validDeleteNotification = new Set([
     'notification_production_ticket_confirmed',
     'notification_production_ticket_payout_done',
     'notification_production_ticket_factura_attached',
+    // Regalos de planes y Hacete Amigo: avisos informativos (las acciones están en
+    // la página del regalo o del grupo, no en la notificación).
+    'notification_plan_gift_received',
+    'notification_plan_gift_activated',
+    'notification_plan_friend_invited',
+    'notification_plan_friend_accepted',
+    'notification_plan_friend_rejected',
+    'notification_plan_friend_ready_to_pay',
+    'notification_plan_friend_active',
+    'notification_plan_friend_charge_failed',
+    'notification_plan_friend_charge_recovered',
+    'notification_plan_friend_cancelled',
 
 ]);
 

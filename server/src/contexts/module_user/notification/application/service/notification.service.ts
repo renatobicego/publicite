@@ -40,6 +40,11 @@ import {
   PRODUCTION_TICKET_NOTIFICATION_SENDER,
   ProductionTicketNotificationPayload,
 } from '../../domain/entity/production-ticket.events';
+import { NotificationPlan } from '../../domain/entity/notification.plan.entity';
+import {
+  PLAN_NOTIFICATION_SENDER,
+  PlanNotificationPayload,
+} from '../../domain/entity/plan.events';
 
 export class NotificationService
   implements NotificationHandlerServiceInterface, NotificationServiceInterface
@@ -240,6 +245,44 @@ export class NotificationService
         );
       } catch (error: any) {
         // Un destinatario que falla no corta los avisos de los demás.
+        this.logger.error(
+          `Error notifying ${recipient.userId} of ${payload.event}: ${error?.message}`,
+        );
+      }
+    }
+  }
+
+  /**
+   * Avisos de regalos de planes y Hacete Amigo: una notificación por destinatario.
+   * Un aviso que falla no corta los de los demás ni la operación que lo originó.
+   */
+  async handlePlanNotification(payload: PlanNotificationPayload): Promise<void> {
+    const factory = NotificationFactory.getInstance(this.logger);
+    for (const recipient of payload.recipients) {
+      try {
+        const notification: any = {
+          event: payload.event,
+          viewed: false,
+          user: recipient.userId,
+          backData: {
+            userIdTo: recipient.userId,
+            userIdFrom: PLAN_NOTIFICATION_SENDER,
+          },
+          socketJobId: 'This notification does not have a socketJobId',
+          type: typeOfNotification.plan_notifications,
+          notificationEntityId: payload.data.entityId,
+          frontData: {
+            plan: { ...payload.data, isPayer: recipient.isPayer ?? null },
+          },
+        };
+        const notificationPlan = factory.createNotification(
+          typeOfNotification.plan_notifications,
+          notification,
+        );
+        await this.notificationSubscriptionService.createNotificationPlanAndSendToUser(
+          notificationPlan as NotificationPlan,
+        );
+      } catch (error: any) {
         this.logger.error(
           `Error notifying ${recipient.userId} of ${payload.event}: ${error?.message}`,
         );

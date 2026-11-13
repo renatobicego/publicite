@@ -1,4 +1,6 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Optional } from '@nestjs/common';
+import { EmitterService } from 'src/contexts/module_shared/event-emmiter/emmiter';
+import { user_created } from 'src/contexts/module_shared/event-emmiter/events';
 import { Inject } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/mongoose';
 import { ClientSession, Connection, Types, ObjectId } from 'mongoose';
@@ -46,6 +48,7 @@ export class UserService implements UserServiceInterface {
     private readonly contactService: ContactServiceInterface,
     private readonly logger: MyLoggerService,
     @InjectConnection() private readonly connection: Connection,
+    @Optional() private readonly emmiter?: EmitterService,
   ) {}
   async getUsersOfAllApp(): Promise<any> {
     try {
@@ -144,6 +147,17 @@ export class UserService implements UserServiceInterface {
         }
       });
       await this.userRepository.createPubliciteRelation(userId);
+
+      // Regalos de planes hechos a este email antes de que tuviera cuenta: se le
+      // asignan ahora. Un fallo no corta el alta de la cuenta.
+      try {
+        await this.emmiter?.emitAsync(user_created, {
+          userId: String(userId),
+          email: userEntity.getEmail,
+        });
+      } catch (error: any) {
+        this.logger.error('Error avisando el alta del usuario: ' + (error?.message ?? error));
+      }
 
       return userId;
     } catch (error) {

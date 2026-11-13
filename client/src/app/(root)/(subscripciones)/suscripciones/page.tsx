@@ -1,5 +1,6 @@
 import BreadcrumbsAdmin from "@/components/BreadcrumbsAdmin";
-import { SUBSCRIPTIONS } from "@/utils/data/urls";
+import { GIFT_PLAN, SUBSCRIPTIONS } from "@/utils/data/urls";
+import { Link } from "@nextui-org/react";
 import Users from "./Users";
 
 import SubscriptionGrid from "../components/SubscriptionGrid";
@@ -50,6 +51,12 @@ export default async function SubscriptionPlans() {
           <p className="md:w-2/3 text-center text-sm md:text-base">
             Nuestros planes de subscripción están pensados para ser accesibles y
             enfocados en tus necesidades.{" "}
+          </p>
+          <p className="text-sm text-center">
+            ¿Querés regalarle un plan a alguien?{" "}
+            <Link href={GIFT_PLAN} size="sm">
+              Regalá meses de un plan
+            </Link>
           </p>
           {/* <Users /> */}
         </div>

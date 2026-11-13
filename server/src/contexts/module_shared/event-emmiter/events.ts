@@ -24,6 +24,8 @@ const plan_gift_notification = 'plan_gift.notification';
 const friend_group_notification = 'friend_group.notification';
 // Alta del usuario en Mongo (fin del onboarding): asigna regalos hechos a su email.
 const user_created = 'user.created';
+// Borrado de cuenta (antes de cancelar sus suscripciones): Hacete Amigo cancela el grupo.
+const user_deleting = 'user.deleting';
 
 export {
     mp_gift_payment,
@@ -33,6 +35,7 @@ export {
     plan_gift_notification,
     friend_group_notification,
     user_created,
+    user_deleting,
     group_deleted,
     group_creator_changed,
     production_ticket_notification,

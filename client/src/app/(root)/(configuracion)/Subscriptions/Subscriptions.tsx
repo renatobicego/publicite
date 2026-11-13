@@ -1,4 +1,4 @@
-import { Button, Divider } from "@nextui-org/react";
+import { Button, Divider, Link } from "@nextui-org/react";
 import React, { useState } from "react";
 import AccountType from "./AccountType/AccountType";
 import PaymentMethod from "./PaymentMethod/PaymentMethod";
@@ -8,7 +8,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import PaymentsTable from "./Payments/PaymentsTable";
 import { FaChevronLeft } from "react-icons/fa6";
 import SecondaryButton from "@/components/buttons/SecondaryButton";
-import { useActiveSubscriptions } from "../../providers/userDataProvider";
+import DataBox, { DataItem } from "../DataBox";
+import { GIFT_PLAN, MY_PLAN_GIFTS } from "@/utils/data/urls";
 
 const Subscriptions = () => {
   const [arePaymentsShown, setArePaymentsShown] = useState(false);
@@ -55,6 +56,17 @@ const Subscriptions = () => {
           >
             Ver Pagos Realizados
           </SecondaryButton>
+          <Divider />
+          <DataBox labelText="Regalos de planes">
+            <DataItem asDiv className="flex-wrap gap-x-4">
+              <Link href={MY_PLAN_GIFTS} size="sm">
+                Mis regalos
+              </Link>
+              <Link href={GIFT_PLAN} size="sm">
+                Regalar un plan
+              </Link>
+            </DataItem>
+          </DataBox>
           <Divider />
           <AiTokensLimit />
           <Divider />

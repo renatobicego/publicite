@@ -225,6 +225,15 @@ export const getAllNotificationsQuery = gql`
             commissionAmount
             reason
           }
+          plan {
+            kind
+            entityId
+            actorName
+            planReason
+            months
+            reason
+            isPayer
+          }
           share {
             _id
             description

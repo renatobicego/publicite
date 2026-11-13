@@ -20,6 +20,7 @@ import { ContactModule } from './contexts/module_user/contact/infrastructure/mod
 import { UserModule } from './contexts/module_user/user/infrastructure/module/user.module';
 import { DatabaseService } from './contexts/module_shared/database/infrastructure/database.service';
 import { MercadoPagoModule } from './contexts/module_webhook/mercadopago/infastructure/module/mercadopago.module';
+import { FriendPlanModule } from './contexts/module_friend_plan/infraestructure/module/friend-plan.module';
 import { ClerkModule } from './contexts/module_webhook/clerk/infrastructure/module/clerk.module';
 import { NotificationModule } from './contexts/module_user/notification/infrastructure/module/notification.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
@@ -52,6 +53,7 @@ import { ProductionModule } from './contexts/module_production/production/infrae
     EmmiterModule,
     ClerkModule,
     MercadoPagoModule,
+    FriendPlanModule,
     UserModule,
     ContactModule,
     SectorModule,

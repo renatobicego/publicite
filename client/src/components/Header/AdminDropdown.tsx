@@ -1,6 +1,7 @@
 import {
   ADMIN_INVOICES,
   ADMIN_MP_TEST,
+  ADMIN_PLAN_GIFTS,
   ADMIN_PRODUCTION_REPORTS,
   ADMIN_PRODUCTION_TICKETS,
   NOVELTIES,
@@ -57,6 +58,15 @@ const AdminDropdown = () => {
           textValue="Denuncias de Producciones"
         >
           Denuncias de Producciones
+        </DropdownItem>
+        <DropdownItem
+          href={ADMIN_PLAN_GIFTS}
+          className="rounded-full pl-4 text-text-color"
+          key="regalos"
+          color="secondary"
+          textValue="Regalos de planes"
+        >
+          Regalos de planes
         </DropdownItem>
         <DropdownItem
           href={ADMIN_MP_TEST}

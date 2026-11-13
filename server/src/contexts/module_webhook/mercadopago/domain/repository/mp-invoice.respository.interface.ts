@@ -23,6 +23,19 @@ export interface AdminInvoicesPage {
 
 export interface MercadoPagoInvoiceRepositoryInterface {
   saveInvoice(invoice: Invoice): Promise<void>;
+  /** Factura de un pago único (regalo de plan), idempotente por invoice_id. */
+  upsertOneTimePaymentInvoice(fields: {
+    invoice_id: string;
+    status: string;
+    paymentStatus: string;
+    preapprovalId: string;
+    external_reference: string;
+    transactionAmount: number;
+    currencyId: string;
+    reason: string;
+    rejectionCode: string;
+    timeOfUpdate: string;
+  }): Promise<any>;
   updateInvoice(
     subscription_authorized_payment_to_update: any,
     id: string,

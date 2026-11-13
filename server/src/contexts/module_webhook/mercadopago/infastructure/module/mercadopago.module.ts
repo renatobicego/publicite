@@ -183,5 +183,13 @@ import { MpTestResolver } from '../resolver/mp-test.resolver';
         },
 
     ],
+    // Los usa module_friend_plan (regalos y Hacete Amigo) para cobrar con MP y dar
+    // de alta suscripciones sin depender de cómo funciona el webhook.
+    exports: [
+        'SubscriptionServiceInterface',
+        'MercadoPagoSubscriptionPlanServiceInterface',
+        'FetchToMpInterface',
+        'MpServiceInvoiceInterface',
+    ],
 })
 export class MercadoPagoModule { }

@@ -12,8 +12,10 @@ import PaymentNotification from "./suscriptions/PaymentNotification";
 import UserRelationNotificationCard from "./users/UserRelationNotification";
 import SubscriptionDowngradeNotification from "./suscriptions/SubscriptionDowngradeNotification";
 import ProductionTicketNotification from "./productionTickets/ProductionTicketNotification";
+import PlanNotification from "./plans/PlanNotification";
 
 type NotificationType =
+  | "notification_plan_"
   | "production_ticket"
   | "notification_group"
   | "magazine"
@@ -29,6 +31,8 @@ type NotificationType =
 
 const notificationComponents = {
   // Primero: sus eventos no deben caer en otro tipo por coincidencia parcial.
+  // Regalos de planes y Hacete Amigo (`notification_plan_*`).
+  notification_plan_: PlanNotification,
   production_ticket: ProductionTicketNotification,
   notification_group: GroupNotificationCard,
   magazine: MagazineNotificationCard,

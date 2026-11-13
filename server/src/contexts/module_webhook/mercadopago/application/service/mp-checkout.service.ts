@@ -17,7 +17,7 @@ import {
   subscriptionKindOf,
 } from 'src/contexts/module_shared/subscriptions/subscription.kind';
 import { FetchToMpInterface } from '../adapter/out/fech.to.mp.interface';
-import { MercadoPagoApiError } from '../adapter/out/mercadopago.api.error';
+import { mercadoPagoUserError } from '../adapter/out/mercadopago.api.error';
 import {
   MpCheckoutServiceInterface,
   StartSubscriptionCheckoutCommand,
@@ -90,6 +90,16 @@ export class MpCheckoutService implements MpCheckoutServiceInterface {
       }
     } else {
       const paidPlans = active.filter(isPaidPlanSubscription);
+      // Hacete Amigo: el plan es del grupo. Para pasarse a uno propio hay que salir.
+      if (
+        paidPlans.some(
+          (subscription: any) => subscriptionKindOf(subscription) === SubscriptionKind.FRIEND_GROUP,
+        )
+      ) {
+        throw new BadRequestException(
+          'Estás en un grupo de Hacete Amigo: para contratar un plan propio, primero salí del grupo.',
+        );
+      }
       if (command.replacesSubscriptionId) {
         previous =
           paidPlans.find(
@@ -362,29 +372,7 @@ export class MpCheckoutService implements MpCheckoutServiceInterface {
 
   /* Traduce un rechazo de MP a un mensaje que el usuario entienda. */
   private toUserError(error: any): Error {
-    if (!(error instanceof MercadoPagoApiError)) return error;
-    const detail = error.detail;
-    if (error.status >= 500) {
-      return new ServiceUnavailableException(
-        'MercadoPago no está respondiendo. Probá de nuevo en unos minutos.',
-      );
-    }
-    if (/reject|rechaz|insufficient|high_risk|blacklist|cc_/.test(detail)) {
-      return new BadRequestException(
-        'La tarjeta fue rechazada. Probá con otra tarjeta o consultá con tu banco.',
-      );
-    }
-    if (/token/.test(detail)) {
-      return new BadRequestException(
-        'No pudimos validar la tarjeta. Volvé a cargar los datos e intentá de nuevo.',
-      );
-    }
-    if (/payer|email/.test(detail)) {
-      return new BadRequestException('Revisá el email del pagador e intentá de nuevo.');
-    }
-    return new BadRequestException(
-      'No pudimos procesar el pago. Revisá los datos de la tarjeta e intentá de nuevo.',
-    );
+    return mercadoPagoUserError(error);
   }
 }
 

@@ -3,8 +3,9 @@ import { NotificationAdapterInterface } from "../../domain/adapter/notification.
 import { NotificationServiceInterface } from "../../domain/service/notification.service.interface";
 import { notification_graph_model_get_all } from "../../application/dtos/getAll.notification.dto";
 import { OnEvent } from "@nestjs/event-emitter";
-import { downgrade_plan_contact_notification, downgrade_plan_post_notification, production_ticket_notification, subscription_event } from "src/contexts/module_shared/event-emmiter/events";
+import { downgrade_plan_contact_notification, downgrade_plan_post_notification, friend_group_notification, plan_gift_notification, production_ticket_notification, subscription_event } from "src/contexts/module_shared/event-emmiter/events";
 import { ProductionTicketNotificationPayload } from "../../domain/entity/production-ticket.events";
+import { PlanNotificationPayload } from "../../domain/entity/plan.events";
 import { PaymentDataFromMeli } from "../../application/dtos/payment.data.meli";
 import { DOWNGRADE_PLAN_CONTACT_EVENT, DOWNGRADE_PLAN_POST_EVENT } from "../../domain/entity/downgrade.plan.events";
 
@@ -83,6 +84,18 @@ export class NotificationAdapter implements NotificationAdapterInterface {
             await this.notificationService.handleProductionTicketNotification(payload)
         } catch (error: any) {
             console.error('Error en notificación de ticket de producción', error?.message)
+        }
+    }
+
+
+    // Regalos de planes y Hacete Amigo. No relanza: un aviso que falla no rompe el regalo ni el grupo.
+    @OnEvent(plan_gift_notification)
+    @OnEvent(friend_group_notification)
+    async plan_notification(payload: PlanNotificationPayload): Promise<void> {
+        try {
+            await this.notificationService.handlePlanNotification(payload)
+        } catch (error: any) {
+            console.error('Error en notificación de plan', error?.message)
         }
     }
 

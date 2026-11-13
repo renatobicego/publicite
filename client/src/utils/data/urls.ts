@@ -45,6 +45,7 @@ const ADMIN_PLAN_GIFTS = "/admin/regalos";
 // Regalo de planes: comprar un regalo y canjear el link.
 const GIFT_PLAN = "/regalar";
 const REDEEM_GIFT = "/canjear";
+const MY_PLAN_GIFTS = "/regalar/mis-regalos";
 // Hacete Amigo: el grupo del plan compartido y el link de invitación.
 const FRIEND_PLAN = "/hacete-amigo";
 const FRIEND_PLAN_JOIN = "/hacete-amigo/unirse";
@@ -94,6 +95,7 @@ export {
   ADMIN_PLAN_GIFTS,
   GIFT_PLAN,
   REDEEM_GIFT,
+  MY_PLAN_GIFTS,
   FRIEND_PLAN,
   FRIEND_PLAN_JOIN,
   NOVELTIES,

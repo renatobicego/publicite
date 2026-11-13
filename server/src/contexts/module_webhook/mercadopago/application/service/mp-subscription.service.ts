@@ -224,6 +224,68 @@ export class MpSubscriptionService implements SubscriptionServiceInterface {
   }
 
   /*
+  Alta de una suscripción que no viene del checkout de un usuario: un regalo
+  (sin preapproval, con vencimiento) o el plan compartido de Hacete Amigo (un
+  preapproval, varios titulares). Se guarda y se agrega a `User.subscriptions` de
+  cada titular, en una transacción. Idempotente por mpPreapprovalId.
+  Devuelve el _id de la suscripción.
+  */
+  async createInternalSubscription(params: {
+    mpPreapprovalId: string;
+    subscriptionPlanId: string;
+    holders: string[];
+    payerUser: string;
+    kind: SubscriptionKind;
+    externalReference: string;
+    status?: string;
+    expiresAt?: Date;
+    nextPaymentDate?: string;
+    payerId?: string;
+  }): Promise<string> {
+    const existing = await this.subscriptionRepository.findSubscriptionByPreapprovalId(
+      params.mpPreapprovalId,
+    );
+    const session = await this.connection.startSession();
+    let subscriptionId: any = existing?._id;
+    try {
+      await session.withTransaction(async () => {
+        if (!subscriptionId) {
+          const now = new Date();
+          const subscription = new Subscription(
+            params.mpPreapprovalId,
+            params.payerId || '-',
+            params.status ?? statusOfSubscription.AUTHORIZED,
+            params.subscriptionPlanId as any,
+            now.toISOString().split('T')[0],
+            (params.expiresAt ?? now).toISOString().split('T')[0],
+            params.externalReference,
+            getTodayDateTime(),
+            params.nextPaymentDate ?? (params.expiresAt ? params.expiresAt.toISOString() : ''),
+            '',
+            '',
+            undefined,
+            {
+              kind: params.kind,
+              expiresAt: params.expiresAt,
+              payerUser: params.payerUser,
+            },
+          );
+          subscriptionId = await this.subscriptionRepository.saveSubPreapproval(
+            subscription,
+            session,
+          );
+        }
+        for (const holder of params.holders) {
+          await this.userService.setSubscriptionToUser(holder, subscriptionId, session);
+        }
+      });
+    } finally {
+      await session.endSession();
+    }
+    return String(subscriptionId);
+  }
+
+  /*
   Cambio de plan: el plan viejo ya se canceló en MP. En una transacción se marca
   cancelado y, si todavía le quedaba tiempo pago (nextPaymentDate futura), se crea
   el extra temporal: una suscripción interna `carryover` que apunta al plan viejo,

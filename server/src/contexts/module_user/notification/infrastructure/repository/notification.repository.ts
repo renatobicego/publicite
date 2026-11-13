@@ -45,6 +45,8 @@ import { NotificationSubscription } from '../../domain/entity/notification.subsc
 import { INotificationSubscription, NotificationSubscriptionModel } from '../schemas/notification.subscription.schema';
 import { NotificationProductionTicket } from '../../domain/entity/notification.productionTicket.entity';
 import { INotificationProductionTicket, NotificationProductionTicketModel } from '../schemas/notification.productionTicket.schema';
+import { NotificationPlan } from '../../domain/entity/notification.plan.entity';
+import { INotificationPlan, NotificationPlanModel } from '../schemas/notification.plan.schema';
 
 export class NotificationRepository implements NotificationRepositoryInterface {
   constructor(
@@ -81,6 +83,8 @@ export class NotificationRepository implements NotificationRepositoryInterface {
 
     @InjectModel(NotificationProductionTicketModel.modelName)
     private readonly notificationProductionTicketDocument: Model<INotificationProductionTicket>,
+    @InjectModel(NotificationPlanModel.modelName)
+    private readonly notificationPlanDocument: Model<INotificationPlan>,
   ) { }
 
 
@@ -372,6 +376,18 @@ export class NotificationRepository implements NotificationRepositoryInterface {
         error.message,
       );
       this.logger.error(error);
+      throw error;
+    }
+  }
+
+  async savePlanNotification(notification: NotificationPlan, session?: any): Promise<Types.ObjectId> {
+    try {
+      this.logger.log('Saving plan notification (regalo / Hacete Amigo) in repository...');
+      const planNotification = new this.notificationPlanDocument(notification);
+      const saved = await planNotification.save({ session });
+      return saved._id;
+    } catch (error: any) {
+      this.logger.error('An error occurred while saving plan notification', error.message);
       throw error;
     }
   }

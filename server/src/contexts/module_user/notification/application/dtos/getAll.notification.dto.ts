@@ -10,6 +10,7 @@ import { front_data_SHARE } from './front.data.notification.share.dto';
 import { front_data_SUBSCRIPTION } from './front.data.notification.subscription.dto';
 import { front_data_POSTCALIFICATION } from './front.data.notification.postNotification.dto';
 import { front_data_PRODUCTIONTICKET } from './front.data.notification.productionTicket.dto';
+import { front_data_PLAN } from './front.data.notification.plan.dto';
 
 @ObjectType()
 export class frontData {
@@ -42,6 +43,9 @@ export class frontData {
 
   @Field(() => front_data_PRODUCTIONTICKET, { nullable: true })
   productionTicket: front_data_PRODUCTIONTICKET;
+
+  @Field(() => front_data_PLAN, { nullable: true })
+  plan: front_data_PLAN;
 }
 
 @ObjectType()

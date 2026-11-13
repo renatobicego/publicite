@@ -1,4 +1,5 @@
 import Subscription from '../entity/subcription.entity';
+import { SubscriptionKind } from 'src/contexts/module_shared/subscriptions/subscription.kind';
 
 export enum statusOfSubscription {
   AUTHORIZED = 'authorized',
@@ -22,6 +23,22 @@ export interface SubscriptionServiceInterface {
    * extra temporal con sus límites hasta su próximo cobro. Devuelve hasta cuándo.
    */
   cancelForPlanChange(previous: any, userId: string, now?: Date): Promise<Date | null>;
+  /**
+   * Alta de una suscripción de regalo o de Hacete Amigo: se agrega a
+   * User.subscriptions de cada titular. Idempotente. Devuelve el _id.
+   */
+  createInternalSubscription(params: {
+    mpPreapprovalId: string;
+    subscriptionPlanId: string;
+    holders: string[];
+    payerUser: string;
+    kind: SubscriptionKind;
+    externalReference: string;
+    status?: string;
+    expiresAt?: Date;
+    nextPaymentDate?: string;
+    payerId?: string;
+  }): Promise<string>;
   findSubscriptionByPreapprovalId(id: string): Promise<any>;
   createSubscription_preapproval(subscription_preapproval: any): Promise<void>;
   updateSubscription_preapproval(

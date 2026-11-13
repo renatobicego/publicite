@@ -76,6 +76,26 @@ export class MpInvoiceService implements MpServiceInvoiceInterface {
   }
 
 
+  /*
+  Factura de un pago único de MP (regalo de plan) a nombre de quien pagó, para
+  que aparezca en sus pagos y en el panel de admin (donde se adjunta la factura).
+  */
+  async saveOneTimePaymentInvoice(payment: any, payerUserId: string, reason: string): Promise<void> {
+    if (!payment?.id) return;
+    await this.mpInvoiceRepository.upsertOneTimePaymentInvoice({
+      invoice_id: String(payment.id),
+      status: String(payment.status ?? 'pending'),
+      paymentStatus: String(payment.status ?? 'pending'),
+      preapprovalId: String(payment.external_reference ?? 'pago-unico'),
+      external_reference: payerUserId,
+      transactionAmount: Number(payment.transaction_amount ?? 0),
+      currencyId: String(payment.currency_id ?? 'ARS'),
+      reason,
+      rejectionCode: String(payment.status_detail ?? ''),
+      timeOfUpdate: getTodayDateTime(),
+    });
+  }
+
   async saveInvoice(subscription_authorized_payment: authorized_payments): Promise<{ payment: any, subscription: any, paymentReady: boolean } | null> {
     this.logger.log('---INVOICE SERVICE CREATE ---');
     let paymetnId;
