@@ -44,6 +44,10 @@ import { UserModel } from 'src/contexts/module_user/user/infrastructure/schemas/
 import { MpSubscriptionResolver } from '../resolver/mp-subscription.resolver';
 import { MpCheckoutService } from '../../application/service/mp-checkout.service';
 import { MpCheckoutAdapter } from '../adapters/in/mp-checkout.adapter';
+import { MpTestEventSchema } from '../schemas/mptest-event.schema';
+import { MpTestEventRepository } from '../repository/mptest-event.repository';
+import { MpTestService } from '../../application/service/mp-test.service';
+import { MpTestResolver } from '../resolver/mp-test.resolver';
 
 
 @Module({
@@ -55,6 +59,8 @@ import { MpCheckoutAdapter } from '../adapters/in/mp-checkout.adapter';
             { name: 'Payment', schema: PaymentSchema },
             { name: 'SubscriptionPlan', schema: SubscriptionPlanSchema },
             { name: 'Error', schema: ErrorSchema },
+            // Pruebas de la Fase 0 (mptest:). Se borra con la página de pruebas.
+            { name: 'MpTestEvent', schema: MpTestEventSchema },
             // El panel admin resuelve nombre/email del dueño de cada ticket a
             // partir del `external_reference` (mongoId), que no es una ref de
             // Mongoose y por eso no se puede populatear.
@@ -76,6 +82,12 @@ import { MpCheckoutAdapter } from '../adapters/in/mp-checkout.adapter';
         MpInvoiceResolver,
         AdminInvoiceResolver,
         MpSubscriptionResolver,
+        MpTestResolver,
+        MpTestService,
+        {
+            provide: 'MpTestEventRepositoryInterface',
+            useClass: MpTestEventRepository,
+        },
         PaymentNotificationService,
         {
             provide: 'MpCheckoutServiceInterface',

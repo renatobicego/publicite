@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Optional } from '@nestjs/common';
 
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { MpHandlerEventsInterface } from 'src/contexts/module_webhook/mercadopago/domain/handler/mp.handler.events.interface';
@@ -6,7 +6,14 @@ import { FetchToMpInterface } from '../../../application/adapter/out/fech.to.mp.
 import { MpServiceInvoiceInterface } from '../../../domain/service/mp-invoice.service.interface';
 import { MpPaymentServiceInterface } from '../../../domain/service/mp-payments.service.interface';
 import { statusOfSubscription, SubscriptionServiceInterface } from '../../../domain/service/mp-subscription.service.interface';
-import { downgrade_plan_contact, downgrade_plan_post } from 'src/contexts/module_shared/event-emmiter/events';
+import {
+  downgrade_plan_contact,
+  downgrade_plan_post,
+  mp_friend_group_charge_failed,
+  mp_friend_group_charge_recovered,
+  mp_friend_group_preapproval,
+  mp_gift_payment,
+} from 'src/contexts/module_shared/event-emmiter/events';
 import { authorized_payments, } from '../../../domain/entity_mp/authorized_payments';
 import { Subscription_preapproval } from '../../../domain/entity_mp/subscription_preapproval';
 
@@ -17,6 +24,7 @@ import { Payment as Payment_meli } from '../../../domain/entity_mp/payment';
 import { EmitterService } from 'src/contexts/module_shared/event-emmiter/emmiter';
 import { PaymentNotificationService } from './PaymentNotificationService';
 import { resolveExternalReference } from 'src/contexts/module_shared/subscriptions/external-reference';
+import { MpTestEventRepositoryInterface } from '../../repository/mptest-event.repository';
 
 
 
@@ -56,9 +64,71 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
     @Inject('FetchToMpInterface')
     private readonly fetchToMpAdapter: FetchToMpInterface,
     private readonly paymentNotificationService: PaymentNotificationService,
-    private readonly emmiter: EmitterService
+    private readonly emmiter: EmitterService,
+    @Optional()
+    @Inject('MpTestEventRepositoryInterface')
+    private readonly testEvents?: MpTestEventRepositoryInterface,
 
   ) { }
+
+  /*
+  Pruebas de la Fase 0 (`external_reference` `mptest:<uuid>`): se guarda el objeto
+  completo de MP en `mptestevents` y se responde OK, sin tocar usuarios ni límites.
+  Devuelve true si el evento era de prueba (y ya está resuelto).
+  */
+  private async divertTestEvent(
+    topic: string,
+    action: string,
+    dataId: string,
+    mpObject: any,
+  ): Promise<boolean> {
+    if (resolveExternalReference(mpObject?.external_reference).type !== 'test') {
+      return false;
+    }
+    this.logger.warn(`Evento de prueba de MP (${topic}.${action} ${dataId}): se guarda en mptestevents.`);
+    try {
+      await this.testEvents?.save({ topic, action, dataId, mpObject });
+    } catch (error: any) {
+      this.logger.error('No se pudo guardar el evento de prueba: ' + (error?.message ?? error));
+    }
+    return true;
+  }
+
+  /*
+  Pago único de un regalo (`gift:<id>`): lo resuelve el módulo de regalos. Si
+  falla, el error sube y MP reintenta el evento (el procesamiento es idempotente).
+  */
+  private async divertGiftPayment(payment: any): Promise<boolean> {
+    const reference = resolveExternalReference(payment?.external_reference);
+    if (reference.type !== 'gift') return false;
+    const results = await this.emmiter.emitAsync(mp_gift_payment, {
+      giftId: reference.id,
+      payment,
+    });
+    if (!results || results.length === 0) {
+      this.logger.error(`Pago ${payment?.id} de un regalo sin módulo que lo procese.`);
+    }
+    return true;
+  }
+
+  /*
+  Preapproval de Hacete Amigo (`friendGroup:<id>`): la suscripción compartida se
+  actualiza como cualquier otra (estado, próximo cobro) y el módulo del grupo
+  decide qué hacer con el grupo (alta, baja, aviso a los miembros).
+  */
+  private async divertFriendGroupPreapproval(preapproval: any): Promise<boolean> {
+    const reference = resolveExternalReference(preapproval?.external_reference);
+    if (reference.type !== 'friendGroup') return false;
+    const existing = await this.subscriptionService.findSubscriptionByPreapprovalId(preapproval.id);
+    if (existing) {
+      await this.subscriptionService.updateSubscription_preapproval(preapproval);
+    }
+    await this.emmiter.emitAsync(mp_friend_group_preapproval, {
+      groupId: reference.id,
+      preapproval,
+    });
+    return true;
+  }
   get getLogger() {
     return this.logger
   }
@@ -104,6 +174,9 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
       console.log('PAYMENT CREATE RESPONSE:');
       console.log(mercadoPago_paymentResponse);
 
+      if (await this.divertTestEvent('payment', 'created', dataID, mercadoPago_paymentResponse)) return true;
+      if (await this.divertGiftPayment(mercadoPago_paymentResponse)) return true;
+
 
 
       const is_a_card_validation = await this.is_a_card_validation(mercadoPago_paymentResponse, "payment.created");
@@ -138,6 +211,13 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
       const mercadoPago_paymentResponse: Payment_meli = await this.fetchToMpAdapter.getDataFromMp_fetch(
         `${this.URL_PAYMENT_CHECK}${dataID}`,
       );
+      if (!mercadoPago_paymentResponse) {
+        this.logger.warn(`Fetch to mercadopago returned an empty response -> ${this.URL_PAYMENT_CHECK}${dataID}`);
+        return Promise.resolve(false);
+      }
+
+      if (await this.divertTestEvent('payment', 'updated', dataID, mercadoPago_paymentResponse)) return true;
+      if (await this.divertGiftPayment(mercadoPago_paymentResponse)) return true;
 
       const is_a_card_validation = await this.is_a_card_validation(mercadoPago_paymentResponse, "paymenty.created");
       if (is_a_card_validation) return Promise.resolve(true);
@@ -182,6 +262,9 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
       );
       console.log('Meli fetch response suscription:');
       console.log(subscription_preapproval);
+
+      if (await this.divertTestEvent('subscription_preapproval', 'created', dataID, subscription_preapproval)) return true;
+      if (await this.divertFriendGroupPreapproval(subscription_preapproval)) return true;
 
       await this.registerSubscription(subscription_preapproval);
       return Promise.resolve(true);
@@ -290,6 +373,9 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
       console.log('Meli fetch response suscription_preapproval_updated:');
       console.log(subscription_preapproval_update);
 
+      if (await this.divertTestEvent('subscription_preapproval', 'updated', dataID, subscription_preapproval_update)) return true;
+      if (await this.divertFriendGroupPreapproval(subscription_preapproval_update)) return true;
+
       const { id, status } = subscription_preapproval_update;
       const alreadyRegistered =
         await this.subscriptionService.findSubscriptionByPreapprovalId(id);
@@ -338,6 +424,8 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
 
       console.log('subscription_authorized_payment CREATE RESPONSE:');
       console.log(subscription_authorized_payment);
+
+      if (await this.divertTestEvent('subscription_authorized_payment', 'created', dataID, subscription_authorized_payment)) return true;
 
       const isCardValidation = await this.is_a_card_validation(subscription_authorized_payment, "subscription_authorized_payment.created");
       if (isCardValidation) return Promise.resolve(true);
@@ -399,6 +487,7 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
         return true;
       }
 
+      if (await this.divertTestEvent('subscription_authorized_payment', 'updated', dataID, response_mp_subscription_authorized_payment)) return true;
 
       const isCardValidation = await this.is_a_card_validation(response_mp_subscription_authorized_payment, 'UPDATE');
       if (isCardValidation) return Promise.resolve(true);
@@ -431,8 +520,15 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
           response_mp_subscription_authorized_payment.external_reference,
         );
 
-        if (reference.type !== 'user') {
-          // Regalos y Hacete Amigo bajan el plan a sus propios titulares (no al external_reference).
+        if (reference.type === 'friendGroup') {
+          // Hacete Amigo: el módulo del grupo pausa el grupo, baja el plan a cada
+          // miembro sin otro plan pago y les avisa a todos.
+          await this.emmiter.emitAsync(mp_friend_group_charge_failed, {
+            groupId: reference.id,
+            preapprovalId: response_mp_subscription_authorized_payment.preapproval_id,
+            authorizedPayment: response_mp_subscription_authorized_payment,
+          });
+        } else if (reference.type !== 'user') {
           this.logger.warn(
             `Pago rechazado del preapproval ${response_mp_subscription_authorized_payment.preapproval_id} (${reference.type}): el downgrade no se resuelve acá.`,
           );
@@ -477,6 +573,15 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
             `Pago aprobado de una suscripción pausada (${preapprovalId}): vuelve a authorized. Pago: ${paymentStatus}, cuota: ${subscriptionStatus}, reintento: ${response_mp_subscription_authorized_payment.retry_attempt ?? 0}`,
           );
           await this.subscriptionService.changeStatusOfSubscription(preapprovalId, statusOfSubscription.AUTHORIZED);
+          const reference = resolveExternalReference(
+            response_mp_subscription_authorized_payment.external_reference,
+          );
+          if (reference.type === 'friendGroup') {
+            await this.emmiter.emitAsync(mp_friend_group_charge_recovered, {
+              groupId: reference.id,
+              preapprovalId,
+            });
+          }
         }
       }
 

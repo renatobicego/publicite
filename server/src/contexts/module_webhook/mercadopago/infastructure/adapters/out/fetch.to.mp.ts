@@ -25,12 +25,18 @@ export class FetchToMercadoPagoAdapter implements FetchToMpInterface {
     Llamada con cuerpo a la API de MP. Si MP no la acepta lanza MercadoPagoApiError
     con su respuesta (no se loguea el cuerpo enviado: lleva el token de la tarjeta).
     */
-    private async sendToMp(method: 'POST' | 'PUT', url: string, body: Record<string, any>): Promise<any> {
+    private async sendToMp(
+        method: 'POST' | 'PUT',
+        url: string,
+        body: Record<string, any>,
+        extraHeaders: Record<string, string> = {},
+    ): Promise<any> {
         const response = await fetch(url, {
             method,
             headers: {
                 Authorization: `Bearer ${this.getAccessToken()}`,
                 'Content-Type': 'application/json',
+                ...extraHeaders,
             },
             body: JSON.stringify(body),
         });
@@ -56,6 +62,13 @@ export class FetchToMercadoPagoAdapter implements FetchToMpInterface {
     async updatePreapproval(preapprovalId: string, body: Record<string, any>): Promise<any> {
         this.logger.log('Updating preapproval in Mercadopago: ' + preapprovalId);
         return this.sendToMp('PUT', `${PREAPPROVAL_URL}/${preapprovalId}`, body);
+    }
+
+    async createPayment(body: Record<string, any>, idempotencyKey: string): Promise<any> {
+        this.logger.log('Creating payment in Mercadopago for ' + (body?.external_reference ?? 'unknown'));
+        return this.sendToMp('POST', 'https://api.mercadopago.com/v1/payments', body, {
+            'X-Idempotency-Key': idempotencyKey,
+        });
     }
 
     async getDataFromMp_fetch(url: string): Promise<any> {

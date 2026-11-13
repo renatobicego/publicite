@@ -1,5 +1,6 @@
 import {
   ADMIN_INVOICES,
+  ADMIN_MP_TEST,
   ADMIN_PRODUCTION_REPORTS,
   ADMIN_PRODUCTION_TICKETS,
   CREATE,
@@ -76,6 +77,12 @@ const MobileMenu = ({
       isAdminOnly: true,
     },
     {
+      title: "Admin: Prueba de MercadoPago",
+      url: ADMIN_MP_TEST,
+      isPrivate: true,
+      isAdminOnly: true,
+    },
+    {
       title: "Admin: Novedades",
       url: NOVELTIES,
       isPrivate: true,
@@ -85,7 +92,8 @@ const MobileMenu = ({
   const variants: Variants = {
     visible: {
       transform: "translateY(0)",
-      height: !isSignedIn ? "190px" : isAdmin ? "410px" : "290px",
+      // La altura crece ~30px por cada ítem de admin.
+      height: !isSignedIn ? "190px" : isAdmin ? "440px" : "290px",
       opacity: 1,
     },
     hidden: { transform: "translateY(-50px)", height: "0px", opacity: 0 },

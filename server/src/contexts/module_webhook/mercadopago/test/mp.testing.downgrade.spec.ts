@@ -2,6 +2,8 @@ import { MpHandlerEvents } from '../infastructure/adapters/handler/mpHandlerFETC
 import {
   downgrade_plan_contact,
   downgrade_plan_post,
+  mp_friend_group_charge_failed,
+  mp_gift_payment,
 } from 'src/contexts/module_shared/event-emmiter/events';
 
 /*
@@ -134,6 +136,11 @@ describe('Pago rechazado - downgrade de plan', () => {
 
     await expect(handler.update_subscription_authorized_payment('99999')).resolves.toBe(true);
     expect(eventosDeDowngrade(emmiterMock)).toEqual([]);
+    // Le avisa al módulo de Hacete Amigo, que baja el plan a cada miembro
+    expect(emmiterMock.emitAsync).toHaveBeenCalledWith(
+      mp_friend_group_charge_failed,
+      expect.objectContaining({ groupId: '6730000000000000000000aa' }),
+    );
   });
 
   it('ante un error consultando las suscripciones, no baja el plan por las dudas', async () => {
@@ -145,6 +152,70 @@ describe('Pago rechazado - downgrade de plan', () => {
     await handler.update_subscription_authorized_payment('99999');
 
     expect(eventosDeDowngrade(emmiterMock)).toEqual([]);
+  });
+});
+
+/*
+Pruebas de la Fase 0 (`mptest:`) y pagos de regalos (`gift:`): el webhook no los
+trata como suscripciones de un usuario.
+*/
+describe('Eventos que no son de un usuario', () => {
+  beforeEach(() => jest.clearAllMocks());
+
+  it('un evento de prueba se guarda y no toca facturas, suscripciones ni planes', async () => {
+    const { handler, emmiterMock, subscriptionServiceMock, invoiceServiceMock } =
+      construirHandler({});
+    const save = jest.fn(async () => undefined);
+    (handler as any).testEvents = { save };
+    (handler as any).fetchToMpAdapter.getDataFromMp_fetch = jest.fn(async () => ({
+      ...authorizedPaymentRechazado(),
+      external_reference: 'mptest:abc',
+    }));
+
+    await expect(handler.update_subscription_authorized_payment('99999')).resolves.toBe(true);
+
+    expect(save).toHaveBeenCalledWith(
+      expect.objectContaining({ topic: 'subscription_authorized_payment', action: 'updated' }),
+    );
+    expect(invoiceServiceMock.updateInvoice).not.toHaveBeenCalled();
+    expect(subscriptionServiceMock.changeStatusOfSubscription).not.toHaveBeenCalled();
+    expect(eventosDeDowngrade(emmiterMock)).toEqual([]);
+  });
+
+  it('un pago de prueba también se guarda aparte', async () => {
+    const { handler } = construirHandler({});
+    const save = jest.fn(async () => undefined);
+    (handler as any).testEvents = { save };
+    (handler as any).mpPaymentService.createPayment = jest.fn();
+    (handler as any).fetchToMpAdapter.getDataFromMp_fetch = jest.fn(async () => ({
+      id: 123,
+      status: 'approved',
+      transaction_amount: 100,
+      external_reference: 'mptest:xyz',
+    }));
+
+    await expect(handler.create_payment('123')).resolves.toBe(true);
+    expect(save).toHaveBeenCalledWith(expect.objectContaining({ topic: 'payment' }));
+    expect((handler as any).mpPaymentService.createPayment).not.toHaveBeenCalled();
+  });
+
+  it('un pago de regalo se lo pasa al módulo de regalos', async () => {
+    const { handler, emmiterMock } = construirHandler({});
+    (handler as any).mpPaymentService.createPayment = jest.fn();
+    const payment = {
+      id: 456,
+      status: 'approved',
+      transaction_amount: 3750,
+      external_reference: 'gift:6730000000000000000000bb',
+    };
+    (handler as any).fetchToMpAdapter.getDataFromMp_fetch = jest.fn(async () => payment);
+
+    await expect(handler.create_payment('456')).resolves.toBe(true);
+    expect(emmiterMock.emitAsync).toHaveBeenCalledWith(mp_gift_payment, {
+      giftId: '6730000000000000000000bb',
+      payment,
+    });
+    expect((handler as any).mpPaymentService.createPayment).not.toHaveBeenCalled();
   });
 });
 

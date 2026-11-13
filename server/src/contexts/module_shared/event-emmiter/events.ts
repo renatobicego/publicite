@@ -12,8 +12,27 @@ const group_deleted = 'group.deleted';
 const group_creator_changed = 'group.creator_changed';
 // Mis Producciones: avisos de venta/cobro de tickets. Los escucha Notificaciones.
 const production_ticket_notification = 'production.ticket_notification';
+// MercadoPago -> planes compartidos (module_friend_plan). El webhook de MP no
+// depende de esos módulos: les avisa por evento cuando el pago o el preapproval
+// tienen una referencia `gift:` o `friendGroup:`.
+const mp_gift_payment = 'mp.gift_payment';
+const mp_friend_group_preapproval = 'mp.friend_group_preapproval';
+const mp_friend_group_charge_failed = 'mp.friend_group_charge_failed';
+const mp_friend_group_charge_recovered = 'mp.friend_group_charge_recovered';
+// Avisos de regalos y Hacete Amigo. Los escucha Notificaciones.
+const plan_gift_notification = 'plan_gift.notification';
+const friend_group_notification = 'friend_group.notification';
+// Alta del usuario en Mongo (fin del onboarding): asigna regalos hechos a su email.
+const user_created = 'user.created';
 
 export {
+    mp_gift_payment,
+    mp_friend_group_preapproval,
+    mp_friend_group_charge_failed,
+    mp_friend_group_charge_recovered,
+    plan_gift_notification,
+    friend_group_notification,
+    user_created,
     group_deleted,
     group_creator_changed,
     production_ticket_notification,

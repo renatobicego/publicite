@@ -39,6 +39,15 @@ const ADMIN = "/admin";
 const ADMIN_INVOICES = "/admin/facturas";
 const ADMIN_PRODUCTION_TICKETS = "/admin/tickets-producciones";
 const ADMIN_PRODUCTION_REPORTS = "/admin/denuncias-producciones";
+// Pruebas de MercadoPago de la Fase 0 (se borra al terminar las pruebas).
+const ADMIN_MP_TEST = "/admin/prueba-mp";
+const ADMIN_PLAN_GIFTS = "/admin/regalos";
+// Regalo de planes: comprar un regalo y canjear el link.
+const GIFT_PLAN = "/regalar";
+const REDEEM_GIFT = "/canjear";
+// Hacete Amigo: el grupo del plan compartido y el link de invitación.
+const FRIEND_PLAN = "/hacete-amigo";
+const FRIEND_PLAN_JOIN = "/hacete-amigo/unirse";
 const NOVELTIES = "/novedades";
 export {
   MAGAZINES,
@@ -81,5 +90,11 @@ export {
   ADMIN_INVOICES,
   ADMIN_PRODUCTION_TICKETS,
   ADMIN_PRODUCTION_REPORTS,
+  ADMIN_MP_TEST,
+  ADMIN_PLAN_GIFTS,
+  GIFT_PLAN,
+  REDEEM_GIFT,
+  FRIEND_PLAN,
+  FRIEND_PLAN_JOIN,
   NOVELTIES,
 };

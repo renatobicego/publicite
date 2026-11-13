@@ -2,9 +2,10 @@
 
 import { Tab, Tabs } from "@nextui-org/react";
 import { usePathname } from "next/navigation";
-import { FaFileInvoiceDollar, FaTicket, FaFlag } from "react-icons/fa6";
+import { FaFileInvoiceDollar, FaTicket, FaFlag, FaFlask } from "react-icons/fa6";
 import {
   ADMIN_INVOICES,
+  ADMIN_MP_TEST,
   ADMIN_PRODUCTION_REPORTS,
   ADMIN_PRODUCTION_TICKETS,
 } from "@/utils/data/urls";
@@ -24,6 +25,12 @@ const sections = [
     href: ADMIN_PRODUCTION_REPORTS,
     label: "Denuncias de Producciones",
     icon: <FaFlag size={16} />,
+  },
+  {
+    // Fase 0 de Hacete Amigo y regalos: se borra al terminar las pruebas.
+    href: ADMIN_MP_TEST,
+    label: "Prueba de MercadoPago",
+    icon: <FaFlask size={16} />,
   },
 ];
 
