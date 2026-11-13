@@ -16,6 +16,16 @@ interface userWithPostsAndSubscriptions {
     ]
 }
 
+/*
+Un plan o pack que no trae un campo (p. ej. un pack de tokens o de MB, que sólo
+carga lo que suma) cuenta 0 en esa dimensión, y una suscripción sin plan populado
+se ignora: sumar `undefined` dejaba el límite en NaN.
+*/
+function planNumber(subscription: any, field: string): number {
+    const value = subscription?.subscriptionPlan?.[field];
+    return typeof value === 'number' && Number.isFinite(value) ? value : 0;
+}
+
 function calculatePostLimitFromUser(userWithSubscriptionsAndPosts: userWithPostsAndSubscriptions, logger: MyLoggerService): {
     agendaPostCount: number,
     librePostCount: number,
@@ -24,20 +34,22 @@ function calculatePostLimitFromUser(userWithSubscriptionsAndPosts: userWithPosts
     agendaAvailable: number,
     libreAvailable: number
 } {
-    const { totalAgendaPostLimit, totalLibrePostLimit } = userWithSubscriptionsAndPosts.subscriptions.reduce(
+    const subscriptions: any[] = userWithSubscriptionsAndPosts.subscriptions ?? [];
+    const { totalAgendaPostLimit, totalLibrePostLimit } = subscriptions.reduce(
         (limits, subscription) => {
-            limits.totalAgendaPostLimit += subscription.subscriptionPlan.postsAgendaCount;
-            limits.totalLibrePostLimit += subscription.subscriptionPlan.postsLibresCount;
+            limits.totalAgendaPostLimit += planNumber(subscription, 'postsAgendaCount');
+            limits.totalLibrePostLimit += planNumber(subscription, 'postsLibresCount');
             return limits;
         },
         { totalAgendaPostLimit: 0, totalLibrePostLimit: 0 }
     );
 
 
-    const { agendaPostCount, librePostCount } = userWithSubscriptionsAndPosts.posts.reduce(
+    const posts: any[] = userWithSubscriptionsAndPosts.posts ?? [];
+    const { agendaPostCount, librePostCount } = posts.reduce(
         (counts, post) => {
-            if (post.postBehaviourType === 'agenda') counts.agendaPostCount++;
-            if (post.postBehaviourType === 'libre') counts.librePostCount++;
+            if (post?.postBehaviourType === 'agenda') counts.agendaPostCount++;
+            if (post?.postBehaviourType === 'libre') counts.librePostCount++;
             return counts;
         },
         { agendaPostCount: 0, librePostCount: 0 }
@@ -66,13 +78,11 @@ function calculateContactLimitFromUser(userWithSubscriptionsAndPosts: userWithPo
 } {
     logger.log('Calculating contact limit....');
     let contactLimit = 0, contactCount = 0, contactAvailable = 0;
-    const { subscriptions } = userWithSubscriptionsAndPosts
+    const subscriptions: any[] = userWithSubscriptionsAndPosts.subscriptions ?? [];
 
-    if (subscriptions && subscriptions.length > 0) {
-        subscriptions.map((plan: any) => {
-            return contactLimit += plan.subscriptionPlan.maxContacts
-        })
-    }
+    subscriptions.forEach((subscription: any) => {
+        contactLimit += planNumber(subscription, 'maxContacts');
+    });
 
     if (userWithSubscriptionsAndPosts.activeRelations && userWithSubscriptionsAndPosts.activeRelations.length > 0) {
         contactCount = userWithSubscriptionsAndPosts.activeRelations.length

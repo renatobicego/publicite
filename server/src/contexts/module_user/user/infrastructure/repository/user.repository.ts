@@ -35,6 +35,7 @@ import {
 } from 'src/contexts/module_magazine/magazine/infrastructure/schemas/magazine.user.schema';
 
 import { applyContactDescriptionFallback } from './apply-contact-description-fallback';
+import { activeSubscriptionMatch } from 'src/contexts/module_shared/subscriptions/active-subscription.match';
 
 @Injectable()
 export class UserRepository implements UserRepositoryInterface {
@@ -319,7 +320,7 @@ export class UserRepository implements UserRepositoryInterface {
           {
             path: 'subscriptions',
             select: 'subscriptionPlan status',
-            match: { status: 'authorized' },
+            match: activeSubscriptionMatch(),
             populate: {
               path: 'subscriptionPlan',
               select: 'postsLibresCount postsAgendaCount',
@@ -350,7 +351,7 @@ export class UserRepository implements UserRepositoryInterface {
           {
             path: 'subscriptions',
             select: 'subscriptionPlan status',
-            match: { status: 'authorized' },
+            match: activeSubscriptionMatch(),
             populate: {
               path: 'subscriptionPlan',
               select: 'postsLibresCount postsAgendaCount maxContacts',
@@ -387,7 +388,7 @@ export class UserRepository implements UserRepositoryInterface {
           {
             path: 'subscriptions',
             select: 'subscriptionPlan status',
-            match: { status: 'authorized' },
+            match: activeSubscriptionMatch(),
             populate: {
               path: 'subscriptionPlan',
               select:
@@ -457,7 +458,7 @@ export class UserRepository implements UserRepositoryInterface {
           {
             path: 'subscriptions',
             select: 'subscriptionPlan status',
-            match: { status: 'authorized' },
+            match: activeSubscriptionMatch(),
             populate: {
               path: 'subscriptionPlan',
               select: 'maxContacts',
@@ -1093,7 +1094,9 @@ export class UserRepository implements UserRepositoryInterface {
         { session },
       );
 
-      if (result.modifiedCount === 0) {
+      // matchedCount y no modifiedCount: si el usuario ya la tenía (un reintento
+      // del alta), $addToSet no modifica nada y no es un error.
+      if (result.matchedCount === 0) {
         throw new Error(
           `No se encontró un usuario con _id: ${external_reference}`,
         );

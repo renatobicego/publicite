@@ -1,5 +1,12 @@
 import { ObjectId } from 'mongoose';
 
+import { SubscriptionKind } from 'src/contexts/module_shared/subscriptions/subscription.kind';
+
+export interface SubscriptionExtras {
+  kind?: SubscriptionKind;
+  expiresAt?: Date;
+  payerUser?: string;
+}
 
 //subscription_preapproval
 export default class Subscription {
@@ -15,6 +22,9 @@ export default class Subscription {
   private paymentMethodId: string;
   private cardId: string;
   private _id?: ObjectId | null;
+  private kind: SubscriptionKind;
+  private expiresAt?: Date;
+  private payerUser?: string;
 
   constructor(
     mpPreapprovalId: string,
@@ -29,7 +39,11 @@ export default class Subscription {
     paymentMethodId: string,
     cardId: string,
     _id?: ObjectId,
+    extras: SubscriptionExtras = {},
   ) {
+    this.kind = extras.kind ?? SubscriptionKind.MP;
+    if (extras.expiresAt) this.expiresAt = extras.expiresAt;
+    if (extras.payerUser) this.payerUser = extras.payerUser;
     this.mpPreapprovalId = mpPreapprovalId;
     this.payerId = payerId;
     this.status = status;
@@ -86,6 +100,18 @@ export default class Subscription {
 
   public getDayOfUpdate() {
     return this.timeOfUpdate;
+  }
+
+  public getKind(): SubscriptionKind {
+    return this.kind;
+  }
+
+  public getExpiresAt(): Date | undefined {
+    return this.expiresAt;
+  }
+
+  public getPayerUser(): string | undefined {
+    return this.payerUser;
   }
 
 

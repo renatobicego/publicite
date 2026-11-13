@@ -9,8 +9,8 @@ Un pago rechazado no tiene que bajarle el plan a quien conserva otra suscripció
 
 Los límites de posts y contactos son acumulativos entre las suscripciones `authorized`
 del usuario, así que ante un rechazo sólo corresponde recortar si efectivamente no le
-queda ninguna otra activa. La del plan gratuito no cuenta: es un documento compartido
-con external_reference "--", y getActiveSubscriptions filtra por el del usuario.
+queda ninguna otra activa. La del plan gratuito no cuenta: getActivePaidSubscriptions
+la deja afuera.
 */
 
 const USER_ID = '67f9c700a05be75639e0f73e';
@@ -42,9 +42,10 @@ function construirHandler(overrides: {
     changeStatusOfSubscription: jest.fn(
       overrides.changeStatusImpl ?? (async () => undefined),
     ),
-    getActiveSubscriptions: jest.fn(
+    getActivePaidSubscriptions: jest.fn(
       async () => overrides.activeSubscriptions ?? [],
     ),
+    verifyIfSubscriptionWasPused: jest.fn(async () => false),
   };
 
   const invoiceServiceMock: any = { updateInvoice: jest.fn(async () => null) };
@@ -124,14 +125,66 @@ describe('Pago rechazado - downgrade de plan', () => {
     expect(invoiceServiceMock.updateInvoice).toHaveBeenCalled();
   });
 
+  it('no le baja el plan a nadie si el preapproval no es de un usuario (friendGroup, gift)', async () => {
+    const { handler, emmiterMock } = construirHandler({ activeSubscriptions: [] });
+    (handler as any).fetchToMpAdapter.getDataFromMp_fetch = jest.fn(async () => ({
+      ...authorizedPaymentRechazado(),
+      external_reference: 'friendGroup:6730000000000000000000aa',
+    }));
+
+    await expect(handler.update_subscription_authorized_payment('99999')).resolves.toBe(true);
+    expect(eventosDeDowngrade(emmiterMock)).toEqual([]);
+  });
+
   it('ante un error consultando las suscripciones, no baja el plan por las dudas', async () => {
     const { handler, emmiterMock } = construirHandler({});
-    (handler as any).subscriptionService.getActiveSubscriptions = jest.fn(async () => {
+    (handler as any).subscriptionService.getActivePaidSubscriptions = jest.fn(async () => {
       throw new Error('se cayó la DB');
     });
 
     await handler.update_subscription_authorized_payment('99999');
 
     expect(eventosDeDowngrade(emmiterMock)).toEqual([]);
+  });
+});
+
+/*
+Un cobro aprobado tiene que reactivar la suscripción que pausamos por un rechazo.
+Antes sólo pasaba con retry_attempt > 0: con retry_attempt 0 el usuario quedaba
+pausado (sin plan) aunque había pagado.
+*/
+describe('Pago aprobado - reactivación de una suscripción pausada', () => {
+  beforeEach(() => jest.clearAllMocks());
+
+  function pagoAprobado(retry_attempt: number) {
+    return {
+      ...authorizedPaymentRechazado(),
+      status: 'processed',
+      payment: { status: 'approved' },
+      retry_attempt,
+    };
+  }
+
+  it('la reactiva aunque retry_attempt sea 0', async () => {
+    const { handler, subscriptionServiceMock } = construirHandler({});
+    subscriptionServiceMock.verifyIfSubscriptionWasPused = jest.fn(async () => true);
+    (handler as any).fetchToMpAdapter.getDataFromMp_fetch = jest.fn(async () => pagoAprobado(0));
+
+    await expect(handler.update_subscription_authorized_payment('99999')).resolves.toBe(true);
+
+    expect(subscriptionServiceMock.changeStatusOfSubscription).toHaveBeenCalledWith(
+      PREAPPROVAL_RECHAZADO,
+      'authorized',
+    );
+  });
+
+  it('no toca la suscripción si no estaba pausada', async () => {
+    const { handler, subscriptionServiceMock, invoiceServiceMock } = construirHandler({});
+    (handler as any).fetchToMpAdapter.getDataFromMp_fetch = jest.fn(async () => pagoAprobado(2));
+
+    await handler.update_subscription_authorized_payment('99999');
+
+    expect(invoiceServiceMock.updateInvoice).toHaveBeenCalled();
+    expect(subscriptionServiceMock.changeStatusOfSubscription).not.toHaveBeenCalled();
   });
 });

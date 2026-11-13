@@ -18,8 +18,21 @@ import {
 import { IUser } from 'src/contexts/module_user/user/infrastructure/schemas/user.schema';
 import { SubscriptionDocument } from 'src/contexts/module_webhook/mercadopago/infastructure/schemas/subscription.schema';
 
+import { activeSubscriptionMatch } from 'src/contexts/module_shared/subscriptions/active-subscription.match';
+import { SubscriptionKind } from 'src/contexts/module_shared/subscriptions/subscription.kind';
+
 const COMMUNITY_POOL_KEY = 'main';
-const PLAN_FIELDS = 'mpPreapprovalPlanId reason isFree isPack';
+const PLAN_FIELDS = 'mpPreapprovalPlanId reason isFree isPack tokensCount';
+
+function toPlanTokenRef(plan: any): PlanTokenRef {
+  return {
+    mpPreapprovalPlanId: plan.mpPreapprovalPlanId,
+    reason: plan.reason,
+    isFree: plan.isFree,
+    isPack: plan.isPack,
+    tokensCount: plan.tokensCount,
+  };
+}
 // Período especial del accrual que acumula la base cargada por la plataforma.
 const SEED_ACCRUAL_PERIOD = 'seed';
 
@@ -47,7 +60,7 @@ export class ChatbotTokenRepository implements ChatbotTokenRepositoryInterface {
       .populate({
         path: 'subscriptions',
         select: 'subscriptionPlan status',
-        match: { status: 'authorized' },
+        match: activeSubscriptionMatch(),
         populate: {
           path: 'subscriptionPlan',
           select: PLAN_FIELDS,
@@ -61,12 +74,7 @@ export class ChatbotTokenRepository implements ChatbotTokenRepositoryInterface {
     return subscriptions
       .map((subscription) => subscription?.subscriptionPlan)
       .filter(Boolean)
-      .map((plan: any) => ({
-        mpPreapprovalPlanId: plan.mpPreapprovalPlanId,
-        reason: plan.reason,
-        isFree: plan.isFree,
-        isPack: plan.isPack,
-      }));
+      .map(toPlanTokenRef);
   }
 
   async getUsedRealTokens(
@@ -135,8 +143,13 @@ export class ChatbotTokenRepository implements ChatbotTokenRepositoryInterface {
   }
 
   async getAllAuthorizedPlans(): Promise<PlanTokenRef[]> {
+    // El extra temporal de cambio de plan no aporta a la bolsa: el plan viejo ya
+    // aportó en el mes que se pagó y se acreditaría dos veces.
     const subscriptions: any[] = await this.subscriptionModel
-      .find({ status: 'authorized' })
+      .find({
+        ...activeSubscriptionMatch(),
+        kind: { $ne: SubscriptionKind.CARRYOVER },
+      })
       .select('subscriptionPlan -_id')
       .populate({ path: 'subscriptionPlan', select: PLAN_FIELDS })
       .lean();
@@ -144,12 +157,7 @@ export class ChatbotTokenRepository implements ChatbotTokenRepositoryInterface {
     return subscriptions
       .map((subscription) => subscription?.subscriptionPlan)
       .filter(Boolean)
-      .map((plan: any) => ({
-        mpPreapprovalPlanId: plan.mpPreapprovalPlanId,
-        reason: plan.reason,
-        isFree: plan.isFree,
-        isPack: plan.isPack,
-      }));
+      .map(toPlanTokenRef);
   }
 
   async finalizeAccrual(

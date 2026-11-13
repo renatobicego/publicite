@@ -14,6 +14,9 @@ import { InjectConnection } from '@nestjs/mongoose';
 import { Connection } from 'mongoose';
 import makeReponsePlanFunction from './function/makeResponsePlan';
 import parseTimeX from './function/parse_time';
+import { resolveExternalReference } from 'src/contexts/module_shared/subscriptions/external-reference';
+import { isPaidPlanSubscription } from 'src/contexts/module_shared/subscriptions/active-subscription.match';
+import { SubscriptionKind } from 'src/contexts/module_shared/subscriptions/subscription.kind';
 
 export class MpSubscriptionService implements SubscriptionServiceInterface {
   constructor(
@@ -31,7 +34,6 @@ export class MpSubscriptionService implements SubscriptionServiceInterface {
     subscription_preapproval: any,
   ): Promise<void> {
     this.logger.log('---------------SUBSCRIPTION SERVICE------------------');
-    const session = await this.connection.startSession();
     // Crear el nuevo objeto de suscripción
     const {
       id,
@@ -43,12 +45,37 @@ export class MpSubscriptionService implements SubscriptionServiceInterface {
       next_payment_date,
       payment_method_id,
       card_id,
-    } = subscription_preapproval;
+    } = subscription_preapproval ?? {};
 
     if (!auto_recurring || !auto_recurring.start_date || !external_reference) {
       this.logger.error('Invalid subscription data - missing dates');
       throw new BadRequestException('Invalid subscription data');
     }
+
+    const reference = resolveExternalReference(external_reference);
+    if (reference.type !== 'user') {
+      // Regalos y Hacete Amigo tienen su propio alta; acá sólo entran las de un usuario.
+      this.logger.error(
+        `El preapproval ${id} no es de un usuario (external_reference: ${external_reference})`,
+      );
+      throw new BadRequestException('Invalid subscription data');
+    }
+    const userId = reference.userId;
+
+    /*
+    Alta idempotente: el checkout la registra apenas MP acepta el pago y después
+    llegan los webhooks; y MP reintenta los eventos. Si ya existe, sólo se
+    actualiza y se asegura que el usuario la tenga.
+    */
+    const existing = await this.subscriptionRepository.findSubscriptionByPreapprovalId(id);
+    if (existing) {
+      this.logger.warn(`La suscripción ${id} ya estaba registrada: se actualiza.`);
+      await this.updateSubscription_preapproval(subscription_preapproval);
+      await this.userService.setSubscriptionToUser(userId, existing._id, null);
+      return;
+    }
+
+    const session = await this.connection.startSession();
     this.logger.log('Data of suscription is valid... Continue to create it');
     let { start_date, frequency } = auto_recurring;
     const { start_date_parsed, end_date_parsed } = parseTimeX(
@@ -67,6 +94,7 @@ export class MpSubscriptionService implements SubscriptionServiceInterface {
       );
 
     if (!plan) {
+      await session.endSession();
       this.logger.error('Plan not found - Class: mpWebhookService');
       throw new BadRequestException(
         "Plan not found, we can't create the subscription",
@@ -96,6 +124,8 @@ export class MpSubscriptionService implements SubscriptionServiceInterface {
         next_payment_date, // fecha de siguiente pago
         payment_method_id, // metodo de pago
         card_id, // id de la tarjeta
+        undefined,
+        { kind: SubscriptionKind.MP, payerUser: userId },
       );
       await session.withTransaction(async () => {
         const subscriptionId =
@@ -104,7 +134,7 @@ export class MpSubscriptionService implements SubscriptionServiceInterface {
             session,
           );
         await this.userService.setSubscriptionToUser(
-          external_reference,
+          userId,
           subscriptionId,
           session,
         );
@@ -142,28 +172,48 @@ export class MpSubscriptionService implements SubscriptionServiceInterface {
     return subscription;
   }
 
-  async getSubscriptionHistory(
-    external_reference: string,
-  ): Promise<Subscription[]> {
+  async getSubscriptionHistory(userId: string): Promise<Subscription[]> {
     try {
       const subscriptions =
-        await this.subscriptionRepository.getSubscriptionHistory(
-          external_reference,
-        );
+        await this.subscriptionRepository.getSubscriptionHistory(userId);
       return makeReponsePlanFunction(subscriptions);
     } catch (error: any) {
       throw error;
     }
   }
 
-  async getActiveSubscriptions(external_reference: string): Promise<any[]> {
+  async getActiveSubscriptions(userId: string): Promise<any[]> {
     try {
-      return this.subscriptionRepository.getActiveSubscriptions(
-        external_reference,
-      );
+      return await this.subscriptionRepository.getActiveSubscriptions(userId);
     } catch (error: any) {
       throw error;
     }
+  }
+
+  /*
+  Activas que no son el plan gratuito: planes, packs, el extra temporal, los
+  compartidos y los regalados. Decide si un pago rechazado le baja el plan al
+  usuario (si le queda alguna, sus límites no quedaron en el gratuito).
+  */
+  async getActivePaidSubscriptions(userId: string): Promise<any[]> {
+    const active = await this.getActiveSubscriptions(userId);
+    return active.filter((subscription: any) => {
+      const plan = subscription?.subscriptionPlan;
+      return plan && typeof plan === 'object' && !plan.isFree;
+    });
+  }
+
+  async hasPaidPlan(userId: string): Promise<boolean> {
+    const active = await this.getActiveSubscriptions(userId);
+    return active.some(isPaidPlanSubscription);
+  }
+
+  async getActiveMpSubscriptionsPaidBy(userId: string): Promise<any[]> {
+    return this.subscriptionRepository.getActiveMpSubscriptionsPaidBy(userId);
+  }
+
+  async cancelSubscriptionInDb(mpPreapprovalId: string): Promise<void> {
+    await this.subscriptionRepository.cancelSubscription(mpPreapprovalId);
   }
 
   async updateSubscription_preapproval(

@@ -6,12 +6,17 @@ import Subscription from 'src/contexts/module_webhook/mercadopago/domain/entity/
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { SubscriptionRepositoryInterface } from '../../domain/repository/mp-subscription.respository.interface';
 import { getTodayDateTime } from 'src/contexts/module_shared/utils/functions/getTodayDateTime';
+import { IUser } from 'src/contexts/module_user/user/infrastructure/schemas/user.schema';
+import { activeSubscriptionMatch } from 'src/contexts/module_shared/subscriptions/active-subscription.match';
+import { MP_BACKED_SUBSCRIPTION_KINDS } from 'src/contexts/module_shared/subscriptions/subscription.kind';
 
 export class SubscriptionRepository implements SubscriptionRepositoryInterface {
   constructor(
     private readonly logger: MyLoggerService,
     @InjectModel('Subscription')
     private readonly subscriptionModel: Model<SubscriptionDocument>,
+    @InjectModel('User')
+    private readonly userModel: Model<IUser>,
   ) {}
 
   async cancelSubscription(id: string): Promise<void> {
@@ -50,14 +55,31 @@ export class SubscriptionRepository implements SubscriptionRepositoryInterface {
     return subscription;
   }
 
-  async getSubscriptionHistory(external_reference: string): Promise<any[]> {
+  /*
+  Suscripciones no canceladas del usuario (y no vencidas, en las temporales). Lee
+  las que tiene en `User.subscriptions` (así ve las compartidas y las regaladas)
+  y, por compatibilidad, las que tienen su mongoId como `external_reference` y el
+  plan gratuito compartido, que es lo que devolvía antes.
+  */
+  async getSubscriptionHistory(userId: string): Promise<any[]> {
     try {
+      const user: any = await this.userModel
+        .findById(userId)
+        .select('subscriptions')
+        .lean();
+      const ownIds = user?.subscriptions ?? [];
       const subscriptions = await this.subscriptionModel
         .find({
           status: { $ne: 'cancelled' },
-          $or: [
-            { external_reference: external_reference },
-            { external_reference: 'FREE' },
+          $and: [
+            {
+              $or: [
+                { _id: { $in: ownIds } },
+                { external_reference: userId },
+                { external_reference: 'FREE' },
+              ],
+            },
+            { $or: [{ expiresAt: null }, { expiresAt: { $gt: new Date() } }] },
           ],
         })
         .populate([
@@ -73,12 +95,46 @@ export class SubscriptionRepository implements SubscriptionRepositoryInterface {
     }
   }
 
-  async getActiveSubscriptions(external_reference: string): Promise<any[]> {
+  /*
+  Suscripciones activas de las que el usuario es titular (las de su
+  `User.subscriptions`, incluido el plan gratuito compartido), con el plan
+  populado. Es la fuente de "qué tiene el usuario": la usan el chequeo de
+  downgrade y los checkouts.
+  */
+  async getActiveSubscriptions(userId: string): Promise<any[]> {
     try {
-      const subscriptions = await this.subscriptionModel.find({
-        status: 'authorized',
-        external_reference: external_reference,
-      });
+      const user: any = await this.userModel
+        .findById(userId)
+        .select('subscriptions')
+        .populate({
+          path: 'subscriptions',
+          model: 'Subscription',
+          match: activeSubscriptionMatch(),
+          populate: { path: 'subscriptionPlan', model: 'SubscriptionPlan' },
+        })
+        .lean();
+      return (user?.subscriptions ?? []).filter(Boolean);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  /*
+  Suscripciones activas con preapproval en MP que paga el usuario. Se busca en la
+  colección y no en `User.subscriptions` porque se usa al borrar la cuenta, cuando
+  el documento del usuario puede no existir más.
+  */
+  async getActiveMpSubscriptionsPaidBy(userId: string): Promise<any[]> {
+    try {
+      const subscriptions = await this.subscriptionModel
+        .find({
+          ...activeSubscriptionMatch(),
+          $and: [
+            { $or: [{ payerUser: userId }, { external_reference: userId }] },
+            { $or: [{ kind: null }, { kind: { $in: MP_BACKED_SUBSCRIPTION_KINDS } }] },
+          ],
+        })
+        .lean();
       return subscriptions ?? [];
     } catch (error: any) {
       throw error;

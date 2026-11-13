@@ -6,8 +6,9 @@
  * CHATBOT_TOKENS_RATIO tokens reales. Toda la persistencia se hace en tokens
  * reales y la conversión ocurre sólo al exponer datos al front.
  *
- * Las cantidades se definen por variables de entorno (los planes NO guardan
- * tokens en Mongo) para poder ajustarlas sin tocar datos:
+ * Los tokens de cada plan salen primero de `SubscriptionPlan.tokensCount`
+ * (tokens Publicité BRUTOS por mes, en Mongo). Si el plan no lo tiene cargado,
+ * se usan las variables de entorno de abajo, que quedan como respaldo:
  *
  * - CHATBOT_TOKENS_RATIO: tokens reales de OpenAI por 1 token Publicité (default 1000).
  * - CHATBOT_TOKENS_PLAN_DEFAULT: tokens Publicité BRUTOS por mes de un plan pago
@@ -53,6 +54,8 @@ export interface PlanTokenRef {
   reason?: string;
   isFree?: boolean;
   isPack?: boolean;
+  /** Tokens Publicité brutos por mes cargados en el plan (Mongo). */
+  tokensCount?: number | null;
 }
 
 function readPositiveNumber(envKey: string, defaultValue: number): number {
@@ -179,12 +182,22 @@ export function getCommunitySharePercent(): number {
 }
 
 /**
- * Tokens Publicité BRUTOS mensuales que otorga un plan. Los planes gratuitos no
- * otorgan tokens propios y los packs sólo los otorgan si tienen mapping explícito
- * (un pack de posts no es una suscripción de IA).
+ * Tokens Publicité BRUTOS mensuales que otorga un plan, en este orden:
+ * 1. `tokensCount` del plan en Mongo, si está cargado (también en packs);
+ * 2. el mapping de CHATBOT_TOKENS_PLAN_MAP, por id de MP o por `reason`;
+ * 3. 0 para un pack (un pack de anuncios no es una suscripción de IA);
+ * 4. CHATBOT_TOKENS_PLAN_DEFAULT.
+ * Los planes gratuitos no otorgan tokens propios.
  */
 export function getPlanGrossPubliciteTokens(plan: PlanTokenRef): number {
   if (!plan || plan.isFree) return 0;
+  if (
+    typeof plan.tokensCount === 'number' &&
+    Number.isFinite(plan.tokensCount) &&
+    plan.tokensCount >= 0
+  ) {
+    return Math.floor(plan.tokensCount);
+  }
   const map = readPlanMap();
   const byId = plan.mpPreapprovalPlanId
     ? map[plan.mpPreapprovalPlanId.toLowerCase().trim()]

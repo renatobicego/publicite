@@ -35,6 +35,10 @@ export const SubscriptionPlanSchema = new Schema({
   // 1073741824 (1GB) premium. Sólo se aplica si el feature flag de storage está
   // activo (PRODUCTION_STORAGE_LIMIT_ENABLED).
   storageBytesLimit: { type: Number },
+  // Tokens de IA ("tokens Publicité") BRUTOS por mes que da el plan o el pack.
+  // Si no está cargado se usa CHATBOT_TOKENS_PLAN_MAP / _DEFAULT (ver
+  // chatbot.tokens.config.ts). El usuario ve el neto (sin el share comunitario).
+  tokensCount: { type: Number },
 });
 
 export interface SubscriptionPlanDocument extends Document {
@@ -55,6 +59,7 @@ export interface SubscriptionPlanDocument extends Document {
   groupBlogsCount?: number;
   filesPerBlogCount?: number;
   storageBytesLimit?: number;
+  tokensCount?: number;
 }
 
 const SubscriptionPlanModel = model<SubscriptionPlanDocument>(

@@ -32,6 +32,7 @@ import { PaymentNotificationService } from "../infastructure/adapters/handler/Pa
 import { ErrorService } from "../application/service/error/error.service.interface";
 import { ErrorRepository } from "../infastructure/repository/error/error.repository";
 import { ConfigModule, ConfigService } from "@nestjs/config";
+import { MpCheckoutService } from "../application/service/mp-checkout.service";
 
 
 
@@ -120,6 +121,10 @@ const mercadopago_testing_module = async (): Promise<TestingModule> => {
             {
                 provide: 'FetchToMpInterface',
                 useValue: {}
+            },
+            {
+                provide: 'MpCheckoutServiceInterface',
+                useClass: MpCheckoutService,
             },
 
             { provide: getModelToken(UserPersonModel.modelName), useValue: {} },

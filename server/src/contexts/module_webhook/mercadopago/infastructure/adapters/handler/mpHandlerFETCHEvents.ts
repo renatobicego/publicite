@@ -16,6 +16,7 @@ import { Payment as Payment_meli } from '../../../domain/entity_mp/payment';
 
 import { EmitterService } from 'src/contexts/module_shared/event-emmiter/emmiter';
 import { PaymentNotificationService } from './PaymentNotificationService';
+import { resolveExternalReference } from 'src/contexts/module_shared/subscriptions/external-reference';
 
 
 
@@ -65,7 +66,16 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
     return this.URL_PAYMENT_CHECK
   }
   private availableStatusOfTheCreatePayment = ['approved', 'rejected', 'pending', 'in_process'];
-  private availableStatusOfTheUpdatePayment = ['approved', 'rejected', 'pending', 'in_process', 'cancelled'];
+  private availableStatusOfTheUpdatePayment = [
+    'approved',
+    'rejected',
+    'pending',
+    'in_process',
+    'cancelled',
+    'refunded',
+    'charged_back',
+    'in_mediation',
+  ];
 
   //Meli urls
   private readonly URL_SUBCRIPTION_PREAPPROVAL_CHECK =
@@ -104,8 +114,9 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
 
 
       if (!this.availableStatusOfTheCreatePayment.includes(statusOfThePayment)) {
-        this.logger.error('Unknown payment CREATE status: ' + statusOfThePayment + " payment is not 'approved', 'rejected', 'pending', 'in_process', please verify status of payment");
-        throw new Error('Unknown payment CREATE status: ' + statusOfThePayment);
+        // Tirar error hacía que Meli reintentara el evento sin fin. Se deja constancia y se responde OK.
+        this.logger.warn('Unknown payment CREATE status: ' + statusOfThePayment + " payment is not 'approved', 'rejected', 'pending', 'in_process'. Payment ID: " + dataID + ". Nothing to do, returning OK to Meli");
+        return Promise.resolve(true);
       }
 
       this.logger.log(`MpWebhookAdapter - Case paymenty.created - STATUS: ${statusOfThePayment}`);
@@ -133,9 +144,14 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
 
       const statusOfThePayment = mercadoPago_paymentResponse.status.toString().toLowerCase();
 
-      if (!this.availableStatusOfTheCreatePayment.includes(statusOfThePayment)) {
-        this.logger.error('Unknown payment CREATE status: ' + statusOfThePayment + " payment is not 'approved', 'rejected', 'pending', 'in_process', please verify status of payment");
-        throw new Error('Unknown payment CREATE status: ' + statusOfThePayment);
+      /*
+      Antes se validaba con la lista del CREATE: una devolución (refunded), un
+      contracargo o una cancelación respondían 500 y Meli reintentaba sin fin.
+      Esos estados se guardan; uno desconocido se registra y se responde OK.
+      */
+      if (!this.availableStatusOfTheUpdatePayment.includes(statusOfThePayment)) {
+        this.logger.warn('Unknown payment UPDATE status: ' + statusOfThePayment + '. Payment ID: ' + dataID + '. Nothing to do, returning OK to Meli');
+        return Promise.resolve(true);
       }
 
       console.log('PAYMENT UPDATE RESPONSE:');
@@ -188,34 +204,76 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
   private async registerSubscription(
     subscription_preapproval: Subscription_preapproval,
   ): Promise<void> {
-    const { free_trial } = subscription_preapproval.auto_recurring;
-    if (free_trial) {
-      this.logger.log("Sending free trial payment notification");
-      this.sendFreeTrialPaymentNotification(subscription_preapproval);
+    const reference = resolveExternalReference(
+      subscription_preapproval?.external_reference,
+    );
+    if (reference.type !== 'user') {
+      /*
+      Regalos, Hacete Amigo y pruebas (`gift:`, `friendGroup:`, `mptest:`) tienen
+      su propio alta. Tratarlos como la suscripción de un usuario terminaba en
+      "Plan not found" y Meli reintentaba el evento sin fin.
+      */
+      this.logger.warn(
+        `Preapproval ${subscription_preapproval?.id} con external_reference "${subscription_preapproval?.external_reference}" (${reference.type}): no es la suscripción de un usuario, no se registra acá.`,
+      );
+      return;
     }
 
+    const existing = await this.subscriptionService.findSubscriptionByPreapprovalId(
+      subscription_preapproval.id,
+    );
     await this.subscriptionService.createSubscription_preapproval(
       subscription_preapproval,
     );
+
+    // El aviso de prueba gratis sale una sola vez: si el checkout ya la había
+    // registrado, el aviso lo mandó él.
+    const free_trial = subscription_preapproval.auto_recurring?.free_trial;
+    if (free_trial && !existing) {
+      this.logger.log("Sending free trial payment notification");
+      await this.sendFreeTrialPaymentNotification(subscription_preapproval);
+    }
   }
 
 
   async sendFreeTrialPaymentNotification(subscription_preapproval: Subscription_preapproval) {
+    let { preapproval_plan_id, reason, external_reference } =
+      subscription_preapproval;
+
+    const data = {
+      subscriptionPlanId: preapproval_plan_id,
+      reason: reason,
+      status: "free_trial",
+      retryAttemp: 1,
+      userId: external_reference,
+    }
+
+    await this.notifySafely(data);
+  }
+
+  private async notifyInvoice(invoiceUpdated: any, paymentStatus: string): Promise<void> {
+    if (!invoiceUpdated) return;
+    await this.notifySafely({
+      subscriptionPlanId: invoiceUpdated.subscriptionId,
+      reason: invoiceUpdated.reason,
+      status: paymentStatus,
+      retryAttemp: invoiceUpdated.retryAttempts,
+      userId: invoiceUpdated.external_reference,
+    });
+  }
+
+  /*
+  Manda el aviso de pago al usuario y espera a que termine: en Firebase Functions
+  lo que no se espera se corta al responder. Un aviso que falla nunca corta el
+  procesamiento del evento (el pago o el alta ya se guardaron).
+  */
+  private async notifySafely(data: any): Promise<void> {
     try {
-      let { preapproval_plan_id, reason, external_reference } =
-        subscription_preapproval;
-
-      const data = {
-        subscriptionPlanId: preapproval_plan_id,
-        reason: reason,
-        status: "free_trial",
-        retryAttemp: 1,
-        userId: external_reference,
-      }
-
-      this.paymentNotificationService.sendPaymentNotification(data);
+      await this.paymentNotificationService.sendPaymentNotification(data);
     } catch (error: any) {
-      throw error;
+      this.logger.error(
+        'No se pudo enviar la notificación de pago: ' + (error?.message ?? error),
+      );
     }
   }
   async update_subscription_preapproval(
@@ -298,7 +356,7 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
             retryAttemp: subscription_authorized_payment.retry_attempt,
             userId: subscription_authorized_payment.external_reference,
           }
-          await this.paymentNotificationService.sendPaymentNotification(data);
+          await this.notifySafely(data);
         }
       }
 
@@ -369,111 +427,59 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
           response_mp_subscription_authorized_payment,
           response_mp_subscription_authorized_payment.id
         );
-        const userId = response_mp_subscription_authorized_payment.external_reference
+        const reference = resolveExternalReference(
+          response_mp_subscription_authorized_payment.external_reference,
+        );
 
-        /*
-        Los límites de posts y contactos son ACUMULATIVOS entre las suscripciones activas
-        del usuario. Si después de pausar la rechazada le queda otra paga, sus límites no
-        bajaron y no corresponde tocarle ni los anuncios ni los contactos.
-        */
-        const hasOtherActive = await this.user_has_active_subscription(userId);
-        if (hasOtherActive) {
+        if (reference.type !== 'user') {
+          // Regalos y Hacete Amigo bajan el plan a sus propios titulares (no al external_reference).
           this.logger.warn(
-            `El usuario ${userId} conserva otra suscripción activa: no se aplica downgrade`,
+            `Pago rechazado del preapproval ${response_mp_subscription_authorized_payment.preapproval_id} (${reference.type}): el downgrade no se resuelve acá.`,
           );
         } else {
-          const result = await this.update_plan_user(userId, downgrade_plan_contact);
-          if (result) await this.update_plan_user(userId, downgrade_plan_post);
-        }
-
-        if (invoiceUpdated) {
-          const data = {
-            subscriptionPlanId: invoiceUpdated.subscriptionId,
-            reason: invoiceUpdated.reason,
-            status: paymentStatus,
-            retryAttemp: invoiceUpdated.retryAttempts,
-            userId: invoiceUpdated.external_reference
+          const userId = reference.userId;
+          /*
+          Los límites de posts y contactos son ACUMULATIVOS entre las suscripciones activas
+          del usuario. Si después de pausar la rechazada le queda otra paga, sus límites no
+          bajaron y no corresponde tocarle ni los anuncios ni los contactos.
+          */
+          const hasOtherActive = await this.user_has_active_subscription(userId);
+          if (hasOtherActive) {
+            this.logger.warn(
+              `El usuario ${userId} conserva otra suscripción activa: no se aplica downgrade`,
+            );
+          } else {
+            const result = await this.update_plan_user(userId, downgrade_plan_contact);
+            if (result) await this.update_plan_user(userId, downgrade_plan_post);
           }
-          this.paymentNotificationService.sendPaymentNotification(data)
         }
 
-
-
+        await this.notifyInvoice(invoiceUpdated, paymentStatus);
         return true
       }
-
-
-
-      if (response_mp_subscription_authorized_payment && response_mp_subscription_authorized_payment.retry_attempt && response_mp_subscription_authorized_payment.retry_attempt > 0 && approvedStatuses.has(paymentStatus)) {
-        this.logger.warn("This is a retry, we are updating the invoice and returning OK to Meli - The status of the subscription or payment is: " + paymentStatus);
-        this.logger.log('status of payment: ' + paymentStatus);
-        this.logger.log('Status of subscription:' + subscriptionStatus);
-
-        const invoiceUpdated: any = await this.mpInvoiceService.updateInvoice(
-          response_mp_subscription_authorized_payment,
-          response_mp_subscription_authorized_payment.id
-        )
-
-
-        if (invoiceUpdated) {
-          const data = {
-            subscriptionPlanId: invoiceUpdated.subscriptionId,
-            reason: invoiceUpdated.reason,
-            status: paymentStatus,
-            retryAttemp: invoiceUpdated.retryAttempts,
-            userId: invoiceUpdated.external_reference
-          }
-          this.paymentNotificationService.sendPaymentNotification(data)
-        }
-        //Aca tengo que poner la suscripcion como authorized
-        const isThisSubscriptionWasPaused = await this.subscriptionService.verifyIfSubscriptionWasPused(response_mp_subscription_authorized_payment.preapproval_id)
-
-        if (isThisSubscriptionWasPaused && (approvedStatuses.has(subscriptionStatus) || approvedStatuses.has(paymentStatus))) {
-          this.logger.warn(
-            `Status was paused, changing to new status. Preapproval_id: ${response_mp_subscription_authorized_payment.preapproval_id}`,
-          );
-          this.logger.warn(
-            `Status of payment: ${paymentStatus}`,
-          );
-          this.logger.warn(
-            `Status of subscription: ${subscriptionStatus}`,
-          );
-
-
-          await this.subscriptionService.changeStatusOfSubscription(response_mp_subscription_authorized_payment.preapproval_id, statusOfSubscription.AUTHORIZED)
-          // await this.fetchToMpAdapter.changeSubscriptionStatusInMercadopago_fetch(
-          //   this.URL_SUBCRIPTION_PREAPPROVAL_CHECK,
-          //   response_mp_subscription_authorized_payment.preapproval_id,
-          //   'authorized',
-          // );
-
-
-
-          this.logger.warn(
-            `Change subscription status in mercadopago Succesfully -- NEW STATUS PAYMENT: ${paymentStatus} -- NEW STATUS SUBSCRIPTION: ${subscriptionStatus}`,
-          );
-          return true
-        }
-        return true
-      }
-
-
-      this.logger.log('Updating subscription_authorized_payment...');
 
       const invoiceUpdated: any = await this.mpInvoiceService.updateInvoice(
         response_mp_subscription_authorized_payment,
         response_mp_subscription_authorized_payment.id
       );
-      if (invoiceUpdated) {
-        const data = {
-          subscriptionPlanId: invoiceUpdated.subscriptionId,
-          reason: invoiceUpdated.reason,
-          status: paymentStatus,
-          retryAttemp: invoiceUpdated.retryAttempts,
-          userId: invoiceUpdated.external_reference
+      await this.notifyInvoice(invoiceUpdated, paymentStatus);
+
+      /*
+      Un pago aprobado reactiva la suscripción si la habíamos pausado por un
+      rechazo. Antes sólo pasaba con retry_attempt > 0: un cobro aprobado con
+      retry_attempt 0 dejaba al usuario pausado (sin plan) aunque había pagado.
+      */
+      if (approvedStatuses.has(paymentStatus)) {
+        const preapprovalId = response_mp_subscription_authorized_payment.preapproval_id;
+        const wasPaused = await this.subscriptionService.verifyIfSubscriptionWasPused(preapprovalId);
+        if (wasPaused) {
+          this.logger.warn(
+            `Pago aprobado de una suscripción pausada (${preapprovalId}): vuelve a authorized. Pago: ${paymentStatus}, cuota: ${subscriptionStatus}, reintento: ${response_mp_subscription_authorized_payment.retry_attempt ?? 0}`,
+          );
+          await this.subscriptionService.changeStatusOfSubscription(preapprovalId, statusOfSubscription.AUTHORIZED);
         }
-        this.paymentNotificationService.sendPaymentNotification(data)
       }
+
       return true;
     } catch (error: any) {
       this.logger.error(
@@ -507,15 +513,15 @@ export class MpHandlerEvents implements MpHandlerEventsInterface {
   }
 
   /*
-  Indica si al usuario le queda alguna suscripción paga activa. La del plan gratuito no
-  cuenta: es un documento compartido cuyo external_reference no es el del usuario, así que
-  getActiveSubscriptions (que filtra por external_reference) no la devuelve.
+  Indica si al usuario le queda alguna suscripción activa que no sea el plan
+  gratuito (plan, pack, extra temporal, compartida o regalada). Se lee de
+  User.subscriptions, así que también ve las que no paga él.
   Ante un error se asume que SÍ tiene una activa, para no bajarle el plan por las dudas.
   */
   async user_has_active_subscription(user_id: string): Promise<boolean> {
     try {
       const activeSubscriptions =
-        await this.subscriptionService.getActiveSubscriptions(user_id);
+        await this.subscriptionService.getActivePaidSubscriptions(user_id);
       return (activeSubscriptions?.length ?? 0) > 0;
     } catch (error: any) {
       this.logger.error(

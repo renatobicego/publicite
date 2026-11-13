@@ -426,9 +426,11 @@ export class UserService implements UserServiceInterface {
       if (!userSubscriptionPlans || userSubscriptionPlans.length === 0)
         return maxContacts;
 
-      const { subscriptions } = userSubscriptionPlans;
-      subscriptions.map((plan: any) => {
-        return (maxContacts += plan.subscriptionPlan.maxContacts);
+      // Un pack de tokens o de MB no trae maxContacts: cuenta 0 (antes daba NaN).
+      const subscriptions: any[] = userSubscriptionPlans.subscriptions ?? [];
+      subscriptions.forEach((plan: any) => {
+        const value = plan?.subscriptionPlan?.maxContacts;
+        if (typeof value === 'number' && Number.isFinite(value)) maxContacts += value;
       });
 
       return maxContacts;

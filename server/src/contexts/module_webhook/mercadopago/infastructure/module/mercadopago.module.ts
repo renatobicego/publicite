@@ -41,6 +41,9 @@ import { MpInvoiceResolver } from '../resolver/mp-invoice.resolver';
 import { AdminInvoiceResolver } from '../resolver/admin-invoice.resolver';
 import { PaymentNotificationService } from '../adapters/handler/PaymentNotificationService';
 import { UserModel } from 'src/contexts/module_user/user/infrastructure/schemas/user.schema';
+import { MpSubscriptionResolver } from '../resolver/mp-subscription.resolver';
+import { MpCheckoutService } from '../../application/service/mp-checkout.service';
+import { MpCheckoutAdapter } from '../adapters/in/mp-checkout.adapter';
 
 
 @Module({
@@ -72,7 +75,16 @@ import { UserModel } from 'src/contexts/module_user/user/infrastructure/schemas/
         MpPaymentResolver,
         MpInvoiceResolver,
         AdminInvoiceResolver,
+        MpSubscriptionResolver,
         PaymentNotificationService,
+        {
+            provide: 'MpCheckoutServiceInterface',
+            useClass: MpCheckoutService,
+        },
+        {
+            provide: 'MpCheckoutAdapterInterface',
+            useClass: MpCheckoutAdapter,
+        },
         {
             provide: 'MpHandlerEventsInterface',
             useClass: MpHandlerEvents,

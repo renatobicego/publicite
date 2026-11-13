@@ -26,6 +26,8 @@ export class SubscriptionPlan {
   private groupBlogsCount?: number;
   private filesPerBlogCount?: number;
   private storageBytesLimit?: number;
+  // Tokens de IA brutos por mes. Opcional: sin cargar, se usa la env (ver chatbot.tokens.config.ts).
+  private tokensCount?: number;
 
   constructor(
     _id: ObjectId,
@@ -45,7 +47,9 @@ export class SubscriptionPlan {
     groupBlogsCount?: number,
     filesPerBlogCount?: number,
     storageBytesLimit?: number,
+    tokensCount?: number,
   ) {
+    this.tokensCount = tokensCount;
     this._id = _id;
     this.mpPreapprovalPlanId = mpPreapprovalPlanId;
     this.isActive = isActive;
@@ -125,6 +129,10 @@ export class SubscriptionPlan {
     return this.storageBytesLimit;
   }
 
+  public getTokensCount(): number | undefined {
+    return this.tokensCount;
+  }
+
   static fromDocument(doc: any): SubscriptionPlan {
     return new SubscriptionPlan(
       doc._id ? doc._id : '',
@@ -144,6 +152,7 @@ export class SubscriptionPlan {
       doc.groupBlogsCount,
       doc.filesPerBlogCount,
       doc.storageBytesLimit,
+      doc.tokensCount,
     );
   }
 
@@ -170,12 +179,14 @@ export class SubscriptionPlan {
       storageBytesLimit: SubscriptionPlan.getVisibleStorageBytesLimit(
         subscriptionPlan,
       ),
-      // Tokens de IA por mes (neto visible): sale de env vars, no de la DB.
+      // Tokens de IA por mes (neto visible): `tokensCount` del plan o, si no
+      // está cargado, las env vars.
       aiTokensPerMonth: getPlanNetPubliciteTokens({
         mpPreapprovalPlanId: subscriptionPlan.getMpPreapprovalPlanId(),
         reason: subscriptionPlan.getReason(),
         isFree: subscriptionPlan.getIsFree(),
         isPack: subscriptionPlan.getIsPack(),
+        tokensCount: subscriptionPlan.getTokensCount(),
       }),
     };
   }

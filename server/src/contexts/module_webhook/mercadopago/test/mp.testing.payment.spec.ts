@@ -95,8 +95,9 @@ describe('Mercadopago - HandlerAdapter - Payment  -> CREATE', () => {
     });
 
 
-    it('Should return error if the payment status is unknown', async () => {
-        jest.spyOn(mpHandlerEvents.getLogger, 'error');
+    // Antes tiraba error y Meli reintentaba el evento sin fin: ahora se registra y se responde OK.
+    it('Should return OK without saving if the payment status is unknown', async () => {
+        jest.spyOn(mpHandlerEvents.getLogger, 'warn');
         mpPaymentService.createPayment = jest.fn();
 
         let statusOfThePayment = "test";
@@ -107,8 +108,10 @@ describe('Mercadopago - HandlerAdapter - Payment  -> CREATE', () => {
 
         mockFetchToMpAdapter.getDataFromMp_fetch.mockResolvedValue(mockedPaymentResponse);
 
-        await expect(mpHandlerEvents.create_payment("123456")).rejects.toThrow(
-            "Unknown payment CREATE status: " + statusOfThePayment
+        await expect(mpHandlerEvents.create_payment("123456")).resolves.toBe(true);
+        expect(mpPaymentService.createPayment).not.toHaveBeenCalled();
+        expect(mpHandlerEvents.getLogger.warn).toHaveBeenCalledWith(
+            expect.stringContaining("Unknown payment CREATE status: " + statusOfThePayment)
         );
         expect(mpPaymentService.createPayment).not.toHaveBeenCalled();
 
@@ -291,8 +294,9 @@ describe('Mercadopago - HandlerAdapter - Payment  -> UPDATE', () => {
 
     });
 
-    it('Should return error if the payment status is unknown', async () => {
-        jest.spyOn(mpHandlerEvents.getLogger, 'error');
+    // Antes tiraba error y Meli reintentaba el evento sin fin: ahora se registra y se responde OK.
+    it('Should return OK without saving if the payment status is unknown', async () => {
+        jest.spyOn(mpHandlerEvents.getLogger, 'warn');
         mpPaymentService.updatePayment = jest.fn();
 
         let statusOfThePayment = "test";
@@ -303,12 +307,20 @@ describe('Mercadopago - HandlerAdapter - Payment  -> UPDATE', () => {
 
         mockFetchToMpAdapter.getDataFromMp_fetch.mockResolvedValue(mockedPaymentResponse);
 
-        await expect(mpHandlerEvents.update_payment("123456")).rejects.toThrow(
-            "Unknown payment CREATE status: " + statusOfThePayment
-        );
+        await expect(mpHandlerEvents.update_payment("123456")).resolves.toBe(true);
         expect(mpPaymentService.updatePayment).not.toHaveBeenCalled();
 
 
+    });
+
+    // Una devolución (las de las pruebas de MP, por ejemplo) antes respondía 500 en loop.
+    it('Should save a refunded payment and return OK', async () => {
+        mpPaymentService.updatePayment = jest.fn();
+        const mockedPaymentResponse = get_payment("refunded", "67420686b02bdd1f9f0ef446");
+        mockFetchToMpAdapter.getDataFromMp_fetch.mockResolvedValue(mockedPaymentResponse);
+
+        await expect(mpHandlerEvents.update_payment("123456")).resolves.toBe(true);
+        expect(mpPaymentService.updatePayment).toHaveBeenCalledWith(mockedPaymentResponse);
     });
 
 

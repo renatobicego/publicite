@@ -23,6 +23,7 @@ import {
 import { getTodayDateTime } from 'src/contexts/module_shared/utils/functions/getTodayDateTime';
 import { authorized_payments } from '../../domain/entity_mp/authorized_payments';
 import { PUBLICITE_LOGO_BASE64 } from './assets/publicite-logo';
+import { payerOfSubscription } from 'src/contexts/module_shared/subscriptions/external-reference';
 
 export class MpInvoiceService implements MpServiceInvoiceInterface {
 
@@ -118,7 +119,10 @@ export class MpInvoiceService implements MpServiceInvoiceInterface {
         subscription_authorized_payment.status ?? 'invoice scheduled',
         subscription_authorized_payment.payment.status ?? 'payment scheduled', //Payment status
         subscription_authorized_payment.preapproval_id, // ID de la suscripcion en MELI
-        subscription_authorized_payment.external_reference,
+        // La factura va a nombre de quien paga (no siempre es el external_reference:
+        // en Hacete Amigo es `friendGroup:<id>`). Sin payerUser, lo de siempre.
+        payerOfSubscription(subscripcion) ??
+          subscription_authorized_payment.external_reference,
         timeOfUpdate,
         subscription_authorized_payment.id, // ID de la factura en meli
         subscription_authorized_payment.transaction_amount ?? 0,
