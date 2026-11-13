@@ -128,8 +128,11 @@ export const getSubscriptions = async (userId: string) => {
     if ("error" in subscriptions || (subscriptions as any).error) {
       return;
     }
+    // El extra temporal de un cambio de plan apunta al plan viejo: nunca es el plan actual.
     const accountType = subscriptions?.find(
-      (subscription: Subscription) => !subscription.subscriptionPlan.isPack
+      (subscription: Subscription) =>
+        !subscription.subscriptionPlan.isPack &&
+        subscription.kind !== "carryover"
     );
     const postsPacks =
       subscriptions?.filter(

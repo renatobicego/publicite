@@ -1,8 +1,12 @@
+"use client";
+
 import SecondaryButton from "@/components/buttons/SecondaryButton";
 const ConfirmModal = lazy(() => import("@/components/modals/ConfirmModal"));
-import { editSubscription } from "@/services/subscriptionServices";
+import { cancelMySubscription } from "@/services/subscriptionServices";
 import { Subscription, SubscriptionPlan } from "@/types/subscriptions";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
+import { useActiveSubscriptions } from "@/app/(root)/providers/userDataProvider";
+import { useUser } from "@clerk/nextjs";
 import { Button, Link, Spinner } from "@nextui-org/react";
 import { lazy, Suspense } from "react";
 
@@ -28,19 +32,29 @@ const ActionButtons = ({
     previousSubscriptionPlanId ===
     subscriptionPlans.find((s) => s.isFree === true)?._id;
 
-  const handleCancelSubscription = () => {
+  const { refreshActiveSubscriptions } = useActiveSubscriptions();
+  const { user } = useUser();
+
+  /*
+  La baja la hace el server (valida que la suscripción sea del usuario y espera
+  a MercadoPago). Antes el resultado no se miraba y siempre se mostraba "éxito".
+  */
+  const handleCancelSubscription = async () => {
     if (!previousSubscription) {
       toastifyError("No hay una subscripción activa.");
       return;
     }
-    editSubscription(previousSubscription.mpPreapprovalId, {
-      status: "cancelled",
-    })
-      .then(() => {
-        toastifySuccess("Subscripción cancelada con éxito");
-        onClose();
-      })
-      .catch(() => toastifyError("Error al cancelar la subscripción"));
+    const result = await cancelMySubscription(
+      previousSubscription.mpPreapprovalId
+    );
+    if ("error" in result) {
+      toastifyError(result.error);
+      return;
+    }
+    toastifySuccess("Subscripción cancelada con éxito");
+    const mongoId = user?.publicMetadata?.mongoId as string | undefined;
+    if (mongoId) refreshActiveSubscriptions(mongoId);
+    onClose();
   };
 
   return (

@@ -1,73 +1,93 @@
 "use server";
 import {
+  cancelMySubscriptionMutation,
   getPaymentsQuery,
   getPostNumbersOfUserQuery,
+  startSubscriptionCheckoutMutation,
+  updateMySubscriptionCardMutation,
 } from "@/graphql/suscriptionsQueries";
-import { query } from "@/lib/client";
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { getClient, query } from "@/lib/client";
+import { auth } from "@clerk/nextjs/server";
 import axios from "axios";
 import { getApiContext } from "./apiContext";
-import { Invoice, Subscription, SubscriptionPlan } from "@/types/subscriptions";
+import {
+  Invoice,
+  Subscription,
+  SubscriptionCheckoutResult,
+  SubscriptionPlan,
+} from "@/types/subscriptions";
 import { getAuthToken } from "./auth-token";
+import { getProductionErrorMessage } from "@/utils/functions/productionErrorHandler";
 
-export const processPayment = async (
-  formData: any,
-  subscriptionPlan: any,
-  userId: string
-) => {
+/*
+Altas, bajas y cambio de tarjeta van al server (mutations con el token del
+usuario). El server decide el usuario, el plan y el monto: el cliente sólo manda
+el plan elegido y el token de la tarjeta que devuelve el Brick de MercadoPago.
+*/
+
+export const startSubscriptionCheckout = async (input: {
+  mpPreapprovalPlanId: string;
+  cardTokenId: string;
+  payerEmail: string;
+  replacesSubscriptionId?: string;
+}): Promise<SubscriptionCheckoutResult | { error: string }> => {
   try {
-    const { data } = await axios.post(
-      process.env.CLIENT_URL + "/api/subscriptions/process_payment",
-      {
-        formData,
-        subscriptionPlan,
-        userId,
-      }
-    );
-
-    // if (status !== 200 && status !== 201) {
-    //   return {
-    //     error: "Error al procesar el pago. Por favor intenta de nuevo.",
-    //   };
-    // }
-
-    return data;
+    const { context } = await getApiContext(false, await getAuthToken());
+    const { data } = await getClient().mutate({
+      mutation: startSubscriptionCheckoutMutation,
+      variables: { input },
+      context,
+    });
+    return data.startSubscriptionCheckout as SubscriptionCheckoutResult;
   } catch (error) {
     console.error(error);
     return {
-      error: "Error al procesar el pago. Por favor intenta de nuevo.",
+      error:
+        getProductionErrorMessage(error) ??
+        "No pudimos procesar el pago. Por favor intentá de nuevo.",
     };
   }
 };
 
-export const editSubscription = async (
-  subscriptionId: string,
-  formData: {
-    status?: "authorized" | "paused" | "cancelled" | "pending";
-    card_token_id?: string;
-  }
-) => {
+export const cancelMySubscription = async (
+  mpPreapprovalId: string
+): Promise<{ ok: true } | { error: string }> => {
   try {
-    const { data, status } = await axios.put(
-      process.env.CLIENT_URL + "/api/subscriptions/update",
-      {
-        formData,
-        subscriptionId,
-      }
-    );
-    if (status !== 200 && status !== 201) {
-      throw new Error(
-        "Error al actualizar la suscripción. Por favor intenta de nuevo.",
-        data
-      );
-    }
-    return {
-      message: "Suscripción actualizada exitosamente.",
-    };
+    const { context } = await getApiContext(false, await getAuthToken());
+    await getClient().mutate({
+      mutation: cancelMySubscriptionMutation,
+      variables: { mpPreapprovalId },
+      context,
+    });
+    return { ok: true };
   } catch (error) {
     console.error(error);
     return {
-      error: "Error al actualizar la suscripción. Por favor intenta de nuevo.",
+      error:
+        getProductionErrorMessage(error) ??
+        "No pudimos cancelar la suscripción. Por favor intentá de nuevo.",
+    };
+  }
+};
+
+export const updateMySubscriptionCard = async (
+  mpPreapprovalId: string,
+  cardTokenId: string
+): Promise<{ ok: true } | { error: string }> => {
+  try {
+    const { context } = await getApiContext(false, await getAuthToken());
+    await getClient().mutate({
+      mutation: updateMySubscriptionCardMutation,
+      variables: { mpPreapprovalId, cardTokenId },
+      context,
+    });
+    return { ok: true };
+  } catch (error) {
+    console.error(error);
+    return {
+      error:
+        getProductionErrorMessage(error) ??
+        "No pudimos cambiar la tarjeta. Por favor intentá de nuevo o contactá a soporte.",
     };
   }
 };

@@ -2,6 +2,7 @@ import Details from "./Details";
 import {
   getSubscriptionPlanById,
   getSubscriptionsOfUser,
+  getSubscriptionsPlans,
 } from "@/services/subscriptionServices";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
@@ -33,9 +34,17 @@ export default async function CheckoutPage(props: {
   if (subscriptionPlan.error)
     return <ErrorCard message={subscriptionPlan.error} />;
 
+  // Un pack se suma al plan: nunca pasa por "cambiar plan" (le cancelaría el plan actual).
+  const plans = await getSubscriptionsPlans().catch(() => []);
+  const isPack = plans.some(
+    (plan) => plan.mpPreapprovalPlanId === params.planId && plan.isPack
+  );
+
   if (
+    !isPack &&
     isUserSubscribedToPayedPlan &&
-    isUserSubscribedToPayedPlan?.subscriptionPlan._id !== params.planId
+    isUserSubscribedToPayedPlan?.subscriptionPlan.mpPreapprovalPlanId !==
+      params.planId
   ) {
     redirect(
       `/suscribirse/${params.planId}/cambiarPlan/${isUserSubscribedToPayedPlan?.mpPreapprovalId}`

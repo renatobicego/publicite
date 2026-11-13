@@ -38,9 +38,9 @@ const Details = ({
       </h1>
       {isChangingPlan && (
         <p>
-          Cambia el plan de suscripción a <em>{subscriptionPlan.reason}</em>. Se
-          cancelará la suscripción actual. En caso de haber un error en la
-          cancelación de la suscripción, <strong>contactar a soporte</strong>.
+          Cambiá tu plan a <em>{subscriptionPlan.reason}</em>. Cuando se
+          confirme el pago, damos de baja tu plan actual para que no se te
+          cobre más.
         </p>
       )}
       <div className="flex gap-1 items-center">

@@ -135,7 +135,31 @@ module_x/<submodulo>/
   - ⚠️ **Para Anuncios los límites son SOLO por cantidad** (posts libres, posts agenda, contactos). No hay MB en Anuncios.
   - Cálculo de límites: `module_user/user/application/functions/calculatePostLimitAndContactLimit.ts` (suma acumulativa de todas las suscripciones activas del usuario).
   - **Mis Producciones** agrega dimensiones propias en el mismo plan: `personalBlogsLibreCount`, `personalBlogsAgendaCount` (cupos de blogs personales por comportamiento, acumulativos como los de anuncios), `groupBlogsCount`, `filesPerBlogCount` (todas por cantidad) y **`storageBytesLimit`** (almacenamiento por usuario, en BYTES — la única dimensión de peso del sistema). Ver §6.1 y §10.
-- **Pagos de suscripciones:** MercadoPago **automático** vía webhooks (`module_webhook/mercadopago`). El alta de la suscripción la hace el **cliente** (`client/src/app/api/subscriptions/process_payment/route.ts` llama a `PreApproval.create` de MP y no persiste nada); el server sólo se entera por el webhook `subscription_preapproval`. En producción MP **no manda el evento `created`** (0 en 30 días de logs al 2026-10-25), el primer aviso es un `updated`, así que `MpHandlerEvents.update_subscription_preapproval` **registra la suscripción si no existe** (mismo camino que `created`, `registerSubscription`) y responde OK sin crear nada si llega `cancelled` de una suscripción nunca registrada. No volver a asumir que el alta llega por `created`.
+- **Pagos de suscripciones:** MercadoPago **automático**, con el checkout **en el server**.
+  - **Mutations** (`MpSubscriptionResolver`, `ClerkAuthGuard`; el usuario sale siempre del token y se rechaza el token de no registrado):
+    - `startSubscriptionCheckout` (plan, pack o cambio de plan con `replacesSubscriptionId`);
+    - `cancelMySubscription`;
+    - `updateMySubscriptionCard`.
+  - **Cómo funciona** (`MpCheckoutService`):
+    - lee el plan de Mongo y su monto de MP (`preapproval_plan`), nunca del navegador;
+    - crea el preapproval con `FetchToMpInterface.createPreapproval` y **registra la suscripción en el momento**;
+    - en un cambio de plan da de baja el anterior; si MP no responde, deja un error `CHANGE_PLAN_CANCEL_FAILED` y devuelve un `warning`.
+  - **Rutas eliminadas:** las de Next `api/subscriptions/process_payment` y `update`. Eran públicas, tomaban el usuario y el monto del cliente y dejaban cancelar suscripciones ajenas.
+  - **Webhooks** (`module_webhook/mercadopago`): quedan de respaldo y son idempotentes. En producción MP **no manda el evento `created`** (0 en 30 días de logs al 2026-10-25): el primer aviso es un `updated`.
+    - `MpHandlerEvents.update_subscription_preapproval` **registra la suscripción si no existe** (`registerSubscription`).
+    - Si llega `cancelled` de una suscripción nunca registrada, responde OK sin crear nada.
+    - Las `external_reference` con prefijo (`gift:`, `friendGroup:`, `mptest:`; ver `resolveExternalReference`) no se registran como suscripción de un usuario.
+    - No volver a asumir que el alta llega por `created`.
+- **Suscripción (`Subscription`):**
+  - `kind`: `mp` | `carryover` (extra temporal de cambio de plan) | `friendGroup` (Hacete Amigo) | `gift` (regalo). Sin el campo es `mp`.
+  - `expiresAt`: en las temporales.
+  - `payerUser`: quién paga.
+  - **Activa = `activeSubscriptionMatch()`** (`module_shared/subscriptions/`): `authorized` y no vencida, evaluado al leer. Es el **único** filtro de "da límites": anuncios, contactos, blogs, almacenamiento y tokens. No volver a filtrar por `status: 'authorized'` a mano.
+  - **Titulares:** las de `User.subscriptions` (así se ven las compartidas y las regaladas). `external_reference` es el valor crudo de MP.
+  - "¿Tiene plan pago?" es `hasPaidPlan` (`isPaidPlanSubscription`: no gratuito, no pack, no `carryover`).
+  - El historial `GET /subscription/:id` usa el usuario del token.
+  - Plan de reglas y fases: `plan-feature-hacete-amigo-y-planes.md`.
+- **Tokens por plan:** `SubscriptionPlan.tokensCount` (brutos por mes, también en packs). Se lee antes que `CHATBOT_TOKENS_PLAN_MAP`, que queda de respaldo. Un plan o pack que no trae un campo de límite cuenta 0 en esa dimensión.
 - **Invoices/facturas:** `invoice.schema.ts` (`facturaUrl`, `facturaUploadedAt`, `facturaUploadedBy`). Panel admin: `AdminInvoiceResolver` (`@UseGuards(ClerkAuthGuard, AdminGuard)`) con `getAllInvoicesAdmin` y `attachFacturaToInvoice`.
 - **Glosario de Cubito:** el texto que usa el chatbot para responder sobre la plataforma es la constante `GLOSSARY` de `module_user/chatbot/domain/service/chatbot.ai.service.ts`; el glosario que ve el usuario es `client/src/components/buttons/HelpButton/GlosaryModal.tsx`. Son dos textos separados: una funcionalidad nueva se documenta en **los dos**.
 - **Prompt de generación de imágenes:** tope de caracteres en `IMAGE_PROMPT_MAX_LENGTH` (2000), duplicado a propósito en `module_shared/ai/ai.config.ts` (lo valida el DTO y `ChatbotAIService.generateImage`) y en `client/src/utils/data/aiLimits.ts` (contador del Tablero de trabajo y del asistente de crear anuncio). Se cambian juntos.

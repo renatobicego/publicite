@@ -1,10 +1,7 @@
 "use client";
 
 import ErrorCard from "@/components/ErrorCard";
-import {
-  editSubscription,
-  processPayment,
-} from "@/services/subscriptionServices";
+import { updateMySubscriptionCard } from "@/services/subscriptionServices";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { useUser } from "@clerk/nextjs";
 import { CardPayment, initMercadoPago } from "@mercadopago/sdk-react";
@@ -35,19 +32,18 @@ const ChangePaymentMethodCheckout = ({
     },
   };
 
-  const onSubmit = async (formData: any, additionalData: any) => {
-    editSubscription(subscriptionId, {
-      card_token_id: formData.token,
-    })
-      .then((res) => {
-        toastifySuccess("Método de pago actualizado con éxito");
-        router.replace("/suscribirse/suscripcion-actualizada");
-      })
-      .catch((err) => {
-        toastifyError(
-          "Error al editar la subscripción. Por favor, intenta de nuevo o contacta a soporte"
-        );
-      });
+  // El server valida que la suscripción sea del usuario antes de cambiar la tarjeta.
+  const onSubmit = async (formData: any) => {
+    const result = await updateMySubscriptionCard(
+      subscriptionId,
+      formData.token
+    );
+    if ("error" in result) {
+      toastifyError(result.error);
+      return;
+    }
+    toastifySuccess("Método de pago actualizado con éxito");
+    router.replace("/suscribirse/suscripcion-actualizada");
   };
 
   const onError = async (error: any) => {

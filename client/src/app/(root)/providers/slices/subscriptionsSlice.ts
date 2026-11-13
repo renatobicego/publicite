@@ -70,6 +70,23 @@ export const fetchSubscriptions = createAsyncThunk(
   }
 );
 
+/*
+Vuelve a pedir las suscripciones aunque ya se hayan pedido en la sesión. Se usa
+después de cancelar o cambiar de plan: sin esto, Configuración seguía mostrando
+el plan viejo hasta recargar la página. Mientras tanto se muestran los datos que
+había (no pasa a "loading").
+*/
+export const refreshSubscriptions = createAsyncThunk(
+  "subscriptions/refreshSubscriptions",
+  async (userId: string, { rejectWithValue }) => {
+    try {
+      return await getSubscriptions(userId);
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  }
+);
+
 const subscriptions = createSlice({
   name: "subscriptions",
   initialState,
@@ -83,6 +100,12 @@ const subscriptions = createSlice({
         state.status = "succeeded";
         state.accountType = action.payload?.accountType;
         state.postsPacks = action.payload?.postsPacks || [];
+      })
+      .addCase(refreshSubscriptions.fulfilled, (state, action) => {
+        if (!action.payload) return;
+        state.status = "succeeded";
+        state.accountType = action.payload.accountType;
+        state.postsPacks = action.payload.postsPacks || [];
       })
       .addCase(fetchSubscriptions.rejected, (state, action) => {
         state.status = "failed";

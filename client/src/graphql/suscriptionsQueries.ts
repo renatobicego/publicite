@@ -24,6 +24,36 @@ export const getPaymentsQuery = gql`
   }
 `;
 
+export const startSubscriptionCheckoutMutation = gql`
+  mutation StartSubscriptionCheckout($input: StartSubscriptionCheckoutInput!) {
+    startSubscriptionCheckout(input: $input) {
+      mpPreapprovalId
+      status
+      registered
+      previousSubscriptionCancelled
+      warning
+    }
+  }
+`;
+
+export const cancelMySubscriptionMutation = gql`
+  mutation CancelMySubscription($mpPreapprovalId: String!) {
+    cancelMySubscription(mpPreapprovalId: $mpPreapprovalId)
+  }
+`;
+
+export const updateMySubscriptionCardMutation = gql`
+  mutation UpdateMySubscriptionCard(
+    $mpPreapprovalId: String!
+    $cardTokenId: String!
+  ) {
+    updateMySubscriptionCard(
+      mpPreapprovalId: $mpPreapprovalId
+      cardTokenId: $cardTokenId
+    )
+  }
+`;
+
 export const getPostNumbersOfUserQuery = gql`
   query GetPostAndContactLimit {
     getPostAndContactLimit {

@@ -14,6 +14,7 @@ import { ReactNode } from "react";
 import { ActiveUserRelation, UserType } from "@/types/userTypes";
 import DataInitializer from "./DataInitializer";
 import { setActiveRelations, setSearchPreferences } from "./slices/configSlice";
+import { refreshSubscriptions } from "./slices/subscriptionsSlice";
 import { PostCategory } from "@/types/postTypes";
 import { Magazine, MagazineSection } from "@/types/magazineTypes";
 
@@ -118,8 +119,12 @@ export const useConfigData = () => {
 };
 
 export const useActiveSubscriptions = () => {
+  const dispatch = useDispatch();
   const { postsPacks, accountType } = useSelector(
     (state: RootState) => state.subscriptions
   );
-  return { postsPacks, accountType };
+  /** Vuelve a pedir las suscripciones (después de cancelar o cambiar de plan). */
+  const refreshActiveSubscriptions = (userId: string) =>
+    dispatch(refreshSubscriptions(userId) as any);
+  return { postsPacks, accountType, refreshActiveSubscriptions };
 };
