@@ -630,6 +630,19 @@ type front_data_PRODUCTIONTICKET {
   reason: String
 }
 
+type front_data_PLAN {
+  """gift | friendGroup"""
+  kind: String!
+
+  """id del regalo o del grupo"""
+  entityId: String!
+  actorName: String
+  planReason: String
+  months: Float
+  reason: String
+  isPayer: Boolean
+}
+
 type frontData {
   group: front_data_GROUP
   magazine: front_data_MAGAZINE
@@ -641,6 +654,7 @@ type frontData {
   share: front_data_SHARE
   subscription: front_data_SUBSCRIPTION
   productionTicket: front_data_PRODUCTIONTICKET
+  plan: front_data_PLAN
 }
 
 type backData {
@@ -781,6 +795,10 @@ type PostLimitResponseGraphql {
   contactLimit: Float!
   contactCount: Float!
   contactAvailable: Float!
+  carryoverExpiresAt: String
+  totalAgendaPostLimitAfterCarryover: Float
+  totalLibrePostLimitAfterCarryover: Float
+  contactLimitAfterCarryover: Float
 }
 
 type post_response_recomended {
@@ -1046,6 +1064,273 @@ type AdminInvoiceGetAllResponse {
 
   """Total de tickets que matchean los filtros"""
   total: Int!
+}
+
+type SubscriptionCheckoutResponse {
+  mpPreapprovalId: String!
+
+  """Estado del preapproval en MercadoPago (authorized, pending, ...)"""
+  status: String!
+
+  """
+  false si MP aceptó el pago pero todavía no quedó guardado (lo registra el webhook)
+  """
+  registered: Boolean!
+
+  """
+  En un cambio de plan: si se dio de baja el plan anterior. null si no hubo cambio
+  """
+  previousSubscriptionCancelled: Boolean
+
+  """
+  En un cambio de plan: hasta cuándo conserva los límites del plan anterior (ISO)
+  """
+  previousLimitsUntil: String
+
+  """Aviso para mostrar al usuario"""
+  warning: String
+}
+
+type MpTestEventModel {
+  _id: ID!
+  topic: String
+  action: String
+  dataId: String
+  externalReference: String
+  status: String
+  amount: Float
+  receivedAt: String!
+
+  """Objeto completo de MP, en JSON"""
+  payload: String
+}
+
+type PlanGiftQuote {
+  """Total a pagar (precio mensual del plan en MP × meses)"""
+  amount: Float!
+  planReason: String!
+  months: Int!
+
+  """Meses que se pueden regalar"""
+  monthOptions: [Int!]!
+}
+
+type PlanGiftModel {
+  _id: ID!
+  code: String!
+  planReason: String!
+  months: Int!
+  amount: Float!
+
+  """pendingPayment | paid | active | expired | rejected | refunded"""
+  status: String!
+  giverName: String
+  recipientName: String
+
+  """Sólo lo ve quien regala"""
+  recipientEmail: String
+
+  """El destinatario lo puede activar ahora"""
+  canActivate: Boolean!
+
+  """Link para compartir: /canjear/<código>"""
+  link: String!
+  activatedAt: String
+  expiresAt: String
+  createdAt: String
+}
+
+type PlanGiftPublicModel {
+  code: String!
+  planReason: String!
+  months: Int!
+  giverName: String
+
+  """available | used | unavailable"""
+  availability: String!
+
+  """Email al que está reservado, enmascarado (ma***@gmail.com)"""
+  reservedForEmail: String
+
+  """El regalo es para quien está mirando (ya asignado o por email)"""
+  isForViewer: Boolean!
+
+  """Sólo si es para quien está mirando"""
+  giftId: ID
+}
+
+type BuyPlanGiftResponse {
+  giftId: ID!
+  code: String!
+  status: String!
+
+  """El destinatario ya tiene cuenta (se le avisó)"""
+  recipientHasAccount: Boolean!
+  link: String!
+
+  """Mensaje para mostrar a quien regala"""
+  message: String!
+}
+
+type MyPlanGiftsResponse {
+  given: [PlanGiftModel!]!
+  received: [PlanGiftModel!]!
+}
+
+type AdminPlanGiftModel {
+  _id: ID!
+  code: String!
+  planReason: String!
+  months: Int!
+  amount: Float!
+
+  """pendingPayment | paid | active | expired | rejected | refunded"""
+  status: String!
+  giverName: String
+  recipientName: String
+
+  """Sólo lo ve quien regala"""
+  recipientEmail: String
+
+  """El destinatario lo puede activar ahora"""
+  canActivate: Boolean!
+
+  """Link para compartir: /canjear/<código>"""
+  link: String!
+  activatedAt: String
+  expiresAt: String
+  createdAt: String
+  giverEmail: String
+  mpPaymentId: String
+  paymentStatus: String
+}
+
+type AdminPlanGiftsResponse {
+  gifts: [AdminPlanGiftModel!]!
+  hasMore: Boolean!
+}
+
+type FriendPlanTier {
+  members: Int!
+  discountPercent: Float!
+
+  """Lo que paga cada uno por mes"""
+  pricePerMember: Float!
+
+  """Lo que se debita por mes (todos)"""
+  totalAmount: Float!
+}
+
+type FriendPlanOption {
+  mpPreapprovalPlanId: String!
+  planReason: String!
+
+  """Precio mensual del plan individual (MP)"""
+  planAmount: Float!
+
+  """Precio según la cantidad de miembros"""
+  tiers: [FriendPlanTier!]!
+}
+
+type FriendPlanOptionsResponse {
+  plans: [FriendPlanOption!]!
+  minMembers: Int!
+
+  """0 = sin tope"""
+  maxMembers: Int!
+}
+
+type FriendGroupMemberModel {
+  userId: ID!
+  name: String
+  username: String
+  profilePhotoUrl: String
+
+  """invited | accepted"""
+  status: String!
+
+  """Publicó al menos un anuncio o una producción"""
+  isActivated: Boolean!
+  isCreator: Boolean!
+  isPayer: Boolean!
+}
+
+type FriendGroupPricingModel {
+  memberCount: Int!
+  discountPercent: Float!
+  planAmount: Float!
+  pricePerMember: Float!
+  totalAmount: Float!
+}
+
+type FriendGroupModel {
+  _id: ID!
+
+  """forming | paying | active | paymentFailed | cancelled"""
+  status: String!
+  planReason: String!
+  mpPreapprovalPlanId: String!
+  isCreator: Boolean!
+  isPayer: Boolean!
+
+  """Sólo para los miembros aceptados"""
+  inviteCode: String
+  members: [FriendGroupMemberModel!]!
+
+  """Mientras se arma: precio con los aceptados. Pagado: lo que se cobra."""
+  pricing: FriendGroupPricingModel
+
+  """Mientras se arma: el precio si se suma uno más"""
+  nextTier: FriendPlanTier
+  canPay: Boolean!
+
+  """Por qué todavía no se puede pagar"""
+  payBlockedReason: String
+  payerName: String
+
+  """Sólo para quien paga (cambiar la tarjeta)"""
+  mpPreapprovalId: String
+  cancelReason: String
+  activatedAt: String
+  paymentFailedAt: String
+}
+
+type FriendGroupInvitationModel {
+  groupId: ID!
+  planReason: String!
+  invitedByName: String
+
+  """Aceptados hasta ahora"""
+  acceptedCount: Int!
+
+  """El precio si se suma"""
+  tierIfJoins: FriendPlanTier
+}
+
+type MyFriendGroupResponse {
+  group: FriendGroupModel
+  invitations: [FriendGroupInvitationModel!]!
+}
+
+type FriendGroupPublicModel {
+  planReason: String!
+  creatorName: String
+
+  """Aceptados hasta ahora"""
+  acceptedCount: Int!
+
+  """open | closed | full"""
+  availability: String!
+  isMember: Boolean!
+
+  """El precio si se suma"""
+  tierIfJoins: FriendPlanTier
+}
+
+type PayFriendGroupResponse {
+  """Estado del grupo después del pago"""
+  status: String!
+  message: String!
 }
 
 type PostContactSeller_graphql {
@@ -2291,6 +2576,39 @@ type Query {
   """
   getAllInvoicesAdmin(page: Int!, limit: Int!, filters: AdminInvoiceFiltersInput): AdminInvoiceGetAllResponse!
 
+  """Sólo admin: consulta un preapproval de prueba"""
+  mpTestGetPreapproval(preapprovalId: String!): String!
+
+  """Sólo admin: eventos de prueba que llegaron por webhook"""
+  mpTestEvents(limit: Int): [MpTestEventModel!]!
+
+  """Cuánto sale regalar N meses de un plan"""
+  planGiftQuote(mpPreapprovalPlanId: String!, months: Int!): PlanGiftQuote!
+
+  """Datos mínimos del link /canjear/<código>"""
+  planGiftByCode(code: String!): PlanGiftPublicModel!
+
+  """Regalos que hice y que recibí"""
+  myPlanGifts: MyPlanGiftsResponse!
+
+  """Sólo admin: registro de todos los regalos"""
+  planGiftsAdmin(page: Int!, limit: Int!): AdminPlanGiftsResponse!
+
+  """Planes de Hacete Amigo con el precio según la cantidad de miembros"""
+  friendPlanOptions: FriendPlanOptionsResponse!
+
+  """Mi grupo y mis invitaciones"""
+  myFriendGroup: MyFriendGroupResponse!
+
+  """Datos mínimos del link de invitación"""
+  friendGroupByInviteCode(code: String!): FriendGroupPublicModel!
+
+  """Valida el grupo y devuelve el monto a debitar"""
+  friendGroupCheckout(groupId: ID!): FriendGroupPricingModel!
+
+  """True si el server corre con MercadoPago simulado"""
+  mpMockEnabled: Boolean!
+
   """Obtiene los posts totales del usuario y los limites segun su plan"""
   getPostAndContactLimit: PostLimitResponseGraphql
 
@@ -2637,6 +2955,66 @@ type Mutation {
 
   """Sólo admin: asocia una factura (archivo ya subido) a un ticket"""
   attachFacturaToInvoice(input: AttachFacturaInput!): AdminInvoice!
+
+  """
+  Contrata un plan o un pack con la tarjeta del Brick. Con replacesSubscriptionId es un cambio de plan.
+  """
+  startSubscriptionCheckout(input: StartSubscriptionCheckoutInput!): SubscriptionCheckoutResponse!
+
+  """Cancela una suscripción propia (plan o pack)."""
+  cancelMySubscription(mpPreapprovalId: String!): Boolean!
+
+  """Cambia la tarjeta de una suscripción propia."""
+  updateMySubscriptionCard(mpPreapprovalId: String!, cardTokenId: String!): Boolean!
+
+  """Sólo admin: suscripción de prueba SIN plan asociado"""
+  mpTestCreatePreapproval(amount: Float!, cardTokenId: String!, payerEmail: String!): String!
+
+  """Sólo admin: pausa, reactiva o cancela un preapproval de prueba"""
+  mpTestSetPreapprovalStatus(preapprovalId: String!, status: String!): String!
+
+  """Sólo admin: pago único de prueba"""
+  mpTestCreatePayment(input: MpTestPaymentInput!): String!
+
+  """Regala N meses de un plan (pago único)"""
+  buyPlanGift(input: BuyPlanGiftInput!): BuyPlanGiftResponse!
+
+  """Toma un regalo reservado al email de la cuenta"""
+  claimPlanGift(code: String!): PlanGiftModel!
+
+  """Activa un regalo recibido: desde ahí cuentan los meses"""
+  activatePlanGift(giftId: ID!): PlanGiftModel!
+
+  """Quien regala corrige el email del destinatario"""
+  updatePlanGiftEmail(giftId: ID!, email: String!): PlanGiftModel!
+
+  """Arma un grupo con un plan pago mensual"""
+  createFriendGroup(mpPreapprovalPlanId: String!): FriendGroupModel!
+  inviteToFriendGroup(groupId: ID!, userId: ID!): FriendGroupModel!
+  respondFriendGroupInvitation(groupId: ID!, accept: Boolean!): MyFriendGroupResponse!
+
+  """Entrar por el link equivale a aceptar"""
+  joinFriendGroupByInviteCode(code: String!): FriendGroupModel!
+
+  """Sólo quien armó el grupo; el link anterior deja de servir"""
+  regenerateFriendGroupInviteCode(groupId: ID!): FriendGroupModel!
+
+  """Sólo quien armó el grupo y mientras se arma"""
+  removeFriendGroupMember(groupId: ID!, userId: ID!): FriendGroupModel!
+
+  """Pagado, se cancela el plan para todos"""
+  leaveFriendGroup(groupId: ID!): Boolean!
+
+  """Uno paga por todos: débito automático mensual"""
+  payFriendGroup(input: PayFriendGroupInput!): PayFriendGroupResponse!
+
+  """
+  Sólo local: simula un aviso de MP del grupo (charge_failed, charge_recovered, payment_failed_expired, cancelled_in_mp)
+  """
+  mpMockFriendGroupEvent(groupId: ID!, event: String!): Boolean!
+
+  """Sólo local: simula la devolución del pago de un regalo"""
+  mpMockRefundGift(giftId: ID!): Boolean!
 
   """Activar o desactivar un post"""
   activateOrDeactivatePost(_id: String!, author_id: String!, postBehaviourType: PostBehaviourType!, activate: Boolean!): String
@@ -3065,6 +3443,58 @@ input AttachFacturaInput {
 
   """URL del PDF/imagen ya subido (UploadThing)"""
   facturaUrl: String!
+}
+
+input StartSubscriptionCheckoutInput {
+  """
+  id del plan en MercadoPago (preapproval_plan), el de la URL del checkout
+  """
+  mpPreapprovalPlanId: String!
+
+  """Token de la tarjeta que devuelve el Brick de MercadoPago"""
+  cardTokenId: String!
+  payerEmail: String!
+
+  """mpPreapprovalId del plan actual, cuando es un cambio de plan"""
+  replacesSubscriptionId: String
+}
+
+input MpTestPaymentInput {
+  amount: Float!
+  cardTokenId: String!
+  payerEmail: String!
+  paymentMethodId: String!
+  issuerId: String
+  identificationType: String
+  identificationNumber: String
+}
+
+input BuyPlanGiftInput {
+  """id del plan en MercadoPago (preapproval_plan)"""
+  mpPreapprovalPlanId: String!
+  months: Int!
+
+  """Destinatario con cuenta (mongoId)"""
+  recipientUserId: String
+
+  """Destinatario sin cuenta: su email"""
+  recipientEmail: String
+
+  """Token de la tarjeta que devuelve el Brick"""
+  cardTokenId: String!
+  paymentMethodId: String!
+  issuerId: String
+  payerEmail: String!
+  identificationType: String
+  identificationNumber: String
+}
+
+input PayFriendGroupInput {
+  groupId: ID!
+
+  """Token de la tarjeta que devuelve el Brick"""
+  cardTokenId: String!
+  payerEmail: String!
 }
 
 input PostRequest {

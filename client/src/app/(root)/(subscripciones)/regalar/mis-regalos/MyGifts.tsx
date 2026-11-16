@@ -24,6 +24,7 @@ import {
   PlanGift,
 } from "@/types/planGiftTypes";
 import { GIFT_PLAN } from "@/utils/data/urls";
+import { GiftMockRefund } from "@/components/payments/MpMockActions";
 import { formatPaymentDate } from "@/utils/functions/packs";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import {
@@ -244,6 +245,9 @@ function GivenGiftCard({
               Copiar link
             </Button>
           </div>
+        )}
+        {["paid", "active"].includes(gift.status) && (
+          <GiftMockRefund giftId={gift._id} onDone={onChange} />
         )}
         {notTakenYet &&
           (editing ? (

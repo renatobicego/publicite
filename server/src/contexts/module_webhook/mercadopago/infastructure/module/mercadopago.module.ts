@@ -1,6 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { MongooseModule } from '@nestjs/mongoose';
+import { getModelToken, MongooseModule } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { isMpMockEnabled } from 'src/contexts/module_shared/mp-mock/mp-mock.config';
+import { MockFetchToMercadoPagoAdapter } from '../adapters/out/fetch.to.mp.mock';
 
 
 import { LoggerModule } from 'src/contexts/module_shared/logger/logger.module';
@@ -176,10 +179,18 @@ import { MpTestResolver } from '../resolver/mp-test.resolver';
         },
         {
             provide: 'FetchToMpInterface',
-            useFactory: (configService: ConfigService, logger: MyLoggerService) => {
+            // MP_MOCK=true (sólo con `npm run dev`): MercadoPago simulado, no cobra nada.
+            useFactory: (
+                configService: ConfigService,
+                logger: MyLoggerService,
+                planModel: Model<any>,
+            ) => {
+                if (isMpMockEnabled()) {
+                    return new MockFetchToMercadoPagoAdapter(planModel, logger);
+                }
                 return new FetchToMercadoPagoAdapter(configService, logger);
             },
-            inject: [ConfigService, MyLoggerService],
+            inject: [ConfigService, MyLoggerService, getModelToken('SubscriptionPlan')],
         },
 
     ],

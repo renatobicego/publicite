@@ -4,11 +4,9 @@ import ErrorCard from "@/components/ErrorCard";
 import { updateMySubscriptionCard } from "@/services/subscriptionServices";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import { useUser } from "@clerk/nextjs";
-import { CardPayment, initMercadoPago } from "@mercadopago/sdk-react";
+import CardPaymentBrick from "@/components/payments/CardPaymentBrick";
 import { ICardPaymentBrickPayer } from "@mercadopago/sdk-react/bricks/cardPayment/type";
 import { useRouter } from "next/navigation";
-
-initMercadoPago(process.env.NEXT_PUBLIC_MP_PUBLIC_KEY as string);
 
 type ChangePaymentMethodCheckoutProps = {
   subscriptionId: string;
@@ -55,13 +53,12 @@ const ChangePaymentMethodCheckout = ({
   // };
   if (!isLoaded) return null;
   return (
-    <CardPayment
+    <CardPaymentBrick
       initialization={initialization}
       key={"cardPaymentBrick"}
       onSubmit={onSubmit}
       // onReady={onReady}
       onError={onError}
-      locale="es-AR"
       customization={{
         paymentMethods: {
           maxInstallments: 1,

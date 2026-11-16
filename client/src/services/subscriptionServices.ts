@@ -18,6 +18,7 @@ import {
 } from "@/types/subscriptions";
 import { getAuthToken } from "./auth-token";
 import { getProductionErrorMessage } from "@/utils/functions/productionErrorHandler";
+import { isMpMock, MP_MOCK_DEFAULT_AMOUNT } from "@/utils/functions/mpMock";
 
 /*
 Altas, bajas y cambio de tarjeta van al server (mutations con el token del
@@ -185,7 +186,32 @@ export const getUserActivePostandActiveRelationsNumber = async (): Promise<
   }
 };
 
+/*
+MercadoPago simulado (desarrollo local): el plan se arma con los datos de la
+base, con la misma forma que devuelve MP (precio = `price`, frecuencia según
+`intervalTime`). Igual que el server simulado.
+*/
+const getMockSubscriptionPlanById = async (id: string) => {
+  const plans = await getSubscriptionsPlans().catch(() => []);
+  const plan = plans.find((candidate) => candidate.mpPreapprovalPlanId === id);
+  if (!plan) {
+    return { error: "Este plan de suscripción ya no está disponible. Por favor elegí otro plan." };
+  }
+  return {
+    id,
+    reason: plan.reason,
+    status: "active",
+    auto_recurring: {
+      frequency: Math.max(1, Math.round((plan.intervalTime || 30) / 30)),
+      frequency_type: "months",
+      transaction_amount: plan.price > 0 ? plan.price : MP_MOCK_DEFAULT_AMOUNT,
+      currency_id: "ARS",
+    },
+  };
+};
+
 export const getSubscriptionPlanById = async (id: string) => {
+  if (isMpMock()) return getMockSubscriptionPlanById(id);
   try {
     const { data, status } = await axios.get(
       "https://api.mercadopago.com/preapproval_plan/" + id,

@@ -1,12 +1,10 @@
 "use client";
 
 import { useUser } from "@clerk/nextjs";
-import { CardPayment, initMercadoPago } from "@mercadopago/sdk-react";
+import CardPaymentBrick from "@/components/payments/CardPaymentBrick";
 
 import { payFriendGroup } from "@/services/friendGroupServices";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
-
-initMercadoPago(process.env.NEXT_PUBLIC_MP_PUBLIC_KEY as string);
 
 /*
 Pago del grupo con el Brick de tarjeta: el server crea el débito automático por
@@ -39,7 +37,7 @@ export default function FriendGroupPay({
   };
 
   return (
-    <CardPayment
+    <CardPaymentBrick
       key={`${groupId}-${totalAmount}`}
       initialization={{
         amount: totalAmount,
@@ -47,7 +45,6 @@ export default function FriendGroupPay({
       }}
       onSubmit={onSubmit}
       onError={(error: any) => toastifyError(String(error?.message ?? error))}
-      locale="es-AR"
       customization={{ paymentMethods: { maxInstallments: 1 } }}
     />
   );

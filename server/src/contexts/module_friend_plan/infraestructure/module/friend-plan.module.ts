@@ -14,6 +14,8 @@ import { FriendGroupRepository } from '../../friendGroup/infraestructure/reposit
 import { FriendGroupService } from '../../friendGroup/application/service/friend-group.service';
 import { FriendGroupAdapter } from '../../friendGroup/infraestructure/adapter/friend-group.adapter';
 import { FriendGroupResolver } from '../../friendGroup/infraestructure/resolver/friend-group.resolver';
+import { MpMockService } from '../../mpMock/mp-mock.service';
+import { MpMockResolver } from '../../mpMock/mp-mock.resolver';
 
 /*
 Planes compartidos: regalos de planes (planGift) y Hacete Amigo (friendGroup).
@@ -44,6 +46,7 @@ export const FRIEND_GROUP_PROVIDERS = [
     MercadoPagoModule,
     LoggerModule,
   ],
-  providers: [...PLAN_GIFT_PROVIDERS, ...FRIEND_GROUP_PROVIDERS],
+  // MpMock*: simulador de avisos de MP para desarrollo local (sólo responde con MP_MOCK).
+  providers: [...PLAN_GIFT_PROVIDERS, ...FRIEND_GROUP_PROVIDERS, MpMockService, MpMockResolver],
 })
 export class FriendPlanModule {}

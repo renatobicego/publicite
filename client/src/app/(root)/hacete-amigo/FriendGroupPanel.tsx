@@ -46,6 +46,7 @@ import {
 } from "@/app/(root)/providers/userDataProvider";
 import { User } from "@/types/userTypes";
 import FriendGroupPayLoader from "./FriendGroupPayLoader";
+import { FriendGroupMockActions } from "@/components/payments/MpMockActions";
 
 /*
 Panel de Hacete Amigo: el grupo del usuario (miembros, invitar, link, resumen
@@ -192,6 +193,9 @@ function GroupView({
       </div>
 
       {paid && <PaidSummary group={group} />}
+      {paid && (
+        <FriendGroupMockActions groupId={group._id} status={group.status} onDone={onChange} />
+      )}
       {forming && <PriceSummary group={group} />}
 
       <MembersList group={group} onChange={onChange} />

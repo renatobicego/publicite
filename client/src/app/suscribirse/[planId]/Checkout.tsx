@@ -8,11 +8,9 @@ import {
 } from "@/utils/functions/toastify";
 import { formatPaymentDate } from "@/utils/functions/packs";
 import { useUser } from "@clerk/nextjs";
-import { CardPayment, initMercadoPago } from "@mercadopago/sdk-react";
+import CardPaymentBrick from "@/components/payments/CardPaymentBrick";
 import { ICardPaymentBrickPayer } from "@mercadopago/sdk-react/bricks/cardPayment/type";
 import { useRouter } from "next/navigation";
-
-initMercadoPago(process.env.NEXT_PUBLIC_MP_PUBLIC_KEY as string);
 
 type CheckoutProps = {
   subscriptionPlan: any;
@@ -74,13 +72,12 @@ const Checkout = ({
   const onReady = async () => {};
   if (!isLoaded) return null;
   return (
-    <CardPayment
+    <CardPaymentBrick
       initialization={initialization}
       key={"cardPaymentBrick"}
       onSubmit={onSubmit}
       onReady={onReady}
       onError={onError}
-      locale="es-AR"
       customization={{
         paymentMethods: {
           maxInstallments: 1,

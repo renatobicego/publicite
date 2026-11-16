@@ -13,7 +13,7 @@ import {
   Tabs,
 } from "@nextui-org/react";
 import { useUser } from "@clerk/nextjs";
-import { CardPayment, initMercadoPago } from "@mercadopago/sdk-react";
+import CardPaymentBrick from "@/components/payments/CardPaymentBrick";
 import { useEffect, useMemo, useState } from "react";
 import { FaGift } from "react-icons/fa6";
 
@@ -27,8 +27,6 @@ import {
 import { User } from "@/types/userTypes";
 import { MY_PLAN_GIFTS } from "@/utils/data/urls";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
-
-initMercadoPago(process.env.NEXT_PUBLIC_MP_PUBLIC_KEY as string);
 
 const DEFAULT_MONTHS = [1, 2, 3, 5];
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -234,7 +232,7 @@ export default function GiftPlanForm({
           regalar a quien ya tiene un plan pago.
         </p>
         {quote && recipientReady ? (
-          <CardPayment
+          <CardPaymentBrick
             key={`${planId}-${months}-${quote.amount}`}
             initialization={{
               amount: quote.amount,
@@ -244,7 +242,6 @@ export default function GiftPlanForm({
             onError={(error: any) =>
               toastifyError(String(error?.message ?? error))
             }
-            locale="es-AR"
             customization={{ paymentMethods: { maxInstallments: 1 } }}
           />
         ) : (

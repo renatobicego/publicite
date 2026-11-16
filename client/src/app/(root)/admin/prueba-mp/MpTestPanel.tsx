@@ -9,7 +9,7 @@ import {
   Tab,
   Tabs,
 } from "@nextui-org/react";
-import { CardPayment, initMercadoPago } from "@mercadopago/sdk-react";
+import CardPaymentBrick from "@/components/payments/CardPaymentBrick";
 import { useUser } from "@clerk/nextjs";
 
 import {
@@ -21,8 +21,6 @@ import {
   mpTestSetPreapprovalStatus,
 } from "@/services/mpTestServices";
 import { toastifyError } from "@/utils/functions/toastify";
-
-initMercadoPago(process.env.NEXT_PUBLIC_MP_PUBLIC_KEY as string);
 
 type Mode = "preapproval" | "payment";
 
@@ -166,7 +164,7 @@ export default function MpTestPanel() {
                 Usar este monto
               </Button>
             </div>
-            <CardPayment
+            <CardPaymentBrick
               key={`${mode}-${brickAmount}`}
               initialization={{
                 amount: brickAmount,
@@ -174,7 +172,6 @@ export default function MpTestPanel() {
               }}
               onSubmit={onSubmit}
               onError={(error: any) => toastifyError(String(error?.message ?? error))}
-              locale="es-AR"
               customization={{ paymentMethods: { maxInstallments: 1 } }}
             />
           </CardBody>
