@@ -19,7 +19,9 @@ export default function FriendGroupPage() {
         ]}
       />
       <section className="w-full max-w-3xl mx-auto flex flex-col gap-6">
-        <h1 className="text-3xl md:text-4xl font-semibold">Mi grupo de Hacete Amigo</h1>
+        <h1 className="text-3xl md:text-4xl font-semibold">
+          Mi grupo de Hacete <span className="text-service">Amigo</span>
+        </h1>
         <FriendGroupPanel />
       </section>
     </main>

@@ -30,7 +30,9 @@ export default async function FriendPlanPage() {
       />
       {/* Asistente de dos pasos: cada paso entra en la pantalla, sin scroll. */}
       <section className="w-full max-w-3xl mx-auto flex flex-col gap-3">
-        <h1 className="text-2xl md:text-3xl font-semibold">Hacete Amigo</h1>
+        <h1 className="text-2xl md:text-3xl font-semibold">
+          Hacete <span className="text-service">Amigo</span>
+        </h1>
         <FriendPlanLanding
           options={options}
           hasGroup={!("error" in mine) && !!mine.group}
