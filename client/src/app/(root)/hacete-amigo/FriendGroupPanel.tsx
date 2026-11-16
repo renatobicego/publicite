@@ -15,6 +15,7 @@ import {
   Spinner,
   useDisclosure,
 } from "@nextui-org/react";
+import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useState } from "react";
 import { FaArrowLeft, FaArrowRight, FaUserGroup, FaWhatsapp } from "react-icons/fa6";
 
@@ -301,39 +302,72 @@ function SummaryStep({ group, go }: { group: FriendGroup; go: (step: number) => 
   const accepted = group.members.filter((member) => member.status === "accepted");
   const invited = group.members.filter((member) => member.status === "invited");
   const missingMembers = accepted.length < 2;
+  // Cubito es el protagonista: cuantos menos son, más grandes se ven.
+  const shown = accepted.length + invited.length + (group.nextTier ? 1 : 0);
+  const size =
+    shown <= 3
+      ? { column: "w-24 sm:w-32", cube: "w-20 h-20 sm:w-28 sm:h-28", slot: "w-16 h-16 sm:w-20 sm:h-20" }
+      : shown <= 5
+        ? { column: "w-16 sm:w-24", cube: "w-14 h-14 sm:w-20 sm:h-20", slot: "w-12 h-12 sm:w-16 sm:h-16" }
+        : { column: "w-14 sm:w-20", cube: "w-12 h-12 sm:w-16 sm:h-16", slot: "w-10 h-10 sm:w-12 sm:h-12" };
+  const bubble = group.canPay
+    ? "¡Listo! Ya podemos pagar."
+    : missingMembers
+      ? "¡Sumá amigos y pagamos menos!"
+      : "¡Ya casi! Falta que todos publiquen algo.";
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-end justify-center gap-1 sm:gap-2 rounded-2xl bg-gradient-to-b from-primary/10 to-transparent px-3 pt-4 pb-2">
+      <div className="flex flex-wrap items-end justify-center gap-2 sm:gap-4 rounded-2xl bg-gradient-to-b from-primary/10 via-primary/5 to-transparent px-3 pt-5 pb-2">
+        {/* Cubito (el primero) habla: qué le falta al grupo. Sólo si hay lugar al lado. */}
+        {shown <= 3 && (
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={bubble}
+              initial={{ opacity: 0, x: 8, scale: 0.95 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              exit={{ opacity: 0, x: -8 }}
+              className="hidden sm:block self-start mt-3 max-w-[11rem] rounded-2xl rounded-br-sm bg-white shadow-md px-3 py-2 text-sm font-medium text-text-color"
+            >
+              {bubble}
+            </motion.div>
+          </AnimatePresence>
+        )}
         {accepted.map((member, index) => (
-          <div key={member.userId} className="flex flex-col items-center w-14 sm:w-16">
-            <div className="w-12 h-12 sm:w-14 sm:h-14">
-              <CubeFriend palette={index} blinkDelay={index * 0.7} />
-            </div>
-            <span className="text-[11px] text-default-600 truncate max-w-full">
+          <div key={member.userId} className={`flex flex-col items-center ${size.column}`}>
+            <motion.div
+              className={size.cube}
+              animate={{ y: [0, -5, 0] }}
+              transition={{ duration: 2.6, delay: index * 0.35, repeat: Infinity, ease: "easeInOut" }}
+            >
+              <CubeFriend palette={index} blinkDelay={index * 0.7} happy={group.canPay} />
+            </motion.div>
+            <span className="text-xs font-medium text-default-700 truncate max-w-full">
               {member.name?.split(" ")[0] ?? member.username}
             </span>
           </div>
         ))}
         {invited.map((member, index) => (
-          <div key={member.userId} className="flex flex-col items-center w-14 sm:w-16 opacity-40">
-            <div className="w-12 h-12 sm:w-14 sm:h-14">
+          <div key={member.userId} className={`flex flex-col items-center opacity-40 ${size.column}`}>
+            <div className={size.cube}>
               <CubeFriend palette={accepted.length + index} />
             </div>
-            <span className="text-[11px] text-default-600 truncate max-w-full">invitado</span>
+            <span className="text-xs text-default-600 truncate max-w-full">invitado</span>
           </div>
         ))}
         {group.nextTier && (
           <button
             type="button"
             onClick={() => go(2)}
-            className="flex flex-col items-center w-14 sm:w-16"
+            className={`flex flex-col items-center ${size.column}`}
             aria-label="Invitar a alguien más"
           >
-            <span className="w-11 h-11 sm:w-12 sm:h-12 mb-1 rounded-xl border-2 border-dashed border-primary/40 text-primary flex items-center justify-center text-xl">
+            <span
+              className={`${size.slot} mb-1 rounded-2xl border-2 border-dashed border-primary/40 text-primary flex items-center justify-center text-2xl transition-colors hover:bg-primary/5`}
+            >
               +
             </span>
-            <span className="text-[11px] text-primary">sumar</span>
+            <span className="text-xs text-primary font-medium">sumar</span>
           </button>
         )}
       </div>
