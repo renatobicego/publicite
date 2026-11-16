@@ -293,6 +293,10 @@ function GroupHeader({ group }: { group: FriendGroup }) {
   );
 }
 
+/** Nombre de pila para mostrar debajo de cada cubito. */
+const firstName = (member: FriendGroup["members"][number]) =>
+  member.name?.split(" ")[0] || member.username || "Amigo";
+
 /*
 Paso 1: los miembros como Cubitos (los invitados, transparentes, y un lugar
 libre para el próximo), el precio de hoy y qué falta para poder pagar.
@@ -344,19 +348,26 @@ function SummaryStep({ group, go }: { group: FriendGroup; go: (step: number) => 
               />
             </div>
             <span className="text-xs font-medium text-default-700 truncate max-w-full">
-              {member.name?.split(" ")[0] ?? member.username}
+              {firstName(member)}
+            </span>
+            <span className="text-[10px] text-default-400 leading-tight">
+              {member.isCreator ? "armó el grupo" : "aceptó"}
             </span>
           </div>
         ))}
         {invited.map((member, index) => (
-          <div key={member.userId} className={`flex flex-col items-center opacity-40 ${size.column}`}>
-            <div className={size.cube}>
+          <div key={member.userId} className={`flex flex-col items-center ${size.column}`}>
+            {/* Sólo el cubito transparente: el nombre se lee */}
+            <div className={`${size.cube} opacity-40`}>
               <CubeFriend
                 palette={accepted.length + index}
                 floatDelay={(accepted.length + index) * 0.45}
               />
             </div>
-            <span className="text-xs text-default-600 truncate max-w-full">invitado</span>
+            <span className="text-xs font-medium text-default-600 truncate max-w-full">
+              {firstName(member)}
+            </span>
+            <span className="text-[10px] text-default-400 leading-tight">invitado</span>
           </div>
         ))}
         {group.nextTier && (
@@ -372,6 +383,11 @@ function SummaryStep({ group, go }: { group: FriendGroup; go: (step: number) => 
               +
             </span>
             <span className="text-xs text-primary font-medium">sumar</span>
+            <span className="text-[10px] text-primary/70 leading-tight">
+              {group.nextTier && group.nextTier.discountPercent > 0
+                ? `-${group.nextTier.discountPercent} % c/u`
+                : <>&nbsp;</>}
+            </span>
           </button>
         )}
       </div>
