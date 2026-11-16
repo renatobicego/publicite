@@ -335,13 +335,14 @@ function SummaryStep({ group, go }: { group: FriendGroup; go: (step: number) => 
         )}
         {accepted.map((member, index) => (
           <div key={member.userId} className={`flex flex-col items-center ${size.column}`}>
-            <motion.div
-              className={size.cube}
-              animate={{ y: [0, -5, 0] }}
-              transition={{ duration: 2.6, delay: index * 0.35, repeat: Infinity, ease: "easeInOut" }}
-            >
-              <CubeFriend palette={index} blinkDelay={index * 0.7} happy={group.canPay} />
-            </motion.div>
+            <div className={size.cube}>
+              <CubeFriend
+                palette={index}
+                blinkDelay={index * 0.7}
+                floatDelay={index * 0.45}
+                happy={group.canPay}
+              />
+            </div>
             <span className="text-xs font-medium text-default-700 truncate max-w-full">
               {member.name?.split(" ")[0] ?? member.username}
             </span>
@@ -350,7 +351,10 @@ function SummaryStep({ group, go }: { group: FriendGroup; go: (step: number) => 
         {invited.map((member, index) => (
           <div key={member.userId} className={`flex flex-col items-center opacity-40 ${size.column}`}>
             <div className={size.cube}>
-              <CubeFriend palette={accepted.length + index} />
+              <CubeFriend
+                palette={accepted.length + index}
+                floatDelay={(accepted.length + index) * 0.45}
+              />
             </div>
             <span className="text-xs text-default-600 truncate max-w-full">invitado</span>
           </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { useId } from "react";
 
 /** Colores de cada amigo. El primero es Cubito (el mismo naranja del header). */
@@ -28,17 +28,28 @@ function shade(hex: string, amount: number): string {
 Un Cubito con cara: el cubo isométrico del header con volumen (luz desde arriba
 a la izquierda, sombra suave en el piso, brillo en la tapa y bordes redondeados),
 ojos con brillo y cachetes. Parpadea cada tanto; con `happy` sonríe con los ojos
-cerrados (cuando festejan).
+cerrados (cuando festejan). Flota: sube y baja apenas, se ladea un poco y la
+sombra del piso se achica cuando sube (con "reducir movimiento" queda quieto).
 */
+
+const FLOAT_SECONDS = 3.2;
 export default function CubeFriend({
   palette = 0,
   happy = false,
   blinkDelay = 0,
+  float = true,
+  floatDelay = 0,
 }: {
   palette?: number;
   happy?: boolean;
   blinkDelay?: number;
+  /** Flotar en el lugar (se apaga mientras otra animación lo mueve, p. ej. al festejar). */
+  float?: boolean;
+  /** Desfase del flotado, para que varios cubitos no suban y bajen a la vez. */
+  floatDelay?: number;
 }) {
+  const reduceMotion = useReducedMotion();
+  const floating = float && !reduceMotion;
   const colors = CUBE_PALETTES[palette % CUBE_PALETTES.length];
   // Ids únicos por cubito: hay varios en la misma página.
   const uid = useId().replace(/:/g, "");
@@ -75,9 +86,37 @@ export default function CubeFriend({
         </radialGradient>
       </defs>
 
-      {/* Sombra en el piso */}
-      <ellipse cx="30" cy="50" rx="19" ry="4.2" fill={url("floor")} />
+      {/* Sombra en el piso: se achica y se aclara cuando el cubito sube */}
+      <motion.ellipse
+        cx="30"
+        cy="50"
+        rx="19"
+        ry="4.2"
+        fill={url("floor")}
+        animate={floating ? { scaleX: [1, 0.78, 1], opacity: [1, 0.55, 1] } : { scaleX: 1, opacity: 1 }}
+        transition={
+          floating
+            ? { duration: FLOAT_SECONDS, repeat: Infinity, ease: "easeInOut", delay: floatDelay }
+            : { duration: 0.3 }
+        }
+      />
 
+      <motion.g
+        animate={floating ? { y: [0, -4, 0], rotate: [-1.5, 1.5, -1.5] } : { y: 0, rotate: 0 }}
+        transition={
+          floating
+            ? {
+                y: { duration: FLOAT_SECONDS, repeat: Infinity, ease: "easeInOut", delay: floatDelay },
+                rotate: {
+                  duration: FLOAT_SECONDS * 2,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: floatDelay,
+                },
+              }
+            : { duration: 0.3 }
+        }
+      >
       {/* Caras del cubo, con bordes redondeados */}
       <polygon
         points="30,5 50,15 30,25 10,15"
@@ -150,6 +189,7 @@ export default function CubeFriend({
           strokeLinecap="round"
         />
       </g>
+      </motion.g>
     </svg>
   );
 }

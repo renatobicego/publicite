@@ -130,15 +130,22 @@ export default function FriendCubesHero({
                   animate={
                     celebrating
                       ? { y: [0, -26, 0, -14, 0], rotate: [0, -6, 0, 6, 0] }
-                      : { y: [0, -3, 0] }
+                      : { y: 0, rotate: 0 }
                   }
                   transition={
                     celebrating
                       ? { duration: 1.1, delay: 0.2 + index * 0.08, repeat: 1, repeatDelay: 0.4 }
-                      : { duration: 2.4, delay: index * 0.3, repeat: Infinity, ease: "easeInOut" }
+                      : { duration: 0.3 }
                   }
                 >
-                  <CubeFriend palette={index} happy={celebrating} blinkDelay={index * 0.7} />
+                  {/* Flotan en el lugar; mientras festejan, saltan (y no flotan). */}
+                  <CubeFriend
+                    palette={index}
+                    happy={celebrating}
+                    blinkDelay={index * 0.7}
+                    float={!celebrating}
+                    floatDelay={index * 0.45}
+                  />
                 </motion.div>
 
                 {/* Uno paga por todos: Cubito lleva la tarjeta */}
