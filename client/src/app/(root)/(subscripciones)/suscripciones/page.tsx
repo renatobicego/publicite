@@ -1,16 +1,16 @@
 import BreadcrumbsAdmin from "@/components/BreadcrumbsAdmin";
-import { FRIEND_PLAN_INFO, GIFT_PLAN, SUBSCRIPTIONS } from "@/utils/data/urls";
-import { Link } from "@nextui-org/react";
+import { SUBSCRIPTIONS } from "@/utils/data/urls";
 import Users from "./Users";
 
 import SubscriptionGrid from "../components/SubscriptionGrid";
+import PlanShortcuts from "../components/PlanShortcuts";
+import { getFriendPlanOptions } from "@/services/friendGroupServices";
 import {
   getSubscriptionsOfUser,
   getSubscriptionsPlans,
 } from "@/services/subscriptionServices";
 import { auth } from "@clerk/nextjs/server";
 import ErrorCard from "@/components/ErrorCard";
-import { SubscriptionPlan } from "@/types/subscriptions";
 
 //add metadata
 export const metadata = {
@@ -31,10 +31,20 @@ export default async function SubscriptionPlans() {
   ];
   const { sessionClaims } = await auth();
 
-  const subscriptions: SubscriptionPlan[] = await getSubscriptionsPlans();
-  const subcriptionsOfUser = await getSubscriptionsOfUser(
-    sessionClaims?.metadata.mongoId as string
-  );
+  const [subscriptions, subcriptionsOfUser, friendPlanOptions] = await Promise.all([
+    getSubscriptionsPlans(),
+    getSubscriptionsOfUser(sessionClaims?.metadata.mongoId as string),
+    getFriendPlanOptions(),
+  ]);
+  const maxFriendDiscount =
+    "error" in friendPlanOptions
+      ? 0
+      : Math.max(
+          0,
+          ...friendPlanOptions.plans.flatMap((plan) =>
+            plan.tiers.map((tier) => tier.discountPercent)
+          )
+        );
 
   if ("error" in subcriptionsOfUser) {
     return <ErrorCard message={"Error obteniendo planes de suscripción"} />;
@@ -52,18 +62,7 @@ export default async function SubscriptionPlans() {
             Nuestros planes de subscripción están pensados para ser accesibles y
             enfocados en tus necesidades.{" "}
           </p>
-          <p className="text-sm text-center">
-            ¿Con amigos?{" "}
-            <Link href={FRIEND_PLAN_INFO} size="sm">
-              Hacete Amigo: armen un grupo y paguen menos
-            </Link>
-          </p>
-          <p className="text-sm text-center">
-            ¿Querés regalarle un plan a alguien?{" "}
-            <Link href={GIFT_PLAN} size="sm">
-              Regalá meses de un plan
-            </Link>
-          </p>
+          <PlanShortcuts maxFriendDiscount={maxFriendDiscount} />
           {/* <Users /> */}
         </div>
         <SubscriptionGrid
