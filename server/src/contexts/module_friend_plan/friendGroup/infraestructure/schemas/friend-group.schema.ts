@@ -54,6 +54,17 @@ export const FriendGroupSchema = new Schema(
     cancelReason: { type: String, default: null },
     activatedAt: { type: Date, default: null },
     paymentFailedAt: { type: Date, default: null },
+    // Anuncios que apagó el downgrade del cobro rechazado, por miembro.
+    pausedPosts: {
+      type: [
+        {
+          _id: false,
+          user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+          posts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }],
+        },
+      ],
+      default: [],
+    },
     cancelledAt: { type: Date, default: null },
   },
   { timestamps: true, collection: 'friendgroups' },

@@ -65,6 +65,12 @@ export interface PostRepositoryInterface {
     userId: string,
     criteria: { [key: string]: number },
   ): Promise<void>;
+  /** Activa, de los anuncios inactivos del autor, hasta `limits` por comportamiento. */
+  reactivatePostsOfAuthor(
+    userId: string,
+    postIds: string[],
+    limits: { [behaviourType: string]: number },
+  ): Promise<number>;
   deleteAccount(id: string): Promise<any>;
   deleteCommentById(
     id: string,

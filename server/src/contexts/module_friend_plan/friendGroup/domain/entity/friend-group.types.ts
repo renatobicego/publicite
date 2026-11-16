@@ -45,6 +45,11 @@ export interface FriendGroupMember {
   joinedAt?: Date | null;
 }
 
+export interface FriendGroupPausedPosts {
+  user: any;
+  posts: any[];
+}
+
 export interface FriendGroupRecord {
   _id: any;
   creator: any;
@@ -66,6 +71,8 @@ export interface FriendGroupRecord {
   cancelReason: string | null;
   activatedAt: Date | null;
   paymentFailedAt: Date | null;
+  /** Anuncios que apagó el downgrade del cobro rechazado: vuelven si se recupera. */
+  pausedPosts?: FriendGroupPausedPosts[];
   cancelledAt: Date | null;
   createdAt?: Date;
   updatedAt?: Date;

@@ -232,6 +232,36 @@ export class PostRepository implements PostRepositoryInterface {
     }
   }
 
+  async reactivatePostsOfAuthor(
+    userId: string,
+    postIds: string[],
+    limits: { [behaviourType: string]: number },
+  ): Promise<number> {
+    const ids = postIds.filter((id) => Types.ObjectId.isValid(id)).map((id) => new Types.ObjectId(id));
+    if (ids.length === 0) return 0;
+    const candidates = await this.postDocument
+      .find({ _id: { $in: ids }, author: new Types.ObjectId(String(userId)), isActive: false })
+      .select('_id postBehaviourType')
+      .lean<{ _id: Types.ObjectId; postBehaviourType: string }[]>();
+
+    const toActivate: Types.ObjectId[] = [];
+    const used: { [behaviourType: string]: number } = {};
+    for (const post of candidates) {
+      const type = post.postBehaviourType;
+      used[type] = used[type] ?? 0;
+      if (used[type] < (limits[type] ?? 0)) {
+        toActivate.push(post._id);
+        used[type]++;
+      }
+    }
+    if (toActivate.length === 0) return 0;
+    const result = await this.postDocument.updateMany(
+      { _id: { $in: toActivate } },
+      { $set: { isActive: true } },
+    );
+    return result.modifiedCount;
+  }
+
   async desactivateAllPost(
     userId: string,
     criteria: { [key: string]: number },

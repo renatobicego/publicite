@@ -132,6 +132,26 @@ export class FriendGroupRepository implements FriendGroupRepositoryInterface {
   }
 
   // En aggregate no hay casteo automático: los ids van como ObjectId.
+  // Los anuncios se leen directo de la colección para no depender del módulo de Anuncios.
+  async findActivePostIds(userId: string): Promise<string[]> {
+    if (!Types.ObjectId.isValid(userId)) return [];
+    const posts = await this.userModel.db
+      .collection('posts')
+      .find({ author: new Types.ObjectId(userId), isActive: true }, { projection: { _id: 1 } })
+      .toArray();
+    return posts.map((post) => String(post._id));
+  }
+
+  async findInactivePostIds(postIds: string[]): Promise<string[]> {
+    const ids = postIds.filter((id) => Types.ObjectId.isValid(id)).map((id) => new Types.ObjectId(id));
+    if (ids.length === 0) return [];
+    const posts = await this.userModel.db
+      .collection('posts')
+      .find({ _id: { $in: ids }, isActive: false }, { projection: { _id: 1 } })
+      .toArray();
+    return posts.map((post) => String(post._id));
+  }
+
   async findUsersByIds(userIds: string[]): Promise<FriendGroupUserRef[]> {
     const ids = userIds
       .filter((id) => Types.ObjectId.isValid(id))

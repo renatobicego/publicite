@@ -2,6 +2,8 @@ const contact_seller_new_request = "contact_seller_new_request";;
 const post_deleted = 'post.deleted';
 const downgrade_plan_contact = 'downgrade_plan_contact';
 const downgrade_plan_post = 'downgrade_plan_post';
+// Hacete Amigo: el cobro del grupo se recuperó; vuelven los anuncios que apagó el downgrade.
+const reactivate_plan_post = 'reactivate_plan_post';
 const downgrade_plan_contact_notification = 'downgrade_plan_contact_notification';
 const downgrade_plan_post_notification = 'downgrade_plan_post_notification';
 const subscription_event = 'subscription_event';
@@ -44,6 +46,7 @@ export {
     downgrade_plan_contact,
     downgrade_plan_contact_notification,
     downgrade_plan_post,
+    reactivate_plan_post,
     downgrade_plan_post_notification,
     subscription_event,
     set_OpinionRequested_TRUE,

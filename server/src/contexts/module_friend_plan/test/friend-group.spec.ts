@@ -7,10 +7,12 @@ import { IUser, UserModel } from 'src/contexts/module_user/user/infrastructure/s
 import { EmitterService } from 'src/contexts/module_shared/event-emmiter/emmiter';
 import {
   downgrade_plan_contact,
+  downgrade_plan_post,
   friend_group_notification,
   mp_friend_group_charge_failed,
   mp_friend_group_charge_recovered,
   mp_friend_group_preapproval,
+  reactivate_plan_post,
   user_deleting,
 } from 'src/contexts/module_shared/event-emmiter/events';
 import { MpSubscriptionService } from 'src/contexts/module_webhook/mercadopago/application/service/mp-subscription.service';
@@ -478,6 +480,57 @@ describe('Fase 5 - Hacete Amigo', () => {
       after = await groupModel.findById(group._id).lean<any>();
       expect(after.status).toBe(FriendGroupStatus.active);
       expect(notifications(PlanNotificationEvent.friendChargeRecovered)).toHaveLength(1);
+    });
+
+    it('rechazo: guarda los anuncios que apagó y, si se recupera, pide reactivar esos mismos', async () => {
+      const group = await paidGroupOfThree();
+      const posts = groupModel.db.collection('posts');
+      const apagado = new Types.ObjectId();
+      const yaInactivo = new Types.ObjectId();
+      await posts.insertMany([
+        { _id: apagado, author: users[0], isActive: true, postBehaviourType: 'libre' },
+        { _id: yaInactivo, author: users[0], isActive: false, postBehaviourType: 'libre' },
+      ]);
+
+      // El módulo de Anuncios no está en este test: se simula su downgrade.
+      emitSpy.mockRestore();
+      const original = emitter.emitAsync.bind(emitter);
+      const reactivations: any[] = [];
+      emitSpy = jest.spyOn(emitter, 'emitAsync').mockImplementation(async (event: string, body: any) => {
+        if (event === downgrade_plan_post) {
+          await posts.updateMany({ author: new Types.ObjectId(String(body)) }, { $set: { isActive: false } });
+          return [true];
+        }
+        if (event === reactivate_plan_post) {
+          reactivations.push(body);
+          return [1];
+        }
+        return original(event, body);
+      });
+
+      try {
+        await pauseLikeTheWebhook(group);
+        await emitter.emitAsync(mp_friend_group_charge_failed, { groupId: String(group._id) });
+        let after = await groupModel.findById(group._id).lean<any>();
+        // Sólo el que estaba activo; el que A ya tenía apagado no se toca.
+        expect(after.pausedPosts.map((entry: any) => [String(entry.user), entry.posts.map(String)])).toEqual([
+          [id(0), [String(apagado)]],
+        ]);
+
+        await subscriptionModel.updateOne(
+          { mpPreapprovalId: group.mpPreapprovalId },
+          { $set: { status: 'authorized' } },
+        );
+        await emitter.emitAsync(mp_friend_group_charge_recovered, { groupId: String(group._id) });
+        // Un segundo aviso de recupero no vuelve a reactivar.
+        await emitter.emitAsync(mp_friend_group_charge_recovered, { groupId: String(group._id) });
+
+        expect(reactivations).toEqual([{ userId: id(0), postIds: [String(apagado)] }]);
+        after = await groupModel.findById(group._id).lean<any>();
+        expect(after.pausedPosts).toEqual([]);
+      } finally {
+        await posts.deleteMany({ _id: { $in: [apagado, yaInactivo] } });
+      }
     });
 
     it('si MP no logra cobrar en el plazo, el grupo se cancela al leerlo', async () => {

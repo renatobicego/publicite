@@ -30,4 +30,8 @@ export interface FriendGroupRepositoryInterface {
   ): Promise<FriendGroupRecord | null>;
   removeMember(id: string, userId: string): Promise<FriendGroupRecord | null>;
   findUsersByIds(userIds: string[]): Promise<FriendGroupUserRef[]>;
+  /** Ids de los anuncios activos del usuario. */
+  findActivePostIds(userId: string): Promise<string[]>;
+  /** De esos ids, los que hoy están inactivos. */
+  findInactivePostIds(postIds: string[]): Promise<string[]>;
 }

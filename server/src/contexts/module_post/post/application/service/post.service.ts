@@ -190,6 +190,23 @@ export class PostService implements PostServiceInterface {
       throw error;
     }
   }
+  /*
+  Vuelve a activar anuncios que apagó un downgrade (p. ej. cuando se recupera el
+  cobro de un grupo de Hacete Amigo), sin pasarse de lo que hoy permite el plan.
+  Sólo toca anuncios del usuario que sigan inactivos.
+  */
+  async reactivatePostsWithinLimits(userId: string, postIds: string[]): Promise<number> {
+    if (!postIds?.length) return 0;
+    const limits = await this.userService.getPostAndLimitsFromUserByUserId(userId);
+    if (!limits) return 0;
+    const reactivated = await this.postRepository.reactivatePostsOfAuthor(userId, postIds, {
+      libre: Math.max(0, limits.libreAvailable),
+      agenda: Math.max(0, limits.agendaAvailable),
+    });
+    this.logger.log(`Anuncios reactivados de ${userId}: ${reactivated} de ${postIds.length}`);
+    return reactivated;
+  }
+
   async desactivatePostByUserId(userId: string): Promise<void> {
     try {
       let totalLibresExceded = 0;

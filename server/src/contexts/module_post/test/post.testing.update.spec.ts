@@ -363,6 +363,47 @@ describe('Post Service Testing - Update post  ', () => {
 
     })
 
+
+    describe('Reactivar anuncios apagados por un downgrade (Hacete Amigo)', () => {
+
+        it('reactiva sólo los pedidos, del autor y hasta el límite del plan', async () => {
+            const insert = (fields: any) => insertPostGood(postGoodModel, {
+                _id: new Types.ObjectId(),
+                imagesUrls: ["asd.com"],
+                author: userId,
+                ...fields,
+            });
+            const active: any[] = [];
+            for (let index = 0; index < 8; index++) active.push((await insert({ isActive: true, postBehaviourType: "libre" }))._id);
+            const pausedLibre: any[] = [];
+            for (let index = 0; index < 4; index++) pausedLibre.push((await insert({ isActive: false, postBehaviourType: "libre" }))._id);
+            const pausedAgenda: any = (await insert({ isActive: false, postBehaviourType: "agenda" }))._id;
+            const foreign: any = (await insert({ isActive: false, postBehaviourType: "agenda", author: new Types.ObjectId() }))._id;
+            await createPersonalUser(userModel, {
+                _id: userId,
+                posts: [...active, ...pausedLibre, pausedAgenda],
+                subscriptions: [subscriptionId],
+            });
+
+            // Plan de 10 libres y 10 de agenda: hay lugar para 2 libres más.
+            const reactivated = await postService.reactivatePostsWithinLimits(
+                userId.toString(),
+                [...pausedLibre, pausedAgenda, foreign].map(String),
+            );
+
+            expect(reactivated).toBe(3);
+            const libresActive = await postGoodModel.countDocuments({ author: userId, postBehaviourType: "libre", isActive: true });
+            expect(libresActive).toBe(10);
+            expect((await postGoodModel.findById(pausedAgenda))?.isActive).toBe(true);
+            expect((await postGoodModel.findById(foreign))?.isActive).toBe(false);
+            await postGoodModel.deleteOne({ _id: foreign });
+        })
+
+        it('sin ids no hace nada', async () => {
+            expect(await postService.reactivatePostsWithinLimits(userId.toString(), [])).toBe(0);
+        })
+    })
+
     describe('Update Post', () => {
 
         it('Update a good post', async () => {

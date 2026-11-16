@@ -260,6 +260,10 @@ Ningún cobro puede ser de $50 o menos (`MIN_CHARGE_AMOUNT`): el webhook los tom
   fijo. El webhook avisa con `mp_friend_group_preapproval` (alta perdida, monto que no coincide → cancela,
   `authorized` activa, `cancelled` cancela), `mp_friend_group_charge_failed` (pausa, downgrade a cada miembro sin
   otro plan pago, aviso; pasado `PAYMENT_FAILED_DAYS` se cancela al leer) y `mp_friend_group_charge_recovered`.
+  El rechazo guarda en `FriendGroup.pausedPosts` los anuncios que apagó el downgrade (activos antes, inactivos
+  después) y el recupero los vuelve a activar con el evento `reactivate_plan_post`
+  (`PostService.reactivatePostsWithinLimits`: sólo los que siguen inactivos, del autor y hasta el límite del plan).
+  El evento `downgrade_plan_post` sigue devolviendo `true` (el webhook de planes individuales reintenta si no).
   Si alguien se baja o borra su cuenta (`user_deleting`, que emite `SubscriptionAdapter.deleteSubscription`), se
   cancela el débito y el grupo para todos, sin downgrade. Estando en un grupo, `MpCheckoutService` no deja
   contratar un plan propio (los packs sí). Cliente: `/suscripciones/hacete-amigo`, `/hacete-amigo`,

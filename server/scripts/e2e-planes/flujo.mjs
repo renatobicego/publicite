@@ -68,6 +68,13 @@ const buyGift = (key, input) =>
     input: { mpPreapprovalPlanId: PREMIUM, months: 2, cardTokenId: OK, paymentMethodId: 'visa', payerEmail: emailOf(key), ...input },
   });
 
+// Si quedó el grupo pagado de escenario.mjs, se cancela: los regalos y el grupo
+// arrancan con Ana y Bruno sin plan.
+for (const key of ['ana', 'bruno']) {
+  const live = (await myGroup(key)).group;
+  if (live && live.status !== 'forming') await must(key, `mutation { leaveFriendGroup(groupId: "${live._id}") }`);
+}
+
 // ============================================================== REGALOS
 section('REGALOS');
 let gift1; // Darío le regala a Carla (cuenta)
@@ -293,26 +300,38 @@ await check('Pero sí un pack (y después lo da de baja)', async () => {
 });
 
 section('HACETE AMIGO — avisos de MercadoPago');
-await check('Cobro rechazado: grupo en pausa y los dos vuelven al plan gratis', async () => {
-  const since = stamp();
-  await must('bruno', `mutation { mpMockFriendGroupEvent(groupId: "${group._id}", event: "charge_failed") }`);
-  group = (await myGroup('ana')).group;
-  assert(group.status === 'paymentFailed', group.status);
-  const a = await activeSubs('ana');
-  assert(!a.includes('friendGroup'), `Ana sigue con ${a}`);
-  const d = await db();
-  const inactive = await d.collection('posts').countDocuments({ author: { $in: [new ObjectId(id.ana), new ObjectId(id.bruno)] }, isActive: false });
-  assert(inactive === 0, `${inactive} anuncios desactivados (con el Gratis de QA no debería)`);
-  return `anuncios siguen activos | avisos Ana: ${await eventsSince('ana', since)} | Bruno: ${await eventsSince('bruno', since)}`;
-});
-await check('Cobro recuperado: vuelve el plan para los dos', async () => {
-  const since = stamp();
-  await must('ana', `mutation { mpMockFriendGroupEvent(groupId: "${group._id}", event: "charge_recovered") }`);
-  group = (await myGroup('ana')).group;
-  assert(group.status === 'active', group.status);
-  assert((await activeSubs('ana')).includes('friendGroup'), 'Ana sin plan');
-  return `avisos Ana: ${await eventsSince('ana', since)}`;
-});
+// Ana queda un rato sin el plan Gratis (límite 0): el rechazo le apaga el anuncio.
+// Bruno lo conserva (en QA el Gratis permite miles): el suyo sigue activo.
+const d0 = await db();
+const freeSub = await d0.collection('subscriptions').findOne({ mpPreapprovalId: 'FREE SUBSCRIPTION' });
+const activePosts = async (key) =>
+  d0.collection('posts').countDocuments({ author: new ObjectId(id[key]), isActive: true });
+const anaPostsBefore = await activePosts('ana');
+if (freeSub) await d0.collection('users').updateOne({ _id: new ObjectId(id.ana) }, { $pull: { subscriptions: freeSub._id } });
+try {
+  await check('Cobro rechazado: grupo en pausa; a quien no tiene el Gratis se le apagan los anuncios', async () => {
+    const since = stamp();
+    await must('bruno', `mutation { mpMockFriendGroupEvent(groupId: "${group._id}", event: "charge_failed") }`);
+    group = (await myGroup('ana')).group;
+    assert(group.status === 'paymentFailed', group.status);
+    const a = await activeSubs('ana');
+    assert(!a.includes('friendGroup'), `Ana sigue con ${a}`);
+    assert(anaPostsBefore > 0 && (await activePosts('ana')) === 0, `Ana tiene ${await activePosts('ana')} activos`);
+    assert((await activePosts('bruno')) > 0, 'a Bruno (con Gratis) se le apagó el anuncio');
+    return `Ana: ${anaPostsBefore} → 0 activos; Bruno sigue | avisos Ana: ${await eventsSince('ana', since)}`;
+  });
+  await check('Cobro recuperado: vuelve el plan y se reactivan los anuncios apagados', async () => {
+    const since = stamp();
+    await must('ana', `mutation { mpMockFriendGroupEvent(groupId: "${group._id}", event: "charge_recovered") }`);
+    group = (await myGroup('ana')).group;
+    assert(group.status === 'active', group.status);
+    assert((await activeSubs('ana')).includes('friendGroup'), 'Ana sin plan');
+    assert((await activePosts('ana')) === anaPostsBefore, `Ana tiene ${await activePosts('ana')} activos`);
+    return `Ana vuelve a ${anaPostsBefore} activos | avisos Ana: ${await eventsSince('ana', since)}`;
+  });
+} finally {
+  if (freeSub) await d0.collection('users').updateOne({ _id: new ObjectId(id.ana) }, { $addToSet: { subscriptions: freeSub._id } });
+}
 await check('Ana se baja: se cancela el débito y el grupo para todos', async () => {
   const since = stamp();
   await must('ana', `mutation { leaveFriendGroup(groupId: "${group._id}") }`);

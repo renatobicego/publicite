@@ -25,6 +25,7 @@ export interface PostServiceInterface {
     isComment: boolean,
   ): Promise<void>;
   desactivatePostByUserId(userId: string): Promise<void>;
+  reactivatePostsWithinLimits(userId: string, postIds: string[]): Promise<number>;
   deleteAccount(id: string): Promise<void>;
   findPostsByAuthorId(id: string): Promise<void>;
   findPostById(id: string): Promise<any>;

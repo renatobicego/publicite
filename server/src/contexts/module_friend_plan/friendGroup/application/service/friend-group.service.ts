@@ -14,6 +14,7 @@ import { EmitterService } from 'src/contexts/module_shared/event-emmiter/emmiter
 import {
   downgrade_plan_contact,
   downgrade_plan_post,
+  reactivate_plan_post,
   friend_group_notification,
 } from 'src/contexts/module_shared/event-emmiter/events';
 import {
@@ -37,6 +38,7 @@ import {
 import { FriendGroupRepositoryInterface } from '../../domain/repository/friend-group.repository.interface';
 import {
   FriendGroupMemberStatus,
+  FriendGroupPausedPosts,
   FriendGroupRecord,
   FriendGroupStatus,
   FriendGroupUserRef,
@@ -582,21 +584,43 @@ export class FriendGroupService {
     );
     if (!updated) return;
 
+    // Se guarda qué anuncios apagó el downgrade para devolverlos si el cobro se recupera.
+    const pausedPosts: FriendGroupPausedPosts[] = [];
     for (const memberId of acceptedIds(updated)) {
       if (await this.subscriptionService.hasPaidPlan(memberId).catch(() => true)) continue;
-      await this.downgrade(memberId);
+      const posts = await this.downgrade(memberId);
+      if (posts.length > 0) pausedPosts.push({ user: memberId, posts });
     }
+    if (pausedPosts.length > 0) await this.repository.update(groupId, { pausedPosts });
     await this.notifyAll(PlanNotificationEvent.friendChargeFailed, updated);
   }
 
-  /** Un reintento salió bien: el webhook ya reactivó la suscripción. */
+  /*
+  Un reintento salió bien: el webhook ya reactivó la suscripción. Vuelven a
+  activarse los anuncios que apagó el rechazo (los que el miembro no tocó y
+  hasta el límite de su plan).
+  */
   async handleChargeRecovered(groupId: string): Promise<void> {
+    const group = await this.repository.findById(groupId);
+    if (!group) return;
+    // El cambio de estado es condicional: si llegan dos avisos, sólo uno reactiva.
     const updated = await this.repository.updateIfStatus(
       groupId,
       [FriendGroupStatus.paymentFailed],
-      { status: FriendGroupStatus.active, paymentFailedAt: null },
+      { status: FriendGroupStatus.active, paymentFailedAt: null, pausedPosts: [] },
     );
-    if (updated) await this.notifyAll(PlanNotificationEvent.friendChargeRecovered, updated);
+    if (!updated) return;
+    for (const entry of group.pausedPosts ?? []) {
+      try {
+        await this.emitter.emitAsync(reactivate_plan_post, {
+          userId: String(entry.user),
+          postIds: (entry.posts ?? []).map(String),
+        });
+      } catch (error: any) {
+        this.logger.error(`No se pudieron reactivar los anuncios de ${entry.user}: ${error?.message}`);
+      }
+    }
+    await this.notifyAll(PlanNotificationEvent.friendChargeRecovered, updated);
   }
 
   /** Borrado de cuenta de un miembro: si el grupo está pagado, se cancela para todos. */
@@ -817,15 +841,21 @@ export class FriendGroupService {
     });
   }
 
-  /** Igual que el webhook con un plan individual: contactos y después anuncios. */
-  private async downgrade(userId: string): Promise<void> {
+  /*
+  Igual que el webhook con un plan individual: contactos y después anuncios.
+  Devuelve los anuncios que quedaron apagados (activos antes, inactivos después).
+  */
+  private async downgrade(userId: string): Promise<string[]> {
     try {
+      const activeBefore = await this.repository.findActivePostIds(userId);
       const contacts = await this.emitter.emitAsync(downgrade_plan_contact, userId);
       if (contacts && contacts[0] === true) {
         await this.emitter.emitAsync(downgrade_plan_post, userId);
       }
+      return this.repository.findInactivePostIds(activeBefore);
     } catch (error: any) {
       this.logger.error(`No se pudo bajar el plan de ${userId} (grupo con cobro rechazado): ${error?.message}`);
+      return [];
     }
   }
 

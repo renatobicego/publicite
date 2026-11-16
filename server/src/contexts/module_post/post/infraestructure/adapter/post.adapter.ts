@@ -21,6 +21,7 @@ import {
 } from '../../domain/entity/enum/post-visibility.enum';
 import {
   downgrade_plan_post,
+  reactivate_plan_post,
   post_deleted,
 } from 'src/contexts/module_shared/event-emmiter/events';
 import { EmitterService } from 'src/contexts/module_shared/event-emmiter/emmiter';
@@ -57,6 +58,12 @@ export class PostAdapter implements PostAdapterInterface {
     } catch (error: any) {
       throw error;
     }
+  }
+
+  /** Hacete Amigo: se recuperó el cobro del grupo. Devuelve cuántos reactivó. */
+  @OnEvent(reactivate_plan_post)
+  async reactivatePausedPosts(payload: { userId: string; postIds: string[] }): Promise<number> {
+    return this.postService.reactivatePostsWithinLimits(payload.userId, payload.postIds);
   }
 
   async activateOrDeactivatePost(
