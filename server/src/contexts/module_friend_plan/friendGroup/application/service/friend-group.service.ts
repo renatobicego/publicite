@@ -655,7 +655,18 @@ export class FriendGroupService {
     const min = getFriendPlanMinMembers();
     if (accepted.length < min) {
       const missing = min - accepted.length;
-      return `Para pagar tienen que ser al menos ${min}: invitá a ${missing} ${missing === 1 ? 'persona más' : 'personas más'}.`;
+      const waiting = group.members.filter(
+        (member) => member.status === FriendGroupMemberStatus.invited,
+      ).length;
+      const people = (count: number) => `${count} ${count === 1 ? 'persona más' : 'personas más'}`;
+      // Con invitaciones pendientes, lo que falta es que acepten (no invitar más).
+      if (waiting >= missing) {
+        return `Para pagar tienen que ser al menos ${min} en el grupo: falta que tus invitados acepten la invitación.`;
+      }
+      if (waiting > 0) {
+        return `Para pagar tienen que ser al menos ${min} en el grupo: falta que tus invitados acepten e invitar a ${people(missing - waiting)}.`;
+      }
+      return `Para pagar tienen que ser al menos ${min}: invitá a ${people(missing)}.`;
     }
     const pending = accepted.filter((id) => !isActivated(users.get(id)));
     if (pending.length > 0) {

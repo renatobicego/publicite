@@ -17,7 +17,16 @@ import {
 } from "@nextui-org/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useState } from "react";
-import { FaArrowLeft, FaArrowRight, FaUserGroup, FaWhatsapp } from "react-icons/fa6";
+import {
+  FaArrowLeft,
+  FaArrowRight,
+  FaCircleCheck,
+  FaClock,
+  FaCreditCard,
+  FaTriangleExclamation,
+  FaUserGroup,
+  FaWhatsapp,
+} from "react-icons/fa6";
 
 import UserPicker from "@/components/inputs/UserPicker";
 import {
@@ -733,13 +742,9 @@ function PaySection({
   return (
     <section className="flex flex-col gap-3">
       <h3 className="font-semibold">Pago</h3>
+      <PaymentExplainer group={group} />
       {!group.canPay ? (
-        <div className="flex flex-col gap-2 items-start">
-          <p className="text-sm">{group.payBlockedReason ?? "Todavía no se puede pagar el grupo."}</p>
-          <Button size="sm" radius="full" variant="flat" onPress={() => go(2)}>
-            Ver miembros
-          </Button>
-        </div>
+        <PayChecklist group={group} go={go} />
       ) : checkout ? (
         <>
           <p className="text-sm">
@@ -758,8 +763,8 @@ function PaySection({
         </>
       ) : (
         <div className="flex flex-col gap-2 items-start">
-          <p className="text-sm">
-            Ya pueden pagar. Uno del grupo paga por todos con débito automático.
+          <p className="text-sm font-medium text-success-700">
+            ¡Ya pueden pagar! Están todos y todos publicaron algo.
           </p>
           <Button color="primary" radius="full" isLoading={busy} onPress={start}>
             Pagar yo por el grupo
@@ -767,6 +772,81 @@ function PaySection({
         </div>
       )}
     </section>
+  );
+}
+
+/*
+Cómo se cobra Hacete Amigo: un solo miembro paga el total con su tarjeta y
+MercadoPago se lo debita todos los meses. Los demás no pagan en Soon.
+*/
+function PaymentExplainer({ group }: { group: FriendGroup }) {
+  const pricing = group.pricing;
+  return (
+    <div className="flex items-start gap-2 rounded-xl bg-default-50 px-3 py-2 text-xs sm:text-sm text-default-600">
+      <FaCreditCard className="text-primary mt-0.5 shrink-0" />
+      <p>
+        <strong>Uno paga por todos:</strong> cualquiera del grupo paga el total con su
+        tarjeta y MercadoPago se lo debita todos los meses
+        {pricing
+          ? pricing.memberCount > 1
+            ? ` (hoy ${money(pricing.totalAmount)}: ${money(pricing.pricePerMember)} por cada uno)`
+            : ` (hoy ${money(pricing.totalAmount)})`
+          : ""}
+        .
+        Los demás no pagan en Soon.
+      </p>
+    </div>
+  );
+}
+
+/* Por qué todavía no se puede pagar: qué falta y en qué está cada miembro. */
+function PayChecklist({ group, go }: { group: FriendGroup; go: (step: number) => void }) {
+  const waiting = group.members.some((member) => member.status === "invited");
+  return (
+    <div className="flex flex-col gap-3">
+      <p className="text-sm font-medium text-warning-700">
+        {group.payBlockedReason ?? "Todavía no se puede pagar el grupo."}
+      </p>
+      <ul className="flex flex-col gap-1.5 max-h-40 overflow-y-auto pr-1">
+        {group.members.map((member) => {
+          const state =
+            member.status === "invited"
+              ? { icon: <FaClock />, color: "text-default-400", text: "Todavía no aceptó la invitación" }
+              : member.isActivated
+                ? { icon: <FaCircleCheck />, color: "text-success", text: "Aceptó y ya publicó" }
+                : {
+                    icon: <FaTriangleExclamation />,
+                    color: "text-warning",
+                    text: "Aceptó, pero falta que publique un anuncio o una producción",
+                  };
+          return (
+            <li key={member.userId} className="flex items-start gap-2 text-sm">
+              <span className={`${state.color} mt-0.5 shrink-0`}>{state.icon}</span>
+              <span>
+                <span className="font-medium">{member.name ?? member.username}</span>
+                <span className="text-default-500"> · {state.text}</span>
+              </span>
+            </li>
+          );
+        })}
+      </ul>
+      {waiting && (
+        <p className="text-xs text-light-text">
+          La invitación les llega por notificación. Si no tienen cuenta o no la vieron,
+          mandales el link.
+        </p>
+      )}
+      <div className="flex flex-wrap gap-2">
+        <Button size="sm" radius="full" variant="flat" onPress={() => go(2)}>
+          Ver miembros
+        </Button>
+        {waiting && (
+          <Button size="sm" radius="full" variant="flat" color="primary" onPress={() => go(3)}>
+            Mandar el link
+          </Button>
+        )}
+      </div>
+    </div>
   );
 }
 

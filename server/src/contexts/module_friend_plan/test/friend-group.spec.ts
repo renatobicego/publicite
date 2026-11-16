@@ -285,7 +285,14 @@ describe('Fase 5 - Hacete Amigo', () => {
   describe('pagar', () => {
     it('no se paga con menos del mínimo ni si alguien no publicó nada', async () => {
       const created = await service.create(id(0), PLAN_MP.premium);
-      await expect(service.getCheckout(id(0), created._id)).rejects.toThrow('al menos 2');
+      await expect(service.getCheckout(id(0), created._id)).rejects.toThrow('invitá a 1 persona más');
+
+      // Con invitaciones pendientes, lo que falta es que acepten.
+      await service.invite(id(0), created._id, id(1));
+      expect((await service.getMine(id(0))).group?.payBlockedReason).toBe(
+        'Para pagar tienen que ser al menos 2 en el grupo: falta que tus invitados acepten la invitación.',
+      );
+      await service.removeMember(id(0), created._id, id(1));
 
       const group = await groupModel.findById(created._id).lean<any>();
       await service.joinByInviteCode(id(3), group.inviteCode);
