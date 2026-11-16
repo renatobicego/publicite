@@ -16,7 +16,7 @@ import {
 } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { FaUserGroup } from "react-icons/fa6";
+import FriendCubesHero from "@/components/friendPlan/FriendCubesHero";
 
 import { createFriendGroup } from "@/services/friendGroupServices";
 import {
@@ -62,10 +62,18 @@ export default function FriendPlanLanding({
 
   return (
     <div className="flex flex-col gap-6 w-full">
-      <Card shadow="sm" className="bg-primary/5">
-        <CardBody className="flex flex-row gap-4 items-center">
-          <FaUserGroup className="text-primary size-10 shrink-0" />
-          <p className="text-base md:text-lg font-medium">{FRIEND_PLAN_WELCOME}</p>
+      <Card shadow="sm">
+        <CardBody className="flex flex-col gap-4 p-3 sm:p-4">
+          {plan && (
+            <FriendCubesHero
+              planAmount={plan.planAmount}
+              tiers={plan.tiers}
+              maxMembers={options.maxMembers}
+            />
+          )}
+          <p className="text-base md:text-lg font-medium text-center px-2">
+            {FRIEND_PLAN_WELCOME}
+          </p>
         </CardBody>
       </Card>
 
