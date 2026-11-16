@@ -66,6 +66,13 @@ const messages: Record<PlanNotificationEvent, (d: PlanNotificationData) => strin
     `Se terminó tu grupo de Hacete Amigo${d.reason ? `: ${d.reason}` : "."}`,
 };
 
+/** Paso del panel del grupo al que lleva cada aviso (2 = miembros, 4 = pago). */
+const FRIEND_PLAN_STEP: Partial<Record<PlanNotificationEvent, number>> = {
+  notification_plan_friend_accepted: 2,
+  notification_plan_friend_rejected: 2,
+  notification_plan_friend_ready_to_pay: 4,
+};
+
 const PlanNotification = ({ notification }: { notification: PlanNotificationType }) => {
   const { setIsOpen } = useNotificationsIsOpen();
   const data = notification.frontData?.plan;
@@ -85,7 +92,13 @@ const PlanNotification = ({ notification }: { notification: PlanNotificationType
           <Link
             size="sm"
             onClick={() => setIsOpen(false)}
-            href={isGift ? MY_PLAN_GIFTS : FRIEND_PLAN}
+            href={
+              isGift
+                ? MY_PLAN_GIFTS
+                : FRIEND_PLAN_STEP[notification.event as PlanNotificationEvent]
+                  ? `${FRIEND_PLAN}?paso=${FRIEND_PLAN_STEP[notification.event as PlanNotificationEvent]}`
+                  : FRIEND_PLAN
+            }
           >
             {isGift ? "Ver mis regalos" : "Ir a mi grupo"}
           </Link>

@@ -14,7 +14,6 @@ import {
   TableRow,
   Tabs,
 } from "@nextui-org/react";
-import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import {
@@ -28,6 +27,7 @@ import {
 } from "react-icons/fa6";
 
 import FriendCubesHero from "@/components/friendPlan/FriendCubesHero";
+import { useWizard, WizardSlide, WizardSteps } from "@/components/wizard/Wizard";
 import { createFriendGroup } from "@/services/friendGroupServices";
 import {
   FRIEND_PLAN_WELCOME,
@@ -37,9 +37,7 @@ import {
 import { FRIEND_PLAN } from "@/utils/data/urls";
 import { toastifyError } from "@/utils/functions/toastify";
 
-type Step = 1 | 2;
-
-const STEPS: { step: Step; label: string }[] = [
+const STEPS = [
   { step: 1, label: "Cómo funciona" },
   { step: 2, label: "Cuánto pagan" },
 ];
@@ -60,13 +58,12 @@ export default function FriendPlanLanding({
   invitationsCount: number;
 }) {
   const router = useRouter();
-  const [step, setStep] = useState<Step>(1);
+  const { step, direction, go } = useWizard(1);
   const [planId, setPlanId] = useState(options.plans[0]?.mpPreapprovalPlanId ?? "");
   const [busy, setBusy] = useState(false);
   // En celular las condiciones van plegadas para que el paso entre sin scroll.
   const [showConditions, setShowConditions] = useState(false);
   const plan = options.plans.find((option) => option.mpPreapprovalPlanId === planId);
-  const forward = step === 2;
 
   const create = async () => {
     if (!plan) return;
@@ -102,16 +99,9 @@ export default function FriendPlanLanding({
 
   return (
     <div className="flex flex-col gap-3 w-full">
-      <StepIndicator step={step} onSelect={setStep} />
+      <WizardSteps steps={STEPS} current={step} onSelect={go} />
 
-      <AnimatePresence mode="wait" initial={false}>
-        <motion.div
-          key={step}
-          initial={{ opacity: 0, x: forward ? 40 : -40 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: forward ? -40 : 40 }}
-          transition={{ duration: 0.22, ease: "easeOut" }}
-        >
+      <WizardSlide step={step} direction={direction}>
           {step === 1 ? (
             <Card shadow="sm">
               <CardBody className="flex flex-col gap-3 p-3 sm:p-4">
@@ -123,13 +113,14 @@ export default function FriendPlanLanding({
                 <p className="text-base md:text-lg font-medium text-center px-2">
                   {FRIEND_PLAN_WELCOME}
                 </p>
-                <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
+                <div className="flex flex-col-reverse items-start gap-2 pt-1 sm:flex-row sm:items-center sm:justify-between">
                   {invitations}
                   <Button
                     color="primary"
                     radius="full"
+                    className="w-full sm:w-auto"
                     endContent={<FaArrowRight />}
-                    onPress={() => setStep(2)}
+                    onPress={() => go(2)}
                   >
                     Siguiente
                   </Button>
@@ -216,21 +207,33 @@ export default function FriendPlanLanding({
                   </Condition>
                 </ul>
 
-                <div className="flex items-center justify-between gap-2 pt-1">
+                <div className="flex flex-col-reverse items-start gap-2 pt-1 sm:flex-row sm:items-center sm:justify-between">
                   <Button
                     variant="light"
                     radius="full"
                     startContent={<FaArrowLeft />}
-                    onPress={() => setStep(1)}
+                    onPress={() => go(1)}
                   >
                     Atrás
                   </Button>
                   {hasGroup ? (
-                    <Button as={Link} href={FRIEND_PLAN} color="primary" radius="full">
+                    <Button
+                      as={Link}
+                      href={FRIEND_PLAN}
+                      color="primary"
+                      radius="full"
+                      className="w-full sm:w-auto"
+                    >
                       Ir a mi grupo
                     </Button>
                   ) : (
-                    <Button color="primary" radius="full" isLoading={busy} onPress={create}>
+                    <Button
+                      color="primary"
+                      radius="full"
+                      className="w-full sm:w-auto"
+                      isLoading={busy}
+                      onPress={create}
+                    >
                       <span className="sm:hidden">Armar mi grupo</span>
                       <span className="hidden sm:inline">Armar mi grupo con {plan.planReason}</span>
                     </Button>
@@ -239,40 +242,8 @@ export default function FriendPlanLanding({
               </CardBody>
             </Card>
           )}
-        </motion.div>
-      </AnimatePresence>
+      </WizardSlide>
     </div>
-  );
-}
-
-function StepIndicator({ step, onSelect }: { step: Step; onSelect: (step: Step) => void }) {
-  return (
-    <ol className="flex items-center gap-2 text-xs sm:text-sm" aria-label="Pasos">
-      {STEPS.map((item, index) => {
-        const active = item.step === step;
-        const done = item.step < step;
-        return (
-          <li key={item.step} className="flex items-center gap-2">
-            {index > 0 && <span className="w-6 h-px bg-default-300" aria-hidden />}
-            <button
-              type="button"
-              onClick={() => onSelect(item.step)}
-              aria-current={active ? "step" : undefined}
-              className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 transition-colors ${
-                active
-                  ? "bg-primary text-white"
-                  : done
-                    ? "bg-primary/10 text-primary"
-                    : "bg-default-100 text-default-500"
-              }`}
-            >
-              <span className="font-bold">{item.step}</span>
-              <span>{item.label}</span>
-            </button>
-          </li>
-        );
-      })}
-    </ol>
   );
 }
 

@@ -16,7 +16,7 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import { useCallback, useEffect, useState } from "react";
-import { FaUserGroup } from "react-icons/fa6";
+import { FaArrowLeft, FaArrowRight, FaUserGroup, FaWhatsapp } from "react-icons/fa6";
 
 import UserPicker from "@/components/inputs/UserPicker";
 import {
@@ -47,12 +47,14 @@ import {
 import { User } from "@/types/userTypes";
 import FriendGroupPayLoader from "./FriendGroupPayLoader";
 import { FriendGroupMockActions } from "@/components/payments/MpMockActions";
+import CubeFriend from "@/components/friendPlan/CubeFriend";
+import { useWizard, WizardSlide, WizardSteps } from "@/components/wizard/Wizard";
 
 /*
 Panel de Hacete Amigo: el grupo del usuario (miembros, invitar, link, resumen
 del precio, pagar, salir) o, si no tiene grupo, sus invitaciones.
 */
-export default function FriendGroupPanel() {
+export default function FriendGroupPanel({ initialStep = 1 }: { initialStep?: number }) {
   const [data, setData] = useState<MyFriendGroup | null>(null);
   const [error, setError] = useState<string | null>(null);
   const { refreshActiveSubscriptions } = useActiveSubscriptions();
@@ -110,7 +112,7 @@ export default function FriendGroupPanel() {
     );
   }
 
-  return <GroupView group={data.group} onChange={reloadWithLimits} />;
+  return <GroupView group={data.group} onChange={reloadWithLimits} initialStep={initialStep} />;
 }
 
 function InvitationCard({
@@ -175,65 +177,209 @@ function InvitationCard({
 function GroupView({
   group,
   onChange,
+  initialStep = 1,
 }: {
   group: FriendGroup;
   onChange: () => Promise<void>;
+  /** Paso con el que abre el asistente (?paso=N, p. ej. desde una notificación). */
+  initialStep?: number;
 }) {
-  const forming = group.status === "forming";
-  const paid = ["paying", "active", "paymentFailed"].includes(group.status);
+  if (group.status === "forming") {
+    return <FormingWizard group={group} onChange={onChange} initialStep={initialStep} />;
+  }
 
+  // Pagado: el grupo queda fijo, no hay nada para invitar ni pagar.
   return (
-    <div className="flex flex-col gap-6 w-full">
-      <div className="flex flex-wrap items-center gap-3">
-        <FaUserGroup className="text-primary size-7" />
-        <h2 className="text-2xl font-semibold">{group.planReason}</h2>
-        <Chip color={FRIEND_GROUP_STATUS_COLOR[group.status]} variant="flat">
-          {FRIEND_GROUP_STATUS_LABEL[group.status]}
-        </Chip>
-      </div>
-
-      {paid && <PaidSummary group={group} />}
-      {paid && (
-        <FriendGroupMockActions groupId={group._id} status={group.status} onDone={onChange} />
-      )}
-      {forming && <PriceSummary group={group} />}
-
-      <MembersList group={group} onChange={onChange} />
-
-      {forming && <InviteSection group={group} onChange={onChange} />}
-      {forming && <PaySection group={group} onChange={onChange} />}
-
-      <LeaveButton group={group} onChange={onChange} />
+    <div className="flex flex-col gap-4 w-full">
+      <GroupHeader group={group} />
+      <PaidSummary group={group} />
+      <FriendGroupMockActions groupId={group._id} status={group.status} onDone={onChange} />
+      <Card shadow="sm">
+        <CardBody className="flex flex-col gap-3 p-4 sm:p-5">
+          <MembersList group={group} onChange={onChange} />
+          <LeaveButton group={group} onChange={onChange} />
+        </CardBody>
+      </Card>
     </div>
   );
 }
 
-function PriceSummary({ group }: { group: FriendGroup }) {
-  const pricing = group.pricing;
-  if (!pricing) return null;
+const FORMING_STEPS = [
+  { step: 1, label: "Resumen" },
+  { step: 2, label: "Miembros e invitar" },
+  { step: 3, label: "Link" },
+  { step: 4, label: "Pago" },
+];
+
+/*
+Mientras el grupo se arma, el panel es un asistente de 4 pasos (sin scroll):
+resumen, miembros e invitar, link de invitación y pago.
+*/
+function FormingWizard({
+  group,
+  onChange,
+  initialStep,
+}: {
+  group: FriendGroup;
+  onChange: () => Promise<void>;
+  initialStep: number;
+}) {
+  const { step, direction, go } = useWizard(
+    Math.min(Math.max(1, Math.trunc(initialStep) || 1), FORMING_STEPS.length)
+  );
+  const last = FORMING_STEPS.length;
+
   return (
-    <Card shadow="sm" className="bg-default-50">
-      <CardBody className="flex flex-col gap-1">
-        <span className="text-sm font-medium">Resumen</span>
-        <p className="text-sm">
-          {pricing.memberCount} {pricing.memberCount === 1 ? "miembro" : "miembros"} ×{" "}
-          {money(pricing.pricePerMember)}
-          {pricing.discountPercent > 0 && ` (${pricing.discountPercent} % de descuento)`}
-        </p>
-        <p className="text-lg">
-          Débito mensual del grupo: <strong>{money(pricing.totalAmount)}</strong>
-        </p>
-        <p className="text-xs text-light-text">
-          Solo, el plan cuesta {money(pricing.planAmount)} por mes.
-        </p>
+    <div className="flex flex-col gap-3 w-full">
+      <GroupHeader group={group} />
+      <WizardSteps steps={FORMING_STEPS} current={step} onSelect={go} />
+      <WizardSlide step={step} direction={direction}>
+        <Card shadow="sm">
+          <CardBody className="flex flex-col gap-4 p-4 sm:p-5">
+            {step === 1 && <SummaryStep group={group} go={go} />}
+            {step === 2 && (
+              <>
+                <MembersList group={group} onChange={onChange} />
+                <InviteSearch group={group} onChange={onChange} />
+              </>
+            )}
+            {step === 3 && <InviteLink group={group} onChange={onChange} />}
+            {step === 4 && <PaySection group={group} onChange={onChange} go={go} />}
+
+            {/* En celular el botón principal va arriba y a todo el ancho: así no lo
+                tapan los botones flotantes de Cubito y Crear. */}
+            <div className="flex flex-col-reverse items-start gap-2 pt-1 sm:flex-row sm:items-center sm:justify-between">
+              {step === 1 ? (
+                <LeaveButton group={group} onChange={onChange} />
+              ) : (
+                <Button
+                  variant="light"
+                  radius="full"
+                  startContent={<FaArrowLeft />}
+                  onPress={() => go(step - 1)}
+                >
+                  Atrás
+                </Button>
+              )}
+              {step < last && (
+                <Button
+                  color="primary"
+                  radius="full"
+                  className="w-full sm:w-auto"
+                  endContent={<FaArrowRight />}
+                  onPress={() => go(step + 1)}
+                >
+                  Siguiente
+                </Button>
+              )}
+            </div>
+          </CardBody>
+        </Card>
+      </WizardSlide>
+    </div>
+  );
+}
+
+function GroupHeader({ group }: { group: FriendGroup }) {
+  return (
+    <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+      <FaUserGroup className="text-primary size-6" />
+      <h2 className="text-xl sm:text-2xl font-semibold">{group.planReason}</h2>
+      <Chip color={FRIEND_GROUP_STATUS_COLOR[group.status]} variant="flat" size="sm">
+        {FRIEND_GROUP_STATUS_LABEL[group.status]}
+      </Chip>
+    </div>
+  );
+}
+
+/*
+Paso 1: los miembros como Cubitos (los invitados, transparentes, y un lugar
+libre para el próximo), el precio de hoy y qué falta para poder pagar.
+*/
+function SummaryStep({ group, go }: { group: FriendGroup; go: (step: number) => void }) {
+  const pricing = group.pricing;
+  const accepted = group.members.filter((member) => member.status === "accepted");
+  const invited = group.members.filter((member) => member.status === "invited");
+  const missingMembers = accepted.length < 2;
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-wrap items-end justify-center gap-1 sm:gap-2 rounded-2xl bg-gradient-to-b from-primary/10 to-transparent px-3 pt-4 pb-2">
+        {accepted.map((member, index) => (
+          <div key={member.userId} className="flex flex-col items-center w-14 sm:w-16">
+            <div className="w-12 h-12 sm:w-14 sm:h-14">
+              <CubeFriend palette={index} blinkDelay={index * 0.7} />
+            </div>
+            <span className="text-[11px] text-default-600 truncate max-w-full">
+              {member.name?.split(" ")[0] ?? member.username}
+            </span>
+          </div>
+        ))}
+        {invited.map((member, index) => (
+          <div key={member.userId} className="flex flex-col items-center w-14 sm:w-16 opacity-40">
+            <div className="w-12 h-12 sm:w-14 sm:h-14">
+              <CubeFriend palette={accepted.length + index} />
+            </div>
+            <span className="text-[11px] text-default-600 truncate max-w-full">invitado</span>
+          </div>
+        ))}
         {group.nextTier && (
-          <p className="text-sm text-primary">
-            Si se suma uno más, cada uno paga {money(group.nextTier.pricePerMember)} (
-            {group.nextTier.discountPercent} % de descuento).
-          </p>
+          <button
+            type="button"
+            onClick={() => go(2)}
+            className="flex flex-col items-center w-14 sm:w-16"
+            aria-label="Invitar a alguien más"
+          >
+            <span className="w-11 h-11 sm:w-12 sm:h-12 mb-1 rounded-xl border-2 border-dashed border-primary/40 text-primary flex items-center justify-center text-xl">
+              +
+            </span>
+            <span className="text-[11px] text-primary">sumar</span>
+          </button>
         )}
-      </CardBody>
-    </Card>
+      </div>
+
+      {pricing && (
+        <div className="flex flex-col gap-1">
+          <p className="text-sm">
+            {pricing.memberCount} {pricing.memberCount === 1 ? "miembro" : "miembros"} ×{" "}
+            {money(pricing.pricePerMember)}
+            {pricing.discountPercent > 0 && ` (${pricing.discountPercent} % de descuento)`}
+          </p>
+          <p className="text-lg">
+            Débito mensual del grupo: <strong>{money(pricing.totalAmount)}</strong>
+          </p>
+          <p className="text-xs text-light-text">
+            Solo, el plan cuesta {money(pricing.planAmount)} por mes.
+          </p>
+          {group.nextTier && (
+            <p className="text-sm text-primary">
+              Si se suma uno más, cada uno paga {money(group.nextTier.pricePerMember)} (
+              {group.nextTier.discountPercent} % de descuento).
+            </p>
+          )}
+        </div>
+      )}
+
+      {group.canPay ? (
+        <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-success-50 px-3 py-2">
+          <span className="text-sm text-success-700 font-medium">¡Ya pueden pagar!</span>
+          <Button size="sm" radius="full" color="success" variant="flat" onPress={() => go(4)}>
+            Ir a pagar
+          </Button>
+        </div>
+      ) : (
+        group.payBlockedReason && (
+          <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-warning-50 px-3 py-2">
+            <span className="text-sm text-warning-700">{group.payBlockedReason}</span>
+            {missingMembers && (
+              <Button size="sm" radius="full" color="warning" variant="flat" onPress={() => go(2)}>
+                Invitar amigos
+              </Button>
+            )}
+          </div>
+        )
+      )}
+    </div>
   );
 }
 
@@ -316,6 +462,7 @@ function MembersList({
   return (
     <section className="flex flex-col gap-2">
       <h3 className="font-semibold">Miembros</h3>
+      <div className="flex flex-col gap-2 max-h-56 overflow-y-auto pr-1">
       {group.members.map((member) => (
         <div
           key={member.userId}
@@ -360,8 +507,9 @@ function MembersList({
           )}
         </div>
       ))}
+      </div>
       {forming && (
-        <p className="text-xs text-light-text">
+        <p className="hidden sm:block text-xs text-light-text">
           Para pagar, cada miembro tiene que haber publicado al menos un anuncio o
           una producción.
         </p>
@@ -370,7 +518,13 @@ function MembersList({
   );
 }
 
-function InviteSection({
+function inviteLinkOf(group: FriendGroup): string | null {
+  if (!group.inviteCode || typeof window === "undefined") return null;
+  return `${window.location.origin}${FRIEND_PLAN_JOIN}/${group.inviteCode}`;
+}
+
+/* Paso 2 (abajo de los miembros): invitar con el buscador de usuarios. */
+function InviteSearch({
   group,
   onChange,
 }: {
@@ -379,10 +533,6 @@ function InviteSection({
 }) {
   const [busy, setBusy] = useState(false);
   const [pickerKey, setPickerKey] = useState(0);
-  const absoluteLink =
-    group.inviteCode && typeof window !== "undefined"
-      ? `${window.location.origin}${FRIEND_PLAN_JOIN}/${group.inviteCode}`
-      : null;
 
   const invite = async (user: User | null) => {
     if (!user) return;
@@ -398,10 +548,37 @@ function InviteSection({
     await onChange();
   };
 
+  return (
+    <section className="flex flex-col gap-2">
+      <h3 className="font-semibold">Invitar</h3>
+      <UserPicker
+        key={pickerKey}
+        label="Buscar en Soon"
+        excludeIds={group.members.map((member) => member.userId)}
+        onSelect={invite}
+        isDisabled={busy}
+        description="Le llega una invitación por notificación. ¿Sin cuenta? Usá el link (paso 3)."
+      />
+    </section>
+  );
+}
+
+/* Paso 3: el link de invitación, para mandarlo por donde quieran. */
+function InviteLink({
+  group,
+  onChange,
+}: {
+  group: FriendGroup;
+  onChange: () => Promise<void>;
+}) {
+  const [busy, setBusy] = useState(false);
+  const link = inviteLinkOf(group);
+  const message = "Sumate a mi grupo de Hacete Amigo en Soon y paguemos menos.";
+
   const copy = async () => {
-    if (!absoluteLink) return;
+    if (!link) return;
     try {
-      await navigator.clipboard.writeText(absoluteLink);
+      await navigator.clipboard.writeText(link);
       toastifySuccess("Link copiado");
     } catch {
       toastifyError("No se pudo copiar. Copialo a mano.");
@@ -409,14 +586,10 @@ function InviteSection({
   };
 
   const share = async () => {
-    if (!absoluteLink) return;
+    if (!link) return;
     if (typeof navigator !== "undefined" && "share" in navigator) {
       try {
-        await navigator.share({
-          title: "Hacete Amigo en Soon",
-          text: "Sumate a mi grupo de Hacete Amigo y paguemos menos.",
-          url: absoluteLink,
-        });
+        await navigator.share({ title: "Hacete Amigo en Soon", text: message, url: link });
         return;
       } catch {
         // El usuario cerró el menú de compartir.
@@ -438,36 +611,41 @@ function InviteSection({
     await onChange();
   };
 
+  if (!link) return <p className="text-sm">El link de invitación no está disponible.</p>;
+
   return (
     <section className="flex flex-col gap-3">
-      <h3 className="font-semibold">Invitar</h3>
-      <UserPicker
-        key={pickerKey}
-        label="Buscar en Soon"
-        excludeIds={group.members.map((member) => member.userId)}
-        onSelect={invite}
-        isDisabled={busy}
-        description="Le llega una invitación por notificación."
-      />
-      {absoluteLink && (
-        <div className="flex flex-col gap-1">
-          <span className="text-sm font-medium">O mandales el link (sirve aunque no tengan cuenta)</span>
-          <div className="flex flex-wrap gap-2 items-center">
-            <code className="text-xs bg-default-100 rounded-lg px-3 py-2 break-all">
-              {absoluteLink}
-            </code>
-            <Button size="sm" radius="full" onPress={copy}>
-              Copiar
-            </Button>
-            <Button size="sm" radius="full" variant="bordered" onPress={share}>
-              Compartir
-            </Button>
-            {group.isCreator && (
-              <Button size="sm" radius="full" variant="light" isDisabled={busy} onPress={regenerate}>
-                Cambiar el link
-              </Button>
-            )}
-          </div>
+      <h3 className="font-semibold">Link de invitación</h3>
+      <p className="text-sm">
+        Mandalo por WhatsApp o por donde quieras. Sirve aunque no tengan cuenta: se
+        registran y entran directo al grupo.
+      </p>
+      <code className="text-xs sm:text-sm bg-default-100 rounded-lg px-3 py-2 break-all">{link}</code>
+      <div className="flex flex-wrap gap-2">
+        <Button size="sm" radius="full" color="primary" onPress={copy}>
+          Copiar link
+        </Button>
+        <Button
+          size="sm"
+          radius="full"
+          variant="bordered"
+          as={Link}
+          isExternal
+          href={`https://wa.me/?text=${encodeURIComponent(`${message} ${link}`)}`}
+          startContent={<FaWhatsapp />}
+        >
+          WhatsApp
+        </Button>
+        <Button size="sm" radius="full" variant="bordered" onPress={share}>
+          Compartir
+        </Button>
+      </div>
+      {group.isCreator && (
+        <div className="flex flex-wrap items-center gap-2 text-xs text-light-text">
+          <span>¿Se compartió de más? Cambialo y el anterior deja de servir.</span>
+          <Button size="sm" variant="light" isDisabled={busy} onPress={regenerate}>
+            Cambiar el link
+          </Button>
         </div>
       )}
     </section>
@@ -477,9 +655,11 @@ function InviteSection({
 function PaySection({
   group,
   onChange,
+  go,
 }: {
   group: FriendGroup;
   onChange: () => Promise<void>;
+  go: (step: number) => void;
 }) {
   const [checkout, setCheckout] = useState<FriendGroupPricing | null>(null);
   const [busy, setBusy] = useState(false);
@@ -498,9 +678,14 @@ function PaySection({
 
   return (
     <section className="flex flex-col gap-3">
-      <h3 className="font-semibold">Pagar</h3>
+      <h3 className="font-semibold">Pago</h3>
       {!group.canPay ? (
-        <p className="text-sm">{group.payBlockedReason ?? "Todavía no se puede pagar el grupo."}</p>
+        <div className="flex flex-col gap-2 items-start">
+          <p className="text-sm">{group.payBlockedReason ?? "Todavía no se puede pagar el grupo."}</p>
+          <Button size="sm" radius="full" variant="flat" onPress={() => go(2)}>
+            Ver miembros
+          </Button>
+        </div>
       ) : checkout ? (
         <>
           <p className="text-sm">

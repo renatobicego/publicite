@@ -7,9 +7,12 @@ export const metadata = {
   description: "Tu grupo de Hacete Amigo: miembros, invitaciones y pago.",
 };
 
-export default function FriendGroupPage() {
+export default async function FriendGroupPage(props: {
+  searchParams: Promise<{ paso?: string }>;
+}) {
+  const { paso } = await props.searchParams;
   return (
-    <main className="flex min-h-screen flex-col items-start main-style gap-8">
+    <main className="flex min-h-screen flex-col items-start main-style gap-3">
       <BreadcrumbsAdmin
         items={[
           { label: "Inicio", href: "/" },
@@ -18,11 +21,12 @@ export default function FriendGroupPage() {
           { label: "Mi grupo", href: FRIEND_PLAN },
         ]}
       />
-      <section className="w-full max-w-3xl mx-auto flex flex-col gap-6">
-        <h1 className="text-3xl md:text-4xl font-semibold">
+      {/* Mientras se arma, el grupo es un asistente de 4 pasos que entra sin scroll. */}
+      <section className="w-full max-w-3xl mx-auto flex flex-col gap-3">
+        <h1 className="text-2xl md:text-3xl font-semibold">
           Mi grupo de Hacete <span className="text-service">Amigo</span>
         </h1>
-        <FriendGroupPanel />
+        <FriendGroupPanel initialStep={Number(paso) || 1} />
       </section>
     </main>
   );
