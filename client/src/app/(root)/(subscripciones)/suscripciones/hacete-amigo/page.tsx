@@ -20,7 +20,7 @@ export default async function FriendPlanPage() {
   if ("error" in options) return <ErrorCard message={options.error} />;
 
   return (
-    <main className="flex min-h-screen flex-col items-start main-style gap-8">
+    <main className="flex min-h-screen flex-col items-start main-style gap-3">
       <BreadcrumbsAdmin
         items={[
           { label: "Inicio", href: "/" },
@@ -28,8 +28,9 @@ export default async function FriendPlanPage() {
           { label: "Hacete Amigo", href: FRIEND_PLAN_INFO },
         ]}
       />
-      <section className="w-full max-w-3xl mx-auto flex flex-col gap-6">
-        <h1 className="text-3xl md:text-4xl font-semibold">Hacete Amigo</h1>
+      {/* Asistente de dos pasos: cada paso entra en la pantalla, sin scroll. */}
+      <section className="w-full max-w-3xl mx-auto flex flex-col gap-3">
+        <h1 className="text-2xl md:text-3xl font-semibold">Hacete Amigo</h1>
         <FriendPlanLanding
           options={options}
           hasGroup={!("error" in mine) && !!mine.group}
