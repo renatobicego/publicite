@@ -102,12 +102,29 @@ async function findClerkUser(email: string): Promise<any | null> {
   return users?.[0] ?? null;
 }
 
+/*
+El plan Gratis es una sola suscripción compartida (mpPreapprovalId "FREE SUBSCRIPTION",
+único en la base) a la que apunta User.subscriptions de cada cuenta. Sin ella los
+límites de anuncios dan 0: no se puede publicar y, si un plan pago se cae, el
+downgrade desactiva todos los anuncios.
+*/
+async function findFreeSubscription(db: any): Promise<any | null> {
+  const freePlans = await db.collection('subscriptionplans').find({ isFree: true }).project({ _id: 1 }).toArray();
+  return db.collection('subscriptions').findOne({
+    subscriptionPlan: { $in: freePlans.map((plan: any) => plan._id) },
+    status: 'authorized',
+    mpPreapprovalId: 'FREE SUBSCRIPTION',
+  });
+}
+
 async function seed(db: any) {
   const { ObjectId } = mongoose.mongo;
   const users = db.collection('users');
   const template =
     (await db.collection('posts').findOne({ _id: new ObjectId(TEMPLATE_POST_ID) })) ??
     (await db.collection('posts').findOne({ kind: 'PostGood' }));
+  const freeSubscription = await findFreeSubscription(db);
+  if (!freeSubscription) console.warn('No encontré la suscripción gratuita: las cuentas quedan sin plan Gratis.');
 
   for (const account of TEST_ACCOUNTS) {
     const email = emailOf(account);
@@ -126,8 +143,7 @@ async function seed(db: any) {
       });
     }
 
-    // 2) Base: usuario + contacto, como el onboarding. El plan Gratis no va en
-    //    User.subscriptions: es una sola suscripción compartida (external_reference FREE).
+    // 2) Base: usuario + contacto, como el onboarding (el plan Gratis se asocia abajo).
     let user = await users.findOne({ $or: [{ clerkId: clerkUser.id }, { email }] });
     if (!user) {
       const now = new Date().toISOString().slice(0, 19);
@@ -189,6 +205,13 @@ async function seed(db: any) {
       user = await users.findOne({ _id: userId });
     }
     const mongoId = String(user._id);
+
+    // Plan Gratis (compartido) y anuncios de prueba activos: una prueba de
+    // cobro rechazado los puede haber desactivado.
+    if (freeSubscription) {
+      await users.updateOne({ _id: user._id }, { $addToSet: { subscriptions: freeSubscription._id } });
+    }
+    await db.collection('posts').updateMany({ author: user._id, isActive: false }, { $set: { isActive: true } });
 
     // 3) Metadata de Clerk: lo mismo que deja el onboarding
     await clerk('PATCH', `/users/${clerkUser.id}/metadata`, {
@@ -261,6 +284,7 @@ async function seed(db: any) {
 
 async function remove(db: any) {
   const users = db.collection('users');
+  const freeSubscription = await findFreeSubscription(db);
   for (const account of TEST_ACCOUNTS) {
     const email = emailOf(account);
     const user = await users.findOne({ email });
@@ -269,11 +293,17 @@ async function remove(db: any) {
       await db.collection('posts').deleteMany({ author: id });
       await db.collection('friendgroups').deleteMany({ 'members.user': id });
       await db.collection('plangifts').deleteMany({ $or: [{ giver: id }, { recipient: id }] });
-      // Las compartidas de Hacete Amigo se borran con su grupo; las demás, por dueño.
+      // Las compartidas (Hacete Amigo y el plan Gratis) no se tocan; las demás, por dueño.
+      const own = (user.subscriptions ?? []).filter(
+        (subId: any) => !freeSubscription || String(subId) !== String(freeSubscription._id),
+      );
       await db.collection('subscriptions').deleteMany({
-        $or: [{ _id: { $in: user.subscriptions ?? [] }, kind: { $ne: 'friendGroup' } }, { payerUser: id }],
+        $or: [{ _id: { $in: own }, kind: { $ne: 'friendGroup' } }, { payerUser: id }],
       });
-      await db.collection('notifications').deleteMany({ 'backData.userIdTo': String(id) });
+      // Las notificaciones viven en "Notifications" (con mayúscula).
+      for (const collection of ['Notifications', 'notifications']) {
+        await db.collection(collection).deleteMany({ 'backData.userIdTo': String(id) });
+      }
       if (user.contact) await db.collection('contacts').deleteOne({ _id: user.contact });
       await users.deleteOne({ _id: id });
     }
