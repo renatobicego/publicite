@@ -5,6 +5,7 @@ import {
   ADMIN_PRODUCTION_REPORTS,
   ADMIN_PRODUCTION_TICKETS,
   CREATE,
+  FRIEND_PLAN,
   NOVELTIES,
   POSTS,
   PROFILE,
@@ -60,6 +61,11 @@ const MobileMenu = ({
       isPrivate: true,
     },
     {
+      title: "Hacete Amigo",
+      url: FRIEND_PLAN,
+      isPrivate: true,
+    },
+    {
       title: "Admin: Facturación",
       url: ADMIN_INVOICES,
       isPrivate: true,
@@ -100,7 +106,7 @@ const MobileMenu = ({
     visible: {
       transform: "translateY(0)",
       // La altura crece ~30px por cada ítem de admin.
-      height: !isSignedIn ? "190px" : isAdmin ? "470px" : "290px",
+      height: !isSignedIn ? "190px" : isAdmin ? "500px" : "320px",
       opacity: 1,
     },
     hidden: { transform: "translateY(-50px)", height: "0px", opacity: 0 },

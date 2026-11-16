@@ -2,12 +2,12 @@
 import { useMemo } from "react";
 import { UserButton } from "@clerk/nextjs";
 import { BiSolidUserDetail } from "react-icons/bi";
-import { FaEyeSlash, FaSliders, FaUser } from "react-icons/fa6";
+import { FaEyeSlash, FaGift, FaSliders, FaUser, FaUserGroup } from "react-icons/fa6";
 import Profile from "./Profile/Profile";
 import Subscriptions from "./Subscriptions/Subscriptions";
 import { MdPayments } from "react-icons/md";
 import Preferences from "./Preferences/Preferences";
-import { PROFILE } from "@/utils/data/urls";
+import { FRIEND_PLAN, MY_PLAN_GIFTS, PROFILE } from "@/utils/data/urls";
 import Business from "./Business/Business";
 import { IoBusiness } from "react-icons/io5";
 import { useUserData } from "../providers/userDataProvider";
@@ -60,6 +60,12 @@ const UserButtonModal = () => {
           labelIcon={<FaUser />}
           href={`${PROFILE}/${userIdLogged}`}
         />
+        <UserButton.Link
+          label="Hacete Amigo"
+          labelIcon={<FaUserGroup />}
+          href={FRIEND_PLAN}
+        />
+        <UserButton.Link label="Mis regalos" labelIcon={<FaGift />} href={MY_PLAN_GIFTS} />
         <UserButton.Action label="manageAccount" />
       </UserButton.MenuItems>
       {pageToReturn}

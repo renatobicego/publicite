@@ -307,6 +307,7 @@ Existen equivalentes para otras entidades: `boardActions.ts`, `groupActions.ts`,
 ### Navegación
 - `components/Header/Header.tsx`: links Explorar (`/anuncios`), Cubito (`/cubito`), Tablero, Search, botón **Crear** (`components/Header/NavMenuItems.tsx` → `/crear`), avatar.
 - **Indicador de app:** `components/AppSwitcher/AppIndicatorTab.tsx` es una pestaña que cuelga del header, a la derecha, con el color de la app actual. La app sale de la ruta con `resolveActiveApp` (`components/AppSwitcher/apps.ts`, compartido con la botonera `AppSwitcher`); rutas sin app (configuración, Cubito…) no la muestran.
+- **Planes:** la flechita ▾ del header (`DropdownItems`, también en el menú del celular) lleva a Planes, Packs, Hacete Amigo y Regalar un plan; el menú del avatar (`UserButtonPage`) tiene "Hacete Amigo" (`/hacete-amigo`) y "Mis regalos", y el menú del celular (`MobileMenu`) también "Hacete Amigo".
 - Búsqueda en `components/Header/Search/`; listados de perfiles/grupos/revistas ya existen bajo `(root)/(explorar)`.
 - **Feature en curso (Mis Producciones):** se agregará una **botonera de 3 apps** — Anuncios (default) / Producciones / Social (perfiles+revistas+grupos) — en el home y en el cartel (`/perfiles/:id`). Producciones es una **sección/ruta nueva** (`/producciones`) que clona el patrón de `/anuncios`. No es una botonera de 5 apps ni un "SuperButton contextual" (eso era del doc comercial; el alcance real es la botonera de 3).
 
