@@ -1,5 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
-import { Link } from "@nextui-org/react";
+import Link from "next/link";
+import { FaGift } from "react-icons/fa6";
 
 import BreadcrumbsAdmin from "@/components/BreadcrumbsAdmin";
 import { getSubscriptionsPlans } from "@/services/subscriptionServices";
@@ -21,14 +22,20 @@ export default async function GiftPlanPage() {
   const { sessionClaims } = await auth();
   const plans: GiftablePlan[] = (await getSubscriptionsPlans().catch(() => []))
     .filter(isGiftable)
+    .sort((a, b) => a.price - b.price)
     .map((plan) => ({
       mpPreapprovalPlanId: plan.mpPreapprovalPlanId,
       reason: plan.reason,
       description: plan.description,
+      price: plan.price,
+      postsLibresCount: plan.postsLibresCount ?? 0,
+      postsAgendaCount: plan.postsAgendaCount ?? 0,
+      aiTokensPerMonth: plan.aiTokensPerMonth,
+      storageBytesLimit: plan.storageBytesLimit,
     }));
 
   return (
-    <main className="flex min-h-screen flex-col items-start main-style gap-8">
+    <main className="flex min-h-screen flex-col items-start main-style gap-3">
       <BreadcrumbsAdmin
         items={[
           { label: "Inicio", href: "/" },
@@ -36,15 +43,23 @@ export default async function GiftPlanPage() {
           { label: "Regalar un plan", href: GIFT_PLAN },
         ]}
       />
-      <section className="w-full max-w-2xl mx-auto flex flex-col gap-6">
-        <div className="flex flex-col gap-2">
-          <h1 className="text-3xl md:text-4xl font-semibold">Regalá un plan</h1>
-          <p className="text-sm md:text-base">
-            Regalale a alguien meses de un plan de Soon. Pagás una sola vez y la
-            persona lo activa cuando quiera.{" "}
-            <Link href={MY_PLAN_GIFTS} size="sm">
-              Ver mis regalos
+      <section className="w-full max-w-5xl mx-auto flex flex-col gap-5">
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center justify-between gap-3">
+            <h1 className="text-2xl md:text-3xl font-semibold">
+              Regalá un <span className="text-primary">plan</span>
+            </h1>
+            <Link
+              href={MY_PLAN_GIFTS}
+              className="flex shrink-0 items-center gap-2 rounded-full border border-default-300 bg-white px-3 py-1.5 text-xs font-medium text-text-color transition hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:px-4 sm:py-2 sm:text-sm"
+            >
+              <FaGift className="text-primary" />
+              Mis regalos
             </Link>
+          </div>
+          <p className="text-sm md:text-base text-light-text max-w-xl">
+            Regalale meses de un plan de Soon a quien quieras. Pagás una sola vez y la
+            persona lo activa cuando quiera.
           </p>
         </div>
         <GiftPlanFormLoader

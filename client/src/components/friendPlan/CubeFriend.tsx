@@ -39,6 +39,7 @@ export default function CubeFriend({
   blinkDelay = 0,
   float = true,
   floatDelay = 0,
+  accessory,
 }: {
   palette?: number;
   happy?: boolean;
@@ -47,6 +48,12 @@ export default function CubeFriend({
   float?: boolean;
   /** Desfase del flotado, para que varios cubitos no suban y bajen a la vez. */
   floatDelay?: number;
+  /**
+   * Algo que lleva puesto (p. ej. la cinta y el moño del regalo), dibujado en las
+   * coordenadas del cubo (viewBox 60×60) sobre las caras y debajo de la cara.
+   * Flota con él.
+   */
+  accessory?: React.ReactNode;
 }) {
   const reduceMotion = useReducedMotion();
   const floating = float && !reduceMotion;
@@ -152,6 +159,8 @@ export default function CubeFriend({
         strokeLinejoin="round"
       />
       <line x1="30" y1="25.6" x2="30" y2="44.2" stroke="#fff" strokeOpacity="0.25" strokeWidth="0.7" />
+
+      {accessory}
 
       {/* Cara en la cara frontal izquierda, inclinada como el cubo */}
       <g transform="matrix(1 0.5 0 1 0 0)">
