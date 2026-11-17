@@ -35,12 +35,16 @@ npm run lint    # eslint . (flat config en eslint.config.mjs; `next lint` ya no 
 
 ### server/
 ```bash
+npm run dev         # local con NODE_ENV=qa (.env.qa), nodemon + ts-node SIN chequeo de tipos (long-running)
 npm run start:dev   # nest start --watch (long-running, correr manualmente)
 npm run build       # nest build  ← usar para verificar cambios
 npm run test        # jest (usa mongodb-memory-server)
 npm run test:e2e    # jest e2e (NODE_ENV=qa)
 # OJO: "lint" en server está vacío; no hay linter configurado en el backend.
 ```
+
+> **`npm run dev` no chequea tipos** (`TS_NODE_TRANSPILE_ONLY=true`): arranca en ~9 s en vez de 16-27 s, también en cada reinicio de nodemon. Los tipos los chequea `npm run build` (o `npx tsc --noEmit`).
+> Sin chequeo de tipos, un import de un **tipo** que se llama como un global de JS se queda en el código y lo pisa. Ejemplo: `import { Date } from 'mongoose'` cambia `new Date()` y `{ type: Date }` por la clase de mongoose y el server no arranca. No importar `Date` (ni otros nombres de globales) desde mongoose: usar el `Date` de JS.
 
 > Verificación de cambios: en `client/` corré `npm run build`; en `server/` corré `npm run build` y, si tocaste lógica, `npm run test`. No arranques dev servers en background como método de verificación.
 
@@ -319,7 +323,7 @@ Existen equivalentes para otras entidades: `boardActions.ts`, `groupActions.ts`,
 
 ### Auth cliente
 - `client/src/proxy.ts` (`clerkMiddleware`; en Next 16 el archivo `middleware.ts` pasó a llamarse `proxy.ts`): define rutas públicas/privadas/admin y fuerza onboarding si falta `sessionClaims.metadata.onboardingComplete`.
-- Servidor: `await auth()` / `currentUser()` de `@clerk/nextjs/server` (Clerk 6: `auth()` y `clerkClient()` son async). Token para GraphQL vía `getAuthToken()` en header `Authorization`.
+- Servidor: `await auth()` / `currentUser()` de `@clerk/nextjs/server` (Clerk 6: `auth()` y `clerkClient()` son async). Token para GraphQL vía `getAuthToken()` en header `Authorization`. Es un token del template `testing` de Clerk (dura 7 días): pedirlo es una llamada a la API de Clerk (250-400 ms desde Argentina), así que `services/auth-token.ts` lo reusa 5 minutos por sesión y por `metadata` de la sesión (si cambia, p. ej. al terminar el onboarding, pide uno nuevo).
 
 ---
 

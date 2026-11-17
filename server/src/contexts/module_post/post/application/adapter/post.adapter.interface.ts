@@ -8,7 +8,6 @@ import { UserLocation } from '../../domain/entity/models_graphql/HTTP-REQUEST/po
 import { PostLimitResponseGraphql } from '../../domain/entity/models_graphql/HTTP-RESPONSE/post.limit.response.graphql';
 import { PostBehaviourType } from '../../domain/entity/enum/postBehaviourType.enum';
 import { Visibility_Of_Find } from '../../domain/entity/enum/post-visibility.enum';
-import { Date } from 'mongoose';
 
 export interface PostAdapterInterface {
   activateOrDeactivatePost(

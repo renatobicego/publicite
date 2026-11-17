@@ -6,7 +6,6 @@ import { PostLimitResponseGraphql } from '../entity/models_graphql/HTTP-RESPONSE
 import { PostBehaviourType } from '../entity/enum/postBehaviourType.enum';
 import { Visibility_Of_Find } from '../entity/enum/post-visibility.enum';
 import { VisibilityEnum } from '../entity/models_graphql/HTTP-REQUEST/post.update.request';
-import { Date } from 'mongoose';
 
 export interface PostServiceInterface {
 

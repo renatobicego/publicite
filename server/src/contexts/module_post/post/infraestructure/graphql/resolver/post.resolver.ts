@@ -2,7 +2,6 @@ import { Inject, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Resolver, Query, Context } from '@nestjs/graphql';
 import { ClerkAuthGuard } from 'src/contexts/module_shared/auth/clerk-auth/clerk.auth.guard';
 import { ClerkAuthGuardOptional } from 'src/contexts/module_shared/auth/clerk-auth/clerk.auth.guard.optional';
-import { Date } from 'mongoose';
 
 import { PostAdapterInterface } from 'src/contexts/module_post/post/application/adapter/post.adapter.interface';
 import {

@@ -1,7 +1,6 @@
 import { BadRequestException, Inject } from '@nestjs/common';
 import { ClientSession, Connection } from 'mongoose';
 import { InjectConnection } from '@nestjs/mongoose';
-import { Date } from 'mongoose';
 
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { UserServiceInterface } from 'src/contexts/module_user/user/domain/service/user.service.interface';

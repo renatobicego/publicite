@@ -1,6 +1,5 @@
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { ClientSession, Connection, Model, Types } from 'mongoose';
-import { Date } from 'mongoose';
 
 import { Post } from '../../domain/entity/post.entity';
 import {
