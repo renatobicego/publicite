@@ -25,6 +25,7 @@ import {
 } from "@/types/planGiftTypes";
 import { GIFT_PLAN } from "@/utils/data/urls";
 import { GiftMockRefund } from "@/components/payments/MpMockActions";
+import GiftActivatedCelebration from "@/components/planGift/GiftActivatedCelebration";
 import { formatPaymentDate } from "@/utils/functions/packs";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
 import {
@@ -125,6 +126,8 @@ function ReceivedGiftCard({
   onChange: () => Promise<void>;
 }) {
   const [busy, setBusy] = useState(false);
+  // Fecha de vencimiento del regalo recién activado: mientras no es null, se festeja.
+  const [celebrateUntil, setCelebrateUntil] = useState<string | null>(null);
   const { refreshActiveSubscriptions } = useActiveSubscriptions();
   const { userIdLogged } = useUserData();
 
@@ -136,17 +139,20 @@ function ReceivedGiftCard({
       toastifyError(response.error);
       return;
     }
-    const until = formatPaymentDate(response.expiresAt);
-    toastifySuccess(
-      until
-        ? `Activaste ${gift.planReason}. Vence el ${until}.`
-        : `Activaste ${gift.planReason}.`
-    );
+    setCelebrateUntil(formatPaymentDate(response.expiresAt) ?? "");
     if (userIdLogged) refreshActiveSubscriptions(userIdLogged);
     await onChange();
   };
 
   return (
+    <>
+    <GiftActivatedCelebration
+      open={celebrateUntil !== null}
+      planName={gift.planReason}
+      until={celebrateUntil || null}
+      giverName={gift.giverName}
+      onClose={() => setCelebrateUntil(null)}
+    />
     <Card shadow="sm">
       <CardBody className="flex flex-col gap-2">
         <GiftHeader
@@ -179,6 +185,7 @@ function ReceivedGiftCard({
         )}
       </CardBody>
     </Card>
+    </>
   );
 }
 

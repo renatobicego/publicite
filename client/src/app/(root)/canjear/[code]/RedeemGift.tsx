@@ -4,6 +4,7 @@ import { Button, Card, CardBody, Link } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { FaGift } from "react-icons/fa6";
 
+import GiftActivatedCelebration from "@/components/planGift/GiftActivatedCelebration";
 import { activatePlanGift, claimPlanGift } from "@/services/planGiftServices";
 import { monthsLabel, PlanGiftPublic } from "@/types/planGiftTypes";
 import { MY_PLAN_GIFTS, REDEEM_GIFT } from "@/utils/data/urls";
@@ -31,6 +32,7 @@ export default function RedeemGift({
   const [claimError, setClaimError] = useState<string | null>(null);
   const [activatedUntil, setActivatedUntil] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [celebrating, setCelebrating] = useState(false);
 
   const title = `${monthsLabel(gift.months)} de ${gift.planReason}`;
 
@@ -58,6 +60,7 @@ export default function RedeemGift({
       return;
     }
     setActivatedUntil(formatPaymentDate(response.expiresAt) ?? "");
+    setCelebrating(true);
   };
 
   const authLinks = (
@@ -152,15 +155,25 @@ export default function RedeemGift({
   }
 
   return (
-    <Card shadow="md" className="w-full max-w-lg">
-      <CardBody className="flex flex-col gap-4 items-start p-6">
-        <FaGift className="text-primary size-12" />
-        <h1 className="text-2xl font-semibold">
-          {gift.giverName ? `${gift.giverName} te regaló` : "Te regalaron"}{" "}
-          {title}
-        </h1>
-        {body}
-      </CardBody>
-    </Card>
+    <>
+      <GiftActivatedCelebration
+        open={celebrating}
+        planName={gift.planReason}
+        until={activatedUntil || null}
+        giverName={gift.giverName}
+        actionHref="/"
+        onClose={() => setCelebrating(false)}
+      />
+      <Card shadow="md" className="w-full max-w-lg">
+        <CardBody className="flex flex-col gap-4 items-start p-6">
+          <FaGift className="text-primary size-12" />
+          <h1 className="text-2xl font-semibold">
+            {gift.giverName ? `${gift.giverName} te regaló` : "Te regalaron"}{" "}
+            {title}
+          </h1>
+          {body}
+        </CardBody>
+      </Card>
+    </>
   );
 }
