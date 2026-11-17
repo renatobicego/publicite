@@ -8,6 +8,7 @@ import React, {
   useState,
   useCallback,
   useContext,
+  useRef,
   ReactNode,
 } from "react";
 
@@ -48,6 +49,43 @@ export const isLocationAwarePostType = (type: PubliciteDataTypes) => {
   }
 };
 
+type BrowserLocation =
+  | { kind: "ok"; coordinates: Coordinates }
+  | { kind: "denied" }
+  | { kind: "prompt" }
+  | { kind: "error" };
+
+/** Lee la ubicación del navegador sin pedir permiso si todavía no lo dio (prompt). */
+async function readBrowserLocation(): Promise<BrowserLocation> {
+  const getPosition = (): Promise<GeolocationPosition> =>
+    new Promise((resolve, reject) =>
+      navigator.geolocation.getCurrentPosition(resolve, reject, {
+        timeout: 10000,
+        maximumAge: 0,
+        enableHighAccuracy: false, // set true only if needed, it's slower
+      })
+    );
+  const toCoordinates = (position: GeolocationPosition): BrowserLocation => ({
+    kind: "ok",
+    coordinates: {
+      latitude: position.coords.latitude,
+      longitude: position.coords.longitude,
+    },
+  });
+
+  try {
+    if (navigator.permissions?.query) {
+      const { state } = await navigator.permissions.query({ name: "geolocation" });
+      if (state === "denied") return { kind: "denied" };
+      if (state === "granted") return toCoordinates(await getPosition());
+      return { kind: "prompt" };
+    }
+    return toCoordinates(await getPosition());
+  } catch {
+    return { kind: "error" };
+  }
+}
+
 export const LocationProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
@@ -58,55 +96,34 @@ export const LocationProvider: React.FC<{ children: ReactNode }> = ({
   const [manualLocation, setManualLocation] = useState(false);
   const [needsUserGesture, setNeedsUserGesture] = useState(false);
 
+  // Si varias listas piden la ubicación a la vez (el inicio tiene varias), se
+  // comparte el mismo pedido: una sola lectura y un solo cambio de coordenadas,
+  // así cada lista carga una vez en lugar de una por cada lectura.
+  const pendingLocation = useRef<Promise<Coordinates | null> | null>(null);
+
   const requestLocationPermission = useCallback(
     async (postType?: PubliciteDataTypes) => {
       if (manualLocation) return null;
       if (postType && !isLocationAwarePostType(postType)) return null;
+      if (pendingLocation.current) return pendingLocation.current;
 
-      const getPosition = (): Promise<GeolocationPosition> =>
-        new Promise((resolve, reject) =>
-          navigator.geolocation.getCurrentPosition(resolve, reject, {
-            timeout: 10000,
-            maximumAge: 0,
-            enableHighAccuracy: false, // set true only if needed, it's slower
-          })
-        );
-
-      try {
-        if (navigator.permissions?.query) {
-          const { state } = await navigator.permissions.query({
-            name: "geolocation",
-          });
-
-          if (state === "denied") {
-            setManualLocation(true);
-            return null;
-          }
-
-          if (state === "granted") {
-            const position = await getPosition();
-            const coordinates = {
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude,
-            };
-            setCoordinates(coordinates);
-            return coordinates;
-          }
-
+      const request = readBrowserLocation().then((result) => {
+        if (result.kind === "denied" || result.kind === "error") {
+          setManualLocation(true);
+          return null;
+        }
+        if (result.kind === "prompt") {
           setNeedsUserGesture(true);
           return null;
         }
-
-        const position = await getPosition();
-        const coordinates = {
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-        };
-        setCoordinates(coordinates);
-        return coordinates;
-      } catch (error) {
-        setManualLocation(true);
-        return null;
+        setCoordinates(result.coordinates);
+        return result.coordinates;
+      });
+      pendingLocation.current = request;
+      try {
+        return await request;
+      } finally {
+        pendingLocation.current = null;
       }
     },
     [manualLocation]

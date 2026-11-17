@@ -88,6 +88,14 @@ export const fetchConfigData = createAsyncThunk(
       );
       return rejectWithValue(error);
     }
+  },
+  {
+    // Se pide una vez por sesión: si ya se está pidiendo o ya llegó, no se
+    // repite (cada pedido son dos llamadas al server: config y relaciones).
+    condition: (_, { getState }) => {
+      const { config } = getState() as { config: ConfigState };
+      return config.status === "idle" || config.status === "failed";
+    },
   }
 );
 const configSlice = createSlice({

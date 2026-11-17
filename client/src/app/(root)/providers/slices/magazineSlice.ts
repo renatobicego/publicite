@@ -11,11 +11,14 @@ interface PostInMagazine {
 export interface MagazineState {
   magazines?: Magazine[];
   postsInMagazine: PostInMagazine[];
+  /** Para pedir las revistas una sola vez aunque se despache varias veces. */
+  status: "idle" | "loading" | "succeeded" | "failed";
 }
 
 const initialState: MagazineState = {
   magazines: undefined,
   postsInMagazine: [],
+  status: "idle",
 };
 
 // Helper function to implement retry logic
@@ -64,6 +67,13 @@ export const fetchMagazines = createAsyncThunk(
       );
       return rejectWithValue(error);
     }
+  },
+  {
+    // Se piden una vez por sesión: si ya se están pidiendo o ya llegaron, no se repite.
+    condition: (_, { getState }) => {
+      const { magazine } = getState() as { magazine: MagazineState };
+      return magazine.status === "idle" || magazine.status === "failed";
+    },
   }
 );
 
@@ -152,7 +162,14 @@ const magazineSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
+    builder.addCase(fetchMagazines.pending, (state) => {
+      state.status = "loading";
+    });
+    builder.addCase(fetchMagazines.rejected, (state) => {
+      state.status = "failed";
+    });
     builder.addCase(fetchMagazines.fulfilled, (state, action) => {
+      state.status = "succeeded";
       state.magazines = action.payload;
       state.postsInMagazine = action.payload.flatMap((magazine) =>
         magazine.sections.flatMap((section) =>

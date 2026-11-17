@@ -10,7 +10,7 @@ import {
   removePostFromMagazine,
   removeSectionFromMagazine,
 } from "./slices/magazineSlice";
-import { ReactNode } from "react";
+import { ReactNode, useMemo } from "react";
 import { ActiveUserRelation, UserType } from "@/types/userTypes";
 import DataInitializer from "./DataInitializer";
 import { setActiveRelations, setSearchPreferences } from "./slices/configSlice";
@@ -31,15 +31,19 @@ export const UserDataProvider = ({
   clerkId?: string;
   userType?: UserType;
 }) => {
-  // Create a Redux store with preloaded state
-  const { store } = createStore({
-    user: {
-      usernameLogged: username,
-      userIdLogged: userId,
-      clerkIdLogged: clerkId,
-      userTypeLogged: userType,
-    },
-  });
+  // Un store por usuario. Antes se creaba uno nuevo en cada render (por ejemplo,
+  // cuando el layout se vuelve a pedir después de una server action) y se perdían
+  // revistas, configuración y suscripciones, que se volvían a pedir.
+  const store = useMemo(() => {
+    return createStore({
+      user: {
+        usernameLogged: username,
+        userIdLogged: userId,
+        clerkIdLogged: clerkId,
+        userTypeLogged: userType,
+      },
+    }).store;
+  }, [username, userId, clerkId, userType]);
 
   return (
     <Provider store={store}>

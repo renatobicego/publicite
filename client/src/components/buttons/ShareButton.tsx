@@ -42,7 +42,8 @@ const ShareButton = ({
 }: ShareButtonProps) => {
   const { onOpen, isOpen, onOpenChange } = useDisclosure();
   const { userIdLogged, usernameLogged } = useUserData();
-  const { users } = useSearchUsers(undefined, userIdLogged);
+  // Los amigos se piden recién al abrir el modal (hay un botón por tarjeta).
+  const { users } = useSearchUsers(undefined, userIdLogged, isOpen && !!userIdLogged);
   const { socket } = useSocket();
   const [isLoading, setIsLoading] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);

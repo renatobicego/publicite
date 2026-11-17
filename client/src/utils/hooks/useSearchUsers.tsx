@@ -4,9 +4,15 @@ import { User } from "@/types/userTypes";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { toastifyError } from "../functions/toastify";
 
+/**
+ * @param enabled en false no pide nada. ShareButton lo usa para pedir los amigos
+ *   recién al abrir el modal: hay un botón por tarjeta de anuncio y cada uno pedía
+ *   la lista entera al aparecer (y sin sesión, la lista de usuarios).
+ */
 const useSearchUsers = (
   isGroupMembersInviteId?: string,
-  id?: string | null
+  id?: string | null,
+  enabled = true
 ) => {
   const [users, setUsers] = useState<User[]>([]);
   const lastChange = useRef<NodeJS.Timeout | null>(null);
@@ -37,6 +43,7 @@ const useSearchUsers = (
   }, [id]);
 
   useEffect(() => {
+    if (!enabled) return;
     if (isGroupMembersInviteId) {
       getGroupMembers(isGroupMembersInviteId);
       return;
@@ -46,7 +53,7 @@ const useSearchUsers = (
       return;
     }
     getUsersByQuery("");
-  }, [getFriends, isGroupMembersInviteId, id]);
+  }, [getFriends, isGroupMembersInviteId, id, enabled]);
 
   return { users, setUsers, getUsersByQuery };
 };
