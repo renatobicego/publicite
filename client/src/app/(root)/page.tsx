@@ -52,14 +52,14 @@ export default async function Home() {
       <Link
         href={SUBSCRIPTIONS}
         aria-label="Sumate a un plan: conocé los planes"
-        className="block w-full overflow-hidden rounded-xl transition-opacity hover:opacity-90"
+        className="block w-full max-w-5xl self-center overflow-hidden rounded-xl transition-opacity hover:opacity-90"
       >
         <NextImage
           src="/sumate-a-un-plan.jpeg"
           alt="Sumate a un plan. Conocé los planes de Soonpublicite"
           width={1600}
           height={900}
-          sizes="(max-width: 1280px) 100vw, 1280px"
+          sizes="(max-width: 1024px) 100vw, 1024px"
           className="h-auto w-full"
         />
       </Link>
