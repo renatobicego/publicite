@@ -2,6 +2,7 @@ import { Divider, Spinner, user } from "@nextui-org/react";
 import PersonalData from "./PersonalData/PersonalData";
 import Description from "./Description/Description";
 import SocialMedia from "./SocialMedia/SocialMedia";
+import CredentialEditor from "./Credential/CredentialEditor";
 import { useEffect, useState, memo } from "react";
 import { EditPersonProfileProps } from "@/types/userTypes";
 import { getProfileData } from "./actions";
@@ -37,6 +38,15 @@ const Profile = ({ username }: { username: string }) => {
 
       <Divider />
       <MemoizedPersonalData data={userData} />
+      <Divider />
+      <CredentialEditor
+        credential={{
+          credentialPhotoUrl: userData.credentialPhotoUrl,
+          credentialColor: userData.credentialColor,
+        }}
+        profesion={userData.contact?.profesion?.label}
+        location={userData.countryRegion}
+      />
       <Divider />
       <MemoizedDescription
         description={userData.description}

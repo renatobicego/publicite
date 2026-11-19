@@ -250,6 +250,14 @@ export class User_Full_Grapql_Model {
   @Field(() => String, { nullable: true })
   credentialId?: string;
 
+  /** Foto de la credencial (key de UploadThing). Si no hay, se usa la de perfil. */
+  @Field(() => String, { nullable: true })
+  credentialPhotoUrl?: string;
+
+  /** Color decorativo del borde de la credencial (hex `#rrggbb`). */
+  @Field(() => String, { nullable: true })
+  credentialColor?: string;
+
   @Field(() => Contact, { nullable: true })
   contact?: Contact;
 

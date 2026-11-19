@@ -84,7 +84,7 @@ export default async function ProfileLayout(props: {
         <BreadcrumbsAdmin items={breadcrumbsItems} />
         <div
           id="user-info-container"
-          className="items-start flex gap-4 justify-between w-full max-md:flex-wrap"
+          className="items-start flex gap-4 md:gap-6 justify-between w-full max-md:flex-wrap rounded-2xl border border-default-200 bg-white/95 backdrop-blur-sm shadow-md p-4 md:p-6"
         >
           <Suspense
             fallback={

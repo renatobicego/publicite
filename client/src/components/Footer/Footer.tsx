@@ -60,6 +60,17 @@ const Footer = ({ id }: { id?: string | null }) => {
       </section>
       {/* add copyright info */}
       <div className="w-full h-[1px] bg-white/10 my-6" />
+      <p className="w-full text-center text-sm text-white/80 mb-2">
+        ¿Querés trabajar en Soon? Postulate y enviá tu CV a{" "}
+        <Link
+          size="sm"
+          underline="always"
+          className="text-white"
+          href="mailto:publicite@soonpublicite.com?subject=Postulación%20-%20CV"
+        >
+          publicite@soonpublicite.com
+        </Link>
+      </p>
       <div className="w-full text-center text-sm text-white/50">
         © {new Date().getFullYear()} SoonPublicité. Todos los derechos
         reservados.

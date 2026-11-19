@@ -15,6 +15,7 @@ import { SectorModule } from 'src/contexts/module_user/businessSector/infrastruc
 import { UserAdapter } from '../adapters/user.adapter';
 import { UserResolver } from '../graphql/resolver/user.resolver';
 import { UserRelationModel } from '../schemas/user.relation.schema';
+import { IDENTITY_PROVIDERS } from 'src/contexts/module_user/identity/infraestructure/identity.providers';
 import { MagazineModelSharedModule } from 'src/contexts/module_shared/sharedSchemas/magazine.model.schema';
 
 @Module({
@@ -63,6 +64,7 @@ import { MagazineModelSharedModule } from 'src/contexts/module_shared/sharedSche
       useClass: SectorRepository,
     },
     UserService,
+    ...IDENTITY_PROVIDERS,
   ],
   exports: ['UserServiceInterface', 'UserRepositoryInterface'],
 })

@@ -4,6 +4,14 @@ import { postUserBusiness } from "@/services/businessServices";
 import { postUserPerson } from "@/services/userServices";
 import {  UserBusinessFormValues, UserPersonFormValues } from "@/types/userTypes";
 import { auth, clerkClient } from "@clerk/nextjs/server";
+import { isAxiosError } from "axios";
+
+const getServerMessage = (err: unknown): string | null => {
+  if (!isAxiosError(err)) return null;
+  const message = err.response?.data?.message;
+  if (Array.isArray(message)) return message.join(" ");
+  return typeof message === "string" && message ? message : null;
+};
 
 export const completeOnboardingPerson = async (formData: UserPersonFormValues) => {
   const { userId } = await auth();
@@ -26,6 +34,10 @@ export const completeOnboardingPerson = async (formData: UserPersonFormValues) =
     });
     return { message: res.publicMetadata };
   } catch (err) {
+    // Si el server rechazó el alta (p. ej. el DNI no se pudo verificar con
+    // RENAPER), se muestra su motivo.
+    const serverMessage = getServerMessage(err);
+    if (serverMessage) return { error: serverMessage };
     console.log(err)
     return { error: "Error al completar el registro. Por favor intenta de nuevo." };
   }

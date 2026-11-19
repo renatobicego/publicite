@@ -27,6 +27,14 @@ interface IUser extends Document {
   posts: Schema.Types.ObjectId[];
   productions: Schema.Types.ObjectId[];
   credentialId: string | undefined;
+  credentialPhotoUrl: string | undefined;
+  credentialColor: string | undefined;
+  identityVerification?: {
+    provider: string;
+    method: string;
+    requestId?: string;
+    verifiedAt: Date;
+  };
   userRelations: Schema.Types.ObjectId[];
   userType: UserType;
   name: string;
@@ -66,6 +74,22 @@ const UserSchema = new Schema<IUser>(
     // antes de MP no lo tienen y se completa de forma perezosa al leerlo.
     productions: [{ type: Schema.Types.ObjectId, ref: 'Production' }],
     credentialId: { type: String, unique: true, sparse: true },
+    // Credencial del cartel: foto propia (key de UploadThing, distinta de la
+    // foto de perfil de Clerk) y color decorativo del borde (hex). Opcionales.
+    credentialPhotoUrl: { type: String },
+    credentialColor: { type: String },
+    // Verificación del DNI con RENAPER al registrarse (sólo personas). Sin el
+    // campo = cuenta anterior a la verificación.
+    identityVerification: {
+      type: {
+        provider: { type: String },
+        method: { type: String },
+        requestId: { type: String },
+        verifiedAt: { type: Date },
+      },
+      default: undefined,
+      _id: false,
+    },
     userRelations: [{ type: Schema.Types.ObjectId, ref: 'UserRelation' }],
     userType: { type: String, enum: Object.values(UserType), required: true },
     name: { type: String, required: true },
@@ -83,6 +107,15 @@ const UserSchema = new Schema<IUser>(
 );
 
 //Indices
+// Un DNI verificado pertenece a una sola cuenta. Parcial: las cuentas sin
+// verificar (anteriores, empresas) pueden repetir DNI.
+UserSchema.index(
+  { dni: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { 'identityVerification.verifiedAt': { $exists: true } },
+  },
+);
 UserSchema.index({ name: 1 });
 UserSchema.index({ finder: 1 });
 // Parcial: sólo indexa a los admins, que son un puñado.

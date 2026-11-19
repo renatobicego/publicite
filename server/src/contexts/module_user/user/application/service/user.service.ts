@@ -1,3 +1,4 @@
+import { IdentityVerificationRecord } from 'src/contexts/module_user/identity/domain/identity.verification.types';
 import { BadRequestException, Injectable, Optional } from '@nestjs/common';
 import { EmitterService } from 'src/contexts/module_shared/event-emmiter/emmiter';
 import { user_created } from 'src/contexts/module_shared/event-emmiter/events';
@@ -17,6 +18,7 @@ import { UserPreferencesEntityDto } from '../../domain/entity/dto/user.preferenc
 import { UP_clerkUpdateRequestDto } from 'src/contexts/module_webhook/clerk/application/dto/UP-clerk.update.request';
 import { UserFindAllResponse } from '../adapter/dto/HTTP-RESPONSE/user.response.dto';
 import { UserType } from '../../domain/entity/enum/user.enums';
+import { CredentialInput, normalizeCredential } from '../functions/credential';
 import { UserRelation } from '../../domain/entity/userRelation.entity';
 import {
   calculateContactLimitFromUser,
@@ -109,7 +111,11 @@ export class UserService implements UserServiceInterface {
     }
   }
 
-  async createUser(userEntity: User, contactDto: any): Promise<string> {
+  async createUser(
+    userEntity: User,
+    contactDto: any,
+    identityVerification?: IdentityVerificationRecord | null,
+  ): Promise<string> {
     this.logger.log(
       'Creating ACCOUNT -> start process in the service: ' + UserService.name,
     );
@@ -128,7 +134,11 @@ export class UserService implements UserServiceInterface {
               'Creating PERSONAL ACCOUNT with username: ' +
                 userEntity.getUsername,
             );
-            user = await this.userRepository.save(userEntity, session);
+            user = await this.userRepository.save(
+              userEntity,
+              session,
+              identityVerification,
+            );
 
             return user;
 
@@ -883,6 +893,34 @@ export class UserService implements UserServiceInterface {
         activeRelations,
         userRequestId,
       );
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  /**
+   * Guarda la foto y el color de la credencial del cartel. Devuelve también la
+   * foto anterior para que el cliente la borre de UploadThing si cambió.
+   */
+  async updateCredential(
+    userRequestId: string,
+    input: CredentialInput,
+  ): Promise<{
+    credentialPhotoUrl: string | null;
+    credentialColor: string | null;
+    previousCredentialPhotoUrl: string | null;
+  }> {
+    try {
+      const credential = normalizeCredential(input);
+      const previous = await this.userRepository.updateCredential(
+        userRequestId,
+        credential,
+      );
+      if (!previous) throw new BadRequestException('Usuario no encontrado.');
+      return {
+        ...credential,
+        previousCredentialPhotoUrl: previous.credentialPhotoUrl ?? null,
+      };
     } catch (error: any) {
       throw error;
     }

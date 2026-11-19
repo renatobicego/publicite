@@ -2,6 +2,7 @@ import { Divider, Spinner } from "@nextui-org/react";
 import Description from "../Profile/Description/Description";
 import SocialMedia from "../Profile/SocialMedia/SocialMedia";
 import BusinessData from "./BusinessData";
+import CredentialEditor from "../Profile/Credential/CredentialEditor";
 import { useEffect, useState } from "react";
 import { EditBusinessProfileProps } from "@/types/userTypes";
 import { getProfileData } from "../Profile/actions";
@@ -25,6 +26,16 @@ const Business = ({ username }: { username: string }) => {
       <h2 className="profile-title">Datos de Cartel - Empresa</h2>
       <Divider />
       <BusinessData data={userData} />
+      <Divider />
+      <CredentialEditor
+        credential={{
+          credentialPhotoUrl: userData.credentialPhotoUrl,
+          credentialColor: userData.credentialColor,
+        }}
+        profesion={userData.contact?.profesion?.label}
+        location={userData.countryRegion}
+        displayName={userData.businessName}
+      />
       <Divider />
       <Description
         description={userData.description}
