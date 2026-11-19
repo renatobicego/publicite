@@ -1,3 +1,4 @@
+import { IdentityVerificationRecord } from 'src/contexts/module_user/identity/domain/identity.verification.types';
 import { ClientSession, Types } from 'mongoose';
 
 import { User, UserPreferences } from '../entity/user.entity';
@@ -17,7 +18,11 @@ export interface UserServiceInterface {
     contactDto: ContactRequest,
     options?: { session?: ClientSession },
   ): Promise<Types.ObjectId>;
-  createUser(req: User, contactDto: ContactRequest): Promise<string>;
+  createUser(
+    req: User,
+    contactDto: ContactRequest,
+    identityVerification?: IdentityVerificationRecord | null,
+  ): Promise<string>;
   getUsersOfAllApp(): Promise<any>;
   deleteAccount(id: string): Promise<any>;
   removeActiveRelationOfUser(userId: string, session?: any): Promise<any>;

@@ -81,7 +81,10 @@ const GlosaryModal = ({ customButton }: { customButton?: React.ReactNode }) => {
               planes y ampliaciones obtendrás un uso aún más extenso para
               publicar. <br />
               <strong>Registrarse:</strong> <br />
-              Regístrate como empresa o persona. <br />
+              Regístrate como empresa o persona. Si te registras como
+              persona, verificamos tu DNI con RENAPER junto con el sexo y la
+              fecha de nacimiento: si no coinciden, no se completa el
+              registro. Un mismo DNI sólo puede tener una cuenta. <br />
               <strong> Inicio de sesión:</strong> <br />
               Inicia sesión una vez registrado.
             </p>

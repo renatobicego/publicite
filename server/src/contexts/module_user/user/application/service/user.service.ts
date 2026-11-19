@@ -1,3 +1,4 @@
+import { IdentityVerificationRecord } from 'src/contexts/module_user/identity/domain/identity.verification.types';
 import { BadRequestException, Injectable, Optional } from '@nestjs/common';
 import { EmitterService } from 'src/contexts/module_shared/event-emmiter/emmiter';
 import { user_created } from 'src/contexts/module_shared/event-emmiter/events';
@@ -110,7 +111,11 @@ export class UserService implements UserServiceInterface {
     }
   }
 
-  async createUser(userEntity: User, contactDto: any): Promise<string> {
+  async createUser(
+    userEntity: User,
+    contactDto: any,
+    identityVerification?: IdentityVerificationRecord | null,
+  ): Promise<string> {
     this.logger.log(
       'Creating ACCOUNT -> start process in the service: ' + UserService.name,
     );
@@ -129,7 +134,11 @@ export class UserService implements UserServiceInterface {
               'Creating PERSONAL ACCOUNT with username: ' +
                 userEntity.getUsername,
             );
-            user = await this.userRepository.save(userEntity, session);
+            user = await this.userRepository.save(
+              userEntity,
+              session,
+              identityVerification,
+            );
 
             return user;
 

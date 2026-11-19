@@ -5,6 +5,7 @@ import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.servic
 import { UserServiceInterface } from '../../domain/service/user.service.interface';
 import { UserFindAllResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.response.dto';
 import {
+  UserPersonRequest,
   UserPreferencesRequest,
   UserRequest,
 } from '../../application/adapter/dto/HTTP-REQUEST/user.request.CREATE';
@@ -16,6 +17,8 @@ import { UserFactory } from '../../application/service/user.factory';
 import { OnEvent } from '@nestjs/event-emitter';
 import { downgrade_plan_contact } from 'src/contexts/module_shared/event-emmiter/events';
 import { UserType } from '../../domain/entity/enum/user.enums';
+import { IDENTITY_VERIFICATION_SERVICE } from 'src/contexts/module_user/identity/domain/identity.verifier.interface';
+import { IdentityVerificationServiceInterface } from 'src/contexts/module_user/identity/application/service/identity.verification.service';
 
 @Injectable()
 export class UserAdapter implements UserAdapterInterface {
@@ -23,6 +26,8 @@ export class UserAdapter implements UserAdapterInterface {
     private readonly logger: MyLoggerService,
     @Inject('UserServiceInterface')
     private readonly userService: UserServiceInterface,
+    @Inject(IDENTITY_VERIFICATION_SERVICE)
+    private readonly identityVerificationService: IdentityVerificationServiceInterface,
   ) {}
   async getUsersOfAllApp(): Promise<any> {
     try {
@@ -38,9 +43,27 @@ export class UserAdapter implements UserAdapterInterface {
     }
 
     try {
+      // Personas: el DNI se verifica con RENAPER ANTES de crear nada. Si no
+      // aprueba, lanza y no se crea la cuenta.
+      const isPerson =
+        String(newUserRequest.userType).toLowerCase() === UserType.Person;
+      const person = newUserRequest as UserPersonRequest & { dni: string };
+      const identityVerification = isPerson
+        ? await this.identityVerificationService.verifyPersonForRegistration({
+            dni: person.dni,
+            gender: person.gender,
+            birthDate: person.birthDate,
+            clerkId: person.clerkId,
+          })
+        : null;
+
       const factory = UserFactory.getInstance(this.logger);
       const user = factory.createUser(newUserRequest.userType, newUserRequest);
-      return await this.userService.createUser(user, newUserRequest?.contact);
+      return await this.userService.createUser(
+        user,
+        newUserRequest?.contact,
+        identityVerification,
+      );
     } catch (error: any) {
       throw error;
     }

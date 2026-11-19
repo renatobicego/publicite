@@ -109,6 +109,7 @@ Puedes usar Publicite de dos maneras:
 1. Ve a la página de registro: https://soonpublicite.com/registrarse
 2. Elige si te registras como **Empresa** o **Persona**
 3. Completa tus datos básicos
+   - Si te registras como **Persona**, verificamos tu DNI con RENAPER junto con el sexo y la fecha de nacimiento. Si los datos no coinciden, no se puede completar el registro: revisa que sean los de tu DNI. Un mismo DNI sólo puede tener una cuenta.
 4. ¡Listo! Ya puedes comenzar a usar Publicite
 
 ### 🔑 Iniciar Sesión

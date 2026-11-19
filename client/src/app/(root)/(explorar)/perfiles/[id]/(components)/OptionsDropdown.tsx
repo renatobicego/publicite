@@ -8,11 +8,19 @@ import {
   DropdownMenu,
   DropdownTrigger,
 } from "@nextui-org/react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import EditCartelModal from "./EditCartelModal";
 import { FaShareAlt } from "react-icons/fa";
-import { FaChevronDown } from "react-icons/fa6";
+import { FaChevronDown, FaPen } from "react-icons/fa6";
 
-const OptionsDropdown = ({ user }: { user: GetUser }) => {
+const OptionsDropdown = ({
+  user,
+  isMyProfile = false,
+}: {
+  user: GetUser;
+  isMyProfile?: boolean;
+}) => {
+  const [isEditOpen, setIsEditOpen] = useState(false);
   const userShareRef = useRef<() => void>(() => { });
   const handleShareOpenModal = () => {
     if (userShareRef.current) {
@@ -43,6 +51,16 @@ const OptionsDropdown = ({ user }: { user: GetUser }) => {
           >
             Compartir
           </DropdownItem>
+          {isMyProfile ? (
+            <DropdownItem
+              startContent={<FaPen />}
+              key="edit"
+              className="rounded-full px-4"
+              onPress={() => setIsEditOpen(true)}
+            >
+              Editar cartel
+            </DropdownItem>
+          ) : null}
         </DropdownMenu>
       </Dropdown>
       <ShareButton
@@ -56,6 +74,14 @@ const OptionsDropdown = ({ user }: { user: GetUser }) => {
         }}
         customOpen={(openModal) => (userShareRef.current = openModal)}
       />
+      {isMyProfile && (
+        <EditCartelModal
+          isOpen={isEditOpen}
+          onOpenChange={setIsEditOpen}
+          username={user.username}
+          userType={user.userType}
+        />
+      )}
     </>
   );
 };

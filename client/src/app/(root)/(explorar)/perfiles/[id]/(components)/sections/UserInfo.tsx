@@ -28,7 +28,10 @@ import {
 import AcceptRequestFriend from "./AcceptRequestFriend";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
+import { TbWorldPin } from "react-icons/tb";
 import CredentialCard from "@/components/Credential/CredentialCard";
+import ImagePreview from "@/components/Credential/ImagePreview";
+import CredentialPhotoPrompt from "../CredentialPhotoPrompt";
 
 const UserInfo = ({
   user,
@@ -162,58 +165,69 @@ const UserInfo = ({
     canSeeField(user.contact?.description?.visibility, isMyProfile, isMyContact);
 
   return (
-    <section className="w-full md:max-w-xl flex flex-col gap-3">
-      {/* Encabezado: foto de perfil, fuera de la credencial */}
-      <div className="flex items-center gap-3">
-        <Image
+    <section className="w-full md:max-w-2xl flex flex-col gap-3">
+      {/* Por fuera de la credencial: foto de perfil, nombre y usuario */}
+      <div className="flex items-center gap-4">
+        <ImagePreview
           src={user.profilePhotoUrl}
           alt={`foto de perfil de ${user.username}`}
-          radius="full"
-          removeWrapper
-          className="size-14 md:size-16 object-cover shrink-0 border-2 border-white shadow-sm"
-        />
+        >
+          <Image
+            src={user.profilePhotoUrl}
+            alt={`foto de perfil de ${user.username}`}
+            radius="full"
+            removeWrapper
+            className="block size-24 md:size-32 object-cover shrink-0 border-4 border-white shadow-md"
+          />
+        </ImagePreview>
         <div className="flex-1 min-w-0">
-          <h2 className="text-lg md:text-xl font-semibold leading-tight truncate">
+          <h2 className="text-xl md:text-2xl font-semibold leading-tight break-words">
             {displayName}
           </h2>
           <p className="text-sm text-default-500 truncate">@{user.username}</p>
         </div>
-        <OptionsDropdown user={user} />
+        <OptionsDropdown user={user} isMyProfile={isMyProfile} />
       </div>
 
-      {/* Credencial: tarjeta chica con su propia foto y el color elegido */}
       <CredentialCard
         userId={user._id}
         displayName={displayName}
-        credentialPhotoUrl={user.credentialPhotoUrl}
         profilePhotoUrl={user.profilePhotoUrl}
+        credentialPhotoUrl={user.credentialPhotoUrl}
         credentialColor={user.credentialColor}
         credentialId={user.credentialId}
-        profesion={profesion}
-        location={showAddress() ? user.countryRegion : undefined}
-      />
-
-      {showDescription && (
-        <p className="text-sm text-default-700 whitespace-pre-line">
-          {displayDescription}
-        </p>
-      )}
-
-      <div className="flex flex-wrap items-start gap-2">{actionToShow()}</div>
+        footer={actionToShow()}
+      >
+        {profesion && (
+          <h4 className="font-semibold text-sm md:text-base leading-tight">
+            {profesion}
+          </h4>
+        )}
+        {showDescription && (
+          <p className="text-xs md:text-sm whitespace-pre-line">
+            {displayDescription}
+          </p>
+        )}
+        {showAddress() && (
+          <div className="flex items-center gap-1.5 text-xs md:text-sm text-default-600">
+            <TbWorldPin className="shrink-0" />
+            <span>{user.countryRegion}</span>
+          </div>
+        )}
+        {isMyProfile && !user.credentialPhotoUrl && (
+          <CredentialPhotoPrompt credentialColor={user.credentialColor} />
+        )}
+      </CredentialCard>
 
       {user.contact && (
-        <div className="rounded-xl border overflow-hidden">
-          <button
-            type="button"
+        <div className="flex flex-col gap-2">
+          <PrimaryButton
+            size="sm"
+            className="self-start"
             onClick={() => setIsOpen((prev) => !prev)}
-            aria-expanded={isOpen}
-            className="w-full flex items-center justify-between px-3 py-2 text-sm font-medium hover:bg-default-50"
           >
-            <span>Links útiles</span>
-            <span className="text-xs text-default-500">
-              {isOpen ? "Ocultar" : "Ver links"}
-            </span>
-          </button>
+            {isOpen ? "Ocultar links" : "Desplegar para ver links"}
+          </PrimaryButton>
 
           <AnimatePresence initial={false}>
             {isOpen && (
@@ -222,15 +236,21 @@ const UserInfo = ({
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: "auto", opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.25 }}
+                transition={{ duration: 0.3 }}
                 className="overflow-hidden"
               >
-                <div className="px-3 pb-3 pt-1">
-                  <SocialMediaLinks
-                    contact={user.contact}
-                    isMyProfile={isMyProfile}
-                    isMyContact={isMyContact}
-                  />
+                <div className="flex flex-col sm:flex-row border rounded-2xl overflow-hidden bg-white">
+                  <div className="bg-primary text-white px-4 py-3 sm:w-2/5 font-medium">
+                    <h3 className="text-sm md:text-base">Links útiles</h3>
+                  </div>
+
+                  <div className="px-4 py-3 sm:w-3/5 flex flex-col gap-2">
+                    <SocialMediaLinks
+                      contact={user.contact}
+                      isMyProfile={isMyProfile}
+                      isMyContact={isMyContact}
+                    />
+                  </div>
                 </div>
               </motion.div>
             )}

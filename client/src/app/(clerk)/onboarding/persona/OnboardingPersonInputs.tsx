@@ -9,6 +9,7 @@ import { UserPersonFormValues } from "@/types/userTypes";
 import { CalendarDate, getLocalTimeZone, today } from "@internationalized/date";
 import { Field, FormikErrors } from "formik";
 import { memo } from "react";
+import { isIdentityVerificationEnabled } from "@/utils/functions/identityVerification";
 
 interface OnboardingPersonInputsProps {
   initialValues: UserPersonFormValues;
@@ -33,6 +34,7 @@ const OnboardingPersonInputs = ({
     { name: "No Binario", value: "X" },
     { name: "Otro", value: "O" },
   ];
+  const verifiesIdentity = isIdentityVerificationEnabled();
   const maxBirthdate = today(getLocalTimeZone()).subtract({ years: 18 });
   return (
     <>
@@ -66,7 +68,11 @@ const OnboardingPersonInputs = ({
         type="text"
         errorMessage={errors.dni}
         placeholder="Ingrese su DNI sin puntos ni espacios"
-        description="Utilizaremos su DNI para realizar la facturación en caso de suscribirse."
+        description={
+          verifiesIdentity
+            ? "Verificaremos su DNI con RENAPER junto con el sexo y la fecha de nacimiento. También lo usamos para facturar si se suscribe."
+            : "Utilizaremos su DNI para realizar la facturación en caso de suscribirse."
+        }
       />
       <Field
         as={CustomInput}
@@ -95,6 +101,11 @@ const OnboardingPersonInputs = ({
         label="Género"
         aria-label="genero"
         placeholder="Seleccione su género"
+        description={
+          verifiesIdentity
+            ? "Elija el sexo que figura en su DNI: se verifica con RENAPER."
+            : undefined
+        }
         items={genderItems}
         defaultSelectedKeys={[initialValues.gender]}
         isInvalid={!!errors.gender}

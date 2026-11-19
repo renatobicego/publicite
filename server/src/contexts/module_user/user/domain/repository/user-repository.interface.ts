@@ -1,3 +1,4 @@
+import { IdentityVerificationRecord } from 'src/contexts/module_user/identity/domain/identity.verification.types';
 import { ClientSession, ObjectId, Types } from 'mongoose';
 import { User, UserPreferences } from '../entity/user.entity';
 import { UserPerson } from '../entity/userPerson.entity';
@@ -68,7 +69,12 @@ export interface UserRepositoryInterface {
     userRelationId: any,
     session: any,
   ): Promise<void>;
-  save(reqUser: User, session?: ClientSession): Promise<string>;
+  save(
+    reqUser: User,
+    session?: ClientSession,
+    identityVerification?: IdentityVerificationRecord | null,
+  ): Promise<string>;
+  existsVerifiedPersonWithDni(dni: string): Promise<boolean>;
 
   saveBusinessAccount(
     baseObj: any,

@@ -1,3 +1,4 @@
+import { IdentityVerificationRecord } from 'src/contexts/module_user/identity/domain/identity.verification.types';
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { ClientSession, Connection, Model, Types } from 'mongoose';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
@@ -887,7 +888,19 @@ export class UserRepository implements UserRepositoryInterface {
     }
   }
 
-  async save(reqUser: User, session?: ClientSession): Promise<any> {
+  async existsVerifiedPersonWithDni(dni: string): Promise<boolean> {
+    const found = await this.userModel.exists({
+      dni,
+      'identityVerification.verifiedAt': { $exists: true },
+    });
+    return !!found;
+  }
+
+  async save(
+    reqUser: User,
+    session?: ClientSession,
+    identityVerification?: IdentityVerificationRecord | null,
+  ): Promise<any> {
     try {
       this.logger.log('Saving User in repository');
       let finder = '';
@@ -919,6 +932,7 @@ export class UserRepository implements UserRepositoryInterface {
         // ID decorativo de credencial (RNF-09). Los usuarios anteriores a MP no
         // lo tienen y lo reciben de forma perezosa vía `setCredentialId`.
         credentialId: reqUser.getCredentialId ?? generateCredentialId(),
+        ...(identityVerification && { identityVerification }),
       };
 
       switch (reqUser.getUserType?.toLowerCase()) {

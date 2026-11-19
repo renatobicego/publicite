@@ -3,6 +3,7 @@ import { useRef, useState } from "react";
 import { Button, Progress } from "@nextui-org/react";
 import { useUser } from "@clerk/nextjs";
 import { FaCheck } from "react-icons/fa6";
+import { TbWorldPin } from "react-icons/tb";
 import { useRouter } from "@bprogress/next/app";
 import DataBox from "../../DataBox";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
@@ -116,9 +117,19 @@ const CredentialEditor = ({
           credentialPhotoUrl={photo}
           profilePhotoUrl={user?.imageUrl}
           credentialColor={color}
-          profesion={profesion}
-          location={location}
-        />
+        >
+          {profesion && (
+            <h4 className="font-semibold text-sm md:text-base leading-tight">
+              {profesion}
+            </h4>
+          )}
+          {location && (
+            <div className="flex items-center gap-1.5 text-xs md:text-sm text-default-600">
+              <TbWorldPin className="shrink-0" />
+              <span>{location}</span>
+            </div>
+          )}
+        </CredentialCard>
 
         <div className="flex flex-col gap-2">
           <p className="text-sm font-medium">Foto de la credencial</p>
