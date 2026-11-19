@@ -159,6 +159,17 @@ export class UserAdapter implements UserAdapterInterface {
     }
   }
 
+  async updateCredential(
+    userRequestId: string,
+    input: { credentialPhotoUrl?: string | null; credentialColor?: string | null },
+  ): Promise<{
+    credentialPhotoUrl: string | null;
+    credentialColor: string | null;
+    previousCredentialPhotoUrl: string | null;
+  }> {
+    return await this.userService.updateCredential(userRequestId, input);
+  }
+
   async updateUser(
     username: string,
     req: businessAccountUpdateRequest | personalAccountUpdateRequest,

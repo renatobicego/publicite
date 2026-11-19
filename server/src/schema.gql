@@ -357,6 +357,8 @@ type User_Full_Grapql_Model {
   businessName: String
   addressPrivacy: String
   credentialId: String
+  credentialPhotoUrl: String
+  credentialColor: String
   contact: Contact
   createdTime: String
   magazines: [Magazines_Full_Graphql_Model]
@@ -377,6 +379,12 @@ type user_active_relation {
   userB: String!
   typeRelationA: String!
   typeRelationB: String!
+}
+
+type User_Credential_Graphql_Model {
+  credentialPhotoUrl: String
+  credentialColor: String
+  previousCredentialPhotoUrl: String
 }
 
 type posts_graphql_magazine {
@@ -2949,6 +2957,11 @@ type Mutation {
 
   """Actualiza las relaciones activas del usuario"""
   setNewActiveUserRelations(activeRelations: [String!]!): String
+
+  """
+  Actualiza la foto y el color de la credencial del usuario logueado. Vacío = quitar.
+  """
+  updateMyCredential(credentialPhotoUrl: String, credentialColor: String): User_Credential_Graphql_Model!
 
   """Actualizar los metodos de contacto de un usuario"""
   updateContactById(contactId: String!, updateRequest: UpdateContactRequest!): String

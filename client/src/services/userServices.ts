@@ -1,6 +1,7 @@
 "use server";
 import {
   Contact,
+  CredentialSettings,
   EditPersonProfileProps,
   GetUser,
   UserPersonFormValues,
@@ -21,6 +22,7 @@ import getUserByIdQuery, {
   getFriendsQuery,
   putActiveRelationsMutation,
   updateContactMutation,
+  updateMyCredentialMutation,
 } from "@/graphql/userQueries";
 import { ApolloError } from "@apollo/client";
 import { getApiContext } from "./apiContext";
@@ -91,6 +93,32 @@ export const putContactData = async (
     return {
       error: "Error al actualizar el contacto. Por favor intenta de nuevo.",
     };
+  }
+};
+
+/** Guarda la foto y el color de la credencial del usuario logueado. */
+export const putMyCredential = async (
+  credential: CredentialSettings
+): Promise<
+  | (CredentialSettings & { previousCredentialPhotoUrl?: string | null })
+  | { error: string }
+> => {
+  try {
+    const { data } = await getClient().mutate({
+      mutation: updateMyCredentialMutation,
+      variables: {
+        credentialPhotoUrl: credential.credentialPhotoUrl ?? null,
+        credentialColor: credential.credentialColor ?? null,
+      },
+      context: {
+        headers: {
+          Authorization: await getAuthToken(),
+        },
+      },
+    });
+    return data.updateMyCredential;
+  } catch (error) {
+    return handleApolloError(error);
   }
 };
 

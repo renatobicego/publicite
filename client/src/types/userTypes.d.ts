@@ -24,6 +24,18 @@ export interface User {
   userPreferences: UserPreferences;
   dni: string;
   addressPrivacy: UserRelation | "none" | "all";
+  /** ID decorativo de la credencial (SP-XXXX-XXXX). */
+  credentialId?: string | null;
+  /** Foto de la credencial (key de UploadThing). Sin ella se usa la de perfil. */
+  credentialPhotoUrl?: string | null;
+  /** Color decorativo del recuadro de la credencial (#rrggbb). */
+  credentialColor?: string | null;
+}
+
+/** Foto y color de la credencial, tal como los edita el usuario. */
+export interface CredentialSettings {
+  credentialPhotoUrl?: string | null;
+  credentialColor?: string | null;
 }
 
 export interface GetUser
@@ -143,7 +155,8 @@ export interface EditPersonProfileProps
       UserPersonFormValues,
       "description" | "birthDate" | "gender" | "countryRegion" | "dni"
     >
-  > {
+  >,
+    CredentialSettings {
   contact?: Contact;
 }
 
@@ -158,7 +171,8 @@ export interface EditBusinessProfileProps
       | "dni"
       | "addressPrivacy"
     >
-  > {
+  >,
+    CredentialSettings {
   sector: BusinessSector | ObjectId;
   contact?: Contact;
 }

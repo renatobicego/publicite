@@ -6,6 +6,8 @@ const getUserByIdQuery = gql`
       _id
       businessName
       credentialId
+      credentialPhotoUrl
+      credentialColor
       addressPrivacy
       contact {
         _id
@@ -347,6 +349,22 @@ export const updateContactMutation = gql`
     $updateRequest: UpdateContactRequest!
   ) {
     updateContactById(contactId: $contactId, updateRequest: $updateRequest)
+  }
+`;
+
+export const updateMyCredentialMutation = gql`
+  mutation UpdateMyCredential(
+    $credentialPhotoUrl: String
+    $credentialColor: String
+  ) {
+    updateMyCredential(
+      credentialPhotoUrl: $credentialPhotoUrl
+      credentialColor: $credentialColor
+    ) {
+      credentialPhotoUrl
+      credentialColor
+      previousCredentialPhotoUrl
+    }
   }
 `;
 

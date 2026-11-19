@@ -27,6 +27,8 @@ interface IUser extends Document {
   posts: Schema.Types.ObjectId[];
   productions: Schema.Types.ObjectId[];
   credentialId: string | undefined;
+  credentialPhotoUrl: string | undefined;
+  credentialColor: string | undefined;
   userRelations: Schema.Types.ObjectId[];
   userType: UserType;
   name: string;
@@ -66,6 +68,10 @@ const UserSchema = new Schema<IUser>(
     // antes de MP no lo tienen y se completa de forma perezosa al leerlo.
     productions: [{ type: Schema.Types.ObjectId, ref: 'Production' }],
     credentialId: { type: String, unique: true, sparse: true },
+    // Credencial del cartel: foto propia (key de UploadThing, distinta de la
+    // foto de perfil de Clerk) y color decorativo del borde (hex). Opcionales.
+    credentialPhotoUrl: { type: String },
+    credentialColor: { type: String },
     userRelations: [{ type: Schema.Types.ObjectId, ref: 'UserRelation' }],
     userType: { type: String, enum: Object.values(UserType), required: true },
     name: { type: String, required: true },

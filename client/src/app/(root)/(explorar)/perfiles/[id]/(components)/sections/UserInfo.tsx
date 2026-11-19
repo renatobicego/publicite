@@ -14,8 +14,6 @@ import {
   FaWhatsapp,
   FaXTwitter,
 } from "react-icons/fa6";
-import { TbWorldPin } from "react-icons/tb";
-import { MdWork, MdDownload } from "react-icons/md";
 import OptionsDropdown from "../OptionsDropdown";
 import ContactPetitionsList from "@/components/modals/ContactPetition/ContactPetitionsList";
 import { relationTypes } from "@/utils/data/selectData";
@@ -30,7 +28,7 @@ import {
 import AcceptRequestFriend from "./AcceptRequestFriend";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
-import CredentialQrShare from "../CredentialQrShare";
+import CredentialCard from "@/components/Credential/CredentialCard";
 
 const UserInfo = ({
   user,
@@ -146,88 +144,76 @@ const UserInfo = ({
   // Resolve description: prefer contact.description.text, fallback to user.description
   const displayDescription = user.contact?.description?.text ?? user.description;
 
+  const displayName =
+    userType === "Business"
+      ? business.businessName
+      : [user.name, user.lastName].filter(Boolean).join(" ") || user.username;
+
+  const profesion = canSeeField(
+    user.contact?.profesion?.visibility,
+    isMyProfile,
+    isMyContact
+  )
+    ? user.contact?.profesion?.label
+    : undefined;
+
+  const showDescription =
+    !!displayDescription &&
+    canSeeField(user.contact?.description?.visibility, isMyProfile, isMyContact);
+
   return (
-    <section className="w-full max-w-4xl  flex flex-col gap-4">
-      {/* CARD PRINCIPAL */}
-      <div className="flex flex-col md:flex-row rounded-2xl border overflow-hidden">
-        {/* IZQUIERDA (ROJO) */}
-        <div className="bg-primary text-white p-6 md:w-1/2 flex flex-col items-start justify-center gap-3">
-          <h2 className="max-lg:mt-1">
-            {userType === "Business"
-              ? business.businessName
-              : `${user.name} ${user.lastName}`}
+    <section className="w-full md:max-w-xl flex flex-col gap-3">
+      {/* Encabezado: foto de perfil, fuera de la credencial */}
+      <div className="flex items-center gap-3">
+        <Image
+          src={user.profilePhotoUrl}
+          alt={`foto de perfil de ${user.username}`}
+          radius="full"
+          removeWrapper
+          className="size-14 md:size-16 object-cover shrink-0 border-2 border-white shadow-sm"
+        />
+        <div className="flex-1 min-w-0">
+          <h2 className="text-lg md:text-xl font-semibold leading-tight truncate">
+            {displayName}
           </h2>
-
-          <p className="opacity-90">@{user.username}</p>
-
-          <Image
-            src={user.profilePhotoUrl}
-            alt={`foto de perfil de ${user.username}`}
-            className="rounded-full self-end"
-            classNames={{
-              img: "object-cover w-full !h-24 md:!h-32 xl:!h-52 2xl:!w-64 border-4 border-white",
-              wrapper:
-                "!min-w-24 w-24 md:!min-w-32 md:!w-32 xl:!w-52 xl:!min-w-52 2xl:!w-52 2xl:!min-w-52 self-end",
-            }}
-          />
+          <p className="text-sm text-default-500 truncate">@{user.username}</p>
         </div>
-
-        {/* DERECHA (GRIS) */}
-        <div className="p-6 md:w-1/2 flex flex-col justify-start gap-4">
-          <div className="flex justify-between items-start">
-            <h3 className="font-semibold">Credencial de {user.username}</h3>
-            <OptionsDropdown user={user} />
-          </div>
-
-          {user.contact && (
-            <ContactField
-              value={user.contact.profesion?.label}
-              visibility={user.contact.profesion?.visibility}
-              isMyProfile={isMyProfile}
-              isMyContact={isMyContact}
-              render={(val) => <h4 className="font-semibold">{val}</h4>}
-            />
-          )}
-
-          {displayDescription && (
-            <ContactField
-              value={displayDescription}
-              visibility={user.contact?.description?.visibility}
-              isMyProfile={isMyProfile}
-              isMyContact={isMyContact}
-              render={(val) => (
-                <p className="text-small md:text-sm lg:text-base">{val}</p>
-              )}
-            />
-          )}
-
-          {showAddress() && (
-            <div className="flex items-center gap-2 text-sm text-default-600">
-              <TbWorldPin />
-              <span>{user.countryRegion}</span>
-            </div>
-          )}
-
-          <CredentialQrShare
-            userId={user._id}
-            credentialId={(user as any).credentialId}
-            displayName={
-              userType === "Business"
-                ? business.businessName
-                : [user.name, user.lastName].filter(Boolean).join(" ") ||
-                user.username
-            }
-          />
-
-          <div className="mt-auto">{actionToShow()}</div>
-        </div>
+        <OptionsDropdown user={user} />
       </div>
 
+      {/* Credencial: tarjeta chica con su propia foto y el color elegido */}
+      <CredentialCard
+        userId={user._id}
+        displayName={displayName}
+        credentialPhotoUrl={user.credentialPhotoUrl}
+        profilePhotoUrl={user.profilePhotoUrl}
+        credentialColor={user.credentialColor}
+        credentialId={user.credentialId}
+        profesion={profesion}
+        location={showAddress() ? user.countryRegion : undefined}
+      />
+
+      {showDescription && (
+        <p className="text-sm text-default-700 whitespace-pre-line">
+          {displayDescription}
+        </p>
+      )}
+
+      <div className="flex flex-wrap items-start gap-2">{actionToShow()}</div>
+
       {user.contact && (
-        <div className="flex flex-col gap-2">
-          <PrimaryButton onClick={() => setIsOpen((prev) => !prev)}>
-            {isOpen ? "Ocultar links" : "Desplegar para ver links"}
-          </PrimaryButton>
+        <div className="rounded-xl border overflow-hidden">
+          <button
+            type="button"
+            onClick={() => setIsOpen((prev) => !prev)}
+            aria-expanded={isOpen}
+            className="w-full flex items-center justify-between px-3 py-2 text-sm font-medium hover:bg-default-50"
+          >
+            <span>Links útiles</span>
+            <span className="text-xs text-default-500">
+              {isOpen ? "Ocultar" : "Ver links"}
+            </span>
+          </button>
 
           <AnimatePresence initial={false}>
             {isOpen && (
@@ -236,21 +222,15 @@ const UserInfo = ({
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: "auto", opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.3 }}
+                transition={{ duration: 0.25 }}
                 className="overflow-hidden"
               >
-                <div className="flex flex-col md:flex-row border rounded-2xl overflow-hidden">
-                  <div className="bg-primary text-white p-4 md:w-1/2 font-medium">
-                    <h3>Links útiles</h3>
-                  </div>
-
-                  <div className="p-4 md:w-1/2 flex flex-col gap-2">
-                    <SocialMediaLinks
-                      contact={user.contact}
-                      isMyProfile={isMyProfile}
-                      isMyContact={isMyContact}
-                    />
-                  </div>
+                <div className="px-3 pb-3 pt-1">
+                  <SocialMediaLinks
+                    contact={user.contact}
+                    isMyProfile={isMyProfile}
+                    isMyContact={isMyContact}
+                  />
                 </div>
               </motion.div>
             )}

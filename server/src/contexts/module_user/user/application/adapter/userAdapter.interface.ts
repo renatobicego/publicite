@@ -35,6 +35,14 @@ export interface UserAdapterInterface {
     activeRelations: string[],
     userRequestId: string,
   ): Promise<any>;
+  updateCredential(
+    userRequestId: string,
+    input: { credentialPhotoUrl?: string | null; credentialColor?: string | null },
+  ): Promise<{
+    credentialPhotoUrl: string | null;
+    credentialColor: string | null;
+    previousCredentialPhotoUrl: string | null;
+  }>;
   updateUserPreferencesByUsername(
     username: string,
     userPreference: UserPreferenceResponse,

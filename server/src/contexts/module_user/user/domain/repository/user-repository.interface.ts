@@ -105,6 +105,10 @@ export interface UserRepositoryInterface {
     activeRelations: string[],
     userRequestId: string,
   ): Promise<any>;
+  updateCredential(
+    userId: string,
+    credential: { credentialPhotoUrl: string | null; credentialColor: string | null },
+  ): Promise<{ credentialPhotoUrl?: string; credentialColor?: string } | null>;
 
   removeFriendRequest(
     previousNotificationId: string,

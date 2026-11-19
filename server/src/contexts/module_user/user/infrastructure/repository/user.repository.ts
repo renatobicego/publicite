@@ -128,7 +128,7 @@ export class UserRepository implements UserRepositoryInterface {
       const user = await this.user
         .findOne({ _id })
         .select(
-          '_id profilePhotoUrl username contact lastName name businessName countryRegion userType board description email suscriptions groups magazines posts friendRequests userRelations credentialId',
+          '_id profilePhotoUrl username contact lastName name businessName countryRegion userType board description email suscriptions groups magazines posts friendRequests userRelations credentialId credentialPhotoUrl credentialColor',
         )
         .populate([
           { path: 'board' },
@@ -252,7 +252,7 @@ export class UserRepository implements UserRepositoryInterface {
   async getUserPersonalInformationByUsername(username: string): Promise<any> {
     try {
       const selectFields =
-        'sector businessName birthDate gender countryRegion description contact dni addressPrivacy';
+        'sector businessName birthDate gender countryRegion description contact dni addressPrivacy credentialPhotoUrl credentialColor';
       const populatedUser = await this.user
         .findOne({ username })
         .select(selectFields)
@@ -524,7 +524,7 @@ export class UserRepository implements UserRepositoryInterface {
         const user = await this.user
           .findOne({ _id })
           .select(
-            '_id profilePhotoUrl username contact lastName name businessName countryRegion userType board description email suscriptions groups magazines posts friendRequests userRelations credentialId',
+            '_id profilePhotoUrl username contact lastName name businessName countryRegion userType board description email suscriptions groups magazines posts friendRequests userRelations credentialId credentialPhotoUrl credentialColor',
           )
           .populate([
             {
@@ -1128,5 +1128,29 @@ export class UserRepository implements UserRepositoryInterface {
       throw error;
     }
   }
-}
 
+  async updateCredential(
+    userId: string,
+    credential: { credentialPhotoUrl: string | null; credentialColor: string | null },
+  ): Promise<{ credentialPhotoUrl?: string; credentialColor?: string } | null> {
+    try {
+      const $set: Record<string, string> = {};
+      const $unset: Record<string, ''> = {};
+      for (const [field, value] of Object.entries(credential)) {
+        if (value) $set[field] = value;
+        else $unset[field] = '';
+      }
+      return await this.user
+        .findOneAndUpdate(
+          { _id: userId },
+          { $set, $unset },
+          // Devuelve los valores ANTERIORES: el cliente borra la foto vieja.
+          { new: false },
+        )
+        .select('credentialPhotoUrl credentialColor -_id')
+        .lean();
+    } catch (error: any) {
+      throw error;
+    }
+  }
+}

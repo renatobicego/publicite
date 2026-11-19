@@ -136,6 +136,14 @@ export interface UserServiceInterface {
     activeRelations: string[],
     userRequestId: string,
   ): Promise<any>;
+  updateCredential(
+    userRequestId: string,
+    input: { credentialPhotoUrl?: string | null; credentialColor?: string | null },
+  ): Promise<{
+    credentialPhotoUrl: string | null;
+    credentialColor: string | null;
+    previousCredentialPhotoUrl: string | null;
+  }>;
   setSubscriptionToUser(
     external_reference: string,
     sub_id: any,

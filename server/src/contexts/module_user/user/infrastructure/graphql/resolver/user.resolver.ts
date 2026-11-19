@@ -7,6 +7,7 @@ import { UserAdapterInterface } from '../../../application/adapter/userAdapter.i
 import { User_Full_Grapql_Model } from '../../../domain/entity/models_graphql/user.full.grapql.model';
 import { CustomContextRequestInterface } from 'src/contexts/module_shared/auth/custom_request/custom.context.request.interface';
 import { user_active_relation } from '../../../domain/entity/models_graphql/user.activeRelation.graphql';
+import { User_Credential_Graphql_Model } from '../../../domain/entity/models_graphql/user.credential.graphql';
 
 @Resolver()
 export class UserResolver {
@@ -66,6 +67,25 @@ export class UserResolver {
     } catch (error: any) {
       throw error;
     }
+  }
+
+  @Mutation(() => User_Credential_Graphql_Model, {
+    description:
+      'Actualiza la foto y el color de la credencial del usuario logueado. Vacío = quitar.',
+  })
+  @UseGuards(ClerkAuthGuard)
+  async updateMyCredential(
+    @Args('credentialPhotoUrl', { type: () => String, nullable: true })
+    credentialPhotoUrl: string | null,
+    @Args('credentialColor', { type: () => String, nullable: true })
+    credentialColor: string | null,
+    @Context() context: { req: CustomContextRequestInterface },
+  ): Promise<User_Credential_Graphql_Model> {
+    const userRequestId = context.req.userRequestId;
+    return await this.userAdapter.updateCredential(userRequestId, {
+      credentialPhotoUrl,
+      credentialColor,
+    });
   }
 
   @Query(() => [user_active_relation], {
