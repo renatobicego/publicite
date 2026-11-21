@@ -8,7 +8,13 @@ import { isAxiosError } from "axios";
 
 const getServerMessage = (err: unknown): string | null => {
   if (!isAxiosError(err)) return null;
-  const message = err.response?.data?.message;
+  // El filtro global del server (AllExceptionsFilter) manda en `message` lo que
+  // devuelve `getResponse()` de la excepción: para un BadRequestException es un
+  // objeto `{ message, error, statusCode }`, no el texto.
+  let message = err.response?.data?.message;
+  if (message && typeof message === "object" && !Array.isArray(message)) {
+    message = message.message;
+  }
   if (Array.isArray(message)) return message.join(" ");
   return typeof message === "string" && message ? message : null;
 };
